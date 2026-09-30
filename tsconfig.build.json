@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": "packages",
+    "outDir": "dist/library"
+  },
+  "include": ["packages/ui/src", "packages/utils/src", "packages/parttens/src"],
+  "exclude": ["**/*.test.*", "**/*.stories.*", "**/test/**", "**/vite-env.d.ts"]
+}

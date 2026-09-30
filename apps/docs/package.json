@@ -1,0 +1,23 @@
+{
+  "name": "@tc96/docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "fumadocs-mdx && vite build"
+  },
+  "dependencies": {
+    "fumadocs-core": "^16.0.0",
+    "fumadocs-mdx": "^15.2.0",
+    "tc96": "file:../../dist/library"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.11",
+    "@types/react-dom": "19.1.7",
+    "@vitejs/plugin-react": "6.0.5",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "typescript": "6.0.3",
+    "vite": "8.2.1"
+  }
+}

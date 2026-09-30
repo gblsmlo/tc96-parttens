@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "types": [
+      "bun",
+      "node"
+    ],
+    "noEmit": true,
+    "paths": {
+      "@tc96/ui": [
+        "./packages/ui/src/index.ts"
+      ],
+      "@tc96/ui/*": [
+        "./packages/ui/src/*"
+      ],
+      "@tc96/utils": [
+        "./packages/utils/src/index.ts"
+      ],
+      "@tc96/parttens": [
+        "./packages/parttens/src/index.ts"
+      ]
+    }
+  },
+  "exclude": [
+    "**/node_modules",
+    "**/dist"
+  ]
+}

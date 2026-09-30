@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "paths": {
+      "@proof/visual/*": [
+        "./packages/visual/src/*"
+      ],
+      "@proof/patterns/*": [
+        "./packages/patterns/src/*"
+      ],
+      "@proof/visual": [
+        "./packages/visual/src"
+      ],
+      "@proof/patterns": [
+        "./packages/patterns/src"
+      ]
+    }
+  }
+}

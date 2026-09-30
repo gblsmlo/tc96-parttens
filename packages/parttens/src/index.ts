@@ -1,0 +1,7 @@
+'use client'
+
+export * from './collection-views/index'
+export * from './properties/index'
+export * from './detail-sheet/index'
+export * from './editable/index'
+export { KanbanView as Kanban } from './collection-views/index'

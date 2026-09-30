@@ -1,0 +1,54 @@
+---
+title: Instalação
+description: Escolha imports npm ou código COSS por bloco.
+---
+
+# Instalação
+
+```sh
+bun add tc96
+```
+
+Importe pela camada que descreve o nível da sua composição:
+
+```tsx
+import { Button, Input } from 'tc96/ui'
+import { SelectProperty } from 'tc96/components'
+import { CalendarView, DataGrid, Kanban } from 'tc96/blocks'
+import { cn } from 'tc96/utils'
+```
+
+## COSS
+
+Para trazer o código de um bloco para o projeto consumidor, use o registry
+gerado durante a publicação. Este comando instala somente o bloco de views:
+
+```sh
+bunx shadcn@latest add ./node_modules/tc96/registry/generated/view.json
+```
+
+TC96 não altera automaticamente os componentes que o projeto não escolheu.
+## Instalação como biblioteca
+
+```sh
+npm install tc96
+```
+
+```tsx
+import { CollectionViewOutlet, TextProperty } from 'tc96/parttens'
+import { Button } from 'tc96/ui'
+```
+
+Os imports `tc96/components` e `tc96/blocks` continuam disponíveis para compatibilidade.
+
+## Instalação de fontes pelo shadcn
+
+Configure `components.json` e instale vários padrões de uma vez:
+
+```sh
+npx tc96-parttens add collection-views properties
+```
+
+O CLI delega a escrita ao shadcn, usa os aliases definidos em `tc96.json` e preserva arquivos que já existem. A primeira versão apresenta compatibilidade TypeScript e orienta a incorporação manual de correções; ela não faz mesclagem automática.
+
+Filter Builder não faz parte desta versão.

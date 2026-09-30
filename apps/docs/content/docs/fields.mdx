@@ -1,0 +1,31 @@
+---
+title: Fields
+description: Estrutura acessível para labels, descrições, erros e formulários.
+---
+
+# Fields
+
+`Field` conecta semanticamente label, controle, descrição e mensagem de erro.
+Use essa composição para inputs que pertencem a um formulário.
+
+```tsx
+import { Field, FieldDescription, FieldError, FieldLabel, Input } from 'tc96/ui'
+
+<Field name="email">
+  <FieldLabel>Email</FieldLabel>
+  <Input required type="email" />
+  <FieldDescription>Usado para notificações da conta.</FieldDescription>
+  <FieldError>Informe um email válido.</FieldError>
+</Field>
+```
+
+## Contrato
+
+- Informe `name` quando o Field participar de um formulário.
+- Use `FieldLabel` como nome acessível visível.
+- Mantenha `FieldDescription` e `FieldError` no mesmo Field do controle.
+- Marque o Input com `required`; o asterisco é apenas um indicador visual.
+- Informe sempre o `type` de Inputs e Buttons.
+
+O Storybook apresenta os estados visuais. Esta página concentra as regras de
+composição e uso.

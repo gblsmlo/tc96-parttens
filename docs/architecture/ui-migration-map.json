@@ -1,0 +1,556 @@
+{
+  "variants": {
+    "avatar": [
+      {
+        "hash": "8aa822fea09a33fef5efa188cf78cf4c8667e73e1233321a623b2f4a3a103ecc",
+        "target": "avatar",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/avatar.tsx"
+      },
+      {
+        "hash": "2d1a5f6bc171a220c09e157b08bda4f074c1b17bd332ba478eb03b0edd6fbcef",
+        "target": "compat/detail-sheet/avatar",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/avatar.tsx"
+      }
+    ],
+    "badge": [
+      {
+        "hash": "fb8665f18044a3e3210196f1a3ab240bbd236dbf1d9f1ec5770cfb77111932ee",
+        "target": "badge",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/badge.tsx"
+      }
+    ],
+    "button": [
+      {
+        "hash": "8b5453ec8a04c7151f9019c4441dd0f2c40537c769012d754ad62faa7e116bce",
+        "target": "button",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/button.tsx"
+      },
+      {
+        "hash": "995d86c5df54255283a2f5528be2fbbc0310832d3cc13ee556a47627d3b3de5c",
+        "target": "compat/collection-views/button",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/button.tsx"
+      }
+    ],
+    "calendar": [
+      {
+        "hash": "2767a6fdecbda699efcb2e2b90b6453bc10b54d71ab47dcaec4f06ea15d92eb4",
+        "target": "calendar",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/calendar.tsx"
+      },
+      {
+        "hash": "c56fce8978f1c4389795b02bbd03298f108476213a280f4c97bc0dfd3fb4002a",
+        "target": "compat/detail-sheet/calendar",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/calendar.tsx"
+      }
+    ],
+    "field": [
+      {
+        "hash": "87838cdb23b01274fa75a8f84468cc896a56bd9c113197c0bb071bc694903c28",
+        "target": "field",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/field.tsx"
+      }
+    ],
+    "form": [
+      {
+        "hash": "60a9abd2b9774b1e4020c7e0c98ae21f3229364a4229f5d905bbcf78a4894568",
+        "target": "form",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/form.tsx"
+      }
+    ],
+    "group": [
+      {
+        "hash": "21f9708c8781b67c0ad2d898659229a9346946a242873975726b3b29de4a5300",
+        "target": "group",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/group.tsx"
+      },
+      {
+        "hash": "ffe3bbc2fdef40c83c0c0676ab33e9833e4a0d7bf2a8caa645ffd78afb31292b",
+        "target": "compat/detail-sheet/group",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/group.tsx"
+      }
+    ],
+    "input-group": [
+      {
+        "hash": "877af3f4bc89644787d1745f34b9c5494e70f9aac5ec4b78c93ee4673470661b",
+        "target": "input-group",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/input-group.tsx"
+      },
+      {
+        "hash": "dfd3530cceef38066b413a46276de4a01944c802d2f6e7eb053ab84d1e79c93b",
+        "target": "compat/properties/input-group",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/properties/components/ui/input-group.tsx"
+      },
+      {
+        "hash": "c76c4fcedc88bb80d76238014a54bcd1ea1145835299f614a624ca2cf69d0639",
+        "target": "compat/detail-sheet/input-group",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/input-group.tsx"
+      }
+    ],
+    "input": [
+      {
+        "hash": "b9d69cbcabe9bbf37f99947d02839fc7169111c0d325eff03d3b9e4162537996",
+        "target": "input",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/input.tsx"
+      },
+      {
+        "hash": "9651e715fabd4d63c6946ad8c2979cb4f1ff73cfbdfc2a0360d44a06971600c9",
+        "target": "compat/collection-views/input",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/input.tsx"
+      },
+      {
+        "hash": "553ad844c0afb926b0333ae571ea21663aa9e2031552da4bcf163dddfd8b4f3d",
+        "target": "compat/detail-sheet/input",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/input.tsx"
+      }
+    ],
+    "kbd": [
+      {
+        "hash": "3bd8019fb6f0b5c476e5b5600bf18f4f3cb7631cd0d391395ac1a4838bbbeaf2",
+        "target": "kbd",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/kbd.tsx"
+      }
+    ],
+    "menu": [
+      {
+        "hash": "21d60ee1db7d8a42ada1226bbdb795446163ab3508db82ab359339d6f9526f88",
+        "target": "menu",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/menu.tsx"
+      }
+    ],
+    "popover": [
+      {
+        "hash": "9b21b5448ce12b87e55debe86cf9a84cbc02055d19816f5578d1e77215d7e283",
+        "target": "popover",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/popover.tsx"
+      }
+    ],
+    "separator": [
+      {
+        "hash": "ee919ac8263cf2bfffbcd5ad8a219a8b2c07b8031048b9570932cc953f7a2e83",
+        "target": "separator",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/separator.tsx"
+      }
+    ],
+    "spinner": [
+      {
+        "hash": "99419698eb8dbd4ae20b37a12cab6e23c861fdfe85f26e6de9d61dd146994512",
+        "target": "spinner",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/spinner.tsx"
+      }
+    ],
+    "text": [
+      {
+        "hash": "099e99b714dd191149fa5854cd487de1c719e53ce9bed90506872bd3f5f2d2ab",
+        "target": "text",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/shared/ui/text.tsx"
+      }
+    ],
+    "card": [
+      {
+        "hash": "8f4b73409f7a9eeb3336e6b8ae8755920bb01d9ad871ef07b106ad3863c212a8",
+        "target": "card",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/card.tsx"
+      }
+    ],
+    "checkbox": [
+      {
+        "hash": "076245ef125a3aa9664f847a51cb4c2bd5165c02ce0b3347ac9b0abccf5eaee8",
+        "target": "checkbox",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/checkbox.tsx"
+      }
+    ],
+    "collapsible": [
+      {
+        "hash": "7bbbaeca9f36fee4198079644d3b9d20e0ebb122b6bb0ec898553ab24329220e",
+        "target": "collapsible",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/collapsible.tsx"
+      }
+    ],
+    "empty": [
+      {
+        "hash": "9d3eb95b8537824a3da41730ec4bf0216ff804f5b82efdc7d43895544dbd5fa0",
+        "target": "empty",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/empty.tsx"
+      }
+    ],
+    "pagination": [
+      {
+        "hash": "49969b96769cf301e36429f14e90040cc68bb8a374d0e9464334e89b67a00b89",
+        "target": "pagination",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/pagination.tsx"
+      }
+    ],
+    "scroll-area": [
+      {
+        "hash": "436559e8ba98fb4ac5daeb33d877cab1d8724dbc6a3d95538ef680aba511c92a",
+        "target": "scroll-area",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/scroll-area.tsx"
+      },
+      {
+        "hash": "d053f713e1140b7a8c394bc465884ac6dcdaa307d3cf504292d35d2d82de34fe",
+        "target": "compat/detail-sheet/scroll-area",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/scroll-area.tsx"
+      }
+    ],
+    "select": [
+      {
+        "hash": "20209a1ef8cc79ee910192ce4a05b4f028b53283e6182b5d157e83ab1f2672dc",
+        "target": "select",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/select.tsx"
+      },
+      {
+        "hash": "afdb44b096854ebb135fb54175466e2833d484be0a853bea92acc81460ea7b38",
+        "target": "compat/detail-sheet/select",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/select.tsx"
+      }
+    ],
+    "skeleton": [
+      {
+        "hash": "50fdabd72bd0d3e9c5394a27653f3a95dd4bca393c685a1f966daef6508ed550",
+        "target": "skeleton",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/skeleton.tsx"
+      }
+    ],
+    "toolbar": [
+      {
+        "hash": "64cd028cf773dcfb45190ea85740c3faefc1b7f9561c25d7c341a7982a93e510",
+        "target": "toolbar",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/collection-views/components/ui/toolbar.tsx"
+      }
+    ],
+    "combobox": [
+      {
+        "hash": "30483d947ed98d89f42e73ddd9b1a8d545d0e434caa3daa6d8f7a81455d84c3d",
+        "target": "combobox",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/properties/components/ui/combobox.tsx"
+      },
+      {
+        "hash": "d13358e473bbacb864734d6f619c1674acbb2eecf5ccae2636415f6b3f408537",
+        "target": "compat/detail-sheet/combobox",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/combobox.tsx"
+      }
+    ],
+    "textarea": [
+      {
+        "hash": "d0950c4bdd0743542150f5c92a7d54357365baa30d9032e337b38ccdf83382c0",
+        "target": "textarea",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/properties/components/ui/textarea.tsx"
+      },
+      {
+        "hash": "4e97e10fdf43feb996950bb4a1761cf6e9ba70858caf7cfec5de9a0618d05547",
+        "target": "compat/detail-sheet/textarea",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/textarea.tsx"
+      }
+    ],
+    "accordion": [
+      {
+        "hash": "bbb06f1b4e970e0fe7a784ee40a480585bd071a1c366bdb6b7611730ede97c91",
+        "target": "accordion",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/accordion.tsx"
+      }
+    ],
+    "alert-dialog": [
+      {
+        "hash": "cb0379e511e9635e68ccd5dd22213b19151f6dfce6e7b96dc6176cb251ff7849",
+        "target": "alert-dialog",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/alert-dialog.tsx"
+      }
+    ],
+    "alert": [
+      {
+        "hash": "a5cbc7298b034f644a7e55ad254790a5d844c9c13b9032a1bc0bd364ef5edd13",
+        "target": "alert",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/alert.tsx"
+      }
+    ],
+    "autocomplete": [
+      {
+        "hash": "a52980d242e1426d8a87d947fcf2c894c6f31eb0b775c97e67cb9b55c8a60063",
+        "target": "autocomplete",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/autocomplete.tsx"
+      }
+    ],
+    "breadcrumb": [
+      {
+        "hash": "555b6b52f2ffd47707c47aec6a6bd7f1f7e15af8802fb5417d5d3ba454d1e91a",
+        "target": "breadcrumb",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/breadcrumb.tsx"
+      }
+    ],
+    "checkbox-group": [
+      {
+        "hash": "b7c168477c1a4e688345622e44dfa17144d78ca602d4d4594c4a10b4c592335b",
+        "target": "checkbox-group",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/checkbox-group.tsx"
+      }
+    ],
+    "command": [
+      {
+        "hash": "7b4ca542cfb4ed1e9f2e1d0b92a8f5698484b1ae729d4a19a25898a9205690dd",
+        "target": "command",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/command.tsx"
+      }
+    ],
+    "context-menu": [
+      {
+        "hash": "c4e4f3bf8913910aeb5942cb54dc506a23d0d7179ea05e2dd18967b0fcaa5bad",
+        "target": "context-menu",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/context-menu.tsx"
+      }
+    ],
+    "dialog": [
+      {
+        "hash": "b81acc9a3cc68a0c080acc47a44b262ea3f5c7c0bd61cb84a549e821e9fdd608",
+        "target": "dialog",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/dialog.tsx"
+      }
+    ],
+    "drawer": [
+      {
+        "hash": "04d237f5a1cf93c26ea3c5a9d49111425000fb1546d608e55f6f941c63774cac",
+        "target": "drawer",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/drawer.tsx"
+      }
+    ],
+    "fieldset": [
+      {
+        "hash": "ed824898b4b1fe6b5f407dd72d48c27987834d9ffff6129e7a02b64c25bc0072",
+        "target": "fieldset",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/fieldset.tsx"
+      }
+    ],
+    "frame": [
+      {
+        "hash": "8366acdd63d2e0a20e94e2466302e92b488d55fb79bbe0bd812340bc314246bb",
+        "target": "frame",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/frame.tsx"
+      }
+    ],
+    "label": [
+      {
+        "hash": "87e906698aa91735fc2f62799fb99437e4bf0d569dcbd13d35e14f16dbe3a032",
+        "target": "label",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/label.tsx"
+      }
+    ],
+    "meter": [
+      {
+        "hash": "c48ceffddd7aa53e18d5b40f1857dde7511d5cf8a93cd0d4532a80a9318d99dd",
+        "target": "meter",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/meter.tsx"
+      }
+    ],
+    "number-field": [
+      {
+        "hash": "4aa9d28d1fb52d1e478729e90cf804fd723405cad4afcf624e8fbafe08206ac7",
+        "target": "number-field",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/number-field.tsx"
+      }
+    ],
+    "otp-field": [
+      {
+        "hash": "9fe138c12a8a0fed5547c7cb8ec9d6595913279056188ee42e76909f93a9161c",
+        "target": "otp-field",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/otp-field.tsx"
+      }
+    ],
+    "preview-card": [
+      {
+        "hash": "a8146faf1f85edf3fbc8bef5d08be4256a4534a91c7d09e7564c70a93683eacb",
+        "target": "preview-card",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/preview-card.tsx"
+      }
+    ],
+    "progress": [
+      {
+        "hash": "96cef5a6b31945888490277060aaf6bbdadc2228cfe28d9c386c7f29f36b216e",
+        "target": "progress",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/progress.tsx"
+      }
+    ],
+    "radio-group": [
+      {
+        "hash": "544a7e210ebbccfeae8a88d625603b94fc29ae9193b41ab70f79d214b7b1f0e8",
+        "target": "radio-group",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/radio-group.tsx"
+      }
+    ],
+    "sheet": [
+      {
+        "hash": "77f0287301e83148c2641a270e723610a729170299280c9b344c5187f967f1eb",
+        "target": "sheet",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/sheet.tsx"
+      }
+    ],
+    "sidebar": [
+      {
+        "hash": "616c375eb28539358cd55be9f23544c35822a43e1f2c5f46e847efe129e31969",
+        "target": "sidebar",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/sidebar.tsx"
+      }
+    ],
+    "slider": [
+      {
+        "hash": "6244c104e5da05e61e64abf4cac2f5558aedd33e15b284daebf2746681e932e3",
+        "target": "slider",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/slider.tsx"
+      }
+    ],
+    "switch": [
+      {
+        "hash": "45411ba6261f470becd9f1c0ba4bad573a9b158df238c28d52327b177158338f",
+        "target": "switch",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/switch.tsx"
+      }
+    ],
+    "table": [
+      {
+        "hash": "189ecbccbe43f9698b2d1037cc830098cc69772d51ecb26f5898fdfb2de1bf7f",
+        "target": "table",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/table.tsx"
+      }
+    ],
+    "tabs": [
+      {
+        "hash": "64f0fc835b5faca5cf945b937d7531dd5b97acb03e4f5bcfd9a57660582d20f8",
+        "target": "tabs",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/tabs.tsx"
+      }
+    ],
+    "toast": [
+      {
+        "hash": "ad4cbecdfe5a9f0c752388ccbfa35848f5a88e83d2c8a73f7015c610d7c94901",
+        "target": "toast",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/toast.tsx"
+      }
+    ],
+    "toggle-group": [
+      {
+        "hash": "83ec4f67faab17cb0164f74a98c365d786c7ffc35a625422c6f7126407eded8e",
+        "target": "toggle-group",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/toggle-group.tsx"
+      }
+    ],
+    "toggle": [
+      {
+        "hash": "62845741d66d4f4499e6029d37dac087e4ac50a683435b859bc8795cee25f336",
+        "target": "toggle",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/toggle.tsx"
+      }
+    ],
+    "tooltip": [
+      {
+        "hash": "c451bebb54680263140134fbb88ac1f7ff477c46ff2b87c413e7ad13f1831202",
+        "target": "tooltip",
+        "source": "/Users/gabs/Workspaces/c/gabriel-melo/tc96/tc96/packages/tc96/src/features/detail-sheet/components/ui/tooltip.tsx"
+      }
+    ]
+  },
+  "mapping": {
+    "shared/avatar": "avatar",
+    "shared/badge": "badge",
+    "shared/button": "button",
+    "shared/calendar": "calendar",
+    "shared/field": "field",
+    "shared/form": "form",
+    "shared/group": "group",
+    "shared/input-group": "input-group",
+    "shared/input": "input",
+    "shared/kbd": "kbd",
+    "shared/menu": "menu",
+    "shared/popover": "popover",
+    "shared/separator": "separator",
+    "shared/spinner": "spinner",
+    "shared/text": "text",
+    "collection-views/badge": "badge",
+    "collection-views/button": "compat/collection-views/button",
+    "collection-views/card": "card",
+    "collection-views/checkbox": "checkbox",
+    "collection-views/collapsible": "collapsible",
+    "collection-views/empty": "empty",
+    "collection-views/input": "compat/collection-views/input",
+    "collection-views/menu": "menu",
+    "collection-views/pagination": "pagination",
+    "collection-views/popover": "popover",
+    "collection-views/scroll-area": "scroll-area",
+    "collection-views/select": "select",
+    "collection-views/skeleton": "skeleton",
+    "collection-views/spinner": "spinner",
+    "collection-views/toolbar": "toolbar",
+    "properties/avatar": "avatar",
+    "properties/badge": "badge",
+    "properties/button": "compat/collection-views/button",
+    "properties/calendar": "calendar",
+    "properties/combobox": "combobox",
+    "properties/field": "field",
+    "properties/input-group": "compat/properties/input-group",
+    "properties/input": "compat/collection-views/input",
+    "properties/menu": "menu",
+    "properties/popover": "popover",
+    "properties/scroll-area": "scroll-area",
+    "properties/select": "select",
+    "properties/spinner": "spinner",
+    "properties/textarea": "textarea",
+    "detail-sheet/accordion": "accordion",
+    "detail-sheet/alert-dialog": "alert-dialog",
+    "detail-sheet/alert": "alert",
+    "detail-sheet/autocomplete": "autocomplete",
+    "detail-sheet/avatar": "compat/detail-sheet/avatar",
+    "detail-sheet/badge": "badge",
+    "detail-sheet/breadcrumb": "breadcrumb",
+    "detail-sheet/button": "compat/collection-views/button",
+    "detail-sheet/calendar": "compat/detail-sheet/calendar",
+    "detail-sheet/card": "card",
+    "detail-sheet/checkbox-group": "checkbox-group",
+    "detail-sheet/checkbox": "checkbox",
+    "detail-sheet/collapsible": "collapsible",
+    "detail-sheet/combobox": "compat/detail-sheet/combobox",
+    "detail-sheet/command": "command",
+    "detail-sheet/context-menu": "context-menu",
+    "detail-sheet/dialog": "dialog",
+    "detail-sheet/drawer": "drawer",
+    "detail-sheet/empty": "empty",
+    "detail-sheet/field": "field",
+    "detail-sheet/fieldset": "fieldset",
+    "detail-sheet/form": "form",
+    "detail-sheet/frame": "frame",
+    "detail-sheet/group": "compat/detail-sheet/group",
+    "detail-sheet/input-group": "compat/detail-sheet/input-group",
+    "detail-sheet/input": "compat/detail-sheet/input",
+    "detail-sheet/kbd": "kbd",
+    "detail-sheet/label": "label",
+    "detail-sheet/menu": "menu",
+    "detail-sheet/meter": "meter",
+    "detail-sheet/number-field": "number-field",
+    "detail-sheet/otp-field": "otp-field",
+    "detail-sheet/pagination": "pagination",
+    "detail-sheet/popover": "popover",
+    "detail-sheet/preview-card": "preview-card",
+    "detail-sheet/progress": "progress",
+    "detail-sheet/radio-group": "radio-group",
+    "detail-sheet/scroll-area": "compat/detail-sheet/scroll-area",
+    "detail-sheet/select": "compat/detail-sheet/select",
+    "detail-sheet/separator": "separator",
+    "detail-sheet/sheet": "sheet",
+    "detail-sheet/sidebar": "sidebar",
+    "detail-sheet/skeleton": "skeleton",
+    "detail-sheet/slider": "slider",
+    "detail-sheet/spinner": "spinner",
+    "detail-sheet/switch": "switch",
+    "detail-sheet/table": "table",
+    "detail-sheet/tabs": "tabs",
+    "detail-sheet/textarea": "compat/detail-sheet/textarea",
+    "detail-sheet/toast": "toast",
+    "detail-sheet/toggle-group": "toggle-group",
+    "detail-sheet/toggle": "toggle",
+    "detail-sheet/toolbar": "toolbar",
+    "detail-sheet/tooltip": "tooltip"
+  },
+  "exports": {
+    "src/shared/ui/index.ts": "export { Avatar, AvatarFallback, AvatarImage } from './avatar'\nexport { Badge, type BadgeProps, badgeVariants } from './badge'\nexport {\n  Button,\n  type ButtonProps,\n  type ButtonSize,\n  buttonSizes,\n  buttonVariants,\n} from './button'\nexport { Calendar } from './calendar'\nexport {\n  Field,\n  FieldControl,\n  FieldDescription,\n  FieldError,\n  FieldItem,\n  FieldLabel,\n  FieldPrimitive,\n  FieldValidity,\n} from './field'\nexport { Form, FormPrimitive } from './form'\nexport { Group, GroupSeparator, GroupText, groupVariants } from './group'\nexport {\n  Input,\n  InputPrimitive,\n  type InputProps,\n  type InputSize,\n  inputSizes,\n  inputVariants,\n} from './input'\nexport { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from './input-group'\nexport { Kbd, KbdGroup } from './kbd'\nexport {\n  Menu,\n  MenuCheckboxItem,\n  MenuCreateHandle,\n  MenuGroup,\n  MenuGroupLabel,\n  MenuItem,\n  MenuLinkItem,\n  MenuPopup,\n  MenuPortal,\n  MenuRadioGroup,\n  MenuRadioItem,\n  MenuSeparator,\n  MenuShortcut,\n  MenuSub,\n  MenuSubPopup,\n  MenuSubTrigger,\n  MenuTrigger,\n} from './menu'\nexport {\n  Popover,\n  PopoverClose,\n  PopoverCreateHandle,\n  PopoverDescription,\n  PopoverPopup,\n  PopoverTitle,\n  PopoverTrigger,\n} from './popover'\nexport { Separator, SeparatorPrimitive } from './separator'\nexport { Spinner } from './spinner'\nexport { Text, type TextProps, type TextSize, textSizes, textVariants } from './text'\n",
+    "src/features/collection-views/index.ts": "export * from './calendar'\nexport * from './collection'\nexport * from './data-grid'\nexport * from './kanban'\nexport * from './list'\n",
+    "src/features/properties/index.ts": "export * from './assigned'\nexport * from './attachments'\nexport * from './collection'\nexport * from './date'\nexport * from './date-range'\nexport * from './editable-text'\nexport * from './email'\nexport * from './flag'\nexport * from './icon-label'\nexport * from './people'\nexport * from './person'\nexport * from './phone'\nexport * from './property-catalog'\nexport * from './property-surface'\nexport * from './reference'\nexport * from './select'\nexport * from './tags'\nexport * from './text'\n",
+    "src/features/detail-sheet/index.ts": "export * from './components/detail-sheet'\n",
+    "src/features/editable/index.ts": "export * from './components/editable'\n"
+  }
+}

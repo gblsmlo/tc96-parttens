@@ -1,0 +1,31 @@
+---
+title: Text
+description: Tipografia polimórfica e semântica do TC96.
+---
+
+# Text
+
+`Text` centraliza tipografia sem substituir a semântica do HTML. O elemento padrão
+é `span`; use `render` para títulos, parágrafos e outros elementos.
+
+```tsx
+import { Text } from 'tc96/ui'
+
+<Text>Body text</Text>
+<Text render={<h2 />} family="heading" size="lg" weight="semibold">
+  Section title
+</Text>
+```
+
+## Tamanhos
+
+Todos os primitives dimensionáveis do TC96 usam o mesmo contrato. `md` é o padrão.
+
+| `size` | Classe tipográfica |
+| --- | --- |
+| `sm` | `text-sm` |
+| `md` | `text-base` |
+| `lg` | `text-lg` |
+
+As cores disponíveis são `base`, `muted`, `destructive` e `inherit`. Elas reutilizam
+somente tokens já presentes no baseline do TC96.

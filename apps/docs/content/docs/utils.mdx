@@ -1,0 +1,35 @@
+---
+title: Utilitários
+description: Funções sem interface visual disponíveis em tc96/utils.
+---
+
+# Utilitários
+
+Utilitários não possuem representação no Storybook. Sua referência, seus
+exemplos e seus limites de uso ficam nesta documentação.
+
+## `cn`
+
+`cn` combina classes condicionais e resolve conflitos entre classes do
+Tailwind CSS.
+
+```tsx
+import { cn } from 'tc96/utils'
+
+export function StatusPill({ active }: { active: boolean }) {
+  return (
+    <span
+      className={cn(
+        'rounded-full px-2 py-1 text-sm',
+        active ? 'bg-success/8 text-success-foreground' : 'bg-muted text-muted-foreground',
+      )}
+    >
+      {active ? 'Ativo' : 'Inativo'}
+    </span>
+  )
+}
+```
+
+Use `tc96/utils` para funções sem domínio que apoiam a composição da interface.
+Componentes renderizáveis pertencem a `tc96/ui`, `tc96/components` ou
+`tc96/blocks`.
