@@ -1,0 +1,12 @@
+{
+  "name": "@tc96/registry",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "shadcn": "4.21.0",
+    "typescript": "6.0.3"
+  }
+}

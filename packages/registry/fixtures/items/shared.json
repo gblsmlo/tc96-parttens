@@ -1,0 +1,13 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "proof-shared",
+  "type": "registry:block",
+  "files": [
+    {
+      "path": "shared.ts",
+      "type": "registry:file",
+      "target": "~/packages/visual/src/shared.ts",
+      "content": "export const shared = \"shared\"\n"
+    }
+  ]
+}

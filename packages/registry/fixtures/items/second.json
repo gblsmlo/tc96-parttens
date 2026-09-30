@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "proof-second",
+  "type": "registry:block",
+  "registryDependencies": [
+    "/Users/gabs/Workspaces/tc96-parttens/packages/registry/fixtures/items/shared.json"
+  ],
+  "files": [
+    {
+      "path": "second.ts",
+      "type": "registry:file",
+      "target": "~/packages/patterns/src/second.ts",
+      "content": "import { shared } from \"@proof/visual/shared\"\nexport const second = shared\n"
+    }
+  ]
+}

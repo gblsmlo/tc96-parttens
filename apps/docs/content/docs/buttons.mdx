@@ -1,0 +1,55 @@
+---
+title: Buttons
+description: Variantes e convenções do Button do TC96.
+---
+
+# Buttons
+
+Importe o primitivo pelo subpath de interface:
+
+```tsx
+import { Button } from 'tc96/ui'
+```
+
+## Tamanhos
+
+O contrato público oferece somente três tamanhos. `md` é o padrão quando a prop
+`size` não é informada.
+
+| `size` | Altura | Uso sugerido |
+| --- | --- | --- |
+| `sm` | 32 px | Ações compactas e toolbars. |
+| `md` | 36 px | Ações comuns e formulários. |
+| `lg` | 40 px | Ações com maior destaque. |
+
+```tsx
+<Button size="sm">Small</Button>
+<Button size="md">Medium</Button>
+<Button size="lg">Large</Button>
+```
+
+## Variantes
+
+`primary` é a variante padrão quando `variant` não é informada. O TC96 não expõe
+uma variante chamada `default`.
+
+```tsx
+<Button variant="primary">Continue</Button>
+```
+
+## Ações destrutivas
+
+Buttons destrutivos possuem três níveis de ênfase. Escolha o nível de acordo com
+o peso da ação na interface.
+
+| Apresentação | `variant` | Uso |
+| --- | --- | --- |
+| Primary | `destructive` | Ação destrutiva principal ou confirmação final. |
+| Ghost | `destructive-ghost` | Ação destrutiva de baixa ênfase em superfícies leves. |
+| Outline | `destructive-outline` | Ação destrutiva secundária que ainda precisa de contorno. |
+
+```tsx
+<Button variant="destructive">Remove</Button>
+<Button variant="destructive-ghost">Remove</Button>
+<Button variant="destructive-outline">Remove</Button>
+```

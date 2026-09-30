@@ -1,0 +1,31 @@
+{
+  "name": "@tc96/parttens",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@tc96/ui": "workspace:*",
+    "@tc96/utils": "workspace:*",
+    "@dnd-kit/abstract": "0.5.0",
+    "@dnd-kit/collision": "0.5.0",
+    "@dnd-kit/dom": "0.5.0",
+    "@dnd-kit/helpers": "0.5.0",
+    "@dnd-kit/react": "0.5.0",
+    "@tanstack/react-table": "8.21.3",
+    "@tanstack/react-virtual": "3.14.2",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.28.0",
+    "react-day-picker": "10.0.1",
+    "react-phone-number-input": "3.4.18",
+    "tailwind-merge": "3.6.0",
+    "zod": "4.4.3"
+  },
+  "peerDependencies": {
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "@base-ui/react": "1.6.0"
+  }
+}

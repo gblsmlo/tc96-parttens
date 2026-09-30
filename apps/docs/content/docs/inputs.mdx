@@ -1,0 +1,30 @@
+---
+title: Inputs
+description: Tamanhos e composições do Input do TC96.
+---
+
+# Inputs
+
+O Input do TC96 segue a superfície visual do COSS usada no Lemind e oferece
+somente três tamanhos:
+
+| `size` | Altura | Button correspondente |
+| --- | --- | --- |
+| `sm` | 32 px | `Button size="sm"` |
+| `md` | 36 px | `Button size="md"` |
+| `lg` | 40 px | `Button size="lg"` |
+
+`md` é o tamanho padrão.
+
+```tsx
+import { Input } from 'tc96/ui'
+
+<Input aria-label="Project name" size="md" type="text" />
+```
+
+## Composições visuais
+
+O catálogo visual cobre os patterns oficiais do COSS para atalho de teclado,
+loading, contadores, composição com Button, visibilidade e força de senha e
+limpeza do campo. Essas composições usam `Group`, `InputGroup`, `Kbd`, `Spinner`
+e `Button`, todos disponíveis em `tc96/ui`.

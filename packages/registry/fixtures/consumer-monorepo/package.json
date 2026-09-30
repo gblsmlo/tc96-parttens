@@ -1,0 +1,8 @@
+{
+  "name": "tc96-monorepo-proof",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ]
+}
