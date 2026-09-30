@@ -19,7 +19,7 @@ const meta = {
     },
   },
   tags: ['autodocs', 'storybook-test'],
-  title: 'Patterns/Properties/Views/Phone',
+  title: 'Patterns/Properties/Display/Phone',
 } satisfies Meta<typeof PhoneProperty>
 
 export default meta

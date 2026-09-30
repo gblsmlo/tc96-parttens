@@ -24,7 +24,7 @@ const meta = {
     },
   },
   tags: ['autodocs', 'storybook-test'],
-  title: 'Patterns/Properties/Views/People',
+  title: 'Patterns/Properties/Display/People',
 } satisfies Meta<typeof PeopleProperty>
 
 export default meta

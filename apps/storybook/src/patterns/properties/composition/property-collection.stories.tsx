@@ -72,7 +72,7 @@ const meta = {
     },
   },
   tags: ['autodocs', 'storybook-test'],
-  title: 'Patterns/Properties/Composition/Collection',
+  title: 'Patterns/Properties/Groups',
 } satisfies Meta<typeof PropertyCollection>
 
 export default meta

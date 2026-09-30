@@ -32,7 +32,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  title: 'Patterns/Properties/Views/Date',
+  title: 'Patterns/Properties/Display/Date',
 } satisfies Meta<typeof DateProperty>
 
 export default meta

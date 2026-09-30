@@ -32,7 +32,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  title: 'Patterns/Properties/Views/Select',
+  title: 'Patterns/Properties/Display/Select',
 } satisfies Meta<typeof SelectProperty>
 
 export default meta

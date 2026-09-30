@@ -46,7 +46,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  title: 'Patterns/Properties/Views/Person',
+  title: 'Patterns/Properties/Display/Person',
 } satisfies Meta<typeof PersonProperty>
 
 export default meta

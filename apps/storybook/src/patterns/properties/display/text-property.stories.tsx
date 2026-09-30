@@ -20,7 +20,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  title: 'Patterns/Properties/Views/Text',
+  title: 'Patterns/Properties/Display/Text',
 } satisfies Meta<typeof TextProperty>
 
 export default meta

@@ -55,25 +55,26 @@ A landing será acrescentada quando houver escopo concreto. A grafia `parttens` 
 
 ## Estrutura interna dos patterns
 
-`collection-views`, `properties` e `editable` usam as mesmas cinco camadas. O nome `views/` representa os padrões de interface oferecidos ao consumidor; não significa uma página ou rota de aplicação. Uma camada só recebe código quando há responsabilidade para ela; pastas de documentação registram as camadas ainda sem implementação.
+`collection-views`, `properties` e `editable` organizam o código pelas responsabilidades de cada pattern. Em `collection-views`, `views/` identifica renderers de coleção; em `properties`, `display/` identifica padrões de apresentação. Os diretórios não representam páginas ou rotas de aplicação. Uma camada só recebe código quando há responsabilidade para ela.
 
 ```text
 <pattern>/
   store/         estado compartilhado e ações
-  shared/        componentes e helpers usados por mais de uma view
+  shared/        componentes e helpers usados por mais de um display
   types/         contratos compartilhados pelo pattern
-  views/         padrões de UI que podem ser usados isoladamente
-  composition/   composição de views e componentes compartilhados
+  views/         renderers de coleção em collection-views
+  display/       padrões de apresentação em properties
+  composition/   composição de displays e componentes compartilhados
 ```
 
 - `collection-views/views/` contém Calendar, Data Grid, Kanban e List. `store/` mantém o `CollectionProvider` e as preferências compartilhadas; `composition/` contém `CollectionViewOutlet`, que seleciona o renderer ativo; toolbar e paginação ficam em `shared/`.
-- `properties/views/` contém os controles de propriedade, como Text, Date e Select. `composition/` contém `PropertyCollection`; `shared/` reúne catálogo e superfície visual. O diretório `store/` fica reservado, mas não há store global de properties: rascunhos de interação continuam locais a cada controle.
-- `editable/composition/` contém o composto Editable e seus controles. `store/` abriga o contexto e o estado compartilhado entre as partes; helpers comuns ficam em `shared/`. `views/` está reservado para uma view independente futura. A implementação atual usa React Context e hooks; a camada não obriga Zustand.
-- `types/` nas três áreas expõe contratos organizados por pattern. Tipos específicos de uma view podem permanecer junto dela.
+- `properties/display/` contém os padrões de apresentação de propriedade, como Text, Date, Select e Person. `composition/` contém `AssignedProperty`, uma composição semântica de Person, e `PropertyCollection`; `shared/` reúne catálogo, superfícies e o shell comum de seleção única. Select e Person fornecem seu próprio conteúdo e suas opções ao shell. O diretório `store/` fica reservado, mas não há store global de properties: rascunhos de interação continuam locais a cada controle.
+- `editable/composition/` contém o composto Editable e seus controles. `store/` abriga o contexto e o estado compartilhado entre as partes; helpers comuns ficam em `shared/`. A implementação atual usa React Context e hooks; a camada não obriga Zustand.
+- `types/` nas três áreas expõe contratos organizados por pattern. Tipos específicos de um renderer ou display podem permanecer junto dele.
 
 Os barrels de cada área preservam a API agregada `tc96/parttens` e os aliases de compatibilidade. O layout interno pode evoluir sem exigir que o consumidor importe caminhos privados.
 
-No Storybook, `Patterns/Collection Views/Overview` apresenta a mesma coleção em List, Kanban e Data Grid. As stories sob `Patterns/Collection Views/Views` documentam cada renderer isoladamente; `Shared Components` documenta toolbar e paginação. Properties e Editable também aparecem sob `Patterns`, mantendo a navegação alinhada à arquitetura do pacote.
+No Storybook, `Patterns/Collection Views/Overview` apresenta a mesma coleção em List, Kanban e Data Grid. As stories sob `Patterns/Collection Views/Views` documentam cada renderer isoladamente; `Shared Components` documenta toolbar e paginação. As stories de properties ficam em `Patterns/Properties/Display`; o agrupamento de properties fica em `Patterns/Properties/Groups`.
 
 `parttens` depende de `ui` e `utils`; `ui` depende de `utils`. Os três não dependem do registry. Dependências entre padrões são explícitas e não podem criar ciclos. Os fontes de UI têm uma implementação canônica, sem cópias mantidas por padrão.
 

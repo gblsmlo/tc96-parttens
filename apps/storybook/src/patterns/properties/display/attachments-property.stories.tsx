@@ -24,7 +24,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  title: 'Patterns/Properties/Views/Attachments',
+  title: 'Patterns/Properties/Display/Attachments',
 } satisfies Meta<typeof AttachmentsProperty>
 
 export default meta

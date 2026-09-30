@@ -26,7 +26,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  title: 'Patterns/Properties/Views/Flag',
+  title: 'Patterns/Properties/Display/Flag',
 } satisfies Meta<typeof FlagProperty>
 
 export default meta

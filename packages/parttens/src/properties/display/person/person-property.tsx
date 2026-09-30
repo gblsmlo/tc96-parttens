@@ -1,24 +1,18 @@
 'use client'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
-import {
-  Select,
-  SelectItem,
-  SelectPopup,
-  SelectPrimitive,
-} from '@tc96/ui/select'
+import { SelectItem } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
 import { UserIcon, UserPlusIcon } from 'lucide-react'
+import {
+  type PropertySelectDropdownPlacement,
+  PropertySelectShell,
+  propertySelectItemClassName,
+} from '../../shared/property-select-shell'
 import {
   PropertySurface,
   type PropertyVariant,
 } from '../../shared/property-surface'
-
-// A property já carrega ícone e tom; o indicador de seleção do item seria ruído.
-// O COSS upstream não expõe prop para omiti-lo: o indicador é o primeiro span e
-// só monta no item selecionado, então some por estrutura, sem depender de classe.
-const selectItemWithoutIndicatorClassName =
-  'flex [&>span:first-child:not(:last-child)]:hidden'
 
 export interface PersonPropertyOption<TValue extends string = string> {
   value: TValue
@@ -28,10 +22,7 @@ export interface PersonPropertyOption<TValue extends string = string> {
   supportingLabel?: string
 }
 
-export type PersonPropertyDropdownPlacement = Pick<
-  React.ComponentProps<typeof SelectPopup>,
-  'align' | 'alignItemWithTrigger' | 'alignOffset' | 'side' | 'sideOffset'
->
+export type PersonPropertyDropdownPlacement = PropertySelectDropdownPlacement
 
 export interface PersonPropertyActionContext<TValue extends string = string> {
   option: PersonPropertyOption<TValue>
@@ -71,24 +62,15 @@ export function PersonProperty<TValue extends string = string>({
   const accessibleLabel = ariaLabel ?? 'Person'
   const canUpdate = Boolean(action ?? onValueChange)
 
-  if (readOnly || !canUpdate) {
-    return (
-      <PersonPropertyBadge
-        ariaLabel={`${accessibleLabel}: ${selectedOption?.label ?? placeholder}`}
-        className={className}
-        display={display}
-        option={selectedOption}
-        placeholder={placeholder}
-        variant={variant}
-      />
-    )
-  }
-
   return (
-    <Select
+    <PropertySelectShell
+      ariaLabel={`${accessibleLabel}: ${selectedOption?.label ?? placeholder}`}
+      className={className}
+      disabled={disabled}
+      dropdownPlacement={dropdownPlacement}
+      items={options}
       itemToStringLabel={(option) => option.label}
       itemToStringValue={(option) => option.value}
-      items={options}
       onValueChange={(option) => {
         if (option && option.value !== value) {
           if (action) {
@@ -101,44 +83,34 @@ export function PersonProperty<TValue extends string = string>({
           onValueChange?.(option.value)
         }
       }}
-      value={selectedOption}
-    >
-      <SelectPrimitive.Trigger
-        aria-label={`${accessibleLabel}: ${selectedOption?.label ?? placeholder}`}
-        disabled={disabled}
-        render={
-          <PropertySurface
-            className={cn('max-w-full', className)}
-            muted={!selectedOption}
-            render={<button type="button" />}
-            variant={variant}
-          />
-        }
-      >
+      muted={!selectedOption}
+      readOnly={readOnly || !canUpdate}
+      renderValue={(option) => (
         <PersonPropertyContent
           display={display}
-          option={selectedOption}
+          option={option}
           placeholder={placeholder}
           variant={variant}
         />
-      </SelectPrimitive.Trigger>
-      <SelectPopup {...dropdownPlacement}>
-        {options.map((option) => (
-          <SelectItem
-            aria-label={option.label}
-            key={option.value}
-            className={selectItemWithoutIndicatorClassName}
-            value={option}
-          >
-            <PersonPropertyContent
-              option={option}
-              placeholder={placeholder}
-              variant={variant}
-            />
-          </SelectItem>
-        ))}
-      </SelectPopup>
-    </Select>
+      )}
+      variant={variant}
+      value={selectedOption}
+    >
+      {options.map((option) => (
+        <SelectItem
+          aria-label={option.label}
+          key={option.value}
+          className={propertySelectItemClassName}
+          value={option}
+        >
+          <PersonPropertyContent
+            option={option}
+            placeholder={placeholder}
+            variant={variant}
+          />
+        </SelectItem>
+      ))}
+    </PropertySelectShell>
   )
 }
 

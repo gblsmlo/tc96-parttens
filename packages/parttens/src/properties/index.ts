@@ -1,3 +1,3 @@
 export * from './shared'
-export * from './views'
+export * from './display'
 export * from './composition'

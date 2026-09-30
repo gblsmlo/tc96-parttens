@@ -29,7 +29,7 @@ const meta = {
     },
   },
   tags: ['autodocs', 'storybook-test'],
-  title: 'Patterns/Properties/Views/Editable Text',
+  title: 'Patterns/Properties/Display/Editable Text',
 } satisfies Meta<typeof EditableText>
 
 export default meta

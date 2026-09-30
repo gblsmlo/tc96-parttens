@@ -1,3 +1,4 @@
+export * from './assigned/index'
 export {
   PropertyCollection,
   type PropertyCollectionItem,

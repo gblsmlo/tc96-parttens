@@ -1,30 +1,18 @@
 'use client'
 
-import {
-  Select,
-  SelectGroup,
-  SelectGroupLabel,
-  SelectItem,
-  SelectPopup,
-  SelectPrimitive,
-} from '@tc96/ui/select'
+import { SelectGroup, SelectGroupLabel, SelectItem } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
-import type React from 'react'
 import {
   type PropertyIcon,
   type PropertyTone,
   propertyToneClassName,
 } from '../../shared/property-catalog'
 import {
-  PropertySurface,
-  type PropertyVariant,
-} from '../../shared/property-surface'
-
-// A property já carrega ícone e tom; o indicador de seleção do item seria ruído.
-// O COSS upstream não expõe prop para omiti-lo: o indicador é o primeiro span e
-// só monta no item selecionado, então some por estrutura, sem depender de classe.
-const selectItemWithoutIndicatorClassName =
-  'flex [&>span:first-child:not(:last-child)]:hidden'
+  type PropertySelectDropdownPlacement,
+  PropertySelectShell,
+  propertySelectItemClassName,
+} from '../../shared/property-select-shell'
+import type { PropertyVariant } from '../../shared/property-surface'
 
 export interface SelectPropertyOption {
   label: string
@@ -38,10 +26,7 @@ export interface SelectPropertyGroup {
   options: readonly SelectPropertyOption[]
 }
 
-export type SelectPropertyDropdownPlacement = Pick<
-  React.ComponentProps<typeof SelectPopup>,
-  'align' | 'alignItemWithTrigger' | 'alignOffset' | 'side' | 'sideOffset'
->
+export type SelectPropertyDropdownPlacement = PropertySelectDropdownPlacement
 
 export interface SelectPropertyActionContext {
   previousValue: string | null
@@ -125,25 +110,16 @@ export function SelectProperty({
     : null
   const items = emptyOption ? [emptyOption, ...catalog] : catalog
 
-  if (readOnly || !canUpdate) {
-    return (
-      <PropertySurface
-        aria-label={accessibleLabel}
-        className={cn('max-w-full', className)}
-        muted={value === null}
-        role="img"
-        variant={variant}
-      >
-        <SelectPropertyContent label={currentLabel} option={selectedOption} />
-      </PropertySurface>
-    )
-  }
-
   return (
-    <Select
+    <PropertySelectShell
+      ariaLabel={accessibleLabel}
+      className={className}
+      disabled={disabled}
+      dropdownPlacement={dropdownPlacement}
+      items={items}
       itemToStringLabel={(option) => option.label}
       itemToStringValue={(option) => option.value}
-      items={items as SelectPropertyOption[]}
+      muted={value === null}
       onValueChange={(option) => {
         if (!option) return
         const next = option.value === '' ? null : option.value
@@ -154,63 +130,43 @@ export function SelectProperty({
         }
         onValueChange?.(next)
       }}
+      readOnly={readOnly || !canUpdate}
+      variant={variant}
+      renderValue={() => (
+        <SelectPropertyContent label={currentLabel} option={selectedOption} />
+      )}
       value={selectedOption ?? emptyOption}
     >
-      <SelectPrimitive.Trigger
-        aria-label={accessibleLabel}
-        disabled={disabled}
-        render={
-          <PropertySurface
-            className={cn('max-w-full', className)}
-            muted={value === null}
-            render={<button type="button" />}
-            variant={variant}
-          />
-        }
-      >
-        <SelectPropertyContent label={currentLabel} option={selectedOption} />
-      </SelectPrimitive.Trigger>
-      <SelectPopup {...dropdownPlacement}>
-        {emptyOption ? (
-          <SelectItem
-            className={selectItemWithoutIndicatorClassName}
-            value={emptyOption}
-          >
-            <SelectPropertyContent
-              label={emptyOption.label}
-              option={undefined}
-            />
-          </SelectItem>
-        ) : null}
-        {groups
-          ? groups.map((group) => (
-              <SelectGroup key={group.label}>
-                <SelectGroupLabel>{group.label}</SelectGroupLabel>
-                {group.options.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    className={selectItemWithoutIndicatorClassName}
-                    value={option}
-                  >
-                    <SelectPropertyContent
-                      label={option.label}
-                      option={option}
-                    />
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            ))
-          : catalog.map((option) => (
-              <SelectItem
-                key={option.value}
-                className={selectItemWithoutIndicatorClassName}
-                value={option}
-              >
-                <SelectPropertyContent label={option.label} option={option} />
-              </SelectItem>
-            ))}
-      </SelectPopup>
-    </Select>
+      {emptyOption ? (
+        <SelectItem className={propertySelectItemClassName} value={emptyOption}>
+          <SelectPropertyContent label={emptyOption.label} option={undefined} />
+        </SelectItem>
+      ) : null}
+      {groups
+        ? groups.map((group) => (
+            <SelectGroup key={group.label}>
+              <SelectGroupLabel>{group.label}</SelectGroupLabel>
+              {group.options.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  className={propertySelectItemClassName}
+                  value={option}
+                >
+                  <SelectPropertyContent label={option.label} option={option} />
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          ))
+        : catalog.map((option) => (
+            <SelectItem
+              key={option.value}
+              className={propertySelectItemClassName}
+              value={option}
+            >
+              <SelectPropertyContent label={option.label} option={option} />
+            </SelectItem>
+          ))}
+    </PropertySelectShell>
   )
 }
 

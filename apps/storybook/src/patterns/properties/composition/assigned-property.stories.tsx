@@ -1,10 +1,10 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
 import {
   AssignedProperty,
   type AssignedPropertyOption,
   type AssignedPropertyProps,
 } from 'tc96/components'
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useState } from 'react'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
@@ -46,7 +46,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  title: 'Patterns/Properties/Views/Assigned',
+  title: 'Patterns/Properties/Display/Assigned',
 } satisfies Meta<typeof AssignedProperty>
 
 export default meta

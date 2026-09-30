@@ -31,7 +31,7 @@ const meta = {
     },
   },
   tags: ['autodocs', 'storybook-test'],
-  title: 'Patterns/Properties/Views/Tags',
+  title: 'Patterns/Properties/Display/Tags',
 } satisfies Meta<typeof TagsProperty>
 
 export default meta

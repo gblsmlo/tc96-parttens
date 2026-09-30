@@ -1,4 +1,3 @@
-export * from './assigned/index'
 export * from './attachments/index'
 export * from './date/index'
 export * from './date-range/index'

@@ -25,7 +25,7 @@ const meta = {
     },
   },
   tags: ['autodocs'],
-  title: 'Patterns/Properties/Views/DateRange',
+  title: 'Patterns/Properties/Display/DateRange',
 } satisfies Meta<typeof DateRangeProperty>
 
 export default meta

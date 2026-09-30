@@ -5,7 +5,7 @@ import {
   PersonPropertyBadge,
   type PersonPropertyDropdownPlacement,
   type PersonPropertyOption,
-} from '../person/index'
+} from '../../display/person/index'
 import type { PropertyVariant } from '../../shared/property-surface'
 
 export type AssignedPropertyOption<TValue extends string = string> =

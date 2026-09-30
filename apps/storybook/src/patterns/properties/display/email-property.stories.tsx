@@ -19,7 +19,7 @@ const meta = {
     },
   },
   tags: ['autodocs', 'storybook-test'],
-  title: 'Patterns/Properties/Views/Email',
+  title: 'Patterns/Properties/Display/Email',
 } satisfies Meta<typeof EmailProperty>
 
 export default meta
