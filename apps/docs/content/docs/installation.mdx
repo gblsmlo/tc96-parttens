@@ -5,10 +5,7 @@ description: Instale os fontes dos patterns no seu projeto COSS.
 
 # Instalação
 
-> **Em migração.** Esta página descreve o modelo decidido em 2026-10-01. Até o
-> fim da migração, o CLI ainda não instala os componentes COSS que os patterns
-> usam: instale-os antes com o shadcn. O nome do CLI no npm ainda não foi
-> confirmado.
+> O nome do CLI no npm ainda não foi confirmado.
 
 ## Requisitos
 
@@ -35,7 +32,11 @@ Acrescente `elements` e `patterns` aos aliases que o shadcn já define:
 Cada alias também precisa de entrada exata e de wildcard em `paths` no
 `tsconfig` da raiz. O CLI grava `elements` e `patterns` no diretório que o
 wildcard de cada alias resolve e reescreve os imports para `ui` e `utils`, que
-continuam sendo seus: nenhum arquivo é gravado neles.
+continuam sendo seus.
+
+O `shadcn init --force` regrava o `components.json` sem `elements` e
+`patterns`, e troca o alias `ui`. Se rodar esse comando, acrescente as duas
+chaves de novo e revise o `ui`; o CLI avisa quando elas faltam.
 
 ## Instalar
 
@@ -44,6 +45,11 @@ Instale um ou vários patterns de uma vez:
 ```sh
 npx tc96-parttens add collection-views properties
 ```
+
+Os componentes COSS que os patterns usam e que faltam no seu `ui` são
+instalados pelo shadcn a partir de `@coss`, respeitando o endereço que você
+configurar em `registries`. Os que você já tem ficam como estão, inclusive os
+personalizados.
 
 O CLI delega a escrita ao shadcn e reescreve os imports para os seus aliases.
 Depois, gera o `index.ts` no diretório de `patterns`, que exporta todos os

@@ -3,6 +3,7 @@ import { join, relative, resolve } from 'node:path'
 import { build } from 'esbuild'
 import ts from 'typescript'
 import {
+  cossDependency,
   defaultConfig,
   type PatternName,
   patternNames,
@@ -24,8 +25,10 @@ for (const pkg of ['elements', 'parttens']) {
   Object.assign(versions, manifest.peerDependencies, manifest.dependencies)
 }
 // ui and utils are the consumer's: their imports are rewritten to its
-// aliases, never followed into the distributed files.
+// aliases, never followed into the distributed files. Each ui component
+// becomes a COSS registry dependency.
 const consumerOwned = /^@tc96\/(ui|utils)(\/|$)/
+const uiComponent = /^@tc96\/ui\/([^/]+)$/
 // The aggregate re-exports the pattern barrels and shared areas such as
 // shared/. An area's barrel ships with every pattern that uses the area, so
 // the consumer's generated barrel can export it.
@@ -42,6 +45,7 @@ for (const pattern of patternNames) {
   const pending = [resolve(`packages/parttens/src/${pattern}/index.ts`)]
   const seen = new Set<string>()
   const external = new Set<string>()
+  const components = new Set<string>()
   const sources: RegistryItem['files'] = []
   const usedAreaBarrel = () =>
     areas
@@ -63,6 +67,8 @@ for (const pattern of patternNames) {
     })
     for (const imported of ts.preProcessFile(content).importedFiles) {
       const specifier = imported.fileName
+      const component = specifier.match(uiComponent)?.[1]
+      if (component) components.add(cossDependency(component))
       if (consumerOwned.test(specifier)) continue
       if (specifier.startsWith('.') || specifier.startsWith('@tc96/')) {
         const result = ts.resolveModuleName(
@@ -101,6 +107,7 @@ for (const pattern of patternNames) {
           )()
         }`,
     ),
+    registryDependencies: [...components].sort(),
   }
   await writeFile(
     join(output, `${pattern}.json`),

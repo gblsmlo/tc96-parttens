@@ -104,7 +104,10 @@ export async function snapshot(root: string, directory: string) {
   return result
 }
 
-/** Runs the packed CLI, then checks what a consumer install must guarantee. */
+/**
+ * Runs the packed CLI, then checks what a consumer install must guarantee.
+ * Returns the installed pattern file count and the COSS files it added.
+ */
 export async function installPatterns(consumer: Consumer, patterns: string[]) {
   const before = await snapshot(consumer.root, consumer.ui)
   run(
@@ -120,14 +123,18 @@ export async function installPatterns(consumer: Consumer, patterns: string[]) {
     consumer.root,
   )
   const after = await snapshot(consumer.root, consumer.ui)
-  if (JSON.stringify(after) !== JSON.stringify(before))
-    throw new Error(`The CLI wrote to the consumer UI in ${consumer.ui}`)
+  for (const [file, hash] of Object.entries(before))
+    if (after[file] !== hash)
+      throw new Error(`The CLI changed ${file} in the consumer UI`)
   const installed = await files(join(consumer.root, consumer.patterns))
   for (const file of installed)
     if ((await readFile(file, 'utf8')).includes('@tc96/'))
       throw new Error(`${relative(consumer.root, file)} still imports @tc96/*`)
   run([join(consumer.root, 'node_modules/.bin/tsc'), '--noEmit'], consumer.root)
-  return installed.length
+  return {
+    files: installed.length,
+    addedUi: Object.keys(after).filter((file) => !(file in before)),
+  }
 }
 
 export async function saveReport(name: string, value: unknown) {

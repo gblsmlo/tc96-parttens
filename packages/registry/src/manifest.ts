@@ -16,12 +16,15 @@ export interface Aliases {
   patterns: string
 }
 export const aliasNames = ['ui', 'utils', 'elements', 'patterns'] as const
-/** Only elements and patterns are written; ui and utils belong to the consumer. */
-export const destinationNames = ['elements', 'patterns'] as const
-export type DestinationName = (typeof destinationNames)[number]
+/**
+ * Directories the aliases resolve to. Only elements and patterns are written;
+ * ui is read to find the COSS components the consumer already has.
+ */
+export const pathNames = ['ui', 'elements', 'patterns'] as const
+export type PathName = (typeof pathNames)[number]
 export interface InstallConfig {
   aliases: Aliases
-  paths: Record<DestinationName, string>
+  paths: Record<PathName, string>
 }
 export interface RegistryFile {
   path: string
@@ -34,6 +37,8 @@ export interface RegistryItem {
   type: string
   files: RegistryFile[]
   dependencies: string[]
+  /** COSS components, as @coss/<item>; shadcn installs the missing ones. */
+  registryDependencies?: string[]
   $schema?: string
 }
 export const defaultConfig: InstallConfig = {
@@ -44,6 +49,7 @@ export const defaultConfig: InstallConfig = {
     patterns: '@tc96/patterns',
   },
   paths: {
+    ui: 'packages/ui/src',
     elements: 'packages/elements/src',
     patterns: 'packages/patterns/src',
   },
@@ -67,7 +73,7 @@ export function validateConfig(value: InstallConfig): InstallConfig {
     if (typeof alias !== 'string' || !/^[@#a-zA-Z]/.test(alias))
       throw new Error(`Invalid ${name} alias.`)
   }
-  for (const name of destinationNames) {
+  for (const name of pathNames) {
     const destination = value.paths?.[name]
     if (typeof destination !== 'string')
       throw new Error(`Invalid ${name} path.`)
@@ -178,5 +184,28 @@ export function combineItems(items: RegistryItem[]): RegistryItem {
     dependencies: [
       ...new Set(items.flatMap((item) => item.dependencies)),
     ].sort(),
+    registryDependencies: [
+      ...new Set(items.flatMap((item) => item.registryDependencies ?? [])),
+    ].sort(),
+  }
+}
+export function cossDependency(item: string) {
+  return `@coss/${item}`
+}
+// shadcn asks before overwriting a COSS component the consumer customized,
+// even with --yes, and stops without a terminal. Components the consumer
+// already has are left out, so it only installs the missing ones.
+export function omitInstalled(
+  item: RegistryItem,
+  installed: (component: string) => boolean,
+): RegistryItem {
+  return {
+    ...item,
+    registryDependencies: (item.registryDependencies ?? []).filter(
+      (dependency) => {
+        const [, component] = dependency.match(/^@coss\/(.+)$/) ?? []
+        return !component || !installed(component)
+      },
+    ),
   }
 }

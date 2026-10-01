@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises'
+import { readFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import ts from 'typescript'
 import { patternNames } from '../packages/registry/src/manifest'
@@ -12,7 +12,8 @@ import {
 // Every pattern installs into the example consumer, compiles against its COSS
 // and leaves its UI untouched. Two runs check that the generated barrel keeps
 // earlier patterns and, once all are installed, exports the workspace
-// aggregate's public API.
+// aggregate's public API. The consumer lacks one COSS component the patterns
+// use, which shadcn installs from @coss; the ones it has are kept.
 const baseline: Record<string, string[]> = JSON.parse(
   await readFile('docs/architecture/public-api-exports.json', 'utf8'),
 )
@@ -55,19 +56,29 @@ const laterOnly = new Set(
     .flatMap((name) => baseline[name] ?? [])
     .filter((name) => !firstNames.has(name)),
 )
+const missingComponent = 'empty'
 const consumer = await createConsumer('consumer-registry')
-let installedFiles = await installPatterns(consumer, first)
+await rm(join(consumer.root, consumer.ui, `${missingComponent}.tsx`))
+const firstRun = await installPatterns(consumer, first)
+const expectedUi = [join(consumer.ui, `${missingComponent}.tsx`)]
+if (JSON.stringify(firstRun.addedUi) !== JSON.stringify(expectedUi))
+  throw new Error(
+    `Expected the CLI to add only ${expectedUi}, added: ${firstRun.addedUi.join(', ') || 'nothing'}`,
+  )
 expectExports(
   barrelExports(consumer),
   all.filter((name) => !laterOnly.has(name)),
   first.join(' and '),
 )
-installedFiles = await installPatterns(consumer, later)
+const laterRun = await installPatterns(consumer, later)
+if (laterRun.addedUi.length)
+  throw new Error(`Unexpected COSS files: ${laterRun.addedUi.join(', ')}`)
 expectExports(barrelExports(consumer), all, 'every pattern')
 await saveReport('consumer-registry', {
   passed: true,
   patterns: patternNames,
-  installedFiles,
+  installedFiles: laterRun.files,
+  installedCossComponents: firstRun.addedUi,
   patternsPath: consumer.patterns,
   barrelExports: all.length,
   uiUntouched: consumer.ui,

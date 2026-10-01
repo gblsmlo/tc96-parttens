@@ -51,7 +51,11 @@ test('reads non-default aliases and resolves their paths from tsconfig', async (
       elements: '@acme/atoms',
       patterns: '@acme/organisms',
     },
-    paths: { elements: 'packages/atoms/src', patterns: 'libs/organisms' },
+    paths: {
+      ui: 'packages/ui/src',
+      elements: 'packages/atoms/src',
+      patterns: 'libs/organisms',
+    },
   })
 })
 
@@ -64,6 +68,9 @@ test('names the missing tc96 aliases', () => {
       aliases: { ui: '@acme/ui', utils: '@acme/utils', elements: '@acme/e' },
     }),
   ).toThrow('components.json is missing aliases.patterns.')
+  expect(() => readAliases({ aliases: { ui: '@acme/ui' } })).toThrow(
+    'shadcn init --force rewrites components.json without them',
+  )
 })
 
 test('requires components.json in the consumer', async () => {
@@ -74,7 +81,7 @@ test('requires components.json in the consumer', async () => {
   )
 })
 
-test('requires a tsconfig path for each written alias', async () => {
+test('requires a tsconfig path for the ui alias and each written alias', async () => {
   const root = await consumer(
     {
       ui: '@acme/ui',
@@ -83,6 +90,20 @@ test('requires a tsconfig path for each written alias', async () => {
       patterns: '@acme/patterns',
     },
     { '@acme/elements/*': ['./packages/elements/src/*'] },
+  )
+  await expect(readInstallConfig(root)).rejects.toThrow(
+    'tsconfig.json paths has no "@acme/ui/*" entry',
+  )
+  await writeFile(
+    join(root, 'tsconfig.json'),
+    JSON.stringify({
+      compilerOptions: {
+        paths: {
+          '@acme/ui/*': ['./packages/ui/src/*'],
+          '@acme/elements/*': ['./packages/elements/src/*'],
+        },
+      },
+    }),
   )
   await expect(readInstallConfig(root)).rejects.toThrow(
     'tsconfig.json paths has no "@acme/patterns/*" entry',
@@ -98,6 +119,7 @@ test('rejects an alias that resolves outside the workspace', async () => {
       patterns: '@acme/patterns',
     },
     {
+      '@acme/ui/*': ['./packages/ui/src/*'],
       '@acme/elements/*': ['./packages/elements/src/*'],
       '@acme/patterns/*': ['../shared/patterns/*'],
     },

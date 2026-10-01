@@ -1,7 +1,9 @@
 import { expect, test } from 'bun:test'
 import {
   assertDistributable,
+  combineItems,
   type InstallConfig,
+  omitInstalled,
   prepareItem,
   type RegistryItem,
   selectPatterns,
@@ -15,7 +17,11 @@ const config: InstallConfig = {
     elements: '@consumer/atoms',
     patterns: '@consumer/patterns',
   },
-  paths: { elements: 'packages/atoms/src', patterns: 'packages/patterns/src' },
+  paths: {
+    ui: 'packages/visual/src',
+    elements: 'packages/atoms/src',
+    patterns: 'packages/patterns/src',
+  },
 }
 function item(path: string, content: string): RegistryItem {
   return {
@@ -127,7 +133,29 @@ test('requires every alias and both destination paths', () => {
   expect(() =>
     validateConfig({
       ...config,
-      paths: { elements: '../outside', patterns: 'packages/patterns/src' },
+      paths: { ...config.paths, elements: '../outside' },
     }),
   ).toThrow('elements path must be inside the consumer workspace')
+})
+test('combines COSS dependencies and leaves out the installed ones', () => {
+  const combined = combineItems([
+    {
+      ...item('parttens/src/a.ts', ''),
+      registryDependencies: ['@coss/menu', '@coss/button'],
+    },
+    {
+      ...item('parttens/src/b.ts', ''),
+      registryDependencies: ['@coss/button', '@coss/empty'],
+    },
+  ])
+  expect(combined.registryDependencies).toEqual([
+    '@coss/button',
+    '@coss/empty',
+    '@coss/menu',
+  ])
+  const installed = new Set(['button', 'menu'])
+  expect(
+    omitInstalled(combined, (component) => installed.has(component))
+      .registryDependencies,
+  ).toEqual(['@coss/empty'])
 })
