@@ -3,6 +3,12 @@ export interface KanbanColumnData<TCard = unknown> {
   title: string
   count: number
   cards: TCard[]
+  /** CSS color used for the column marker and its tinted surface. */
+  color?: string
+  /** Presentation state controlled by the consumer. */
+  collapsed?: boolean
+  /** Hidden columns remain in consumer data so view settings can restore them. */
+  hidden?: boolean
 }
 
 export interface KanbanColumnActions {

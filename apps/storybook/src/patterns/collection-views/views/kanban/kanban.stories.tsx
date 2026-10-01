@@ -1,13 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import type { ReactElement } from 'react'
-import {
-  KanbanCard,
-  type KanbanColumnData,
-  KanbanView,
-  type KanbanViewProps,
-} from 'tc96/blocks'
-import { booleanArgType } from '../../../../test-utils/story-arg-types'
-import { KanbanCardExampleContent } from './kanban-card-example'
+import { type KanbanColumnData, KanbanView } from 'tc96/blocks'
+import { TodoKanbanCard } from './kanban-card-example'
 
 interface MechanicsCard {
   description: string
@@ -61,58 +54,60 @@ const kanbanArgs = {
   getCardLabel: (card: MechanicsCard) => card.title,
   getKey: (card: MechanicsCard) => card.id,
   renderCard: (card: MechanicsCard) => (
-    <KanbanCard variant="interactive">
-      <KanbanCardExampleContent
-        description={card.description}
-        initialPriority={card.priority}
-        taskCount={card.taskCount}
-        title={card.title}
-      />
-    </KanbanCard>
+    <TodoKanbanCard
+      description={card.description}
+      initialPriority={card.priority}
+      taskCount={card.taskCount}
+      title={card.title}
+      variant="interactive"
+    />
   ),
 }
 
-const MechanicsKanbanView = KanbanView as (
-  props: KanbanViewProps<MechanicsCard>,
-) => ReactElement
-
-function Example({ loading = false }: Readonly<{ loading?: boolean }>) {
+function Example() {
   return (
     <div className="h-144 min-w-0 p-4">
       <KanbanView
         {...kanbanArgs}
         emptyColumnLabel="No items in this column."
-        loading={loading}
-        loadingCardLabel="Loading collection item"
-        onMoveCard={loading ? undefined : () => true}
+        onMoveCard={() => true}
       />
     </div>
   )
 }
 
 const meta = {
-  args: kanbanArgs,
-  argTypes: { loading: booleanArgType },
-  component: MechanicsKanbanView,
+  args: {
+    description: columns[0].cards[0].description,
+    initialPriority: columns[0].cards[0].priority,
+    taskCount: columns[0].cards[0].taskCount,
+    title: columns[0].cards[0].title,
+  },
+  component: TodoKanbanCard,
   parameters: {
     docs: {
       description: {
         component:
-          'Building Block de Kanban. Documenta projeção de colunas, movimentação, loading e renderização de cards sem fixtures ou regras de Tasks e Pipeline.',
+          'O mesmo card Todo compõe o exemplo isolado e os itens do board.',
       },
     },
     layout: 'fullscreen',
   },
-  tags: ['autodocs', 'storybook-test'],
-  title: 'Patterns/CollectionViews/Views/Kanban',
-} satisfies Meta<typeof MechanicsKanbanView>
+  tags: ['!autodocs'],
+  title: 'Patterns/CollectionViews/Views/Kanban/Usages/Todo',
+} satisfies Meta<typeof TodoKanbanCard>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Mechanics: Story = { args: kanbanArgs, render: () => <Example /> }
-export const Loading: Story = {
-  args: kanbanArgs,
-  render: () => <Example loading />,
+export const Card: Story = {
+  parameters: { layout: 'centered' },
+  render: (args) => (
+    <div className="w-full max-w-sm p-4">
+      <TodoKanbanCard {...args} />
+    </div>
+  ),
 }
+
+export const Board: Story = { render: () => <Example /> }

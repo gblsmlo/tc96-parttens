@@ -11,21 +11,19 @@ import {
   CardTitle,
 } from '@tc96/ui/card'
 import { cn } from '@tc96/utils'
-import { type VariantProps, cva } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
 import {
   type ComponentProps,
   type ComponentPropsWithoutRef,
-  type ReactElement,
   createContext,
+  type ReactElement,
   useContext,
 } from 'react'
 
 export type KanbanCardDisplay = 'full' | 'compact'
 
-// Mesma superfície do Card do COSS, mais a densidade que o Kanban precisa e o
-// Card upstream não oferece.
 const kanbanCardSurfaceVariants = cva(
-  'relative flex flex-col rounded-2xl border bg-card not-dark:bg-clip-padding text-card-foreground shadow-xs/5 before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-2xl)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:before:shadow-[0_-1px_--theme(--color-white/6%)]',
+  'relative flex flex-col rounded-2xl border border-border/70 bg-card not-dark:bg-clip-padding text-card-foreground shadow-xs/5 before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-2xl)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:before:shadow-[0_-1px_--theme(--color-white/6%)]',
   {
     defaultVariants: { density: 'md' },
     variants: {
@@ -38,7 +36,7 @@ const kanbanCardSurfaceVariants = cva(
 )
 
 export const kanbanCardVariants = cva(
-  'relative isolate min-w-0 w-full max-w-full overflow-hidden [&_[data-kanban-card-action]]:relative [&_[data-kanban-card-action]]:z-10',
+  'relative isolate min-w-0 w-full max-w-full overflow-hidden transition-colors hover:border-border hover:bg-accent/35 has-focus-visible:ring-2 has-focus-visible:ring-primary has-focus-visible:ring-offset-2 has-focus-visible:ring-offset-background [&_[data-kanban-card-action]]:relative [&_[data-kanban-card-action]]:z-10',
   {
     defaultVariants: {
       dimmed: false,
@@ -57,14 +55,12 @@ export const kanbanCardVariants = cva(
       variant: {
         default: null,
         interactive:
-          'cursor-pointer rounded-md border-border/70 bg-card/95 text-left shadow-none outline-none transition-colors hover:border-border hover:bg-accent/35 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background has-focus-visible:ring-2 has-focus-visible:ring-primary has-focus-visible:ring-offset-2 has-focus-visible:ring-offset-background [&>:focus-visible]:outline-none',
+          'cursor-pointer text-left outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background [&>:focus-visible]:outline-none',
       },
     },
   },
 )
 
-// O Card upstream troca o espaçamento de header e footer quando há um painel;
-// o Kanban separa o footer por régua e mantém o próprio ritmo.
 const kanbanCardHeaderVariants = cva(
   'gap-1 in-[[data-slot=card]:has(>[data-slot=card-panel])]:pb-2',
   {
@@ -113,7 +109,16 @@ export interface KanbanCardProps extends useRender.ComponentProps<'article'> {
 }
 
 export type KanbanCardActionProps = ComponentProps<typeof CardAction>
+export interface KanbanCardActionButtonProps
+  extends useRender.ComponentProps<'button'> {
+  size?: 'default' | 'icon'
+}
 export type KanbanCardContentProps = ComponentProps<typeof CardContent>
+export type KanbanCardBodyProps = KanbanCardContentProps
+export interface KanbanCardBodyRowProps
+  extends ComponentPropsWithoutRef<'div'> {
+  align?: 'start' | 'between'
+}
 export type KanbanCardDescriptionProps = ComponentProps<typeof CardDescription>
 export type KanbanCardFooterProps = ComponentProps<typeof CardFooter>
 export type KanbanCardHeaderProps = ComponentProps<typeof CardHeader>
@@ -217,15 +222,30 @@ export function KanbanCardAction({
   )
 }
 
-/**
- * Alvo de clique do card inteiro, esticado sobre ele.
- *
- * Existe porque um card que é um `button` não pode hospedar propriedade editável —
- * botão dentro de botão é HTML inválido. Como gatilho irmão, o card volta a ser
- * `article` e cada controle interno segue clicável, desde que marcado com
- * `data-kanban-card-action`: o atributo sobe o controle acima deste gatilho e já
- * impede o arraste de roubar o ponteiro em `SortableKanbanCard`.
- */
+export function KanbanCardActionButton({
+  className,
+  render,
+  size = 'default',
+  ...props
+}: KanbanCardActionButtonProps): ReactElement {
+  const defaultProps = {
+    className: cn(
+      'inline-flex min-h-7 shrink-0 cursor-pointer items-center justify-center gap-1 rounded-md border border-transparent px-1.5 text-card-foreground/70 text-xs outline-none transition-colors hover:bg-accent hover:text-card-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+      size === 'icon' && 'size-7 p-0',
+      className,
+    ),
+    'data-kanban-card-action': '',
+    'data-slot': 'kanban-card-action-button',
+    type: 'button' as const,
+  }
+
+  return useRender({
+    defaultTagName: 'button',
+    props: mergeProps<'button'>(defaultProps, props),
+    render,
+  })
+}
+
 export function KanbanCardOpenTrigger({
   className,
   ...props
@@ -254,6 +274,26 @@ export function KanbanCardContent({
       className={cn(kanbanCardContentVariants(), className)}
       {...props}
       hidden={display === 'compact' || props.hidden}
+    />
+  )
+}
+
+export const KanbanCardBody = KanbanCardContent
+
+export function KanbanCardBodyRow({
+  align = 'start',
+  className,
+  ...props
+}: KanbanCardBodyRowProps): ReactElement {
+  return (
+    <div
+      className={cn(
+        'flex min-w-0 items-center gap-2',
+        align === 'between' ? 'justify-between' : 'justify-start',
+        className,
+      )}
+      data-slot="kanban-card-body-row"
+      {...props}
     />
   )
 }
