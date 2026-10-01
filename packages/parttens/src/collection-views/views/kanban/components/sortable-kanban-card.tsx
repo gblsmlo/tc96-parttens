@@ -9,10 +9,36 @@ import { cn } from '@tc96/utils'
 import { GripVerticalIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
+// Alvos que mantem o proprio gesto. O botao que abre o card cobre a
+// superficie inteira; arrastar a partir dele so comeca apos a distancia
+// minima, e o dnd-kit suprime o clique que encerra o arraste.
+const OWN_GESTURE_TARGETS = [
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  'button:not([disabled]):not([data-slot="kanban-card-open-trigger"])',
+  'a[href]',
+  '[contenteditable]:not([contenteditable="false"])',
+  '[role="button"]',
+  '[role="checkbox"]',
+  '[role="combobox"]',
+  '[role="menuitem"]',
+  '[role="option"]',
+  '[role="slider"]',
+  '[role="switch"]',
+].join(',')
+
 const KANBAN_CARD_SENSORS = [
   PointerSensor.configure({
+    // Ponteiro e toque pegam o card inteiro; a alca segue como ativador de
+    // teclado e da tecnologia assistiva.
+    activatorElements: (source) => [source.element],
+    preventActivation: (event, source) =>
+      event.target instanceof Element &&
+      !source.handle?.contains(event.target) &&
+      event.target.closest(OWN_GESTURE_TARGETS) !== null,
     /**
-     * Exigir deslocamento minimo separa clique de arraste na alca; no toque
+     * Exigir deslocamento minimo separa clique de arraste no card; no toque
      * mantem-se o atraso, para nao competir com o scroll da coluna.
      */
     activationConstraints: (event) =>
@@ -60,13 +86,13 @@ export function SortableKanbanCard({
     type: 'kanban-card',
   })
 
-  // So a alca arrasta. O dnd-kit transforma o ativador em botao, e um botao
-  // esconde o que contem da tecnologia assistiva; por isso o card e as acoes
-  // dele ficam fora da alca.
+  // A alca e o ativador: o dnd-kit a transforma em botao, e um botao esconde
+  // o que contem da tecnologia assistiva; por isso o card e as acoes dele
+  // ficam fora dela, mesmo o ponteiro arrastando pelo card inteiro.
   return (
     <div
       className={cn(
-        'group/kanban-drag flex min-w-0 max-w-full items-start gap-0.5',
+        'group/kanban-drag flex min-w-0 max-w-full cursor-grab items-start gap-0.5',
         isDragSource && 'opacity-0',
       )}
       data-kanban-card-container=""
