@@ -1,4 +1,4 @@
-import { TextProperty } from 'tc96/components'
+import { TextProperty } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MailIcon, PhoneIcon, ShapesIcon } from 'lucide-react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'

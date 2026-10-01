@@ -1,4 +1,4 @@
-import { TagsProperty, type TagsPropertyOption } from 'tc96/components'
+import { TagsProperty, type TagsPropertyOption } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { expect } from 'storybook/test'

@@ -5,7 +5,7 @@ import {
   SelectProperty,
   type SelectPropertyOption,
   TagsProperty,
-} from 'tc96/components'
+} from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   CalendarDaysIcon,

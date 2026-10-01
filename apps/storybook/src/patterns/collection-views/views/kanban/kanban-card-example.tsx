@@ -16,20 +16,17 @@ import {
   KanbanCardFooter,
   KanbanCardHeader,
   KanbanCardTitle,
-} from 'tc96/blocks'
-import { SelectProperty, type SelectPropertyOption } from 'tc96/components'
+  SelectProperty,
+  type SelectPropertyOption,
+} from '@tc96/parttens'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
-  Avatar,
-  AvatarFallback,
-  Menu,
-  MenuItem,
-  MenuPopup,
-  MenuTrigger,
   Popover,
   PopoverClose,
   PopoverPopup,
   PopoverTrigger,
-} from 'tc96/ui'
+} from '@tc96/ui/popover'
 
 const priorityOptions: readonly SelectPropertyOption[] = [
   { icon: SignalHighIcon, label: 'Alta', tone: 'danger', value: 'high' },
