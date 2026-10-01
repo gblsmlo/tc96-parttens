@@ -18,6 +18,7 @@ apps/
   docs/
 packages/
   ui/
+  elements/
   parttens/
     src/
       collection-views/
@@ -48,7 +49,8 @@ docs/
 
 A landing será acrescentada quando houver escopo concreto. A grafia `parttens` acompanha o nome escolhido para o produto e o contrato público.
 
-- `ui`: componentes básicos COSS/Base UI e fundações visuais.
+- `ui`: componentes COSS sem alterações, no papel da UI do consumidor.
+- `elements`: componentes próprios do tc96 que não existem no COSS, como `Text`. Usam só os tokens do tema do consumidor.
 - `parttens`: padrões, com componentes, hooks, tipos e testes próximos de cada padrão.
 - `utils`: funções compartilhadas sem React ou dependências visuais.
 - `registry`: manifestos, geração e ferramentas para instalação dos fontes.
@@ -76,7 +78,7 @@ Cada área tem um barrel próprio. O CLI gera o barrel agregado no projeto do co
 
 No Storybook, `Patterns/Collection Views/Overview` apresenta a mesma coleção em List, Kanban e Data Grid. As stories sob `Patterns/Collection Views/Views` documentam cada renderer isoladamente; `Shared Components` documenta toolbar e paginação. As stories de properties ficam em `Patterns/Properties/Display`; o agrupamento de properties fica em `Patterns/Properties/Groups`.
 
-`parttens` depende de `ui` e `utils`; `ui` depende de `utils`. Os três não dependem do registry. Dependências entre padrões são explícitas e não podem criar ciclos. Os fontes de UI têm uma implementação canônica, sem cópias mantidas por padrão.
+`parttens` depende de `ui`, `elements` e `utils`; `ui` e `elements` dependem de `utils`; `elements` não depende de `parttens`. Os três não dependem do registry. Dependências entre padrões são explícitas e não podem criar ciclos. Os fontes de UI têm uma implementação canônica, sem cópias mantidas por padrão.
 
 Nomes internos: `@tc96/ui`, `@tc96/parttens`, `@tc96/utils` e `@tc96/registry`. São pacotes privados do workspace. O produto publica só o CLI `tc96-parttens` com o registry embutido; não há biblioteca npm. `ui` e `utils` existem para desenvolvimento, Storybook e testes, no papel de projeto consumidor (ver [UI base sem opinião](#ui-base-sem-opinião)).
 
@@ -102,7 +104,7 @@ O nome npm só importa para o CLI `tc96-parttens`. O README da base relata recus
 
 Decidido em 2026-10-01. O tc96 reutiliza patterns em projetos que já usam COSS, com a menor sobrescrita de estilo possível. A UI base não é opinativa e usa os componentes COSS sem alterações.
 
-- O COSS vence a API própria. Os patterns usam a API do COSS. Saem `size` `sm | md | lg`, `variant: 'primary'`, `buttonSizes`, `inputSizes`, o `control-radius` e o `Text`, que não existe no COSS. O `tc96/ui` público é removido, sem re-export.
+- O COSS vence a API própria. Os patterns usam a API do COSS. Saem `size` `sm | md | lg`, `variant: 'primary'`, `buttonSizes`, `inputSizes` e o `control-radius`. O `Text`, que não existe no COSS, migra para `packages/elements`. O `tc96/ui` público é removido, sem re-export.
 - O consumidor é dono dos componentes COSS. Os patterns declaram `registryDependencies` do COSS, e o shadcn instala ou reutiliza o que o projeto já tem. O tc96 não distribui UI.
 - O `cn` também é do consumidor. Os imports de `@tc96/utils` são reescritos para o `aliases.utils` do `components.json` do consumidor, e o arquivo não é distribuído.
 - Os patterns não redefinem tema. Tokens, `:root`, `.dark` e utilitários próprios pertencem ao consumidor.
@@ -115,7 +117,7 @@ Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue im
 
 Questões abertas:
 
-- Destino do `Text` e do locale e da faixa de datas do calendar. É pré-requisito para limpar `packages/ui`.
+- Locale e faixa de datas do calendar. É pré-requisito para limpar `packages/ui`.
 - Namespace das dependências COSS no registry e reescrita de `@tc96/ui/<item>` para o `aliases.ui` do consumidor. É o caminho crítico do registry, e o contrato de instalação só foi provado com itens locais.
 - Regra objetiva de sobrescrita nos patterns. A proposta é permitir só layout e dimensão, sem cor, raio ou sombra.
 
@@ -164,6 +166,7 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 | Preservar API atual dos patterns; substituída para a UI em 2026-10-01 | Redesenhar todos os contratos | Evitar quebra para consumidores existentes |
 | UI base é COSS sem alterações, com API COSS; `tc96/ui` removido | Manter a API própria de `tc96/ui` | Reutilizar patterns sobre o COSS do consumidor com a menor sobrescrita |
 | Componentes COSS de posse do consumidor via `registryDependencies` | tc96 mantém cópia vendorizada | O tema e as personalizações do consumidor valem sem cópia paralela |
+| `Text` e outros componentes fora do COSS em `packages/elements`, distribuídos pelo registry com destino configurável | Manter em `packages/ui` | `packages/ui` só contém COSS sem alterações |
 | `cn` resolvido pelo `aliases.utils` do consumidor | Distribuir `@tc96/utils` | O COSS já instala `cn` no consumidor |
 | Grupos preparados com agrupamento antigo preservado | Remover projeção interna | Separar operações novas sem quebrar comportamento atual |
 | UI compartilhada e destino configurável | UI duplicada por padrão | Reaproveitar a base e as personalizações do consumidor |
@@ -173,7 +176,7 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 
 ## Pontos ainda em revisão
 
-- Destino do `Text` e do calendar, namespace COSS no registry e regra de sobrescrita. Ver [UI base sem opinião](#ui-base-sem-opinião).
+- Locale do calendar, namespace COSS no registry e regra de sobrescrita. Ver [UI base sem opinião](#ui-base-sem-opinião).
 - Aprovação da estratégia de validação e do limite da verificação de compatibilidade.
 - Configuração e integração do CLI com shadcn, preservando o comando desejado e validando destinos em monorepo.
 - Nome npm disponível para o CLI.
