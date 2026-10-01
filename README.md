@@ -16,9 +16,7 @@ React patterns without business rules, installed as source on top of your COSS c
 
 </div>
 
-> **Status:** 0.2.1. The API can change before 1.0.
-
-## ✨ Overview
+## Overview
 
 - **Source, not a dependency**: the CLI copies the pattern source into your workspace. You own it and change it as you like
 - **Built on COSS**: patterns import `Button`, `Menu`, `Popover` and the rest from your project's own UI alias
