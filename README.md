@@ -10,7 +10,7 @@ npx @tc96/parttens add collection-views properties
 import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
 ```
 
-> **Status:** 0.1.0, the first release. The API can change before 1.0.
+> **Status:** 0.2.0. The API can change before 1.0.
 
 ## How it works
 
