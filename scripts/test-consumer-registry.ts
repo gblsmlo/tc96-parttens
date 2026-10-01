@@ -1,24 +1,28 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { defaultConfig } from '../packages/registry/src/manifest'
 import { createConsumer, json, pack, run, saveReport } from './consumer'
 
 const cli = await pack(resolve('dist/cli'))
 const root = await createConsumer('consumer-registry', {
   'tc96-parttens': `file:${cli}`,
 })
-const config = {
-  patterns: { path: 'packages/patterns/src', alias: '@consumer/patterns' },
-  elements: { path: 'packages/atoms/src', alias: '@consumer/atoms' },
-  ui: { path: 'packages/visual/src', alias: '@consumer/visual' },
-  utils: { path: 'packages/helpers/src', alias: '@consumer/helpers' },
+const aliases = {
+  ui: '@consumer/visual',
+  utils: '@consumer/helpers',
+  elements: '@consumer/atoms',
+  patterns: '@consumer/patterns',
 }
-await json(join(root, 'tc96.json'), config)
+const paths = {
+  ui: 'packages/visual/src',
+  utils: 'packages/helpers/src',
+  elements: 'packages/atoms/src',
+  patterns: 'packages/patterns/src',
+}
 const tsconfig = JSON.parse(await readFile(join(root, 'tsconfig.json'), 'utf8'))
 tsconfig.compilerOptions.paths = Object.fromEntries(
-  Object.values(config).flatMap((destination) => [
-    [destination.alias, [`./${destination.path}/index.ts`]],
-    [`${destination.alias}/*`, [`./${destination.path}/*`]],
+  (Object.keys(aliases) as (keyof typeof aliases)[]).flatMap((name) => [
+    [aliases[name], [`./${paths[name]}/index.ts`]],
+    [`${aliases[name]}/*`, [`./${paths[name]}/*`]],
   ]),
 )
 tsconfig.include = ['src', 'packages']
@@ -41,10 +45,9 @@ await json(join(root, 'components.json'), {
   },
   aliases: {
     components: '@consumer/patterns',
-    ui: '@consumer/visual',
-    utils: '@consumer/helpers',
     lib: '@consumer/helpers',
     hooks: '@consumer/patterns/hooks',
+    ...aliases,
   },
 })
 await mkdir(join(root, 'packages/helpers/src'), { recursive: true })
@@ -83,6 +86,6 @@ await saveReport('consumer-registry', {
   passed: true,
   installedPatterns: 4,
   customizedFilePreserved: true,
-  destinations: config,
-  defaults: defaultConfig,
+  aliases,
+  paths,
 })

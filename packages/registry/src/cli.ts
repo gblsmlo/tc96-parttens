@@ -6,16 +6,15 @@ import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { checkCompatibility } from './check-compatibility'
+import { readInstallConfig } from './config'
 import {
   combineItems,
-  defaultConfig,
   prepareItem,
   type RegistryItem,
   selectPatterns,
-  validateConfig,
 } from './manifest'
 
-const help = `tc96-parttens add <patterns...> [--cwd path] [--config path] [--dry-run] [--diff] [--view]\nPatterns: collection-views properties detail-sheet editable\nExisting files are preserved unless you approve shadcn's overwrite prompt.\n`
+const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view]\nPatterns: collection-views properties detail-sheet editable\nReads aliases ui, utils, elements and patterns from components.json.\nExisting files are preserved unless you approve shadcn's overwrite prompt.\n`
 function targetPath(workspace: string, target: string | undefined) {
   if (!target?.startsWith('~/'))
     throw new Error(`Invalid registry target: ${target ?? 'missing'}`)
@@ -29,7 +28,6 @@ async function main() {
   }
   if (args.shift() !== 'add') throw new Error(help)
   let cwd = process.cwd()
-  let configFile = 'tc96.json'
   let registryDirectory = join(
     dirname(fileURLToPath(import.meta.url)),
     'registry',
@@ -40,12 +38,11 @@ async function main() {
   for (let i = 0; i < args.length; i++) {
     const argument = args[i]
     if (!argument) throw new Error('Missing argument')
-    if (['--cwd', '--config', '--registry-dir'].includes(argument)) {
+    if (['--cwd', '--registry-dir'].includes(argument)) {
       const value = args[++i]
       if (!value || value.startsWith('--'))
         throw new Error(`Missing value for ${argument}`)
       if (argument === '--cwd') cwd = resolve(value)
-      else if (argument === '--config') configFile = value
       else registryDirectory = resolve(value)
     } else if (argument === '--preserve-existing') preserveExisting = true
     else if (['--dry-run', '--diff', '--view', '--yes'].includes(argument))
@@ -55,16 +52,7 @@ async function main() {
     else names.push(argument)
   }
   const selected = selectPatterns(names)
-  if (!existsSync(join(cwd, 'components.json')))
-    throw new Error(
-      'Configure shadcn components.json in the consumer workspace first.',
-    )
-  const configurationPath = resolve(cwd, configFile)
-  const configuration = validateConfig(
-    existsSync(configurationPath)
-      ? JSON.parse(await readFile(configurationPath, 'utf8'))
-      : defaultConfig,
-  )
+  const configuration = await readInstallConfig(cwd)
   const items = await Promise.all(
     selected.map(
       async (name) =>
