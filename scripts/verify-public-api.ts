@@ -11,7 +11,6 @@ const parsed = ts.parseJsonConfigFileContent(
 const sourceProgram = ts.createProgram(parsed.fileNames, parsed.options)
 const checker = sourceProgram.getTypeChecker()
 const modules = {
-  ui: 'packages/ui/src/index.ts',
   utils: 'packages/utils/src/index.ts',
   components: 'packages/parttens/src/components.ts',
   blocks: 'packages/parttens/src/blocks.ts',
@@ -28,7 +27,7 @@ for (const [name, file] of Object.entries(modules)) {
     .sort()
   const runtime = await import(
     resolve(
-      `dist/library/${name === 'ui' || name === 'utils' ? name : 'parttens'}/src/${name === 'components' || name === 'blocks' ? name : 'index'}.js`,
+      `dist/library/${name === 'utils' ? name : 'parttens'}/src/${name === 'components' || name === 'blocks' ? name : 'index'}.js`,
     )
   )
   for (const key of Object.keys(runtime)) {

@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@tc96/ui/compat/collection-views/button'
+import { Button } from '@tc96/ui/button'
 import { MenuTrigger } from '@tc96/ui/menu'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import type { ReactElement, ReactNode } from 'react'

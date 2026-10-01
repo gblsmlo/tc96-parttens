@@ -13,34 +13,43 @@ const meta = {
     size: {
       control: 'select',
       description: 'Controls the button height and horizontal padding.',
-      options: ['sm', 'md', 'lg'],
+      options: [
+        'xs',
+        'sm',
+        'default',
+        'lg',
+        'xl',
+        'icon-xs',
+        'icon-sm',
+        'icon',
+        'icon-lg',
+        'icon-xl',
+      ],
       table: {
-        defaultValue: { summary: 'md' },
+        defaultValue: { summary: 'default' },
       },
     },
     variant: {
       control: 'select',
       description: 'Controls the semantic visual emphasis of the action.',
       options: [
-        'primary',
+        'default',
         'secondary',
         'outline',
         'destructive',
-        'destructive-ghost',
         'destructive-outline',
         'ghost',
         'link',
       ],
       table: {
-        defaultValue: { summary: 'primary' },
+        defaultValue: { summary: 'default' },
       },
     },
   },
   parameters: {
     docs: {
       description: {
-        component:
-          'Triggers an action. Primary is the default appearance and medium is the default size.',
+        component: 'COSS Button, unmodified. Triggers an action.',
       },
     },
   },
@@ -50,9 +59,6 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  args: {
-    variant: 'primary',
-  },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement)
     await userEvent.click(canvas.getByRole('button', { name: 'Continue' }))

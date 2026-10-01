@@ -1,6 +1,12 @@
+import { ptBR } from '@daypicker/react/locale'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { type DateRange, DateRangeProperty } from '@tc96/parttens'
+import {
+  type DateRange,
+  DateRangeProperty,
+  type DateRangePropertyProps,
+} from '@tc96/parttens'
 import { useState } from 'react'
+import { expect, screen, userEvent, within } from 'storybook/test'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
@@ -93,10 +99,38 @@ export const Trigger: Story = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole('button'))
+    await expect(await screen.findByText('June 2026')).toBeInTheDocument()
+  },
   render: () => <DateRangePropertyPickerStory />,
 }
 
-function DateRangePropertyPickerStory() {
+export const CalendarLocale: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'O calendar fala inglês por padrão. Para outro idioma, o consumidor passa o locale do DayPicker em `calendarProps`; o rótulo da superfície segue a prop `locale`.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole('button'))
+    await expect(await screen.findByText('junho 2026')).toBeInTheDocument()
+  },
+  render: () => (
+    <DateRangePropertyPickerStory
+      calendarProps={{ locale: ptBR }}
+      locale="pt-BR"
+    />
+  ),
+}
+
+function DateRangePropertyPickerStory({
+  calendarProps,
+  locale = 'en-US',
+}: Readonly<Pick<DateRangePropertyProps, 'calendarProps' | 'locale'>>) {
   const [value, setValue] = useState<DateRange | undefined>({
     from: new Date('2026-06-19T12:00:00.000Z'),
     to: new Date('2026-06-26T12:00:00.000Z'),
@@ -106,8 +140,9 @@ function DateRangePropertyPickerStory() {
     <div className="flex min-h-136 items-start p-16">
       <DateRangeProperty
         ariaLabel="Período"
+        calendarProps={calendarProps}
         fallback="Sem período"
-        locale="en-US"
+        locale={locale}
         value={value}
         onValueChange={setValue}
       />

@@ -13,9 +13,6 @@
     ],
     "noEmit": true,
     "paths": {
-      "@tc96/ui": [
-        "./packages/ui/src/index.ts"
-      ],
       "@tc96/ui/*": [
         "./packages/ui/src/*"
       ],

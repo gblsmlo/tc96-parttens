@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import type * as React from "react";
 import { cn } from "@tc96/utils";
-import { type Button, buttonVariants } from "@tc96/ui/compat/collection-views/button";
+import { type Button, buttonVariants } from "@tc96/ui/button";
 
 export function Pagination({
   className,

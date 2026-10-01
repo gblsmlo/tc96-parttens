@@ -1,0 +1,140 @@
+{
+  "registry": "https://coss.com/ui/r",
+  "items": {
+    "avatar": {
+      "url": "https://coss.com/ui/r/avatar.json",
+      "upstream": "sha256-a742f2d7c3aa1a867799e66fa7f3b37615e455906fa0117b66c49cfedca0a4f1",
+      "file": "sha256-663eecf04ca0f4d60e877808a4815ae2d8576bfe2350e9146fe353456c4101a2"
+    },
+    "badge": {
+      "url": "https://coss.com/ui/r/badge.json",
+      "upstream": "sha256-60f73554b462ec5e2929ccc58c0522b069c07e1268dbfb67749c2837347b788b",
+      "file": "sha256-c75e2e223952ed5981fca357865acefe5b83ab9d2ae33d08519afcbeed12a51a"
+    },
+    "button": {
+      "url": "https://coss.com/ui/r/button.json",
+      "upstream": "sha256-1e65556bde3071f90f61825cf573aec74bdd8695824470bea3dae4d68a6b8fc8",
+      "file": "sha256-2f723110a1ab660c25822e4b21970a9650641806d157d34961391771e8cb9bfe"
+    },
+    "calendar": {
+      "url": "https://coss.com/ui/r/calendar.json",
+      "upstream": "sha256-e9046da3021b3bb1e77ae657cdacac79a15f71e99596984fbcd54f26f3b60179",
+      "file": "sha256-68406fc9cf2c6466a058784ede7c01ac9b625b2096b05b7ab35762c0a35a9fff"
+    },
+    "card": {
+      "url": "https://coss.com/ui/r/card.json",
+      "upstream": "sha256-b59dbc0bd5d61694fcf1948fb8134795b0f5a1bf0a28d8d6bc817297c73a006e",
+      "file": "sha256-59843cf8efe49f85af80a12eb6ded74f3b5f78cd83c84f7fe386c5cb473543d3"
+    },
+    "checkbox": {
+      "url": "https://coss.com/ui/r/checkbox.json",
+      "upstream": "sha256-a1b8b4180a39a47c47bd2b50e432d0911da6efe3b963b065b3b5cb8893760047",
+      "file": "sha256-029b4a444776df12bd92d1a0d0dae75aa7a0687d91f4f22d9c6e6bca37deccf1"
+    },
+    "collapsible": {
+      "url": "https://coss.com/ui/r/collapsible.json",
+      "upstream": "sha256-f70e7b9fde220ce5f039c93176a545a46a9b553ecdb23595a320e5163a95a1e8",
+      "file": "sha256-058d1ba79b5d1acfa503e2f5127aee1f85fe65d73e4cddc131b7068274a341b2"
+    },
+    "combobox": {
+      "url": "https://coss.com/ui/r/combobox.json",
+      "upstream": "sha256-df233af98aa9141b3418489d20b71a693aa3d8672a3962e3d19576fb21383087",
+      "file": "sha256-6197ad99e2ae5c17fc776c3dd1f0bdb794471b246d5baef14c34b03def184872"
+    },
+    "empty": {
+      "url": "https://coss.com/ui/r/empty.json",
+      "upstream": "sha256-57341b5a985ba2cc229e4832ab8624b060d172706b678dd99a682fbb476d4aa9",
+      "file": "sha256-cd2f8af473c4d50e3ee187afd7aa2e30a5199470af77ec71593c3bb09d38c53a"
+    },
+    "field": {
+      "url": "https://coss.com/ui/r/field.json",
+      "upstream": "sha256-02ffda39f73f04638f580fd1fbb76e783cb252f9a87ecebdd62fb4bd0d1393ff",
+      "file": "sha256-28feacbae515a5353ed4d576d96ef65741396aea84c7d4c8d64ee08f8beaac86"
+    },
+    "form": {
+      "url": "https://coss.com/ui/r/form.json",
+      "upstream": "sha256-c08b75b48a90dd349763720e4ffb5423ae348ec0ef43c8c96110695d6fcf7404",
+      "file": "sha256-c08b75b48a90dd349763720e4ffb5423ae348ec0ef43c8c96110695d6fcf7404"
+    },
+    "group": {
+      "url": "https://coss.com/ui/r/group.json",
+      "upstream": "sha256-d2392c54a90e353762779639971bb9aaa44759a7bda81ea0cf1462afbf4492b0",
+      "file": "sha256-2d0e6e8fa57c2e6306e9bacf87e36ef9d7ed2f4026a173a6a6e026a333b61d1e"
+    },
+    "input": {
+      "url": "https://coss.com/ui/r/input.json",
+      "upstream": "sha256-3d488d491eb4e63642adc8b9354b0b0cc5b8ec4e284bbc26da7e2516f24980a4",
+      "file": "sha256-a115960ba483e0c24afafa71fe2488bf2922672cccbda184d7db8ceafdf3a713"
+    },
+    "input-group": {
+      "url": "https://coss.com/ui/r/input-group.json",
+      "upstream": "sha256-999f1e8aa29d4520aa4086f508cfd55503547822e4a6c4a2314e2fb14a351452",
+      "file": "sha256-154a1b68147ffe300562424d2d41a91995a2b4b9b980fd4e0931aad38b519b8e"
+    },
+    "kbd": {
+      "url": "https://coss.com/ui/r/kbd.json",
+      "upstream": "sha256-ad8f26b95d8307f460316cd27a2b595d04069df2561395b5d39067a99e407cb5",
+      "file": "sha256-e7f98efe8fdfdf151b9d809eba2628984e2c338f9a35ac57a8c498f9b33c3d50"
+    },
+    "menu": {
+      "url": "https://coss.com/ui/r/menu.json",
+      "upstream": "sha256-aeb2ebda24c8c90453fd7087bae8f14510f98e4eee75da5c084dfecaa56f2625",
+      "file": "sha256-38d635c449ee3cd9c72b24a8a94c23bf86f751813d329cce1ae634de431759be"
+    },
+    "pagination": {
+      "url": "https://coss.com/ui/r/pagination.json",
+      "upstream": "sha256-4c3d048be127d228ad199b8555b833ffc26cd9506b4a75b4b298754833474993",
+      "file": "sha256-4292336aa06c785a5eff55b1e4ce199168e0f2b556ce81845fa7599a4446b94a"
+    },
+    "popover": {
+      "url": "https://coss.com/ui/r/popover.json",
+      "upstream": "sha256-ff9b981ce4e68b86a266f69480c59967c7065aacfa2d4ce927d91a1eff0035cf",
+      "file": "sha256-eaf1bd47b90affa9148ddf1ea0ad425dd82dfeefec4a3d096abeba372846d9de"
+    },
+    "scroll-area": {
+      "url": "https://coss.com/ui/r/scroll-area.json",
+      "upstream": "sha256-6274eace4599cba26e731b0f02cd2307d2207947162ccc575e45984e87aa269f",
+      "file": "sha256-f2f68e5c5c79041dd8472e643b59b2cb6d95db043b63382c03c49fecf919d822"
+    },
+    "select": {
+      "url": "https://coss.com/ui/r/select.json",
+      "upstream": "sha256-aa8821bbb4bd6b8b52a6cbaaf8d995f48b1001ad93d4bfa4e5b91b5e6d5f66a0",
+      "file": "sha256-c317e1c3deb1409bf5d07b1d977fa1f9b08287ff7d091f4ac0c210fe0795daef"
+    },
+    "separator": {
+      "url": "https://coss.com/ui/r/separator.json",
+      "upstream": "sha256-48393a9f365097e350bb33f0e84d2df25efd6b374868aa075f8d6011378c1d6e",
+      "file": "sha256-cf1de4c6f1d300a672ad5b92fcff89bc76a87c6762bde8d2161881140324d0ae"
+    },
+    "sheet": {
+      "url": "https://coss.com/ui/r/sheet.json",
+      "upstream": "sha256-74ce70050415c0ac6ad033a4d6770f023a736a9f24540c994e88c6934c16d9a4",
+      "file": "sha256-395a5588bd54036d2c90f6c0b6e3a990950102a778366e3bb66fdad87465f66d"
+    },
+    "skeleton": {
+      "url": "https://coss.com/ui/r/skeleton.json",
+      "upstream": "sha256-02e61d00c76b7ed5a1979c37c2a86b8a837a013909e84ac21c40bb5b56f9afd2",
+      "file": "sha256-0679e914443dd819d3894c579c8790abf52b5e643051f0e05a4e1b9688afd7ae"
+    },
+    "spinner": {
+      "url": "https://coss.com/ui/r/spinner.json",
+      "upstream": "sha256-5116d0ec549bf70d20d5359a485e6792b6c87d89a389102ad6c3f44312c23972",
+      "file": "sha256-70fcbb4abc38fc50882108772bc1b811fdf13e8ba02e0e4291ed524e6679094a"
+    },
+    "textarea": {
+      "url": "https://coss.com/ui/r/textarea.json",
+      "upstream": "sha256-3e30e41c099d7343cb0a603557acd4e8b7c94b43139a7a489df322c04c5f601c",
+      "file": "sha256-1e9c86d3de5263b91a071af37f77e44041205b1afddb8b656e218c08c2676351"
+    },
+    "toolbar": {
+      "url": "https://coss.com/ui/r/toolbar.json",
+      "upstream": "sha256-f08696682ad171b5a0d2c918202bcee10b9f6de1408a2a2e864f61e8d424dba2",
+      "file": "sha256-7371425e4e2c56baea865a62f7788aeb56e6ceb5ca27bb75a63405d120a018fd"
+    },
+    "tooltip": {
+      "url": "https://coss.com/ui/r/tooltip.json",
+      "upstream": "sha256-0ac59089d1d813b7eb1cd9e08ed2ff3b3931e4024df649ddb45b1eb43d50f694",
+      "file": "sha256-e11a923ef009df57c6dc8dd23878c90adf1b6e363455ccbca4832df1a7ea25e0"
+    }
+  }
+}

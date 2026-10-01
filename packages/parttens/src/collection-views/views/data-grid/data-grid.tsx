@@ -9,7 +9,7 @@ import {
   type Table as TanstackTable,
 } from '@tanstack/react-table'
 import { observeElementRect, useVirtualizer } from '@tanstack/react-virtual'
-import { Button } from '@tc96/ui/compat/collection-views/button'
+import { Button } from '@tc96/ui/button'
 import {
   Menu,
   MenuItem,

@@ -57,9 +57,7 @@ function CompleteFormPattern(): React.ReactElement {
         <FieldDescription>This field is optional.</FieldDescription>
       </Field>
 
-      <Button size="md" type="submit">
-        Create account
-      </Button>
+      <Button type="submit">Create account</Button>
 
       {submittedName ? (
         <output aria-live="polite" className="text-muted-foreground text-sm">
@@ -86,9 +84,7 @@ function InputFormPattern(): React.ReactElement {
         <Input placeholder="you@example.com" required type="email" />
         <FieldError>Please enter a valid email.</FieldError>
       </Field>
-      <Button size="md" type="submit">
-        Submit
-      </Button>
+      <Button type="submit">Submit</Button>
       {submittedEmail ? (
         <output aria-live="polite" className="text-muted-foreground text-sm">
           Submitted {submittedEmail}.

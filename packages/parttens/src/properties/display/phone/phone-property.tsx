@@ -1,21 +1,21 @@
 'use client'
 
-import { Button } from '@tc96/ui/compat/collection-views/button'
+import { Button } from '@tc96/ui/button'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
 import { PhoneIcon, PlusIcon, XIcon } from 'lucide-react'
 import { type FormEvent, useEffect, useState } from 'react'
 import {
+  PropertySurface,
+  type PropertyVariant,
+  propertyBadgeClassName,
+} from '../../shared/property-surface'
+import { IconLabelProperty } from '../icon-label/icon-label-property'
+import {
   type PhoneCountryCode,
   PhoneInput,
   phoneNumberSchema,
 } from '../phone-input/index'
-import { IconLabelProperty } from '../icon-label/icon-label-property'
-import {
-  propertyBadgeClassName,
-  PropertySurface,
-  type PropertyVariant,
-} from '../../shared/property-surface'
 
 const phoneSchema = phoneNumberSchema()
 

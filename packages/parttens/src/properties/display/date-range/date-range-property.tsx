@@ -1,18 +1,18 @@
 'use client'
 
-import { Button } from '@tc96/ui/compat/collection-views/button'
+import type { DateRange } from '@daypicker/react'
+import { Button } from '@tc96/ui/button'
 import { Calendar } from '@tc96/ui/calendar'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
 import { CalendarRangeIcon } from 'lucide-react'
 import type React from 'react'
 import { useState } from 'react'
-import type { DateRange } from 'react-day-picker'
-import type { DatePropertyDropdownPlacement } from '../date/date-property'
 import {
   PropertySurface,
   type PropertyVariant,
 } from '../../shared/property-surface'
+import type { DatePropertyDropdownPlacement } from '../date/date-property'
 
 export type { DateRange }
 

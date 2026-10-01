@@ -6,8 +6,8 @@ import { useRender } from "@base-ui/react/use-render";
 import { XIcon } from "lucide-react";
 import type React from "react";
 import { cn } from "@tc96/utils";
-import { Button } from "@tc96/ui/compat/collection-views/button";
-import { ScrollArea } from "@tc96/ui/compat/detail-sheet/scroll-area";
+import { Button } from "@tc96/ui/button";
+import { ScrollArea } from "@tc96/ui/scroll-area";
 
 export const Sheet: typeof SheetPrimitive.Root = SheetPrimitive.Root;
 
@@ -214,7 +214,7 @@ export function SheetPanel({
   };
 
   return (
-    <ScrollArea scrollFade={scrollFade}>
+    <ScrollArea overscrollContain scrollFade={scrollFade}>
       {useRender({
         defaultTagName: "div",
         props: mergeProps<"div">(defaultProps, props),

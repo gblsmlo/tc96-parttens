@@ -47,7 +47,7 @@ export const WithInputAndCurrencyText: Story = {
 export const WithAddButtonAndInput: Story = {
   render: () => (
     <Group aria-label="Add item">
-      <Button aria-label="Add" size="md" variant="outline">
+      <Button aria-label="Add" size="icon" variant="outline">
         <PlusIcon aria-hidden />
       </Button>
       <GroupSeparator />

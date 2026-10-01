@@ -60,12 +60,14 @@ function groupKey<TData>(group: ActionBarGroup<TData>) {
   )
 }
 
-function buttonVariant(
+function buttonAppearance(
   variant: ActionBarItem['variant'] = 'default',
-): ButtonProps['variant'] {
-  if (variant === 'primary') return 'primary'
-  if (variant === 'destructive') return 'destructive-ghost'
-  return 'ghost'
+): Pick<ButtonProps, 'className' | 'variant'> {
+  if (variant === 'primary') return { variant: 'default' }
+  // O COSS não tem botão ghost destrutivo: o ghost leva o texto destrutivo.
+  if (variant === 'destructive')
+    return { className: 'text-destructive-foreground', variant: 'ghost' }
+  return { variant: 'ghost' }
 }
 
 function ActionItem<TData>({
@@ -96,7 +98,7 @@ function ActionItem<TData>({
               aria-label={action.label}
               disabled={action.disabled}
               size="sm"
-              variant={buttonVariant(action.variant)}
+              {...buttonAppearance(action.variant)}
             />
           }
         >
@@ -141,7 +143,7 @@ function ActionItem<TData>({
       onClick={() => action.onSelect?.(context)}
       size="sm"
       title={action.label}
-      variant={buttonVariant(action.variant)}
+      {...buttonAppearance(action.variant)}
     >
       {content}
     </Button>

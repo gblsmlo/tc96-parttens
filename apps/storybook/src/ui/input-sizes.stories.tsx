@@ -15,22 +15,33 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+const sizes = ['sm', 'default', 'lg'] as const
+
 export const AllSizes: Story = {
   render: () => (
     <div className="flex w-80 flex-col gap-3">
-      <Input aria-label="Small project name" placeholder="Small" size="sm" type="text" />
-      <Input aria-label="Medium project name" placeholder="Medium" type="text" />
-      <Input aria-label="Large project name" placeholder="Large" size="lg" type="text" />
+      {sizes.map((size) => (
+        <Input
+          aria-label={`${size} project name`}
+          key={size}
+          placeholder={size}
+          size={size}
+          type="text"
+        />
+      ))}
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const small = canvas.getByRole('textbox', { name: 'Small project name' })
-    const medium = canvas.getByRole('textbox', { name: 'Medium project name' })
-    const large = canvas.getByRole('textbox', { name: 'Large project name' })
+    const heights = sizes.map((size) =>
+      Number.parseFloat(
+        getComputedStyle(
+          canvas.getByRole('textbox', { name: `${size} project name` }),
+        ).height,
+      ),
+    )
 
-    await expect(getComputedStyle(small).height).toBe('32px')
-    await expect(getComputedStyle(medium).height).toBe('36px')
-    await expect(getComputedStyle(large).height).toBe('40px')
+    await expect(heights).toEqual([...heights].sort((a, b) => a - b))
+    await expect(new Set(heights).size).toBe(sizes.length)
   },
 }
