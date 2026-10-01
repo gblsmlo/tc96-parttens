@@ -92,7 +92,26 @@ A entrada agregada `tc96/parttens` é a experiência escolhida. Preservar nomes,
 
 `collection-views` identifica o conjunto. Preservar nomes como `KanbanView`, `ListView`, `CalendarView` e `DataGrid`. Não renomear componentes apenas por uniformidade.
 
+A preservação de API vale para os patterns. A camada de UI segue a seção [UI base sem opinião](#ui-base-sem-opinião).
+
 O identificador npm `tc96` é o contrato desejado, mas não está confirmado como publicável. O README da base relata recusa anterior do nome pelo registry. Resolver o nome de publicação antes de divulgar comandos como funcionais.
+
+## UI base sem opinião
+
+Decidido em 2026-10-01. O tc96 reutiliza patterns em projetos que já usam COSS, com a menor sobrescrita de estilo possível. A UI base não é opinativa e usa os componentes COSS sem alterações.
+
+- O COSS vence a API própria. `tc96/ui` adota a API do COSS numa versão major. Saem `size` `sm | md | lg`, `variant: 'primary'`, `buttonSizes`, `inputSizes`, o `control-radius` e o `Text`, que não existe no COSS.
+- O consumidor é dono dos componentes COSS. Os patterns declaram `registryDependencies` do COSS, e o shadcn instala ou reutiliza o que o projeto já tem. No modo de fontes, o tc96 não distribui UI.
+- Os patterns não redefinem tema. Tokens, `:root`, `.dark` e utilitários próprios pertencem ao consumidor.
+
+Situação em 2026-10-01, medida por diff contra `coss.com/ui/r/*.json`. Dos 28 arquivos de `packages/ui/src`, 16 são idênticos ao COSS e 3 diferem só na formatação. Outros 8 divergem: button, input, input-group, group, calendar (locale `ptBR` fixo), combobox, sheet e textarea. `compat/collection-views/button.tsx` e `compat/collection-views/input.tsx` são o COSS sem alterações, e o `button.tsx` e o `input.tsx` canônicos são o fork. `scripts/build-library.ts` publica `ui/styles.css` com tokens próprios. Os quatro `styles/global.css` dos patterns não são importados.
+
+Questões abertas:
+
+- Modo biblioteca npm: um pacote compilado não importa o COSS do consumidor. Isso conflita com "Fontes locais e biblioteca versionada" e está com a arquitetura.
+- Destino do `Text` e do locale e da faixa de datas do calendar.
+- Namespace das dependências COSS no registry e reescrita de aliases. O contrato de instalação só foi provado com itens locais.
+- Regra objetiva de sobrescrita nos patterns. A proposta é permitir só layout e dimensão, sem cor, raio ou sombra.
 
 ## Comportamento e dados
 
@@ -134,7 +153,9 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 | Monorepo com pacotes internos por responsabilidade | Uma pasta pública única ou releases independentes | Apps e fronteiras claras sem multiplicar versões da biblioteca |
 | API agregada `tc96/parttens` | Imports públicos obrigatórios por padrão | Preferência do consumidor |
 | Fontes locais e biblioteca versionada | Apenas uma modalidade | Personalização livre e atualização por versão para usos distintos |
-| Preservar API atual | Redesenhar todos os contratos | Evitar quebra para consumidores existentes |
+| Preservar API atual dos patterns; substituída para a UI em 2026-10-01 | Redesenhar todos os contratos | Evitar quebra para consumidores existentes |
+| UI base é COSS sem alterações, com API COSS numa major | Manter a API própria de `tc96/ui` | Reutilizar patterns sobre o COSS do consumidor com a menor sobrescrita |
+| Componentes COSS de posse do consumidor via `registryDependencies` | tc96 mantém cópia vendorizada | O tema e as personalizações do consumidor valem sem cópia paralela |
 | Grupos preparados com agrupamento antigo preservado | Remover projeção interna | Separar operações novas sem quebrar comportamento atual |
 | UI compartilhada e destino configurável | UI duplicada por padrão | Reaproveitar a base e as personalizações do consumidor |
 | Correções locais manuais | Mesclagem automática | Escopo definido para a primeira versão |
@@ -143,6 +164,7 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 
 ## Pontos ainda em revisão
 
+- Modo biblioteca npm diante da UI de posse do consumidor. Ver [UI base sem opinião](#ui-base-sem-opinião).
 - Aprovação da estratégia de validação e do limite da verificação de compatibilidade.
 - Configuração e integração do CLI com shadcn, preservando o comando desejado e validando destinos em monorepo.
 - Nome npm disponível para a biblioteca e o executável; relação entre esses artefatos.
