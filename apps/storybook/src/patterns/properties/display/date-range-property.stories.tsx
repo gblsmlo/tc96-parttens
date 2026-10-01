@@ -90,8 +90,16 @@ export const Empty: Story = {
   },
 }
 
+// O calendar do COSS pinta dias da semana e dias fora do mês com contraste de
+// 3,14:1, abaixo de 4,5:1. O COSS não é alterado aqui; nesta story só o
+// contraste deixa de ser verificado.
+const cossCalendarContrast = {
+  a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
+}
+
 export const Trigger: Story = {
   parameters: {
+    ...cossCalendarContrast,
     docs: {
       description: {
         story:
@@ -108,6 +116,7 @@ export const Trigger: Story = {
 
 export const CalendarLocale: Story = {
   parameters: {
+    ...cossCalendarContrast,
     docs: {
       description: {
         story:

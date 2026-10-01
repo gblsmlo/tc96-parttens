@@ -257,12 +257,12 @@ describe('EditableText', () => {
       />,
     )
 
-    // `placeholder:text-foreground/40` sempre está na classe; o que muda é o
-    // token sem variante, que pinta o valor em si.
-    expect(field().classList.contains('text-foreground/40')).toBe(true)
+    // `placeholder:text-muted-foreground` sempre está na classe; o que muda é
+    // o token sem variante, que pinta o valor em si.
+    expect(field().classList.contains('text-muted-foreground')).toBe(true)
 
     fireEvent.change(field(), { target: { value: 'Contrato assinado' } })
 
-    expect(field().classList.contains('text-foreground/40')).toBe(false)
+    expect(field().classList.contains('text-muted-foreground')).toBe(false)
   })
 })

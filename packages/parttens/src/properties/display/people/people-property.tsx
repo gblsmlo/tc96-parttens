@@ -195,13 +195,14 @@ export function PeopleProperty<TValue extends string = string>({
         <ComboboxPopup
           {...dropdownPlacement}
           align={dropdownPlacement?.align ?? 'end'}
+          aria-label={ariaLabel}
           className="w-64 min-w-0! max-w-[calc(100vw-2rem)]"
         >
           {isLoading ? (
             <ComboboxStatus>Carregando pessoas…</ComboboxStatus>
           ) : null}
           <ComboboxEmpty>Nenhuma pessoa encontrada.</ComboboxEmpty>
-          <ComboboxList>
+          <ComboboxList aria-label={ariaLabel}>
             {(option) => (
               <ComboboxItem key={option.value} value={option}>
                 <PersonChipContent option={option} />

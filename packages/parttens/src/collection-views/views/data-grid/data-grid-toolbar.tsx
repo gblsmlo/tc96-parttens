@@ -59,7 +59,7 @@ export function DataGridFilterMenu<TData>({
         <ListFilterIcon />
         {label}
       </PopoverTrigger>
-      <PopoverPopup align="end" className="w-72">
+      <PopoverPopup align="end" aria-label={label} className="w-72">
         <div className="flex flex-col gap-3" data-slot="data-grid-filter-menu">
           <div>
             <h3 className="font-medium text-sm">Filtrar por</h3>

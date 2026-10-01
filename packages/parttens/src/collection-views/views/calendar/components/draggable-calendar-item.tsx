@@ -7,24 +7,16 @@ import {
 } from '@dnd-kit/dom'
 import { useDraggable } from '@dnd-kit/react'
 import { cn } from '@tc96/utils'
-import type {
-  CSSProperties,
-  MouseEvent as ReactMouseEvent,
-  ReactNode,
-  PointerEvent as ReactPointerEvent,
-} from 'react'
-import { useRef } from 'react'
+import { GripVerticalIcon } from 'lucide-react'
+import type { CSSProperties, ReactNode } from 'react'
 
 import type { CalendarItemDragData } from '../lib/drag-and-drop'
 
 export const CALENDAR_ITEM_SENSORS = [
   PointerSensor.configure({
     /**
-     * O chip inteiro é o handle de arraste e também hospeda o gatilho de abrir.
-     * O padrão do dnd-kit dispararia o arraste já no `pointerdown` e cancelaria
-     * o `click` seguinte — o chip pararia de abrir o Preview. Exigir 5px de
-     * deslocamento separa clique de arraste; no toque fica o atraso, para não
-     * competir com o scroll da grade.
+     * Exigir 5px de deslocamento separa clique de arraste na alça; no toque fica
+     * o atraso, para não competir com o scroll da grade.
      */
     activationConstraints: (event) =>
       event.pointerType === 'touch'
@@ -68,54 +60,43 @@ export function DraggableCalendarItem({
   itemKey,
   style,
 }: DraggableCalendarItemProps) {
-  const { isDragSource, ref } = useDraggable({
+  const { handleRef, isDragSource, ref } = useDraggable({
     data: itemData,
     disabled,
     id,
     sensors: CALENDAR_ITEM_SENSORS,
     type: dragType,
   })
-  const pointerMovedRef = useRef(false)
 
-  const handlePointerDownCapture = (event: ReactPointerEvent<HTMLElement>) => {
-    pointerMovedRef.current = false
-    const target = event.target
-    if (
-      target instanceof Element &&
-      target.closest('[data-calendar-item-action]')
-    ) {
-      event.stopPropagation()
-    }
-  }
-  const handlePointerMoveCapture = (event: ReactPointerEvent<HTMLElement>) => {
-    if (event.buttons !== 0) pointerMovedRef.current = true
-  }
-  const handleClickCapture = (event: ReactMouseEvent<HTMLElement>) => {
-    if (!pointerMovedRef.current) return
-    pointerMovedRef.current = false
-    event.preventDefault()
-    event.stopPropagation()
-  }
-
+  // Só a alça arrasta. O dnd-kit transforma o ativador em botão, e um botão
+  // esconde o que contém da tecnologia assistiva; por isso o chip e o gatilho
+  // de abrir ficam fora da alça. Sem arraste não há alça nem ativador: o
+  // dnd-kit marcaria o próprio chip como botão.
   return (
-    <section
-      aria-label={dragLabel}
+    <div
       className={cn(
-        'min-w-0 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        !disabled && 'touch-none cursor-grab active:cursor-grabbing',
+        'group/calendar-drag flex min-w-0 rounded-md',
         isDragSource && 'opacity-40',
         className,
       )}
-      data-calendar-item-drag-id={id}
       data-calendar-item-draggable={disabled ? undefined : ''}
       data-calendar-item-id={itemKey}
-      onClickCapture={handleClickCapture}
-      onPointerDownCapture={handlePointerDownCapture}
-      onPointerMoveCapture={handlePointerMoveCapture}
-      ref={ref}
+      ref={disabled ? undefined : ref}
       style={style}
     >
-      {children}
-    </section>
+      {disabled ? null : (
+        <button
+          aria-label={dragLabel}
+          className="flex w-4 shrink-0 cursor-grab touch-none items-center justify-center rounded-sm text-muted-foreground opacity-0 outline-none transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing group-hover/calendar-drag:opacity-100"
+          data-calendar-item-drag-handle=""
+          data-calendar-item-drag-id={id}
+          ref={handleRef}
+          type="button"
+        >
+          <GripVerticalIcon aria-hidden="true" className="size-3" />
+        </button>
+      )}
+      <div className="min-w-0 flex-1">{children}</div>
+    </div>
   )
 }

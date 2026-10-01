@@ -42,7 +42,7 @@ const sizeClassName: Record<EditableTextSize, string> = {
 // O campo é editado no lugar do texto: qualquer moldura ao focar denunciaria a
 // caixa que a superfície esconde. O cursor é o indicador de foco.
 const fieldClassName =
-  'w-full bg-transparent outline-none placeholder:text-foreground/40 focus:outline-none focus-visible:outline-none'
+  'w-full bg-transparent outline-none placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none'
 
 /**
  * Campo de texto editado no lugar: rascunho local, commit no `blur` — um PATCH
@@ -91,7 +91,7 @@ export function EditableText({
   // O default do domínio não é um nome que alguém escreveu: enquanto ele estiver
   // ali, o campo lê como espaço reservado, e não como valor confirmado.
   const showsEmptyValue = !draft || draft === emptyValue
-  const emptyClassName = showsEmptyValue ? 'text-foreground/40' : undefined
+  const emptyClassName = showsEmptyValue ? 'text-muted-foreground' : undefined
 
   if (readOnly) {
     return (

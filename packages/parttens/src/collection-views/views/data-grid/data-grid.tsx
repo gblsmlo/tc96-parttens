@@ -411,7 +411,11 @@ export function DataGrid<TData>({
     : collectionRowCount === 0
       ? 1
       : collectionRowCount + groupRowCount
-  const ariaRowCount = headerRowCount + bodyRowCount + (onRowAdd ? 1 : 0)
+  // A linha de adicionar e o rodapé também são linhas do grid: um grid só
+  // contém linhas, então a paginação fica numa gridcell.
+  const addRowIndex = headerRowCount + bodyRowCount + 1
+  const ariaRowCount =
+    headerRowCount + bodyRowCount + (onRowAdd ? 1 : 0) + (footerContent ? 1 : 0)
   const density = densityProp ?? table.options.meta?.dataGridDensity ?? 'short'
   const firstNavigableColumn = Math.max(
     0,
@@ -1095,7 +1099,7 @@ export function DataGrid<TData>({
                 role="rowgroup"
               >
                 <div
-                  aria-rowindex={ariaRowCount}
+                  aria-rowindex={addRowIndex}
                   className="flex min-h-9 w-full"
                   role="row"
                   style={{ minWidth: table.getTotalSize() }}
@@ -1122,10 +1126,19 @@ export function DataGrid<TData>({
 
             {footerContent ? (
               <div
+                aria-rowindex={ariaRowCount}
                 className="sticky bottom-0 z-10 border-t bg-background"
                 data-slot="data-grid-footer"
+                role="row"
+                tabIndex={-1}
               >
-                {footerContent}
+                <div
+                  aria-colspan={leafColumns.length}
+                  role="gridcell"
+                  tabIndex={-1}
+                >
+                  {footerContent}
+                </div>
               </div>
             ) : null}
           </ScrollAreaPrimitive.Content>

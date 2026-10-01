@@ -27,6 +27,7 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
+import { Separator } from '@tc96/ui/separator'
 import {
   ArrowDownUpIcon,
   CalendarDaysIcon,
@@ -44,7 +45,7 @@ import {
   UserRoundIcon,
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
-import { expect, screen, userEvent, within } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 
 interface DemoItem {
   assigneeId: string | null
@@ -238,20 +239,27 @@ function SelectedViewControl({
         ) : null}
         {favoriteViews.length ? (
           <SelectedViewItems label="Favoritos">
-            <MenuGroupLabel>Favoritos</MenuGroupLabel>
+            <p
+              aria-hidden="true"
+              className="px-2 py-1 font-medium text-muted-foreground text-xs"
+            >
+              Favoritos
+            </p>
             {favoriteViews.map(renderView)}
           </SelectedViewItems>
         ) : null}
-        {favoriteViews.length && otherViews.length ? <MenuSeparator /> : null}
+        {favoriteViews.length && otherViews.length ? <Separator /> : null}
         {otherViews.length ? (
           <SelectedViewItems>{otherViews.map(renderView)}</SelectedViewItems>
         ) : null}
         {!visibleViews.length ? (
-          <MenuItem disabled>Nenhuma view encontrada</MenuItem>
+          <p className="px-2 py-1.5 text-muted-foreground text-sm">
+            Nenhuma view encontrada
+          </p>
         ) : null}
         {withCreate ? (
           <>
-            <MenuSeparator />
+            <Separator />
             <SelectedViewCreate onClick={() => setEvent('criar')} />
           </>
         ) : null}
@@ -505,7 +513,7 @@ export const WithSelectedView: Story = {
     docs: {
       description: {
         story:
-          'A view selecionada ocupa o início da toolbar. O menu reúne busca, itens selecionáveis, opções contextuais e criação de uma nova view.',
+          'A view selecionada ocupa o início da toolbar. O popover reúne busca, views selecionáveis, opções contextuais e criação de uma nova view.',
       },
     },
   },
@@ -515,15 +523,18 @@ export const WithSelectedView: Story = {
       canvas.getByRole('button', { name: 'Pessoas contatadas recentemente' }),
     )
 
-    const menu = within(await screen.findByRole('menu'))
+    const popover = within(await screen.findByRole('dialog'))
+    // O popover entra com animação de opacidade; espera terminar de abrir.
+    await waitFor(() =>
+      expect(
+        popover.getByRole('searchbox', { name: 'Buscar views' }),
+      ).toBeVisible(),
+    )
     await expect(
-      menu.getByRole('searchbox', { name: 'Buscar views' }),
-    ).toBeVisible()
-    await expect(
-      menu.getByRole('menuitem', { name: 'Pessoas contatadas recentemente' }),
+      popover.getByRole('button', { name: 'Pessoas contatadas recentemente' }),
     ).toHaveAttribute('aria-current', 'true')
     await expect(
-      menu.getByRole('menuitem', { name: 'Criar nova view' }),
+      popover.getByRole('button', { name: 'Criar nova view' }),
     ).toBeVisible()
   },
   render: () => (
@@ -542,7 +553,7 @@ export const WithSelectedViewAndSearch: Story = {
     docs: {
       description: {
         story:
-          'A busca filtra os itens do menu sem alterar a view selecionada.',
+          'A busca filtra as views do popover sem alterar a view selecionada.',
       },
     },
   },
@@ -552,16 +563,16 @@ export const WithSelectedViewAndSearch: Story = {
         name: 'Pessoas contatadas recentemente',
       }),
     )
-    const menu = within(await screen.findByRole('menu'))
+    const popover = within(await screen.findByRole('dialog'))
     await userEvent.type(
-      menu.getByRole('searchbox', { name: 'Buscar views' }),
+      popover.getByRole('searchbox', { name: 'Buscar views' }),
       'retorno',
     )
     await expect(
-      menu.getByRole('menuitem', { name: 'Aguardando retorno' }),
+      popover.getByRole('button', { name: 'Aguardando retorno' }),
     ).toBeVisible()
     await expect(
-      menu.queryByRole('menuitem', { name: 'Todas as pessoas' }),
+      popover.queryByRole('button', { name: 'Todas as pessoas' }),
     ).toBe(null)
   },
   render: () => (
@@ -585,13 +596,13 @@ export const Items: Story = {
     await userEvent.click(
       canvas.getByRole('button', { name: 'Pessoas contatadas recentemente' }),
     )
-    const menu = within(await screen.findByRole('menu'))
-    await expect(menu.queryByRole('searchbox')).toBe(null)
+    const popover = within(await screen.findByRole('dialog'))
+    await expect(popover.queryByRole('searchbox')).toBe(null)
     await expect(
-      menu.queryByRole('menuitem', { name: 'Criar nova view' }),
+      popover.queryByRole('button', { name: 'Criar nova view' }),
     ).toBe(null)
     await userEvent.click(
-      menu.getByRole('menuitem', { name: 'Todas as pessoas' }),
+      popover.getByRole('button', { name: 'Todas as pessoas' }),
     )
     await expect(
       canvas.getByRole('button', { name: 'Todas as pessoas' }),
@@ -629,7 +640,7 @@ export const ItemOptions: Story = {
       }),
     )
     await userEvent.click(
-      await screen.findByRole('menuitem', {
+      await screen.findByRole('button', {
         name: 'Opções de Pessoas contatadas recentemente',
       }),
     )
@@ -652,7 +663,7 @@ export const Favorites: Story = {
     docs: {
       description: {
         story:
-          'Favoritar uma view move o item para o grupo Favoritos no início do menu, separado das demais views. A ação pode ser revertida pelo mesmo submenu.',
+          'Favoritar uma view move o item para o grupo Favoritos no início do popover, separado das demais views. A ação pode ser revertida pelo mesmo menu de opções.',
       },
     },
   },
@@ -662,13 +673,15 @@ export const Favorites: Story = {
       canvas.getByRole('button', { name: 'Pessoas contatadas recentemente' }),
     )
     await userEvent.click(
-      await screen.findByRole('menuitem', { name: 'Aguardando retorno' }),
+      within(await screen.findByRole('dialog')).getByRole('button', {
+        name: 'Aguardando retorno',
+      }),
     )
     await userEvent.click(
       canvas.getByRole('button', { name: 'Aguardando retorno' }),
     )
     await userEvent.click(
-      await screen.findByRole('menuitem', {
+      await screen.findByRole('button', {
         name: 'Opções de Aguardando retorno',
       }),
     )
@@ -679,12 +692,12 @@ export const Favorites: Story = {
       canvas.getByRole('button', { name: 'Aguardando retorno' }),
     )
 
-    const menu = within(
-      await screen.findByRole('menu', { name: 'Aguardando retorno' }),
+    const popover = within(
+      await screen.findByRole('dialog', { name: 'Aguardando retorno' }),
     )
-    await expect(menu.getByText('Favoritos')).toBeVisible()
-    const viewLabels = menu
-      .getAllByRole('menuitem')
+    await waitFor(() => expect(popover.getByText('Favoritos')).toBeVisible())
+    const viewLabels = popover
+      .getAllByRole('button')
       .map((item) => item.textContent)
       .filter((label) => selectedViews.some((view) => view.label === label))
     await expect(viewLabels).toEqual([
@@ -692,7 +705,7 @@ export const Favorites: Story = {
       'Pessoas contatadas recentemente',
       'Todas as pessoas',
     ])
-    await expect(menu.getAllByRole('separator')).toHaveLength(2)
+    await expect(popover.getAllByRole('separator')).toHaveLength(2)
   },
   render: () => (
     <Frame>
@@ -716,7 +729,7 @@ export const CreateNewView: Story = {
       canvas.getByRole('button', { name: 'Pessoas contatadas recentemente' }),
     )
     await userEvent.click(
-      await screen.findByRole('menuitem', { name: 'Criar nova view' }),
+      await screen.findByRole('button', { name: 'Criar nova view' }),
     )
     await expect(
       canvasElement.querySelector('[data-story-event]')?.textContent,

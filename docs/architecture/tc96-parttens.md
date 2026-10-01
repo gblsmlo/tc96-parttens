@@ -177,6 +177,14 @@ Preservar arquivos existentes por padrão; perguntar antes de sobrescrever. A pr
 
 Proposta de verificação: conferir exports e compatibilidade dos contratos TypeScript, reportando limitações. Essa verificação não garante equivalência visual ou comportamental. Não anunciar compatibilidade completa somente com base no nome ou na existência de um arquivo.
 
+## Acessibilidade dos patterns
+
+Decidido em 2026-10-01, na triagem das violações do axe.
+
+- **Arraste:** o dnd-kit transforma o ativador do arraste em botão, e um botão esconde o que contém da tecnologia assistiva. Por isso o card do kanban e o item do calendar arrastam só por uma alça dedicada, um botão com ícone de grip ao lado do conteúdo, que aparece no hover e no foco. O card continua um contêiner comum, com as ações acessíveis. Antes dava para arrastar clicando em qualquer ponto do card. Sem arraste, o calendar não tem alça.
+- **Seletor de views:** `SelectedViewMenu` é um popover (`role="dialog"`), não um menu, porque reúne um campo de busca e, em cada view, um botão de opções, e um `role="menu"` não pode conter nenhum dos dois. Nomes e props continuam os mesmos, mas os filhos deixam de ser itens de menu: rótulo de grupo, separador e estado vazio são elementos comuns, como o `Separator` do COSS. Entre as views o teclado usa Tab, e as opções de cada view ficam num menu próprio. Escolher uma view, criar outra ou usar uma opção fecha o popover.
+- **Popups e listas** dos patterns têm nome acessível, e mensagens de erro usam `text-destructive-foreground`, como o `Field` do COSS.
+
 ## Validação proposta
 
 - Fronteiras: impedir imports em direção proibida, ciclos e UI duplicada por padrão. `packages/parttens` só importa `@tc96/ui/<item>` presente no lock COSS.
@@ -185,6 +193,7 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 - Consumidor: num projeto COSS com alias e caminho fora do padrão e um botão marcado, instalar `collection-views properties`. O `tsc --noEmit` passa, a renderização contém o marcador e nenhum arquivo é escrito no caminho de UI. Implementado em `apps/example`, um consumidor com aliases `@acme/*` e patterns em `packages/organisms/src`. O `test:consumer:registry` instala os quatro patterns e o `test:consumer:ssr` renderiza `collection-views` e `properties` no servidor; os dois copiam o exemplo para `.test-output`, instalam nele o COSS do lock com um marcador no `button.tsx` e reprovam se o CLI escrever em `packages/ui` ou deixar import `@tc96/*`.
 - Registry/CLI: instalar padrões isolados e em conjunto com aliases personalizados; verificar dependências, conflitos e preservação de arquivos.
 - Storybook: cobrir interação, teclado, foco, edição e arraste. Docs e Storybook consomem os pacotes do workspace.
+- Acessibilidade: o addon de a11y roda o axe em cada story com `test: 'error'`, e uma violação reprova o `storybook:test`. Exceção só na própria story, com o motivo. Hoje são quatro, todas de contraste vindo do COSS sem alterações: os dias da semana e os dias fora do mês do calendar (3,14:1), nas stories `Trigger` e `CalendarLocale` do `DateRangeProperty`, o variant `destructive` do botão (3,8:1) e o exemplo de força de senha do COSS (3,65:1). Ver [Acessibilidade dos patterns](#acessibilidade-dos-patterns).
 - SSR: validar renderização e hidratação num consumidor real com SSR, preservando fronteiras de componentes cliente. SSR não implica executar interações no servidor.
 - Desempenho: medir cenários com milhares de itens por view, incluindo scroll, seleção e arraste; verificar virtualização sem fixar limites numéricos não acordados.
 

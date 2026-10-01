@@ -1,18 +1,25 @@
 'use client'
 
+import { Button } from '@tc96/ui/button'
+import { Menu, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
-  Menu,
-  MenuGroup,
-  MenuItem,
-  MenuPopup,
-  MenuSub,
-  MenuSubPopup,
-  MenuSubTrigger,
-} from '@tc96/ui/menu'
+  Popover,
+  PopoverClose,
+  PopoverPopup,
+  PopoverTrigger,
+} from '@tc96/ui/popover'
+import { ToolbarButton } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
 import { ChevronDownIcon, EllipsisIcon, PlusIcon } from 'lucide-react'
 import type { ReactElement, ReactNode } from 'react'
-import { CollectionToolbarMenuTrigger } from './collection-toolbar-menu-trigger'
+import { createContext, useContext, useState } from 'react'
+
+/*
+ * O seletor é um popover, não um menu: ele reúne um campo de busca e, em cada
+ * view, um botão de opções, e um `role="menu"` não pode conter nenhum dos dois.
+ * Escolher uma view, criar outra ou usar uma opção fecha o popover.
+ */
+const SelectedViewCloseContext = createContext<() => void>(() => undefined)
 
 export interface SelectedViewMenuProps {
   children: ReactNode
@@ -28,17 +35,29 @@ export function SelectedViewMenu({
   icon,
   label,
 }: Readonly<SelectedViewMenuProps>): ReactElement {
+  const [open, setOpen] = useState(false)
+
   return (
-    <Menu>
-      <CollectionToolbarMenuTrigger className={className}>
+    <Popover onOpenChange={setOpen} open={open}>
+      <PopoverTrigger
+        render={
+          <ToolbarButton
+            render={
+              <Button className={className} type="button" variant="ghost" />
+            }
+          />
+        }
+      >
         {icon ? <span className="shrink-0">{icon}</span> : null}
         <span className="min-w-0 truncate font-medium">{label}</span>
         <ChevronDownIcon aria-hidden="true" className="shrink-0" />
-      </CollectionToolbarMenuTrigger>
-      <MenuPopup align="start" className="w-64">
-        {children}
-      </MenuPopup>
-    </Menu>
+      </PopoverTrigger>
+      <PopoverPopup align="start" aria-label={label} className="w-72">
+        <SelectedViewCloseContext.Provider value={() => setOpen(false)}>
+          <div className="flex flex-col gap-1">{children}</div>
+        </SelectedViewCloseContext.Provider>
+      </PopoverPopup>
+    </Popover>
   )
 }
 
@@ -56,14 +75,11 @@ export function SelectedViewSearch({
   value,
 }: Readonly<SelectedViewSearchProps>): ReactElement {
   return (
-    <div className="px-1 pb-1" data-slot="selected-view-search">
+    <div className="pb-1" data-slot="selected-view-search">
       <input
         aria-label={label}
         className="h-8 w-full rounded-md bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
         onChange={(event) => onValueChange(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key !== 'Escape') event.stopPropagation()
-        }}
         placeholder={placeholder}
         type="search"
         value={value}
@@ -82,9 +98,14 @@ export function SelectedViewItems({
   label = 'Views',
 }: Readonly<SelectedViewItemsProps>): ReactElement {
   return (
-    <MenuGroup aria-label={label} data-slot="selected-view-items">
+    <div
+      aria-label={label}
+      className="flex flex-col gap-0.5"
+      data-slot="selected-view-items"
+      role="group"
+    >
       {children}
-    </MenuGroup>
+    </div>
   )
 }
 
@@ -105,6 +126,8 @@ export function SelectedViewItem({
   optionsLabel = `Opções de ${label}`,
   selected = false,
 }: Readonly<SelectedViewItemProps>): ReactElement {
+  const close = useContext(SelectedViewCloseContext)
+
   return (
     <div
       className={cn(
@@ -114,24 +137,40 @@ export function SelectedViewItem({
       data-selected={selected ? '' : undefined}
       data-slot="selected-view-item"
     >
-      <MenuItem
+      <PopoverClose
         aria-current={selected ? 'true' : undefined}
-        className={cn('min-w-0 flex-1', selected && 'text-primary')}
         onClick={onSelect}
+        render={
+          <Button
+            className={cn(
+              'min-w-0 flex-1 justify-start',
+              selected && 'text-primary',
+            )}
+            size="sm"
+            type="button"
+            variant="ghost"
+          />
+        }
       >
         {icon ? <span className="shrink-0">{icon}</span> : null}
         <span className="truncate">{label}</span>
-      </MenuItem>
+      </PopoverClose>
       {options ? (
-        <MenuSub>
-          <MenuSubTrigger
+        <Menu
+          onOpenChange={(menuOpen, details) => {
+            if (!menuOpen && details.reason === 'item-press') close()
+          }}
+        >
+          <MenuTrigger
             aria-label={optionsLabel}
-            className="me-1 h-7 min-h-7 w-7 justify-center px-1 [&>svg:last-child]:hidden"
+            render={<Button size="icon-sm" type="button" variant="ghost" />}
           >
             <EllipsisIcon aria-hidden="true" className="size-4" />
-          </MenuSubTrigger>
-          <MenuSubPopup className="w-64">{options}</MenuSubPopup>
-        </MenuSub>
+          </MenuTrigger>
+          <MenuPopup align="start" className="w-64" side="right">
+            {options}
+          </MenuPopup>
+        </Menu>
       ) : null}
     </div>
   )
@@ -147,9 +186,20 @@ export function SelectedViewCreate({
   onClick,
 }: Readonly<SelectedViewCreateProps>): ReactElement {
   return (
-    <MenuItem data-slot="selected-view-create" onClick={onClick}>
+    <PopoverClose
+      data-slot="selected-view-create"
+      onClick={onClick}
+      render={
+        <Button
+          className="w-full justify-start"
+          size="sm"
+          type="button"
+          variant="ghost"
+        />
+      }
+    >
       <PlusIcon aria-hidden="true" />
       {label}
-    </MenuItem>
+    </PopoverClose>
   )
 }
