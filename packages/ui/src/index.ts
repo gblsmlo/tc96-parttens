@@ -62,4 +62,3 @@ export {
 } from './popover'
 export { Separator, SeparatorPrimitive } from './separator'
 export { Spinner } from './spinner'
-export { Text, type TextProps, type TextSize, textSizes, textVariants } from './text'

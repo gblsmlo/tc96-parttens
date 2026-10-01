@@ -6,6 +6,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@tc96/elements": "workspace:*",
     "@tc96/ui": "workspace:*",
     "@tc96/utils": "workspace:*",
     "@dnd-kit/abstract": "0.5.0",

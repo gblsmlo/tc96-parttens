@@ -59,17 +59,12 @@
     "Separator",
     "SeparatorPrimitive",
     "Spinner",
-    "Text",
-    "TextProps",
-    "TextSize",
     "badgeVariants",
     "buttonSizes",
     "buttonVariants",
     "groupVariants",
     "inputSizes",
-    "inputVariants",
-    "textSizes",
-    "textVariants"
+    "inputVariants"
   ],
   "utils": [
     "cn"

@@ -20,7 +20,7 @@ const versions: Record<string, string> = {
   'react-dom': '19.1.1',
   '@base-ui/react': '1.6.0',
 }
-for (const pkg of ['utils', 'ui', 'parttens']) {
+for (const pkg of ['utils', 'ui', 'elements', 'parttens']) {
   Object.assign(
     versions,
     JSON.parse(await readFile(`packages/${pkg}/package.json`, 'utf8'))

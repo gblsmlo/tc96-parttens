@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Text } from '@tc96/ui/text'
+import { Text } from '@tc96/elements/text'
 import { expect, within } from 'storybook/test'
 
 const weights = [
@@ -17,7 +17,7 @@ const weights = [
 const foregrounds = ['base', 'muted', 'destructive', 'inherit'] as const
 
 const meta = {
-  title: 'UI/Text',
+  title: 'Elements/Text',
   component: Text,
   args: {
     children: 'Reusable interface text',

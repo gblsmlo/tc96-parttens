@@ -7,6 +7,6 @@
     "rootDir": "packages",
     "outDir": "dist/library"
   },
-  "include": ["packages/ui/src", "packages/utils/src", "packages/parttens/src"],
+  "include": ["packages/ui/src", "packages/elements/src", "packages/utils/src", "packages/parttens/src"],
   "exclude": ["**/*.test.*", "**/*.stories.*", "**/test/**", "**/vite-env.d.ts"]
 }

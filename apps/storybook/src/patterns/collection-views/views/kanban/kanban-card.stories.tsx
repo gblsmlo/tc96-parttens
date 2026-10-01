@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Text } from '@tc96/elements/text'
 import {
   DateProperty,
   KanbanCard,
@@ -22,7 +23,6 @@ import {
   PopoverPopup,
   PopoverTrigger,
 } from '@tc96/ui/popover'
-import { Text } from '@tc96/ui/text'
 import { EllipsisIcon, ListTodoIcon, MessageCircleIcon } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 

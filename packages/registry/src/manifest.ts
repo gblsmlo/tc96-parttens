@@ -14,9 +14,11 @@ export interface Destination {
 }
 export interface InstallConfig {
   patterns: Destination
+  elements: Destination
   ui: Destination
   utils: Destination
 }
+const destinationNames = ['patterns', 'elements', 'ui', 'utils'] as const
 export interface RegistryFile {
   path: string
   type: string
@@ -32,6 +34,7 @@ export interface RegistryItem {
 }
 export const defaultConfig: InstallConfig = {
   patterns: { path: 'packages/patterns/src', alias: '@tc96/patterns' },
+  elements: { path: 'packages/elements/src', alias: '@tc96/elements' },
   ui: { path: 'packages/ui/src', alias: '@tc96/ui' },
   utils: { path: 'packages/utils/src', alias: '@tc96/utils' },
 }
@@ -49,7 +52,8 @@ export function selectPatterns(names: string[]): PatternName[] {
   ]
 }
 export function validateConfig(value: InstallConfig): InstallConfig {
-  for (const [name, destination] of Object.entries(value)) {
+  for (const name of destinationNames) {
+    const destination = value[name]
     if (
       !destination ||
       typeof destination.path !== 'string' ||
@@ -80,6 +84,7 @@ export function prepareItem(
   const config = validateConfig(configuration)
   const destinations: Record<string, Destination> = {
     parttens: config.patterns,
+    elements: config.elements,
     ui: config.ui,
     utils: config.utils,
   }
@@ -105,7 +110,7 @@ export function prepareItem(
           ts.isStringLiteral(node.moduleSpecifier)
         ) {
           const match = node.moduleSpecifier.text.match(
-            /^@tc96\/(ui|utils|parttens)(\/.*)?$/,
+            /^@tc96\/(ui|utils|elements|parttens)(\/.*)?$/,
           )
           if (match) {
             const target = destinations[match[1] ?? '']

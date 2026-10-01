@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Text } from '@tc96/elements/text'
 import {
   KanbanCard,
   KanbanCardAction,
@@ -16,7 +17,6 @@ import {
   type SelectPropertyOption,
 } from '@tc96/parttens'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import { Text } from '@tc96/ui/text'
 import {
   CircleDollarSignIcon,
   Clock3Icon,

@@ -55,6 +55,7 @@
       "dependencies": {
         "@base-ui/react": "1.6.0",
         "@dnd-kit/dom": "0.5.0",
+        "@tc96/elements": "workspace:*",
         "@tc96/parttens": "workspace:*",
         "@tc96/ui": "workspace:*",
         "lucide-react": "1.28.0",
@@ -80,6 +81,18 @@
         "vitest": "^4.1.10",
       },
     },
+    "packages/elements": {
+      "name": "@tc96/elements",
+      "dependencies": {
+        "@tc96/utils": "workspace:*",
+        "class-variance-authority": "0.7.1",
+      },
+      "peerDependencies": {
+        "@base-ui/react": "1.6.0",
+        "react": "19.1.1",
+        "react-dom": "19.1.1",
+      },
+    },
     "packages/parttens": {
       "name": "@tc96/parttens",
       "dependencies": {
@@ -90,6 +103,7 @@
         "@dnd-kit/react": "0.5.0",
         "@tanstack/react-table": "8.21.3",
         "@tanstack/react-virtual": "3.14.2",
+        "@tc96/elements": "workspace:*",
         "@tc96/ui": "workspace:*",
         "@tc96/utils": "workspace:*",
         "class-variance-authority": "0.7.1",
@@ -545,6 +559,8 @@
     "@tanstack/virtual-core": ["@tanstack/virtual-core@3.17.0", "", {}, "sha512-gOxY/hFkPh/XQYhnThBHzkbkX3Ed+z/iushyz+R+JAr213aXxUDgQoTgTdrDpBSRsjFM73P/KfUyWmaF9WHMkQ=="],
 
     "@tc96/docs": ["@tc96/docs@workspace:apps/docs"],
+
+    "@tc96/elements": ["@tc96/elements@workspace:packages/elements"],
 
     "@tc96/parttens": ["@tc96/parttens@workspace:packages/parttens"],
 

@@ -12,6 +12,7 @@
   "dependencies": {
     "@base-ui/react": "1.6.0",
     "@dnd-kit/dom": "0.5.0",
+    "@tc96/elements": "workspace:*",
     "@tc96/parttens": "workspace:*",
     "@tc96/ui": "workspace:*",
     "lucide-react": "1.28.0",

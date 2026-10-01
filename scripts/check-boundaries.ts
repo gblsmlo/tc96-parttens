@@ -6,7 +6,8 @@ import { files } from './files'
 const allowed: Record<string, string[]> = {
   utils: [],
   ui: ['utils'],
-  parttens: ['ui', 'utils'],
+  elements: ['ui', 'utils'],
+  parttens: ['ui', 'elements', 'utils'],
   registry: [],
 }
 const graph = new Map<string, string[]>()

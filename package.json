@@ -10,10 +10,10 @@
   "scripts": {
     "boundaries:check": "bun scripts/check-boundaries.ts",
     "typecheck": "tsc --noEmit",
-    "test:ui": "bun test --isolate packages/ui/src packages/utils/src",
+    "test:ui": "bun test --isolate packages/ui/src packages/elements/src packages/utils/src",
     "test:patterns": "bun scripts/test-patterns.ts",
     "test:registry": "bun test --isolate packages/registry/src",
-    "test": "bun run test:ui && bun run test:patterns && bun run test:registry",
+    "test": "bun run test:ui && bun run test:boundaries && bun run test:patterns && bun run test:registry",
     "build:library": "bun scripts/build-library.ts",
     "build:registry": "bun packages/registry/src/build-registry.ts",
     "build": "bun run build:library && bun run build:registry",
@@ -30,7 +30,8 @@
     "test:consumer:registry": "bun scripts/test-consumer-registry.ts",
     "test:consumer:ssr": "bun scripts/test-consumer-ssr.ts",
     "bench:views": "bun scripts/bench-views.ts",
-    "pack:check": "bun scripts/pack-check.ts"
+    "pack:check": "bun scripts/pack-check.ts",
+    "test:boundaries": "bun test --isolate scripts"
   },
   "devDependencies": {
     "@types/bun": "1.3.14",

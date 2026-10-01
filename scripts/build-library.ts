@@ -41,7 +41,7 @@ function rewrite(source: string, file: string, declaration: boolean) {
       `${prefix}${quote}${modulePath(specifier, file, declaration)}${quote}`,
   )
 }
-for (const pkg of ['utils', 'ui', 'parttens']) {
+for (const pkg of ['utils', 'ui', 'elements', 'parttens']) {
   for (const source of await files(`packages/${pkg}/src`)) {
     if (
       !/\.(ts|tsx)$/.test(source) ||
@@ -75,7 +75,7 @@ for (const file of await files(output)) {
     await writeFile(file, rewrite(await readFile(file, 'utf8'), file, true))
 }
 const dependencies: Record<string, string> = {}
-for (const pkg of ['utils', 'ui', 'parttens']) {
+for (const pkg of ['utils', 'ui', 'elements', 'parttens']) {
   const manifest = JSON.parse(
     await readFile(`packages/${pkg}/package.json`, 'utf8'),
   )
