@@ -45,13 +45,18 @@ Instale um ou vários patterns de uma vez:
 npx tc96-parttens add collection-views properties
 ```
 
-O CLI delega a escrita ao shadcn e reescreve os imports para os seus aliases:
+O CLI delega a escrita ao shadcn e reescreve os imports para os seus aliases.
+Depois, gera o `index.ts` no diretório de `patterns`, que exporta todos os
+patterns instalados, inclusive os de execuções anteriores:
 
 ```tsx
 import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
 ```
 
 Arquivos existentes são preservados; o shadcn pergunta antes de sobrescrever.
+O `index.ts` é do CLI e é regravado a cada `add`. Se você já tinha um
+`index.ts` seu nesse diretório, o CLI não mexe nele e avisa para exportar os
+patterns instalados por conta própria.
 
 ## Atualizar
 

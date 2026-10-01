@@ -1,5 +1,4 @@
-import { ActionBar } from '@acme/patterns/collection-views'
-import { TextProperty } from '@acme/patterns/properties'
+import { ActionBar, TextProperty } from '@acme/patterns'
 import { renderToString } from 'react-dom/server'
 
 export function Page() {

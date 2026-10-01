@@ -4,6 +4,7 @@ import { build } from 'esbuild'
 import ts from 'typescript'
 import {
   defaultConfig,
+  type PatternName,
   patternNames,
   prepareItem,
   type RegistryItem,
@@ -25,14 +26,34 @@ for (const pkg of ['elements', 'parttens']) {
 // ui and utils are the consumer's: their imports are rewritten to its
 // aliases, never followed into the distributed files.
 const consumerOwned = /^@tc96\/(ui|utils)(\/|$)/
+// The aggregate re-exports the pattern barrels and shared areas such as
+// shared/. An area's barrel ships with every pattern that uses the area, so
+// the consumer's generated barrel can export it.
+const aggregate = await readFile('packages/parttens/src/index.ts', 'utf8')
+const areas = ts
+  .preProcessFile(aggregate)
+  .importedFiles.map(({ fileName }) => fileName.match(/^\.\/([^/]+)\/index$/))
+  .map((match) => match?.[1])
+  .filter(
+    (area): area is string =>
+      !!area && !patternNames.includes(area as PatternName),
+  )
 for (const pattern of patternNames) {
   const pending = [resolve(`packages/parttens/src/${pattern}/index.ts`)]
   const seen = new Set<string>()
   const external = new Set<string>()
   const sources: RegistryItem['files'] = []
-  while (pending.length) {
-    const file = pending.pop()
-    if (!file || seen.has(file)) continue
+  const usedAreaBarrel = () =>
+    areas
+      .filter((area) =>
+        sources.some(({ path }) => path.startsWith(`parttens/src/${area}/`)),
+      )
+      .map((area) => resolve(`packages/parttens/src/${area}/index.ts`))
+      .find((barrel) => !seen.has(barrel))
+  for (;;) {
+    const file = pending.pop() ?? usedAreaBarrel()
+    if (!file) break
+    if (seen.has(file)) continue
     seen.add(file)
     const content = await readFile(file, 'utf8')
     sources.push({
@@ -87,12 +108,16 @@ for (const pattern of patternNames) {
   )
 }
 await writeFile(
+  join(output, 'aggregate.json'),
+  `${JSON.stringify({ path: 'parttens/src/index.ts', content: aggregate }, null, 2)}\n`,
+)
+await writeFile(
   join(output, 'view.json'),
   await readFile(join(output, 'collection-views.json')),
 )
 const cliOutput = resolve('dist/cli')
 await mkdir(join(cliOutput, 'registry'), { recursive: true })
-for (const name of [...patternNames, 'view'])
+for (const name of [...patternNames, 'view', 'aggregate'])
   await writeFile(
     join(cliOutput, `registry/${name}.json`),
     await readFile(join(output, `${name}.json`)),
@@ -128,5 +153,5 @@ await writeFile(
 )
 await writeFile(join(cliOutput, 'LICENSE'), await readFile('LICENSE'))
 console.log(
-  'Generated four registry items, the legacy view entry and the Node CLI artifact.',
+  'Generated four registry items, the legacy view entry, the aggregate and the Node CLI artifact.',
 )

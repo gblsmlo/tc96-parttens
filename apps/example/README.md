@@ -14,7 +14,11 @@ What it proves:
 - aliases come from `components.json`; `patterns` resolves to
   `packages/organisms/src`, a path other than the default;
 - the patterns compile against the consumer's COSS (`tsc --noEmit`);
-- server rendering uses the consumer's button, so the marker shows up;
+- the CLI generates the `@acme/patterns` barrel, which keeps patterns from
+  earlier runs and, with every pattern installed, exports the workspace
+  aggregate's public API;
+- server rendering through the barrel uses the consumer's button, so the
+  marker shows up;
 - nothing is written to the consumer's `packages/ui`.
 
 `src/ssr.tsx` only compiles after the patterns are installed, so this

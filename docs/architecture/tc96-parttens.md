@@ -1,6 +1,6 @@
 # Arquitetura do tc96-parttens
 
-Status: as decisões de 2026-10-01 (UI base sem opinião, sem biblioteca npm) estão aplicadas no workspace. Continuam pendentes as decisões adiadas até o primeiro consumidor, o barrel agregado gerado pelo CLI e as decisões externas de publicação.
+Status: as decisões de 2026-10-01 (UI base sem opinião, sem biblioteca npm) estão aplicadas no workspace. Continuam pendentes as decisões adiadas até o primeiro consumidor e as decisões externas de publicação.
 
 ## Objetivo e escopo
 
@@ -75,6 +75,8 @@ A landing será acrescentada quando houver escopo concreto. A grafia `parttens` 
 - `types/` nas três áreas expõe contratos organizados por pattern. Tipos específicos de um renderer ou display podem permanecer junto dele.
 
 Cada área tem um barrel próprio. O CLI gera o barrel agregado no projeto do consumidor, só com os patterns instalados. O layout interno pode evoluir sem exigir que o consumidor importe caminhos privados.
+
+O barrel agregado é o `index.ts` no diretório do alias de patterns. A fonte é o agregado do workspace, `packages/parttens/src/index.ts`, distribuído no registry como `aggregate.json`. O CLI mantém as diretivas e cada re-export cujo módulo está instalado, contando execuções anteriores, de modo que o apelido `Kanban` acompanha `collection-views`. Uma área compartilhada como `shared/` entra no item de cada pattern que usa algum arquivo dela, com o barrel da área; hoje só `collection-views` usa `shared/`. O arquivo gerado começa com um comentário que o identifica e é regravado a cada `add`; um `index.ts` escrito pelo consumidor é preservado com aviso. Por isso o agregado do workspace só pode conter diretivas e re-exports.
 
 No Storybook, `Patterns/Collection Views/Overview` apresenta a mesma coleção em List, Kanban e Data Grid. As stories sob `Patterns/Collection Views/Views` documentam cada renderer isoladamente; `Shared Components` documenta toolbar e paginação. As stories de properties ficam em `Patterns/Properties/Display`; o agrupamento de properties fica em `Patterns/Properties/Groups`.
 
@@ -208,7 +210,6 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 ## Pontos ainda em revisão
 
 - Namespace COSS no registry e regra de sobrescrita. Ver [UI base sem opinião](#ui-base-sem-opinião).
-- Barrel agregado gerado pelo CLI no alias de patterns. Até existir, `CollectionToolbar`, `CollectionToolbarGroup`, `CollectionPagination` e o apelido `Kanban` só são exportados pelo agregado do workspace, que o registry não distribui.
 - Aprovação da estratégia de validação e do limite da verificação de compatibilidade.
 - Configuração e integração do CLI com shadcn, preservando o comando desejado e validando destinos em monorepo.
 - Nome npm disponível para o CLI.
