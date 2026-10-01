@@ -131,7 +131,7 @@ const meta = {
     layout: 'fullscreen',
   },
   tags: ['autodocs', 'storybook-test'],
-  title: 'Patterns/Collection Views/Views/Calendar/Time Grid',
+  title: 'Patterns/CollectionViews/Views/Calendar/Time Grid',
 } satisfies Meta<typeof MechanicsCalendarView>
 
 export default meta

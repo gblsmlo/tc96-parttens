@@ -34,7 +34,7 @@ const meta = {
     layout: 'padded',
   },
   tags: ['autodocs'],
-  title: 'Patterns/Collection Views/Shared Components/Pagination',
+  title: 'Patterns/Pagination',
 } satisfies Meta<typeof CollectionPagination>
 
 export default meta

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, mock, test } from 'bun:test'
 import type { ComponentType, ReactNode } from 'react'
 
-await import('../../test/dom')
+await import('../../collection-views/test/dom')
 
 class MockResizeObserver {
   disconnect() {}
@@ -15,7 +15,7 @@ const { act, cleanup, fireEvent, render, screen } = await import(
   '@testing-library/react'
 )
 const { MenuItem } = await import('@tc96/ui/menu')
-const collectionModule = await import('../index')
+const collectionModule = await import('../../index')
 const CollectionToolbar = Reflect.get(
   collectionModule,
   'CollectionToolbar',

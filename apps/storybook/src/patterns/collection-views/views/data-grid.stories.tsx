@@ -1,5 +1,6 @@
 import {
   Action,
+  ActionBar,
   CollectionToolbar,
   DataGrid,
   type DataGridColumnDef,
@@ -14,6 +15,7 @@ import {
   useDataGrid,
 } from 'tc96/blocks'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
 import { type ReactElement, useMemo, useState } from 'react'
 import { expect } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
@@ -121,6 +123,8 @@ interface DataGridExampleProps {
   data?: MechanicsRecord[]
   /** Teto de altura. Sem ele o grid tem a altura do conteúdo; com ele, rola por dentro. */
   maxHeight?: number
+  /** Expande a composição até a altura disponível para validar ações ancoradas no rodapé. */
+  fullHeight?: boolean
 }
 
 /**
@@ -135,6 +139,7 @@ function DataGridExample({
   maxHeight,
   paginated = false,
   selectable = false,
+  fullHeight = false,
   withToolbar = false,
 }: Readonly<DataGridExampleProps>): ReactElement {
   const { table } = useDataGrid<MechanicsRecord>({
@@ -149,7 +154,9 @@ function DataGridExample({
   })
 
   return (
-    <div className="flex min-w-0 flex-col gap-2 p-4">
+    <div
+      className={`flex min-w-0 flex-col gap-2 p-4${fullHeight ? ' min-h-screen' : ''}`}
+    >
       {withToolbar ? (
         <CollectionToolbar
           aria-label="Ações da coleção"
@@ -178,6 +185,66 @@ function DataGridExample({
         getRowGroup={grouped ? (record) => record.owner : undefined}
         isLoading={isLoading}
         maxHeight={maxHeight}
+        selectionActions={
+          selectable
+            ? ({ clearSelection, selectedCount, selectedRows }) => (
+                <ActionBar
+                  actions={[
+                    {
+                      items: [
+                        {
+                          icon: <SendIcon />,
+                          label: 'Enviar',
+                          onSelect: () => undefined,
+                          variant: 'primary',
+                        },
+                        {
+                          icon: <ArchiveIcon />,
+                          label: 'Arquivar',
+                          onSelect: () => undefined,
+                        },
+                      ],
+                    },
+                    {
+                      items: [
+                        {
+                          label: 'Mais opções',
+                          submenu: [
+                            {
+                              label: 'Organizar',
+                              items: [
+                                {
+                                  label: 'Duplicar',
+                                  onSelect: () => undefined,
+                                },
+                                {
+                                  label: 'Mover para…',
+                                  onSelect: () => undefined,
+                                },
+                              ],
+                            },
+                            {
+                              items: [
+                                {
+                                  icon: <Trash2Icon />,
+                                  label: 'Excluir',
+                                  onSelect: () => undefined,
+                                  variant: 'destructive',
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ]}
+                  onClearSelection={clearSelection}
+                  selectedCount={selectedCount}
+                  selectedRows={selectedRows}
+                />
+              )
+            : undefined
+        }
         table={table}
       />
     </div>
@@ -191,6 +258,7 @@ const meta = {
       options: ['short', 'medium', 'tall', 'extra-tall'],
     },
     grouped: booleanArgType,
+    fullHeight: booleanArgType,
     isLoading: booleanArgType,
     paginated: booleanArgType,
     selectable: booleanArgType,
@@ -204,10 +272,10 @@ const meta = {
           'Building Block de DataGrid. Documenta cabeçalho de coluna, densidade, agrupamento, seleção, paginação, carregamento e vazio — sem fixtures nem vocabulário de nenhuma feature. A tabela vem de `useDataGrid`; o consumidor é dono das colunas.',
       },
     },
-    layout: 'fullscreen',
+    layout: 'centered',
   },
   tags: ['autodocs'],
-  title: 'Patterns/Collection Views/Views/Data Grid',
+  title: 'Patterns/CollectionViews/Views/Data Grid',
 } satisfies Meta<typeof DataGridExample>
 
 export default meta
@@ -222,7 +290,9 @@ export const Paginated: Story = { args: { paginated: true } }
 
 export const Grouped: Story = { args: { grouped: true } }
 
-export const Selectable: Story = { args: { selectable: true } }
+export const Selectable: Story = {
+  args: { fullHeight: true, selectable: true },
+}
 
 const stageOptions = [
   { label: 'Aberto', value: 'Aberto' },

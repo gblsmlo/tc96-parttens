@@ -141,7 +141,7 @@ const meta = {
     layout: 'fullscreen',
   },
   tags: ['autodocs', 'storybook-test'],
-  title: 'Patterns/Collection Views/Views/List',
+  title: 'Patterns/CollectionViews/Views/List',
 } satisfies Meta<typeof MechanicsListView>
 
 export default meta

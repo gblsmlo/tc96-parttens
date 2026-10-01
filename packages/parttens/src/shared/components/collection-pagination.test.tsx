@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 
-await import('../../test/dom')
+await import('../../collection-views/test/dom')
 
 const { cleanup, fireEvent, render, screen } = await import(
   '@testing-library/react'

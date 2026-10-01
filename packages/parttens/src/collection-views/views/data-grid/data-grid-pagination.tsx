@@ -2,7 +2,7 @@
 
 import type { Table as TanstackTable } from '@tanstack/react-table'
 import type React from 'react'
-import { CollectionPagination } from '../../shared/components/collection-pagination'
+import { CollectionPagination } from '../../../shared/components/collection-pagination'
 
 export interface DataGridPaginationProps<TData>
   extends Omit<React.ComponentProps<'div'>, 'children'> {

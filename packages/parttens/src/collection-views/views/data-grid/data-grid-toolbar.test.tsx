@@ -18,7 +18,7 @@ const { DataGridSearch, DataGridSelectionSummary } = await import(
   './data-grid-toolbar'
 )
 const { CollectionToolbar } = await import(
-  '../../shared/components/collection-toolbar'
+  '../../../shared/components/collection-toolbar'
 )
 const { useDataGrid } = await import('./use-data-grid')
 const { createSelectColumn } = await import('./data-grid-columns')

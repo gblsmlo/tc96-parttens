@@ -12,7 +12,7 @@ class MockResizeObserver {
 
 Object.assign(globalThis, { ResizeObserver: MockResizeObserver })
 
-const { cleanup, fireEvent, render, screen } = await import(
+const { act, cleanup, fireEvent, render, screen } = await import(
   '@testing-library/react'
 )
 const { DataGrid } = await import('./data-grid')
@@ -57,6 +57,52 @@ const TypedGrid = Grid as ComponentType<GridProps>
 afterEach(cleanup)
 
 describe('DataGrid', () => {
+  test('renders selection actions when the table has selected rows', () => {
+    const captured = {
+      table: null as ReturnType<typeof useDataGrid<Campaign>>['table'] | null,
+    }
+
+    function SelectableGrid(): ReactElement {
+      const { table } = useDataGrid<Campaign>({
+        columns: [createSelectColumn<Campaign>(), ...columns],
+        data: campaigns,
+        enableRowSelection: true,
+        getRowId: (campaign) => campaign.id,
+      })
+      captured.table = table
+
+      return (
+        <DataGrid
+          selectionActions={({ selectedCount }) => (
+            <span>{selectedCount} selecionado</span>
+          )}
+          table={table}
+        />
+      )
+    }
+
+    const { container } = render(<SelectableGrid />)
+    expect(screen.queryByText('1 selecionado')).toBeNull()
+
+    act(() => {
+      captured.table?.getRow('a').toggleSelected(true)
+    })
+
+    expect(screen.getByText('1 selecionado')).toBeTruthy()
+    expect(
+      container
+        .querySelector('[data-slot="data-grid-selection-actions"]')
+        ?.classList.contains('bottom-3'),
+    ).toBe(true)
+    expect(
+      container
+        .querySelector('[data-slot="data-grid"]')
+        ?.contains(
+          container.querySelector('[data-slot="data-grid-selection-actions"]'),
+        ),
+    ).toBe(false)
+  })
+
   test('exposes the collection as an ARIA grid with one column header per column', () => {
     render(<TypedGrid />)
 

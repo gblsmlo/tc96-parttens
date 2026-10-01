@@ -1,30 +1,19 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
+import { expect, screen, userEvent, within } from 'storybook/test'
 import {
   KanbanCard,
-  KanbanCardAction,
-  KanbanCardContent,
-  KanbanCardDescription,
-  KanbanCardFooter,
-  KanbanCardHeader,
   KanbanCardOpenTrigger,
   KanbanCardSkeleton,
-  KanbanCardTitle,
 } from 'tc96/blocks'
-import { Avatar, AvatarFallback } from 'tc96/ui'
-import { Badge } from 'tc96/ui'
-import { Button } from 'tc96/ui'
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ListTodoIcon } from 'lucide-react'
-import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
+import { KanbanCardExampleContent } from './kanban-card-example'
 
 function Example({
   dimmed = false,
-  display = 'full',
   interactive = false,
   selected = false,
 }: Readonly<{
   dimmed?: boolean
-  display?: 'compact' | 'full'
   interactive?: boolean
   selected?: boolean
 }>) {
@@ -32,7 +21,6 @@ function Example({
     <div className="w-full max-w-sm p-4">
       <KanbanCard
         dimmed={dimmed}
-        display={display}
         render={
           interactive
             ? (props) => (
@@ -45,37 +33,11 @@ function Example({
         selected={selected}
         variant={interactive ? 'interactive' : 'default'}
       >
-        <KanbanCardHeader>
-          <KanbanCardTitle>Revisar proposta comercial</KanbanCardTitle>
-          <KanbanCardDescription>
-            O primitive organiza o shell; o consumer define significado e ações.
-          </KanbanCardDescription>
-        </KanbanCardHeader>
-
-        <KanbanCardContent>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">Em andamento</Badge>
-            <Badge variant="secondary">Ana Souza</Badge>
-          </div>
-        </KanbanCardContent>
-
-        <KanbanCardFooter>
-          <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
-            <span className="inline-flex shrink-0 items-center gap-1.5">
-              <ListTodoIcon aria-hidden className="size-3.5" />
-              <span>4 tarefas</span>
-            </span>
-            <Avatar
-              aria-label="Responsável: Ana Souza"
-              className="size-6"
-              title="Ana Souza"
-            >
-              <AvatarFallback className="text-xs text-foreground font-semibold">
-                AS
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        </KanbanCardFooter>
+        <KanbanCardExampleContent
+          description="O consumer compõe o shell com dados e propriedades do item."
+          readOnlyPriority={interactive}
+          title="Revisar proposta comercial"
+        />
       </KanbanCard>
     </div>
   )
@@ -97,39 +59,22 @@ function OpenTriggerExample() {
           aria-label="Abrir detalhes do item"
           onClick={() => setEvents((current) => [...current, 'abrir'])}
         />
-        <KanbanCardHeader>
-          <KanbanCardTitle>Revisar proposta comercial</KanbanCardTitle>
-          <KanbanCardAction>
-            <Button
-              onClick={() => setEvents((current) => [...current, 'prioridade'])}
-              size="sm"
-              variant="ghost"
-            >
-              Prioridade
-            </Button>
-          </KanbanCardAction>
-        </KanbanCardHeader>
-
-        <KanbanCardContent>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">Em andamento</Badge>
-            <span data-kanban-card-action>
-              <Button
-                onClick={() =>
-                  setEvents((current) => [...current, 'responsável'])
-                }
-                size="sm"
-                variant="ghost"
-              >
-                Ana Souza
-              </Button>
+        <KanbanCardExampleContent
+          description="O consumer compõe o shell com dados e propriedades do item."
+          footerExtra={
+            <span className="sr-only" data-story-events>
+              {events.join(' · ') || 'nenhuma ação'}
             </span>
-          </div>
-        </KanbanCardContent>
-
-        <KanbanCardFooter>
-          <span data-story-events>{events.join(' · ') || 'nenhuma ação'}</span>
-        </KanbanCardFooter>
+          }
+          onPriorityChange={(value) =>
+            setEvents((current) => [
+              ...current,
+              `prioridade: ${value ?? 'none'}`,
+            ])
+          }
+          priorityIsCardAction
+          title="Revisar proposta comercial"
+        />
       </KanbanCard>
     </div>
   )
@@ -146,12 +91,6 @@ const meta = {
       control: 'boolean',
       description:
         'Indica que o card está temporariamente inativo durante uma movimentação.',
-    },
-    display: {
-      control: 'radio',
-      description:
-        'Define a densidade de conteúdo. Compacto mantém o cabeçalho e oculta descrição, conteúdo e footer.',
-      options: ['full', 'compact'],
     },
     render: {
       control: false,
@@ -173,12 +112,12 @@ const meta = {
     docs: {
       description: {
         component:
-          'Contrato visual canônico para cards em Kanban. Use KanbanCard como shell e componha os slots KanbanCardHeader, KanbanCardTitle, KanbanCardDescription, KanbanCardAction, KanbanCardContent e KanbanCardFooter. A visualização full exibe a composição completa com resumo de tasks e responsável no footer; compact preserva o cabeçalho e o título. O consumer fornece o significado e as ações de domínio, sem sobrescrever o layout do componente.',
+          'Contrato visual canônico para cards em Kanban. Todos os exemplos usam a anatomia completa: título, descrição, propriedade de prioridade, contagem de tarefas e responsável. O consumer fornece os dados e as ações de domínio.',
       },
     },
   },
   tags: ['autodocs', 'storybook-test'],
-  title: 'Patterns/Collection Views/Views/Kanban/Card',
+  title: 'Patterns/CollectionViews/Views/Kanban/Card',
 } satisfies Meta<typeof KanbanCard>
 
 export default meta
@@ -212,34 +151,6 @@ export const Full: Story = {
     },
   },
   render: () => <Example />,
-}
-
-export const Compact: Story = {
-  play: async ({ canvasElement }) => {
-    const header = getComputedStyle(slot(canvasElement, 'card-header'))
-    const titulo = getComputedStyle(slot(canvasElement, 'card-title'))
-
-    await expect(header.minHeight).toBe('40px')
-    await expect(header.paddingLeft).toBe('12px')
-    await expect(header.paddingTop).toBe('8px')
-
-    await expect(titulo.fontSize).toBe('14px')
-    await expect(titulo.textOverflow).toBe('ellipsis')
-    await expect(titulo.whiteSpace).toBe('nowrap')
-
-    // As seções secundárias somem do modo compacto.
-    await expect(slot(canvasElement, 'card-description').hidden).toBe(true)
-    await expect(slot(canvasElement, 'card-footer').hidden).toBe(true)
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Modo compacto para preservar apenas o cabeçalho e o título quando o espaço vertical é limitado.',
-      },
-    },
-  },
-  render: () => <Example display="compact" />,
 }
 
 export const WithOpenTriggerAndActions: Story = {
@@ -277,17 +188,18 @@ export const WithOpenTriggerAndActions: Story = {
     await expect(getComputedStyle(action).zIndex).toBe('10')
 
     // Cada alvo dispara só o que é seu.
-    await userEvent.click(canvas.getByRole('button', { name: 'Prioridade' }))
+    await userEvent.click(canvas.getByRole('combobox', { name: 'Prioridade' }))
+    await userEvent.click(await screen.findByRole('option', { name: 'Média' }))
     await expect(
       canvasElement.querySelector('[data-story-events]')?.textContent,
-    ).toBe('prioridade')
+    ).toBe('prioridade: medium')
 
     await userEvent.click(
       canvas.getByRole('button', { name: 'Abrir detalhes do item' }),
     )
     await expect(
       canvasElement.querySelector('[data-story-events]')?.textContent,
-    ).toBe('prioridade · abrir')
+    ).toBe('prioridade: medium · abrir')
   },
   render: () => <OpenTriggerExample />,
 }

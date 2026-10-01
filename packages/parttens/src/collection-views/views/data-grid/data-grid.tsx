@@ -2,6 +2,13 @@
 
 'use client'
 
+import {
+  type Column,
+  flexRender,
+  type Header,
+  type Table as TanstackTable,
+} from '@tanstack/react-table'
+import { observeElementRect, useVirtualizer } from '@tanstack/react-virtual'
 import { Button } from '@tc96/ui/compat/collection-views/button'
 import {
   Menu,
@@ -14,18 +21,11 @@ import { ScrollAreaPrimitive, ScrollBar } from '@tc96/ui/scroll-area'
 import { Skeleton } from '@tc96/ui/skeleton'
 import { cn } from '@tc96/utils'
 import {
-  type Column,
-  type Header,
-  type Table as TanstackTable,
-  flexRender,
-} from '@tanstack/react-table'
-import { observeElementRect, useVirtualizer } from '@tanstack/react-virtual'
-import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ChevronDownIcon,
-  ChevronUpIcon,
   ChevronsUpDownIcon,
+  ChevronUpIcon,
   EyeOffIcon,
   PinIcon,
   PinOffIcon,
@@ -41,6 +41,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import type { ActionBarContext } from '../../shared/components/action-bar'
 import { DataGridColumnTypeIcon } from './data-grid-column-types'
 import { DataGridPagination } from './data-grid-pagination'
 import type {
@@ -308,6 +309,14 @@ export interface DataGridProps<TData> {
   virtualize?: boolean
   overscan?: number
   className?: string
+  /** Renderiza a barra de ações enquanto houver rows selecionadas. */
+  selectionActions?:
+    | ReactNode
+    | ((
+        context: ActionBarContext<TData> & {
+          clearSelection: () => void
+        },
+      ) => ReactNode)
   'aria-label'?: string
 }
 
@@ -366,6 +375,7 @@ export function DataGrid<TData>({
   virtualize = false,
   overscan = 8,
   className,
+  selectionActions,
   'aria-label': ariaLabel,
 }: DataGridProps<TData>) {
   const showsPagination =
@@ -384,6 +394,10 @@ export function DataGrid<TData>({
   const fillColumnId =
     fillColumn === false ? undefined : (fillColumn ?? lastCommonColumnId)
   const rows = table.getRowModel().rows
+  const selectedRows = table
+    .getSelectedRowModel()
+    .rows.map((row) => row.original)
+  const selectedCount = selectedRows.length
   const collectionRows = table.getSortedRowModel().rows
   const collectionRowCount = table.getRowCount()
   const headerRowCount = table.getHeaderGroups().length
@@ -449,6 +463,18 @@ export function DataGrid<TData>({
   })
   let lastGroup: string | null = null
   let renderedGroupCount = 0
+
+  let selectionActionsContent: ReactNode = null
+  if (selectedCount > 0 && selectionActions) {
+    selectionActionsContent =
+      typeof selectionActions === 'function'
+        ? selectionActions({
+            clearSelection: () => table.resetRowSelection(),
+            selectedCount,
+            selectedRows,
+          })
+        : selectionActions
+  }
 
   const focusedCellIsAvailable =
     rows.some((row) => row.id === focusedCell.rowId) &&
@@ -867,238 +893,255 @@ export function DataGrid<TData>({
   }
 
   return (
-    <ScrollAreaPrimitive.Root
+    <div
       className={cn(
-        'relative h-auto rounded-md border bg-background text-sm',
-        // Sem coluna que cresce, esticar deixaria uma faixa sem borda à direita
-        // lendo como coluna fantasma: a moldura encolhe para as colunas e ainda
-        // rola quando elas passam do container.
+        'relative min-w-0',
+        // O wrapper externo mantém a barra fora da superfície que desenha a
+        // borda, sem alterar a geometria horizontal da tabela.
         fillColumnId ? 'w-full' : 'w-fit max-w-full',
         className,
       )}
-      data-slot="data-grid"
     >
-      <ScrollAreaPrimitive.Viewport
-        aria-busy={isLoading || undefined}
-        aria-colcount={leafColumns.length}
-        aria-label={ariaLabel}
-        aria-rowcount={ariaRowCount}
-        className="grid h-full cursor-grab select-none rounded-[inherit] outline-none transition-shadows focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background data-[drag-scroll=dragging]:cursor-grabbing data-has-overflow-x:overscroll-x-contain data-has-overflow-y:overscroll-y-contain"
-        data-density={density}
-        data-drag-scroll={isDragScrolling ? 'dragging' : undefined}
-        data-slot="scroll-area-viewport"
-        onClickCapture={onGridClickCapture}
-        onLostPointerCapture={onGridPointerEnd}
-        onPointerCancel={onGridPointerEnd}
-        onPointerDownCapture={onGridPointerDown}
-        onPointerMove={onGridPointerMove}
-        onPointerUp={onGridPointerEnd}
-        ref={gridRef}
-        role="grid"
-        style={{ maxHeight }}
-        tabIndex={rows.length > 0 && !isLoading ? -1 : 0}
+      <ScrollAreaPrimitive.Root
+        className={cn(
+          'relative h-auto rounded-md border bg-background text-sm',
+          // Sem coluna que cresce, esticar deixaria uma faixa sem borda à direita
+          // lendo como coluna fantasma: a moldura encolhe para as colunas e ainda
+          // rola quando elas passam do container.
+          fillColumnId ? 'w-full' : 'w-fit max-w-full',
+        )}
+        data-slot="data-grid"
       >
-        <ScrollAreaPrimitive.Content
-          data-slot="scroll-area-content"
-          style={{ minWidth: 0 }}
+        <ScrollAreaPrimitive.Viewport
+          aria-busy={isLoading || undefined}
+          aria-colcount={leafColumns.length}
+          aria-label={ariaLabel}
+          aria-rowcount={ariaRowCount}
+          className="grid h-full cursor-grab select-none rounded-[inherit] outline-none transition-shadows focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background data-[drag-scroll=dragging]:cursor-grabbing data-has-overflow-x:overscroll-x-contain data-has-overflow-y:overscroll-y-contain"
+          data-density={density}
+          data-drag-scroll={isDragScrolling ? 'dragging' : undefined}
+          data-slot="scroll-area-viewport"
+          onClickCapture={onGridClickCapture}
+          onLostPointerCapture={onGridPointerEnd}
+          onPointerCancel={onGridPointerEnd}
+          onPointerDownCapture={onGridPointerDown}
+          onPointerMove={onGridPointerMove}
+          onPointerUp={onGridPointerEnd}
+          ref={gridRef}
+          role="grid"
+          style={{ maxHeight }}
+          tabIndex={rows.length > 0 && !isLoading ? -1 : 0}
         >
-          <div
-            className="sticky top-0 z-10 grid border-b bg-background"
-            data-slot="data-grid-header"
-            role="rowgroup"
-            style={{ minWidth: table.getTotalSize() }}
+          <ScrollAreaPrimitive.Content
+            data-slot="scroll-area-content"
+            style={{ minWidth: 0 }}
           >
-            {table.getHeaderGroups().map((headerGroup, rowIndex) => (
-              <div
-                aria-rowindex={rowIndex + 1}
-                className="flex w-full"
-                data-slot="data-grid-header-row"
-                key={headerGroup.id}
-                role="row"
-                style={{ minWidth: table.getTotalSize() }}
-                tabIndex={-1}
-              >
-                {headerGroup.headers.map((header, columnIndex) => {
-                  const sorted = header.column.getIsSorted()
-                  return (
-                    <div
-                      aria-colindex={columnIndex + 1}
-                      aria-sort={
-                        sorted === 'asc'
-                          ? 'ascending'
-                          : sorted === 'desc'
-                            ? 'descending'
-                            : header.column.getCanSort()
-                              ? 'none'
-                              : undefined
-                      }
-                      className="relative flex min-h-9 items-center border-e px-1.5 text-muted-foreground last:border-e-0 data-[pinned]:bg-background"
-                      data-column-id={header.column.id}
-                      data-pinned={header.column.getIsPinned() || undefined}
-                      data-slot="data-grid-header-cell"
-                      key={header.id}
-                      role="columnheader"
-                      style={pinnedColumnStyle(header.column, fillColumnId)}
-                      tabIndex={-1}
-                    >
-                      {header.isPlaceholder ? null : (
-                        <DataGridColumnHeader header={header} />
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            ))}
-          </div>
-
-          <div
-            className="relative grid"
-            data-slot="data-grid-body"
-            data-virtualized={shouldVirtualize ? 'true' : undefined}
-            role="rowgroup"
-            style={{
-              height: shouldVirtualize
-                ? rowVirtualizer.getTotalSize()
-                : undefined,
-              minWidth: table.getTotalSize(),
-            }}
-          >
-            {isLoading ? (
-              Array.from({ length: loadingRowCount }).map((_, rowIndex) => (
+            <div
+              className="sticky top-0 z-10 grid border-b bg-background"
+              data-slot="data-grid-header"
+              role="rowgroup"
+              style={{ minWidth: table.getTotalSize() }}
+            >
+              {table.getHeaderGroups().map((headerGroup, rowIndex) => (
                 <div
-                  aria-rowindex={headerRowCount + rowIndex + 1}
-                  className={cn(
-                    'flex w-full border-b last:border-b-0',
-                    ROW_DENSITY[density],
-                  )}
-                  key={`skeleton-${rowIndex}`}
+                  aria-rowindex={rowIndex + 1}
+                  className="flex w-full"
+                  data-slot="data-grid-header-row"
+                  key={headerGroup.id}
+                  role="row"
+                  style={{ minWidth: table.getTotalSize() }}
+                  tabIndex={-1}
+                >
+                  {headerGroup.headers.map((header, columnIndex) => {
+                    const sorted = header.column.getIsSorted()
+                    return (
+                      <div
+                        aria-colindex={columnIndex + 1}
+                        aria-sort={
+                          sorted === 'asc'
+                            ? 'ascending'
+                            : sorted === 'desc'
+                              ? 'descending'
+                              : header.column.getCanSort()
+                                ? 'none'
+                                : undefined
+                        }
+                        className="relative flex min-h-9 items-center border-e px-1.5 text-muted-foreground last:border-e-0 data-[pinned]:bg-background"
+                        data-column-id={header.column.id}
+                        data-pinned={header.column.getIsPinned() || undefined}
+                        data-slot="data-grid-header-cell"
+                        key={header.id}
+                        role="columnheader"
+                        style={pinnedColumnStyle(header.column, fillColumnId)}
+                        tabIndex={-1}
+                      >
+                        {header.isPlaceholder ? null : (
+                          <DataGridColumnHeader header={header} />
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              ))}
+            </div>
+
+            <div
+              className="relative grid"
+              data-slot="data-grid-body"
+              data-virtualized={shouldVirtualize ? 'true' : undefined}
+              role="rowgroup"
+              style={{
+                height: shouldVirtualize
+                  ? rowVirtualizer.getTotalSize()
+                  : undefined,
+                minWidth: table.getTotalSize(),
+              }}
+            >
+              {isLoading ? (
+                Array.from({ length: loadingRowCount }).map((_, rowIndex) => (
+                  <div
+                    aria-rowindex={headerRowCount + rowIndex + 1}
+                    className={cn(
+                      'flex w-full border-b last:border-b-0',
+                      ROW_DENSITY[density],
+                    )}
+                    key={`skeleton-${rowIndex}`}
+                    role="row"
+                    tabIndex={-1}
+                  >
+                    {leafColumns.map((column, columnIndex) => (
+                      <div
+                        aria-colindex={columnIndex + 1}
+                        className={cn(
+                          'flex items-center border-e last:border-e-0 data-[pinned]:bg-background',
+                          CELL_DENSITY[density],
+                        )}
+                        data-column-id={column.id}
+                        data-pinned={column.getIsPinned() || undefined}
+                        key={column.id}
+                        role="gridcell"
+                        style={pinnedColumnStyle(column, fillColumnId)}
+                        tabIndex={-1}
+                      >
+                        <Skeleton className="h-4 w-full" />
+                      </div>
+                    ))}
+                  </div>
+                ))
+              ) : rows.length === 0 ? (
+                <div
+                  aria-rowindex={headerRowCount + 1}
+                  className="flex min-h-24 items-center justify-center text-muted-foreground"
                   role="row"
                   tabIndex={-1}
                 >
-                  {leafColumns.map((column, columnIndex) => (
-                    <div
-                      aria-colindex={columnIndex + 1}
-                      className={cn(
-                        'flex items-center border-e last:border-e-0 data-[pinned]:bg-background',
-                        CELL_DENSITY[density],
-                      )}
-                      data-column-id={column.id}
-                      data-pinned={column.getIsPinned() || undefined}
-                      key={column.id}
-                      role="gridcell"
-                      style={pinnedColumnStyle(column, fillColumnId)}
-                      tabIndex={-1}
-                    >
-                      <Skeleton className="h-4 w-full" />
-                    </div>
-                  ))}
+                  <div aria-colindex={1} role="gridcell" tabIndex={-1}>
+                    {emptyMessage}
+                  </div>
                 </div>
-              ))
-            ) : rows.length === 0 ? (
-              <div
-                aria-rowindex={headerRowCount + 1}
-                className="flex min-h-24 items-center justify-center text-muted-foreground"
-                role="row"
-                tabIndex={-1}
-              >
-                <div aria-colindex={1} role="gridcell" tabIndex={-1}>
-                  {emptyMessage}
-                </div>
-              </div>
-            ) : shouldVirtualize ? (
-              rowVirtualizer.getVirtualItems().flatMap((virtualRow) => {
-                const row = rows[virtualRow.index]
-                if (!row) return []
+              ) : shouldVirtualize ? (
+                rowVirtualizer.getVirtualItems().flatMap((virtualRow) => {
+                  const row = rows[virtualRow.index]
+                  if (!row) return []
 
-                return renderDataRow(row, virtualRow.index, {
-                  height: virtualRow.size,
-                  transform: `translateY(${virtualRow.start}px)`,
+                  return renderDataRow(row, virtualRow.index, {
+                    height: virtualRow.size,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  })
                 })
-              })
-            ) : (
-              rows.flatMap((row, rowIndex) => {
-                const group = getRowGroup?.(row.original) ?? null
-                const startsGroup = Boolean(group && group !== lastGroup)
-                if (startsGroup) renderedGroupCount += 1
-                const dataRow = renderDataRow(
-                  row,
-                  rowIndex,
-                  undefined,
-                  headerRowCount +
-                    getCollectionRowIndex(row, rowIndex) +
-                    renderedGroupCount +
-                    1,
-                )
-                if (startsGroup) {
-                  lastGroup = group
-                  return [
-                    <div
-                      aria-rowindex={
-                        headerRowCount + rowIndex + renderedGroupCount
-                      }
-                      className="flex min-h-9 items-center border-b bg-muted/40 px-3 font-medium"
-                      data-slot="data-grid-group-row"
-                      key={`group-${group}-${rowIndex}`}
-                      role="row"
-                      tabIndex={-1}
-                    >
-                      <div role="gridcell" tabIndex={-1}>
-                        {group}
-                      </div>
-                    </div>,
-                    dataRow,
-                  ]
-                }
-                return [dataRow]
-              })
-            )}
-          </div>
+              ) : (
+                rows.flatMap((row, rowIndex) => {
+                  const group = getRowGroup?.(row.original) ?? null
+                  const startsGroup = Boolean(group && group !== lastGroup)
+                  if (startsGroup) renderedGroupCount += 1
+                  const dataRow = renderDataRow(
+                    row,
+                    rowIndex,
+                    undefined,
+                    headerRowCount +
+                      getCollectionRowIndex(row, rowIndex) +
+                      renderedGroupCount +
+                      1,
+                  )
+                  if (startsGroup) {
+                    lastGroup = group
+                    return [
+                      <div
+                        aria-rowindex={
+                          headerRowCount + rowIndex + renderedGroupCount
+                        }
+                        className="flex min-h-9 items-center border-b bg-muted/40 px-3 font-medium"
+                        data-slot="data-grid-group-row"
+                        key={`group-${group}-${rowIndex}`}
+                        role="row"
+                        tabIndex={-1}
+                      >
+                        <div role="gridcell" tabIndex={-1}>
+                          {group}
+                        </div>
+                      </div>,
+                      dataRow,
+                    ]
+                  }
+                  return [dataRow]
+                })
+              )}
+            </div>
 
-          {onRowAdd ? (
-            <div
-              className="sticky bottom-0 z-10 grid border-t bg-background"
-              data-slot="data-grid-add-row-group"
-              role="rowgroup"
-            >
+            {onRowAdd ? (
               <div
-                aria-rowindex={ariaRowCount}
-                className="flex min-h-9 w-full"
-                role="row"
-                style={{ minWidth: table.getTotalSize() }}
-                tabIndex={-1}
+                className="sticky bottom-0 z-10 grid border-t bg-background"
+                data-slot="data-grid-add-row-group"
+                role="rowgroup"
               >
                 <div
-                  className="flex grow items-center bg-muted/30"
-                  role="gridcell"
+                  aria-rowindex={ariaRowCount}
+                  className="flex min-h-9 w-full"
+                  role="row"
+                  style={{ minWidth: table.getTotalSize() }}
                   tabIndex={-1}
                 >
-                  <Button
-                    aria-label={addRowLabel}
-                    className="h-full w-full justify-start rounded-none px-3 text-muted-foreground"
-                    onClick={() => void onRowAdd()}
-                    variant="ghost"
+                  <div
+                    className="flex grow items-center bg-muted/30"
+                    role="gridcell"
+                    tabIndex={-1}
                   >
-                    <PlusIcon />
-                    {addRowLabel}
-                  </Button>
+                    <Button
+                      aria-label={addRowLabel}
+                      className="h-full w-full justify-start rounded-none px-3 text-muted-foreground"
+                      onClick={() => void onRowAdd()}
+                      variant="ghost"
+                    >
+                      <PlusIcon />
+                      {addRowLabel}
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : null}
+            ) : null}
 
-          {footerContent ? (
-            <div
-              className="sticky bottom-0 z-10 border-t bg-background"
-              data-slot="data-grid-footer"
-            >
-              {footerContent}
-            </div>
-          ) : null}
-        </ScrollAreaPrimitive.Content>
-      </ScrollAreaPrimitive.Viewport>
-      <ScrollBar orientation="vertical" />
-      <ScrollBar orientation="horizontal" />
-      <ScrollAreaPrimitive.Corner data-slot="scroll-area-corner" />
-    </ScrollAreaPrimitive.Root>
+            {footerContent ? (
+              <div
+                className="sticky bottom-0 z-10 border-t bg-background"
+                data-slot="data-grid-footer"
+              >
+                {footerContent}
+              </div>
+            ) : null}
+          </ScrollAreaPrimitive.Content>
+        </ScrollAreaPrimitive.Viewport>
+        <ScrollBar orientation="vertical" />
+        <ScrollBar orientation="horizontal" />
+        <ScrollAreaPrimitive.Corner data-slot="scroll-area-corner" />
+      </ScrollAreaPrimitive.Root>
+      {selectionActionsContent ? (
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex justify-center px-3"
+          data-slot="data-grid-selection-actions"
+        >
+          <div className="pointer-events-auto">{selectionActionsContent}</div>
+        </div>
+      ) : null}
+    </div>
   )
 }
