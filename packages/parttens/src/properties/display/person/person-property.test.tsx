@@ -43,9 +43,6 @@ describe('PersonProperty', () => {
     )
 
     expect(screen.getByLabelText('Responsável: Sem responsável')).toBeTruthy()
-    expect(
-      container.querySelector('[data-slot="avatar"]')?.className,
-    ).toContain('border')
     expect(container.querySelector('.lucide-user')).toBeTruthy()
   })
 })

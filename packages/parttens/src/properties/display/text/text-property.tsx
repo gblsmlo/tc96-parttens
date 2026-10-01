@@ -1,13 +1,12 @@
 'use client'
 
-import { Button } from '@tc96/ui/button'
 import { cn } from '@tc96/utils'
 import { CopyIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { copyToClipboard } from '../../shared/lib/clipboard'
 import {
+  PropertySurface,
   type PropertyVariant,
-  propertyBadgeClassName,
 } from '../../shared/property-surface'
 import { EditableText } from '../editable-text/index'
 import {
@@ -87,20 +86,16 @@ export function TextProperty({
   // continua lendo como ausência, e não como formulário em branco.
   if (editable && !text && editing === 'trigger' && !editingInline) {
     return (
-      <Button
+      <PropertySurface
         aria-label={addLabel ?? fallback}
-        className={cn(
-          propertyBadgeClassName,
-          'gap-1 text-muted-foreground [&_svg]:mx-0',
-          className,
-        )}
+        className={cn('gap-1', className)}
+        muted
         onClick={() => setEditingInline(true)}
-        type="button"
-        variant="ghost"
+        render={<button type="button" />}
       >
         <PlusIcon aria-hidden="true" className="size-3.5" />
         {fallback}
-      </Button>
+      </PropertySurface>
     )
   }
 

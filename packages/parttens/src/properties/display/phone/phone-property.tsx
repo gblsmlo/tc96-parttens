@@ -8,7 +8,6 @@ import { type FormEvent, useEffect, useState } from 'react'
 import {
   PropertySurface,
   type PropertyVariant,
-  propertyBadgeClassName,
 } from '../../shared/property-surface'
 import { IconLabelProperty } from '../icon-label/icon-label-property'
 import {
@@ -367,19 +366,14 @@ export function PhoneProperty({
         <Popover onOpenChange={setOpen} open={open}>
           <PopoverTrigger
             render={
-              <Button
-                // Vazia, a fileira lê como as outras propriedades ausentes —
-                // texto esmaecido dizendo que não há número —, e o que ela faz
-                // fica no nome acessível. Com números nela sobra o `+`.
+              <PropertySurface
+                // Vazia, a fileira lê como as outras propriedades ausentes, e o
+                // que ela faz fica no nome acessível. Com números nela sobra o
+                // `+`.
                 aria-label={addLabel}
-                className={cn(
-                  propertyBadgeClassName,
-                  '[&_svg]:mx-0',
-                  value.length > 0 ? 'w-6 px-0' : 'gap-1 text-muted-foreground',
-                )}
-                disabled={disabled}
-                type="button"
-                variant="ghost"
+                className={value.length > 0 ? 'w-6 px-0' : 'gap-1'}
+                muted={value.length === 0}
+                render={<button disabled={disabled} type="button" />}
               />
             }
           >

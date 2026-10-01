@@ -142,10 +142,7 @@ export function SelectedViewItem({
         onClick={onSelect}
         render={
           <Button
-            className={cn(
-              'min-w-0 flex-1 justify-start',
-              selected && 'text-primary',
-            )}
+            className="min-w-0 flex-1 justify-start"
             size="sm"
             type="button"
             variant="ghost"

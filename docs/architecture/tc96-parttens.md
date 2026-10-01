@@ -119,10 +119,23 @@ Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue im
 
 Locale do calendar, resolvido no planejamento: o calendar do COSS fala inglês por padrão, como o rótulo dos patterns (`en-US`). Outro idioma entra por `calendarProps.locale`.
 
-Questões abertas:
+Faixa de datas do calendar, decidida em 2026-10-01: o intervalo selecionado usa o desenho do calendar do COSS sem alterações, com o miolo reto em `bg-accent` e as pontas arredondadas por fora. O degradê com pontas `rounded-full` do fork antigo não volta.
 
-- Faixa de datas do calendar.
-- Regra objetiva de sobrescrita nos patterns. A proposta é permitir só layout e dimensão, sem cor, raio ou sombra.
+### Regra de sobrescrita
+
+Decidida em 2026-10-01. Sobre um componente COSS com estilo, um pattern só passa classes de:
+
+- layout e dimensão (`flex`, `gap-*`, `w-*`, `h-*`, `p-*`, posição);
+- tipografia (`text-sm`, `font-medium`, `truncate`);
+- neutralização: zerar o que o componente traz, com `transparent`, `none` ou `0` (`bg-transparent`, `shadow-none`, `border-0`, `rounded-none`), inclusive com `!` quando uma variante de estado do COSS ganharia;
+- mostrar e esconder (`opacity-0` e `opacity-100`);
+- o formato do `Skeleton`, que é o desenho do que ele substitui.
+
+Cor, raio, borda e sombra novos ficam com o tema do consumidor. Quando o pattern precisa de outra aparência, usa uma variante ou um tamanho do COSS: o valor de uma propriedade é o `Badge` `secondary` e a ausência o `outline`; o botão de adicionar card é o `Button` `outline`. Aplicar o estilo de outro componente COSS (`badgeVariants` num `Button`) também é sobrescrita; o caminho é o próprio componente com `render`, como o `Badge` com `render={<button />}`.
+
+Partes do COSS sem estilo (os primitivos do base-ui, `MenuTrigger`, `MenuRadioGroup`, `ComboboxTrigger`) não têm o que sobrescrever: estilizá-las é como estilizar um elemento do próprio pattern. O mesmo vale para o markup próprio, que usa os tokens do tema.
+
+O `bun run overrides:check` (`scripts/check-overrides.ts`) aplica a regra e roda no `bun run check`. Ele lê o fonte de `packages/ui` para saber quais exports têm estilo e segue as constantes de classe locais e importadas. Exceção só em `scripts/override-exceptions.json`, com o motivo; o check também reprova exceção sem motivo ou sem uso. Hoje não há nenhuma.
 
 ## Comportamento e dados
 
@@ -222,7 +235,6 @@ Decidido em 2026-10-01, na triagem das violações do axe.
 
 ## Pontos ainda em revisão
 
-- Regra de sobrescrita nos patterns. Ver [UI base sem opinião](#ui-base-sem-opinião).
 - Aprovação da estratégia de validação e do limite da verificação de compatibilidade.
 - Configuração e integração do CLI com shadcn, preservando o comando desejado e validando destinos em monorepo.
 - Nome npm disponível para o CLI.

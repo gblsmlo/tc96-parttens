@@ -33,7 +33,7 @@ export function DetailGroup({
       ) : null}
 
       <Card
-        className="bg-muted shadow-none before:hidden"
+        className="shadow-none before:hidden"
         data-slot="detail-group-content"
       >
         {children}

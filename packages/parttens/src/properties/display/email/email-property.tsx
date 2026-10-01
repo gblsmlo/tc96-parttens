@@ -10,7 +10,6 @@ import { z } from 'zod'
 import {
   PropertySurface,
   type PropertyVariant,
-  propertyBadgeClassName,
 } from '../../shared/property-surface'
 import { EditableText } from '../editable-text/index'
 import { IconLabelProperty } from '../icon-label/icon-label-property'
@@ -397,7 +396,7 @@ export function EmailProperty({
           <span className="inline-flex min-w-0 flex-col gap-0.5">
             {/* O campo ocupa o lugar do gatilho, com largura própria: `w-full`
                 aqui quebraria a fileira de pílulas numa segunda linha. */}
-            <span className={cn(propertyBadgeClassName, 'w-48')}>
+            <PropertySurface className="w-48">
               <EditableText
                 ariaLabel={addLabel}
                 className="text-sm"
@@ -422,7 +421,7 @@ export function EmailProperty({
                 type="email"
                 value={inlineDraft}
               />
-            </span>
+            </PropertySurface>
             {(formatError ?? errorMessage) ? (
               <span
                 className="text-destructive-foreground text-xs"
@@ -482,17 +481,11 @@ function AddTrigger({
   placeholder: string
 }>) {
   return (
-    <Button
+    <PropertySurface
       aria-label={addLabel}
-      className={cn(
-        propertyBadgeClassName,
-        '[&_svg]:mx-0',
-        hasValue ? 'w-6 px-0' : 'gap-1 text-muted-foreground',
-      )}
-      disabled={disabled}
-      onClick={onClick}
-      type="button"
-      variant="ghost"
+      className={hasValue ? 'w-6 px-0' : 'gap-1'}
+      muted={!hasValue}
+      render={<button disabled={disabled} onClick={onClick} type="button" />}
     >
       {hasValue ? (
         <PlusIcon aria-hidden="true" className="size-3.5" />
@@ -502,6 +495,6 @@ function AddTrigger({
           {placeholder}
         </>
       )}
-    </Button>
+    </PropertySurface>
   )
 }

@@ -155,7 +155,7 @@ export function PeopleProperty<TValue extends string = string>({
         <ComboboxChips
           className={cn(
             variant === 'plain' &&
-              'min-h-7 border-transparent! bg-transparent! p-0 shadow-none! before:hidden focus-within:border-transparent! focus-within:ring-2 sm:min-h-6 dark:bg-transparent!',
+              'min-h-7 border-transparent! bg-transparent! p-0 shadow-none! before:hidden sm:min-h-6',
           )}
         >
           {selectedOptions.map((option) => (
@@ -174,13 +174,14 @@ export function PeopleProperty<TValue extends string = string>({
               selectedOptions.length > 0 ? 'Adicionar pessoa' : undefined
             }
             className={cn(
-              'rounded-[calc(var(--radius-md)-1px)] bg-accent text-accent-foreground [&_svg]:mx-0',
+              '[&_svg]:mx-0',
               selectedOptions.length > 0 ? 'size-6 px-0' : 'gap-1',
             )}
             disabled={disabled}
             onClick={() => setOpen(true)}
+            size="xs"
             type="button"
-            variant="ghost"
+            variant="secondary"
           >
             {selectedOptions.length > 0 ? (
               <PlusIcon aria-hidden="true" className="size-3.5" />

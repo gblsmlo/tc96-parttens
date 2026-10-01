@@ -36,7 +36,7 @@ describe('PhoneProperty', () => {
     // e o que o gatilho faz vive no nome acessível.
     const trigger = screen.getByRole('button', { name: 'Adicionar telefone' })
     expect(trigger.textContent).toContain('Sem telefone')
-    expect(trigger.className).toContain('text-muted-foreground')
+    expect(trigger.getAttribute('data-empty')).toBe('true')
   })
 
   test('com telefone, o gatilho colapsa no sinal de adicionar', () => {

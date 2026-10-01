@@ -82,9 +82,8 @@ describe('SelectProperty', () => {
     const surface = container.querySelector('[data-slot="property-surface"]')
     // Sem valor o nome acessível é só a propriedade, sem repetir o placeholder.
     expect(surface?.getAttribute('aria-label')).toBe('Tipo')
-    // E o texto recua para o tom secundário: ausência não se lê como valor.
+    // E a ausência usa a variante outline do Badge: não se lê como valor.
     expect(surface?.getAttribute('data-empty')).toBe('true')
-    expect(surface?.className).toContain('text-muted-foreground')
     expect(container.textContent).toContain('Tipo')
   })
 
