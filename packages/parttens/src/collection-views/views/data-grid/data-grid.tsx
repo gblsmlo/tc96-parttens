@@ -9,6 +9,7 @@ import {
   type Table as TanstackTable,
 } from '@tanstack/react-table'
 import { observeElementRect, useVirtualizer } from '@tanstack/react-virtual'
+import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import {
   Menu,
@@ -24,6 +25,7 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
   ChevronsUpDownIcon,
   ChevronUpIcon,
   EyeOffIcon,
@@ -303,6 +305,16 @@ export interface DataGridProps<TData> {
   emptyMessage?: string
   maxHeight?: number | string
   getRowGroup?: (row: TData) => string | null
+  /**
+   * Grupos recolhidos, identificados pelo valor de `getRowGroup`. Quando
+   * passado, o array é a autoridade e o clique só chama
+   * `onCollapsedGroupIdsChange`. Recolher esconde as linhas só na página: a
+   * paginação continua contando todas.
+   */
+  collapsedGroupIds?: readonly string[]
+  /** Grupos que começam recolhidos. Ignorado quando `collapsedGroupIds` é passado. */
+  defaultCollapsedGroupIds?: readonly string[]
+  onCollapsedGroupIdsChange?: (groupIds: readonly string[]) => void
   getRowSelected?: (row: TData) => boolean
   onRowAdd?: () => void | Promise<void>
   addRowLabel?: string
@@ -351,6 +363,13 @@ function parseCellKey(key: string): [rowId: string, columnId: string] {
   return JSON.parse(key) as [string, string]
 }
 
+function shouldPullFocus(cell: HTMLElement) {
+  const active = document.activeElement
+  if (!active || active === document.body) return true
+  if (cell.contains(active)) return false
+  return Boolean(active.closest('[data-slot="data-grid-cell"]'))
+}
+
 function isDragScrollExcludedTarget(target: EventTarget | null) {
   return (
     target instanceof Element &&
@@ -369,6 +388,9 @@ export function DataGrid<TData>({
   emptyMessage = 'Nenhum registro para exibir.',
   maxHeight,
   getRowGroup,
+  collapsedGroupIds: controlledCollapsedGroupIds,
+  defaultCollapsedGroupIds = [],
+  onCollapsedGroupIdsChange,
   getRowSelected,
   onRowAdd,
   addRowLabel = 'Adicionar linha',
@@ -393,7 +415,26 @@ export function DataGrid<TData>({
     )?.id
   const fillColumnId =
     fillColumn === false ? undefined : (fillColumn ?? lastCommonColumnId)
-  const rows = table.getRowModel().rows
+  const [uncontrolledCollapsedGroupIds, setUncontrolledCollapsedGroupIds] =
+    useState<readonly string[]>(defaultCollapsedGroupIds)
+  const collapsedGroupIds =
+    controlledCollapsedGroupIds ?? uncontrolledCollapsedGroupIds
+  const pageRows = table.getRowModel().rows
+  const pageGroupCounts = new Map<string, number>()
+  if (getRowGroup) {
+    for (const row of pageRows) {
+      const group = getRowGroup(row.original)
+      if (group)
+        pageGroupCounts.set(group, (pageGroupCounts.get(group) ?? 0) + 1)
+    }
+  }
+  const isGroupCollapsed = (group: string | null) =>
+    group !== null && collapsedGroupIds.includes(group)
+  // Navegação e foco andam só pelas linhas visíveis; as de grupo recolhido
+  // continuam na página, mas fora do grid.
+  const rows = getRowGroup
+    ? pageRows.filter((row) => !isGroupCollapsed(getRowGroup(row.original)))
+    : pageRows
   const selectedRows = table
     .getSelectedRowModel()
     .rows.map((row) => row.original)
@@ -467,6 +508,15 @@ export function DataGrid<TData>({
   })
   let lastGroup: string | null = null
   let renderedGroupCount = 0
+  let visibleRowIndex = 0
+
+  function setGroupCollapsed(group: string, collapsed: boolean) {
+    const next = collapsed
+      ? [...collapsedGroupIds.filter((id) => id !== group), group]
+      : collapsedGroupIds.filter((id) => id !== group)
+    if (!controlledCollapsedGroupIds) setUncontrolledCollapsedGroupIds(next)
+    onCollapsedGroupIdsChange?.(next)
+  }
 
   let selectionActionsContent: ReactNode = null
   if (selectedCount > 0 && selectionActions) {
@@ -873,13 +923,15 @@ export function DataGrid<TData>({
                   // Só puxa o foco de fora da célula. Um controle interno — o
                   // trigger da célula editável — já é o foco certo, e roubá-lo
                   // fecharia o popup que o próprio clique acabou de abrir.
+                  // Fora das células, só recupera foco perdido: o chevron de
+                  // grupo continua com o foco depois de recolher.
                   if (
                     hasInteracted &&
                     isFocused &&
                     !node.contains(document.activeElement)
                   ) {
                     queueMicrotask(() => {
-                      if (!node.contains(document.activeElement)) node.focus()
+                      if (shouldPullFocus(node)) node.focus()
                     })
                   }
                 } else cellRefs.current.delete(currentCellKey)
@@ -1032,7 +1084,7 @@ export function DataGrid<TData>({
                     ))}
                   </div>
                 ))
-              ) : rows.length === 0 ? (
+              ) : pageRows.length === 0 ? (
                 <div
                   aria-rowindex={headerRowCount + 1}
                   className="flex min-h-24 items-center justify-center text-muted-foreground"
@@ -1054,40 +1106,73 @@ export function DataGrid<TData>({
                   })
                 })
               ) : (
-                rows.flatMap((row, rowIndex) => {
+                pageRows.flatMap((row, rowIndex) => {
                   const group = getRowGroup?.(row.original) ?? null
                   const startsGroup = Boolean(group && group !== lastGroup)
                   if (startsGroup) renderedGroupCount += 1
-                  const dataRow = renderDataRow(
-                    row,
-                    rowIndex,
-                    undefined,
-                    headerRowCount +
-                      getCollectionRowIndex(row, rowIndex) +
-                      renderedGroupCount +
-                      1,
-                  )
-                  if (startsGroup) {
+                  const collapsed = isGroupCollapsed(group)
+                  const dataRow = collapsed
+                    ? null
+                    : renderDataRow(
+                        row,
+                        visibleRowIndex++,
+                        undefined,
+                        headerRowCount +
+                          getCollectionRowIndex(row, rowIndex) +
+                          renderedGroupCount +
+                          1,
+                      )
+                  if (startsGroup && group) {
                     lastGroup = group
                     return [
                       <div
                         aria-rowindex={
                           headerRowCount + rowIndex + renderedGroupCount
                         }
-                        className="flex min-h-9 items-center border-b bg-muted/40 px-3 font-medium"
+                        className="flex min-h-9 items-center border-b bg-muted/40 px-1 font-medium"
+                        data-collapsed={collapsed ? 'true' : undefined}
                         data-slot="data-grid-group-row"
                         key={`group-${group}-${rowIndex}`}
                         role="row"
                         tabIndex={-1}
                       >
-                        <div role="gridcell" tabIndex={-1}>
-                          {group}
+                        <div
+                          className="flex min-w-0 items-center gap-1"
+                          role="gridcell"
+                          tabIndex={-1}
+                        >
+                          <Button
+                            aria-expanded={!collapsed}
+                            aria-label={`${collapsed ? 'Expand' : 'Collapse'} ${group}`}
+                            onClick={() => setGroupCollapsed(group, !collapsed)}
+                            size="icon-sm"
+                            variant="ghost"
+                          >
+                            {collapsed ? (
+                              <ChevronRightIcon aria-hidden="true" />
+                            ) : (
+                              <ChevronDownIcon aria-hidden="true" />
+                            )}
+                          </Button>
+                          <span
+                            className="truncate"
+                            data-slot="data-grid-group-label"
+                          >
+                            {group}
+                          </span>
+                          <Badge
+                            className="size-5 min-w-5 shrink-0 rounded-full p-0 text-xs tabular-nums sm:size-5 sm:min-w-5"
+                            data-slot="data-grid-group-count"
+                            variant="secondary"
+                          >
+                            {pageGroupCounts.get(group)}
+                          </Badge>
                         </div>
                       </div>,
-                      dataRow,
+                      ...(dataRow ? [dataRow] : []),
                     ]
                   }
-                  return [dataRow]
+                  return dataRow ? [dataRow] : []
                 })
               )}
             </div>
