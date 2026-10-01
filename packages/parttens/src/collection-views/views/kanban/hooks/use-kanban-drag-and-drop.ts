@@ -90,16 +90,31 @@ export function useKanbanDragAndDrop<TCard>({
     (event: DragOverEvent) => {
       const { source, target } = event.operation
       const { type: sourceType } = source?.data ?? {}
-      const { type: targetType } = target?.data ?? {}
+      const { columnId: targetColumnId, type: targetType } = target?.data ?? {}
 
-      if (!onMoveCard || sourceType !== 'card' || targetType !== 'column') {
-        return
-      }
+      if (!onMoveCard || !source || sourceType !== 'card') return
 
       const visibleColumns =
         optimisticColumnsRef.current ??
         dragSourceColumnsRef.current ??
         columnsRef.current
+
+      if (targetType === 'card') {
+        const sourceLocation = findCardLocation(
+          visibleColumns,
+          String(source.id),
+          getCardDragId,
+        )
+        // Na mesma coluna o plugin otimista do dnd-kit reordena o DOM sem
+        // render. Entre colunas o no mudaria de pai por fora do React, que
+        // depois falharia ao remove-lo (removeChild); por isso o plugin e
+        // impedido e a troca de coluna passa pelo estado.
+        if (!sourceLocation || sourceLocation.columnId === targetColumnId)
+          return
+        event.preventDefault()
+      } else if (targetType !== 'column') {
+        return
+      }
       const projectedColumns = projectKanbanColumns(
         visibleColumns,
         event,

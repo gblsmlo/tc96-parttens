@@ -5,7 +5,7 @@ import { ScrollArea } from '@tc96/ui/scroll-area'
 import { cn } from '@tc96/utils'
 import { EllipsisIcon, PlusIcon } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
-import { useId } from 'react'
+import { memo, useId } from 'react'
 
 import { createColumnDropId } from '../lib/drag-and-drop'
 import type { KanbanColumnActions, KanbanColumnData } from '../types'
@@ -187,30 +187,71 @@ function KanbanColumnCards<TCard>({
     )
   }
 
-  if (!sortableCards || !getCardDragId) {
-    return column.cards.map((card) => (
-      <div
-        className="min-w-0 max-w-full"
-        data-kanban-card-container=""
-        key={getKey(card)}
-      >
-        {renderCard(card)}
-      </div>
-    ))
-  }
+  const sortable = sortableCards && getCardDragId
 
   return column.cards.map((card, index) => (
-    <SortableKanbanCard
+    <KanbanColumnCard
+      card={card}
       columnId={column.id}
       dragLabel={`Mover card ${getCardLabel(card)}`}
-      id={getCardDragId(card)}
       index={index}
       key={getKey(card)}
-    >
-      {renderCard(card)}
-    </SortableKanbanCard>
+      renderCard={renderCard}
+      {...(sortable ? { dragId: getCardDragId(card) } : {})}
+    />
   ))
 }
+
+interface KanbanColumnCardProps<TCard> {
+  card: TCard
+  columnId: string
+  dragId?: string
+  dragLabel: string
+  index: number
+  renderCard: (card: TCard) => ReactNode
+}
+
+// Cada troca de coluna durante o arraste renderiza o board de novo, e a
+// insercao desloca o indice de todos os cards abaixo dela. O involucro
+// sortable precisa do indice novo; o conteudo do consumidor, nao.
+const KanbanColumnCard = memo(function KanbanColumnCard<TCard>({
+  card,
+  columnId,
+  dragId,
+  dragLabel,
+  index,
+  renderCard,
+}: KanbanColumnCardProps<TCard>) {
+  const content = <KanbanCardContentSlot card={card} renderCard={renderCard} />
+
+  if (dragId === undefined) {
+    return (
+      <div className="min-w-0 max-w-full" data-kanban-card-container="">
+        {content}
+      </div>
+    )
+  }
+
+  return (
+    <SortableKanbanCard
+      columnId={columnId}
+      dragLabel={dragLabel}
+      id={dragId}
+      index={index}
+    >
+      {content}
+    </SortableKanbanCard>
+  )
+}) as <TCard>(props: KanbanColumnCardProps<TCard>) => ReactNode
+
+const KanbanCardContentSlot = memo(function KanbanCardContentSlot<TCard>({
+  card,
+  renderCard,
+}: Pick<KanbanColumnCardProps<TCard>, 'card' | 'renderCard'>) {
+  return renderCard(card)
+}) as <TCard>(
+  props: Pick<KanbanColumnCardProps<TCard>, 'card' | 'renderCard'>,
+) => ReactNode
 
 export function KanbanColumn<TCard>({
   column,
