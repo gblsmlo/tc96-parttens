@@ -23,9 +23,11 @@ import {
   type KanbanColumnData,
   KanbanView,
   type KanbanViewProps,
-} from 'tc96/blocks'
-import { SelectProperty, type SelectPropertyOption } from 'tc96/components'
-import { Menu, MenuItem, MenuPopup, MenuTrigger, Text } from 'tc96/ui'
+  SelectProperty,
+  type SelectPropertyOption,
+} from '@tc96/parttens'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+import { Text } from '@tc96/ui/text'
 
 interface SalesDeal {
   assignee: string

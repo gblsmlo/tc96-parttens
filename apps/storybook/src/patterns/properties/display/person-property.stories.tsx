@@ -1,4 +1,4 @@
-import { PersonProperty, type PersonPropertyOption } from 'tc96/components'
+import { PersonProperty, type PersonPropertyOption } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import {

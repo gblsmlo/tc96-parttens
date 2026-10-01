@@ -32,7 +32,7 @@ import {
   ViewSettingsMenu,
   type ViewSettingsMode,
   ViewSettingsSection,
-} from 'tc96/blocks'
+} from '@tc96/parttens'
 import {
   MenuCheckboxItem,
   MenuGroup,
@@ -44,7 +44,7 @@ import {
   MenuSub,
   MenuSubPopup,
   MenuSubTrigger,
-} from 'tc96/ui'
+} from '@tc96/ui/menu'
 
 interface DemoItem {
   assigneeId: string | null

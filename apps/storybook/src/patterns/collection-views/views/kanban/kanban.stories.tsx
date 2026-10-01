@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { type KanbanColumnData, KanbanView } from 'tc96/blocks'
+import { type KanbanColumnData, KanbanView } from '@tc96/parttens'
 import { TodoKanbanCard } from './kanban-card-example'
 
 interface MechanicsCard {

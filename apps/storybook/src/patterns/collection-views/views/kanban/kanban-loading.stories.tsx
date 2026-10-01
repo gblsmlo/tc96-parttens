@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { KanbanView } from 'tc96/blocks'
+import { KanbanView } from '@tc96/parttens'
 
 const meta = {
   component: KanbanView,

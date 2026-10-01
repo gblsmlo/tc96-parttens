@@ -11,7 +11,7 @@ import {
   ListItemTrailing,
   ListView,
   type ListViewProps,
-} from 'tc96/blocks'
+} from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { ReactElement } from 'react'
 import { expect } from 'storybook/test'

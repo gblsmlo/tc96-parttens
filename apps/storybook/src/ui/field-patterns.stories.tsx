@@ -2,15 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
-import {
-  Button,
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-  Form,
-  Input,
-} from 'tc96/ui'
+import { Button } from '@tc96/ui/button'
+import { Field, FieldDescription, FieldError, FieldLabel } from '@tc96/ui/field'
+import { Form } from '@tc96/ui/form'
+import { Input } from '@tc96/ui/input'
 
 const meta = {
   title: 'UI/Field/Patterns',

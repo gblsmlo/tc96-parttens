@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { KanbanCardSkeleton } from 'tc96/blocks'
+import { KanbanCardSkeleton } from '@tc96/parttens'
 
 const meta = {
   component: KanbanCardSkeleton,

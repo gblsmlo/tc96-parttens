@@ -1,54 +1,58 @@
 ---
 title: Instalação
-description: Escolha imports npm ou código COSS por bloco.
+description: Instale os fontes dos patterns no seu projeto COSS.
 ---
 
 # Instalação
 
-```sh
-bun add tc96
+## Requisitos
+
+- React 19, TypeScript e Tailwind CSS 4.
+- COSS configurado com shadcn, com `components.json` na raiz do monorepo.
+- Node e npm para executar o CLI. Bun não é exigido.
+
+## Aliases
+
+Acrescente `elements` e `patterns` aos aliases que o shadcn já define:
+
+```json
+{
+  "aliases": {
+    "components": "@acme/ui",
+    "ui": "@acme/ui",
+    "utils": "@acme/ui/lib/utils",
+    "elements": "@acme/elements",
+    "patterns": "@acme/patterns"
+  }
+}
 ```
 
-Importe pela camada que descreve o nível da sua composição:
+Cada alias também precisa de entrada exata e de wildcard em `paths` no
+`tsconfig` da raiz.
 
-```tsx
-import { Button, Input } from 'tc96/ui'
-import { SelectProperty } from 'tc96/components'
-import { CalendarView, DataGrid, Kanban } from 'tc96/blocks'
-import { cn } from 'tc96/utils'
-```
+## Instalar
 
-## COSS
-
-Para trazer o código de um bloco para o projeto consumidor, use o registry
-gerado durante a publicação. Este comando instala somente o bloco de views:
-
-```sh
-bunx shadcn@latest add ./node_modules/tc96/registry/generated/view.json
-```
-
-TC96 não altera automaticamente os componentes que o projeto não escolheu.
-## Instalação como biblioteca
-
-```sh
-npm install tc96
-```
-
-```tsx
-import { CollectionViewOutlet, TextProperty } from 'tc96/parttens'
-import { Button } from 'tc96/ui'
-```
-
-Os imports `tc96/components` e `tc96/blocks` continuam disponíveis para compatibilidade.
-
-## Instalação de fontes pelo shadcn
-
-Configure `components.json` e instale vários padrões de uma vez:
+Instale um ou vários patterns de uma vez:
 
 ```sh
 npx tc96-parttens add collection-views properties
 ```
 
-O CLI delega a escrita ao shadcn, usa os aliases definidos em `tc96.json` e preserva arquivos que já existem. A primeira versão apresenta compatibilidade TypeScript e orienta a incorporação manual de correções; ela não faz mesclagem automática.
+O CLI delega a escrita ao shadcn e reescreve os imports para os seus aliases:
+
+```tsx
+import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
+```
+
+Arquivos existentes são preservados; o shadcn pergunta antes de sobrescrever.
+
+## Atualizar
+
+Não há pacote para atualizar. Compare os arquivos instalados com a versão atual
+e incorpore as correções manualmente:
+
+```sh
+npx tc96-parttens add collection-views --diff
+```
 
 Filter Builder não faz parte desta versão.

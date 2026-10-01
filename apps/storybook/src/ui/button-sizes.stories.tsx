@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, within } from 'storybook/test'
-import { Button } from 'tc96/ui'
+import { Button } from '@tc96/ui/button'
 
 const meta = {
   title: 'UI/Button/Sizes',

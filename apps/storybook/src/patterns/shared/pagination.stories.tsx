@@ -1,4 +1,4 @@
-import { CollectionPagination } from 'tc96/blocks'
+import { CollectionPagination } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'

@@ -2,17 +2,17 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CheckIcon, EyeIcon, EyeOffIcon, XIcon } from 'lucide-react'
 import { useId, useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
+import { Button } from '@tc96/ui/button'
+import { Group } from '@tc96/ui/group'
+import { Input } from '@tc96/ui/input'
 import {
-  Button,
-  Group,
-  Input,
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
   InputGroupText,
-  Kbd,
-  Spinner,
-} from 'tc96/ui'
+} from '@tc96/ui/input-group'
+import { Kbd } from '@tc96/ui/kbd'
+import { Spinner } from '@tc96/ui/spinner'
 
 const meta = {
   title: 'UI/Input/Patterns',

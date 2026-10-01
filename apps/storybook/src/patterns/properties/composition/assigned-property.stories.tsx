@@ -4,7 +4,7 @@ import {
   AssignedProperty,
   type AssignedPropertyOption,
   type AssignedPropertyProps,
-} from 'tc96/components'
+} from '@tc96/parttens'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,

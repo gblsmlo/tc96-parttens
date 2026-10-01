@@ -10,7 +10,7 @@ import {
   KanbanView,
   ViewSettingsMenu,
   ViewSettingsSection,
-} from 'tc96/blocks'
+} from '@tc96/parttens'
 import {
   Menu,
   MenuCheckboxItem,
@@ -18,10 +18,8 @@ import {
   MenuPopup,
   MenuSeparator,
   MenuTrigger,
-  Popover,
-  PopoverPopup,
-  PopoverTrigger,
-} from 'tc96/ui'
+} from '@tc96/ui/menu'
+import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 
 interface ExampleCard {
   id: string
@@ -119,7 +117,7 @@ function ColumnExample({
   collapsedColumnId?: string
   hiddenColumnId?: string
 }) {
-  const [columns, setColumns] = useState(() =>
+  const [columns, setColumns] = useState((): KanbanColumnData<ExampleCard>[] =>
     initialColumns.map((column) => ({
       ...column,
       cards: [...column.cards],

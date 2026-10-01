@@ -1,33 +1,29 @@
 ---
 title: TC96
-description: Blocos React reutilizáveis para aplicações COSS.
+description: Patterns React instalados como fontes sobre o COSS do seu projeto.
 ---
 
 # TC96
 
-TC96 reúne padrões de interface que antes eram publicados separadamente. Instale
-um único pacote e importe pela camada adequada ao que você está construindo.
-
-```tsx
-import { Kanban } from 'tc96/blocks'
-```
-
-## Instalação
+TC96 reúne patterns de interface sem regra de negócio, como collection views,
+properties, detail sheet e edição inline. Eles não são uma dependência: o CLI
+copia os fontes para o seu projeto, e você passa a ser dono deles.
 
 ```sh
-bun add tc96
+npx tc96-parttens add collection-views properties
 ```
 
-O pacote requer React 19, Tailwind CSS 4 e Base UI. Para manter o código no seu
-projeto COSS, instale o bloco correspondente pelo registry do TC96.
+## Camadas do consumidor
 
-## Camadas públicas
+Os patterns se apoiam numa estrutura em camadas, configurada pelo
+`components.json` na raiz do monorepo:
 
-- `tc96/ui`: primitives como `Button` e `Input`.
-- `tc96/components`: composições reutilizáveis, como properties e edição inline.
-- `tc96/blocks`: experiências completas, como as collection views (Kanban,
-  List, DataGrid, Calendar), Detail Sheet e Filter Builder.
-- `tc96/utils`: utilitários sem domínio, como `cn`.
+- `ui`: os componentes COSS do seu projeto. O TC96 não distribui UI própria;
+  consulte a [documentação do COSS](https://coss.com/ui) para `Button`, `Input`,
+  `Field` e os demais.
+- `utils`: o `cn` que o COSS já instala.
+- `elements`: componentes do TC96 que não existem no COSS, como `Text`.
+- `patterns`: os patterns do TC96.
 
-Os nomes históricos de grupos continuam organizando o registry COSS, mas não
-fazem parte da API npm pública.
+Os patterns usam o tema e as personalizações dos seus componentes COSS. O TC96
+não publica CSS, tokens nem tema.

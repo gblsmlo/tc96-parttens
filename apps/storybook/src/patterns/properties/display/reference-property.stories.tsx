@@ -1,4 +1,4 @@
-import { ReferenceProperty } from 'tc96/components'
+import { ReferenceProperty } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { propertyVariantArgType } from '../../../test-utils/story-arg-types'
 

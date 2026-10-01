@@ -13,7 +13,7 @@ import {
   ViewSettingsSection,
   createSelectColumn,
   useDataGrid,
-} from 'tc96/blocks'
+} from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
 import { type ReactElement, useMemo, useState } from 'react'

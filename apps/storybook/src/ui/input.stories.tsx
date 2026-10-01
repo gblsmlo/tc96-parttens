@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, userEvent, within } from 'storybook/test'
-import { Input } from 'tc96/ui'
+import { Input } from '@tc96/ui/input'
 
 const meta = {
   title: 'UI/Input',
