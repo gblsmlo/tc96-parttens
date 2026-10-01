@@ -1,6 +1,6 @@
 # Arquitetura do tc96-parttens
 
-Status: as decisões de 2026-10-01 (UI base sem opinião, sem biblioteca npm) estão aplicadas no workspace. Continuam pendentes as decisões externas de publicação.
+Status: as decisões de 2026-10-01 (UI base sem opinião, sem biblioteca npm) estão aplicadas no workspace. O CLI sai no npm como `tc96-parttens`, a partir da 0.1.0.
 
 ## Objetivo e escopo
 
@@ -100,7 +100,7 @@ A entrada agregada continua sendo a experiência escolhida, agora como barrel ge
 
 A preservação de API vale para os patterns. A camada de UI segue a seção [UI base sem opinião](#ui-base-sem-opinião).
 
-O nome npm só importa para o CLI `tc96-parttens`. O README da base relata recusa anterior do nome `tc96` pelo registry. Confirmar o nome do CLI antes de divulgar comandos como funcionais.
+O nome npm só importa para o CLI. Confirmado em 2026-10-01: `tc96-parttens` estava livre, sem nome parecido no registry. O repositório continua privado, e o pacote npm é público: o tarball leva o registry com o fonte dos patterns, sob MIT. Por isso o manifesto não aponta para o GitHub, e o README publicado para antes da seção sobre o repositório.
 
 ## UI base sem opinião
 
@@ -237,6 +237,5 @@ Decidido em 2026-10-01, na triagem das violações do axe.
 
 - Aprovação da estratégia de validação e do limite da verificação de compatibilidade.
 - Configuração e integração do CLI com shadcn, preservando o comando desejado e validando destinos em monorepo.
-- Nome npm disponível para o CLI.
 - Metas mensuráveis por view e matriz inicial de ambientes SSR/navegadores.
 - Execução da migração conforme o [plano em revisão](../plans/2026-09-29-reestruturacao-tc96-parttens.md).

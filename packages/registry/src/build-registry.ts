@@ -147,6 +147,9 @@ await writeFile(
     {
       name: 'tc96-parttens',
       version: '0.1.0',
+      description:
+        'React patterns without business rules, installed as source on top of your COSS components.',
+      keywords: ['coss', 'shadcn', 'react', 'patterns', 'registry', 'cli'],
       type: 'module',
       license: 'MIT',
       engines: { node: '>=22' },
@@ -159,6 +162,15 @@ await writeFile(
   )}\n`,
 )
 await writeFile(join(cliOutput, 'LICENSE'), await readFile('LICENSE'))
+// O repositorio e privado: o README publicado para antes da secao que descreve
+// o repositorio e aponta para documentos internos.
+const readme = await readFile('README.md', 'utf8')
+const publicEnd = readme.indexOf('\n## Repository')
+if (publicEnd === -1) throw new Error('README.md lost its Repository section')
+await writeFile(
+  join(cliOutput, 'README.md'),
+  `${readme.slice(0, publicEnd).trimEnd()}\n`,
+)
 console.log(
   'Generated four registry items, the legacy view entry, the aggregate and the Node CLI artifact.',
 )

@@ -10,7 +10,7 @@ npx tc96-parttens add collection-views properties
 import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
 ```
 
-> **Status:** the source-only model described here was decided on 2026-10-01, and the migration is in progress. The npm name of the CLI is not confirmed yet.
+> **Status:** 0.1.0, the first release. The API can change before 1.0.
 
 ## How it works
 
