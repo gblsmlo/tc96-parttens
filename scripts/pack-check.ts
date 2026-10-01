@@ -6,18 +6,7 @@ const reports = []
 for (const artifact of ['library', 'cli']) {
   const root = resolve(`dist/${artifact}`)
   const result = JSON.parse(
-    run(
-      [
-        'npm',
-        'pack',
-        '--dry-run',
-        '--json',
-        '--cache',
-        '/private/tmp/tc96-parttens-npm-cache',
-      ],
-      root,
-      true,
-    ),
+    run(['npm', 'pack', '--dry-run', '--json'], root, true),
   )[0]
   const names: string[] = result.files.map(
     (file: { path: string }) => file.path,
