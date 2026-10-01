@@ -1,6 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { LayoutGridIcon, Rows3Icon, Table2Icon } from 'lucide-react'
-import { useState } from 'react'
 import {
   Action,
   type CollectionDefinition,
@@ -35,6 +33,8 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
+import { LayoutGridIcon, Rows3Icon, Table2Icon } from 'lucide-react'
+import { useState } from 'react'
 
 interface WorkItem {
   id: string

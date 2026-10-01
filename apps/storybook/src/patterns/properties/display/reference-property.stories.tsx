@@ -1,5 +1,5 @@
-import { ReferenceProperty } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { ReferenceProperty } from '@tc96/parttens'
 import { propertyVariantArgType } from '../../../test-utils/story-arg-types'
 
 const meta = {

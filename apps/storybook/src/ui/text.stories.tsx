@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, within } from 'storybook/test'
 import { Text } from '@tc96/ui/text'
+import { expect, within } from 'storybook/test'
 
 const weights = [
   'thin',

@@ -1,5 +1,5 @@
-import { SelectProperty, type SelectPropertyOption } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { SelectProperty, type SelectPropertyOption } from '@tc96/parttens'
 import { CircleDotIcon, MailIcon, PhoneIcon, UsersIcon } from 'lucide-react'
 import { useState } from 'react'
 import {

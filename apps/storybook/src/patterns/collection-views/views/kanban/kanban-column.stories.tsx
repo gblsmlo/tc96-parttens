@@ -1,6 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ChevronRightIcon, EllipsisIcon } from 'lucide-react'
-import { useState } from 'react'
 import {
   CollectionToolbar,
   KanbanCard,
@@ -20,6 +18,8 @@ import {
   MenuTrigger,
 } from '@tc96/ui/menu'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
+import { ChevronRightIcon, EllipsisIcon } from 'lucide-react'
+import { useState } from 'react'
 
 interface ExampleCard {
   id: string

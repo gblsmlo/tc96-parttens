@@ -1,10 +1,10 @@
 # TC96 Storybook
 
-Catálogo visual interno para desenvolver e testar a API publicada do pacote.
-Stories desta pasta devem representar componentes renderizáveis e importar
-somente `tc96/ui`, `tc96/components` ou `tc96/blocks`. Utilitários sem interface,
-MDX e documentação conceitual pertencem ao app Fumadocs em `apps/docs`; imports
-diretos de `packages/tc96/src` também não são permitidos.
+Catálogo visual interno para desenvolver e testar os patterns sobre os pacotes do
+workspace. As stories importam os patterns de `@tc96/parttens` e os componentes de
+UI por subpath, como `@tc96/ui/button`; o barrel de `@tc96/ui` está sendo
+removido. Utilitários sem interface, MDX e documentação conceitual pertencem ao
+app Fumadocs em `apps/docs`.
 
 Cada grupo de stories gera automaticamente uma entrada `Doc` por meio do
 Storybook Autodocs. Props, Controls e descrições são derivados do componente e
@@ -21,18 +21,11 @@ bun run storybook:test
 `storybook:test` transforma as stories em testes Vitest e executa as interações
 em Chromium pelo Playwright.
 
-A suíte de arquitetura falha quando uma story é criada fora de `ui`,
-`components` ou `blocks`, importa `tc96/utils`, adiciona MDX ou cria uma story
-manual chamada `Docs`.
-
-O catálogo segue a mesma responsabilidade dos subpaths públicos:
+O catálogo é organizado em dois grupos:
 
 ```text
 UI
-Components/Properties
-Blocks/Views
+Patterns
 ```
 
-Dentro de `Blocks/Views`, Kanban e List compartilham a infraestrutura de
-Collection; DataGrid permanece uma view independente. Gallery, Timeline e
-Calendar aparecem como planned para reservar sua posição sem antecipar APIs.
+`Patterns` reúne Collection Views, Properties, Toolbar, Pagination e Action Bar.

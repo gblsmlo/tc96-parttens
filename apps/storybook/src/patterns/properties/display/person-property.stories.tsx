@@ -1,5 +1,5 @@
-import { PersonProperty, type PersonPropertyOption } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { PersonProperty, type PersonPropertyOption } from '@tc96/parttens'
 import { useState } from 'react'
 import {
   esperarAvatarComAresta,

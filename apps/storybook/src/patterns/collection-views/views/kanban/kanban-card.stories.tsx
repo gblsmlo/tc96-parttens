@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EllipsisIcon, ListTodoIcon, MessageCircleIcon } from 'lucide-react'
-import { type ReactNode, useState } from 'react'
 import {
+  DateProperty,
   KanbanCard,
   KanbanCardAction,
   KanbanCardActionButton,
@@ -12,7 +11,6 @@ import {
   KanbanCardHeader,
   KanbanCardOpenTrigger,
   KanbanCardTitle,
-  DateProperty,
   SelectProperty,
   type SelectPropertyOption,
 } from '@tc96/parttens'
@@ -25,6 +23,8 @@ import {
   PopoverTrigger,
 } from '@tc96/ui/popover'
 import { Text } from '@tc96/ui/text'
+import { EllipsisIcon, ListTodoIcon, MessageCircleIcon } from 'lucide-react'
+import { type ReactNode, useState } from 'react'
 
 const priorityOptions: readonly SelectPropertyOption[] = [
   { label: 'Alta', tone: 'danger', value: 'high' },

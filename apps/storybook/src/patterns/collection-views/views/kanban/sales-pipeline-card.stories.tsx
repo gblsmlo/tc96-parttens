@@ -1,16 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
-  CircleDollarSignIcon,
-  Clock3Icon,
-  EllipsisIcon,
-  FileTextIcon,
-  ListTodoIcon,
-  MessageCircleIcon,
-  UserRoundIcon,
-} from 'lucide-react'
-import type { ReactElement, ReactNode } from 'react'
-import { useState } from 'react'
-import {
   KanbanCard,
   KanbanCardAction,
   KanbanCardActionButton,
@@ -28,6 +17,17 @@ import {
 } from '@tc96/parttens'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Text } from '@tc96/ui/text'
+import {
+  CircleDollarSignIcon,
+  Clock3Icon,
+  EllipsisIcon,
+  FileTextIcon,
+  ListTodoIcon,
+  MessageCircleIcon,
+  UserRoundIcon,
+} from 'lucide-react'
+import type { ReactElement, ReactNode } from 'react'
+import { useState } from 'react'
 
 interface SalesDeal {
   assignee: string

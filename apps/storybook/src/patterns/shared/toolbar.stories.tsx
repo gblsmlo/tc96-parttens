@@ -1,23 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
-  ArrowDownUpIcon,
-  CalendarDaysIcon,
-  CircleDotIcon,
-  CopyPlusIcon,
-  LayoutGridIcon,
-  PencilIcon,
-  Rows3Icon,
-  ShapesIcon,
-  SignalHighIcon,
-  StarIcon,
-  Table2Icon,
-  TagsIcon,
-  Trash2Icon,
-  UserRoundIcon,
-} from 'lucide-react'
-import { type ReactNode, useState } from 'react'
-import { expect, screen, userEvent, within } from 'storybook/test'
-import {
   Action,
   type CollectionDefinition,
   CollectionProvider,
@@ -45,6 +27,24 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
+import {
+  ArrowDownUpIcon,
+  CalendarDaysIcon,
+  CircleDotIcon,
+  CopyPlusIcon,
+  LayoutGridIcon,
+  PencilIcon,
+  Rows3Icon,
+  ShapesIcon,
+  SignalHighIcon,
+  StarIcon,
+  Table2Icon,
+  TagsIcon,
+  Trash2Icon,
+  UserRoundIcon,
+} from 'lucide-react'
+import { type ReactNode, useState } from 'react'
+import { expect, screen, userEvent, within } from 'storybook/test'
 
 interface DemoItem {
   assigneeId: string | null

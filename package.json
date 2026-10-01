@@ -17,7 +17,7 @@
     "build:library": "bun scripts/build-library.ts",
     "build:registry": "bun packages/registry/src/build-registry.ts",
     "build": "bun run build:library && bun run build:registry",
-    "storybook": "bun run build:library && bun run --cwd apps/storybook dev",
+    "storybook": "bun run --cwd apps/storybook dev",
     "storybook:test": "bun run --cwd apps/storybook test",
     "storybook:build": "bun run --cwd apps/storybook build",
     "docs:build": "bun run --cwd apps/docs build",
