@@ -1,6 +1,6 @@
 # Arquitetura do tc96-parttens
 
-Status: arquitetura aplicada no workspace até 2026-09-30. As decisões de 2026-10-01 (UI base sem opinião, sem biblioteca npm) ainda não foram aplicadas no código; decisões externas de publicação continuam pendentes.
+Status: as decisões de 2026-10-01 (UI base sem opinião, sem biblioteca npm) estão aplicadas no workspace. Continuam pendentes as decisões adiadas até o primeiro consumidor, o barrel agregado gerado pelo CLI e as decisões externas de publicação.
 
 ## Objetivo e escopo
 
@@ -111,9 +111,9 @@ Decidido em 2026-10-01. O tc96 reutiliza patterns em projetos que já usam COSS,
 
 `packages/ui` continua no workspace, privado, como a UI que um consumidor COSS teria. Ele é gerado por `bun run sync:coss`, que grava cada item do registry do COSS como publicado e só troca os aliases de import (`@/registry/default/...`) pelos do workspace, como o `shadcn add` faria. Nunca é editado à mão. O lock `packages/ui/coss.lock.json` registra, por item, a URL `coss.com/ui/r/<item>.json`, o hash do conteúdo publicado e o hash do arquivo gravado. O `check:coss` compara cada arquivo com o lock, e o `check:coss --remote` compara com o registry. O diretório fica fora do Biome. Os patterns só importam `@tc96/ui/<item>` presente no lock.
 
-Situação em 2026-10-01: os 27 itens de `packages/ui/src` são o COSS sem alterações. Antes, 8 deles divergiam (button, input, input-group, group, calendar, combobox, sheet e textarea) e havia cópias em `compat/`. O COSS fixa `@base-ui/react` 1.8.0 e usa `@daypicker/react` no calendar, e o workspace acompanha essas versões. `scripts/build-library.ts` publica `ui/styles.css` com tokens próprios. Os quatro `styles/global.css` dos patterns não são importados.
+Situação em 2026-10-01: os 27 itens de `packages/ui/src` são o COSS sem alterações. Antes, 8 deles divergiam (button, input, input-group, group, calendar, combobox, sheet e textarea) e havia cópias em `compat/`. O COSS fixa `@base-ui/react` 1.8.0 e usa `@daypicker/react` no calendar, e o workspace acompanha essas versões. Os quatro `styles/global.css` dos patterns não são importados.
 
-Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue importar o COSS do consumidor sem embutir uma cópia própria ou depender de um caminho que não resolve. Por isso o tc96 é distribuído só como fontes. A atualização passa a ser `tc96-parttens add --diff` com incorporação manual. Reabrir esta decisão só se surgir como requisito um consumidor sem COSS.
+Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue importar o COSS do consumidor sem embutir uma cópia própria ou depender de um caminho que não resolve. Por isso o tc96 é distribuído só como fontes. A atualização passa a ser `tc96-parttens add --diff` com incorporação manual. Reabrir esta decisão só se surgir como requisito um consumidor sem COSS. O build da biblioteca foi removido; o `verify-public-api` confere os barrels dos quatro patterns e o agregado `packages/parttens/src/index.ts` contra `public-api-exports.json`, e o `pack:check` confere só o CLI.
 
 Locale do calendar, resolvido no planejamento: o calendar do COSS fala inglês por padrão, como o rótulo dos patterns (`en-US`). Outro idioma entra por `calendarProps.locale`.
 
@@ -208,6 +208,7 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 ## Pontos ainda em revisão
 
 - Namespace COSS no registry e regra de sobrescrita. Ver [UI base sem opinião](#ui-base-sem-opinião).
+- Barrel agregado gerado pelo CLI no alias de patterns. Até existir, `CollectionToolbar`, `CollectionToolbarGroup`, `CollectionPagination` e o apelido `Kanban` só são exportados pelo agregado do workspace, que o registry não distribui.
 - Aprovação da estratégia de validação e do limite da verificação de compatibilidade.
 - Configuração e integração do CLI com shadcn, preservando o comando desejado e validando destinos em monorepo.
 - Nome npm disponível para o CLI.

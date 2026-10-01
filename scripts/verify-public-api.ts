@@ -1,7 +1,19 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import ts from 'typescript'
+import { patternNames } from '../packages/registry/src/manifest'
 
+// The public API is what a consumer imports from the patterns alias: each
+// pattern barrel the registry installs, and the aggregate entry.
+const modules: Record<string, string> = {
+  ...Object.fromEntries(
+    patternNames.map((name) => [
+      name,
+      `packages/parttens/src/${name}/index.ts`,
+    ]),
+  ),
+  parttens: 'packages/parttens/src/index.ts',
+}
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)
 const parsed = ts.parseJsonConfigFileContent(
   configuration.config,
@@ -10,41 +22,31 @@ const parsed = ts.parseJsonConfigFileContent(
 )
 const sourceProgram = ts.createProgram(parsed.fileNames, parsed.options)
 const checker = sourceProgram.getTypeChecker()
-const modules = {
-  utils: 'packages/utils/src/index.ts',
-  components: 'packages/parttens/src/components.ts',
-  blocks: 'packages/parttens/src/blocks.ts',
-  parttens: 'packages/parttens/src/index.ts',
-}
 const snapshot: Record<string, string[]> = {}
 for (const [name, file] of Object.entries(modules)) {
   const source = sourceProgram.getSourceFile(resolve(file))
   const symbol = source && checker.getSymbolAtLocation(source)
   if (!symbol) throw new Error(`No public module: ${file}`)
-  snapshot[name] = checker
+  const exported = checker
     .getExportsOfModule(symbol)
     .map((value) => value.name)
     .sort()
-  const runtime = await import(
-    resolve(
-      `dist/library/${name === 'utils' ? name : 'parttens'}/src/${name === 'components' || name === 'blocks' ? name : 'index'}.js`,
-    )
-  )
-  for (const key of Object.keys(runtime)) {
-    if (!snapshot[name].includes(key))
+  snapshot[name] = exported
+  for (const key of Object.keys(await import(resolve(file))))
+    if (!exported.includes(key))
       throw new Error(`Unexpected runtime export ${name}/${key}`)
-  }
 }
-const legacyPath = 'docs/architecture/public-api-exports.json'
+const baselinePath = 'docs/architecture/public-api-exports.json'
 if (process.argv.includes('--record')) {
-  await writeFile(legacyPath, `${JSON.stringify(snapshot, null, 2)}\n`)
+  await writeFile(baselinePath, `${JSON.stringify(snapshot, null, 2)}\n`)
 } else {
   const baseline: Record<string, string[]> = JSON.parse(
-    await readFile(legacyPath, 'utf8'),
+    await readFile(baselinePath, 'utf8'),
   )
   for (const [module, names] of Object.entries(baseline)) {
+    if (!snapshot[module]) throw new Error(`Missing public module: ${module}`)
     for (const name of names)
-      if (!snapshot[module]?.includes(name))
+      if (!snapshot[module].includes(name))
         throw new Error(`Missing export: ${module}/${name}`)
   }
 }

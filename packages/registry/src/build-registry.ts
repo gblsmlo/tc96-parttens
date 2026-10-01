@@ -90,12 +90,6 @@ await writeFile(
   join(output, 'view.json'),
   await readFile(join(output, 'collection-views.json')),
 )
-await mkdir('dist/library/registry', { recursive: true })
-for (const name of [...patternNames, 'view'])
-  await writeFile(
-    `dist/library/registry/${name}.json`,
-    await readFile(join(output, `${name}.json`)),
-  )
 const cliOutput = resolve('dist/cli')
 await mkdir(join(cliOutput, 'registry'), { recursive: true })
 for (const name of [...patternNames, 'view'])
