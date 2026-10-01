@@ -1,27 +1,57 @@
-# tc96-parttens
+<div align="center">
 
-React patterns without business rules, built on your project's own [COSS](https://coss.com/ui) components. You install the source, own it, and change it as you like.
+# @tc96/parttens
+React patterns without business rules, installed as source on top of your COSS components
 
-```sh
+[![npm version](https://img.shields.io/npm/v/@tc96/parttens?style=flat&colorA=18181B&colorB=0EA5E9)](https://www.npmjs.com/package/@tc96/parttens)
+[![npm downloads](https://img.shields.io/npm/dm/@tc96/parttens?style=flat&colorA=18181B&colorB=0EA5E9)](https://www.npmjs.com/package/@tc96/parttens)
+[![License](https://img.shields.io/github/license/gblsmlo/tc96-parttens?style=flat&colorA=18181B&colorB=0EA5E9)](https://github.com/gblsmlo/tc96-parttens/blob/main/LICENSE)
+
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=white&labelColor=18181B)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white&labelColor=18181B)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat&logo=tailwindcss&logoColor=white&labelColor=18181B)
+![shadcn](https://img.shields.io/badge/shadcn-registry-FFFFFF?style=flat&logo=shadcnui&logoColor=white&labelColor=18181B)
+![Storybook](https://img.shields.io/badge/Storybook-stories-FF4785?style=flat&logo=storybook&logoColor=white&labelColor=18181B)
+![Bun](https://img.shields.io/badge/Bun-tests-FBF0DF?style=flat&logo=bun&logoColor=white&labelColor=18181B)
+
+</div>
+
+> **Status:** 0.2.1. The API can change before 1.0.
+
+## ✨ Overview
+
+- **Source, not a dependency**: the CLI copies the pattern source into your workspace. You own it and change it as you like
+- **Built on COSS**: patterns import `Button`, `Menu`, `Popover` and the rest from your project's own UI alias
+- **Themeable**: tc96 ships no CSS, tokens or theme, only layout classes on top of your components
+- **No business rules**: your app provides prepared data and handles events. Filtering, sorting, persistence and API calls stay with you
+- **Layered**: imports only go down a layer (`patterns` → `elements` → `ui` → `utils`), checked by a boundaries script
+- **Tested**: Storybook stories, bun tests, consumer install checks and a view benchmark
+
+## Installation
+
+```bash
 npx @tc96/parttens add collection-views properties
 ```
+
+**Quick Start:**
 
 ```tsx
 import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
 ```
 
-> **Status:** 0.2.0. The API can change before 1.0.
+### How it works
 
-## How it works
+- **Your COSS components:** if a COSS component is missing, it is installed through shadcn. If you already have it, yours is reused, customizations included
+- **Your aliases:** imports are rewritten to the aliases in your root `components.json`
+- **Your files:** existing files are kept. shadcn asks before overwriting anything
 
-tc96 is not a runtime dependency. It works like shadcn and COSS: the CLI copies the pattern source into your workspace.
+### Requirements
 
-- **Your COSS components:** patterns import `Button`, `Menu`, `Popover` and the rest from your project's UI alias. If a COSS component is missing, it is installed through shadcn. If you already have it, yours is reused, customizations included.
-- **Your theme:** tc96 ships no CSS, tokens or theme. Patterns use COSS components without changes and only add layout classes.
-- **Your aliases:** imports are rewritten to the aliases in your root `components.json`.
-- **Your files:** existing files are kept. shadcn asks before overwriting anything.
+- React 19, TypeScript and Tailwind CSS 4
+- COSS set up with shadcn, with `components.json` at the monorepo root
+- Node and npm to run the CLI. Bun is not required
 
-## Consumer structure
+### Consumer structure
 
 tc96 expects a layered design system, in the spirit of atomic design, configured by one `components.json` at the monorepo root:
 
@@ -49,12 +79,6 @@ apps/
 
 Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`, and `elements` can import `ui` and `utils`. Each alias also needs exact and wildcard entries in the root `tsconfig` `paths`.
 
-## Requirements
-
-- React 19, TypeScript and Tailwind CSS 4
-- COSS set up with shadcn, with `components.json` at the monorepo root
-- Node and npm to run the CLI. Bun is not required.
-
 ## Patterns
 
 | Pattern | Contents |
@@ -64,29 +88,72 @@ Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`
 | `detail-sheet` | Detail sheet with groups, rows and actions |
 | `editable` | Inline editing compound |
 
-Your app provides prepared data and handles events. Filtering, sorting, pagination, grouping, persistence, permissions and API calls stay in your app.
-
 Filter Builder and responsive layouts are out of scope for the first version.
 
 ## Updating
 
 There is no package to update. To compare your installed files with the current version, run:
 
-```sh
+```bash
 npx @tc96/parttens add collection-views --diff
 ```
 
 Then apply the changes you want by hand.
 
-## Repository
+## Development
 
-| Package | Role |
-| --- | --- |
-| `packages/parttens` | Pattern source |
-| `packages/elements` | tc96 components that COSS does not have, such as `Text` |
-| `packages/ui` | Unmodified COSS components, locked to an upstream snapshot and used for development and tests |
-| `packages/utils` | Shared helpers (`cn`) |
-| `packages/registry` | Registry build and the CLI, published as `@tc96/parttens` |
-| `apps/storybook`, `apps/docs` | Stories and documentation |
+```bash
+# Install dependencies
+bun install
+
+# Start Storybook dev server
+bun run storybook
+
+# Run tests
+bun run test
+bun run storybook:test
+
+# Type checking
+bun run typecheck
+
+# Lint
+bun run lint:ci
+
+# Build the registry
+bun run build
+
+# Full verification (run before a release)
+bun run check
+bun run release:check
+```
+
+## Project Structure
+
+```text
+packages/
+├── parttens/          # Pattern source
+├── elements/          # tc96 components COSS does not have, such as Text
+├── ui/                # Unmodified COSS components, locked to an upstream snapshot
+├── utils/             # Shared helpers (cn)
+└── registry/          # Registry build and the CLI, published as @tc96/parttens
+apps/
+├── storybook/         # Stories and interaction tests
+└── docs/              # Documentation site
+docs/architecture/     # Boundaries and decisions (in Portuguese)
+scripts/               # Boundary, COSS sync and release checks
+```
 
 The [architecture document](docs/architecture/tc96-parttens.md) records the boundaries and decisions. It is written in Portuguese.
+
+## Contributing
+
+Contributions are welcome! Please:
+
+1. Check existing [issues](https://github.com/gblsmlo/tc96-parttens/issues) or create a new one
+2. Fork the repository and create a feature branch
+3. Run `bun run check` before submitting
+4. Submit a Pull Request with a clear description
+
+## License
+
+MIT License - see [LICENSE](./LICENSE) for details.
