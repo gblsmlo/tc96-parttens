@@ -164,11 +164,11 @@ await writeFile(
   )}\n`,
 )
 await writeFile(join(cliOutput, 'LICENSE'), await readFile('LICENSE'))
-// O repositorio e privado: o README publicado para antes da secao que descreve
-// o repositorio e aponta para documentos internos.
+// O repositorio e privado: o README publicado para antes de Development, que
+// descreve os scripts do monorepo e aponta para documentos e issues internos.
 const readme = await readFile('README.md', 'utf8')
-const publicEnd = readme.indexOf('\n## Repository')
-if (publicEnd === -1) throw new Error('README.md lost its Repository section')
+const publicEnd = readme.indexOf('\n## Development')
+if (publicEnd === -1) throw new Error('README.md lost its Development section')
 await writeFile(
   join(cliOutput, 'README.md'),
   `${readme.slice(0, publicEnd).trimEnd()}\n`,
