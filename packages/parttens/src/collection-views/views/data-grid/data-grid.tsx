@@ -442,11 +442,29 @@ export function DataGrid<TData>({
   const collectionRows = table.getSortedRowModel().rows
   const collectionRowCount = table.getRowCount()
   const headerRowCount = table.getHeaderGroups().length
-  const groupRowCount = getRowGroup
-    ? new Set(
-        collectionRows.map((row) => getRowGroup(row.original)).filter(Boolean),
-      ).size
-    : 0
+  // Uma linha de grupo por sequência de linhas com o mesmo valor, na coleção
+  // inteira: é como o render a desenha. `groupRunsThrough[i]` diz quantas já
+  // abriram até a linha `i`, o que dá a posição dela no grid mesmo em outra
+  // página. Com paginação no servidor a coleção é só a página carregada, então
+  // a posição é buscada na própria coleção, não pelo deslocamento da página.
+  const groupRunsThrough: number[] = []
+  const groupRunStarts: boolean[] = []
+  const collectionPositions = new Map<string, number>()
+  let groupRowCount = 0
+  if (getRowGroup) {
+    let previousGroup: string | null = null
+    collectionRows.forEach((row, position) => {
+      const group = getRowGroup(row.original)
+      const startsRun = Boolean(group && group !== previousGroup)
+      if (group && startsRun) {
+        groupRowCount += 1
+        previousGroup = group
+      }
+      groupRunsThrough.push(groupRowCount)
+      groupRunStarts.push(startsRun)
+      collectionPositions.set(row.id, position)
+    })
+  }
   const bodyRowCount = isLoading
     ? loadingRowCount
     : collectionRowCount === 0
@@ -506,8 +524,6 @@ export function DataGrid<TData>({
     overscan,
     useFlushSync: false,
   })
-  let lastGroup: string | null = null
-  let renderedGroupCount = 0
   let visibleRowIndex = 0
 
   function setGroupCollapsed(group: string, collapsed: boolean) {
@@ -1108,8 +1124,15 @@ export function DataGrid<TData>({
               ) : (
                 pageRows.flatMap((row, rowIndex) => {
                   const group = getRowGroup?.(row.original) ?? null
-                  const startsGroup = Boolean(group && group !== lastGroup)
-                  if (startsGroup) renderedGroupCount += 1
+                  const collectionIndex = getCollectionRowIndex(row, rowIndex)
+                  const runPosition = collectionPositions.get(row.id) ?? -1
+                  const groupRunsBefore = groupRunsThrough[runPosition] ?? 0
+                  // Uma página que abre no meio de um grupo repete o cabeçalho
+                  // dele, só na primeira linha: no meio da página, um grupo
+                  // que já estava aberto não ganha outra linha.
+                  const startsGroup = Boolean(
+                    group && (groupRunStarts[runPosition] || rowIndex === 0),
+                  )
                   const collapsed = isGroupCollapsed(group)
                   const dataRow = collapsed
                     ? null
@@ -1117,17 +1140,13 @@ export function DataGrid<TData>({
                         row,
                         visibleRowIndex++,
                         undefined,
-                        headerRowCount +
-                          getCollectionRowIndex(row, rowIndex) +
-                          renderedGroupCount +
-                          1,
+                        headerRowCount + collectionIndex + groupRunsBefore + 1,
                       )
                   if (startsGroup && group) {
-                    lastGroup = group
                     return [
                       <div
                         aria-rowindex={
-                          headerRowCount + rowIndex + renderedGroupCount
+                          headerRowCount + collectionIndex + groupRunsBefore
                         }
                         className="flex min-h-9 items-center border-b bg-muted/40 px-1 font-medium"
                         data-collapsed={collapsed ? 'true' : undefined}

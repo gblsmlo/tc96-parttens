@@ -232,6 +232,218 @@ describe('DataGrid', () => {
   })
 })
 
+describe('DataGrid group row numbering', () => {
+  const byResponsible = (campaign: Campaign) => campaign.responsible
+
+  function record(id: string, responsible: string): Campaign {
+    return { id, responsible, title: `Campanha ${id}` }
+  }
+
+  const captured = {
+    table: null as ReturnType<typeof useDataGrid<Campaign>>['table'] | null,
+  }
+
+  function GroupedGrid({
+    data,
+    getRowGroup = byResponsible,
+    pageSize,
+    tableOptions,
+  }: Readonly<{
+    data: Campaign[]
+    getRowGroup?: (campaign: Campaign) => string | null
+    pageSize?: number
+    tableOptions?: Parameters<typeof useDataGrid<Campaign>>[0]['tableOptions']
+  }>): ReactElement {
+    const { table } = useDataGrid<Campaign>({
+      columns,
+      data,
+      enablePagination: pageSize !== undefined,
+      getRowId: (campaign) => campaign.id,
+      ...(pageSize === undefined ? {} : { pageSize }),
+      ...(tableOptions ? { tableOptions } : {}),
+    })
+    captured.table = table
+
+    return (
+      <DataGrid
+        aria-label="Campanhas"
+        getRowGroup={getRowGroup}
+        table={table}
+      />
+    )
+  }
+
+  function bodyRowIndexes(container: HTMLElement) {
+    return Array.from(
+      container.querySelectorAll(
+        '[data-slot="data-grid-group-row"], [data-slot="data-grid-row"]',
+      ),
+      (row) => Number(row.getAttribute('aria-rowindex')),
+    )
+  }
+
+  function rowCountOf(container: HTMLElement) {
+    return Number(
+      container.querySelector('[role="grid"]')?.getAttribute('aria-rowcount'),
+    )
+  }
+
+  test('counts one group row per run, so a group that returns is counted twice', () => {
+    const { container } = render(
+      <GroupedGrid
+        data={[record('a', 'Ana'), record('b', 'Bruno'), record('c', 'Ana')]}
+      />,
+    )
+
+    // 1 cabeçalho + 3 linhas + 3 grupos (Ana, Bruno, Ana)
+    expect(rowCountOf(container)).toBe(7)
+    expect(bodyRowIndexes(container)).toEqual([2, 3, 4, 5, 6, 7])
+  })
+
+  test('numbers the rows of a later page after the groups of the earlier pages', () => {
+    const { container } = render(
+      <GroupedGrid
+        data={[
+          record('a', 'Ana'),
+          record('b', 'Ana'),
+          record('c', 'Bruno'),
+          record('d', 'Bruno'),
+        ]}
+        pageSize={2}
+      />,
+    )
+
+    // 1 cabeçalho + 4 linhas + 2 grupos + 1 rodapé
+    expect(rowCountOf(container)).toBe(8)
+    expect(bodyRowIndexes(container)).toEqual([2, 3, 4])
+
+    act(() => {
+      captured.table?.nextPage()
+    })
+
+    expect(bodyRowIndexes(container)).toEqual([5, 6, 7])
+  })
+
+  test('numbers a row that continues a group across the page break after its first rows', () => {
+    const { container } = render(
+      <GroupedGrid
+        data={[record('a', 'Ana'), record('b', 'Ana'), record('c', 'Ana')]}
+        pageSize={2}
+      />,
+    )
+
+    act(() => {
+      captured.table?.nextPage()
+    })
+
+    // O dado é a linha 5 do grid inteiro (cabeçalho, grupo, 3 linhas).
+    const dataRow = container.querySelector('[data-slot="data-grid-row"]')
+    expect(dataRow?.getAttribute('aria-rowindex')).toBe('5')
+    // 1 cabeçalho + 3 linhas + 1 grupo + 1 rodapé
+    expect(rowCountOf(container)).toBe(6)
+  })
+})
+
+describe('DataGrid group row numbering edge cases', () => {
+  function record(id: string, responsible: string): Campaign {
+    return { id, responsible, title: `Campanha ${id}` }
+  }
+
+  const captured = {
+    table: null as ReturnType<typeof useDataGrid<Campaign>>['table'] | null,
+  }
+  const blankAsNoGroup = (campaign: Campaign) => campaign.responsible || null
+
+  function Grid({
+    data,
+    pageSize,
+    tableOptions,
+  }: Readonly<{
+    data: Campaign[]
+    pageSize?: number
+    tableOptions?: Parameters<typeof useDataGrid<Campaign>>[0]['tableOptions']
+  }>): ReactElement {
+    const { table } = useDataGrid<Campaign>({
+      columns,
+      data,
+      enablePagination: pageSize !== undefined,
+      getRowId: (campaign) => campaign.id,
+      ...(pageSize === undefined ? {} : { pageSize }),
+      ...(tableOptions ? { tableOptions } : {}),
+    })
+    captured.table = table
+
+    return (
+      <DataGrid
+        aria-label="Campanhas"
+        getRowGroup={blankAsNoGroup}
+        pagination={false}
+        table={table}
+      />
+    )
+  }
+
+  function bodyRowIndexes(container: HTMLElement) {
+    return Array.from(
+      container.querySelectorAll(
+        '[data-slot="data-grid-group-row"], [data-slot="data-grid-row"]',
+      ),
+      (row) => Number(row.getAttribute('aria-rowindex')),
+    )
+  }
+
+  test('keeps a group open across a row without a group', () => {
+    const { container } = render(
+      <Grid data={[record('a', 'Ana'), record('b', ''), record('c', 'Ana')]} />,
+    )
+
+    // 1 cabeçalho + 3 linhas + 1 grupo: a linha sem grupo não fecha o de Ana
+    expect(
+      container.querySelector('[role="grid"]')?.getAttribute('aria-rowcount'),
+    ).toBe('5')
+    expect(bodyRowIndexes(container)).toEqual([2, 3, 4, 5])
+  })
+
+  test('gives every row of a page its own index when the page starts without a group', () => {
+    const { container } = render(
+      <Grid
+        data={[
+          record('a', 'Ana'),
+          record('b', 'Ana'),
+          record('c', ''),
+          record('d', 'Ana'),
+        ]}
+        pageSize={2}
+      />,
+    )
+
+    act(() => {
+      captured.table?.nextPage()
+    })
+
+    const indexes = bodyRowIndexes(container)
+    expect(new Set(indexes).size).toBe(indexes.length)
+  })
+
+  test('gives every row of a page its own index when the table paginates on the server', () => {
+    const { container } = render(
+      <Grid
+        data={[record('c', 'Ana'), record('d', 'Bruno')]}
+        pageSize={2}
+        tableOptions={{ manualPagination: true, rowCount: 6 }}
+      />,
+    )
+
+    act(() => {
+      captured.table?.setPageIndex(1)
+    })
+
+    const indexes = bodyRowIndexes(container)
+    expect(indexes).toHaveLength(4)
+    expect(new Set(indexes).size).toBe(indexes.length)
+  })
+})
+
 describe('DataGrid collapsible groups', () => {
   const byResponsible = (campaign: Campaign) => campaign.responsible
 
