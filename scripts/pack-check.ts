@@ -14,6 +14,9 @@ for (const artifact of ['cli']) {
   )
   if (names.some((name) => /filter-builder|node_modules|\.test\./.test(name)))
     throw new Error(`Unexpected package content in ${artifact}`)
+  for (const required of ['cli.js', 'README.md', 'LICENSE', 'package.json'])
+    if (!names.includes(required))
+      throw new Error(`${artifact} is missing ${required}`)
   const manifest = JSON.parse(await readFile(`${root}/package.json`, 'utf8'))
   if (
     Object.keys(manifest.dependencies).some((name) => name.startsWith('@tc96/'))
