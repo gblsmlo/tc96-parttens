@@ -159,9 +159,9 @@ function PersonPropertyContent<TValue extends string = string>({
 }>) {
   if (display === 'avatar') {
     return (
-      <Avatar className="size-7 border bg-muted text-[0.625rem]">
+      <Avatar className="size-7 text-[0.625rem]">
         {option?.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
-        <AvatarFallback className="text-muted-foreground">
+        <AvatarFallback>
           {option ? (
             (option.fallback ?? getInitials(option.label))
           ) : (

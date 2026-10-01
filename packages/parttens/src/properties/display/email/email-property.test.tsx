@@ -40,7 +40,7 @@ describe('EmailProperty', () => {
 
     const trigger = screen.getByRole('button', { name: 'Adicionar e-mail' })
     expect(trigger.textContent).toContain('Sem e-mail')
-    expect(trigger.className).toContain('text-muted-foreground')
+    expect(trigger.getAttribute('data-empty')).toBe('true')
   })
 
   test('com e-mail, o gatilho colapsa no sinal de adicionar', () => {

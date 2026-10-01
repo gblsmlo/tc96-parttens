@@ -314,10 +314,10 @@ export function KanbanColumn<TCard>({
             {!loading && actions?.onAddCard ? (
               <Button
                 aria-label={`Adicionar card em ${column.title}`}
-                className="w-full border border-dashed border-border bg-card/40 text-muted-foreground"
+                className="w-full"
                 onClick={() => actions.onAddCard?.(column.id)}
                 size="sm"
-                variant="ghost"
+                variant="outline"
               >
                 <PlusIcon aria-hidden="true" />
                 {actions.addLabel ?? 'Adicionar card'}

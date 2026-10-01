@@ -36,7 +36,6 @@ describe('TagsProperty', () => {
     expect(trigger.querySelector('svg')?.classList.contains('lucide-tag')).toBe(
       true,
     )
-    expect(trigger.className).toContain('rounded-full')
     expect(
       container.querySelector('[data-slot="combobox-chips"]')?.lastElementChild,
     ).toBe(trigger)
@@ -65,7 +64,7 @@ describe('TagsProperty', () => {
     expect(
       trigger.querySelector('svg')?.classList.contains('lucide-plus'),
     ).toBe(true)
-    expect(trigger.className).toContain('w-6')
+    expect(trigger.className).toContain('size-6')
   })
 
   test('renders the editable multi-value collection as a plain property', () => {
@@ -108,7 +107,7 @@ describe('TagsProperty', () => {
     ).toBe('plain')
   })
 
-  test('renders editable tags with secondary badge styling', () => {
+  test('renders editable tags as the COSS chip, without own styling', () => {
     const { container } = render(
       <TagsProperty
         onValueChange={() => undefined}
@@ -119,9 +118,8 @@ describe('TagsProperty', () => {
 
     const tag = container.querySelector('[data-slot="combobox-chip"]')
 
-    expect(tag?.className).toContain('bg-secondary')
-    expect(tag?.className).toContain('text-secondary-foreground')
-    expect(tag?.className).toContain('rounded-full')
+    expect(tag?.textContent).toContain('Documentos')
+    expect(tag?.className).not.toContain('rounded-full')
   })
 
   test('returns the next collection when an option is selected', async () => {

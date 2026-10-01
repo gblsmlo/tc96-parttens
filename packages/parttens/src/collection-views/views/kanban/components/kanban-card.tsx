@@ -82,22 +82,19 @@ const kanbanCardTitleVariants = cva('font-medium text-sm leading-5', {
   },
 })
 
-const kanbanCardDescriptionVariants = cva(
-  'text-card-foreground/70 text-xs leading-5',
-  {
-    variants: {
-      display: {
-        compact: null,
-        full: 'line-clamp-3',
-      },
+const kanbanCardDescriptionVariants = cva('text-xs leading-5', {
+  variants: {
+    display: {
+      compact: null,
+      full: 'line-clamp-3',
     },
   },
-)
+})
 
 const kanbanCardContentVariants = cva('px-3 pt-0 pb-3')
 
 const kanbanCardFooterVariants = cva(
-  'min-h-9 border-t border-border/70 px-3 py-2 text-card-foreground/70 text-xs in-[[data-slot=card]:has(>[data-slot=card-panel])]:pt-2',
+  'min-h-9 px-3 py-2 text-xs in-[[data-slot=card]:has(>[data-slot=card-panel])]:pt-2',
 )
 
 export interface KanbanCardProps extends useRender.ComponentProps<'article'> {

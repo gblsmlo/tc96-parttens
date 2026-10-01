@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "boundaries:check": "bun scripts/check-boundaries.ts",
+    "overrides:check": "bun scripts/check-overrides.ts",
     "check:coss": "bun scripts/check-coss.ts",
     "sync:coss": "bun scripts/sync-coss.ts",
     "typecheck": "tsc --noEmit",
@@ -26,7 +27,7 @@
     "docs:build": "bun run --cwd apps/docs build",
     "docs:dev": "bun run --cwd apps/docs dev",
     "lint:ci": "biome check scripts packages/registry/src",
-    "check": "bun run check:coss && bun run boundaries:check && bun run typecheck && bun run lint:ci && bun run storybook:typecheck && bun run storybook:lint && bun run test && bun run build && bun run verify:public-api && bun run storybook:test && bun run storybook:build && bun run docs:build",
+    "check": "bun run check:coss && bun run boundaries:check && bun run overrides:check && bun run typecheck && bun run lint:ci && bun run storybook:typecheck && bun run storybook:lint && bun run test && bun run build && bun run verify:public-api && bun run storybook:test && bun run storybook:build && bun run docs:build",
     "release:check": "bun run check && bun run test:consumer:registry && bun run test:consumer:ssr && bun run bench:views && bun run pack:check",
     "verify:public-api": "bun scripts/verify-public-api.ts",
     "test:consumer:registry": "bun scripts/test-consumer-registry.ts",

@@ -48,7 +48,7 @@ export function CollectionToolbar({
         'justify-between',
         variant === 'text' ? 'min-h-14' : 'h-9 md:h-10',
         (variant === 'plain' || variant === 'text') &&
-          'items-center rounded-none border-0 bg-transparent p-0 text-foreground',
+          'items-center rounded-none border-0 bg-transparent p-0',
         className,
       )}
       data-variant={variant}

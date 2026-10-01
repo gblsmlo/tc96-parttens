@@ -18,7 +18,6 @@ import { useMemo, useState } from 'react'
 import {
   PropertySurface,
   type PropertyVariant,
-  propertyBadgeClassName,
 } from '../../shared/property-surface'
 
 export interface TagsPropertyOption<TValue extends string = string> {
@@ -176,12 +175,11 @@ export function TagsProperty<TValue extends string = string>({
           <ComboboxChips
             className={cn(
               variant === 'plain' &&
-                'min-h-7 border-transparent! bg-transparent! p-0 shadow-none! before:hidden focus-within:border-transparent! focus-within:ring-2 sm:min-h-6 dark:bg-transparent!',
+                'min-h-7 border-transparent! bg-transparent! p-0 shadow-none! before:hidden sm:min-h-6',
             )}
           >
             {selectedOptions.map((option) => (
               <ComboboxChip
-                className={cn(propertyBadgeClassName, 'pe-0')}
                 key={option.value}
                 removeProps={{ 'aria-label': `Remover tag ${option.label}` }}
               >
@@ -195,19 +193,18 @@ export function TagsProperty<TValue extends string = string>({
               aria-label={
                 selectedOptions.length > 0 ? 'Adicionar tag' : undefined
               }
-              // `Button` traz `[&_svg]:-mx-0.5` e a própria escala de ícone; num
-              // chip isso encolhe o glifo e o cola no rótulo, quebrando o
-              // alinhamento com as tags ao lado. O tamanho explícito no ícone
-              // desliga as duas regras de escala, e a margem volta a zero.
+              // `Button` traz `[&_svg]:-mx-0.5`; ao lado dos chips isso cola o
+              // glifo no rótulo. O tamanho explícito no ícone desliga a escala
+              // do Button, e a margem volta a zero.
               className={cn(
-                propertyBadgeClassName,
                 '[&_svg]:mx-0',
-                selectedOptions.length > 0 ? 'w-6 px-0' : 'gap-1',
+                selectedOptions.length > 0 ? 'size-6 px-0' : 'gap-1',
               )}
               disabled={disabled}
               onClick={() => setOpen(true)}
+              size="xs"
               type="button"
-              variant="ghost"
+              variant="secondary"
             >
               {selectedOptions.length > 0 ? (
                 <PlusIcon aria-hidden="true" className="size-3.5" />

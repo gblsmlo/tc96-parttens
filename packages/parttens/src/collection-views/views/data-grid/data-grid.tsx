@@ -1112,7 +1112,7 @@ export function DataGrid<TData>({
                   >
                     <Button
                       aria-label={addRowLabel}
-                      className="h-full w-full justify-start rounded-none px-3 text-muted-foreground"
+                      className="h-full w-full justify-start rounded-none px-3"
                       onClick={() => void onRowAdd()}
                       variant="ghost"
                     >
