@@ -42,12 +42,11 @@ const ViewSettingsSection = Reflect.get(
   children: ReactNode
   label: ReactNode
 }>
-const CollectionToolbar = Reflect.get(
-  collectionModule,
-  'CollectionToolbar',
-) as ComponentType<{
-  endSlot?: ReactNode
-}>
+// A toolbar saiu de collection-views para `src/shared`; importar pelo nome
+// faz o typecheck acusar se ela mudar de lugar de novo.
+const { CollectionToolbar } = await import(
+  '../../../shared/components/collection-toolbar'
+)
 
 /** O gatilho do menu é um `ToolbarButton`, que exige o contexto do Base UI. */
 const renderSubmenu = (submenu: ReactNode) =>

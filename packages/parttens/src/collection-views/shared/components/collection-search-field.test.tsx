@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, mock, test } from 'bun:test'
-import type { ComponentType, ReactNode } from 'react'
+import type { ComponentType } from 'react'
 
 await import('../../test/dom')
 
@@ -26,12 +26,11 @@ const CollectionSearchField = Reflect.get(
   collectionModule,
   'CollectionSearchField',
 ) as ComponentType<SearchFieldProps>
-const CollectionToolbar = Reflect.get(
-  collectionModule,
-  'CollectionToolbar',
-) as ComponentType<{
-  startSlot?: ReactNode
-}>
+// A toolbar saiu de collection-views para `src/shared`; importar pelo nome
+// faz o typecheck acusar se ela mudar de lugar de novo.
+const { CollectionToolbar } = await import(
+  '../../../shared/components/collection-toolbar'
+)
 
 /** O campo só monta dentro da toolbar: `ToolbarInput` exige o contexto do Base UI. */
 const renderField = (props: SearchFieldProps) =>

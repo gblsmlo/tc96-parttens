@@ -6,6 +6,7 @@ for (const path of [
   'detail-sheet',
   'editable',
   'properties',
+  'shared',
 ]) {
   if (
     !(await files(`packages/parttens/src/${path}`)).some((file) =>
