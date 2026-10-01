@@ -170,7 +170,7 @@ describe('DataGrid', () => {
     )
 
     const groupRows = container.querySelectorAll(
-      '[data-slot="data-grid-group-row"]',
+      '[data-slot="data-grid-group-row"] [data-slot="data-grid-group-label"]',
     )
     expect(Array.from(groupRows, (row) => row.textContent)).toEqual([
       'Ana',
@@ -203,7 +203,7 @@ describe('DataGrid', () => {
     const { container } = render(<UnsortedGrid />)
 
     const groupRows = container.querySelectorAll(
-      '[data-slot="data-grid-group-row"]',
+      '[data-slot="data-grid-group-row"] [data-slot="data-grid-group-label"]',
     )
     expect(Array.from(groupRows, (row) => row.textContent)).toEqual([
       'Ana',
@@ -229,6 +229,268 @@ describe('DataGrid', () => {
     const checkboxes = screen.getAllByRole('checkbox')
     // 1 no cabeçalho + 1 por linha
     expect(checkboxes).toHaveLength(4)
+  })
+})
+
+describe('DataGrid collapsible groups', () => {
+  const byResponsible = (campaign: Campaign) => campaign.responsible
+
+  function groupRow(container: HTMLElement, label: string) {
+    return Array.from(
+      container.querySelectorAll<HTMLElement>(
+        '[data-slot="data-grid-group-row"]',
+      ),
+    ).find(
+      (row) =>
+        row.querySelector('[data-slot="data-grid-group-label"]')
+          ?.textContent === label,
+    )
+  }
+
+  function toggleOf(label: string) {
+    return screen.getByRole('button', {
+      name: new RegExp(`^(Expand|Collapse) ${label}$`),
+    })
+  }
+
+  test('renders every group expanded when no collapse prop is passed', () => {
+    render(<TypedGrid getRowGroup={byResponsible} />)
+
+    expect(toggleOf('Ana').getAttribute('aria-expanded')).toBe('true')
+    expect(toggleOf('Bruno').getAttribute('aria-expanded')).toBe('true')
+    expect(screen.getAllByRole('row')).toHaveLength(1 + 2 + 3)
+  })
+
+  test('shows the name and the page count of each group in its row', () => {
+    const { container } = render(<TypedGrid getRowGroup={byResponsible} />)
+
+    const counts = Array.from(
+      container.querySelectorAll('[data-slot="data-grid-group-count"]'),
+      (count) => count.textContent,
+    )
+    expect(counts).toEqual(['2', '1'])
+  })
+
+  test('hides and restores the rows of a group, keeping the group row', () => {
+    const { container } = render(<TypedGrid getRowGroup={byResponsible} />)
+
+    fireEvent.click(toggleOf('Ana'))
+
+    expect(screen.queryByText('Retomada de inativos')).toBeNull()
+    expect(screen.queryByText('Indicação premiada')).toBeNull()
+    expect(screen.getByText('Aniversariantes')).toBeTruthy()
+    expect(groupRow(container, 'Ana')).toBeTruthy()
+    expect(toggleOf('Ana').getAttribute('aria-expanded')).toBe('false')
+    expect(toggleOf('Ana').getAttribute('aria-label')).toBe('Expand Ana')
+
+    fireEvent.click(toggleOf('Ana'))
+
+    expect(screen.getByText('Retomada de inativos')).toBeTruthy()
+    expect(screen.getByText('Indicação premiada')).toBeTruthy()
+  })
+
+  test('lets collapsedGroupIds own the state and only reports the change', () => {
+    const changes: (readonly string[])[] = []
+    render(
+      <TypedGrid
+        collapsedGroupIds={[]}
+        getRowGroup={byResponsible}
+        onCollapsedGroupIdsChange={(ids) => changes.push(ids)}
+      />,
+    )
+
+    fireEvent.click(toggleOf('Ana'))
+
+    expect(changes).toEqual([['Ana']])
+    expect(screen.getByText('Retomada de inativos')).toBeTruthy()
+  })
+
+  test('starts from defaultCollapsedGroupIds and reports the full list', () => {
+    const changes: (readonly string[])[] = []
+    render(
+      <TypedGrid
+        defaultCollapsedGroupIds={['Bruno']}
+        getRowGroup={byResponsible}
+        onCollapsedGroupIdsChange={(ids) => changes.push(ids)}
+      />,
+    )
+
+    expect(screen.queryByText('Aniversariantes')).toBeNull()
+
+    fireEvent.click(toggleOf('Ana'))
+
+    expect(changes.map((ids) => [...ids].sort())).toEqual([['Ana', 'Bruno']])
+  })
+
+  test('keeps a group collapsed on the next page without changing the pagination', () => {
+    const captured = {
+      table: null as ReturnType<typeof useDataGrid<Campaign>>['table'] | null,
+    }
+
+    function PaginatedGroupedGrid(): ReactElement {
+      const { table } = useDataGrid<Campaign>({
+        columns,
+        data: campaigns,
+        enablePagination: true,
+        getRowId: (campaign) => campaign.id,
+        pageSize: 1,
+      })
+      captured.table = table
+
+      return <DataGrid getRowGroup={byResponsible} table={table} />
+    }
+
+    const { container } = render(<PaginatedGroupedGrid />)
+
+    fireEvent.click(toggleOf('Ana'))
+    expect(screen.queryByText('Retomada de inativos')).toBeNull()
+
+    act(() => {
+      captured.table?.nextPage()
+    })
+
+    expect(captured.table?.getPageCount()).toBe(3)
+    expect(captured.table?.getState().pagination.pageIndex).toBe(1)
+    expect(screen.queryByText('Indicação premiada')).toBeNull()
+    expect(toggleOf('Ana').getAttribute('aria-expanded')).toBe('false')
+    expect(
+      groupRow(container, 'Ana')?.querySelector(
+        '[data-slot="data-grid-group-count"]',
+      )?.textContent,
+    ).toBe('1')
+  })
+
+  const threeOwners: Campaign[] = [
+    { id: 'a', responsible: 'Ana', title: 'Retomada de inativos' },
+    { id: 'b', responsible: 'Bruno', title: 'Aniversariantes' },
+    { id: 'd', responsible: 'Carla', title: 'Boas-vindas' },
+  ]
+
+  function ThreeOwnersGrid(props: Readonly<GridProps>): ReactElement {
+    const { table } = useDataGrid<Campaign>({
+      columns,
+      data: threeOwners,
+      getRowId: (campaign) => campaign.id,
+    })
+
+    return (
+      <DataGrid
+        aria-label="Campanhas"
+        getRowGroup={byResponsible}
+        table={table}
+        {...props}
+      />
+    )
+  }
+
+  const TypedThreeOwnersGrid = ThreeOwnersGrid as ComponentType<GridProps>
+
+  test('skips the rows of a collapsed group when moving with the arrows', async () => {
+    render(<TypedThreeOwnersGrid defaultCollapsedGroupIds={['Bruno']} />)
+
+    const firstCell = screen
+      .getByText('Retomada de inativos')
+      .closest<HTMLElement>('[role="gridcell"]')
+    if (!firstCell) throw new Error('cell not found')
+    fireEvent.click(firstCell)
+    fireEvent.keyDown(firstCell, { key: 'ArrowDown' })
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    expect(document.activeElement?.textContent).toBe('Boas-vindas')
+  })
+
+  test('keeps the focus on the chevron that collapsed the group', async () => {
+    render(<TypedThreeOwnersGrid />)
+
+    const carlaCell = screen
+      .getByText('Boas-vindas')
+      .closest<HTMLElement>('[role="gridcell"]')
+    if (!carlaCell) throw new Error('cell not found')
+    fireEvent.click(carlaCell)
+    const toggle = toggleOf('Ana')
+    toggle.focus()
+    fireEvent.click(toggle)
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    expect(document.activeElement?.getAttribute('aria-label')).toBe(
+      'Expand Ana',
+    )
+  })
+
+  test('moves the focus to the first visible row when its group collapses', async () => {
+    const { rerender } = render(<TypedThreeOwnersGrid collapsedGroupIds={[]} />)
+
+    const brunoCell = screen
+      .getByText('Aniversariantes')
+      .closest<HTMLElement>('[role="gridcell"]')
+    if (!brunoCell) throw new Error('cell not found')
+    fireEvent.click(brunoCell)
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(document.activeElement?.textContent).toBe('Aniversariantes')
+    rerender(<TypedThreeOwnersGrid collapsedGroupIds={['Bruno']} />)
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    expect(document.activeElement?.textContent).toBe('Retomada de inativos')
+  })
+
+  test('brings the focus back to the roving cell from another cell on re-render', async () => {
+    const { rerender } = render(<TypedThreeOwnersGrid collapsedGroupIds={[]} />)
+
+    const anaCell = screen
+      .getByText('Retomada de inativos')
+      .closest<HTMLElement>('[role="gridcell"]')
+    const brunoCell = screen
+      .getByText('Aniversariantes')
+      .closest<HTMLElement>('[role="gridcell"]')
+    if (!(anaCell && brunoCell)) throw new Error('cell not found')
+    fireEvent.click(anaCell)
+    await act(async () => {
+      await Promise.resolve()
+    })
+    brunoCell.focus()
+    rerender(<TypedThreeOwnersGrid collapsedGroupIds={['Carla']} />)
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    expect(document.activeElement?.textContent).toBe('Retomada de inativos')
+  })
+
+  test('selects the rows of collapsed groups when selecting all', () => {
+    function SelectableGroupedGrid(): ReactElement {
+      const { table } = useDataGrid<Campaign>({
+        columns: [createSelectColumn<Campaign>(), ...columns],
+        data: campaigns,
+        enableRowSelection: true,
+        getRowId: (campaign) => campaign.id,
+      })
+
+      return (
+        <DataGrid
+          getRowGroup={byResponsible}
+          selectionActions={({ selectedCount }) => (
+            <span>{selectedCount} selecionados</span>
+          )}
+          table={table}
+        />
+      )
+    }
+
+    render(<SelectableGroupedGrid />)
+    fireEvent.click(toggleOf('Ana'))
+    const [selectAll] = screen.getAllByRole('checkbox')
+    if (!selectAll) throw new Error('select-all not found')
+    fireEvent.click(selectAll)
+
+    expect(screen.getByText('3 selecionados')).toBeTruthy()
   })
 })
 

@@ -17,7 +17,7 @@ import {
 } from '@tc96/parttens'
 import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
 import { type ReactElement, useMemo, useState } from 'react'
-import { expect } from 'storybook/test'
+import { expect, userEvent, within } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
 
 interface MechanicsRecord {
@@ -113,6 +113,9 @@ interface DataGridExampleProps {
   isLoading?: boolean
   /** Agrupa linhas consecutivas que compartilham o responsável. */
   grouped?: boolean
+  /** Grupos recolhidos, quando o estado fica com quem compõe o grid. */
+  collapsedGroupIds?: readonly string[]
+  onCollapsedGroupIdsChange?: (groupIds: readonly string[]) => void
   /** Liga a coluna de seleção e a caixa de seleção por linha. */
   selectable?: boolean
   /** Pagina no cliente. O rodapé de paginação vem junto, sem wiring extra. */
@@ -132,9 +135,11 @@ interface DataGridExampleProps {
  * monta a tabela, o grid desenha, e a toolbar e a paginação são opcionais.
  */
 function DataGridExample({
+  collapsedGroupIds,
   data = records,
   density,
   grouped = false,
+  onCollapsedGroupIdsChange,
   isLoading = false,
   maxHeight,
   paginated = false,
@@ -183,6 +188,8 @@ function DataGridExample({
         density={density}
         emptyMessage="Nenhum item para exibir."
         getRowGroup={grouped ? (record) => record.owner : undefined}
+        {...(collapsedGroupIds ? { collapsedGroupIds } : {})}
+        {...(onCollapsedGroupIdsChange ? { onCollapsedGroupIdsChange } : {})}
         isLoading={isLoading}
         maxHeight={maxHeight}
         selectionActions={
@@ -287,7 +294,49 @@ export const WithToolbar: Story = { args: { withToolbar: true } }
 
 export const Paginated: Story = { args: { paginated: true } }
 
-export const Grouped: Story = { args: { grouped: true } }
+export const Grouped: Story = {
+  args: { grouped: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const toggle = canvas.getByRole('button', { name: 'Collapse Ana' })
+
+    await userEvent.click(toggle)
+    await expect(canvas.queryByText('First item')).toBeNull()
+    await expect(toggle.getAttribute('aria-expanded')).toBe('false')
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Expand Ana' }))
+    await expect(canvas.getByText('First item')).toBeTruthy()
+  },
+}
+
+/**
+ * Quem compõe o grid guarda os grupos recolhidos — por exemplo, para
+ * lembrá-los entre visitas. Bruno começa recolhido.
+ */
+function ControlledGroupsExample(): ReactElement {
+  const [collapsedGroupIds, setCollapsedGroupIds] = useState<readonly string[]>(
+    ['Bruno'],
+  )
+
+  return (
+    <DataGridExample
+      collapsedGroupIds={collapsedGroupIds}
+      grouped
+      onCollapsedGroupIdsChange={setCollapsedGroupIds}
+    />
+  )
+}
+
+export const GroupedControlled: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.queryByText('Third item')).toBeNull()
+    await userEvent.click(canvas.getByRole('button', { name: 'Expand Bruno' }))
+    await expect(canvas.getByText('Third item')).toBeTruthy()
+  },
+  render: () => <ControlledGroupsExample />,
+}
 
 export const Selectable: Story = {
   args: { fullHeight: true, selectable: true },
