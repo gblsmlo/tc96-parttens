@@ -1,4 +1,4 @@
-import { AttachmentProperty, AttachmentsProperty } from 'tc96/components'
+import { AttachmentProperty, AttachmentsProperty } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { LinkIcon, PaperclipIcon } from 'lucide-react'
 import { expect } from 'storybook/test'

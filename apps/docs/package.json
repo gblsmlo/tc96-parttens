@@ -8,8 +8,7 @@
   },
   "dependencies": {
     "fumadocs-core": "^16.0.0",
-    "fumadocs-mdx": "^15.2.0",
-    "tc96": "file:../../dist/library"
+    "fumadocs-mdx": "^15.2.0"
   },
   "devDependencies": {
     "@types/react": "19.1.11",

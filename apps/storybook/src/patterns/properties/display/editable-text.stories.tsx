@@ -1,4 +1,4 @@
-import { EditableText } from 'tc96/components'
+import { EditableText } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'

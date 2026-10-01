@@ -1,4 +1,4 @@
-import { FlagProperty } from 'tc96/components'
+import { FlagProperty } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { BotIcon, CircleIcon } from 'lucide-react'
 import {

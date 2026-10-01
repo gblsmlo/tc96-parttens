@@ -12,25 +12,19 @@ import {
   KanbanCardHeader,
   KanbanCardOpenTrigger,
   KanbanCardTitle,
-} from 'tc96/blocks'
-import {
   DateProperty,
   SelectProperty,
   type SelectPropertyOption,
-} from 'tc96/components'
+} from '@tc96/parttens'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
-  Avatar,
-  AvatarFallback,
-  Menu,
-  MenuItem,
-  MenuPopup,
-  MenuTrigger,
   Popover,
   PopoverClose,
   PopoverPopup,
   PopoverTrigger,
-  Text,
-} from 'tc96/ui'
+} from '@tc96/ui/popover'
+import { Text } from '@tc96/ui/text'
 
 const priorityOptions: readonly SelectPropertyOption[] = [
   { label: 'Alta', tone: 'danger', value: 'high' },
