@@ -1,35 +1,34 @@
-import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { createConsumer, run, saveReport } from './consumer'
+import { build } from 'esbuild'
+import {
+  buttonMarker,
+  createConsumer,
+  installPatterns,
+  run,
+  saveReport,
+} from './consumer'
 
-const root = await createConsumer('consumer-ssr')
-await mkdir(join(root, 'src'), { recursive: true })
-await writeFile(
-  join(root, 'src/ssr.tsx'),
-  `import React from 'react'
-import { renderToString } from 'react-dom/server'
-import { Button } from 'tc96/ui'
-import { TextProperty } from 'tc96/parttens'
-export function Page() { return <main><Button>Server action</Button><TextProperty value="Rendered on server" /></main> }
-const html = renderToString(<Page />)
-if (!html.includes('Server action') || !html.includes('Rendered on server')) throw new Error('SSR markup was incomplete')
-console.log(html)
-`,
-)
-run([join(root, 'node_modules/.bin/tsc'), '--noEmit'], root)
-run(
-  [
-    'node',
-    '--input-type=module',
-    '-e',
-    `import('tsx').then(() => console.log('tsx loader available')).catch(() => console.log('compile contract verified'))`,
-  ],
-  root,
-)
+// Server rendering in the example consumer must use its own COSS button.
+const consumer = await createConsumer('consumer-ssr')
+await installPatterns(consumer, ['collection-views', 'properties'])
+const outfile = join(consumer.root, 'dist/ssr.cjs')
+await build({
+  entryPoints: [join(consumer.root, 'src/ssr.tsx')],
+  absWorkingDir: consumer.root,
+  tsconfig: join(consumer.root, 'tsconfig.json'),
+  bundle: true,
+  platform: 'node',
+  format: 'cjs',
+  outfile,
+  logLevel: 'error',
+})
+const html = run(['node', outfile], consumer.root, true)
+for (const expected of ['Arquivar', 'Rendered on server', buttonMarker])
+  if (!html.includes(expected))
+    throw new Error(`Server markup is missing "${expected}"`)
 await saveReport('consumer-ssr', {
   passed: true,
-  consumer: 'React DOM server renderer',
-  hydration:
-    'interaction stories cover hydration-sensitive UI; full framework hydration remains consumer-specific',
-  note: 'The package has no server-only imports. TanStack Start and Next.js adapters are not bundled into tc96.',
+  patterns: ['collection-views', 'properties'],
+  consumerButtonRendered: true,
 })
+console.log('SSR rendered the consumer button.')
