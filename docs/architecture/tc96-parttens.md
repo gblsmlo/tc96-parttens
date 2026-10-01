@@ -118,7 +118,6 @@ Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue im
 Questões abertas:
 
 - Locale e faixa de datas do calendar. É pré-requisito para limpar `packages/ui`.
-- Forma das `registryDependencies` do COSS (URL completa ou namespace `@coss` em `registries`) e reaproveitamento sem prompt de um componente COSS que o consumidor já tem. É o caminho crítico do registry, e o contrato de instalação só foi provado com itens locais.
 - Regra objetiva de sobrescrita nos patterns. A proposta é permitir só layout e dimensão, sem cor, raio ou sombra.
 
 ## Comportamento e dados
@@ -150,7 +149,13 @@ apps/
 - Imports só descem de camada: `patterns` importa `elements`, `ui` e `utils`; `elements` importa `ui` e `utils`; `ui` não importa nenhuma das outras.
 - Cada alias precisa de entrada exata e de wildcard nos `paths` do `tsconfig` da raiz, conforme o [contrato de instalação](installation-contract.md).
 
-Não verificado: se `shadcn init` ou outros comandos regravam o `components.json` e descartam `elements` e `patterns`. Se descartarem, o CLI precisa avisar e reaplicar.
+### Decisões adiadas até o primeiro consumidor
+
+Estas decisões ficam para quando o primeiro pattern for instalado num consumidor real. Até lá, nenhuma unidade de trabalho depende delas.
+
+- Forma das `registryDependencies` do COSS: URL completa (`https://coss.com/ui/r/<item>.json`) ou namespace `@coss` declarado em `registries` no `components.json`.
+- Reaproveitamento de um componente COSS que o consumidor já tem: provar que o shadcn não pergunta se deve sobrescrever, ou fazer o CLI deixar de fora as dependências já instaladas antes de chamar o shadcn.
+- Persistência de `aliases.elements` e `aliases.patterns`: verificar se `shadcn init` ou outros comandos regravam o `components.json` e descartam essas chaves. Se descartarem, o CLI precisa avisar e reaplicar.
 
 Contrato proposto do comando:
 
