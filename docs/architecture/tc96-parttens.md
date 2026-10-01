@@ -1,6 +1,6 @@
 # Arquitetura do tc96-parttens
 
-Status: as decisões de 2026-10-01 (UI base sem opinião, sem biblioteca npm) estão aplicadas no workspace. O CLI sai no npm como `tc96-parttens`, a partir da 0.1.0.
+Status: as decisões de 2026-10-01 (UI base sem opinião, sem biblioteca npm) estão aplicadas no workspace. O CLI sai no npm como `@tc96/parttens`, na org `tc96`, a partir da 0.1.0.
 
 ## Objetivo e escopo
 
@@ -82,7 +82,7 @@ No Storybook, `Patterns/Collection Views/Overview` apresenta a mesma coleção e
 
 `parttens` depende de `ui`, `elements` e `utils`; `ui` e `elements` dependem de `utils`; `elements` não depende de `parttens`. Os três não dependem do registry. Dependências entre padrões são explícitas e não podem criar ciclos. Os fontes de UI têm uma implementação canônica, sem cópias mantidas por padrão.
 
-Nomes internos: `@tc96/ui`, `@tc96/parttens`, `@tc96/utils` e `@tc96/registry`. São pacotes privados do workspace. O produto publica só o CLI `tc96-parttens` com o registry embutido; não há biblioteca npm. `ui` e `utils` existem para desenvolvimento, Storybook e testes, no papel de projeto consumidor (ver [UI base sem opinião](#ui-base-sem-opinião)).
+Nomes internos: `@tc96/ui`, `@tc96/parttens`, `@tc96/utils` e `@tc96/registry`. São pacotes privados do workspace. O produto publica só o CLI, como `@tc96/parttens` (comando `tc96-parttens`), com o registry embutido; não há biblioteca npm. O nome npm coincide com o do pacote privado `packages/parttens`, que nunca é publicado. `ui` e `utils` existem para desenvolvimento, Storybook e testes, no papel de projeto consumidor (ver [UI base sem opinião](#ui-base-sem-opinião)).
 
 ## API e compatibilidade
 
@@ -100,7 +100,7 @@ A entrada agregada continua sendo a experiência escolhida, agora como barrel ge
 
 A preservação de API vale para os patterns. A camada de UI segue a seção [UI base sem opinião](#ui-base-sem-opinião).
 
-O nome npm só importa para o CLI. Confirmado em 2026-10-01: `tc96-parttens` estava livre, sem nome parecido no registry. O repositório continua privado, e o pacote npm é público: o tarball leva o registry com o fonte dos patterns, sob MIT. Por isso o manifesto não aponta para o GitHub, e o README publicado para antes da seção sobre o repositório.
+O nome npm só importa para o CLI. Decidido em 2026-10-01: `@tc96/parttens`, na org `tc96`, com o comando `tc96-parttens` (`npx @tc96/parttens add ...`). A 0.1.0 saiu antes como `tc96-parttens`, sem escopo, e foi despublicada. O repositório continua privado, e o pacote npm é público: o tarball leva o registry com o fonte dos patterns, sob MIT. Por isso o manifesto não aponta para o GitHub, e o README publicado para antes da seção sobre o repositório.
 
 ## UI base sem opinião
 
@@ -179,7 +179,7 @@ Decidido em 2026-10-01, depois de medir o shadcn 4.21 no consumidor de exemplo, 
 Contrato proposto do comando:
 
 ```sh
-npx tc96-parttens add collection-views properties
+npx @tc96/parttens add collection-views properties
 ```
 
 O CLI aceita vários padrões, resolve dependências compartilhadas uma vez e ajusta imports para os pacotes do consumidor. Os imports `@tc96/ui`, `@tc96/utils`, `@tc96/elements` e `@tc96/parttens` são reescritos para `aliases.ui`, `aliases.utils`, `aliases.elements` e `aliases.patterns` do consumidor. Exemplo: `@tc96/ui/button` se torna `@lemind/ui/button`.
