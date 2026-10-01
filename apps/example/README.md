@@ -7,7 +7,7 @@ copy it to `.test-output/` and then:
 1. install the COSS components from the locked snapshot in `packages/ui`,
    rewriting their imports to the `@acme/*` aliases as shadcn would, and add a
    marker class to the consumer's `button.tsx`;
-2. install the packed `tc96-parttens` CLI and run `tc96-parttens add`.
+2. install the packed `@tc96/parttens` CLI and run its `tc96-parttens add`.
 
 What it proves:
 

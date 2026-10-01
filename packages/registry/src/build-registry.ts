@@ -145,7 +145,7 @@ await writeFile(
   join(cliOutput, 'package.json'),
   `${JSON.stringify(
     {
-      name: 'tc96-parttens',
+      name: '@tc96/parttens',
       version: '0.1.0',
       description:
         'React patterns without business rules, installed as source on top of your COSS components.',
@@ -153,7 +153,9 @@ await writeFile(
       type: 'module',
       license: 'MIT',
       engines: { node: '>=22' },
-      bin: { 'tc96-parttens': './cli.js' },
+      bin: { 'tc96-parttens': 'cli.js' },
+      // Pacote com escopo nasce restrito no npm; o CLI e publico.
+      publishConfig: { access: 'public' },
       files: ['cli.js', 'registry', 'README.md', 'LICENSE'],
       dependencies: { shadcn: '4.21.0', typescript: '6.0.3' },
     },

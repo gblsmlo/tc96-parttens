@@ -87,7 +87,7 @@ export async function createConsumer(name: string): Promise<Consumer> {
     await readFile(join(root, 'package.json'), 'utf8'),
   )
   manifest.name = `tc96-${name}`
-  manifest.dependencies['tc96-parttens'] =
+  manifest.dependencies['@tc96/parttens'] =
     `file:${await pack(resolve('dist/cli'))}`
   await json(join(root, 'package.json'), manifest)
   run(['npm', 'install', '--no-audit', '--no-fund'], root)
@@ -113,7 +113,7 @@ export async function installPatterns(consumer: Consumer, patterns: string[]) {
   run(
     [
       'node',
-      join(consumer.root, 'node_modules/tc96-parttens/cli.js'),
+      join(consumer.root, 'node_modules/@tc96/parttens/cli.js'),
       'add',
       ...patterns,
       '--cwd',

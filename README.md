@@ -3,7 +3,7 @@
 React patterns without business rules, built on your project's own [COSS](https://coss.com/ui) components. You install the source, own it, and change it as you like.
 
 ```sh
-npx tc96-parttens add collection-views properties
+npx @tc96/parttens add collection-views properties
 ```
 
 ```tsx
@@ -73,7 +73,7 @@ Filter Builder and responsive layouts are out of scope for the first version.
 There is no package to update. To compare your installed files with the current version, run:
 
 ```sh
-npx tc96-parttens add collection-views --diff
+npx @tc96/parttens add collection-views --diff
 ```
 
 Then apply the changes you want by hand.
@@ -86,7 +86,7 @@ Then apply the changes you want by hand.
 | `packages/elements` | tc96 components that COSS does not have, such as `Text` |
 | `packages/ui` | Unmodified COSS components, locked to an upstream snapshot and used for development and tests |
 | `packages/utils` | Shared helpers (`cn`) |
-| `packages/registry` | Registry build and the `tc96-parttens` CLI |
+| `packages/registry` | Registry build and the CLI, published as `@tc96/parttens` |
 | `apps/storybook`, `apps/docs` | Stories and documentation |
 
 The [architecture document](docs/architecture/tc96-parttens.md) records the boundaries and decisions. It is written in Portuguese.
