@@ -484,7 +484,6 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
-  tags: ['autodocs', 'storybook-test'],
   title: 'Patterns/Toolbar',
 } satisfies Meta<typeof CollectionToolbar>
 

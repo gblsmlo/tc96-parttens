@@ -26,7 +26,9 @@ type Story = StoryObj<typeof meta>
 
 const maxLength = 14
 
-function PatternFrame({ children }: Readonly<{ children: React.ReactNode }>): React.ReactElement {
+function PatternFrame({
+  children,
+}: Readonly<{ children: React.ReactNode }>): React.ReactElement {
   return <div className="w-80">{children}</div>
 }
 
@@ -45,7 +47,11 @@ function CharacterCounterPattern(): React.ReactElement {
           value={value}
         />
         <InputGroupAddon align="inline-end">
-          <InputGroupText aria-live="polite" className="text-xs tabular-nums" role="status">
+          <InputGroupText
+            aria-live="polite"
+            className="text-xs tabular-nums"
+            role="status"
+          >
             {value.length}/{maxLength}
           </InputGroupText>
         </InputGroupAddon>
@@ -70,7 +76,8 @@ function CharactersRemainingPattern(): React.ReactElement {
           value={value}
         />
         <p className="text-muted-foreground text-sm" id="code-description">
-          <span className="tabular-nums">{maxLength - value.length}</span> characters left
+          <span className="tabular-nums">{maxLength - value.length}</span>{' '}
+          characters left
         </p>
       </div>
     </PatternFrame>
@@ -213,17 +220,26 @@ function PasswordStrengthPattern(): React.ReactElement {
           />
         </div>
 
-        <p className="font-medium text-foreground text-sm" id={`${id}-description`}>
+        <p
+          className="font-medium text-foreground text-sm"
+          id={`${id}-description`}
+        >
           {getStrengthLabel(score)}. Must contain:
         </p>
 
-        <ul aria-label="Password requirements" className="flex flex-col gap-1.5">
+        <ul
+          aria-label="Password requirements"
+          className="flex flex-col gap-1.5"
+        >
           {requirements.map((requirement) => (
             <li className="flex items-center gap-2" key={requirement.text}>
               {requirement.met ? (
                 <CheckIcon aria-hidden className="size-4 text-emerald-500" />
               ) : (
-                <XIcon aria-hidden className="size-4 text-muted-foreground/80" />
+                <XIcon
+                  aria-hidden
+                  className="size-4 text-muted-foreground/80"
+                />
               )}
               <span
                 className={`text-xs ${
@@ -232,7 +248,9 @@ function PasswordStrengthPattern(): React.ReactElement {
               >
                 {requirement.text}
                 <span className="sr-only">
-                  {requirement.met ? ' - Requirement met' : ' - Requirement not met'}
+                  {requirement.met
+                    ? ' - Requirement met'
+                    : ' - Requirement not met'}
                 </span>
               </span>
             </li>
@@ -247,7 +265,11 @@ export const KeyboardShortcut: Story = {
   render: () => (
     <PatternFrame>
       <InputGroup>
-        <InputGroupInput aria-label="Search" placeholder="Search…" type="search" />
+        <InputGroupInput
+          aria-label="Search"
+          placeholder="Search…"
+          type="search"
+        />
         <InputGroupAddon align="inline-end">
           <Kbd>/</Kbd>
         </InputGroupAddon>
@@ -260,7 +282,12 @@ export const EndLoadingSpinner: Story = {
   render: () => (
     <PatternFrame>
       <InputGroup>
-        <InputGroupInput aria-label="Processing" disabled placeholder="Processing…" type="search" />
+        <InputGroupInput
+          aria-label="Processing"
+          disabled
+          placeholder="Processing…"
+          type="search"
+        />
         <InputGroupAddon align="inline-end">
           <Spinner />
         </InputGroupAddon>
@@ -273,7 +300,10 @@ export const CharacterCounter: Story = {
   render: () => <CharacterCounterPattern />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.type(canvas.getByRole('textbox', { name: 'Username' }), 'tc96')
+    await userEvent.type(
+      canvas.getByRole('textbox', { name: 'Username' }),
+      'tc96',
+    )
     await expect(canvas.getByRole('status')).toHaveTextContent('4/14')
   },
 }
@@ -282,7 +312,12 @@ export const WithButtonUsingGroup: Story = {
   render: () => (
     <PatternFrame>
       <Group aria-label="Email subscription" className="w-full gap-2">
-        <Input aria-label="Email" className="flex-1" placeholder="you@example.com" type="email" />
+        <Input
+          aria-label="Email"
+          className="flex-1"
+          placeholder="you@example.com"
+          type="email"
+        />
         <div>
           <Button type="button" variant="outline">
             Send
@@ -317,7 +352,9 @@ export const ClearButton: Story = {
   render: () => <ClearButtonPattern />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const input = canvas.getByRole('textbox', { name: 'Text input with clear button' })
+    const input = canvas.getByRole('textbox', {
+      name: 'Text input with clear button',
+    })
     await userEvent.click(canvas.getByRole('button', { name: 'Clear input' }))
     await expect(input).toHaveValue('')
   },
@@ -333,10 +370,9 @@ export const PasswordStrengthIndicator: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await userEvent.type(canvas.getByLabelText('Password'), 'Tc96pass')
-    await expect(canvas.getByRole('progressbar', { name: 'Password strength' })).toHaveAttribute(
-      'aria-valuenow',
-      '4',
-    )
+    await expect(
+      canvas.getByRole('progressbar', { name: 'Password strength' }),
+    ).toHaveAttribute('aria-valuenow', '4')
     await expect(canvas.getByText(/Strong password/)).toBeInTheDocument()
   },
 }

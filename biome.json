@@ -1,7 +1,10 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
   "files": {
-    "includes": ["**", "!packages/ui/src"]
+    "includes": [
+      "**",
+      "!packages/ui/src"
+    ]
   },
   "formatter": {
     "indentStyle": "space",
@@ -11,6 +14,11 @@
     "formatter": {
       "quoteStyle": "single",
       "semicolons": "asNeeded"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "linter": {

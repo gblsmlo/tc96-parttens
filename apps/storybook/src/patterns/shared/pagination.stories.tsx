@@ -33,7 +33,6 @@ const meta = {
     },
     layout: 'padded',
   },
-  tags: ['autodocs'],
   title: 'Patterns/Pagination',
 } satisfies Meta<typeof CollectionPagination>
 

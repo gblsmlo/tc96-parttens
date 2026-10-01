@@ -28,7 +28,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs', 'storybook-test'],
   title: 'Patterns/Properties/Display/Editable Text',
 } satisfies Meta<typeof EditableText>
 

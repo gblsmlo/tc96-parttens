@@ -151,7 +151,6 @@ const meta = {
     },
     layout: 'fullscreen',
   },
-  tags: ['autodocs', 'storybook-test'],
   title: 'Patterns/CollectionViews/Views/Calendar/Month',
 } satisfies Meta<typeof MechanicsCalendarView>
 

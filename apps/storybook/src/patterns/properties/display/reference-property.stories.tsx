@@ -19,7 +19,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs'],
   title: 'Patterns/Properties/Display/Reference',
 } satisfies Meta<typeof ReferenceProperty>
 

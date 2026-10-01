@@ -19,7 +19,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs'],
   title: 'Patterns/Properties/Display/Text',
 } satisfies Meta<typeof TextProperty>
 

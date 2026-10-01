@@ -71,7 +71,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs', 'storybook-test'],
   title: 'Patterns/Properties/Groups',
 } satisfies Meta<typeof PropertyCollection>
 

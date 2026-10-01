@@ -30,7 +30,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs'],
   title: 'Patterns/Properties/Display/DateRange',
 } satisfies Meta<typeof DateRangeProperty>
 

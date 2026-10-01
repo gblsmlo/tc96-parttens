@@ -128,10 +128,20 @@ export const CompleteFormBuiltWithField: Story = {
   render: () => <CompleteFormPattern />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.type(canvas.getByRole('textbox', { name: 'Full name' }), 'Ada Lovelace')
-    await userEvent.type(canvas.getByRole('textbox', { name: 'Email' }), 'ada@example.com')
-    await userEvent.click(canvas.getByRole('button', { name: 'Create account' }))
-    await expect(canvas.getByRole('status')).toHaveTextContent('Account ready for Ada Lovelace.')
+    await userEvent.type(
+      canvas.getByRole('textbox', { name: 'Full name' }),
+      'Ada Lovelace',
+    )
+    await userEvent.type(
+      canvas.getByRole('textbox', { name: 'Email' }),
+      'ada@example.com',
+    )
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Create account' }),
+    )
+    await expect(canvas.getByRole('status')).toHaveTextContent(
+      'Account ready for Ada Lovelace.',
+    )
   },
 }
 
@@ -139,8 +149,13 @@ export const InputInAForm: Story = {
   render: () => <InputFormPattern />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.type(canvas.getByRole('textbox', { name: 'Email' }), 'team@tc96.dev')
+    await userEvent.type(
+      canvas.getByRole('textbox', { name: 'Email' }),
+      'team@tc96.dev',
+    )
     await userEvent.click(canvas.getByRole('button', { name: 'Submit' }))
-    await expect(canvas.getByRole('status')).toHaveTextContent('Submitted team@tc96.dev.')
+    await expect(canvas.getByRole('status')).toHaveTextContent(
+      'Submitted team@tc96.dev.',
+    )
   },
 }

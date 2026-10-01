@@ -30,7 +30,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs', 'storybook-test'],
   title: 'Patterns/Properties/Display/Tags',
 } satisfies Meta<typeof TagsProperty>
 

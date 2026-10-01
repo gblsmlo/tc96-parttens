@@ -76,9 +76,15 @@ export const Sizes: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    await expect(canvas.getByText('Small interface text')).toHaveClass('text-sm')
-    await expect(canvas.getByText('Medium interface text')).toHaveClass('text-base')
-    await expect(canvas.getByText('Large interface text')).toHaveClass('text-lg')
+    await expect(canvas.getByText('Small interface text')).toHaveClass(
+      'text-sm',
+    )
+    await expect(canvas.getByText('Medium interface text')).toHaveClass(
+      'text-base',
+    )
+    await expect(canvas.getByText('Large interface text')).toHaveClass(
+      'text-lg',
+    )
   },
 }
 
@@ -129,7 +135,10 @@ export const PolymorphicHeading: Story = {
   ),
   play: async ({ canvasElement }) => {
     await expect(
-      within(canvasElement).getByRole('heading', { level: 2, name: 'Semantic heading' }),
+      within(canvasElement).getByRole('heading', {
+        level: 2,
+        name: 'Semantic heading',
+      }),
     ).toBeVisible()
   },
 }

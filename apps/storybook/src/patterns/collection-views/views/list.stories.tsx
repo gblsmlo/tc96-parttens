@@ -140,7 +140,6 @@ const meta = {
     },
     layout: 'fullscreen',
   },
-  tags: ['autodocs', 'storybook-test'],
   title: 'Patterns/CollectionViews/Views/List',
 } satisfies Meta<typeof MechanicsListView>
 
