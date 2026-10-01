@@ -23,7 +23,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs', 'storybook-test'],
   title: 'Patterns/Properties/Display/People',
 } satisfies Meta<typeof PeopleProperty>
 

@@ -45,7 +45,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs'],
   title: 'Patterns/Properties/Display/Person',
 } satisfies Meta<typeof PersonProperty>
 

@@ -18,7 +18,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs', 'storybook-test'],
   title: 'Patterns/Properties/Display/Phone',
 } satisfies Meta<typeof PhoneProperty>
 

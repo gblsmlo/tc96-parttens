@@ -34,14 +34,22 @@
   --radius-4xl: calc(var(--radius) * 2.6);
   --animate-skeleton: skeleton 2s -1s infinite linear;
   --animate-caret-blink: 1s ease-out infinite caret-blink;
-  --animate-toast-success-odd: toast-success-odd 0.32s cubic-bezier(0.5, 1, 0.89, 1);
-  --animate-toast-success-even: toast-success-even 0.32s cubic-bezier(0.5, 1, 0.89, 1);
+  --animate-toast-success-odd: toast-success-odd 0.32s
+    cubic-bezier(0.5, 1, 0.89, 1);
+  --animate-toast-success-even: toast-success-even 0.32s
+    cubic-bezier(0.5, 1, 0.89, 1);
   --animate-toast-error-odd: toast-error-odd 0.28s cubic-bezier(0.5, 1, 0.89, 1);
-  --animate-toast-error-even: toast-error-even 0.28s cubic-bezier(0.5, 1, 0.89, 1);
+  --animate-toast-error-even: toast-error-even 0.28s
+    cubic-bezier(0.5, 1, 0.89, 1);
   --font-heading:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -178,7 +186,11 @@
   --secondary: --alpha(var(--color-black) / 4%);
   --secondary-foreground: var(--color-stone-800);
   --muted: --alpha(var(--color-black) / 4%);
-  --muted-foreground: color-mix(in srgb, var(--color-stone-500) 90%, var(--color-black));
+  --muted-foreground: color-mix(
+    in srgb,
+    var(--color-stone-500) 90%,
+    var(--color-black)
+  );
   --accent: --alpha(var(--color-black) / 4%);
   --accent-foreground: var(--color-stone-800);
   --destructive: var(--color-red-500);
@@ -186,7 +198,9 @@
   --border: --alpha(var(--color-black) / 8%);
   --input: --alpha(var(--color-black) / 10%);
   --ring: var(--color-neutral-400);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
   --info: var(--color-blue-500);
   --info-foreground: var(--color-blue-700);
   --success: var(--color-emerald-500);
@@ -205,7 +219,11 @@
   --sidebar-accent: --alpha(var(--color-black) / 4%);
   --sidebar-accent-foreground: var(--color-stone-800);
   --sidebar-border: --alpha(var(--color-black) / 6%);
-  --sidebar-foreground: color-mix(in srgb, var(--color-stone-800) 64%, var(--sidebar));
+  --sidebar-foreground: color-mix(
+    in srgb,
+    var(--color-stone-800) 64%,
+    var(--sidebar)
+  );
   --sidebar-primary: var(--color-stone-800);
   --sidebar-primary-foreground: var(--color-stone-50);
   --sidebar-ring: var(--color-stone-400);
@@ -223,10 +241,18 @@
   --secondary: --alpha(var(--color-white) / 4%);
   --secondary-foreground: var(--color-stone-100);
   --muted: --alpha(var(--color-white) / 4%);
-  --muted-foreground: color-mix(in srgb, var(--color-stone-500) 90%, var(--color-white));
+  --muted-foreground: color-mix(
+    in srgb,
+    var(--color-stone-500) 90%,
+    var(--color-white)
+  );
   --accent: --alpha(var(--color-white) / 4%);
   --accent-foreground: var(--color-stone-100);
-  --destructive: color-mix(in srgb, var(--color-red-500) 90%, var(--color-white));
+  --destructive: color-mix(
+    in srgb,
+    var(--color-red-500) 90%,
+    var(--color-white)
+  );
   --destructive-foreground: var(--color-red-400);
   --border: --alpha(var(--color-white) / 6%);
   --input: --alpha(var(--color-white) / 8%);

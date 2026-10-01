@@ -274,7 +274,6 @@ const meta = {
     },
     layout: 'centered',
   },
-  tags: ['autodocs'],
   title: 'Patterns/CollectionViews/Views/Data Grid',
 } satisfies Meta<typeof DataGridExample>
 

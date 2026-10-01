@@ -31,7 +31,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs'],
   title: 'Patterns/Properties/Display/Select',
 } satisfies Meta<typeof SelectProperty>
 

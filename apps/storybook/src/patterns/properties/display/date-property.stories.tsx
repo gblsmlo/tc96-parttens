@@ -31,7 +31,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs'],
   title: 'Patterns/Properties/Display/Date',
 } satisfies Meta<typeof DateProperty>
 

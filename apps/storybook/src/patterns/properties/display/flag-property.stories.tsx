@@ -25,7 +25,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs'],
   title: 'Patterns/Properties/Display/Flag',
 } satisfies Meta<typeof FlagProperty>
 
