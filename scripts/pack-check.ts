@@ -2,8 +2,9 @@ import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { run, saveReport } from './consumer'
 
+// The CLI, with the registry inside it, is the only published artifact.
 const reports = []
-for (const artifact of ['library', 'cli']) {
+for (const artifact of ['cli']) {
   const root = resolve(`dist/${artifact}`)
   const result = JSON.parse(
     run(['npm', 'pack', '--dry-run', '--json'], root, true),
