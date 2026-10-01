@@ -31,6 +31,7 @@ export interface KanbanViewProps<TCard = unknown> {
   mobileColumnHint?: string
   onMoveCard?: (move: KanbanCardMove<TCard>) => boolean | Promise<boolean>
   renderColumnTitle?: (column: KanbanColumnData<TCard>) => ReactNode
+  renderHeaderActions?: (column: KanbanColumnData<TCard>) => ReactNode
 }
 
 export function KanbanView<TCard>({
@@ -46,8 +47,13 @@ export function KanbanView<TCard>({
   mobileColumnHint,
   onMoveCard,
   renderColumnTitle,
+  renderHeaderActions,
 }: KanbanViewProps<TCard>) {
-  const [activeColumnId, setActiveColumnId] = useActiveColumnId(columns)
+  const shownColumns = useMemo(
+    () => columns.filter((column) => !column.hidden),
+    [columns],
+  )
+  const [activeColumnId, setActiveColumnId] = useActiveColumnId(shownColumns)
   const {
     cardDragEnabled,
     focusCardDragId,
@@ -58,13 +64,13 @@ export function KanbanView<TCard>({
     handleDragStart,
     visibleColumns,
   } = useKanbanDragAndDrop({
-    columns,
+    columns: shownColumns,
     getKey,
     ...(!loading && onMoveCard ? { onMoveCard } : {}),
   })
   const { isDragging: isBoardDragging, rootRef } = useHorizontalDragScroll()
   const boardContentRef = useRef<HTMLDivElement | null>(null)
-  const columnOptions = useMemo(() => createColumnOptions(columns), [columns])
+  const columnOptions = createColumnOptions(shownColumns)
   const cardsByDragId = useMemo(
     () =>
       new Map(
@@ -87,6 +93,7 @@ export function KanbanView<TCard>({
     loadingCardCount,
     loadingCardLabel,
     renderColumnTitle,
+    renderHeaderActions,
     renderCard,
     sortableCards: cardDragEnabled,
     ...(emptyColumnLabel ? { emptyLabel: emptyColumnLabel } : {}),
@@ -177,7 +184,7 @@ export function KanbanView<TCard>({
             scrollFade
           >
             <div
-              className="grid h-full min-h-full w-max auto-cols-[minmax(19rem,22rem)] grid-flow-col gap-2"
+              className="flex h-full min-h-full w-max gap-2 [&>[data-slot=kanban-column]]:shrink-0 [&>[data-slot=kanban-column]:not([data-collapsed])]:w-[19rem] xl:[&>[data-slot=kanban-column]:not([data-collapsed])]:w-[22rem]"
               ref={boardContentRef}
             >
               {visibleColumns.map((column) => (
