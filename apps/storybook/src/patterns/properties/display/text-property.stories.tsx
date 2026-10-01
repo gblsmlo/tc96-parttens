@@ -1,5 +1,5 @@
-import { TextProperty } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { TextProperty } from '@tc96/parttens'
 import { MailIcon, PhoneIcon, ShapesIcon } from 'lucide-react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import {

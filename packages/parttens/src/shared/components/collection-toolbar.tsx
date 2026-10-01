@@ -1,6 +1,6 @@
 'use client'
 
-import { Text } from '@tc96/ui/text'
+import { Text } from '@tc96/elements/text'
 import { ToolbarGroup, Toolbar as ToolbarPrimitive } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'

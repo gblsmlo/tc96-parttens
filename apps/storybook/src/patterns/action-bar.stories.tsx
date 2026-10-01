@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { ActionBar } from '@tc96/parttens'
 import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
 import { fn } from 'storybook/test'
-import { ActionBar } from '@tc96/parttens'
 
 const meta = {
   title: 'Patterns/ActionBar',

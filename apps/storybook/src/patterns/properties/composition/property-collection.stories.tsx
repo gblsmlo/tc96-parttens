@@ -1,3 +1,4 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   DateProperty,
   PersonProperty,
@@ -6,7 +7,6 @@ import {
   type SelectPropertyOption,
   TagsProperty,
 } from '@tc96/parttens'
-import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   CalendarDaysIcon,
   CircleCheckIcon,

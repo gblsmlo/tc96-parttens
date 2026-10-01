@@ -9,6 +9,7 @@ const root = await createConsumer('consumer-registry', {
 })
 const config = {
   patterns: { path: 'packages/patterns/src', alias: '@consumer/patterns' },
+  elements: { path: 'packages/atoms/src', alias: '@consumer/atoms' },
   ui: { path: 'packages/visual/src', alias: '@consumer/visual' },
   utils: { path: 'packages/helpers/src', alias: '@consumer/helpers' },
 }

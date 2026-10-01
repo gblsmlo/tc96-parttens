@@ -1,5 +1,5 @@
-import { EmailProperty } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { EmailProperty } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, screen, userEvent } from 'storybook/test'
 import { propertyArgTypes } from '../../../test-utils/story-arg-types'

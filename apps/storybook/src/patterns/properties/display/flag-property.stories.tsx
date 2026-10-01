@@ -1,5 +1,5 @@
-import { FlagProperty } from '@tc96/parttens'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { FlagProperty } from '@tc96/parttens'
 import { BotIcon, CircleIcon } from 'lucide-react'
 import {
   esperarSuperficieDeBadge,

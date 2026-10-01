@@ -1,12 +1,4 @@
 import {
-  EllipsisIcon,
-  ListTodoIcon,
-  SignalHighIcon,
-  SignalLowIcon,
-  SignalMediumIcon,
-} from 'lucide-react'
-import { useState } from 'react'
-import {
   KanbanCard,
   KanbanCardAction,
   KanbanCardActionButton,
@@ -27,6 +19,14 @@ import {
   PopoverPopup,
   PopoverTrigger,
 } from '@tc96/ui/popover'
+import {
+  EllipsisIcon,
+  ListTodoIcon,
+  SignalHighIcon,
+  SignalLowIcon,
+  SignalMediumIcon,
+} from 'lucide-react'
+import { useState } from 'react'
 
 const priorityOptions: readonly SelectPropertyOption[] = [
   { icon: SignalHighIcon, label: 'Alta', tone: 'danger', value: 'high' },

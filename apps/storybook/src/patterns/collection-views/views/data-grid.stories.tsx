@@ -1,7 +1,9 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Action,
   ActionBar,
   CollectionToolbar,
+  createSelectColumn,
   DataGrid,
   type DataGridColumnDef,
   DataGridColumnsSubmenu,
@@ -9,12 +11,10 @@ import {
   DataGridDensitySubmenu,
   DataGridSearch,
   DataGridSortSubmenu,
+  useDataGrid,
   ViewSettingsMenu,
   ViewSettingsSection,
-  createSelectColumn,
-  useDataGrid,
 } from '@tc96/parttens'
-import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
 import { type ReactElement, useMemo, useState } from 'react'
 import { expect } from 'storybook/test'

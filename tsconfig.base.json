@@ -19,6 +19,9 @@
       "@tc96/ui/*": [
         "./packages/ui/src/*"
       ],
+      "@tc96/elements/*": [
+        "./packages/elements/src/*"
+      ],
       "@tc96/utils": [
         "./packages/utils/src/index.ts"
       ],

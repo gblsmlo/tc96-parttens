@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Text } from '@tc96/elements/text'
 import { CircleAlertIcon } from 'lucide-react'
-import { Text } from '@tc96/ui/text'
 
 function KanbanErrorSurface() {
   return (

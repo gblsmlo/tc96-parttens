@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PlusIcon } from 'lucide-react'
-import { expect, userEvent, within } from 'storybook/test'
 import { Button } from '@tc96/ui/button'
 import { Group, GroupSeparator, GroupText } from '@tc96/ui/group'
 import { Input } from '@tc96/ui/input'
+import { PlusIcon } from 'lucide-react'
+import { expect, userEvent, within } from 'storybook/test'
 
 const meta = {
   title: 'UI/Group/Patterns',
