@@ -151,6 +151,8 @@ apps/
 - Imports só descem de camada: `patterns` importa `elements`, `ui` e `utils`; `elements` importa `ui` e `utils`; `ui` não importa nenhuma das outras.
 - Cada alias precisa de entrada exata e de wildcard nos `paths` do `tsconfig` da raiz, conforme o [contrato de instalação](installation-contract.md).
 
+Situação em 2026-10-01: o CLI lê os quatro aliases do `components.json` e reprova, com a lista das chaves que faltam, quando algum está ausente. O destino de `elements` e `patterns` é o diretório que o wildcard de cada alias resolve no `tsconfig`. O build do registry não segue os imports de `@tc96/ui` e `@tc96/utils`, e o `assertDistributable` reprova qualquer item com arquivo de `ui/` ou `utils/` ou com `:root`, `.dark`, `@theme` ou `@utility`. Enquanto as `registryDependencies` estiverem adiadas, o consumidor instala antes os componentes COSS usados pelos patterns.
+
 ### Decisões adiadas até o primeiro consumidor
 
 Estas decisões ficam para quando o primeiro pattern for instalado num consumidor real. Até lá, nenhuma unidade de trabalho depende delas.

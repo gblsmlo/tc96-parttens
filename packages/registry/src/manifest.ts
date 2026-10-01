@@ -8,17 +8,21 @@ export const patternNames = [
   'editable',
 ] as const
 export type PatternName = (typeof patternNames)[number]
-export interface Destination {
-  path: string
-  alias: string
+/** The consumer's components.json aliases the patterns import from. */
+export interface Aliases {
+  ui: string
+  utils: string
+  elements: string
+  patterns: string
 }
+export const aliasNames = ['ui', 'utils', 'elements', 'patterns'] as const
+/** Only elements and patterns are written; ui and utils belong to the consumer. */
+export const destinationNames = ['elements', 'patterns'] as const
+export type DestinationName = (typeof destinationNames)[number]
 export interface InstallConfig {
-  patterns: Destination
-  elements: Destination
-  ui: Destination
-  utils: Destination
+  aliases: Aliases
+  paths: Record<DestinationName, string>
 }
-const destinationNames = ['patterns', 'elements', 'ui', 'utils'] as const
 export interface RegistryFile {
   path: string
   type: string
@@ -33,10 +37,16 @@ export interface RegistryItem {
   $schema?: string
 }
 export const defaultConfig: InstallConfig = {
-  patterns: { path: 'packages/patterns/src', alias: '@tc96/patterns' },
-  elements: { path: 'packages/elements/src', alias: '@tc96/elements' },
-  ui: { path: 'packages/ui/src', alias: '@tc96/ui' },
-  utils: { path: 'packages/utils/src', alias: '@tc96/utils' },
+  aliases: {
+    ui: '@tc96/ui',
+    utils: '@tc96/utils',
+    elements: '@tc96/elements',
+    patterns: '@tc96/patterns',
+  },
+  paths: {
+    elements: 'packages/elements/src',
+    patterns: 'packages/patterns/src',
+  },
 }
 export function selectPatterns(names: string[]): PatternName[] {
   if (!names.length) throw new Error('Choose at least one pattern.')
@@ -52,18 +62,16 @@ export function selectPatterns(names: string[]): PatternName[] {
   ]
 }
 export function validateConfig(value: InstallConfig): InstallConfig {
+  for (const name of aliasNames) {
+    const alias = value.aliases?.[name]
+    if (typeof alias !== 'string' || !/^[@#a-zA-Z]/.test(alias))
+      throw new Error(`Invalid ${name} alias.`)
+  }
   for (const name of destinationNames) {
-    const destination = value[name]
-    if (
-      !destination ||
-      typeof destination.path !== 'string' ||
-      typeof destination.alias !== 'string'
-    ) {
-      throw new Error(
-        `Invalid ${name} destination; path and alias are required.`,
-      )
-    }
-    const path = normalize(destination.path).replaceAll('\\', '/')
+    const destination = value.paths?.[name]
+    if (typeof destination !== 'string')
+      throw new Error(`Invalid ${name} path.`)
+    const path = normalize(destination).replaceAll('\\', '/')
     if (
       isAbsolute(path) ||
       path === '.' ||
@@ -72,21 +80,37 @@ export function validateConfig(value: InstallConfig): InstallConfig {
     ) {
       throw new Error(`${name} path must be inside the consumer workspace.`)
     }
-    if (!destination.alias || !/^[@#a-zA-Z]/.test(destination.alias))
-      throw new Error(`Invalid ${name} alias.`)
   }
   return value
+}
+/** Fails when an item would ship the consumer's UI, its cn, or a theme. */
+export function assertDistributable(item: RegistryItem) {
+  for (const file of item.files) {
+    const [pkg] = file.path.split('/')
+    if (pkg === 'ui' || pkg === 'utils')
+      throw new Error(
+        `${item.name}: ${file.path} belongs to the consumer and is not distributed.`,
+      )
+    const theme = file.content.match(/:root|\.dark\b|@theme|@utility/)
+    if (theme)
+      throw new Error(
+        `${item.name}: ${file.path} redefines the theme (${theme[0]}).`,
+      )
+  }
 }
 export function prepareItem(
   item: RegistryItem,
   configuration: InstallConfig,
 ): RegistryItem {
   const config = validateConfig(configuration)
-  const destinations: Record<string, Destination> = {
-    parttens: config.patterns,
-    elements: config.elements,
-    ui: config.ui,
-    utils: config.utils,
+  assertDistributable(item)
+  const destinations: Record<string, string> = {
+    parttens: config.paths.patterns,
+    elements: config.paths.elements,
+  }
+  const aliases: Record<string, string> = {
+    ...config.aliases,
+    parttens: config.aliases.patterns,
   }
   return {
     ...item,
@@ -113,12 +137,12 @@ export function prepareItem(
             /^@tc96\/(ui|utils|elements|parttens)(\/.*)?$/,
           )
           if (match) {
-            const target = destinations[match[1] ?? '']
-            if (target)
+            const alias = aliases[match[1] ?? '']
+            if (alias)
               edits.push({
                 start: node.moduleSpecifier.getStart(ast) + 1,
                 end: node.moduleSpecifier.getEnd() - 1,
-                value: target.alias + (match[2] ?? ''),
+                value: alias + (match[2] ?? ''),
               })
           }
         }
@@ -133,7 +157,7 @@ export function prepareItem(
         ...file,
         content,
         type: 'registry:file',
-        target: `~/${destination.path}/${suffix.join('/')}`,
+        target: `~/${destination}/${suffix.join('/')}`,
       }
     }),
   }

@@ -15,18 +15,16 @@ await rm(output, { recursive: true, force: true })
 await mkdir(output, { recursive: true })
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)
 const parsed = ts.parseJsonConfigFileContent(configuration.config, ts.sys, root)
-const versions: Record<string, string> = {
-  react: '19.1.1',
-  'react-dom': '19.1.1',
-  '@base-ui/react': '1.6.0',
-}
-for (const pkg of ['utils', 'ui', 'elements', 'parttens']) {
-  Object.assign(
-    versions,
-    JSON.parse(await readFile(`packages/${pkg}/package.json`, 'utf8'))
-      .dependencies,
+const versions: Record<string, string> = {}
+for (const pkg of ['elements', 'parttens']) {
+  const manifest = JSON.parse(
+    await readFile(`packages/${pkg}/package.json`, 'utf8'),
   )
+  Object.assign(versions, manifest.peerDependencies, manifest.dependencies)
 }
+// ui and utils are the consumer's: their imports are rewritten to its
+// aliases, never followed into the distributed files.
+const consumerOwned = /^@tc96\/(ui|utils)(\/|$)/
 for (const pattern of patternNames) {
   const pending = [resolve(`packages/parttens/src/${pattern}/index.ts`)]
   const seen = new Set<string>()
@@ -44,6 +42,7 @@ for (const pattern of patternNames) {
     })
     for (const imported of ts.preProcessFile(content).importedFiles) {
       const specifier = imported.fileName
+      if (consumerOwned.test(specifier)) continue
       if (specifier.startsWith('.') || specifier.startsWith('@tc96/')) {
         const result = ts.resolveModuleName(
           specifier,
