@@ -76,3 +76,101 @@ test('reports unavailable dependencies as inconclusive rather than compatible', 
     await rm(root, { recursive: true, force: true })
   }
 })
+
+async function consumerWith(dependency?: { version: string; types: string }) {
+  const root = await mkdtemp(join(tmpdir(), 'tc96-types-'))
+  await writeFile(
+    join(root, 'tsconfig.json'),
+    JSON.stringify({
+      compilerOptions: {
+        module: 'ESNext',
+        moduleResolution: 'Bundler',
+        strict: true,
+      },
+    }),
+  )
+  if (dependency) {
+    const directory = join(root, 'node_modules/dep')
+    await mkdir(directory, { recursive: true })
+    await writeFile(
+      join(directory, 'package.json'),
+      JSON.stringify({ name: 'dep', version: dependency.version }),
+    )
+    await writeFile(join(directory, 'index.d.ts'), dependency.types)
+  }
+  return root
+}
+function itemUsingDep(content: string): RegistryItem {
+  return {
+    name: 'proof',
+    type: 'registry:block',
+    dependencies: ['dep@4.4.3'],
+    files: [
+      {
+        path: 'parttens/src/proof.ts',
+        target: '~/src/proof.ts',
+        type: 'registry:file',
+        content,
+      },
+    ],
+  }
+}
+
+test('does not check against another major of a dependency installed later', async () => {
+  // shadcn brings zod 3 into node_modules; the patterns declare zod 4.
+  const root = await consumerWith({
+    version: '3.25.0',
+    types: 'export declare const legacy: number',
+  })
+  try {
+    const item = itemUsingDep(
+      'import { email } from "dep"; export const value = email((input) => input)',
+    )
+    const before = await checkCompatibility(root, item)
+    expect(before.status).toBe('inconclusive')
+    expect(before.diagnostics[0]).toBe(
+      'dep@4.4.3 is not installed yet (found 3.25.0); its types are checked after installation.',
+    )
+
+    const file = item.files[0]
+    if (!file) throw new Error('Fixture file missing')
+    await mkdir(join(root, 'src'), { recursive: true })
+    await writeFile(join(root, 'src/proof.ts'), file.content)
+    expect((await checkCompatibility(root, item, true)).status).toBe(
+      'incompatible',
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+test('still checks a dependency already installed in a compatible version', async () => {
+  const root = await consumerWith({
+    version: '4.0.0',
+    types: 'export declare const legacy: number',
+  })
+  try {
+    const result = await checkCompatibility(
+      root,
+      itemUsingDep('import { email } from "dep"; export { email }'),
+    )
+    expect(result.status).toBe('incompatible')
+    expect(result.diagnostics.join('\n')).toContain('TS2305')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+test('does not report implicit any caused by a missing module as incompatible', async () => {
+  const root = await consumerWith()
+  try {
+    const result = await checkCompatibility(
+      root,
+      itemUsingDep(
+        'import { email } from "dep"; export const value = email((input) => input)',
+      ),
+    )
+    expect(result.status).toBe('inconclusive')
+    expect(result.diagnostics.join('\n')).not.toContain('TS7006')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
