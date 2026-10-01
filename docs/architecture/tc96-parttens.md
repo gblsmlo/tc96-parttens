@@ -1,6 +1,6 @@
 # Arquitetura do tc96-parttens
 
-Status: as decisões de 2026-10-01 (UI base sem opinião, sem biblioteca npm) estão aplicadas no workspace. Continuam pendentes as decisões adiadas até o primeiro consumidor e as decisões externas de publicação.
+Status: as decisões de 2026-10-01 (UI base sem opinião, sem biblioteca npm) estão aplicadas no workspace. Continuam pendentes as decisões externas de publicação.
 
 ## Objetivo e escopo
 
@@ -107,7 +107,7 @@ O nome npm só importa para o CLI `tc96-parttens`. O README da base relata recus
 Decidido em 2026-10-01. O tc96 reutiliza patterns em projetos que já usam COSS, com a menor sobrescrita de estilo possível. A UI base não é opinativa e usa os componentes COSS sem alterações.
 
 - O COSS vence a API própria. Os patterns usam a API do COSS. Saem `size` `sm | md | lg`, `variant: 'primary'`, `buttonSizes`, `inputSizes` e o `control-radius`. O `Text`, que não existe no COSS, migra para `packages/elements`. O `tc96/ui` público é removido, sem re-export.
-- O consumidor é dono dos componentes COSS. Os patterns declaram `registryDependencies` do COSS, e o shadcn instala ou reutiliza o que o projeto já tem. O tc96 não distribui UI.
+- O consumidor é dono dos componentes COSS. Os patterns declaram `registryDependencies` do COSS como `@coss/<item>`; o CLI deixa de fora as que o projeto já tem, e o shadcn instala as que faltam. O tc96 não distribui UI. Ver [Dependências do COSS](#dependências-do-coss).
 - O `cn` também é do consumidor. Os imports de `@tc96/utils` são reescritos para o `aliases.utils` do `components.json` do consumidor, e o arquivo não é distribuído.
 - Os patterns não redefinem tema. Tokens, `:root`, `.dark` e utilitários próprios pertencem ao consumidor.
 
@@ -153,15 +153,15 @@ apps/
 - Imports só descem de camada: `patterns` importa `elements`, `ui` e `utils`; `elements` importa `ui` e `utils`; `ui` não importa nenhuma das outras.
 - Cada alias precisa de entrada exata e de wildcard nos `paths` do `tsconfig` da raiz, conforme o [contrato de instalação](installation-contract.md).
 
-Situação em 2026-10-01: o CLI lê os quatro aliases do `components.json` e reprova, com a lista das chaves que faltam, quando algum está ausente. O destino de `elements` e `patterns` é o diretório que o wildcard de cada alias resolve no `tsconfig`. O build do registry não segue os imports de `@tc96/ui` e `@tc96/utils`, e o `assertDistributable` reprova qualquer item com arquivo de `ui/` ou `utils/` ou com `:root`, `.dark`, `@theme` ou `@utility`. Enquanto as `registryDependencies` estiverem adiadas, o consumidor instala antes os componentes COSS usados pelos patterns.
+Situação em 2026-10-01: o CLI lê os quatro aliases do `components.json` e reprova, com a lista das chaves que faltam, quando algum está ausente. O destino de `elements` e `patterns` é o diretório que o wildcard de cada alias resolve no `tsconfig`. O build do registry não segue os imports de `@tc96/ui` e `@tc96/utils`, e o `assertDistributable` reprova qualquer item com arquivo de `ui/` ou `utils/` ou com `:root`, `.dark`, `@theme` ou `@utility`. Cada `@tc96/ui/<item>` importado vira `@coss/<item>` nas `registryDependencies` do item; o CLI também resolve o diretório do alias `ui` para saber quais o consumidor já tem.
 
-### Decisões adiadas até o primeiro consumidor
+### Dependências do COSS
 
-Estas decisões ficam para quando o primeiro pattern for instalado num consumidor real. Até lá, nenhuma unidade de trabalho depende delas.
+Decidido em 2026-10-01, depois de medir o shadcn 4.21 no consumidor de exemplo, com os componentes COSS instalados e o `button.tsx` personalizado. Eram as decisões adiadas até o primeiro consumidor.
 
-- Forma das `registryDependencies` do COSS: URL completa (`https://coss.com/ui/r/<item>.json`) ou namespace `@coss` declarado em `registries` no `components.json`.
-- Reaproveitamento de um componente COSS que o consumidor já tem: provar que o shadcn não pergunta se deve sobrescrever, ou fazer o CLI deixar de fora as dependências já instaladas antes de chamar o shadcn.
-- Persistência de `aliases.elements` e `aliases.patterns`: verificar se `shadcn init` ou outros comandos regravam o `components.json` e descartam essas chaves. Se descartarem, o CLI precisa avisar e reaplicar.
+- **Forma:** `@coss/<item>`, a mesma que o próprio COSS usa entre os seus itens. Sem configuração, o shadcn resolve `@coss` pelo índice público e grava `registries.@coss` no `components.json`, mantendo `elements` e `patterns`. Um endereço que o consumidor configure para `@coss` é respeitado; a URL completa o ignoraria.
+- **Reaproveitamento:** o CLI deixa de fora as dependências cujo `<ui>/<item>.tsx` já existe antes de chamar o shadcn. Medido: o shadcn pula arquivo igual, e não sobrescreve variável de tema que o consumidor alterou, mas pergunta antes de sobrescrever um componente personalizado, mesmo com `--yes`. Responder sim apaga a personalização; sem terminal, ele para na pergunta e sai com status 0 sem gravar os arquivos. A pergunta ainda pode aparecer quando um componente que falta depende de outro personalizado, como ao rodar `shadcn add @coss/<item>`. Um componente instalado numa versão antiga do COSS aparece na verificação de tipos depois da instalação.
+- **Persistência dos aliases:** `shadcn add` mantém `elements` e `patterns`. `shadcn init --force` regrava o `components.json` do zero, sem essas chaves e com outro alias `ui`. O CLI avisa sem reaplicar: a mensagem lista as chaves que faltam e cita o `init --force`. Não há outra fonte para reaplicar os valores, e o `ui` alterado precisa de revisão do consumidor. `shadcn apply` não foi medido.
 
 Contrato proposto do comando:
 
@@ -198,6 +198,9 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 | Preservar API atual dos patterns; substituída para a UI em 2026-10-01 | Redesenhar todos os contratos | Evitar quebra para consumidores existentes |
 | UI base é COSS sem alterações, com API COSS; `tc96/ui` removido | Manter a API própria de `tc96/ui` | Reutilizar patterns sobre o COSS do consumidor com a menor sobrescrita |
 | Componentes COSS de posse do consumidor via `registryDependencies` | tc96 mantém cópia vendorizada | O tema e as personalizações do consumidor valem sem cópia paralela |
+| `registryDependencies` como `@coss/<item>` | URL completa do item COSS | Mesma forma que o COSS usa; respeita o endereço de `@coss` configurado pelo consumidor |
+| CLI deixa de fora os componentes COSS já instalados | Passar tudo e deixar o shadcn decidir | O shadcn pergunta antes de sobrescrever componente personalizado, mesmo com `--yes`, e para sem terminal |
+| Avisar quando `elements` ou `patterns` somem do `components.json`, sem reaplicar | Guardar uma cópia dos aliases | Uma configuração só; o `init --force` também troca o `ui`, que o consumidor precisa revisar |
 | `Text` e outros componentes fora do COSS em `packages/elements`, distribuídos pelo registry com destino configurável | Manter em `packages/ui` | `packages/ui` só contém COSS sem alterações |
 | `components.json` na raiz como única configuração, com `aliases.elements` e `aliases.patterns`; `tc96.json` removido | Manter `tc96.json` para os destinos do tc96 | Uma configuração só, numa estrutura em camadas no consumidor |
 | `cn` resolvido pelo `aliases.utils` do consumidor | Distribuir `@tc96/utils` | O COSS já instala `cn` no consumidor |
@@ -209,7 +212,7 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 
 ## Pontos ainda em revisão
 
-- Namespace COSS no registry e regra de sobrescrita. Ver [UI base sem opinião](#ui-base-sem-opinião).
+- Regra de sobrescrita nos patterns. Ver [UI base sem opinião](#ui-base-sem-opinião).
 - Aprovação da estratégia de validação e do limite da verificação de compatibilidade.
 - Configuração e integração do CLI com shadcn, preservando o comando desejado e validando destinos em monorepo.
 - Nome npm disponível para o CLI.

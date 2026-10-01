@@ -5,9 +5,9 @@ import ts from 'typescript'
 import {
   type Aliases,
   aliasNames,
-  type DestinationName,
-  destinationNames,
   type InstallConfig,
+  type PathName,
+  pathNames,
   validateConfig,
 } from './manifest'
 
@@ -22,7 +22,7 @@ export function readAliases(components: unknown): Aliases {
   )
   if (missing.length)
     throw new Error(
-      `components.json is missing ${missing.map((name) => `aliases.${name}`).join(', ')}. tc96 needs ui and utils from shadcn, plus elements and patterns, e.g. "elements": "@acme/elements" and "patterns": "@acme/patterns".`,
+      `components.json is missing ${missing.map((name) => `aliases.${name}`).join(', ')}. tc96 needs ui and utils from shadcn, plus elements and patterns, e.g. "elements": "@acme/elements" and "patterns": "@acme/patterns". shadcn init --force rewrites components.json without them; add them back and review the ui alias.`,
     )
   const { ui, utils, elements, patterns } = aliases as Aliases
   return { ui, utils, elements, patterns }
@@ -61,10 +61,10 @@ export async function readInstallConfig(root: string): Promise<InstallConfig> {
     throw new Error('Cannot read the consumer tsconfig.json.')
   const { options } = ts.parseJsonConfigFileContent(read.config, ts.sys, root)
   const paths = Object.fromEntries(
-    destinationNames.map((name) => [
+    pathNames.map((name) => [
       name,
       resolveAliasPath(root, aliases[name], options),
     ]),
-  ) as Record<DestinationName, string>
+  ) as Record<PathName, string>
   return validateConfig({ aliases, paths })
 }

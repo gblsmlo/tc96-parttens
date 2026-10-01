@@ -10,12 +10,13 @@ import { checkCompatibility } from './check-compatibility'
 import { readInstallConfig } from './config'
 import {
   combineItems,
+  omitInstalled,
   prepareItem,
   type RegistryItem,
   selectPatterns,
 } from './manifest'
 
-const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view]\nPatterns: collection-views properties detail-sheet editable\nReads aliases ui, utils, elements and patterns from components.json.\nExisting files are preserved unless you approve shadcn's overwrite prompt.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
+const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view]\nPatterns: collection-views properties detail-sheet editable\nReads aliases ui, utils, elements and patterns from components.json.\nInstalls from @coss only the COSS components missing from the ui alias.\nExisting files are preserved unless you approve shadcn's overwrite prompt.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
 function targetPath(workspace: string, target: string | undefined) {
   if (!target?.startsWith('~/'))
     throw new Error(`Invalid registry target: ${target ?? 'missing'}`)
@@ -62,8 +63,12 @@ async function main() {
         ) as RegistryItem,
     ),
   )
-  const item = prepareItem(combineItems(items), configuration)
   const workspace = await realpath(cwd)
+  const item = omitInstalled(
+    prepareItem(combineItems(items), configuration),
+    (component) =>
+      existsSync(join(workspace, configuration.paths.ui, `${component}.tsx`)),
+  )
   for (const file of item.files) {
     let ancestor = targetPath(workspace, file.target)
     while (!existsSync(ancestor)) ancestor = dirname(ancestor)
@@ -98,6 +103,11 @@ async function main() {
   )
   for (const diagnostic of before.diagnostics.slice(0, 12))
     console.log(diagnostic)
+  console.log(
+    item.registryDependencies?.length
+      ? `Missing COSS components, installed by shadcn: ${item.registryDependencies.join(', ')}.`
+      : 'Every COSS component the patterns use is already installed; keeping yours.',
+  )
   const temporary = await mkdtemp(join(tmpdir(), 'tc96-registry-'))
   try {
     const manifest = join(temporary, 'selected.json')
