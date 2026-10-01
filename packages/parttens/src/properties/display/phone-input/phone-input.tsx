@@ -161,7 +161,7 @@ export function PhoneInput({
               />
               <ComboboxSeparator className="mx-0 my-0" />
               <ComboboxEmpty>Nenhum país encontrado.</ComboboxEmpty>
-              <ComboboxList>
+              <ComboboxList aria-label="Selecionar país">
                 {(item: PhoneCountry) => (
                   <ComboboxItem key={item.code} value={item}>
                     <span className="flex w-full min-w-0 items-center gap-2">

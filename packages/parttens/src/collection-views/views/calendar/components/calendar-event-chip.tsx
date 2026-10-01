@@ -119,8 +119,8 @@ export function CalendarEventChipTitle({
  * Alvo de clique do chip inteiro, esticado sobre ele.
  *
  * O chip é `article`, não `button`: controle interno futuro segue clicável
- * marcado com `data-calendar-item-action`, que o eleva acima deste gatilho e
- * impede o arraste de roubar o ponteiro — o mesmo desenho do KanbanCard.
+ * marcado com `data-calendar-item-action`, que o eleva acima deste gatilho — o
+ * mesmo desenho do KanbanCard. O arraste fica numa alça fora do chip.
  */
 export function CalendarEventChipOpenTrigger({
   className,

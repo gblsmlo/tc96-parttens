@@ -124,6 +124,7 @@ export function DateProperty({
       </PopoverTrigger>
       <PopoverPopup
         align="start"
+        aria-label={accessibleLabel}
         className="w-auto"
         side="bottom"
         {...dropdownPlacement}

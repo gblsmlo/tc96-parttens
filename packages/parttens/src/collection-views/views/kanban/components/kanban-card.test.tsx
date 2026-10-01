@@ -130,7 +130,7 @@ describe('KanbanCardOpenTrigger', () => {
     expect(events).toEqual(['open', 'action'])
   })
 
-  test('marks the action slot with the contract the drag sensor already respects', () => {
+  test('marks the action slot with the data-kanban-card-action contract', () => {
     const { container } = render(
       <KanbanCard>
         <KanbanCardAction>

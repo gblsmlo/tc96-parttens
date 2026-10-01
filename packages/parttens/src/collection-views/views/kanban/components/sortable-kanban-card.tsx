@@ -6,22 +6,14 @@ import {
 } from '@dnd-kit/dom'
 import { useSortable } from '@dnd-kit/react/sortable'
 import { cn } from '@tc96/utils'
-import type {
-  MouseEvent as ReactMouseEvent,
-  ReactNode,
-  PointerEvent as ReactPointerEvent,
-} from 'react'
-import { useCallback, useLayoutEffect, useRef } from 'react'
+import { GripVerticalIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 const KANBAN_CARD_SENSORS = [
   PointerSensor.configure({
     /**
-     * O card inteiro e o handle de arraste. Nesse caso o padrao do dnd-kit dispara
-     * o arraste ja no `pointerdown` e instala um cancelador do `click` seguinte —
-     * o card para de abrir Details com o mouse, e nada abaixo de E2E enxerga isso
-     * (com evento sintetico o `setPointerCapture` falha e o dnd-kit desiste).
-     * Exigir deslocamento minimo separa clique de arraste; no toque mantem-se o
-     * atraso, para nao competir com o scroll da coluna.
+     * Exigir deslocamento minimo separa clique de arraste na alca; no toque
+     * mantem-se o atraso, para nao competir com o scroll da coluna.
      */
     activationConstraints: (event) =>
       event.pointerType === 'touch'
@@ -67,59 +59,31 @@ export function SortableKanbanCard({
     transition: null,
     type: 'kanban-card',
   })
-  const wrapperRef = useRef<HTMLElement | null>(null)
-  const pointerMovedRef = useRef(false)
-  const setWrapperRef = useCallback(
-    (node: HTMLElement | null) => {
-      wrapperRef.current = node
-      ref(node)
-    },
-    [ref],
-  )
 
-  useLayoutEffect(() => {
-    const wrapper = wrapperRef.current
-    handleRef(wrapper)
-    return () => handleRef(null)
-  })
-
-  const handlePointerDownCapture = (event: ReactPointerEvent<HTMLElement>) => {
-    pointerMovedRef.current = false
-    const target = event.target
-    if (
-      target instanceof Element &&
-      target.closest('[data-kanban-card-action]')
-    ) {
-      event.stopPropagation()
-    }
-  }
-  const handlePointerMoveCapture = (event: ReactPointerEvent<HTMLElement>) => {
-    if (event.buttons !== 0) pointerMovedRef.current = true
-  }
-  const handleClickCapture = (event: ReactMouseEvent<HTMLElement>) => {
-    if (!pointerMovedRef.current) return
-    pointerMovedRef.current = false
-    event.preventDefault()
-    event.stopPropagation()
-  }
-
+  // So a alca arrasta. O dnd-kit transforma o ativador em botao, e um botao
+  // esconde o que contem da tecnologia assistiva; por isso o card e as acoes
+  // dele ficam fora da alca.
   return (
-    <section
-      aria-label={dragLabel}
+    <div
       className={cn(
-        'relative min-w-0 max-w-full touch-none rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        'cursor-grab active:cursor-grabbing',
+        'group/kanban-drag flex min-w-0 max-w-full items-start gap-0.5',
         isDragSource && 'opacity-0',
       )}
       data-kanban-card-container=""
-      data-kanban-card-drag-id={id}
       data-kanban-card-draggable=""
-      onClickCapture={handleClickCapture}
-      onPointerDownCapture={handlePointerDownCapture}
-      onPointerMoveCapture={handlePointerMoveCapture}
-      ref={setWrapperRef}
+      ref={ref}
     >
-      {children}
-    </section>
+      <button
+        aria-label={dragLabel}
+        className="flex h-8 w-5 shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-muted-foreground opacity-0 outline-none transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing group-hover/kanban-drag:opacity-100"
+        data-kanban-card-drag-handle=""
+        data-kanban-card-drag-id={id}
+        ref={handleRef}
+        type="button"
+      >
+        <GripVerticalIcon aria-hidden="true" className="size-4" />
+      </button>
+      <div className="min-w-0 flex-1">{children}</div>
+    </div>
   )
 }

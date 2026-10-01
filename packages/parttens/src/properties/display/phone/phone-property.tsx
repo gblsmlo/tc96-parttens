@@ -269,14 +269,14 @@ export function PhoneProperty({
               ) : null}
             </div>
             {errors[index] ? (
-              <p className="text-destructive text-xs" role="alert">
+              <p className="text-destructive-foreground text-xs" role="alert">
                 {errors[index]}
               </p>
             ) : null}
           </div>
         ))}
         {errorMessage ? (
-          <p className="text-destructive text-xs" role="alert">
+          <p className="text-destructive-foreground text-xs" role="alert">
             {errorMessage}
           </p>
         ) : null}

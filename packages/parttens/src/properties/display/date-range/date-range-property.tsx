@@ -97,6 +97,7 @@ export function DateRangeProperty({
       </PopoverTrigger>
       <PopoverPopup
         align="start"
+        aria-label={ariaLabel ?? 'Period'}
         className="w-auto"
         side="bottom"
         {...dropdownPlacement}

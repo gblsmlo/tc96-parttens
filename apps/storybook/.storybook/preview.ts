@@ -30,8 +30,10 @@ const preview: Preview = {
     theme: 'light',
   },
   parameters: {
+    // Uma violação do axe reprova o storybook:test. Exceções ficam na story,
+    // com o motivo; hoje só contraste de componentes e exemplos do COSS.
     a11y: {
-      test: 'todo',
+      test: 'error',
     },
     controls: {
       matchers: {
