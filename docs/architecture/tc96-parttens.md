@@ -118,7 +118,7 @@ Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue im
 Questões abertas:
 
 - Locale e faixa de datas do calendar. É pré-requisito para limpar `packages/ui`.
-- Namespace das dependências COSS no registry e reescrita de `@tc96/ui/<item>` para o `aliases.ui` do consumidor. É o caminho crítico do registry, e o contrato de instalação só foi provado com itens locais.
+- Forma das `registryDependencies` do COSS (URL completa ou namespace `@coss` em `registries`) e reaproveitamento sem prompt de um componente COSS que o consumidor já tem. É o caminho crítico do registry, e o contrato de instalação só foi provado com itens locais.
 - Regra objetiva de sobrescrita nos patterns. A proposta é permitir só layout e dimensão, sem cor, raio ou sombra.
 
 ## Comportamento e dados
@@ -129,7 +129,28 @@ Exceção de compatibilidade aceita: preservar o agrupamento interno atual e acr
 
 ## Distribuição e instalação
 
-Há um modo só: instalação editável dos fontes. O destino padrão é `packages/patterns`. A UI e o `cn` vêm do COSS do consumidor, pelos aliases do `components.json`.
+Há um modo só: instalação editável dos fontes.
+
+### Estrutura do consumidor
+
+Decidido em 2026-10-01. O consumidor monta um design system em camadas, no espírito do atomic design. O `components.json` fica na raiz do monorepo e é a única configuração; o `tc96.json` deixa de existir.
+
+```text
+components.json        aliases: ui, utils, elements, patterns
+packages/
+  ui/                  átomos: componentes COSS (aliases.ui)
+  elements/            componentes próprios fora do COSS, como Text (aliases.elements)
+  patterns/            organismos: patterns do tc96 (aliases.patterns)
+apps/
+  web/                 templates e páginas da aplicação
+```
+
+- `ui` e `utils` vêm dos aliases que o shadcn já define. O shadcn instala ali os componentes COSS.
+- `elements` e `patterns` são aliases acrescentados ao mesmo objeto `aliases`. O shadcn 4.21 valida `aliases` com um `z.object` não estrito, que aceita e ignora chaves desconhecidas; o objeto de topo é estrito, por isso as chaves novas ficam dentro de `aliases`. O CLI do tc96 lê o arquivo bruto para obter esses dois aliases.
+- Imports só descem de camada: `patterns` importa `elements`, `ui` e `utils`; `elements` importa `ui` e `utils`; `ui` não importa nenhuma das outras.
+- Cada alias precisa de entrada exata e de wildcard nos `paths` do `tsconfig` da raiz, conforme o [contrato de instalação](installation-contract.md).
+
+Não verificado: se `shadcn init` ou outros comandos regravam o `components.json` e descartam `elements` e `patterns`. Se descartarem, o CLI precisa avisar e reaplicar.
 
 Contrato proposto do comando:
 
@@ -137,7 +158,7 @@ Contrato proposto do comando:
 npx tc96-parttens add collection-views properties
 ```
 
-O CLI aceita vários padrões, resolve dependências compartilhadas uma vez e ajusta imports para os pacotes do consumidor. Exemplo: `@tc96/ui/button` se torna `@lemind/ui/button` quando esse for o `aliases.ui` do consumidor.
+O CLI aceita vários padrões, resolve dependências compartilhadas uma vez e ajusta imports para os pacotes do consumidor. Os imports `@tc96/ui`, `@tc96/utils`, `@tc96/elements` e `@tc96/parttens` são reescritos para `aliases.ui`, `aliases.utils`, `aliases.elements` e `aliases.patterns` do consumidor. Exemplo: `@tc96/ui/button` se torna `@lemind/ui/button`.
 
 Decisão confirmada: utilizar o instalador do shadcn. `tc96-parttens` será uma camada fina de configuração, seleção e verificações; não terá um segundo mecanismo de cópia e resolução de dependências. O registry será compatível com o schema do shadcn. Validar destinos em monorepo e aliases personalizados antes de finalizar esse adaptador. Bun não será exigido para executar o CLI via npm.
 
@@ -167,6 +188,7 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 | UI base é COSS sem alterações, com API COSS; `tc96/ui` removido | Manter a API própria de `tc96/ui` | Reutilizar patterns sobre o COSS do consumidor com a menor sobrescrita |
 | Componentes COSS de posse do consumidor via `registryDependencies` | tc96 mantém cópia vendorizada | O tema e as personalizações do consumidor valem sem cópia paralela |
 | `Text` e outros componentes fora do COSS em `packages/elements`, distribuídos pelo registry com destino configurável | Manter em `packages/ui` | `packages/ui` só contém COSS sem alterações |
+| `components.json` na raiz como única configuração, com `aliases.elements` e `aliases.patterns`; `tc96.json` removido | Manter `tc96.json` para os destinos do tc96 | Uma configuração só, numa estrutura em camadas no consumidor |
 | `cn` resolvido pelo `aliases.utils` do consumidor | Distribuir `@tc96/utils` | O COSS já instala `cn` no consumidor |
 | Grupos preparados com agrupamento antigo preservado | Remover projeção interna | Separar operações novas sem quebrar comportamento atual |
 | UI compartilhada e destino configurável | UI duplicada por padrão | Reaproveitar a base e as personalizações do consumidor |

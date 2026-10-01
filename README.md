@@ -18,13 +18,41 @@ tc96 is not a runtime dependency. It works like shadcn and COSS: the CLI copies 
 
 - **Your COSS components:** patterns import `Button`, `Menu`, `Popover` and the rest from your project's UI alias. If a COSS component is missing, it is installed through shadcn. If you already have it, yours is reused, customizations included.
 - **Your theme:** tc96 ships no CSS, tokens or theme. Patterns use COSS components without changes and only add layout classes.
-- **Your aliases:** imports are rewritten to the aliases in your `components.json`. The patterns destination is `packages/patterns` by default and can be changed in `tc96.json`.
+- **Your aliases:** imports are rewritten to the aliases in your root `components.json`.
 - **Your files:** existing files are kept. shadcn asks before overwriting anything.
+
+## Consumer structure
+
+tc96 expects a layered design system, in the spirit of atomic design, configured by one `components.json` at the monorepo root:
+
+```text
+components.json        aliases: ui, utils, elements, patterns
+packages/
+  ui/                  atoms: COSS components
+  elements/            components COSS does not have, such as Text
+  patterns/            organisms: tc96 patterns
+apps/
+  web/                 templates and pages
+```
+
+```json
+{
+  "aliases": {
+    "components": "@acme/ui",
+    "ui": "@acme/ui",
+    "utils": "@acme/ui/lib/utils",
+    "elements": "@acme/elements",
+    "patterns": "@acme/patterns"
+  }
+}
+```
+
+Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`, and `elements` can import `ui` and `utils`. Each alias also needs exact and wildcard entries in the root `tsconfig` `paths`.
 
 ## Requirements
 
 - React 19, TypeScript and Tailwind CSS 4
-- COSS set up with shadcn (`components.json` in the consumer workspace)
+- COSS set up with shadcn, with `components.json` at the monorepo root
 - Node and npm to run the CLI. Bun is not required.
 
 ## Patterns
