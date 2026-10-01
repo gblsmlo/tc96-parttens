@@ -109,15 +109,17 @@ Decidido em 2026-10-01. O tc96 reutiliza patterns em projetos que já usam COSS,
 - O `cn` também é do consumidor. Os imports de `@tc96/utils` são reescritos para o `aliases.utils` do `components.json` do consumidor, e o arquivo não é distribuído.
 - Os patterns não redefinem tema. Tokens, `:root`, `.dark` e utilitários próprios pertencem ao consumidor.
 
-`packages/ui` continua no workspace, privado, como a UI que um consumidor COSS teria. Ele é gerado pelo mesmo `shadcn add` do COSS e nunca editado à mão. Um lock registra, por item, a URL `coss.com/ui/r/<item>.json` e o hash. Um check compara cada arquivo com esse snapshot, normalizando só os imports. O diretório fica fora do formatador.
+`packages/ui` continua no workspace, privado, como a UI que um consumidor COSS teria. Ele é gerado por `bun run sync:coss`, que grava cada item do registry do COSS como publicado e só troca os aliases de import (`@/registry/default/...`) pelos do workspace, como o `shadcn add` faria. Nunca é editado à mão. O lock `packages/ui/coss.lock.json` registra, por item, a URL `coss.com/ui/r/<item>.json`, o hash do conteúdo publicado e o hash do arquivo gravado. O `check:coss` compara cada arquivo com o lock, e o `check:coss --remote` compara com o registry. O diretório fica fora do Biome. Os patterns só importam `@tc96/ui/<item>` presente no lock.
 
-Situação em 2026-10-01, medida por diff contra `coss.com/ui/r/*.json`. Dos 28 arquivos de `packages/ui/src`, 16 são idênticos ao COSS e 3 diferem só na formatação. Outros 8 divergem: button, input, input-group, group, calendar (locale `ptBR` fixo), combobox, sheet e textarea. `compat/collection-views/button.tsx` e `compat/collection-views/input.tsx` são o COSS sem alterações, e o `button.tsx` e o `input.tsx` canônicos são o fork. `scripts/build-library.ts` publica `ui/styles.css` com tokens próprios. Os quatro `styles/global.css` dos patterns não são importados.
+Situação em 2026-10-01: os 27 itens de `packages/ui/src` são o COSS sem alterações. Antes, 8 deles divergiam (button, input, input-group, group, calendar, combobox, sheet e textarea) e havia cópias em `compat/`. O COSS fixa `@base-ui/react` 1.8.0 e usa `@daypicker/react` no calendar, e o workspace acompanha essas versões. `scripts/build-library.ts` publica `ui/styles.css` com tokens próprios. Os quatro `styles/global.css` dos patterns não são importados.
 
 Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue importar o COSS do consumidor sem embutir uma cópia própria ou depender de um caminho que não resolve. Por isso o tc96 é distribuído só como fontes. A atualização passa a ser `tc96-parttens add --diff` com incorporação manual. Reabrir esta decisão só se surgir como requisito um consumidor sem COSS.
 
+Locale do calendar, resolvido no planejamento: o calendar do COSS fala inglês por padrão, como o rótulo dos patterns (`en-US`). Outro idioma entra por `calendarProps.locale`.
+
 Questões abertas:
 
-- Locale e faixa de datas do calendar. É pré-requisito para limpar `packages/ui`.
+- Faixa de datas do calendar.
 - Regra objetiva de sobrescrita nos patterns. A proposta é permitir só layout e dimensão, sem cor, raio ou sombra.
 
 ## Comportamento e dados
@@ -203,7 +205,7 @@ Proposta de verificação: conferir exports e compatibilidade dos contratos Type
 
 ## Pontos ainda em revisão
 
-- Locale do calendar, namespace COSS no registry e regra de sobrescrita. Ver [UI base sem opinião](#ui-base-sem-opinião).
+- Namespace COSS no registry e regra de sobrescrita. Ver [UI base sem opinião](#ui-base-sem-opinião).
 - Aprovação da estratégia de validação e do limite da verificação de compatibilidade.
 - Configuração e integração do CLI com shadcn, preservando o comando desejado e validando destinos em monorepo.
 - Nome npm disponível para o CLI.

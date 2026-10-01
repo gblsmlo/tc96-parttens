@@ -1,20 +1,20 @@
 'use client'
 
-import { Button } from '@tc96/ui/compat/collection-views/button'
+import { Button } from '@tc96/ui/button'
 import { cn } from '@tc96/utils'
-import { copyToClipboard } from '../../shared/lib/clipboard'
 import { CopyIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
+import { copyToClipboard } from '../../shared/lib/clipboard'
+import {
+  type PropertyVariant,
+  propertyBadgeClassName,
+} from '../../shared/property-surface'
 import { EditableText } from '../editable-text/index'
 import {
   IconLabelProperty,
   type IconLabelPropertyIcon,
   type IconLabelPropertyTrailingVisibility,
 } from '../icon-label/icon-label-property'
-import {
-  propertyBadgeClassName,
-  type PropertyVariant,
-} from '../../shared/property-surface'
 
 export type TextPropertyIcon = IconLabelPropertyIcon
 

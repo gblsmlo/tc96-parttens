@@ -32,7 +32,6 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --radius-control: var(--radius-md);
   --animate-skeleton: skeleton 2s -1s infinite linear;
   --animate-caret-blink: 1s ease-out infinite caret-blink;
   --animate-toast-success-odd: toast-success-odd 0.32s cubic-bezier(0.5, 1, 0.89, 1);
@@ -163,14 +162,6 @@
     100% {
       translate: 0 0;
     }
-  }
-}
-
-@utility control-radius {
-  border-radius: var(--radius-control);
-
-  &::before {
-    border-radius: calc(var(--radius-control) - 1px);
   }
 }
 

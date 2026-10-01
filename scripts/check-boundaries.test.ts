@@ -11,6 +11,11 @@ let root = ''
 async function workspace(sources: Record<string, string>) {
   root = await mkdtemp(join(tmpdir(), 'tc96-boundaries-'))
   await writeFile(join(root, 'tsconfig.json'), '{}')
+  await mkdir(join(root, 'packages/ui'), { recursive: true })
+  await writeFile(
+    join(root, 'packages/ui/coss.lock.json'),
+    JSON.stringify({ items: { button: {} } }),
+  )
   for (const owner of owners)
     await mkdir(join(root, 'packages', owner, 'src'), { recursive: true })
   for (const [path, content] of Object.entries(sources)) {
@@ -24,15 +29,18 @@ afterEach(() => rm(root, { recursive: true, force: true }))
 
 test('lets patterns depend on elements, and elements on ui', async () => {
   const result = await workspace({
-    'packages/parttens/src/a.ts': "import { Text } from '@tc96/elements/text'\n",
-    'packages/elements/src/text.tsx': "import { Button } from '@tc96/ui/button'\n",
+    'packages/parttens/src/a.ts':
+      "import { Text } from '@tc96/elements/text'\n",
+    'packages/elements/src/text.tsx':
+      "import { Button } from '@tc96/ui/button'\n",
   })
   expect(result.status).toBe(0)
 })
 
 test('rejects ui depending on elements', async () => {
   const result = await workspace({
-    'packages/ui/src/button.tsx': "import { Text } from '@tc96/elements/text'\n",
+    'packages/ui/src/button.tsx':
+      "import { Text } from '@tc96/elements/text'\n",
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain('ui cannot depend on elements')
@@ -40,8 +48,25 @@ test('rejects ui depending on elements', async () => {
 
 test('rejects elements depending on patterns', async () => {
   const result = await workspace({
-    'packages/elements/src/text.tsx': "import { Kanban } from '@tc96/parttens'\n",
+    'packages/elements/src/text.tsx':
+      "import { Kanban } from '@tc96/parttens'\n",
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain('elements cannot depend on parttens')
+})
+
+test('rejects a ui import that is not a locked COSS item', async () => {
+  const result = await workspace({
+    'packages/parttens/src/a.ts': "import { Text } from '@tc96/ui/text'\n",
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain('@tc96/ui/text is not a locked COSS item')
+})
+
+test('rejects the removed ui barrel', async () => {
+  const result = await workspace({
+    'packages/parttens/src/a.ts': "import { Button } from '@tc96/ui'\n",
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain('@tc96/ui is not a locked COSS item')
 })

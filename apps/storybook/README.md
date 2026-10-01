@@ -2,8 +2,8 @@
 
 Catálogo visual interno para desenvolver e testar os patterns sobre os pacotes do
 workspace. As stories importam os patterns de `@tc96/parttens` e os componentes de
-UI por subpath, como `@tc96/ui/button`; o barrel de `@tc96/ui` está sendo
-removido. Utilitários sem interface, MDX e documentação conceitual pertencem ao
+UI por subpath, como `@tc96/ui/button`. `packages/ui` é o COSS sem alterações,
+travado em `packages/ui/coss.lock.json`. Utilitários sem interface, MDX e documentação conceitual pertencem ao
 app Fumadocs em `apps/docs`.
 
 Cada grupo de stories gera automaticamente uma entrada `Doc` por meio do

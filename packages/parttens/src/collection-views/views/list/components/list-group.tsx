@@ -1,5 +1,5 @@
 import { Badge } from '@tc96/ui/badge'
-import { Button } from '@tc96/ui/compat/collection-views/button'
+import { Button } from '@tc96/ui/button'
 import {
   Collapsible,
   CollapsiblePanel,

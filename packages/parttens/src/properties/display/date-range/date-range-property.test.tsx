@@ -8,7 +8,7 @@ const { cleanup, fireEvent, render, screen, waitFor } = await import(
 const { DateRangeProperty, formatDateRangeProperty } = await import(
   './date-range-property'
 )
-type DateRange = import('react-day-picker').DateRange
+type DateRange = import('@daypicker/react').DateRange
 
 // Marcadores de dia local, que é o que o calendário entrega — construí-los em UTC
 // faria as asserções de rótulo dependerem do fuso da máquina.

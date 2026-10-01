@@ -17,22 +17,27 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+const sizes = ['xs', 'sm', 'default', 'lg', 'xl'] as const
+
 export const AllSizes: Story = {
   render: () => (
     <div className="flex items-center gap-3">
-      <Button size="sm">Small</Button>
-      <Button>Medium</Button>
-      <Button size="lg">Large</Button>
+      {sizes.map((size) => (
+        <Button key={size} size={size}>
+          {size}
+        </Button>
+      ))}
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const small = canvas.getByRole('button', { name: 'Small' })
-    const medium = canvas.getByRole('button', { name: 'Medium' })
-    const large = canvas.getByRole('button', { name: 'Large' })
+    const heights = sizes.map((size) =>
+      Number.parseFloat(
+        getComputedStyle(canvas.getByRole('button', { name: size })).height,
+      ),
+    )
 
-    await expect(getComputedStyle(small).height).toBe('32px')
-    await expect(getComputedStyle(medium).height).toBe('36px')
-    await expect(getComputedStyle(large).height).toBe('40px')
+    await expect(heights).toEqual([...heights].sort((a, b) => a - b))
+    await expect(new Set(heights).size).toBe(sizes.length)
   },
 }

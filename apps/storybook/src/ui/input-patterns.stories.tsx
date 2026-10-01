@@ -284,7 +284,7 @@ export const WithButtonUsingGroup: Story = {
       <Group aria-label="Email subscription" className="w-full gap-2">
         <Input aria-label="Email" className="flex-1" placeholder="you@example.com" type="email" />
         <div>
-          <Button size="md" type="button" variant="outline">
+          <Button type="button" variant="outline">
             Send
           </Button>
         </div>

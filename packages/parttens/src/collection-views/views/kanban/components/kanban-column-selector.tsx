@@ -1,4 +1,4 @@
-import { Button } from '@tc96/ui/compat/collection-views/button'
+import { Button } from '@tc96/ui/button'
 import { ScrollArea } from '@tc96/ui/scroll-area'
 import { useId } from 'react'
 

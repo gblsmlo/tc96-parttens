@@ -1,6 +1,6 @@
 'use client'
 
-import { Input } from '@tc96/ui/compat/collection-views/input'
+import { Input } from '@tc96/ui/input'
 import { ToolbarInput } from '@tc96/ui/toolbar'
 import { SearchIcon } from 'lucide-react'
 import { type FormEvent, type ReactElement, useEffect, useState } from 'react'

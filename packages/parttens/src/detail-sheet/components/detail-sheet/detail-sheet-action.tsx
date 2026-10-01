@@ -1,11 +1,10 @@
-import type * as React from 'react'
-
-import { Button, type ButtonProps } from '@tc96/ui/compat/collection-views/button'
+import { Button, type ButtonProps } from '@tc96/ui/button'
 import {
   Tooltip,
   TooltipPopup,
   TooltipTrigger,
 } from '@tc96/ui/tooltip'
+import type * as React from 'react'
 
 export interface DetailSheetActionProps
   extends Omit<ButtonProps, 'aria-label' | 'children' | 'render' | 'size'> {

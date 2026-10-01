@@ -23,7 +23,16 @@ export const Primary: Story = {
 
 export const Ghost: Story = {
   args: {
-    variant: 'destructive-ghost',
+    className: 'text-destructive-foreground',
+    variant: 'ghost',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'COSS has no destructive ghost variant. Patterns use the ghost variant with destructive text instead.',
+      },
+    },
   },
 }
 

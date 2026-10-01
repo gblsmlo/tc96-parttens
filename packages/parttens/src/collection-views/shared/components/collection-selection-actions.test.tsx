@@ -116,6 +116,30 @@ describe('ActionBar', () => {
     expect(button.className).not.toContain('blue')
   })
 
+  test('renders a destructive action as a ghost button with destructive text', () => {
+    render(
+      <ActionBar
+        actions={[
+          {
+            items: [
+              {
+                label: 'Excluir',
+                onSelect: () => undefined,
+                variant: 'destructive',
+              },
+            ],
+          },
+        ]}
+        selectedCount={1}
+      />,
+    )
+
+    const button = screen.getByRole('button', { name: 'Excluir' })
+
+    expect(button.className).toContain('text-destructive-foreground')
+    expect(button.className).not.toContain('bg-destructive')
+  })
+
   test('keeps the previous component name as a compatibility alias', () => {
     expect(CollectionSelectionActions).toBe(ActionBar)
   })

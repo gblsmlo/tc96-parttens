@@ -1,7 +1,8 @@
 'use client'
 
-import { Button } from '@tc96/ui/compat/collection-views/button'
-import { Input } from '@tc96/ui/compat/collection-views/input'
+import type { Table as TanstackTable } from '@tanstack/react-table'
+import { Button } from '@tc96/ui/button'
+import { Input } from '@tc96/ui/input'
 import {
   MenuCheckboxItem,
   MenuItem,
@@ -14,7 +15,6 @@ import {
 } from '@tc96/ui/menu'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
-import type { Table as TanstackTable } from '@tanstack/react-table'
 import {
   AlignVerticalSpaceAroundIcon,
   ArrowDownUpIcon,

@@ -9,6 +9,7 @@
     "@tc96/elements": "workspace:*",
     "@tc96/ui": "workspace:*",
     "@tc96/utils": "workspace:*",
+    "@daypicker/react": "10.0.2",
     "@dnd-kit/abstract": "0.5.0",
     "@dnd-kit/collision": "0.5.0",
     "@dnd-kit/dom": "0.5.0",
@@ -19,7 +20,6 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "1.28.0",
-    "react-day-picker": "10.0.1",
     "react-phone-number-input": "3.4.18",
     "tailwind-merge": "3.6.0",
     "zod": "4.4.3"
@@ -27,6 +27,6 @@
   "peerDependencies": {
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "@base-ui/react": "1.6.0"
+    "@base-ui/react": "1.8.0"
   }
 }

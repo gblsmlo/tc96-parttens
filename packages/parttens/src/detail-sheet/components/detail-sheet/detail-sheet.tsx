@@ -1,9 +1,7 @@
 'use client'
 
 import { Dialog } from '@base-ui/react/dialog'
-import { XIcon } from 'lucide-react'
-import type * as React from 'react'
-
+import { Button } from '@tc96/ui/button'
 import {
   Sheet,
   SheetClose,
@@ -14,7 +12,8 @@ import {
   SheetPopup,
   SheetTitle,
 } from '@tc96/ui/sheet'
-import { Button } from '@tc96/ui/compat/collection-views/button'
+import { XIcon } from 'lucide-react'
+import type * as React from 'react'
 
 export interface DetailSheetProps extends Omit<Dialog.Root.Props, 'children'> {
   actions?: React.ReactNode

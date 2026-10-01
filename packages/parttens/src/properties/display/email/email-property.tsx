@@ -1,19 +1,19 @@
 'use client'
 
-import { Button } from '@tc96/ui/compat/collection-views/button'
-import { Input } from '@tc96/ui/compat/collection-views/input'
+import { Button } from '@tc96/ui/button'
+import { Input } from '@tc96/ui/input'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
 import { MailIcon, PlusIcon, XIcon } from 'lucide-react'
 import { type FormEvent, useEffect, useState } from 'react'
 import { z } from 'zod'
-import { EditableText } from '../editable-text/index'
-import { IconLabelProperty } from '../icon-label/icon-label-property'
 import {
-  propertyBadgeClassName,
   PropertySurface,
   type PropertyVariant,
+  propertyBadgeClassName,
 } from '../../shared/property-surface'
+import { EditableText } from '../editable-text/index'
+import { IconLabelProperty } from '../icon-label/icon-label-property'
 
 const emailSchema = z.email('Informe um e-mail válido.')
 

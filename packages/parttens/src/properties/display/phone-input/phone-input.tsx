@@ -16,15 +16,15 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from '@tc96/ui/compat/properties/input-group'
+} from '@tc96/ui/input-group'
 import { ChevronDownIcon, GlobeIcon, SearchIcon } from 'lucide-react'
 import type React from 'react'
 import { useCallback, useRef, useState } from 'react'
 import PhoneNumberInput from 'react-phone-number-input/input-max'
 import {
+  findPhoneCountry,
   type PhoneCountry,
   type PhoneCountryCode,
-  findPhoneCountry,
   phoneCountries,
 } from './countries'
 import {

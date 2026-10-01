@@ -9,8 +9,10 @@
   ],
   "scripts": {
     "boundaries:check": "bun scripts/check-boundaries.ts",
+    "check:coss": "bun scripts/check-coss.ts",
+    "sync:coss": "bun scripts/sync-coss.ts",
     "typecheck": "tsc --noEmit",
-    "test:ui": "bun test --isolate packages/ui/src packages/elements/src packages/utils/src",
+    "test:ui": "bun test --isolate packages/elements/src packages/utils/src",
     "test:patterns": "bun scripts/test-patterns.ts",
     "test:registry": "bun test --isolate packages/registry/src",
     "test": "bun run test:ui && bun run test:boundaries && bun run test:patterns && bun run test:registry",
@@ -23,7 +25,7 @@
     "docs:build": "bun run --cwd apps/docs build",
     "docs:dev": "bun run --cwd apps/docs dev",
     "lint:ci": "biome check scripts packages/registry/src",
-    "check": "bun run boundaries:check && bun run typecheck && bun run test && bun run build && bun run verify:public-api && bun run storybook:test && bun run storybook:build && bun run docs:build",
+    "check": "bun run check:coss && bun run boundaries:check && bun run typecheck && bun run test && bun run build && bun run verify:public-api && bun run storybook:test && bun run storybook:build && bun run docs:build",
     "release:check": "bun run check && bun run test:consumer:npm && bun run test:consumer:registry && bun run test:consumer:ssr && bun run bench:views && bun run pack:check",
     "verify:public-api": "bun scripts/verify-public-api.ts",
     "test:consumer:npm": "bun scripts/test-consumer-library.ts",
@@ -54,12 +56,12 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "1.28.0",
-    "react-day-picker": "10.0.1",
+    "@daypicker/react": "10.0.2",
     "react-phone-number-input": "3.4.18",
     "tailwind-merge": "3.6.0",
     "zod": "4.4.3",
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "@base-ui/react": "1.6.0"
+    "@base-ui/react": "1.8.0"
   }
 }

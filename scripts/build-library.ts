@@ -88,7 +88,6 @@ const entry = (path: string) => ({
   import: `./${path}.js`,
 })
 const exports = {
-  './ui': entry('ui/src/index'),
   './utils': entry('utils/src/index'),
   './parttens': entry('parttens/src/index'),
   './components': entry('parttens/src/components'),
@@ -116,7 +115,7 @@ await writeFile(
       peerDependencies: {
         react: '>=19.1.1 <20',
         'react-dom': '>=19.1.1 <20',
-        '@base-ui/react': '>=1.6.0 <2',
+        '@base-ui/react': '>=1.8.0 <2',
       },
     },
     null,
