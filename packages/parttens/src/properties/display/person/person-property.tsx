@@ -159,7 +159,7 @@ function PersonPropertyContent<TValue extends string = string>({
 }>) {
   if (display === 'avatar') {
     return (
-      <Avatar className="size-7 text-[0.625rem]">
+      <Avatar className="size-4 text-sm">
         {option?.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
         <AvatarFallback>
           {option ? (
@@ -185,7 +185,7 @@ function PersonPropertyContent<TValue extends string = string>({
     <span className="flex min-w-0 items-center gap-1.5">
       <Avatar
         className={cn(
-          variant === 'badge' ? 'size-5' : 'size-7',
+          variant === 'badge' ? 'size-4' : 'size-7',
           'text-[0.625rem]',
         )}
       >
@@ -216,11 +216,11 @@ function findPersonOption<TValue extends string>(
   }
 }
 
-function getInitials(label: string): string {
+function getInitials(label: string, size = 2): string {
   return label
     .split(/\s+/)
     .filter(Boolean)
-    .slice(0, 2)
+    .slice(0, size)
     .map((part) => part[0])
     .join('')
     .toUpperCase()

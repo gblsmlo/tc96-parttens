@@ -166,9 +166,6 @@ export function PeopleProperty<TValue extends string = string>({
               <PersonChipContent option={option} />
             </ComboboxChip>
           ))}
-          {/* Sem ninguém a fileira precisa se explicar, e vira um chip rotulado.
-              Com participantes já aplicados o avatar de cada um já dá o
-              contexto — sobra o sinal de adicionar. */}
           <Button
             aria-label={
               selectedOptions.length > 0 ? 'Adicionar pessoa' : undefined
@@ -221,7 +218,7 @@ function PersonChipContent<TValue extends string = string>({
 }: Readonly<{ option: PeoplePropertyOption<TValue> }>) {
   return (
     <span className="flex min-w-0 items-center gap-1.5">
-      <Avatar className="size-5 text-[0.625rem]">
+      <Avatar className="size-4 text-sm">
         {option.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
         <AvatarFallback>
           {option.fallback ?? getInitials(option.label)}

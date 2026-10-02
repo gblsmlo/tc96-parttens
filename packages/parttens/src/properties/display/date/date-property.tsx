@@ -35,6 +35,7 @@ export interface DatePropertyProps {
   clearLabel?: string
   fallback?: string
   disabled?: boolean
+  displayLabel?: string
   dropdownPlacement?: DatePropertyDropdownPlacement
   isOverdue?: boolean
   locale?: string
@@ -53,6 +54,7 @@ export function DateProperty({
   className,
   clearLabel = 'Limpar data',
   disabled = false,
+  displayLabel,
   dropdownPlacement,
   fallback = 'Sem data',
   isOverdue = false,
@@ -90,6 +92,7 @@ export function DateProperty({
     return (
       <DatePropertyBadge
         className={className}
+        displayLabel={displayLabel}
         fallback={fallback}
         isOverdue={isOverdue}
         locale={locale}
@@ -100,7 +103,8 @@ export function DateProperty({
     )
   }
 
-  const label = formatDateProperty(value, fallback, locale, timeZone)
+  const label =
+    displayLabel ?? formatDateProperty(value, fallback, locale, timeZone)
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -159,6 +163,7 @@ export function DateProperty({
 
 export function DatePropertyBadge({
   className,
+  displayLabel,
   fallback = 'Sem data',
   isOverdue = false,
   locale = 'en-US',
@@ -169,6 +174,7 @@ export function DatePropertyBadge({
   Pick<
     DatePropertyProps,
     | 'className'
+    | 'displayLabel'
     | 'fallback'
     | 'isOverdue'
     | 'locale'
@@ -177,7 +183,8 @@ export function DatePropertyBadge({
     | 'variant'
   >
 >) {
-  const label = formatDateProperty(value, fallback, locale, timeZone)
+  const label =
+    displayLabel ?? formatDateProperty(value, fallback, locale, timeZone)
 
   return (
     <PropertySurface

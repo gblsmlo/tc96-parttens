@@ -38,6 +38,9 @@ test('selects several patterns once and maps legacy view to collection-views', (
     'properties',
   ])
 })
+test('accepts the migrated checklist pattern', () => {
+  expect(selectPatterns(['checklist', 'checklist'])).toEqual(['checklist'])
+})
 test('rejects unknown or excluded patterns', () => {
   expect(() => selectPatterns(['filter-builder'])).toThrow('Unknown pattern')
   expect(() => selectPatterns([])).toThrow('Choose')

@@ -308,6 +308,12 @@
     "EditableTrigger",
     "EditableTriggerProps"
   ],
+  "checklist": [
+    "Checklist",
+    "ChecklistDensity",
+    "ChecklistItem",
+    "ChecklistProps"
+  ],
   "parttens": [
     "Action",
     "ActionBar",
@@ -356,6 +362,10 @@
     "CalendarView",
     "CalendarViewMode",
     "CalendarViewProps",
+    "Checklist",
+    "ChecklistDensity",
+    "ChecklistItem",
+    "ChecklistProps",
     "CollectionDataGridViewProps",
     "CollectionDefinition",
     "CollectionGroup",

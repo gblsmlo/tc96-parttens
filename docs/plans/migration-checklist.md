@@ -14,3 +14,10 @@
 - [ ] Teste completo de hidratação em TanStack Start/Next.js executado em seus respectivos consumidores.
 
 Os três itens abertos são dependências externas ou decisões de release; não são inferidos pelo pacote.
+
+## Patterns do Lemind
+
+- [x] Checklist: fonte adaptada para `@tc96/ui`, export público, item de registry, story e testes de interação.
+- [ ] Validar a instalação do checklist em um consumidor COSS externo e a hidratação em uma aplicação real.
+
+O checklist original permanece em `lemind/packages/patterns/src/checklist.tsx`; a cópia do TC96 passa a evoluir neste repositório.

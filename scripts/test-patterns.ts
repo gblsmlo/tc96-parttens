@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process'
 import { files } from './files'
 
 for (const path of [
+  'checklist',
   'collection-views',
   'detail-sheet',
   'editable',
