@@ -1,15 +1,16 @@
 'use client'
 
+import type { RowData } from '@tanstack/react-table'
 import { Checkbox } from '@tc96/ui/checkbox'
-import type { ColumnDef } from '@tanstack/react-table'
+import type { DataGridColumnDef } from './data-grid-features'
 
 /**
  * Row-selection column with header "select all" and per-row checkboxes.
  * Place it first in your column list and pair with `enableRowSelection` on the grid.
  */
-export function createSelectColumn<TData>(
+export function createSelectColumn<TData extends RowData>(
   options: { showRowNumbers?: boolean; size?: number } = {},
-): ColumnDef<TData, unknown> {
+): DataGridColumnDef<TData> {
   const showRowNumbers = options.showRowNumbers ?? true
 
   return {
@@ -25,7 +26,10 @@ export function createSelectColumn<TData>(
         <Checkbox
           aria-label="Selecionar todos os registros"
           checked={table.getIsAllPageRowsSelected()}
-          indeterminate={table.getIsSomePageRowsSelected()}
+          indeterminate={
+            table.getIsSomePageRowsSelected() &&
+            !table.getIsAllPageRowsSelected()
+          }
           onCheckedChange={(checked) =>
             table.toggleAllPageRowsSelected(Boolean(checked))
           }

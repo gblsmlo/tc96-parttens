@@ -36,13 +36,13 @@ export type {
   DataGridAlign,
   DataGridCellValueChange,
   DataGridCellVariant,
-  DataGridColumnDef,
   DataGridColumnMeta,
   DataGridColumnType,
   DataGridDensity,
   DataGridSelectOption,
 } from './views/data-grid/types'
 export { DATA_GRID_COLUMN_TYPES } from './views/data-grid/types'
+export type { DataGridColumnDef } from './views/data-grid/data-grid-features'
 export {
   createCardDragId,
   createColumnDropId,

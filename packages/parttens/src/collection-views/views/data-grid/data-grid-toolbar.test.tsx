@@ -57,7 +57,7 @@ describe('DataGridSearch', () => {
         getRowId: (record) => record.id,
         pageSize: 1,
       })
-      seen.pageIndex = table.getState().pagination.pageIndex
+      seen.pageIndex = table.atoms.pagination.get().pageIndex
       seen.rows = table.getRowModel().rows.map((row) => row.id)
 
       return (

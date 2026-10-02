@@ -1,5 +1,3 @@
-import type { ColumnDef, RowData } from '@tanstack/react-table'
-
 /**
  * Display variants understood by the default cell renderer.
  * Rendering variants supplied by the default COSS/Base UI view.
@@ -89,18 +87,3 @@ export interface DataGridColumnMeta {
     | 'info'
     | 'error'
 }
-
-declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData extends RowData, TValue>
-    extends DataGridColumnMeta {}
-
-  interface TableMeta<TData extends RowData> {
-    dataGridDensity?: DataGridDensity
-    dataGridPaginationRowOffset?: number
-    onDataGridDensityChange?: (density: DataGridDensity) => void
-    onDataGridCellValueChange?: (change: DataGridCellValueChange) => void
-  }
-}
-
-/** Convenience alias for column definitions consumed by the grid. */
-export type DataGridColumnDef<TData> = ColumnDef<TData, unknown>

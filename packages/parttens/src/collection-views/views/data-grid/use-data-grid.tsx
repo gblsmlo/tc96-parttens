@@ -1,32 +1,33 @@
 'use client'
 
 import {
-  type ColumnDef,
   type ColumnFiltersState,
   type ColumnOrderState,
   type ColumnPinningState,
   type ColumnSizingState,
+  type ColumnVisibilityState,
   type PaginationState,
+  type ReactTable,
+  type RowData,
   type RowSelectionState,
   type SortingState,
-  type Table,
   type TableOptions,
-  type VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+  useTable,
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
 import { DataGridCell } from './data-grid-cells'
+import {
+  type DataGridColumnDef,
+  type DataGridFeatures,
+  dataGridFeatures,
+} from './data-grid-features'
 import type { DataGridCellValueChange, DataGridDensity } from './types'
 
-export interface UseDataGridOptions<TData> {
+export interface UseDataGridOptions<TData extends RowData> {
   /** Row data. */
   data: TData[]
   /** Column definitions. Attach `meta.variant` to opt into a default display renderer. */
-  columns: ColumnDef<TData, unknown>[]
+  columns: DataGridColumnDef<TData>[]
   /** Stable row identity. Strongly recommended so selection survives reordering. */
   getRowId?: (row: TData, index: number) => string
   enableSorting?: boolean
@@ -42,18 +43,18 @@ export interface UseDataGridOptions<TData> {
   /** Receives opt-in interactive cell changes. The consumer remains the owner of mutation. */
   onCellValueChange?: (change: DataGridCellValueChange) => void
   /** Escape hatch for any TanStack Table option not surfaced above. */
-  tableOptions?: Partial<TableOptions<TData>>
+  tableOptions?: Partial<TableOptions<DataGridFeatures, TData>>
 }
 
-export interface UseDataGridReturn<TData> {
-  table: Table<TData>
+export interface UseDataGridReturn<TData extends RowData> {
+  table: ReactTable<DataGridFeatures, TData>
 }
 
 /**
  * Wraps TanStack Table with the feature models and defaults the DataGrid expects.
  * Returns the table instance to hand to `<DataGrid table={table} />`.
  */
-export function useDataGrid<TData>({
+export function useDataGrid<TData extends RowData>({
   data,
   columns,
   getRowId,
@@ -77,14 +78,13 @@ export function useDataGrid<TData>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     () => initialState?.columnFilters ?? [],
   )
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    () => initialState?.columnVisibility ?? {},
-  )
+  const [columnVisibility, setColumnVisibility] =
+    useState<ColumnVisibilityState>(() => initialState?.columnVisibility ?? {})
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
     () => initialState?.columnOrder ?? [],
   )
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(
-    () => initialState?.columnPinning ?? {},
+    () => initialState?.columnPinning ?? { end: [], start: [] },
   )
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(
     () => initialState?.columnSizing ?? {},
@@ -98,7 +98,7 @@ export function useDataGrid<TData>({
   })
   const [density, setDensity] = useState<DataGridDensity>(densityProp)
 
-  const defaultColumn = useMemo<Partial<ColumnDef<TData, unknown>>>(
+  const defaultColumn = useMemo<Partial<DataGridColumnDef<TData>>>(
     () => ({
       cell: (context) => <DataGridCell context={context} />,
       minSize: 80,
@@ -106,7 +106,8 @@ export function useDataGrid<TData>({
     [],
   )
 
-  const table = useReactTable<TData>({
+  const table = useTable<DataGridFeatures, TData>({
+    features: dataGridFeatures,
     data,
     columns,
     defaultColumn,
@@ -137,12 +138,9 @@ export function useDataGrid<TData>({
     onColumnSizingChange: setColumnSizing,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    ...(enablePagination
-      ? { getPaginationRowModel: getPaginationRowModel() }
-      : {}),
+    // Paginação é sempre registrada; desligada, a tabela entrega as linhas
+    // pré-paginação, como fazia a v8 sem `getPaginationRowModel`.
+    manualPagination: !enablePagination,
     ...tableOptions,
     meta: {
       ...tableOptions?.meta,

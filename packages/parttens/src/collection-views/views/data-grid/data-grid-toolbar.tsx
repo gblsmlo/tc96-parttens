@@ -1,6 +1,6 @@
 'use client'
 
-import type { Table as TanstackTable } from '@tanstack/react-table'
+import type { RowData } from '@tanstack/react-table'
 import { Button } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
 import {
@@ -25,16 +25,17 @@ import {
   MinusIcon,
 } from 'lucide-react'
 import type React from 'react'
+import type { DataGridTable } from './data-grid-features'
 import type { DataGridColumnMeta, DataGridDensity } from './types'
 
-export interface DataGridFilterMenuProps<TData> {
+export interface DataGridFilterMenuProps<TData extends RowData> {
   className?: string
   label?: string
-  table: TanstackTable<TData>
+  table: DataGridTable<TData>
 }
 
 /** Column filter controls derived from filterable TanStack columns. */
-export function DataGridFilterMenu<TData>({
+export function DataGridFilterMenu<TData extends RowData>({
   className,
   label = 'Filtrar',
   table,
@@ -92,7 +93,7 @@ export function DataGridFilterMenu<TData>({
               </label>
             )
           })}
-          {table.getState().columnFilters.length > 0 ? (
+          {table.store.state.columnFilters.length > 0 ? (
             <Button
               onClick={() => table.resetColumnFilters()}
               size="sm"
@@ -107,16 +108,16 @@ export function DataGridFilterMenu<TData>({
   )
 }
 
-export interface DataGridSortSubmenuProps<TData> {
+export interface DataGridSortSubmenuProps<TData extends RowData> {
   label?: string
-  table: TanstackTable<TData>
+  table: DataGridTable<TData>
 }
 
 /**
  * Ordenação como seção do `ViewSettingsMenu`, não como gatilho vizinho.
  * A ordenação continua sendo estado do TanStack Table.
  */
-export function DataGridSortSubmenu<TData>({
+export function DataGridSortSubmenu<TData extends RowData>({
   label = 'Ordenar por',
   table,
 }: DataGridSortSubmenuProps<TData>): React.ReactElement | null {
@@ -150,7 +151,7 @@ export function DataGridSortSubmenu<TData>({
             </MenuItem>,
           ]
         })}
-        {table.getState().sorting.length > 0 ? (
+        {table.store.state.sorting.length > 0 ? (
           <>
             <MenuSeparator />
             <MenuItem onClick={() => table.resetSorting()}>
@@ -176,13 +177,13 @@ const DENSITIES: [DensityOption, ...DensityOption[]] = [
   { icon: ChevronsDownUpIcon, label: 'Extra alta', value: 'extra-tall' },
 ]
 
-export interface DataGridDensitySubmenuProps<TData> {
+export interface DataGridDensitySubmenuProps<TData extends RowData> {
   label?: string
-  table: TanstackTable<TData>
+  table: DataGridTable<TData>
 }
 
 /** Altura das linhas como seção do `ViewSettingsMenu`. */
-export function DataGridDensitySubmenu<TData>({
+export function DataGridDensitySubmenu<TData extends RowData>({
   label = 'Altura das linhas',
   table,
 }: DataGridDensitySubmenuProps<TData>): React.ReactElement {
@@ -218,16 +219,16 @@ export function DataGridDensitySubmenu<TData>({
   )
 }
 
-export interface DataGridSearchProps<TData>
+export interface DataGridSearchProps<TData extends RowData>
   extends Omit<
     React.ComponentProps<typeof Input>,
     'onChange' | 'value' | 'type'
   > {
-  table: TanstackTable<TData>
+  table: DataGridTable<TData>
 }
 
 /** Client-side global search control. Server-controlled consumers can render their own input. */
-export function DataGridSearch<TData>({
+export function DataGridSearch<TData extends RowData>({
   'aria-label': ariaLabel,
   className,
   placeholder = 'Buscar…',
@@ -247,19 +248,19 @@ export function DataGridSearch<TData>({
       }}
       placeholder={placeholder}
       type="search"
-      value={(table.getState().globalFilter as string) ?? ''}
+      value={(table.store.state.globalFilter as string) ?? ''}
       {...props}
     />
   )
 }
 
-export interface DataGridColumnsSubmenuProps<TData> {
+export interface DataGridColumnsSubmenuProps<TData extends RowData> {
   label?: string
-  table: TanstackTable<TData>
+  table: DataGridTable<TData>
 }
 
 /** Visibilidade de coluna como seção do `ViewSettingsMenu`. */
-export function DataGridColumnsSubmenu<TData>({
+export function DataGridColumnsSubmenu<TData extends RowData>({
   label = 'Colunas',
   table,
 }: DataGridColumnsSubmenuProps<TData>): React.ReactElement | null {
@@ -295,13 +296,13 @@ export function DataGridColumnsSubmenu<TData>({
   )
 }
 
-export interface DataGridSelectionSummaryProps<TData>
+export interface DataGridSelectionSummaryProps<TData extends RowData>
   extends Omit<React.ComponentProps<'span'>, 'children'> {
-  table: TanstackTable<TData>
+  table: DataGridTable<TData>
 }
 
 /** Live selection summary intended for contextual row-action toolbars. */
-export function DataGridSelectionSummary<TData>({
+export function DataGridSelectionSummary<TData extends RowData>({
   className,
   table,
   ...props

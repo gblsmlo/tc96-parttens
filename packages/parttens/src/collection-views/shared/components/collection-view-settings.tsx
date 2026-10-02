@@ -82,7 +82,12 @@ export function ViewSettingsMenu<TMode extends string = string>({
         <SlidersHorizontalIcon aria-hidden="true" />
         {triggerLabel}
       </CollectionToolbarMenuTrigger>
-      <MenuPopup align="end" className={hasModeTabs ? 'w-64' : 'w-56'}>
+      <MenuPopup
+        align="end"
+        // Tabs empilhadas (4+ modos) precisam de largura para que ícone e
+        // rótulo de cada modo respirem; abaixo disso, a linha única cabe em 16rem.
+        className={hasModeTabs ? (modes.length < 4 ? 'w-64' : 'w-96') : 'w-56'}
+      >
         {hasModeTabs ? (
           <ViewSettingsModeTabs
             modes={modes}
@@ -125,7 +130,10 @@ function ViewSettingsModeTabs<TMode extends string>({
 
   return (
     <MenuRadioGroup
-      className="flex gap-0.5 rounded-lg bg-muted p-0.5"
+      className={cn(
+        'flex rounded-lg bg-muted',
+        layout === 'stacked' ? 'gap-1 p-1' : 'gap-0.5 p-0.5',
+      )}
       onValueChange={(next: TMode) => onModeChange?.(next)}
       value={value}
     >
@@ -134,7 +142,7 @@ function ViewSettingsModeTabs<TMode extends string>({
           className={cn(
             'flex min-w-0 flex-auto cursor-default select-none items-center justify-center rounded-md text-muted-foreground outline-none data-checked:bg-background not-data-checked:data-highlighted:bg-accent data-highlighted:text-foreground data-checked:text-foreground data-checked:shadow-sm/5 dark:data-checked:bg-input [&_svg:not([class*=size-])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0',
             layout === 'stacked'
-              ? 'flex-col gap-1 px-1 py-1.5 text-xs'
+              ? 'flex-col gap-1.5 px-2 py-2 text-xs'
               : 'min-h-7 gap-1.5 px-1.5 text-sm',
           )}
           closeOnClick

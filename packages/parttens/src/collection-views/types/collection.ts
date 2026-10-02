@@ -1,7 +1,12 @@
 import type { ReactNode } from 'react'
 
 export type CollectionGroupingId = string
-export type CollectionViewMode = 'datagrid' | 'kanban' | 'list'
+export type CollectionViewMode =
+  | 'calendar'
+  | 'datagrid'
+  | 'datatable'
+  | 'kanban'
+  | 'list'
 
 /** @deprecated Use CollectionViewMode. */
 export type CollectionView = CollectionViewMode

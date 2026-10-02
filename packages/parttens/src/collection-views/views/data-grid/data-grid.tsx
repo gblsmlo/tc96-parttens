@@ -2,12 +2,7 @@
 
 'use client'
 
-import {
-  type Column,
-  flexRender,
-  type Header,
-  type Table as TanstackTable,
-} from '@tanstack/react-table'
+import { flexRender, type RowData } from '@tanstack/react-table'
 import { observeElementRect, useVirtualizer } from '@tanstack/react-virtual'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
@@ -45,6 +40,11 @@ import {
 } from 'react'
 import type { ActionBarContext } from '../../shared/components/action-bar'
 import { DataGridColumnTypeIcon } from './data-grid-column-types'
+import type {
+  DataGridColumn,
+  DataGridHeader,
+  DataGridTable,
+} from './data-grid-features'
 import { DataGridPagination } from './data-grid-pagination'
 import type {
   DataGridAlign,
@@ -112,13 +112,13 @@ interface SuppressedDragClick {
   y: number
 }
 
-function moveColumn<TData>(
-  table: TanstackTable<TData>,
+function moveColumn<TData extends RowData>(
+  table: DataGridTable<TData>,
   columnId: string,
   direction: -1 | 1,
 ) {
   const leafIds = table.getAllLeafColumns().map((column) => column.id)
-  const state = table.getState().columnOrder
+  const state = table.atoms.columnOrder.get()
   const order = state.length ? [...state] : leafIds
   const from = order.indexOf(columnId)
   const to = from + direction
@@ -129,10 +129,10 @@ function moveColumn<TData>(
   table.setColumnOrder(order)
 }
 
-function DataGridColumnHeader<TData>({
+function DataGridColumnHeader<TData extends RowData>({
   header,
 }: {
-  header: Header<TData, unknown>
+  header: DataGridHeader<TData>
 }) {
   const { column } = header
   const meta = (column.columnDef.meta ?? {}) as DataGridColumnMeta
@@ -206,11 +206,11 @@ function DataGridColumnHeader<TData>({
                   </MenuItem>
                 ) : (
                   <>
-                    <MenuItem onClick={() => column.pin('left')}>
+                    <MenuItem onClick={() => column.pin('start')}>
                       <PinIcon />
                       Fixar à esquerda
                     </MenuItem>
-                    <MenuItem onClick={() => column.pin('right')}>
+                    <MenuItem onClick={() => column.pin('end')}>
                       <PinIcon />
                       Fixar à direita
                     </MenuItem>
@@ -283,8 +283,8 @@ function DataGridColumnHeader<TData>({
   )
 }
 
-export interface DataGridProps<TData> {
-  table: TanstackTable<TData>
+export interface DataGridProps<TData extends RowData> {
+  table: DataGridTable<TData>
   /**
    * Exibe a paginação padrão no rodapé. Por omissão segue o modelo da tabela:
    * com `enablePagination` no `useDataGrid` a paginação aparece, sem ele não.
@@ -340,17 +340,25 @@ function columnStyle(size: number, fill = false): CSSProperties {
   }
 }
 
-function pinnedColumnStyle<TData>(
-  column: Column<TData, unknown>,
+function pinnedColumnStyle<TData extends RowData>(
+  column: DataGridColumn<TData>,
   fillColumnId?: string,
 ): CSSProperties {
   const pinned = column.getIsPinned()
   return {
     ...columnStyle(column.getSize(), !pinned && column.id === fillColumnId),
-    ...(pinned === 'left'
-      ? { left: column.getStart('left'), position: 'sticky', zIndex: 5 }
-      : pinned === 'right'
-        ? { position: 'sticky', right: column.getAfter('right'), zIndex: 5 }
+    ...(pinned === 'start'
+      ? {
+          insetInlineStart: column.getStart('start'),
+          position: 'sticky',
+          zIndex: 5,
+        }
+      : pinned === 'end'
+        ? {
+            insetInlineEnd: column.getAfter('end'),
+            position: 'sticky',
+            zIndex: 5,
+          }
         : {}),
   }
 }
@@ -377,7 +385,7 @@ function isDragScrollExcludedTarget(target: EventTarget | null) {
   )
 }
 
-export function DataGrid<TData>({
+export function DataGrid<TData extends RowData>({
   table,
   pagination,
   fillColumn,
@@ -400,8 +408,7 @@ export function DataGrid<TData>({
   selectionActions,
   'aria-label': ariaLabel,
 }: DataGridProps<TData>) {
-  const showsPagination =
-    pagination ?? Boolean(table.options.getPaginationRowModel)
+  const showsPagination = pagination ?? !table.options.manualPagination
   const footerContent =
     footer ?? (showsPagination ? <DataGridPagination table={table} /> : null)
   const leafColumns = table.getVisibleLeafColumns()

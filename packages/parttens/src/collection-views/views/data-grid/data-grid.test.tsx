@@ -562,7 +562,7 @@ describe('DataGrid collapsible groups', () => {
     })
 
     expect(captured.table?.getPageCount()).toBe(3)
-    expect(captured.table?.getState().pagination.pageIndex).toBe(1)
+    expect(captured.table?.atoms.pagination.get().pageIndex).toBe(1)
     expect(screen.queryByText('Indicação premiada')).toBeNull()
     expect(toggleOf('Ana').getAttribute('aria-expanded')).toBe('false')
     expect(
