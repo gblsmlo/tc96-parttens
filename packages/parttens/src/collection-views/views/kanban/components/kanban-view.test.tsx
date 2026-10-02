@@ -78,7 +78,10 @@ describe('KanbanView', () => {
     expect(column?.className).toContain('border-border')
     expect(column?.className).toContain('shadow-none')
     expect(column?.getAttribute('style')).toContain(
-      'color-mix(in srgb, var(--card) 88%, #ef4444 12%)',
+      'color-mix(in srgb, var(--card) 96%, #ef4444 4%)',
+    )
+    expect(column?.getAttribute('style')).toContain(
+      'border-color: color-mix(in srgb, rgb(239, 68, 68) 8%, transparent)',
     )
   })
 

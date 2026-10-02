@@ -132,7 +132,7 @@ function ContextCard({
   const [priority, setPriority] = useState<string | null>('medium')
 
   return (
-    <div className="w-80 max-w-full p-4">
+    <div className="w-80 p-4">
       <KanbanCard
         dimmed={dimmed}
         display={display}

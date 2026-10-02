@@ -273,7 +273,8 @@ export function KanbanColumn<TCard>({
   const titleId = `kanban-column-title-${instanceId}`
   const surfaceStyle: CSSProperties | undefined = column.color
     ? {
-        backgroundColor: `color-mix(in srgb, var(--card) 88%, ${column.color} 12%)`,
+        backgroundColor: `color-mix(in srgb, var(--card) 96%, ${column.color} 4%)`,
+        borderColor: `color-mix(in srgb, ${column.color} 8%, transparent)`,
       }
     : undefined
   const { ref } = useDroppable({

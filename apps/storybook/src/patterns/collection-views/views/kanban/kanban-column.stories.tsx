@@ -36,11 +36,12 @@ const initialColumns: KanbanColumnData<ExampleCard>[] = [
   },
   {
     cards: [{ id: 'lead-2', title: 'Prepare a follow-up' }],
+    color: '#3b82f6',
     count: 1,
     id: 'active',
     title: 'Active',
   },
-  { cards: [], count: 0, id: 'done', title: 'Done' },
+  { cards: [], color: '#22c55e', count: 0, id: 'done', title: 'Done' },
 ]
 
 const colors = [

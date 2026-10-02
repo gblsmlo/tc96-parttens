@@ -29,7 +29,7 @@ describe('kanbanCardVariants', () => {
     // `:hover` e `:focus-visible` não respondem a evento sintético do Testing Library,
     // e a `play` do Storybook só dispara evento sintético — a classe é a única evidência.
     expect(kanbanCardVariants({ variant: 'interactive' })).toContain(
-      'hover:bg-accent/35',
+      'hover:bg-card/60',
     )
     expect(kanbanCardVariants({ variant: 'interactive' })).toContain(
       'focus-visible:ring-2',

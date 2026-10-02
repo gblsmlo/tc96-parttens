@@ -13,7 +13,7 @@ type Story = StoryObj<typeof meta>
 export const Skeleton: Story = {
   args: { label: 'Carregando card' },
   render: (args) => (
-    <div className="w-full max-w-sm p-4">
+    <div className="w-full p-4">
       <KanbanCardSkeleton {...args} />
     </div>
   ),
