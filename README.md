@@ -13,8 +13,9 @@ React patterns without business rules, installed as source on top of your COSS c
 ![shadcn](https://img.shields.io/badge/shadcn-registry-FFFFFF?style=flat&logo=shadcnui&logoColor=white&labelColor=18181B)
 ![Storybook](https://img.shields.io/badge/Storybook-stories-FF4785?style=flat&logo=storybook&logoColor=white&labelColor=18181B)
 ![Bun](https://img.shields.io/badge/Bun-tests-FBF0DF?style=flat&logo=bun&logoColor=white&labelColor=18181B)
-
 </div>
+
+<img width="1096" height="570" alt="screenshot" src="https://github.com/user-attachments/assets/fd6faf76-1075-416d-a720-ea9ce41d2d36" />
 
 ## Overview
 
