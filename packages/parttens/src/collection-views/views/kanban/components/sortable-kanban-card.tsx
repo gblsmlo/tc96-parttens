@@ -88,11 +88,12 @@ export function SortableKanbanCard({
 
   // A alca e o ativador: o dnd-kit a transforma em botao, e um botao esconde
   // o que contem da tecnologia assistiva; por isso o card e as acoes dele
-  // ficam fora dela, mesmo o ponteiro arrastando pelo card inteiro.
+  // ficam fora dela, mesmo o ponteiro arrastando pelo card inteiro. Ela so
+  // fica visivel com foco de teclado; o hover nao a revela.
   return (
     <div
       className={cn(
-        'group/kanban-drag flex min-w-0 max-w-full cursor-grab items-start gap-0.5',
+        'relative min-w-0 cursor-grab',
         isDragSource && 'opacity-0',
       )}
       data-kanban-card-container=""
@@ -101,7 +102,7 @@ export function SortableKanbanCard({
     >
       <button
         aria-label={dragLabel}
-        className="flex h-8 w-5 shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-muted-foreground opacity-0 outline-none transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing group-hover/kanban-drag:opacity-100"
+        className="absolute top-1 left-1 z-10 flex size-6 cursor-grab touch-none items-center justify-center rounded-md bg-card text-muted-foreground opacity-0 outline-none focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing"
         data-kanban-card-drag-handle=""
         data-kanban-card-drag-id={id}
         ref={handleRef}
@@ -109,7 +110,7 @@ export function SortableKanbanCard({
       >
         <GripVerticalIcon aria-hidden="true" className="size-4" />
       </button>
-      <div className="min-w-0 flex-1">{children}</div>
+      {children}
     </div>
   )
 }

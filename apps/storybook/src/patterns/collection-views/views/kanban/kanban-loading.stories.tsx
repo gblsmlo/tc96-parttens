@@ -14,9 +14,15 @@ type Story = StoryObj<typeof meta>
 export const Board: Story = {
   args: {
     columns: [
-      { cards: [], count: 0, id: 'todo', title: 'To do' },
-      { cards: [], count: 0, id: 'in-progress', title: 'In progress' },
-      { cards: [], count: 0, id: 'done', title: 'Done' },
+      { cards: [], color: '#6b7280', count: 0, id: 'todo', title: 'To do' },
+      {
+        cards: [],
+        color: '#3b82f6',
+        count: 0,
+        id: 'in-progress',
+        title: 'In progress',
+      },
+      { cards: [], color: '#22c55e', count: 0, id: 'done', title: 'Done' },
     ],
     getKey: () => '',
     loading: true,

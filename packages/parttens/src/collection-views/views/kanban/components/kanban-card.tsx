@@ -36,7 +36,7 @@ const kanbanCardSurfaceVariants = cva(
 )
 
 export const kanbanCardVariants = cva(
-  'relative isolate min-w-0 w-full max-w-full overflow-hidden transition-colors hover:border-border hover:bg-accent/35 has-focus-visible:ring-2 has-focus-visible:ring-primary has-focus-visible:ring-offset-2 has-focus-visible:ring-offset-background [&_[data-kanban-card-action]]:relative [&_[data-kanban-card-action]]:z-10',
+  'relative isolate min-w-0 w-full overflow-hidden transition-colors hover:border-border hover:bg-accent/35 has-focus-visible:ring-2 has-focus-visible:ring-primary has-focus-visible:ring-offset-2 has-focus-visible:ring-offset-background [&_[data-kanban-card-action]]:relative [&_[data-kanban-card-action]]:z-10',
   {
     defaultVariants: {
       dimmed: false,

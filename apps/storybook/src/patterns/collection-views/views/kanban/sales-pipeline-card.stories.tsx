@@ -70,6 +70,7 @@ const salesColumns: KanbanColumnData<SalesDeal>[] = [
         value: 'R$ 48.000',
       },
     ],
+    color: '#3b82f6',
     count: 2,
     id: 'new',
     title: 'New',
@@ -85,11 +86,12 @@ const salesColumns: KanbanColumnData<SalesDeal>[] = [
         value: 'R$ 36.000',
       },
     ],
+    color: '#f59e0b',
     count: 1,
     id: 'proposal',
     title: 'Proposal',
   },
-  { cards: [], count: 0, id: 'won', title: 'Won' },
+  { cards: [], color: '#22c55e', count: 0, id: 'won', title: 'Won' },
 ]
 
 function ActionSlot({
@@ -153,9 +155,6 @@ function SalesDealCard({ deal }: Readonly<{ deal: SalesDeal }>) {
     <KanbanCard density="sm">
       <KanbanCardHeader>
         <div className="flex min-w-0 items-center gap-2">
-          <span className="flex shrink-0 items-center">
-            <span className="size-3.5 rounded-sm bg-muted" />
-          </span>
           <KanbanCardTitle className="min-w-0 flex-1 truncate">
             {deal.title}
           </KanbanCardTitle>

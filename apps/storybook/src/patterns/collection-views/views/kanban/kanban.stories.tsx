@@ -29,6 +29,7 @@ const columns: KanbanColumnData<MechanicsCard>[] = [
         title: 'Second item',
       },
     ],
+    color: '#6b7280',
     count: 2,
     id: 'todo',
     title: 'To do',
@@ -43,11 +44,12 @@ const columns: KanbanColumnData<MechanicsCard>[] = [
         title: 'In work',
       },
     ],
+    color: '#3b82f6',
     count: 1,
     id: 'in-progress',
     title: 'In progress',
   },
-  { cards: [], count: 0, id: 'done', title: 'Done' },
+  { cards: [], color: '#22c55e', count: 0, id: 'done', title: 'Done' },
 ]
 
 const kanbanArgs = {
@@ -105,7 +107,7 @@ type Story = StoryObj<typeof meta>
 export const Card: Story = {
   parameters: { layout: 'centered' },
   render: (args) => (
-    <div className="w-full max-w-sm p-4">
+    <div className="w-full p-4">
       <TodoKanbanCard {...args} />
     </div>
   ),
