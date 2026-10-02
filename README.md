@@ -85,6 +85,7 @@ Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`
 | `properties` | Text, Date, Select, Person and other property displays, plus property groups |
 | `detail-sheet` | Detail sheet with groups, rows and actions |
 | `editable` | Inline editing compound |
+| `checklist` | Controlled item creation, completion, renaming, ordering, deletion and progress |
 
 Filter Builder and responsive layouts are out of scope for the first version.
 

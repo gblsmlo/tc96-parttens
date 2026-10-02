@@ -59,6 +59,8 @@ A landing será acrescentada quando houver escopo concreto. A grafia `parttens` 
 
 `collection-views`, `properties` e `editable` organizam o código pelas responsabilidades de cada pattern. Em `collection-views`, `views/` identifica renderers de coleção; em `properties`, `display/` identifica padrões de apresentação. Os diretórios não representam páginas ou rotas de aplicação. Uma camada só recebe código quando há responsabilidade para ela.
 
+`checklist/` foi acrescentado como primeiro pattern migrado do Lemind. Seu componente recebe itens e callbacks controlados pelo consumidor; criação, conclusão, edição, reordenação e exclusão não conhecem entidades nem persistência.
+
 ```text
 <pattern>/
   store/         estado compartilhado e ações
@@ -115,7 +117,7 @@ Decidido em 2026-10-01. O tc96 reutiliza patterns em projetos que já usam COSS,
 
 Situação em 2026-10-01: os 27 itens de `packages/ui/src` são o COSS sem alterações. Antes, 8 deles divergiam (button, input, input-group, group, calendar, combobox, sheet e textarea) e havia cópias em `compat/`. O COSS fixa `@base-ui/react` 1.8.0 e usa `@daypicker/react` no calendar, e o workspace acompanha essas versões. Os quatro `styles/global.css` dos patterns não são importados.
 
-Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue importar o COSS do consumidor sem embutir uma cópia própria ou depender de um caminho que não resolve. Por isso o tc96 é distribuído só como fontes. A atualização passa a ser `tc96-parttens add --diff` com incorporação manual. Reabrir esta decisão só se surgir como requisito um consumidor sem COSS. O build da biblioteca foi removido; o `verify-public-api` confere os barrels dos quatro patterns e o agregado `packages/parttens/src/index.ts` contra `public-api-exports.json`, e o `pack:check` confere só o CLI.
+Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue importar o COSS do consumidor sem embutir uma cópia própria ou depender de um caminho que não resolve. Por isso o tc96 é distribuído só como fontes. A atualização passa a ser `tc96-parttens add --diff` com incorporação manual. Reabrir esta decisão só se surgir como requisito um consumidor sem COSS. O build da biblioteca foi removido; o `verify-public-api` confere os barrels dos patterns e o agregado `packages/parttens/src/index.ts` contra `public-api-exports.json`, e o `pack:check` confere só o CLI.
 
 Locale do calendar, resolvido no planejamento: o calendar do COSS fala inglês por padrão, como o rótulo dos patterns (`en-US`). Outro idioma entra por `calendarProps.locale`.
 
@@ -204,7 +206,7 @@ Decidido em 2026-10-01, na triagem das violações do axe.
 - Fronteiras: impedir imports em direção proibida, ciclos e UI duplicada por padrão. `packages/parttens` só importa `@tc96/ui/<item>` presente no lock COSS.
 - UI: todo arquivo de `packages/ui/src` é igual ao snapshot COSS fixado. Um job separado procura versão nova no upstream.
 - Registry: nenhum item distribui arquivo de UI, nem `:root`, `.dark`, `@theme` ou `@utility`. Todo `@tc96/ui/<item>` usado aparece em `registryDependencies`.
-- Consumidor: num projeto COSS com alias e caminho fora do padrão e um botão marcado, instalar `collection-views properties`. O `tsc --noEmit` passa, a renderização contém o marcador e nenhum arquivo é escrito no caminho de UI. Implementado em `apps/example`, um consumidor com aliases `@acme/*` e patterns em `packages/organisms/src`. O `test:consumer:registry` instala os quatro patterns e o `test:consumer:ssr` renderiza `collection-views` e `properties` no servidor; os dois copiam o exemplo para `.test-output`, instalam nele o COSS do lock com um marcador no `button.tsx` e reprovam se o CLI escrever em `packages/ui` ou deixar import `@tc96/*`.
+- Consumidor: num projeto COSS com alias e caminho fora do padrão e um botão marcado, instalar `collection-views properties`. O `tsc --noEmit` passa, a renderização contém o marcador e nenhum arquivo é escrito no caminho de UI. Implementado em `apps/example`, um consumidor com aliases `@acme/*` e patterns em `packages/organisms/src`. O `test:consumer:registry` instala todos os patterns e o `test:consumer:ssr` renderiza `collection-views` e `properties` no servidor; os dois copiam o exemplo para `.test-output`, instalam nele o COSS do lock com um marcador no `button.tsx` e reprovam se o CLI escrever em `packages/ui` ou deixar import `@tc96/*`.
 - Registry/CLI: instalar padrões isolados e em conjunto com aliases personalizados; verificar dependências, conflitos e preservação de arquivos.
 - Storybook: cobrir interação, teclado, foco, edição e arraste. Docs e Storybook consomem os pacotes do workspace. O framework é `@storybook/react-vite`, porque nenhuma story depende do `@tanstack/react-router`. O `bun run check` roda também o typecheck e o lint do Storybook.
 - Acessibilidade: o addon de a11y roda o axe em cada story com `test: 'error'`, e uma violação reprova o `storybook:test`. Exceção só na própria story, com o motivo. Hoje são quatro, todas de contraste vindo do COSS sem alterações: os dias da semana e os dias fora do mês do calendar (3,14:1), nas stories `Trigger` e `CalendarLocale` do `DateRangeProperty`, o variant `destructive` do botão (3,8:1) e o exemplo de força de senha do COSS (3,65:1). Ver [Acessibilidade dos patterns](#acessibilidade-dos-patterns).
