@@ -55,7 +55,7 @@ export function CalendarDayColumn<TItem>({
   return (
     <section
       aria-labelledby={titleId}
-      className="relative min-w-0 border-border/70 border-s"
+      className="relative min-w-0 border-border/80 border-s"
     >
       <h3 className="sr-only" id={titleId}>
         {headingLabel}

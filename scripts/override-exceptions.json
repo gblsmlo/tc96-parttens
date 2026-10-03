@@ -14,7 +14,7 @@
   {
     "file": "packages/parttens/src/widgets/shared/card-widget-shell.tsx",
     "component": "Card",
-    "className": "border-input",
-    "reason": "A moldura dos widgets abre mão da sombra do Card e precisa de uma borda um tom acima de `border` para separar o widget do fundo da página; `input` é o token neutro seguinte do mesmo tema."
+    "className": "border-border/80",
+    "reason": "A moldura dos widgets abre mão da sombra do Card e precisa de uma borda mais discreta que a do Card; `border-border/80` mantém o token do tema com 80% da opacidade."
   }
 ]

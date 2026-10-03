@@ -45,7 +45,7 @@ export function AssetList({
 }: Readonly<AssetListProps>): ReactElement {
   return (
     <ul
-      className={cn('divide-y divide-border', className)}
+      className={cn('divide-y divide-border/40', className)}
       data-slot="asset-list"
       {...props}
     />

@@ -60,7 +60,7 @@ export function ShareBar({
             key={segment.id}
             style={{ flex: `${share} 1 0%` }}
           >
-            <div className="flex h-14 items-start border-border border-s ps-2">
+            <div className="flex h-8 items-start border-border/40 border-s ps-2">
               {segment.change === undefined ? null : (
                 <TrendIndicator
                   className="whitespace-nowrap pe-1"

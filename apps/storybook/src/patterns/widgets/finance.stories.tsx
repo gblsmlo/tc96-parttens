@@ -251,7 +251,7 @@ type Story = StoryObj<typeof meta>
 export const Overview: Story = {
   parameters: invertedThemeContrast,
   render: () => (
-    <div className="grid min-h-screen place-items-center bg-muted p-6 sm:p-10">
+    <div className="grid min-h-screen place-items-center p-6 sm:p-10">
       <div className="grid w-full max-w-5xl gap-4 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <div className="grid content-start gap-4">
           <MarketLeaders />
@@ -295,7 +295,7 @@ export const Overview: Story = {
 const single =
   (width: string): Decorator =>
   (Story) => (
-    <div className="grid min-h-screen place-items-center bg-muted p-6">
+    <div className="grid min-h-screen place-items-center p-6">
       <div className={`w-full ${width}`}>
         <Story />
       </div>

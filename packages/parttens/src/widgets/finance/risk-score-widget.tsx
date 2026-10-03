@@ -72,7 +72,7 @@ export function RiskScoreWidget({
           <dl className="flex flex-wrap gap-x-4 gap-y-3">
             {stats.map((stat) => (
               <div
-                className="grid gap-1 not-first:border-border not-first:border-s not-first:ps-4"
+                className="grid gap-1 not-first:border-border/40 not-first:border-s not-first:ps-4"
                 key={stat.id}
               >
                 <dt className="text-muted-foreground text-sm">{stat.label}</dt>

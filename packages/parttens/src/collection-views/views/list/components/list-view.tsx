@@ -102,7 +102,7 @@ export function ListView<TItem>({
 
   return (
     <div
-      className="flex min-w-0 flex-col gap-1 p-2 rounded-lg bg-card/40 shadow-black/5 border border-border/70"
+      className="flex min-w-0 flex-col gap-1 p-2 rounded-lg bg-card/40 shadow-black/5 border border-border/80"
       aria-busy={loading ? 'true' : undefined}
       data-collection-grouping={grouping ?? undefined}
       data-slot="list-view"

@@ -39,7 +39,7 @@ export function CalendarAllDayCell<TItem>({
   return (
     <div
       className={cn(
-        'flex min-h-7 min-w-0 flex-col gap-0.5 border-border/70 border-s p-0.5',
+        'flex min-h-7 min-w-0 flex-col gap-0.5 border-border/80 border-s p-0.5',
         isDropTarget && 'bg-accent/40',
       )}
       data-calendar-all-day-date={dateKey}
