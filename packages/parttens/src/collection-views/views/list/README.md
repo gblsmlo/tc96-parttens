@@ -2,6 +2,10 @@
 
 `ListView` renders a collection as a flat list or as collapsible groups. The component is controlled: the consumer passes a `CollectionDefinition` (or prepared `groups`) and a `renderItem` function, and nothing is fetched, filtered, sorted or persisted inside the view. Group collapse is the only state it owns, and it can be controlled with `collapsedGroupIds`. Selection and keyboard navigation are not part of the view: they belong to the items the consumer renders.
 
+## Renderer contract
+
+Each item is rendered through a memoized wrapper keyed on `{ item, renderItem }`. `renderItem` re-runs only when its identity changes or when the item object itself is replaced; a parent re-render, a group toggle or a replaced sibling does not call it. A renderer that reads other state (selection, a hover id, a store) through a stable identity goes stale: either pass a new `renderItem` when that state changes (for example with `useCallback` and the state in its dependencies) or put the state inside the item object.
+
 ## Benchmark
 
 Reproduce from the repo root:

@@ -7,9 +7,10 @@ import {
 } from '@tc96/ui/collapsible'
 import { Empty, EmptyDescription } from '@tc96/ui/empty'
 import { ChevronDownIcon, ChevronRightIcon, PlusIcon } from 'lucide-react'
-import { Fragment, type ReactNode, useId } from 'react'
+import { type ReactNode, useId } from 'react'
 import type { CollectionGroup } from '../../../types/collection'
 import { ListItemSkeleton } from './list-item-skeleton'
+import { ListViewItem } from './list-view-item'
 
 export interface ListGroupActions {
   addLabel?: string
@@ -121,7 +122,11 @@ export function ListGroup<TItem>({
               ))
             ) : group.items.length ? (
               group.items.map((item) => (
-                <Fragment key={getKey(item)}>{renderItem(item)}</Fragment>
+                <ListViewItem
+                  item={item}
+                  key={getKey(item)}
+                  renderItem={renderItem}
+                />
               ))
             ) : (
               <Empty>
