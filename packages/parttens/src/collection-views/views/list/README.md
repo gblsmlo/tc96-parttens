@@ -27,19 +27,19 @@ Cases: 100 and 1000 items, flat and grouped into 10 groups. Data is seeded (seed
 
 Not benchmarked: selection click and keyboard navigation, because `ListView` has neither; items and their selection state are the consumer's.
 
-Baseline: 2026-10-03, bun 1.3.14, JSDOM 26.1.0 (no layout), React 19.1.1 development build, AMD Ryzen 3 3200G with Radeon Vega Graphics x4, seed 96, 5 iterations per scenario with 1 warmup (mount: 3, fresh container, no warmup), medians. File: `scripts/bench/results/list.base.json`. Render counts are deterministic and gate; times are a report, and differences under 10% are noise.
+Environment: 2026-10-03, bun 1.3.14, JSDOM 26.1.0 (no layout), React 19.1.1 development build, AMD Ryzen 3 3200G with Radeon Vega Graphics x4, seed 96, 5 iterations per scenario with 1 warmup (mount: 3, fresh container), medians. Before is the view before the memoized leaf, after is this folder; same machine, same adapter, run one after the other. The after file is the committed baseline `scripts/bench/results/list.base.json`. Render counts gate; times are a report and differences under 10% are noise.
 
-| Case | Scenario | n | Items | Commits | Wall (ms) | Profiler (ms) |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| list 100 | mount | 3 | 100 | 1 | 36.1 | 33.4 |
-| list 100 | parent re-render | 5 | 100 | 1 | 9.7 | 4.7 |
-| list 1000 | mount | 3 | 1000 | 1 | 149.1 | 137.8 |
-| list 1000 | parent re-render | 5 | 1000 | 1 | 62.0 | 23.9 |
-| list 100 grouped | mount | 3 | 100 | 1 | 68.0 | 45.1 |
-| list 100 grouped | parent re-render | 5 | 100 | 1 | 16.9 | 7.4 |
-| list 100 grouped | group collapse and expand | 5 | 200 | 6 | 34.2 | 14.2 |
-| list 1000 grouped | mount | 3 | 1000 | 1 | 190.5 | 171.4 |
-| list 1000 grouped | parent re-render | 5 | 1000 | 1 | 73.4 | 30.9 |
-| list 1000 grouped | group collapse and expand | 5 | 2000 | 6 | 148.7 | 65.1 |
+| Case | Scenario | Items before | Items after | Wall before (ms) | Wall after (ms) | Δ wall | Profiler before (ms) | Profiler after (ms) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| list 100 | mount | 100 | 100 | 36.1 | 35.9 | -1% | 33.4 | 33.0 |
+| list 100 | parent re-render | 100 | 0 | 9.7 | 2.5 | -74% | 4.7 | 0.4 |
+| list 1000 | mount | 1000 | 1000 | 149.1 | 202.2 | +36% | 137.8 | 153.8 |
+| list 1000 | parent re-render | 1000 | 0 | 62.0 | 15.9 | -74% | 23.9 | 1.5 |
+| list 100 grouped | mount | 100 | 100 | 68.0 | 57.2 | -16% | 45.1 | 38.3 |
+| list 100 grouped | parent re-render | 100 | 0 | 16.9 | 8.0 | -53% | 7.4 | 4.4 |
+| list 100 grouped | group collapse and expand | 200 | 10 | 34.2 | 24.9 | -27% | 14.2 | 10.7 |
+| list 1000 grouped | mount | 1000 | 1000 | 190.5 | 184.2 | -3% | 171.4 | 163.5 |
+| list 1000 grouped | parent re-render | 1000 | 0 | 73.4 | 19.6 | -73% | 30.9 | 3.5 |
+| list 1000 grouped | group collapse and expand | 2000 | 100 | 148.7 | 63.5 | -57% | 65.1 | 22.2 |
 
-Reading the table: mount costs one `renderItem` call per item, the floor. Every other scenario is waste that grows with the list. A parent re-render with unchanged props calls `renderItem` for every item (100 and 1000, target 0), because `ListView` maps `collection.items` straight into `renderItem` and `ListGroup` is not memoized (`components/list-view.tsx`, `components/list-group.tsx`). Collapsing and expanding one group calls it for every item twice (200 and 2000, target one group's worth), because the collapsed state lives in `ListView` and re-renders every group, and a collapsed group still builds its items before `CollapsiblePanel` hides them. Each click also takes 3 commits; two are Base UI Collapsible's own and do not touch items.
+Reading the table: a parent re-render with unchanged props renders 0 items (100 and 1000 before), and collapsing and expanding a group renders only that group's items, once, on expand (10 and 100; 200 and 2000 before). Mount still renders every item. In this run mount at 1000 items was +36% wall and +12% profiler while the other mounts moved -16% to -1%; the memo adds one component per item, so treat it as a possible small mount cost and re-measure before reading it as a regression.

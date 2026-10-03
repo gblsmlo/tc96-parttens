@@ -146,6 +146,8 @@ Top level:
 | `views/list/README.md` | what `ListView` is and its `## Benchmark` section: scenarios, how to run and compare, the baseline numbers | — |
 | `views/list/components/list-view.tsx` | `ListView`, `ListViewProps` | yes |
 | `views/list/components/list-view.test.tsx` | JSDOM tests for loading, group metadata, flat mode and `collapseEmptyGroups` | — |
+| `views/list/components/list-view-item.tsx` | `ListViewItem`: the memoized leaf that calls `renderItem(item)` in the flat list and in each group | no |
+| `views/list/components/list-view-renders.test.tsx` | JSDOM tests for each path that re-runs `renderItem` (identity, replaced item, uncontrolled and controlled collapse) in the flat and grouped paths | — |
 | `views/list/components/list-group.tsx` | `ListGroup`, `ListGroupProps`, `ListGroupActions`: a `Collapsible` section with header, count and add button | yes |
 | `views/list/components/list-item.tsx` | `ListItem` (`article`) and its slots `ListItemHeader`, `ListItemLeading`, `ListItemBody`, `ListItemTitle`, `ListItemTitleTrigger`, `ListItemDescription`, `ListItemContent`, `ListItemFooter`, `ListItemTrailing`, `ListItemField`, `ListItemAction`, `ListItemDensity`, the props types, and `ListItemHeadingLevelContext` | yes, except `ListItemHeadingLevelContext`, which the barrel does not export |
 | `views/list/components/list-item.test.tsx` | JSDOM tests for the anatomy, densities, `always` and the title trigger | — |
