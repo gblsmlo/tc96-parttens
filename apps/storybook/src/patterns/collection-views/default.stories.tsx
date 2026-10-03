@@ -69,8 +69,6 @@ import {
   type TaskPriority,
 } from './fixtures/tasks'
 
-// ─── Toolbar ────────────────────────────────────────────────────────────────
-
 const viewModes: readonly ViewSettingsMode<CollectionViewMode>[] = [
   { icon: Rows3Icon, label: 'Lista', value: 'list' },
   { icon: LayoutGridIcon, label: 'Kanban', value: 'kanban' },
@@ -96,7 +94,6 @@ const presets = [
 
 type PresetId = (typeof presets)[number]['id']
 
-/** "Minhas tarefas" é da Ana, a pessoa logada na vitrine. */
 const CURRENT_USER_ID = 'ana'
 
 const matchesPreset = (task: Task, preset: PresetId) => {
@@ -109,8 +106,6 @@ const toggle = <TValue,>(values: readonly TValue[], value: TValue) =>
   values.includes(value)
     ? values.filter((current) => current !== value)
     : [...values, value]
-
-// ─── Vitrine ────────────────────────────────────────────────────────────────
 
 function TasksShowcase({
   onTasksChange,
@@ -158,7 +153,6 @@ function TasksShowcase({
     [visibleTasks],
   )
 
-  // As tabelas agrupam linhas consecutivas: a ordem segue a do agrupamento.
   const grouping = groupings.find(({ id }) => id === preferences.groupBy)
   const tableRows = useMemo(() => {
     if (!grouping) return [...visibleTasks]
@@ -580,9 +574,9 @@ const meta = {
     docs: {
       description: {
         component: [
-          'Vitrine das collection views sobre uma mesma coleção real: as tarefas do lançamento de um app.',
-          'O `ViewSettingsMenu` alterna entre **Lista**, **Kanban**, **Calendário**, **Planilha** (DataGrid) e **Tabela** (DataTable), e reúne agrupamento, período do calendário, ordenação, densidade, colunas e filtros por responsável e prioridade.',
-          'Toda edição volta para a mesma coleção — mover o card no Kanban, reagendar no Calendário ou trocar status e prioridade nas tabelas aparece em todas as views.',
+          'Showcase of the collection views over one real collection: the tasks of an app launch.',
+          'The `ViewSettingsMenu` switches between **List**, **Kanban**, **Calendar**, **Spreadsheet** (DataGrid) and **Table** (DataTable), and gathers grouping, calendar range, sorting, density, columns and filters by assignee and priority.',
+          'Every edit goes back to the same collection: moving a card in Kanban, rescheduling in the Calendar or changing status and priority in the tables shows up in every view.',
         ].join('\n\n'),
       },
     },
@@ -595,14 +589,17 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/**
- * Percorre as cinco views pelas tabs do `ViewSettingsMenu` e confirma que cada
- * uma monta sobre a mesma coleção.
- */
 export const Default: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Walks the five views through the `ViewSettingsMenu` tabs and checks that each one mounts over the same collection.',
+      },
+    },
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    // O popup do menu sai em portal — vive fora de `canvasElement`.
     const body = within(canvasElement.ownerDocument.body)
     const views = [
       ['Kanban', 'kanban-view'],
@@ -628,8 +625,15 @@ export const Default: Story = {
   },
 }
 
-/** Trocar o status na Tabela reescreve a tarefa na coleção compartilhada. */
 export const SharedEdits: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Changing the status in the Table rewrites the task in the shared collection.',
+      },
+    },
+  },
   args: { defaultView: 'datatable' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
@@ -653,8 +657,15 @@ export const SharedEdits: Story = {
   },
 }
 
-/** Na Planilha, cada coluna de valor é uma property da UI — até o Prazo. */
 export const SpreadsheetProperties: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'In the Spreadsheet, every value column is a UI property, including the due date.',
+      },
+    },
+  },
   args: { defaultView: 'datagrid' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)

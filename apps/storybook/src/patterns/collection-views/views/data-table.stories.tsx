@@ -8,18 +8,14 @@ import { useTasks } from '../fixtures/task-renderers'
 import { initialTasks, type Task } from '../fixtures/tasks'
 
 interface DataTableExampleProps {
-  /** Coleção exibida. Passe uma lista vazia para ver a mensagem de vazio. */
+  /** Displayed collection. Pass an empty list to see the empty message. */
   data?: Task[]
-  /** Troca as linhas por esqueletos de carregamento. */
+  /** Replaces the rows with loading skeletons. */
   isLoading?: boolean
-  /** Pagina no cliente e compõe o rodapé de paginação abaixo da tabela. */
+  /** Paginates on the client and composes the pagination footer below the table. */
   paginated?: boolean
 }
 
-/**
- * Compõe `useDataTable` e `DataTable` do jeito que um consumidor compõe: o
- * hook monta a tabela, a view desenha. Sem `CardFrame` — a tabela fica solta.
- */
 function DataTableExample({
   data = initialTasks,
   isLoading = false,
@@ -59,7 +55,6 @@ const meta = {
   },
   component: DataTableExample,
   decorators: [
-    // Ocupa a largura do canvas até 1280px; acima disso, fica centralizada.
     (Story) => (
       <div className="w-[calc(100vw-2rem)] max-w-[1280px]">
         <Story />
@@ -70,7 +65,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Collection view em tabela semântica, sobre a `Table` do COSS e o TanStack Table. A view não traz moldura: não é filha de `CardFrame`. O consumidor é dono das colunas e do estado; o rodapé aparece quando alguma coluna declara `footer`. O status é um `SelectProperty`: o select emite a troca e o exemplo escreve na coleção.',
+          'Semantic table collection view, built on the COSS `Table` and TanStack Table. The view has no frame: it is not a child of `CardFrame`. The consumer owns the columns and the state; the footer appears when a column declares `footer`. Status is a `SelectProperty`: the select emits the change and the example writes to the collection.',
       },
     },
     layout: 'centered',
@@ -100,8 +95,15 @@ export const Default: Story = {
   },
 }
 
-/** Trocar o status pelo select reescreve a linha na coleção do exemplo. */
 export const EditStatus: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Changing the status through the select rewrites the row in the example collection.',
+      },
+    },
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const body = within(canvasElement.ownerDocument.body)

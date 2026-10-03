@@ -77,15 +77,10 @@ export const dayKeyFormatter = new Intl.DateTimeFormat('en-CA', {
   year: 'numeric',
 })
 
-/** Dia civil no fuso da coleção, como `YYYY-MM-DD`. */
 export const dayKey = (iso: string) => dayKeyFormatter.format(new Date(iso))
 
 export const dueOf = (task: Task) => task.end ?? task.start
 
-/**
- * Mudar o prazo desloca a janela inteira pelos dias de diferença: início e fim
- * andam juntos, e o horário de cada um se mantém — o Calendário segue coerente.
- */
 export const moveDue = (task: Task, picked: string): TaskChange => {
   const delta =
     Date.parse(`${dayKey(picked)}T00:00:00Z`) -
@@ -159,12 +154,6 @@ export function PriorityField({
   )
 }
 
-// ─── Colunas das tabelas ────────────────────────────────────────────────────
-
-/**
- * As células da planilha são as properties da UI: o grid só posiciona, e cada
- * property abre o próprio controle e avisa a troca para a coleção.
- */
 export const createDataGridColumns = (
   onChange: UpdateTask,
 ): DataGridColumnDef<Task>[] => [

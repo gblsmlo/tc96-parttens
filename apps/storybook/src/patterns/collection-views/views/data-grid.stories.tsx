@@ -29,31 +29,27 @@ const assigneeName = (task: Task) =>
   people.find((person) => person.id === task.assigneeId)?.name ?? null
 
 interface DataGridExampleProps {
-  /** Densidade vertical das linhas. */
+  /** Vertical density of the rows. */
   density?: DataGridDensity
-  /** Troca as linhas por esqueletos de carregamento. */
+  /** Replaces the rows with loading skeletons. */
   isLoading?: boolean
-  /** Agrupa linhas consecutivas que compartilham o responsável. */
+  /** Groups consecutive rows that share the assignee. */
   grouped?: boolean
-  /** Grupos recolhidos, quando o estado fica com quem compõe o grid. */
+  /** Collapsed groups, when the grid's composer owns that state. */
   collapsedGroupIds?: readonly string[]
   onCollapsedGroupIdsChange?: (groupIds: readonly string[]) => void
-  /** Liga a coluna de seleção e a caixa de seleção por linha. */
+  /** Turns on the selection column and the per-row checkbox. */
   selectable?: boolean
-  /** Pagina no cliente. O rodapé de paginação vem junto, sem wiring extra. */
+  /** Paginates on the client. The pagination footer comes with it, no extra wiring. */
   paginated?: boolean
-  /** Coleção exibida. Passe uma lista vazia para ver a mensagem de vazio. */
+  /** Displayed collection. Pass an empty list to see the empty message. */
   data?: Task[]
-  /** Teto de altura. Sem ele o grid tem a altura do conteúdo; com ele, rola por dentro. */
+  /** Height cap. Without it the grid is as tall as its content; with it, it scrolls inside. */
   maxHeight?: number
-  /** Expande a composição até a altura disponível para validar ações ancoradas no rodapé. */
+  /** Expands the composition to the available height to validate actions anchored to the footer. */
   fullHeight?: boolean
 }
 
-/**
- * Compõe `useDataGrid` e `DataGrid` do jeito que um consumidor compõe: o hook
- * monta a tabela, o grid desenha, e a paginação é opcional.
- */
 function DataGridExample({
   collapsedGroupIds,
   data = initialTasks,
@@ -180,7 +176,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Building Block de DataGrid. Documenta cabeçalho de coluna, densidade, agrupamento, seleção, paginação, carregamento e vazio — sobre as tarefas do lançamento compartilhadas por todas as views. A tabela vem de `useDataGrid`; o consumidor é dono das colunas.',
+          'DataGrid building block. Documents the column header, density, grouping, selection, pagination, loading and empty states over the launch tasks shared by every view. The table comes from `useDataGrid`; the consumer owns the columns.',
       },
     },
     layout: 'centered',
@@ -213,10 +209,6 @@ export const Grouped: Story = {
   },
 }
 
-/**
- * Quem compõe o grid guarda os grupos recolhidos — por exemplo, para
- * lembrá-los entre visitas. Bruno Lima começa recolhido.
- */
 function ControlledGroupsExample(): ReactElement {
   const [collapsedGroupIds, setCollapsedGroupIds] = useState<readonly string[]>(
     ['Bruno Lima'],
@@ -232,6 +224,14 @@ function ControlledGroupsExample(): ReactElement {
 }
 
 export const GroupedControlled: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Whoever composes the grid keeps the collapsed groups, for example to remember them between visits. Bruno Lima starts collapsed.',
+      },
+    },
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
@@ -253,11 +253,6 @@ const assigneeOptions = people.map((person) => ({
   value: person.id,
 }))
 
-/**
- * Colunas de valor fechado viram property com trigger: o Badge abre o Select e
- * emite `onCellValueChange`. A mutação continua sendo do consumer — o grid não
- * escreve na coleção, só avisa o que mudou.
- */
 function EditableExample(): ReactElement {
   const { tasks, updateTask } = useTasks()
 
@@ -319,18 +314,13 @@ export const EditableValues: Story = {
     docs: {
       description: {
         story:
-          'Status e Responsável são valores fechados, então a célula vira property com trigger: o Badge abre o Select e o grid emite `onCellValueChange`. Quem escreve na coleção é o consumer.',
+          'Status and Assignee are closed values, so the cell becomes a property with a trigger: the Badge opens the Select and the grid emits `onCellValueChange`. The consumer writes to the collection.',
       },
     },
   },
   render: () => <EditableExample />,
 }
 
-/**
- * A última coluna absorve a sobra horizontal, senão o grid terminaria antes da
- * borda. `fillColumn` escolhe outra coluna, ou `false` desliga o preenchimento e
- * cada coluna fica com a largura declarada.
- */
 function FillExample({
   fillColumn,
 }: Readonly<{ fillColumn?: string | false }>): ReactElement {
@@ -359,8 +349,6 @@ function FillExample({
 
 export const FillColumn: Story = {
   play: async ({ canvasElement }) => {
-    // Rolagem além do conteúdo abre uma faixa vazia à direita, que se lê como
-    // uma coluna a mais: o punho de redimensionar da última coluna somava 8px.
     for (const grid of canvasElement.querySelectorAll(
       '[data-slot="data-grid"]',
     )) {
@@ -377,7 +365,7 @@ export const FillColumn: Story = {
     docs: {
       description: {
         story:
-          'Por omissão a última coluna cresce para fechar a moldura. `fillColumn` move esse papel para outra coluna. Com `false` nenhuma cresce e a moldura encolhe para a soma das colunas — esticar ali deixaria uma faixa sem borda à direita, que se lê como coluna fantasma. Passando das colunas o container, o grid rola.',
+          'By default the last column grows to close the frame. `fillColumn` moves that role to another column. With `false` none grows and the frame shrinks to the sum of the columns; stretching it would leave a borderless strip on the right that reads as a ghost column. When the columns exceed the container, the grid scrolls.',
       },
     },
   },
@@ -412,9 +400,17 @@ export const Densities: Story = {
   ),
 }
 
-/** Com `maxHeight` o grid para de crescer e passa a rolar por dentro, com o
- *  cabeçalho grudado. */
-export const Scrollable: Story = { args: { maxHeight: 160 } }
+export const Scrollable: Story = {
+  args: { maxHeight: 160 },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'With `maxHeight` the grid stops growing and scrolls inside, with the header stuck.',
+      },
+    },
+  },
+}
 
 export const Loading: Story = { args: { isLoading: true } }
 
