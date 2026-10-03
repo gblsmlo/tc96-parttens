@@ -12,7 +12,7 @@ export function CardWidgetShell({
   return (
     <Card
       className={cn(
-        'min-w-0 border-border/80 shadow-none before:hidden',
+        'min-w-0 rounded-lg border-border/80 shadow-none before:hidden',
         className,
       )}
       render={render}

@@ -2,9 +2,7 @@
 
 import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
 import type { ReactElement } from 'react'
-
 import type { WidgetPeriodOption } from '../types'
-import { cn } from '@tc96/utils'
 
 export interface WidgetPeriodToggleProps<TPeriod extends string = string> {
   'aria-label'?: string

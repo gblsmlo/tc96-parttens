@@ -192,8 +192,44 @@ test('card widget shell drops the native shadow and strengthens the border', () 
   )
   const shell = container.querySelector('section[data-slot="card"]')
   expect(shell).toBeTruthy()
-  for (const token of ['border-input', 'shadow-none', 'before:hidden', 'p-2'])
+  for (const token of [
+    'border-border/80',
+    'shadow-none',
+    'before:hidden',
+    'p-2',
+  ])
     expect(shell?.className).toContain(token)
   expect(shell?.className).not.toContain('shadow-xs')
   expect(screen.getByRole('region', { name: 'Moldura' })).toBeTruthy()
+})
+
+test('expandable list collapses past the visible count and scrolls once expanded', async () => {
+  const { ExpandableList } = await import('./shared/expandable-list')
+  const items = Array.from({ length: 8 }, (_, index) => `Item ${index + 1}`)
+  const { container } = render(
+    <ExpandableList
+      expandLabel={(hidden) => `Ver todas (+${hidden})`}
+      items={items}
+      visibleCount={3}
+    >
+      {(shown) => (
+        <ul>
+          {shown.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      )}
+    </ExpandableList>,
+  )
+  const root = () => container.querySelector('[data-slot="expandable-list"]')
+  expect(root()?.getAttribute('data-expanded')).toBe('false')
+  expect(container.querySelectorAll('li').length).toBe(3)
+  fireEvent.click(screen.getByRole('button', { name: 'Ver todas (+5)' }))
+  expect(root()?.getAttribute('data-expanded')).toBe('true')
+  expect(container.querySelectorAll('li').length).toBe(8)
+  expect(
+    container.querySelector('[data-slot="expandable-list-scroll"]'),
+  ).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: 'Ver menos' }))
+  expect(container.querySelectorAll('li').length).toBe(3)
 })

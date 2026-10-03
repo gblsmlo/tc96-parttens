@@ -58,7 +58,7 @@ tc96 expects a layered design system, in the spirit of atomic design, configured
 components.json        aliases: ui, utils, elements, helpers, patterns
 packages/
   ui/                  atoms: COSS components
-  elements/            components COSS does not have, such as Text
+  elements/            components COSS does not have, such as Text and IconFrame
   helpers/             React-free functions, such as amount formatting
   patterns/            organisms: tc96 patterns
 apps/
@@ -89,7 +89,7 @@ Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`
 | `detail-sheet` | Detail sheet with groups, rows and actions |
 | `editable` | Inline editing compound |
 | `checklist` | Controlled item creation, completion, renaming, ordering, deletion and progress |
-| `widgets` | Dashboard widgets; the first set targets finance: market share, asset stats, risk score and balance chart |
+| `widgets` | Dashboard widgets in three groups: finance (market share, asset stats, risk score, balance, budget, cash flow, transactions, transaction form, invoices), productivity (task progress, upcoming event, project card, agenda, world clock) and CRM (pipeline, deals, activity feed, contact card), plus shared metric, stat list, avatar stack and the IconFrame element |
 
 Filter Builder and responsive layouts are out of scope for the first version.
 

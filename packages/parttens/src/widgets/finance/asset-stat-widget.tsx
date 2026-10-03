@@ -53,7 +53,7 @@ export function AssetStatWidget({
           )}
         </div>
         <div className="grid gap-3">
-          <h3 className="truncate font-medium text-base" id={titleId}>
+          <h3 className="truncate font-semibold text-sm" id={titleId}>
             {name}
             {symbol ? (
               <span className="ms-1.5 font-normal text-muted-foreground text-sm">

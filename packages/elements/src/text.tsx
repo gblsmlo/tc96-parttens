@@ -2,9 +2,9 @@
 
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
+import { cn } from '@tc96/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import type * as React from 'react'
-import { cn } from '@tc96/utils'
 
 export const textVariants = cva('', {
   defaultVariants: {

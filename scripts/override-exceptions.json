@@ -16,5 +16,11 @@
     "component": "Card",
     "className": "border-border/80",
     "reason": "A moldura dos widgets abre mão da sombra do Card e precisa de uma borda mais discreta que a do Card; `border-border/80` mantém o token do tema com 80% da opacidade."
+  },
+  {
+    "file": "packages/parttens/src/widgets/shared/card-widget-shell.tsx",
+    "component": "Card",
+    "className": "rounded-lg",
+    "reason": "O widget usa o mesmo raio do card do Kanban e da coluna (`--radius`), em vez do `rounded-2xl` do Card do COSS, para que cards de collection-views e widgets tenham a mesma forma."
   }
 ]

@@ -1,42 +1,6 @@
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 
-export interface AssetIconProps extends ComponentProps<'span'> {
-  /** Cor da marca do ativo; o fundo é a mesma cor, atenuada. */
-  color?: string
-}
-
-export function AssetIcon({
-  children,
-  className,
-  color,
-  style,
-  ...props
-}: Readonly<AssetIconProps>): ReactElement {
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        'inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-foreground [&_svg:not([class*=size-])]:size-4.5',
-        className,
-      )}
-      data-slot="asset-icon"
-      style={
-        color
-          ? {
-              backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)`,
-              color,
-              ...style,
-            }
-          : style
-      }
-      {...props}
-    >
-      {children}
-    </span>
-  )
-}
-
 export interface AssetListProps extends ComponentProps<'ul'> {}
 
 export function AssetList({
@@ -81,7 +45,7 @@ export function AssetListItem({
       {icon}
       <div className="grid min-w-0 flex-1 gap-0.5">
         <span className="truncate text-muted-foreground text-sm">{name}</span>
-        <span className="truncate font-medium text-base tabular-nums">
+        <span className="truncate font-semibold text-sm tabular-nums">
           {value}
         </span>
       </div>

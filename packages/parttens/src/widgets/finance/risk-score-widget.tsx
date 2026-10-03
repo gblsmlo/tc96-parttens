@@ -5,14 +5,11 @@ import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 
 import { CardWidgetShell } from '../shared/card-widget-shell'
+import { StatList, type WidgetStat } from '../shared/stat-list'
 import { WidgetHeader } from '../shared/widget-header'
 import type { WidgetTone } from '../types'
 
-export interface RiskScoreStat {
-  id: string
-  label: ReactNode
-  value: ReactNode
-}
+export type RiskScoreStat = WidgetStat
 
 export interface RiskScoreWidgetProps
   extends Omit<ComponentProps<'div'>, 'children' | 'title'> {
@@ -68,21 +65,7 @@ export function RiskScoreWidget({
     >
       <WidgetHeader action={action} title={title} titleId={titleId} />
       <CardPanel className="grid gap-5 px-5 pb-5">
-        {stats?.length ? (
-          <dl className="flex flex-wrap gap-x-4 gap-y-3">
-            {stats.map((stat) => (
-              <div
-                className="grid gap-1 not-first:border-border/40 not-first:border-s not-first:ps-4"
-                key={stat.id}
-              >
-                <dt className="text-muted-foreground text-sm">{stat.label}</dt>
-                <dd className="font-medium text-lg tabular-nums">
-                  {stat.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        ) : null}
+        {stats?.length ? <StatList stats={stats} /> : null}
         <MeterPrimitive.Root
           aria-label={accessibleMeterLabel}
           className="grid gap-2"
