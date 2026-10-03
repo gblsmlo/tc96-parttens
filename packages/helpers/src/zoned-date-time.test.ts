@@ -4,7 +4,7 @@ import {
   fromZonedDateTime,
   getTimeZoneOffsetMs,
   toZonedDateTime,
-} from './calendar-math'
+} from './zoned-date-time'
 
 const FORTALEZA = 'America/Fortaleza'
 const NEW_YORK = 'America/New_York'

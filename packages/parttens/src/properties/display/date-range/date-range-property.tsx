@@ -1,6 +1,7 @@
 'use client'
 
 import type { DateRange } from '@daypicker/react'
+import { formatShortDate, isValidDate } from '@tc96/helpers/date'
 import { Button } from '@tc96/ui/button'
 import { Calendar } from '@tc96/ui/calendar'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
@@ -163,9 +164,5 @@ export function formatDateRangeProperty(
  * propriedade a data é referência curta.
  */
 function formatEnd(date: Date | undefined, locale: string): string | null {
-  if (!date || Number.isNaN(date.getTime())) return null
-  return new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'short',
-  }).format(date)
+  return isValidDate(date) ? formatShortDate(date, locale) : null
 }

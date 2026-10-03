@@ -1,3 +1,10 @@
+export type {
+  ActionBarContext,
+  ActionBarGroup,
+  ActionBarItem,
+  ActionBarProps,
+} from './components/action-bar'
+export { ActionBar } from './components/action-bar'
 export type { ActionProps } from './components/collection-action'
 export { Action } from './components/collection-action'
 export type { FilterRadioSubmenuProps } from './components/collection-filter-submenu'
@@ -20,13 +27,6 @@ export {
   SelectedViewMenu,
   SelectedViewSearch,
 } from './components/collection-selected-view'
-export type {
-  ActionBarContext,
-  ActionBarGroup,
-  ActionBarItem,
-  ActionBarProps,
-} from './components/action-bar'
-export { ActionBar } from './components/action-bar'
 export type {
   CollectionSelectionAction,
   CollectionSelectionActionContext,

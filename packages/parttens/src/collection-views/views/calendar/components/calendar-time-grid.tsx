@@ -1,11 +1,13 @@
 'use client'
 
+import {
+  calendarDateKey,
+  isSameCalendarDate,
+} from '@tc96/helpers/calendar-date'
 import { ScrollArea } from '@tc96/ui/scroll-area'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
-
-import { calendarDateKey, isSameCalendarDate } from '../lib/calendar-date'
 import type { CalendarItemSegment, TimeGridLane } from '../lib/calendar-layout'
 import type { CalendarDate } from '../types'
 import { CalendarAllDayCell } from './calendar-all-day-cell'

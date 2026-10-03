@@ -7,6 +7,7 @@ export const patternNames = [
   'detail-sheet',
   'editable',
   'checklist',
+  'widgets',
 ] as const
 export type PatternName = (typeof patternNames)[number]
 /** The consumer's components.json aliases the patterns import from. */
@@ -14,14 +15,22 @@ export interface Aliases {
   ui: string
   utils: string
   elements: string
+  helpers: string
   patterns: string
 }
-export const aliasNames = ['ui', 'utils', 'elements', 'patterns'] as const
+export const aliasNames = [
+  'ui',
+  'utils',
+  'elements',
+  'helpers',
+  'patterns',
+] as const
 /**
- * Directories the aliases resolve to. Only elements and patterns are written;
+ * Directories the aliases resolve to. Only elements, helpers and patterns are
+ * written;
  * ui is read to find the COSS components the consumer already has.
  */
-export const pathNames = ['ui', 'elements', 'patterns'] as const
+export const pathNames = ['ui', 'elements', 'helpers', 'patterns'] as const
 export type PathName = (typeof pathNames)[number]
 export interface InstallConfig {
   aliases: Aliases
@@ -47,11 +56,13 @@ export const defaultConfig: InstallConfig = {
     ui: '@tc96/ui',
     utils: '@tc96/utils',
     elements: '@tc96/elements',
+    helpers: '@tc96/helpers',
     patterns: '@tc96/patterns',
   },
   paths: {
     ui: 'packages/ui/src',
     elements: 'packages/elements/src',
+    helpers: 'packages/helpers/src',
     patterns: 'packages/patterns/src',
   },
 }
@@ -114,6 +125,7 @@ export function prepareItem(
   const destinations: Record<string, string> = {
     parttens: config.paths.patterns,
     elements: config.paths.elements,
+    helpers: config.paths.helpers,
   }
   const aliases: Record<string, string> = {
     ...config.aliases,
@@ -141,7 +153,7 @@ export function prepareItem(
           ts.isStringLiteral(node.moduleSpecifier)
         ) {
           const match = node.moduleSpecifier.text.match(
-            /^@tc96\/(ui|utils|elements|parttens)(\/.*)?$/,
+            /^@tc96\/(ui|utils|elements|helpers|parttens)(\/.*)?$/,
           )
           if (match) {
             const alias = aliases[match[1] ?? '']

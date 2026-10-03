@@ -1,3 +1,3 @@
-export * from './shared'
-export * from './display'
 export * from './composition'
+export * from './display'
+export * from './shared'

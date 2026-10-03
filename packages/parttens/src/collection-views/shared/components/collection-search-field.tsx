@@ -2,9 +2,9 @@
 
 import { Input } from '@tc96/ui/input'
 import { ToolbarInput } from '@tc96/ui/toolbar'
+import { cn } from '@tc96/utils'
 import { SearchIcon } from 'lucide-react'
 import { type FormEvent, type ReactElement, useEffect, useState } from 'react'
-import { cn } from '../lib/utils'
 
 export interface CollectionSearchFieldProps {
   className?: string

@@ -61,6 +61,8 @@ A landing será acrescentada quando houver escopo concreto. A grafia `parttens` 
 
 `checklist/` foi acrescentado como primeiro pattern migrado do Lemind. Seu componente recebe itens e callbacks controlados pelo consumidor; criação, conclusão, edição, reordenação e exclusão não conhecem entidades nem persistência.
 
+`widgets/` reúne widgets de dashboard, agrupados por domínio. O primeiro conjunto, `widgets/finance/`, atende aplicações de finanças, bancos e fintechs: `MarketShareWidget` com `ShareBar` e `AssetList`, `AssetStatWidget`, `RiskScoreWidget` e `BalanceWidget`. `widgets/shared/` tem as peças comuns aos domínios: `Amount`, `TrendIndicator`, `WidgetPeriodToggle`. A formatação sobre `Intl.NumberFormat` (`formatAmount`, `createAmountFormatter`, `splitAmountAtDecimal`, `AmountFormatOptions`) vive em `packages/helpers`, importada como `@tc96/helpers/format` e re-exportada pelo barrel dos widgets. Os widgets recebem valores prontos e não interpretam a pontuação: qual faixa de risco é boa ou ruim, por exemplo, chega pelo `tone`. Os percentuais seguem a semântica do Intl (`0.0934` é `9,34%`). Decidido em 2026-10-02: o COSS não tem chart, e o `BalanceWidget` usa `recharts`, a mesma base do chart do shadcn; os demais gráficos são barras em CSS sobre o `Meter` do COSS e elementos próprios. O tom `inverted` do `AssetStatWidget` aplica o `.dark` do tema do consumidor ao widget, sem cores próprias. Decidido em 2026-10-02, na auditoria de contraste e composição: a variação usa o `Badge` `lg` do COSS e o `TrendIndicator` `plain` acompanha o mesmo `text-sm`; o seletor de período é o `ToggleGroup` `outline` `sm`; rótulos que nomeiam um valor ficam em `text-sm` e legendas de eixo (datas sob a barra, extremos do medidor, ticks do gráfico) em `text-xs`, ambos `muted-foreground`; o valor principal de cada widget é `text-4xl`. Decidido em 2026-10-02: os widgets compartilham a moldura `CardWidgetShell`, o `Card` do COSS renderizado como `section` sem a sombra nativa (`shadow-none before:hidden`, sobrescrita neutra) e com `border-input`, um tom acima de `border`, para separar o widget do fundo da página; é a única exceção de borda registrada. Os preenchimentos semânticos do medidor (`bg-success`, `bg-warning`) e o `--chart-1` são do tema do consumidor e ficam abaixo de 3:1 sobre o card no tema claro do Storybook (2,5:1 e 2,2:1) e no escuro (2,4:1); o valor segue em texto e no `aria-valuenow`, e a cor é regra do tema, não do pattern.
+
 ```text
 <pattern>/
   store/         estado compartilhado e ações
@@ -73,7 +75,7 @@ A landing será acrescentada quando houver escopo concreto. A grafia `parttens` 
 
 - `collection-views/views/` contém Calendar, Data Grid, Kanban e List. `store/` mantém o `CollectionProvider` e as preferências compartilhadas; `composition/` contém `CollectionViewOutlet`, que seleciona o renderer ativo; toolbar e paginação ficam em `shared/`.
 - `properties/display/` contém os padrões de apresentação de propriedade, como Text, Date, Select e Person. `composition/` contém `AssignedProperty`, uma composição semântica de Person, e `PropertyCollection`; `shared/` reúne catálogo, superfícies e o shell comum de seleção única. Select e Person fornecem seu próprio conteúdo e suas opções ao shell. O diretório `store/` fica reservado, mas não há store global de properties: rascunhos de interação continuam locais a cada controle.
-- `editable/composition/` contém o composto Editable e seus controles. `store/` abriga o contexto e o estado compartilhado entre as partes; helpers comuns ficam em `shared/`. A implementação atual usa React Context e hooks; a camada não obriga Zustand.
+- `editable/composition/` contém o composto Editable e seus controles. `store/` abriga o contexto e o estado compartilhado entre as partes. O `cn` é sempre o de `@tc96/utils`: nenhum pattern mantém cópia própria, e funções puras compartilhadas ficam em `packages/helpers`. A implementação atual usa React Context e hooks; a camada não obriga Zustand.
 - `types/` nas três áreas expõe contratos organizados por pattern. Tipos específicos de um renderer ou display podem permanecer junto dele.
 
 Cada área tem um barrel próprio. O CLI gera o barrel agregado no projeto do consumidor, só com os patterns instalados. O layout interno pode evoluir sem exigir que o consumidor importe caminhos privados.
@@ -84,7 +86,7 @@ No Storybook, `Patterns/Collection Views/Overview` apresenta a mesma coleção e
 
 `parttens` depende de `ui`, `elements` e `utils`; `ui` e `elements` dependem de `utils`; `elements` não depende de `parttens`. Os três não dependem do registry. Dependências entre padrões são explícitas e não podem criar ciclos. Os fontes de UI têm uma implementação canônica, sem cópias mantidas por padrão.
 
-Nomes internos: `@tc96/ui`, `@tc96/parttens`, `@tc96/utils` e `@tc96/registry`. São pacotes privados do workspace. O produto publica só o CLI, como `@tc96/parttens` (comando `tc96-parttens`), com o registry embutido; não há biblioteca npm. O nome npm coincide com o do pacote privado `packages/parttens`, que nunca é publicado. `ui` e `utils` existem para desenvolvimento, Storybook e testes, no papel de projeto consumidor (ver [UI base sem opinião](#ui-base-sem-opinião)).
+Nomes internos: `@tc96/ui`, `@tc96/parttens`, `@tc96/elements`, `@tc96/helpers`, `@tc96/utils` e `@tc96/registry`. São pacotes privados do workspace. O produto publica só o CLI, como `@tc96/parttens` (comando `tc96-parttens`), com o registry embutido; não há biblioteca npm. O nome npm coincide com o do pacote privado `packages/parttens`, que nunca é publicado. `ui` e `utils` existem para desenvolvimento, Storybook e testes, no papel de projeto consumidor (ver [UI base sem opinião](#ui-base-sem-opinião)).
 
 ## API e compatibilidade
 
@@ -137,7 +139,7 @@ Cor, raio, borda e sombra novos ficam com o tema do consumidor. Quando o pattern
 
 Partes do COSS sem estilo (os primitivos do base-ui, `MenuTrigger`, `MenuRadioGroup`, `ComboboxTrigger`) não têm o que sobrescrever: estilizá-las é como estilizar um elemento do próprio pattern. O mesmo vale para o markup próprio, que usa os tokens do tema.
 
-O `bun run overrides:check` (`scripts/check-overrides.ts`) aplica a regra e roda no `bun run check`. Ele lê o fonte de `packages/ui` para saber quais exports têm estilo e segue as constantes de classe locais e importadas. Exceção só em `scripts/override-exceptions.json`, com o motivo; o check também reprova exceção sem motivo ou sem uso. Hoje não há nenhuma.
+O `bun run overrides:check` (`scripts/check-overrides.ts`) aplica a regra e roda no `bun run check`. Ele lê o fonte de `packages/ui` para saber quais exports têm estilo e segue as constantes de classe locais e importadas. Exceção só em `scripts/override-exceptions.json`, com o motivo; o check também reprova exceção sem motivo ou sem uso. Hoje são três: o fundo do `AvatarFallback` nas properties de pessoa e a borda `input` do `Card` na moldura dos widgets.
 
 ## Comportamento e dados
 
@@ -153,22 +155,25 @@ Há um modo só: instalação editável dos fontes.
 
 Decidido em 2026-10-01. O consumidor monta um design system em camadas, no espírito do atomic design. O `components.json` fica na raiz do monorepo e é a única configuração; o `tc96.json` deixa de existir.
 
+Decidido em 2026-10-02: `packages/helpers` (`@tc96/helpers`) reúne funções sem React que mais de um pattern usa, a começar pela formatação de valores dos widgets. É distribuído como `elements`, no alias `helpers`, com um arquivo por módulo (`@tc96/helpers/format`), para o consumidor receber só o que o pattern importa; `utils` continua sendo o `cn` do consumidor e não é distribuído. O alias passa a ser obrigatório no `components.json`. Módulos atuais: `format` (valores), `initials`, `clipboard`, `date` (ISO, dia curto, deslocamento de dias por fuso, dia relativo), `calendar-date` (`CalendarDate` e aritmética de dias em Y/M/D) e `zoned-date-time` (relógio de parede por fuso). O calendar e o checklist usam os três últimos; `properties/date` mantém `formatDateProperty`, `parseDatePropertyValue` e `serializeDatePropertyValue` como API pública, delegando ao helper, e o checklist deixou de importar funções de `properties`.
+
 ```text
-components.json        aliases: ui, utils, elements, patterns
+components.json        aliases: ui, utils, elements, helpers, patterns
 packages/
   ui/                  átomos: componentes COSS (aliases.ui)
   elements/            componentes próprios fora do COSS, como Text (aliases.elements)
+  helpers/             funções sem React, como a formatação de valores (aliases.helpers)
   patterns/            organismos: patterns do tc96 (aliases.patterns)
 apps/
   web/                 templates e páginas da aplicação
 ```
 
 - `ui` e `utils` vêm dos aliases que o shadcn já define. O shadcn instala ali os componentes COSS.
-- `elements` e `patterns` são aliases acrescentados ao mesmo objeto `aliases`. O shadcn 4.21 valida `aliases` com um `z.object` não estrito, que aceita e ignora chaves desconhecidas; o objeto de topo é estrito, por isso as chaves novas ficam dentro de `aliases`. O CLI do tc96 lê o arquivo bruto para obter esses dois aliases.
-- Imports só descem de camada: `patterns` importa `elements`, `ui` e `utils`; `elements` importa `ui` e `utils`; `ui` não importa nenhuma das outras.
+- `elements`, `helpers` e `patterns` são aliases acrescentados ao mesmo objeto `aliases`. O shadcn 4.21 valida `aliases` com um `z.object` não estrito, que aceita e ignora chaves desconhecidas; o objeto de topo é estrito, por isso as chaves novas ficam dentro de `aliases`. O CLI do tc96 lê o arquivo bruto para obter esses três aliases.
+- Imports só descem de camada: `patterns` importa `elements`, `ui`, `utils` e `helpers`; `elements` importa `ui`, `utils` e `helpers`; `ui` não importa nenhuma das outras; `helpers` e `utils` não importam React nem UI.
 - Cada alias precisa de entrada exata e de wildcard nos `paths` do `tsconfig` da raiz, conforme o [contrato de instalação](installation-contract.md).
 
-Situação em 2026-10-01: o CLI lê os quatro aliases do `components.json` e reprova, com a lista das chaves que faltam, quando algum está ausente. O destino de `elements` e `patterns` é o diretório que o wildcard de cada alias resolve no `tsconfig`. O build do registry não segue os imports de `@tc96/ui` e `@tc96/utils`, e o `assertDistributable` reprova qualquer item com arquivo de `ui/` ou `utils/` ou com `:root`, `.dark`, `@theme` ou `@utility`. Cada `@tc96/ui/<item>` importado vira `@coss/<item>` nas `registryDependencies` do item; o CLI também resolve o diretório do alias `ui` para saber quais o consumidor já tem.
+Situação em 2026-10-01: o CLI lê os aliases do `components.json` e reprova, com a lista das chaves que faltam, quando algum está ausente. O destino de `elements`, `helpers` e `patterns` é o diretório que o wildcard de cada alias resolve no `tsconfig`. O build do registry não segue os imports de `@tc96/ui` e `@tc96/utils`, e o `assertDistributable` reprova qualquer item com arquivo de `ui/` ou `utils/` ou com `:root`, `.dark`, `@theme` ou `@utility`. Cada `@tc96/ui/<item>` importado vira `@coss/<item>` nas `registryDependencies` do item; o CLI também resolve o diretório do alias `ui` para saber quais o consumidor já tem.
 
 ### Dependências do COSS
 
@@ -184,7 +189,7 @@ Contrato proposto do comando:
 npx @tc96/parttens add collection-views properties
 ```
 
-O CLI aceita vários padrões, resolve dependências compartilhadas uma vez e ajusta imports para os pacotes do consumidor. Os imports `@tc96/ui`, `@tc96/utils`, `@tc96/elements` e `@tc96/parttens` são reescritos para `aliases.ui`, `aliases.utils`, `aliases.elements` e `aliases.patterns` do consumidor. Exemplo: `@tc96/ui/button` se torna `@lemind/ui/button`.
+O CLI aceita vários padrões, resolve dependências compartilhadas uma vez e ajusta imports para os pacotes do consumidor. Os imports `@tc96/ui`, `@tc96/utils`, `@tc96/elements`, `@tc96/helpers` e `@tc96/parttens` são reescritos para `aliases.ui`, `aliases.utils`, `aliases.elements`, `aliases.helpers` e `aliases.patterns` do consumidor. Exemplo: `@tc96/ui/button` se torna `@lemind/ui/button`.
 
 Decisão confirmada: utilizar o instalador do shadcn. `tc96-parttens` será uma camada fina de configuração, seleção e verificações; não terá um segundo mecanismo de cópia e resolução de dependências. O registry será compatível com o schema do shadcn. Validar destinos em monorepo e aliases personalizados antes de finalizar esse adaptador. Bun não será exigido para executar o CLI via npm.
 
@@ -209,7 +214,7 @@ Decidido em 2026-10-01, na triagem das violações do axe.
 - Consumidor: num projeto COSS com alias e caminho fora do padrão e um botão marcado, instalar `collection-views properties`. O `tsc --noEmit` passa, a renderização contém o marcador e nenhum arquivo é escrito no caminho de UI. Implementado em `apps/example`, um consumidor com aliases `@acme/*` e patterns em `packages/organisms/src`. O `test:consumer:registry` instala todos os patterns e o `test:consumer:ssr` renderiza `collection-views` e `properties` no servidor; os dois copiam o exemplo para `.test-output`, instalam nele o COSS do lock com um marcador no `button.tsx` e reprovam se o CLI escrever em `packages/ui` ou deixar import `@tc96/*`.
 - Registry/CLI: instalar padrões isolados e em conjunto com aliases personalizados; verificar dependências, conflitos e preservação de arquivos.
 - Storybook: cobrir interação, teclado, foco, edição e arraste. Docs e Storybook consomem os pacotes do workspace. O framework é `@storybook/react-vite`, porque nenhuma story depende do `@tanstack/react-router`. O `bun run check` roda também o typecheck e o lint do Storybook.
-- Acessibilidade: o addon de a11y roda o axe em cada story com `test: 'error'`, e uma violação reprova o `storybook:test`. Exceção só na própria story, com o motivo. Hoje são quatro, todas de contraste vindo do COSS sem alterações: os dias da semana e os dias fora do mês do calendar (3,14:1), nas stories `Trigger` e `CalendarLocale` do `DateRangeProperty`, o variant `destructive` do botão (3,8:1) e o exemplo de força de senha do COSS (3,65:1). Ver [Acessibilidade dos patterns](#acessibilidade-dos-patterns).
+- Acessibilidade: o addon de a11y roda o axe em cada story com `test: 'error'`, e uma violação reprova o `storybook:test`. Exceção só na própria story, com o motivo. Hoje são quatro, todas de contraste vindo do COSS sem alterações: os dias da semana e os dias fora do mês do calendar (3,14:1), nas stories `Trigger` e `CalendarLocale` do `DateRangeProperty`, o variant `destructive` do botão (3,8:1) e o exemplo de força de senha do COSS (3,65:1). Fora da contagem, a regra de contraste das stories `Overview` e `AssetStatInverted` dos widgets ignora só o widget de tom invertido: o `muted-foreground` escuro do tema do Storybook fica em 4,21:1 sobre o card. Ver [Acessibilidade dos patterns](#acessibilidade-dos-patterns).
 - SSR: validar renderização e hidratação num consumidor real com SSR, preservando fronteiras de componentes cliente. SSR não implica executar interações no servidor.
 - Desempenho: medir cenários com milhares de itens por view, incluindo scroll, seleção e arraste; verificar virtualização sem fixar limites numéricos não acordados.
 

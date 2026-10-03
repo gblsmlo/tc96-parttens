@@ -55,10 +55,11 @@ import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
 tc96 expects a layered design system, in the spirit of atomic design, configured by one `components.json` at the monorepo root:
 
 ```text
-components.json        aliases: ui, utils, elements, patterns
+components.json        aliases: ui, utils, elements, helpers, patterns
 packages/
   ui/                  atoms: COSS components
   elements/            components COSS does not have, such as Text
+  helpers/             React-free functions, such as amount formatting
   patterns/            organisms: tc96 patterns
 apps/
   web/                 templates and pages
@@ -71,6 +72,7 @@ apps/
     "ui": "@acme/ui",
     "utils": "@acme/ui/lib/utils",
     "elements": "@acme/elements",
+    "helpers": "@acme/helpers",
     "patterns": "@acme/patterns"
   }
 }
@@ -87,6 +89,7 @@ Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`
 | `detail-sheet` | Detail sheet with groups, rows and actions |
 | `editable` | Inline editing compound |
 | `checklist` | Controlled item creation, completion, renaming, ordering, deletion and progress |
+| `widgets` | Dashboard widgets; the first set targets finance: market share, asset stats, risk score and balance chart |
 
 Filter Builder and responsive layouts are out of scope for the first version.
 
@@ -133,6 +136,7 @@ bun run release:check
 packages/
 ├── parttens/          # Pattern source
 ├── elements/          # tc96 components COSS does not have, such as Text
+├── helpers/           # React-free helpers shared by patterns, such as amount formatting
 ├── ui/                # Unmodified COSS components, locked to an upstream snapshot
 ├── utils/             # Shared helpers (cn)
 └── registry/          # Registry build and the CLI, published as @tc96/parttens

@@ -1,6 +1,6 @@
 'use client'
 
-import { Dialog } from '@base-ui/react/dialog'
+import type { Dialog } from '@base-ui/react/dialog'
 import { Button } from '@tc96/ui/button'
 import {
   Sheet,
@@ -41,7 +41,9 @@ export function DetailSheet({
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1 space-y-0.5">
                 {title ? <SheetTitle>{title}</SheetTitle> : null}
-                {description ? <SheetDescription>{description}</SheetDescription> : null}
+                {description ? (
+                  <SheetDescription>{description}</SheetDescription>
+                ) : null}
               </div>
 
               {actions || showCloseButton ? (

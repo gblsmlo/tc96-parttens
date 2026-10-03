@@ -10,5 +10,11 @@
     "component": "AvatarFallback",
     "className": "bg-muted/40",
     "reason": "Fallback das properties de pessoa mais discreto que o avatar padrão do COSS: as iniciais acompanham um rótulo e não podem pesar mais que ele."
+  },
+  {
+    "file": "packages/parttens/src/widgets/shared/card-widget-shell.tsx",
+    "component": "Card",
+    "className": "border-input",
+    "reason": "A moldura dos widgets abre mão da sombra do Card e precisa de uma borda um tom acima de `border` para separar o widget do fundo da página; `input` é o token neutro seguinte do mesmo tema."
   }
 ]

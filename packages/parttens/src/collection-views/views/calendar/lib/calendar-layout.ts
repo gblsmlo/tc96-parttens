@@ -1,11 +1,11 @@
-import type { CalendarDate, CalendarItemSchedule } from '../types'
 import {
   addCalendarDays,
   calendarDateKey,
   compareCalendarDates,
   isSameCalendarDate,
-} from './calendar-date'
-import { toZonedDateTime } from './calendar-math'
+} from '@tc96/helpers/calendar-date'
+import { toZonedDateTime } from '@tc96/helpers/zoned-date-time'
+import type { CalendarDate, CalendarItemSchedule } from '../types'
 
 export const MINUTES_IN_DAY = 1440
 

@@ -1,7 +1,6 @@
 import { describe, expect, test } from 'bun:test'
-
+import { calendarRange } from '@tc96/helpers/calendar-date'
 import type { CalendarItemSchedule } from '../types'
-import { calendarRange } from './calendar-date'
 import {
   assignTimeGridLanes,
   segmentItems,

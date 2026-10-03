@@ -3,8 +3,8 @@
 import { cn } from '@tc96/utils'
 import { XIcon } from 'lucide-react'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
-import { IconLabelProperty } from '../icon-label/icon-label-property'
 import { PropertySurface } from '../../shared/property-surface'
+import { IconLabelProperty } from '../icon-label/icon-label-property'
 import { type AttachmentType, AttachmentTypeIcon } from './attachment-type'
 
 export interface AttachmentPropertyProps

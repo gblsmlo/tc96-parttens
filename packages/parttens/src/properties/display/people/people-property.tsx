@@ -1,5 +1,6 @@
 'use client'
 
+import { getInitials } from '@tc96/helpers/initials'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
 import {
@@ -232,14 +233,4 @@ function PersonChipContent<TValue extends string = string>({
       ) : null}
     </span>
   )
-}
-
-function getInitials(label: string): string {
-  return label
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join('')
-    .toUpperCase()
 }

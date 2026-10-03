@@ -1,10 +1,10 @@
 'use client'
 
+import type { PropertyVariant } from '../../shared/property-surface'
 import {
   IconLabelProperty,
   type IconLabelPropertyIcon,
 } from '../icon-label/icon-label-property'
-import type { PropertyVariant } from '../../shared/property-surface'
 
 export type FlagPropertyIcon = IconLabelPropertyIcon
 

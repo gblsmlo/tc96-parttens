@@ -1,15 +1,20 @@
-import type { CalendarDate } from '../types'
+import type { CalendarDate } from './calendar-date'
 
+/**
+ * A wall-clock reading in some time zone: the calendar day and the minutes
+ * elapsed since local midnight.
+ */
 export interface ZonedDateTime {
   date: CalendarDate
-  /** Minutos desde 00:00 no relógio de parede do fuso. */
   minutes: number
 }
 
-// `Intl.DateTimeFormat` é caro de construir; um formatter por fuso basta para a
-// vida do módulo.
 const formatterCache = new Map<string, Intl.DateTimeFormat>()
 
+/**
+ * Returns the formatter for a time zone. `Intl.DateTimeFormat` is expensive
+ * to construct, so one instance per zone is kept for the life of the module.
+ */
 function getFormatter(timeZone: string): Intl.DateTimeFormat {
   const cached = formatterCache.get(timeZone)
   if (cached) return cached
@@ -29,6 +34,7 @@ function getFormatter(timeZone: string): Intl.DateTimeFormat {
   return formatter
 }
 
+/** Numeric date and time fields of an instant, read in a time zone. */
 interface WallClockParts {
   day: number
   hour: number
@@ -38,6 +44,12 @@ interface WallClockParts {
   year: number
 }
 
+/**
+ * Reads the wall-clock fields of an instant in a time zone.
+ *
+ * @param instant - The UTC instant to project.
+ * @param timeZone - An IANA time zone.
+ */
 function wallClockPartsOf(instant: Date, timeZone: string): WallClockParts {
   const parts: Partial<WallClockParts> = {}
 
@@ -59,7 +71,13 @@ const partKeys = {
   year: 'year',
 } as const
 
-/** Projeta um instante UTC no relógio de parede do fuso. */
+/**
+ * Projects a UTC instant onto the wall clock of a time zone.
+ *
+ * @param instant - The UTC instant to project.
+ * @param timeZone - An IANA time zone.
+ * @returns The calendar day and the minutes since local midnight.
+ */
 export function toZonedDateTime(
   instant: Date,
   timeZone: string,
@@ -72,6 +90,15 @@ export function toZonedDateTime(
   }
 }
 
+/**
+ * Offset of a time zone from UTC at a given instant. The formatter stops at
+ * seconds, so the instant is truncated to the second before comparing;
+ * otherwise milliseconds would leak into the offset.
+ *
+ * @param instant - The UTC instant to measure at.
+ * @param timeZone - An IANA time zone.
+ * @returns The offset in milliseconds; positive east of UTC.
+ */
 export function getTimeZoneOffsetMs(instant: Date, timeZone: string): number {
   const parts = wallClockPartsOf(instant, timeZone)
   const wallAsUtc = Date.UTC(
@@ -82,8 +109,6 @@ export function getTimeZoneOffsetMs(instant: Date, timeZone: string): number {
     parts.minute,
     parts.second,
   )
-  // As partes param no segundo; comparar contra o instante truncado evita que o
-  // milissegundo contamine o offset.
   const truncated =
     instant.getTime() - (((instant.getTime() % 1000) + 1000) % 1000)
 
@@ -91,11 +116,16 @@ export function getTimeZoneOffsetMs(instant: Date, timeZone: string): number {
 }
 
 /**
- * Converte relógio de parede no fuso de volta para instante UTC sem biblioteca
- * de datas: chuta o wall time como se fosse UTC e corrige pelo offset do fuso.
- * Uma segunda passada resolve borda de transição (offsets só mudam ali): hora
- * ambígua (fall-back) fica com o primeiro offset encontrado, e hora inexistente
- * (spring-forward) resolve para o instante pós-transição.
+ * Converts a wall-clock reading in a time zone back to a UTC instant without a
+ * date library: the wall time is first treated as UTC and then corrected by the
+ * zone offset. A second pass handles transition edges, since offsets only
+ * change there: an ambiguous time (fall back) keeps the first offset found,
+ * and a nonexistent time (spring forward) resolves to the instant after the
+ * transition.
+ *
+ * @param zoned - The calendar day and minutes since local midnight.
+ * @param timeZone - An IANA time zone.
+ * @returns The UTC instant that shows that wall time in the zone.
  */
 export function fromZonedDateTime(
   zoned: ZonedDateTime,

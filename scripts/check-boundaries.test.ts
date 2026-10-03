@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 const script = join(import.meta.dir, 'check-boundaries.ts')
-const owners = ['utils', 'ui', 'elements', 'parttens', 'registry']
+const owners = ['utils', 'helpers', 'ui', 'elements', 'parttens', 'registry']
 let root = ''
 
 async function workspace(sources: Record<string, string>) {
@@ -35,6 +35,27 @@ test('lets patterns depend on elements, and elements on ui', async () => {
       "import { Button } from '@tc96/ui/button'\n",
   })
   expect(result.status).toBe(0)
+})
+
+test('lets patterns and elements depend on helpers', async () => {
+  const result = await workspace({
+    'packages/parttens/src/a.ts':
+      "import { formatAmount } from '@tc96/helpers/format'\n",
+    'packages/elements/src/text.tsx':
+      "import { formatAmount } from '@tc96/helpers/format'\n",
+    'packages/helpers/src/format.ts': 'export const formatAmount = 1\n',
+  })
+  expect(result.status).toBe(0)
+})
+
+test('rejects helpers depending on React or on another layer', async () => {
+  const result = await workspace({
+    'packages/helpers/src/format.ts':
+      "import { useState } from 'react'\nimport { cn } from '@tc96/utils'\n",
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain('helpers cannot depend on React or UI')
+  expect(result.stderr).toContain('helpers cannot depend on utils')
 })
 
 test('rejects ui depending on elements', async () => {

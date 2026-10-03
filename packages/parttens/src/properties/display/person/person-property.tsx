@@ -1,5 +1,6 @@
 'use client'
 
+import { getInitials } from '@tc96/helpers/initials'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { SelectItem } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
@@ -214,14 +215,4 @@ function findPersonOption<TValue extends string>(
     label: value,
     value,
   }
-}
-
-function getInitials(label: string, size = 2): string {
-  return label
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, size)
-    .map((part) => part[0])
-    .join('')
-    .toUpperCase()
 }

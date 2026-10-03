@@ -18,7 +18,7 @@ await mkdir(output, { recursive: true })
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)
 const parsed = ts.parseJsonConfigFileContent(configuration.config, ts.sys, root)
 const versions: Record<string, string> = {}
-for (const pkg of ['elements', 'parttens']) {
+for (const pkg of ['elements', 'helpers', 'parttens']) {
   const manifest = JSON.parse(
     await readFile(`packages/${pkg}/package.json`, 'utf8'),
   )
@@ -174,5 +174,5 @@ await writeFile(
   `${readme.slice(0, publicEnd).trimEnd()}\n`,
 )
 console.log(
-  'Generated five registry items, the legacy view entry, the aggregate and the Node CLI artifact.',
+  'Generated six registry items, the legacy view entry, the aggregate and the Node CLI artifact.',
 )
