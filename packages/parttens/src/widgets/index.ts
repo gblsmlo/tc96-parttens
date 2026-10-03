@@ -1,5 +1,6 @@
 export * from './crm/index'
 export * from './finance/index'
+export * from './gamification/index'
 export * from './productivity/index'
 export * from './shared/index'
 export type { TrendDirection, WidgetPeriodOption, WidgetTone } from './types'

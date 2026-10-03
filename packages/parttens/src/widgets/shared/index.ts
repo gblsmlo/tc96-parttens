@@ -22,8 +22,12 @@ export {
   defaultVisibleCount,
   ExpandableList,
 } from './expandable-list'
+export type { MetricPillProps, MetricPillTone } from './metric-pill'
+export { MetricPill } from './metric-pill'
 export type { MetricWidgetProps } from './metric-widget'
 export { MetricWidget } from './metric-widget'
+export type { ProgressRingProps } from './progress-ring'
+export { clampRatio, ProgressRing } from './progress-ring'
 export type { StatListProps, WidgetStat } from './stat-list'
 export { StatList } from './stat-list'
 export type {
