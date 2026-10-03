@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Text } from '@tc96/elements/text'
 import {
-  DateProperty,
   KanbanCard,
   KanbanCardAction,
   KanbanCardActionButton,
@@ -12,10 +11,7 @@ import {
   KanbanCardHeader,
   KanbanCardOpenTrigger,
   KanbanCardTitle,
-  SelectProperty,
-  type SelectPropertyOption,
 } from '@tc96/parttens'
-import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   Popover,
@@ -24,13 +20,14 @@ import {
   PopoverTrigger,
 } from '@tc96/ui/popover'
 import { EllipsisIcon, ListTodoIcon, MessageCircleIcon } from 'lucide-react'
-import { type ReactNode, useState } from 'react'
-
-const priorityOptions: readonly SelectPropertyOption[] = [
-  { label: 'Alta', tone: 'danger', value: 'high' },
-  { label: 'Média', tone: 'warning', value: 'medium' },
-  { label: 'Baixa', tone: 'neutral', value: 'low' },
-]
+import type { ReactNode } from 'react'
+import {
+  AssigneeField,
+  DueField,
+  PriorityField,
+} from '../../fixtures/task-fields'
+import { useTasks } from '../../fixtures/task-renderers'
+import { initialTasks } from '../../fixtures/tasks'
 
 const meta = {
   component: KanbanCard,
@@ -64,20 +61,6 @@ function CardActions() {
         <MenuItem>Duplicar card</MenuItem>
       </MenuPopup>
     </Menu>
-  )
-}
-
-function CardOwner() {
-  return (
-    <Avatar
-      aria-label="Responsável: Ana Souza"
-      className="size-6"
-      title="Ana Souza"
-    >
-      <AvatarFallback className="text-xs font-semibold text-foreground">
-        AS
-      </AvatarFallback>
-    </Avatar>
   )
 }
 
@@ -129,7 +112,8 @@ function ContextCard({
   interactive?: boolean
   selected?: boolean
 }>) {
-  const [priority, setPriority] = useState<string | null>('medium')
+  const { tasks, updateTask } = useTasks(initialTasks.slice(0, 1))
+  const task = tasks[0]
 
   return (
     <div className="w-80 p-4">
@@ -143,13 +127,18 @@ function ContextCard({
         <KanbanCardHeader>
           <KanbanCardTitle>
             <span className="flex min-w-0 items-center gap-2">
-              <span className="truncate">Revisar proposta comercial</span>
-              {display === 'compact' && <CardOwner />}
+              <span className="truncate">{task.title}</span>
+              {display === 'compact' && (
+                <AssigneeField
+                  display="avatar"
+                  onChange={updateTask}
+                  task={task}
+                  variant="plain"
+                />
+              )}
             </span>
           </KanbanCardTitle>
-          <KanbanCardDescription>
-            Validar valores e condições antes do envio ao cliente.
-          </KanbanCardDescription>
+          <KanbanCardDescription>{task.description}</KanbanCardDescription>
           <KanbanCardAction>
             <CardActions />
           </KanbanCardAction>
@@ -159,25 +148,13 @@ function ContextCard({
             <Text foreground="muted" size="sm">
               Prioridade
             </Text>
-            <SelectProperty
-              ariaLabel="Prioridade"
-              onValueChange={setPriority}
-              options={priorityOptions}
-              value={priority}
-              variant="plain"
-            />
+            <PriorityField onChange={updateTask} task={task} />
           </KanbanCardBodyRow>
           <KanbanCardBodyRow align="start" data-kanban-card-action="">
             <Text foreground="muted" size="sm">
               Prazo
             </Text>
-            <DateProperty
-              ariaLabel="Prazo"
-              locale="pt-BR"
-              readOnly
-              value="2026-10-04"
-              variant="plain"
-            />
+            <DueField onChange={updateTask} task={task} variant="plain" />
           </KanbanCardBodyRow>
         </KanbanCardBody>
         <KanbanCardFooter>
@@ -199,7 +176,12 @@ function ContextCard({
               <span>2</span>
             </FooterAction>
             <span className="ml-auto">
-              <CardOwner />
+              <AssigneeField
+                display="avatar"
+                onChange={updateTask}
+                task={task}
+                variant="plain"
+              />
             </span>
           </div>
         </KanbanCardFooter>

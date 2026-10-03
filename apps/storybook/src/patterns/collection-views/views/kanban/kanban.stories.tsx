@@ -1,104 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { type KanbanColumnData, KanbanView } from '@tc96/parttens'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { TodoKanbanCard } from './kanban-card-example'
-
-interface MechanicsCard {
-  description: string
-  id: string
-  priority: string | null
-  taskCount: number
-  title: string
-}
-
-const columns: KanbanColumnData<MechanicsCard>[] = [
-  {
-    cards: [
-      {
-        description: 'A card without an assigned priority.',
-        id: 'card-1',
-        priority: null,
-        taskCount: 3,
-        title: 'First item',
-      },
-      {
-        description: 'A second item in the same column.',
-        id: 'card-2',
-        priority: 'low',
-        taskCount: 5,
-        title: 'Second item',
-      },
-    ],
-    color: '#6b7280',
-    count: 2,
-    id: 'todo',
-    title: 'To do',
-  },
-  {
-    cards: [
-      {
-        description: 'An item currently being worked on.',
-        id: 'card-3',
-        priority: 'high',
-        taskCount: 2,
-        title: 'In work',
-      },
-    ],
-    color: '#3b82f6',
-    count: 1,
-    id: 'in-progress',
-    title: 'In progress',
-  },
-  { cards: [], color: '#22c55e', count: 0, id: 'done', title: 'Done' },
-]
-
-const kanbanArgs = {
-  columns,
-  getCardLabel: (card: MechanicsCard) => card.title,
-  getKey: (card: MechanicsCard) => card.id,
-  renderCard: (card: MechanicsCard) => (
-    <TodoKanbanCard
-      description={card.description}
-      initialPriority={card.priority}
-      taskCount={card.taskCount}
-      title={card.title}
-      variant="interactive"
-    />
-  ),
-}
-
-function Example() {
-  return (
-    <div className="h-144 min-w-0 p-4">
-      <KanbanView
-        {...kanbanArgs}
-        emptyColumnLabel="No items in this column."
-        onMoveCard={() => true}
-      />
-    </div>
-  )
-}
+import { renderTaskKanbanCard } from '../../fixtures/task-renderers'
+import { initialTasks } from '../../fixtures/tasks'
+import { TaskBoard } from './kanban-tasks'
 
 const meta = {
-  args: {
-    description: columns[0].cards[0].description,
-    initialPriority: columns[0].cards[0].priority,
-    taskCount: columns[0].cards[0].taskCount,
-    title: columns[0].cards[0].title,
-  },
-  component: TodoKanbanCard,
+  component: TaskBoard,
   parameters: {
     docs: {
       description: {
         component:
-          'O mesmo card Todo compõe o exemplo isolado e os itens do board.',
+          'Board de tarefas por status sobre o mock compartilhado das collection views.',
       },
     },
     layout: 'fullscreen',
   },
   tags: ['!autodocs'],
   title: 'Patterns/CollectionViews/Views/Kanban/Usages/Todo',
-} satisfies Meta<typeof TodoKanbanCard>
+} satisfies Meta<typeof TaskBoard>
 
 export default meta
 
@@ -106,14 +25,14 @@ type Story = StoryObj<typeof meta>
 
 export const Card: Story = {
   parameters: { layout: 'centered' },
-  render: (args) => (
-    <div className="w-full p-4">
-      <TodoKanbanCard {...args} />
+  render: () => (
+    <div className="w-80 p-4">
+      {renderTaskKanbanCard('status', () => undefined)(initialTasks[0])}
     </div>
   ),
 }
 
-export const Board: Story = { render: () => <Example /> }
+export const Board: Story = {}
 
 const nextFrame = () =>
   new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)))
@@ -173,12 +92,22 @@ async function expectColumnCards(
 ) {
   await waitFor(() =>
     expect(
-      cardHandles(canvasElement, column).map((handle) =>
-        handle.getAttribute('aria-label'),
-      ),
-    ).toEqual(cards.map((card) => `Mover card ${card}`)),
+      cardHandles(canvasElement, column)
+        .map((handle) => handle.getAttribute('aria-label'))
+        .sort(),
+    ).toEqual(cards.map((card) => `Mover card ${card}`).sort()),
   )
 }
+
+const BACKLOG_AFTER_MOVE = ['Instrumentar analytics']
+const TODO_AFTER_MOVE = [
+  'Notificações push',
+  'Entregar design do checkout',
+  'Testes E2E do checkout',
+  'Code freeze da versão 2.0',
+  'Material das lojas',
+  'Demo da beta',
+]
 
 export const MoveWithKeyboard: Story = {
   parameters: {
@@ -191,26 +120,19 @@ export const MoveWithKeyboard: Story = {
   },
   play: async ({ canvasElement }) => {
     const handle = within(canvasElement).getByRole('button', {
-      name: 'Mover card First item',
+      name: 'Mover card Notificações push',
     })
 
     handle.focus()
     await userEvent.keyboard('[Space]')
     await waitFor(() => expect(dragOverlay()).not.toBeEmptyDOMElement())
     await userEvent.keyboard('[ArrowRight]')
-    await expectColumnCards(canvasElement, 'In progress', [
-      'First item',
-      'In work',
-    ])
+    await expectColumnCards(canvasElement, 'A fazer', TODO_AFTER_MOVE)
     await userEvent.keyboard('[Space]')
     await waitFor(() => expect(dragOverlay()).toBeEmptyDOMElement())
-    await expectColumnCards(canvasElement, 'To do', ['Second item'])
-    await expectColumnCards(canvasElement, 'In progress', [
-      'First item',
-      'In work',
-    ])
+    await expectColumnCards(canvasElement, 'Backlog', BACKLOG_AFTER_MOVE)
+    await expectColumnCards(canvasElement, 'A fazer', TODO_AFTER_MOVE)
   },
-  render: () => <Example />,
 }
 
 export const MoveWithPointer: Story = {
@@ -225,22 +147,20 @@ export const MoveWithPointer: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    // A coluna do layout mobile tambem renderiza os cards, escondida.
     await dragWithPointer(
-      within(canvas.getByRole('region', { name: 'To do' })).getByText(
-        'A card without an assigned priority.',
+      within(canvas.getByRole('region', { name: 'Backlog' })).getByText(
+        'Disparo de push transacional para pedidos e lembretes.',
       ),
-      within(canvas.getByRole('region', { name: 'In progress' })).getByText(
-        'An item currently being worked on.',
+      within(canvas.getByRole('region', { name: 'A fazer' })).getByText(
+        'Telas finais de checkout e estados de erro no Figma.',
       ),
     )
     await waitFor(() => expect(dragOverlay()).toBeEmptyDOMElement())
-    await expectColumnCards(canvasElement, 'To do', ['Second item'])
+    await expectColumnCards(canvasElement, 'Backlog', BACKLOG_AFTER_MOVE)
     await expect(
-      cardHandles(canvasElement, 'In progress').map((handle) =>
+      cardHandles(canvasElement, 'A fazer').map((handle) =>
         handle.getAttribute('aria-label'),
       ),
-    ).toContain('Mover card First item')
+    ).toContain('Mover card Notificações push')
   },
-  render: () => <Example />,
 }

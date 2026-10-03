@@ -22,5 +22,17 @@
     "component": "Card",
     "className": "rounded-lg",
     "reason": "O widget usa o mesmo raio do card do Kanban e da coluna (`--radius`), em vez do `rounded-2xl` do Card do COSS, para que cards de collection-views e widgets tenham a mesma forma."
+  },
+  {
+    "file": "packages/parttens/src/collection-views/views/list/components/list-group.tsx",
+    "component": "Separator",
+    "className": "bg-border/40",
+    "reason": "O separator entre itens da lista é mais discreto que o do COSS: as linhas agrupam itens sem competir com o conteúdo; `bg-border/40` mantém o token do tema com 40% da opacidade."
+  },
+  {
+    "file": "packages/parttens/src/collection-views/views/list/components/list-view.tsx",
+    "component": "Separator",
+    "className": "bg-border/40",
+    "reason": "O separator entre itens da lista é mais discreto que o do COSS: as linhas agrupam itens sem competir com o conteúdo; `bg-border/40` mantém o token do tema com 40% da opacidade."
   }
 ]

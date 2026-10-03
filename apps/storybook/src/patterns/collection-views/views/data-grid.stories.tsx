@@ -1,110 +1,32 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
-  Action,
   ActionBar,
-  CollectionToolbar,
-  createSelectColumn,
   DataGrid,
   type DataGridColumnDef,
-  DataGridColumnsSubmenu,
   type DataGridDensity,
-  DataGridDensitySubmenu,
-  DataGridSearch,
-  DataGridSortSubmenu,
   useDataGrid,
-  ViewSettingsMenu,
-  ViewSettingsSection,
 } from '@tc96/parttens'
 import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
 import { type ReactElement, useMemo, useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
+import { createDataGridColumns } from '../fixtures/task-fields'
+import { useTasks } from '../fixtures/task-renderers'
+import {
+  initialTasks,
+  people,
+  statusOptions,
+  type Task,
+} from '../fixtures/tasks'
 
-interface MechanicsRecord {
-  amount: number
-  id: string
-  name: string
-  owner: string
-  stage: string
-  updatedAt: string
-}
-
-const records: MechanicsRecord[] = [
-  {
-    amount: 1200,
-    id: 'record-1',
-    name: 'First item',
-    owner: 'Ana',
-    stage: 'Aberto',
-    updatedAt: '2026-08-04',
-  },
-  {
-    amount: 860,
-    id: 'record-2',
-    name: 'Second item',
-    owner: 'Ana',
-    stage: 'Aberto',
-    updatedAt: '2026-08-11',
-  },
-  {
-    amount: 2400,
-    id: 'record-3',
-    name: 'Third item',
-    owner: 'Bruno',
-    stage: 'Em análise',
-    updatedAt: '2026-08-18',
-  },
-  {
-    amount: 310,
-    id: 'record-4',
-    name: 'Fourth item',
-    owner: 'Bruno',
-    stage: 'Concluído',
-    updatedAt: '2026-08-25',
-  },
-  {
-    amount: 1750,
-    id: 'record-5',
-    name: 'Fifth item',
-    owner: 'Carla',
-    stage: 'Concluído',
-    updatedAt: '2026-08-29',
-  },
-]
-
-const columns: DataGridColumnDef<MechanicsRecord>[] = [
-  {
-    accessorKey: 'name',
-    enableHiding: false,
-    header: 'Name',
-    meta: { label: 'Name', type: 'text' },
-    minSize: 200,
-  },
-  {
-    accessorKey: 'stage',
-    header: 'Etapa',
-    meta: { label: 'Etapa', type: 'status', variant: 'badge' },
-    minSize: 150,
-  },
-  {
-    accessorKey: 'owner',
-    header: 'Responsável',
-    meta: { label: 'Responsável', type: 'person' },
-    minSize: 150,
-  },
-  {
-    accessorKey: 'amount',
-    header: 'Valor',
-    meta: { align: 'end', label: 'Valor', type: 'number', variant: 'number' },
-    minSize: 120,
-  },
-  {
-    accessorKey: 'updatedAt',
-    header: 'Atualizado em',
-    meta: { label: 'Atualizado em', type: 'last-edited-time', variant: 'date' },
-    minSize: 160,
-  },
-]
+const assigneeOrder = people.map((person) => person.id)
+const sortByAssignee = (tasks: readonly Task[]) =>
+  [...tasks].sort(
+    (a, b) =>
+      assigneeOrder.indexOf(a.assigneeId) - assigneeOrder.indexOf(b.assigneeId),
+  )
+const assigneeName = (task: Task) =>
+  people.find((person) => person.id === task.assigneeId)?.name ?? null
 
 interface DataGridExampleProps {
   /** Densidade vertical das linhas. */
@@ -120,10 +42,8 @@ interface DataGridExampleProps {
   selectable?: boolean
   /** Pagina no cliente. O rodapé de paginação vem junto, sem wiring extra. */
   paginated?: boolean
-  /** Renderiza a toolbar de busca, filtro, ordenação, densidade e colunas. */
-  withToolbar?: boolean
   /** Coleção exibida. Passe uma lista vazia para ver a mensagem de vazio. */
-  data?: MechanicsRecord[]
+  data?: Task[]
   /** Teto de altura. Sem ele o grid tem a altura do conteúdo; com ele, rola por dentro. */
   maxHeight?: number
   /** Expande a composição até a altura disponível para validar ações ancoradas no rodapé. */
@@ -132,11 +52,11 @@ interface DataGridExampleProps {
 
 /**
  * Compõe `useDataGrid` e `DataGrid` do jeito que um consumidor compõe: o hook
- * monta a tabela, o grid desenha, e a toolbar e a paginação são opcionais.
+ * monta a tabela, o grid desenha, e a paginação é opcional.
  */
 function DataGridExample({
   collapsedGroupIds,
-  data = records,
+  data = initialTasks,
   density,
   grouped = false,
   onCollapsedGroupIdsChange,
@@ -145,49 +65,34 @@ function DataGridExample({
   paginated = false,
   selectable = false,
   fullHeight = false,
-  withToolbar = false,
 }: Readonly<DataGridExampleProps>): ReactElement {
-  const { table } = useDataGrid<MechanicsRecord>({
-    columns: selectable
-      ? [createSelectColumn<MechanicsRecord>(), ...columns]
-      : columns,
-    data,
+  const { tasks, updateTask } = useTasks(data)
+  const columns = useMemo(() => {
+    const all = createDataGridColumns(updateTask)
+    return selectable ? all : all.filter((column) => column.id !== 'select')
+  }, [selectable, updateTask])
+  const rows = useMemo(
+    () => (grouped ? sortByAssignee(tasks) : tasks),
+    [grouped, tasks],
+  )
+  const { table } = useDataGrid<Task>({
+    columns,
+    data: rows,
     enablePagination: paginated,
     enableRowSelection: selectable,
-    getRowId: (record) => record.id,
-    pageSize: 3,
+    getRowId: (task) => task.id,
+    pageSize: 5,
   })
 
   return (
     <div
       className={`flex min-w-0 flex-col gap-2 p-4${fullHeight ? ' min-h-screen' : ''}`}
     >
-      {withToolbar ? (
-        <CollectionToolbar
-          aria-label="Ações da coleção"
-          endSlot={
-            <>
-              <ViewSettingsMenu
-                activeFilterCount={table.state.globalFilter ? 1 : 0}
-                onClearFilters={() => table.setGlobalFilter('')}
-              >
-                <ViewSettingsSection label="Exibição">
-                  <DataGridSortSubmenu table={table} />
-                  <DataGridDensitySubmenu table={table} />
-                  <DataGridColumnsSubmenu table={table} />
-                </ViewSettingsSection>
-              </ViewSettingsMenu>
-              <Action label="Novo item" onClick={() => undefined} />
-            </>
-          }
-          startSlot={<DataGridSearch placeholder="Buscar…" table={table} />}
-        />
-      ) : null}
       <DataGrid
-        aria-label="Coleção"
+        aria-label="Tarefas do lançamento"
         density={density}
-        emptyMessage="Nenhum item para exibir."
-        getRowGroup={grouped ? (record) => record.owner : undefined}
+        emptyMessage="Nenhuma tarefa para exibir."
+        getRowGroup={grouped ? assigneeName : undefined}
         {...(collapsedGroupIds ? { collapsedGroupIds } : {})}
         {...(onCollapsedGroupIdsChange ? { onCollapsedGroupIdsChange } : {})}
         isLoading={isLoading}
@@ -269,14 +174,13 @@ const meta = {
     isLoading: booleanArgType,
     paginated: booleanArgType,
     selectable: booleanArgType,
-    withToolbar: booleanArgType,
   },
   component: DataGridExample,
   parameters: {
     docs: {
       description: {
         component:
-          'Building Block de DataGrid. Documenta cabeçalho de coluna, densidade, agrupamento, seleção, paginação, carregamento e vazio — sem fixtures nem vocabulário de nenhuma feature. A tabela vem de `useDataGrid`; o consumidor é dono das colunas.',
+          'Building Block de DataGrid. Documenta cabeçalho de coluna, densidade, agrupamento, seleção, paginação, carregamento e vazio — sobre as tarefas do lançamento compartilhadas por todas as views. A tabela vem de `useDataGrid`; o consumidor é dono das colunas.',
       },
     },
     layout: 'centered',
@@ -290,32 +194,32 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
-export const WithToolbar: Story = { args: { withToolbar: true } }
-
 export const Paginated: Story = { args: { paginated: true } }
 
 export const Grouped: Story = {
   args: { grouped: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const toggle = canvas.getByRole('button', { name: 'Collapse Ana' })
+    const toggle = canvas.getByRole('button', { name: 'Collapse Ana Souza' })
 
     await userEvent.click(toggle)
-    await expect(canvas.queryByText('First item')).toBeNull()
+    await expect(canvas.queryByText('Implementar onboarding')).toBeNull()
     await expect(toggle.getAttribute('aria-expanded')).toBe('false')
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Expand Ana' }))
-    await expect(canvas.getByText('First item')).toBeTruthy()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Expand Ana Souza' }),
+    )
+    await expect(canvas.getByText('Implementar onboarding')).toBeTruthy()
   },
 }
 
 /**
  * Quem compõe o grid guarda os grupos recolhidos — por exemplo, para
- * lembrá-los entre visitas. Bruno começa recolhido.
+ * lembrá-los entre visitas. Bruno Lima começa recolhido.
  */
 function ControlledGroupsExample(): ReactElement {
   const [collapsedGroupIds, setCollapsedGroupIds] = useState<readonly string[]>(
-    ['Bruno'],
+    ['Bruno Lima'],
   )
 
   return (
@@ -331,9 +235,11 @@ export const GroupedControlled: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    await expect(canvas.queryByText('Third item')).toBeNull()
-    await userEvent.click(canvas.getByRole('button', { name: 'Expand Bruno' }))
-    await expect(canvas.getByText('Third item')).toBeTruthy()
+    await expect(canvas.queryByText('Revisar API de pagamentos')).toBeNull()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Expand Bruno Lima' }),
+    )
+    await expect(canvas.getByText('Revisar API de pagamentos')).toBeTruthy()
   },
   render: () => <ControlledGroupsExample />,
 }
@@ -342,17 +248,10 @@ export const Selectable: Story = {
   args: { fullHeight: true, selectable: true },
 }
 
-const stageOptions = [
-  { label: 'Aberto', value: 'Aberto' },
-  { label: 'Em análise', value: 'Em análise' },
-  { label: 'Concluído', value: 'Concluído' },
-]
-
-const ownerOptions = [
-  { label: 'Ana', value: 'Ana' },
-  { label: 'Bruno', value: 'Bruno' },
-  { label: 'Carla', value: 'Carla' },
-]
+const assigneeOptions = people.map((person) => ({
+  label: person.name,
+  value: person.id,
+}))
 
 /**
  * Colunas de valor fechado viram property com trigger: o Badge abre o Select e
@@ -360,56 +259,57 @@ const ownerOptions = [
  * escreve na coleção, só avisa o que mudou.
  */
 function EditableExample(): ReactElement {
-  const [rows, setRows] = useState(records)
+  const { tasks, updateTask } = useTasks()
 
-  const editableColumns = useMemo<DataGridColumnDef<MechanicsRecord>[]>(
+  const editableColumns = useMemo<DataGridColumnDef<Task>[]>(
     () => [
-      columns[0] as DataGridColumnDef<MechanicsRecord>,
       {
-        accessorKey: 'stage',
-        header: 'Etapa',
+        accessorKey: 'title',
+        enableHiding: false,
+        header: 'Tarefa',
+        meta: { label: 'Tarefa', type: 'title' },
+        minSize: 240,
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
         meta: {
           editable: true,
-          label: 'Etapa',
-          options: stageOptions,
+          label: 'Status',
+          options: statusOptions.map(({ label, value }) => ({ label, value })),
           type: 'status',
           variant: 'select',
         },
         minSize: 170,
       },
       {
-        accessorKey: 'owner',
+        accessorKey: 'assigneeId',
         header: 'Responsável',
         meta: {
           badgeVariant: 'outline',
           editable: true,
           label: 'Responsável',
-          options: ownerOptions,
+          options: assigneeOptions,
           type: 'person',
           variant: 'select',
         },
-        minSize: 170,
+        minSize: 190,
       },
-      ...columns.slice(3),
     ],
     [],
   )
 
-  const { table } = useDataGrid<MechanicsRecord>({
+  const { table } = useDataGrid<Task>({
     columns: editableColumns,
-    data: rows,
-    getRowId: (record) => record.id,
+    data: tasks,
+    getRowId: (task) => task.id,
     onCellValueChange: ({ columnId, rowId, value }) =>
-      setRows((current) =>
-        current.map((record) =>
-          record.id === rowId ? { ...record, [columnId]: value } : record,
-        ),
-      ),
+      updateTask(rowId, { [columnId]: value }),
   })
 
   return (
     <div className="p-4">
-      <DataGrid aria-label="Coleção" table={table} />
+      <DataGrid aria-label="Tarefas do lançamento" table={table} />
     </div>
   )
 }
@@ -419,7 +319,7 @@ export const EditableValues: Story = {
     docs: {
       description: {
         story:
-          'Etapa e Responsável são valores fechados, então a célula vira property com trigger: o Badge abre o Select e o grid emite `onCellValueChange`. Quem escreve na coleção é o consumer.',
+          'Status e Responsável são valores fechados, então a célula vira property com trigger: o Badge abre o Select e o grid emite `onCellValueChange`. Quem escreve na coleção é o consumer.',
       },
     },
   },
@@ -434,13 +334,27 @@ export const EditableValues: Story = {
 function FillExample({
   fillColumn,
 }: Readonly<{ fillColumn?: string | false }>): ReactElement {
-  const { table } = useDataGrid<MechanicsRecord>({
+  const { tasks, updateTask } = useTasks(initialTasks.slice(0, 3))
+  const columns = useMemo(
+    () =>
+      createDataGridColumns(updateTask).filter(
+        (column) => column.id !== 'select',
+      ),
+    [updateTask],
+  )
+  const { table } = useDataGrid<Task>({
     columns,
-    data: records.slice(0, 3),
-    getRowId: (record) => record.id,
+    data: tasks,
+    getRowId: (task) => task.id,
   })
 
-  return <DataGrid aria-label="Coleção" fillColumn={fillColumn} table={table} />
+  return (
+    <DataGrid
+      aria-label="Tarefas do lançamento"
+      fillColumn={fillColumn}
+      table={table}
+    />
+  )
 }
 
 export const FillColumn: Story = {
@@ -472,7 +386,7 @@ export const FillColumn: Story = {
       {(
         [
           ['Padrão: a última coluna cresce', undefined],
-          ["fillColumn='name': a primeira cresce", 'name'],
+          ["fillColumn='title': a primeira cresce", 'title'],
           ['fillColumn={false}: nenhuma cresce, a moldura encolhe', false],
         ] as const
       ).map(([label, fillColumn]) => (
@@ -491,7 +405,7 @@ export const Densities: Story = {
       {(['short', 'medium', 'tall', 'extra-tall'] as const).map((density) => (
         <div className="flex flex-col gap-1" key={density}>
           <p className="font-medium text-muted-foreground text-sm">{density}</p>
-          <DataGridExample data={records.slice(0, 3)} density={density} />
+          <DataGridExample data={initialTasks.slice(0, 3)} density={density} />
         </div>
       ))}
     </div>
@@ -500,7 +414,7 @@ export const Densities: Story = {
 
 /** Com `maxHeight` o grid para de crescer e passa a rolar por dentro, com o
  *  cabeçalho grudado. */
-export const Scrollable: Story = { args: { maxHeight: 160, withToolbar: true } }
+export const Scrollable: Story = { args: { maxHeight: 160 } }
 
 export const Loading: Story = { args: { isLoading: true } }
 

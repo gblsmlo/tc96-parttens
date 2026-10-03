@@ -31,5 +31,10 @@ export {
 } from './components/list-item'
 export type { ListItemSkeletonProps } from './components/list-item-skeleton'
 export { ListItemSkeleton } from './components/list-item-skeleton'
+export type {
+  ListRowIconFrame,
+  ListRowProps,
+} from './components/list-row'
+export { ListRow } from './components/list-row'
 export type { ListViewProps } from './components/list-view'
 export { ListView } from './components/list-view'
