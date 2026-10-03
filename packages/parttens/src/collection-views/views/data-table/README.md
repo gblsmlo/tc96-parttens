@@ -2,6 +2,10 @@
 
 A semantic `<table>` on COSS `Table` and TanStack Table v9, with optional row selection, sorting and client-side pagination. Unlike `DataGrid`, it is not a WAI-ARIA grid: there is no roving focus, cell selection, column menu, resizing, pinning, grouping or virtualization, and the header is plain content. The consumer owns the cells (a checkbox, a sort button, a pagination control) and drives the instance from `useDataTable`. `DataGridPagination` also accepts this table.
 
+## Cell renderers
+
+Rows are memoized below the component that calls `useDataTable`. A row re-renders when its `row`, its `selected` and `canSelect` state, the visible columns or `table.options.meta` change. A cell renderer must derive from its `row`, `column`, `cell` and `table.options.meta`. A custom cell that reads other table state (sorting, pagination, filters) during render is not re-rendered when that state changes, because the row is memoized. Pass what the cell needs through `meta`, or read it from the row.
+
 ## Benchmark
 
 Reproduce from the repo root:
