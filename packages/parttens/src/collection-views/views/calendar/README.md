@@ -2,6 +2,10 @@
 
 `CalendarView` renders one collection on a calendar: a month grid, or a time grid (week or day) with an all-day strip, greedy lanes for overlapping items and a "now" line. The component is controlled: the consumer passes the `anchor` instant, the `timeZone`, `getItemSchedule` and `renderItem`, and nothing is fetched or persisted inside the view. With `onItemReschedule` the items can be dragged (pointer or keyboard) to another day or time slot; the callback accepts or rejects the move, and a rejection rolls the item back.
 
+## Renderer contract
+
+`renderItem` re-runs only when its identity, the item object or the segment's date, placement or minutes (`startMinutes`, `endMinutes`, `isStart`, `isEnd`) change. A parent re-render with the same props, and a drag that touches another item, do not call it. A renderer that reads other state through a stable identity (a ref, a module variable, a store read without a subscription) goes stale: pass the value through the item, or give `renderItem` a new identity when that state changes.
+
 ## Benchmark
 
 Reproduce from the repo root:
@@ -29,25 +33,25 @@ The bench drives the view through its public entry only. `renderItem` is wrapped
 
 JSDOM has no layout, so the bench mocks `getBoundingClientRect` (a 10px grid keyed by `data-calendar-date`, and the dragged overlay from its `--dnd-*` variables), `elementFromPoint` and `getAnimations`. One arrow press moves the pointer 10px, which is exactly one day cell. The drag scenario runs outside `act` so dnd-kit's signals can flush, and it throws if the probe does not change day.
 
-Baseline: 2026-10-03, bun 1.3.14, JSDOM 26.1.0 (no layout), React 19.1.1 development build, AMD Ryzen 3 3200G with Radeon Vega Graphics x4, seed 96, 5 iterations per scenario with 1 warmup (mount: 3, fresh container, no warmup), medians. File: `scripts/bench/results/calendar.base.json`. Render counts are deterministic and gate; times are a report, and differences under 10% are noise.
+Environment: 2026-10-03, bun 1.3.14, JSDOM 26.1.0 (no layout), React 19.1.1 development build, AMD Ryzen 3 3200G with Radeon Vega Graphics x4, seed 96, 5 iterations per scenario with 1 warmup (mount: 3, fresh container), medians. Before is the view before the memoized leaf, after is this folder; same machine, same adapter, run one after the other. The after file is the committed baseline `scripts/bench/results/calendar.base.json`. Render counts gate; times are a report and differences under 10% are noise.
 
-| Case | Scenario | n | Items | Commits | Wall (ms) | Profiler (ms) |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| month 100 | mount | 3 | 87 | 1 | 168.3 | 100.4 |
-| month 100 | parent re-render | 5 | 87 | 1 | 27.7 | 11.6 |
-| month 100 | next period | 5 | 164 | 2 | 210.6 | 105.4 |
-| month 100 | keyboard reschedule | 5 | 270 | 6 | 279.2 | 52.5 |
-| month 1000 | mount | 3 | 108 | 1 | 160.5 | 89.3 |
-| month 1000 | parent re-render | 5 | 108 | 1 | 27.8 | 10.2 |
-| month 1000 | next period | 5 | 204 | 2 | 316.7 | 147.2 |
-| month 1000 | keyboard reschedule | 5 | 335 | 6 | 333.8 | 101.4 |
-| week 100 | mount | 3 | 101 | 2 | 150.1 | 87.0 |
-| week 100 | parent re-render | 5 | 101 | 1 | 26.4 | 11.3 |
-| week 100 | next period | 5 | 201 | 2 | 331.7 | 151.2 |
-| week 100 | keyboard reschedule | 5 | 334 | 6 | 220.7 | 63.5 |
-| week 1000 | mount | 3 | 1001 | 2 | 4428.9 | 573.1 |
-| week 1000 | parent re-render | 5 | 1001 | 1 | 206.5 | 82.4 |
-| week 1000 | next period | 5 | 2001 | 2 | 16049.4 | 1053.2 |
-| week 1000 | keyboard reschedule | 5 | 3259 | 6 | 1461.3 | 416.9 |
+| Case | Scenario | Items before | Items after | Wall before (ms) | Wall after (ms) | Δ wall | Profiler before (ms) | Profiler after (ms) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| month 100 | mount | 86 | 86 | 200.5 | 167.3 | -17% | 122.4 | 97.1 |
+| month 100 | parent re-render | 86 | 0 | 25.7 | 24.2 | -6% | 10.5 | 9.5 |
+| month 100 | next period | 163 | 133 | 239.8 | 206.4 | -14% | 122.5 | 103.4 |
+| month 100 | keyboard reschedule and back | 522 | 1 | 587.2 | 476.5 | -19% | 119.7 | 86.8 |
+| month 1000 | mount | 107 | 107 | 196.8 | 154.1 | -22% | 115.2 | 89.3 |
+| month 1000 | parent re-render | 107 | 0 | 30.2 | 24.3 | -20% | 11.4 | 8.1 |
+| month 1000 | next period | 203 | 161 | 354.3 | 291.5 | -18% | 149.0 | 136.3 |
+| month 1000 | keyboard reschedule and back | 652 | 2 | 625.0 | 557.0 | -11% | 182.0 | 138.3 |
+| week 100 | mount | 100 | 100 | 129.8 | 132.2 | +2% | 77.3 | 78.2 |
+| week 100 | parent re-render | 100 | 0 | 27.7 | 25.4 | -8% | 10.5 | 9.0 |
+| week 100 | next period | 200 | 200 | 314.0 | 288.8 | -8% | 146.7 | 140.6 |
+| week 100 | keyboard reschedule and back | 650 | 0 | 451.0 | 375.7 | -17% | 115.7 | 79.1 |
+| week 1000 | mount | 1000 | 1000 | 4423.8 | 4171.9 | -6% | 550.3 | 534.0 |
+| week 1000 | parent re-render | 1000 | 0 | 199.6 | 165.2 | -17% | 79.9 | 59.0 |
+| week 1000 | next period | 2000 | 2000 | 16367.9 | 14875.5 | -9% | 1044.6 | 955.7 |
+| week 1000 | keyboard reschedule and back | 6500 | 0 | 2851.2 | 2426.7 | -15% | 793.9 | 632.4 |
 
-Reading the table: month mode is bounded by `maxVisibleMonthItems`, so 100 and 1000 items render about the same chips (87 and 108). Every interaction re-renders all of them. A parent re-render with unchanged props renders every visible item (target 0), because `CalendarView` builds each segment's `renderItem` output eagerly and neither the grid, the cells nor `DraggableCalendarItem` are memoized (`components/calendar-view.tsx`). One keyboard reschedule renders all items about three times (270 in month 100, 3259 in week 1000): `useCalendarDragAndDrop` rebuilds `resolveSchedule` when its overrides change, which invalidates the segment memo when the override is set and again when it is cleared, and the drop target state lives on the whole day cell or column, so every chip in it re-renders while the pointer moves. The time grid is not capped, so week 1000 renders every item on mount (1001) and twice on a period change: that is volume, which virtualization or a visible-range cap addresses, not memo.
+Reading the table: a parent re-render with unchanged props renders 0 items (it rendered every visible item), and dragging an item to the next day and back renders 0 other items in the week cases and 1 or 2 in month (522 to 6500 before): the 1 or 2 are items hidden behind a day's `+N` that the move reveals and hides again. The count no longer depends on how many items the calendar holds. A month period change renders fewer items (shared days keep their chips), the week time grid still mounts every item (1000, and 2000 across a period change) because it is not capped, which is volume, not memo. The dragged item is not counted and the drag scenario has no commit counter, because dnd-kit's overlay re-renders it a varying number of times and its animation-frame timing adds or removes a commit. Mount and period changes moved within the noise band.

@@ -208,9 +208,6 @@ interface KanbanColumnCardProps<TCard> {
   renderCard: (card: TCard) => ReactNode
 }
 
-// Cada troca de coluna durante o arraste renderiza o board de novo, e a
-// insercao desloca o indice de todos os cards abaixo dela. O involucro
-// sortable precisa do indice novo; o conteudo do consumidor, nao.
 const KanbanColumnCard = memo(function KanbanColumnCard<TCard>({
   card,
   columnId,

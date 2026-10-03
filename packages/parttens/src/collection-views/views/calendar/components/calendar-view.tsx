@@ -19,6 +19,7 @@ import type {
   CalendarViewMode,
 } from '../types'
 import { CalendarMonthGrid } from './calendar-month-grid'
+import { CalendarSegmentContent } from './calendar-segment-content'
 import { CalendarTimeGrid } from './calendar-time-grid'
 import { DraggableCalendarItem } from './draggable-calendar-item'
 
@@ -137,14 +138,6 @@ export function CalendarView<TItem>({
     segment: CalendarItemSegment<TItem>,
     placement: 'all-day' | 'month' | 'time-grid',
   ) => {
-    const context: CalendarItemRenderContext = {
-      date: segment.date,
-      endMinutes: placement === 'time-grid' ? segment.endMinutes : null,
-      isEnd: segment.isEnd,
-      isStart: segment.isStart,
-      placement,
-      startMinutes: placement === 'time-grid' ? segment.startMinutes : null,
-    }
     const dateKey = calendarDateKey(segment.date)
 
     return (
@@ -157,7 +150,16 @@ export function CalendarView<TItem>({
         itemData={{ dateKey, itemKey: segment.itemKey, type: 'item' }}
         itemKey={segment.itemKey}
       >
-        {renderItem(segment.item, context)}
+        <CalendarSegmentContent
+          dateKey={dateKey}
+          endMinutes={placement === 'time-grid' ? segment.endMinutes : null}
+          isEnd={segment.isEnd}
+          isStart={segment.isStart}
+          item={segment.item}
+          placement={placement}
+          renderItem={renderItem}
+          startMinutes={placement === 'time-grid' ? segment.startMinutes : null}
+        />
       </DraggableCalendarItem>
     )
   }
