@@ -2,6 +2,10 @@
 
 `CalendarView` renders one collection on a calendar: a month grid, or a time grid (week or day) with an all-day strip, greedy lanes for overlapping items and a "now" line. The component is controlled: the consumer passes the `anchor` instant, the `timeZone`, `getItemSchedule` and `renderItem`, and nothing is fetched or persisted inside the view. With `onItemReschedule` the items can be dragged (pointer or keyboard) to another day or time slot; the callback accepts or rejects the move, and a rejection rolls the item back.
 
+## Renderer contract
+
+`renderItem` re-runs only when its identity, the item object or the segment's date, placement or minutes (`startMinutes`, `endMinutes`, `isStart`, `isEnd`) change. A parent re-render with the same props, and a drag that touches another item, do not call it. A renderer that reads other state through a stable identity (a ref, a module variable, a store read without a subscription) goes stale: pass the value through the item, or give `renderItem` a new identity when that state changes.
+
 ## Benchmark
 
 Reproduce from the repo root:
