@@ -23,7 +23,12 @@
     "react-phone-number-input": "3.4.18",
     "zod": "4.4.3",
     "recharts": "3.10.1",
-    "react-is": "19.1.1"
+    "react-is": "19.1.1",
+    "platejs": "53.3.14",
+    "@platejs/basic-nodes": "53.0.0",
+    "@platejs/combobox": "53.0.0",
+    "@platejs/list-classic": "53.0.0",
+    "@platejs/slash-command": "53.0.0"
   },
   "peerDependencies": {
     "react": "19.1.1",

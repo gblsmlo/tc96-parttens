@@ -4,7 +4,7 @@ Guide for AI coding agents working in this repository. For product context read 
 
 ## What this repo is
 
-`@tc96/parttens` is a set of React patterns (collection views, properties, detail sheet, editable, checklist, widgets) that a CLI copies as source into a consumer's workspace. Patterns carry no business rules, no CSS, no tokens and no theme: only layout classes on top of the consumer's COSS components.
+`@tc96/parttens` is a set of React patterns (collection views, properties, detail sheet, editable, checklist, widgets, rich text editor) that a CLI copies as source into a consumer's workspace. Patterns carry no business rules, no CSS, no tokens and no theme: only layout classes on top of the consumer's COSS components.
 
 Stack: Bun workspaces, React 19, TypeScript, Tailwind CSS v4, Base UI, Storybook 10, Biome.
 
@@ -12,9 +12,9 @@ Stack: Bun workspaces, React 19, TypeScript, Tailwind CSS v4, Base UI, Storybook
 
 ```text
 packages/
-  parttens/    pattern source (collection-views, properties, detail-sheet, editable, checklist, widgets)
+  parttens/    pattern source (collection-views, properties, detail-sheet, editable, checklist, widgets, rich-text-editor)
   elements/    components COSS does not have (Text, IconFrame)
-  helpers/     React-free functions (amount formatting, dates)
+  helpers/     React-free functions (amount formatting, dates, rich text)
   ui/          COSS components, unmodified, locked by coss.lock.json
   utils/       shared helpers (cn)
   registry/    registry build and the CLI published as @tc96/parttens
@@ -61,7 +61,8 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 - Use `cn` from `@tc96/utils` for class merging and import COSS components through `@tc96/ui/<component>`.
 - Components are controlled: the consumer passes prepared data and handles events. No fetching, filtering, sorting or persistence inside a pattern.
 - Widgets render through `CardWidgetShell` (`packages/parttens/src/widgets/shared/card-widget-shell.tsx`); keep card radius, border and shadow decisions there.
-- Prefer composition and the existing shared widgets (`IconFrame`, metric, stat list, avatar stack) over new one-off markup.
+- Prefer composition and the existing shared widgets (`IconFrame`, metric, stat list, avatar stack, progress ring, metric pill) over new one-off markup.
+- The rich text editor is Plate (Slate) configured in `packages/parttens/src/rich-text-editor/plugins.tsx`; its vocabulary is `RICH_TEXT_ELEMENTS` and `RICH_TEXT_MARKS`, and the document never carries node ids or the `/` menu input.
 - Docs and architecture decisions are in Portuguese; code, stories, README and this file are in English.
 
 ## Visual work (widgets, stories, theme)

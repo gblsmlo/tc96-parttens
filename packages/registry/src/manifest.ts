@@ -8,6 +8,7 @@ export const patternNames = [
   'editable',
   'checklist',
   'widgets',
+  'rich-text-editor',
 ] as const
 export type PatternName = (typeof patternNames)[number]
 /** The consumer's components.json aliases the patterns import from. */
