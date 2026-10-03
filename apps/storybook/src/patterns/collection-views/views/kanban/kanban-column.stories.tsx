@@ -6,12 +6,12 @@ import {
   KanbanCardTitle,
   type KanbanColumnData,
   KanbanView,
+  MenuCheckboxOption,
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/parttens'
 import {
   Menu,
-  MenuCheckboxItem,
   MenuItem,
   MenuPopup,
   MenuSeparator,
@@ -165,7 +165,7 @@ function ColumnExample({
           >
             <ViewSettingsSection label="Colunas">
               {columns.map((column) => (
-                <MenuCheckboxItem
+                <MenuCheckboxOption
                   checked={!column.hidden}
                   key={column.id}
                   onCheckedChange={(checked) =>
@@ -176,7 +176,7 @@ function ColumnExample({
                   }
                 >
                   {column.title}
-                </MenuCheckboxItem>
+                </MenuCheckboxOption>
               ))}
             </ViewSettingsSection>
           </ViewSettingsMenu>

@@ -6,6 +6,8 @@ import {
   CollectionSearchField,
   CollectionToolbar,
   FilterRadioSubmenu,
+  MenuCheckboxOption,
+  MenuRadioOption,
   SelectedViewCreate,
   SelectedViewItem,
   SelectedViewItems,
@@ -16,12 +18,10 @@ import {
   ViewSettingsSection,
 } from '@tc96/parttens'
 import {
-  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuItem,
   MenuRadioGroup,
-  MenuRadioItem,
   MenuSeparator,
   MenuSub,
   MenuSubPopup,
@@ -320,8 +320,8 @@ function MergedViewSettingsControl() {
               onValueChange={(value) => setDensity(value as typeof density)}
               value={density}
             >
-              <MenuRadioItem value="comfortable">Confortável</MenuRadioItem>
-              <MenuRadioItem value="compact">Compacta</MenuRadioItem>
+              <MenuRadioOption value="comfortable">Confortável</MenuRadioOption>
+              <MenuRadioOption value="compact">Compacta</MenuRadioOption>
             </MenuRadioGroup>
           </MenuSubPopup>
         </MenuSub>
@@ -335,8 +335,8 @@ function MergedViewSettingsControl() {
               onValueChange={(value) => setSort(value as typeof sort)}
               value={sort}
             >
-              <MenuRadioItem value="due">Prazo</MenuRadioItem>
-              <MenuRadioItem value="updated">Atualização</MenuRadioItem>
+              <MenuRadioOption value="due">Prazo</MenuRadioOption>
+              <MenuRadioOption value="updated">Atualização</MenuRadioOption>
             </MenuRadioGroup>
           </MenuSubPopup>
         </MenuSub>
@@ -353,14 +353,14 @@ function MergedViewSettingsControl() {
               <MenuGroup>
                 <MenuGroupLabel>{label}</MenuGroupLabel>
                 {options.map((option) => (
-                  <MenuCheckboxItem
+                  <MenuCheckboxOption
                     checked={filters[id].includes(option)}
                     closeOnClick={false}
                     key={option}
                     onCheckedChange={() => toggleFilter(id, option)}
                   >
                     {option}
-                  </MenuCheckboxItem>
+                  </MenuCheckboxOption>
                 ))}
               </MenuGroup>
             </MenuSubPopup>

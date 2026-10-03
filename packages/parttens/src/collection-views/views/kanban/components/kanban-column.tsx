@@ -144,7 +144,6 @@ interface KanbanColumnCardsProps<TCard> {
   loading: boolean
   loadingCardCount: number
   loadingCardLabel?: string
-  showEmptyState: boolean
   renderCard: (card: TCard) => ReactNode
   sortableCards: boolean
 }
@@ -158,7 +157,6 @@ function KanbanColumnCards<TCard>({
   loading,
   loadingCardCount,
   loadingCardLabel,
-  showEmptyState,
   renderCard,
   sortableCards,
 }: KanbanColumnCardsProps<TCard>) {
@@ -179,7 +177,6 @@ function KanbanColumnCards<TCard>({
   }
 
   if (!column.cards.length) {
-    if (!showEmptyState) return null
     return (
       <KanbanEmptyState className="bg-card/60 py-10">
         {emptyLabel}
@@ -312,18 +309,6 @@ export function KanbanColumn<TCard>({
             ref={ref}
             className="grid h-full min-h-full min-w-0 max-w-full content-start gap-2 px-2 pb-2"
           >
-            {!loading && actions?.onAddCard ? (
-              <Button
-                aria-label={`Adicionar card em ${column.title}`}
-                className="w-full"
-                onClick={() => actions.onAddCard?.(column.id)}
-                size="sm"
-                variant="outline"
-              >
-                <PlusIcon aria-hidden="true" />
-                {actions.addLabel ?? 'Adicionar card'}
-              </Button>
-            ) : null}
             <KanbanColumnCards
               column={column}
               emptyLabel={emptyLabel}
@@ -331,7 +316,6 @@ export function KanbanColumn<TCard>({
               getKey={getKey}
               loading={loading}
               loadingCardCount={loadingCardCount}
-              showEmptyState={!actions?.onAddCard}
               renderCard={renderCard}
               sortableCards={sortableCards}
               {...(getCardDragId ? { getCardDragId } : {})}

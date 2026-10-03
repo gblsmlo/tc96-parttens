@@ -117,7 +117,7 @@ describe('KanbanView', () => {
     expect(screen.queryByRole('heading', { name: 'Done' })).toBeNull()
   })
 
-  test('supports header action slots and add card triggers in header and body', () => {
+  test('supports header action slots and the add card trigger in the header only', () => {
     const added: string[] = []
     render(
       <KanbanView
@@ -135,9 +135,9 @@ describe('KanbanView', () => {
     fireEvent.click(
       screen.getAllByRole('button', { name: 'Adicionar item à seção Todo' })[0],
     )
-    fireEvent.click(
-      screen.getAllByRole('button', { name: 'Adicionar card em Todo' })[0],
-    )
-    expect(added).toEqual(['todo', 'todo'])
+    expect(
+      screen.queryByRole('button', { name: 'Adicionar card em Todo' }),
+    ).toBeNull()
+    expect(added).toEqual(['todo'])
   })
 })
