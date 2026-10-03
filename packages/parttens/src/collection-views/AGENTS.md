@@ -114,6 +114,8 @@ Top level:
 | `views/data-table/index.ts` | re-exports the two files below | through the barrel |
 | `views/data-table/README.md` | what `DataTable` is and its `## Benchmark` section: scenarios, how to run and compare, the baseline numbers | — |
 | `views/data-table/data-table.tsx` | `DataTable`, `DataTableProps` | yes |
+| `views/data-table/data-table-row.tsx` | `DataTableRow`: the memoized row below the component that calls `useTable`; invalidates on `row`, `selected`, `canSelect`, the visible columns and `meta` | no |
+| `views/data-table/data-table-row.test.tsx` | JSDOM tests for each prop that re-renders a row and for the render counts of select, sort and parent re-render | — |
 | `views/data-table/use-data-table.ts` | `useDataTable`, `dataTableFeatures`, `DataTableFeatures`, `DataTableTable`, `DataTableColumnDef`, `UseDataTableOptions`, `UseDataTableReturn` | yes |
 | `views/data-table/data-table.test.tsx` | JSDOM tests for semantics, `bordered`, selection, footer, empty, loading and pagination | — |
 
@@ -125,7 +127,7 @@ Top level:
 | `views/kanban/README.md` | what `KanbanView` is and its `## Benchmark` section: scenarios, how to run and compare, the baseline numbers | — |
 | `views/kanban/types.ts` | `KanbanColumnData`, `KanbanColumnActions`, `KanbanCardMove`, `KanbanColumnOption` | yes |
 | `views/kanban/components/kanban-view.tsx` | `KanbanView`, `KanbanViewProps`: column selector, board scroll area, drag provider and overlay | yes |
-| `views/kanban/components/kanban-view.test.tsx` | JSDOM tests for loading, column metadata, color overlay, collapsed and hidden columns, header actions | — |
+| `views/kanban/components/kanban-view.test.tsx` | JSDOM tests for loading, column metadata, color overlay, collapsed and hidden columns, header actions, no drag handles in the mobile panel, and both layouts in a server render | — |
 | `views/kanban/components/kanban-column.tsx` | `KanbanColumn`, `KanbanColumnProps` and the internal header, cards list, memoized card wrapper and empty state | yes |
 | `views/kanban/components/kanban-card.tsx` | `KanbanCard` (`article`), `KanbanCardHeader`, `KanbanCardTitle`, `KanbanCardDescription`, `KanbanCardAction`, `KanbanCardActionButton`, `KanbanCardOpenTrigger`, `KanbanCardContent`, `KanbanCardBody`, `KanbanCardBodyRow`, `KanbanCardFooter`, `kanbanCardVariants`, `KanbanCardDisplay` and the props types | yes |
 | `views/kanban/components/kanban-card.test.tsx` | JSDOM tests for the variants, the card anatomy, `render` and the open-trigger/action contract | — |
@@ -146,6 +148,8 @@ Top level:
 | `views/list/README.md` | what `ListView` is and its `## Benchmark` section: scenarios, how to run and compare, the baseline numbers | — |
 | `views/list/components/list-view.tsx` | `ListView`, `ListViewProps` | yes |
 | `views/list/components/list-view.test.tsx` | JSDOM tests for loading, group metadata, flat mode and `collapseEmptyGroups` | — |
+| `views/list/components/list-view-item.tsx` | `ListViewItem`: the memoized leaf that calls `renderItem(item)` in the flat list and in each group | no |
+| `views/list/components/list-view-renders.test.tsx` | JSDOM tests for each path that re-runs `renderItem` (identity, replaced item, uncontrolled and controlled collapse) in the flat and grouped paths | — |
 | `views/list/components/list-group.tsx` | `ListGroup`, `ListGroupProps`, `ListGroupActions`: a `Collapsible` section with header, count and add button | yes |
 | `views/list/components/list-item.tsx` | `ListItem` (`article`) and its slots `ListItemHeader`, `ListItemLeading`, `ListItemBody`, `ListItemTitle`, `ListItemTitleTrigger`, `ListItemDescription`, `ListItemContent`, `ListItemFooter`, `ListItemTrailing`, `ListItemField`, `ListItemAction`, `ListItemDensity`, the props types, and `ListItemHeadingLevelContext` | yes, except `ListItemHeadingLevelContext`, which the barrel does not export |
 | `views/list/components/list-item.test.tsx` | JSDOM tests for the anatomy, densities, `always` and the title trigger | — |

@@ -2,6 +2,14 @@
 
 A controlled board for one collection: the consumer passes `columns` (`id`, `title`, `count`, `cards`, optional `color`, `collapsed`, `hidden`), a `renderCard` function and a `getKey`, and `KanbanView` lays them out as columns with a mobile column switcher. Passing `onMoveCard` turns on card drag with dnd-kit (pointer, touch and keyboard); the consumer accepts the move by returning `true` (or a promise) and rejects it with `false`, which rolls the board back. The view fetches, filters, sorts and persists nothing.
 
+## Layouts
+
+`KanbanView` always renders both layouts: the mobile panel (the column selector and the active column, shown below `md`) and the desktop board (every visible column, shown from `md`). CSS shows one of them; nothing is chosen in JavaScript, so a server render contains both. Mount therefore costs every card plus the active column's cards a second time. Switching the mobile column swaps that column's cards in the panel and keeps its scroll position.
+
+The mobile panel never enables card drag: it holds no `[data-kanban-card-drag-handle]`, and drag exists only on the desktop board.
+
+Because the active column's cards render twice, `renderCard` must be pure and must not emit DOM ids (`id`, `htmlFor` targets, `aria-labelledby` references), or the page ends up with duplicates.
+
 ## Benchmark
 
 Reproduce from the repo root:
