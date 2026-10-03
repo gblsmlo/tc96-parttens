@@ -55,7 +55,6 @@ import {
 } from './fixtures/task-fields'
 import {
   createTaskCalendarProps,
-  moveTaskCard,
   renderTaskKanbanCard,
   renderTaskListRow,
 } from './fixtures/task-renderers'
@@ -196,7 +195,12 @@ function TasksShowcase({
     )
   }
 
-  const moveCard = moveTaskCard(preferences.groupBy, updateTask)
+  const replaceTask = (next: Task) => {
+    onTasksChange((current) =>
+      current.map((task) => (task.id === next.id ? next : task)),
+    )
+    return true
+  }
 
   const activeFilterCount =
     assigneeFilter.length + priorityFilter.length + (search ? 1 : 0)
@@ -475,6 +479,7 @@ function TasksShowcase({
           className="flex min-h-0 flex-1 flex-col gap-2"
         >
           <CollectionViewOutlet
+            onItemChange={({ item }) => replaceTask(item)}
             calendar={{
               ...createTaskCalendarProps(updateTask),
               mode: calendarMode,
@@ -513,7 +518,6 @@ function TasksShowcase({
                 addLabel: `Nova tarefa em ${column.title}`,
                 onAddCard: () => undefined,
               }),
-              onMoveCard: moveCard,
             }}
             list={{
               collapseEmptyGroups: true,
@@ -701,5 +705,45 @@ export const SpreadsheetProperties: Story = {
     )
     if (!row) throw new Error('linha não montou')
     await expect(within(row).getByText('Carla Mendes')).toBeTruthy()
+  },
+}
+
+export const KanbanMoveWritesGroup: Story = {
+  args: { defaultView: 'kanban' },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Each grouping declares `setGroupId`, the write pair of `getGroupId`. A drop into another column makes the outlet build the updated item and hand it to `onItemChange`; the consumer only stores it. The card stays in the new column and the Table shows the new status.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const body = within(canvasElement.ownerDocument.body)
+    const overlay = () =>
+      canvasElement.ownerDocument.querySelector('[data-dnd-overlay]')
+
+    canvas.getByRole('button', { name: 'Mover card Notificações push' }).focus()
+    await userEvent.keyboard('[Space]')
+    await waitFor(() => expect(overlay()).not.toBeEmptyDOMElement())
+    await userEvent.keyboard('[ArrowRight]')
+    await userEvent.keyboard('[Space]')
+    await waitFor(() => expect(overlay()).toBeEmptyDOMElement())
+
+    const todo = canvas.getByRole('region', { name: /A fazer/ })
+    await waitFor(() =>
+      expect(within(todo).getByText('Notificações push')).toBeTruthy(),
+    )
+
+    await userEvent.click(canvas.getByRole('button', { name: /Exibição/ }))
+    await userEvent.click(
+      await body.findByRole('menuitemradio', { name: 'Tabela' }),
+    )
+    const row = (await canvas.findByText('Notificações push')).closest('tr')
+    if (!row) throw new Error('row did not mount')
+    await expect(
+      within(row).getByRole('combobox', { name: 'Status: A fazer' }),
+    ).toBeTruthy()
   },
 }

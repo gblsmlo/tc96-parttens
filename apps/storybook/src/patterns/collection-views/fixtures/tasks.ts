@@ -264,12 +264,18 @@ export const groupings: CollectionDefinition<Task>['groupings'] = [
       id: option.value,
       label: option.label,
     })),
+    setGroupId: (task, groupId) =>
+      groupId && isStatus(groupId) ? { ...task, status: groupId } : task,
   },
   {
     getGroupId: (task) => task.assigneeId,
     id: 'assignee',
     label: 'Responsável',
     options: people.map((person) => ({ id: person.id, label: person.name })),
+    setGroupId: (task, groupId) =>
+      groupId && peopleById.has(groupId)
+        ? { ...task, assigneeId: groupId }
+        : task,
   },
   {
     getGroupId: (task) => task.priority,
@@ -279,6 +285,8 @@ export const groupings: CollectionDefinition<Task>['groupings'] = [
       id: option.value,
       label: option.label,
     })),
+    setGroupId: (task, groupId) =>
+      groupId && isPriority(groupId) ? { ...task, priority: groupId } : task,
   },
 ]
 

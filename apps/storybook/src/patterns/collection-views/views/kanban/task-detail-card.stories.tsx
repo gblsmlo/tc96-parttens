@@ -27,7 +27,7 @@ import {
   PriorityField,
   type UpdateTask,
 } from '../../fixtures/task-fields'
-import { moveTaskCard, useTasks } from '../../fixtures/task-renderers'
+import { moveTaskStatus, useTasks } from '../../fixtures/task-renderers'
 import { initialTasks, peopleById, type Task } from '../../fixtures/tasks'
 import { projectTaskColumns } from './kanban-tasks'
 
@@ -166,7 +166,7 @@ function TaskDetailCard({
 }
 
 function TaskDetailBoard() {
-  const { tasks, updateTask } = useTasks()
+  const { replaceTask, tasks, updateTask } = useTasks()
   const columns = useMemo(() => projectTaskColumns(tasks), [tasks])
 
   return (
@@ -176,7 +176,7 @@ function TaskDetailBoard() {
         emptyColumnLabel="Nenhuma tarefa nesta coluna."
         getCardLabel={(task) => task.title}
         getKey={(task) => task.id}
-        onMoveCard={moveTaskCard('status', updateTask)}
+        onMoveCard={moveTaskStatus(replaceTask)}
         renderCard={(task) => (
           <TaskDetailCard onChange={updateTask} task={task} />
         )}
