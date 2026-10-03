@@ -127,7 +127,7 @@ Top level:
 | `views/kanban/README.md` | what `KanbanView` is and its `## Benchmark` section: scenarios, how to run and compare, the baseline numbers | — |
 | `views/kanban/types.ts` | `KanbanColumnData`, `KanbanColumnActions`, `KanbanCardMove`, `KanbanColumnOption` | yes |
 | `views/kanban/components/kanban-view.tsx` | `KanbanView`, `KanbanViewProps`: column selector, board scroll area, drag provider and overlay | yes |
-| `views/kanban/components/kanban-view.test.tsx` | JSDOM tests for loading, column metadata, color overlay, collapsed and hidden columns, header actions | — |
+| `views/kanban/components/kanban-view.test.tsx` | JSDOM tests for loading, column metadata, color overlay, collapsed and hidden columns, header actions, no drag handles in the mobile panel, and both layouts in a server render | — |
 | `views/kanban/components/kanban-column.tsx` | `KanbanColumn`, `KanbanColumnProps` and the internal header, cards list, memoized card wrapper and empty state | yes |
 | `views/kanban/components/kanban-card.tsx` | `KanbanCard` (`article`), `KanbanCardHeader`, `KanbanCardTitle`, `KanbanCardDescription`, `KanbanCardAction`, `KanbanCardActionButton`, `KanbanCardOpenTrigger`, `KanbanCardContent`, `KanbanCardBody`, `KanbanCardBodyRow`, `KanbanCardFooter`, `kanbanCardVariants`, `KanbanCardDisplay` and the props types | yes |
 | `views/kanban/components/kanban-card.test.tsx` | JSDOM tests for the variants, the card anatomy, `render` and the open-trigger/action contract | — |

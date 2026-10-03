@@ -14,7 +14,10 @@ import { CheckIcon, MinusIcon } from 'lucide-react'
 import { CELL_ALIGN } from '../lib/constants'
 import type { DataGridFeatures } from '../lib/data-grid-features'
 import { formatDate, toStringValue } from '../lib/format-value'
-import type { DataGridColumnMeta } from '../types'
+import type { DataGridColumnMeta, DataGridSelectOption } from '../types'
+
+const optionToLabel = (option: DataGridSelectOption) => option.label
+const optionToValue = (option: DataGridSelectOption) => option.value
 
 export function DataGridCell<TData extends RowData>({
   context,
@@ -54,8 +57,8 @@ export function DataGridCell<TData extends RowData>({
           selectedOption?.label ?? meta.placeholder ?? 'Sem valor'
         return (
           <Select
-            itemToStringLabel={(option) => option.label}
-            itemToStringValue={(option) => option.value}
+            itemToStringLabel={optionToLabel}
+            itemToStringValue={optionToValue}
             items={options}
             onValueChange={(option) => {
               if (!option) return
