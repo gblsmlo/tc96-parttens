@@ -12,7 +12,7 @@ export function WidgetHeader({
 }>): ReactElement {
   return (
     <CardHeader className="grid-rows-1 items-center p-5">
-      <CardTitle className="font-medium text-base" id={titleId}>
+      <CardTitle className="font-semibold text-base" id={titleId}>
         {title}
       </CardTitle>
       {action ? (
