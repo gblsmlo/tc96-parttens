@@ -86,3 +86,7 @@ export async function pressFloatingButton(name: string) {
   await userEvent.click(button)
   return button
 }
+
+export function moveCaretToLineEnd(editor: HTMLElement) {
+  editor.ownerDocument.getSelection()?.modify('move', 'forward', 'lineboundary')
+}

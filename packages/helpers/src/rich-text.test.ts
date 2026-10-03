@@ -5,6 +5,7 @@ import {
   richTextElementTypes,
   richTextHasNodeId,
   richTextToPlainText,
+  stripRichTextNodeIds,
 } from './rich-text'
 
 describe('flattenTitle', () => {
@@ -98,5 +99,30 @@ describe('richTextHasNodeId', () => {
         },
       ]),
     ).toBe(true)
+  })
+})
+
+describe('stripRichTextNodeIds', () => {
+  test('removes ids at every depth and keeps everything else', () => {
+    const tagged = [
+      {
+        children: [
+          { children: [{ bold: true, text: 'a' }], id: 'b', type: 'p' },
+        ],
+        id: 'a',
+        type: 'blockquote',
+        url: 'x',
+      },
+    ]
+    const stripped = stripRichTextNodeIds(tagged)
+    expect(richTextHasNodeId(stripped)).toBe(false)
+    expect(stripped).toEqual([
+      {
+        children: [{ children: [{ bold: true, text: 'a' }], type: 'p' }],
+        type: 'blockquote',
+        url: 'x',
+      },
+    ])
+    expect(richTextHasNodeId(tagged)).toBe(true)
   })
 })

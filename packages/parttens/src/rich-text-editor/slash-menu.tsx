@@ -3,8 +3,19 @@
 import { filterWords } from '@platejs/combobox'
 import { Popover, PopoverPopup } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
-import { type LucideIcon, TextIcon } from 'lucide-react'
 import {
+  CalendarIcon,
+  ImageIcon,
+  ListTodoIcon,
+  type LucideIcon,
+  MessageSquareWarningIcon,
+  MinusIcon,
+  SquareCodeIcon,
+  TableIcon,
+  TextIcon,
+} from 'lucide-react'
+import {
+  ElementApi,
   NodeApi,
   type Path,
   PathApi,
@@ -14,24 +25,38 @@ import {
 import { useEditorRef, useEditorSelector } from 'platejs/react'
 import type { FocusEvent, KeyboardEvent, ReactElement } from 'react'
 import { useMemo, useState } from 'react'
+import {
+  applyExtraBlock,
+  RICH_TEXT_EXTRA_BLOCKS,
+  type RichTextExtraBlock,
+} from './extra-blocks'
 import { blockIcon } from './floating-toolbar'
 import {
   applyBlock,
+  MENTION_INPUT_TYPE,
   RICH_TEXT_BLOCKS,
   type RichTextBlock,
   SLASH_INPUT_TYPE,
 } from './plugins'
 
-export type SlashMenuBlock = RichTextBlock | 'p'
+export type SlashMenuBlock = RichTextBlock | RichTextExtraBlock | 'p'
 
 export interface SlashMenuOption {
-  block: SlashMenuBlock
+  block: SlashMenuBlock | (string & {})
+  icon?: LucideIcon
   keywords: readonly string[]
   label: string
 }
 
 const keywords = {
   blockquote: ['citacao', 'quote'],
+  callout: ['destaque', 'aviso', 'nota', 'callout'],
+  code: ['codigo', 'code', 'bloco'],
+  date: ['data', 'hoje', 'date'],
+  hr: ['divisor', 'linha', 'separador', 'divider'],
+  image: ['imagem', 'foto', 'figura', 'image'],
+  table: ['tabela', 'grade', 'table'],
+  todo: ['tarefa', 'checklist', 'todo', 'checkbox'],
   h2: ['titulo', 'secao', 'heading'],
   h3: ['subtitulo', 'heading'],
   ol: ['lista', 'numerada', 'ordenada', 'numeros'],
@@ -39,19 +64,28 @@ const keywords = {
   ul: ['lista', 'marcadores', 'topicos', 'bullet'],
 } as const satisfies Record<SlashMenuBlock, readonly string[]>
 
-const optionIcon = { ...blockIcon, p: TextIcon } as const satisfies Record<
-  SlashMenuBlock,
-  LucideIcon
->
+const optionIcon = {
+  ...blockIcon,
+  callout: MessageSquareWarningIcon,
+  code: SquareCodeIcon,
+  date: CalendarIcon,
+  hr: MinusIcon,
+  image: ImageIcon,
+  table: TableIcon,
+  p: TextIcon,
+  todo: ListTodoIcon,
+} as const satisfies Record<SlashMenuBlock, LucideIcon>
 
 export function slashMenuOptions(
   labels: Readonly<Record<SlashMenuBlock, string>>,
 ): SlashMenuOption[] {
-  return (['p', ...RICH_TEXT_BLOCKS] as const).map((block) => ({
-    block,
-    keywords: keywords[block],
-    label: labels[block],
-  }))
+  return (['p', ...RICH_TEXT_BLOCKS, ...RICH_TEXT_EXTRA_BLOCKS] as const).map(
+    (block) => ({
+      block,
+      keywords: keywords[block],
+      label: labels[block],
+    }),
+  )
 }
 
 export function filterSlashMenuOptions(
@@ -70,12 +104,15 @@ export interface SlashInput {
   query: string
 }
 
-export function currentSlashInput(editor: SlateEditor): SlashInput | null {
+export function currentSlashInput(
+  editor: SlateEditor,
+  inputType: string = SLASH_INPUT_TYPE,
+): SlashInput | null {
   const { selection } = editor
   if (!selection || RangeApi.isExpanded(selection)) return null
   const entry = editor.api.above({
     at: selection,
-    match: { type: SLASH_INPUT_TYPE },
+    match: { type: inputType },
   })
   if (!entry) return null
   const [node, path] = entry
@@ -88,7 +125,9 @@ export function applySlashMenuOption(
   block: SlashMenuBlock,
 ): void {
   editor.tf.removeNodes({ at: input.path })
-  applyBlock(editor, block)
+  if ((RICH_TEXT_EXTRA_BLOCKS as readonly string[]).includes(block))
+    applyExtraBlock(editor, block as RichTextExtraBlock)
+  else applyBlock(editor, block as RichTextBlock | 'p')
 }
 
 export function dismissSlashInput(
@@ -100,7 +139,12 @@ export function dismissSlashInput(
 
 function unwrapSlashInputs(editor: SlateEditor): void {
   const leftovers = [
-    ...editor.api.nodes({ at: [], match: { type: SLASH_INPUT_TYPE } }),
+    ...editor.api.nodes({
+      at: [],
+      match: (node) =>
+        ElementApi.isElement(node) &&
+        (node.type === SLASH_INPUT_TYPE || node.type === MENTION_INPUT_TYPE),
+    }),
   ]
   for (const [, path] of leftovers.reverse())
     editor.tf.unwrapNodes({ at: path })
@@ -132,15 +176,30 @@ export interface SlashMenuState {
 
 export function useSlashMenu({
   id,
+  inputType = SLASH_INPUT_TYPE,
+  onSelect,
   options,
 }: Readonly<{
   id: string
+  inputType?: string
+  onSelect?: (
+    editor: SlateEditor,
+    input: SlashInput,
+    option: SlashMenuOption,
+  ) => void
   options: readonly SlashMenuOption[]
 }>): SlashMenuState {
   const editor = useEditorRef()
-  const input = useEditorSelector((current) => currentSlashInput(current), [], {
-    equalityFn: sameInput,
-  })
+  const input = useEditorSelector(
+    (current) => currentSlashInput(current, inputType),
+    [inputType],
+    { equalityFn: sameInput },
+  )
+  const select = (option: SlashMenuOption) => {
+    if (!input) return
+    if (onSelect) onSelect(editor, input, option)
+    else applySlashMenuOption(editor, input, option.block as SlashMenuBlock)
+  }
   const [active, setActive] = useState<{
     index: number
     query: string
@@ -175,7 +234,7 @@ export function useSlashMenu({
   const optionId = (option: SlashMenuOption) => `${id}-${option.block}`
 
   const apply = (option: SlashMenuOption) => {
-    if (input) applySlashMenuOption(editor, input, option.block)
+    select(option)
   }
 
   const onKeyDown = (event: KeyboardEvent): boolean => {
@@ -198,7 +257,7 @@ export function useSlashMenu({
           return false
         }
         event.preventDefault()
-        applySlashMenuOption(editor, input, activeOption.block)
+        select(activeOption)
         return true
       }
       case 'Escape': {
@@ -270,7 +329,10 @@ export function SlashMenu({
           role="listbox"
         >
           {menu.matches.map((option, index) => {
-            const Icon = optionIcon[option.block]
+            const Icon =
+              option.icon ??
+              optionIcon[option.block as SlashMenuBlock] ??
+              TextIcon
             const active = index === menu.activeIndex
             return (
               <button

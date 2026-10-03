@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 import {
   richTextElementTypes,
   richTextHasNodeId,
+  stripRichTextNodeIds,
 } from '@tc96/helpers/rich-text'
 import type { Descendant, Path, TElement, Value } from 'platejs'
 import { createPlateEditor } from 'platejs/react'
@@ -37,6 +38,7 @@ const listOf = (type: 'ol' | 'ul', ...texts: string[]): TElement => ({
 function editorAt(value: Value, at: Path = [0]) {
   const editor = createPlateEditor({
     ...richTextEditorOptions(MAX_DEPTH),
+    nodeId: false,
     value,
   })
   const end = editor.api.end(at)
@@ -104,18 +106,18 @@ describe('richTextEditorOptions', () => {
       return editor.children
     }
 
-    test('the Plate default writes an id on inserted blocks', () => {
+    test('the editor tags inserted blocks with an id internally', () => {
       expect(
-        richTextHasNodeId(
-          editWith({ plugins: richTextEditorOptions(MAX_DEPTH).plugins }),
-        ),
+        richTextHasNodeId(editWith(richTextEditorOptions(MAX_DEPTH))),
       ).toBe(true)
     })
 
-    test('the editor options write no node id', () => {
-      expect(
-        richTextHasNodeId(editWith(richTextEditorOptions(MAX_DEPTH))),
-      ).toBe(false)
+    test('stripping the tagged tree leaves no node id', () => {
+      const stripped = stripRichTextNodeIds(
+        editWith(richTextEditorOptions(MAX_DEPTH)),
+      )
+      expect(richTextHasNodeId(stripped)).toBe(false)
+      expect(stripped).toHaveLength(2)
     })
   })
 
@@ -123,6 +125,7 @@ describe('richTextEditorOptions', () => {
     function normalized(value: Value) {
       const editor = createPlateEditor({
         ...richTextEditorOptions(MAX_DEPTH),
+        nodeId: false,
         value,
       })
       editor.tf.normalize({ force: true })
@@ -156,6 +159,7 @@ describe('richTextEditorOptions', () => {
     test('blocks pasted inside a quote are flattened with a line break between them', () => {
       const editor = createPlateEditor({
         ...richTextEditorOptions(MAX_DEPTH),
+        nodeId: false,
         value: [
           {
             children: [
@@ -337,7 +341,7 @@ describe('richTextEditorOptions', () => {
   })
 
   describe('pasted HTML', () => {
-    test('headings outside the vocabulary map by level; table and image keep only their text', () => {
+    test('headings outside the vocabulary map by level; tables stay tables and images keep only their text', () => {
       const editor = editorAt([paragraph()])
       const body = document.createElement('body')
       body.innerHTML =
@@ -355,7 +359,7 @@ describe('richTextEditorOptions', () => {
         ['h2', 'One'],
         ['h3', 'Four'],
         ['h3', 'Six'],
-        ['p', 'ab'],
+        ['table', 'ab'],
         ['p', 'end'],
       ])
       expectVocabulary(editor.children)

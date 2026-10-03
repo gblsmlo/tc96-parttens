@@ -1,6 +1,14 @@
 'use client'
 
+import { unwrapList } from '@platejs/list-classic'
 import { Popover, PopoverPopup } from '@tc96/ui/popover'
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@tc96/ui/select'
 import { Toggle } from '@tc96/ui/toggle'
 import {
   ToolbarButton,
@@ -13,6 +21,7 @@ import {
   CodeIcon,
   Heading2Icon,
   Heading3Icon,
+  HighlighterIcon,
   ItalicIcon,
   ListIcon,
   ListOrderedIcon,
@@ -30,6 +39,7 @@ import {
 } from 'platejs/react'
 import type { ReactElement, RefObject } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { LinkButton, type LinkButtonLabels } from './link-button'
 import {
   applyBlock,
   RICH_TEXT_BLOCKS,
@@ -41,6 +51,7 @@ import {
 const markIcon = {
   bold: BoldIcon,
   code: CodeIcon,
+  highlight: HighlighterIcon,
   italic: ItalicIcon,
   strikethrough: StrikethroughIcon,
   underline: UnderlineIcon,
@@ -123,6 +134,60 @@ function BlockButton({
   )
 }
 
+type BlockType = RichTextBlock | 'p'
+
+const blockTypes: readonly BlockType[] = ['p', ...RICH_TEXT_BLOCKS]
+
+function BlockTypeSelect({
+  blockLabels,
+  label,
+  paragraphLabel,
+}: Readonly<{
+  blockLabels: Readonly<Record<RichTextBlock, string>>
+  label: string
+  paragraphLabel: string
+}>): ReactElement {
+  const editor = useEditorRef()
+  const current = useEditorSelector(
+    (state) =>
+      RICH_TEXT_BLOCKS.find((block) =>
+        state.api.some({ match: { type: block } }),
+      ) ?? 'p',
+    [],
+  )
+  const labels = { ...blockLabels, p: paragraphLabel }
+
+  return (
+    <Select<BlockType>
+      items={blockTypes.map((value) => ({ label: labels[value], value }))}
+      onValueChange={(next) => {
+        if (next === null || next === current) return
+        if (next === 'p') {
+          if (current === 'ul' || current === 'ol') unwrapList(editor)
+          else editor.tf.toggleBlock(current)
+        } else applyBlock(editor, next)
+        editor.tf.focus()
+      }}
+      value={current}
+    >
+      <ToolbarButton
+        aria-label={label}
+        onMouseDown={(event) => event.preventDefault()}
+        render={<SelectTrigger className="min-w-32" size="sm" />}
+      >
+        <SelectValue />
+      </ToolbarButton>
+      <SelectPopup alignItemWithTrigger={false} sideOffset={8}>
+        {blockTypes.map((value) => (
+          <SelectItem key={value} value={value}>
+            {labels[value]}
+          </SelectItem>
+        ))}
+      </SelectPopup>
+    </Select>
+  )
+}
+
 const sameRange = (a: TRange | null, b: TRange | null) =>
   a === b || (a !== null && b !== null && RangeApi.equals(a, b))
 
@@ -137,15 +202,21 @@ function selectionAnchor(editor: SlateEditor, selection: TRange) {
 
 export interface FloatingToolbarProps {
   blockLabels: Readonly<Record<RichTextBlock, string>>
+  blockTypeLabel: string
   label: string
+  linkLabels: LinkButtonLabels
   markLabels: Readonly<Record<RichTextMark, string>>
+  paragraphLabel: string
   toolbarRef: RefObject<HTMLDivElement | null>
 }
 
 export function FloatingToolbar({
   blockLabels,
+  blockTypeLabel,
   label,
+  linkLabels,
   markLabels,
+  paragraphLabel,
   toolbarRef,
 }: Readonly<FloatingToolbarProps>): ReactElement {
   const editor = useEditorRef()
@@ -163,7 +234,10 @@ export function FloatingToolbar({
     const inside = (node: EventTarget | null) =>
       node instanceof Node &&
       ((editable?.contains(node) ?? false) ||
-        (toolbarRef.current?.contains(node) ?? false))
+        (toolbarRef.current?.contains(node) ?? false) ||
+        (node instanceof Element &&
+          node.closest('[data-slot=select-popup],[data-slot=popover-popup]') !==
+            null))
     const down = (event: PointerEvent) => {
       if (editable?.contains(event.target as Node)) setPointerDown(true)
     }
@@ -234,10 +308,19 @@ export function FloatingToolbar({
           }}
           ref={toolbarRef}
         >
+          <BlockTypeSelect
+            blockLabels={blockLabels}
+            label={blockTypeLabel}
+            paragraphLabel={paragraphLabel}
+          />
+          <ToolbarSeparator orientation="vertical" />
           <ToolbarGroup className="gap-0.5">
             {RICH_TEXT_MARKS.map((mark) => (
               <MarkButton key={mark} label={markLabels[mark]} mark={mark} />
             ))}
+          </ToolbarGroup>
+          <ToolbarGroup className="gap-0.5">
+            <LinkButton labels={linkLabels} />
           </ToolbarGroup>
           <ToolbarSeparator orientation="vertical" />
           <ToolbarGroup className="gap-0.5">

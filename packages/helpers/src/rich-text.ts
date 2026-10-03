@@ -79,3 +79,20 @@ export function richTextHasNodeId(value: readonly RichTextNode[]): boolean {
       'id' in node || (!isLeaf(node) && richTextHasNodeId(node.children)),
   )
 }
+
+/**
+ * Copy of the tree with every element `id` removed, so a document that an
+ * editor tagged internally can leave it without carrying node ids.
+ *
+ * @param value - the Slate-like node tree, possibly carrying `id` on elements
+ * @returns a new tree of the same shape, with no `id` on any element
+ */
+export function stripRichTextNodeIds(
+  value: readonly RichTextNode[],
+): RichTextNode[] {
+  return value.map((node) => {
+    if (isLeaf(node)) return node
+    const { id: _id, ...rest } = node as RichTextElement & { id?: unknown }
+    return { ...rest, children: stripRichTextNodeIds(node.children) }
+  })
+}

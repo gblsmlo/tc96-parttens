@@ -2,6 +2,7 @@ import { afterEach, describe, expect, mock, test } from 'bun:test'
 import { richTextElementTypes } from '@tc96/helpers/rich-text'
 import type { TElement, Value } from 'platejs'
 import { createPlateEditor } from 'platejs/react'
+import { RICH_TEXT_EXTRA_BLOCKS } from './extra-blocks'
 import {
   hasSlashInput,
   RICH_TEXT_BLOCKS,
@@ -30,10 +31,17 @@ const MAX_DEPTH = 4
 
 const labels = {
   blockquote: 'Citação',
+  callout: 'Destaque',
+  code: 'Bloco de código',
+  date: 'Data de hoje',
   h2: 'Título de seção',
   h3: 'Subtítulo',
+  hr: 'Divisor',
+  image: 'Imagem',
   ol: 'Lista numerada',
   p: 'Texto',
+  table: 'Tabela',
+  todo: 'Lista de tarefas',
   ul: 'Lista com marcadores',
 } as const satisfies Record<SlashMenuBlock, string>
 
@@ -44,6 +52,7 @@ const paragraph = (text = ''): TElement => ({ children: [{ text }], type: 'p' })
 function editorAtEnd(value: Value) {
   const editor = createPlateEditor({
     ...richTextEditorOptions(MAX_DEPTH),
+    nodeId: false,
     value,
   })
   const end = editor.api.end([0])
@@ -57,10 +66,11 @@ function typeText(editor: ReturnType<typeof editorAtEnd>, text: string) {
 }
 
 describe('slash menu options', () => {
-  test('are the paragraph and every block of RICH_TEXT_BLOCKS, in that order', () => {
+  test('are the paragraph, every block of RICH_TEXT_BLOCKS and the extras, in that order', () => {
     expect(options.map((option) => option.block)).toEqual([
       'p',
       ...RICH_TEXT_BLOCKS,
+      ...RICH_TEXT_EXTRA_BLOCKS,
     ])
     expect(options.map((option) => option.label)).toEqual([
       'Texto',
@@ -69,19 +79,46 @@ describe('slash menu options', () => {
       'Citação',
       'Lista com marcadores',
       'Lista numerada',
+      'Lista de tarefas',
+      'Destaque',
+      'Bloco de código',
+      'Divisor',
+      'Data de hoje',
+      'Tabela',
+      'Imagem',
     ])
-    for (const option of options) {
+    for (const option of options.filter(
+      (item) =>
+        !(RICH_TEXT_EXTRA_BLOCKS as readonly string[]).includes(item.block),
+    )) {
       expect(RICH_TEXT_ELEMENTS as readonly string[]).toContain(option.block)
     }
   })
 
   test.each([
-    ['', ['p', 'h2', 'h3', 'blockquote', 'ul', 'ol']],
+    [
+      '',
+      [
+        'p',
+        'h2',
+        'h3',
+        'blockquote',
+        'ul',
+        'ol',
+        'todo',
+        'callout',
+        'code',
+        'hr',
+        'date',
+        'table',
+        'image',
+      ],
+    ],
     ['titulo', ['h2']],
     ['tit', ['h2']],
     ['TÍTULO', ['h2']],
     ['subtitulo', ['h3']],
-    ['lista', ['ul', 'ol']],
+    ['lista', ['ul', 'ol', 'todo']],
     ['lista n', ['ol']],
     ['marcadores', ['ul']],
     ['cita', ['blockquote']],

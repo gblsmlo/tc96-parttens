@@ -99,6 +99,7 @@ const maxListNesting = (nodes: readonly unknown[]): number =>
 const markTag = {
   bold: 'strong',
   code: 'code',
+  highlight: 'mark',
   italic: 'em',
   strikethrough: 's',
   underline: 'u',
@@ -107,6 +108,7 @@ const markTag = {
 const markLabel = {
   bold: 'Negrito',
   code: 'Código',
+  highlight: 'Destaque de texto',
   italic: 'Itálico',
   strikethrough: 'Tachado',
   underline: 'Sublinhado',
@@ -257,16 +259,86 @@ export const FloatingToolbarOnSelection: Story = {
   },
 }
 
+export const FloatingToolbarBlockTypeSelect: Story = {
+  parameters: baseUiFocusGuards,
+  play: async ({ args, canvasElement }) => {
+    const editor = await startTyping(canvasElement, 'Uma frase para marcar')
+    const text = editor.querySelector('[data-slate-string]') as HTMLElement
+    await userEvent.pointer([
+      { keys: '[MouseLeft>]', offset: 4, target: text },
+      { offset: 10, target: text },
+      { keys: '[/MouseLeft]' },
+    ])
+
+    const toolbar = await findFloatingToolbar()
+    const trigger = within(toolbar).getByRole('combobox', {
+      name: 'Tipo de bloco',
+    })
+    await expect(trigger).toHaveTextContent('Texto')
+
+    await userEvent.click(trigger)
+    await userEvent.click(
+      await screen.findByRole('option', { name: 'Título de seção' }),
+    )
+    await waitFor(() =>
+      expect(editor.querySelector('h2')).toHaveTextContent('Uma frase'),
+    )
+    await expect(queryFloatingToolbar()).not.toBeNull()
+    await waitFor(() => expect(editor).toHaveFocus())
+    await expect(trigger).toHaveTextContent('Título de seção')
+
+    await userEvent.click(trigger)
+    await userEvent.click(await screen.findByRole('option', { name: 'Texto' }))
+    await waitFor(() => expect(editor.querySelector('h2')).toBeNull())
+    await expectVocabulary(lastValue(args.onValueChange))
+  },
+}
+
+export const FloatingToolbarLink: Story = {
+  parameters: baseUiFocusGuards,
+  play: async ({ args, canvasElement }) => {
+    const editor = await startTyping(canvasElement, 'Uma frase para marcar')
+    const text = editor.querySelector('[data-slate-string]') as HTMLElement
+    await userEvent.pointer([
+      { keys: '[MouseLeft>]', offset: 4, target: text },
+      { offset: 9, target: text },
+      { keys: '[/MouseLeft]' },
+    ])
+
+    const toolbar = await findFloatingToolbar()
+    await userEvent.click(within(toolbar).getByRole('button', { name: 'Link' }))
+    const input = await screen.findByRole('textbox', {
+      name: 'Endereço do link',
+    })
+    await userEvent.type(input, 'https://example.com{Enter}')
+
+    await waitFor(() =>
+      expect(editor.querySelector('a')).toHaveAttribute(
+        'href',
+        'https://example.com',
+      ),
+    )
+    await waitFor(() => expect(editor).toHaveFocus())
+    await expectVocabulary(lastValue(args.onValueChange))
+  },
+}
+
 export const FloatingToolbarByKeyboard: Story = {
   play: async ({ args, canvasElement }) => {
     const editor = await startTyping(canvasElement, 'Uma leve')
     await extendSelectionBackward(editor, 'leve'.length)
     const toolbar = await findFloatingToolbar()
+    const blockType = within(toolbar).getByRole('combobox', {
+      name: 'Tipo de bloco',
+    })
     const bold = within(toolbar).getByRole('button', { name: 'Negrito' })
     const italic = within(toolbar).getByRole('button', { name: 'Itálico' })
     await expect(editor).toHaveFocus()
 
     await userEvent.keyboard('{Alt>}{F10}{/Alt}')
+    await expect(blockType).toHaveFocus()
+
+    await userEvent.keyboard('{ArrowRight}')
     await expect(bold).toHaveFocus()
 
     await userEvent.keyboard('{ArrowRight}')
@@ -281,7 +353,7 @@ export const FloatingToolbarByKeyboard: Story = {
     await waitFor(() => expect(italic).toHaveAttribute('aria-pressed', 'true'))
 
     await userEvent.keyboard('{Alt>}{F10}{/Alt}')
-    await expect(bold).toHaveFocus()
+    await expect(blockType).toHaveFocus()
     await userEvent.keyboard('{Escape}')
     await waitFor(() => expect(editor).toHaveFocus())
     await expect(selectionOf(editor)?.toString()).toBe('leve')
@@ -378,7 +450,7 @@ export const SlashMenuByKeyboard: Story = {
     const listbox = await findSlashMenu()
     await expect(editor).toHaveFocus()
     await expect(editor).toHaveAttribute('aria-controls', listbox.id)
-    await expect(optionNames(listbox)).toHaveLength(6)
+    await expect(optionNames(listbox)).toHaveLength(12)
     const text = within(listbox).getByRole('option', { name: 'Texto' })
     await expect(editor).toHaveAttribute('aria-activedescendant', text.id)
 
@@ -409,6 +481,136 @@ export const SlashMenuByKeyboard: Story = {
     await userEvent.keyboard('Seção')
     await waitFor(() =>
       expect(editor.querySelector('h2')).toHaveTextContent('Seção'),
+    )
+    await expectVocabulary(lastValue(args.onValueChange))
+  },
+}
+
+export const DraggableBlocks: Story = {
+  args: {
+    defaultValue: [
+      { children: [{ text: 'Primeiro' }], type: 'p' },
+      { children: [{ text: 'Segundo' }], type: 'p' },
+      { children: [{ text: 'Terceiro' }], type: 'p' },
+    ],
+    draggableBlocks: true,
+  },
+  decorators: [
+    (Story) => (
+      <div className="ps-10">
+        <Story />
+      </div>
+    ),
+  ],
+  play: async ({ args, canvasElement }) => {
+    const editor = within(canvasElement).getByRole('textbox')
+    const handles = within(canvasElement).getAllByRole('button', {
+      name: 'Mover bloco',
+    })
+    await expect(handles).toHaveLength(3)
+
+    handles[0]?.focus()
+    await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}')
+    await waitFor(() =>
+      expect(typedText(editor)).toBe('SegundoPrimeiroTerceiro'),
+    )
+
+    const moved = within(canvasElement).getAllByRole('button', {
+      name: 'Mover bloco',
+    })
+    moved[2]?.focus()
+    await userEvent.keyboard('{Alt>}{ArrowUp}{/Alt}')
+    await waitFor(() =>
+      expect(typedText(editor)).toBe('SegundoTerceiroPrimeiro'),
+    )
+    await expectVocabulary(lastValue(args.onValueChange))
+  },
+}
+
+export const BlockSelectionByKeyboard: Story = {
+  args: DraggableBlocks.args,
+  decorators: DraggableBlocks.decorators,
+  play: async ({ args, canvasElement }) => {
+    const editor = within(canvasElement).getByRole('textbox')
+    const first = editor.querySelector('[data-slate-string]') as HTMLElement
+    await userEvent.click(first)
+
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() =>
+      expect(
+        canvasElement.querySelectorAll('[data-block-selected]'),
+      ).toHaveLength(1),
+    )
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Blocos selecionados')).toHaveFocus(),
+    )
+    await userEvent.keyboard('{Backspace}')
+    await waitFor(() => expect(typedText(editor)).toBe('SegundoTerceiro'))
+    await expectVocabulary(lastValue(args.onValueChange))
+  },
+}
+
+export const Mentions: Story = {
+  args: {
+    mentions: [
+      { id: 'ana', label: 'Ana Souza' },
+      { id: 'bruno', label: 'Bruno Lima' },
+      { id: 'carla', label: 'Carla Dias' },
+    ],
+  },
+  play: async ({ args, canvasElement }) => {
+    const editor = await startTyping(canvasElement, 'Oi')
+    await userEvent.keyboard(' @br')
+
+    const listbox = await screen.findByRole('listbox', { name: 'Pessoas' })
+    await waitFor(() => expect(optionNames(listbox)).toEqual(['Bruno Lima']))
+    await userEvent.keyboard('{Enter}')
+
+    await waitFor(() =>
+      expect(editor.querySelector('[data-slate-void=true]')).toHaveTextContent(
+        '@Bruno Lima',
+      ),
+    )
+    await waitFor(() =>
+      expect(screen.queryByRole('listbox', { name: 'Pessoas' })).toBeNull(),
+    )
+    await expectVocabulary(lastValue(args.onValueChange))
+  },
+}
+
+export const SlashMenuExtraBlocks: Story = {
+  play: async ({ args, canvasElement }) => {
+    const editor = await startTyping(canvasElement, 'Intro')
+
+    await userEvent.keyboard('{Enter}/tarefa{Enter}Comprar pão')
+    await waitFor(() =>
+      expect(
+        editor.querySelector('[data-slate-node=element] [role=checkbox]'),
+      ).not.toBeNull(),
+    )
+    await userEvent.click(within(editor).getByRole('checkbox'))
+    await waitFor(() =>
+      expect(within(editor).getByRole('checkbox')).toBeChecked(),
+    )
+
+    await userEvent.keyboard('{Enter}{Enter}/destaque{Enter}Atenção')
+    await waitFor(() => expect(editor.textContent).toContain('Atenção'))
+
+    await userEvent.keyboard('{Enter}{Enter}/codigo{Enter}const a = 1')
+    await waitFor(() =>
+      expect(editor.querySelector('pre')).toHaveTextContent('const a = 1'),
+    )
+
+    await userEvent.keyboard('{Enter}{Enter}/divisor{Enter}Fim')
+    await waitFor(() => expect(editor.querySelector('hr')).not.toBeNull())
+
+    await userEvent.keyboard('{Enter}/data{Enter}')
+    await waitFor(() => expect(editor.querySelector('time')).not.toBeNull())
+
+    await userEvent.keyboard('{Enter}/tabela{Enter}')
+    await waitFor(() =>
+      expect(editor.querySelectorAll('td, th').length).toBe(9),
     )
     await expectVocabulary(lastValue(args.onValueChange))
   },
@@ -668,9 +870,19 @@ const englishLabels = {
     ol: 'Numbered list',
     ul: 'Bulleted list',
   },
+  extraBlockLabels: {
+    callout: 'Callout',
+    code: 'Code block',
+    date: 'Today’s date',
+    hr: 'Divider',
+    image: 'Image',
+    table: 'Table',
+    todo: 'Task list',
+  },
   markLabels: {
     bold: 'Bold',
     code: 'Code',
+    highlight: 'Highlight',
     italic: 'Italic',
     strikethrough: 'Strikethrough',
     underline: 'Underline',
@@ -719,6 +931,12 @@ export const EnglishLabels: Story = {
       'Quote',
       'Bulleted list',
       'Numbered list',
+      'Task list',
+      'Callout',
+      'Code block',
+      'Divider',
+      'Today’s date',
+      'Table',
     ])
     await userEvent.keyboard('{Escape}')
     await waitFor(() =>

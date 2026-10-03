@@ -1,6 +1,8 @@
 'use client'
 
+import { stripRichTextNodeIds } from '@tc96/helpers/rich-text'
 import { cn } from '@tc96/utils'
+import { AtSignIcon } from 'lucide-react'
 import {
   PointApi,
   RangeApi,
@@ -17,16 +19,41 @@ import {
 } from 'platejs/react'
 import type { KeyboardEvent, ReactElement, Ref, RefObject } from 'react'
 import { useId, useImperativeHandle, useMemo, useRef } from 'react'
-import { FloatingToolbar } from './floating-toolbar'
 import {
-  hasSlashInput,
+  type BlockDragLabels,
+  defaultBlockDragLabels,
+  selectCurrentBlock,
+} from './block-draggable'
+import {
+  insertImage,
+  type RichTextExtraBlock,
+  type RichTextImage,
+} from './extra-blocks'
+import { FloatingToolbar } from './floating-toolbar'
+import type { LinkButtonLabels } from './link-button'
+import {
+  hasTriggerInput,
+  MENTION_INPUT_TYPE,
+  MENTION_TYPE,
   type RichTextBlock,
   type RichTextMark,
   richTextEditorOptions,
 } from './plugins'
-import { SlashMenu, slashMenuOptions, useSlashMenu } from './slash-menu'
+import {
+  applySlashMenuOption,
+  SlashMenu,
+  type SlashMenuBlock,
+  type SlashMenuOption,
+  slashMenuOptions,
+  useSlashMenu,
+} from './slash-menu'
 
 export type RichTextValue = Value
+
+export interface RichTextMention {
+  id: string
+  label: string
+}
 
 export interface RichTextEditorHandle {
   focusStart: () => void
@@ -35,11 +62,20 @@ export interface RichTextEditorHandle {
 export interface RichTextEditorProps {
   'aria-label': string
   blockLabels?: Readonly<Record<RichTextBlock, string>>
+  blockDragLabels?: BlockDragLabels
+  blockTypeLabel?: string
+  extraBlockLabels?: Readonly<Record<RichTextExtraBlock, string>>
   className?: string
   defaultValue?: RichTextValue
+  draggableBlocks?: boolean
+  linkLabels?: LinkButtonLabels
   markLabels?: Readonly<Record<RichTextMark, string>>
   maxListDepth?: number
+  mentionEmptyLabel?: string
+  mentionLabel?: string
+  mentions?: readonly RichTextMention[]
   onExitStart?: () => void
+  onPickImage?: () => Promise<RichTextImage | null>
   onValueChange?: (value: RichTextValue) => void
   paragraphLabel?: string
   placeholder?: string
@@ -51,13 +87,31 @@ export interface RichTextEditorProps {
 
 export const defaultMaxListDepth = 4
 
+const defaultLinkLabels = {
+  apply: 'Aplicar',
+  button: 'Link',
+  remove: 'Remover',
+  url: 'Endereço do link',
+} as const satisfies LinkButtonLabels
+
 const defaultMarkLabels = {
   bold: 'Negrito',
   code: 'Código',
+  highlight: 'Destaque de texto',
   italic: 'Itálico',
   strikethrough: 'Tachado',
   underline: 'Sublinhado',
 } as const satisfies Record<RichTextMark, string>
+
+export const defaultExtraBlockLabels = {
+  callout: 'Destaque',
+  code: 'Bloco de código',
+  date: 'Data de hoje',
+  hr: 'Divisor',
+  image: 'Imagem',
+  table: 'Tabela',
+  todo: 'Lista de tarefas',
+} as const satisfies Record<RichTextExtraBlock, string>
 
 const defaultBlockLabels = {
   blockquote: 'Citação',
@@ -99,7 +153,8 @@ export function withoutSlashInput(
   onValueChange?: (value: RichTextValue) => void,
 ) {
   return ({ value }: { value: RichTextValue }) => {
-    if (!hasSlashInput(value)) onValueChange?.(value)
+    if (!hasTriggerInput(value))
+      onValueChange?.(stripRichTextNodeIds(value) as RichTextValue)
   }
 }
 
@@ -125,35 +180,96 @@ type EditorContentProps = Required<
     RichTextEditorProps,
     | 'aria-label'
     | 'blockLabels'
+    | 'extraBlockLabels'
+    | 'mentionEmptyLabel'
+    | 'mentionLabel'
     | 'paragraphLabel'
     | 'slashMenuEmptyLabel'
     | 'slashMenuLabel'
   >
 > &
-  Pick<RichTextEditorProps, 'onExitStart' | 'placeholder'> & {
+  Pick<
+    RichTextEditorProps,
+    'mentions' | 'onExitStart' | 'onPickImage' | 'placeholder'
+  > & {
+    selectableBlocks: boolean
     toolbarRef: RefObject<HTMLDivElement | null>
   }
 
 function EditorContent({
   'aria-label': ariaLabel,
   blockLabels,
+  extraBlockLabels,
+  mentionEmptyLabel,
+  mentionLabel,
+  mentions,
   onExitStart,
+  onPickImage,
   paragraphLabel,
   placeholder,
+  selectableBlocks,
   slashMenuEmptyLabel,
   slashMenuLabel,
   toolbarRef,
 }: EditorContentProps): ReactElement {
   const editor = useEditorRef()
   const options = useMemo(
-    () => slashMenuOptions({ ...blockLabels, p: paragraphLabel }),
-    [blockLabels, paragraphLabel],
+    () =>
+      slashMenuOptions({
+        ...blockLabels,
+        ...extraBlockLabels,
+        p: paragraphLabel,
+      }).filter((option) => option.block !== 'image' || onPickImage),
+    [blockLabels, extraBlockLabels, onPickImage, paragraphLabel],
   )
-  const slashMenu = useSlashMenu({ id: useId(), options })
+  const slashMenu = useSlashMenu({
+    id: useId(),
+    onSelect: (current, input, option) => {
+      if (option.block !== 'image') {
+        applySlashMenuOption(current, input, option.block as SlashMenuBlock)
+        return
+      }
+      current.tf.removeNodes({ at: input.path })
+      onPickImage?.().then((image: RichTextImage | null) => {
+        if (image) insertImage(current, image)
+        current.tf.focus()
+      })
+    },
+    options,
+  })
+  const mentionOptions = useMemo<SlashMenuOption[]>(
+    () =>
+      (mentions ?? []).map((mention) => ({
+        block: mention.id,
+        icon: AtSignIcon,
+        keywords: [],
+        label: mention.label,
+      })),
+    [mentions],
+  )
+  const mentionMenu = useSlashMenu({
+    id: useId(),
+    inputType: MENTION_INPUT_TYPE,
+    onSelect: (current, input, option) => {
+      current.tf.removeNodes({ at: input.path })
+      current.tf.insertNodes(
+        { children: [{ text: '' }], type: MENTION_TYPE, value: option.label },
+        { select: true },
+      )
+      current.tf.insertText(' ')
+    },
+    options: mentionOptions,
+  })
+  const activeMenu = mentionMenu.open ? mentionMenu : slashMenu
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.nativeEvent.isComposing) return
+    if (mentionMenu.onKeyDown(event)) return
     if (slashMenu.onKeyDown(event)) return
+    if (event.key === 'Escape' && selectableBlocks) {
+      if (selectCurrentBlock(editor)) event.preventDefault()
+      return
+    }
     if (event.key === 'F10' && event.altKey) {
       const first = toolbarRef.current?.querySelector<HTMLElement>(
         '[data-slot=toolbar-button]',
@@ -188,13 +304,16 @@ function EditorContent({
   return (
     <>
       <PlateContent
-        aria-activedescendant={slashMenu.activeId}
-        aria-controls={slashMenu.open ? slashMenu.id : undefined}
+        aria-activedescendant={activeMenu.activeId}
+        aria-controls={activeMenu.open ? activeMenu.id : undefined}
         aria-label={ariaLabel}
         aria-placeholder={placeholder}
         className="w-full text-base text-foreground outline-none"
         data-slot="rich-text-editor-content"
-        onBlur={slashMenu.onBlur}
+        onBlur={(event) => {
+          slashMenu.onBlur(event)
+          mentionMenu.onBlur(event)
+        }}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         renderPlaceholder={renderPlaceholder}
@@ -204,6 +323,11 @@ function EditorContent({
         label={slashMenuLabel}
         menu={slashMenu}
       />
+      <SlashMenu
+        emptyLabel={mentionEmptyLabel}
+        label={mentionLabel}
+        menu={mentionMenu}
+      />
     </>
   )
 }
@@ -211,11 +335,20 @@ function EditorContent({
 export function RichTextEditor({
   'aria-label': ariaLabel,
   blockLabels = defaultBlockLabels,
+  blockDragLabels = defaultBlockDragLabels,
+  blockTypeLabel = 'Tipo de bloco',
   className,
   defaultValue,
+  draggableBlocks = false,
+  extraBlockLabels = defaultExtraBlockLabels,
+  linkLabels = defaultLinkLabels,
   markLabels = defaultMarkLabels,
   maxListDepth = defaultMaxListDepth,
+  mentionEmptyLabel = 'Ninguém com esse nome',
+  mentionLabel = 'Pessoas',
+  mentions,
   onExitStart,
+  onPickImage,
   onValueChange,
   paragraphLabel = 'Texto',
   placeholder,
@@ -225,7 +358,11 @@ export function RichTextEditor({
   toolbarLabel = 'Formatação',
 }: Readonly<RichTextEditorProps>): ReactElement {
   const editor = usePlateEditor({
-    ...richTextEditorOptions(maxListDepth),
+    ...richTextEditorOptions(
+      maxListDepth,
+      mentions !== undefined,
+      draggableBlocks ? blockDragLabels : undefined,
+    ),
     ...(defaultValue ? { value: defaultValue } : {}),
   })
   const toolbarRef = useRef<HTMLDivElement>(null)
@@ -240,17 +377,26 @@ export function RichTextEditor({
         <EditorContent
           aria-label={ariaLabel}
           blockLabels={blockLabels}
+          extraBlockLabels={extraBlockLabels}
+          mentionEmptyLabel={mentionEmptyLabel}
+          mentionLabel={mentionLabel}
           paragraphLabel={paragraphLabel}
+          selectableBlocks={draggableBlocks}
           slashMenuEmptyLabel={slashMenuEmptyLabel}
           slashMenuLabel={slashMenuLabel}
           toolbarRef={toolbarRef}
+          {...(mentions ? { mentions } : {})}
           {...(onExitStart ? { onExitStart } : {})}
+          {...(onPickImage ? { onPickImage } : {})}
           {...(placeholder ? { placeholder } : {})}
         />
         <FloatingToolbar
           blockLabels={blockLabels}
+          blockTypeLabel={blockTypeLabel}
           label={toolbarLabel}
+          linkLabels={linkLabels}
           markLabels={markLabels}
+          paragraphLabel={paragraphLabel}
           toolbarRef={toolbarRef}
         />
       </div>

@@ -9,10 +9,12 @@ import {
   CodePlugin,
   H2Plugin,
   H3Plugin,
+  HighlightPlugin,
   ItalicPlugin,
   StrikethroughPlugin,
   UnderlinePlugin,
 } from '@platejs/basic-nodes/react'
+import { LinkPlugin } from '@platejs/link/react'
 import { toggleList, unwrapList } from '@platejs/list-classic'
 import {
   BulletedListPlugin,
@@ -21,6 +23,7 @@ import {
   NumberedListPlugin,
   TaskListPlugin,
 } from '@platejs/list-classic/react'
+import { MentionInputPlugin, MentionPlugin } from '@platejs/mention/react'
 import { SlashInputPlugin, SlashPlugin } from '@platejs/slash-command/react'
 import {
   createBlockStartInputRule,
@@ -44,6 +47,8 @@ import {
   type PlateLeafProps,
 } from 'platejs/react'
 import type { ReactElement } from 'react'
+import { type BlockDragLabels, blockDragPlugins } from './block-draggable'
+import { extraBlockPlugins, RICH_TEXT_EXTRA_ELEMENTS } from './extra-blocks'
 
 export const RICH_TEXT_MARKS = [
   'bold',
@@ -51,6 +56,7 @@ export const RICH_TEXT_MARKS = [
   'underline',
   'strikethrough',
   'code',
+  'highlight',
 ] as const
 
 export type RichTextMark = (typeof RICH_TEXT_MARKS)[number]
@@ -68,9 +74,16 @@ export const RICH_TEXT_ELEMENTS = [
   'ol',
   'li',
   'lic',
+  'a',
+  'mention',
+  ...RICH_TEXT_EXTRA_ELEMENTS,
 ] as const
 
 export const SLASH_INPUT_TYPE = KEYS.slashInput
+
+export const MENTION_INPUT_TYPE = KEYS.mentionInput
+
+export const MENTION_TYPE = KEYS.mention
 
 const LIST_TYPES: readonly string[] = ['ul', 'ol']
 
@@ -166,6 +179,33 @@ function ListItemElement(props: PlateElementProps): ReactElement {
   return <PlateElement {...props} as="li" />
 }
 
+function LinkElement(props: PlateElementProps): ReactElement {
+  const url = String(props.element.url ?? '')
+  return (
+    <PlateElement
+      {...props}
+      as="a"
+      attributes={{
+        ...props.attributes,
+        href: url,
+        rel: 'noopener noreferrer',
+        target: '_blank',
+      }}
+      className="text-primary underline underline-offset-2"
+    />
+  )
+}
+
+function HighlightLeaf(props: PlateLeafProps): ReactElement {
+  return (
+    <PlateLeaf
+      {...props}
+      as="mark"
+      className="rounded-sm bg-yellow-300/50 text-foreground dark:bg-yellow-400/30"
+    />
+  )
+}
+
 function CodeLeaf(props: PlateLeafProps): ReactElement {
   return (
     <PlateLeaf
@@ -180,32 +220,76 @@ function SlashInputElement(props: PlateElementProps): ReactElement {
   return <PlateElement {...props} as="span" className="rounded-sm bg-muted" />
 }
 
-export const hasSlashInput = (nodes: readonly Descendant[]): boolean =>
+const TRIGGER_INPUT_TYPES: readonly string[] = [
+  SLASH_INPUT_TYPE,
+  MENTION_INPUT_TYPE,
+]
+
+export const hasTriggerInput = (nodes: readonly Descendant[]): boolean =>
   nodes.some(
     (node) =>
       ElementApi.isElement(node) &&
-      (node.type === SLASH_INPUT_TYPE ||
-        hasSlashInput(node.children as Descendant[])),
+      (TRIGGER_INPUT_TYPES.includes(node.type) ||
+        hasTriggerInput(node.children as Descendant[])),
   )
 
-function unwrapStaleSlashInputs(editor: SlateEditor): void {
+export const hasSlashInput = hasTriggerInput
+
+function unwrapStaleTriggerInputs(editor: SlateEditor): void {
   const { selection } = editor
   const current =
     selection && !RangeApi.isExpanded(selection)
-      ? editor.api.above({ at: selection, match: { type: SLASH_INPUT_TYPE } })
+      ? editor.api.above({
+          at: selection,
+          match: (node) =>
+            ElementApi.isElement(node) &&
+            TRIGGER_INPUT_TYPES.includes(node.type),
+        })
       : undefined
   if (current) return
   const leftovers = [
-    ...editor.api.nodes({ at: [], match: { type: SLASH_INPUT_TYPE } }),
+    ...editor.api.nodes({
+      at: [],
+      match: (node) =>
+        ElementApi.isElement(node) && TRIGGER_INPUT_TYPES.includes(node.type),
+    }),
   ]
   for (const [, path] of leftovers.reverse())
     editor.tf.unwrapNodes({ at: path })
 }
 
+const triggerNormalizer =
+  (type: string, prefix: string) =>
+  ({
+    editor,
+    tf: { normalizeNode },
+  }: {
+    editor: SlateEditor
+    tf: { normalizeNode: (entry: [unknown, Path]) => void }
+  }) => ({
+    transforms: {
+      normalizeNode(entry: [unknown, Path]) {
+        const [node, path] = entry
+        if (ElementApi.isElement(node) && node.type === type) {
+          const text = NodeApi.string(node)
+          if (text === '') {
+            editor.tf.removeNodes({ at: path })
+            return
+          }
+          if (!text.startsWith(prefix)) {
+            editor.tf.unwrapNodes({ at: path })
+            return
+          }
+        }
+        normalizeNode(entry)
+      },
+    },
+  })
+
 const slashPlugin = SlashPlugin.configure({
   handlers: {
     onChange: ({ editor }: { editor: SlateEditor }) =>
-      unwrapStaleSlashInputs(editor),
+      unwrapStaleTriggerInputs(editor),
   },
   options: {
     createComboboxInput: () => ({
@@ -217,25 +301,37 @@ const slashPlugin = SlashPlugin.configure({
   .configurePlugin(SlashInputPlugin, {
     node: { component: SlashInputElement, isVoid: false },
   })
-  .overrideEditor(({ editor, tf: { normalizeNode } }) => ({
-    transforms: {
-      normalizeNode(entry) {
-        const [node, path] = entry
-        if (ElementApi.isElement(node) && node.type === SLASH_INPUT_TYPE) {
-          const text = NodeApi.string(node)
-          if (text === '') {
-            editor.tf.removeNodes({ at: path })
-            return
-          }
-          if (!text.startsWith('/')) {
-            editor.tf.unwrapNodes({ at: path })
-            return
-          }
-        }
-        normalizeNode(entry)
-      },
-    },
-  }))
+  .overrideEditor(triggerNormalizer(SLASH_INPUT_TYPE, '/') as never)
+
+function MentionElement(props: PlateElementProps): ReactElement {
+  return (
+    <PlateElement
+      {...props}
+      as="span"
+      attributes={{ ...props.attributes, contentEditable: false }}
+      className="rounded-sm bg-primary/12 px-1 font-medium text-primary"
+    >
+      @{String(props.element.value ?? '')}
+      {props.children}
+    </PlateElement>
+  )
+}
+
+const mentionPlugin = MentionPlugin.configure({
+  node: { component: MentionElement },
+  options: {
+    createComboboxInput: () => ({
+      children: [{ text: '@' }],
+      type: MENTION_INPUT_TYPE,
+    }),
+    trigger: '@',
+    triggerPreviousCharPattern: /^\s?$/,
+  },
+})
+  .configurePlugin(MentionInputPlugin, {
+    node: { component: SlashInputElement, isVoid: false },
+  })
+  .overrideEditor(triggerNormalizer(MENTION_INPUT_TYPE, '@') as never)
 
 const BlockquotePlugin = createPlatePlugin({
   inputRules: [blockShortcut('>', 'blockquote')],
@@ -362,14 +458,18 @@ const listPlugin = ListPlugin.configure({
   })
   .configurePlugin(ListItemPlugin, { node: { component: ListItemElement } })
 
-export function richTextEditorOptions(maxListDepth: number) {
+export function richTextEditorOptions(
+  maxListDepth: number,
+  withMentions = false,
+  blockDragLabels?: BlockDragLabels,
+) {
   if (!Number.isInteger(maxListDepth) || maxListDepth < 1) {
     throw new RangeError(
       `maxListDepth must be an integer of at least 1; received ${maxListDepth}.`,
     )
   }
   return {
-    nodeId: false,
+    nodeId: { initialValueIds: 'always' as const },
     plugins: [
       ParagraphPlugin.withComponent(ParagraphElement),
       H2Plugin.withComponent(H2Element).configure({
@@ -391,7 +491,13 @@ export function richTextEditorOptions(maxListDepth: number) {
       BlockquotePlugin,
       listPlugin,
       ListDepthPlugin.configure({ options: { maxDepth: maxListDepth } }),
+      LinkPlugin.configure({ node: { component: LinkElement } }),
+      ...extraBlockPlugins,
       slashPlugin,
+      ...(withMentions ? [mentionPlugin] : []),
+      ...(blockDragLabels === undefined
+        ? []
+        : blockDragPlugins(blockDragLabels.handle, blockDragLabels.selection)),
       BoldPlugin.configure({ inputRules: [BoldRules.markdown()] }),
       ItalicPlugin.configure({
         inputRules: [
@@ -400,6 +506,10 @@ export function richTextEditorOptions(maxListDepth: number) {
         ],
       }),
       UnderlinePlugin,
+      HighlightPlugin.configure({
+        node: { component: HighlightLeaf },
+        shortcuts: { toggle: { keys: [[Key.Mod, Key.Shift, 'h']] } },
+      }),
       StrikethroughPlugin.configure({
         inputRules: [StrikethroughRules.markdown()],
         shortcuts: { toggle: { keys: [[Key.Mod, Key.Shift, 'x']] } },
