@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Board de tarefas por status sobre o mock compartilhado das collection views.',
+          'Task board by status over the shared collection-views mock.',
       },
     },
     layout: 'fullscreen',
@@ -42,8 +42,6 @@ function center(element: Element) {
   return { clientX: left + width / 2, clientY: top + height / 2 }
 }
 
-// O dnd-kit ouve o ponteiro no documento depois do pointerdown; os passos
-// intermediarios deixam a colisao achar o card de destino.
 async function dragWithPointer(from: Element, to: Element) {
   const pointer = {
     bubbles: true,
@@ -76,7 +74,6 @@ async function dragWithPointer(from: Element, to: Element) {
   )
 }
 
-// O DragOverlay fica montado; so tem conteudo durante o arraste.
 const dragOverlay = () => document.querySelector('[data-dnd-overlay]')
 
 function cardHandles(canvasElement: HTMLElement, column: string) {
@@ -114,7 +111,7 @@ export const MoveWithKeyboard: Story = {
     docs: {
       description: {
         story:
-          'Pela alça: Space pega o card, a seta leva à coluna vizinha e Space solta.',
+          'From the handle: Space picks up the card, the arrow moves it to the neighbouring column and Space drops it.',
       },
     },
   },
@@ -140,7 +137,7 @@ export const MoveWithPointer: Story = {
     docs: {
       description: {
         story:
-          'O ponteiro pega o card inteiro e o solta sobre um card de outra coluna.',
+          'The pointer grabs the whole card and drops it over a card in another column.',
       },
     },
   },

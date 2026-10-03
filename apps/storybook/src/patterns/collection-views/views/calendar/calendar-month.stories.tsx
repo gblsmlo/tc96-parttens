@@ -73,7 +73,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Building Block de calendário no modo mês. Documenta bucketização por dia no fuso da view, chips por tom, overflow "+N", loading e arraste entre dias sem vocabulário de domínio.',
+          'Month-mode calendar building block. Documents per-day bucketing in the view time zone, tone chips, the "+N" overflow, loading and dragging between days.',
       },
     },
     layout: 'fullscreen',
@@ -88,7 +88,6 @@ type Story = StoryObj<typeof meta>
 export const Month: Story = {
   args: calendarArgs,
   play: async ({ canvasElement }) => {
-    // 17:00Z é 14:00 em São Paulo: o chip pertence ao dia 14 no fuso da view.
     const cell = canvasElement.querySelector(
       '[data-calendar-date="2026-10-14"]',
     )
@@ -110,7 +109,7 @@ export const WithTones: Story = {
     docs: {
       description: {
         story:
-          'O tom é vocabulário visual neutro: o consumer mapeia o status e a prioridade da tarefa para `tone`, e concluído ganha distinção sem sumir.',
+          'Tone is a neutral visual vocabulary: the consumer maps task status and priority to `tone`, and a completed item is distinguished without disappearing.',
       },
     },
   },
@@ -160,7 +159,7 @@ export const DndDisabled: Story = {
     docs: {
       description: {
         story:
-          'Sem `onItemReschedule`, nenhum chip é arrastável e o cursor segue normal.',
+          'Without `onItemReschedule`, no chip is draggable and the cursor stays normal.',
       },
     },
   },

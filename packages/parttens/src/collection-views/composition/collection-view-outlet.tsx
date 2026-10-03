@@ -1,8 +1,12 @@
 import type { RowData } from '@tanstack/react-table'
-import { type ReactNode, useMemo } from 'react'
+import { type ReactNode, useCallback, useMemo } from 'react'
 import { projectCollection } from '../shared/lib/project-collection'
 import { useCollectionPreferences } from '../store/collection-provider'
-import type { CollectionDefinition, CollectionGroup } from '../types/collection'
+import type {
+  CollectionDefinition,
+  CollectionGroup,
+  CollectionItemChange,
+} from '../types/collection'
 import {
   CalendarView,
   type CalendarViewProps,
@@ -16,7 +20,7 @@ import {
   KanbanView,
   type KanbanViewProps,
 } from '../views/kanban/components/kanban-view'
-import type { KanbanColumnData } from '../views/kanban/types'
+import type { KanbanCardMove, KanbanColumnData } from '../views/kanban/types'
 import {
   ListView,
   type ListViewProps,
@@ -33,10 +37,20 @@ export type CollectionDataGridViewProps<TItem extends RowData> =
 export type CollectionDataTableViewProps<TItem extends RowData> =
   DataTableProps<TItem>
 
-export type CollectionKanbanViewProps<TItem> = Omit<
-  KanbanViewProps<TItem>,
-  'columns' | 'getKey' | 'renderCard'
->
+export interface CollectionKanbanCardMove<TItem> extends KanbanCardMove<TItem> {
+  sourceGroup: CollectionGroup<TItem>
+  targetGroup: CollectionGroup<TItem>
+}
+
+export interface CollectionKanbanViewProps<TItem>
+  extends Omit<
+    KanbanViewProps<TItem>,
+    'columns' | 'getKey' | 'onMoveCard' | 'renderCard'
+  > {
+  onMoveCard?: (
+    move: CollectionKanbanCardMove<TItem>,
+  ) => boolean | Promise<boolean>
+}
 
 export type CollectionListViewProps<TItem> = Omit<
   ListViewProps<TItem>,
@@ -52,6 +66,9 @@ export interface CollectionViewOutletProps<TItem extends RowData> {
   datatable?: CollectionDataTableViewProps<TItem>
   kanban?: CollectionKanbanViewProps<TItem>
   list?: CollectionListViewProps<TItem>
+  onItemChange?: (
+    change: CollectionItemChange<TItem>,
+  ) => boolean | Promise<boolean>
   renderKanbanItem: (item: TItem) => ReactNode
   renderListItem: (item: TItem) => ReactNode
 }
@@ -64,22 +81,63 @@ export function CollectionViewOutlet<TItem extends RowData>({
   datatable,
   kanban,
   list,
+  onItemChange,
   renderKanbanItem,
   renderListItem,
 }: CollectionViewOutletProps<TItem>) {
   const { preferences } = useCollectionPreferences()
-  const columns = useMemo<KanbanColumnData<TItem>[]>(() => {
-    if (preferences.view !== 'kanban') return []
-
-    return (groups ?? projectCollection(collection, preferences.groupBy)).map(
-      (group) => ({
+  const kanbanGroups = useMemo(
+    () =>
+      preferences.view === 'kanban'
+        ? (groups ?? projectCollection(collection, preferences.groupBy))
+        : [],
+    [collection, groups, preferences.groupBy, preferences.view],
+  )
+  const columns = useMemo<KanbanColumnData<TItem>[]>(
+    () =>
+      kanbanGroups.map((group) => ({
         cards: [...group.items],
         count: group.count,
         id: group.id,
         title: group.label,
-      }),
-    )
-  }, [collection, groups, preferences.groupBy, preferences.view])
+      })),
+    [kanbanGroups],
+  )
+  const { onMoveCard: onCollectionMoveCard, ...kanbanProps } = kanban ?? {}
+  const canWriteGroup = Boolean(
+    onItemChange &&
+      collection.groupings.find(({ id }) => id === preferences.groupBy)
+        ?.setGroupId,
+  )
+  const onMoveCard = useCallback(
+    (move: KanbanCardMove<TItem>) => {
+      const sourceGroup = kanbanGroups.find(
+        (group) => group.id === move.sourceColumnId,
+      )
+      const targetGroup = kanbanGroups.find(
+        (group) => group.id === move.targetColumnId,
+      )
+
+      if (!sourceGroup || !targetGroup) return false
+      if (onCollectionMoveCard)
+        return onCollectionMoveCard({ ...move, sourceGroup, targetGroup })
+
+      const setGroupId = collection.groupings.find(
+        ({ id }) => id === targetGroup.grouping,
+      )?.setGroupId
+
+      if (!onItemChange || !setGroupId || sourceGroup.id === targetGroup.id)
+        return false
+
+      return onItemChange({
+        grouping: targetGroup.grouping,
+        item: setGroupId(move.card, targetGroup.value),
+        previousItem: move.card,
+        reason: 'grouping',
+      })
+    },
+    [collection.groupings, kanbanGroups, onCollectionMoveCard, onItemChange],
+  )
 
   if (preferences.view === 'datagrid') {
     if (!datagrid) {
@@ -129,7 +187,8 @@ export function CollectionViewOutlet<TItem extends RowData>({
       getCardLabel={collection.getLabel}
       getKey={collection.getKey}
       renderCard={renderKanbanItem}
-      {...kanban}
+      {...kanbanProps}
+      {...(onCollectionMoveCard || canWriteGroup ? { onMoveCard } : {})}
     />
   )
 }

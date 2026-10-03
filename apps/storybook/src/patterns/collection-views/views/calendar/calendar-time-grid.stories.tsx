@@ -12,7 +12,6 @@ import { createCollection, initialTasks, type Task } from '../../fixtures/tasks'
 const onboarding = initialTasks[0] as Task
 const codeFreeze = initialTasks[7] as Task
 
-// 14:00–16:00 em São Paulo (17:00Z–19:00Z): topo 58.33% e altura 8.33% do dia.
 const positionedTasks: Task[] = [
   onboarding,
   {
@@ -82,7 +81,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Building Block de calendário nos modos semana e dia: eixo de horas, faixa de dia inteiro, blocos posicionados por hora com altura proporcional à duração, sobreposição em lanes e linha do instante corrente.',
+          'Week and day calendar building block: hour axis, all-day strip, blocks positioned by hour with height proportional to duration, overlap lanes and the current-time line.',
       },
     },
     layout: 'fullscreen',
@@ -106,18 +105,15 @@ export const Week: Story = {
     if (!column || !block)
       throw new Error('A story não posicionou o bloco na coluna do dia 14.')
 
-    // O wrapper posicionado é o pai imediato do draggable.
     const positioned = block.parentElement as HTMLElement
     const columnRect = column.getBoundingClientRect()
     const blockRect = positioned.getBoundingClientRect()
     const topPct = ((blockRect.top - columnRect.top) / columnRect.height) * 100
     const heightPct = (blockRect.height / columnRect.height) * 100
 
-    // 14:00 → 58.33% do dia; 2h → 8.33% do dia.
     await expect(Math.abs(topPct - 58.33)).toBeLessThan(0.5)
     await expect(Math.abs(heightPct - 8.33)).toBeLessThan(0.5)
 
-    // A linha "agora" existe só na coluna de hoje.
     await expect(
       canvasElement.querySelectorAll('[data-slot="calendar-now-line"]'),
     ).toHaveLength(1)
@@ -148,7 +144,6 @@ export const WeekOverlap: Story = {
       second.parentElement as HTMLElement
     ).getBoundingClientRect()
 
-    // Sobrepostos dividem a coluna lado a lado, metade para cada lane.
     await expect(Math.abs(firstRect.width - columnWidth / 2)).toBeLessThan(2)
     await expect(Math.abs(secondRect.width - columnWidth / 2)).toBeLessThan(2)
     await expect(secondRect.left).toBeGreaterThan(firstRect.left)
@@ -166,7 +161,6 @@ export const AllDay: Story = {
       strip?.querySelector('[data-calendar-item-id="TSK-108"]'),
     ).not.toBeNull()
 
-    // O item de dia inteiro não vira bloco na coluna de horas.
     const column = canvasElement.querySelector(
       '[data-calendar-date="2026-10-14"]',
     )

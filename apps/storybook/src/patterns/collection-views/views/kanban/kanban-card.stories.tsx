@@ -35,7 +35,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Estrutura e estados do card de Kanban com conteúdo neutro para dar contexto aos slots. Composições específicas de Todo e Sales estão em Usages.',
+          'Kanban card structure and states over the shared task mock. Richer compositions live under Usages.',
       },
     },
   },

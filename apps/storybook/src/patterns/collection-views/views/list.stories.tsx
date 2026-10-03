@@ -62,7 +62,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Building Block de List. Documenta agrupamento, loading e composição sem fixtures ou regras de Tasks e Pipeline.',
+          'List building block. Documents grouping, loading and composition without fixtures or Tasks and Pipeline rules.',
       },
     },
     layout: 'fullscreen',
@@ -84,7 +84,6 @@ export const GroupedByStatus: Story = {
     if (!contagem)
       throw new Error('A story não renderizou [data-slot="list-group-count"].')
 
-    // Badge de contagem circular: quadrado com raio maior que a metade da aresta.
     const medida = contagem.getBoundingClientRect()
 
     await expect(medida.width).toBe(medida.height)
@@ -92,7 +91,6 @@ export const GroupedByStatus: Story = {
       Number.parseFloat(getComputedStyle(contagem).borderRadius),
     ).toBeGreaterThan(medida.height / 2)
 
-    // O corpo da linha é quem absorve o espaço livre entre os controles das pontas.
     const corpo = canvasElement.querySelector<HTMLElement>(
       '[data-slot="list-item-body"]',
     )
@@ -112,7 +110,7 @@ export const Ungrouped: Story = {
     docs: {
       description: {
         story:
-          'Sem dimensão (`grouping={null}`), a List lê a coleção na ordem que o consumer passou: nenhum cabeçalho, nenhum colapso, nenhuma contagem por grupo.',
+          'Without a dimension (`grouping={null}`), the List reads the collection in the order the consumer passed: no header, no collapse, no per-group count.',
       },
     },
   },
@@ -137,12 +135,11 @@ export const EmptyGroupsCollapsed: Story = {
     docs: {
       description: {
         story:
-          'Com `collapseEmptyGroups`, um grupo sem itens nasce fechado e o populado continua aberto. Abrir ou fechar manualmente passa a valer sobre o automático, e um grupo intocado reabre sozinho quando recebe item.',
+          'With `collapseEmptyGroups`, a group with no items starts closed and the populated one stays open. Opening or closing manually wins over the automatic behavior, and an untouched group reopens on its own when it receives an item.',
       },
     },
   },
   play: async ({ canvasElement }) => {
-    // O grupo populado segue aberto (oferece "Collapse"); o vazio nasce fechado.
     await expect(
       canvasElement.querySelector('[aria-label="Collapse Em andamento"]'),
     ).toBeTruthy()
@@ -159,7 +156,7 @@ export const Compact: Story = {
     docs: {
       description: {
         story:
-          'Densidade compacta: o ritmo vertical é do pattern, então a lista adensa sem o consumidor sobrepor padding.',
+          'Compact density: the vertical rhythm belongs to the pattern, so the list tightens without the consumer overriding padding.',
       },
     },
   },
@@ -184,7 +181,7 @@ export const Separated: Story = {
     docs: {
       description: {
         story:
-          'Com `separated`, um `Separator` discreto aparece entre as linhas, na lista plana e dentro de cada grupo, sem herdar a borda do container.',
+          'With `separated`, a subtle `Separator` appears between rows, in the flat list and inside each group, without inheriting the container border.',
       },
     },
   },

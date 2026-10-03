@@ -19,6 +19,7 @@ export type {
   CollectionGroup,
   CollectionGroupingDimension,
   CollectionGroupingId,
+  CollectionItemChange,
   CollectionOption,
   CollectionPreferences,
   CollectionView,

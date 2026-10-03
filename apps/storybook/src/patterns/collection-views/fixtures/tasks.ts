@@ -21,9 +21,7 @@ export type TaskPriority = 'urgent' | 'high' | 'medium' | 'low'
 export interface Task {
   assigneeId: string
   description: string
-  /** Fim da janela; `null` é tarefa só com prazo. */
   end: string | null
-  /** Horas estimadas. */
   estimate: number
   id: string
   isAllDay?: boolean
@@ -40,7 +38,6 @@ export interface Person {
 }
 
 export const TIME_ZONE = 'America/Sao_Paulo'
-// Âncora e "agora" fixos mantêm a vitrine determinística entre execuções.
 export const ANCHOR = new Date('2026-10-14T15:00:00.000Z')
 export const NOW = new Date('2026-10-14T16:30:00.000Z')
 
@@ -267,12 +264,18 @@ export const groupings: CollectionDefinition<Task>['groupings'] = [
       id: option.value,
       label: option.label,
     })),
+    setGroupId: (task, groupId) =>
+      groupId && isStatus(groupId) ? { ...task, status: groupId } : task,
   },
   {
     getGroupId: (task) => task.assigneeId,
     id: 'assignee',
     label: 'Responsável',
     options: people.map((person) => ({ id: person.id, label: person.name })),
+    setGroupId: (task, groupId) =>
+      groupId && peopleById.has(groupId)
+        ? { ...task, assigneeId: groupId }
+        : task,
   },
   {
     getGroupId: (task) => task.priority,
@@ -282,6 +285,8 @@ export const groupings: CollectionDefinition<Task>['groupings'] = [
       id: option.value,
       label: option.label,
     })),
+    setGroupId: (task, groupId) =>
+      groupId && isPriority(groupId) ? { ...task, priority: groupId } : task,
   },
 ]
 
@@ -293,8 +298,6 @@ export const createCollection = (
   groupings,
   items,
 })
-
-// ─── Formatação ─────────────────────────────────────────────────────────────
 
 export const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
   hour: '2-digit',

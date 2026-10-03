@@ -23,7 +23,7 @@ Top level:
 | File | Owns | Public |
 | --- | --- | --- |
 | `composition/index.ts` | re-exports `CollectionViewOutlet` and its props types | through the barrel |
-| `composition/collection-view-outlet.tsx` | `CollectionViewOutlet` and `CollectionViewOutletProps`, `CollectionCalendarViewProps`, `CollectionDataGridViewProps`, `CollectionDataTableViewProps`, `CollectionKanbanViewProps`, `CollectionListViewProps` | yes |
+| `composition/collection-view-outlet.tsx` | `CollectionViewOutlet` and `CollectionViewOutletProps`, `CollectionKanbanCardMove`, `CollectionCalendarViewProps`, `CollectionDataGridViewProps`, `CollectionDataTableViewProps`, `CollectionKanbanViewProps`, `CollectionListViewProps` | yes |
 | `composition/collection-view-outlet.test.tsx` | JSDOM tests: renders `DataTable`, throws without `datatable` or `calendar` | — |
 | `composition/prepared-groups.test.tsx` | JSDOM tests: prepared `groups` win over the collection in list and kanban mode | — |
 
@@ -58,7 +58,7 @@ Top level:
 | File | Owns | Public |
 | --- | --- | --- |
 | `types/index.ts` | re-exports every type of `collection.ts` | through the barrel |
-| `types/collection.ts` | `CollectionDefinition`, `CollectionGroupingDimension`, `CollectionGroupingId`, `CollectionOption`, `CollectionGroup`, `CollectionPreferences`, `CollectionPreferencesChangeDetails`, `CollectionPreferencesChangeReason`, `CollectionViewMode` and the deprecated alias `CollectionView` | yes |
+| `types/collection.ts` | `CollectionDefinition`, `CollectionItemChange`, `CollectionGroupingDimension`, `CollectionGroupingId`, `CollectionOption`, `CollectionGroup`, `CollectionPreferences`, `CollectionPreferencesChangeDetails`, `CollectionPreferencesChangeReason`, `CollectionViewMode` and the deprecated alias `CollectionView` | yes |
 
 `views/calendar/`, month and time-grid calendar with rescheduling:
 
@@ -178,6 +178,7 @@ interface CollectionGroupingDimension<TItem> {
   id: CollectionGroupingId
   label: string
   options: readonly CollectionOption[]          // { icon?, id, label }, one group each, in this order
+  setGroupId?: (item: TItem, groupId: string | null) => TItem   // the write pair of getGroupId; enables kanban drag through onItemChange
   unassignedLabel?: string                      // default 'Sem valor'
 }
 
@@ -200,8 +201,11 @@ interface CollectionViewOutletProps<TItem extends RowData> {
   calendar?: Omit<CalendarViewProps<TItem>, 'collection'>                   // required when view is 'calendar'
   datagrid?: DataGridProps<TItem>                                           // required when view is 'datagrid'
   datatable?: DataTableProps<TItem>                                         // required when view is 'datatable'
-  kanban?: Omit<KanbanViewProps<TItem>, 'columns' | 'getKey' | 'renderCard'>
+  kanban?: Omit<KanbanViewProps<TItem>, 'columns' | 'getKey' | 'onMoveCard' | 'renderCard'> & {
+    onMoveCard?: (move: CollectionKanbanCardMove<TItem>) => boolean | Promise<boolean>   // KanbanCardMove + sourceGroup, targetGroup
+  }
   list?: Omit<ListViewProps<TItem>, 'collection' | 'grouping' | 'renderItem'>
+  onItemChange?: (change: CollectionItemChange<TItem>) => boolean | Promise<boolean>   // { grouping, item, previousItem, reason: 'grouping' }
   renderKanbanItem: (item: TItem) => ReactNode
   renderListItem: (item: TItem) => ReactNode
 }
@@ -321,7 +325,7 @@ interface CalendarViewProps<TItem> {
 Behavior worth knowing before changing it:
 
 - `CollectionProvider` starts uncontrolled at `{ groupBy: collection.groupings[0]?.id ?? null, view: 'kanban' }` merged with `defaultPreferences`, or follows `preferences` when passed. `setPreferences(update, reason)` accepts a value or an updater and always calls `onPreferencesChange(next, { reason })`. `useCollectionPreferences` throws outside the provider.
-- `CollectionViewOutlet` throws when the active view is `datagrid`, `datatable` or `calendar` and the matching prop is missing (the test asserts the message). Kanban columns are derived only while the view is `kanban`, from `groups` or `projectCollection(collection, groupBy)`; `getCardLabel` defaults to `collection.getLabel`. In list mode the outlet passes `groups ?? list?.groups`, and an explicit `[]` never falls back to the source items.
+- `CollectionViewOutlet` throws when the active view is `datagrid`, `datatable` or `calendar` and the matching prop is missing (the test asserts the message). Kanban columns are derived only while the view is `kanban`, from `groups` or `projectCollection(collection, groupBy)`, with the group `id` (`${groupBy}:${option.id}`) as the column id. `kanban.onMoveCard` receives `CollectionKanbanCardMove`: the `KanbanCardMove` plus the `sourceGroup` and `targetGroup` `CollectionGroup`, so a handler never parses column ids; a column with no matching group rejects the move, and a handler typed with `KanbanCardMove` still fits. Without `kanban.onMoveCard`, drag is enabled when the outlet has `onItemChange` and the active dimension declares `setGroupId`: a drop into another group calls `onItemChange({ grouping, item: setGroupId(card, targetGroup.value), previousItem: card, reason: 'grouping' })`, the consumer stores the item and returns the result; a reorder inside one group returns false, since the collection order is the consumer's. `kanban.onMoveCard` wins when both are passed; `getCardLabel` defaults to `collection.getLabel`. In list mode the outlet passes `groups ?? list?.groups`, and an explicit `[]` never falls back to the source items.
 - `projectCollection` throws for `groupBy === null` and for an undeclared dimension. It creates one group per option in option order, adds a group on the fly for a value with no option (labelled by the value), and appends a `${groupBy}:unassigned` group for `null` values. Group ids are `${groupBy}:${option.id}` and `count` is the item count.
 - Kanban drag: enabled only with `onMoveCard` and not `loading`. The pointer and touch pick up the whole card except inputs, links, menu items, roles such as `button`, `checkbox`, `combobox`, `slider` and `switch`, and any button other than `KanbanCardOpenTrigger`; the open trigger drags only after the 5px distance constraint (touch uses a 250ms delay with 5px tolerance). The grip handle is the keyboard and assistive-technology activator, visible only on focus; keyboard codes are Space to start and end, arrows to move, Escape to cancel, Tab to end. Same-column reorders use dnd-kit's optimistic DOM reorder; a cross-column `dragOver` calls `event.preventDefault()` and goes through state, because a node moved outside React broke `removeChild`.
 - Kanban move settlement: `onMoveCard` may return a boolean or a promise. `false`, a rejection or a synchronous throw rolls the optimistic columns back to the source order; `true` keeps them until the `columns` prop shows the card at the target column and index (`isPendingCardMoveConfirmed`), then the override is dropped. A promise resumes dnd-kit's suspension immediately so the drop animation does not wait on the network. After a cross-column move, `KanbanView` focuses the moved card's handle by `data-kanban-card-drag-id`. Card content is memoized, so `renderCard` runs only for the moved card.
@@ -390,6 +394,7 @@ Each view has a benchmark built on the shared harness in `scripts/bench/` (`benc
 ```bash
 bun run bench:list          # also bench:data-grid, bench:data-table, bench:kanban, bench:calendar
 bun scripts/bench/list.bench.ts --compare scripts/bench/results/list.base.json --gate
+bun run bench:gate          # all five views against their baselines; part of release:check
 ```
 
 `--gate` exits 1 when a render counter rose or a scenario disappeared; timing only warns. Regenerate a baseline with `--json scripts/bench/results/<view>.base.json` on an otherwise idle machine and update the README table in the same change.

@@ -5,7 +5,7 @@ import {
 } from '@tc96/parttens'
 import { useMemo } from 'react'
 import {
-  moveTaskCard,
+  moveTaskStatus,
   renderTaskKanbanCard,
   useTasks,
 } from '../../fixtures/task-renderers'
@@ -35,7 +35,7 @@ export const projectTaskColumns = (
   }))
 
 export function TaskBoard() {
-  const { tasks, updateTask } = useTasks()
+  const { replaceTask, tasks, updateTask } = useTasks()
   const columns = useMemo(() => projectTaskColumns(tasks), [tasks])
 
   return (
@@ -45,7 +45,7 @@ export function TaskBoard() {
         emptyColumnLabel="Nenhuma tarefa nesta coluna."
         getCardLabel={(task) => task.title}
         getKey={(task) => task.id}
-        onMoveCard={moveTaskCard('status', updateTask)}
+        onMoveCard={moveTaskStatus(replaceTask)}
         renderCard={renderTaskKanbanCard('status', updateTask)}
       />
     </div>

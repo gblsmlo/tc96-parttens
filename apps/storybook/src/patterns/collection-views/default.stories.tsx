@@ -55,7 +55,6 @@ import {
 } from './fixtures/task-fields'
 import {
   createTaskCalendarProps,
-  moveTaskCard,
   renderTaskKanbanCard,
   renderTaskListRow,
 } from './fixtures/task-renderers'
@@ -68,8 +67,6 @@ import {
   type Task,
   type TaskPriority,
 } from './fixtures/tasks'
-
-// ─── Toolbar ────────────────────────────────────────────────────────────────
 
 const viewModes: readonly ViewSettingsMode<CollectionViewMode>[] = [
   { icon: Rows3Icon, label: 'Lista', value: 'list' },
@@ -96,7 +93,6 @@ const presets = [
 
 type PresetId = (typeof presets)[number]['id']
 
-/** "Minhas tarefas" é da Ana, a pessoa logada na vitrine. */
 const CURRENT_USER_ID = 'ana'
 
 const matchesPreset = (task: Task, preset: PresetId) => {
@@ -109,8 +105,6 @@ const toggle = <TValue,>(values: readonly TValue[], value: TValue) =>
   values.includes(value)
     ? values.filter((current) => current !== value)
     : [...values, value]
-
-// ─── Vitrine ────────────────────────────────────────────────────────────────
 
 function TasksShowcase({
   onTasksChange,
@@ -158,7 +152,6 @@ function TasksShowcase({
     [visibleTasks],
   )
 
-  // As tabelas agrupam linhas consecutivas: a ordem segue a do agrupamento.
   const grouping = groupings.find(({ id }) => id === preferences.groupBy)
   const tableRows = useMemo(() => {
     if (!grouping) return [...visibleTasks]
@@ -202,7 +195,12 @@ function TasksShowcase({
     )
   }
 
-  const moveCard = moveTaskCard(preferences.groupBy, updateTask)
+  const replaceTask = (next: Task) => {
+    onTasksChange((current) =>
+      current.map((task) => (task.id === next.id ? next : task)),
+    )
+    return true
+  }
 
   const activeFilterCount =
     assigneeFilter.length + priorityFilter.length + (search ? 1 : 0)
@@ -481,6 +479,7 @@ function TasksShowcase({
           className="flex min-h-0 flex-1 flex-col gap-2"
         >
           <CollectionViewOutlet
+            onItemChange={({ item }) => replaceTask(item)}
             calendar={{
               ...createTaskCalendarProps(updateTask),
               mode: calendarMode,
@@ -519,7 +518,6 @@ function TasksShowcase({
                 addLabel: `Nova tarefa em ${column.title}`,
                 onAddCard: () => undefined,
               }),
-              onMoveCard: moveCard,
             }}
             list={{
               collapseEmptyGroups: true,
@@ -580,9 +578,9 @@ const meta = {
     docs: {
       description: {
         component: [
-          'Vitrine das collection views sobre uma mesma coleção real: as tarefas do lançamento de um app.',
-          'O `ViewSettingsMenu` alterna entre **Lista**, **Kanban**, **Calendário**, **Planilha** (DataGrid) e **Tabela** (DataTable), e reúne agrupamento, período do calendário, ordenação, densidade, colunas e filtros por responsável e prioridade.',
-          'Toda edição volta para a mesma coleção — mover o card no Kanban, reagendar no Calendário ou trocar status e prioridade nas tabelas aparece em todas as views.',
+          'Showcase of the collection views over one real collection: the tasks of an app launch.',
+          'The `ViewSettingsMenu` switches between **List**, **Kanban**, **Calendar**, **Spreadsheet** (DataGrid) and **Table** (DataTable), and gathers grouping, calendar range, sorting, density, columns and filters by assignee and priority.',
+          'Every edit goes back to the same collection: moving a card in Kanban, rescheduling in the Calendar or changing status and priority in the tables shows up in every view.',
         ].join('\n\n'),
       },
     },
@@ -595,14 +593,17 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/**
- * Percorre as cinco views pelas tabs do `ViewSettingsMenu` e confirma que cada
- * uma monta sobre a mesma coleção.
- */
 export const Default: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Walks the five views through the `ViewSettingsMenu` tabs and checks that each one mounts over the same collection.',
+      },
+    },
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    // O popup do menu sai em portal — vive fora de `canvasElement`.
     const body = within(canvasElement.ownerDocument.body)
     const views = [
       ['Kanban', 'kanban-view'],
@@ -628,8 +629,15 @@ export const Default: Story = {
   },
 }
 
-/** Trocar o status na Tabela reescreve a tarefa na coleção compartilhada. */
 export const SharedEdits: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Changing the status in the Table rewrites the task in the shared collection.',
+      },
+    },
+  },
   args: { defaultView: 'datatable' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
@@ -653,8 +661,15 @@ export const SharedEdits: Story = {
   },
 }
 
-/** Na Planilha, cada coluna de valor é uma property da UI — até o Prazo. */
 export const SpreadsheetProperties: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'In the Spreadsheet, every value column is a UI property, including the due date.',
+      },
+    },
+  },
   args: { defaultView: 'datagrid' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
@@ -690,5 +705,45 @@ export const SpreadsheetProperties: Story = {
     )
     if (!row) throw new Error('linha não montou')
     await expect(within(row).getByText('Carla Mendes')).toBeTruthy()
+  },
+}
+
+export const KanbanMoveWritesGroup: Story = {
+  args: { defaultView: 'kanban' },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Each grouping declares `setGroupId`, the write pair of `getGroupId`. A drop into another column makes the outlet build the updated item and hand it to `onItemChange`; the consumer only stores it. The card stays in the new column and the Table shows the new status.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const body = within(canvasElement.ownerDocument.body)
+    const overlay = () =>
+      canvasElement.ownerDocument.querySelector('[data-dnd-overlay]')
+
+    canvas.getByRole('button', { name: 'Mover card Notificações push' }).focus()
+    await userEvent.keyboard('[Space]')
+    await waitFor(() => expect(overlay()).not.toBeEmptyDOMElement())
+    await userEvent.keyboard('[ArrowRight]')
+    await userEvent.keyboard('[Space]')
+    await waitFor(() => expect(overlay()).toBeEmptyDOMElement())
+
+    const todo = canvas.getByRole('region', { name: /A fazer/ })
+    await waitFor(() =>
+      expect(within(todo).getByText('Notificações push')).toBeTruthy(),
+    )
+
+    await userEvent.click(canvas.getByRole('button', { name: /Exibição/ }))
+    await userEvent.click(
+      await body.findByRole('menuitemradio', { name: 'Tabela' }),
+    )
+    const row = (await canvas.findByText('Notificações push')).closest('tr')
+    if (!row) throw new Error('row did not mount')
+    await expect(
+      within(row).getByRole('combobox', { name: 'Status: A fazer' }),
+    ).toBeTruthy()
   },
 }

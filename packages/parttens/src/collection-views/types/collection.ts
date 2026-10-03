@@ -22,6 +22,7 @@ export interface CollectionGroupingDimension<TItem = unknown> {
   id: CollectionGroupingId
   label: string
   options: readonly CollectionOption[]
+  setGroupId?: (item: TItem, groupId: string | null) => TItem
   /** Label for items whose getGroupId returns null. Defaults to a generic "unassigned". */
   unassignedLabel?: string
 }
@@ -37,6 +38,13 @@ export interface CollectionPreferences {
   /** `null` é a coleção sem agrupamento, que a Lista e o DataGrid sabem renderizar. */
   groupBy: CollectionGroupingId | null
   view: CollectionViewMode
+}
+
+export interface CollectionItemChange<TItem = unknown> {
+  grouping: CollectionGroupingId
+  item: TItem
+  previousItem: TItem
+  reason: 'grouping'
 }
 
 export type CollectionPreferencesChangeReason = 'grouping' | 'view'

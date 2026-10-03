@@ -27,11 +27,9 @@ import {
 import {
   ANCHOR,
   formatMinutes,
+  groupings,
   initialTasks,
-  isPriority,
-  isStatus,
   NOW,
-  peopleById,
   STATUS_TONE,
   statusOptions,
   type Task,
@@ -49,7 +47,14 @@ export function useTasks(initial: readonly Task[] = initialTasks) {
     [],
   )
 
-  return { setTasks, tasks, updateTask }
+  const replaceTask = useCallback((next: Task) => {
+    setTasks((current) =>
+      current.map((task) => (task.id === next.id ? next : task)),
+    )
+    return true
+  }, [])
+
+  return { replaceTask, setTasks, tasks, updateTask }
 }
 
 export const renderTaskListRow =
@@ -110,23 +115,14 @@ export const renderTaskKanbanCard =
     </KanbanCard>
   )
 
-export const moveTaskCard =
-  (groupBy: CollectionGroupingId | null, updateTask: UpdateTask) =>
-  ({ card, targetColumnId }: KanbanCardMove<Task>) => {
-    const prefix = `${groupBy}:`
-    const target = targetColumnId.startsWith(prefix)
-      ? targetColumnId.slice(prefix.length)
-      : targetColumnId
+const statusGrouping = groupings.find(({ id }) => id === 'status')
 
-    if (groupBy === 'status' && isStatus(target))
-      updateTask(card.id, { status: target })
-    else if (groupBy === 'priority' && isPriority(target))
-      updateTask(card.id, { priority: target })
-    else if (groupBy === 'assignee' && peopleById.has(target))
-      updateTask(card.id, { assigneeId: target })
-    else return false
-    return true
-  }
+export const moveTaskStatus =
+  (replaceTask: (task: Task) => boolean) =>
+  ({ card, targetColumnId }: KanbanCardMove<Task>) =>
+    statusGrouping?.setGroupId
+      ? replaceTask(statusGrouping.setGroupId(card, targetColumnId))
+      : false
 
 export const createTaskCalendarProps = (updateTask: UpdateTask) => ({
   anchor: ANCHOR,
