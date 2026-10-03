@@ -18,8 +18,10 @@ export function CalendarItemSkeleton({
       aria-busy="true"
       aria-label={label}
       className={cn(
-        'pointer-events-none flex min-w-0 select-none gap-1 overflow-hidden rounded-md border-s-2 border-s-muted-foreground/20 bg-muted/40 px-1.5 py-0.5',
-        display === 'block' && 'h-full w-full flex-col px-2 py-1',
+        'pointer-events-none flex min-w-0 select-none gap-1 overflow-hidden rounded-md border-s-2 border-s-muted-foreground/20 bg-muted/40',
+        display === 'block'
+          ? 'h-full w-full flex-col px-2 py-1'
+          : 'px-1.5 py-0.5',
         className,
       )}
       data-slot="calendar-item-skeleton"

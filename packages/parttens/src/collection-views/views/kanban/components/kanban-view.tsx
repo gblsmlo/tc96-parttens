@@ -184,7 +184,7 @@ export function KanbanView<TCard>({
             scrollFade
           >
             <div
-              className="flex h-full min-h-full w-max gap-2 [&>[data-slot=kanban-column]]:shrink-0 [&>[data-slot=kanban-column]:not([data-collapsed])]:w-[19rem] xl:[&>[data-slot=kanban-column]:not([data-collapsed])]:w-[22rem]"
+              className="flex h-full min-h-full w-max gap-2 [&>[data-slot=kanban-column]]:shrink-0 [&>[data-slot=kanban-column]:not([data-collapsed])]:w-76 xl:[&>[data-slot=kanban-column]:not([data-collapsed])]:w-88"
               ref={boardContentRef}
             >
               {visibleColumns.map((column) => (

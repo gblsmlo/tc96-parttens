@@ -47,7 +47,7 @@ packages/parttens/src/<pattern>/
   test/dom.ts    the JSDOM setup the pattern's bun test files import; each pattern owns its copy
 ```
 
-Files are kebab-case and named after what they export (`checklist-row.tsx` exports `ChecklistRow`); tests sit next to the file they cover. `styles/global.css` and `vite-env.d.ts` in the older patterns date from isolated development: nothing imports them and the registry does not ship them, so a new or restructured pattern does not add them (patterns carry no CSS). `checklist` follows this layout with `composition/checklist/`, `components/`, `lib/`, `types/`, `test/` and `core.ts`; a flat pattern such as `rich-text-editor` adopts it when it is next split.
+Files are kebab-case and named after what they export (`checklist-row.tsx` exports `ChecklistRow`); tests sit next to the file they cover. `vite-env.d.ts` in the older patterns dates from isolated development: nothing imports it and the registry does not ship it, so a new or restructured pattern does not add it. The `styles/global.css` files of `collection-views`, `properties` and `editable` were removed on 2026-10-03 for the same reason; only `detail-sheet` still carries one until its own revision (patterns carry no CSS). `checklist` follows this layout with `composition/checklist/`, `components/`, `lib/`, `types/`, `test/` and `core.ts`; a flat pattern such as `rich-text-editor` adopts it when it is next split.
 
 ## Rules that are enforced by scripts
 

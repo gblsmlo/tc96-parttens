@@ -82,7 +82,7 @@ export function CalendarTimeGrid<TItem>({
         className="grid border-border/80 border-b"
         style={{ gridTemplateColumns: columnsTemplate }}
       >
-        <div className="px-2 py-2 text-end text-[10px] text-muted-foreground">
+        <div className="px-2 py-2 text-end text-[0.625rem] text-muted-foreground">
           {timeZoneLabel}
         </div>
         {range.map((date, index) => {
@@ -116,7 +116,7 @@ export function CalendarTimeGrid<TItem>({
         className="grid border-border/80 border-b"
         style={{ gridTemplateColumns: columnsTemplate }}
       >
-        <div className="px-2 py-1 text-end text-[10px] text-muted-foreground">
+        <div className="px-2 py-1 text-end text-[0.625rem] text-muted-foreground">
           <span className="sr-only">Dia inteiro</span>
           <span aria-hidden="true">dia inteiro</span>
         </div>
@@ -147,7 +147,7 @@ export function CalendarTimeGrid<TItem>({
           <div aria-hidden="true" className="relative">
             {hourLabels.map((label, hour) => (
               <span
-                className="absolute end-2 translate-y-[-50%] text-[10px] text-muted-foreground tabular-nums"
+                className="absolute end-2 -translate-y-1/2 text-[0.625rem] text-muted-foreground tabular-nums"
                 key={label}
                 style={{ top: `${(hour / 24) * 100}%` }}
               >

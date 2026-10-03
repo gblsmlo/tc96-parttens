@@ -62,8 +62,8 @@ function KanbanColumnHeader<TCard>({
   return (
     <header
       className={cn(
-        'mb-3 flex shrink-0 items-center justify-between gap-3 px-3 pt-3',
-        column.collapsed && 'flex-col px-1.5',
+        'mb-3 flex shrink-0 items-center justify-between gap-3 pt-3',
+        column.collapsed ? 'flex-col px-1.5' : 'px-3',
       )}
     >
       <div
