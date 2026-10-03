@@ -2,50 +2,19 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Action,
   ActionBar,
-  CalendarEventChip,
-  CalendarEventChipOpenTrigger,
-  CalendarEventChipTime,
-  CalendarEventChipTitle,
-  type CalendarEventChipTone,
-  type CalendarItemRenderContext,
   type CalendarViewMode,
-  type CollectionDefinition,
   CollectionProvider,
   CollectionSearchField,
   CollectionToolbar,
   type CollectionViewMode,
   CollectionViewOutlet,
-  createSelectColumn,
-  type DataGridColumnDef,
   DataGridColumnsSubmenu,
   DataGridDensitySubmenu,
   DataGridPagination,
   DataGridSortSubmenu,
-  type DataTableColumnDef,
-  DateProperty,
-  KanbanCard,
-  KanbanCardBody,
-  KanbanCardBodyRow,
-  KanbanCardDescription,
-  KanbanCardFooter,
-  KanbanCardHeader,
-  type KanbanCardMove,
-  KanbanCardTitle,
-  ListItem,
-  ListItemBody,
-  ListItemDescription,
-  ListItemField,
-  ListItemTitle,
-  ListItemTitleTrigger,
-  ListItemTrailing,
   MenuCheckboxOption,
   MenuRadioOption,
-  PersonProperty,
-  type PersonPropertyOption,
   PresetsMenu,
-  SelectProperty,
-  type SelectPropertyOption,
-  TextProperty,
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
@@ -53,7 +22,6 @@ import {
   type ViewSettingsMode,
   ViewSettingsSection,
 } from '@tc96/parttens'
-import { Checkbox } from '@tc96/ui/checkbox'
 import {
   MenuGroup,
   MenuGroupLabel,
@@ -69,600 +37,37 @@ import {
   CalendarDaysIcon,
   CalendarRangeIcon,
   CircleCheckIcon,
-  CircleDashedIcon,
-  CircleDotIcon,
-  CircleIcon,
-  EyeIcon,
   FlagIcon,
   LayoutGridIcon,
   ListIcon,
   Rows3Icon,
-  SignalHighIcon,
-  SignalLowIcon,
-  SignalMediumIcon,
   Table2Icon,
   TableIcon,
   Trash2Icon,
-  TriangleAlertIcon,
   UsersIcon,
 } from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-
-// ─── Domínio ────────────────────────────────────────────────────────────────
-
-type TaskStatus = 'backlog' | 'todo' | 'in-progress' | 'review' | 'done'
-type TaskPriority = 'urgent' | 'high' | 'medium' | 'low'
-
-interface Task {
-  assigneeId: string
-  description: string
-  /** Fim da janela; `null` é tarefa só com prazo. */
-  end: string | null
-  /** Horas estimadas. */
-  estimate: number
-  id: string
-  isAllDay?: boolean
-  priority: TaskPriority
-  start: string
-  status: TaskStatus
-  title: string
-}
-
-interface Person {
-  id: string
-  initials: string
-  name: string
-}
-
-const TIME_ZONE = 'America/Sao_Paulo'
-// Âncora e "agora" fixos mantêm a vitrine determinística entre execuções.
-const ANCHOR = new Date('2026-10-14T15:00:00.000Z')
-const NOW = new Date('2026-10-14T16:30:00.000Z')
-
-const people: readonly Person[] = [
-  { id: 'ana', initials: 'AS', name: 'Ana Souza' },
-  { id: 'bruno', initials: 'BL', name: 'Bruno Lima' },
-  { id: 'carla', initials: 'CM', name: 'Carla Mendes' },
-  { id: 'diego', initials: 'DR', name: 'Diego Rocha' },
-]
-
-const peopleById = new Map(people.map((person) => [person.id, person]))
-
-const statusOptions = [
-  {
-    icon: CircleDashedIcon,
-    label: 'Backlog',
-    tone: 'neutral',
-    value: 'backlog',
-  },
-  { icon: CircleIcon, label: 'A fazer', tone: 'neutral', value: 'todo' },
-  {
-    icon: CircleDotIcon,
-    label: 'Em andamento',
-    tone: 'info',
-    value: 'in-progress',
-  },
-  { icon: EyeIcon, label: 'Em revisão', tone: 'warning', value: 'review' },
-  { icon: CircleCheckIcon, label: 'Concluída', tone: 'success', value: 'done' },
-] as const satisfies readonly (SelectPropertyOption & { value: TaskStatus })[]
-
-const priorityOptions = [
-  {
-    icon: TriangleAlertIcon,
-    label: 'Urgente',
-    tone: 'danger',
-    value: 'urgent',
-  },
-  { icon: SignalHighIcon, label: 'Alta', tone: 'warning', value: 'high' },
-  { icon: SignalMediumIcon, label: 'Média', tone: 'info', value: 'medium' },
-  { icon: SignalLowIcon, label: 'Baixa', tone: 'neutral', value: 'low' },
-] as const satisfies readonly (SelectPropertyOption & {
-  value: TaskPriority
-})[]
-
-const isStatus = (value: string): value is TaskStatus =>
-  statusOptions.some((option) => option.value === value)
-
-const isPriority = (value: string): value is TaskPriority =>
-  priorityOptions.some((option) => option.value === value)
-
-const initialTasks: Task[] = [
-  {
-    assigneeId: 'ana',
-    description: 'Fluxo de cadastro com e-mail e login social no app.',
-    end: '2026-10-14T19:00:00.000Z',
-    estimate: 16,
-    id: 'TSK-101',
-    priority: 'urgent',
-    start: '2026-10-14T17:00:00.000Z',
-    status: 'in-progress',
-    title: 'Implementar onboarding',
-  },
-  {
-    assigneeId: 'bruno',
-    description:
-      'Revisar contratos dos endpoints de pagamento com o time de backend.',
-    end: '2026-10-13T15:30:00.000Z',
-    estimate: 4,
-    id: 'TSK-102',
-    priority: 'high',
-    start: '2026-10-13T14:00:00.000Z',
-    status: 'review',
-    title: 'Revisar API de pagamentos',
-  },
-  {
-    assigneeId: 'carla',
-    description: 'Telas finais de checkout e estados de erro no Figma.',
-    end: null,
-    estimate: 12,
-    id: 'TSK-103',
-    priority: 'high',
-    start: '2026-10-15T20:00:00.000Z',
-    status: 'todo',
-    title: 'Entregar design do checkout',
-  },
-  {
-    assigneeId: 'diego',
-    description: 'Pipeline de build para as lojas com assinatura automática.',
-    end: '2026-10-12T18:00:00.000Z',
-    estimate: 8,
-    id: 'TSK-104',
-    priority: 'medium',
-    start: '2026-10-12T16:00:00.000Z',
-    status: 'done',
-    title: 'Configurar CI mobile',
-  },
-  {
-    assigneeId: 'ana',
-    description: 'Disparo de push transacional para pedidos e lembretes.',
-    end: null,
-    estimate: 10,
-    id: 'TSK-105',
-    priority: 'medium',
-    start: '2026-10-19T21:00:00.000Z',
-    status: 'backlog',
-    title: 'Notificações push',
-  },
-  {
-    assigneeId: 'bruno',
-    description: 'Cobrir o fluxo de compra com testes ponta a ponta.',
-    end: '2026-10-16T17:00:00.000Z',
-    estimate: 6,
-    id: 'TSK-106',
-    priority: 'high',
-    start: '2026-10-16T13:00:00.000Z',
-    status: 'todo',
-    title: 'Testes E2E do checkout',
-  },
-  {
-    assigneeId: 'carla',
-    description: 'Planejamento do sprint com produto e engenharia.',
-    end: '2026-10-14T14:00:00.000Z',
-    estimate: 2,
-    id: 'TSK-107',
-    priority: 'low',
-    start: '2026-10-14T13:00:00.000Z',
-    status: 'done',
-    title: 'Planning do sprint 21',
-  },
-  {
-    assigneeId: 'diego',
-    description: 'Janela de congelamento de código antes do envio às lojas.',
-    end: '2026-10-23T03:00:00.000Z',
-    estimate: 0,
-    id: 'TSK-108',
-    isAllDay: true,
-    priority: 'urgent',
-    start: '2026-10-21T03:00:00.000Z',
-    status: 'todo',
-    title: 'Code freeze da versão 2.0',
-  },
-  {
-    assigneeId: 'ana',
-    description: 'Ajustar contraste e rótulos para leitores de tela.',
-    end: null,
-    estimate: 5,
-    id: 'TSK-109',
-    priority: 'medium',
-    start: '2026-10-20T18:00:00.000Z',
-    status: 'in-progress',
-    title: 'Auditoria de acessibilidade',
-  },
-  {
-    assigneeId: 'bruno',
-    description: 'Eventos de funil e painel de conversão do lançamento.',
-    end: null,
-    estimate: 7,
-    id: 'TSK-110',
-    priority: 'low',
-    start: '2026-10-27T20:00:00.000Z',
-    status: 'backlog',
-    title: 'Instrumentar analytics',
-  },
-  {
-    assigneeId: 'carla',
-    description: 'Capturas, descrição e palavras-chave para App Store e Play.',
-    end: '2026-10-22T18:00:00.000Z',
-    estimate: 6,
-    id: 'TSK-111',
-    priority: 'medium',
-    start: '2026-10-22T15:00:00.000Z',
-    status: 'todo',
-    title: 'Material das lojas',
-  },
-  {
-    assigneeId: 'diego',
-    description: 'Corrigir quedas reportadas no Android 15.',
-    end: null,
-    estimate: 9,
-    id: 'TSK-112',
-    priority: 'urgent',
-    start: '2026-10-15T15:00:00.000Z',
-    status: 'in-progress',
-    title: 'Crash no Android 15',
-  },
-  {
-    assigneeId: 'ana',
-    description: 'Demo da versão beta para os stakeholders.',
-    end: '2026-10-28T18:00:00.000Z',
-    estimate: 1,
-    id: 'TSK-113',
-    priority: 'high',
-    start: '2026-10-28T17:00:00.000Z',
-    status: 'todo',
-    title: 'Demo da beta',
-  },
-  {
-    assigneeId: 'bruno',
-    description: 'Documentar decisões de arquitetura do módulo offline.',
-    end: null,
-    estimate: 3,
-    id: 'TSK-114',
-    priority: 'low',
-    start: '2026-10-09T19:00:00.000Z',
-    status: 'review',
-    title: 'ADR do modo offline',
-  },
-]
-
-const STATUS_TONE: Record<TaskStatus, CalendarEventChipTone> = {
-  backlog: 'neutral',
-  done: 'success',
-  'in-progress': 'primary',
-  review: 'warning',
-  todo: 'neutral',
-}
-
-const groupings: CollectionDefinition<Task>['groupings'] = [
-  {
-    getGroupId: (task) => task.status,
-    id: 'status',
-    label: 'Status',
-    options: statusOptions.map((option) => ({
-      id: option.value,
-      label: option.label,
-    })),
-  },
-  {
-    getGroupId: (task) => task.assigneeId,
-    id: 'assignee',
-    label: 'Responsável',
-    options: people.map((person) => ({ id: person.id, label: person.name })),
-  },
-  {
-    getGroupId: (task) => task.priority,
-    id: 'priority',
-    label: 'Prioridade',
-    options: priorityOptions.map((option) => ({
-      id: option.value,
-      label: option.label,
-    })),
-  },
-]
-
-const createCollection = (
-  items: readonly Task[],
-): CollectionDefinition<Task> => ({
-  getKey: (task) => task.id,
-  getLabel: (task) => task.title,
+import {
+  createDataGridColumns,
+  createDataTableColumns,
+  type UpdateTask,
+} from './fixtures/task-fields'
+import {
+  createTaskCalendarProps,
+  moveTaskCard,
+  renderTaskKanbanCard,
+  renderTaskListRow,
+} from './fixtures/task-renderers'
+import {
+  createCollection,
   groupings,
-  items,
-})
-
-// ─── Formatação ─────────────────────────────────────────────────────────────
-
-const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
-  hour: '2-digit',
-  minute: '2-digit',
-  timeZone: TIME_ZONE,
-})
-
-const formatMinutes = (minutes: number | null) => {
-  if (minutes === null) return null
-  const hours = String(Math.floor(minutes / 60)).padStart(2, '0')
-  return `${hours}:${String(minutes % 60).padStart(2, '0')}`
-}
-
-// ─── Peças compartilhadas pelas views ───────────────────────────────────────
-
-type TaskChange = Partial<Omit<Task, 'id'>>
-type UpdateTask = (id: string, change: TaskChange) => void
-
-function StatusField({
-  onChange,
-  task,
-}: Readonly<{ onChange: UpdateTask; task: Task }>) {
-  return (
-    <SelectProperty
-      ariaLabel="Status"
-      onValueChange={(value) => {
-        if (value && isStatus(value)) onChange(task.id, { status: value })
-      }}
-      options={statusOptions}
-      value={task.status}
-    />
-  )
-}
-
-const personOptions: readonly PersonPropertyOption[] = people.map((person) => ({
-  fallback: person.initials,
-  label: person.name,
-  value: person.id,
-}))
-
-function AssigneeField({
-  display = 'full',
-  onChange,
-  task,
-  variant,
-}: Readonly<{
-  display?: 'avatar' | 'full'
-  onChange: UpdateTask
-  task: Task
-  variant?: 'badge' | 'plain'
-}>) {
-  return (
-    <PersonProperty
-      ariaLabel="Responsável"
-      display={display}
-      onValueChange={(value) => onChange(task.id, { assigneeId: value })}
-      options={personOptions}
-      value={task.assigneeId}
-      variant={variant}
-    />
-  )
-}
-
-const dayKeyFormatter = new Intl.DateTimeFormat('en-CA', {
-  day: '2-digit',
-  month: '2-digit',
-  timeZone: TIME_ZONE,
-  year: 'numeric',
-})
-
-/** Dia civil no fuso da coleção, como `YYYY-MM-DD`. */
-const dayKey = (iso: string) => dayKeyFormatter.format(new Date(iso))
-
-const dueOf = (task: Task) => task.end ?? task.start
-
-/**
- * Mudar o prazo desloca a janela inteira pelos dias de diferença: início e fim
- * andam juntos, e o horário de cada um se mantém — o Calendário segue coerente.
- */
-const moveDue = (task: Task, picked: string): TaskChange => {
-  const delta =
-    Date.parse(`${dayKey(picked)}T00:00:00Z`) -
-    Date.parse(`${dayKey(dueOf(task))}T00:00:00Z`)
-  const shift = (iso: string) => new Date(Date.parse(iso) + delta).toISOString()
-
-  return { end: task.end ? shift(task.end) : null, start: shift(task.start) }
-}
-
-function DueField({
-  onChange,
-  task,
-  variant,
-}: Readonly<{
-  onChange: UpdateTask
-  task: Task
-  variant?: 'badge' | 'plain'
-}>) {
-  return (
-    <DateProperty
-      allowClear={false}
-      ariaLabel="Prazo"
-      isOverdue={
-        task.status !== 'done' && Date.parse(dueOf(task)) < NOW.getTime()
-      }
-      locale="pt-BR"
-      onValueChange={(value) => {
-        if (value) onChange(task.id, moveDue(task, value))
-      }}
-      timeZone={TIME_ZONE}
-      value={dueOf(task)}
-      variant={variant}
-    />
-  )
-}
-
-function EstimateField({
-  onChange,
-  task,
-}: Readonly<{ onChange: UpdateTask; task: Task }>) {
-  return (
-    <TextProperty
-      ariaLabel="Estimativa"
-      editing="inline"
-      fallback="Sem estimativa"
-      inputPlaceholder="Ex.: 8 h"
-      onCommit={(value) => {
-        const hours = Number.parseFloat(value ?? '')
-        onChange(task.id, {
-          estimate: Number.isFinite(hours) && hours >= 0 ? hours : 0,
-        })
-      }}
-      value={`${task.estimate} h`}
-    />
-  )
-}
-
-function PriorityField({
-  onChange,
-  task,
-}: Readonly<{ onChange: UpdateTask; task: Task }>) {
-  return (
-    <SelectProperty
-      ariaLabel="Prioridade"
-      onValueChange={(value) => {
-        if (value && isPriority(value)) onChange(task.id, { priority: value })
-      }}
-      options={priorityOptions}
-      value={task.priority}
-    />
-  )
-}
-
-// ─── Colunas das tabelas ────────────────────────────────────────────────────
-
-/**
- * As células da planilha são as properties da UI: o grid só posiciona, e cada
- * property abre o próprio controle e avisa a troca para a coleção.
- */
-const createDataGridColumns = (
-  onChange: UpdateTask,
-): DataGridColumnDef<Task>[] => [
-  createSelectColumn<Task>(),
-  {
-    accessorKey: 'title',
-    enableHiding: false,
-    header: 'Tarefa',
-    meta: { label: 'Tarefa', type: 'title' },
-    minSize: 240,
-  },
-  {
-    accessorKey: 'status',
-    cell: ({ row }) => <StatusField onChange={onChange} task={row.original} />,
-    header: 'Status',
-    meta: { label: 'Status', type: 'status' },
-    minSize: 170,
-  },
-  {
-    accessorKey: 'priority',
-    cell: ({ row }) => (
-      <PriorityField onChange={onChange} task={row.original} />
-    ),
-    header: 'Prioridade',
-    meta: { label: 'Prioridade', type: 'select' },
-    minSize: 150,
-  },
-  {
-    accessorKey: 'assigneeId',
-    cell: ({ row }) => (
-      <AssigneeField onChange={onChange} task={row.original} />
-    ),
-    header: 'Responsável',
-    meta: { label: 'Responsável', type: 'person' },
-    minSize: 190,
-  },
-  {
-    accessorFn: dueOf,
-    cell: ({ row }) => <DueField onChange={onChange} task={row.original} />,
-    header: 'Prazo',
-    id: 'due',
-    meta: { label: 'Prazo', type: 'date' },
-    minSize: 150,
-  },
-  {
-    accessorKey: 'estimate',
-    cell: ({ row }) => (
-      <EstimateField onChange={onChange} task={row.original} />
-    ),
-    header: 'Estimativa',
-    meta: { label: 'Estimativa', type: 'number' },
-    minSize: 150,
-  },
-]
-
-const createDataTableColumns = (
-  onChange: UpdateTask,
-): DataTableColumnDef<Task>[] => [
-  {
-    cell: ({ row }) => (
-      <Checkbox
-        aria-label={`Selecionar ${row.original.title}`}
-        checked={row.getIsSelected()}
-        disabled={!row.getCanSelect()}
-        onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
-      />
-    ),
-    header: ({ table }) => (
-      <Checkbox
-        aria-label="Selecionar todas as tarefas"
-        checked={table.getIsAllPageRowsSelected()}
-        indeterminate={
-          table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
-        }
-        onCheckedChange={(value) =>
-          table.toggleAllPageRowsSelected(Boolean(value))
-        }
-      />
-    ),
-    id: 'select',
-  },
-  {
-    accessorKey: 'title',
-    cell: ({ row }) => (
-      <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="font-medium">{row.original.title}</span>
-        <span className="truncate text-muted-foreground text-xs">
-          {row.original.id} · {row.original.description}
-        </span>
-      </div>
-    ),
-    footer: ({ table }) => `${table.getRowCount()} tarefas`,
-    header: 'Tarefa',
-  },
-  {
-    accessorKey: 'status',
-    cell: ({ row }) => <StatusField onChange={onChange} task={row.original} />,
-    header: 'Status',
-  },
-  {
-    accessorKey: 'priority',
-    cell: ({ row }) => (
-      <PriorityField onChange={onChange} task={row.original} />
-    ),
-    header: 'Prioridade',
-  },
-  {
-    accessorKey: 'assigneeId',
-    cell: ({ row }) => (
-      <AssigneeField onChange={onChange} task={row.original} />
-    ),
-    header: 'Responsável',
-  },
-  {
-    cell: ({ row }) => <DueField onChange={onChange} task={row.original} />,
-    header: 'Prazo',
-    id: 'due',
-  },
-  {
-    accessorKey: 'estimate',
-    cell: ({ row }) => (
-      <EstimateField onChange={onChange} task={row.original} />
-    ),
-    footer: ({ table }) => (
-      <span className="tabular-nums">
-        {table
-          .getPrePaginatedRowModel()
-          .rows.reduce((sum, row) => sum + row.original.estimate, 0)}{' '}
-        h
-      </span>
-    ),
-    header: 'Estimativa',
-  },
-]
+  initialTasks,
+  people,
+  priorityOptions,
+  type Task,
+  type TaskPriority,
+} from './fixtures/tasks'
 
 // ─── Toolbar ────────────────────────────────────────────────────────────────
 
@@ -797,19 +202,7 @@ function TasksShowcase({
     )
   }
 
-  const moveCard = ({ card, targetColumnId }: KanbanCardMove<Task>) => {
-    if (preferences.groupBy === 'status' && isStatus(targetColumnId))
-      updateTask(card.id, { status: targetColumnId })
-    else if (preferences.groupBy === 'priority' && isPriority(targetColumnId))
-      updateTask(card.id, { priority: targetColumnId })
-    else if (
-      preferences.groupBy === 'assignee' &&
-      peopleById.has(targetColumnId)
-    )
-      updateTask(card.id, { assigneeId: targetColumnId })
-    else return false
-    return true
-  }
+  const moveCard = moveTaskCard(preferences.groupBy, updateTask)
 
   const activeFilterCount =
     assigneeFilter.length + priorityFilter.length + (search ? 1 : 0)
@@ -876,14 +269,15 @@ function TasksShowcase({
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-4 p-6">
-      <header className="flex flex-col gap-3">
-        <div>
-          <h1 className="font-semibold text-2xl">Lançamento do app 2.0</h1>
-          <p className="text-muted-foreground text-sm">
-            Todas as tarefas do lançamento em uma coleção — troque a view em
-            Exibição.
-          </p>
-        </div>
+      <header>
+        <h1 className="font-semibold text-2xl">Lançamento do app 2.0</h1>
+        <p className="text-muted-foreground text-sm">
+          Todas as tarefas do lançamento em uma coleção — troque a view em
+          Exibição.
+        </p>
+      </header>
+
+      <div className="flex min-h-0 flex-1 flex-col gap-3">
         <CollectionToolbar
           aria-label="Controles da coleção de tarefas"
           endSlot={
@@ -1081,179 +475,79 @@ function TasksShowcase({
           }
           variant="plain"
         />
-      </header>
 
-      <section
-        aria-label="Visualização da coleção"
-        className="flex min-h-0 flex-1 flex-col gap-2"
-      >
-        <CollectionViewOutlet
-          calendar={{
-            anchor: ANCHOR,
-            getItemSchedule: (task) => ({
-              end: task.end ? new Date(task.end) : null,
-              isAllDay: task.isAllDay ?? false,
-              start: new Date(task.start),
-            }),
-            loadingItemLabel: 'Carregando tarefa',
-            mode: calendarMode,
-            now: NOW,
-            onItemReschedule: ({ end, isAllDay, item, start }) => {
-              updateTask(item.id, {
-                end: end?.toISOString() ?? null,
-                isAllDay,
-                start: start.toISOString(),
-              })
-              return true
-            },
-            renderItem: (task: Task, context: CalendarItemRenderContext) => {
-              const inTimeGrid = context.placement === 'time-grid'
-              return (
-                <CalendarEventChip
-                  completed={task.status === 'done'}
-                  display={inTimeGrid ? 'block' : 'chip'}
-                  tone={
-                    task.priority === 'urgent' && task.status !== 'done'
-                      ? 'destructive'
-                      : STATUS_TONE[task.status]
-                  }
-                >
-                  {inTimeGrid ? (
-                    <CalendarEventChipTime>
-                      {formatMinutes(context.startMinutes)}
-                    </CalendarEventChipTime>
-                  ) : task.isAllDay ? null : (
-                    <CalendarEventChipTime>
-                      {timeFormatter.format(new Date(task.start))}
-                    </CalendarEventChipTime>
+        <section
+          aria-label="Visualização da coleção"
+          className="flex min-h-0 flex-1 flex-col gap-2"
+        >
+          <CollectionViewOutlet
+            calendar={{
+              ...createTaskCalendarProps(updateTask),
+              mode: calendarMode,
+            }}
+            collection={collection}
+            datagrid={{
+              'aria-label': 'Tarefas do lançamento',
+              emptyMessage: 'Nenhuma tarefa com esses filtros.',
+              getRowGroup: grouping ? groupRowLabel : undefined,
+              selectionActions: ({
+                clearSelection,
+                selectedCount,
+                selectedRows,
+              }) => (
+                <ActionBar
+                  actions={selectionActions(
+                    selectedRows.map((task) => task.id),
+                    clearSelection,
                   )}
-                  <CalendarEventChipTitle>{task.title}</CalendarEventChipTitle>
-                  <CalendarEventChipOpenTrigger
-                    aria-label={`Abrir ${task.title}`}
-                  />
-                </CalendarEventChip>
-              )
-            },
-            timeZone: TIME_ZONE,
-            weekStartsOn: 1,
-          }}
-          collection={collection}
-          datagrid={{
-            'aria-label': 'Tarefas do lançamento',
-            emptyMessage: 'Nenhuma tarefa com esses filtros.',
-            getRowGroup: grouping ? groupRowLabel : undefined,
-            selectionActions: ({
-              clearSelection,
-              selectedCount,
-              selectedRows,
-            }) => (
+                  onClearSelection={clearSelection}
+                  selectedCount={selectedCount}
+                  selectedRows={selectedRows}
+                />
+              ),
+              table: dataGridTable,
+            }}
+            datatable={{
+              'aria-label': 'Tarefas do lançamento',
+              bordered: true,
+              emptyMessage: 'Nenhuma tarefa com esses filtros.',
+              table: dataTable,
+            }}
+            kanban={{
+              emptyColumnLabel: 'Nenhuma tarefa nesta coluna.',
+              getColumnActions: (column) => ({
+                addLabel: `Nova tarefa em ${column.title}`,
+                onAddCard: () => undefined,
+              }),
+              onMoveCard: moveCard,
+            }}
+            list={{
+              collapseEmptyGroups: true,
+              emptyGroupLabel: 'Nenhuma tarefa neste grupo.',
+              renderGroupTitle: (group) => group.label,
+            }}
+            renderKanbanItem={renderTaskKanbanCard(
+              preferences.groupBy,
+              updateTask,
+            )}
+            renderListItem={renderTaskListRow(updateTask)}
+          />
+          {view === 'datatable' ? (
+            <>
+              <DataGridPagination table={dataTable} />
               <ActionBar
                 actions={selectionActions(
-                  selectedRows.map((task) => task.id),
-                  clearSelection,
+                  dataTableSelection.map((task) => task.id),
+                  () => dataTable.resetRowSelection(),
                 )}
-                onClearSelection={clearSelection}
-                selectedCount={selectedCount}
-                selectedRows={selectedRows}
+                onClearSelection={() => dataTable.resetRowSelection()}
+                selectedCount={dataTableSelection.length}
+                selectedRows={dataTableSelection}
               />
-            ),
-            table: dataGridTable,
-          }}
-          datatable={{
-            'aria-label': 'Tarefas do lançamento',
-            bordered: true,
-            emptyMessage: 'Nenhuma tarefa com esses filtros.',
-            table: dataTable,
-          }}
-          kanban={{
-            emptyColumnLabel: 'Nenhuma tarefa nesta coluna.',
-            getColumnActions: (column) => ({
-              addLabel: `Nova tarefa em ${column.title}`,
-              onAddCard: () => undefined,
-            }),
-            onMoveCard: moveCard,
-          }}
-          list={{
-            collapseEmptyGroups: true,
-            emptyGroupLabel: 'Nenhuma tarefa neste grupo.',
-            renderGroupTitle: (group) => group.label,
-          }}
-          renderKanbanItem={(task) => (
-            <KanbanCard key={task.id} variant="interactive">
-              <KanbanCardHeader>
-                <KanbanCardTitle>{task.title}</KanbanCardTitle>
-                <KanbanCardDescription>
-                  {task.description}
-                </KanbanCardDescription>
-              </KanbanCardHeader>
-              <KanbanCardBody>
-                <KanbanCardBodyRow data-kanban-card-action="">
-                  {preferences.groupBy === 'status' ? (
-                    <PriorityField onChange={updateTask} task={task} />
-                  ) : (
-                    <StatusField onChange={updateTask} task={task} />
-                  )}
-                </KanbanCardBodyRow>
-              </KanbanCardBody>
-              <KanbanCardFooter>
-                <div className="flex min-w-0 flex-1 items-center justify-between gap-3 text-muted-foreground text-xs">
-                  <DueField onChange={updateTask} task={task} variant="plain" />
-                  <AssigneeField
-                    display="avatar"
-                    onChange={updateTask}
-                    task={task}
-                    variant="plain"
-                  />
-                </div>
-              </KanbanCardFooter>
-            </KanbanCard>
-          )}
-          renderListItem={(task) => (
-            <ListItem key={task.id}>
-              <ListItemBody>
-                <ListItemTitle>
-                  <ListItemTitleTrigger>{task.title}</ListItemTitleTrigger>
-                </ListItemTitle>
-                <ListItemDescription>
-                  {task.id} · {task.description}
-                </ListItemDescription>
-              </ListItemBody>
-              <ListItemTrailing>
-                <ListItemField>
-                  <StatusField onChange={updateTask} task={task} />
-                </ListItemField>
-                <ListItemField>
-                  <PriorityField onChange={updateTask} task={task} />
-                </ListItemField>
-                <ListItemField>
-                  <DueField onChange={updateTask} task={task} />
-                </ListItemField>
-                <ListItemField always>
-                  <AssigneeField
-                    display="avatar"
-                    onChange={updateTask}
-                    task={task}
-                  />
-                </ListItemField>
-              </ListItemTrailing>
-            </ListItem>
-          )}
-        />
-        {view === 'datatable' ? (
-          <>
-            <DataGridPagination table={dataTable} />
-            <ActionBar
-              actions={selectionActions(
-                dataTableSelection.map((task) => task.id),
-                () => dataTable.resetRowSelection(),
-              )}
-              onClearSelection={() => dataTable.resetRowSelection()}
-              selectedCount={dataTableSelection.length}
-              selectedRows={dataTableSelection}
-            />
-          </>
-        ) : null}
-      </section>
+            </>
+          ) : null}
+        </section>
+      </div>
     </main>
   )
 }

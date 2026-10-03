@@ -1,169 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  DataGridPagination,
-  DataTable,
-  type DataTableColumnDef,
-  SelectProperty,
-  type SelectPropertyOption,
-  useDataTable,
-} from '@tc96/parttens'
-import { Checkbox } from '@tc96/ui/checkbox'
-import {
-  CircleCheckIcon,
-  CircleDashedIcon,
-  CircleXIcon,
-  ClockIcon,
-} from 'lucide-react'
-import { type ReactElement, useMemo, useState } from 'react'
+import { DataGridPagination, DataTable, useDataTable } from '@tc96/parttens'
+import { type ReactElement, useMemo } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
-
-interface Project {
-  budget: number
-  id: string
-  project: string
-  status: 'Paid' | 'Unpaid' | 'Pending' | 'Failed'
-  team: string
-}
-
-const projects: Project[] = [
-  {
-    budget: 12500,
-    id: '1',
-    project: 'Website Redesign',
-    status: 'Paid',
-    team: 'Frontend Team',
-  },
-  {
-    budget: 8750,
-    id: '2',
-    project: 'Mobile App',
-    status: 'Unpaid',
-    team: 'Mobile Team',
-  },
-  {
-    budget: 5200,
-    id: '3',
-    project: 'API Integration',
-    status: 'Pending',
-    team: 'Backend Team',
-  },
-  {
-    budget: 3800,
-    id: '4',
-    project: 'Database Migration',
-    status: 'Paid',
-    team: 'DevOps Team',
-  },
-  {
-    budget: 7200,
-    id: '5',
-    project: 'User Dashboard',
-    status: 'Paid',
-    team: 'UX Team',
-  },
-  {
-    budget: 2100,
-    id: '6',
-    project: 'Security Audit',
-    status: 'Failed',
-    team: 'Security Team',
-  },
-]
-
-const statusOptions: readonly SelectPropertyOption[] = [
-  { icon: CircleCheckIcon, label: 'Paid', tone: 'success', value: 'Paid' },
-  { icon: CircleDashedIcon, label: 'Unpaid', tone: 'neutral', value: 'Unpaid' },
-  { icon: ClockIcon, label: 'Pending', tone: 'warning', value: 'Pending' },
-  { icon: CircleXIcon, label: 'Failed', tone: 'danger', value: 'Failed' },
-]
-
-const isStatus = (value: string): value is Project['status'] =>
-  statusOptions.some((option) => option.value === value)
-
-const currency = new Intl.NumberFormat('en-US', {
-  currency: 'USD',
-  maximumFractionDigits: 0,
-  style: 'currency',
-})
-
-/**
- * O status é uma propriedade de catálogo fechado: o `SelectProperty` abre o
- * select e avisa a troca, e quem escreve na coleção é o consumer.
- */
-const createColumns = (
-  onStatusChange: (id: string, status: Project['status']) => void,
-): DataTableColumnDef<Project>[] => [
-  {
-    cell: ({ row }) => (
-      <Checkbox
-        aria-label="Select row"
-        checked={row.getIsSelected()}
-        disabled={!row.getCanSelect()}
-        onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
-      />
-    ),
-    header: ({ table }) => (
-      <Checkbox
-        aria-label="Select all"
-        checked={table.getIsAllPageRowsSelected()}
-        indeterminate={
-          table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
-        }
-        onCheckedChange={(value) =>
-          table.toggleAllPageRowsSelected(Boolean(value))
-        }
-      />
-    ),
-    id: 'select',
-  },
-  {
-    accessorKey: 'project',
-    cell: ({ row }) => (
-      <div className="font-medium">{row.original.project}</div>
-    ),
-    footer: 'Total Budget',
-    header: 'Project',
-  },
-  {
-    accessorKey: 'status',
-    cell: ({ row }) => (
-      <SelectProperty
-        ariaLabel="Status"
-        onValueChange={(value) => {
-          if (value && isStatus(value)) onStatusChange(row.id, value)
-        }}
-        options={statusOptions}
-        value={row.original.status}
-      />
-    ),
-    header: 'Status',
-  },
-  {
-    accessorKey: 'team',
-    header: 'Team',
-  },
-  {
-    accessorKey: 'budget',
-    cell: ({ row }) => (
-      <div className="text-right">{currency.format(row.original.budget)}</div>
-    ),
-    footer: ({ table }) => (
-      <div className="text-right">
-        {currency.format(
-          table
-            .getCoreRowModel()
-            .rows.reduce((sum, row) => sum + row.original.budget, 0),
-        )}
-      </div>
-    ),
-    header: () => <div className="text-right">Budget</div>,
-  },
-]
+import { createDataTableColumns } from '../fixtures/task-fields'
+import { useTasks } from '../fixtures/task-renderers'
+import { initialTasks, type Task } from '../fixtures/tasks'
 
 interface DataTableExampleProps {
   /** Coleção exibida. Passe uma lista vazia para ver a mensagem de vazio. */
-  data?: Project[]
+  data?: Task[]
   /** Troca as linhas por esqueletos de carregamento. */
   isLoading?: boolean
   /** Pagina no cliente e compõe o rodapé de paginação abaixo da tabela. */
@@ -175,36 +21,29 @@ interface DataTableExampleProps {
  * hook monta a tabela, a view desenha. Sem `CardFrame` — a tabela fica solta.
  */
 function DataTableExample({
-  data = projects,
+  data = initialTasks,
   isLoading = false,
   paginated = false,
 }: Readonly<DataTableExampleProps>): ReactElement {
-  const [rows, setRows] = useState(data)
+  const { tasks, updateTask } = useTasks(data)
   const columns = useMemo(
-    () =>
-      createColumns((id, status) =>
-        setRows((current) =>
-          current.map((project) =>
-            project.id === id ? { ...project, status } : project,
-          ),
-        ),
-      ),
-    [],
+    () => createDataTableColumns(updateTask),
+    [updateTask],
   )
-  const { table } = useDataTable<Project>({
+  const { table } = useDataTable<Task>({
     columns,
-    data: rows,
+    data: tasks,
     enablePagination: paginated,
     enableRowSelection: true,
-    getRowId: (project) => project.id,
-    pageSize: 3,
+    getRowId: (task) => task.id,
+    pageSize: 5,
   })
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-2 p-4">
       <DataTable
-        aria-label="Projetos"
-        emptyMessage="No results."
+        aria-label="Tarefas do lançamento"
+        emptyMessage="Nenhuma tarefa para exibir."
         isLoading={isLoading}
         table={table}
       />
@@ -247,11 +86,14 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    await expect(canvas.getByText('$39,550')).toBeTruthy()
-    await userEvent.click(canvas.getByRole('checkbox', { name: 'Select all' }))
+    await expect(canvas.getByText('14 tarefas')).toBeTruthy()
+    await expect(canvas.getByText('89 h')).toBeTruthy()
+    await userEvent.click(
+      canvas.getByRole('checkbox', { name: 'Selecionar todas as tarefas' }),
+    )
     await expect(
       canvasElement.querySelectorAll('tbody tr[data-state="selected"]'),
-    ).toHaveLength(projects.length)
+    ).toHaveLength(initialTasks.length)
     await expect(
       canvasElement.querySelector('[data-slot="card-frame"]'),
     ).toBeNull()
@@ -262,19 +104,20 @@ export const Default: Story = {
 export const EditStatus: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    // O popup do Select sai em portal — vive fora de `canvasElement`.
     const body = within(canvasElement.ownerDocument.body)
 
     await userEvent.click(
-      await canvas.findByRole('combobox', { name: 'Status: Unpaid' }),
+      (await canvas.findAllByRole('combobox', { name: 'Status: Backlog' }))[0],
     )
-    await userEvent.click(await body.findByRole('option', { name: 'Paid' }))
+    await userEvent.click(
+      await body.findByRole('option', { name: 'Em revisão' }),
+    )
     await expect(
-      canvas.queryByRole('combobox', { name: 'Status: Unpaid' }),
-    ).toBeNull()
+      canvas.getAllByRole('combobox', { name: 'Status: Backlog' }),
+    ).toHaveLength(1)
     await expect(
-      canvas.getAllByRole('combobox', { name: 'Status: Paid' }),
-    ).toHaveLength(4)
+      canvas.getAllByRole('combobox', { name: 'Status: Em revisão' }),
+    ).toHaveLength(3)
   },
 }
 

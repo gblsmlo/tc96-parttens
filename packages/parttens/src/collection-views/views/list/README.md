@@ -6,6 +6,10 @@
 
 Each item is rendered through a memoized wrapper keyed on `{ item, renderItem }`. `renderItem` re-runs only when its identity changes or when the item object itself is replaced; a parent re-render, a group toggle or a replaced sibling does not call it. A renderer that reads other state (selection, a hover id, a store) through a stable identity goes stale: either pass a new `renderItem` when that state changes (for example with `useCallback` and the state in its dependencies) or put the state inside the item object.
 
+## ListRow
+
+`ListRow` is a ready-made row for `renderItem`, with a left side (`icon`, `title`, `description`) and a right side (`value`, `properties`, `actions`). `description` accepts a node or an array of nodes, joined by a `·`. `ListItem` alone is an `article` with no click contract; `ListRow` adds it through `onClick`, which makes the title the keyboard-reachable trigger of the whole row while `properties` and `actions` remain independently clickable.
+
 ## Benchmark
 
 Reproduce from the repo root:

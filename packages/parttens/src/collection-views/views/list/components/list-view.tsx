@@ -1,6 +1,7 @@
 'use client'
 
-import { type ReactNode, useMemo, useState } from 'react'
+import { Separator } from '@tc96/ui/separator'
+import { Fragment, type ReactNode, useMemo, useState } from 'react'
 
 import { projectCollection } from '../../../shared/lib/project-collection'
 import type {
@@ -25,6 +26,7 @@ export interface ListViewProps<TItem> {
    */
   collapseEmptyGroups?: boolean
   defaultCollapsedGroupIds?: readonly string[]
+  separated?: boolean
   emptyGroupLabel?: ReactNode | ((group: CollectionGroup<TItem>) => ReactNode)
   getGroupActions?: (
     group: CollectionGroup<TItem>,
@@ -46,6 +48,7 @@ export function ListView<TItem>({
   collapsedGroupIds: controlledCollapsedGroupIds,
   collapseEmptyGroups = false,
   defaultCollapsedGroupIds = [],
+  separated = false,
   emptyGroupLabel = 'No items in this group.',
   getGroupActions,
   grouping,
@@ -118,12 +121,13 @@ export function ListView<TItem>({
                     {...(loadingItemLabel ? { label: loadingItemLabel } : {})}
                   />
                 ))
-              : collection.items.map((item) => (
-                  <ListViewItem
-                    item={item}
-                    key={collection.getKey(item)}
-                    renderItem={renderItem}
-                  />
+              : collection.items.map((item, position) => (
+                  <Fragment key={collection.getKey(item)}>
+                    {separated && position > 0 ? (
+                      <Separator className="bg-border/40" />
+                    ) : null}
+                    <ListViewItem item={item} renderItem={renderItem} />
+                  </Fragment>
                 ))}
           </div>
         </ListItemHeadingLevelContext.Provider>
@@ -134,6 +138,7 @@ export function ListView<TItem>({
           return (
             <ListGroup
               collapsed={isCollapsed(group)}
+              separated={separated}
               emptyLabel={
                 typeof emptyGroupLabel === 'function'
                   ? emptyGroupLabel(group)

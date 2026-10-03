@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { KanbanView } from '@tc96/parttens'
+import { projectTaskColumns } from './kanban-tasks'
 
 const meta = {
   component: KanbanView,
@@ -13,17 +14,7 @@ type Story = StoryObj<typeof meta>
 
 export const Board: Story = {
   args: {
-    columns: [
-      { cards: [], color: '#6b7280', count: 0, id: 'todo', title: 'To do' },
-      {
-        cards: [],
-        color: '#3b82f6',
-        count: 0,
-        id: 'in-progress',
-        title: 'In progress',
-      },
-      { cards: [], color: '#22c55e', count: 0, id: 'done', title: 'Done' },
-    ],
+    columns: projectTaskColumns([]),
     getKey: () => '',
     loading: true,
     loadingCardLabel: 'Carregando card',

@@ -1,15 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  CollectionToolbar,
-  KanbanCard,
-  KanbanCardHeader,
-  KanbanCardTitle,
-  type KanbanColumnData,
-  KanbanView,
-  MenuCheckboxOption,
-  ViewSettingsMenu,
-  ViewSettingsSection,
-} from '@tc96/parttens'
+import { type KanbanColumnData, KanbanView } from '@tc96/parttens'
 import {
   Menu,
   MenuItem,
@@ -19,30 +9,14 @@ import {
 } from '@tc96/ui/menu'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { ChevronRightIcon, EllipsisIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { renderTaskKanbanCard, useTasks } from '../../fixtures/task-renderers'
+import type { Task, TaskStatus } from '../../fixtures/tasks'
+import { projectTaskColumns } from './kanban-tasks'
 
-interface ExampleCard {
-  id: string
-  title: string
-}
-
-const initialColumns: KanbanColumnData<ExampleCard>[] = [
-  {
-    cards: [{ id: 'lead-1', title: 'Review the proposal' }],
-    color: '#ef4444',
-    count: 1,
-    id: 'lost',
-    title: 'Lost',
-  },
-  {
-    cards: [{ id: 'lead-2', title: 'Prepare a follow-up' }],
-    color: '#3b82f6',
-    count: 1,
-    id: 'active',
-    title: 'Active',
-  },
-  { cards: [], color: '#22c55e', count: 0, id: 'done', title: 'Done' },
-]
+type ColumnState = Partial<
+  Pick<KanbanColumnData<Task>, 'collapsed' | 'color' | 'hidden'>
+>
 
 const colors = [
   { label: 'Vermelho', value: '#ef4444' },
@@ -63,7 +37,7 @@ function ColumnColorPopover({
   column,
   onChange,
 }: Readonly<{
-  column: KanbanColumnData<ExampleCard>
+  column: KanbanColumnData<Task>
   onChange: (color: string) => void
 }>) {
   return (
@@ -118,81 +92,52 @@ function ColumnExample({
   collapsedColumnId?: string
   hiddenColumnId?: string
 }) {
-  const [columns, setColumns] = useState((): KanbanColumnData<ExampleCard>[] =>
-    initialColumns.map((column) => ({
-      ...column,
-      cards: [...column.cards],
-      collapsed: column.id === collapsedColumnId,
-      hidden: column.id === hiddenColumnId,
-    })),
+  const { setTasks, tasks, updateTask } = useTasks()
+  const [states, setStates] = useState<Record<string, ColumnState>>({})
+  const columns = useMemo(
+    () =>
+      projectTaskColumns(tasks).map((column) => {
+        const state = states[column.id]
+        return {
+          ...column,
+          collapsed: state?.collapsed ?? column.id === collapsedColumnId,
+          color: state?.color ?? column.color,
+          hidden: state?.hidden ?? column.id === hiddenColumnId,
+        }
+      }),
+    [collapsedColumnId, hiddenColumnId, states, tasks],
   )
-  const hiddenCount = columns.filter((column) => column.hidden).length
   const updateColumn = (
     id: string,
-    update: (
-      column: KanbanColumnData<ExampleCard>,
-    ) => KanbanColumnData<ExampleCard>,
+    update: (column: KanbanColumnData<Task>) => ColumnState,
   ) =>
-    setColumns((current) =>
-      current.map((column) => (column.id === id ? update(column) : column)),
-    )
-  const addCard = (id: string) =>
-    updateColumn(id, (column) => {
-      const next = column.cards.length + 1
-      return {
-        ...column,
-        cards: [
-          ...column.cards,
-          { id: `${id}-${next}`, title: `New card ${next}` },
-        ],
-        count: column.count + 1,
-      }
+    setStates((current) => {
+      const column = columns.find((candidate) => candidate.id === id)
+      return column ? { ...current, [id]: update(column) } : current
     })
+  const addCard = (id: string) =>
+    setTasks((current) => [
+      ...current,
+      {
+        assigneeId: 'ana',
+        description: 'Tarefa criada pela coluna.',
+        end: null,
+        estimate: 0,
+        id: `TSK-${200 + current.length}`,
+        priority: 'medium',
+        start: '2026-10-14T15:00:00.000Z',
+        status: id as TaskStatus,
+        title: 'Nova tarefa',
+      },
+    ])
 
   return (
     <div className="flex h-144 min-w-0 flex-col gap-3 p-4">
-      <CollectionToolbar
-        aria-label="Ações da coleção"
-        endSlot={
-          <ViewSettingsMenu
-            activeFilterCount={hiddenCount}
-            clearLabel="Restaurar colunas"
-            onClearFilters={() =>
-              setColumns((current) =>
-                current.map((column) => ({ ...column, hidden: false })),
-              )
-            }
-          >
-            <ViewSettingsSection label="Colunas">
-              {columns.map((column) => (
-                <MenuCheckboxOption
-                  checked={!column.hidden}
-                  key={column.id}
-                  onCheckedChange={(checked) =>
-                    updateColumn(column.id, (current) => ({
-                      ...current,
-                      hidden: !checked,
-                    }))
-                  }
-                >
-                  {column.title}
-                </MenuCheckboxOption>
-              ))}
-            </ViewSettingsSection>
-          </ViewSettingsMenu>
-        }
-      />
       <KanbanView
         columns={columns}
         getColumnActions={() => ({ onAddCard: addCard })}
-        getKey={(card) => card.id}
-        renderCard={(card) => (
-          <KanbanCard>
-            <KanbanCardHeader>
-              <KanbanCardTitle>{card.title}</KanbanCardTitle>
-            </KanbanCardHeader>
-          </KanbanCard>
-        )}
+        getKey={(task) => task.id}
+        renderCard={renderTaskKanbanCard('status', updateTask)}
         renderHeaderActions={(column) => (
           <Menu>
             <MenuTrigger
@@ -211,7 +156,7 @@ function ColumnExample({
                 column={column}
                 onChange={(color) =>
                   updateColumn(column.id, (current) => ({
-                    ...current,
+                    ...states[current.id],
                     color,
                   }))
                 }
@@ -220,7 +165,7 @@ function ColumnExample({
               <MenuItem
                 onClick={() =>
                   updateColumn(column.id, (current) => ({
-                    ...current,
+                    ...states[current.id],
                     collapsed: !current.collapsed,
                   }))
                 }
@@ -230,7 +175,7 @@ function ColumnExample({
               <MenuItem
                 onClick={() =>
                   updateColumn(column.id, (current) => ({
-                    ...current,
+                    ...states[current.id],
                     hidden: true,
                   }))
                 }
@@ -256,5 +201,5 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = { args: {} }
-export const Collapsed: Story = { args: { collapsedColumnId: 'lost' } }
-export const Hidden: Story = { args: { hiddenColumnId: 'lost' } }
+export const Collapsed: Story = { args: { collapsedColumnId: 'backlog' } }
+export const Hidden: Story = { args: { hiddenColumnId: 'backlog' } }

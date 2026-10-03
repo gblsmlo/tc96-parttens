@@ -6,8 +6,9 @@ import {
   CollapsibleTrigger,
 } from '@tc96/ui/collapsible'
 import { Empty, EmptyDescription } from '@tc96/ui/empty'
+import { Separator } from '@tc96/ui/separator'
 import { ChevronDownIcon, ChevronRightIcon, PlusIcon } from 'lucide-react'
-import { type ReactNode, useId } from 'react'
+import { Fragment, type ReactNode, useId } from 'react'
 import type { CollectionGroup } from '../../../types/collection'
 import { ListItemSkeleton } from './list-item-skeleton'
 import { ListViewItem } from './list-view-item'
@@ -20,6 +21,7 @@ export interface ListGroupActions {
 export interface ListGroupProps<TItem> {
   actions?: ListGroupActions
   collapsed: boolean
+  separated?: boolean
   emptyLabel: ReactNode
   group: CollectionGroup<TItem>
   onCollapsedChange: (collapsed: boolean) => void
@@ -34,6 +36,7 @@ export interface ListGroupProps<TItem> {
 export function ListGroup<TItem>({
   actions,
   collapsed,
+  separated = false,
   emptyLabel,
   getKey,
   group,
@@ -121,12 +124,13 @@ export function ListGroup<TItem>({
                 />
               ))
             ) : group.items.length ? (
-              group.items.map((item) => (
-                <ListViewItem
-                  item={item}
-                  key={getKey(item)}
-                  renderItem={renderItem}
-                />
+              group.items.map((item, position) => (
+                <Fragment key={getKey(item)}>
+                  {separated && position > 0 ? (
+                    <Separator className="bg-border/40" />
+                  ) : null}
+                  <ListViewItem item={item} renderItem={renderItem} />
+                </Fragment>
               ))
             ) : (
               <Empty>

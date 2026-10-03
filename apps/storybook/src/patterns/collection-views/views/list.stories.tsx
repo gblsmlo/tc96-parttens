@@ -1,97 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
-  type CollectionDefinition,
   type CollectionGroupingId,
-  ListItem,
-  ListItemBody,
   type ListItemDensity,
-  ListItemDescription,
-  ListItemField,
-  ListItemTitle,
-  ListItemTitleTrigger,
-  ListItemTrailing,
   ListView,
   type ListViewProps,
 } from '@tc96/parttens'
 import type { ReactElement } from 'react'
 import { expect } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
+import { renderTaskListRow, useTasks } from '../fixtures/task-renderers'
+import { createCollection, initialTasks, type Task } from '../fixtures/tasks'
 
-interface MechanicsItem {
-  assigneeId: string
-  description: string
-  id: string
-  statusId: string
-  title: string
-}
-
-const items: MechanicsItem[] = [
-  {
-    assigneeId: 'person-a',
-    description: 'A dense row with title and description.',
-    id: 'item-1',
-    statusId: 'todo',
-    title: 'First item',
-  },
-  {
-    assigneeId: 'person-b',
-    description: 'A second row for grouping behavior.',
-    id: 'item-2',
-    statusId: 'in-progress',
-    title: 'Second item',
-  },
-]
-
-const collection: CollectionDefinition<MechanicsItem> = {
-  getKey: (item) => item.id,
-  getLabel: (item) => item.title,
-  groupings: [
-    {
-      getGroupId: (item) => item.statusId,
-      id: 'status',
-      label: 'Status',
-      options: [
-        { id: 'todo', label: 'To do' },
-        { id: 'in-progress', label: 'In progress' },
-      ],
-    },
-    {
-      getGroupId: (item) => item.assigneeId,
-      id: 'assignee',
-      label: 'Assignee',
-      options: [
-        { id: 'person-a', label: 'Person A' },
-        { id: 'person-b', label: 'Person B' },
-      ],
-    },
-  ],
-  items,
-}
-
-const renderRow = (density: ListItemDensity) => (item: MechanicsItem) => (
-  <ListItem density={density} key={item.id}>
-    <ListItemBody>
-      <ListItemTitle>
-        <ListItemTitleTrigger>{item.title}</ListItemTitleTrigger>
-      </ListItemTitle>
-      <ListItemDescription>{item.description}</ListItemDescription>
-    </ListItemBody>
-    <ListItemTrailing>
-      <ListItemField>{item.statusId}</ListItemField>
-      <ListItemField always>{item.assigneeId}</ListItemField>
-    </ListItemTrailing>
-  </ListItem>
-)
+const TasksListView = ListView as (props: ListViewProps<Task>) => ReactElement
 
 const listArgs = {
-  collection,
+  collection: createCollection(initialTasks),
   grouping: 'status' as const,
-  renderItem: renderRow('comfortable'),
+  renderItem: renderTaskListRow(() => undefined),
 }
-
-const MechanicsListView = ListView as (
-  props: ListViewProps<MechanicsItem>,
-) => ReactElement
 
 function Example({
   collapseEmptyGroups = false,
@@ -99,29 +25,30 @@ function Example({
   emptyGroup = false,
   groupBy = 'status',
   loading = false,
+  separated = false,
 }: Readonly<{
   collapseEmptyGroups?: boolean
   density?: ListItemDensity
   emptyGroup?: boolean
   groupBy?: CollectionGroupingId | null
   loading?: boolean
+  separated?: boolean
 }>) {
-  // Só a primeira opção recebe item: é o que deixa um grupo vazio ao lado de um
-  // populado, sem introduzir vocabulário de domínio na fixture.
-  const visibleItems = emptyGroup ? items.slice(0, 1) : items
+  const { tasks, updateTask } = useTasks()
+  const visibleTasks = emptyGroup ? tasks.slice(0, 1) : tasks
 
   return (
     <div className="min-w-0 p-4">
-      <ListView
-        {...listArgs}
+      <TasksListView
         collapseEmptyGroups={collapseEmptyGroups}
-        collection={{ ...collection, items: loading ? [] : visibleItems }}
-        emptyGroupLabel="No items in this group."
+        collection={createCollection(loading ? [] : visibleTasks)}
+        emptyGroupLabel="Nenhuma tarefa neste grupo."
         grouping={groupBy}
         loading={loading}
-        loadingItemLabel="Loading collection item"
+        loadingItemLabel="Carregando tarefa"
         renderGroupTitle={(group) => group.label}
-        renderItem={renderRow(density)}
+        renderItem={renderTaskListRow(updateTask, density)}
+        separated={separated}
       />
     </div>
   )
@@ -130,7 +57,7 @@ function Example({
 const meta = {
   args: listArgs,
   argTypes: { collapseEmptyGroups: booleanArgType, loading: booleanArgType },
-  component: MechanicsListView,
+  component: TasksListView,
   parameters: {
     docs: {
       description: {
@@ -141,7 +68,7 @@ const meta = {
     layout: 'fullscreen',
   },
   title: 'Patterns/CollectionViews/Views/List',
-} satisfies Meta<typeof MechanicsListView>
+} satisfies Meta<typeof TasksListView>
 
 export default meta
 
@@ -195,7 +122,7 @@ export const Ungrouped: Story = {
     ).toBeNull()
     await expect(
       canvasElement.querySelectorAll('[data-slot="list-item"]'),
-    ).toHaveLength(2)
+    ).toHaveLength(initialTasks.length)
   },
   render: () => <Example groupBy={null} />,
 }
@@ -217,10 +144,10 @@ export const EmptyGroupsCollapsed: Story = {
   play: async ({ canvasElement }) => {
     // O grupo populado segue aberto (oferece "Collapse"); o vazio nasce fechado.
     await expect(
-      canvasElement.querySelector('[aria-label="Collapse To do"]'),
+      canvasElement.querySelector('[aria-label="Collapse Em andamento"]'),
     ).toBeTruthy()
     await expect(
-      canvasElement.querySelector('[aria-label="Expand In progress"]'),
+      canvasElement.querySelector('[aria-label="Expand A fazer"]'),
     ).toBeTruthy()
   },
   render: () => <Example collapseEmptyGroups emptyGroup />,
@@ -249,4 +176,25 @@ export const Compact: Story = {
     ).toBeLessThan(6)
   },
   render: () => <Example density="compact" />,
+}
+
+export const Separated: Story = {
+  args: listArgs,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Com `separated`, um `Separator` discreto aparece entre as linhas, na lista plana e dentro de cada grupo, sem herdar a borda do container.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(
+      canvasElement.querySelectorAll('[data-slot="separator"]').length,
+    ).toBeGreaterThan(0)
+    await expect(
+      canvasElement.querySelectorAll('[data-slot="list-item-title-trigger"]'),
+    ).toHaveLength(initialTasks.length)
+  },
+  render: () => <Example groupBy={null} separated />,
 }
