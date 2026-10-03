@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Text } from '@tc96/elements/text'
+import { Text, textSizes } from '@tc96/elements/text'
 import { expect, within } from 'storybook/test'
 
 const weights = [
@@ -23,7 +23,7 @@ const meta = {
     children: 'Reusable interface text',
     family: 'sans',
     foreground: 'base',
-    size: 'md',
+    size: 'base',
     truncate: false,
     weight: 'normal',
   },
@@ -46,7 +46,7 @@ const meta = {
     },
     size: {
       control: 'select',
-      options: ['sm', 'md', 'lg'],
+      options: textSizes,
     },
     tracking: {
       control: 'select',
@@ -65,26 +65,25 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+export const Default: Story = {}
+
 export const Sizes: Story = {
   render: () => (
     <div className="flex flex-col gap-3">
-      <Text size="sm">Small interface text</Text>
-      <Text>Medium interface text</Text>
-      <Text size="lg">Large interface text</Text>
+      {textSizes.map((size) => (
+        <Text key={size} leading="none" size={size}>
+          {size} interface text
+        </Text>
+      ))}
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-
-    await expect(canvas.getByText('Small interface text')).toHaveClass(
-      'text-sm',
-    )
-    await expect(canvas.getByText('Medium interface text')).toHaveClass(
-      'text-base',
-    )
-    await expect(canvas.getByText('Large interface text')).toHaveClass(
-      'text-lg',
-    )
+    for (const size of textSizes) {
+      await expect(canvas.getByText(`${size} interface text`)).toHaveClass(
+        `text-${size}`,
+      )
+    }
   },
 }
 
@@ -124,21 +123,65 @@ export const Families: Story = {
   ),
 }
 
-export const PolymorphicHeading: Story = {
+export const Headings: Story = {
   render: () => (
-    <Text
-      family="heading"
-      render={<h2>Semantic heading</h2>}
-      size="lg"
-      weight="semibold"
-    />
+    <div className="flex flex-col gap-4">
+      <Text
+        family="heading"
+        render={<h1>Page heading</h1>}
+        size="3xl"
+        tracking="tight"
+        weight="bold"
+      />
+      <Text
+        family="heading"
+        render={<h2>Section heading</h2>}
+        size="2xl"
+        weight="semibold"
+      />
+      <Text
+        family="heading"
+        render={<h3>Subsection heading</h3>}
+        size="lg"
+        weight="semibold"
+      />
+      <Text render={<h4>Checklist heading</h4>} size="sm" weight="medium" />
+      <Text>Checklist item</Text>
+      <Text size="sm">Compact checklist item</Text>
+    </div>
   ),
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      within(canvasElement).getByRole('heading', {
-        level: 2,
-        name: 'Semantic heading',
-      }),
-    ).toBeVisible()
+      canvas.getByRole('heading', { level: 1, name: 'Page heading' }),
+    ).toHaveClass('font-heading', 'text-3xl', 'font-bold')
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Section heading' }),
+    ).toHaveClass('font-heading', 'text-2xl', 'font-semibold')
+    await expect(
+      canvas.getByRole('heading', { level: 3, name: 'Subsection heading' }),
+    ).toHaveClass('text-lg', 'font-semibold')
+    await expect(
+      canvas.getByRole('heading', { level: 4, name: 'Checklist heading' }),
+    ).toHaveClass('font-sans', 'text-sm', 'font-medium')
+    await expect(canvas.getByText('Checklist item')).toHaveClass(
+      'text-base',
+      'font-normal',
+    )
+  },
+}
+
+export const Truncated: Story = {
+  render: () => (
+    <div className="w-48">
+      <Text render={<p />} truncate>
+        A long line of interface text that does not fit the column it lives in
+      </Text>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const text = within(canvasElement).getByText(/A long line/)
+    await expect(text).toHaveClass('truncate')
+    await expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
   },
 }

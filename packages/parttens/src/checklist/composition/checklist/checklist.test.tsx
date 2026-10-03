@@ -1,6 +1,6 @@
 import { afterEach, expect, test } from 'bun:test'
 
-await import('../properties/test/dom')
+await import('../../test/dom')
 
 class ResizeObserverStub {
   disconnect() {}
@@ -13,7 +13,7 @@ Object.assign(globalThis, {
   ResizeObserver: ResizeObserverStub,
 })
 
-const { cleanup, fireEvent, render, screen, waitFor } = await import(
+const { cleanup, fireEvent, render, screen } = await import(
   '@testing-library/react'
 )
 const { Checklist } = await import('./checklist')

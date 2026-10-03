@@ -7,10 +7,9 @@ export function richTextTyping(name: string) {
   async function focusEditor(canvasElement: HTMLElement): Promise<HTMLElement> {
     await waitFor(async () => {
       const editor = current(canvasElement)
-      await userEvent.click(editor)
-      const anchor = editor.ownerDocument.getSelection()?.anchorNode ?? null
+      if (!hasCaretInside(editor)) placeCaretAtEnd(editor)
       await expect(editor).toHaveFocus()
-      await expect(anchor !== null && editor.contains(anchor)).toBe(true)
+      await expect(hasCaretInside(editor)).toBe(true)
     })
     return current(canvasElement)
   }
@@ -26,7 +25,7 @@ export function richTextTyping(name: string) {
         const editor = current(canvasElement)
         if (typedText(editor) === '') {
           editor.blur()
-          await userEvent.click(editor)
+          placeCaretAtEnd(editor)
           await userEvent.keyboard(text)
         }
         await expect(typedText(current(canvasElement))).toBe(expected)
@@ -57,6 +56,37 @@ export async function expectCaretAtStart(editor: HTMLElement) {
   })
 }
 
+export function hasCaretInside(editor: HTMLElement): boolean {
+  const anchor = editor.ownerDocument.getSelection()?.anchorNode ?? null
+  return (
+    editor.ownerDocument.activeElement === editor &&
+    anchor !== null &&
+    editor.contains(anchor)
+  )
+}
+
+export function placeCaretAtEnd(
+  editor: HTMLElement,
+  target: Element | null = Array.from(
+    editor.querySelectorAll('[data-slate-string]'),
+  ).at(-1) ?? null,
+): void {
+  const node =
+    target?.firstChild ?? editor.querySelector('[data-slate-zero-width]')
+  const document = editor.ownerDocument
+  const selection = document.getSelection()
+  if (!node || !selection) return
+  editor.focus()
+  const range = document.createRange()
+  range.setStart(
+    node,
+    node.nodeType === Node.TEXT_NODE ? (node.textContent?.length ?? 0) : 0,
+  )
+  range.collapse(true)
+  selection.removeAllRanges()
+  selection.addRange(range)
+}
+
 export const typedText = (editor: HTMLElement) =>
   Array.from(
     editor.querySelectorAll('[data-slate-string]'),
@@ -85,8 +115,4 @@ export async function pressFloatingButton(name: string) {
   const button = within(toolbar).getByRole('button', { name })
   await userEvent.click(button)
   return button
-}
-
-export function moveCaretToLineEnd(editor: HTMLElement) {
-  editor.ownerDocument.getSelection()?.modify('move', 'forward', 'lineboundary')
 }

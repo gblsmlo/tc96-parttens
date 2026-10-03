@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { RichTextValue } from '@tc96/parttens'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
-import { moveCaretToLineEnd } from '../../../test-utils/rich-text-typing'
+import { placeCaretAtEnd } from '../../../test-utils/rich-text-typing'
 import {
   clearStored,
   paragraph,
@@ -84,11 +84,8 @@ export const MentionATeammate: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const editor = canvas.getByRole('textbox', { name: 'Tarefas' })
-    const last = Array.from(
-      editor.querySelectorAll<HTMLElement>('[data-slate-string]'),
-    ).at(-1) as HTMLElement
-    await userEvent.click(last)
-    moveCaretToLineEnd(editor)
+    placeCaretAtEnd(editor)
+    await waitFor(() => expect(editor).toHaveFocus())
     await userEvent.keyboard('@car')
 
     const listbox = await within(document.body).findByRole('listbox', {

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { RichTextValue } from '@tc96/parttens'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
-import { moveCaretToLineEnd } from '../../../test-utils/rich-text-typing'
+import { placeCaretAtEnd } from '../../../test-utils/rich-text-typing'
 import {
   clearStored,
   paragraph,
@@ -100,7 +100,8 @@ export const DraftPersistsInTheBrowser: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const title = canvas.getByRole('textbox', { name: 'Título' })
-    await userEvent.click(title)
+    title.focus()
+    await waitFor(() => expect(title).toHaveFocus())
     await userEvent.keyboard('{End} (rascunho)')
 
     await waitFor(() =>
@@ -130,10 +131,8 @@ export const ImageFromThePicker: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const editor = canvas.getByRole('textbox', { name: 'Artigo' })
-    await userEvent.click(
-      editor.querySelector('h2 [data-slate-string]') as HTMLElement,
-    )
-    moveCaretToLineEnd(editor)
+    placeCaretAtEnd(editor, editor.querySelector('h2 [data-slate-string]'))
+    await waitFor(() => expect(editor).toHaveFocus())
     await userEvent.keyboard('{Enter}/imagem{Enter}')
 
     await waitFor(() =>
