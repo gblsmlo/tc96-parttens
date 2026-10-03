@@ -114,6 +114,8 @@ Top level:
 | `views/data-table/index.ts` | re-exports the two files below | through the barrel |
 | `views/data-table/README.md` | what `DataTable` is and its `## Benchmark` section: scenarios, how to run and compare, the baseline numbers | — |
 | `views/data-table/data-table.tsx` | `DataTable`, `DataTableProps` | yes |
+| `views/data-table/data-table-row.tsx` | `DataTableRow`: the memoized row below the component that calls `useTable`; invalidates on `row`, `selected`, `canSelect`, the visible columns and `meta` | no |
+| `views/data-table/data-table-row.test.tsx` | JSDOM tests for each prop that re-renders a row and for the render counts of select, sort and parent re-render | — |
 | `views/data-table/use-data-table.ts` | `useDataTable`, `dataTableFeatures`, `DataTableFeatures`, `DataTableTable`, `DataTableColumnDef`, `UseDataTableOptions`, `UseDataTableReturn` | yes |
 | `views/data-table/data-table.test.tsx` | JSDOM tests for semantics, `bordered`, selection, footer, empty, loading and pagination | — |
 

@@ -28,23 +28,23 @@ bun scripts/bench/data-table.bench.ts --compare scripts/bench/results/data-table
 
 `DataTable` has no public header sort control or pagination UI, so sorting and paging go through the table instance, the same API a consumer's own controls call.
 
-Baseline: 2026-10-03, bun 1.3.14, JSDOM 26.1.0 (no layout), React 19.1.1 development build, AMD Ryzen 3 3200G with Radeon Vega Graphics x4, seed 96, 5 iterations per scenario with 1 warmup (mount: 3, fresh container, no warmup), medians. File: `scripts/bench/results/data-table.base.json`. Render counts are deterministic and gate; times are a report, and differences under 10% are noise.
+Environment: 2026-10-03, bun 1.3.14, JSDOM 26.1.0 (no layout), React 19.1.1 development build, AMD Ryzen 3 3200G with Radeon Vega Graphics x4, seed 96, 5 iterations per scenario with 1 warmup (mount: 3, fresh container), medians. Before is the view before the memoized leaf, after is this folder; same machine, same adapter, run one after the other. The after file is the committed baseline `scripts/bench/results/data-table.base.json`. Render counts gate; times are a report and differences under 10% are noise.
 
-| Case | Scenario | n | Cells | Commits | Wall (ms) | Profiler (ms) |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| 200x10 | mount | 3 | 2000 | 1 | 304.7 | 268.3 |
-| 200x10 | select click | 5 | 2000 | 1 | 57.4 | 29.5 |
-| 200x10 | sort toggle | 5 | 2000 | 1 | 66.7 | 28.8 |
-| 200x10 | parent re-render | 5 | 2000 | 1 | 46.7 | 25.1 |
-| 1000x20 | mount | 3 | 20000 | 1 | 1269.0 | 1166.1 |
-| 1000x20 | select click | 5 | 20000 | 1 | 366.2 | 211.5 |
-| 1000x20 | sort toggle | 5 | 20000 | 1 | 497.8 | 234.0 |
-| 1000x20 | parent re-render | 5 | 20000 | 1 | 355.6 | 202.9 |
-| 200x10 paged | mount | 3 | 500 | 1 | 36.1 | 33.1 |
-| 200x10 paged | pagination next/prev | 5 | 500 | 1 | 41.7 | 35.4 |
-| 200x10 paged | parent re-render | 5 | 500 | 1 | 14.9 | 6.4 |
-| 1000x20 paged | mount | 3 | 1000 | 1 | 65.4 | 60.0 |
-| 1000x20 paged | pagination next/prev | 5 | 1000 | 1 | 75.6 | 65.5 |
-| 1000x20 paged | parent re-render | 5 | 1000 | 1 | 24.9 | 12.3 |
+| Case | Scenario | Cells before | Cells after | Wall before (ms) | Wall after (ms) | Δ wall | Profiler before (ms) | Profiler after (ms) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 200x10 | mount | 2000 | 2000 | 304.7 | 184.5 | -39% | 268.3 | 170.1 |
+| 200x10 | select click | 2000 | 10 | 57.4 | 9.7 | -83% | 29.5 | 1.4 |
+| 200x10 | sort toggle | 2000 | 0 | 66.7 | 19.1 | -71% | 28.8 | 3.4 |
+| 200x10 | parent re-render | 2000 | 0 | 46.7 | 2.5 | -95% | 25.1 | 1.3 |
+| 1000x20 | mount | 20000 | 20000 | 1269.0 | 1226.5 | -3% | 1166.1 | 1132.4 |
+| 1000x20 | select click | 20000 | 20 | 366.2 | 37.9 | -90% | 211.5 | 4.0 |
+| 1000x20 | sort toggle | 20000 | 0 | 497.8 | 138.9 | -72% | 234.0 | 7.8 |
+| 1000x20 | parent re-render | 20000 | 0 | 355.6 | 6.5 | -98% | 202.9 | 4.3 |
+| 200x10 paged | mount | 500 | 500 | 36.1 | 38.8 | +7% | 33.1 | 35.7 |
+| 200x10 paged | pagination next/prev | 500 | 500 | 41.7 | 44.2 | +6% | 35.4 | 39.0 |
+| 200x10 paged | parent re-render | 500 | 0 | 14.9 | 1.2 | -92% | 6.4 | 0.4 |
+| 1000x20 paged | mount | 1000 | 1000 | 65.4 | 60.8 | -7% | 60.0 | 56.5 |
+| 1000x20 paged | pagination next/prev | 1000 | 1000 | 75.6 | 72.2 | -5% | 65.5 | 64.0 |
+| 1000x20 paged | parent re-render | 1000 | 0 | 24.9 | 1.4 | -94% | 12.3 | 0.5 |
 
-Reading the table: every scenario renders every cell on screen. Selecting one row, toggling a sort or re-rendering the parent with unchanged props costs 2000 cells at 200x10 and 20000 at 1000x20 (target: one row for selection, 0 for sort and parent re-render), because `DataTable` renders rows and cells inline from `rows.map` with no memoized row or cell and `useDataTable` keeps row selection in its own state. Paged cases render one page (500 and 1000 cells), so pagination bounds the cost rather than fixing it. `DataGrid` memoizes rows below the component that calls `useTable` and gets 2 cells and 0; the same approach applies here, but how the table subscribes to its state is an architecture decision, not a memo.
+Reading the table: selecting a row renders that row's cells (10 and 20; every cell before), and a sort toggle or a parent re-render with unchanged props renders none. Pagination still renders one page, because the rows on screen change. Mount renders every cell either way; its moves in this run (-39% at 200x10, under 10% elsewhere) are noise, since a memo cannot make a mount cheaper.
