@@ -13,6 +13,7 @@ Object.assign(globalThis, { ResizeObserver: MockResizeObserver })
 const { cleanup, fireEvent, render, screen } = await import(
   '@testing-library/react'
 )
+const { renderToString } = await import('react-dom/server')
 const { KanbanView } = await import('./kanban-view')
 
 afterEach(cleanup)
@@ -139,5 +140,54 @@ describe('KanbanView', () => {
       screen.queryByRole('button', { name: 'Adicionar card em Todo' }),
     ).toBeNull()
     expect(added).toEqual(['todo'])
+  })
+
+  test('keeps card drag off in the mobile panel and on in the desktop board', () => {
+    const { container } = render(
+      <KanbanView
+        columns={[
+          {
+            cards: [{ id: 'task-1' }, { id: 'task-2' }],
+            count: 2,
+            id: 'todo',
+            title: 'Todo',
+          },
+        ]}
+        getKey={(card) => card.id}
+        onMoveCard={() => true}
+        renderCard={(card) => <span>{card.id}</span>}
+      />,
+    )
+
+    const mobilePanel = container.querySelector('div.grid.md\\:hidden')
+    const board = container.querySelector('[data-kanban-board-scroll-area]')
+
+    expect(
+      mobilePanel?.querySelectorAll('[data-slot="kanban-column"]'),
+    ).toHaveLength(1)
+    expect(mobilePanel?.textContent).toContain('task-1')
+    expect(
+      mobilePanel?.querySelectorAll('[data-kanban-card-drag-handle]'),
+    ).toHaveLength(0)
+    expect(
+      board?.querySelectorAll('[data-kanban-card-drag-handle]'),
+    ).toHaveLength(2)
+  })
+
+  test('server renders both the mobile panel and the desktop board', () => {
+    const html = renderToString(
+      <KanbanView
+        columns={[
+          { cards: [{ id: 'task-1' }], count: 1, id: 'todo', title: 'Todo' },
+        ]}
+        getKey={(card) => card.id}
+        renderCard={(card) => <span>{card.id}</span>}
+      />,
+    )
+
+    expect(html).toContain('grid min-h-0 flex-1 gap-2 md:hidden')
+    expect(html).toContain('data-kanban-board-scroll-area')
+    expect(html.match(/data-slot="kanban-column"/g)).toHaveLength(2)
+    expect(html.match(/task-1/g)).toHaveLength(2)
   })
 })
