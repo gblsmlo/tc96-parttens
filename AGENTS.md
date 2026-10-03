@@ -56,7 +56,7 @@ Files are kebab-case and named after what they export (`checklist-row.tsx` expor
 - **Overriding COSS styles needs a registered exception.** Any `className` that overrides a COSS component's border, radius, etc. must be listed with a reason in `scripts/override-exceptions.json`, or `bun run overrides:check` fails. Update the entry whenever the class changes.
 - **Public API baseline:** adding or removing exports changes `docs/architecture/public-api-exports.json`. Regenerate with `bun scripts/verify-public-api.ts --record` and mention it in the summary, since the diff may include unrelated pending exports.
 - Pattern `shared/` code is internal; export through the pattern's `index.ts` only when it is meant to be public.
-- A pattern split into fragments carries its own `AGENTS.md` next to the files (today `packages/parttens/src/checklist/AGENTS.md`), with the file map, the public API and the `data-*` styling contract. Read it before changing that pattern and update it when you add or move a fragment.
+- Every pattern carries its own `AGENTS.md` at `packages/parttens/src/<pattern>/AGENTS.md`, with the file map, the public API and the `data-*` styling contract. Read it before changing that pattern and update it when you add, move or remove a file; a pattern that still lacks one gets it in the next change that touches it.
 
 ## Commands
 
