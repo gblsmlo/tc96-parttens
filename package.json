@@ -34,7 +34,11 @@
     "test:consumer:registry": "bun scripts/test-consumer-registry.ts",
     "test:consumer:ssr": "bun scripts/test-consumer-ssr.ts",
     "bench:views": "bun scripts/bench-views.ts",
-    "bench:data-grid": "bun scripts/bench-data-grid.ts",
+    "bench:data-grid": "bun scripts/bench/data-grid.bench.ts",
+    "bench:data-table": "bun scripts/bench/data-table.bench.ts",
+    "bench:list": "bun scripts/bench/list.bench.ts",
+    "bench:kanban": "bun scripts/bench/kanban.bench.ts",
+    "bench:calendar": "bun scripts/bench/calendar.bench.ts",
     "pack:check": "bun scripts/pack-check.ts",
     "test:boundaries": "bun test --isolate scripts"
   },

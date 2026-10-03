@@ -27,11 +27,11 @@ data-grid/
 | `data-grid-body-cell.tsx` | `DataGridBodyCell`, memoized: the `gridcell` element and its `flexRender` |
 | `data-grid-group-row.tsx`, `data-grid-skeleton-rows.tsx`, `data-grid-empty-row.tsx`, `data-grid-add-row.tsx`, `data-grid-footer.tsx` | the other rows of the grid |
 | `data-grid-selection-actions.tsx` | the floating selection action bar; reads the selected rows only when `selectionActions` is set |
-| `data-grid-cell.tsx` | `DataGridCell`: default renderer per `meta.variant` (public) |
+| `data-grid-cell.tsx` | `DataGridCell`: default renderer per `meta.variant` (public); the Select's item-to-string functions are module constants so Base UI does not re-sync them every render |
 | `data-grid-column-type-icon.tsx` | `DATA_GRID_COLUMN_TYPE_ICONS`, `DataGridColumnTypeIcon` (public) |
 | `data-grid-pagination.tsx` | `DataGridPagination`, `PaginatedTable` (public) |
 | `data-grid-search.tsx`, `data-grid-filter-menu.tsx`, `data-grid-selection-summary.tsx`, `data-grid-sort-submenu.tsx`, `data-grid-columns-submenu.tsx`, `data-grid-density-submenu.tsx` | toolbar parts and their props (public) |
-| `*.test.tsx` | JSDOM tests next to the file they cover; `data-grid.test.tsx` covers ARIA, numbering, groups, pagination, editable cells, fill column; `data-grid-rendering.test.tsx` covers memoized rows and the ARIA attributes |
+| `*.test.tsx` | JSDOM tests next to the file they cover; `data-grid.test.tsx` covers ARIA, numbering, groups, pagination, editable cells, fill column; `data-grid-rendering.test.tsx` covers memoized rows and the ARIA attributes; `data-grid-select-cell.test.tsx` covers the select cell (one commit entering and leaving it, label follows options and value, pointer opens on the second click) |
 
 ### hooks/
 
@@ -89,8 +89,8 @@ State lives in `data-*` attributes: `data-state="selected"` on a row, `data-sele
 bunx biome check packages/parttens/src/collection-views/views/data-grid
 bun test packages/parttens/src/collection-views/views/data-grid
 bun run typecheck && bun run verify:public-api
-bun run bench:data-grid --json baseline.json
-bun run bench:data-grid --compare baseline.json
+bun run bench:data-grid
+bun scripts/bench/data-grid.bench.ts --compare scripts/bench/results/data-grid.base.json --gate
 ```
 
-The first run records a baseline (do it before changing code); later runs compare against it.
+The gate compares against the committed baseline and fails when any render counter rose; timing only warns. If a change is meant to move the numbers, regenerate the baseline with `--json scripts/bench/results/data-grid.base.json` and update the README table.

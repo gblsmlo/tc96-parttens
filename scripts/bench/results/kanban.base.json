@@ -1,0 +1,360 @@
+{
+  "config": {
+    "iterations": 5,
+    "mountIterations": 3,
+    "threshold": 10,
+    "warmup": 1
+  },
+  "environment": {
+    "cpu": "AMD Ryzen 3 3200G with Radeon Vega Graphics x4",
+    "date": "2026-10-03T18:04:57.155Z",
+    "dom": "jsdom (no layout)",
+    "domVersion": "26.1.0",
+    "nodeEnv": "development (unset)",
+    "platform": "linux-x64",
+    "react": "19.1.1",
+    "runtime": "bun",
+    "runtimeVersion": "1.3.14",
+    "seed": 96,
+    "commit": "581ba7c"
+  },
+  "harness": "bench-harness v1",
+  "name": "kanban view",
+  "results": [
+    {
+      "case": "5 columns x 20 cards",
+      "kind": "mount",
+      "n": 3,
+      "profilerMs": {
+        "max": 205.61372999999787,
+        "median": 104.2662530000016,
+        "min": 79.79568799999288,
+        "p95": 205.61372999999787
+      },
+      "renders": {
+        "cards": {
+          "max": 120,
+          "median": 120,
+          "min": 120
+        },
+        "commits": {
+          "max": 3,
+          "median": 3,
+          "min": 3
+        }
+      },
+      "scenario": "mount",
+      "wallMs": {
+        "max": 361.55932700000005,
+        "median": 181.47529899999995,
+        "min": 135.73015400000008,
+        "p95": 361.55932700000005
+      },
+      "warmup": 0,
+      "heapMb": 8.219959259033203
+    },
+    {
+      "case": "5 columns x 20 cards",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 4.7970609999965745,
+        "median": 4.014756000004354,
+        "min": 3.722224000002143,
+        "p95": 4.7970609999965745
+      },
+      "renders": {
+        "cards": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "parent re-render",
+      "wallMs": {
+        "max": 14.306154000000106,
+        "median": 13.538987000000134,
+        "min": 8.21592099999998,
+        "p95": 14.306154000000106
+      },
+      "warmup": 1
+    },
+    {
+      "case": "5 columns x 20 cards",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 23.74881399999549,
+        "median": 17.668480999998792,
+        "min": 17.652623000001768,
+        "p95": 23.74881399999549
+      },
+      "renders": {
+        "cards": {
+          "max": 20,
+          "median": 20,
+          "min": 20
+        },
+        "commits": {
+          "max": 3,
+          "median": 3,
+          "min": 3
+        }
+      },
+      "scenario": "collapse and expand column",
+      "wallMs": {
+        "max": 61.426490999999714,
+        "median": 59.384783999999854,
+        "min": 56.300146999999924,
+        "p95": 61.426490999999714
+      },
+      "warmup": 1
+    },
+    {
+      "case": "5 columns x 20 cards",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 26.8856929999979,
+        "median": 7.644545000001017,
+        "min": 6.969104000002062,
+        "p95": 26.8856929999979
+      },
+      "renders": {
+        "cards": {
+          "max": 40,
+          "median": 40,
+          "min": 40
+        },
+        "commits": {
+          "max": 2,
+          "median": 2,
+          "min": 2
+        }
+      },
+      "scenario": "switch mobile column",
+      "wallMs": {
+        "max": 34.67784000000029,
+        "median": 17.84350399999994,
+        "min": 16.595814000000246,
+        "p95": 34.67784000000029
+      },
+      "warmup": 1
+    },
+    {
+      "case": "10 columns x 100 cards",
+      "kind": "mount",
+      "n": 3,
+      "profilerMs": {
+        "max": 539.850341999977,
+        "median": 469.8031189998983,
+        "min": 452.0104169997612,
+        "p95": 539.850341999977
+      },
+      "renders": {
+        "cards": {
+          "max": 1100,
+          "median": 1100,
+          "min": 1100
+        },
+        "commits": {
+          "max": 3,
+          "median": 3,
+          "min": 3
+        }
+      },
+      "scenario": "mount",
+      "wallMs": {
+        "max": 4479.609897999999,
+        "median": 4410.136697,
+        "min": 4334.422742,
+        "p95": 4479.609897999999
+      },
+      "warmup": 0,
+      "heapMb": 140.24321842193604
+    },
+    {
+      "case": "10 columns x 100 cards",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 8.84893400002693,
+        "median": 7.843355000044539,
+        "min": 7.43032299983679,
+        "p95": 8.84893400002693
+      },
+      "renders": {
+        "cards": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "parent re-render",
+      "wallMs": {
+        "max": 48.349967999998626,
+        "median": 43.00733200000104,
+        "min": 36.33359399999972,
+        "p95": 48.349967999998626
+      },
+      "warmup": 1
+    },
+    {
+      "case": "10 columns x 100 cards",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 58.94821499995305,
+        "median": 56.63183200032654,
+        "min": 55.25111699975241,
+        "p95": 58.94821499995305
+      },
+      "renders": {
+        "cards": {
+          "max": 100,
+          "median": 100,
+          "min": 100
+        },
+        "commits": {
+          "max": 3,
+          "median": 3,
+          "min": 3
+        }
+      },
+      "scenario": "collapse and expand column",
+      "wallMs": {
+        "max": 1581.9164400000009,
+        "median": 1573.5950769999981,
+        "min": 1557.6880600000004,
+        "p95": 1581.9164400000009
+      },
+      "warmup": 1
+    },
+    {
+      "case": "10 columns x 100 cards",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 26.47753800002829,
+        "median": 22.29742400012765,
+        "min": 21.001819999946747,
+        "p95": 26.47753800002829
+      },
+      "renders": {
+        "cards": {
+          "max": 200,
+          "median": 200,
+          "min": 200
+        },
+        "commits": {
+          "max": 2,
+          "median": 2,
+          "min": 2
+        }
+      },
+      "scenario": "switch mobile column",
+      "wallMs": {
+        "max": 70.34195899999759,
+        "median": 55.26428800000576,
+        "min": 51.88161800000671,
+        "p95": 70.34195899999759
+      },
+      "warmup": 1
+    },
+    {
+      "case": "5 columns x 20 cards, drag",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": null,
+      "renders": {
+        "cards": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        }
+      },
+      "scenario": "drag right and back",
+      "wallMs": {
+        "max": 2763.6330080000043,
+        "median": 2728.2319130000105,
+        "min": 2708.5998529999924,
+        "p95": 2763.6330080000043
+      },
+      "warmup": 1
+    },
+    {
+      "case": "5 columns x 20 cards, drag",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": null,
+      "renders": {
+        "cards": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        }
+      },
+      "scenario": "reorder down and back",
+      "wallMs": {
+        "max": 2770.4252080000006,
+        "median": 2721.289923000004,
+        "min": 2656.5094519999984,
+        "p95": 2770.4252080000006
+      },
+      "warmup": 1
+    },
+    {
+      "case": "10 columns x 100 cards, drag",
+      "kind": "interaction",
+      "n": 3,
+      "profilerMs": null,
+      "renders": {
+        "cards": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        }
+      },
+      "scenario": "drag right and back",
+      "wallMs": {
+        "max": 15359.497241999998,
+        "median": 15122.74216400001,
+        "min": 14958.881408000001,
+        "p95": 15359.497241999998
+      },
+      "warmup": 0
+    },
+    {
+      "case": "10 columns x 100 cards, drag",
+      "kind": "interaction",
+      "n": 3,
+      "profilerMs": null,
+      "renders": {
+        "cards": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        }
+      },
+      "scenario": "reorder down and back",
+      "wallMs": {
+        "max": 14048.888569000002,
+        "median": 13873.748613000003,
+        "min": 13732.67149400001,
+        "p95": 14048.888569000002
+      },
+      "warmup": 0
+    }
+  ],
+  "schema": "bench-result/v1"
+}

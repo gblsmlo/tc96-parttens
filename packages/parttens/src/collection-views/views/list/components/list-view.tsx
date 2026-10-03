@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, type ReactNode, useMemo, useState } from 'react'
+import { type ReactNode, useMemo, useState } from 'react'
 
 import { projectCollection } from '../../../shared/lib/project-collection'
 import type {
@@ -11,6 +11,7 @@ import type {
 import { ListGroup, type ListGroupActions } from './list-group'
 import { ListItemHeadingLevelContext } from './list-item'
 import { ListItemSkeleton } from './list-item-skeleton'
+import { ListViewItem } from './list-view-item'
 
 export interface ListViewProps<TItem> {
   collection: CollectionDefinition<TItem>
@@ -118,9 +119,11 @@ export function ListView<TItem>({
                   />
                 ))
               : collection.items.map((item) => (
-                  <Fragment key={collection.getKey(item)}>
-                    {renderItem(item)}
-                  </Fragment>
+                  <ListViewItem
+                    item={item}
+                    key={collection.getKey(item)}
+                    renderItem={renderItem}
+                  />
                 ))}
           </div>
         </ListItemHeadingLevelContext.Provider>
