@@ -1,9 +1,8 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 import type { ComponentType, ReactElement } from 'react'
 
-await import('../../test/dom')
+await import('../../../test/dom')
 
-// O virtualizador do TanStack lê `ResizeObserver` já no import do módulo.
 class MockResizeObserver {
   disconnect() {}
   observe() {}
@@ -16,8 +15,8 @@ const { act, cleanup, fireEvent, render, screen } = await import(
   '@testing-library/react'
 )
 const { DataGrid } = await import('./data-grid')
-const { useDataGrid } = await import('./use-data-grid')
-const { createSelectColumn } = await import('./data-grid-columns')
+const { useDataGrid } = await import('../hooks/use-data-grid')
+const { createSelectColumn } = await import('../lib/create-select-column')
 
 interface Campaign {
   id: string
@@ -120,7 +119,6 @@ describe('DataGrid', () => {
     render(<TypedGrid />)
 
     const rows = screen.getAllByRole('row')
-    // 1 cabeçalho + 3 dados
     expect(rows).toHaveLength(4)
     expect(rows[1]?.getAttribute('aria-rowindex')).toBe('2')
     expect(screen.getByText('Retomada de inativos')).toBeTruthy()
@@ -160,7 +158,6 @@ describe('DataGrid', () => {
     render(<TypedGrid isLoading loadingRowCount={2} />)
 
     expect(screen.queryByText('Retomada de inativos')).toBeNull()
-    // 1 cabeçalho + 2 esqueletos
     expect(screen.getAllByRole('row')).toHaveLength(3)
   })
 
@@ -178,8 +175,6 @@ describe('DataGrid', () => {
     ])
   })
 
-  /** A coleção chega ordenada por grupo; sem isso o mesmo grupo reabre e as
-   *  chaves de irmão colidiriam. */
   test('reopens a group when the same value returns after another group', () => {
     function UnsortedGrid(): ReactElement {
       const { table } = useDataGrid<Campaign>({
@@ -227,7 +222,6 @@ describe('DataGrid', () => {
     render(<SelectableGrid />)
 
     const checkboxes = screen.getAllByRole('checkbox')
-    // 1 no cabeçalho + 1 por linha
     expect(checkboxes).toHaveLength(4)
   })
 })
@@ -295,7 +289,6 @@ describe('DataGrid group row numbering', () => {
       />,
     )
 
-    // 1 cabeçalho + 3 linhas + 3 grupos (Ana, Bruno, Ana)
     expect(rowCountOf(container)).toBe(7)
     expect(bodyRowIndexes(container)).toEqual([2, 3, 4, 5, 6, 7])
   })
@@ -313,7 +306,6 @@ describe('DataGrid group row numbering', () => {
       />,
     )
 
-    // 1 cabeçalho + 4 linhas + 2 grupos + 1 rodapé
     expect(rowCountOf(container)).toBe(8)
     expect(bodyRowIndexes(container)).toEqual([2, 3, 4])
 
@@ -336,10 +328,8 @@ describe('DataGrid group row numbering', () => {
       captured.table?.nextPage()
     })
 
-    // O dado é a linha 5 do grid inteiro (cabeçalho, grupo, 3 linhas).
     const dataRow = container.querySelector('[data-slot="data-grid-row"]')
     expect(dataRow?.getAttribute('aria-rowindex')).toBe('5')
-    // 1 cabeçalho + 3 linhas + 1 grupo + 1 rodapé
     expect(rowCountOf(container)).toBe(6)
   })
 })
@@ -397,7 +387,6 @@ describe('DataGrid group row numbering edge cases', () => {
       <Grid data={[record('a', 'Ana'), record('b', ''), record('c', 'Ana')]} />,
     )
 
-    // 1 cabeçalho + 3 linhas + 1 grupo: a linha sem grupo não fecha o de Ana
     expect(
       container.querySelector('[role="grid"]')?.getAttribute('aria-rowcount'),
     ).toBe('5')
@@ -726,8 +715,6 @@ describe('DataGridCell', () => {
 
     render(<DateGrid />)
 
-    // Comparar com a data local evita fixar formato de locale; o que o teste
-    // protege é o dia do calendário, não a máscara.
     const localDay = new Date('2026-08-04T00:00:00')
     expect(screen.getByText(localDay.toLocaleDateString())).toBeTruthy()
     expect(localDay.getDate()).toBe(4)
@@ -764,7 +751,6 @@ describe('DataGrid pagination', () => {
     expect(paginationOf(container)).toBeNull()
   })
 
-  /** Coleção inteira numa área de rolagem, mesmo com o modelo de paginação ligado. */
   test('drops the pagination when the consumer asks for scroll only', () => {
     const { container } = render(<PaginatedGrid pagination={false} />)
 
@@ -833,11 +819,6 @@ describe('DataGrid editable cells', () => {
     expect(trigger?.getAttribute('aria-haspopup')).toBe('listbox')
   })
 
-  /**
-   * A célula rouba o foco para si quando vira a célula corrente, e isso fechava
-   * o popup que o próprio clique tinha acabado de abrir: um controle interno já
-   * é o foco certo.
-   */
   test('does not steal focus from a control inside the focused cell', async () => {
     const { container } = render(<EditableGrid />)
 
@@ -851,8 +832,6 @@ describe('DataGrid editable cells', () => {
     trigger.focus()
     fireEvent.click(cell)
 
-    // O roubo de foco acontecia numa microtask do `ref`; assertar antes dela
-    // esvaziar faria o teste passar mesmo com o defeito de volta.
     await Promise.resolve()
     await Promise.resolve()
 
@@ -894,7 +873,6 @@ describe('DataGrid fill column', () => {
     expect(growOf(container, 'responsible')).toBe('0')
   })
 
-  /** Sem coluna que cresce, esticar deixaria uma faixa sem borda lendo como coluna fantasma. */
   test('shrinks the frame to the columns when no column fills, and stretches when one does', () => {
     const withoutFill = render(<FillGrid fillColumn={false} />)
     const shrunk =

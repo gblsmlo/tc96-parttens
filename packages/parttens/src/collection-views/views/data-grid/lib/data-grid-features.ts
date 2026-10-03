@@ -26,9 +26,8 @@ import type {
   DataGridCellValueChange,
   DataGridColumnMeta,
   DataGridDensity,
-} from './types'
+} from '../types'
 
-/** Table meta the grid reads from the instance built by `useDataGrid`. */
 export interface DataGridTableMeta {
   dataGridDensity?: DataGridDensity
   dataGridPaginationRowOffset?: number
@@ -36,11 +35,6 @@ export interface DataGridTableMeta {
   onDataGridCellValueChange?: (change: DataGridCellValueChange) => void
 }
 
-/**
- * Features, row models and function registries the DataGrid relies on. The
- * full `filterFns`/`sortFns` registries keep the v8 behavior of resolving any
- * built-in by name, including the `auto` sort and filter picks.
- */
 export const dataGridFeatures = tableFeatures({
   columnFilteringFeature,
   globalFilteringFeature,
@@ -63,13 +57,11 @@ export const dataGridFeatures = tableFeatures({
 
 export type DataGridFeatures = typeof dataGridFeatures
 
-/** Table instance consumed by the grid and its toolbar pieces. */
 export type DataGridTable<TData extends RowData> = Table<
   DataGridFeatures,
   TData
 >
 
-/** Convenience alias for column definitions consumed by the grid. */
 export type DataGridColumnDef<TData extends RowData> = ColumnDef<
   DataGridFeatures,
   TData,

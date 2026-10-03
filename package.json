@@ -34,6 +34,7 @@
     "test:consumer:registry": "bun scripts/test-consumer-registry.ts",
     "test:consumer:ssr": "bun scripts/test-consumer-ssr.ts",
     "bench:views": "bun scripts/bench-views.ts",
+    "bench:data-grid": "bun scripts/bench-data-grid.ts",
     "pack:check": "bun scripts/pack-check.ts",
     "test:boundaries": "bun test --isolate scripts"
   },

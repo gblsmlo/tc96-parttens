@@ -32,7 +32,7 @@ export type {
   CalendarItemSchedule,
   CalendarViewMode,
 } from './views/calendar/types'
-export type { DataGridColumnDef } from './views/data-grid/data-grid-features'
+export type { DataGridColumnDef } from './views/data-grid/lib/data-grid-features'
 export type {
   DataGridAlign,
   DataGridCellValueChange,
