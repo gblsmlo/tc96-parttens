@@ -168,7 +168,7 @@ function DataGridExample({
           endSlot={
             <>
               <ViewSettingsMenu
-                activeFilterCount={table.getState().globalFilter ? 1 : 0}
+                activeFilterCount={table.state.globalFilter ? 1 : 0}
                 onClearFilters={() => table.setGlobalFilter('')}
               >
                 <ViewSettingsSection label="Exibição">

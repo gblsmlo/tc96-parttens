@@ -1,5 +1,7 @@
 export type {
+  CollectionCalendarViewProps,
   CollectionDataGridViewProps,
+  CollectionDataTableViewProps,
   CollectionKanbanViewProps,
   CollectionListViewProps,
   CollectionViewOutletProps,

@@ -1,5 +1,6 @@
 'use client'
 
+import type { CellContext, RowData } from '@tanstack/react-table'
 import { Badge } from '@tc96/ui/badge'
 import {
   Select,
@@ -9,8 +10,8 @@ import {
   SelectValue,
 } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
-import type { CellContext } from '@tanstack/react-table'
 import { CheckIcon, MinusIcon } from 'lucide-react'
+import type { DataGridFeatures } from './data-grid-features'
 import type { DataGridAlign, DataGridColumnMeta } from './types'
 
 const ALIGN_CLASS: Record<DataGridAlign, string> = {
@@ -46,10 +47,10 @@ function formatDate(value: unknown): string {
  * Default renderer. Single-select interaction is opt-in through column meta;
  * domain validation and mutation remain owned by the consumer callback.
  */
-export function DataGridCell<TData>({
+export function DataGridCell<TData extends RowData>({
   context,
 }: {
-  context: CellContext<TData, unknown>
+  context: CellContext<DataGridFeatures, TData, unknown>
 }) {
   const { column, getValue, row, table } = context
   const meta = (column.columnDef.meta ?? {}) as DataGridColumnMeta

@@ -121,6 +121,11 @@
       "upstream": "sha256-5116d0ec549bf70d20d5359a485e6792b6c87d89a389102ad6c3f44312c23972",
       "file": "sha256-70fcbb4abc38fc50882108772bc1b811fdf13e8ba02e0e4291ed524e6679094a"
     },
+    "table": {
+      "url": "https://coss.com/ui/r/table.json",
+      "upstream": "sha256-b21f811291d6a1706874cb37dd568b922fb5d8b053e6636b7b0e9e9c6320c98d",
+      "file": "sha256-28fbc1db67a0a07109dc647aa16e2e300411f91e7f02641c52b5b525599a2e00"
+    },
     "textarea": {
       "url": "https://coss.com/ui/r/textarea.json",
       "upstream": "sha256-3e30e41c099d7343cb0a603557acd4e8b7c94b43139a7a489df322c04c5f601c",

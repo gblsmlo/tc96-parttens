@@ -1,6 +1,7 @@
 export * from './views/calendar/index'
 export * from './shared/index'
 export * from './views/data-grid/index'
+export * from './views/data-table/index'
 export * from './views/kanban/index'
 export * from './views/list/index'
 export * from './store/index'

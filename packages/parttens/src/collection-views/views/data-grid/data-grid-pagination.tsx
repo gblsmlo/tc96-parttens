@@ -1,12 +1,23 @@
 'use client'
 
-import type { Table as TanstackTable } from '@tanstack/react-table'
+import type { PaginationState } from '@tanstack/react-table'
 import type React from 'react'
 import { CollectionPagination } from '../../../shared/components/collection-pagination'
 
-export interface DataGridPaginationProps<TData>
+/**
+ * O que o rodapé lê de uma tabela TanStack. Qualquer instância que registre
+ * `rowPaginationFeature` serve — a do DataGrid ou a da DataTable.
+ */
+export interface PaginatedTable {
+  readonly store: { readonly state: { pagination: PaginationState } }
+  getPageCount: () => number
+  getRowCount: () => number
+  setPageIndex: (pageIndex: number) => void
+}
+
+export interface DataGridPaginationProps
   extends Omit<React.ComponentProps<'div'>, 'children'> {
-  table: TanstackTable<TData>
+  table: PaginatedTable
 }
 
 /**
@@ -14,11 +25,11 @@ export interface DataGridPaginationProps<TData>
  * modelo da tabela e o entrega à `CollectionPagination`, que é a autoridade
  * visual — a tabela não desenha uma paginação própria.
  */
-export function DataGridPagination<TData>({
+export function DataGridPagination({
   table,
   ...props
-}: DataGridPaginationProps<TData>): React.ReactElement {
-  const { pageIndex, pageSize } = table.getState().pagination
+}: DataGridPaginationProps): React.ReactElement {
+  const { pageIndex, pageSize } = table.store.state.pagination
 
   return (
     <CollectionPagination

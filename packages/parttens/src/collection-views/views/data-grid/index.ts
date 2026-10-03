@@ -6,7 +6,19 @@ export {
   DataGridColumnTypeIcon,
 } from './data-grid-column-types'
 export { createSelectColumn } from './data-grid-columns'
-export type { DataGridPaginationProps } from './data-grid-pagination'
+export type {
+  DataGridColumn,
+  DataGridColumnDef,
+  DataGridFeatures,
+  DataGridHeader,
+  DataGridTable,
+  DataGridTableMeta,
+} from './data-grid-features'
+export { dataGridFeatures } from './data-grid-features'
+export type {
+  DataGridPaginationProps,
+  PaginatedTable,
+} from './data-grid-pagination'
 export { DataGridPagination } from './data-grid-pagination'
 export type {
   DataGridColumnsSubmenuProps,
@@ -28,7 +40,6 @@ export type {
   DataGridAlign,
   DataGridCellValueChange,
   DataGridCellVariant,
-  DataGridColumnDef,
   DataGridColumnMeta,
   DataGridColumnType,
   DataGridDensity,

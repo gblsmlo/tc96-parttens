@@ -105,7 +105,7 @@ describe('useDataGrid', () => {
       captured.table.getRow('b').toggleSelected(true)
     })
 
-    expect(captured.table.getState().rowSelection).toEqual({ b: true })
+    expect(captured.table.atoms.rowSelection.get()).toEqual({ b: true })
     expect(
       captured.table
         .getSelectedRowModel()
