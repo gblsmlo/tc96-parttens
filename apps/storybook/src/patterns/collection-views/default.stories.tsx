@@ -38,6 +38,8 @@ import {
   ListItemTitle,
   ListItemTitleTrigger,
   ListItemTrailing,
+  MenuCheckboxOption,
+  MenuRadioOption,
   PersonProperty,
   type PersonPropertyOption,
   PresetsMenu,
@@ -53,12 +55,10 @@ import {
 } from '@tc96/parttens'
 import { Checkbox } from '@tc96/ui/checkbox'
 import {
-  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuItem,
   MenuRadioGroup,
-  MenuRadioItem,
   MenuSeparator,
   MenuSub,
   MenuSubPopup,
@@ -415,10 +415,12 @@ function AssigneeField({
   display = 'full',
   onChange,
   task,
+  variant,
 }: Readonly<{
   display?: 'avatar' | 'full'
   onChange: UpdateTask
   task: Task
+  variant?: 'badge' | 'plain'
 }>) {
   return (
     <PersonProperty
@@ -427,6 +429,7 @@ function AssigneeField({
       onValueChange={(value) => onChange(task.id, { assigneeId: value })}
       options={personOptions}
       value={task.assigneeId}
+      variant={variant}
     />
   )
 }
@@ -924,17 +927,17 @@ function TasksShowcase({
                           value={preferences.groupBy ?? ''}
                         >
                           {view === 'kanban' ? null : (
-                            <MenuRadioItem value="">
+                            <MenuRadioOption value="">
                               Sem agrupamento
-                            </MenuRadioItem>
+                            </MenuRadioOption>
                           )}
                           {groupings.map((dimension) => (
-                            <MenuRadioItem
+                            <MenuRadioOption
                               key={dimension.id}
                               value={dimension.id}
                             >
                               {dimension.label}
-                            </MenuRadioItem>
+                            </MenuRadioOption>
                           ))}
                         </MenuRadioGroup>
                       </MenuSubPopup>
@@ -954,9 +957,12 @@ function TasksShowcase({
                           value={calendarMode}
                         >
                           {calendarModes.map((mode) => (
-                            <MenuRadioItem key={mode.value} value={mode.value}>
+                            <MenuRadioOption
+                              key={mode.value}
+                              value={mode.value}
+                            >
                               {mode.label}
-                            </MenuRadioItem>
+                            </MenuRadioOption>
                           ))}
                         </MenuRadioGroup>
                       </MenuSubPopup>
@@ -980,7 +986,7 @@ function TasksShowcase({
                           .getAllLeafColumns()
                           .filter((column) => column.id !== 'select')
                           .map((column) => (
-                            <MenuCheckboxItem
+                            <MenuCheckboxOption
                               checked={column.getIsVisible()}
                               closeOnClick={false}
                               key={column.id}
@@ -991,7 +997,7 @@ function TasksShowcase({
                               {typeof column.columnDef.header === 'string'
                                 ? column.columnDef.header
                                 : 'Estimativa'}
-                            </MenuCheckboxItem>
+                            </MenuCheckboxOption>
                           ))}
                       </MenuSubPopup>
                     </MenuSub>
@@ -1008,7 +1014,7 @@ function TasksShowcase({
                       <MenuGroup>
                         <MenuGroupLabel>Responsável</MenuGroupLabel>
                         {people.map((person) => (
-                          <MenuCheckboxItem
+                          <MenuCheckboxOption
                             checked={assigneeFilter.includes(person.id)}
                             closeOnClick={false}
                             key={person.id}
@@ -1019,7 +1025,7 @@ function TasksShowcase({
                             }
                           >
                             {person.name}
-                          </MenuCheckboxItem>
+                          </MenuCheckboxOption>
                         ))}
                       </MenuGroup>
                     </MenuSubPopup>
@@ -1033,7 +1039,7 @@ function TasksShowcase({
                       <MenuGroup>
                         <MenuGroupLabel>Prioridade</MenuGroupLabel>
                         {priorityOptions.map((option) => (
-                          <MenuCheckboxItem
+                          <MenuCheckboxOption
                             checked={priorityFilter.includes(option.value)}
                             closeOnClick={false}
                             key={option.value}
@@ -1044,7 +1050,7 @@ function TasksShowcase({
                             }
                           >
                             {option.label}
-                          </MenuCheckboxItem>
+                          </MenuCheckboxOption>
                         ))}
                       </MenuGroup>
                     </MenuSubPopup>
@@ -1191,11 +1197,12 @@ function TasksShowcase({
               </KanbanCardBody>
               <KanbanCardFooter>
                 <div className="flex min-w-0 flex-1 items-center justify-between gap-3 text-muted-foreground text-xs">
-                  <DueField onChange={updateTask} task={task} />
+                  <DueField onChange={updateTask} task={task} variant="plain" />
                   <AssigneeField
                     display="avatar"
                     onChange={updateTask}
                     task={task}
+                    variant="plain"
                   />
                 </div>
               </KanbanCardFooter>
@@ -1384,7 +1391,9 @@ export const SpreadsheetProperties: Story = {
     await userEvent.click(
       await body.findByRole('menuitemradio', { name: 'Tabela' }),
     )
-    const row = (await canvas.findByText('Code freeze da versão 2.0')).closest('tr')
+    const row = (await canvas.findByText('Code freeze da versão 2.0')).closest(
+      'tr',
+    )
     if (!row) throw new Error('linha não montou')
     await expect(within(row).getByText('Carla Mendes')).toBeTruthy()
   },

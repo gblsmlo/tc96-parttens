@@ -2,13 +2,13 @@
 
 import {
   MenuRadioGroup,
-  MenuRadioItem,
   MenuSub,
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
 import type { LucideIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
+import { MenuRadioOption } from '../../../shared/components/menu-selection-item'
 
 /**
  * `MenuRadioGroup` não representa ausência de escolha: `value=''` deixa o grupo
@@ -53,11 +53,11 @@ export function FilterRadioSubmenu({
           }
           value={value || CLEAR_VALUE}
         >
-          <MenuRadioItem value={CLEAR_VALUE}>{clearLabel}</MenuRadioItem>
+          <MenuRadioOption value={CLEAR_VALUE}>{clearLabel}</MenuRadioOption>
           {options.map(([optionValue, optionLabel]) => (
-            <MenuRadioItem key={optionValue} value={optionValue}>
+            <MenuRadioOption key={optionValue} value={optionValue}>
               {optionLabel}
-            </MenuRadioItem>
+            </MenuRadioOption>
           ))}
         </MenuRadioGroup>
       </MenuSubPopup>

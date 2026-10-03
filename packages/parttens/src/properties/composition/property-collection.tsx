@@ -2,7 +2,6 @@
 
 import {
   Menu,
-  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuPopup,
@@ -12,6 +11,7 @@ import { cn } from '@tc96/utils'
 import { EllipsisIcon } from 'lucide-react'
 import type React from 'react'
 import { Fragment, useState } from 'react'
+import { MenuCheckboxOption } from '../../shared/components/menu-selection-item'
 import type { PropertyIcon } from '../shared/property-catalog'
 import { PropertySurface } from '../shared/property-surface'
 
@@ -114,7 +114,7 @@ export function PropertyCollection({
               {items.map((item) => {
                 const Icon = item.icon
                 return (
-                  <MenuCheckboxItem
+                  <MenuCheckboxOption
                     checked={visibleSet.has(item.id)}
                     closeOnClick={false}
                     key={item.id}
@@ -129,7 +129,7 @@ export function PropertyCollection({
                       ) : null}
                       <span className="truncate">{item.label}</span>
                     </span>
-                  </MenuCheckboxItem>
+                  </MenuCheckboxOption>
                 )
               })}
             </MenuGroup>

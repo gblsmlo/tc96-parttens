@@ -121,6 +121,7 @@ export function TextProperty({
     editable && (editing === 'inline' || editingInline) ? (
       <EditableText
         ariaLabel={ariaLabel ?? fallback}
+        className="field-sizing-content w-auto min-w-[1ch] max-w-full"
         onCommit={commit}
         placeholder={inputPlaceholder ?? fallback}
         size="sm"

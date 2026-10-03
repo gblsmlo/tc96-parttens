@@ -131,7 +131,7 @@ function ViewSettingsModeTabs<TMode extends string>({
   return (
     <MenuRadioGroup
       className={cn(
-        'flex rounded-lg bg-muted',
+        'flex rounded-lg',
         layout === 'stacked' ? 'gap-1 p-1' : 'gap-0.5 p-0.5',
       )}
       onValueChange={(next: TMode) => onModeChange?.(next)}

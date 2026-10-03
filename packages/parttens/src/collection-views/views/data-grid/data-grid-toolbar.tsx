@@ -4,10 +4,8 @@ import type { RowData } from '@tanstack/react-table'
 import { Button } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
 import {
-  MenuCheckboxItem,
   MenuItem,
   MenuRadioGroup,
-  MenuRadioItem,
   MenuSeparator,
   MenuSub,
   MenuSubPopup,
@@ -25,6 +23,10 @@ import {
   MinusIcon,
 } from 'lucide-react'
 import type React from 'react'
+import {
+  MenuCheckboxOption,
+  MenuRadioOption,
+} from '../../../shared/components/menu-selection-item'
 import type { DataGridTable } from './data-grid-features'
 import type { DataGridColumnMeta, DataGridDensity } from './types'
 
@@ -208,10 +210,10 @@ export function DataGridDensitySubmenu<TData extends RowData>({
           value={density}
         >
           {DENSITIES.map((option) => (
-            <MenuRadioItem key={option.value} value={option.value}>
+            <MenuRadioOption key={option.value} value={option.value}>
               <option.icon />
               {option.label}
-            </MenuRadioItem>
+            </MenuRadioOption>
           ))}
         </MenuRadioGroup>
       </MenuSubPopup>
@@ -279,7 +281,7 @@ export function DataGridColumnsSubmenu<TData extends RowData>({
         {columns.map((column) => {
           const meta = (column.columnDef.meta ?? {}) as DataGridColumnMeta
           return (
-            <MenuCheckboxItem
+            <MenuCheckboxOption
               checked={column.getIsVisible()}
               closeOnClick={false}
               key={column.id}
@@ -288,7 +290,7 @@ export function DataGridColumnsSubmenu<TData extends RowData>({
               }
             >
               {meta.label ?? column.id}
-            </MenuCheckboxItem>
+            </MenuCheckboxOption>
           )
         })}
       </MenuSubPopup>

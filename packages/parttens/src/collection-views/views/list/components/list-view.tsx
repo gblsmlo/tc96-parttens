@@ -109,10 +109,7 @@ export function ListView<TItem>({
     >
       {grouping === null && preparedGroups === undefined ? (
         <ListItemHeadingLevelContext.Provider value={2}>
-          <div
-            className="flex flex-col divide-y divide-border/70"
-            data-slot="list-view-items"
-          >
+          <div className="flex flex-col" data-slot="list-view-items">
             {loading
               ? Array.from({ length: loadingItemCount }, (_, position) => (
                   <ListItemSkeleton

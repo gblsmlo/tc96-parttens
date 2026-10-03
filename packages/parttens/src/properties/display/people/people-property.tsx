@@ -220,7 +220,7 @@ function PersonChipContent<TValue extends string = string>({
     <span className="flex min-w-0 items-center gap-1.5">
       <Avatar className="size-4 text-sm">
         {option.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
-        <AvatarFallback>
+        <AvatarFallback className="bg-muted/40 text-[0.6rem]">
           {option.fallback ?? getInitials(option.label)}
         </AvatarFallback>
       </Avatar>
