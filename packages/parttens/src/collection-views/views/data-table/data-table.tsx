@@ -12,6 +12,7 @@ import {
   TableRow,
 } from '@tc96/ui/table'
 import type { ComponentProps, ReactElement } from 'react'
+import { DataTableRow } from './data-table-row'
 import type { DataTableTable } from './use-data-table'
 
 export interface DataTableProps<TData extends RowData>
@@ -33,7 +34,9 @@ export function DataTable<TData extends RowData>({
   ...props
 }: DataTableProps<TData>): ReactElement {
   const rows = table.getRowModel().rows
-  const columnCount = table.getVisibleLeafColumns().length
+  const visibleColumns = table.getVisibleLeafColumns()
+  const columnCount = visibleColumns.length
+  const meta = table.options.meta
   const hasFooter = table
     .getAllLeafColumns()
     .some((column) => column.columnDef.footer)
@@ -77,16 +80,14 @@ export function DataTable<TData extends RowData>({
           ))
         ) : rows.length ? (
           rows.map((row) => (
-            <TableRow
-              data-state={row.getIsSelected() ? 'selected' : undefined}
+            <DataTableRow
+              canSelect={row.getCanSelect()}
               key={row.id}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
+              meta={meta}
+              row={row}
+              selected={row.getIsSelected()}
+              visibleColumns={visibleColumns}
+            />
           ))
         ) : (
           <TableRow>

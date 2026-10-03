@@ -86,30 +86,30 @@ Baseline: 2026-10-03, bun 1.3.14, JSDOM 26.1.0 (no layout), React 19.1.1 develop
 
 | Case | Scenario | n | Cells | Commits | Wall (ms) | Profiler (ms) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| 200x10 | mount | 2 | 2000 | 4 | 1063.2 | 945.4 |
-| 200x10 | focus move vertical | 5 | 2 | 1 | 18.0 | 10.6 |
-| 200x10 | focus move horizontal | 5 | 2 | 2 | 23.3 | 15.7 |
-| 200x10 | select click | 5 | 2 | 2 | 42.2 | 9.3 |
-| 200x10 | select shift-click | 5 | 2 | 1 | 39.7 | 7.1 |
-| 200x10 | sort toggle | 5 | 0 | 1 | 58.3 | 23.3 |
-| 200x10 | parent re-render | 5 | 0 | 1 | 17.9 | 13.6 |
-| 200x10 grouped | mount | 2 | 2000 | 4 | 757.3 | 686.8 |
-| 200x10 grouped | group collapse | 5 | 1 | 1 | 23.5 | 7.7 |
-| 200x10 grouped | group expand | 5 | 200 | 3 | 82.9 | 68.6 |
-| 200x10 grouped | parent re-render | 5 | 0 | 1 | 16.5 | 8.5 |
-| 1000x20 | mount | 2 | 20000 | 4 | 8890.4 | 8266.0 |
-| 1000x20 | focus move vertical | 5 | 2 | 1 | 47.8 | 18.5 |
-| 1000x20 | focus move horizontal | 5 | 2 | 2 | 47.3 | 18.1 |
-| 1000x20 | select click | 5 | 2 | 2 | 251.1 | 14.2 |
-| 1000x20 | select shift-click | 5 | 2 | 1 | 248.4 | 11.8 |
-| 1000x20 | sort toggle | 5 | 0 | 1 | 407.5 | 80.0 |
-| 1000x20 | parent re-render | 5 | 0 | 1 | 30.2 | 14.8 |
-| 1000x20 grouped | mount | 2 | 20000 | 4 | 6452.2 | 5797.0 |
-| 1000x20 grouped | group collapse | 5 | 1 | 1 | 110.3 | 18.5 |
-| 1000x20 grouped | group expand | 5 | 2000 | 3 | 637.6 | 537.5 |
-| 1000x20 grouped | parent re-render | 5 | 0 | 1 | 37.3 | 18.9 |
+| 200x10 | mount | 2 | 2000 | 4 | 955.1 | 852.7 |
+| 200x10 | focus move vertical | 5 | 2 | 1 | 17.4 | 6.9 |
+| 200x10 | focus move horizontal | 5 | 2 | 1 | 13.9 | 8.0 |
+| 200x10 | select click | 5 | 2 | 1 | 36.6 | 6.0 |
+| 200x10 | select shift-click | 5 | 2 | 1 | 33.3 | 4.7 |
+| 200x10 | sort toggle | 5 | 0 | 1 | 46.9 | 17.7 |
+| 200x10 | parent re-render | 5 | 0 | 1 | 9.8 | 6.8 |
+| 200x10 grouped | mount | 2 | 2000 | 4 | 601.6 | 535.8 |
+| 200x10 grouped | group collapse | 5 | 1 | 1 | 23.5 | 8.3 |
+| 200x10 grouped | group expand | 5 | 200 | 3 | 71.3 | 60.4 |
+| 200x10 grouped | parent re-render | 5 | 0 | 1 | 11.3 | 7.9 |
+| 1000x20 | mount | 2 | 20000 | 4 | 5829.5 | 5227.9 |
+| 1000x20 | focus move vertical | 5 | 2 | 1 | 47.6 | 20.1 |
+| 1000x20 | focus move horizontal | 5 | 2 | 1 | 44.6 | 16.6 |
+| 1000x20 | select click | 5 | 2 | 1 | 238.4 | 11.1 |
+| 1000x20 | select shift-click | 5 | 2 | 1 | 236.1 | 11.2 |
+| 1000x20 | sort toggle | 5 | 0 | 1 | 352.9 | 72.2 |
+| 1000x20 | parent re-render | 5 | 0 | 1 | 24.9 | 12.0 |
+| 1000x20 grouped | mount | 2 | 20000 | 4 | 5798.3 | 5177.0 |
+| 1000x20 grouped | group collapse | 5 | 1 | 1 | 108.4 | 16.3 |
+| 1000x20 grouped | group expand | 5 | 2000 | 3 | 623.5 | 532.8 |
+| 1000x20 grouped | parent re-render | 5 | 0 | 1 | 27.0 | 13.7 |
 
-Reading the table: no interaction scales with the grid. Focus moves, cell selection and shift-selection render 2 cells, sort and parent re-render 0, collapsing a group 1 and expanding one group's worth (200 and 2000). Two things remain, both constant in size: horizontal focus moves and select clicks take 2 commits and group expand 3, which points at a state update cascading from an effect; and at 1000x20 select and sort spend 250 to 400 ms on the wall against 12 to 80 ms in render, so the remaining cost is in handlers and DOM work, which render counts do not see. Mount runs 2 iterations because one 1000x20 mount takes about 9 s; read mount times as indicative.
+Reading the table: no interaction scales with the grid. Focus moves, cell selection and shift-selection render 2 cells, sort and parent re-render 0, collapsing a group 1 and expanding one group's worth (200 and 2000). Every interaction is one commit: horizontal moves and select clicks took 2 until the Select's item-to-string functions became module constants, because Base UI synced the inline functions into its store in a layout effect and re-rendered the trigger value in a second commit. Two things remain, both constant in size: mount (4 commits) and group expand (3) include commits that are Base UI 1.8.0 internals, not grid state: `SelectRoot` stores its trigger once per mounted Select and `ScrollArea` measures overflow, so they are documented and left alone; and at 1000x20 select and sort spend 250 to 400 ms on the wall against 12 to 80 ms in render, so the remaining cost is in handlers and DOM work, which render counts do not see. Mount runs 2 iterations because one 1000x20 mount takes about 9 s; read mount times as indicative.
 
 History: the table below was produced by the previous custom script (`bench-data-grid.ts`, since removed) and is kept as the before/after record of the memoization refactor. It has no parent re-render row and uses the old scenario names.
 
