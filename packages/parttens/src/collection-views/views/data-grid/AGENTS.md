@@ -89,8 +89,8 @@ State lives in `data-*` attributes: `data-state="selected"` on a row, `data-sele
 bunx biome check packages/parttens/src/collection-views/views/data-grid
 bun test packages/parttens/src/collection-views/views/data-grid
 bun run typecheck && bun run verify:public-api
-bun run bench:data-grid --json baseline.json
-bun run bench:data-grid --compare baseline.json
+bun run bench:data-grid
+bun scripts/bench/data-grid.bench.ts --compare scripts/bench/results/data-grid.base.json --gate
 ```
 
-The first run records a baseline (do it before changing code); later runs compare against it.
+The gate compares against the committed baseline and fails when any render counter rose; timing only warns. If a change is meant to move the numbers, regenerate the baseline with `--json scripts/bench/results/data-grid.base.json` and update the README table.

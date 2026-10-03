@@ -1,0 +1,464 @@
+{
+  "config": {
+    "iterations": 5,
+    "mountIterations": 3,
+    "threshold": 10,
+    "warmup": 1
+  },
+  "environment": {
+    "cpu": "AMD Ryzen 3 3200G with Radeon Vega Graphics x4",
+    "date": "2026-10-03T18:08:30.641Z",
+    "dom": "jsdom (no layout)",
+    "domVersion": "26.1.0",
+    "nodeEnv": "development (unset)",
+    "platform": "linux-x64",
+    "react": "19.1.1",
+    "runtime": "bun",
+    "runtimeVersion": "1.3.14",
+    "seed": 96,
+    "commit": "581ba7c"
+  },
+  "harness": "bench-harness v1",
+  "name": "data-table",
+  "results": [
+    {
+      "case": "200x10",
+      "kind": "mount",
+      "n": 3,
+      "profilerMs": {
+        "max": 425.11778400000196,
+        "median": 268.33859599999096,
+        "min": 189.4873309999823,
+        "p95": 425.11778400000196
+      },
+      "renders": {
+        "cells": {
+          "max": 2000,
+          "median": 2000,
+          "min": 2000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "mount",
+      "wallMs": {
+        "max": 463.1365370000001,
+        "median": 304.66788299999985,
+        "min": 209.24007400000005,
+        "p95": 463.1365370000001
+      },
+      "warmup": 0,
+      "heapMb": -6.478855133056641
+    },
+    {
+      "case": "200x10",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 51.533844999961275,
+        "median": 29.469090000042343,
+        "min": 27.163044999991598,
+        "p95": 51.533844999961275
+      },
+      "renders": {
+        "cells": {
+          "max": 2000,
+          "median": 2000,
+          "min": 2000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "select click",
+      "wallMs": {
+        "max": 74.82164499999999,
+        "median": 57.35265699999991,
+        "min": 52.9696399999998,
+        "p95": 74.82164499999999
+      },
+      "warmup": 1
+    },
+    {
+      "case": "200x10",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 34.09650699996837,
+        "median": 28.82589099999268,
+        "min": 24.84064700003819,
+        "p95": 34.09650699996837
+      },
+      "renders": {
+        "cells": {
+          "max": 2000,
+          "median": 2000,
+          "min": 2000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "sort toggle",
+      "wallMs": {
+        "max": 71.54360700000007,
+        "median": 66.69325500000014,
+        "min": 59.62478599999986,
+        "p95": 71.54360700000007
+      },
+      "warmup": 1
+    },
+    {
+      "case": "200x10",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 28.949704999992264,
+        "median": 25.14671099997304,
+        "min": 23.300450000030196,
+        "p95": 28.949704999992264
+      },
+      "renders": {
+        "cells": {
+          "max": 2000,
+          "median": 2000,
+          "min": 2000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "parent re-render",
+      "wallMs": {
+        "max": 59.786317000000054,
+        "median": 46.730606999999964,
+        "min": 43.53858999999966,
+        "p95": 59.786317000000054
+      },
+      "warmup": 1
+    },
+    {
+      "case": "1000x20",
+      "kind": "mount",
+      "n": 3,
+      "profilerMs": {
+        "max": 1229.1765299999101,
+        "median": 1166.0987159999258,
+        "min": 1131.747275999861,
+        "p95": 1229.1765299999101
+      },
+      "renders": {
+        "cells": {
+          "max": 20000,
+          "median": 20000,
+          "min": 20000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "mount",
+      "wallMs": {
+        "max": 1314.7284190000005,
+        "median": 1268.9688909999995,
+        "min": 1232.3861899999993,
+        "p95": 1314.7284190000005
+      },
+      "warmup": 0,
+      "heapMb": -28.179118156433105
+    },
+    {
+      "case": "1000x20",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 215.597720999609,
+        "median": 211.52793800011932,
+        "min": 195.83780199998546,
+        "p95": 215.597720999609
+      },
+      "renders": {
+        "cells": {
+          "max": 20000,
+          "median": 20000,
+          "min": 20000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "select click",
+      "wallMs": {
+        "max": 415.96815699999934,
+        "median": 366.24975599999925,
+        "min": 347.51298699999825,
+        "p95": 415.96815699999934
+      },
+      "warmup": 1
+    },
+    {
+      "case": "1000x20",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 349.34894199991504,
+        "median": 233.98480300031588,
+        "min": 215.36547099989002,
+        "p95": 349.34894199991504
+      },
+      "renders": {
+        "cells": {
+          "max": 20000,
+          "median": 20000,
+          "min": 20000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "sort toggle",
+      "wallMs": {
+        "max": 710.3136439999998,
+        "median": 497.784721,
+        "min": 473.481534999999,
+        "p95": 710.3136439999998
+      },
+      "warmup": 1
+    },
+    {
+      "case": "1000x20",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 253.34805000008419,
+        "median": 202.86788499909744,
+        "min": 195.17944499932128,
+        "p95": 253.34805000008419
+      },
+      "renders": {
+        "cells": {
+          "max": 20000,
+          "median": 20000,
+          "min": 20000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "parent re-render",
+      "wallMs": {
+        "max": 409.67296500000157,
+        "median": 355.58594500000254,
+        "min": 347.73973900000055,
+        "p95": 409.67296500000157
+      },
+      "warmup": 1
+    },
+    {
+      "case": "200x10 paged",
+      "kind": "mount",
+      "n": 3,
+      "profilerMs": {
+        "max": 33.76325599992924,
+        "median": 33.074721000033605,
+        "min": 31.976870999966195,
+        "p95": 33.76325599992924
+      },
+      "renders": {
+        "cells": {
+          "max": 500,
+          "median": 500,
+          "min": 500
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "mount",
+      "wallMs": {
+        "max": 39.132981999999174,
+        "median": 36.112976000000344,
+        "min": 34.530823000000964,
+        "p95": 39.132981999999174
+      },
+      "warmup": 0,
+      "heapMb": 0
+    },
+    {
+      "case": "200x10 paged",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 43.40064699985669,
+        "median": 35.39348199989763,
+        "min": 33.615767000173946,
+        "p95": 43.40064699985669
+      },
+      "renders": {
+        "cells": {
+          "max": 500,
+          "median": 500,
+          "min": 500
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "pagination next/prev",
+      "wallMs": {
+        "max": 48.94023599999855,
+        "median": 41.68186400000195,
+        "min": 38.824469000002864,
+        "p95": 48.94023599999855
+      },
+      "warmup": 1
+    },
+    {
+      "case": "200x10 paged",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 9.978615999938484,
+        "median": 6.356742999934795,
+        "min": 6.1074220000482455,
+        "p95": 9.978615999938484
+      },
+      "renders": {
+        "cells": {
+          "max": 500,
+          "median": 500,
+          "min": 500
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "parent re-render",
+      "wallMs": {
+        "max": 16.130366999997932,
+        "median": 14.924775999999838,
+        "min": 11.296105999997962,
+        "p95": 16.130366999997932
+      },
+      "warmup": 1
+    },
+    {
+      "case": "1000x20 paged",
+      "kind": "mount",
+      "n": 3,
+      "profilerMs": {
+        "max": 63.316056000032404,
+        "median": 59.986140999786585,
+        "min": 58.78515800013702,
+        "p95": 63.316056000032404
+      },
+      "renders": {
+        "cells": {
+          "max": 1000,
+          "median": 1000,
+          "min": 1000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "mount",
+      "wallMs": {
+        "max": 68.79983300000094,
+        "median": 65.40351499999815,
+        "min": 63.61754900000233,
+        "p95": 68.79983300000094
+      },
+      "warmup": 0,
+      "heapMb": -0.25380706787109375
+    },
+    {
+      "case": "1000x20 paged",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 67.53910400010864,
+        "median": 65.49329600032434,
+        "min": 54.695305000153894,
+        "p95": 67.53910400010864
+      },
+      "renders": {
+        "cells": {
+          "max": 1000,
+          "median": 1000,
+          "min": 1000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "pagination next/prev",
+      "wallMs": {
+        "max": 76.55979800000205,
+        "median": 75.6213510000016,
+        "min": 64.83074900000065,
+        "p95": 76.55979800000205
+      },
+      "warmup": 1
+    },
+    {
+      "case": "1000x20 paged",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 16.00976599999194,
+        "median": 12.301943999860669,
+        "min": 11.709765000021434,
+        "p95": 16.00976599999194
+      },
+      "renders": {
+        "cells": {
+          "max": 1000,
+          "median": 1000,
+          "min": 1000
+        },
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        }
+      },
+      "scenario": "parent re-render",
+      "wallMs": {
+        "max": 27.503522999999404,
+        "median": 24.940451999998913,
+        "min": 20.77214599999934,
+        "p95": 27.503522999999404
+      },
+      "warmup": 1
+    }
+  ],
+  "schema": "bench-result/v1"
+}

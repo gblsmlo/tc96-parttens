@@ -65,6 +65,7 @@ Top level:
 | File | Owns | Public |
 | --- | --- | --- |
 | `views/calendar/index.ts` | re-exports the components below, the calendar types and the `@tc96/helpers` date functions (`addCalendarDays`, `calendarDateKey`, `calendarRange`, `compareCalendarDates`, `isSameCalendarDate`, `parseCalendarDateKey`, `startOfWeek`, `fromZonedDateTime`, `getTimeZoneOffsetMs`, `toZonedDateTime`, `ZonedDateTime`) | through the barrel |
+| `views/calendar/README.md` | what `CalendarView` is and its `## Benchmark` section: scenarios, how to run and compare, the baseline numbers | — |
 | `views/calendar/types.ts` | `CalendarDate`, `CalendarViewMode`, `CalendarItemSchedule`, `CalendarItemPlacement`, `CalendarItemRenderContext`, `CalendarItemReschedule` | yes |
 | `views/calendar/components/calendar-view.tsx` | `CalendarView` and `CalendarViewProps`: range, segments, labels, drag provider and overlay | yes |
 | `views/calendar/components/calendar-view.test.tsx` | JSDOM tests for month placement, today marks, loading, `+N`, draggable markers, the time grid split, day mode and the now line | — |
@@ -108,6 +109,7 @@ Top level:
 | File | Owns | Public |
 | --- | --- | --- |
 | `views/data-table/index.ts` | re-exports the two files below | through the barrel |
+| `views/data-table/README.md` | what `DataTable` is and its `## Benchmark` section: scenarios, how to run and compare, the baseline numbers | — |
 | `views/data-table/data-table.tsx` | `DataTable`, `DataTableProps` | yes |
 | `views/data-table/use-data-table.ts` | `useDataTable`, `dataTableFeatures`, `DataTableFeatures`, `DataTableTable`, `DataTableColumnDef`, `UseDataTableOptions`, `UseDataTableReturn` | yes |
 | `views/data-table/data-table.test.tsx` | JSDOM tests for semantics, `bordered`, selection, footer, empty, loading and pagination | — |
@@ -117,6 +119,7 @@ Top level:
 | File | Owns | Public |
 | --- | --- | --- |
 | `views/kanban/index.ts` | re-exports the components below, `useActiveColumnId` and the kanban types | through the barrel |
+| `views/kanban/README.md` | what `KanbanView` is and its `## Benchmark` section: scenarios, how to run and compare, the baseline numbers | — |
 | `views/kanban/types.ts` | `KanbanColumnData`, `KanbanColumnActions`, `KanbanCardMove`, `KanbanColumnOption` | yes |
 | `views/kanban/components/kanban-view.tsx` | `KanbanView`, `KanbanViewProps`: column selector, board scroll area, drag provider and overlay | yes |
 | `views/kanban/components/kanban-view.test.tsx` | JSDOM tests for loading, column metadata, color overlay, collapsed and hidden columns, header actions | — |
@@ -137,6 +140,7 @@ Top level:
 | File | Owns | Public |
 | --- | --- | --- |
 | `views/list/index.ts` | re-exports the components below | through the barrel |
+| `views/list/README.md` | what `ListView` is and its `## Benchmark` section: scenarios, how to run and compare, the baseline numbers | — |
 | `views/list/components/list-view.tsx` | `ListView`, `ListViewProps` | yes |
 | `views/list/components/list-view.test.tsx` | JSDOM tests for loading, group metadata, flat mode and `collapseEmptyGroups` | — |
 | `views/list/components/list-group.tsx` | `ListGroup`, `ListGroupProps`, `ListGroupActions`: a `Collapsible` section with header, count and add button | yes |
@@ -371,5 +375,14 @@ bunx biome check packages/parttens/src/collection-views
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/collection-views
 ```
+
+Each view has a benchmark built on the shared harness in `scripts/bench/` (`bench-harness.ts` and `bench-compare.ts`, copied from the tc96-marketplace `react-component-performance` skill; keep the `bench-harness v1` line). The adapters are `scripts/bench/<view>.bench.ts`, the committed baselines `scripts/bench/results/<view>.base.json`, and the numbers and reading live in each view's `README.md`. Before a change that touches rendering, run the view's bench; after it, compare against the baseline and gate on render counts:
+
+```bash
+bun run bench:list          # also bench:data-grid, bench:data-table, bench:kanban, bench:calendar
+bun scripts/bench/list.bench.ts --compare scripts/bench/results/list.base.json --gate
+```
+
+`--gate` exits 1 when a render counter rose or a scenario disappeared; timing only warns. Regenerate a baseline with `--json scripts/bench/results/<view>.base.json` on an otherwise idle machine and update the README table in the same change.
 
 The stories live under `apps/storybook/src/patterns/collection-views/` and run axe with `test: 'error'`: `default.stories.tsx` (`Patterns/CollectionViews`), `views/data-grid.stories.tsx` (`Patterns/CollectionViews/Views/Data Grid`), `views/data-table.stories.tsx` (`Patterns/CollectionViews/Views/Data Table`), `views/list.stories.tsx` (`Patterns/CollectionViews/Views/List`), `views/calendar/calendar-month.stories.tsx` (`Patterns/CollectionViews/Views/Calendar/Month`), `views/calendar/calendar-time-grid.stories.tsx` (`Patterns/CollectionViews/Views/Calendar/Time Grid`), `views/kanban/kanban.stories.tsx` (`Patterns/CollectionViews/Views/Kanban/Usages/Todo`), `views/kanban/sales-pipeline-card.stories.tsx` (`Patterns/CollectionViews/Views/Kanban/Usages/Sales`), `views/kanban/kanban-card.stories.tsx` (`Patterns/CollectionViews/Views/Kanban/Cards`), `views/kanban/kanban-column.stories.tsx` (`Patterns/CollectionViews/Views/Kanban/Column`), `views/kanban/kanban-loading.stories.tsx` (`Patterns/CollectionViews/Views/Kanban/Loading/Board`), `views/kanban/kanban-card-loading.stories.tsx` (`Patterns/CollectionViews/Views/Kanban/Loading/Card`) and `views/kanban/kanban-error.stories.tsx` (`Patterns/CollectionViews/Views/Kanban/Surfaces Error`). `views/kanban/kanban-card-example.tsx` is the shared card fixture, not a story.
