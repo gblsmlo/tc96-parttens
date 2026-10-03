@@ -7,7 +7,10 @@ import {
   CalendarView,
   type CalendarViewProps,
 } from '../views/calendar/components/calendar-view'
-import { DataGrid, type DataGridProps } from '../views/data-grid/data-grid'
+import {
+  DataGrid,
+  type DataGridProps,
+} from '../views/data-grid/components/data-grid'
 import { DataTable, type DataTableProps } from '../views/data-table/data-table'
 import {
   KanbanView,

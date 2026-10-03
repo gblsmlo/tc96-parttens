@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 import type { ReactElement } from 'react'
 
-await import('../../test/dom')
+await import('../../../test/dom')
 
 class MockResizeObserver {
   disconnect() {}
@@ -36,7 +36,6 @@ type Options = Omit<
   'columns' | 'data'
 >
 
-/** Monta o hook fora de um componente de teste dedicado para poder agir sobre a instância. */
 function renderTable(options: Options = {}) {
   const captured = {
     table: null as ReturnType<typeof useDataGrid<Campaign>>['table'] | null,
@@ -132,7 +131,6 @@ describe('useDataGrid', () => {
     ).toEqual(['c'])
   })
 
-  /** O offset alimenta a numeração ARIA das linhas, que precisa ser contínua entre páginas. */
   test('reports the row offset of the current page through the table metadata', () => {
     const captured = renderTable({ enablePagination: true, pageSize: 2 })
 

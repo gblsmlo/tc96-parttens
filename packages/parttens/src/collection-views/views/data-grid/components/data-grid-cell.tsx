@@ -1,7 +1,6 @@
 'use client'
 
 import type { CellContext, RowData } from '@tanstack/react-table'
-import { isValidDate, parseDateValue } from '@tc96/helpers/date'
 import { Badge } from '@tc96/ui/badge'
 import {
   Select,
@@ -12,30 +11,11 @@ import {
 } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
 import { CheckIcon, MinusIcon } from 'lucide-react'
-import type { DataGridFeatures } from './data-grid-features'
-import type { DataGridAlign, DataGridColumnMeta } from './types'
+import { CELL_ALIGN } from '../lib/constants'
+import type { DataGridFeatures } from '../lib/data-grid-features'
+import { formatDate, toStringValue } from '../lib/format-value'
+import type { DataGridColumnMeta } from '../types'
 
-const ALIGN_CLASS: Record<DataGridAlign, string> = {
-  center: 'text-center justify-center',
-  end: 'text-end justify-end',
-  start: 'text-start justify-start',
-}
-
-function toStringValue(value: unknown): string {
-  if (value === null || value === undefined) return ''
-  return String(value)
-}
-
-function formatDate(value: unknown): string {
-  if (!value) return ''
-  const date = parseDateValue(value)
-  return isValidDate(date) ? date.toLocaleDateString() : toStringValue(value)
-}
-
-/**
- * Default renderer. Single-select interaction is opt-in through column meta;
- * domain validation and mutation remain owned by the consumer callback.
- */
 export function DataGridCell<TData extends RowData>({
   context,
 }: {
@@ -44,7 +24,7 @@ export function DataGridCell<TData extends RowData>({
   const { column, getValue, row, table } = context
   const meta = (column.columnDef.meta ?? {}) as DataGridColumnMeta
   const variant = meta.variant ?? 'text'
-  const align = ALIGN_CLASS[meta.align ?? 'start']
+  const align = CELL_ALIGN[meta.align ?? 'start']
   const value = getValue()
 
   switch (variant) {
@@ -53,10 +33,11 @@ export function DataGridCell<TData extends RowData>({
       return (
         <span className={cn('flex items-center text-muted-foreground', align)}>
           {checked ? (
-            <CheckIcon className="size-4" />
+            <CheckIcon aria-hidden="true" className="size-4" />
           ) : (
-            <MinusIcon className="size-4 opacity-40" />
+            <MinusIcon aria-hidden="true" className="size-4 opacity-40" />
           )}
+          <span className="sr-only">{checked ? 'Marcado' : 'Desmarcado'}</span>
         </span>
       )
     }

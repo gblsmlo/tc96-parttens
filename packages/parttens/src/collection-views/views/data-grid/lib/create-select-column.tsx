@@ -4,10 +4,6 @@ import type { RowData } from '@tanstack/react-table'
 import { Checkbox } from '@tc96/ui/checkbox'
 import type { DataGridColumnDef } from './data-grid-features'
 
-/**
- * Row-selection column with header "select all" and per-row checkboxes.
- * Place it first in your column list and pair with `enableRowSelection` on the grid.
- */
 export function createSelectColumn<TData extends RowData>(
   options: { showRowNumbers?: boolean; size?: number } = {},
 ): DataGridColumnDef<TData> {

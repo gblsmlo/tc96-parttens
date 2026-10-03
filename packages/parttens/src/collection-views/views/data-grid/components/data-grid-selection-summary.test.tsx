@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, test } from 'bun:test'
 import type { ReactElement } from 'react'
 
-await import('../../test/dom')
+await import('../../../test/dom')
 
 class MockResizeObserver {
   disconnect() {}
@@ -11,17 +11,15 @@ class MockResizeObserver {
 
 Object.assign(globalThis, { ResizeObserver: MockResizeObserver })
 
-const { act, cleanup, fireEvent, render, screen } = await import(
-  '@testing-library/react'
-)
-const { DataGridSearch, DataGridSelectionSummary } = await import(
-  './data-grid-toolbar'
+const { act, cleanup, render } = await import('@testing-library/react')
+const { DataGridSelectionSummary } = await import(
+  './data-grid-selection-summary'
 )
 const { CollectionToolbar } = await import(
-  '../../../shared/components/collection-toolbar'
+  '../../../../shared/components/collection-toolbar'
 )
-const { useDataGrid } = await import('./use-data-grid')
-const { createSelectColumn } = await import('./data-grid-columns')
+const { useDataGrid } = await import('../hooks/use-data-grid')
+const { createSelectColumn } = await import('../lib/create-select-column')
 
 interface Record {
   id: string
@@ -44,38 +42,6 @@ const columns = [
 ]
 
 afterEach(cleanup)
-
-describe('DataGridSearch', () => {
-  test('drives the global filter and returns to the first page on every keystroke', () => {
-    const seen = { pageIndex: -1, rows: [] as string[] }
-
-    function SearchExample(): ReactElement {
-      const { table } = useDataGrid<Record>({
-        columns,
-        data: records,
-        enablePagination: true,
-        getRowId: (record) => record.id,
-        pageSize: 1,
-      })
-      seen.pageIndex = table.atoms.pagination.get().pageIndex
-      seen.rows = table.getRowModel().rows.map((row) => row.id)
-
-      return (
-        <CollectionToolbar>
-          <DataGridSearch placeholder="Buscar…" table={table} />
-        </CollectionToolbar>
-      )
-    }
-
-    render(<SearchExample />)
-
-    const field = screen.getByRole('searchbox', { name: 'Buscar…' })
-    fireEvent.change(field, { target: { value: 'Aniversariantes' } })
-
-    expect(seen.rows).toEqual(['b'])
-    expect(seen.pageIndex).toBe(0)
-  })
-})
 
 describe('DataGridSelectionSummary', () => {
   test('counts the selected rows, agreeing the label with the count', () => {

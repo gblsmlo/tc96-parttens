@@ -26,7 +26,7 @@ import {
   UserPenIcon,
   UserPlusIcon,
 } from 'lucide-react'
-import type { DataGridColumnType } from './types'
+import type { DataGridColumnType } from '../types'
 
 export const DATA_GRID_COLUMN_TYPE_ICONS = {
   title: Heading1Icon,
