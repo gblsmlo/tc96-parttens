@@ -2,13 +2,13 @@
 
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
+import { cn } from '@tc96/utils'
 import * as React from 'react'
 import {
   EditableContext,
   type EditableContextValue,
   useEditableContext,
 } from '../../store/editable-store'
-import { cn } from '../../shared/lib/utils'
 
 type Direction = 'ltr' | 'rtl'
 type TriggerMode = 'click' | 'dblclick' | 'focus'

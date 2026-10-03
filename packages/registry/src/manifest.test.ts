@@ -15,11 +15,13 @@ const config: InstallConfig = {
     ui: '@consumer/visual',
     utils: '@consumer/helpers/cn',
     elements: '@consumer/atoms',
+    helpers: '@consumer/toolkit',
     patterns: '@consumer/patterns',
   },
   paths: {
     ui: 'packages/visual/src',
     elements: 'packages/atoms/src',
+    helpers: 'packages/toolkit/src',
     patterns: 'packages/patterns/src',
   },
 }
@@ -40,6 +42,9 @@ test('selects several patterns once and maps legacy view to collection-views', (
 })
 test('accepts the migrated checklist pattern', () => {
   expect(selectPatterns(['checklist', 'checklist'])).toEqual(['checklist'])
+})
+test('accepts the widgets pattern', () => {
+  expect(selectPatterns(['widgets'])).toEqual(['widgets'])
 })
 test('rejects unknown or excluded patterns', () => {
   expect(() => selectPatterns(['filter-builder'])).toThrow('Unknown pattern')
@@ -91,6 +96,30 @@ test('maps elements files and imports to the elements destination', () => {
   )
   expect(result.files[0]?.target).toBe('~/packages/atoms/src/text.tsx')
   expect(result.files[1]?.content).toContain('from "@consumer/atoms/text"')
+})
+test('maps helpers files and imports to the helpers destination', () => {
+  const result = prepareItem(
+    {
+      name: 'proof',
+      type: 'registry:block',
+      files: [
+        {
+          path: 'helpers/src/format.ts',
+          type: 'registry:file',
+          content: 'export const formatAmount = 1\n',
+        },
+        {
+          path: 'parttens/src/widgets/index.ts',
+          type: 'registry:file',
+          content: 'export { formatAmount } from "@tc96/helpers/format"\n',
+        },
+      ],
+      dependencies: [],
+    },
+    config,
+  )
+  expect(result.files[0]?.target).toBe('~/packages/toolkit/src/format.ts')
+  expect(result.files[1]?.content).toContain('from "@consumer/toolkit/format"')
 })
 test('rewrites ui and utils imports to the consumer aliases', () => {
   const result = prepareItem(

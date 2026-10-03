@@ -1,8 +1,8 @@
 'use client'
 
 import { BoxIcon, Building2Icon, PackageIcon } from 'lucide-react'
-import { IconLabelProperty } from '../icon-label/icon-label-property'
 import type { PropertyVariant } from '../../shared/property-surface'
+import { IconLabelProperty } from '../icon-label/icon-label-property'
 
 export type ReferencePropertyKind = 'account' | 'product' | 'record'
 

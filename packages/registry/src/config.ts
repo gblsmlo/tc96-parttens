@@ -12,7 +12,7 @@ import {
 } from './manifest'
 
 // The consumer's components.json is the only configuration. shadcn defines
-// ui and utils; elements and patterns are tc96 keys added to the same aliases
+// ui and utils; elements, helpers and patterns are tc96 keys added to the same aliases
 // object, so they are read from the raw file.
 export function readAliases(components: unknown): Aliases {
   const aliases =
@@ -22,10 +22,10 @@ export function readAliases(components: unknown): Aliases {
   )
   if (missing.length)
     throw new Error(
-      `components.json is missing ${missing.map((name) => `aliases.${name}`).join(', ')}. tc96 needs ui and utils from shadcn, plus elements and patterns, e.g. "elements": "@acme/elements" and "patterns": "@acme/patterns". shadcn init --force rewrites components.json without them; add them back and review the ui alias.`,
+      `components.json is missing ${missing.map((name) => `aliases.${name}`).join(', ')}. tc96 needs ui and utils from shadcn, plus elements, helpers and patterns, e.g. "elements": "@acme/elements", "helpers": "@acme/helpers" and "patterns": "@acme/patterns". shadcn init --force rewrites components.json without them; add them back and review the ui alias.`,
     )
-  const { ui, utils, elements, patterns } = aliases as Aliases
-  return { ui, utils, elements, patterns }
+  const { ui, utils, elements, helpers, patterns } = aliases as Aliases
+  return { ui, utils, elements, helpers, patterns }
 }
 
 // Files are written where the tsconfig resolves each alias, as shadcn does.

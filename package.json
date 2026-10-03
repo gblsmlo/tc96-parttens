@@ -14,9 +14,10 @@
     "sync:coss": "bun scripts/sync-coss.ts",
     "typecheck": "tsc --noEmit",
     "test:ui": "bun test --isolate packages/elements/src packages/utils/src",
+    "test:helpers": "bun test --isolate packages/helpers/src",
     "test:patterns": "bun scripts/test-patterns.ts",
     "test:registry": "bun test --isolate packages/registry/src",
-    "test": "bun run test:ui && bun run test:boundaries && bun run test:patterns && bun run test:registry",
+    "test": "bun run test:ui && bun run test:helpers && bun run test:boundaries && bun run test:patterns && bun run test:registry",
     "build:registry": "bun packages/registry/src/build-registry.ts",
     "build": "bun run build:registry",
     "storybook": "bun run --cwd apps/storybook dev",
@@ -63,7 +64,9 @@
     "zod": "4.4.3",
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "@base-ui/react": "1.8.0"
+    "@base-ui/react": "1.8.0",
+    "recharts": "3.10.1",
+    "react-is": "19.1.1"
   },
   "engines": {
     "node": ">=22.12"

@@ -8,6 +8,7 @@ for (const path of [
   'editable',
   'properties',
   'shared',
+  'widgets',
 ]) {
   if (
     !(await files(`packages/parttens/src/${path}`)).some((file) =>

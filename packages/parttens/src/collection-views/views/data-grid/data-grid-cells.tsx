@@ -1,6 +1,7 @@
 'use client'
 
 import type { CellContext, RowData } from '@tanstack/react-table'
+import { isValidDate, parseDateValue } from '@tc96/helpers/date'
 import { Badge } from '@tc96/ui/badge'
 import {
   Select,
@@ -25,22 +26,10 @@ function toStringValue(value: unknown): string {
   return String(value)
 }
 
-const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/
-
-function parseDate(value: unknown): Date {
-  if (value instanceof Date) return value
-  const raw = String(value)
-
-  // `new Date('2026-08-04')` é meia-noite UTC, e `toLocaleDateString` a devolve
-  // no fuso local: em qualquer fuso negativo a data exibida volta um dia.
-  return DATE_ONLY.test(raw) ? new Date(`${raw}T00:00:00`) : new Date(raw)
-}
-
 function formatDate(value: unknown): string {
   if (!value) return ''
-  const date = parseDate(value)
-  if (Number.isNaN(date.getTime())) return toStringValue(value)
-  return date.toLocaleDateString()
+  const date = parseDateValue(value)
+  return isValidDate(date) ? date.toLocaleDateString() : toStringValue(value)
 }
 
 /**

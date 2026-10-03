@@ -3,7 +3,7 @@
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import { cn } from '@tc96/utils'
-import { type VariantProps, cva } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
 import type { ComponentPropsWithoutRef, ReactElement } from 'react'
 
 export type CalendarEventChipTone = VariantProps<

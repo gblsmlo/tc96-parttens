@@ -6,7 +6,11 @@ describe('elements', () => {
     expect(textSizes).toEqual(['sm', 'md', 'lg'])
     expect(textVariants()).toContain('text-base')
     expect(textVariants()).toContain('text-foreground')
-    expect(textVariants({ foreground: 'muted', size: 'sm' })).toContain('text-muted-foreground')
-    expect(textVariants({ foreground: 'muted', size: 'sm' })).toContain('text-sm')
+    expect(textVariants({ foreground: 'muted', size: 'sm' })).toContain(
+      'text-muted-foreground',
+    )
+    expect(textVariants({ foreground: 'muted', size: 'sm' })).toContain(
+      'text-sm',
+    )
   })
 })

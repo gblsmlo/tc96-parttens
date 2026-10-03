@@ -1,5 +1,10 @@
 'use client'
 
+import {
+  formatShortDate,
+  parseIsoDate,
+  serializeIsoDay,
+} from '@tc96/helpers/date'
 import { Button } from '@tc96/ui/button'
 import { Calendar } from '@tc96/ui/calendar'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
@@ -216,26 +221,16 @@ export function formatDateProperty(
   locale: string,
   timeZone: string,
 ): string {
-  const date = parseDatePropertyValue(value)
-  if (!date) return fallback
+  const date = parseIsoDate(value)
   // Sem ano: numa propriedade a data é referência curta, e o ano ocupa metade da
   // pílula para dizer o que quase sempre já se sabe.
-  return new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'short',
-    timeZone,
-  }).format(date)
+  return date ? formatShortDate(date, locale, timeZone) : fallback
 }
 
 export function parseDatePropertyValue(value: string | null): Date | null {
-  if (!value) return null
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return null
-  return date
+  return parseIsoDate(value)
 }
 
 export function serializeDatePropertyValue(date: Date): string {
-  return new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12),
-  ).toISOString()
+  return serializeIsoDay(date)
 }

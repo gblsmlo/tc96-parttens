@@ -1,12 +1,11 @@
-export type CalendarViewMode = 'day' | 'month' | 'week'
+import type {
+  CalendarDate,
+  CalendarRangeMode,
+} from '@tc96/helpers/calendar-date'
 
-/** Dia de calendário no fuso da view — sem hora e sem timezone embutido. */
-export interface CalendarDate {
-  day: number
-  /** 1–12. */
-  month: number
-  year: number
-}
+export type { CalendarDate } from '@tc96/helpers/calendar-date'
+
+export type CalendarViewMode = CalendarRangeMode
 
 export interface CalendarItemSchedule {
   /** `null` é o instante único (item só com prazo); o time grid dá altura mínima. */

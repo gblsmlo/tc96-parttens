@@ -3,11 +3,10 @@
 import { CollisionPriority } from '@dnd-kit/abstract'
 import { pointerIntersection } from '@dnd-kit/collision'
 import { useDroppable } from '@dnd-kit/react'
+import { calendarDateKey } from '@tc96/helpers/calendar-date'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'
 import { useId } from 'react'
-
-import { calendarDateKey } from '../lib/calendar-date'
 import type { CalendarItemSegment, TimeGridLane } from '../lib/calendar-layout'
 import { timeGridPosition } from '../lib/calendar-layout'
 import { createCalendarDropId } from '../lib/drag-and-drop'
@@ -56,7 +55,7 @@ export function CalendarDayColumn<TItem>({
   return (
     <section
       aria-labelledby={titleId}
-      className="relative min-w-0 border-border/70 border-s"
+      className="relative min-w-0 border-border/80 border-s"
     >
       <h3 className="sr-only" id={titleId}>
         {headingLabel}

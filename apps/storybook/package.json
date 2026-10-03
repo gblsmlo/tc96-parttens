@@ -14,6 +14,7 @@
     "@daypicker/react": "10.0.2",
     "@dnd-kit/dom": "0.5.0",
     "@tc96/elements": "workspace:*",
+    "@tc96/helpers": "workspace:*",
     "@tc96/parttens": "workspace:*",
     "@tc96/ui": "workspace:*",
     "lucide-react": "1.28.0",

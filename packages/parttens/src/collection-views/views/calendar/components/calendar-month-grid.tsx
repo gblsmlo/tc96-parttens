@@ -1,7 +1,10 @@
 'use client'
 
+import {
+  calendarDateKey,
+  isSameCalendarDate,
+} from '@tc96/helpers/calendar-date'
 import type { ReactNode } from 'react'
-import { calendarDateKey, isSameCalendarDate } from '../lib/calendar-date'
 import type { CalendarItemSegment } from '../lib/calendar-layout'
 import type { CalendarDate } from '../types'
 import { CalendarMonthDayCell } from './calendar-month-day-cell'
@@ -46,7 +49,7 @@ export function CalendarMonthGrid<TItem>({
 
   return (
     <div
-      className="grid min-w-0 overflow-hidden rounded-lg border border-border/70 bg-border/70"
+      className="grid min-w-0 overflow-hidden rounded-lg border border-border/80 bg-border/70"
       data-slot="calendar-month-grid"
     >
       <h2 className="sr-only">{gridLabel}</h2>

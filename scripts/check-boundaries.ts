@@ -6,9 +6,10 @@ import { files } from './files'
 
 const allowed: Record<string, string[]> = {
   utils: [],
+  helpers: [],
   ui: ['utils'],
-  elements: ['ui', 'utils'],
-  parttens: ['ui', 'elements', 'utils'],
+  elements: ['ui', 'utils', 'helpers'],
+  parttens: ['ui', 'elements', 'utils', 'helpers'],
   registry: [],
 }
 const cossItems = new Set(Object.keys((await readLock()).items))
@@ -51,8 +52,11 @@ for (const owner of Object.keys(allowed)) {
         if (!item || !cossItems.has(item))
           violations.push(`${file}: ${specifier} is not a locked COSS item`)
       }
-      if (owner === 'utils' && /^(react|@base-ui)/.test(specifier)) {
-        violations.push(`${file}: utils cannot depend on React or UI`)
+      if (
+        (owner === 'utils' || owner === 'helpers') &&
+        /^(react|@base-ui)/.test(specifier)
+      ) {
+        violations.push(`${file}: ${owner} cannot depend on React or UI`)
       }
       if (specifier.startsWith('@/'))
         violations.push(`${file}: unresolved legacy alias ${specifier}`)

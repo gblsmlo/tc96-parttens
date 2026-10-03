@@ -15,7 +15,7 @@ description: Instale os fontes dos patterns no seu projeto COSS.
 
 ## Aliases
 
-Acrescente `elements` e `patterns` aos aliases que o shadcn já define:
+Acrescente `elements`, `helpers` e `patterns` aos aliases que o shadcn já define:
 
 ```json
 {
@@ -24,18 +24,19 @@ Acrescente `elements` e `patterns` aos aliases que o shadcn já define:
     "ui": "@acme/ui",
     "utils": "@acme/ui/lib/utils",
     "elements": "@acme/elements",
+    "helpers": "@acme/helpers",
     "patterns": "@acme/patterns"
   }
 }
 ```
 
 Cada alias também precisa de entrada exata e de wildcard em `paths` no
-`tsconfig` da raiz. O CLI grava `elements` e `patterns` no diretório que o
-wildcard de cada alias resolve e reescreve os imports para `ui` e `utils`, que
+`tsconfig` da raiz. O CLI grava `elements`, `helpers` e `patterns` no diretório
+que o wildcard de cada alias resolve e reescreve os imports para `ui` e `utils`, que
 continuam sendo seus.
 
-O `shadcn init --force` regrava o `components.json` sem `elements` e
-`patterns`, e troca o alias `ui`. Se rodar esse comando, acrescente as duas
+O `shadcn init --force` regrava o `components.json` sem `elements`, `helpers`
+e `patterns`, e troca o alias `ui`. Se rodar esse comando, acrescente as três
 chaves de novo e revise o `ui`; o CLI avisa quando elas faltam.
 
 ## Instalar
@@ -47,6 +48,8 @@ npx @tc96/parttens add collection-views properties
 ```
 
 Para instalar o checklist isoladamente, use `npx @tc96/parttens add checklist`.
+
+Os widgets de finanças, produtividade e CRM vêm juntos em `npx @tc96/parttens add widgets`. Os gráficos de saldo, progresso de tarefas e fluxo de caixa usam `recharts`, instalado como dependência do pattern.
 
 Os componentes COSS que os patterns usam e que faltam no seu `ui` são
 instalados pelo shadcn a partir de `@coss`, respeitando o endereço que você

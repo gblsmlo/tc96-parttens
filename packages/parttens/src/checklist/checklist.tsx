@@ -4,6 +4,12 @@ import { KeyboardSensor, PointerSensor } from '@dnd-kit/dom'
 import { DragDropProvider, type DragEndEvent } from '@dnd-kit/react'
 import { isSortableOperation, useSortable } from '@dnd-kit/react/sortable'
 import { Title } from '@tc96/elements/title'
+import {
+  dayOffsetInTimeZone,
+  formatRelativeDay,
+  formatShortDate,
+  parseIsoDate,
+} from '@tc96/helpers/date'
 import { Button } from '@tc96/ui/button'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { InputPrimitive } from '@tc96/ui/input'
@@ -12,11 +18,7 @@ import { cn } from '@tc96/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { GripVerticalIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 import type { ComponentPropsWithoutRef, KeyboardEvent, ReactNode } from 'react'
-import {
-  DateProperty,
-  formatDateProperty,
-  parseDatePropertyValue,
-} from '../properties/display/date/date-property'
+import { DateProperty } from '../properties/display/date/date-property'
 import {
   EditableText,
   type EditableTextSize,
@@ -623,24 +625,8 @@ function calendarDayOffset(
   now: Date,
   timeZone: string,
 ): number | null {
-  const due = parseDatePropertyValue(value ?? null)
-  if (!due) return null
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    day: '2-digit',
-    month: '2-digit',
-    timeZone,
-    year: 'numeric',
-  })
-  const dayNumber = (date: Date) => {
-    const parts = Object.fromEntries(
-      formatter.formatToParts(date).map((part) => [part.type, part.value]),
-    )
-    return (
-      Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)) /
-      86_400_000
-    )
-  }
-  return dayNumber(due) - dayNumber(now)
+  const due = parseIsoDate(value)
+  return due ? dayOffsetInTimeZone(now, due, timeZone) : null
 }
 
 function formatChecklistDueDate(
@@ -649,13 +635,10 @@ function formatChecklistDueDate(
   timeZone: string,
   dayOffset: number | null,
 ): string {
-  if (dayOffset !== null && Math.abs(dayOffset) <= 1) {
-    const label = new Intl.RelativeTimeFormat(locale, {
-      numeric: 'auto',
-    }).format(dayOffset, 'day')
-    return label.charAt(0).toLocaleUpperCase(locale) + label.slice(1)
-  }
-  return formatDateProperty(value, 'No due date', locale, timeZone)
+  if (dayOffset !== null && Math.abs(dayOffset) <= 1)
+    return formatRelativeDay(dayOffset, locale)
+  const due = parseIsoDate(value)
+  return due ? formatShortDate(due, locale, timeZone) : 'No due date'
 }
 
 function ChecklistItemCard({

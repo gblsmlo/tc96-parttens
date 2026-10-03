@@ -81,6 +81,11 @@
       "upstream": "sha256-aeb2ebda24c8c90453fd7087bae8f14510f98e4eee75da5c084dfecaa56f2625",
       "file": "sha256-38d635c449ee3cd9c72b24a8a94c23bf86f751813d329cce1ae634de431759be"
     },
+    "meter": {
+      "url": "https://coss.com/ui/r/meter.json",
+      "upstream": "sha256-f7f0b85f6878378c76e66887a111a1cb8476ebea84a2ebb4f6d41fe0fbad8653",
+      "file": "sha256-78a54afca2a90c0df56ce3d920c94dd037d15307de7cc6905b7482d818b1ec37"
+    },
     "pagination": {
       "url": "https://coss.com/ui/r/pagination.json",
       "upstream": "sha256-4c3d048be127d228ad199b8555b833ffc26cd9506b4a75b4b298754833474993",
@@ -130,6 +135,16 @@
       "url": "https://coss.com/ui/r/textarea.json",
       "upstream": "sha256-3e30e41c099d7343cb0a603557acd4e8b7c94b43139a7a489df322c04c5f601c",
       "file": "sha256-1e9c86d3de5263b91a071af37f77e44041205b1afddb8b656e218c08c2676351"
+    },
+    "toggle": {
+      "url": "https://coss.com/ui/r/toggle.json",
+      "upstream": "sha256-a32372d0eaa291bc81f61f4ddb1f5bb827c507fd53de03c6f709adc242ee5bfb",
+      "file": "sha256-2490ec9226372ebe2b7514f5ca8c54c68153b756553ce9295f409f083075da86"
+    },
+    "toggle-group": {
+      "url": "https://coss.com/ui/r/toggle-group.json",
+      "upstream": "sha256-8c67854bffcf762299fb989721e47da30fea3268cb969fdc6c775c3fe89982bb",
+      "file": "sha256-1e0dcc47529aa8f08cfaff572be345208b090f73bb2ae7cd42216d89236491d9"
     },
     "toolbar": {
       "url": "https://coss.com/ui/r/toolbar.json",

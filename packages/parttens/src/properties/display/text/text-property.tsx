@@ -1,9 +1,9 @@
 'use client'
 
+import { copyToClipboard } from '@tc96/helpers/clipboard'
 import { cn } from '@tc96/utils'
 import { CopyIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
-import { copyToClipboard } from '../../shared/lib/clipboard'
 import {
   PropertySurface,
   type PropertyVariant,

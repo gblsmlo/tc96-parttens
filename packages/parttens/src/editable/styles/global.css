@@ -20,7 +20,9 @@
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -31,7 +33,11 @@
   --primary: var(--color-stone-800);
   --primary-foreground: var(--color-stone-50);
   --muted: --alpha(var(--color-black) / 4%);
-  --muted-foreground: color-mix(in srgb, var(--color-stone-500) 90%, var(--color-black));
+  --muted-foreground: color-mix(
+    in srgb,
+    var(--color-stone-500) 90%,
+    var(--color-black)
+  );
   --accent: --alpha(var(--color-black) / 4%);
   --accent-foreground: var(--color-stone-800);
   --destructive: var(--color-red-500);

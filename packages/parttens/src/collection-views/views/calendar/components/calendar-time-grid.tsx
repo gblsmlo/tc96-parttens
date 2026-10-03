@@ -1,11 +1,13 @@
 'use client'
 
+import {
+  calendarDateKey,
+  isSameCalendarDate,
+} from '@tc96/helpers/calendar-date'
 import { ScrollArea } from '@tc96/ui/scroll-area'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
-
-import { calendarDateKey, isSameCalendarDate } from '../lib/calendar-date'
 import type { CalendarItemSegment, TimeGridLane } from '../lib/calendar-layout'
 import type { CalendarDate } from '../types'
 import { CalendarAllDayCell } from './calendar-all-day-cell'
@@ -71,13 +73,13 @@ export function CalendarTimeGrid<TItem>({
 
   return (
     <div
-      className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-border/70"
+      className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-border/80"
       data-slot="calendar-time-grid"
     >
       <h2 className="sr-only">{gridLabel}</h2>
 
       <div
-        className="grid border-border/70 border-b"
+        className="grid border-border/80 border-b"
         style={{ gridTemplateColumns: columnsTemplate }}
       >
         <div className="px-2 py-2 text-end text-[10px] text-muted-foreground">
@@ -89,7 +91,7 @@ export function CalendarTimeGrid<TItem>({
           return (
             <div
               aria-hidden="true"
-              className="flex items-baseline justify-center gap-1 border-border/70 border-s px-1.5 py-2"
+              className="flex items-baseline justify-center gap-1 border-border/80 border-s px-1.5 py-2"
               data-today={isSameCalendarDate(date, today) ? '' : undefined}
               key={calendarDateKey(date)}
             >
@@ -111,7 +113,7 @@ export function CalendarTimeGrid<TItem>({
       </div>
 
       <div
-        className="grid border-border/70 border-b"
+        className="grid border-border/80 border-b"
         style={{ gridTemplateColumns: columnsTemplate }}
       >
         <div className="px-2 py-1 text-end text-[10px] text-muted-foreground">
