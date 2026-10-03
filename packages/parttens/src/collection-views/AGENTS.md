@@ -69,6 +69,7 @@ Top level:
 | `views/calendar/types.ts` | `CalendarDate`, `CalendarViewMode`, `CalendarItemSchedule`, `CalendarItemPlacement`, `CalendarItemRenderContext`, `CalendarItemReschedule` | yes |
 | `views/calendar/components/calendar-view.tsx` | `CalendarView` and `CalendarViewProps`: range, segments, labels, drag provider and overlay | yes |
 | `views/calendar/components/calendar-view.test.tsx` | JSDOM tests for month placement, today marks, loading, `+N`, draggable markers, the time grid split, day mode and the now line | — |
+| `views/calendar/components/calendar-view-drag.test.tsx` | JSDOM drag tests with layout mocks: an accepted move re-renders only the moved item, rejection and a rejected promise roll back, confirming through props renders nothing | — |
 | `views/calendar/components/calendar-month-grid.tsx` | `CalendarMonthGrid`: weekday header and one row per week | yes |
 | `views/calendar/components/calendar-month-day-cell.tsx` | `CalendarMonthDayCell`: droppable day cell, visible chips and the `+N` overflow | no |
 | `views/calendar/components/calendar-time-grid.tsx` | `CalendarTimeGrid`: day headings, all-day strip, hour labels and the scrolling columns | yes |
@@ -77,6 +78,8 @@ Top level:
 | `views/calendar/components/calendar-event-chip.tsx` | `CalendarEventChip` (`article`), `CalendarEventChipTime`, `CalendarEventChipTitle`, `CalendarEventChipOpenTrigger`, `calendarEventChipVariants` and the tone and display types | yes |
 | `views/calendar/components/calendar-item-skeleton.tsx` | `CalendarItemSkeleton` | yes |
 | `views/calendar/components/draggable-calendar-item.tsx` | `DraggableCalendarItem` and `CALENDAR_ITEM_SENSORS`: the drag handle wrapper around a segment | no |
+| `views/calendar/components/calendar-segment-content.tsx` | `CalendarSegmentContent`: the memoized leaf that rebuilds the render context from primitive props and calls `renderItem` | no |
+| `views/calendar/components/calendar-segment-content.test.tsx` | JSDOM tests for each path that re-runs `renderItem` (identity, item, minutes, `isStart`/`isEnd`, navigation) | — |
 | `views/calendar/hooks/use-calendar-drag-and-drop.ts` | `useCalendarDragAndDrop`: optimistic overrides, pending reschedule and focus restore | no |
 | `views/calendar/hooks/use-calendar-drag-and-drop.test.tsx` | JSDOM tests for accept, rollback, rejection and cancel | — |
 | `views/calendar/hooks/use-now.ts` | `useNow`: controlled instant or a one-minute ticker | no |

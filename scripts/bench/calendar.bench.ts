@@ -1,5 +1,8 @@
 // bench-harness v1 adapter for CalendarView (month and week time grid).
 //
+// The probe item that the reschedule scenario drags is not counted: the drag overlay re-renders it a
+// variable number of times per drag, so `items` means "renders of every other item" (see the README).
+//
 //   bun scripts/bench/calendar.bench.ts --json scripts/bench/results/calendar.base.json
 //   bun scripts/bench/calendar.bench.ts --compare scripts/bench/results/calendar.base.json --gate
 
@@ -203,15 +206,20 @@ const getItemSchedule = (item: Item): Schedule => ({
   start: new Date(item.start),
 })
 
-const renderItem = countRenders<[Item, RenderContext], ReactElement>(
-  (item) =>
-    createElement(
-      CalendarEventChip,
-      null,
-      createElement(CalendarEventChipTitle, null, item.title),
-    ),
+const renderChip = (item: Item) =>
+  createElement(
+    CalendarEventChip,
+    null,
+    createElement(CalendarEventChipTitle, null, item.title),
+  )
+
+const renderOtherItems = countRenders<[Item, RenderContext], ReactElement>(
+  renderChip,
   'items',
 )
+
+const renderItem = (item: Item, context: RenderContext): ReactElement =>
+  item.id === PROBE_ID ? renderChip(item) : renderOtherItems(item, context)
 
 interface WrapperProps {
   anchors: readonly [Date, Date]
@@ -394,9 +402,12 @@ const bench = createBench<Handle>({
       },
     },
     {
-      name: 'keyboard reschedule',
-      run: (handle, { index }) =>
-        dragProbe(handle, index % 2 === 0 ? 'ArrowRight' : 'ArrowLeft'),
+      name: 'keyboard reschedule and back',
+      commits: false,
+      run: async (handle) => {
+        await dragProbe(handle, 'ArrowRight')
+        await dragProbe(handle, 'ArrowLeft')
+      },
     },
   ],
   seed: SEED,
