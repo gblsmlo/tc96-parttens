@@ -17,6 +17,7 @@ import {
   expectCaretAtStart,
   extendSelectionBackward,
   findFloatingToolbar,
+  placeCaretAtEnd,
   pressFloatingButton,
   queryFloatingToolbar,
   richTextTyping,
@@ -48,6 +49,7 @@ const meta = {
   },
   argTypes: {
     'aria-label': { control: 'text' },
+    autoFocus: { control: 'boolean' },
     maxListDepth: { control: 'number' },
     placeholder: { control: 'text' },
     toolbarLabel: { control: 'text' },
@@ -173,8 +175,10 @@ function blockStory(block: keyof typeof blockCases): Story {
 }
 
 export const Empty: Story = {
+  args: { autoFocus: true },
   play: async ({ args, canvasElement }) => {
     const editor = within(canvasElement).getByRole('textbox', { name: 'Nota' })
+    await waitFor(() => expect(editor).toHaveFocus())
     await expect(editor).toHaveAttribute(
       'aria-placeholder',
       'Escreva sua nota, ou digite / para escolher um bloco',
@@ -532,8 +536,8 @@ export const BlockSelectionByKeyboard: Story = {
   decorators: DraggableBlocks.decorators,
   play: async ({ args, canvasElement }) => {
     const editor = within(canvasElement).getByRole('textbox')
-    const first = editor.querySelector('[data-slate-string]') as HTMLElement
-    await userEvent.click(first)
+    placeCaretAtEnd(editor, editor.querySelector('[data-slate-string]'))
+    await waitFor(() => expect(editor).toHaveFocus())
 
     await userEvent.keyboard('{Escape}')
     await waitFor(() =>

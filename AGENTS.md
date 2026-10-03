@@ -26,6 +26,29 @@ docs/architecture/  boundaries and decisions
 scripts/            boundary, COSS, override and public API checks
 ```
 
+## Pattern structure
+
+`collection-views`, `detail-sheet` and `editable` set the internal layout of a pattern. Code is grouped by responsibility, and a layer exists only when it has code to hold:
+
+```text
+packages/parttens/src/<pattern>/
+  index.ts       public barrel; re-exports the layer barrels. The registry and the public API baseline read this file
+  core.ts        React-free surface: the pattern's types and pure functions, for use without rendering
+  composition/   the compound the consumer mounts, one folder per compound with its own index.ts and tests
+                 (editable/composition/editable/, collection-views/composition/)
+  components/    building blocks of one compound, never public (detail-sheet/components/detail-sheet/)
+  shared/        components and helpers used by more than one view or display (collection-views/shared/components/, shared/lib/)
+  views/         independently usable renderers, each with components/, hooks/, lib/, types.ts and index.ts (collection-views);
+                 properties uses display/ for the same role
+  hooks/         React hooks (detail-sheet/hooks/use-media-query.ts, views/<view>/hooks/)
+  lib/           pure functions and class variants (shared/lib/project-collection.ts, views/kanban/lib/drag-and-drop.ts)
+  store/         context, provider and shared state (editable/store/, collection-views/store/)
+  types/         contracts shared across the pattern, with types/index.ts as the barrel; a type used by one file stays next to it
+  test/dom.ts    the JSDOM setup the pattern's bun test files import; each pattern owns its copy
+```
+
+Files are kebab-case and named after what they export (`checklist-row.tsx` exports `ChecklistRow`); tests sit next to the file they cover. `styles/global.css` and `vite-env.d.ts` in the older patterns date from isolated development: nothing imports them and the registry does not ship them, so a new or restructured pattern does not add them (patterns carry no CSS). `checklist` follows this layout with `composition/checklist/`, `components/`, `lib/`, `types/`, `test/` and `core.ts`; a flat pattern such as `rich-text-editor` adopts it when it is next split.
+
 ## Rules that are enforced by scripts
 
 - **Layering:** imports only go down: `parttens` → `elements` → `ui` → `utils` (`helpers` is React-free). Checked by `bun run boundaries:check`.
@@ -33,6 +56,7 @@ scripts/            boundary, COSS, override and public API checks
 - **Overriding COSS styles needs a registered exception.** Any `className` that overrides a COSS component's border, radius, etc. must be listed with a reason in `scripts/override-exceptions.json`, or `bun run overrides:check` fails. Update the entry whenever the class changes.
 - **Public API baseline:** adding or removing exports changes `docs/architecture/public-api-exports.json`. Regenerate with `bun scripts/verify-public-api.ts --record` and mention it in the summary, since the diff may include unrelated pending exports.
 - Pattern `shared/` code is internal; export through the pattern's `index.ts` only when it is meant to be public.
+- A pattern split into fragments carries its own `AGENTS.md` next to the files (today `packages/parttens/src/checklist/AGENTS.md`), with the file map, the public API and the `data-*` styling contract. Read it before changing that pattern and update it when you add or move a fragment.
 
 ## Commands
 

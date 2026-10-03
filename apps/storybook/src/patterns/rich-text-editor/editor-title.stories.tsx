@@ -16,6 +16,9 @@ const meta = {
     onChange: fn(),
     onEnter: fn(),
   },
+  argTypes: {
+    autoFocus: { control: 'boolean' },
+  },
   component: EditorTitle,
   decorators: [
     (Story) => (
@@ -45,14 +48,15 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Empty: Story = {
+  args: { autoFocus: true },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement)
     const heading = canvas.getByRole('heading', { level: 1 })
     await expect(heading).toHaveAccessibleName('Nota sem título')
     const field = canvas.getByRole('textbox', { name: 'Título' })
     await expect(field).toHaveAttribute('placeholder', 'Nota sem título')
+    await waitFor(() => expect(field).toHaveFocus())
 
-    await userEvent.click(field)
     await userEvent.keyboard('Phrasal verbs{Enter}')
     await expect(args.onChange).toHaveBeenLastCalledWith('Phrasal verbs')
     await expect(args.onEnter).toHaveBeenCalledTimes(1)
@@ -83,6 +87,7 @@ function NotePage(): React.ReactElement {
   return (
     <div className="flex flex-col gap-4">
       <EditorTitle
+        autoFocus
         emptyLabel="Nota sem título"
         onArrowDownAtEnd={() => body.current?.focusStart()}
         onEnter={() => body.current?.focusStart()}
@@ -106,7 +111,7 @@ export const NotePage_: Story = {
     const field = canvas.getByRole('textbox', { name: 'Título' })
     const editor = canvas.getByRole('textbox', { name: 'Nota' })
 
-    await userEvent.click(field)
+    await waitFor(() => expect(field).toHaveFocus())
     await userEvent.keyboard('Verbos{Enter}')
     await waitFor(() => expect(editor).toHaveFocus())
 

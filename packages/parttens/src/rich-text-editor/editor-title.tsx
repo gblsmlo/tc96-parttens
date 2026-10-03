@@ -3,13 +3,14 @@
 import { flattenTitle, formatTitleCounter } from '@tc96/helpers/rich-text'
 import { cn } from '@tc96/utils'
 import type { ChangeEvent, KeyboardEvent, ReactElement, Ref } from 'react'
-import { useId, useImperativeHandle, useRef, useState } from 'react'
+import { useEffect, useId, useImperativeHandle, useRef, useState } from 'react'
 
 export interface EditorTitleHandle {
   focusEnd: () => void
 }
 
 export interface EditorTitleProps {
+  autoFocus?: boolean
   className?: string
   counterFrom?: number
   defaultValue?: string
@@ -23,6 +24,7 @@ export interface EditorTitleProps {
 }
 
 export function EditorTitle({
+  autoFocus = false,
   className,
   counterFrom,
   defaultValue = '',
@@ -50,6 +52,13 @@ export function EditorTitle({
       field.setSelectionRange(field.value.length, field.value.length)
     },
   }))
+
+  useEffect(() => {
+    const field = fieldRef.current
+    if (!autoFocus || !field) return
+    field.focus()
+    field.setSelectionRange(field.value.length, field.value.length)
+  }, [autoFocus])
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const raw = event.target.value

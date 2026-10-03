@@ -18,7 +18,7 @@ import {
   usePlateEditor,
 } from 'platejs/react'
 import type { KeyboardEvent, ReactElement, Ref, RefObject } from 'react'
-import { useId, useImperativeHandle, useMemo, useRef } from 'react'
+import { useEffect, useId, useImperativeHandle, useMemo, useRef } from 'react'
 import {
   type BlockDragLabels,
   defaultBlockDragLabels,
@@ -61,6 +61,7 @@ export interface RichTextEditorHandle {
 
 export interface RichTextEditorProps {
   'aria-label': string
+  autoFocus?: boolean
   blockLabels?: Readonly<Record<RichTextBlock, string>>
   blockDragLabels?: BlockDragLabels
   blockTypeLabel?: string
@@ -190,7 +191,7 @@ type EditorContentProps = Required<
 > &
   Pick<
     RichTextEditorProps,
-    'mentions' | 'onExitStart' | 'onPickImage' | 'placeholder'
+    'autoFocus' | 'mentions' | 'onExitStart' | 'onPickImage' | 'placeholder'
   > & {
     selectableBlocks: boolean
     toolbarRef: RefObject<HTMLDivElement | null>
@@ -198,6 +199,7 @@ type EditorContentProps = Required<
 
 function EditorContent({
   'aria-label': ariaLabel,
+  autoFocus,
   blockLabels,
   extraBlockLabels,
   mentionEmptyLabel,
@@ -213,6 +215,9 @@ function EditorContent({
   toolbarRef,
 }: EditorContentProps): ReactElement {
   const editor = useEditorRef()
+  useEffect(() => {
+    if (autoFocus) editor.tf.focus({ edge: 'endEditor' })
+  }, [autoFocus, editor])
   const options = useMemo(
     () =>
       slashMenuOptions({
@@ -334,6 +339,7 @@ function EditorContent({
 
 export function RichTextEditor({
   'aria-label': ariaLabel,
+  autoFocus = false,
   blockLabels = defaultBlockLabels,
   blockDragLabels = defaultBlockDragLabels,
   blockTypeLabel = 'Tipo de bloco',
@@ -376,6 +382,7 @@ export function RichTextEditor({
       <div className={cn('w-full', className)} data-slot="rich-text-editor">
         <EditorContent
           aria-label={ariaLabel}
+          autoFocus={autoFocus}
           blockLabels={blockLabels}
           extraBlockLabels={extraBlockLabels}
           mentionEmptyLabel={mentionEmptyLabel}
