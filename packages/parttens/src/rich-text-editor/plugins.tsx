@@ -201,7 +201,7 @@ function HighlightLeaf(props: PlateLeafProps): ReactElement {
     <PlateLeaf
       {...props}
       as="mark"
-      className="rounded-sm bg-yellow-300/50 text-foreground dark:bg-yellow-400/30"
+      className="rounded-sm bg-warning/30 text-foreground dark:bg-warning/25"
     />
   )
 }

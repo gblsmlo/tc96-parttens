@@ -42,7 +42,7 @@ const sizeClassName: Record<EditableTextSize, string> = {
 // O campo é editado no lugar do texto: qualquer moldura ao focar denunciaria a
 // caixa que a superfície esconde. O cursor é o indicador de foco.
 const fieldClassName =
-  'w-full bg-transparent outline-none placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none'
+  'w-full bg-transparent outline-none placeholder:text-muted-foreground'
 
 /**
  * Campo de texto editado no lugar: rascunho local, commit no `blur` — um PATCH

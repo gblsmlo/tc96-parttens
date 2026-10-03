@@ -60,9 +60,13 @@ export function CalendarMonthDayCell<TItem>({
   return (
     <div
       className={cn(
-        'flex min-h-24 min-w-0 flex-col gap-1 bg-background p-1.5',
-        isOutsideMonth && 'bg-muted/30 text-muted-foreground',
-        isDropTarget && 'bg-accent/40 ring-1 ring-ring ring-inset',
+        'flex min-h-24 min-w-0 flex-col gap-1 p-1.5',
+        isOutsideMonth && 'text-muted-foreground',
+        isDropTarget
+          ? 'bg-accent/40 ring-1 ring-ring ring-inset'
+          : isOutsideMonth
+            ? 'bg-muted/30'
+            : 'bg-background',
       )}
       data-calendar-date={dateKey}
       data-outside-month={isOutsideMonth ? '' : undefined}
@@ -95,7 +99,7 @@ export function CalendarMonthDayCell<TItem>({
         onSelectDay ? (
           <button
             aria-label={`Mostrar todos os ${segments.length} itens de ${dayLabel}`}
-            className="self-start rounded px-1.5 text-muted-foreground text-xs outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            className="self-start rounded-sm px-1.5 text-muted-foreground text-xs outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
             onClick={() => onSelectDay(date)}
             type="button"
           >

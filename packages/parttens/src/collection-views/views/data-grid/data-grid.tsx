@@ -249,14 +249,14 @@ function DataGridColumnHeader<TData extends RowData>({
           aria-valuemin={column.columnDef.minSize}
           aria-valuenow={column.getSize()}
           className={cn(
-            'absolute top-0 z-20 h-full w-0.5 cursor-ew-resize touch-none select-none bg-border outline-none after:absolute after:inset-y-0 after:start-1/2 after:w-4 hover:bg-primary focus-visible:bg-primary',
+            'absolute top-0 z-20 h-full w-0.5 cursor-ew-resize touch-none select-none outline-none after:absolute after:inset-y-0 after:start-1/2 after:w-4 hover:bg-primary focus-visible:bg-primary',
             // Na última coluna o punho e sua área de agarre crescem para dentro:
             // para fora eles somariam 8px de rolagem além do conteúdo, e a faixa
             // vazia à direita se lê como coluna a mais.
             isLastColumn
               ? 'end-0 after:-translate-x-full'
               : '-end-px after:-translate-x-1/2',
-            column.getIsResizing() && 'bg-primary',
+            column.getIsResizing() ? 'bg-primary' : 'bg-border',
           )}
           onDoubleClick={() => column.resetSize()}
           onKeyDown={(event) => {

@@ -140,7 +140,7 @@ const selectedViews = [
 
 function ViewIcon() {
   return (
-    <span className="inline-flex size-4 items-center justify-center rounded bg-[#c65c50] text-white">
+    <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
       <LayoutGridIcon aria-hidden="true" className="size-3" />
     </span>
   )

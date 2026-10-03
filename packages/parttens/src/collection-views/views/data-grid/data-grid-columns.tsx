@@ -41,7 +41,7 @@ export function createSelectColumn<TData extends RowData>(
         {showRowNumbers ? (
           <span
             aria-hidden="true"
-            className="text-muted-foreground text-xs tabular-nums group-hover/marker:opacity-0 group-data-[state=selected]/marker:opacity-0"
+            className="pointer-coarse:opacity-0 text-muted-foreground text-xs tabular-nums group-hover/marker:opacity-0 group-focus-within/marker:opacity-0 group-data-[state=selected]/marker:opacity-0"
             data-slot="data-grid-row-marker"
           >
             {row.index + 1}
@@ -52,7 +52,7 @@ export function createSelectColumn<TData extends RowData>(
           checked={row.getIsSelected()}
           className={
             showRowNumbers
-              ? 'absolute opacity-0 group-hover/marker:opacity-100 data-checked:opacity-100'
+              ? 'pointer-coarse:opacity-100 absolute opacity-0 group-hover/marker:opacity-100 group-focus-within/marker:opacity-100 data-checked:opacity-100'
               : undefined
           }
           disabled={!row.getCanSelect()}

@@ -20,7 +20,7 @@ export interface AvatarStackProps
 
 const sizes = {
   default: 'size-7 text-xs',
-  sm: 'size-6 text-[10px]',
+  sm: 'size-6 text-[0.625rem]',
 } as const
 
 export function AvatarStack({

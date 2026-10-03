@@ -66,7 +66,7 @@ function DraggableBlock({
       ref={nodeRef}
     >
       <div
-        className="absolute inset-s-0 top-0 z-10 -translate-x-full pe-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover/block:opacity-100"
+        className="absolute inset-s-0 top-0 z-10 -translate-x-full pe-1 pointer-coarse:opacity-100 opacity-0 transition-opacity focus-within:opacity-100 group-hover/block:opacity-100"
         contentEditable={false}
       >
         <Button

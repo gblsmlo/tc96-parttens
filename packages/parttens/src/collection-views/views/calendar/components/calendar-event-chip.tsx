@@ -12,7 +12,7 @@ export type CalendarEventChipTone = VariantProps<
 export type CalendarEventChipDisplay = 'block' | 'chip'
 
 export const calendarEventChipVariants = cva(
-  'relative isolate flex min-w-0 select-none overflow-hidden rounded-md border-s-2 text-start text-xs leading-4 [&_[data-calendar-item-action]]:relative [&_[data-calendar-item-action]]:z-10',
+  'relative isolate flex min-w-0 select-none overflow-hidden rounded-md border-s-2 text-start text-xs leading-4 has-focus-visible:ring-2 has-focus-visible:ring-primary [&_[data-calendar-item-action]]:relative [&_[data-calendar-item-action]]:z-10',
   {
     defaultVariants: {
       completed: false,

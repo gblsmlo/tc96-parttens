@@ -337,10 +337,7 @@ export function SlashMenu({
             return (
               <button
                 aria-selected={active}
-                className={cn(
-                  'flex min-h-8 w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1 text-start text-foreground text-sm outline-none sm:min-h-7',
-                  active && 'bg-accent text-accent-foreground',
-                )}
+                className="flex min-h-8 w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1 text-start text-foreground text-sm outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground sm:min-h-7"
                 data-highlighted={active || undefined}
                 data-slot="slash-menu-option"
                 id={menu.optionId(option)}

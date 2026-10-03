@@ -151,7 +151,7 @@ function ViewSettingsModeTabs<TMode extends string>({
           key={modeValue}
           value={modeValue}
         >
-          <span className="inline-flex size-4 shrink-0 items-center justify-center rounded bg-[#c65c50] text-white">
+          <span className="inline-flex size-4 shrink-0 items-center justify-center rounded-sm bg-primary text-primary-foreground">
             <Icon aria-hidden="true" className="size-3" />
           </span>
           <span className="truncate">{label}</span>
