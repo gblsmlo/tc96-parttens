@@ -111,10 +111,7 @@ export function ListGroup<TItem>({
           ) : null}
         </div>
         <CollapsiblePanel>
-          <div
-            className="flex flex-col divide-y divide-border/70"
-            data-slot="list-group-items"
-          >
+          <div className="flex flex-col" data-slot="list-group-items">
             {loading ? (
               loadingItems.map((item) => (
                 <ListItemSkeleton
