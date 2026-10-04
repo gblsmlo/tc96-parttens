@@ -174,5 +174,5 @@ await writeFile(
   `${readme.slice(0, publicEnd).trimEnd()}\n`,
 )
 console.log(
-  'Generated seven registry items, the legacy view entry, the aggregate and the Node CLI artifact.',
+  `Generated ${patternNames.length} registry items, the legacy view entry, the aggregate and the Node CLI artifact.`,
 )
