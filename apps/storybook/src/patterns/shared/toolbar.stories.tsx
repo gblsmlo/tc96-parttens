@@ -567,12 +567,16 @@ export const WithSelectedViewAndSearch: Story = {
       popover.getByRole('searchbox', { name: 'Buscar views' }),
       'retorno',
     )
-    await expect(
-      popover.getByRole('button', { name: 'Aguardando retorno' }),
-    ).toBeVisible()
-    await expect(
-      popover.queryByRole('button', { name: 'Todas as pessoas' }),
-    ).toBe(null)
+    await waitFor(() =>
+      expect(
+        popover.getByRole('button', { name: 'Aguardando retorno' }),
+      ).toBeVisible(),
+    )
+    await waitFor(() =>
+      expect(popover.queryByRole('button', { name: 'Todas as pessoas' })).toBe(
+        null,
+      ),
+    )
   },
   render: () => (
     <Frame>
