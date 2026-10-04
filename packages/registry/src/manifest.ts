@@ -10,6 +10,7 @@ export const patternNames = [
   'record-dialog',
   'widgets',
   'rich-text-editor',
+  'state-surface',
 ] as const
 export type PatternName = (typeof patternNames)[number]
 /** The consumer's components.json aliases the patterns import from. */

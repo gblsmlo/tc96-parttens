@@ -43,6 +43,9 @@ test('selects several patterns once and maps legacy view to collection-views', (
 test('accepts the migrated checklist pattern', () => {
   expect(selectPatterns(['checklist', 'checklist'])).toEqual(['checklist'])
 })
+test('accepts the state-surface pattern', () => {
+  expect(selectPatterns(['state-surface'])).toEqual(['state-surface'])
+})
 test('accepts the widgets pattern', () => {
   expect(selectPatterns(['widgets'])).toEqual(['widgets'])
 })

@@ -10,6 +10,7 @@ for (const path of [
   'record-dialog',
   'rich-text-editor',
   'shared',
+  'state-surface',
   'widgets',
 ]) {
   if (
