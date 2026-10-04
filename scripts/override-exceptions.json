@@ -28,5 +28,17 @@
     "component": "Separator",
     "className": "bg-border/40",
     "reason": "O separator entre itens da lista é mais discreto que o do COSS: as linhas agrupam itens sem competir com o conteúdo; `bg-border/40` mantém o token do tema com 40% da opacidade."
+  },
+  {
+    "file": "packages/parttens/src/record-dialog/components/dialog-shell.tsx",
+    "component": "DialogTitle",
+    "className": "text-foreground",
+    "reason": "Shell do dialog portado do Lemind: o título vem depois do ancestral em `text-muted-foreground` numa trilha, e `font-medium text-sm text-foreground` o traz ao tamanho do ancestral em vez do `text-xl` do COSS; `text-foreground` é o token do tema."
+  },
+  {
+    "file": "packages/parttens/src/record-dialog/components/dialog-shell.tsx",
+    "component": "AlertDialogTitle",
+    "className": "text-foreground",
+    "reason": "Mesmo shell portado do Lemind, ramo alertdialog: o título segue o ancestral em `text-muted-foreground` na trilha e usa `font-medium text-sm text-foreground` no lugar do `text-xl` do COSS; `text-foreground` é o token do tema."
   }
 ]

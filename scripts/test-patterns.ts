@@ -7,6 +7,7 @@ for (const path of [
   'detail-sheet',
   'editable',
   'properties',
+  'record-dialog',
   'rich-text-editor',
   'shared',
   'widgets',

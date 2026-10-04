@@ -337,6 +337,14 @@
     "ChecklistItem",
     "ChecklistProps"
   ],
+  "record-dialog": [
+    "RecordDialog",
+    "RecordDialogProps",
+    "RecordDialogSettlement",
+    "RecordDialogSize",
+    "SurfaceStates",
+    "SurfaceStatesProps"
+  ],
   "widgets": [
     "Achievement",
     "AchievementsWidget",
@@ -861,6 +869,10 @@
     "RICH_TEXT_ELEMENTS",
     "RICH_TEXT_EXTRA_BLOCKS",
     "RICH_TEXT_MARKS",
+    "RecordDialog",
+    "RecordDialogProps",
+    "RecordDialogSettlement",
+    "RecordDialogSize",
     "ReferenceProperty",
     "ReferencePropertyKind",
     "ReferencePropertyProps",
@@ -901,6 +913,8 @@
     "StreakDay",
     "StreakWidget",
     "StreakWidgetProps",
+    "SurfaceStates",
+    "SurfaceStatesProps",
     "TagsProperty",
     "TagsPropertyActionContext",
     "TagsPropertyDropdownPlacement",

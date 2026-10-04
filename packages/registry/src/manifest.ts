@@ -7,6 +7,7 @@ export const patternNames = [
   'detail-sheet',
   'editable',
   'checklist',
+  'record-dialog',
   'widgets',
   'rich-text-editor',
 ] as const
