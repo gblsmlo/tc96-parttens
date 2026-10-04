@@ -141,6 +141,8 @@ export const ImageFromThePicker: Story = {
     await waitFor(() =>
       expect(JSON.stringify(readStored(storageKey)?.body)).toContain('"img"'),
     )
-    await expect(screen.queryByRole('listbox', { name: 'Blocos' })).toBeNull()
+    await waitFor(() =>
+      expect(screen.queryByRole('listbox', { name: 'Blocos' })).toBeNull(),
+    )
   },
 }
