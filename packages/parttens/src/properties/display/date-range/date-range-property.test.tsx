@@ -5,13 +5,10 @@ await import('../../test/dom')
 const { cleanup, fireEvent, render, screen, waitFor } = await import(
   '@testing-library/react'
 )
-const { DateRangeProperty, formatDateRangeProperty } = await import(
-  './date-range-property'
-)
+const { DateRangeProperty } = await import('./date-range-property')
+const { formatDateRangeProperty } = await import('./date-range-format')
 type DateRange = import('@daypicker/react').DateRange
 
-// Marcadores de dia local, que é o que o calendário entrega — construí-los em UTC
-// faria as asserções de rótulo dependerem do fuso da máquina.
 const march = new Date(2026, 2, 2)
 const april = new Date(2026, 3, 15)
 
@@ -48,6 +45,30 @@ describe('DateRangeProperty', () => {
       />,
     )
     expect(screen.getByText('Até Apr 15')).toBeTruthy()
+  })
+
+  test('replaces the open-ended words through props', () => {
+    const { rerender } = render(
+      <DateRangeProperty
+        fromLabel="From"
+        locale="en-US"
+        readOnly
+        untilLabel="Until"
+        value={{ from: march, to: undefined }}
+      />,
+    )
+    expect(screen.getByText('From Mar 2')).toBeTruthy()
+
+    rerender(
+      <DateRangeProperty
+        fromLabel="From"
+        locale="en-US"
+        readOnly
+        untilLabel="Until"
+        value={{ from: undefined, to: april }}
+      />,
+    )
+    expect(screen.getByText('Until Apr 15')).toBeTruthy()
   })
 
   test('falls back when neither end is set', () => {
@@ -141,6 +162,38 @@ describe('DateRangeProperty', () => {
     expect(changes.at(-1)).toBeUndefined()
   })
 
+  test('centers the popup on the trigger unless dropdownPlacement says otherwise', async () => {
+    const positionerAlign = () =>
+      document.querySelector<HTMLElement>('[data-slot="popover-positioner"]')
+        ?.dataset.align
+    const trigger = () =>
+      screen.getByRole('button', { name: 'Período: Mar 2 – Apr 15' })
+
+    const first = render(
+      <DateRangeProperty
+        ariaLabel="Período"
+        locale="en-US"
+        onValueChange={() => undefined}
+        value={{ from: march, to: april }}
+      />,
+    )
+    fireEvent.click(trigger())
+    await waitFor(() => expect(positionerAlign()).toBe('center'))
+    first.unmount()
+
+    render(
+      <DateRangeProperty
+        ariaLabel="Período"
+        dropdownPlacement={{ align: 'start' }}
+        locale="en-US"
+        onValueChange={() => undefined}
+        value={{ from: march, to: april }}
+      />,
+    )
+    fireEvent.click(trigger())
+    await waitFor(() => expect(positionerAlign()).toBe('start'))
+  })
+
   test('formats without rendering', () => {
     expect(
       formatDateRangeProperty({ from: march, to: april }, 'x', 'en-US'),
@@ -148,5 +201,19 @@ describe('DateRangeProperty', () => {
     expect(formatDateRangeProperty(undefined, 'Sem período', 'en-US')).toBe(
       'Sem período',
     )
+  })
+
+  test('formats an open range with default and custom words', () => {
+    expect(
+      formatDateRangeProperty({ from: march, to: undefined }, 'x', 'en-US'),
+    ).toBe('A partir de Mar 2')
+    expect(
+      formatDateRangeProperty({ from: undefined, to: april }, 'x', 'en-US'),
+    ).toBe('Até Apr 15')
+    expect(
+      formatDateRangeProperty({ from: march, to: undefined }, 'x', 'en-US', {
+        fromLabel: 'From',
+      }),
+    ).toBe('From Mar 2')
   })
 })

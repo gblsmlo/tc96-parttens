@@ -29,7 +29,6 @@ export interface PropertySelectShellProps<
   variant?: PropertyVariant
 }
 
-/** Shared trigger and popup shell for single-value Properties. */
 export function PropertySelectShell<
   TOption extends { label: ReactNode; value: string },
 >({
@@ -89,6 +88,5 @@ export function PropertySelectShell<
   )
 }
 
-/** COSS SelectItems reserve a leading column for the check indicator. */
 export const propertySelectItemClassName =
   'flex [&>span:first-child:not(:last-child)]:hidden'

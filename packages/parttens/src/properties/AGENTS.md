@@ -1,6 +1,6 @@
 # Properties pattern
 
-Guide for agents working in `packages/parttens/src/properties`. The repo-wide rules in the root `AGENTS.md` still apply: no comments in code, Biome formatting, `cn` only at the boundary with an external `className`, COSS through `@tc96/ui/<component>`, no business rules inside the pattern. The folder uses `composition/`, `display/`, `shared/`, `types/`, `store/`, `test/` and `core.ts`; `display/` plays the role that `views/` plays in `collection-views`, one folder per property display.
+Guide for agents working in `packages/parttens/src/properties`. The repo-wide rules in the root `AGENTS.md` still apply: no comments in code, Biome formatting, `cn` only at the boundary with an external `className`, COSS through `@tc96/ui/<component>`, no business rules inside the pattern. The folder uses `composition/`, `display/`, `hooks/`, `shared/`, `test/` and `core.ts`; `display/` plays the role that `views/` plays in `collection-views`, one folder per property display.
 
 ## What it is
 
@@ -13,11 +13,9 @@ Top level:
 | File | Owns | Public |
 | --- | --- | --- |
 | `index.ts` | the barrel: re-exports `composition/index.ts`, `display/index.ts` and `shared/index.ts` | yes |
-| `core.ts` | the React-free surface: `PropertyIcon`, `PropertyPreset`, `PropertyTone`, `propertyToneClassName`, `PropertyVariant` | workspace only; not reached from the barrel |
-| `types/index.ts` | the same type names as `core.ts`, without the class map | not reached from the barrel; nothing imports it |
-| `store/index.ts` | an empty module (`export {}`); the pattern has no shared store | no |
+| `core.ts` | the React-free surface: `PropertyIcon`, `PropertyPreset`, `PropertyTone`, `propertyToneClassName`, `PropertyVariant`, and the date formatters `formatDateProperty`, `parseDatePropertyValue`, `serializeDatePropertyValue`, `formatDateRangeProperty` | workspace only; not reached from the barrel |
+| `core.test.ts` | bun tests for the formatters through `core.ts`, and that their modules carry no `'use client'` or React import | — |
 | `test/dom.ts` | the JSDOM setup the test files import; the `widgets` tests import this copy too | — |
-| `vite-env.d.ts` | the Vite client types reference; legacy from isolated development, nothing imports it and the registry does not ship it | no |
 
 `composition/`, the compounds the consumer mounts:
 
@@ -30,14 +28,37 @@ Top level:
 | `composition/assigned/assigned-property.tsx` | `AssignedProperty`, `AssignedPropertyBadge`, `AssignedPropertyActionContext`, `AssignedPropertyDropdownPlacement`, `AssignedPropertyOption`, `AssignedPropertyProps`: aliases over `PersonProperty` | yes |
 | `composition/assigned/assigned-property.test.tsx` | JSDOM tests | — |
 
+`hooks/`, React hooks used by more than one display:
+
+| File | Owns | Public |
+| --- | --- | --- |
+| `hooks/use-entry-list-editor.ts` | `useEntryListEditor`, `UseEntryListEditorOptions`, `EntryListChange`: the popup session of a list of typed entries (open state, drafts, one error per row, add, remove, save with parse, duplicate check and diff) | no |
+| `hooks/use-entry-list-editor.test.tsx` | `renderHook` tests for reset on open, row errors, the limit, save and close | — |
+
 `shared/`, used by every display:
 
 | File | Owns | Public |
 | --- | --- | --- |
-| `shared/index.ts` | re-exports `property-catalog.ts` and `property-surface.tsx`; `property-select-shell.tsx` stays internal | through the barrel |
+| `shared/index.ts` | re-exports `property-catalog.ts` and `property-surface.tsx`; `property-select-shell.tsx`, `property-multi-select-shell.tsx`, `property-add-trigger.tsx`, `property-entry-form.tsx`, `property-calendar-popover.tsx`, `property-row.tsx` and `lib/` stay internal | through the barrel |
 | `shared/property-catalog.ts` | `PropertyIcon`, `PropertyTone`, `PropertyPreset`, `propertyToneClassName` | yes |
 | `shared/property-surface.tsx` | `PropertySurface`, `PropertySurfaceProps`, `PropertyVariant`, `propertyBadgeClassName`: the badge or plain span every display renders on | yes |
+| `shared/property-add-trigger.tsx` | `PropertyAddTrigger`, `PropertyAddTriggerProps`: the add button of the chip rows (email, phone, attachments); labeled and muted when empty, a `+` once `hasValue`, and it forwards its rest props so a Base UI trigger can render it | no |
+| `shared/property-add-trigger.test.tsx` | JSDOM tests for the empty and filled states, `muted`, prop forwarding and `disabled` | — |
+| `shared/property-multi-select-shell.tsx` | `PropertyMultiSelectShell`, `PropertyMultiSelectShellProps`, `PropertyMultiSelectChange`, `PropertyMultiSelectDropdownPlacement`: the COSS `Combobox` with `multiple` for tags and people; chips with a remove label, the add chip, the popup with loading and empty states, and a `renderTrigger` slot that replaces the chips | no |
+| `shared/property-multi-select-shell.test.tsx` | JSDOM tests for the empty and filled chips, the `onChange` context, `renderTrigger`, placement and the popup labels | — |
+| `shared/property-entry-form.tsx` | `PropertyEntryForm`, `PropertyEntryFormProps`, `PropertyEntryField`: the popup form for a list of typed entries (email, phone); entry labels, per-row remove, row and consumer errors, `Adicionar outro`, `Salvar`, Enter saves; the field is a `renderField` slot | no |
+| `shared/property-entry-form.test.tsx` | JSDOM tests for labels, remove, typing, Enter, submit, the add flag and the alerts | — |
+| `shared/property-calendar-popover.tsx` | `PropertyCalendarPopover`, `PropertyCalendarPopoverProps`, `PropertyPopoverDropdownPlacement`, `PropertyCalendarProps`: the surface trigger (icon and truncated label), the `w-auto` popup and the optional clear footer shared by date and date range; the calendar is `children`, the open state is the caller's | no |
+| `shared/property-calendar-popover.test.tsx` | JSDOM tests for the trigger name, muted, the dialog, the clear footer, alignment and `disabled` | — |
+| `shared/property-row.tsx` | `PropertyRow`, `PropertyRowProps`: the named `fieldset` every chip row renders on (`m-0 min-w-0 border-0 p-0`, `data-slot`, `data-variant`); layout classes and extra `data-*` come from the caller | no |
+| `shared/property-row.test.tsx` | JSDOM tests for the attributes, the reset classes and the pass-through | — |
 | `shared/property-select-shell.tsx` | `PropertySelectShell`, `PropertySelectShellProps`, `PropertySelectDropdownPlacement`, `propertySelectItemClassName`: the COSS `Select` trigger and popup for single-value displays | no |
+| `shared/lib/property-change.ts` | `isEditable`, `emitChange`, `PropertyChangeHandlers`: the read-only gate and the `action` over `onValueChange` dispatch every controlled display uses | no |
+| `shared/lib/property-change.test.ts` | bun tests for the two functions | — |
+| `shared/lib/property-options.ts` | `resolveOption`, `resolveOptions`, `diffValues`, `diffOptions`, `OptionLike`, `ResolvedOption`: option lookup with the value as label fallback, and the first added and first removed value | no |
+| `shared/lib/property-options.test.ts` | bun tests for the four functions | — |
+| `shared/lib/entry-parser.ts` | `createEntryParser`, `EntryParser`, `EntryParseResult`: turns a zod schema into a parser that returns the value or the first issue message | no |
+| `shared/lib/entry-parser.test.ts` | bun tests for the parser | — |
 
 `display/`, one folder per property; `display/index.ts` re-exports every folder's `index.ts` except `phone-input/`:
 
@@ -50,16 +71,19 @@ Top level:
 | `display/attachments/attachment-type.tsx` | `AttachmentType`, `attachmentTypeCatalog`, `AttachmentTypeIcon`, `AttachmentTypeIconProps` | only `AttachmentType` |
 | `display/attachments/attachments-property.test.tsx` | JSDOM tests | — |
 | `display/date/index.ts` | exports `DateProperty`, `DatePropertyBadge`, `DatePropertyActionContext`, `DatePropertyDropdownPlacement`, `DatePropertyProps`, `formatDateProperty`, `parseDatePropertyValue`, `serializeDatePropertyValue` | through the barrel |
-| `display/date/date-property.tsx` | the names above: popover with COSS `Calendar` in `mode="single"` and the clear button | yes |
+| `display/date/date-value.ts` | `formatDateProperty`, `parseDatePropertyValue`, `serializeDatePropertyValue`: React-free, no `'use client'`, so a Server Component can call them through the barrel; the two parse and serialize ones delegate to `@tc96/helpers/date` | through the barrel |
+| `display/date/date-property.tsx` | `DateProperty`, `DatePropertyBadge` and the types above: `PropertyCalendarPopover` with COSS `Calendar` in `mode="single"` and the clear button; the read-only rendering is an `IconLabelProperty` | yes |
 | `display/date/date-property.test.tsx` | JSDOM tests | — |
 | `display/date-range/index.ts` | exports `DateRange`, `DateRangeProperty`, `DateRangePropertyProps`, `formatDateRangeProperty` | through the barrel |
-| `display/date-range/date-range-property.tsx` | the names above; `DateRange` is re-exported from `@daypicker/react` | yes |
+| `display/date-range/date-range-format.ts` | `formatDateRangeProperty`: React-free, no `'use client'`; formats without a time zone | through the barrel |
+| `display/date-range/date-range-property.tsx` | `DateRangeProperty`, `DateRange` and the types above, over `PropertyCalendarPopover` with `align="center"`; `DateRange` is re-exported from `@daypicker/react` | yes |
 | `display/date-range/date-range-property.test.tsx` | JSDOM tests | — |
 | `display/editable-text/index.ts` | exports `EditableText`, `EditableTextProps`, `EditableTextSize` | through the barrel |
 | `display/editable-text/editable-text.tsx` | `EditableText`, `EditableTextProps`, `EditableTextSize`: the in-place `input` or `textarea` with a local draft | yes |
 | `display/editable-text/editable-text.test.tsx` | JSDOM tests | — |
 | `display/email/index.ts` | exports `EmailProperty`, `EmailPropertyActionContext`, `EmailPropertyProps` | through the barrel |
-| `display/email/email-property.tsx` | the names above and the internal `AddTrigger`: chips row, popup form or inline `EditableText` | yes |
+| `display/email/email-address.ts` | `emailAddressSchema`: `z.email` with the pt-BR message; React-free, beside `phone-input/phone-number.ts` | no |
+| `display/email/email-property.tsx` | the names above: chips row, popup form (`useEntryListEditor` and `PropertyEntryForm`) or inline `EditableText` | yes |
 | `display/email/email-property.test.tsx` | JSDOM tests | — |
 | `display/flag/index.ts` | exports `FlagProperty`, `FlagPropertyIcon`, `FlagPropertyProps` | through the barrel |
 | `display/flag/flag-property.tsx` | the names above, over `IconLabelProperty` | yes |
@@ -68,17 +92,19 @@ Top level:
 | `display/icon-label/icon-label-property.tsx` | the names above and `IconLabelPropertyTrailingVisibility`: the base of `TextProperty`, `FlagProperty`, `ReferenceProperty`, the email and phone chips and `AttachmentProperty` | all but `IconLabelPropertyTrailingVisibility` |
 | `display/icon-label/icon-label-property.test.tsx` | JSDOM tests | — |
 | `display/people/index.ts` | exports `PeopleProperty`, `PeoplePropertyActionContext`, `PeoplePropertyDropdownPlacement`, `PeoplePropertyOption`, `PeoplePropertyProps` | through the barrel |
-| `display/people/people-property.tsx` | the names above and the internal `PersonChipContent`: COSS `Combobox` with `multiple` and avatar chips | yes |
+| `display/people/people-property.tsx` | the names above: `PropertyMultiSelectShell` with `PersonOptionContent` chips; `PeoplePropertyOption` aliases `PersonPropertyOption` | yes |
 | `display/people/people-property.test.tsx` | JSDOM tests | — |
 | `display/person/index.ts` | exports `PersonProperty`, `PersonPropertyBadge`, `PersonPropertyActionContext`, `PersonPropertyDropdownPlacement`, `PersonPropertyOption`, `PersonPropertyProps` | through the barrel |
-| `display/person/person-property.tsx` | the names above and the internal `PersonPropertyContent`, `findPersonOption`: single person over `PropertySelectShell` | yes |
+| `display/person/person-property.tsx` | the names above and the internal `PersonPropertyContent`: single person over `PropertySelectShell`; it re-exports `PersonPropertyOption` from `person-option-content.tsx` | yes |
+| `display/person/person-option-content.tsx` | `PersonPropertyOption`, `PersonAvatar`, `PersonOptionContent`: the avatar (16px, 10px initials from `resolveInitials`, `UserIcon` without a person) and the avatar, label and supporting label that person and people render | `PersonPropertyOption` only |
+| `display/person/person-option-content.test.tsx` | JSDOM tests for the initials, the explicit fallback, the user icon, the size and the supporting label | — |
 | `display/person/person-property.test.tsx` | JSDOM tests | — |
 | `display/phone/index.ts` | exports `PhoneProperty`, `PhonePropertyActionContext`, `PhonePropertyProps` | through the barrel |
-| `display/phone/phone-property.tsx` | the names above: chips row and popup form with `PhoneInput` | yes |
+| `display/phone/phone-property.tsx` | the names above: chips row and popup form (`useEntryListEditor` and `PropertyEntryForm`) with `PhoneInput` | yes |
 | `display/phone/phone-property.test.tsx` | JSDOM tests | — |
 | `display/phone-input/index.ts` | exports `PhoneCountryCode`, `PhoneInput`, `PhoneInputProps`, `defaultPhoneCountry`, `PhoneNumberSchemaOptions`, `phoneNumberSchema` | no; reached by `phone-property.tsx`, so the registry ships it |
 | `display/phone-input/phone-input.tsx` | `PhoneInput`, `PhoneInputProps`: country `Combobox` plus `react-phone-number-input` field inside a COSS `InputGroup` | no |
-| `display/phone-input/phone-number.ts` | `defaultPhoneCountry` (`'BR'`), `phoneNumberCountry`, `nationalDigits`, `PhoneNumberSchemaOptions`, `phoneNumberSchema` | no |
+| `display/phone-input/phone-number.ts` | `defaultPhoneCountry` (`'BR'`), `phoneNumberCountry`, `nationalDigits`, `PhoneNumberSchemaOptions`, `phoneNumberSchema`: validated by the same library that formats the field, so a form never accepts a number the input already knows is incomplete; an optional field composes `phoneNumberSchema().nullable()` | no |
 | `display/phone-input/countries.ts` | `PhoneCountryCode`, `PhoneCountry`, `phoneCountries` (pt-BR names, sorted), `findPhoneCountry` | no |
 | `display/phone-input/phone-input.test.tsx` | JSDOM tests, including `phoneNumberSchema` | — |
 | `display/reference/index.ts` | exports `ReferenceProperty`, `ReferencePropertyKind`, `ReferencePropertyProps` | through the barrel |
@@ -87,15 +113,15 @@ Top level:
 | `display/select/select-property.tsx` | the names above and `SelectPropertyItems`: consumer catalog over `PropertySelectShell` | all but `SelectPropertyItems` |
 | `display/select/select-property.test.tsx` | JSDOM tests | — |
 | `display/tags/index.ts` | exports `TagsProperty`, `TagsPropertyActionContext`, `TagsPropertyDropdownPlacement`, `TagsPropertyOption`, `TagsPropertyProps` | through the barrel |
-| `display/tags/tags-property.tsx` | the names above: COSS `Combobox` with `multiple`, chips or count | yes |
+| `display/tags/tags-property.tsx` | the names above: `PropertyMultiSelectShell` with chips, or a count trigger through `renderTrigger` | yes |
 | `display/tags/tags-property.test.tsx` | JSDOM tests | — |
 | `display/text/index.ts` | exports `TextProperty`, `TextPropertyIcon`, `TextPropertyProps` | through the barrel |
 | `display/text/text-property.tsx` | the names above and `TextPropertyEditing`: value, fallback, copy button and in-place `EditableText` | all but `TextPropertyEditing` |
 | `display/text/text-property.test.tsx` | JSDOM tests | — |
 
-Only what `index.ts` exports is public, and the current list is the `properties` entry of `docs/architecture/public-api-exports.json`. The registry copies every file this barrel reaches, so a new file must be imported from one of these, and nothing in `shared/property-select-shell.tsx` or `display/phone-input/` should be exported from the barrel without a reason recorded in `docs/architecture/tc96-parttens.md`. `styles/global.css` was removed on 2026-10-03 (patterns carry no CSS), and `vite-env.d.ts` stays only until the pattern's next restructuring. `types/index.ts` and `store/index.ts` hold no code the pattern uses today; a layer is kept only while it has code to hold.
+Only what `index.ts` exports is public, and the current list is the `properties` entry of `docs/architecture/public-api-exports.json`. The registry copies every file this barrel reaches, so a new file must be imported from one of these, and nothing in `shared/property-select-shell.tsx` or `display/phone-input/` should be exported from the barrel without a reason recorded in `docs/architecture/tc96-parttens.md`. `styles/global.css` was removed on 2026-10-03 (patterns carry no CSS); `types/`, `store/` and `vite-env.d.ts` were removed in the shared-rules refactor, since a layer is kept only while it has code to hold.
 
-Import direction inside the folder: `composition/` → `display/` and `shared/`; `display/<property>/` → `shared/` and other display folders (`email`, `text` → `editable-text` and `icon-label`; `flag`, `reference`, `attachments` → `icon-label`; `phone` → `phone-input` and `icon-label`; `date-range` → `date` for a type; `assigned` → `person`); `shared/` imports only COSS, Base UI and `@tc96/utils`, never a display or a composition. `composition/property-collection.tsx` also imports `MenuCheckboxOption` from `packages/parttens/src/shared/components/menu-selection-item.tsx`, outside this pattern.
+Import direction inside the folder: `composition/` → `display/` and `shared/`; `display/<property>/` → `hooks/`, `shared/` and other display folders (`email`, `text` → `editable-text` and `icon-label`; `flag`, `reference`, `attachments` → `icon-label`; `phone` → `phone-input` and `icon-label`; `date` and `date-range` → `icon-label`; `assigned` and `people` → `person`; only `email` and `phone` use `hooks/`); `hooks/` → `shared/lib/`; `shared/` imports only COSS, Base UI, `@tc96/utils` and zod types, never a display, a hook or a composition. `composition/property-collection.tsx` also imports `MenuCheckboxOption` from `packages/parttens/src/shared/components/menu-selection-item.tsx`, outside this pattern.
 
 ## Public API
 
@@ -164,15 +190,17 @@ interface DateRangePropertyProps {
   value: DateRange | undefined       // the calendar's own type
   allowClear?: boolean
   ariaLabel?: string                 // default 'Period'
-  calendarProps?: DatePropertyProps['calendarProps']
+  calendarProps?: DatePropertyProps['calendarProps']   // PropertyCalendarProps
   className?: string
   clearLabel?: string                // default 'Limpar período'
   disabled?: boolean
   dropdownPlacement?: DatePropertyDropdownPlacement
   fallback?: string                  // default 'Sem período'
+  fromLabel?: string                 // default 'A partir de'; word before an open range that has only a start
   locale?: string                    // default 'en-US'; no timeZone
   numberOfMonths?: number            // default 2
   readOnly?: boolean
+  untilLabel?: string                // default 'Até'; word before an open range that has only an end
   variant?: PropertyVariant
   onValueChange?: (value: DateRange | undefined) => void
 }
@@ -256,7 +284,8 @@ interface IconLabelPropertyProps {
   variant?: PropertyVariant
 }
 
-interface PeoplePropertyOption<TValue extends string = string> {
+type PeoplePropertyOption<TValue extends string = string> = PersonPropertyOption<TValue>
+interface PersonPropertyOption<TValue extends string = string> {
   value: TValue
   label: string
   fallback?: string                  // avatar initials
@@ -280,7 +309,7 @@ interface PeoplePropertyProps<TValue extends string = string> {
 
 interface PersonPropertyProps<TValue extends string = string> {
   value: TValue | null
-  options: readonly PersonPropertyOption<TValue>[]   // same fields as PeoplePropertyOption
+  options: readonly PersonPropertyOption<TValue>[]   // the same type as PeoplePropertyOption
   action?: (value: TValue, context: PersonPropertyActionContext<TValue>) => void
   ariaLabel?: string                 // default 'Person'
   className?: string
@@ -365,27 +394,27 @@ interface AttachmentsPropertyAction { label: string; onSelect: () => void; disab
 interface AttachmentsPropertyProps { children?: ReactNode; action?: AttachmentsPropertyAction; ariaLabel?: string; className?: string }
 ```
 
-Every `*ActionContext` carries `previousValue`; the single-value ones add `option` (person, assigned) or `date` (date), and the multi-value ones add `added` and `removed`. The free functions are `formatDateProperty(value, fallback, locale, timeZone)`, `parseDatePropertyValue`, `serializeDatePropertyValue`, `formatDateRangeProperty(value, fallback, locale)` and the `propertyToneClassName` map.
+Every `*ActionContext` carries `previousValue`; the single-value ones add `option` (person, assigned) or `date` (date), and the multi-value ones add `added` and `removed`. The free functions (in `date-value.ts` and `date-range-format.ts`, also reachable from `core.ts`) are `formatDateProperty(value, fallback, locale, timeZone)`, `parseDatePropertyValue`, `serializeDatePropertyValue`, `formatDateRangeProperty(value, fallback, locale, { fromLabel, untilLabel })` and the `propertyToneClassName` map.
 
-Other code that depends on this pattern: `packages/parttens/src/index.ts` re-exports the barrel; `checklist` imports `EditableText` and `EditableTextSize` from `display/editable-text/editable-text.tsx`, `DateProperty` from `display/date/date-property.tsx` and `PersonProperty`, `PersonPropertyOption` from `display/person/person-property.tsx` by file path, not through the barrel; the `widgets` tests import `properties/test/dom.ts`. Renaming or moving any of those files breaks `checklist` and `widgets`.
+Other code that depends on this pattern: `packages/parttens/src/index.ts` re-exports the barrel; `checklist` imports `EditableText` and `EditableTextSize` from `display/editable-text/editable-text.tsx`, `DateProperty` from `display/date/date-property.tsx` and `PersonProperty`, `PersonPropertyOption` from `display/person/person-property.tsx` by file path (the type is re-exported there), not through the barrel; the `widgets` tests import `properties/test/dom.ts`. Renaming or moving any of those files breaks `checklist` and `widgets`.
 
 Behavior worth knowing before changing it:
 
-- Every display is controlled and becomes read-only when it has no handler: `readOnly` or the absence of both `action` and `onValueChange` (or of `onCommit` in `TextProperty` and `EditableText`) renders the value on a `PropertySurface` with no trigger. When both handlers exist, `action` runs and `onValueChange` does not.
+- Every display is controlled and becomes read-only when it has no handler: `readOnly` or the absence of both `action` and `onValueChange` (or of `onCommit` in `TextProperty` and `EditableText`) renders the value on a `PropertySurface` with no trigger. When both handlers exist, `action` runs and `onValueChange` does not. `isEditable` and `emitChange` in `shared/lib/property-change.ts` carry that rule; `DateRangeProperty` has no `action` and keeps its own `!onValueChange` gate so the handler stays narrowed.
 - `PropertySurface` renders the COSS `Badge` (`secondary` for a value, `outline` when `muted`) or, with `variant="plain"`, a `span`. A surface that receives `aria-label` without `role` or `render` gets `role="img"`; with `render={<button />}` the button keeps its role. The badge metric is `propertyBadgeClassName` (24px); color and radius stay with the consumer's `Badge`.
 - `PropertySelectShell` (person, select, assigned) renders the surface with `role="img"` when read-only and a COSS `Select` trigger with `role="combobox"` otherwise; `propertySelectItemClassName` hides the item check indicator, and the tests assert that no `select-item-indicator` is rendered.
 - `PropertyCollection` is uncontrolled unless `visible` is passed; the initial set is `defaultVisible` or the items flagged `defaultVisible`. Toggling always reports ids in catalog order, so a property that is turned back on returns to its place. With `visible`, clicking a menu item calls `onVisibleChange` and changes nothing on its own. The menu items are `menuitemcheckbox` and do not close the menu on click.
 - `DateProperty` formats with `formatShortDate` (day and short month, no year) in `locale` `'en-US'` and `timeZone` `'UTC'` by default. `serializeDatePropertyValue` returns noon UTC of the picked day (`new Date(2026, 5, 19)` gives `2026-06-19T12:00:00.000Z`). Picking the current value closes the popover without emitting; the clear button emits `null`. `DatePropertyBadge` is the read-only rendering.
-- `DateRangeProperty` keeps the calendar's `DateRange`, formats without a time zone (local day markers) and labels an open range as `A partir de <from>` or `Até <to>`. The popover stays open after the first click, because the calendar returns `from` and `to` on the same day there; only the clear button closes it.
-- `EditableText` keeps a local draft and commits on blur. Enter blurs a single-line field (one commit, from the blur); in `multiline` Enter inserts a line break. Escape with a dirty draft restores the confirmed value, stops propagation and blurs; with a clean draft it bubbles, so inside a dialog the first Escape cancels the edit and the second closes the dialog. An empty draft commits `null`, or restores the value under `revertWhenEmpty`. `emptyValue` is cleared on focus and does not count as an edit. A new `value` is ignored while the field is focused. Sizes map to `text-sm`, `text-base`, `text-2xl`, `text-[2rem]`.
-- `TextProperty` with an empty value and `editing="trigger"` renders a `+ fallback` button that swaps to the inline field; `editing="inline"` renders the field whenever editable. `copyLabel` with a value adds a copy button over `copyToClipboard`; a rejected clipboard promise is swallowed.
-- `EmailProperty` and `PhoneProperty` share one anatomy: a `fieldset` of chips with a remove button named `Remover e-mail <x>` / `Remover telefone <x>`, and an add trigger that reads `placeholder` when empty and collapses to `+` with `addLabel` as accessible name once there are values. The popup edits the whole list: `entryLabels` caps the rows, `Adicionar outro` is enabled only when every draft is valid and the cap is not reached, blank rows are skipped, invalid or duplicate rows get a `role="alert"` message, `errorMessage` is the consumer's refusal, and Enter inside a field saves and stops propagation because the Base UI popup closes on Enter. `display="trigger"` replaces the chips by one trigger that keeps naming the property. `addDisabled` removes the add path and keeps removal. Email format is `z.email`; phone format is `phoneNumberSchema` and values are E.164. `EmailProperty` also offers `editing="inline"`, where the trigger becomes an `EditableText` that stays open with the message when the address is rejected.
-- `PhoneInput` takes the country from the number itself before `defaultCountry` (`'BR'`), rewrites the calling code and keeps the national digits when the country changes, disables both the field and the country selector under `readOnly`, and fires `onKeyDown` only from the number field. Country names come from `react-phone-number-input/locale/pt-BR.json`.
-- `TagsProperty` and `PeopleProperty` wrap the COSS `Combobox` with `multiple`: a labelled chip opens the list when empty (`Adicionar tag`, `placeholder` for people) and collapses to `+` with an `aria-label` once there are values; the popup is `w-64`, aligned `end` by default and has no search field; `isLoading` shows a `ComboboxStatus`. A value missing from `options` is rendered with the value as its label. `display="count"` on tags shows the count in a ghost button. Default `variant` is `plain`, and the chips are the COSS `ComboboxChip` without pattern styling.
-- `PersonProperty` with `display="avatar"` hides the name but keeps `ariaLabel: label` as accessible name, and shows a `UserIcon` in the fallback when there is no person. The avatar is 16px on a badge and 28px on a plain surface; `supportingLabel` is hidden below `sm`.
+- `DateRangeProperty` keeps the calendar's `DateRange`, formats without a time zone (local day markers) and labels an open range as `<fromLabel> <from>` or `<untilLabel> <to>` (defaults `A partir de` and `Até`, replaceable through props). The popover (aligned `center`, where `DateProperty` aligns `start`; both take `dropdownPlacement`) stays open after the first click, because the calendar returns `from` and `to` on the same day there; only the clear button closes it.
+- `EditableText` keeps a local draft and commits on blur. Enter blurs a single-line field (one commit, from the blur); in `multiline` Enter inserts a line break. Escape with a dirty draft restores the confirmed value, stops propagation and blurs; with a clean draft it bubbles, so inside a dialog the first Escape cancels the edit and the second closes the dialog. An empty draft commits `null`, or restores the value under `revertWhenEmpty`. `emptyValue` is cleared on focus and does not count as an edit. A new `value` is ignored while the field is focused. The commit reads the draft from a ref, because the blur that Escape triggers would otherwise read state that is not applied yet. Sizes map to `text-sm`, `text-base`, `text-2xl`, `text-[2rem]`.
+- `TextProperty` with an empty value and `editing="trigger"` renders a `+ fallback` button that swaps to the inline field; `editing="inline"` renders the field whenever editable. `copyLabel` with a value adds a copy button over `copyToClipboard`; a rejected clipboard promise is swallowed (permission denied or an insecure context has nothing to tell the reader beyond the copy not happening). With the inline field the accessible name belongs to the field: an `img` labelled outside it would announce the value twice.
+- `EmailProperty` and `PhoneProperty` share one anatomy: a `fieldset` of chips with a remove button named `Remover e-mail <x>` / `Remover telefone <x>`, and an add trigger (`PropertyAddTrigger`) that reads `placeholder` when empty and collapses to `+` with `addLabel` as accessible name once there are values; as a Base UI `PopoverTrigger` it carries `aria-haspopup="dialog"` and `aria-expanded`. The popup edits the whole list: `entryLabels` caps the rows, `Adicionar outro` is enabled only when every draft is valid and the cap is not reached, blank rows are skipped, invalid or duplicate rows get a `role="alert"` message, `errorMessage` is the consumer's refusal, and Enter inside a field saves and stops propagation because the Base UI popup closes on Enter. The session lives in `useEntryListEditor` and the form in `PropertyEntryForm`, the same for both displays (`w-80`, the remove button revealed on row hover or focus); the drafts are copied from `value` when the popup opens, so a new `value` while it is open does not overwrite what is being typed. `display="trigger"` replaces the chips by one trigger that keeps naming the property. The form sets `noValidate`: validation is the pattern's, with a pt-BR message next to the field, and the browser's would block the submit first with a bubble the pattern can neither place nor translate. `addDisabled` removes the add path and keeps removal. Email format is `emailAddressSchema` (`z.email`); phone format is `phoneNumberSchema` and values are E.164. `EmailProperty` also offers `editing="inline"`, where the trigger becomes an `EditableText` that stays open with the message when the address is rejected.
+- `PhoneInput` takes the country from the number itself, even an incomplete one (`+551198` already identifies Brazil, which keeps the flag coherent while typing), before `defaultCountry` (`'BR'`), rewrites the calling code and keeps the national digits when the country changes, disables both the field and the country selector under `readOnly`, and fires `onKeyDown` only from the number field. Country names come from `react-phone-number-input/locale/pt-BR.json`.
+- `TagsProperty` and `PeopleProperty` render through `PropertyMultiSelectShell`, which wraps the COSS `Combobox` with `multiple` and owns the open state: a labelled chip opens the list when empty (`Adicionar tag`, `placeholder` for people) and collapses to `+` with an `aria-label` once there are values; the shell reports `{ added, previousValue, removed }` and each display forwards it to `emitChange`; the popup is `w-64`, aligned `end` by default and has no search field; `isLoading` shows a `ComboboxStatus`. A value missing from `options` is rendered with the value as its label. `display="count"` on tags shows the count in a ghost button, for the row of a collection where the width belongs to the other properties. The add chip resets the icon margin (`[&_svg]:mx-0`) because `Button` brings `[&_svg]:-mx-0.5`, which glues the glyph to the label next to the chips. Default `variant` is `plain`, and the chips are the COSS `ComboboxChip` without pattern styling.
+- `PersonProperty` with `display="avatar"` hides the name but keeps `ariaLabel: label` as accessible name, and shows a `UserIcon` in the fallback when there is no person. The avatar is 16px on a badge and 28px on a plain surface (people chips are always 16px); `supportingLabel` is hidden below `sm`.
 - `SelectProperty` takes `options` or `groups`, never both. `emptyOptionLabel` adds an item with value `''` that reports `null`; a value outside the catalog shows `fallback`; with `null` the accessible name is `ariaLabel` alone, otherwise `ariaLabel: label`.
 - `FlagProperty` returns `null` when inactive unless `showInactive`. `ReferenceProperty` maps `kind` to `Building2Icon`, `PackageIcon` or `BoxIcon`. `IconLabelProperty` with `trailing` and `ariaLabel` takes `role="group"` so the trailing button stays in the accessibility tree.
-- `AttachmentProperty` is a surface wrapping an `a` (`download` attribute only with `action="download"`) and an optional remove button; the type icon sits on the left. `AttachmentsProperty` renders its children and a single `action` trigger that shows `action.label` when empty and collapses to `+` once it has children; `action.disabled` disables the button.
+- `AttachmentProperty` is a surface wrapping an `a` (`download` attribute only with `action="download"`) and an optional remove button; the type icon sits on the left. The link lives inside the surface because a button inside an anchor is invalid markup and a screen reader would announce one control. The right-hand affordance is always remove: `anchor` and `download` decide only how the target opens, since a download icon in that corner would compete with the `×` and make two equal chips look different. `AttachmentsProperty` renders its children and a single `action` trigger (`PropertyAddTrigger` with `muted={false}` and `text-muted-foreground`) that shows `action.label` when empty and collapses to `+` once it has children; `action.disabled` disables the button.
 - Default copy is pt-BR (`Sem data`, `Limpar período`, `Adicionar telefone`, `Carregando tags…`); the fallback `ariaLabel`s `Date`, `Person` and `Period` are English.
 
 ## Styling contract
@@ -401,9 +430,9 @@ State lives in `data-*` attributes; this pattern sets them for consumers and tes
 | `data-editing="inline\|popover"` | the editable `[data-slot=email-property]` | consumers |
 | `data-attachment-type="audio\|doc\|link\|pdf"` | `[data-slot=attachment-type-icon]` | consumers; the tone comes from `propertyToneClassName` |
 
-There is no `cva` in this pattern; the class maps are `propertyBadgeClassName` and the plain-surface string in `shared/property-surface.tsx`, `propertyToneClassName` in `shared/property-catalog.ts` (`danger`, `info`, `neutral`, `success`, `warning` → `text-destructive-foreground`, `text-info-foreground`, `text-muted-foreground`, `text-success-foreground`, `text-warning-foreground`), `propertySelectItemClassName` in `shared/property-select-shell.tsx`, and `sizeClassName` and `fieldClassName` in `display/editable-text/editable-text.tsx`. Hover-only affordances pair `group-hover/property:opacity-100` with `group-focus-within/property:opacity-100` and `pointer-coarse:opacity-100` (`icon-label-property`) or `group-hover/entry` with `group-focus-within/entry` and `focus-visible:opacity-100` (email and phone popup rows). Colors come only from theme tokens (`text-muted-foreground`, `text-foreground`, `text-destructive-foreground`, `bg-muted/40`, `bg-input`, `hover:bg-accent`, `ring-ring`, `ring-offset-background`); no palette colors.
+There is no `cva` in this pattern; the class maps are `propertyBadgeClassName` and the plain-surface string in `shared/property-surface.tsx`, `propertyToneClassName` in `shared/property-catalog.ts` (`danger`, `info`, `neutral`, `success`, `warning` → `text-destructive-foreground`, `text-info-foreground`, `text-muted-foreground`, `text-success-foreground`, `text-warning-foreground`), `propertySelectItemClassName` in `shared/property-select-shell.tsx`, and `sizeClassName` and `fieldClassName` in `display/editable-text/editable-text.tsx`. Hover-only affordances pair `group-hover/property:opacity-100` with `group-focus-within/property:opacity-100` and `pointer-coarse:opacity-100` (`icon-label-property`) or `group-hover/entry` with `group-focus-within/entry` and `focus-visible:opacity-100` (email and phone popup rows). Colors come only from theme tokens (`text-muted-foreground`, `text-foreground`, `text-destructive-foreground`, `bg-muted/40`, `bg-input`, `hover:bg-accent`, `ring-ring`, `ring-offset-background`); no palette colors: `--*-foreground` is `700` in the light theme and `400` in the dark one, while a literal `text-*-500` stayed the same in both and lost contrast on the light background.
 
-Two entries in `scripts/override-exceptions.json` belong to this pattern: `AvatarFallback` with `bg-muted/40` in `display/people/people-property.tsx` and in `display/person/person-property.tsx`. Any change to those classes must update the entry, or `bun run overrides:check` fails.
+One entry in `scripts/override-exceptions.json` belongs to this pattern: `AvatarFallback` with `bg-muted/40` in `display/person/person-option-content.tsx`, the only place that renders the avatar of person and people. Any change to those classes must update the entry, or `bun run overrides:check` fails.
 
 Decisions recorded on 2026-10-03 in `docs/architecture/tc96-parttens.md`, section "Acessibilidade dos patterns", that apply here: the 10px avatar fallback uses the single spelling `text-[0.625rem]` (people and person) until the consumer declares a `--text-2xs: 0.625rem` token, which is a note to the consumer and not a change in `packages/ui`; the `EditableText` field keeps `w-full bg-transparent outline-none placeholder:text-muted-foreground` with the caret as the focus indicator, which the audit lists as not a finding; `icon-label-property` already followed the hover, focus-within and coarse-pointer pair.
 

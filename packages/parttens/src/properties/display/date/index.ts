@@ -4,7 +4,9 @@ export {
   DatePropertyBadge,
   type DatePropertyDropdownPlacement,
   type DatePropertyProps,
+} from './date-property'
+export {
   formatDateProperty,
   parseDatePropertyValue,
   serializeDatePropertyValue,
-} from './date-property'
+} from './date-value'

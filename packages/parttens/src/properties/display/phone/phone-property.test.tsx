@@ -39,6 +39,18 @@ describe('PhoneProperty', () => {
     expect(trigger.getAttribute('data-empty')).toBe('true')
   })
 
+  test('o gatilho de adicionar anuncia o popup que abre', async () => {
+    render(<PhoneProperty action={() => undefined} value={[]} />)
+
+    const trigger = screen.getByRole('button', { name: 'Adicionar telefone' })
+    expect(trigger.getAttribute('aria-haspopup')).toBe('dialog')
+    expect(trigger.getAttribute('aria-expanded')).toBe('false')
+
+    await act(async () => fireEvent.click(trigger))
+
+    expect(trigger.getAttribute('aria-expanded')).toBe('true')
+  })
+
   test('com telefone, o gatilho colapsa no sinal de adicionar', () => {
     render(<PhoneProperty action={() => undefined} value={[PHONE]} />)
 

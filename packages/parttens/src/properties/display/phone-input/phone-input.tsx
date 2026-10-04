@@ -34,13 +34,10 @@ import {
 } from './phone-number'
 
 export interface PhoneInputProps {
-  /** Número em E.164 (`+5511987654321`), ou `null` enquanto ninguém digitou nada. */
   value: string | null
   onValueChange: (value: string | null) => void
-  /** Nome acessível do campo, quando ele não está dentro de um `<Field>` com rótulo. */
   ariaLabel?: string
   className?: string
-  /** País assumido para o número digitado em formato nacional. */
   defaultCountry?: PhoneCountryCode
   disabled?: boolean
   invalid?: boolean
@@ -49,22 +46,9 @@ export interface PhoneInputProps {
   readOnly?: boolean
   required?: boolean
   onBlur?: React.FocusEventHandler<HTMLInputElement>
-  /**
-   * Tecla no campo do número, não no seletor de país.
-   *
-   * Existe para quem monta o campo dentro de uma superfície que reage às mesmas
-   * teclas — o popup do Base UI fecha no `Enter`, e confirmar pelo teclado exige
-   * conter o evento aqui, antes de ele subir.
-   */
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>
 }
 
-/**
- * Campo de telefone internacional: seletor de país com bandeira e código de
- * discagem, e um input que formata o número no padrão do país enquanto a pessoa
- * digita. O valor que sai é sempre E.164, o mesmo formato que
- * `phoneNumberSchema` valida.
- */
 export function PhoneInput({
   ariaLabel,
   className,
@@ -84,9 +68,6 @@ export function PhoneInput({
   const [chosenCountry, setChosenCountry] =
     useState<PhoneCountryCode>(defaultCountry)
 
-  // O país que o próprio número declara vence a escolha guardada: passar para a
-  // biblioteca um país que não corresponde ao valor faz ela reclamar de
-  // divergência, e a bandeira mentiria sobre o que está escrito no campo.
   const country = findPhoneCountry(phoneNumberCountry(value) ?? chosenCountry)
 
   const filter = useComboboxFilter({ sensitivity: 'base' })
@@ -104,19 +85,12 @@ export function PhoneInput({
   const selectCountry = (next: PhoneCountry | null) => {
     if (!next || next.code === country.code) return
     setChosenCountry(next.code)
-    // Trocar de país reescreve o código de discagem e preserva o que já foi
-    // digitado, para a escolha não custar o número inteiro.
     const digits = nationalDigits(value)
     onValueChange(digits === '' ? null : `+${next.callingCode}${digits}`)
   }
 
   return (
     <InputGroup className={className} data-slot="phone-input" ref={fieldRef}>
-      {/*
-        Sem um Field próprio, o Field do consumer adota o seletor de país como
-        controle dele: o gatilho passa a se anunciar com o rótulo, a descrição
-        e o erro do telefone, e perde o próprio nome.
-      */}
       <FieldPrimitive.Root render={<span className="contents" />}>
         <InputGroupAddon align="inline-start">
           <Combobox
@@ -140,18 +114,12 @@ export function PhoneInput({
                 className="size-3.5 opacity-80"
               />
             </ComboboxTrigger>
-            {/*
-              Ancorado no campo inteiro, não no gatilho: `--anchor-width` passa a
-              ser a largura do telefone, e o dropdown acompanha o campo em
-              qualquer wrapper em vez de carregar uma largura fixa.
-            */}
             <ComboboxPopup
               align="start"
               anchor={fieldRef}
               aria-label="Selecionar país"
               className="w-(--anchor-width) min-w-64"
             >
-              {/* Achatado como o `CommandInput`: a moldura é do popup, não do campo. */}
               <ComboboxInput
                 aria-label="Buscar país"
                 className="border-transparent! bg-transparent! shadow-none before:hidden has-focus-visible:ring-0"
@@ -199,7 +167,6 @@ export function PhoneInput({
   )
 }
 
-/** Ponte entre o `inputComponent` que a biblioteca espera e o input do design system. */
 function PhoneNumberField({ ref, ...props }: React.ComponentProps<'input'>) {
   return <InputGroupInput ref={ref} {...props} />
 }

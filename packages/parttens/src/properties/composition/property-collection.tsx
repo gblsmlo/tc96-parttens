@@ -13,34 +13,25 @@ import type React from 'react'
 import { Fragment, useState } from 'react'
 import { MenuCheckboxOption } from '../../shared/components/menu-selection-item'
 import type { PropertyIcon } from '../shared/property-catalog'
+import { PropertyRow } from '../shared/property-row'
 import { PropertySurface } from '../shared/property-surface'
 
 export interface PropertyCollectionItem {
   id: string
-  /** Nome da propriedade no menu de preferência. */
   label: string
-  /** Ícone da propriedade no menu de preferência. */
   icon?: PropertyIcon
-  /** Entra visível antes de qualquer preferência do usuário. */
   defaultVisible?: boolean
-  /** A Property renderizada quando visível; o estado vazio é affordance dela. */
   render: () => React.ReactNode
 }
 
 export interface PropertyCollectionProps {
-  /** Catálogo de propriedades da collection, na ordem de exibição. */
   items: readonly PropertyCollectionItem[]
   ariaLabel?: string
   className?: string
-  /** Ids visíveis no modo não controlado; sobrepõe os `defaultVisible` dos itens. */
   defaultVisible?: readonly string[]
-  /** Título do menu de preferência. */
   menuLabel?: string
-  /** Oculta o trigger de preferência; a fileira mostra só os visíveis. */
   readOnly?: boolean
-  /** Rótulo acessível do trigger de preferência. */
   triggerLabel?: string
-  /** Ids visíveis no modo controlado. */
   visible?: readonly string[]
   onVisibleChange?: (visible: readonly string[]) => void
 }
@@ -68,8 +59,6 @@ export function PropertyCollection({
   const visibleSet = new Set(visibleIds)
 
   const toggle = (id: string) => {
-    // A visibilidade muda, a posição não: o resultado segue a ordem do
-    // catálogo, para religar uma propriedade devolvê-la ao mesmo lugar.
     const next = items
       .filter((item) =>
         item.id === id ? !visibleSet.has(id) : visibleSet.has(item.id),
@@ -82,13 +71,10 @@ export function PropertyCollection({
   }
 
   return (
-    <fieldset
-      aria-label={ariaLabel}
-      className={cn(
-        'flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5',
-        className,
-      )}
-      data-slot="property-collection"
+    <PropertyRow
+      ariaLabel={ariaLabel}
+      className={cn('flex flex-wrap items-center gap-x-1 gap-y-0.5', className)}
+      slot="property-collection"
     >
       {items
         .filter((item) => visibleSet.has(item.id))
@@ -136,6 +122,6 @@ export function PropertyCollection({
           </MenuPopup>
         </Menu>
       )}
-    </fieldset>
+    </PropertyRow>
   )
 }

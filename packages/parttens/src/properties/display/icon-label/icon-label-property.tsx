@@ -22,31 +22,13 @@ export interface IconLabelPropertyProps {
   icon?: IconLabelPropertyIcon
   iconClassName?: string
   leading?: ReactNode
-  /** A superfície mostra ausência, não valor: o texto recua para o tom secundário. */
   muted?: boolean
   render?: PropertySurfaceProps['render']
   trailing?: ReactNode
-  /**
-   * `hover` guarda a afordância até o ponteiro chegar. Numa lateral onde toda
-   * fileira oferece a mesma ação, os ícones repetidos disputam a leitura com os
-   * valores. O espaço continua reservado — é opacidade, não remoção —, então a
-   * fileira não salta; foco e ponteiro grosso revelam sem hover.
-   */
   trailingVisibility?: IconLabelPropertyTrailingVisibility
   variant?: PropertyVariant
 }
 
-/**
- * Base compartilhada por toda property de ícone opcional + rótulo truncado:
- * `TextProperty`, `FlagProperty` e `ReferenceProperty` renderizavam essa mesma
- * forma cada uma com sua própria cópia. O que muda entre elas é de onde vem o
- * ícone e o rótulo — um catálogo fechado, um booleano ativo/inativo, um valor
- * anulável — não a superfície.
- *
- * `leading` e `trailing` abrem os dois lados para conteúdo que não é ícone de
- * catálogo (avatar, afordância de ação, indicador de cópia); `render` troca o
- * elemento raiz quando a property é navegável ou acionável.
- */
 export function IconLabelProperty({
   ariaLabel,
   className,
@@ -72,9 +54,6 @@ export function IconLabelProperty({
       className={cn('max-w-full', hidesTrailing && 'group/property', className)}
       muted={muted}
       render={render}
-      // Com afordância dentro, a superfície não pode ser `img`: filho de `img` é
-      // presentacional para a árvore de acessibilidade, e o botão sumiria dela.
-      // `group` mantém o nome e deixa o botão alcançável.
       role={trailing && ariaLabel ? 'group' : undefined}
       variant={variant}
     >
@@ -85,8 +64,6 @@ export function IconLabelProperty({
       <span className="truncate">{label}</span>
       {hidesTrailing ? (
         <span
-          // Teclado e toque não têm hover: sem `focus-within` a afordância seria
-          // inalcançável pelo `Tab`, e sem `pointer-coarse` sumiria no celular.
           className="pointer-coarse:opacity-100 flex shrink-0 self-stretch items-center opacity-0 transition-opacity group-focus-within/property:opacity-100 group-hover/property:opacity-100"
           data-slot="property-trailing"
         >

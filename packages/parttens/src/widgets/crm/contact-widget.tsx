@@ -1,4 +1,4 @@
-import { getInitials } from '@tc96/helpers/initials'
+import { resolveInitials } from '@tc96/helpers/initials'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
@@ -97,9 +97,7 @@ export function ContactWidget({
               {person.imageUrl ? (
                 <AvatarImage alt="" src={person.imageUrl} />
               ) : null}
-              <AvatarFallback>
-                {person.fallback ?? getInitials(person.label)}
-              </AvatarFallback>
+              <AvatarFallback>{resolveInitials(person)}</AvatarFallback>
             </Avatar>
           </span>
           <div className="grid min-w-0 flex-1 gap-1">

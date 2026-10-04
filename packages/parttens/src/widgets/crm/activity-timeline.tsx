@@ -1,4 +1,4 @@
-import { getInitials } from '@tc96/helpers/initials'
+import { resolveInitials } from '@tc96/helpers/initials'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
@@ -68,8 +68,7 @@ export function ActivityTimeline({
                       <AvatarImage alt="" src={activity.person.imageUrl} />
                     ) : null}
                     <AvatarFallback>
-                      {activity.person.fallback ??
-                        getInitials(activity.person.label)}
+                      {resolveInitials(activity.person)}
                     </AvatarFallback>
                   </Avatar>
                 </span>

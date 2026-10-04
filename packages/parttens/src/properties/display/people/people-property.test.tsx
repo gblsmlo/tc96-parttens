@@ -103,6 +103,50 @@ describe('PeopleProperty', () => {
     expect(values).toEqual([['person-2']])
   })
 
+  test('gives action the added and the removed person', async () => {
+    const calls: unknown[] = []
+    const { rerender } = render(
+      <PeopleProperty
+        action={(value, context) => calls.push({ context, value })}
+        options={options}
+        value={['person-1']}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar pessoa' }))
+    const option = await screen.findByRole('option', { name: /Ana Souza/ })
+    fireEvent.pointerDown(option, { pointerType: 'mouse' })
+    fireEvent.click(option)
+
+    rerender(
+      <PeopleProperty
+        action={(value, context) => calls.push({ context, value })}
+        options={options}
+        value={['person-1', 'person-2']}
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Remover Bruno Lima' }))
+
+    expect(calls).toEqual([
+      {
+        context: {
+          added: options[1],
+          previousValue: ['person-1'],
+          removed: null,
+        },
+        value: ['person-1', 'person-2'],
+      },
+      {
+        context: {
+          added: null,
+          previousValue: ['person-1', 'person-2'],
+          removed: options[0],
+        },
+        value: ['person-2'],
+      },
+    ])
+  })
+
   test('keeps read-only people out of the editing controls', () => {
     render(<PeopleProperty options={options} readOnly value={['person-1']} />)
 

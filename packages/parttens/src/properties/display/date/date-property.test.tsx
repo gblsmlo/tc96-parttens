@@ -5,8 +5,10 @@ await import('../../test/dom')
 const { cleanup, fireEvent, render, screen, waitFor } = await import(
   '@testing-library/react'
 )
-const { DateProperty, formatDateProperty, serializeDatePropertyValue } =
-  await import('./date-property')
+const { DateProperty } = await import('./date-property')
+const { formatDateProperty, serializeDatePropertyValue } = await import(
+  './date-value'
+)
 
 afterEach(cleanup)
 

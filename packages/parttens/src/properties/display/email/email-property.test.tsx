@@ -245,6 +245,18 @@ describe('EmailProperty', () => {
     ).toBeTruthy()
   })
 
+  test('o gatilho de adicionar anuncia o popup que abre', async () => {
+    render(<EmailProperty action={() => undefined} value={[]} />)
+
+    const trigger = screen.getByRole('button', { name: 'Adicionar e-mail' })
+    expect(trigger.getAttribute('aria-haspopup')).toBe('dialog')
+    expect(trigger.getAttribute('aria-expanded')).toBe('false')
+
+    await act(async () => fireEvent.click(trigger))
+
+    expect(trigger.getAttribute('aria-expanded')).toBe('true')
+  })
+
   test('somente leitura mostra os endereços sem caminho de edição', () => {
     render(<EmailProperty readOnly value={[EMAIL]} />)
 
