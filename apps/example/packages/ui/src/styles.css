@@ -242,7 +242,7 @@
   --muted: --alpha(var(--color-white) / 4%);
   --muted-foreground: color-mix(
     in srgb,
-    var(--color-stone-500) 90%,
+    var(--color-stone-500) 80%,
     var(--color-white)
   );
   --accent: --alpha(var(--color-white) / 4%);
