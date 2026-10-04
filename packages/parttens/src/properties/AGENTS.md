@@ -1,6 +1,6 @@
 # Properties pattern
 
-Controlled property displays (date, date range, editable text, email, flag, icon and label, people, person, phone, reference, select, tags, text, attachments) that render one value each on a shared surface, plus two compositions: `PropertyCollection` (a `fieldset` of the visible properties of a catalog and a menu to toggle them) and `AssignedProperty` (a `PersonProperty` with assignee defaults). The consumer passes the value and options and receives the next value through `onValueChange`, or through `action` with a context carrying `previousValue`. The pattern never fetches, filters, persists or ships CSS; its only state is popover and combobox open state, popup drafts, the `EditableText` draft and the uncontrolled visibility of `PropertyCollection`.
+Controlled property displays (date, date range, editable text, email, flag, icon and label, people, person, phone, reference, select, tags, text, attachments) that render one value each on a shared surface, plus two compositions: `PropertyCollection` (a `fieldset` of the visible properties of a catalog and a menu to toggle them) and `AssignedProperty` (a `PersonProperty` with assignee defaults). The consumer passes the value and options and receives the next value through `onValueChange`, or through `action` with a context carrying `previousValue`. The pattern never fetches, filters, persists or ships CSS; its only state is popover and combobox open state, popup drafts, the `EditableText` draft, the uncontrolled visibility of `PropertyCollection` and the chose-the-empty-option flag of `SelectProperty`.
 
 ## Map
 
@@ -35,6 +35,10 @@ Dates:
 - `serializeDatePropertyValue` returns noon UTC of the picked day (`new Date(2026, 5, 19)` gives `2026-06-19T12:00:00.000Z`). Picking the current value closes without emitting.
 - An empty `DateProperty` renders the filled badge with `text-muted-foreground`, not the outline badge `muted` gives other empty states, so it sets no `data-empty`.
 - `DateRangeProperty` formats without a time zone and stays open after the first click, because the calendar returns `from` and `to` on the same day; only the clear button closes it.
+
+Select:
+
+- A `null` from the consumer is absence (`muted`, `data-empty`, the `placeholder` label). When the user picks `emptyOptionLabel`, even over a `null`, the surface renders filled with that label and a `CircleDashedIcon` until a non-null `value` arrives. The flag is component state, so a remount that returns `null` shows absence again.
 
 Editing:
 

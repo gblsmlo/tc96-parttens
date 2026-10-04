@@ -29,7 +29,7 @@ const options: AssignedPropertyOption<ExampleAssignee>[] = [
   {
     fallback: 'MS',
     label: 'Marina Souza',
-    supportingLabel: 'Comercial',
+    supportingLabel: 'Sales',
     value: 'marina',
   },
 ]

@@ -19,7 +19,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Coleção de pessoas na anatomia de chip que `TagsProperty` já fixa — cada chip aqui carrega avatar e nome, como `PersonProperty` já desenha para o valor único. O gatilho de adicionar fica como último elemento, e vira só o `+` quando já há alguém aplicado.',
+          'Collection of people in the chip anatomy that `TagsProperty` already fixes: each chip here carries an avatar and a name, as `PersonProperty` already draws for the single value. The add trigger stays as the last element and becomes just the `+` once someone is applied.',
       },
     },
   },
@@ -35,13 +35,13 @@ export const SelectAndRemove: Story = {
     docs: {
       description: {
         story:
-          'Caso editável com catálogo controlado pelo consumer: adicionar abre o popover, escolher uma pessoa aplica o chip, e remover pelo `x` do próprio chip devolve à coleção anterior.',
+          "Editable case with a catalog controlled by the consumer: adding opens the popover, picking a person applies the chip, and removing with the chip's own `x` returns to the previous collection.",
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    // O popover do Combobox sai em portal — vive fora de `canvasElement`.
+    // The Combobox popover renders in a portal, outside `canvasElement`.
     const body = within(canvasElement.ownerDocument.body)
 
     await userEvent.click(
@@ -66,7 +66,7 @@ export const Empty: Story = {
     docs: {
       description: {
         story:
-          'Sem ninguém aplicado o gatilho se explica: ícone e rótulo, não só o `+`.',
+          'With no one applied the trigger explains itself: icon and label, not just the `+`.',
       },
     },
   },
@@ -89,7 +89,7 @@ function PeoplePropertyExample({
   return (
     <div className="max-w-sm p-4">
       <PeopleProperty
-        ariaLabel="Participantes"
+        ariaLabel="Participants"
         onValueChange={setValue}
         options={initialOptions}
         value={value}

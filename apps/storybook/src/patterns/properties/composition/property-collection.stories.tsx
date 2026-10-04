@@ -23,39 +23,37 @@ import { useState } from 'react'
 import { expect, screen, userEvent, within } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
 
-const pessoas = [
+const people = [
   { label: 'Bruno Lima', value: 'person-1' },
   { label: 'Ana Souza', value: 'person-2' },
 ] as const
 
-const etiquetas = [
-  { label: 'Documentos', value: 'documents' },
-  { label: 'Retorno', value: 'return' },
+const tagOptions = [
+  { label: 'Documents', value: 'documents' },
+  { label: 'Follow-up', value: 'return' },
 ] as const
 
-// Catálogos de status e prioridade pertencem ao consumer; a story só precisa de
-// um conjunto fechado com ícone e tom para exercitar a fileira.
 const statusOptions: readonly SelectPropertyOption[] = [
-  { icon: CircleIcon, label: 'A fazer', tone: 'neutral', value: 'todo' },
+  { icon: CircleIcon, label: 'To do', tone: 'neutral', value: 'todo' },
   {
     icon: CircleDotIcon,
-    label: 'Em andamento',
+    label: 'In progress',
     tone: 'info',
     value: 'inProgress',
   },
-  { icon: CircleCheckIcon, label: 'Concluído', tone: 'success', value: 'done' },
+  { icon: CircleCheckIcon, label: 'Done', tone: 'success', value: 'done' },
   {
     icon: CircleSlashIcon,
-    label: 'Cancelado',
+    label: 'Canceled',
     tone: 'neutral',
     value: 'canceled',
   },
 ]
 
 const priorityOptions: readonly SelectPropertyOption[] = [
-  { icon: SignalHighIcon, label: 'Alta', tone: 'danger', value: 'high' },
-  { icon: SignalMediumIcon, label: 'Média', tone: 'warning', value: 'medium' },
-  { icon: SignalLowIcon, label: 'Baixa', tone: 'neutral', value: 'low' },
+  { icon: SignalHighIcon, label: 'High', tone: 'danger', value: 'high' },
+  { icon: SignalMediumIcon, label: 'Medium', tone: 'warning', value: 'medium' },
+  { icon: SignalLowIcon, label: 'Low', tone: 'neutral', value: 'low' },
 ]
 
 const meta = {
@@ -67,7 +65,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Fileira de propriedades de uma collection com preferência de visibilidade. O catálogo — quais propriedades existem, em que ordem e quais são default — pertence à collection (Tasks, Leads, Campanhas…); o trigger `…` abre o menu que lista o catálogo inteiro para o usuário adicionar ou remover da fileira. Uma propriedade visível e vazia mostra a própria affordance de preenchimento; oculta, é omitida. Ligar e desligar não reordena: a posição segue a ordem do catálogo.',
+          'Property row of a collection with a visibility preference. The catalog (which properties exist, in what order and which are default) belongs to the collection (Tasks, Leads, Campaigns...); the `…` trigger opens the menu listing the whole catalog so the user can add or remove properties from the row. A visible empty property shows its own fill-in affordance; a hidden one is omitted. Toggling does not reorder: position follows the catalog order.',
       },
     },
   },
@@ -78,11 +76,6 @@ export default meta
 
 type Story = StoryObj<typeof PropertyCollection>
 
-/**
- * O registro de uma Task: status e prioridade sempre têm valor (vazio é estado
- * do domínio), responsável e prazo nascem vazios com affordance própria, e
- * etiquetas ficam fora da fileira até o usuário preferir vê-las.
- */
 function TaskCollectionExample({
   readOnly = false,
 }: Readonly<{ readOnly?: boolean }>) {
@@ -94,7 +87,7 @@ function TaskCollectionExample({
 
   return (
     <PropertyCollection
-      ariaLabel="Propriedades da Task"
+      ariaLabel="Task properties"
       items={[
         {
           defaultVisible: true,
@@ -114,10 +107,10 @@ function TaskCollectionExample({
           defaultVisible: true,
           icon: SignalHighIcon,
           id: 'priority',
-          label: 'Prioridade',
+          label: 'Priority',
           render: () => (
             <SelectProperty
-              ariaLabel="Prioridade"
+              ariaLabel="Priority"
               onValueChange={setPriority}
               options={priorityOptions}
               value={priority}
@@ -128,13 +121,13 @@ function TaskCollectionExample({
           defaultVisible: true,
           icon: UserCircleIcon,
           id: 'assignee',
-          label: 'Responsável',
+          label: 'Assignee',
           render: () => (
             <PersonProperty
-              ariaLabel="Responsável"
+              ariaLabel="Assignee"
               onValueChange={setAssignee}
-              options={pessoas}
-              placeholder="Definir responsável"
+              options={people}
+              placeholder="Set assignee"
               value={assignee}
             />
           ),
@@ -143,11 +136,11 @@ function TaskCollectionExample({
           defaultVisible: true,
           icon: CalendarDaysIcon,
           id: 'dueDate',
-          label: 'Prazo',
+          label: 'Due date',
           render: () => (
             <DateProperty
-              ariaLabel="Prazo"
-              fallback="Definir prazo"
+              ariaLabel="Due date"
+              fallback="Set due date"
               locale="pt-BR"
               onValueChange={setDueDate}
               value={dueDate}
@@ -157,12 +150,12 @@ function TaskCollectionExample({
         {
           icon: TagIcon,
           id: 'tags',
-          label: 'Etiquetas',
+          label: 'Tags',
           render: () => (
             <TagsProperty
-              ariaLabel="Etiquetas"
+              ariaLabel="Tags"
               onValueChange={setTags}
-              options={etiquetas}
+              options={tagOptions}
               value={tags}
             />
           ),
@@ -173,11 +166,6 @@ function TaskCollectionExample({
   )
 }
 
-/**
- * O registro de um Lead compartilha as mesmas Properties com outro catálogo:
- * sem prioridade, status restrito ao funil e um default diferente. A diferença
- * entre collections mora no registro, nunca em variações das Properties.
- */
 function LeadCollectionExample() {
   const [status, setStatus] = useState<string | null>('todo')
   const [owner, setOwner] = useState<string | null>('person-2')
@@ -186,7 +174,7 @@ function LeadCollectionExample() {
 
   return (
     <PropertyCollection
-      ariaLabel="Propriedades do Lead"
+      ariaLabel="Lead properties"
       items={[
         {
           defaultVisible: true,
@@ -209,10 +197,10 @@ function LeadCollectionExample() {
           label: 'Dono',
           render: () => (
             <PersonProperty
-              ariaLabel="Dono"
+              ariaLabel="Owner"
               onValueChange={setOwner}
-              options={pessoas}
-              placeholder="Definir dono"
+              options={people}
+              placeholder="Set owner"
               value={owner}
             />
           ),
@@ -221,12 +209,12 @@ function LeadCollectionExample() {
           defaultVisible: true,
           icon: TagIcon,
           id: 'tags',
-          label: 'Etiquetas',
+          label: 'Tags',
           render: () => (
             <TagsProperty
-              ariaLabel="Etiquetas"
+              ariaLabel="Tags"
               onValueChange={setTags}
-              options={etiquetas}
+              options={tagOptions}
               value={tags}
             />
           ),
@@ -234,11 +222,11 @@ function LeadCollectionExample() {
         {
           icon: CalendarDaysIcon,
           id: 'nextContact',
-          label: 'Próximo contato',
+          label: 'Next contact',
           render: () => (
             <DateProperty
-              ariaLabel="Próximo contato"
-              fallback="Agendar contato"
+              ariaLabel="Next contact"
+              fallback="Schedule contact"
               locale="pt-BR"
               onValueChange={setNextContact}
               value={nextContact}
@@ -252,13 +240,13 @@ function LeadCollectionExample() {
 
 export const Task: Story = {
   play: async ({ canvas }) => {
-    const grupo = await canvas.findByRole('group', {
-      name: 'Propriedades da Task',
+    const group = await canvas.findByRole('group', {
+      name: 'Task properties',
     })
 
-    await expect(grupo.textContent).toContain('Em andamento')
-    await expect(grupo.textContent).toContain('Definir responsável')
-    await expect(canvas.queryByLabelText('Etiquetas')).toBe(null)
+    await expect(group.textContent).toContain('In progress')
+    await expect(group.textContent).toContain('Set assignee')
+    await expect(canvas.queryByLabelText('Tags')).toBe(null)
     await expect(
       canvas.getByRole('button', { name: 'Ajustar propriedades' }),
     ).toBeTruthy()
@@ -267,7 +255,7 @@ export const Task: Story = {
     docs: {
       description: {
         story:
-          'Defaults visíveis com dois vazios (responsável e prazo) mostrando a affordance da própria Property; etiquetas só entram pelo trigger.',
+          'Visible defaults with two empty ones (assignee and due date) showing the Property own affordance; tags only enter through the trigger.',
       },
     },
   },
@@ -279,7 +267,7 @@ export const Lead: Story = {
     docs: {
       description: {
         story:
-          'Mesmo pattern, outro catálogo: o registro por collection decide quais propriedades existem, a ordem e os defaults.',
+          'Same pattern, different catalog: the per-collection registry decides which properties exist, their order and the defaults.',
       },
     },
   },
@@ -296,33 +284,29 @@ export const ReadOnly: Story = {
     docs: {
       description: {
         story:
-          'Sem o trigger de preferência a fileira mostra somente os visíveis.',
+          'Without the preference trigger the row shows only the visible ones.',
       },
     },
   },
   render: () => <TaskCollectionExample readOnly />,
 }
 
-/**
- * Nenhuma propriedade default: a fileira nasce só com o trigger, que é o
- * caminho de preenchimento — o zero da collection é uma ação, não um aviso.
- */
-export const SemDefaults: Story = {
+export const NoDefaults: Story = {
   play: async ({ canvas }) => {
     await userEvent.click(
       await canvas.findByRole('button', { name: 'Ajustar propriedades' }),
     )
 
-    // O popup é portalado para fora do canvas; o menu se consulta pelo document.
+    // The popup is portaled outside the canvas, so the menu is queried from the document.
     const menu = within(await screen.findByRole('menu'))
-    const opcoes = menu.getAllByRole('menuitemcheckbox')
+    const options = menu.getAllByRole('menuitemcheckbox')
     await expect(
-      opcoes.map((opcao) => opcao.getAttribute('aria-checked')),
+      options.map((option) => option.getAttribute('aria-checked')),
     ).toEqual(['false', 'false'])
   },
   render: () => (
     <PropertyCollection
-      ariaLabel="Propriedades"
+      ariaLabel="Properties"
       items={[
         {
           icon: CircleDotIcon,
@@ -340,11 +324,11 @@ export const SemDefaults: Story = {
         {
           icon: CalendarDaysIcon,
           id: 'dueDate',
-          label: 'Prazo',
+          label: 'Due date',
           render: () => (
             <DateProperty
-              ariaLabel="Prazo"
-              fallback="Definir prazo"
+              ariaLabel="Due date"
+              fallback="Set due date"
               locale="pt-BR"
               readOnly
               value={null}

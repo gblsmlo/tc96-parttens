@@ -26,7 +26,7 @@ const options: PersonPropertyOption<ExamplePerson>[] = [
   {
     fallback: 'MS',
     label: 'Marina Souza',
-    supportingLabel: 'Comercial',
+    supportingLabel: 'Sales',
     value: 'marina',
   },
 ]
@@ -41,7 +41,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Unidade de propriedade de pessoa com avatar para assignee, owner, membro ou qualquer referência humana. Badge é a superfície padrão; plain integra a mesma unidade visual em outros componentes.',
+          'Person property unit with an avatar for assignee, owner, member or any human reference. Badge is the default surface; plain integrates the same visual unit into other components.',
       },
     },
   },
@@ -82,7 +82,7 @@ export const AvatarOnly: Story = {
     await esperarAvatarComAresta(canvasElement, 16)
   },
   args: {
-    ariaLabel: 'Responsável',
+    ariaLabel: 'Assignee',
     display: 'avatar',
     options,
     readOnly: true,
@@ -93,7 +93,7 @@ export const AvatarOnly: Story = {
     docs: {
       description: {
         story:
-          'Exibição compacta para linhas e cards. Mantém o nome da pessoa no rótulo acessível e apresenta somente o avatar.',
+          "Compact display for rows and cards. Keeps the person's name in the accessible label and shows only the avatar.",
       },
     },
   },

@@ -26,7 +26,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Unidade de propriedade para um período — vigência de campanha, janela de atendimento, intervalo de apuração. É uma propriedade só, e não duas datas lado a lado: início sem fim e fim sem início são estados da mesma coisa. Quando editável, a superfície abre um Popover com Calendar em `mode="range"`.',
+          'Property unit for a period: campaign validity, support window, reporting interval. It is a single property, not two dates side by side: a start without an end and an end without a start are states of the same thing. When editable, the surface opens a Popover with a Calendar in `mode="range"`.',
       },
     },
   },
@@ -71,7 +71,7 @@ export const OpenEnded: Story = {
     docs: {
       description: {
         story:
-          'Uma ponta só: o rótulo diz qual delas existe em vez de mostrar metade de um intervalo. É o estado de uma campanha que começou sem data de encerramento definida.',
+          'Only one end: the label says which one exists instead of showing half of an interval. This is the state of a campaign that started with no end date defined.',
       },
     },
   },
@@ -84,14 +84,12 @@ export const OpenEnded: Story = {
 
 export const Empty: Story = {
   args: {
-    fallback: 'Sem período',
+    fallback: 'No period',
     value: undefined,
   },
 }
 
-// O calendar do COSS pinta dias da semana e dias fora do mês com contraste de
-// 3,14:1, abaixo de 4,5:1. O COSS não é alterado aqui; nesta story só o
-// contraste deixa de ser verificado.
+// COSS calendar weekday and outside-month text is 3.14:1 (below 4.5:1); COSS stays unmodified, so only the contrast check is off.
 const cossCalendarContrast = {
   a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
 }
@@ -102,7 +100,7 @@ export const Trigger: Story = {
     docs: {
       description: {
         story:
-          'Caso de uso editável: a superfície vira trigger e abre dois meses lado a lado. O primeiro clique já devolve `from` e `to` no mesmo dia; é o segundo que abre a faixa, então o popover fica aberto até o usuário fechá-lo.',
+          'Editable use case: the surface becomes a trigger and opens two months side by side. The first click already returns `from` and `to` on the same day; the second one opens the range, so the popover stays open until the user closes it.',
       },
     },
   },
@@ -119,7 +117,7 @@ export const CalendarLocale: Story = {
     docs: {
       description: {
         story:
-          'O calendar fala inglês por padrão. Para outro idioma, o consumidor passa o locale do DayPicker em `calendarProps`; o rótulo da superfície segue a prop `locale`.',
+          'The calendar speaks English by default. For another language, the consumer passes the DayPicker locale in `calendarProps`; the surface label follows the `locale` prop.',
       },
     },
   },
@@ -147,9 +145,9 @@ function DateRangePropertyPickerStory({
   return (
     <div className="flex min-h-136 items-start p-16">
       <DateRangeProperty
-        ariaLabel="Período"
+        ariaLabel="Period"
         calendarProps={calendarProps}
-        fallback="Sem período"
+        fallback="No period"
         locale={locale}
         value={value}
         onValueChange={setValue}

@@ -15,7 +15,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Unidade de propriedade de referência: chip para produto, conta, lead, atendimento ou outro registro relacionado.',
+          'Reference property unit: chip for a product, account, lead, support ticket or another related record.',
       },
     },
   },
@@ -51,6 +51,6 @@ export const Account: Story = {
 export const Record: Story = {
   args: {
     kind: 'record',
-    label: 'Lead autorizado',
+    label: 'Authorized lead',
   },
 }

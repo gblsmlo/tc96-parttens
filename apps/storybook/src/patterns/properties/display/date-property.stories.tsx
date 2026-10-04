@@ -27,7 +27,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Unidade de propriedade de data para prazo, início, alvo ou marco auditável. Badge é a superfície padrão e plain remove o badge; quando editável, a superfície escolhida abre um Popover com Calendar.',
+          'Date property unit for a deadline, start, target or auditable milestone. Badge is the default surface and plain removes the badge; when editable, the chosen surface opens a Popover with a Calendar.',
       },
     },
   },
@@ -82,7 +82,7 @@ export const Trigger: Story = {
     docs: {
       description: {
         story:
-          'Caso de uso editável: o badge funciona como trigger e abre um calendário em Popover. Use dropdownPlacement para ajustar side/align/offset no consumer.',
+          'Editable use case: the badge works as a trigger and opens a calendar in a Popover. Use dropdownPlacement to adjust side/align/offset in the consumer.',
       },
     },
   },

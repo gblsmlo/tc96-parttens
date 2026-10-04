@@ -14,7 +14,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'E-mails como fileira de chips, na mesma anatomia de `PhoneProperty`: vazia, o gatilho se explica ("Adicionar e-mail"); com endereços na fileira o contexto já está dado e sobra o `+`. O que muda em relação ao telefone é só a entrada — não há país nem formatação a aplicar —, e por isso ela tem duas formas: `popover` abre um campo sobre o gatilho, e `inline` troca o próprio gatilho por um `EditableText`. Formato é do campo; `errorMessage` fica para a recusa do consumidor — duplicata no workspace, unicidade, domínio corporativo.',
+          'Emails as a row of chips, with the same anatomy as `PhoneProperty`: when empty, the trigger explains itself ("Adicionar e-mail"); with addresses in the row the context is already given and only the `+` remains. What changes compared to the phone is just the input: there is no country or formatting to apply, so it has two forms: `popover` opens a field over the trigger, and `inline` swaps the trigger itself for an `EditableText`. Format belongs to the field; `errorMessage` is for the consumer\'s rejection: duplicate in the workspace, uniqueness, corporate domain.',
       },
     },
   },
@@ -35,16 +35,16 @@ export const Empty: Story = {
     docs: {
       description: {
         story:
-          'Sem endereço nenhum o gatilho é o único conteúdo da fileira. Se fosse só um `+`, o estado inicial não teria afordância nenhuma.',
+          'With no address at all the trigger is the only content of the row. If it were just a `+`, the initial state would have no affordance whatsoever.',
       },
     },
   },
   play: async ({ canvas }) => {
-    const gatilho = await canvas.findByRole('button', {
+    const trigger = await canvas.findByRole('button', {
       name: 'Adicionar e-mail',
     })
 
-    await expect(gatilho.textContent).toContain('Sem e-mail')
+    await expect(trigger.textContent).toContain('Sem e-mail')
   },
   render: () => <EmailField />,
 }
@@ -54,16 +54,16 @@ export const WithEmails: Story = {
     docs: {
       description: {
         story:
-          'Com endereços na fileira o rótulo sai do texto e vira nome acessível: o contexto já está dado pelos chips ao lado, e repetir a palavra por endereço seria ruído.',
+          'With addresses in the row the label leaves the text and becomes the accessible name: the chips next to it already give the context, and repeating the word per address would be noise.',
       },
     },
   },
   play: async ({ canvas }) => {
-    const gatilho = await canvas.findByRole('button', {
+    const trigger = await canvas.findByRole('button', {
       name: 'Adicionar e-mail',
     })
 
-    await expect(gatilho.textContent).toBe('')
+    await expect(trigger.textContent).toBe('')
     await expect(canvas.getByText(EMAIL)).toBeTruthy()
   },
   render: () => <EmailField initial={[EMAIL, OTHER]} />,
@@ -74,17 +74,17 @@ export const Adding: Story = {
     docs: {
       description: {
         story:
-          'O popup é um campo de e-mail, e `Enter` confirma. Endereço malformado não vai ao servidor — a recusa fica junto do campo.',
+          'The popup is an email field, and `Enter` confirms. A malformed address does not reach the server: the rejection stays next to the field.',
       },
     },
   },
   play: async ({ canvas, step }) => {
-    await step('e-mail malformado é recusado no próprio campo', async () => {
+    await step('malformed email is rejected in the field itself', async () => {
       await userEvent.click(
         await canvas.findByRole('button', { name: 'Adicionar e-mail' }),
       )
-      const campo = await screen.findByRole('textbox', { name: 'Principal' })
-      await userEvent.type(campo, 'ana@{Enter}')
+      const field = await screen.findByRole('textbox', { name: 'Principal' })
+      await userEvent.type(field, 'ana@{Enter}')
 
       await expect((await screen.findByRole('alert')).textContent).toContain(
         'e-mail válido',
@@ -100,7 +100,7 @@ export const InlineEditing: Story = {
     docs: {
       description: {
         story:
-          'Com `editing="inline"` o gatilho não abre popup: ele dá lugar a um `EditableText` na própria fileira, que comita no `blur`. Serve à superfície que guarda um endereço só e não quer tirar a pessoa da linha.',
+          'With `editing="inline"` the trigger does not open a popup: it gives way to an `EditableText` in the row itself, which commits on `blur`. It suits a surface that holds a single address and does not want to take the person out of the line.',
       },
     },
   },
@@ -108,17 +108,17 @@ export const InlineEditing: Story = {
     await userEvent.click(
       await canvas.findByRole('button', { name: 'Adicionar e-mail' }),
     )
-    const campo = await canvas.findByRole('textbox', {
+    const field = await canvas.findByRole('textbox', {
       name: 'Adicionar e-mail',
     })
 
-    await expect(campo.getAttribute('data-slot')).toBe('editable-text')
+    await expect(field.getAttribute('data-slot')).toBe('editable-text')
     await expect(screen.queryByRole('dialog')).toBeNull()
 
     await step(
-      'formato recusado mantém o campo aberto com a mensagem',
+      'rejected format keeps the field open with the message',
       async () => {
-        await userEvent.type(campo, 'ana@')
+        await userEvent.type(field, 'ana@')
         await userEvent.tab()
 
         await expect((await canvas.findByRole('alert')).textContent).toContain(
@@ -143,7 +143,7 @@ export const PersistentTrigger: Story = {
     docs: {
       description: {
         story:
-          'Com `display="trigger"` a fileira não vira chips: um gatilho só, que segue nomeando a propriedade mesmo preenchida, e abre o popup para acrescentar, editar ou remover. Serve à linha onde duas fileiras vizinhas colapsariam em dois `+` indistinguíveis.',
+          'With `display="trigger"` the row does not turn into chips: a single trigger that keeps naming the property even when filled, and opens the popup to add, edit or remove. It suits a line where two neighboring rows would collapse into two indistinguishable `+`.',
       },
     },
   },
@@ -163,8 +163,7 @@ export const ReadOnly: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Somente leitura: os endereços aparecem sem gatilho de adição nem de remoção.',
+        story: 'Read-only: the addresses appear with no add or remove trigger.',
       },
     },
   },

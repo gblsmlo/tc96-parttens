@@ -8,26 +8,29 @@ import {
 } from '../../../test-utils/property-surface'
 import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
-// O catálogo é do consumer: aqui ele imita uma enumeração de domínio qualquer.
-const opcoes: SelectPropertyOption[] = [
-  { icon: UsersIcon, label: 'Reunião', tone: 'info', value: 'meeting' },
-  { icon: PhoneIcon, label: 'Ligação', tone: 'success', value: 'call' },
-  { icon: MailIcon, label: 'E-mail', tone: 'neutral', value: 'email' },
-  { icon: CircleDotIcon, label: 'Outro', tone: 'neutral', value: 'other' },
+// The catalog belongs to the consumer: here it mimics any domain enumeration.
+const catalog: SelectPropertyOption[] = [
+  { icon: UsersIcon, label: 'Meeting', tone: 'info', value: 'meeting' },
+  { icon: PhoneIcon, label: 'Call', tone: 'success', value: 'call' },
+  { icon: MailIcon, label: 'Email', tone: 'neutral', value: 'email' },
+  { icon: CircleDotIcon, label: 'Other', tone: 'neutral', value: 'other' },
 ]
 
 const meta = {
   argTypes: {
     ...propertyArgTypes,
-    value: { control: 'select', options: opcoes.map((opcao) => opcao.value) },
+    value: {
+      control: 'select',
+      options: catalog.map((option) => option.value),
+    },
   },
-  args: { ariaLabel: 'Tipo', options: opcoes },
+  args: { ariaLabel: 'Type', options: catalog },
   component: SelectProperty,
   parameters: {
     docs: {
       description: {
         component:
-          'Propriedade de catálogo fechado definido pelo consumer. `Status` e `Prioridade` trazem o próprio vocabulário porque ele é delas; aqui as opções vêm de fora, para o pattern servir qualquer enumeração de domínio sem carregá-la (Decisão 030). Ícone e tom são opcionais por opção, e `ariaLabel` é obrigatório — sem domínio próprio não há rótulo a derivar.',
+          'A closed-catalog property defined by the consumer. `Status` and `Priority` ship their own vocabulary because it belongs to them; here the options come from outside, so the pattern serves any domain enumeration without carrying it (Decision 030). Icon and tone are optional per option, and `ariaLabel` is required: without a domain of its own there is no label to derive.',
       },
     },
   },
@@ -56,65 +59,73 @@ export const Dropdown: Story = {
   render: (args) => <SelectDropdownExample {...args} />,
 }
 
-export const SemIcone: Story = {
+export const NoIcon: Story = {
   args: {
-    options: opcoes.map(({ label, value }) => ({ label, value })),
+    options: catalog.map(({ label, value }) => ({ label, value })),
     readOnly: true,
     value: 'call',
   },
 }
 
-export const SemValor: Story = {
-  args: { placeholder: 'Tipo', readOnly: true, value: null },
+export const NoValue: Story = {
+  args: { placeholder: 'Type', readOnly: true, value: null },
 }
 
-export const LimparValor: Story = {
+export const ClearValue: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A `null` that comes from the consumer is absence: an outline trigger with the `placeholder`. When the user picks the empty option, absence becomes a choice and the surface renders filled with the option label. That state lives in the component, so a reload that returns `null` shows absence again.',
+      },
+    },
+  },
   render: (args) => (
     <SelectDropdownExample
       {...args}
-      emptyOptionLabel="Sem tipo"
-      placeholder="Tipo"
+      emptyOptionLabel="No type"
+      placeholder="Type"
     />
   ),
 }
 
-export const ForaDoCatalogo: Story = {
-  args: { fallback: 'Não informado', readOnly: true, value: 'inexistente' },
+export const OutsideCatalog: Story = {
+  args: { fallback: 'Not provided', readOnly: true, value: 'unknown' },
 }
 
-export const Agrupado: Story = {
+export const Grouped: Story = {
   args: {
-    ariaLabel: 'Modelo',
-    emptyOptionLabel: 'Sem modelo',
+    ariaLabel: 'Template',
+    emptyOptionLabel: 'No template',
     groups: [
       {
-        label: 'Reuniões',
+        label: 'Meetings',
         options: [
-          { icon: UsersIcon, label: 'Reunião inicial', value: 'meeting_first' },
+          { icon: UsersIcon, label: 'First meeting', value: 'meeting_first' },
           {
             icon: UsersIcon,
-            label: 'Reunião de retorno',
+            label: 'Follow-up meeting',
             value: 'meeting_return',
           },
         ],
       },
       {
-        label: 'Contato remoto',
+        label: 'Remote contact',
         options: [
-          { icon: PhoneIcon, label: 'Ligação', value: 'call' },
-          { icon: MailIcon, label: 'E-mail', value: 'email' },
+          { icon: PhoneIcon, label: 'Call', value: 'call' },
+          { icon: MailIcon, label: 'Email', value: 'email' },
         ],
       },
     ],
     options: undefined,
-    placeholder: 'Sem modelo',
+    placeholder: 'No template',
     value: null,
   },
   parameters: {
     docs: {
       description: {
         story:
-          'Com `groups` o catálogo chega repartido em seções nomeadas, para a lista que precisa dizer de onde as opções vêm. `options` e `groups` são exclusivos — o catálogo é plano ou repartido, nunca os dois. A opção de valor ausente fica fora das seções, porque não pertence a nenhuma.',
+          'With `groups` the catalog arrives split into named sections, for lists that need to say where the options come from. `options` and `groups` are exclusive: the catalog is flat or split, never both. The empty option sits outside the sections because it belongs to none.',
       },
     },
   },
