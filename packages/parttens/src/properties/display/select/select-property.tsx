@@ -2,6 +2,8 @@
 
 import { SelectGroup, SelectGroupLabel, SelectItem } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
+import { CircleDashedIcon } from 'lucide-react'
+import { useState } from 'react'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import {
   type PropertyIcon,
@@ -73,16 +75,32 @@ export function SelectProperty({
   const catalog = groups ? groups.flatMap((group) => group.options) : options
   const selectedOption =
     value === null ? undefined : catalog.find((o) => o.value === value)
+  const emptyOption: SelectPropertyOption | null = emptyOptionLabel
+    ? {
+        icon: CircleDashedIcon,
+        label: emptyOptionLabel,
+        tone: 'neutral',
+        value: '',
+      }
+    : null
+  const [chosenEmpty, setChosenEmpty] = useState(false)
+  const [seenValue, setSeenValue] = useState(value)
+  if (seenValue !== value) {
+    setSeenValue(value)
+    if (value !== null) setChosenEmpty(false)
+  }
+  const explicitEmpty = emptyOption !== null && value === null && chosenEmpty
+  const absent = value === null && !explicitEmpty
 
   const currentLabel =
     selectedOption?.label ??
-    (value === null ? (placeholder ?? fallback) : fallback)
+    (explicitEmpty
+      ? emptyOption.label
+      : value === null
+        ? (placeholder ?? fallback)
+        : fallback)
 
-  const accessibleLabel =
-    value === null ? ariaLabel : `${ariaLabel}: ${currentLabel}`
-  const emptyOption: SelectPropertyOption | null = emptyOptionLabel
-    ? { label: emptyOptionLabel, value: '' }
-    : null
+  const accessibleLabel = absent ? ariaLabel : `${ariaLabel}: ${currentLabel}`
   const items = emptyOption ? [emptyOption, ...catalog] : catalog
 
   return (
@@ -94,23 +112,30 @@ export function SelectProperty({
       items={items}
       itemToStringLabel={(option) => option.label}
       itemToStringValue={(option) => option.value}
-      muted={value === null}
+      muted={absent}
       onValueChange={(option) => {
         if (!option) return
         const next = option.value === '' ? null : option.value
+        setChosenEmpty(next === null)
         if (next === value) return
         emitChange({ action, onValueChange }, next, { previousValue: value })
       }}
       readOnly={!isEditable({ action, onValueChange, readOnly })}
       variant={variant}
       renderValue={() => (
-        <SelectPropertyContent label={currentLabel} option={selectedOption} />
+        <SelectPropertyContent
+          label={currentLabel}
+          option={selectedOption ?? (explicitEmpty ? emptyOption : undefined)}
+        />
       )}
-      value={selectedOption ?? emptyOption}
+      value={selectedOption ?? (explicitEmpty ? emptyOption : null)}
     >
       {emptyOption ? (
         <SelectItem className={propertySelectItemClassName} value={emptyOption}>
-          <SelectPropertyContent label={emptyOption.label} option={undefined} />
+          <SelectPropertyContent
+            label={emptyOption.label}
+            option={emptyOption}
+          />
         </SelectItem>
       ) : null}
       {groups

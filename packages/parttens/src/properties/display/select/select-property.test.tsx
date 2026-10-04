@@ -5,9 +5,36 @@ await import('../../test/dom')
 const { cleanup, fireEvent, render, screen, waitFor } = await import(
   '@testing-library/react'
 )
+const { useState } = await import('react')
 const { SelectProperty } = await import('./select-property')
 
 afterEach(cleanup)
+
+function Controlled({ initial }: Readonly<{ initial: string | null }>) {
+  const [value, setValue] = useState<string | null>(initial)
+
+  return (
+    <SelectProperty
+      ariaLabel="Prioridade"
+      emptyOptionLabel="Sem prioridade"
+      onValueChange={setValue}
+      options={options}
+      placeholder="Prioridade"
+      value={value}
+    />
+  )
+}
+
+async function choose(trigger: HTMLElement, name: string) {
+  fireEvent.pointerDown(trigger, { pointerId: 1, pointerType: 'mouse' })
+  fireEvent.mouseDown(trigger)
+  fireEvent.pointerUp(trigger, { pointerId: 1, pointerType: 'mouse' })
+  fireEvent.click(trigger)
+
+  const option = await waitFor(() => screen.getByRole('option', { name }))
+  fireEvent.pointerDown(option, { pointerType: 'mouse' })
+  fireEvent.click(option)
+}
 
 const options = [
   { label: 'Reunião', value: 'meeting' },
@@ -132,5 +159,74 @@ describe('SelectProperty', () => {
         .querySelector('[data-slot="property-surface"]')
         ?.getAttribute('aria-label'),
     ).toBe('Tipo: Não informado')
+  })
+
+  test('reads as filled once the user picks the empty option over a null', async () => {
+    const { container } = render(<Controlled initial={null} />)
+    const surface = () =>
+      container.querySelector('[data-slot="property-surface"]')
+
+    expect(surface()?.getAttribute('data-empty')).toBe('true')
+
+    await choose(
+      screen.getByRole('combobox', { name: 'Prioridade' }),
+      'Sem prioridade',
+    )
+
+    await waitFor(() =>
+      expect(surface()?.getAttribute('data-empty')).toBeNull(),
+    )
+    expect(surface()?.getAttribute('aria-label')).toBe(
+      'Prioridade: Sem prioridade',
+    )
+    expect(container.textContent).toContain('Sem prioridade')
+    expect(surface()?.querySelector('svg')).not.toBeNull()
+  })
+
+  test('reads as filled after moving from a value to the empty option', async () => {
+    const { container } = render(<Controlled initial="call" />)
+    const surface = () =>
+      container.querySelector('[data-slot="property-surface"]')
+
+    await choose(
+      screen.getByRole('combobox', { name: 'Prioridade: Ligação' }),
+      'Sem prioridade',
+    )
+
+    await waitFor(() =>
+      expect(surface()?.getAttribute('aria-label')).toBe(
+        'Prioridade: Sem prioridade',
+      ),
+    )
+    expect(surface()?.getAttribute('data-empty')).toBeNull()
+  })
+
+  test('goes back to absent when null returns from outside after another value', async () => {
+    const element = (value: string | null) => (
+      <SelectProperty
+        ariaLabel="Prioridade"
+        emptyOptionLabel="Sem prioridade"
+        onValueChange={() => undefined}
+        options={options}
+        placeholder="Prioridade"
+        value={value}
+      />
+    )
+    const { container, rerender } = render(element(null))
+    const surface = () =>
+      container.querySelector('[data-slot="property-surface"]')
+
+    await choose(
+      screen.getByRole('combobox', { name: 'Prioridade' }),
+      'Sem prioridade',
+    )
+    await waitFor(() =>
+      expect(surface()?.getAttribute('data-empty')).toBeNull(),
+    )
+
+    rerender(element('call'))
+    rerender(element(null))
+
+    expect(surface()?.getAttribute('data-empty')).toBe('true')
   })
 })
