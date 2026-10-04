@@ -14,7 +14,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Telefones como fileira de chips, no mesmo gatilho de `TagsProperty`: vazia, o gatilho se explica ("Adicionar telefone"); com números na fileira o contexto já está dado e sobra o `+`. A diferença para Tags é a origem do valor — tag vem de catálogo fechado e o popup é uma lista; telefone é digitado, e o popup é o `PhoneInput`, com seletor de país e formatação enquanto se digita. Formato é do campo, que carrega a biblioteca que valida; `errorMessage` fica para a recusa do consumidor — duplicata no workspace, unicidade, papel.',
+          'Phones as a row of chips, with the same trigger as `TagsProperty`: when empty, the trigger explains itself ("Adicionar telefone"); with numbers in the row the context is already given and only the `+` remains. The difference from Tags is where the value comes from: a tag comes from a closed catalog and the popup is a list; a phone is typed, and the popup is the `PhoneInput`, with a country selector and formatting as you type. Format belongs to the field, which carries the library that validates; `errorMessage` is for the consumer\'s rejection: duplicate in the workspace, uniqueness, role.',
       },
     },
   },
@@ -35,15 +35,15 @@ export const Empty: Story = {
     docs: {
       description: {
         story:
-          'Sem número nenhum o gatilho é o único conteúdo da fileira. Se fosse só um `+`, o estado inicial não teria afordância nenhuma.',
+          'With no number at all the trigger is the only content of the row. If it were just a `+`, the initial state would have no affordance whatsoever.',
       },
     },
   },
   play: async ({ canvas }) => {
-    const gatilho = await canvas.findByRole('button', {
+    const trigger = await canvas.findByRole('button', {
       name: 'Adicionar telefone',
     })
-    await expect(gatilho.textContent).toContain('Sem telefone')
+    await expect(trigger.textContent).toContain('Sem telefone')
   },
   render: () => <PhoneField />,
 }
@@ -53,19 +53,19 @@ export const WithPhones: Story = {
     docs: {
       description: {
         story:
-          'Com números na fileira o rótulo sai do texto e vira nome acessível: o contexto já está dado pelos chips ao lado, e repetir a palavra por número seria ruído. O gatilho fica no mesmo quadrado de 24px do `TagsProperty`.',
+          'With numbers in the row the label leaves the text and becomes the accessible name: the chips next to it already give the context, and repeating the word per number would be noise. The trigger stays in the same 24px square as `TagsProperty`.',
       },
     },
   },
   play: async ({ canvas }) => {
-    const gatilho = await canvas.findByRole('button', {
+    const trigger = await canvas.findByRole('button', {
       name: 'Adicionar telefone',
     })
-    await expect(gatilho.textContent).toBe('')
+    await expect(trigger.textContent).toBe('')
 
-    const medida = gatilho.getBoundingClientRect()
-    await expect(medida.width).toBe(24)
-    await expect(medida.height).toBe(24)
+    const rect = trigger.getBoundingClientRect()
+    await expect(rect.width).toBe(24)
+    await expect(rect.height).toBe(24)
   },
   render: () => <PhoneField initial={[PHONE, OTHER]} />,
 }
@@ -75,21 +75,24 @@ export const Adding: Story = {
     docs: {
       description: {
         story:
-          'O popup é o `PhoneInput`: seletor de país e formatação no padrão do país enquanto se digita. Submeter um número incompleto não vai ao servidor — a mesma biblioteca que formata sabe recusar, e a mensagem fica junto do campo.',
+          'The popup is the `PhoneInput`: country selector and formatting in the country pattern as you type. Submitting an incomplete number does not reach the server: the same library that formats knows how to reject, and the message stays next to the field.',
       },
     },
   },
   play: async ({ canvas, step }) => {
-    await step('número incompleto é recusado no próprio campo', async () => {
-      await userEvent.click(
-        await canvas.findByRole('button', { name: 'Adicionar telefone' }),
-      )
-      const campo = await screen.findByRole('textbox', { name: 'Principal' })
-      await userEvent.type(campo, '11987')
-      // Sem botão no popup, `Enter` no campo é o que confirma.
-      await userEvent.keyboard('{Enter}')
-      await expect(await screen.findByRole('alert')).toBeTruthy()
-    })
+    await step(
+      'incomplete number is rejected in the field itself',
+      async () => {
+        await userEvent.click(
+          await canvas.findByRole('button', { name: 'Adicionar telefone' }),
+        )
+        const field = await screen.findByRole('textbox', { name: 'Principal' })
+        await userEvent.type(field, '11987')
+        // No button in the popup, so `Enter` in the field is what confirms.
+        await userEvent.keyboard('{Enter}')
+        await expect(await screen.findByRole('alert')).toBeTruthy()
+      },
+    )
   },
   render: () => <PhoneField initial={[PHONE]} />,
 }
@@ -100,7 +103,7 @@ export const PersistentTrigger: Story = {
     docs: {
       description: {
         story:
-          'Com `display="trigger"` a fileira não vira chips: um gatilho só, que segue nomeando a propriedade mesmo preenchida, e abre o popup para acrescentar, editar ou remover. Serve à linha onde duas fileiras vizinhas colapsariam em dois `+` indistinguíveis.',
+          'With `display="trigger"` the row does not turn into chips: a single trigger that keeps naming the property even when filled, and opens the popup to add, edit or remove. It suits a line where two neighboring rows would collapse into two indistinguishable `+`.',
       },
     },
   },
@@ -120,7 +123,7 @@ export const ReadOnly: Story = {
     docs: {
       description: {
         story:
-          'Sem ação a fileira não oferece nem adicionar nem remover — o chip de quem só pode ler. Vazia, ela declara a ausência em vez de ficar em branco.',
+          'Without an action the row offers neither add nor remove: the chip of someone who can only read. When empty, it declares the absence instead of staying blank.',
       },
     },
   },
@@ -137,7 +140,7 @@ export const AddDisabled: Story = {
     docs: {
       description: {
         story:
-          '`addDisabled` fecha só o caminho de adição, sem tornar a fileira somente leitura: o número existente continua removível. É o caso do contrato que guarda um número principal — com ele preenchido, não há segundo a adicionar, e um `+` prometeria o que a escrita recusaria.',
+          '`addDisabled` closes only the add path, without making the row read-only: the existing number is still removable. It is the case of a contract that holds a single primary number: once filled, there is no second one to add, and a `+` would promise what the write would refuse.',
       },
     },
   },
@@ -157,11 +160,11 @@ export const WithRejection: Story = {
     docs: {
       description: {
         story:
-          'Formato o campo resolve sozinho. `errorMessage` é para o que só o consumidor sabe — unicidade no workspace, papel, duplicata —, e aparece no mesmo lugar.',
+          'The field resolves format on its own. `errorMessage` is for what only the consumer knows (uniqueness in the workspace, role, duplicate) and it appears in the same place.',
       },
     },
   },
   render: () => (
-    <PhoneField errorMessage="Já existe outro contato com este telefone." />
+    <PhoneField errorMessage="Another contact with this phone already exists." />
   ),
 }

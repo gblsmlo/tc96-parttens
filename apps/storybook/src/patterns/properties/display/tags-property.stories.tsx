@@ -10,9 +10,9 @@ import {
 type ExampleTag = string
 
 const initialOptions: TagsPropertyOption<ExampleTag>[] = [
-  { label: 'Documentos', value: 'documents' },
-  { label: 'Retorno', value: 'return' },
-  { label: 'Urgente', value: 'urgent' },
+  { label: 'Documents', value: 'documents' },
+  { label: 'Return', value: 'return' },
+  { label: 'Urgent', value: 'urgent' },
 ]
 
 const meta = {
@@ -26,7 +26,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Propriedade neutra para coleções de tags com plain como variante padrão e badges secondary para os valores selecionados. O trigger de adição usa os ícones de tag e mais, permanece como último elemento e permite que os chips quebrem para novas linhas; o popover mantém largura própria e não acompanha a row.',
+          'Neutral property for tag collections with plain as the default variant and secondary badges for the selected values. The add trigger uses the tag and plus icons, stays as the last element and lets the chips wrap onto new lines; the popover keeps its own width and does not follow the row.',
       },
     },
   },
@@ -39,17 +39,17 @@ type Story = StoryObj<typeof TagsProperty>
 
 export const Trigger: Story = {
   play: async ({ canvas }) => {
-    // O gatilho de adicionar tag é um quadrado de 24px — o mesmo pé da escala de badge.
-    const gatilho = await canvas.findByRole('button', { name: 'Adicionar tag' })
-    const medida = gatilho.getBoundingClientRect()
+    // The add tag trigger is a 24px square, the same footing as the badge scale.
+    const trigger = await canvas.findByRole('button', { name: 'Adicionar tag' })
+    const size = trigger.getBoundingClientRect()
 
-    await expect(medida.width).toBe(24)
-    await expect(medida.height).toBe(24)
+    await expect(size.width).toBe(24)
+    await expect(size.height).toBe(24)
   },
   parameters: {
     docs: {
       description: {
-        story: 'Caso editável com catálogo controlado pelo consumer.',
+        story: 'Editable case with a catalog controlled by the consumer.',
       },
     },
   },
@@ -61,23 +61,20 @@ export const Plain: Story = {
     docs: {
       description: {
         story:
-          'Superfície usada em SummaryProperty: preserva toda a interação sem introduzir um segundo campo visual dentro da linha.',
+          'Surface used in SummaryProperty: preserves all the interaction without introducing a second visual field inside the row.',
       },
     },
   },
   render: () => <TagsPropertyExample variant="plain" />,
 }
 
-/**
- * Numa linha de coleção a largura pertence às outras propriedades, então o valor
- * some e fica só a quantidade — o mesmo popover continua atrás do gatilho.
- */
+/** In a collection row the width belongs to the other properties, so only the count shows and the same popover stays behind the trigger. */
 export const Count: Story = {
   play: async ({ canvas }) => {
-    const gatilho = await canvas.findByRole('button', { name: 'Tags' })
+    const trigger = await canvas.findByRole('button', { name: 'Tags' })
 
-    await expect(gatilho.textContent).toContain('1')
-    await expect(canvas.queryByText('Documentos')).toBe(null)
+    await expect(trigger.textContent).toContain('1')
+    await expect(canvas.queryByText('Documents')).toBe(null)
   },
   render: () => <TagsPropertyExample display="count" />,
 }

@@ -7,10 +7,10 @@ const onCommit = fn()
 
 const meta = {
   args: {
-    ariaLabel: 'Título',
+    ariaLabel: 'Title',
     onCommit,
-    placeholder: 'Sem título',
-    value: 'Conferir assinaturas do contrato',
+    placeholder: 'Untitled',
+    value: 'Check the contract signatures',
   },
   argTypes: {
     multiline: booleanArgType,
@@ -24,7 +24,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Campo de texto editado no lugar. O contrato de teclado é `Enter` para confirmar (linha única), `Escape` para descartar o rascunho e `blur` para persistir. A escala do texto é `size`; peso, família e largura ficam com quem compõe.',
+          'Text field edited in place. The keyboard contract is `Enter` to confirm (single line), `Escape` to discard the draft and `blur` to persist. The text scale is `size`; weight, family and width are left to whoever composes it.',
       },
     },
   },
@@ -41,14 +41,14 @@ export const Default: Story = {
     const canvas = within(canvasElement)
     onCommit.mockClear()
 
-    const field = canvas.getByLabelText<HTMLInputElement>('Título')
+    const field = canvas.getByLabelText<HTMLInputElement>('Title')
     await userEvent.click(field)
     await userEvent.clear(field)
-    await userEvent.type(field, 'Contrato assinado')
+    await userEvent.type(field, 'Contract signed')
     await expect(onCommit).not.toHaveBeenCalled()
 
     await userEvent.tab()
-    await expect(onCommit).toHaveBeenCalledWith('Contrato assinado')
+    await expect(onCommit).toHaveBeenCalledWith('Contract signed')
   },
 }
 
@@ -58,7 +58,7 @@ export const CommitsOnEnter: Story = {
     docs: {
       description: {
         story:
-          '`Enter` tira o foco, e é o `blur` que persiste — o campo comita uma vez só, sem depender de o teclado e o ponteiro concordarem.',
+          '`Enter` removes focus, and it is the `blur` that persists: the field commits exactly once, without relying on the keyboard and the pointer agreeing.',
       },
     },
   },
@@ -66,13 +66,13 @@ export const CommitsOnEnter: Story = {
     const canvas = within(canvasElement)
     onCommit.mockClear()
 
-    const field = canvas.getByLabelText<HTMLInputElement>('Título')
+    const field = canvas.getByLabelText<HTMLInputElement>('Title')
     await userEvent.click(field)
     await userEvent.clear(field)
-    await userEvent.type(field, 'Contrato assinado{Enter}')
+    await userEvent.type(field, 'Contract signed{Enter}')
 
     await expect(onCommit).toHaveBeenCalledTimes(1)
-    await expect(onCommit).toHaveBeenCalledWith('Contrato assinado')
+    await expect(onCommit).toHaveBeenCalledWith('Contract signed')
   },
 }
 
@@ -82,7 +82,7 @@ export const DiscardsOnEscape: Story = {
     docs: {
       description: {
         story:
-          '`Escape` devolve o rascunho ao valor confirmado. Dentro de um diálogo, o evento só sobe quando não há rascunho a descartar: o primeiro `Escape` cancela a edição, o segundo fecha o diálogo.',
+          '`Escape` returns the draft to the confirmed value. Inside a dialog, the event only bubbles up when there is no draft to discard: the first `Escape` cancels the edit, the second closes the dialog.',
       },
     },
   },
@@ -90,30 +90,30 @@ export const DiscardsOnEscape: Story = {
     const canvas = within(canvasElement)
     onCommit.mockClear()
 
-    const field = canvas.getByLabelText<HTMLInputElement>('Título')
+    const field = canvas.getByLabelText<HTMLInputElement>('Title')
     await userEvent.click(field)
     await userEvent.clear(field)
-    await userEvent.type(field, 'Rascunho descartado{Escape}')
+    await userEvent.type(field, 'Discarded draft{Escape}')
 
-    await expect(field.value).toBe('Conferir assinaturas do contrato')
+    await expect(field.value).toBe('Check the contract signatures')
     await expect(onCommit).not.toHaveBeenCalled()
   },
 }
 
 export const Multiline: Story = {
   args: {
-    ariaLabel: 'Descrição',
+    ariaLabel: 'Description',
     className: 'max-w-prose leading-relaxed',
     multiline: true,
     size: 'sm',
-    placeholder: 'Adicione uma descrição',
-    value: 'O contrato precisa das duas assinaturas antes da reunião de terça.',
+    placeholder: 'Add a description',
+    value: 'The contract needs both signatures before Tuesday’s meeting.',
   },
   parameters: {
     docs: {
       description: {
         story:
-          'Cresce com o conteúdo por `field-sizing-content`, sem medir altura em JavaScript. `Enter` quebra a linha; o commit fica com o `blur`.',
+          'Grows with its content through `field-sizing-content`, without measuring height in JavaScript. `Enter` breaks the line; the commit is left to `blur`.',
       },
     },
   },
@@ -121,16 +121,16 @@ export const Multiline: Story = {
 
 export const RevertWhenEmpty: Story = {
   args: {
-    emptyValue: 'Sem título',
+    emptyValue: 'Untitled',
     revertWhenEmpty: true,
     size: 'lg',
-    value: 'Sem título',
+    value: 'Untitled',
   },
   parameters: {
     docs: {
       description: {
         story:
-          'Para o campo que o contrato exige não-vazio: o rascunho vazio volta ao valor confirmado em vez de comitar `null`. `emptyValue` some ao focar, para não ser apagado caractere por caractere.',
+          'For a field the contract requires to be non-empty: an empty draft goes back to the confirmed value instead of committing `null`. `emptyValue` disappears on focus, so it is not erased character by character.',
       },
     },
   },
@@ -138,20 +138,20 @@ export const RevertWhenEmpty: Story = {
     const canvas = within(canvasElement)
     onCommit.mockClear()
 
-    const field = canvas.getByLabelText<HTMLInputElement>('Título')
+    const field = canvas.getByLabelText<HTMLInputElement>('Title')
     await userEvent.click(field)
     await expect(field.value).toBe('')
 
     await userEvent.tab()
-    await expect(field.value).toBe('Sem título')
+    await expect(field.value).toBe('Untitled')
     await expect(onCommit).not.toHaveBeenCalled()
   },
 }
 
 export const ReadOnly: Story = {
   args: {
-    ariaLabel: 'E-mail',
-    placeholder: 'Sem e-mail',
+    ariaLabel: 'Email',
+    placeholder: 'No email',
     size: 'sm',
     readOnly: true,
     value: null,
@@ -160,7 +160,7 @@ export const ReadOnly: Story = {
     docs: {
       description: {
         story:
-          'Sem permissão de escrita o campo não é oferecido: o valor vira texto, e o placeholder ocupa a ausência.',
+          'Without write permission the field is not offered: the value becomes text, and the placeholder fills the absence.',
       },
     },
   },
@@ -171,7 +171,7 @@ export const Sizes: Story = {
     docs: {
       description: {
         story:
-          'A escala fecha os quatro degraus que as superfícies usam: `sm` na fileira de propriedades, `base` no corpo, `lg` e `xl` na identidade do registro.',
+          'The scale covers the four steps the surfaces use: `sm` in the property row, `base` in the body, `lg` and `xl` in the record identity.',
       },
     },
   },
@@ -180,10 +180,10 @@ export const Sizes: Story = {
       {(['sm', 'base', 'lg', 'xl'] as const).map((size) => (
         <EditableText
           {...args}
-          ariaLabel={`Título ${size}`}
+          ariaLabel={`Title ${size}`}
           key={size}
           size={size}
-          value={`Título em ${size}`}
+          value={`Title in ${size}`}
         />
       ))}
     </div>

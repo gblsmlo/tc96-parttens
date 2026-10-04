@@ -5,7 +5,7 @@ import { expect } from 'storybook/test'
 
 const meta = {
   args: {
-    ariaLabel: 'Arquivos do registro',
+    ariaLabel: 'Record files',
   },
   component: AttachmentsProperty,
   decorators: [
@@ -19,7 +19,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A fileira de anexos com o caminho de adição sempre à vista. Anexar é o que se faz numa fileira vazia, e esconder isso atrás de `…` deixaria o estado inicial sem afordância — por isso a ação é chip próprio, e não entrada de menu como em `Properties/Collection`, onde o `…` guarda visibilidade. O gatilho é **um**, como o `+` de `Properties/Tags`: fileiras que aceitam coisas diferentes são fileiras diferentes, cada uma com seu rótulo. Cada item é um `AttachmentProperty` — ícone tonal pelo `type`, rótulo truncado e o `×` de remover, na mesma anatomia do chip de Tags.',
+          'The attachments row, with the add path always in view. Attaching is what you do on an empty row, and hiding it behind `…` would leave the initial state with no affordance, so the action is its own chip rather than a menu entry as in `Properties/Collection`, where the `…` holds visibility. There is **one** trigger, like the `+` in `Properties/Tags`: rows that accept different things are different rows, each with its own label. Each item is an `AttachmentProperty`: a tonal icon by `type`, a truncated label and the remove `×`, in the same anatomy as the Tags chip.',
       },
     },
   },
@@ -34,25 +34,25 @@ export const Default: Story = {
   args: {
     action: {
       icon: PaperclipIcon,
-      label: 'Anexar arquivo',
+      label: 'Attach file',
       onSelect: () => undefined,
     },
     children: (
       <>
         <AttachmentProperty
           action="download"
-          href="#proposta"
-          label="Proposta comercial.pdf"
+          href="#proposal"
+          label="Commercial proposal.pdf"
           onRemove={() => undefined}
-          removeLabel="Remover Proposta comercial.pdf"
+          removeLabel="Remove Commercial proposal.pdf"
           type="pdf"
         />
         <AttachmentProperty
           action="download"
-          href="#contrato"
-          label="Contrato assinado.pdf"
+          href="#contract"
+          label="Signed contract.pdf"
           onRemove={() => undefined}
-          removeLabel="Remover Contrato assinado.pdf"
+          removeLabel="Remove Signed contract.pdf"
           type="doc"
         />
       </>
@@ -65,9 +65,9 @@ export const Default: Story = {
     await expect(
       canvasElement.querySelectorAll('[data-slot="attachment-property"]'),
     ).toHaveLength(2)
-    // Um gatilho só, colapsado em `+`: dois `+` idênticos não diriam qual é qual.
+    // One trigger only, collapsed to `+`: two identical `+` would not say which is which.
     await expect(
-      canvasElement.querySelectorAll('button[aria-label="Anexar arquivo"]'),
+      canvasElement.querySelectorAll('button[aria-label="Attach file"]'),
     ).toHaveLength(1)
   },
 }
@@ -76,16 +76,16 @@ export const Links: Story = {
   args: {
     action: {
       icon: LinkIcon,
-      label: 'Adicionar link',
+      label: 'Add link',
       onSelect: () => undefined,
     },
-    ariaLabel: 'Links do registro',
+    ariaLabel: 'Record links',
     children: (
       <AttachmentProperty
         href="#playbook"
-        label="Playbook do atendimento"
+        label="Support playbook"
         onRemove={() => undefined}
-        removeLabel="Remover Playbook do atendimento"
+        removeLabel="Remove Support playbook"
         type="link"
       />
     ),
@@ -94,7 +94,7 @@ export const Links: Story = {
     docs: {
       description: {
         story:
-          'Arquivo e link não dividem a mesma fileira: cada uma tem seu rótulo e seu único caminho de adição — é assim que a feature Documents compõe as duas.',
+          'Files and links do not share a row: each has its own label and its single add path, which is how the Documents feature composes the two.',
       },
     },
   },
@@ -105,7 +105,7 @@ export const ReadOnly: Story = {
     children: (
       <AttachmentProperty
         href="#playbook"
-        label="Playbook do atendimento"
+        label="Support playbook"
         type="link"
       />
     ),
@@ -114,7 +114,7 @@ export const ReadOnly: Story = {
     docs: {
       description: {
         story:
-          'Sem `action` o gatilho some, e sem `onRemove` o chip perde o `×` — é o estado de quem lista anexos sem poder mexer neles.',
+          'Without `action` the trigger disappears, and without `onRemove` the chip loses its `×`. This is the state for listing attachments without being able to change them.',
       },
     },
   },
@@ -127,7 +127,7 @@ export const Empty: Story = {
   args: {
     action: {
       icon: PaperclipIcon,
-      label: 'Anexar arquivo',
+      label: 'Attach file',
       onSelect: () => undefined,
     },
   },
@@ -135,13 +135,13 @@ export const Empty: Story = {
     docs: {
       description: {
         story:
-          'Sem anexos ainda, o gatilho aparece por extenso — um `+` sozinho não diria o que adiciona.',
+          'With no attachments yet, the trigger shows its full label, since a lone `+` would not say what it adds.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     await expect(canvasElement.querySelector('button')?.textContent).toContain(
-      'Anexar arquivo',
+      'Attach file',
     )
   },
 }
@@ -151,16 +151,16 @@ export const Types: Story = {
     docs: {
       description: {
         story:
-          'Um chip por tipo do catálogo. Todos terminam no mesmo `×`: `anchor` e `download` decidem só como o destino abre, não a afordância da direita.',
+          'One chip per catalog type. All end in the same `×`: `anchor` and `download` only decide how the target opens, not the affordance on the right.',
       },
     },
   },
   play: async ({ canvasElement }) => {
-    const tipos = [
+    const types = [
       ...canvasElement.querySelectorAll('[data-slot="attachment-type-icon"]'),
     ].map((icon) => icon.getAttribute('data-attachment-type'))
 
-    await expect(tipos).toEqual(['pdf', 'doc', 'audio', 'link'])
+    await expect(types).toEqual(['pdf', 'doc', 'audio', 'link'])
     await expect(canvasElement.querySelectorAll('a[download]')).toHaveLength(3)
     await expect(
       canvasElement.querySelectorAll(
@@ -172,33 +172,33 @@ export const Types: Story = {
     <AttachmentsProperty {...args}>
       <AttachmentProperty
         action="download"
-        href="#proposta"
-        label="Proposta comercial.pdf"
+        href="#proposal"
+        label="Commercial proposal.pdf"
         onRemove={() => undefined}
-        removeLabel="Remover Proposta comercial.pdf"
+        removeLabel="Remove Commercial proposal.pdf"
         type="pdf"
       />
       <AttachmentProperty
         action="download"
         href="#playbook"
-        label="Playbook de onboarding"
+        label="Onboarding playbook"
         onRemove={() => undefined}
-        removeLabel="Remover Playbook de onboarding"
+        removeLabel="Remove Onboarding playbook"
         type="doc"
       />
       <AttachmentProperty
         action="download"
-        href="#gravacao"
-        label="Gravação da reunião"
+        href="#recording"
+        label="Meeting recording"
         onRemove={() => undefined}
-        removeLabel="Remover Gravação da reunião"
+        removeLabel="Remove Meeting recording"
         type="audio"
       />
       <AttachmentProperty
         href="#linkedin"
-        label="Perfil no LinkedIn"
+        label="LinkedIn profile"
         onRemove={() => undefined}
-        removeLabel="Remover Perfil no LinkedIn"
+        removeLabel="Remove LinkedIn profile"
         type="link"
       />
     </AttachmentsProperty>

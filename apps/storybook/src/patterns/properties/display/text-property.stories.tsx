@@ -51,16 +51,16 @@ export const Plain: Story = {
 
 export const WithCopy: Story = {
   args: {
-    ariaLabel: 'E-mail',
-    copyLabel: 'Copiar e-mail do contato',
+    ariaLabel: 'Email',
+    copyLabel: 'Copy contact email',
     icon: MailIcon,
-    value: 'mariana@exemplo.com.br',
+    value: 'mariana@example.com',
   },
   parameters: {
     docs: {
       description: {
         story:
-          '`copyLabel` acende a afordância de cópia à direita do valor, na mesma anatomia do `×` de `AttachmentProperty`: um ícone dentro da própria pílula, não um controle ao lado dela. A escrita na área de transferência é da property; ao consumidor cabe nomear o que está sendo copiado.',
+          "`copyLabel` turns on the copy affordance to the right of the value, in the same anatomy as the `×` of `AttachmentProperty`: an icon inside the pill itself, not a control beside it. Writing to the clipboard is the property's job; the consumer only names what is being copied.",
       },
     },
   },
@@ -71,11 +71,9 @@ export const WithCopy: Story = {
     )
 
     await expect(
-      canvas.getByRole('button', { name: 'Copiar e-mail do contato' }),
+      canvas.getByRole('button', { name: 'Copy contact email' }),
     ).toBeVisible()
-    // Filho de `img` é presentacional: se a superfície virasse `img`, o botão
-    // sairia da árvore de acessibilidade mesmo estando no DOM. `getByRole`
-    // sozinho não pega isso — por isso o papel da superfície é afirmado aqui.
+    // Children of `img` are presentational, so an `img` surface would hide the button from the a11y tree; `getByRole` alone misses that.
     await expect(surface?.getAttribute('role')).not.toBe('img')
     await expect(surface?.getAttribute('role')).toBe('group')
   },
@@ -83,24 +81,24 @@ export const WithCopy: Story = {
 
 export const WithCopyOnHover: Story = {
   args: {
-    ariaLabel: 'E-mail',
-    copyLabel: 'Copiar e-mail do contato',
+    ariaLabel: 'Email',
+    copyLabel: 'Copy contact email',
     trailingVisibility: 'hover',
     icon: MailIcon,
-    value: 'mariana@exemplo.com.br',
+    value: 'mariana@example.com',
   },
   parameters: {
     docs: {
       description: {
         story:
-          "`trailingVisibility='hover'` guarda a afordância até o ponteiro chegar, e o espaço dela continua reservado — a fileira não salta. Serve à lateral onde toda fileira oferece a mesma ação e a coluna de ícones repetidos disputa a leitura com os valores. Teclado e toque continuam alcançando: `focus-within` e `pointer-coarse` revelam sem hover.",
+          "`trailingVisibility='hover'` hides the affordance until the pointer arrives, and its space stays reserved, so the row does not jump. It suits the sidebar where every row offers the same action and a column of repeated icons competes with the values for attention. Keyboard and touch still reach it: `focus-within` and `pointer-coarse` reveal it without hover.",
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const copyButton = canvas.getByRole('button', {
-      name: 'Copiar e-mail do contato',
+      name: 'Copy contact email',
     })
     const affordance = canvasElement.querySelector<HTMLElement>(
       '[data-slot="property-trailing"]',
@@ -109,14 +107,11 @@ export const WithCopyOnHover: Story = {
     await expect(affordance).not.toBeNull()
     if (!affordance) return
 
-    // Em repouso a afordância não se vê, mas continua ocupando o espaço dela: a
-    // fileira não salta quando ela aparece.
+    // At rest the affordance is invisible but still takes up its space, so the row does not jump when it appears.
     await expect(getComputedStyle(affordance).opacity).toBe('0')
     await expect(affordance.getBoundingClientRect().width).toBeGreaterThan(0)
 
-    // O caminho do teclado é o que esta story protege. O do ponteiro não cabe
-    // aqui: `userEvent.hover` despacha evento sintético, e `:hover` do CSS só
-    // responde a ponteiro real — a revelação por hover se confere no navegador.
+    // `userEvent.hover` dispatches a synthetic event and CSS `:hover` only responds to a real pointer, so only the keyboard path is covered here.
     copyButton.focus()
     await waitFor(() => expect(getComputedStyle(affordance).opacity).toBe('1'))
   },
@@ -134,7 +129,7 @@ export const Empty: Story = {
     docs: {
       description: {
         story:
-          'Sem valor, a cópia não aparece mesmo pedida: copiar o texto de ausência entregaria "No category" à área de transferência.',
+          'With no value the copy affordance does not show even when requested: copying the absence text would put "No category" on the clipboard.',
       },
     },
   },
@@ -146,16 +141,15 @@ export const Empty: Story = {
     await expect(
       canvasElement.querySelector('[data-slot="text-property-copy"]'),
     ).toBeNull()
-    // Ausência recua para o tom de placeholder: sem isso o fallback se lê com o
-    // mesmo peso de um valor preenchido.
+    // Absence recedes to the placeholder tone, otherwise the fallback reads with the same weight as a filled value.
     await expect(surface?.dataset.empty).toBe('true')
   },
 }
 
 export const EmptyWithTrigger: Story = {
   args: {
-    ariaLabel: 'Telefone',
-    fallback: 'Sem telefone',
+    ariaLabel: 'Phone',
+    fallback: 'No phone',
     icon: PhoneIcon,
     inputPlaceholder: '+55 81 3333-0000',
     onCommit: fn(),
@@ -165,51 +159,51 @@ export const EmptyWithTrigger: Story = {
     docs: {
       description: {
         story:
-          'Vazia e editável, a property oferece o preenchimento em vez de só declarar a ausência — é a mesma anatomia do `+` de `TagsProperty` e do gatilho de `EmailProperty`. Clicar troca o gatilho pelo campo, no lugar.',
+          'Empty and editable, the property offers to be filled instead of just declaring absence, in the same anatomy as the `+` of `TagsProperty` and the trigger of `EmailProperty`. Clicking swaps the trigger for the field, in place.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Sem telefone' }))
+    await userEvent.click(canvas.getByRole('button', { name: 'No phone' }))
     const field = await canvas.findByRole<HTMLInputElement>('textbox', {
-      name: 'Telefone',
+      name: 'Phone',
     })
 
     await expect(field).toBeVisible()
-    // O gatilho dizia que não há valor; o campo ensina como o valor se escreve.
+    // The trigger said there is no value; the field shows how the value is written.
     await expect(field.placeholder).toBe('+55 81 3333-0000')
   },
 }
 
 export const EditableInline: Story = {
   args: {
-    ariaLabel: 'E-mail',
+    ariaLabel: 'Email',
     editing: 'inline',
-    fallback: 'Sem e-mail',
+    fallback: 'No email',
     icon: MailIcon,
     onCommit: fn(),
-    value: 'mariana@exemplo.com.br',
+    value: 'mariana@example.com',
   },
   parameters: {
     docs: {
       description: {
         story:
-          'O campo ocupa o lugar do valor desde o início: clicar já é escrever, sem gatilho intermediário. Serve à unidade que é vitrine de um cadastro, onde a fileira existe para ser preenchida. O commit é no `blur`, contrato de `EditableText`.',
+          "The field takes the value's place from the start: clicking is already writing, with no intermediate trigger. It suits a unit that is the showcase of a record, where the row exists to be filled. Commit happens on `blur`, per the `EditableText` contract.",
       },
     },
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement)
-    const field = canvas.getByRole('textbox', { name: 'E-mail' })
+    const field = canvas.getByRole('textbox', { name: 'Email' })
 
     await userEvent.clear(field)
-    await userEvent.type(field, 'nova@exemplo.com.br')
+    await userEvent.type(field, 'new@example.com')
     await userEvent.tab()
 
     await waitFor(() =>
-      expect(args.onCommit).toHaveBeenCalledWith('nova@exemplo.com.br'),
+      expect(args.onCommit).toHaveBeenCalledWith('new@example.com'),
     )
   },
 }
