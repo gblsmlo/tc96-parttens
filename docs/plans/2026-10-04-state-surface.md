@@ -1,6 +1,6 @@
 # State Surface: portar `StateSurface` e `StateGuard` do Lemind
 
-Status: pesquisa, planejamento e implementação concluídos em 2026-10-04; validação independente pendente.
+Status: pesquisa, planejamento, implementação e validação concluídos em 2026-10-04.
 
 Referência canônica: [arquitetura e decisões](../architecture/tc96-parttens.md).
 
@@ -164,6 +164,7 @@ Leituras esperadas:
 - D16 (dono). Ícone via `IconFrame`, `shape="rounded"`, `variant="color"`, `size="xl"`. `error` e `permission` passam `color="var(--destructive)"`, sem classe de fundo; `empty`, `no-result` e `not-found` não passam `color` e usam `bg-muted/60` com o tom padrão. O mapa é `STATE_SURFACE_ICON_COLORS` em `core.ts`.
 - D17 (fecha o cenário 7 em escuro). A descrição em escuro mede 4,44:1, abaixo de 4.5:1. Ela é o `EmptyDescription` do COSS sem alteração sobre o `--muted-foreground` do tema de exemplo, então fica como nota de token para o consumidor (`tc96-parttens.md`), sem override no pattern nem mudança no tema nesta unidade.
 - D18 (dono). A story `Data` do `StateGuard` foi removida: sem visual próprio, ela só repetia o filho. A montagem em `data` segue coberta pelo teste unitário do cenário 5.
+- D19 (planejamento, achado da validação). O cenário 8 passa a exigir teste executável do item construído: o item `state-surface` existe, `registryDependencies` só tem componentes COSS e os arquivos incluem `elements/src/icon-frame.tsx`. A Task pedia só o teste de seleção em `manifest.test.ts`, abaixo do "Pronto quando" da Story.
 
 ### Acompanhamento (fora deste plano)
 
@@ -173,11 +174,11 @@ Leituras esperadas:
 ## Envelope
 
 ```yaml
-pilar: implementacao
-resultado: pattern state-surface com StateSurface e StateGuard, registrado no registry, na API pública, nas stories e na documentação
+pilar: validacao
+resultado: aprovado por revisão independente após uma rodada de correção (achados 1 a 4 fechados)
 artefato: branch feat/state-surface
-evidencia: biome, typecheck, storybook:typecheck, bun test state-surface (21), check:coss, boundaries:check, overrides:check, verify:public-api, test:registry, build:registry, vitest storybook state-surface com axe (tema claro), contraste claro e escuro
-decisoes: [D16, D17, D18]
-lacunas: [G5, G6, axe não rodou em escuro, bun run check completo não rodou]
-proximo: workflow-validation
+evidencia: bun run check verde (13 etapas, 296 testes de story com axe no tema claro, 0 falhas, 0 pulados), test:registry 27, bun test state-surface 21, vitest storybook state-surface 12
+decisoes: [D16, D17, D18, D19]
+lacunas: [G5 (#60), G6 (#59), axe só no tema claro (#58), contraste escuro da descrição (#57)]
+proximo: fechado tecnicamente; push e PR com o dono
 ```
