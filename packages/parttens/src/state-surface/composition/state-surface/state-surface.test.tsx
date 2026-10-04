@@ -49,6 +49,7 @@ describe('StateSurface', () => {
     expect(frame?.getAttribute('aria-hidden')).toBe('true')
     expect(frame?.getAttribute('data-shape')).toBe('rounded')
     expect(frame?.getAttribute('data-variant')).toBe('color')
+    expect(frame?.getAttribute('data-size')).toBe('xl')
     expect(frame?.querySelector('svg')).toBeTruthy()
     expect(frame?.className).toContain('bg-muted/60')
     expect(frame?.className).not.toContain('bg-muted ')
@@ -65,6 +66,7 @@ describe('StateSurface', () => {
 
       expect(frame?.getAttribute('data-shape')).toBe('rounded')
       expect(frame?.getAttribute('data-variant')).toBe('color')
+      expect(frame?.getAttribute('data-size')).toBe('xl')
       expect(style).toContain('var(--destructive)')
       expect(style).toContain('background-color')
       expect(frame?.className).not.toContain('bg-muted/60')
@@ -109,6 +111,7 @@ describe('StateSurface', () => {
     fireEvent.click(button)
 
     expect(pressed).toEqual(['retry'])
-    expect(button.className).toContain('destructive')
+    expect(button.getAttribute('data-slot')).toBe('button')
+    expect(button.className.split(' ')).toContain('bg-destructive')
   })
 })

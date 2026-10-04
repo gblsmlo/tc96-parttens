@@ -83,9 +83,11 @@ export const CustomIcon: Story = {
   },
 }
 
+const onRetry = fn()
+
 export const Interaction: Story = {
   args: {
-    actions: <Button onClick={fn()}>Try again</Button>,
+    actions: <Button onClick={onRetry}>Try again</Button>,
     kind: 'error',
     title: 'Something went wrong',
   },
@@ -97,6 +99,7 @@ export const Interaction: Story = {
       'error',
     )
     await userEvent.click(canvas.getByRole('button', { name: 'Try again' }))
+    await expect(onRetry).toHaveBeenCalledTimes(1)
   },
   tags: ['!dev', '!autodocs'],
 }

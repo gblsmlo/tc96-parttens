@@ -1,4 +1,7 @@
 import { expect, test } from 'bun:test'
+import { spawnSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import {
   assertDistributable,
   combineItems,
@@ -193,4 +196,28 @@ test('combines COSS dependencies and leaves out the installed ones', () => {
     omitInstalled(combined, (component) => installed.has(component))
       .registryDependencies,
   ).toEqual(['@coss/empty'])
+})
+
+test('builds the state-surface item with COSS-only dependencies and no test files', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/state-surface.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('state-surface')
+  expect(item.registryDependencies?.length).toBeGreaterThan(0)
+  expect(
+    item.registryDependencies?.every((dependency) =>
+      dependency.startsWith('@coss/'),
+    ),
+  ).toBe(true)
+  expect(paths).toContain('elements/src/icon-frame.tsx')
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
