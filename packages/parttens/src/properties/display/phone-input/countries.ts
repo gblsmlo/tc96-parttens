@@ -9,7 +9,6 @@ import countryNames from 'react-phone-number-input/locale/pt-BR.json'
 export type PhoneCountryCode = Country
 
 export interface PhoneCountry {
-  /** Código de discagem sem o `+`, como `55`. */
   callingCode: string
   code: PhoneCountryCode
   flag: NonNullable<(typeof flags)[Country]> | undefined

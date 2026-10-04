@@ -5,8 +5,10 @@ await import('../../test/dom')
 const { cleanup, fireEvent, render, screen, waitFor } = await import(
   '@testing-library/react'
 )
-const { DateProperty, formatDateProperty, serializeDatePropertyValue } =
-  await import('./date-property')
+const { DateProperty } = await import('./date-property')
+const { formatDateProperty, serializeDatePropertyValue } = await import(
+  './date-value'
+)
 
 afterEach(cleanup)
 
@@ -91,6 +93,34 @@ describe('DateProperty', () => {
         previous: '2026-06-19T12:00:00.000Z',
       },
     ])
+  })
+
+  test('renders an empty value as the filled badge with muted text, like the attachments trigger', () => {
+    const surface = () =>
+      screen
+        .getByText('Sem data')
+        .closest<HTMLElement>('button, [data-slot="property-surface"]')
+
+    const { rerender } = render(<DateProperty readOnly value={null} />)
+    expect(surface()?.className).toContain('bg-secondary')
+    expect(surface()?.className).toContain('text-muted-foreground')
+    expect(surface()?.className).not.toContain('border-input')
+
+    rerender(<DateProperty onValueChange={() => undefined} value={null} />)
+    expect(surface()?.className).toContain('bg-secondary')
+    expect(surface()?.className).toContain('text-muted-foreground')
+    expect(surface()?.className).not.toContain('border-input')
+
+    rerender(
+      <DateProperty
+        locale="en-US"
+        onValueChange={() => undefined}
+        value="2026-06-19T12:00:00.000Z"
+      />,
+    )
+    expect(
+      screen.getByText('Jun 19').closest('button')?.className,
+    ).not.toContain('text-muted-foreground')
   })
 
   test('formats invalid or empty values with the fallback', () => {

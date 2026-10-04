@@ -1,4 +1,4 @@
-import { getInitials } from '@tc96/helpers/initials'
+import { resolveInitials } from '@tc96/helpers/initials'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement } from 'react'
@@ -50,9 +50,7 @@ export function AvatarStack({
             {person.imageUrl ? (
               <AvatarImage alt="" src={person.imageUrl} />
             ) : null}
-            <AvatarFallback>
-              {person.fallback ?? getInitials(person.label)}
-            </AvatarFallback>
+            <AvatarFallback>{resolveInitials(person)}</AvatarFallback>
           </Avatar>
           <span className="sr-only">{person.label}</span>
         </li>

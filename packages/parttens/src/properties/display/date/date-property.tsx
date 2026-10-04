@@ -1,26 +1,24 @@
 'use client'
 
-import {
-  formatShortDate,
-  parseIsoDate,
-  serializeIsoDay,
-} from '@tc96/helpers/date'
-import { Button } from '@tc96/ui/button'
 import { Calendar } from '@tc96/ui/calendar'
-import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
 import { CalendarDaysIcon } from 'lucide-react'
-import type React from 'react'
 import { useState } from 'react'
+import { emitChange, isEditable } from '../../shared/lib/property-change'
 import {
-  PropertySurface,
-  type PropertyVariant,
-} from '../../shared/property-surface'
+  PropertyCalendarPopover,
+  type PropertyCalendarProps,
+  type PropertyPopoverDropdownPlacement,
+} from '../../shared/property-calendar-popover'
+import type { PropertyVariant } from '../../shared/property-surface'
+import { IconLabelProperty } from '../icon-label/icon-label-property'
+import {
+  formatDateProperty,
+  parseDatePropertyValue,
+  serializeDatePropertyValue,
+} from './date-value'
 
-export type DatePropertyDropdownPlacement = Pick<
-  React.ComponentProps<typeof PopoverPopup>,
-  'align' | 'alignOffset' | 'side' | 'sideOffset'
->
+export type DatePropertyDropdownPlacement = PropertyPopoverDropdownPlacement
 
 export interface DatePropertyActionContext {
   date: Date | null
@@ -32,10 +30,7 @@ export interface DatePropertyProps {
   action?: (value: string | null, context: DatePropertyActionContext) => void
   allowClear?: boolean
   ariaLabel?: string
-  calendarProps?: Omit<
-    React.ComponentProps<typeof Calendar>,
-    'defaultMonth' | 'mode' | 'onSelect' | 'selected'
-  >
+  calendarProps?: PropertyCalendarProps
   className?: string
   clearLabel?: string
   fallback?: string
@@ -74,26 +69,18 @@ export function DateProperty({
   const [open, setOpen] = useState(false)
   const selectedDate = parseDatePropertyValue(value)
   const accessibleLabel = ariaLabel ?? 'Date'
-  const canUpdate = Boolean(action ?? onValueChange)
 
   const handleChange = (nextValue: string | null, date: Date | null) => {
-    if (nextValue === value) {
-      setOpen(false)
-      return
-    }
-
-    if (action) {
-      action(nextValue, {
+    if (nextValue !== value) {
+      emitChange({ action, onValueChange }, nextValue, {
         date,
         previousValue: value,
       })
-    } else {
-      onValueChange?.(nextValue)
     }
     setOpen(false)
   }
 
-  if (readOnly || !canUpdate) {
+  if (!isEditable({ action, onValueChange, readOnly })) {
     return (
       <DatePropertyBadge
         className={className}
@@ -112,57 +99,37 @@ export function DateProperty({
     displayLabel ?? formatDateProperty(value, fallback, locale, timeZone)
 
   return (
-    <Popover onOpenChange={setOpen} open={open}>
-      <PopoverTrigger
-        aria-label={`${accessibleLabel}: ${label}`}
-        disabled={disabled}
-        render={
-          <PropertySurface
-            className={cn(
-              'max-w-full',
-              isOverdue ? 'font-medium' : undefined,
-              className,
-            )}
-            muted={!value}
-            render={<button type="button" />}
-            variant={variant}
-          />
-        }
-      >
-        <DatePropertyContent label={label} />
-      </PopoverTrigger>
-      <PopoverPopup
-        align="start"
-        aria-label={accessibleLabel}
-        className="w-auto"
-        side="bottom"
-        {...dropdownPlacement}
-      >
-        <Calendar
-          defaultMonth={selectedDate ?? undefined}
-          mode="single"
-          selected={selectedDate ?? undefined}
-          onSelect={(date) => {
-            if (!date) return
-            handleChange(serializeDate(date), date)
-          }}
-          {...calendarProps}
-        />
-        {allowClear ? (
-          <div className="border-t p-2">
-            <Button
-              className="w-full justify-start"
-              size="sm"
-              type="button"
-              variant="ghost"
-              onClick={() => handleChange(null, null)}
-            >
-              {clearLabel}
-            </Button>
-          </div>
-        ) : null}
-      </PopoverPopup>
-    </Popover>
+    <PropertyCalendarPopover
+      ariaLabel={accessibleLabel}
+      className={cn(
+        isOverdue && 'font-medium',
+        !value && 'text-muted-foreground',
+        className,
+      )}
+      clear={
+        allowClear
+          ? { label: clearLabel, onClear: () => handleChange(null, null) }
+          : undefined
+      }
+      disabled={disabled}
+      dropdownPlacement={dropdownPlacement}
+      icon={CalendarDaysIcon}
+      label={label}
+      onOpenChange={setOpen}
+      open={open}
+      variant={variant}
+    >
+      <Calendar
+        defaultMonth={selectedDate ?? undefined}
+        mode="single"
+        selected={selectedDate ?? undefined}
+        onSelect={(date) => {
+          if (!date) return
+          handleChange(serializeDate(date), date)
+        }}
+        {...calendarProps}
+      />
+    </PropertyCalendarPopover>
   )
 }
 
@@ -192,45 +159,15 @@ export function DatePropertyBadge({
     displayLabel ?? formatDateProperty(value, fallback, locale, timeZone)
 
   return (
-    <PropertySurface
+    <IconLabelProperty
       className={cn(
-        'max-w-full',
-        isOverdue ? 'font-medium' : undefined,
+        isOverdue && 'font-medium',
+        !value && 'text-muted-foreground',
         className,
       )}
-      muted={!value}
+      icon={CalendarDaysIcon}
+      label={label}
       variant={variant}
-    >
-      <DatePropertyContent label={label} />
-    </PropertySurface>
+    />
   )
-}
-
-function DatePropertyContent({ label }: Readonly<{ label: string }>) {
-  return (
-    <>
-      <CalendarDaysIcon aria-hidden className="size-3" />
-      <span className="truncate">{label}</span>
-    </>
-  )
-}
-
-export function formatDateProperty(
-  value: string | null,
-  fallback: string,
-  locale: string,
-  timeZone: string,
-): string {
-  const date = parseIsoDate(value)
-  // Sem ano: numa propriedade a data é referência curta, e o ano ocupa metade da
-  // pílula para dizer o que quase sempre já se sabe.
-  return date ? formatShortDate(date, locale, timeZone) : fallback
-}
-
-export function parseDatePropertyValue(value: string | null): Date | null {
-  return parseIsoDate(value)
-}
-
-export function serializeDatePropertyValue(date: Date): string {
-  return serializeIsoDay(date)
 }

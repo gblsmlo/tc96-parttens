@@ -11,11 +11,6 @@ export interface PropertyPreset<TValue extends string> {
   value: TValue
 }
 
-/**
- * Os tons vêm dos tokens de tema, não da paleta fixa: `--*-foreground` é `700`
- * no claro e `400` no escuro, enquanto um `text-*-500` literal ficava igual nos
- * dois e perdia contraste sobre o fundo claro.
- */
 export const propertyToneClassName: Record<PropertyTone, string> = {
   danger: 'text-destructive-foreground',
   info: 'text-info-foreground',

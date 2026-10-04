@@ -141,6 +141,62 @@ describe('TagsProperty', () => {
     expect(values).toEqual([['documents', 'return']])
   })
 
+  test('gives action the added option and runs it instead of onValueChange', async () => {
+    const calls: unknown[] = []
+    const values: string[][] = []
+    render(
+      <TagsProperty
+        action={(value, context) => calls.push({ context, value })}
+        onValueChange={(value) => values.push(Array.from(value))}
+        options={options}
+        value={['documents']}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar tag' }))
+    const option = await screen.findByRole('option', { name: 'Retorno' })
+    fireEvent.pointerDown(option, { pointerType: 'mouse' })
+    fireEvent.click(option)
+
+    expect(values).toEqual([])
+    expect(calls).toEqual([
+      {
+        context: {
+          added: options[1],
+          previousValue: ['documents'],
+          removed: null,
+        },
+        value: ['documents', 'return'],
+      },
+    ])
+  })
+
+  test('gives action the removed option when a chip is removed', () => {
+    const calls: unknown[] = []
+    render(
+      <TagsProperty
+        action={(value, context) => calls.push({ context, value })}
+        options={options}
+        value={['documents', 'return']}
+      />,
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Remover tag Documentos' }),
+    )
+
+    expect(calls).toEqual([
+      {
+        context: {
+          added: null,
+          previousValue: ['documents', 'return'],
+          removed: options[0],
+        },
+        value: ['return'],
+      },
+    ])
+  })
+
   test('opens the available options without a search field', async () => {
     render(
       <TagsProperty

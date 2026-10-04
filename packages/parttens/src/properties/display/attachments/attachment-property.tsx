@@ -11,24 +11,11 @@ export interface AttachmentPropertyProps
   extends Omit<ComponentPropsWithoutRef<'a'>, 'children' | 'download'> {
   action?: 'anchor' | 'download'
   label: ReactNode
-  /** Ausente, o anexo não oferece remoção — é o chip de quem só pode ler. */
   onRemove?: () => void
   removeLabel?: string
   type?: AttachmentType
 }
 
-/**
- * Um anexo é uma property navegável, na anatomia do chip de `TagsProperty`:
- * ícone de tipo à esquerda, rótulo, e o `×` de remover à direita. O pill é o
- * wrapper e o link mora dentro dele — botão dentro de âncora é marcação
- * inválida, e o leitor de tela anunciaria um controle só.
- *
- * A afordância da direita é sempre a mesma, remover; `anchor` e `download`
- * decidem só como o destino abre. Um ícone de download ali competiria com o `×`
- * pelo mesmo canto e faria dois chips iguais parecerem diferentes.
- *
- * Singular é o item; `AttachmentsProperty` é a fileira que o hospeda.
- */
 export function AttachmentProperty({
   action = 'anchor',
   className,

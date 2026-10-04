@@ -1,34 +1,29 @@
 'use client'
 
 import { Button } from '@tc96/ui/button'
-import {
-  Combobox,
-  ComboboxChip,
-  ComboboxChips,
-  ComboboxEmpty,
-  ComboboxItem,
-  ComboboxList,
-  ComboboxPopup,
-  ComboboxStatus,
-} from '@tc96/ui/combobox'
 import { cn } from '@tc96/utils'
-import { PlusIcon, TagIcon } from 'lucide-react'
-import type React from 'react'
-import { useMemo, useState } from 'react'
+import { TagIcon } from 'lucide-react'
+import { useMemo } from 'react'
+import { emitChange, isEditable } from '../../shared/lib/property-change'
+import { resolveOptions } from '../../shared/lib/property-options'
+import {
+  type PropertyMultiSelectDropdownPlacement,
+  PropertyMultiSelectShell,
+} from '../../shared/property-multi-select-shell'
+import { PropertyRow } from '../../shared/property-row'
 import {
   PropertySurface,
   type PropertyVariant,
 } from '../../shared/property-surface'
+
+const addTagLabel = 'Adicionar tag'
 
 export interface TagsPropertyOption<TValue extends string = string> {
   label: string
   value: TValue
 }
 
-export type TagsPropertyDropdownPlacement = Pick<
-  React.ComponentProps<typeof ComboboxPopup>,
-  'align' | 'alignOffset' | 'side' | 'sideOffset'
->
+export type TagsPropertyDropdownPlacement = PropertyMultiSelectDropdownPlacement
 
 export interface TagsPropertyActionContext<TValue extends string = string> {
   added: TagsPropertyOption<TValue> | null
@@ -46,10 +41,6 @@ export interface TagsPropertyProps<TValue extends string = string> {
   ariaLabel?: string
   className?: string
   disabled?: boolean
-  /**
-   * `chips` mostra cada tag; `count` mostra só a quantidade num gatilho compacto,
-   * para a linha de uma coleção, onde a largura pertence às outras propriedades.
-   */
   display?: 'chips' | 'count'
   dropdownPlacement?: TagsPropertyDropdownPlacement
   isLoading?: boolean
@@ -74,31 +65,19 @@ export function TagsProperty<TValue extends string = string>({
   value,
   variant = 'plain',
 }: Readonly<TagsPropertyProps<TValue>>) {
-  const [open, setOpen] = useState(false)
   const selectedOptions = useMemo(
-    () =>
-      value.map(
-        (selectedValue) =>
-          options.find((option) => option.value === selectedValue) ?? {
-            label: selectedValue,
-            value: selectedValue,
-          },
-      ),
+    () => resolveOptions(options, value),
     [options, value],
   )
-  const canUpdate = Boolean(action ?? onValueChange)
 
-  if (readOnly || !canUpdate) {
+  if (!isEditable({ action, onValueChange, readOnly })) {
     return (
-      <fieldset
-        aria-label={ariaLabel}
-        className={cn(
-          'm-0 flex min-w-0 flex-wrap gap-1 border-0 p-0',
-          className,
-        )}
+      <PropertyRow
+        ariaLabel={ariaLabel}
+        className={cn('flex flex-wrap gap-1', className)}
         data-display={display}
-        data-slot="tags-property"
-        data-variant={variant}
+        slot="tags-property"
+        variant={variant}
       >
         {display === 'count' ? (
           <PropertySurface variant={variant}>
@@ -116,7 +95,7 @@ export function TagsProperty<TValue extends string = string>({
             {placeholder}
           </PropertySurface>
         )}
-      </fieldset>
+      </PropertyRow>
     )
   }
 
@@ -130,110 +109,44 @@ export function TagsProperty<TValue extends string = string>({
       data-slot="tags-property"
       data-variant={variant}
     >
-      <Combobox<TagsPropertyOption<TValue>, true>
-        autoHighlight
+      <PropertyMultiSelectShell
+        addIcon={TagIcon}
+        addLabel={addTagLabel}
+        ariaLabel={ariaLabel}
         disabled={disabled}
-        itemToStringLabel={(option) => option.label}
-        itemToStringValue={(option) => option.value}
-        items={options}
-        multiple
-        onOpenChange={setOpen}
-        onValueChange={(nextOptions) => {
-          const nextValue = nextOptions.map((option) => option.value)
-          const previousValues = new Set(value)
-          const nextValues = new Set(nextValue)
-          const added =
-            nextOptions.find((option) => !previousValues.has(option.value)) ??
-            null
-          const removed =
-            selectedOptions.find((option) => !nextValues.has(option.value)) ??
-            null
-
-          if (action) {
-            action(nextValue, { added, previousValue: value, removed })
-            return
-          }
-          onValueChange?.(nextValue)
-        }}
-        open={open}
-        value={selectedOptions}
-      >
-        {display === 'count' ? (
-          <Button
-            aria-label={ariaLabel}
-            className="gap-1 px-1.5"
-            disabled={disabled}
-            onClick={() => setOpen(true)}
-            size="sm"
-            type="button"
-            variant="ghost"
-          >
-            <TagIcon aria-hidden="true" />
-            <span className="tabular-nums">{selectedOptions.length}</span>
-          </Button>
-        ) : (
-          <ComboboxChips
-            className={cn(
-              variant === 'plain' &&
-                'min-h-7 border-transparent! bg-transparent! p-0 shadow-none! before:hidden sm:min-h-6',
-            )}
-          >
-            {selectedOptions.map((option) => (
-              <ComboboxChip
-                key={option.value}
-                removeProps={{ 'aria-label': `Remover tag ${option.label}` }}
-              >
-                {option.label}
-              </ComboboxChip>
-            ))}
-            {/* Sem tag nenhuma o gatilho precisa se explicar, e vira um chip
-                rotulado. Com tags na fileira o contexto já está dado: sobra o
-                sinal de adicionar, sem repetir a palavra ao lado de cada uma. */}
-            <Button
-              aria-label={
-                selectedOptions.length > 0 ? 'Adicionar tag' : undefined
-              }
-              // `Button` traz `[&_svg]:-mx-0.5`; ao lado dos chips isso cola o
-              // glifo no rótulo. O tamanho explícito no ícone desliga a escala
-              // do Button, e a margem volta a zero.
-              className={cn(
-                '[&_svg]:mx-0',
-                selectedOptions.length > 0 ? 'size-6 px-0' : 'gap-1',
-              )}
-              disabled={disabled}
-              onClick={() => setOpen(true)}
-              size="xs"
-              type="button"
-              variant="secondary"
-            >
-              {selectedOptions.length > 0 ? (
-                <PlusIcon aria-hidden="true" className="size-3.5" />
-              ) : (
-                <>
-                  <TagIcon aria-hidden="true" className="size-3.5" />
-                  Adicionar tag
-                </>
-              )}
-            </Button>
-          </ComboboxChips>
-        )}
-        <ComboboxPopup
-          {...dropdownPlacement}
-          align={dropdownPlacement?.align ?? 'end'}
-          aria-label={ariaLabel}
-          className="w-64 min-w-0! max-w-[calc(100vw-2rem)]"
-        >
-          {isLoading ? <ComboboxStatus>Carregando tags…</ComboboxStatus> : null}
-          <ComboboxEmpty>Nenhuma tag encontrada.</ComboboxEmpty>
-          <ComboboxList aria-label={ariaLabel}>
-            {(option) => (
-              <ComboboxItem key={option.value} value={option}>
-                {option.label}
-              </ComboboxItem>
-            )}
-          </ComboboxList>
-        </ComboboxPopup>
-      </Combobox>
+        dropdownPlacement={dropdownPlacement}
+        emptyLabel="Nenhuma tag encontrada."
+        isLoading={isLoading}
+        loadingLabel="Carregando tags…"
+        onChange={(nextValue, change) =>
+          emitChange({ action, onValueChange }, nextValue, change)
+        }
+        options={options}
+        placeholder={addTagLabel}
+        removeLabel={(option) => `Remover tag ${option.label}`}
+        renderOption={(option) => option.label}
+        renderTrigger={
+          display === 'count'
+            ? ({ open }) => (
+                <Button
+                  aria-label={ariaLabel}
+                  className="gap-1 px-1.5"
+                  disabled={disabled}
+                  onClick={open}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  <TagIcon aria-hidden="true" />
+                  <span className="tabular-nums">{selectedOptions.length}</span>
+                </Button>
+              )
+            : undefined
+        }
+        selectedOptions={selectedOptions}
+        value={value}
+        variant={variant}
+      />
     </div>
   )
 }

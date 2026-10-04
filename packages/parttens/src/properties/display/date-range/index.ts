@@ -1,6 +1,6 @@
+export { formatDateRangeProperty } from './date-range-format'
 export {
   type DateRange,
   DateRangeProperty,
   type DateRangePropertyProps,
-  formatDateRangeProperty,
 } from './date-range-property'

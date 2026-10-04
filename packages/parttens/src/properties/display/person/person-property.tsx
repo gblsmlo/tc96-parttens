@@ -1,10 +1,10 @@
 'use client'
 
-import { getInitials } from '@tc96/helpers/initials'
-import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { SelectItem } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
-import { UserIcon, UserPlusIcon } from 'lucide-react'
+import { UserPlusIcon } from 'lucide-react'
+import { emitChange, isEditable } from '../../shared/lib/property-change'
+import { resolveOption } from '../../shared/lib/property-options'
 import {
   type PropertySelectDropdownPlacement,
   PropertySelectShell,
@@ -14,14 +14,13 @@ import {
   PropertySurface,
   type PropertyVariant,
 } from '../../shared/property-surface'
+import {
+  PersonAvatar,
+  PersonOptionContent,
+  type PersonPropertyOption,
+} from './person-option-content'
 
-export interface PersonPropertyOption<TValue extends string = string> {
-  value: TValue
-  label: string
-  fallback?: string
-  imageUrl?: string
-  supportingLabel?: string
-}
+export type { PersonPropertyOption }
 
 export type PersonPropertyDropdownPlacement = PropertySelectDropdownPlacement
 
@@ -59,9 +58,8 @@ export function PersonProperty<TValue extends string = string>({
   value,
   variant = 'badge',
 }: Readonly<PersonPropertyProps<TValue>>) {
-  const selectedOption = value ? findPersonOption(options, value) : null
+  const selectedOption = value ? resolveOption(options, value) : null
   const accessibleLabel = ariaLabel ?? 'Person'
-  const canUpdate = Boolean(action ?? onValueChange)
 
   return (
     <PropertySelectShell
@@ -74,18 +72,14 @@ export function PersonProperty<TValue extends string = string>({
       itemToStringValue={(option) => option.value}
       onValueChange={(option) => {
         if (option && option.value !== value) {
-          if (action) {
-            action(option.value, {
-              option,
-              previousValue: value,
-            })
-            return
-          }
-          onValueChange?.(option.value)
+          emitChange({ action, onValueChange }, option.value, {
+            option,
+            previousValue: value,
+          })
         }
       }}
       muted={!selectedOption}
-      readOnly={readOnly || !canUpdate}
+      readOnly={!isEditable({ action, onValueChange, readOnly })}
       renderValue={(option) => (
         <PersonPropertyContent
           display={display}
@@ -158,20 +152,7 @@ function PersonPropertyContent<TValue extends string = string>({
   placeholder: string
   variant: PropertyVariant
 }>) {
-  if (display === 'avatar') {
-    return (
-      <Avatar className="size-4 text-[0.625rem]">
-        {option?.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
-        <AvatarFallback className="bg-muted/40">
-          {option ? (
-            (option.fallback ?? getInitials(option.label))
-          ) : (
-            <UserIcon aria-hidden className="size-3" />
-          )}
-        </AvatarFallback>
-      </Avatar>
-    )
-  }
+  if (display === 'avatar') return <PersonAvatar option={option} />
 
   if (!option) {
     return (
@@ -183,36 +164,9 @@ function PersonPropertyContent<TValue extends string = string>({
   }
 
   return (
-    <span className="flex min-w-0 items-center gap-1.5">
-      <Avatar
-        className={cn(
-          variant === 'badge' ? 'size-4' : 'size-7',
-          'text-[0.625rem]',
-        )}
-      >
-        {option.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
-        <AvatarFallback className="bg-muted/40">
-          {option.fallback ?? getInitials(option.label)}
-        </AvatarFallback>
-      </Avatar>
-      <span className="min-w-0 truncate">{option.label}</span>
-      {option.supportingLabel ? (
-        <span className="hidden text-muted-foreground text-xs sm:inline">
-          {option.supportingLabel}
-        </span>
-      ) : null}
-    </span>
+    <PersonOptionContent
+      avatarClassName={variant === 'badge' ? 'size-4' : 'size-7'}
+      option={option}
+    />
   )
-}
-
-function findPersonOption<TValue extends string>(
-  options: readonly PersonPropertyOption<TValue>[],
-  value: TValue,
-): PersonPropertyOption<TValue> {
-  const selectedOption = options.find((option) => option.value === value)
-  if (selectedOption) return selectedOption
-  return {
-    label: value,
-    value,
-  }
 }

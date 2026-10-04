@@ -15,3 +15,19 @@ export function getInitials(label: string, size = 2): string {
     .join('')
     .toUpperCase()
 }
+
+/**
+ * Picks the text of an avatar fallback: the explicit fallback a person carries,
+ * or the initials of its label when there is none.
+ *
+ * @param person - Anything with a `label` and an optional `fallback`.
+ * @param size - How many words contribute a letter when the label is used. Defaults to two.
+ * @returns The fallback as given (only `undefined` falls through, so an empty
+ * string is kept), otherwise the initials of the label.
+ */
+export function resolveInitials(
+  person: { label: string; fallback?: string },
+  size = 2,
+): string {
+  return person.fallback ?? getInitials(person.label, size)
+}

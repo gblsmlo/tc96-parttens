@@ -1,3 +1,9 @@
+export {
+  formatDateProperty,
+  parseDatePropertyValue,
+  serializeDatePropertyValue,
+} from './display/date/date-value'
+export { formatDateRangeProperty } from './display/date-range/date-range-format'
 export type {
   PropertyIcon,
   PropertyPreset,
