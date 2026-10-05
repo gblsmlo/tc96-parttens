@@ -182,6 +182,10 @@ export const BoardInteraction: Story = {
     const confirm = await screen().findByRole('alertdialog', {
       name: 'Delete Write the docs',
     })
+    expect(
+      document.querySelector('[data-slot="dialog-title-trail"]'),
+    ).toBeNull()
+    expect(within(confirm).queryByText('Lemind')).toBeNull()
     await userEvent.click(
       within(confirm).getByRole('button', { name: 'Delete' }),
     )
