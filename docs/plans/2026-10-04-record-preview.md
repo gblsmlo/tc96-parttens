@@ -182,6 +182,6 @@ resultado: aprovado por revisão independente; pattern após uma rodada de corre
 artefato: working tree em feat/record-preview, sem commit
 evidencia: bun run check verde; bun test record-preview 15, test:registry 26, vitest storybook record-preview 9; BoardInteraction falha sem finalFocus (record-preview-kanban.stories.tsx:165) e passa com ele
 decisoes: [D21, D22, D23 (substituída por D27), D24, D25, D26, D27]
-lacunas: [G1, muted-foreground escuro sobre popover (#57), axe só no tema claro (#58), ajuda do CLI (#52)]
+lacunas: [G1, axe só no tema claro (#58), ajuda do CLI (#52)]
 proximo: fechado tecnicamente; commit, push e PR com o dono (o PR fecha #61)
 ```
