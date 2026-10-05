@@ -10,6 +10,7 @@ const meta = {
     }),
     onOpenChange: fn(),
     title: 'Delete project',
+    titleAncestor: 'Lemind',
   },
   component: DeleteCardDialogDemo,
   parameters: {
