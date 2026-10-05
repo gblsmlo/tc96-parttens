@@ -12,8 +12,8 @@ import {
 import { Textarea } from '@tc96/ui/textarea'
 import { Maximize2Icon } from 'lucide-react'
 import { useState } from 'react'
-import { delay } from './card-record-dialog'
 import { CreateMoreSwitch } from './create-more'
+import { delay } from './delay'
 import {
   type ProjectValues,
   people,

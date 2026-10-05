@@ -3,7 +3,6 @@ import { RecordDialog, type RecordDialogSize } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-import { DeleteCardDialogDemo, delay } from './card-record-dialog'
 import { CreateRecordDemo } from './create-record-demo'
 import { CreateRecordWithFormDemo } from './create-record-with-form-demo'
 
@@ -329,42 +328,4 @@ export const CreateRecordWithFormInteraction: Story = {
     ).toHaveTextContent('Planned')
   },
   tags: ['!dev', '!autodocs'],
-}
-
-export const DeleteRecord: StoryObj<typeof DeleteCardDialogDemo> = {
-  args: {
-    onConfirm: fn(async () => {
-      await delay(150)
-      return true
-    }),
-    onOpenChange: fn(),
-    title: 'Delete Implement onboarding',
-  },
-  parameters: {
-    // COSS destructive button is white on red-500 (3.8:1); COSS is not changed here.
-    a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
-  },
-  render: (args) => <DeleteCardDialogDemo {...args} />,
-}
-
-export const DeleteRecordInteraction: StoryObj<typeof DeleteCardDialogDemo> = {
-  ...DeleteRecord,
-  tags: ['!dev', '!autodocs'],
-  play: async ({ args }) => {
-    const dialog = await screen().findByRole('alertdialog', {
-      name: 'Delete Implement onboarding',
-    })
-
-    expect(
-      document.querySelector('[data-slot="dialog-title-trail"]'),
-    ).toBeNull()
-    expect(within(dialog).queryByText('Lemind')).toBeNull()
-
-    await userEvent.click(
-      within(dialog).getByRole('button', { name: 'Delete' }),
-    )
-
-    await waitFor(() => expect(args.onConfirm).toHaveBeenCalledTimes(1))
-    await waitFor(() => expect(screen().queryByRole('alertdialog')).toBeNull())
-  },
 }

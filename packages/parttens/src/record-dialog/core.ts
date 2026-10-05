@@ -25,19 +25,3 @@ export interface RecordDialogProps {
   title: ReactNode
   titleAncestor?: string
 }
-
-export interface SurfaceStatesProps {
-  cancelLabel: string
-  className?: string
-  confirmLabel: string
-  confirmingLabel?: string
-  description?: ReactNode
-  destructive?: boolean
-  errorMessage?: ReactNode
-  onConfirm: () => RecordDialogSettlement
-  onOpenChange: (open: boolean) => void
-  open: boolean
-  size?: RecordDialogSize
-  title: ReactNode
-  titleAncestor?: string
-}

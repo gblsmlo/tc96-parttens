@@ -3,5 +3,4 @@ export type {
   RecordDialogProps,
   RecordDialogSettlement,
   RecordDialogSize,
-  SurfaceStatesProps,
 } from './core'
