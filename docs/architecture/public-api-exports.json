@@ -301,16 +301,6 @@
     "propertyToneClassName",
     "serializeDatePropertyValue"
   ],
-  "detail-sheet": [
-    "DetailGroup",
-    "DetailGroupProps",
-    "DetailRow",
-    "DetailRowProps",
-    "DetailSheet",
-    "DetailSheetAction",
-    "DetailSheetActionProps",
-    "DetailSheetProps"
-  ],
   "editable": [
     "Editable",
     "EditableArea",
@@ -344,6 +334,12 @@
     "RecordDialogSize",
     "SurfaceStates",
     "SurfaceStatesProps"
+  ],
+  "record-preview": [
+    "RecordPreview",
+    "RecordPreviewAction",
+    "RecordPreviewActionProps",
+    "RecordPreviewProps"
   ],
   "widgets": [
     "Achievement",
@@ -680,14 +676,6 @@
     "DealStage",
     "DealsWidget",
     "DealsWidgetProps",
-    "DetailGroup",
-    "DetailGroupProps",
-    "DetailRow",
-    "DetailRowProps",
-    "DetailSheet",
-    "DetailSheetAction",
-    "DetailSheetActionProps",
-    "DetailSheetProps",
     "Editable",
     "EditableArea",
     "EditableAreaProps",
@@ -873,6 +861,10 @@
     "RecordDialogProps",
     "RecordDialogSettlement",
     "RecordDialogSize",
+    "RecordPreview",
+    "RecordPreviewAction",
+    "RecordPreviewActionProps",
+    "RecordPreviewProps",
     "ReferenceProperty",
     "ReferencePropertyKind",
     "ReferencePropertyProps",

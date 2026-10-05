@@ -4,10 +4,10 @@ import { files } from './files'
 for (const path of [
   'checklist',
   'collection-views',
-  'detail-sheet',
   'editable',
   'properties',
   'record-dialog',
+  'record-preview',
   'rich-text-editor',
   'shared',
   'widgets',

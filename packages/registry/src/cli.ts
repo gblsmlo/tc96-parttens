@@ -16,7 +16,7 @@ import {
   selectPatterns,
 } from './manifest'
 
-const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view]\nPatterns: collection-views properties detail-sheet editable\nReads aliases ui, utils, elements, helpers and patterns from components.json.\nInstalls from @coss only the COSS components missing from the ui alias.\nExisting files are preserved unless you approve shadcn's overwrite prompt.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
+const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view]\nPatterns: collection-views properties record-preview editable\nReads aliases ui, utils, elements, helpers and patterns from components.json.\nInstalls from @coss only the COSS components missing from the ui alias.\nExisting files are preserved unless you approve shadcn's overwrite prompt.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
 function targetPath(workspace: string, target: string | undefined) {
   if (!target?.startsWith('~/'))
     throw new Error(`Invalid registry target: ${target ?? 'missing'}`)
