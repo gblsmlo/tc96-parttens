@@ -196,7 +196,7 @@
   --destructive-foreground: var(--color-red-700);
   --border: --alpha(var(--color-black) / 8%);
   --input: --alpha(var(--color-black) / 10%);
-  --ring: var(--color-neutral-400);
+  --ring: var(--color-neutral-500);
   font-family:
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
