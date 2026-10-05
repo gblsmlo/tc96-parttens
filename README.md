@@ -78,7 +78,25 @@ apps/
 }
 ```
 
-Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`, and `elements` can import `ui` and `utils`. Each alias also needs exact and wildcard entries in the root `tsconfig` `paths`.
+Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`, and `elements` can import `ui` and `utils`.
+
+Only `ui` and `utils` are required in `components.json`. `elements`, `helpers` and `patterns` default to siblings of `ui`, so `@acme/ui` gives `@acme/elements`, `@acme/helpers` and `@acme/patterns`.
+
+Each alias needs two entries in the root `tsconfig.json` `paths`, and the CLI never writes them:
+
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@acme/patterns": ["./packages/patterns/src/index.ts"],
+      "@acme/patterns/*": ["./packages/patterns/src/*"]
+    }
+  }
+}
+```
+
+- **The wildcard entry** (`@acme/patterns/*`) is required. The CLI reads it to know where to write the files, and fails with the line to add when it is missing. Repeat it for `ui`, `elements` and `helpers`
+- **The exact entry** (`@acme/patterns`) points to the `index.ts` the CLI generates. It is what makes `import { CollectionViewOutlet } from '@acme/patterns'` work. The CLI does not need it, so add it for the aliases you import from directly
 
 ### Install with an AI agent
 
@@ -88,7 +106,7 @@ Paste this into your coding agent, replacing the pattern names:
 Install the @tc96/parttens patterns `collection-views` and `properties` in this project.
 
 1. Find the root `components.json`. It must define `aliases.ui` and `aliases.utils`. `aliases.elements`, `aliases.helpers` and `aliases.patterns` are optional and default to siblings of `ui` (`@acme/ui` gives `@acme/elements`). If the file is missing, stop and ask me; do not run `shadcn init --force`, which rewrites it.
-2. For `ui`, `elements`, `helpers` and `patterns`, check that the root `tsconfig.json` `paths` has an exact entry and a wildcard entry (`"@acme/patterns/*": ["./packages/patterns/src/*"]`) and that each alias points to an existing workspace package. If something is missing, show me the change and wait for my approval before editing.
+2. For `ui`, `elements`, `helpers` and `patterns`, check that the root `tsconfig.json` `paths` has a wildcard entry (`"@acme/patterns/*": ["./packages/patterns/src/*"]`), which the CLI requires, and that each alias points to an existing workspace package. `patterns` also needs an exact entry pointing to the generated barrel (`"@acme/patterns": ["./packages/patterns/src/index.ts"]`) so that imports from the alias resolve. If something is missing, show me the change and wait for my approval before editing.
 3. Preview first, from any directory inside the repo (the CLI searches upward for `components.json`; use `--cwd` to override):
    npx @tc96/parttens add collection-views properties --dry-run
    Read the output. If it lists files that already exist or a destination I did not expect, such as a legacy folder with the same name, stop and ask me.
