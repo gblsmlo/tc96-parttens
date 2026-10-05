@@ -1,8 +1,8 @@
 import { afterEach, expect, test } from 'bun:test'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { readAliases, readInstallConfig } from './config'
+import { findProjectRoot, readAliases, readInstallConfig } from './config'
 
 const roots: string[] = []
 afterEach(async () => {
@@ -63,24 +63,39 @@ test('reads non-default aliases and resolves their paths from tsconfig', async (
   })
 })
 
-test('names the missing tc96 aliases', () => {
-  expect(() =>
+test('derives the tc96 aliases from the ui alias when absent', () => {
+  expect(
     readAliases({ aliases: { ui: '@acme/ui', utils: '@acme/ui/lib/utils' } }),
-  ).toThrow(
-    'components.json is missing aliases.elements, aliases.helpers, aliases.patterns.',
-  )
-  expect(() =>
+  ).toEqual({
+    ui: '@acme/ui',
+    utils: '@acme/ui/lib/utils',
+    elements: '@acme/elements',
+    helpers: '@acme/helpers',
+    patterns: '@acme/patterns',
+  })
+  expect(
     readAliases({
-      aliases: {
-        ui: '@acme/ui',
-        utils: '@acme/utils',
-        elements: '@acme/e',
-        helpers: '@acme/h',
-      },
+      aliases: { ui: '@acme/ui', utils: '@acme/utils', patterns: '@acme/p' },
     }),
-  ).toThrow('components.json is missing aliases.patterns.')
+  ).toMatchObject({ elements: '@acme/elements', patterns: '@acme/p' })
+})
+
+test('requires the ui and utils aliases', () => {
   expect(() => readAliases({ aliases: { ui: '@acme/ui' } })).toThrow(
-    'shadcn init --force rewrites components.json without them',
+    'components.json is missing aliases.utils.',
+  )
+  expect(() => readAliases({})).toThrow(
+    'components.json is missing aliases.ui, aliases.utils.',
+  )
+})
+
+test('suggests the missing tsconfig path from the ui path', async () => {
+  const root = await consumer(
+    { ui: '@acme/ui', utils: '@acme/utils' },
+    { '@acme/ui/*': ['./packages/ui/src/*'] },
+  )
+  await expect(readInstallConfig(root)).rejects.toThrow(
+    '"@acme/elements/*": ["./packages/elements/src/*"]',
   )
 })
 
@@ -88,7 +103,7 @@ test('requires components.json in the consumer', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tc96-config-'))
   roots.push(root)
   await expect(readInstallConfig(root)).rejects.toThrow(
-    'Configure shadcn components.json',
+    'No components.json found in',
   )
 })
 
@@ -141,4 +156,20 @@ test('rejects an alias that resolves outside the workspace', async () => {
   await expect(readInstallConfig(root)).rejects.toThrow(
     '"@acme/patterns/*" must resolve inside the consumer workspace.',
   )
+})
+
+test('finds the nearest components.json above the working directory', async () => {
+  const root = await consumer({}, {})
+  const nested = join(root, 'apps', 'web')
+  await mkdir(nested, { recursive: true })
+
+  expect(findProjectRoot(nested)).toBe(root)
+  expect(findProjectRoot(root)).toBe(root)
+})
+
+test('falls back to the working directory when no components.json exists', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tc96-config-'))
+  roots.push(root)
+
+  expect(findProjectRoot(root)).toBe(root)
 })

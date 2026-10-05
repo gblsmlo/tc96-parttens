@@ -7,7 +7,7 @@ import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { aggregateBarrel, writeBarrel } from './barrel'
 import { checkCompatibility } from './check-compatibility'
-import { readInstallConfig } from './config'
+import { findProjectRoot, readInstallConfig } from './config'
 import {
   combineItems,
   omitInstalled,
@@ -17,7 +17,7 @@ import {
   selectPatterns,
 } from './manifest'
 
-const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view]\nPatterns: ${patternNames.join(' ')}\nReads aliases ui, utils, elements, helpers and patterns from components.json.\nInstalls from @coss only the COSS components missing from the ui alias.\nExisting files are preserved unless you approve shadcn's overwrite prompt.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
+const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view]\nPatterns: ${patternNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers and patterns default to the ui alias's siblings (@acme/ui gives @acme/elements) unless set.\nInstalls from @coss only the COSS components missing from the ui alias.\nExisting files are preserved unless you approve shadcn's overwrite prompt.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
 function targetPath(workspace: string, target: string | undefined) {
   if (!target?.startsWith('~/'))
     throw new Error(`Invalid registry target: ${target ?? 'missing'}`)
@@ -54,6 +54,7 @@ async function main() {
       throw new Error(`Unsupported option: ${argument}`)
     else names.push(argument)
   }
+  cwd = findProjectRoot(cwd)
   const selected = selectPatterns(names)
   const configuration = await readInstallConfig(cwd)
   const items = await Promise.all(
