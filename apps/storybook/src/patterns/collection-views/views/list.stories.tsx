@@ -6,7 +6,7 @@ import {
   type ListViewProps,
 } from '@tc96/parttens'
 import type { ReactElement } from 'react'
-import { expect } from 'storybook/test'
+import { expect, fn, userEvent } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
 import { renderTaskListRow, useTasks } from '../fixtures/task-renderers'
 import { createCollection, initialTasks, type Task } from '../fixtures/tasks'
@@ -19,12 +19,15 @@ const listArgs = {
   renderItem: renderTaskListRow(() => undefined),
 }
 
+const openTask = fn()
+
 function Example({
   collapseEmptyGroups = false,
   density = 'comfortable',
   emptyGroup = false,
   groupBy = 'status',
   loading = false,
+  onOpenTask,
   separated = false,
 }: Readonly<{
   collapseEmptyGroups?: boolean
@@ -32,6 +35,7 @@ function Example({
   emptyGroup?: boolean
   groupBy?: CollectionGroupingId | null
   loading?: boolean
+  onOpenTask?: (task: Task) => void
   separated?: boolean
 }>) {
   const { tasks, updateTask } = useTasks()
@@ -47,7 +51,7 @@ function Example({
         loading={loading}
         loadingItemLabel="Carregando tarefa"
         renderGroupTitle={(group) => group.label}
-        renderItem={renderTaskListRow(updateTask, density)}
+        renderItem={renderTaskListRow(updateTask, density, onOpenTask)}
         separated={separated}
       />
     </div>
@@ -118,11 +122,50 @@ export const Ungrouped: Story = {
     await expect(
       canvasElement.querySelector('[data-slot="list-group"]'),
     ).toBeNull()
+
+    const [first, second] = Array.from(
+      canvasElement
+        .querySelector('[data-slot="list-item-field"]')
+        ?.querySelectorAll('button') ?? [],
+    )
+
+    if (!(first && second))
+      throw new Error('A primeira linha não renderizou dois campos.')
+
+    const left = first.getBoundingClientRect()
+    const right = second.getBoundingClientRect()
+    const y = left.top + left.height / 2
+    const gapX = (left.right + right.left) / 2
+
+    await expect(right.left).toBeGreaterThan(left.right)
+    await expect(
+      document
+        .elementFromPoint(gapX, y)
+        ?.closest('[data-slot="list-item-title-trigger"]'),
+    ).not.toBeNull()
+
+    const onField = document.elementFromPoint(left.left + left.width / 2, y)
+
+    await expect(onField).not.toBeNull()
+    await expect(
+      onField?.closest('[data-slot="list-item-title-trigger"]'),
+    ).toBeNull()
+    await expect(first.contains(onField)).toBe(true)
+
+    openTask.mockClear()
+    await userEvent.click(document.elementFromPoint(gapX, y) as Element)
+    await expect(openTask).toHaveBeenCalledTimes(1)
+    await expect(openTask).toHaveBeenCalledWith(initialTasks[0])
+
+    await userEvent.click(onField as Element)
+    await expect(openTask).toHaveBeenCalledTimes(1)
+    await userEvent.keyboard('{Escape}')
+
     await expect(
       canvasElement.querySelectorAll('[data-slot="list-item"]'),
     ).toHaveLength(initialTasks.length)
   },
-  render: () => <Example groupBy={null} />,
+  render: () => <Example groupBy={null} onOpenTask={openTask} />,
 }
 export const Loading: Story = {
   args: listArgs,
