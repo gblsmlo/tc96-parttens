@@ -6,7 +6,7 @@ import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 
 interface CollectionToolbarBaseProps
-  extends Omit<ComponentProps<typeof ToolbarPrimitive>, 'title'> {
+  extends Omit<ComponentProps<typeof ToolbarPrimitive>, 'title' | 'variant'> {
   endSlot?: ReactNode
   startSlot?: ReactNode
 }

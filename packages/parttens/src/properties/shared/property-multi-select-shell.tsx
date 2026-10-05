@@ -119,10 +119,13 @@ export function PropertyMultiSelectShell<TOption extends OptionLike>({
           ))}
           <Button
             aria-label={hasValue ? addLabel : undefined}
-            className={cn('[&_svg]:mx-0', hasValue ? 'size-6 px-0' : 'gap-1')}
+            className={cn(
+              '[&_svg]:mx-0',
+              hasValue ? 'size-6 px-0 sm:size-6' : 'h-6 gap-1 sm:h-6',
+            )}
             disabled={disabled}
             onClick={openList}
-            size="xs"
+            size="sm"
             type="button"
             variant="secondary"
           >
