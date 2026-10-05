@@ -88,7 +88,7 @@ Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`
 | `properties` | Text, Date, Select, Person and other property displays, plus property groups |
 | `editable` | Inline editing compound |
 | `checklist` | Controlled item creation, completion, renaming, ordering, deletion and progress |
-| `record-dialog` | `RecordDialog` for create and edit, `SurfaceStates` for confirm and delete; the handler returns `boolean \| Promise<boolean>` and the pattern settles the dialog |
+| `record-dialog` | `RecordDialog` for create and edit; the handler returns `boolean \| Promise<boolean>` and the pattern settles the dialog |
 | `record-preview` | `RecordPreview`, a right-side sheet that previews a record with header actions, a close button and an optional footer, and `RecordPreviewAction`, its icon action; open state and content belong to the consumer |
 | `widgets` | Dashboard widgets in four groups: finance (market share, asset stats, risk score, balance, budget, cash flow, transactions, invoices), productivity (task progress, upcoming event, project card, agenda, world clock), CRM (pipeline, deals, activity feed, contact card) and gamification (level, streak, achievements, quests, progress HUD and footer), plus shared metric, stat list, avatar stack, progress ring, metric pill and the IconFrame element |
 | `rich-text-editor` | Notion-style block editor on headless Plate: paragraphs, headings, quote, nested lists, five marks, floating toolbar, `/` menu and a separate editable title |

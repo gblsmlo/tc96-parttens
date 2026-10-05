@@ -23,17 +23,16 @@ Prefixo `L` = `/Users/gabs/Workspaces/c/studio-risine/lemind`.
 - F7. Fora do genérico: `errorCodeToSurfaceKind` decide quais códigos de backend significam `permission` (`state-kinds.ts:25-39`); `RecordStateSurface` carrega cópia pt-BR e a regra `SGL-003` (`record-state.tsx:23-60`).
 - F8. Uso por kind em JSX: `empty` 22, `error` 20, `permission` 18, `no-result` 8, `not-found` 0 direto (só via `record-state.tsx:56`), `sync-pending` 3, `integration-disconnected` 0 (um produtor em `apps/web/src/features/states/index.ts:37`).
 - F9. Os 3 usos de `sync-pending` são loading disfarçado; `task-detail-state.tsx:41-44` já o converte em `loading`.
-- F10. O parttens exporta `SurfaceStates` (diálogos de confirmar e excluir) em `packages/parttens/src/record-dialog/composition/surface-states/surface-states.tsx:9`.
 - F11. O CLI gera um item por entrada de `patternNames` (`packages/registry/src/build-registry.ts:44`); código em `shared/` ou `elements` só é distribuído quando um pattern o importa (`build-registry.ts:50-56`).
 - F12. `registryDependencies` contém apenas componentes COSS (`packages/registry/src/manifest.ts:52-53`).
-- F13. O `Spinner` do COSS fixa `role="status"` e `aria-label="Loading"` (`packages/ui/src/spinner.tsx:11-13`); `surface-states.tsx:51` o usa com `aria-hidden`.
+- F13. O `Spinner` do COSS fixa `role="status"` e `aria-label="Loading"` (`packages/ui/src/spinner.tsx:11-13`).
 - F14. Precedente de slot: `actions?: ReactNode` no `RecordDialog` (`packages/parttens/src/record-dialog/AGENTS.md`).
 
 ## Decisões
 
 - D1 (dono). Portar `StateSurface` e `StateGuard`, sem regra de negócio.
 - D2 (arquitetura, eixo distribuição). Pattern próprio em `packages/parttens/src/state-surface/`, entrada `state-surface` em `patternNames`, com `index.ts`, `core.ts`, `AGENTS.md`, `test/dom.ts` e entrada em `scripts/test-patterns.ts`. `shared/` ou `elements` não seriam instaláveis sem consumidor (F11).
-- D3 (arquitetura, eixo contrato). Exports: `StateSurface`, `StateGuard`, `StateSurfaceKind`, `StateGuardState`, `StateSurfaceProps`, `StateGuardProps`. Nenhum export novo com prefixo `Surface*` (F10). Contrato `data-kind` na raiz.
+- D3 (arquitetura, eixo contrato). Exports: `StateSurface`, `StateGuard`, `StateSurfaceKind`, `StateGuardState`, `StateSurfaceProps`, `StateGuardProps`. Contrato `data-kind` na raiz.
 - D4 (design). Cinco kinds: `empty | no-result | error | permission | not-found`. `sync-pending` sai, porque é loading (F9); `integration-disconnected` sai, porque o consumidor o expressa como `error` com ícone próprio (F8).
 - D5 (design). Papel fixo por kind: `error` e `permission` com `role="alert"`; `empty`, `no-result` e `not-found` com `role="status"`. Sem `aria-live` explícito, porque o papel já o implica. Sem prop de override.
 - D6 (arquitetura, eixo fronteira). `core.ts` sem React: tipos, a tupla `STATE_SURFACE_KINDS` e o mapeamento kind → role. Ícones, classes, `Empty`, `Spinner` e os ramos do guard ficam em `composition/state-surface/` e `composition/state-guard/`.
@@ -42,7 +41,7 @@ Prefixo `L` = `/Users/gabs/Workspaces/c/studio-risine/lemind`.
 - D9 (design). `StateGuard` aceita `data | loading | StateSurfaceKind`; filhos montam só em `data`; loading é um bloco leve com `role="status"`, `Spinner` com `aria-hidden`, título e descrição opcional (F6, F13); `surface` obrigatório fora de `data`.
 - D10 (arquitetura, eixo fronteira). `errorCodeToSurfaceKind` e `RecordStateSurface` ficam fora, nem em `helpers`: nomear erros de API é do consumidor (F7).
 - D11 (arquitetura, eixo custo). Adoção em `collection-views` e `record-dialog` é unidade posterior, com aceite próprio.
-- D12 (arquitetura). Em `tc96-parttens.md:74`, remover a frase sobre o `StateGuard` não portado, acrescentar o parágrafo de `state-surface/` e esclarecer que "superfícies de estado" do tamanho `small` se refere ao `SurfaceStates`.
+- D12 (arquitetura). Em `tc96-parttens.md:74`, remover a frase sobre o `StateGuard` não portado, acrescentar o parágrafo de `state-surface/`.
 - D13 (design). Stories: `Patterns/StateSurface` (Empty, NoResult, Error, Permission, NotFound, CustomIcon) e `Patterns/StateGuard` (Loading, Data, Blocked, provando filhos ausentes do DOM); tema claro e escuro pelo global da toolbar; axe em `error`; play tests para role por kind e clique na ação.
 
 ## Lacunas
@@ -157,7 +156,7 @@ Leituras esperadas:
 - O `AGENTS.md` do pattern tem as seis seções na ordem e não copia props, tipos ou listas de stories.
 - `tc96-parttens.md:74` reflete D12.
 
-**Entrega isolada com segurança porque:** só acrescenta um pattern e um item de registry; nenhum arquivo de pattern existente muda, `SurfaceStates` e as telas atuais não são tocados, e os únicos arquivos compartilhados alterados recebem uma linha aditiva.
+**Entrega isolada com segurança porque:** só acrescenta um pattern e um item de registry; nenhum arquivo de pattern existente muda, as telas atuais não são tocadas, e os únicos arquivos compartilhados alterados recebem uma linha aditiva.
 
 ### Decisões de implementação
 

@@ -331,9 +331,7 @@
     "RecordDialog",
     "RecordDialogProps",
     "RecordDialogSettlement",
-    "RecordDialogSize",
-    "SurfaceStates",
-    "SurfaceStatesProps"
+    "RecordDialogSize"
   ],
   "record-preview": [
     "RecordPreview",
@@ -919,8 +917,6 @@
     "StreakDay",
     "StreakWidget",
     "StreakWidgetProps",
-    "SurfaceStates",
-    "SurfaceStatesProps",
     "TagsProperty",
     "TagsPropertyActionContext",
     "TagsPropertyDropdownPlacement",

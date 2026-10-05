@@ -1,14 +1,6 @@
 'use client'
 
 import {
-  AlertDialog,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogPopup,
-  AlertDialogTitle,
-} from '@tc96/ui/alert-dialog'
-import {
   Dialog,
   DialogDescription,
   DialogFooter,
@@ -36,14 +28,11 @@ const STRETCH_MIN_HEIGHT: Record<RecordDialogSize, string | undefined> = {
 
 const TITLE_CLASS = 'font-medium font-sans text-foreground text-sm'
 
-type DialogShellRole = 'dialog' | 'alertdialog'
-
 interface DialogShellProps {
   actions?: ReactNode
   children?: ReactNode
   className?: string
   description?: ReactNode
-  destructive?: boolean
   dismissible?: boolean
   errorMessage?: ReactNode
   footer?: ReactNode
@@ -52,7 +41,6 @@ interface DialogShellProps {
   onOpenChange: (open: boolean) => void
   open: boolean
   pending?: boolean
-  role?: DialogShellRole
   size?: RecordDialogSize
   stretchBody?: boolean
   title: ReactNode
@@ -97,7 +85,6 @@ export function DialogShell({
   children,
   className,
   description,
-  destructive = false,
   dismissible = true,
   errorMessage,
   footer,
@@ -106,7 +93,6 @@ export function DialogShell({
   onOpenChange,
   open,
   pending,
-  role = 'dialog',
   size = 'default',
   stretchBody = false,
   title,
@@ -119,10 +105,7 @@ export function DialogShell({
 
   const actionsRow = actions ? (
     <div
-      className={cn(
-        'absolute top-2 flex items-center gap-1',
-        role === 'alertdialog' ? 'end-2' : 'end-11',
-      )}
+      className="absolute end-11 top-2 flex items-center gap-1"
       data-slot="dialog-actions"
     >
       {actions}
@@ -144,40 +127,6 @@ export function DialogShell({
   ) : null
 
   const footerClassName = footerStart ? 'sm:items-center' : undefined
-
-  if (role === 'alertdialog') {
-    return (
-      <AlertDialog onOpenChange={handleOpenChange} open={open}>
-        <AlertDialogPopup
-          className={cn(SIZE_CLASS[size], className)}
-          data-destructive={destructive ? '' : undefined}
-          data-size={size}
-          data-pending={pending ? '' : undefined}
-        >
-          {actionsRow}
-          <AlertDialogHeader>
-            <TitleTrail ancestor={titleAncestor}>
-              <AlertDialogTitle className={TITLE_CLASS}>
-                {title}
-              </AlertDialogTitle>
-            </TitleTrail>
-            {description ? (
-              <AlertDialogDescription>{description}</AlertDialogDescription>
-            ) : null}
-          </AlertDialogHeader>
-          {children ? (
-            <div className="px-6 pb-2 text-sm">{children}</div>
-          ) : null}
-          {errorMessage ? <ErrorMessage>{errorMessage}</ErrorMessage> : null}
-          {footerContent ? (
-            <AlertDialogFooter className={footerClassName}>
-              {footerContent}
-            </AlertDialogFooter>
-          ) : null}
-        </AlertDialogPopup>
-      </AlertDialog>
-    )
-  }
 
   return (
     <Dialog onOpenChange={handleOpenChange} open={open}>

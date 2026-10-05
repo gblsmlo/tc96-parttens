@@ -4,20 +4,18 @@ Guide for agents working in `packages/parttens/src/record-dialog`. The repo-wide
 
 ## What it is
 
-Two dialogs for acting on a record. `RecordDialog` covers create and edit: an internal shell on the COSS `Dialog` (header with an optional icon and a breadcrumb-style trail `ancestor › title`, optional actions row, optional panel, error slot, footer), a COSS `Form` that holds the consumer's fields, and a footer with an optional cancel and the submit. `SurfaceStates` covers confirm and delete: the same shell in its `alertdialog` branch (COSS `AlertDialog`, same header trail, no close button, so `actions` would sit at `end-2`), a footer and an error slot. Fields, validation, mutation and error text belong to the consumer; there is no form library in the pattern.
+A dialog for acting on a record. `RecordDialog` covers create and edit: an internal shell on the COSS `Dialog` (header with an optional icon and a breadcrumb-style trail `ancestor › title`, optional actions row, optional panel, error slot, footer), a COSS `Form` that holds the consumer's fields, and a footer with an optional cancel and the submit. Fields, validation, mutation and error text belong to the consumer; there is no form library in the pattern.
 
 ## Files
 
 | File | Owns | Public |
 | --- | --- | --- |
 | `index.ts` | the barrel: re-exports `composition/index.ts` and the types from `core.ts` | yes |
-| `core.ts` | the React-free surface: `RecordDialogProps`, `SurfaceStatesProps`, `RecordDialogSettlement` | types through the barrel |
-| `composition/index.ts` | re-exports both compounds | through the barrel |
-| `components/dialog-shell.tsx` | `DialogShell`: popup with the size scale, actions, header trail, panel, error and footer, in a `dialog` and an `alertdialog` branch; used by both compounds | no |
+| `core.ts` | the React-free surface: `RecordDialogProps`, `RecordDialogSettlement` | types through the barrel |
+| `composition/index.ts` | re-exports the compound | through the barrel |
+| `components/dialog-shell.tsx` | `DialogShell`: popup with the size scale, actions, header trail, panel, error and footer, on the COSS `Dialog` | no |
 | `composition/record-dialog/record-dialog.tsx` | `RecordDialog` | yes |
 | `composition/record-dialog/record-dialog.test.tsx` | JSDOM tests: settle rule, pending lock, alert, submit prevention | — |
-| `composition/surface-states/surface-states.tsx` | `SurfaceStates` | yes |
-| `composition/surface-states/surface-states.test.tsx` | JSDOM tests: settle rule, pending lock, alert, destructive variant | — |
 | `hooks/use-settled-action.ts` | `useSettledAction`: pending state, re-entry guard and the settle rule | no |
 | `test/dom.ts` | the JSDOM setup the test files import; a copy owned by this pattern | — |
 
@@ -58,35 +56,19 @@ interface RecordDialogProps {
   title: ReactNode
   titleAncestor?: string             // muted ancestor before a chevron; no trail when absent
 }
-
-interface SurfaceStatesProps {
-  cancelLabel: string
-  className?: string
-  confirmLabel: string
-  confirmingLabel?: string
-  description?: ReactNode
-  destructive?: boolean              // destructive button variant
-  errorMessage?: ReactNode
-  onConfirm: () => RecordDialogSettlement
-  onOpenChange: (open: boolean) => void
-  open: boolean
-  size?: 'small' | 'default' | 'large'   // default 'small'
-  title: ReactNode
-  titleAncestor?: string             // same trail as RecordDialog
-}
 ```
 
 Behavior the tests fix:
 
 - Settle rule: the handler returning `true` calls `onOpenChange(false)`. `false`, a rejection or a synchronous throw keeps the dialog open and the field values untouched. Errors are swallowed; the consumer reports them through `errorMessage`.
 - Pending belongs to one open session. When `open` becomes false the pattern resets pending and ignores any settlement still in flight, so a late `true` never closes a reopened dialog, and nothing runs after unmount.
-- Pending is tracked by the pattern. While pending, Escape, outside press and the close button do not close, the cancel and submit or confirm buttons are disabled, a second submit is ignored, and the submit or confirm button shows `Spinner` and `submittingLabel` or `confirmingLabel` when given.
+- Pending is tracked by the pattern. While pending, Escape, outside press and the close button do not close, the cancel and submit buttons are disabled, a second submit is ignored, and the submit button shows `Spinner` and `submittingLabel` when given.
 - The consumer clears `errorMessage` at the start of the handler; the pattern never clears it.
 - `event.currentTarget` is null after the first `await`, so `onSubmit` reads `FormData` (or the form elements) synchronously, before awaiting anything.
 - Base UI `Form` renders `noValidate`: native constraints such as `required` or `type="email"` do not block the submit. Validation is the consumer's job inside `onSubmit`, returning `false` to keep the dialog open. The pattern does not call `checkValidity`.
 - `RecordDialog` calls `preventDefault` on the submit event before it calls `onSubmit`. Base UI `Form` blocks the submit first when a Base UI `Field` is invalid.
 - Sizes, set on the popup as `data-size`:
-  - `small`: `max-w-md` (448px), for confirmations and state surfaces. It is the default of `SurfaceStates`.
+  - `small`: `max-w-md` (448px), for short bodies.
   - `default`: `max-w-2xl` (672px), for create and edit forms. It is the default of `RecordDialog`.
   - `large`: `max-w-4xl sm:min-h-136` (896px, Lemind's 920x540), for long or dense bodies.
   Below the `sm` breakpoint the popup is full width whatever the size. With `stretchBody` the default size gets `sm:min-h-96` so there is height to stretch; `large` already has `min-h-136`.
@@ -98,11 +80,10 @@ Behavior the tests fix:
 - The submit button sits outside the panel and points at the form with `form={id}`.
 - `submitOnModEnter` blocks while pending or `submitDisabled`. The hint shows `⌘` on Apple platforms and `Ctrl` elsewhere, decided after mount; it is `aria-hidden` and the button carries `aria-keyshortcuts="Meta+Enter Control+Enter"`.
 - `keepOpenOnSuccess` calls `form.reset()`, which does not touch React-controlled inputs: controlled fields reset their own state inside `onSubmit`. The generation and unmount guards still apply.
-- `SurfaceStates` is an `alertdialog`: outside press never closes it and it has no close button. Its header, `titleAncestor` and `size` behave as in `RecordDialog`, and its accessible name is the title only.
 
 ## Styling contract
 
-`data-slot` names on the popups are left to COSS (`dialog-popup`, `alert-dialog-popup`), because COSS selectors depend on them.
+`data-slot` names on the popup are left to COSS (`dialog-popup`), because COSS selectors depend on them.
 
 | Attribute | Where | Meaning |
 | --- | --- | --- |
@@ -112,10 +93,9 @@ Behavior the tests fix:
 | `data-slot=dialog-actions` | the actions row | `absolute end-11 top-2` |
 | `data-slot=dialog-title-trail` | the ancestor and title wrapper | only with `titleAncestor` |
 | | `data-slot=dialog-footer-start` | the `footerStart` wrapper | only with `footerStart` |
-| `data-destructive` | the `SurfaceStates` popup | `destructive` is set |
 | `aria-busy` | the form | the handler has not settled |
 
-`data-slot` names: `record-dialog-form`, `dialog-error`, `record-dialog-submit-hint`, `record-dialog-cancel`, `record-dialog-submit`, `surface-states-error`, `surface-states-cancel`, `surface-states-confirm`.
+`data-slot` names: `record-dialog-form`, `dialog-error`, `record-dialog-submit-hint`, `record-dialog-cancel`, `record-dialog-submit`.
 
 ## Verify
 
@@ -126,4 +106,4 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/record-dialog
 ```
 
-The stories are `Patterns/RecordDialog` (Default, Sizes, CreateRecord, CreateRecordWithForm, DeleteRecord) and `Patterns/SurfaceStates` in `apps/storybook/src/patterns/record-dialog/`, with a `!dev` `<Story>Interaction` twin for each, and run axe with `test: 'error'`.
+The stories are `Patterns/RecordDialog` (Default, Sizes, CreateRecord, CreateRecordWithForm) in `apps/storybook/src/patterns/record-dialog/`, with a `!dev` `<Story>Interaction` twin for each, and run axe with `test: 'error'`.
