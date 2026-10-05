@@ -126,4 +126,4 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/record-dialog
 ```
 
-The stories are `Patterns/RecordDialog` (Default, Sizes, CreateRecord, CreateRecordWithForm, DeleteRecord), `Patterns/SurfaceStates` and `Patterns/RecordDialog/Usages/Kanban` in `apps/storybook/src/patterns/record-dialog/`, with a `!dev` `<Story>Interaction` twin for each, and run axe with `test: 'error'`.
+The stories are `Patterns/RecordDialog` (Default, Sizes, CreateRecord, CreateRecordWithForm, DeleteRecord) and `Patterns/SurfaceStates` in `apps/storybook/src/patterns/record-dialog/`, with a `!dev` `<Story>Interaction` twin for each, and run axe with `test: 'error'`.
