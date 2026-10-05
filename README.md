@@ -55,7 +55,7 @@ import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
 tc96 expects a layered design system, in the spirit of atomic design, configured by one `components.json` at the monorepo root:
 
 ```text
-components.json        aliases: ui, utils, elements, helpers, patterns
+components.json        aliases: ui, utils (elements, helpers and patterns default to siblings of ui)
 packages/
   ui/                  atoms: COSS components
   elements/            components COSS does not have, such as Text and IconFrame
