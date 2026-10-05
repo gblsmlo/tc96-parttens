@@ -98,14 +98,13 @@ export function SelectedViewItems({
   label = 'Views',
 }: Readonly<SelectedViewItemsProps>): ReactElement {
   return (
-    <div
+    <fieldset
       aria-label={label}
-      className="flex flex-col gap-0.5"
+      className="m-0 flex min-w-0 flex-col gap-0.5 border-0 p-0"
       data-slot="selected-view-items"
-      role="group"
     >
       {children}
-    </div>
+    </fieldset>
   )
 }
 

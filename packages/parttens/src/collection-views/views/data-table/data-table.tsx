@@ -12,6 +12,7 @@ import {
   TableRow,
 } from '@tc96/ui/table'
 import type { ComponentProps, ReactElement } from 'react'
+import { skeletonKeys } from '../../shared/lib/skeleton-keys'
 import { DataTableRow } from './data-table-row'
 import type { DataTableTable } from './use-data-table'
 
@@ -69,10 +70,10 @@ export function DataTable<TData extends RowData>({
       </TableHeader>
       <TableBody>
         {isLoading ? (
-          Array.from({ length: loadingRowCount }, (_, position) => (
-            <TableRow key={`loading-${position + 1}`}>
-              {Array.from({ length: columnCount }, (_, cell) => (
-                <TableCell key={`loading-${position + 1}-${cell + 1}`}>
+          skeletonKeys('loading', loadingRowCount).map((rowKey) => (
+            <TableRow key={rowKey}>
+              {skeletonKeys(rowKey, columnCount).map((cellKey) => (
+                <TableCell key={cellKey}>
                   <Skeleton className="h-4 min-w-4 w-full" />
                 </TableCell>
               ))}
