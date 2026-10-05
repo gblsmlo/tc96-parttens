@@ -17,7 +17,7 @@ import {
   selectPatterns,
 } from './manifest'
 
-const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view]\nPatterns: ${patternNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers and patterns default to the ui alias's siblings (@acme/ui gives @acme/elements) unless set.\nInstalls from @coss only the COSS components missing from the ui alias.\nExisting files are preserved unless you approve shadcn's overwrite prompt.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
+const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view] [--force]\nPatterns: ${patternNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers and patterns default to the ui alias's siblings (@acme/ui gives @acme/elements) unless set.\nInstalls from @coss only the COSS components missing from the ui alias.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files are preserved unless you approve shadcn's overwrite prompt.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
 function targetPath(workspace: string, target: string | undefined) {
   if (!target?.startsWith('~/'))
     throw new Error(`Invalid registry target: ${target ?? 'missing'}`)
@@ -38,6 +38,7 @@ async function main() {
   const names: string[] = []
   const flags: string[] = []
   let preserveExisting = !process.stdin.isTTY
+  let force = false
   for (let i = 0; i < args.length; i++) {
     const argument = args[i]
     if (!argument) throw new Error('Missing argument')
@@ -48,6 +49,7 @@ async function main() {
       if (argument === '--cwd') cwd = resolve(value)
       else registryDirectory = resolve(value)
     } else if (argument === '--preserve-existing') preserveExisting = true
+    else if (argument === '--force') force = true
     else if (['--dry-run', '--diff', '--view', '--yes'].includes(argument))
       flags.push(argument)
     else if (argument.startsWith('-'))
@@ -105,6 +107,13 @@ async function main() {
   )
   for (const diagnostic of before.diagnostics.slice(0, 12))
     console.log(diagnostic)
+  if (before.status === 'incompatible') {
+    if (!force)
+      throw new Error(
+        'The patterns do not type-check against your components, so nothing was installed. Fix the diagnostics above or pass --force to install anyway.',
+      )
+    console.warn('Incompatible, installing anyway because of --force.')
+  }
   console.log(
     item.registryDependencies?.length
       ? `Missing COSS components, installed by shadcn: ${item.registryDependencies.join(', ')}.`

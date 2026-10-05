@@ -144,8 +144,13 @@ export async function checkCompatibility(
   const program = ts.createProgram(roots, options, host)
   const diagnostics = ts.getPreEmitDiagnostics(program)
   const unavailable = new Set([2307, 2688, 6053, 7016])
+  const duplicatedTypes = (diagnostic: ts.Diagnostic) =>
+    ts
+      .flattenDiagnosticMessageText(diagnostic.messageText, ' ')
+      .includes('Two different types with this name exist')
   const incompatible = diagnostics.some(
-    (diagnostic) => !unavailable.has(diagnostic.code),
+    (diagnostic) =>
+      !unavailable.has(diagnostic.code) && !duplicatedTypes(diagnostic),
   )
   return {
     status: incompatible
