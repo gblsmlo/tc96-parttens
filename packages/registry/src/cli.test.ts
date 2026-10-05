@@ -16,6 +16,12 @@ test('help lists every pattern', () => {
   expect(result.stdout).toContain(`Patterns: ${patternNames.join(' ')}\n`)
 })
 
+const pendingRegistryDirectory = join(
+  import.meta.dir,
+  '..',
+  'fixtures',
+  'cli-pending',
+)
 const registryDirectory = join(
   import.meta.dir,
   '..',
@@ -96,6 +102,36 @@ test('--force goes past an incompatible check', async () => {
     expect(result.stdout).toContain('Compatibility: incompatible')
     expect(result.stderr).toContain('installing anyway')
     expect(result.stderr).not.toContain('nothing was installed')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('a dry run lists pending dependencies once instead of one error per import', async () => {
+  const root = await consumer()
+  try {
+    await writeFile(
+      join(root, 'src/ui/button.ts'),
+      'export function Button(props: { variant: string }) { return props }',
+    )
+    const result = spawnSync(
+      process.execPath,
+      [
+        join(import.meta.dir, 'cli.ts'),
+        'add',
+        'checklist',
+        '--cwd',
+        root,
+        '--registry-dir',
+        pendingRegistryDirectory,
+        '--dry-run',
+      ],
+      { encoding: 'utf8' },
+    )
+    expect(result.stdout).toContain('Compatibility: inconclusive')
+    expect(result.stdout).toContain('1 dependencies are not installed yet')
+    expect(result.stdout).toContain('absent-package')
+    expect(result.stdout).not.toContain('TS2882')
   } finally {
     await rm(root, { recursive: true, force: true })
   }
