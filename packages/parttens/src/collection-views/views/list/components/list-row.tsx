@@ -23,6 +23,9 @@ import {
   ListItemTrailing,
 } from './list-item'
 
+const interactiveDescendants =
+  '[&_:is(a[href],button,input,select,textarea,summary,label,[role=button],[role=checkbox],[role=combobox],[role=link],[role=menuitem],[role=option],[role=radio],[role=slider],[role=spinbutton],[role=switch],[role=tab],[role=textbox],[tabindex]:not([tabindex="-1"]),[contenteditable]:not([contenteditable=false]))]:pointer-events-auto'
+
 export type ListRowIconFrame = Pick<
   IconFrameProps,
   'color' | 'shape' | 'size' | 'variant'
@@ -111,7 +114,13 @@ export function ListRow({
             </Text>
           ) : null}
           {properties ? (
-            <ListItemField always className="relative z-10">
+            <ListItemField
+              always
+              className={cn(
+                'relative z-10 pointer-events-none',
+                interactiveDescendants,
+              )}
+            >
               {properties}
             </ListItemField>
           ) : null}
