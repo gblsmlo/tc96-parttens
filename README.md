@@ -91,7 +91,7 @@ Install the @tc96/parttens patterns `collection-views` and `properties` in this 
 2. For `ui`, `elements`, `helpers` and `patterns`, check that the root `tsconfig.json` `paths` has an exact entry and a wildcard entry (`"@acme/patterns/*": ["./packages/patterns/src/*"]`) and that each alias points to an existing workspace package. If something is missing, show me the change and wait for my approval before editing.
 3. Preview first, from any directory inside the repo (the CLI searches upward for `components.json`; use `--cwd` to override):
    npx @tc96/parttens add collection-views properties --dry-run
-   Read the output. If it lists files that already exist or a destination I did not expect, such as a legacy folder with the same name, stop and ask me.
+   Read the output. If it lists files that already exist or a destination I did not expect, such as a legacy folder with the same name, stop and ask me. If it stops with "do not type-check against your components", report the diagnostics and wait; do not add `--force`.
 4. Install:
    npx @tc96/parttens add collection-views properties
    Answer no to any shadcn prompt that would overwrite a file I own. If the repo blocks npx, use `bunx` or `pnpm dlx`.
