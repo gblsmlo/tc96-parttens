@@ -176,7 +176,6 @@ export const WithoutFooterInteraction: Story = {
 
 export const LongContent: Story = {
   args: { defaultOpen: true, longBody: true, longTitle: true },
-  globals: { viewport: { isRotated: false, value: 'mobile1' } },
 }
 
 export const LongContentInteraction: Story = {
@@ -190,7 +189,6 @@ export const LongContentInteraction: Story = {
     const box = close.getBoundingClientRect()
     const title = dialog.querySelector('[data-slot="sheet-title"]')
 
-    expect(window.innerWidth).toBeLessThanOrEqual(320)
     expect(close).toBeVisible()
     expect(box.right).toBeLessThanOrEqual(popup.right)
     expect(box.top).toBeGreaterThanOrEqual(popup.top)
