@@ -161,6 +161,8 @@ Entrega isolada com segurança porque: é uma mudança reversível por `git reve
 - D28 (dono). `LongContent` deixa de usar o viewport `mobile1` (Small mobile) e roda na largura padrão da story; o play não assere mais `window.innerWidth <= 320` e segue provando que o título quebra linha, não estoura e que o fechar fica visível dentro do painel.
 
 - D29 (dono). As stories de uso em Kanban saem do topo e vão para o contexto de cada pattern, na convenção `Usages` do repo (`Patterns/Rich Text Editor/Usages/*`): `Patterns/RecordPreview Kanban` vira `Patterns/RecordPreview/Usages/Kanban` (`apps/storybook/src/patterns/record-preview/usages/kanban.stories.tsx`) e `Patterns/RecordDialog Kanban` vira `Patterns/RecordDialog/Usages/Kanban` (`apps/storybook/src/patterns/record-dialog/usages/kanban.stories.tsx`).
+- D30 (dono). Em `Patterns/RecordPreview/Usages/Kanban`, o cabeçalho fica só com a ação de abrir a página do registro (`RecordPreviewAction` "Open as page" com `Maximize2Icon`, como em `Default`), e "Move to Done" sai do cabeçalho para um `Button` no corpo do preview. O play de `BoardInteraction` assere essa divisão e segue movendo o card com o preview aberto, então a prova do #61 (D27) continua.
+
 ### Acompanhamento (fora deste plano)
 
 - Prop de clique em registro no `collection-views`, unidade posterior com aceite próprio (D12, F17).

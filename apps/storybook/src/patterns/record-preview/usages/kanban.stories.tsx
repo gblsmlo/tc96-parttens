@@ -10,9 +10,10 @@ import {
   RecordPreview,
   RecordPreviewAction,
 } from '@tc96/parttens'
-import { ArrowRightIcon } from 'lucide-react'
+import { Button } from '@tc96/ui/button'
+import { Maximize2Icon } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 
 interface BoardCard {
   columnId: string
@@ -49,7 +50,7 @@ function toColumns(cards: BoardCard[]): KanbanColumnData<BoardCard>[] {
   })
 }
 
-function PreviewBoard() {
+function PreviewBoard({ onOpenPage }: { onOpenPage?: () => void }) {
   const boardRef = useRef<HTMLDivElement | null>(null)
   const [cards, setCards] = useState(initialCards)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -87,18 +88,8 @@ function PreviewBoard() {
       />
       <RecordPreview
         actions={
-          <RecordPreviewAction
-            disabled={selected?.columnId === 'done'}
-            label="Move to Done"
-            onClick={() =>
-              setCards((current) =>
-                current.map((card) =>
-                  card.id === selectedId ? { ...card, columnId: 'done' } : card,
-                ),
-              )
-            }
-          >
-            <ArrowRightIcon aria-hidden="true" />
+          <RecordPreviewAction label="Open as page" onClick={onOpenPage}>
+            <Maximize2Icon aria-hidden="true" />
           </RecordPreviewAction>
         }
         closeLabel="Close preview"
@@ -118,13 +109,30 @@ function PreviewBoard() {
         open={selectedId !== null}
         title={selected?.title ?? 'Card'}
       >
-        <p className="text-sm">{selected?.description}</p>
+        <div className="flex flex-col items-start gap-3">
+          <p className="text-sm">{selected?.description}</p>
+          <Button
+            disabled={selected?.columnId === 'done'}
+            onClick={() =>
+              setCards((current) =>
+                current.map((card) =>
+                  card.id === selectedId ? { ...card, columnId: 'done' } : card,
+                ),
+              )
+            }
+            size="sm"
+            variant="outline"
+          >
+            Move to Done
+          </Button>
+        </div>
       </RecordPreview>
     </div>
   )
 }
 
 const meta = {
+  args: { onOpenPage: fn() },
   component: PreviewBoard,
   parameters: {
     docs: {
@@ -161,6 +169,17 @@ export const BoardInteraction: Story = {
       name: 'Implement onboarding',
     })
     await waitFor(() => expect(within(dialog).getByText('To do')).toBeVisible())
+    const headerActions = within(
+      dialog.querySelector(
+        '[data-slot="record-preview-header-actions"]',
+      ) as HTMLElement,
+    )
+    expect(
+      headerActions.getByRole('button', { name: 'Open as page' }),
+    ).toBeVisible()
+    expect(
+      headerActions.queryByRole('button', { name: 'Move to Done' }),
+    ).toBeNull()
 
     await userEvent.keyboard('{Escape}')
     await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
