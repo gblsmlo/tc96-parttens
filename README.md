@@ -32,6 +32,8 @@ React patterns without business rules, installed as source on top of your COSS c
 npx @tc96/parttens add collection-views properties
 ```
 
+Before copying anything, the CLI type-checks the patterns against your own `ui` components. If they do not type-check, it stops with exit code 1, in a `--dry-run` too. Fix the diagnostics it prints, or pass `--force` to install anyway.
+
 **Quick Start:**
 
 ```tsx
