@@ -105,8 +105,19 @@ async function main() {
   console.log(
     `Compatibility: ${before.status}. ${before.existingFiles.length} existing files; no automatic overwrite.`,
   )
-  for (const diagnostic of before.diagnostics.slice(0, 12))
+  const hidden = new Set([...before.pending, ...before.deferred])
+  for (const diagnostic of before.diagnostics
+    .filter((line) => !hidden.has(line))
+    .slice(0, 12))
     console.log(diagnostic)
+  if (before.pending.length)
+    console.log(
+      `${before.pending.length} dependencies are not installed yet, so ${before.deferred.length} diagnostics about them were hidden; their types are checked after installation:\n${before.pending.map((line) => `  ${line.split(' ')[0]}`).join('\n')}`,
+    )
+  else if (before.deferred.length)
+    console.log(
+      `${before.deferred.length} diagnostics about modules that are not installed yet were hidden; they are checked after installation.`,
+    )
   if (before.status === 'incompatible') {
     if (!force)
       throw new Error(

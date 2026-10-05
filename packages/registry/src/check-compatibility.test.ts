@@ -174,3 +174,34 @@ test('does not report implicit any caused by a missing module as incompatible', 
     await rm(root, { recursive: true, force: true })
   }
 })
+
+test('separates pending dependencies and their diagnostics from real ones', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tc96-types-'))
+  try {
+    await writeFile(
+      join(root, 'tsconfig.json'),
+      JSON.stringify({
+        compilerOptions: { moduleResolution: 'Bundler', module: 'ESNext' },
+      }),
+    )
+    const report = await checkCompatibility(root, {
+      name: 'proof',
+      type: 'registry:block',
+      dependencies: ['absent-package@1.0.0'],
+      files: [
+        {
+          path: 'parttens/src/proof.ts',
+          target: '~/src/proof.ts',
+          type: 'registry:file',
+          content: 'import "absent-package"; export const value = 1',
+        },
+      ],
+    })
+    expect(report.status).toBe('inconclusive')
+    expect(report.pending).toHaveLength(1)
+    expect(report.deferred).toHaveLength(1)
+    expect(report.deferred[0]).toContain('TS2882')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})

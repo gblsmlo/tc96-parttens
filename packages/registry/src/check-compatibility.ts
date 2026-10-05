@@ -6,6 +6,8 @@ import type { RegistryItem } from './manifest'
 export interface CompatibilityReport {
   status: 'compatible' | 'incompatible' | 'inconclusive'
   diagnostics: string[]
+  pending: string[]
+  deferred: string[]
   existingFiles: string[]
 }
 /** Version of a package as Node resolves it from the consumer root. */
@@ -54,6 +56,8 @@ export async function checkCompatibility(
     return {
       status: 'inconclusive',
       diagnostics: ['No tsconfig.json was found.'],
+      pending: [],
+      deferred: [],
       existingFiles: [],
     }
   const read = ts.readConfigFile(config, ts.sys.readFile)
@@ -61,6 +65,8 @@ export async function checkCompatibility(
     return {
       status: 'inconclusive',
       diagnostics: ['Cannot read the consumer tsconfig.json.'],
+      pending: [],
+      deferred: [],
       existingFiles: [],
     }
   const parsed = ts.parseJsonConfigFileContent(read.config, ts.sys, root)
@@ -143,7 +149,7 @@ export async function checkCompatibility(
     .map((target) => resolve(root, target.slice(2)))
   const program = ts.createProgram(roots, options, host)
   const diagnostics = ts.getPreEmitDiagnostics(program)
-  const unavailable = new Set([2307, 2688, 6053, 7016])
+  const unavailable = new Set([2307, 2688, 2882, 6053, 7016])
   const duplicatedTypes = (diagnostic: ts.Diagnostic) =>
     ts
       .flattenDiagnosticMessageText(diagnostic.messageText, ' ')
@@ -152,25 +158,31 @@ export async function checkCompatibility(
     (diagnostic) =>
       !unavailable.has(diagnostic.code) && !duplicatedTypes(diagnostic),
   )
+  const describe = (diagnostic: ts.Diagnostic) => {
+    const position =
+      diagnostic.file && diagnostic.start !== undefined
+        ? diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start)
+        : null
+    return `${diagnostic.file?.fileName ?? 'TypeScript'}${position ? `:${position.line + 1}` : ''} TS${diagnostic.code}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, ' ')}`
+  }
+  const pendingLines = pending.map(
+    ({ name, declared, installed: found }) =>
+      `${name}@${declared} is not installed yet${found ? ` (found ${found})` : ''}; its types are checked after installation.`,
+  )
   return {
     status: incompatible
       ? 'incompatible'
       : diagnostics.length
         ? 'inconclusive'
         : 'compatible',
-    diagnostics: [
-      ...pending.map(
-        ({ name, declared, installed: found }) =>
-          `${name}@${declared} is not installed yet${found ? ` (found ${found})` : ''}; its types are checked after installation.`,
-      ),
-      ...diagnostics.map((diagnostic) => {
-        const position =
-          diagnostic.file && diagnostic.start !== undefined
-            ? diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start)
-            : null
-        return `${diagnostic.file?.fileName ?? 'TypeScript'}${position ? `:${position.line + 1}` : ''} TS${diagnostic.code}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, ' ')}`
-      }),
-    ],
+    diagnostics: [...pendingLines, ...diagnostics.map(describe)],
+    pending: pendingLines,
+    deferred: diagnostics
+      .filter(
+        (diagnostic) =>
+          unavailable.has(diagnostic.code) || duplicatedTypes(diagnostic),
+      )
+      .map(describe),
     existingFiles,
   }
 }
