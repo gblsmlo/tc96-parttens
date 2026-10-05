@@ -17,7 +17,7 @@ import {
   type CardValues,
   DeleteCardDialog,
   delay,
-} from './card-record-dialog'
+} from '../card-record-dialog'
 
 interface BoardCard extends CardValues {
   columnId: string
@@ -141,7 +141,7 @@ const meta = {
     layout: 'fullscreen',
   },
   tags: ['!autodocs'],
-  title: 'Patterns/RecordDialog Kanban',
+  title: 'Patterns/RecordDialog/Usages/Kanban',
 } satisfies Meta<typeof RecordBoard>
 
 export default meta
