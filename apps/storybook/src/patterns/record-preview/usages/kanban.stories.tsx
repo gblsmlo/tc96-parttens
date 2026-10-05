@@ -136,7 +136,7 @@ const meta = {
     layout: 'fullscreen',
   },
   tags: ['!autodocs'],
-  title: 'Patterns/RecordPreview Kanban',
+  title: 'Patterns/RecordPreview/Usages/Kanban',
 } satisfies Meta<typeof PreviewBoard>
 
 export default meta
