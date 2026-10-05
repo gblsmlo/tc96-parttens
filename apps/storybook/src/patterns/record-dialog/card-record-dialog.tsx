@@ -90,6 +90,7 @@ interface DeleteCardDialogProps {
   onOpenChange: (open: boolean) => void
   open: boolean
   title: ReactNode
+  titleAncestor?: string
 }
 
 export function DeleteCardDialog({
@@ -97,6 +98,7 @@ export function DeleteCardDialog({
   onOpenChange,
   open,
   title,
+  titleAncestor,
 }: DeleteCardDialogProps) {
   const [error, setError] = useState<string>()
 
@@ -125,7 +127,7 @@ export function DeleteCardDialog({
       }}
       open={open}
       title={title}
-      titleAncestor="Lemind"
+      titleAncestor={titleAncestor}
     />
   )
 }
