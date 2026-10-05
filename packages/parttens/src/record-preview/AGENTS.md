@@ -26,7 +26,7 @@ Import direction: `composition/` → `core.ts`. Composition imports only COSS (`
 - The COSS `SheetPopup` renders its own close button by default; the pattern passes `showCloseButton={false}` so there is exactly one.
 - Initial focus goes to the popup (`initialFocus` on its ref, `tabIndex={-1}`). Opened by keyboard, the focus otherwise stayed on the trigger and `Escape` went to the trigger's tooltip, leaving no way to close.
 - The sheet is modal: `Escape` and an outside press call `onOpenChange(false)`. Closing returns focus to the element that was focused on open.
-- When the trigger is unmounted while the preview is open (a card that moves to another column), Base UI returns focus to the detached node and focus falls to `body`. The consumer resolves the target at close time through `finalFocus`; a `null` return keeps the Base UI default. Exercised by the Kanban board play. Decided in D27 of the plan.
+- When the trigger is unmounted while the preview is open (a card that moves to another column), Base UI returns focus to the detached node and focus falls to `body`. The consumer resolves the target at close time through `finalFocus`; a `null` return keeps the Base UI default. Covered by the `finalFocus` tests in `record-preview.test.tsx`. Decided in D27 of the plan.
 - The footer renders only with `footer`, in a COSS `SheetFooter` outside the scrolling panel. The pattern never confirms a destructive action; the consumer opens `SurfaceStates` on top.
 - `actions` is a slot; `RecordPreviewAction` is the suggested item and does not extend the COSS `Button` props, for the same baseline reason.
 - `side="right"` and `variant="inset"` are COSS props, not overrides, and `className` goes to the popup. There is no size prop; the width is the COSS one.
