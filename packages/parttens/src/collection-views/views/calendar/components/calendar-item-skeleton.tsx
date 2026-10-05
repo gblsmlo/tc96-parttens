@@ -14,7 +14,7 @@ export function CalendarItemSkeleton({
   label = 'Carregando compromisso',
 }: CalendarItemSkeletonProps): ReactElement {
   return (
-    <div
+    <output
       aria-busy="true"
       aria-label={label}
       className={cn(
@@ -25,10 +25,9 @@ export function CalendarItemSkeleton({
         className,
       )}
       data-slot="calendar-item-skeleton"
-      role="status"
     >
       <Skeleton aria-hidden="true" className="h-3 w-8 shrink-0" />
       <Skeleton aria-hidden="true" className="h-3 w-2/3" />
-    </div>
+    </output>
   )
 }

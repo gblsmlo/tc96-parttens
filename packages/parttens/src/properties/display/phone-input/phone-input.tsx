@@ -19,6 +19,7 @@ import {
 } from '@tc96/ui/input-group'
 import { ChevronDownIcon, GlobeIcon, SearchIcon } from 'lucide-react'
 import type React from 'react'
+import type { ComponentRef } from 'react'
 import { useCallback, useRef, useState } from 'react'
 import PhoneNumberInput from 'react-phone-number-input/input-max'
 import {
@@ -64,7 +65,7 @@ export function PhoneInput({
   required = false,
   value,
 }: Readonly<PhoneInputProps>) {
-  const fieldRef = useRef<HTMLDivElement>(null)
+  const fieldRef = useRef<ComponentRef<typeof InputGroup>>(null)
   const [chosenCountry, setChosenCountry] =
     useState<PhoneCountryCode>(defaultCountry)
 

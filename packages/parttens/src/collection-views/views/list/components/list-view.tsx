@@ -4,6 +4,7 @@ import { Separator } from '@tc96/ui/separator'
 import { Fragment, type ReactNode, useMemo, useState } from 'react'
 
 import { projectCollection } from '../../../shared/lib/project-collection'
+import { skeletonKeys } from '../../../shared/lib/skeleton-keys'
 import type {
   CollectionDefinition,
   CollectionGroup,
@@ -115,9 +116,9 @@ export function ListView<TItem>({
         <ListItemHeadingLevelContext.Provider value={2}>
           <div className="flex flex-col" data-slot="list-view-items">
             {loading
-              ? Array.from({ length: loadingItemCount }, (_, position) => (
+              ? skeletonKeys('loading', loadingItemCount).map((skeletonKey) => (
                   <ListItemSkeleton
-                    key={`loading-${position + 1}`}
+                    key={skeletonKey}
                     {...(loadingItemLabel ? { label: loadingItemLabel } : {})}
                   />
                 ))
