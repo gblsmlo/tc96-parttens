@@ -80,6 +80,25 @@ apps/
 
 Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`, and `elements` can import `ui` and `utils`. Each alias also needs exact and wildcard entries in the root `tsconfig` `paths`.
 
+### Install with an AI agent
+
+Paste this into your coding agent, replacing the pattern names:
+
+````text
+Install the @tc96/parttens patterns `collection-views` and `properties` in this project.
+
+1. Find the root `components.json`. It must define `aliases.ui` and `aliases.utils`. `aliases.elements`, `aliases.helpers` and `aliases.patterns` are optional and default to siblings of `ui` (`@acme/ui` gives `@acme/elements`). If the file is missing, stop and ask me; do not run `shadcn init --force`, which rewrites it.
+2. For `ui`, `elements`, `helpers` and `patterns`, check that the root `tsconfig.json` `paths` has an exact entry and a wildcard entry (`"@acme/patterns/*": ["./packages/patterns/src/*"]`) and that each alias points to an existing workspace package. If something is missing, show me the change and wait for my approval before editing.
+3. Preview first, from any directory inside the repo (the CLI searches upward for `components.json`; use `--cwd` to override):
+   npx @tc96/parttens add collection-views properties --dry-run
+   Read the output. If it lists files that already exist or a destination I did not expect, such as a legacy folder with the same name, stop and ask me.
+4. Install:
+   npx @tc96/parttens add collection-views properties
+   Answer no to any shadcn prompt that would overwrite a file I own. If the repo blocks npx, use `bunx` or `pnpm dlx`.
+5. Do not edit the installed files or the COSS components in `ui`. Import from the `patterns` alias (`import { CollectionViewOutlet } from '@acme/patterns'`).
+6. Run the typecheck and lint scripts of the workspace that received the files, and report what was installed, where, and any errors.
+````
+
 ## Patterns
 
 | Pattern | Contents |
