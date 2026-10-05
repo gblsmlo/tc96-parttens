@@ -12,7 +12,7 @@ Stack: Bun workspaces, React 19, TypeScript, Tailwind CSS v4, Base UI, Storybook
 
 ```text
 packages/
-  parttens/    pattern source (collection-views, properties, detail-sheet, editable, checklist, widgets, rich-text-editor)
+  parttens/    pattern source (collection-views, properties, editable, checklist, record-dialog, record-preview, widgets, rich-text-editor)
   elements/    components COSS does not have (Text, IconFrame)
   helpers/     React-free functions (amount formatting, dates, rich text)
   ui/          COSS components, unmodified, locked by coss.lock.json
@@ -28,7 +28,7 @@ scripts/            boundary, COSS, override and public API checks
 
 ## Pattern structure
 
-`collection-views`, `detail-sheet` and `editable` set the internal layout of a pattern. Code is grouped by responsibility, and a layer exists only when it has code to hold:
+`collection-views`, `record-dialog` and `editable` set the internal layout of a pattern. Code is grouped by responsibility, and a layer exists only when it has code to hold:
 
 ```text
 packages/parttens/src/<pattern>/
@@ -36,18 +36,18 @@ packages/parttens/src/<pattern>/
   core.ts        React-free surface: the pattern's types and pure functions, for use without rendering
   composition/   the compound the consumer mounts, one folder per compound with its own index.ts and tests
                  (editable/composition/editable/, collection-views/composition/)
-  components/    building blocks of one compound, never public (detail-sheet/components/detail-sheet/)
+  components/    building blocks of one compound, never public (record-dialog/components/dialog-shell.tsx)
   shared/        components and helpers used by more than one view or display (collection-views/shared/components/, shared/lib/)
   views/         independently usable renderers, each with components/, hooks/, lib/, types.ts and index.ts (collection-views);
                  properties uses display/ for the same role
-  hooks/         React hooks (detail-sheet/hooks/use-media-query.ts, views/<view>/hooks/)
+  hooks/         React hooks (record-dialog/hooks/use-settled-action.ts, views/<view>/hooks/)
   lib/           pure functions and class variants (shared/lib/project-collection.ts, views/kanban/lib/drag-and-drop.ts)
   store/         context, provider and shared state (editable/store/, collection-views/store/)
   types/         contracts shared across the pattern, with types/index.ts as the barrel; a type used by one file stays next to it
   test/dom.ts    the JSDOM setup the pattern's bun test files import; each pattern owns its copy
 ```
 
-Files are kebab-case and named after what they export (`checklist-row.tsx` exports `ChecklistRow`); tests sit next to the file they cover. `vite-env.d.ts` in the older patterns dates from isolated development: nothing imports it and the registry does not ship it, so a new or restructured pattern does not add it. The `styles/global.css` files of `collection-views`, `properties` and `editable` were removed on 2026-10-03 for the same reason; only `detail-sheet` still carries one until its own revision (patterns carry no CSS). `checklist` follows this layout with `composition/checklist/`, `components/`, `lib/`, `types/`, `test/` and `core.ts`; a flat pattern such as `rich-text-editor` adopts it when it is next split.
+Files are kebab-case and named after what they export (`checklist-row.tsx` exports `ChecklistRow`); tests sit next to the file they cover. `vite-env.d.ts` in the older patterns dates from isolated development: nothing imports it and the registry does not ship it, so a new or restructured pattern does not add it. The `styles/global.css` files of `collection-views`, `properties` and `editable` were removed on 2026-10-03 for the same reason (patterns carry no CSS). `checklist` follows this layout with `composition/checklist/`, `components/`, `lib/`, `types/`, `test/` and `core.ts`; a flat pattern such as `rich-text-editor` adopts it when it is next split.
 
 ## Rules that are enforced by scripts
 

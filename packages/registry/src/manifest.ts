@@ -4,10 +4,10 @@ import ts from 'typescript'
 export const patternNames = [
   'collection-views',
   'properties',
-  'detail-sheet',
   'editable',
   'checklist',
   'record-dialog',
+  'record-preview',
   'widgets',
   'rich-text-editor',
   'state-surface',

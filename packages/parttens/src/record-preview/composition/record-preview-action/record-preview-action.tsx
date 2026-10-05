@@ -1,28 +1,26 @@
-import { Button, type ButtonProps } from '@tc96/ui/button'
+'use client'
+
+import { Button } from '@tc96/ui/button'
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@tc96/ui/tooltip'
 import type * as React from 'react'
+import type { RecordPreviewActionProps } from '../../core'
 
-export interface DetailSheetActionProps
-  extends Omit<ButtonProps, 'aria-label' | 'children' | 'render' | 'size'> {
-  children: React.ReactNode
-  label: string
-}
-
-export function DetailSheetAction({
+export function RecordPreviewAction({
   children,
+  disabled,
   label,
-  variant = 'ghost',
-  ...props
-}: Readonly<DetailSheetActionProps>): React.ReactElement {
+  onClick,
+}: Readonly<RecordPreviewActionProps>): React.ReactElement {
   return (
     <Tooltip>
       <TooltipTrigger
         render={
           <Button
-            {...props}
             aria-label={label}
+            disabled={disabled}
+            onClick={onClick}
             size="icon-sm"
-            variant={variant}
+            variant="ghost"
           />
         }
       >

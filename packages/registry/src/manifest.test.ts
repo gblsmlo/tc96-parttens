@@ -54,6 +54,7 @@ test('accepts the widgets pattern', () => {
 })
 test('rejects unknown or excluded patterns', () => {
   expect(() => selectPatterns(['filter-builder'])).toThrow('Unknown pattern')
+  expect(() => selectPatterns(['detail-sheet'])).toThrow('Unknown pattern')
   expect(() => selectPatterns([])).toThrow('Choose')
 })
 test('maps destinations and imports without corrupting arbitrary string contents', () => {
@@ -196,6 +197,29 @@ test('combines COSS dependencies and leaves out the installed ones', () => {
     omitInstalled(combined, (component) => installed.has(component))
       .registryDependencies,
   ).toEqual(['@coss/empty'])
+})
+
+test('builds the record-preview item with COSS-only dependencies and no test files', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/record-preview.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('record-preview')
+  expect(item.registryDependencies?.length).toBeGreaterThan(0)
+  for (const dependency of item.registryDependencies ?? [])
+    expect(dependency.startsWith('@coss/')).toBe(true)
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+  expect(() =>
+    readFileSync(join(root, 'dist/registry/detail-sheet.json'), 'utf8'),
+  ).toThrow()
 })
 
 test('builds the state-surface item with COSS-only dependencies and no test files', () => {
