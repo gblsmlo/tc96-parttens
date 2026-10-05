@@ -92,6 +92,7 @@ Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`
 | `record-preview` | `RecordPreview`, a right-side sheet that previews a record with header actions, a close button and an optional footer, and `RecordPreviewAction`, its icon action; open state and content belong to the consumer |
 | `widgets` | Dashboard widgets in four groups: finance (market share, asset stats, risk score, balance, budget, cash flow, transactions, invoices), productivity (task progress, upcoming event, project card, agenda, world clock), CRM (pipeline, deals, activity feed, contact card) and gamification (level, streak, achievements, quests, progress HUD and footer), plus shared metric, stat list, avatar stack, progress ring, metric pill and the IconFrame element |
 | `rich-text-editor` | Notion-style block editor on headless Plate: paragraphs, headings, quote, nested lists, five marks, floating toolbar, `/` menu and a separate editable title |
+| `state-surface` | `StateSurface` for empty, no-result, error, permission and not-found, and `StateGuard`, which mounts its children only when the state is `data` |
 
 Filter Builder and responsive layouts are out of scope for the first version.
 

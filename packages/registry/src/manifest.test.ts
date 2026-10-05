@@ -46,6 +46,9 @@ test('selects several patterns once and maps legacy view to collection-views', (
 test('accepts the migrated checklist pattern', () => {
   expect(selectPatterns(['checklist', 'checklist'])).toEqual(['checklist'])
 })
+test('accepts the state-surface pattern', () => {
+  expect(selectPatterns(['state-surface'])).toEqual(['state-surface'])
+})
 test('accepts the widgets pattern', () => {
   expect(selectPatterns(['widgets'])).toEqual(['widgets'])
 })
@@ -217,4 +220,28 @@ test('builds the record-preview item with COSS-only dependencies and no test fil
   expect(() =>
     readFileSync(join(root, 'dist/registry/detail-sheet.json'), 'utf8'),
   ).toThrow()
+})
+
+test('builds the state-surface item with COSS-only dependencies and no test files', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/state-surface.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('state-surface')
+  expect(item.registryDependencies?.length).toBeGreaterThan(0)
+  expect(
+    item.registryDependencies?.every((dependency) =>
+      dependency.startsWith('@coss/'),
+    ),
+  ).toBe(true)
+  expect(paths).toContain('elements/src/icon-frame.tsx')
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })

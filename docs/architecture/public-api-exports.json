@@ -496,6 +496,14 @@
     "filterSlashMenuOptions",
     "slashMenuOptions"
   ],
+  "state-surface": [
+    "StateGuard",
+    "StateGuardProps",
+    "StateGuardState",
+    "StateSurface",
+    "StateSurfaceKind",
+    "StateSurfaceProps"
+  ],
   "parttens": [
     "Achievement",
     "AchievementsWidget",
@@ -902,6 +910,12 @@
     "SlashMenuOption",
     "StatList",
     "StatListProps",
+    "StateGuard",
+    "StateGuardProps",
+    "StateGuardState",
+    "StateSurface",
+    "StateSurfaceKind",
+    "StateSurfaceProps",
     "StreakDay",
     "StreakWidget",
     "StreakWidgetProps",
