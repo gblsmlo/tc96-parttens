@@ -58,7 +58,11 @@ export function useTasks(initial: readonly Task[] = initialTasks) {
 }
 
 export const renderTaskListRow =
-  (updateTask: UpdateTask, density: ListItemDensity = 'comfortable') =>
+  (
+    updateTask: UpdateTask,
+    density: ListItemDensity = 'comfortable',
+    onOpen: (task: Task) => void = () => undefined,
+  ) =>
   (task: Task) => {
     const StatusIcon = statusOptions.find(
       (option) => option.value === task.status,
@@ -70,7 +74,7 @@ export const renderTaskListRow =
         description={[task.id, task.description]}
         icon={StatusIcon ? <StatusIcon /> : undefined}
         key={task.id}
-        onClick={() => undefined}
+        onClick={() => onOpen(task)}
         properties={
           <div className="flex items-center gap-2">
             <StatusField onChange={updateTask} task={task} />

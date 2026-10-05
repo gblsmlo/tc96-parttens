@@ -110,10 +110,7 @@ export function ListItemTitleTrigger({
 }: ListItemTitleTriggerProps): ReactElement {
   return (
     <button
-      className={cn(
-        'min-w-0 truncate text-start underline-offset-4 hover:underline',
-        className,
-      )}
+      className={cn('min-w-0 truncate text-start', className)}
       data-slot="list-item-title-trigger"
       type="button"
       {...props}
