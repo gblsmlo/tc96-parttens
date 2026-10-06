@@ -627,15 +627,21 @@ function TasksWorkspace({
           {view === 'datatable' ? (
             <>
               <DataGridPagination table={dataTable} />
-              <ActionBar
-                actions={selectionActions(
-                  dataTableSelection.map((task) => task.id),
-                  () => dataTable.resetRowSelection(),
-                )}
-                onClearSelection={() => dataTable.resetRowSelection()}
-                selectedCount={dataTableSelection.length}
-                selectedRows={dataTableSelection}
-              />
+              {dataTableSelection.length > 0 ? (
+                <div className="pointer-events-none fixed inset-x-0 bottom-6 z-20 flex justify-center px-3">
+                  <div className="pointer-events-auto max-w-full">
+                    <ActionBar
+                      actions={selectionActions(
+                        dataTableSelection.map((task) => task.id),
+                        () => dataTable.resetRowSelection(),
+                      )}
+                      onClearSelection={() => dataTable.resetRowSelection()}
+                      selectedCount={dataTableSelection.length}
+                      selectedRows={dataTableSelection}
+                    />
+                  </div>
+                </div>
+              ) : null}
             </>
           ) : null}
         </section>
