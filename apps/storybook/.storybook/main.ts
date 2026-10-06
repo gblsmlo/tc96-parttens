@@ -6,7 +6,11 @@ const config: StorybookConfig = {
     '@storybook/addon-docs',
     '@storybook/addon-a11y',
     '@storybook/addon-vitest',
+    '@storybook/addon-mcp',
   ],
+  features: {
+    componentsManifest: true,
+  },
   // O autodocs vem da tag `autodocs` no preview.ts; aqui só o nome da página.
   docs: {
     defaultName: 'Doc',
