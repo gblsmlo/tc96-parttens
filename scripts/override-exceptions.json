@@ -34,5 +34,17 @@
     "component": "DialogTitle",
     "className": "text-foreground",
     "reason": "Shell do dialog portado do Lemind: o título vem depois do ancestral em `text-muted-foreground` numa trilha, e `font-medium text-sm text-foreground` o traz ao tamanho do ancestral em vez do `text-xl` do COSS; `text-foreground` é o token do tema."
+  },
+  {
+    "file": "packages/parttens/src/collection-views/views/data-table/data-table.tsx",
+    "component": "TableHeader",
+    "className": "not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)]",
+    "reason": "O thead da tabela usa a mesma cor do `TableFooter` do COSS (`color-mix` de `var(--card)` com 2% de preto, ou de branco no escuro), para que cabeçalho e rodapé enquadrem as linhas, que ficam na cor do fundo."
+  },
+  {
+    "file": "packages/parttens/src/collection-views/views/data-table/data-table.tsx",
+    "component": "TableHeader",
+    "className": "dark:not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-white)_2%)]",
+    "reason": "O thead da tabela usa a mesma cor do `TableFooter` do COSS (`color-mix` de `var(--card)` com 2% de preto, ou de branco no escuro), para que cabeçalho e rodapé enquadrem as linhas, que ficam na cor do fundo."
   }
 ]

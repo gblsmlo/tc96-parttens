@@ -137,7 +137,7 @@ function ColumnExample({
         columns={columns}
         getColumnActions={() => ({ onAddCard: addCard })}
         getKey={(task) => task.id}
-        renderCard={renderTaskKanbanCard('status', updateTask)}
+        renderCard={renderTaskKanbanCard(updateTask)}
         renderHeaderActions={(column) => (
           <Menu>
             <MenuTrigger

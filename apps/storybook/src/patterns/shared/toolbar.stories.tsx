@@ -8,11 +8,6 @@ import {
   FilterRadioSubmenu,
   MenuCheckboxOption,
   MenuRadioOption,
-  SelectedViewCreate,
-  SelectedViewItem,
-  SelectedViewItems,
-  SelectedViewMenu,
-  SelectedViewSearch,
   ViewSettingsMenu,
   type ViewSettingsMode,
   ViewSettingsSection,
@@ -27,25 +22,21 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
-import { Separator } from '@tc96/ui/separator'
 import {
   ArrowDownUpIcon,
   CalendarDaysIcon,
   CircleDotIcon,
-  CopyPlusIcon,
   LayoutGridIcon,
-  PencilIcon,
   Rows3Icon,
   ShapesIcon,
   SignalHighIcon,
-  StarIcon,
   Table2Icon,
   TagsIcon,
-  Trash2Icon,
   UserRoundIcon,
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
+import { SelectedViewPicker } from './selected-view-picker'
 
 interface DemoItem {
   assigneeId: string | null
@@ -138,14 +129,6 @@ const selectedViews = [
   { id: 'overdue', label: 'Aguardando retorno' },
 ] as const
 
-function ViewIcon() {
-  return (
-    <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
-      <LayoutGridIcon aria-hidden="true" className="size-3" />
-    </span>
-  )
-}
-
 function SelectedViewControl({
   searchable = true,
   withCreate = true,
@@ -156,114 +139,22 @@ function SelectedViewControl({
   withOptions?: boolean
 }>) {
   const [selectedId, setSelectedId] = useState<string>('recent')
-  const [favoriteIds, setFavoriteIds] = useState<string[]>([])
-  const [query, setQuery] = useState('')
   const [event, setEvent] = useState('')
-  const selected = selectedViews.find((view) => view.id === selectedId)
-  const visibleViews = selectedViews.filter((view) =>
-    view.label
-      .toLocaleLowerCase('pt-BR')
-      .includes(query.toLocaleLowerCase('pt-BR')),
-  )
-  const favoriteViews = visibleViews.filter((view) =>
-    favoriteIds.includes(view.id),
-  )
-  const otherViews = visibleViews.filter(
-    (view) => !favoriteIds.includes(view.id),
-  )
-  const renderView = (view: (typeof selectedViews)[number]) => {
-    const isFavorite = favoriteIds.includes(view.id)
-
-    return (
-      <SelectedViewItem
-        icon={<ViewIcon />}
-        key={view.id}
-        label={view.label}
-        onSelect={() => setSelectedId(view.id)}
-        options={
-          withOptions && view.id === selectedId ? (
-            <>
-              <MenuItem
-                className="whitespace-nowrap"
-                onClick={() =>
-                  setFavoriteIds((current) =>
-                    isFavorite
-                      ? current.filter((id) => id !== view.id)
-                      : [...current, view.id],
-                  )
-                }
-              >
-                <StarIcon
-                  aria-hidden="true"
-                  fill={isFavorite ? 'currentColor' : 'none'}
-                />
-                {isFavorite
-                  ? 'Remover dos favoritos'
-                  : 'Adicionar aos favoritos'}
-              </MenuItem>
-              <MenuItem onClick={() => setEvent('renomear')}>
-                <PencilIcon aria-hidden="true" />
-                Renomear
-              </MenuItem>
-              <MenuItem onClick={() => setEvent('duplicar')}>
-                <CopyPlusIcon aria-hidden="true" />
-                Duplicar
-              </MenuItem>
-              <MenuSeparator />
-              <MenuItem
-                onClick={() => setEvent('excluir')}
-                variant="destructive"
-              >
-                <Trash2Icon aria-hidden="true" />
-                Excluir
-              </MenuItem>
-              <div className="mt-1 border-t px-2 pt-2 pb-1 text-muted-foreground text-xs">
-                Criado pela equipe · 30 set 2026
-              </div>
-            </>
-          ) : undefined
-        }
-        selected={view.id === selectedId}
-      />
-    )
-  }
 
   return (
     <>
-      <SelectedViewMenu
-        icon={<ViewIcon />}
-        label={selected?.label ?? 'Selecionar view'}
-      >
-        {searchable ? (
-          <SelectedViewSearch onValueChange={setQuery} value={query} />
-        ) : null}
-        {favoriteViews.length ? (
-          <SelectedViewItems label="Favoritos">
-            <p
-              aria-hidden="true"
-              className="px-2 py-1 font-medium text-muted-foreground text-xs"
-            >
-              Favoritos
-            </p>
-            {favoriteViews.map(renderView)}
-          </SelectedViewItems>
-        ) : null}
-        {favoriteViews.length && otherViews.length ? <Separator /> : null}
-        {otherViews.length ? (
-          <SelectedViewItems>{otherViews.map(renderView)}</SelectedViewItems>
-        ) : null}
-        {!visibleViews.length ? (
-          <p className="px-2 py-1.5 text-muted-foreground text-sm">
-            Nenhuma view encontrada
-          </p>
-        ) : null}
-        {withCreate ? (
-          <>
-            <Separator />
-            <SelectedViewCreate onClick={() => setEvent('criar')} />
-          </>
-        ) : null}
-      </SelectedViewMenu>
+      <SelectedViewPicker
+        footer="Criado pela equipe · 30 set 2026"
+        onCreate={withCreate ? () => setEvent('criar') : undefined}
+        onDelete={() => setEvent('excluir')}
+        onDuplicate={() => setEvent('duplicar')}
+        onRename={() => setEvent('renomear')}
+        onSelect={setSelectedId}
+        searchable={searchable}
+        selectedId={selectedId}
+        views={selectedViews}
+        withOptions={withOptions}
+      />
       <span className="sr-only" data-story-event>
         {event}
       </span>

@@ -1,0 +1,135 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Patterns/CollectionViews/Guide" />
+
+# Collection views: how to build a collection screen
+
+Use this page when a screen shows one collection of records in more than one layout: List, Kanban, Calendar, Spreadsheet (`DataGrid`) or Table (`DataTable`). Follow the steps in order, then use "Where to read next" for the docs entry behind each part.
+
+If the screen only ever shows one layout, mount that view alone (`ListView`, `KanbanView`, `CalendarView`, `DataGrid`, `DataTable`) and skip steps 2 and 3.
+
+## 0. Decide what your code owns
+
+The pattern is controlled. It never fetches, filters, searches, sorts or persists. Your code owns:
+
+- the items, already fetched and filtered, and the write that saves an edit;
+- search terms, filters and saved views (presets);
+- persistence of the `{ view, groupBy }` preferences, if they must survive a reload.
+
+The pattern owns only the active view and grouping (when uncontrolled), drag overrides while a move settles, collapse state and the TanStack table state of `useDataGrid` and `useDataTable`.
+
+## 1. Declare the collection
+
+Build a `CollectionDefinition<TItem>` from the items you already filtered. Every grouping the user can pick is a dimension in `groupings`.
+
+```tsx
+import type { CollectionDefinition } from '@tc96/parttens'
+
+const groupings: CollectionDefinition<Task>['groupings'] = [
+  {
+    id: 'status',
+    label: 'Status',
+    options: statusOptions.map((option) => ({ id: option.value, label: option.label })),
+    getGroupId: (task) => task.status,
+    setGroupId: (task, groupId) =>
+      groupId && isStatus(groupId) ? { ...task, status: groupId } : task,
+  },
+]
+
+const collection = useMemo<CollectionDefinition<Task>>(
+  () => ({
+    items: visibleTasks,
+    getKey: (task) => task.id,
+    getLabel: (task) => task.title,
+    groupings,
+  }),
+  [visibleTasks],
+)
+```
+
+- `setGroupId` is the write pair of `getGroupId`. Without it, a Kanban card cannot be dragged to another column of that dimension.
+- `getGroupId` returning `null` puts the item in the unassigned group; set `unassignedLabel` to name it.
+- Kanban needs a grouping or prepared `groups`; `groupBy: null` throws there. List and DataGrid render it ungrouped.
+
+## 2. Wrap the screen in `CollectionProvider`
+
+`CollectionViewOutlet` and `useCollectionPreferences` throw outside it.
+
+```tsx
+<CollectionProvider
+  collection={collection}
+  preferences={preferences}
+  onPreferencesChange={setPreferences}
+>
+  <TasksWorkspace />
+</CollectionProvider>
+```
+
+- Controlled: pass `preferences` and `onPreferencesChange` when you persist them. Uncontrolled: pass `defaultPreferences`.
+- Inside, change the view or grouping with `setPreferences(next, 'view')` or `setPreferences(next, 'grouping')` from `useCollectionPreferences()`.
+
+## 3. Mount `CollectionViewOutlet`
+
+The outlet renders the active view. Give it a renderer for List and Kanban, and the props block of every other view you offer.
+
+```tsx
+<CollectionViewOutlet
+  collection={collection}
+  renderListItem={renderTaskListRow}
+  renderKanbanItem={renderTaskKanbanCard}
+  onItemChange={({ item }) => saveTask(item)}
+  list={{ emptyGroupLabel: 'No tasks in this group.' }}
+  kanban={{ emptyColumnLabel: 'No tasks in this column.' }}
+  datagrid={{ 'aria-label': 'Tasks', table: dataGridTable }}
+  datatable={{ 'aria-label': 'Tasks', table: dataTable }}
+  calendar={calendarProps}
+/>
+```
+
+- The outlet throws when the active view is `datagrid`, `datatable` or `calendar` and its prop is missing. Pass only the blocks for the views you offer in step 5.
+- Build `table` with `useDataGrid` or `useDataTable` in the same component, from the same filtered items.
+- `renderKanbanItem` must be pure and emit no DOM `id`: Kanban renders the mobile panel and the desktop board at once, so each card renders twice.
+
+## 4. Handle writes
+
+There are two write paths, and both end in your code:
+
+- A move between groups (Kanban drag) calls `onItemChange({ item, previousItem, grouping })` with the item already rebuilt by `setGroupId`. Save it and return `true`, or return `false` (or reject) to roll the card back. While a returned promise is pending, the card stays in the target column.
+- An edit inside a row, card or cell (status select, assignee, due date) is your renderer or column calling your own update function. The pattern does not see it.
+
+To veto or reroute a Kanban move with both groups in hand, pass `kanban.onMoveCard` instead; it wins over `onItemChange`.
+
+## 5. Add the toolbar
+
+`CollectionToolbar` lays out the controls; everything inside it reads and writes your state.
+
+- `CollectionSearchField` commits on submit and when emptied, not per keystroke. Filter the items with the committed value.
+- `ViewSettingsMenu` takes `modes` (the views you offer), `mode` and `onModeChange`. Put grouping, sorting, density, columns and filters in `ViewSettingsSection` children.
+- For DataGrid, reuse `DataGridSortSubmenu`, `DataGridDensitySubmenu` and `DataGridColumnsSubmenu` with the same `table`.
+- `ActionBar` shows bulk actions for selected rows; DataGrid takes it through `datagrid.selectionActions`.
+
+## 6. Cover loading, empty and error
+
+Each view has its own props: `loading` on List, Kanban and Calendar, `isLoading` on DataGrid and DataTable, and an empty label on each. Decide them per view before calling the screen done.
+
+## Where to read next
+
+| You need | `docs-show` id |
+| --- | --- |
+| A full screen with all five views, toolbar, filters, presets and persistence | `patterns-collectionviews-usages-tasks` |
+| List rows, grouping and collapse | `patterns-collectionviews-views-list` |
+| Kanban board, cards and drag | `patterns-collectionviews-usages-pipeline`, `patterns-collectionviews-views-kanban-cards` |
+| Kanban loading and error | `patterns-collectionviews-views-kanban-loading-board`, `patterns-collectionviews-views-kanban-surfaces-error` |
+| Calendar month and time grid | `patterns-collectionviews-views-calendar-month`, `patterns-collectionviews-views-calendar-time-grid` |
+| Spreadsheet with editable cells | `patterns-collectionviews-views-data-grid` |
+| Read-only table | `patterns-collectionviews-views-data-table` |
+| Toolbar and pagination | `patterns-toolbar`, `patterns-pagination` |
+| Cell and card values (status, person, date) | the `patterns-properties-display-*` entries |
+
+## Done when
+
+- Every view in `modes` has its props block in the outlet.
+- Every grouping offered in Kanban has `setGroupId`, or drag is intentionally off.
+- Search, filters and presets live in your state, and the items passed to `collection` are already filtered.
+- Loading and empty states exist for each view you offer.
+- `test-run` passes for the stories you added, axe included.

@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Action,
   ActionBar,
   type CalendarViewMode,
+  type CollectionPreferences,
   CollectionProvider,
   CollectionSearchField,
   CollectionToolbar,
@@ -14,7 +14,6 @@ import {
   DataGridSortSubmenu,
   MenuCheckboxOption,
   MenuRadioOption,
-  PresetsMenu,
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
@@ -22,10 +21,10 @@ import {
   type ViewSettingsMode,
   ViewSettingsSection,
 } from '@tc96/parttens'
+import { Button } from '@tc96/ui/button'
 import {
   MenuGroup,
   MenuGroupLabel,
-  MenuItem,
   MenuRadioGroup,
   MenuSeparator,
   MenuSub,
@@ -47,17 +46,22 @@ import {
   UsersIcon,
 } from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { SelectedViewPicker } from '../../shared/selected-view-picker'
+import {
+  resetPersistedMock,
+  usePersistedState,
+  useSimulatedFetch,
+} from './persisted-mock'
 import {
   createDataGridColumns,
   createDataTableColumns,
   type UpdateTask,
-} from './fixtures/task-fields'
+} from './task-fields'
 import {
   createTaskCalendarProps,
   renderTaskKanbanCard,
   renderTaskListRow,
-} from './fixtures/task-renderers'
+} from './task-renderers'
 import {
   createCollection,
   groupings,
@@ -66,9 +70,9 @@ import {
   priorityOptions,
   type Task,
   type TaskPriority,
-} from './fixtures/tasks'
+} from './tasks'
 
-const viewModes: readonly ViewSettingsMode<CollectionViewMode>[] = [
+export const viewModes: readonly ViewSettingsMode<CollectionViewMode>[] = [
   { icon: Rows3Icon, label: 'Lista', value: 'list' },
   { icon: LayoutGridIcon, label: 'Kanban', value: 'kanban' },
   { icon: CalendarDaysIcon, label: 'Calendário', value: 'calendar' },
@@ -85,19 +89,49 @@ const calendarModes: readonly { label: string; value: CalendarViewMode }[] = [
 const isCalendarMode = (value: string): value is CalendarViewMode =>
   calendarModes.some((mode) => mode.value === value)
 
-const presets = [
-  { id: 'all', label: 'Todas as tarefas' },
-  { id: 'mine', label: 'Minhas tarefas' },
-  { id: 'open', label: 'Em aberto' },
-] as const
+type PresetScope = 'all' | 'mine' | 'open'
 
-type PresetId = (typeof presets)[number]['id']
+interface Preset {
+  assigneeIds: readonly string[]
+  id: string
+  label: string
+  priorities: readonly TaskPriority[]
+  scope: PresetScope
+  search: string
+  view: CollectionViewMode
+}
+
+type PresetSettings = Pick<
+  Preset,
+  'assigneeIds' | 'priorities' | 'search' | 'view'
+>
+
+const basePresets: readonly Pick<Preset, 'id' | 'label' | 'scope'>[] = [
+  { id: 'all', label: 'Todas as tarefas', scope: 'all' },
+  { id: 'mine', label: 'Minhas tarefas', scope: 'mine' },
+  { id: 'open', label: 'Em aberto', scope: 'open' },
+]
+
+const createPresets = (view: CollectionViewMode): readonly Preset[] =>
+  basePresets.map((preset) => ({
+    ...preset,
+    assigneeIds: [],
+    priorities: [],
+    search: '',
+    view,
+  }))
+
+const hasSameSettings = (a: PresetSettings, b: PresetSettings) =>
+  a.view === b.view &&
+  a.search === b.search &&
+  a.assigneeIds.join() === b.assigneeIds.join() &&
+  a.priorities.join() === b.priorities.join()
 
 const CURRENT_USER_ID = 'ana'
 
-const matchesPreset = (task: Task, preset: PresetId) => {
-  if (preset === 'mine') return task.assigneeId === CURRENT_USER_ID
-  if (preset === 'open') return task.status !== 'done'
+const matchesScope = (task: Task, scope: PresetScope) => {
+  if (scope === 'mine') return task.assigneeId === CURRENT_USER_ID
+  if (scope === 'open') return task.status !== 'done'
   return true
 }
 
@@ -106,21 +140,34 @@ const toggle = <TValue,>(values: readonly TValue[], value: TValue) =>
     ? values.filter((current) => current !== value)
     : [...values, value]
 
-function TasksShowcase({
+function TasksWorkspace({
+  loading,
+  onReset,
   onTasksChange,
   tasks,
 }: Readonly<{
+  loading: boolean
+  onReset: () => void
   onTasksChange: (update: (current: Task[]) => Task[]) => void
   tasks: readonly Task[]
 }>): ReactElement {
   const { preferences, setPreferences } = useCollectionPreferences()
-  const [preset, setPreset] = useState<PresetId>('all')
-  const [search, setSearch] = useState('')
-  const [assigneeFilter, setAssigneeFilter] = useState<readonly string[]>([])
-  const [priorityFilter, setPriorityFilter] = useState<readonly TaskPriority[]>(
-    [],
+  const [presets, setPresets] = usePersistedState('presets', () =>
+    createPresets(preferences.view),
   )
-  const [calendarMode, setCalendarMode] = useState<CalendarViewMode>('month')
+  const [presetId, setPresetId] = usePersistedState('preset-id', 'all')
+  const [search, setSearch] = usePersistedState('search', '')
+  const [assigneeFilter, setAssigneeFilter] = usePersistedState<
+    readonly string[]
+  >('assignee-filter', [])
+  const [priorityFilter, setPriorityFilter] = usePersistedState<
+    readonly TaskPriority[]
+  >('priority-filter', [])
+  const [calendarMode, setCalendarMode] = usePersistedState<CalendarViewMode>(
+    'calendar-mode',
+    'month',
+  )
+  const activePreset = presets.find(({ id }) => id === presetId) ?? presets[0]
 
   const updateTask = useCallback<UpdateTask>(
     (id, change) =>
@@ -136,7 +183,7 @@ function TasksShowcase({
     const term = search.toLocaleLowerCase('pt-BR')
     return tasks.filter(
       (task) =>
-        matchesPreset(task, preset) &&
+        matchesScope(task, activePreset.scope) &&
         (!term ||
           `${task.id} ${task.title} ${task.description}`
             .toLocaleLowerCase('pt-BR')
@@ -145,7 +192,7 @@ function TasksShowcase({
           assigneeFilter.includes(task.assigneeId)) &&
         (priorityFilter.length === 0 || priorityFilter.includes(task.priority)),
     )
-  }, [assigneeFilter, preset, priorityFilter, search, tasks])
+  }, [activePreset.scope, assigneeFilter, priorityFilter, search, tasks])
 
   const collection = useMemo(
     () => createCollection(visibleTasks),
@@ -212,8 +259,45 @@ function TasksShowcase({
   const view = preferences.view
   const usesGrouping =
     view === 'list' || view === 'kanban' || view === 'datagrid'
-  const presetLabel =
-    presets.find(({ id }) => id === preset)?.label ?? presets[0].label
+  const currentSettings: PresetSettings = {
+    assigneeIds: assigneeFilter,
+    priorities: priorityFilter,
+    search,
+    view,
+  }
+  const presetModified = !hasSameSettings(currentSettings, activePreset)
+
+  const selectPreset = (next: Preset) => {
+    setPresetId(next.id)
+    setAssigneeFilter(next.assigneeIds)
+    setPriorityFilter(next.priorities)
+    setSearch(next.search)
+    setPreferences((current) => ({ ...current, view: next.view }), 'view')
+  }
+  const savePreset = () =>
+    setPresets((current) =>
+      current.map((preset) =>
+        preset.id === activePreset.id
+          ? { ...preset, ...currentSettings }
+          : preset,
+      ),
+    )
+  const createPreset = () => {
+    const savedCount = presets.filter(({ id }) => id.startsWith('saved-'))
+    const next: Preset = {
+      ...currentSettings,
+      id: `saved-${crypto.randomUUID()}`,
+      label: `Nova visão ${savedCount.length + 1}`,
+      scope: activePreset.scope,
+    }
+    setPresets((current) => [...current, next])
+    setPresetId(next.id)
+  }
+  const deletePreset = (id: string) => {
+    const remaining = presets.filter((preset) => preset.id !== id)
+    setPresets(remaining)
+    if (id === activePreset.id) selectPreset(remaining[0])
+  }
 
   const selectionActions = (
     selectedIds: readonly string[],
@@ -267,12 +351,17 @@ function TasksShowcase({
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-4 p-6">
-      <header>
-        <h1 className="font-semibold text-2xl">Lançamento do app 2.0</h1>
-        <p className="text-muted-foreground text-sm">
-          Todas as tarefas do lançamento em uma coleção — troque a view em
-          Exibição.
-        </p>
+      <header className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-semibold text-2xl">Lançamento do app 2.0</h1>
+          <p className="text-muted-foreground text-sm">
+            Dados de exemplo salvos neste navegador: edições, filtros e views
+            continuam após recarregar.
+          </p>
+        </div>
+        <Button onClick={onReset} size="sm" variant="outline">
+          Restaurar dados
+        </Button>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3">
@@ -291,6 +380,8 @@ function TasksShowcase({
                 mode={view}
                 modes={viewModes}
                 onClearFilters={clearFilters}
+                onSavePreference={savePreset}
+                savePreferenceDisabled={!presetModified}
                 onModeChange={(nextView) =>
                   setPreferences(
                     (current) => ({ ...current, view: nextView }),
@@ -453,23 +544,16 @@ function TasksShowcase({
             </>
           }
           startSlot={
-            <PresetsMenu
-              count={visibleTasks.length}
-              countLabel={`${visibleTasks.length} tarefas`}
-              label={presetLabel}
-            >
-              <MenuGroup>
-                <MenuGroupLabel>Visões salvas</MenuGroupLabel>
-                {presets.map((option) => (
-                  <MenuItem
-                    key={option.id}
-                    onClick={() => setPreset(option.id)}
-                  >
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </MenuGroup>
-            </PresetsMenu>
+            <SelectedViewPicker
+              onCreate={createPreset}
+              onDelete={presets.length > 1 ? deletePreset : undefined}
+              onSelect={(id) => {
+                const next = presets.find((preset) => preset.id === id)
+                if (next) selectPreset(next)
+              }}
+              selectedId={activePreset.id}
+              views={presets}
+            />
           }
           variant="plain"
         />
@@ -482,6 +566,8 @@ function TasksShowcase({
             onItemChange={({ item }) => replaceTask(item)}
             calendar={{
               ...createTaskCalendarProps(updateTask),
+              loading,
+              loadingItemLabel: 'Carregando tarefa',
               mode: calendarMode,
             }}
             collection={collection}
@@ -489,6 +575,7 @@ function TasksShowcase({
               'aria-label': 'Tarefas do lançamento',
               emptyMessage: 'Nenhuma tarefa com esses filtros.',
               getRowGroup: grouping ? groupRowLabel : undefined,
+              isLoading: loading,
               selectionActions: ({
                 clearSelection,
                 selectedCount,
@@ -509,10 +596,14 @@ function TasksShowcase({
             datatable={{
               'aria-label': 'Tarefas do lançamento',
               bordered: true,
+              isLoading: loading,
               emptyMessage: 'Nenhuma tarefa com esses filtros.',
               table: dataTable,
             }}
             kanban={{
+              loading,
+              loadingCardCount: 2,
+              loadingCardLabel: 'Carregando tarefa',
               emptyColumnLabel: 'Nenhuma tarefa nesta coluna.',
               getColumnActions: (column) => ({
                 addLabel: `Nova tarefa em ${column.title}`,
@@ -520,28 +611,34 @@ function TasksShowcase({
               }),
             }}
             list={{
+              loading,
+              loadingItemCount: 3,
+              loadingItemLabel: 'Carregando tarefa',
               collapseEmptyGroups: true,
               emptyGroupLabel: 'Nenhuma tarefa neste grupo.',
               renderGroupTitle: (group) => group.label,
             }}
-            renderKanbanItem={renderTaskKanbanCard(
-              preferences.groupBy,
-              updateTask,
-            )}
+            renderKanbanItem={renderTaskKanbanCard(updateTask)}
             renderListItem={renderTaskListRow(updateTask)}
           />
           {view === 'datatable' ? (
             <>
               <DataGridPagination table={dataTable} />
-              <ActionBar
-                actions={selectionActions(
-                  dataTableSelection.map((task) => task.id),
-                  () => dataTable.resetRowSelection(),
-                )}
-                onClearSelection={() => dataTable.resetRowSelection()}
-                selectedCount={dataTableSelection.length}
-                selectedRows={dataTableSelection}
-              />
+              {dataTableSelection.length > 0 ? (
+                <div className="pointer-events-none fixed inset-x-0 bottom-6 z-20 flex justify-center px-3">
+                  <div className="pointer-events-auto max-w-full">
+                    <ActionBar
+                      actions={selectionActions(
+                        dataTableSelection.map((task) => task.id),
+                        () => dataTable.resetRowSelection(),
+                      )}
+                      onClearSelection={() => dataTable.resetRowSelection()}
+                      selectedCount={dataTableSelection.length}
+                      selectedRows={dataTableSelection}
+                    />
+                  </div>
+                </div>
+              ) : null}
             </>
           ) : null}
         </section>
@@ -550,200 +647,58 @@ function TasksShowcase({
   )
 }
 
-function CollectionViewsShowcase({
+export function TasksUsage({
   defaultView = 'list',
-}: Readonly<{ defaultView?: CollectionViewMode }>): ReactElement {
-  const [tasks, setTasks] = useState(initialTasks)
+  fetchDelay = 0,
+}: Readonly<{
+  defaultView?: CollectionViewMode
+  fetchDelay?: number
+}>): ReactElement {
+  const [session, setSession] = useState(0)
+
+  return (
+    <TasksCollection
+      defaultView={defaultView}
+      fetchDelay={fetchDelay}
+      key={session}
+      onReset={() => {
+        resetPersistedMock()
+        setSession((current) => current + 1)
+      }}
+    />
+  )
+}
+
+function TasksCollection({
+  defaultView,
+  fetchDelay,
+  onReset,
+}: Readonly<{
+  defaultView: CollectionViewMode
+  fetchDelay: number
+  onReset: () => void
+}>): ReactElement {
+  const [tasks, setTasks] = usePersistedState<Task[]>('tasks', initialTasks)
+  const [preferences, setPreferences] =
+    usePersistedState<CollectionPreferences>('preferences', {
+      groupBy: 'status',
+      view: defaultView,
+    })
   const collection = useMemo(() => createCollection(tasks), [tasks])
+  const loading = useSimulatedFetch(fetchDelay)
 
   return (
     <CollectionProvider
       collection={collection}
-      defaultPreferences={{ groupBy: 'status', view: defaultView }}
+      onPreferencesChange={setPreferences}
+      preferences={preferences}
     >
-      <TasksShowcase onTasksChange={setTasks} tasks={tasks} />
+      <TasksWorkspace
+        loading={loading}
+        onReset={onReset}
+        onTasksChange={setTasks}
+        tasks={tasks}
+      />
     </CollectionProvider>
   )
-}
-
-const meta = {
-  argTypes: {
-    defaultView: {
-      control: 'inline-radio',
-      options: viewModes.map((mode) => mode.value),
-    },
-  },
-  component: CollectionViewsShowcase,
-  parameters: {
-    docs: {
-      description: {
-        component: [
-          'Showcase of the collection views over one real collection: the tasks of an app launch.',
-          'The `ViewSettingsMenu` switches between **List**, **Kanban**, **Calendar**, **Spreadsheet** (DataGrid) and **Table** (DataTable), and gathers grouping, calendar range, sorting, density, columns and filters by assignee and priority.',
-          'Every edit goes back to the same collection: moving a card in Kanban, rescheduling in the Calendar or changing status and priority in the tables shows up in every view.',
-        ].join('\n\n'),
-      },
-    },
-    layout: 'fullscreen',
-  },
-  title: 'Patterns/CollectionViews',
-} satisfies Meta<typeof CollectionViewsShowcase>
-
-export default meta
-
-type Story = StoryObj<typeof meta>
-
-export const Default: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Walks the five views through the `ViewSettingsMenu` tabs and checks that each one mounts over the same collection.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-    const views = [
-      ['Kanban', 'kanban-view'],
-      ['Calendário', 'calendar-view'],
-      ['Planilha', 'data-grid'],
-      ['Tabela', 'table-container'],
-      ['Lista', 'list-view'],
-    ] as const
-
-    for (const [label, slot] of views) {
-      await userEvent.click(canvas.getByRole('button', { name: /Exibição/ }))
-      await userEvent.click(
-        await body.findByRole('menuitemradio', { name: label }),
-      )
-      await waitFor(() =>
-        expect(
-          canvasElement.querySelector(`[data-slot="${slot}"]`),
-        ).not.toBeNull(),
-      )
-    }
-
-    await expect(canvas.getByText('Implementar onboarding')).toBeInTheDocument()
-  },
-}
-
-export const SharedEdits: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Changing the status in the Table rewrites the task in the shared collection.',
-      },
-    },
-  },
-  args: { defaultView: 'datatable' },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-    const row = canvas.getByText('Notificações push').closest('tr')
-    if (!row) throw new Error('linha não montou')
-
-    await userEvent.click(
-      within(row).getByRole('combobox', { name: 'Status: Backlog' }),
-    )
-    await userEvent.click(
-      await body.findByRole('option', { name: 'Em revisão' }),
-    )
-
-    await userEvent.click(canvas.getByRole('button', { name: /Exibição/ }))
-    await userEvent.click(
-      await body.findByRole('menuitemradio', { name: 'Kanban' }),
-    )
-    const review = await canvas.findByRole('region', { name: /Em revisão/ })
-    await expect(within(review).getByText('Notificações push')).toBeTruthy()
-  },
-}
-
-export const SpreadsheetProperties: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'In the Spreadsheet, every value column is a UI property, including the due date.',
-      },
-    },
-  },
-  args: { defaultView: 'datagrid' },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-    const grid = await waitFor(() => {
-      const element = canvasElement.querySelector('[data-slot="data-grid"]')
-      if (!(element instanceof HTMLElement)) throw new Error('grid não montou')
-      return within(element)
-    })
-
-    for (const label of [
-      /^Status:/,
-      /^Prioridade:/,
-      /^Responsável:/,
-      /^Prazo/,
-    ]) {
-      await expect(grid.getAllByLabelText(label).length).toBeGreaterThan(0)
-    }
-
-    await userEvent.click(
-      grid.getAllByLabelText(/^Responsável: Diego Rocha/)[0],
-    )
-    await userEvent.click(
-      await body.findByRole('option', { name: /Carla Mendes/ }),
-    )
-
-    await userEvent.click(canvas.getByRole('button', { name: /Exibição/ }))
-    await userEvent.click(
-      await body.findByRole('menuitemradio', { name: 'Tabela' }),
-    )
-    const row = (await canvas.findByText('Code freeze da versão 2.0')).closest(
-      'tr',
-    )
-    if (!row) throw new Error('linha não montou')
-    await expect(within(row).getByText('Carla Mendes')).toBeTruthy()
-  },
-}
-
-export const KanbanMoveWritesGroup: Story = {
-  args: { defaultView: 'kanban' },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Each grouping declares `setGroupId`, the write pair of `getGroupId`. A drop into another column makes the outlet build the updated item and hand it to `onItemChange`; the consumer only stores it. The card stays in the new column and the Table shows the new status.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-    const overlay = () =>
-      canvasElement.ownerDocument.querySelector('[data-dnd-overlay]')
-
-    canvas.getByRole('button', { name: 'Mover card Notificações push' }).focus()
-    await userEvent.keyboard('[Space]')
-    await waitFor(() => expect(overlay()).not.toBeEmptyDOMElement())
-    await userEvent.keyboard('[ArrowRight]')
-    await userEvent.keyboard('[Space]')
-    await waitFor(() => expect(overlay()).toBeEmptyDOMElement())
-
-    const todo = canvas.getByRole('region', { name: /A fazer/ })
-    await waitFor(() =>
-      expect(within(todo).getByText('Notificações push')).toBeTruthy(),
-    )
-
-    await userEvent.click(canvas.getByRole('button', { name: /Exibição/ }))
-    await userEvent.click(
-      await body.findByRole('menuitemradio', { name: 'Tabela' }),
-    )
-    const row = (await canvas.findByText('Notificações push')).closest('tr')
-    if (!row) throw new Error('row did not mount')
-    await expect(
-      within(row).getByRole('combobox', { name: 'Status: A fazer' }),
-    ).toBeTruthy()
-  },
 }

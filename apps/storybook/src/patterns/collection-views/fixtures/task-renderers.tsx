@@ -1,22 +1,32 @@
+import { Text } from '@tc96/elements/text'
 import {
   CalendarEventChip,
   CalendarEventChipOpenTrigger,
   CalendarEventChipTime,
   CalendarEventChipTitle,
   type CalendarItemRenderContext,
-  type CollectionGroupingId,
   KanbanCard,
+  KanbanCardAction,
   KanbanCardBody,
   KanbanCardBodyRow,
   KanbanCardDescription,
   KanbanCardFooter,
   KanbanCardHeader,
-  type KanbanCardMove,
   KanbanCardTitle,
   type ListItemDensity,
   ListRow,
 } from '@tc96/parttens'
+import {
+  Clock3Icon,
+  FileTextIcon,
+  ListTodoIcon,
+  MessageCircleIcon,
+} from 'lucide-react'
 import { useCallback, useState } from 'react'
+import {
+  KanbanCardCountAction,
+  KanbanCardMoreActions,
+} from './kanban-card-actions'
 import {
   AssigneeField,
   DueField,
@@ -27,7 +37,6 @@ import {
 import {
   ANCHOR,
   formatMinutes,
-  groupings,
   initialTasks,
   NOW,
   STATUS_TONE,
@@ -47,14 +56,7 @@ export function useTasks(initial: readonly Task[] = initialTasks) {
     [],
   )
 
-  const replaceTask = useCallback((next: Task) => {
-    setTasks((current) =>
-      current.map((task) => (task.id === next.id ? next : task)),
-    )
-    return true
-  }, [])
-
-  return { replaceTask, setTasks, tasks, updateTask }
+  return { setTasks, tasks, updateTask }
 }
 
 export const renderTaskListRow =
@@ -89,44 +91,88 @@ export const renderTaskListRow =
   }
 
 export const renderTaskKanbanCard =
-  (groupBy: CollectionGroupingId | null, updateTask: UpdateTask) =>
-  (task: Task) => (
-    <KanbanCard key={task.id} variant="interactive">
-      <KanbanCardHeader>
-        <KanbanCardTitle>{task.title}</KanbanCardTitle>
-        <KanbanCardDescription>{task.description}</KanbanCardDescription>
-      </KanbanCardHeader>
-      <KanbanCardBody>
-        <KanbanCardBodyRow data-kanban-card-action="">
-          {groupBy === 'status' ? (
+  (updateTask: UpdateTask) => (task: Task) => {
+    return (
+      <KanbanCard density="sm" key={task.id} variant="interactive">
+        <KanbanCardHeader>
+          <div className="flex min-w-0 items-center gap-2">
+            <KanbanCardTitle className="min-w-0 flex-1 truncate">
+              {task.title}
+            </KanbanCardTitle>
+          </div>
+          <KanbanCardDescription>{task.description}</KanbanCardDescription>
+          <KanbanCardAction>
+            <KanbanCardMoreActions
+              items={['Editar tarefa', 'Duplicar tarefa']}
+              label="Mais ações da tarefa"
+            />
+          </KanbanCardAction>
+        </KanbanCardHeader>
+
+        <KanbanCardBody className="grid gap-2 text-sm">
+          <KanbanCardBodyRow data-kanban-card-action="">
+            <DueField onChange={updateTask} task={task} variant="plain" />
+          </KanbanCardBodyRow>
+          <KanbanCardBodyRow>
+            <Text
+              className="flex min-w-0 items-center gap-2"
+              foreground="muted"
+              size="sm"
+            >
+              <Clock3Icon aria-hidden className="size-3.5" />
+              <span>{task.estimate} h</span>
+            </Text>
+          </KanbanCardBodyRow>
+          <KanbanCardBodyRow data-kanban-card-action="">
             <PriorityField onChange={updateTask} task={task} />
-          ) : (
-            <StatusField onChange={updateTask} task={task} />
-          )}
-        </KanbanCardBodyRow>
-      </KanbanCardBody>
-      <KanbanCardFooter>
-        <div className="flex min-w-0 flex-1 items-center justify-between gap-3 text-muted-foreground text-xs">
-          <DueField onChange={updateTask} task={task} variant="plain" />
-          <AssigneeField
-            display="avatar"
-            onChange={updateTask}
-            task={task}
-            variant="plain"
-          />
-        </div>
-      </KanbanCardFooter>
-    </KanbanCard>
-  )
+          </KanbanCardBodyRow>
+        </KanbanCardBody>
 
-const statusGrouping = groupings.find(({ id }) => id === 'status')
-
-export const moveTaskStatus =
-  (replaceTask: (task: Task) => boolean) =>
-  ({ card, targetColumnId }: KanbanCardMove<Task>) =>
-    statusGrouping?.setGroupId
-      ? replaceTask(statusGrouping.setGroupId(card, targetColumnId))
-      : false
+        <KanbanCardFooter className="gap-2">
+          <div className="flex min-w-0 flex-1 items-center gap-1">
+            <span data-kanban-card-action="">
+              <KanbanCardCountAction
+                createLabel="Criar nota"
+                label="Notas: 1"
+                viewLabel="Ver notas"
+              >
+                <FileTextIcon aria-hidden className="size-3.5" />
+                <span>1</span>
+              </KanbanCardCountAction>
+            </span>
+            <span data-kanban-card-action="">
+              <KanbanCardCountAction
+                createLabel="Criar subtarefa"
+                label="Subtarefas: 1"
+                viewLabel="Ver subtarefas"
+              >
+                <ListTodoIcon aria-hidden className="size-3.5" />
+                <span>1</span>
+              </KanbanCardCountAction>
+            </span>
+            <span data-kanban-card-action="">
+              <KanbanCardCountAction
+                createLabel="Criar comentário"
+                label="Comentários: 1"
+                viewLabel="Ver comentários"
+              >
+                <MessageCircleIcon aria-hidden className="size-3.5" />
+                <span>1</span>
+              </KanbanCardCountAction>
+            </span>
+          </div>
+          <span className="ml-auto shrink-0" data-kanban-card-action="">
+            <AssigneeField
+              display="avatar"
+              onChange={updateTask}
+              task={task}
+              variant="plain"
+            />
+          </span>
+        </KanbanCardFooter>
+      </KanbanCard>
+    )
+  }
 
 export const createTaskCalendarProps = (updateTask: UpdateTask) => ({
   anchor: ANCHOR,
