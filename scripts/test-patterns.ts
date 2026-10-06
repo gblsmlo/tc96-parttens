@@ -7,6 +7,7 @@ for (const path of [
   'editable',
   'properties',
   'record-dialog',
+  'record-group',
   'record-preview',
   'rich-text-editor',
   'shared',

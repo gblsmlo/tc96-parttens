@@ -339,6 +339,16 @@
     "RecordPreviewActionProps",
     "RecordPreviewProps"
   ],
+  "record-group": [
+    "RecordGroup",
+    "RecordGroupAction",
+    "RecordGroupActionProps",
+    "RecordGroupProps",
+    "RecordGroupRow",
+    "RecordGroupRowAlign",
+    "RecordGroupRowProps",
+    "RecordGroupVariant"
+  ],
   "widgets": [
     "Achievement",
     "AchievementsWidget",
@@ -867,6 +877,14 @@
     "RecordDialogProps",
     "RecordDialogSettlement",
     "RecordDialogSize",
+    "RecordGroup",
+    "RecordGroupAction",
+    "RecordGroupActionProps",
+    "RecordGroupProps",
+    "RecordGroupRow",
+    "RecordGroupRowAlign",
+    "RecordGroupRowProps",
+    "RecordGroupVariant",
     "RecordPreview",
     "RecordPreviewAction",
     "RecordPreviewActionProps",

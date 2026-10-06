@@ -8,6 +8,7 @@ export const patternNames = [
   'checklist',
   'record-dialog',
   'record-preview',
+  'record-group',
   'widgets',
   'rich-text-editor',
   'state-surface',

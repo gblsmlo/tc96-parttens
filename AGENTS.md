@@ -12,7 +12,7 @@ Stack: Bun workspaces, React 19, TypeScript, Tailwind CSS v4, Base UI, Storybook
 
 ```text
 packages/
-  parttens/    pattern source (collection-views, properties, editable, checklist, record-dialog, record-preview, widgets, rich-text-editor)
+  parttens/    pattern source (collection-views, properties, editable, checklist, record-dialog, record-preview, record-group, widgets, rich-text-editor)
   elements/    components COSS does not have (Text, IconFrame)
   helpers/     React-free functions (amount formatting, dates, rich text)
   ui/          COSS components, unmodified, locked by coss.lock.json
