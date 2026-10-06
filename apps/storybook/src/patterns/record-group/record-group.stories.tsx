@@ -1,22 +1,32 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   DateProperty,
+  PersonProperty,
+  type PersonPropertyOption,
   RecordGroup,
   RecordGroupAction,
   RecordGroupRow,
   type RecordGroupRowAlign,
   type RecordGroupVariant,
+  SelectProperty,
+  type SelectPropertyOption,
+  TagsProperty,
+  type TagsPropertyOption,
   TextProperty,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
   CalendarDaysIcon,
+  CircleCheckIcon,
+  CircleDotIcon,
+  CirclePauseIcon,
   HashIcon,
   PlusIcon,
   ShapesIcon,
   UserIcon,
 } from 'lucide-react'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { useState } from 'react'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 
 interface RowFixture {
   icon: typeof ShapesIcon
@@ -236,11 +246,13 @@ export const LongLabelStartInteraction: Story = {
     const longRow = rows[1] as HTMLElement
     const text = part(longRow, 'label').lastElementChild as HTMLElement
     const value = part(longRow, 'value')
+    const widths = rows.map(
+      (row) => part(row, 'label').getBoundingClientRect().width,
+    )
 
     expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
-    expect(part(longRow, 'label').getBoundingClientRect().width).toBe(
-      part(rows[0] as HTMLElement, 'label').getBoundingClientRect().width,
-    )
+    expect(new Set(widths).size).toBe(1)
+    expect(widths[0]).toBeLessThanOrEqual(120)
     expect(value).toBeVisible()
     expect(value).toHaveTextContent('Oct 21')
   },
@@ -268,6 +280,7 @@ export const LongLabelBetweenInteraction: Story = {
     const valueBox = valueText.getBoundingClientRect()
 
     expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
+    expect(label.getBoundingClientRect().width).toBeLessThanOrEqual(120)
     expect(value).toBeVisible()
     expect(valueBox.width).toBeGreaterThan(0)
     expect(valueBox.left).toBeGreaterThanOrEqual(
@@ -332,25 +345,31 @@ export const CardInteraction: Story = {
   tags: interaction,
 }
 
+const longTitle =
+  'Customer onboarding, compliance review and contract renewal details for the current quarter'
+
 export const LongTitle: Story = {
-  args: {
-    actionLabel: 'Add property',
-    title: 'Customer onboarding and compliance details',
-  },
+  args: { actionLabel: 'Add property', title: longTitle },
 }
 
 export const LongTitleInteraction: Story = {
   ...LongTitle,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const title = 'Customer onboarding and compliance details'
-    const trigger = canvas.getByRole('button', { name: title })
+    const trigger = canvas.getByRole('button', { name: longTitle })
     const text = trigger.querySelector('span') as HTMLElement
+    const header = canvasElement.querySelector(
+      '[data-slot="record-group-header"]',
+    ) as HTMLElement
+    const action = canvas.getByRole('button', { name: 'Add property' })
 
-    expect(canvas.getByRole('region', { name: title })).toBeVisible()
-    expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
-    expect(text.clientWidth).toBeLessThanOrEqual(120)
-    expect(canvas.getByRole('button', { name: 'Add property' })).toBeVisible()
+    expect(canvas.getByRole('region', { name: longTitle })).toBeVisible()
+    expect(text.scrollWidth).toBeLessThanOrEqual(text.clientWidth)
+    expect(action).toBeVisible()
+    expect(action.getBoundingClientRect().right).toBeLessThanOrEqual(
+      header.getBoundingClientRect().right + 0.5,
+    )
+    expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth)
   },
   tags: interaction,
 }
@@ -475,6 +494,264 @@ export const EmptyInteraction: Story = {
     expect(
       within(footer).getByRole('button', { name: 'Add property' }),
     ).toBeVisible()
+  },
+  tags: interaction,
+}
+
+const statusOptions: SelectPropertyOption[] = [
+  {
+    icon: CircleDotIcon,
+    label: 'In progress',
+    tone: 'info',
+    value: 'progress',
+  },
+  { icon: CirclePauseIcon, label: 'On hold', tone: 'warning', value: 'hold' },
+  { icon: CircleCheckIcon, label: 'Done', tone: 'success', value: 'done' },
+]
+
+const assigneeOptions: PersonPropertyOption[] = [
+  { label: 'Mariana Souza', value: 'mariana' },
+  { label: 'Daniel Costa', value: 'daniel' },
+]
+
+const labelOptions: TagsPropertyOption[] = [
+  { label: 'Compliance', value: 'compliance' },
+  { label: 'Customer', value: 'customer' },
+  { label: 'Urgent', value: 'urgent' },
+]
+
+function PropertiesDemo() {
+  return (
+    <RecordGroup title="Properties">
+      <RecordGroupRow label="Title" leading={<HashIcon aria-hidden="true" />}>
+        <TextProperty
+          ariaLabel="Title"
+          value="Quarterly access review"
+          variant="plain"
+        />
+      </RecordGroupRow>
+      <RecordGroupRow
+        label="Status"
+        leading={<ShapesIcon aria-hidden="true" />}
+      >
+        <SelectProperty
+          ariaLabel="Status"
+          options={statusOptions}
+          readOnly
+          value="progress"
+          variant="plain"
+        />
+      </RecordGroupRow>
+      <RecordGroupRow
+        label="Assignee"
+        leading={<UserIcon aria-hidden="true" />}
+      >
+        <PersonProperty
+          ariaLabel="Assignee"
+          options={assigneeOptions}
+          readOnly
+          value="mariana"
+          variant="plain"
+        />
+      </RecordGroupRow>
+      <RecordGroupRow
+        label="Labels"
+        leading={<ShapesIcon aria-hidden="true" />}
+      >
+        <TagsProperty
+          ariaLabel="Labels"
+          options={labelOptions}
+          readOnly
+          value={['compliance']}
+          variant="plain"
+        />
+      </RecordGroupRow>
+      <RecordGroupRow
+        label="Due"
+        leading={<CalendarDaysIcon aria-hidden="true" />}
+      >
+        <DateProperty
+          ariaLabel="Due date"
+          locale="en-US"
+          readOnly
+          timeZone="UTC"
+          value="2026-10-21T12:00:00.000Z"
+          variant="plain"
+        />
+      </RecordGroupRow>
+    </RecordGroup>
+  )
+}
+
+const controlSelector =
+  'button, a[href], input, textarea, select, [role="combobox"], [role="textbox"]'
+
+export const ReadOnlyProperties: Story = {
+  render: () => <PropertiesDemo />,
+}
+
+export const ReadOnlyPropertiesInteraction: Story = {
+  ...ReadOnlyProperties,
+  play: async ({ canvasElement }) => {
+    const rows = rowsOf(canvasElement)
+
+    expect(rows).toHaveLength(5)
+    for (const row of rows) {
+      expect(part(row, 'value').querySelector(controlSelector)).toBeNull()
+    }
+    expect(
+      within(canvasElement).getByText('Quarterly access review'),
+    ).toBeVisible()
+    expect(within(canvasElement).getByText('In progress')).toBeVisible()
+  },
+  tags: interaction,
+}
+
+function EditablePropertiesDemo() {
+  const [title, setTitle] = useState<string | null>('Quarterly access review')
+  const [status, setStatus] = useState<string | null>('progress')
+  const [assignee, setAssignee] = useState<string | null>('mariana')
+  const [due, setDue] = useState<string | null>('2026-10-21T12:00:00.000Z')
+  const [labels, setLabels] = useState<readonly string[]>(['compliance'])
+
+  return (
+    <RecordGroup title="Properties">
+      <p className="sr-only" data-testid="committed-title">
+        {title}
+      </p>
+      <RecordGroupRow label="Title" leading={<HashIcon aria-hidden="true" />}>
+        <TextProperty
+          ariaLabel="Title"
+          editing="inline"
+          onCommit={setTitle}
+          value={title}
+        />
+      </RecordGroupRow>
+      <RecordGroupRow
+        label="Status"
+        leading={<ShapesIcon aria-hidden="true" />}
+      >
+        <SelectProperty
+          ariaLabel="Status"
+          onValueChange={setStatus}
+          options={statusOptions}
+          value={status}
+        />
+      </RecordGroupRow>
+      <RecordGroupRow
+        label="Assignee"
+        leading={<UserIcon aria-hidden="true" />}
+      >
+        <PersonProperty
+          ariaLabel="Assignee"
+          onValueChange={setAssignee}
+          options={assigneeOptions}
+          value={assignee}
+        />
+      </RecordGroupRow>
+      <RecordGroupRow
+        label="Labels"
+        leading={<ShapesIcon aria-hidden="true" />}
+      >
+        <TagsProperty
+          ariaLabel="Labels"
+          onValueChange={setLabels}
+          options={labelOptions}
+          value={labels}
+        />
+      </RecordGroupRow>
+      <RecordGroupRow
+        label="Due"
+        leading={<CalendarDaysIcon aria-hidden="true" />}
+      >
+        <DateProperty
+          ariaLabel="Due date"
+          locale="en-US"
+          onValueChange={setDue}
+          timeZone="UTC"
+          value={due}
+        />
+      </RecordGroupRow>
+    </RecordGroup>
+  )
+}
+
+export const EditableProperties: Story = {
+  render: () => <EditablePropertiesDemo />,
+}
+
+const centerOf = (element: HTMLElement) => {
+  const box = element.getBoundingClientRect()
+  return box.top + box.height / 2
+}
+
+const expectAligned = (canvasElement: HTMLElement) => {
+  const rows = rowsOf(canvasElement)
+  const startRows = rows.filter(
+    (row) => row.getAttribute('data-align') === 'start',
+  )
+
+  expect(
+    new Set(
+      startRows.map((row) => part(row, 'label').getBoundingClientRect().width),
+    ).size,
+  ).toBe(1)
+  for (const row of rows) {
+    const box = row.getBoundingClientRect()
+    const label = part(row, 'label')
+    const value = part(row, 'value')
+
+    expect(value.getBoundingClientRect().right).toBeLessThanOrEqual(
+      box.right + 0.5,
+    )
+    expect(row.scrollWidth).toBeLessThanOrEqual(row.clientWidth)
+    expect(Math.abs(centerOf(label) - centerOf(value))).toBeLessThanOrEqual(3)
+  }
+}
+
+export const EditablePropertiesInteraction: Story = {
+  ...EditableProperties,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const [, statusRow, assigneeRow] = rowsOf(canvasElement) as HTMLElement[]
+
+    expectAligned(canvasElement)
+    for (const row of rowsOf(canvasElement)) {
+      expect(part(row, 'value').querySelector(controlSelector)).not.toBeNull()
+    }
+
+    const title = canvas.getByRole('textbox', { name: 'Title' })
+    await userEvent.clear(title)
+    await userEvent.type(title, 'Access review, final')
+    await userEvent.tab()
+    await waitFor(() =>
+      expect(canvas.getByTestId('committed-title')).toHaveTextContent(
+        'Access review, final',
+      ),
+    )
+
+    await userEvent.click(canvas.getByRole('combobox', { name: /^Status/ }))
+    await userEvent.click(await screen.findByRole('option', { name: /Done/ }))
+    await waitFor(() =>
+      expect(
+        within(part(statusRow as HTMLElement, 'value')).getByText('Done'),
+      ).toBeVisible(),
+    )
+
+    await userEvent.click(canvas.getByRole('combobox', { name: /^Assignee/ }))
+    await userEvent.click(
+      await screen.findByRole('option', { name: /Daniel Costa/ }),
+    )
+    await waitFor(() =>
+      expect(
+        within(part(assigneeRow as HTMLElement, 'value')).getByText(
+          'Daniel Costa',
+        ),
+      ).toBeVisible(),
+    )
+
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
+    expectAligned(canvasElement)
   },
   tags: interaction,
 }

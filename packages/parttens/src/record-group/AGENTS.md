@@ -37,6 +37,7 @@ Footer and actions:
 Markup:
 
 - The root is a `section` made by the COSS `Collapsible` through `render`; `aria-labelledby` points at the `h2` that wraps the trigger, so the region is named by the title.
+- Editability belongs to the value: a `properties` component in a row is read-only or editable through its own props, and `RecordGroupRow` stays presentation.
 - `RecordGroupAction` has no tooltip: `label` is its only accessible name and the icon is `aria-hidden`.
 - No default copy: every label is a prop.
 
@@ -52,7 +53,8 @@ The pattern sets these attributes and styles none of them through a variant:
 | `data-slot="record-group-row-label"`, `record-group-row-value` | the two cells of a row |
 
 - Alignment and emptiness reach the classes through the `cva` variants, and the group variant through `cn` in `recordGroupClassName`; no class is keyed on `data-align`, `data-empty` or `data-variant`.
-- The title text is capped at a Tailwind scale step and truncated, so a long title never pushes `actions` out; the region and the trigger keep the full title as their name.
+- The title is never truncated: it wraps inside the header, so a long title never pushes `actions` out, and the region and the trigger keep it as their name.
+- The row label is capped at a Tailwind scale step: fixed in `start`, a maximum in `between`, and it truncates past it.
 - `between` rows are a two-track grid: the label track takes what the value leaves and truncates first, but keeps a floor so a long value never crushes it onto the leading icon; past the floor the value shrinks inside its cell, and the row never overflows horizontally.
 - `start` fixes the label column in `recordGroupRowLabelVariants`, so every row shares one width whatever its label length.
 - The chevron rotates from the trigger's own `data-panel-open` (`group-data-panel-open/trigger:`), set by Base UI.

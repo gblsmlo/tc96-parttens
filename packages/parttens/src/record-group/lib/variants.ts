@@ -38,8 +38,8 @@ export const recordGroupRowLabelVariants = cva(
     defaultVariants: { align: 'start' },
     variants: {
       align: {
-        between: 'min-w-0',
-        start: 'w-32 shrink-0',
+        between: 'min-w-0 max-w-30',
+        start: 'w-30 shrink-0',
       },
     },
   },

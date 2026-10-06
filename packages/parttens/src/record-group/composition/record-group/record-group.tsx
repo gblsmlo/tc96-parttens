@@ -58,7 +58,7 @@ export function RecordGroup({
               aria-hidden="true"
               className="size-4 shrink-0 -rotate-90 transition-transform group-data-panel-open/trigger:rotate-0"
             />
-            <span className="block max-w-30 truncate">{title}</span>
+            <span className="min-w-0 break-words text-start">{title}</span>
           </CollapsibleTrigger>
         </h2>
         {actions ? (

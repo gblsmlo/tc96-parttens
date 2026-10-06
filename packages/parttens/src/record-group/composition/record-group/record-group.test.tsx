@@ -353,8 +353,9 @@ test('defaults to the plain variant and exposes the variant as data-variant', ()
   ).toBe('card')
 })
 
-test('names the region and the trigger with the full title', () => {
-  const title = 'A title long enough to be cut by the width limit of the header'
+test('names the region and the trigger with the full title, never truncated', () => {
+  const title =
+    'A title long enough that it wraps in the header instead of being cut'
   mount({ title })
 
   expect(screen.getByRole('region', { name: title })).not.toBeNull()
