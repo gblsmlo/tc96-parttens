@@ -222,6 +222,29 @@ test('builds the record-preview item with COSS-only dependencies and no test fil
   ).toThrow()
 })
 
+test('builds the record-group item shipping the properties catalog it imports by path', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/record-group.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('record-group')
+  expect(paths).toContain('parttens/src/properties/shared/property-catalog.ts')
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+  expect(
+    item.registryDependencies?.every((dependency) =>
+      dependency.startsWith('@coss/'),
+    ),
+  ).toBe(true)
+})
+
 test('builds the state-surface item with COSS-only dependencies and no test files', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(

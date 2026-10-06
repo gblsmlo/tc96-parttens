@@ -19,6 +19,7 @@ Import direction: `composition/` → `display/`, `shared/`; `display/<property>/
 ## Dependents
 
 - `checklist` imports by file path, not through the barrel: `display/date/date-property.tsx`, `display/person/person-property.tsx` (`PersonProperty`, `PersonPropertyOption`) and `display/editable-text/editable-text.tsx` (`EditableText`, `EditableTextSize`). Renaming or moving these breaks `checklist`.
+- `record-group` imports `shared/property-catalog.ts` (`PropertyIcon`) by file path, as a type, from its `core.ts`. Renaming or moving it breaks `record-group`.
 - `widgets` tests import `properties/test/dom.ts`. Moving it breaks `widgets`.
 - `packages/parttens/src/index.ts` re-exports `properties/index`.
 
