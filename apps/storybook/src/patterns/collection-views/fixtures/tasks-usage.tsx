@@ -618,10 +618,7 @@ function TasksWorkspace({
               emptyGroupLabel: 'Nenhuma tarefa neste grupo.',
               renderGroupTitle: (group) => group.label,
             }}
-            renderKanbanItem={renderTaskKanbanCard(
-              preferences.groupBy,
-              updateTask,
-            )}
+            renderKanbanItem={renderTaskKanbanCard(updateTask)}
             renderListItem={renderTaskListRow(updateTask)}
           />
           {view === 'datatable' ? (

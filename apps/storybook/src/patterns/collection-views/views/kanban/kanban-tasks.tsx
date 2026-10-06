@@ -1,14 +1,4 @@
-import {
-  type KanbanColumnData,
-  KanbanView,
-  projectCollection,
-} from '@tc96/parttens'
-import { useMemo } from 'react'
-import {
-  moveTaskStatus,
-  renderTaskKanbanCard,
-  useTasks,
-} from '../../fixtures/task-renderers'
+import { type KanbanColumnData, projectCollection } from '@tc96/parttens'
 import {
   createCollection,
   type Task,
@@ -33,21 +23,3 @@ export const projectTaskColumns = (
     id: group.value ?? group.id,
     title: group.label,
   }))
-
-export function TaskBoard() {
-  const { replaceTask, tasks, updateTask } = useTasks()
-  const columns = useMemo(() => projectTaskColumns(tasks), [tasks])
-
-  return (
-    <div className="h-144 min-w-0 p-4">
-      <KanbanView
-        columns={columns}
-        emptyColumnLabel="Nenhuma tarefa nesta coluna."
-        getCardLabel={(task) => task.title}
-        getKey={(task) => task.id}
-        onMoveCard={moveTaskStatus(replaceTask)}
-        renderCard={renderTaskKanbanCard('status', updateTask)}
-      />
-    </div>
-  )
-}
