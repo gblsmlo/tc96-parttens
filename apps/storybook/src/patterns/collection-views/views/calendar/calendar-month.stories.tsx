@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CalendarView, type CalendarViewProps } from '@tc96/parttens'
 import type { ReactElement } from 'react'
-import { expect } from 'storybook/test'
+import { expect, screen, userEvent, within } from 'storybook/test'
 import { booleanArgType } from '../../../../test-utils/story-arg-types'
 import {
   createTaskCalendarProps,
@@ -52,7 +52,6 @@ function Example({
             ? createTaskCalendarProps(updateTask).onItemReschedule
             : undefined
         }
-        onSelectDay={() => undefined}
         {...(maxVisibleMonthItems === undefined
           ? {}
           : { maxVisibleMonthItems })}
@@ -130,18 +129,34 @@ export const WithTones: Story = {
 
 export const Overflow: Story = {
   args: calendarArgs,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The 18th holds five tasks and the cell shows three. The "+2" opens a popover named after the day that lists the two hidden tasks, which keep their open trigger and drag handle.',
+      },
+    },
+  },
   play: async ({ canvasElement }) => {
-    const cell = canvasElement.querySelector(
+    const cell = canvasElement.querySelector<HTMLElement>(
       '[data-calendar-date="2026-10-18"]',
     )
     await expect(
       cell?.querySelectorAll('[data-calendar-item-id]'),
     ).toHaveLength(3)
 
-    const overflow = Array.from(cell?.querySelectorAll('button') ?? []).find(
-      (button) => button.textContent === '+2',
-    )
-    await expect(overflow).toBeDefined()
+    const overflow = within(cell as HTMLElement).getByRole('button', {
+      name: /^Mostrar mais 2 itens de domingo/,
+    })
+    await expect(overflow).toHaveTextContent('+2')
+    await userEvent.click(overflow)
+
+    const popover = await screen.findByRole('dialog', { name: /^domingo/ })
+    await expect(
+      Array.from(popover.querySelectorAll('[data-calendar-item-id]')).map(
+        (item) => item.getAttribute('data-calendar-item-id'),
+      ),
+    ).toEqual(['overflow-3', 'overflow-4'])
   },
   render: () => (
     <Example itemsOverride={overflowTasks} maxVisibleMonthItems={3} />

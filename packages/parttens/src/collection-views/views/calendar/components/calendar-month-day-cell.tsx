@@ -4,6 +4,12 @@ import { CollisionPriority } from '@dnd-kit/abstract'
 import { pointerIntersection } from '@dnd-kit/collision'
 import { useDroppable } from '@dnd-kit/react'
 import { calendarDateKey } from '@tc96/helpers/calendar-date'
+import {
+  Popover,
+  PopoverClose,
+  PopoverPopup,
+  PopoverTrigger,
+} from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'
 import { useId } from 'react'
@@ -55,7 +61,8 @@ export function CalendarMonthDayCell<TItem>({
     type: 'calendar-day',
   })
   const visibleSegments = loading ? [] : segments.slice(0, maxVisibleItems)
-  const hiddenCount = loading ? 0 : segments.length - visibleSegments.length
+  const hiddenSegments = loading ? [] : segments.slice(maxVisibleItems)
+  const hiddenCount = hiddenSegments.length
 
   return (
     <div
@@ -96,20 +103,36 @@ export function CalendarMonthDayCell<TItem>({
       ))}
 
       {hiddenCount > 0 ? (
-        onSelectDay ? (
-          <button
-            aria-label={`Mostrar todos os ${segments.length} itens de ${dayLabel}`}
-            className="self-start rounded-sm px-1.5 text-muted-foreground text-xs outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-            onClick={() => onSelectDay(date)}
-            type="button"
+        <Popover>
+          <PopoverTrigger
+            aria-label={`Mostrar mais ${hiddenCount} ${hiddenCount === 1 ? 'item' : 'itens'} de ${dayLabel}`}
+            className="self-start rounded-sm px-1.5 text-muted-foreground text-xs outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring data-popup-open:text-foreground"
           >
             {overflowLabel(hiddenCount)}
-          </button>
-        ) : (
-          <span className="self-start px-1.5 text-muted-foreground text-xs">
-            {overflowLabel(hiddenCount)}
-          </span>
-        )
+          </PopoverTrigger>
+          <PopoverPopup align="start" aria-label={dayLabel} className="w-72">
+            <div className="flex flex-col gap-2">
+              {onSelectDay ? (
+                <PopoverClose
+                  aria-label={`Mostrar todos os ${segments.length} itens de ${dayLabel}`}
+                  className="self-start rounded-sm text-start font-medium text-sm outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                  onClick={() => onSelectDay(date)}
+                >
+                  {dayLabel}
+                </PopoverClose>
+              ) : (
+                <p className="font-medium text-sm">{dayLabel}</p>
+              )}
+              <ul className="flex flex-col gap-1">
+                {hiddenSegments.map((segment) => (
+                  <li className="min-w-0" key={segment.itemKey}>
+                    {renderSegment(segment)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </PopoverPopup>
+        </Popover>
       ) : null}
     </div>
   )

@@ -7,6 +7,7 @@ import type { ComponentProps, ReactElement, ReactNode } from 'react'
 
 interface CollectionToolbarBaseProps
   extends Omit<ComponentProps<typeof ToolbarPrimitive>, 'title' | 'variant'> {
+  centerSlot?: ReactNode
   endSlot?: ReactNode
   startSlot?: ReactNode
 }
@@ -32,6 +33,7 @@ export type CollectionToolbarGroupProps = ComponentProps<typeof ToolbarGroup>
 
 export function CollectionToolbar({
   'aria-label': ariaLabel = 'Controles da coleção',
+  centerSlot,
   children,
   className,
   description,
@@ -41,6 +43,11 @@ export function CollectionToolbar({
   variant = 'plain',
   ...props
 }: Readonly<CollectionToolbarProps>): ReactElement {
+  const centered = centerSlot != null
+  const spacer = centered ? (
+    <div aria-hidden="true" className="flex-1 basis-0" />
+  ) : null
+
   return (
     <ToolbarPrimitive
       aria-label={ariaLabel}
@@ -75,12 +82,27 @@ export function CollectionToolbar({
         </ToolbarGroup>
       ) : null}
       {startSlot ? (
-        <ToolbarGroup className="min-w-0">{startSlot}</ToolbarGroup>
+        <ToolbarGroup
+          className={centered ? 'min-w-0 flex-1 basis-0' : 'min-w-0'}
+        >
+          {startSlot}
+        </ToolbarGroup>
+      ) : (
+        spacer
+      )}
+      {centered ? (
+        <ToolbarGroup className="shrink-0">{centerSlot}</ToolbarGroup>
       ) : null}
       {children}
       {endSlot ? (
-        <ToolbarGroup className="ms-auto">{endSlot}</ToolbarGroup>
-      ) : null}
+        <ToolbarGroup
+          className={centered ? 'flex-1 basis-0 justify-end' : 'ms-auto'}
+        >
+          {endSlot}
+        </ToolbarGroup>
+      ) : (
+        spacer
+      )}
     </ToolbarPrimitive>
   )
 }

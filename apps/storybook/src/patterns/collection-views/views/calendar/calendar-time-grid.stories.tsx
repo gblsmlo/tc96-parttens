@@ -31,6 +31,46 @@ const overlapTasks: Task[] = [
   },
 ]
 
+const shortTask = (
+  id: string,
+  title: string,
+  start: string,
+  minutes: number,
+): Task => ({
+  ...onboarding,
+  end: new Date(new Date(start).getTime() + minutes * 60_000).toISOString(),
+  id,
+  priority: 'medium',
+  start,
+  title,
+})
+
+const shortTasks: Task[] = [
+  shortTask('short-15', 'Daily', '2026-10-13T12:00:00.000Z', 15),
+  shortTask('short-30', 'Café', '2026-10-13T13:00:00.000Z', 30),
+  shortTask(
+    'long-30',
+    'Revisão do contrato de fornecimento',
+    '2026-10-13T14:00:00.000Z',
+    30,
+  ),
+  shortTask(
+    'long-45',
+    'Alinhamento com o time de dados',
+    '2026-10-13T15:00:00.000Z',
+    45,
+  ),
+  shortTask(
+    'long-60',
+    'Planejamento da sprint de pagamentos',
+    '2026-10-13T17:00:00.000Z',
+    60,
+  ),
+  shortTask('lane-a', 'Ligação com cliente', '2026-10-14T13:00:00.000Z', 30),
+  shortTask('lane-b', 'Revisão de PR', '2026-10-14T13:00:00.000Z', 30),
+  shortTask('lane-c', 'Entrevista', '2026-10-14T13:00:00.000Z', 30),
+]
+
 const calendarArgs = {
   ...createTaskCalendarProps(() => undefined),
   collection: createCollection(initialTasks),
@@ -149,6 +189,67 @@ export const WeekOverlap: Story = {
     await expect(secondRect.left).toBeGreaterThan(firstRect.left)
   },
   render: () => <Example itemsOverride={overlapTasks} />,
+}
+
+export const ShortItems: Story = {
+  args: calendarArgs,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Items of 15, 30, 45 and 60 minutes, and three 30-minute items sharing a slot. A block shows the title before the time; one shorter than two lines lays them on a single row and keeps the time only when it fits beside the title.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const rectsOf = (id: string) => {
+      const item = canvasElement.querySelector(
+        `[data-calendar-item-id="${id}"]`,
+      )
+      const chip = item?.querySelector('[data-slot="calendar-event-chip"]')
+      const title = item?.querySelector(
+        '[data-slot="calendar-event-chip-title"]',
+      )
+      const time = item?.querySelector('[data-slot="calendar-event-chip-time"]')
+      if (!chip || !title || !time)
+        throw new Error(`A story não montou o bloco ${id}.`)
+
+      return {
+        chip: chip.getBoundingClientRect(),
+        time: time.getBoundingClientRect(),
+        title: title.getBoundingClientRect(),
+      }
+    }
+
+    for (const id of [
+      'short-30',
+      'long-30',
+      'long-45',
+      'long-60',
+      'lane-a',
+      'lane-b',
+      'lane-c',
+    ]) {
+      const { chip, title } = rectsOf(id)
+      await expect(title.top).toBeGreaterThanOrEqual(chip.top)
+      await expect(title.bottom).toBeLessThanOrEqual(chip.bottom)
+      await expect(title.width).toBeGreaterThan(0)
+    }
+
+    const inline = rectsOf('short-30')
+    await expect(inline.time.top).toBe(inline.title.top)
+    await expect(inline.time.left).toBeGreaterThan(inline.title.left)
+
+    for (const id of ['long-30', 'long-45']) {
+      const wrapped = rectsOf(id)
+      await expect(wrapped.time.top).toBeGreaterThanOrEqual(wrapped.chip.bottom)
+    }
+
+    const stacked = rectsOf('long-60')
+    await expect(stacked.time.top).toBeGreaterThanOrEqual(stacked.title.bottom)
+    await expect(stacked.time.bottom).toBeLessThanOrEqual(stacked.chip.bottom)
+  },
+  render: () => <Example itemsOverride={shortTasks} />,
 }
 
 export const AllDay: Story = {

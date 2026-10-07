@@ -73,13 +73,13 @@ export function CalendarTimeGrid<TItem>({
 
   return (
     <div
-      className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-border/80"
+      className="group/time-grid flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-border/80"
       data-slot="calendar-time-grid"
     >
       <h2 className="sr-only">{gridLabel}</h2>
 
       <div
-        className="grid border-border/80 border-b"
+        className="grid border-border/80 border-b group-has-[[data-has-overflow-y]]/time-grid:pe-2.5"
         style={{ gridTemplateColumns: columnsTemplate }}
       >
         <div className="px-2 py-2 text-end text-[0.625rem] text-muted-foreground">
@@ -113,7 +113,7 @@ export function CalendarTimeGrid<TItem>({
       </div>
 
       <div
-        className="grid border-border/80 border-b"
+        className="grid border-border/80 border-b group-has-[[data-has-overflow-y]]/time-grid:pe-2.5"
         style={{ gridTemplateColumns: columnsTemplate }}
       >
         <div className="px-2 py-1 text-end text-[0.625rem] text-muted-foreground">

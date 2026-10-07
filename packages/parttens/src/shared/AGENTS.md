@@ -1,6 +1,6 @@
 # Shared components
 
-Not a pattern: three controlled building blocks for collections that the root barrel `packages/parttens/src/index.ts` exports through `export * from './shared/index'` and that patterns reuse by relative import. They are a pagination bar (`CollectionPagination`), a toolbar frame with start and end slots (`CollectionToolbar`, `CollectionToolbarGroup`) and two menu options with a trailing check (`MenuRadioOption`, `MenuCheckboxOption`). The folder is distinct from the per-pattern `shared/` folders (`collection-views/shared/`, `properties/shared/`, `widgets/shared/`), which are internal to their pattern. It never imports a pattern and keeps no state: the consumer passes `page`, `variant`, `value` or `checked` and handles the callbacks.
+Not a pattern: three controlled building blocks for collections that the root barrel `packages/parttens/src/index.ts` exports through `export * from './shared/index'` and that patterns reuse by relative import. They are a pagination bar (`CollectionPagination`), a toolbar frame with start, center and end slots (`CollectionToolbar`, `CollectionToolbarGroup`) and two menu options with a trailing check (`MenuRadioOption`, `MenuCheckboxOption`). The folder is distinct from the per-pattern `shared/` folders (`collection-views/shared/`, `properties/shared/`, `widgets/shared/`), which are internal to their pattern. It never imports a pattern and keeps no state: the consumer passes `page`, `variant`, `value` or `checked` and handles the callbacks.
 
 ## Map
 
@@ -35,7 +35,7 @@ Toolbar:
 
 - `variant` defaults to `plain`, not the COSS frame (`default`). `plain` and `text` strip the frame with `items-center rounded-none border-0 bg-transparent p-0`. `aria-label` defaults to `Controles da coleção`.
 - With `variant="text"`, `title` renders as an `h2` and `description` as a muted `p`; in the other variants `title` is the HTML `title` attribute and `description` is typed `never`.
-- `startSlot` and `endSlot` are destructured so they never reach the DOM; the end group carries `ms-auto`.
+- `startSlot`, `centerSlot` and `endSlot` are destructured so they never reach the DOM. Without `centerSlot` the end group carries `ms-auto`; with it, start and end become `flex-1 basis-0` (an `aria-hidden` spacer stands in for a missing side) so the center group sits at the toolbar's midpoint whatever the side widths.
 - `components/collection-toolbar.test.tsx` pins the root barrel's toolbar surface: `ViewSettingsMenu`, `ViewSettingsSection`, `PresetsMenu` and `Action` must exist, and `SavedViewsMenu`, `FilterMenu` and `SettingsMenu` must not. Those live in `collection-views/shared/`, not here. The test checks `hover:bg-accent` and `w-56` by class name, because `:hover` does not respond to synthetic events.
 
 Menu options:

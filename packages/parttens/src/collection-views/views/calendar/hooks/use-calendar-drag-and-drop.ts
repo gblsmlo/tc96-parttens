@@ -40,6 +40,9 @@ export function useCalendarDragAndDrop<TItem>({
   const [overrides, setOverrides] = useState<
     ReadonlyMap<string, CalendarItemSchedule>
   >(new Map())
+  const [previews, setPreviews] = useState<
+    ReadonlyMap<string, CalendarItemSchedule>
+  >(new Map())
   const [focusItemDragId, setFocusItemDragId] = useState<string | null>(null)
   const itemsRef = useRef(items)
   const overridesRef = useRef(overrides)
@@ -50,8 +53,10 @@ export function useCalendarDragAndDrop<TItem>({
 
   const resolveSchedule = useCallback(
     (item: TItem): CalendarItemSchedule | null =>
-      overrides.get(String(getKey(item))) ?? getItemSchedule(item),
-    [getItemSchedule, getKey, overrides],
+      previews.get(String(getKey(item))) ??
+      overrides.get(String(getKey(item))) ??
+      getItemSchedule(item),
+    [getItemSchedule, getKey, overrides, previews],
   )
 
   const removeOverride = useCallback((itemKey: string) => {
@@ -87,6 +92,74 @@ export function useCalendarDragAndDrop<TItem>({
     [],
   )
 
+  const commitReschedule = useCallback(
+    (
+      item: TItem,
+      itemKey: string,
+      schedule: CalendarItemSchedule,
+      nextSchedule: CalendarItemSchedule,
+      suspend?: () => { abort: () => void; resume: () => void },
+    ) => {
+      if (!onItemReschedule) return
+
+      const change: CalendarItemReschedule<TItem> = {
+        end: nextSchedule.end,
+        isAllDay: nextSchedule.isAllDay,
+        item,
+        itemKey,
+        sourceEnd: schedule.end,
+        sourceStart: schedule.start,
+        start: nextSchedule.start,
+      }
+
+      setOverrides((current) => new Map(current).set(itemKey, nextSchedule))
+      const requestId = requestIdRef.current + 1
+      requestIdRef.current = requestId
+      pendingRef.current = {
+        accepted: false,
+        itemKey,
+        requestId,
+        schedule: nextSchedule,
+      }
+      const suspension = suspend?.()
+
+      const settle = (accepted: boolean, settleSuspension: boolean) => {
+        const pending = pendingRef.current
+        if (!pending || pending.requestId !== requestId) return
+
+        if (!accepted) {
+          pendingRef.current = null
+          if (settleSuspension) suspension?.abort()
+          removeOverride(itemKey)
+          return
+        }
+
+        pending.accepted = true
+        if (settleSuspension) suspension?.resume()
+      }
+
+      try {
+        const accepted = onItemReschedule(change)
+
+        if (isPromiseLike(accepted)) {
+          // Segurar a operação suspensa através da latência de rede manteria o
+          // feedback de arraste vivo depois do pointer-up. O drop nativo
+          // termina agora; o override acima cuida só da reconciliação.
+          suspension?.resume()
+          void Promise.resolve(accepted).then(
+            (value) => settle(value, false),
+            () => settle(false, false),
+          )
+        } else {
+          settle(accepted, true)
+        }
+      } catch {
+        settle(false, true)
+      }
+    },
+    [onItemReschedule, removeOverride],
+  )
+
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       if (event.canceled || !onItemReschedule) return
@@ -113,72 +186,50 @@ export function useCalendarDragAndDrop<TItem>({
         ...next,
         isAllDay: schedule.isAllDay,
       }
-      const change: CalendarItemReschedule<TItem> = {
-        end: next.end,
-        isAllDay: schedule.isAllDay,
-        item,
-        itemKey: parsed.itemKey,
-        sourceEnd: schedule.end,
-        sourceStart: schedule.start,
-        start: next.start,
-      }
 
       setFocusItemDragId(String(source?.id))
-      setOverrides((current) =>
-        new Map(current).set(parsed.itemKey, nextSchedule),
+      commitReschedule(item, parsed.itemKey, schedule, nextSchedule, () =>
+        event.suspend(),
       )
-      const requestId = requestIdRef.current + 1
-      requestIdRef.current = requestId
-      pendingRef.current = {
-        accepted: false,
-        itemKey: parsed.itemKey,
-        requestId,
-        schedule: nextSchedule,
-      }
-      const suspension = event.suspend()
-
-      const settle = (accepted: boolean, settleSuspension: boolean) => {
-        const pending = pendingRef.current
-        if (!pending || pending.requestId !== requestId) return
-
-        if (!accepted) {
-          pendingRef.current = null
-          if (settleSuspension) suspension.abort()
-          removeOverride(parsed.itemKey)
-          return
-        }
-
-        pending.accepted = true
-        if (settleSuspension) suspension.resume()
-      }
-
-      try {
-        const accepted = onItemReschedule(change)
-
-        if (isPromiseLike(accepted)) {
-          // Segurar a operação suspensa através da latência de rede manteria o
-          // feedback de arraste vivo depois do pointer-up. O drop nativo
-          // termina agora; o override acima cuida só da reconciliação.
-          suspension.resume()
-          void Promise.resolve(accepted).then(
-            (value) => settle(value, false),
-            () => settle(false, false),
-          )
-        } else {
-          settle(accepted, true)
-        }
-      } catch {
-        settle(false, true)
-      }
     },
     [
+      commitReschedule,
       getItemSchedule,
       getKey,
       onItemReschedule,
-      removeOverride,
       snapMinutes,
       timeZone,
     ],
+  )
+
+  const previewSchedule = useCallback(
+    (itemKey: string, schedule: CalendarItemSchedule | null) => {
+      setPreviews((current) => {
+        if (!schedule && !current.has(itemKey)) return current
+        const next = new Map(current)
+        if (schedule) next.set(itemKey, schedule)
+        else next.delete(itemKey)
+        return next
+      })
+    },
+    [],
+  )
+
+  const resizeItem = useCallback(
+    (itemKey: string, nextSchedule: CalendarItemSchedule) => {
+      previewSchedule(itemKey, null)
+      const item = itemsRef.current.find(
+        (candidate) => String(getKey(candidate)) === itemKey,
+      )
+      if (!item) return
+
+      const schedule =
+        overridesRef.current.get(itemKey) ?? getItemSchedule(item)
+      if (!schedule || schedulesMatch(schedule, nextSchedule)) return
+
+      commitReschedule(item, itemKey, schedule, nextSchedule)
+    },
+    [commitReschedule, getItemSchedule, getKey, previewSchedule],
   )
 
   return {
@@ -187,6 +238,8 @@ export function useCalendarDragAndDrop<TItem>({
     handleDragEnd,
     handleDragStart,
     handleItemFocusRestored,
+    previewSchedule,
+    resizeItem,
     resolveSchedule,
   }
 }

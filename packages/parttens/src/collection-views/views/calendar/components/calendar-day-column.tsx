@@ -89,7 +89,7 @@ export function CalendarDayColumn<TItem>({
 
             return (
               <div
-                className="absolute px-px"
+                className="@container-size/calendar-item absolute px-px"
                 key={segment.itemKey}
                 style={{
                   height: `${position.heightPct}%`,
