@@ -48,6 +48,8 @@ List, calendar and table:
 
 - `ListView` renders the flat collection with `h2` titles and grouped lists with `h3`. With `collapseEmptyGroups`, a manual choice wins, an untouched group reopens when it gets items, every group stays open while loading, and `onCollapsedGroupIdsChange` reports the effective list.
 - Calendar drops on a day or all-day cell keep the wall-clock time and the absolute duration (DST-safe); time-column drops snap the block's top edge to `snapMinutes`. The override lives until `getItemSchedule` matches it, and a drop resolving to the same window is ignored. Without `onItemReschedule` no handle or draggable marker exists (tested).
+- A calendar item drags from its whole body like a kanban card, except interactive descendants; `CalendarEventChipOpenTrigger` drags only past 5px (touch: 250ms delay, 5px tolerance). The grip handle, visible only on keyboard focus, is the keyboard and assistive-technology activator.
+- In the time grid, a timed item with an `end` gets two pointer-only resize edges (`aria-hidden`, no tab stop) on its top and bottom (top only on the first segment, bottom only on the last). The pointer drags an edge with pointer capture and a live preview that never touches the optimistic override; release goes through the same `onItemReschedule` commit as a drop. The keyboard path is the move handle, so an item keeps two tab stops like a kanban card: Alt+ArrowUp/ArrowDown moves the start and Shift+ArrowUp/ArrowDown the end, one grid line at a time, announced through `aria-keyshortcuts` and ignored while a drag is active. The moved edge lands on the `snapMinutes` wall-clock grid of `timeZone`, and the item keeps at least `snapMinutes` of duration. Items without `end`, all-day items and month chips do not resize.
 - `useDataTable` always registers pagination with `manualPagination: !enablePagination`, so without the flag the table yields every row.
 - Calendar, List and Data Table run the consumer's renderer in a memoized leaf below the stateful component: it re-runs only when its identity or inputs change, so a renderer that reads other state with a stable identity goes stale.
 
@@ -67,6 +69,7 @@ Toolbar:
 | `data-state="selected"` | `DataTable` rows, `KanbanCard` | consumers; the card uses its `selected` variant |
 | `data-density`, `data-display`, `data-variant`, `data-tone`, `data-completed` | `ListItem`, `KanbanCard`, `CalendarEventChip` | consumers; the pattern styles through `cva` variants or ternaries |
 | `data-calendar-date`, `data-today`, `data-outside-month`, `data-calendar-mode` | calendar cells, columns, root | consumers and tests |
+| `data-calendar-item-resize="start\|end"` | the resize buttons on time-grid items | tests and the drag sensor, which never starts a move from an edge; the edge measures its `[data-calendar-date]` column to turn pixels into minutes |
 | `data-collection-grouping`, `data-interactive`, `data-bordered`, `data-layout` | `ListView`, `ListItem`, `DataTable`, view settings mode tab | consumers |
 
 Data Grid attributes are listed in `views/data-grid/AGENTS.md`.

@@ -11,6 +11,11 @@ import { useNow } from '../hooks/use-now'
 import type { CalendarItemSegment, TimeGridLane } from '../lib/calendar-layout'
 import { assignTimeGridLanes, segmentItems } from '../lib/calendar-layout'
 import { createCalendarItemDragId } from '../lib/drag-and-drop'
+import {
+  type CalendarResizeDirection,
+  type CalendarResizeEdge,
+  stepCalendarScheduleEdge,
+} from '../lib/resize'
 import type {
   CalendarDate,
   CalendarItemRenderContext,
@@ -19,6 +24,7 @@ import type {
   CalendarViewMode,
 } from '../types'
 import { CalendarMonthGrid } from './calendar-month-grid'
+import { CalendarResizeHandle } from './calendar-resize-handle'
 import { CalendarSegmentContent } from './calendar-segment-content'
 import { CalendarTimeGrid } from './calendar-time-grid'
 import { DraggableCalendarItem } from './draggable-calendar-item'
@@ -85,6 +91,8 @@ export function CalendarView<TItem>({
     handleDragEnd,
     handleDragStart,
     handleItemFocusRestored,
+    previewSchedule,
+    resizeItem,
     resolveSchedule,
   } = useCalendarDragAndDrop({
     getItemSchedule,
@@ -139,17 +147,49 @@ export function CalendarView<TItem>({
     placement: 'all-day' | 'month' | 'time-grid',
   ) => {
     const dateKey = calendarDateKey(segment.date)
+    const label = resolveLabel(segment.item)
+    const schedule =
+      dragEnabled && placement === 'time-grid' && !segment.isAllDay
+        ? resolveSchedule(segment.item)
+        : null
+    const resizable = schedule?.end != null
+    const resizeGrid = { snapMinutes, timeZone }
+    const resizeHandle = (edge: 'end' | 'start') =>
+      schedule ? (
+        <CalendarResizeHandle
+          edge={edge}
+          grid={resizeGrid}
+          onCommit={(next) => resizeItem(segment.itemKey, next)}
+          onPreview={(next) => previewSchedule(segment.itemKey, next)}
+          schedule={schedule}
+        />
+      ) : null
+    const stepEdge = (
+      edge: CalendarResizeEdge,
+      direction: CalendarResizeDirection,
+    ) => {
+      if (!schedule) return
+      const next = stepCalendarScheduleEdge(
+        schedule,
+        edge,
+        direction,
+        resizeGrid,
+      )
+      if (next) resizeItem(segment.itemKey, next)
+    }
 
     return (
       <DraggableCalendarItem
         className={placement === 'time-grid' ? 'h-full' : undefined}
         disabled={!dragEnabled}
-        dragLabel={`Mover ${resolveLabel(segment.item)}`}
+        dragLabel={`Mover ${label}`}
         dragType={segment.isAllDay ? 'calendar-item-all-day' : 'calendar-item'}
         id={createCalendarItemDragId(segment.itemKey, dateKey)}
         itemData={{ dateKey, itemKey: segment.itemKey, type: 'item' }}
         itemKey={segment.itemKey}
+        {...(resizable ? { onResizeStep: stepEdge } : {})}
       >
+        {resizable && segment.isStart ? resizeHandle('start') : null}
         <CalendarSegmentContent
           dateKey={dateKey}
           endMinutes={placement === 'time-grid' ? segment.endMinutes : null}
@@ -160,6 +200,7 @@ export function CalendarView<TItem>({
           renderItem={renderItem}
           startMinutes={placement === 'time-grid' ? segment.startMinutes : null}
         />
+        {resizable && segment.isEnd ? resizeHandle('end') : null}
       </DraggableCalendarItem>
     )
   }
