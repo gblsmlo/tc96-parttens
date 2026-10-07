@@ -95,21 +95,19 @@ describe('DateProperty', () => {
     ])
   })
 
-  test('renders an empty value as the filled badge with muted text, like the attachments trigger', () => {
+  test('renders an empty value as the outline badge, like the other empty properties', () => {
     const surface = () =>
       screen
         .getByText('Sem data')
         .closest<HTMLElement>('button, [data-slot="property-surface"]')
 
     const { rerender } = render(<DateProperty readOnly value={null} />)
-    expect(surface()?.className).toContain('bg-secondary')
-    expect(surface()?.className).toContain('text-muted-foreground')
-    expect(surface()?.className).not.toContain('border-input')
+    expect(surface()?.getAttribute('data-empty')).toBe('true')
+    expect(surface()?.className).toContain('border-input')
 
     rerender(<DateProperty onValueChange={() => undefined} value={null} />)
-    expect(surface()?.className).toContain('bg-secondary')
-    expect(surface()?.className).toContain('text-muted-foreground')
-    expect(surface()?.className).not.toContain('border-input')
+    expect(surface()?.getAttribute('data-empty')).toBe('true')
+    expect(surface()?.className).toContain('border-input')
 
     rerender(
       <DateProperty
@@ -119,8 +117,8 @@ describe('DateProperty', () => {
       />,
     )
     expect(
-      screen.getByText('Jun 19').closest('button')?.className,
-    ).not.toContain('text-muted-foreground')
+      screen.getByText('Jun 19').closest('button')?.getAttribute('data-empty'),
+    ).toBe(null)
   })
 
   test('formats invalid or empty values with the fallback', () => {

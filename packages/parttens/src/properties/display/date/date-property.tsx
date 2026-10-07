@@ -101,11 +101,8 @@ export function DateProperty({
   return (
     <PropertyCalendarPopover
       ariaLabel={accessibleLabel}
-      className={cn(
-        isOverdue && 'font-medium',
-        !value && 'text-muted-foreground',
-        className,
-      )}
+      className={cn(isOverdue && 'font-medium', className)}
+      muted={!value}
       clear={
         allowClear
           ? { label: clearLabel, onClear: () => handleChange(null, null) }
@@ -160,11 +157,8 @@ export function DatePropertyBadge({
 
   return (
     <IconLabelProperty
-      className={cn(
-        isOverdue && 'font-medium',
-        !value && 'text-muted-foreground',
-        className,
-      )}
+      className={cn(isOverdue && 'font-medium', className)}
+      muted={!value}
       icon={CalendarDaysIcon}
       label={label}
       variant={variant}

@@ -1,6 +1,5 @@
 'use client'
 
-import { Button } from '@tc96/ui/button'
 import { cn } from '@tc96/utils'
 import { TagIcon } from 'lucide-react'
 import { useMemo } from 'react'
@@ -80,7 +79,10 @@ export function TagsProperty<TValue extends string = string>({
         variant={variant}
       >
         {display === 'count' ? (
-          <PropertySurface variant={variant}>
+          <PropertySurface
+            muted={selectedOptions.length === 0}
+            variant={variant}
+          >
             <TagIcon aria-hidden="true" />
             <span className="tabular-nums">{selectedOptions.length}</span>
           </PropertySurface>
@@ -127,19 +129,23 @@ export function TagsProperty<TValue extends string = string>({
         renderOption={(option) => option.label}
         renderTrigger={
           display === 'count'
-            ? ({ open }) => (
-                <Button
+            ? ({ anchorRef, open }) => (
+                <PropertySurface
                   aria-label={ariaLabel}
-                  className="gap-1 px-1.5"
-                  disabled={disabled}
-                  onClick={open}
-                  size="sm"
-                  type="button"
-                  variant="ghost"
+                  muted={selectedOptions.length === 0}
+                  render={
+                    <button
+                      disabled={disabled}
+                      onClick={open}
+                      ref={anchorRef}
+                      type="button"
+                    />
+                  }
+                  variant={variant}
                 >
                   <TagIcon aria-hidden="true" />
                   <span className="tabular-nums">{selectedOptions.length}</span>
-                </Button>
+                </PropertySurface>
               )
             : undefined
         }
