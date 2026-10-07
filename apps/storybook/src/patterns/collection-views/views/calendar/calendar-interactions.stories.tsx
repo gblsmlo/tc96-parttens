@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
-import { rangeModes, ScheduleUsage } from '../fixtures/schedule-usage'
+import { rangeModes } from '../../fixtures/calendar-toolbar'
+import { CalendarWorkspace } from '../../fixtures/calendar-workspace'
 
 const meta = {
   argTypes: {
@@ -9,27 +10,27 @@ const meta = {
       options: rangeModes.map((mode) => mode.value),
     },
   },
-  component: ScheduleUsage,
+  component: CalendarWorkspace,
   parameters: {
     docs: {
       description: {
         component: [
-          'A team schedule as a `CalendarView` alone: meetings, customer visits, focus blocks, deadlines and all-day absences in one collection.',
+          'Interaction coverage for `CalendarView` over a team mock: meetings, customer visits, focus blocks, deadlines and all-day absences in one collection.',
           'The toolbar owns the period: "Hoje" and the arrows move the `anchor`, the Dia/Semana/Mês toggle sets `mode`, and the `ViewSettingsMenu` filters by owner and type. A drop calls `onItemReschedule`, which writes the new window, and the "+N" of a full month cell opens that day through `onSelectDay`.',
         ].join('\n\n'),
       },
     },
     layout: 'fullscreen',
   },
-  title: 'Patterns/CollectionViews/Usages/Schedule',
-} satisfies Meta<typeof ScheduleUsage>
+  title: 'Patterns/CollectionViews/Views/Calendar/Interactions',
+} satisfies Meta<typeof CalendarWorkspace>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
 const period = (canvasElement: HTMLElement) =>
-  canvasElement.querySelector('[data-slot="schedule-period"]')?.textContent ??
+  canvasElement.querySelector('[data-slot="calendar-period"]')?.textContent ??
   ''
 
 const cellOf = (canvasElement: HTMLElement, id: string) =>
@@ -37,6 +38,54 @@ const cellOf = (canvasElement: HTMLElement, id: string) =>
     .querySelector(`[data-calendar-item-id="${id}"]`)
     ?.closest('[data-calendar-date]')
     ?.getAttribute('data-calendar-date')
+
+const nextFrame = () =>
+  new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)))
+
+function center(element: Element) {
+  const { height, left, top, width } = element.getBoundingClientRect()
+  return { clientX: left + width / 2, clientY: top + height / 2 }
+}
+
+async function dragWithPointer(from: Element, to: Element) {
+  const pointer = {
+    bubbles: true,
+    button: 0,
+    buttons: 1,
+    cancelable: true,
+    composed: true,
+    isPrimary: true,
+    pointerId: 1,
+    pointerType: 'mouse',
+  }
+  const start = center(from)
+  const end = center(to)
+  const steps = 12
+
+  from.dispatchEvent(new PointerEvent('pointerdown', { ...pointer, ...start }))
+  for (let step = 1; step <= steps; step += 1) {
+    document.dispatchEvent(
+      new PointerEvent('pointermove', {
+        ...pointer,
+        clientX: start.clientX + ((end.clientX - start.clientX) * step) / steps,
+        clientY: start.clientY + ((end.clientY - start.clientY) * step) / steps,
+      }),
+    )
+    await nextFrame()
+    await nextFrame()
+  }
+  document.dispatchEvent(
+    new PointerEvent('pointerup', { ...pointer, buttons: 0, ...end }),
+  )
+}
+
+const blockHeight = (canvasElement: HTMLElement, id: string) =>
+  Number.parseFloat(
+    canvasElement.querySelector<HTMLElement>(`[data-calendar-item-id="${id}"]`)
+      ?.parentElement?.style.height ?? '0',
+  )
+
+const HOUR_PCT = 100 / 24
 
 export const Week: Story = {
   play: async ({ canvasElement }) => {
@@ -134,7 +183,7 @@ export const OpenDayFromOverflow: Story = {
     docs: {
       description: {
         story:
-          'The 14th holds four events and the month shows three. The "+1" calls `onSelectDay`, and the schedule opens that day in the time grid with every event.',
+          'The 14th holds four events and the month shows three. The "+1" calls `onSelectDay`, and the calendar opens that day in the time grid with every event.',
       },
     },
   },
@@ -196,6 +245,137 @@ export const RescheduleWithKeyboard: Story = {
           '[data-calendar-item-id="EVT-311"]',
         ) as HTMLElement,
       ).getByText('10:00'),
+    ).toBeInTheDocument()
+  },
+}
+
+export const RescheduleWithPointer: Story = {
+  args: { defaultMode: 'month' },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The pointer grabs the event itself, with no handle, and drops it on Saturday. A plain click on the same event still opens it, because the drag starts only after 5px.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const overlay = () =>
+      canvasElement.ownerDocument.querySelector('[data-dnd-overlay]')
+    const target = canvasElement.querySelector(
+      '[data-calendar-date="2026-10-17"]',
+    )
+    if (!target) throw new Error('The Saturday cell did not render.')
+
+    await expect(
+      canvasElement.querySelector('[data-calendar-item-drag-handle]'),
+    ).not.toBeVisible()
+    await dragWithPointer(
+      within(canvasElement).getByRole('button', {
+        name: 'Abrir Demo para Banco Aurora',
+      }),
+      target,
+    )
+    await waitFor(() => expect(overlay()).toBeEmptyDOMElement())
+    await waitFor(() =>
+      expect(cellOf(canvasElement, 'EVT-311')).toBe('2026-10-17'),
+    )
+  },
+}
+
+export const ResizeWithPointer: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The bottom edge of the customer demo is dragged down one hour, so it ends at 12:00 instead of 11:00. The top edge moves the start the same way. The moved edge lands on the 15-minute wall-clock grid of `timeZone`, and the change goes through `onItemReschedule`. The edges are pointer-only and take no tab stop.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(blockHeight(canvasElement, 'EVT-311')).toBeCloseTo(HOUR_PCT, 1)
+
+    const handle = canvasElement.querySelector(
+      '[data-calendar-item-id="EVT-311"] [data-calendar-item-resize="end"]',
+    )
+    if (!handle) throw new Error('The end edge did not render.')
+    const column = handle.closest('[data-calendar-date]')
+    if (!column) throw new Error('The day column did not render.')
+    const hourPx = column.getBoundingClientRect().height / 24
+    const start = center(handle)
+    const pointer = {
+      bubbles: true,
+      button: 0,
+      buttons: 1,
+      cancelable: true,
+      clientX: start.clientX,
+      composed: true,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: 'mouse',
+    }
+
+    handle.dispatchEvent(
+      new PointerEvent('pointerdown', { ...pointer, clientY: start.clientY }),
+    )
+    for (let step = 1; step <= 4; step += 1) {
+      handle.dispatchEvent(
+        new PointerEvent('pointermove', {
+          ...pointer,
+          clientY: start.clientY + (hourPx * step) / 4,
+        }),
+      )
+      await nextFrame()
+    }
+    handle.dispatchEvent(
+      new PointerEvent('pointerup', {
+        ...pointer,
+        buttons: 0,
+        clientY: start.clientY + hourPx,
+      }),
+    )
+
+    await waitFor(() =>
+      expect(blockHeight(canvasElement, 'EVT-311')).toBeCloseTo(
+        HOUR_PCT * 2,
+        1,
+      ),
+    )
+  },
+}
+
+export const ResizeWithKeyboard: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Keyboard resize lives on the move handle, so an event keeps two tab stops: Alt+ArrowUp/ArrowDown moves the start and Shift+ArrowUp/ArrowDown moves the end, one grid line at a time. Two Alt+ArrowUp presses start the demo at 09:30.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const handle = within(canvasElement).getByRole('button', {
+      name: 'Mover Demo para Banco Aurora',
+    })
+    await expect(handle).toHaveAttribute(
+      'aria-keyshortcuts',
+      'Alt+ArrowUp Alt+ArrowDown Shift+ArrowUp Shift+ArrowDown',
+    )
+    handle.focus()
+    await userEvent.keyboard('{Alt>}[ArrowUp][ArrowUp]{/Alt}')
+
+    await waitFor(() =>
+      expect(blockHeight(canvasElement, 'EVT-311')).toBeCloseTo(
+        HOUR_PCT * 1.5,
+        1,
+      ),
+    )
+    await expect(
+      within(
+        canvasElement.querySelector(
+          '[data-calendar-item-id="EVT-311"]',
+        ) as HTMLElement,
+      ).getByText('09:30'),
     ).toBeInTheDocument()
   },
 }

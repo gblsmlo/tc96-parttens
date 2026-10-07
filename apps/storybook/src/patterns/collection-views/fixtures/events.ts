@@ -10,7 +10,7 @@ export type EventKind =
   | 'deadline'
   | 'out-of-office'
 
-export interface ScheduleEvent {
+export interface CalendarEvent {
   end: string | null
   id: string
   isAllDay: boolean
@@ -36,7 +36,7 @@ export const KIND_TONE = Object.fromEntries(
   kindOptions.map((option) => [option.value, option.tone]),
 ) as Record<EventKind, CalendarEventChipTone>
 
-const daily = (id: string, day: number): ScheduleEvent => ({
+const daily = (id: string, day: number): CalendarEvent => ({
   end: `2026-10-${day}T12:45:00.000Z`,
   id,
   isAllDay: false,
@@ -46,7 +46,7 @@ const daily = (id: string, day: number): ScheduleEvent => ({
   title: 'Daily da equipe',
 })
 
-export const initialEvents: ScheduleEvent[] = [
+export const initialEvents: CalendarEvent[] = [
   {
     end: '2026-10-05T14:30:00.000Z',
     id: 'EVT-300',
@@ -163,8 +163,8 @@ export const initialEvents: ScheduleEvent[] = [
 ]
 
 export const createEventCollection = (
-  items: readonly ScheduleEvent[],
-): CollectionDefinition<ScheduleEvent> => ({
+  items: readonly CalendarEvent[],
+): CollectionDefinition<CalendarEvent> => ({
   getKey: (event) => event.id,
   getLabel: (event) => event.title,
   groupings: [],
