@@ -20,6 +20,7 @@ const CollectionToolbar = Reflect.get(
   collectionModule,
   'CollectionToolbar',
 ) as ComponentType<{
+  centerSlot?: ReactNode
   children?: ReactNode
   endSlot?: ReactNode
   startSlot?: ReactNode
@@ -99,6 +100,26 @@ describe('CollectionToolbar', () => {
         .getByRole('button', { name: 'Ações' })
         .closest('[data-slot="toolbar-group"]'),
     ).toBeTruthy()
+  })
+
+  test('renders the center slot between equal-width start and end groups', () => {
+    render(
+      <CollectionToolbar
+        centerSlot={<button type="button">Período</button>}
+        endSlot={<button type="button">Ações</button>}
+      />,
+    )
+
+    const toolbar = screen.getByRole('toolbar', {
+      name: 'Controles da coleção',
+    })
+    expect(toolbar.hasAttribute('centerslot')).toBe(false)
+    const [spacer, center, end] = Array.from(toolbar.children)
+    expect(spacer?.getAttribute('aria-hidden')).toBe('true')
+    expect(spacer?.className).toBe('flex-1 basis-0')
+    expect(center?.textContent).toBe('Período')
+    expect(center?.className).toContain('shrink-0')
+    expect(end?.className).toContain('flex-1 basis-0 justify-end')
   })
 
   test('keeps filter count and clear behavior in the shared composition', async () => {

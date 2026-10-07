@@ -22,6 +22,7 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
+import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
 import {
   ArrowDownUpIcon,
   CalendarDaysIcon,
@@ -792,6 +793,58 @@ export const WithText: Story = {
         }
         title="Tarefas"
         variant="text"
+      />
+    </Frame>
+  ),
+}
+
+export const WithCenterSlot: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A control in `centerSlot` sits in the middle of the toolbar: the start and end groups split the remaining width equally, so the center does not drift when one side is wider.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const toolbar = canvas.getByRole('toolbar', {
+      name: 'Controles da coleção',
+    })
+    const center = canvas
+      .getByRole('group', { name: 'Período' })
+      .closest('[data-slot="toolbar-group"]')
+    if (!(center instanceof HTMLElement))
+      throw new Error('The center slot did not render.')
+
+    const toolbarRect = toolbar.getBoundingClientRect()
+    const centerRect = center.getBoundingClientRect()
+    await expect(
+      Math.abs(
+        centerRect.left +
+          centerRect.width / 2 -
+          (toolbarRect.left + toolbarRect.width / 2),
+      ),
+    ).toBeLessThan(1)
+  },
+  render: () => (
+    <Frame>
+      <CollectionToolbar
+        centerSlot={
+          <ToggleGroup aria-label="Período" defaultValue={['week']}>
+            <ToggleGroupItem value="day">Dia</ToggleGroupItem>
+            <ToggleGroupItem value="week">Semana</ToggleGroupItem>
+            <ToggleGroupItem value="month">Mês</ToggleGroupItem>
+          </ToggleGroup>
+        }
+        endSlot={
+          <>
+            <MergedViewSettingsControl />
+            <Action label="Nova tarefa" onClick={() => undefined} />
+          </>
+        }
+        startSlot={<SelectedViewControl />}
       />
     </Frame>
   ),
