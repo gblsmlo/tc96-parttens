@@ -16,7 +16,7 @@ const meta = {
       description: {
         component: [
           'Interaction coverage for `CalendarView` over a team mock: meetings, customer visits, focus blocks, deadlines and all-day absences in one collection.',
-          'The toolbar owns the period: "Hoje" and the arrows move the `anchor`, the Dia/Semana/Mês toggle sets `mode`, and the `ViewSettingsMenu` filters by owner and type. A drop calls `onItemReschedule`, which writes the new window, and the "+N" of a full month cell opens that day through `onSelectDay`.',
+          'The toolbar owns the period: "Hoje" and the arrows move the `anchor`, the Dia/Semana/Mês toggle sets `mode`, and the `ViewSettingsMenu` filters by owner and type. A drop calls `onItemReschedule`, which writes the new window, and the "+N" of a full month cell opens a popover with the hidden events, whose day title opens that day through `onSelectDay`.',
         ].join('\n\n'),
       },
     },
@@ -183,7 +183,7 @@ export const OpenDayFromOverflow: Story = {
     docs: {
       description: {
         story:
-          'The 14th holds four events and the month shows three. The "+1" calls `onSelectDay`, and the calendar opens that day in the time grid with every event.',
+          'The 14th holds four events and the month shows three. The "+1" opens a popover with the hidden event; its day title calls `onSelectDay`, and the calendar opens that day in the time grid with every event.',
       },
     },
   },
@@ -191,7 +191,14 @@ export const OpenDayFromOverflow: Story = {
     const canvas = within(canvasElement)
 
     await userEvent.click(
-      canvas.getByRole('button', {
+      canvas.getByRole('button', { name: /^Mostrar mais 1 item de quarta/ }),
+    )
+    const popover = await screen.findByRole('dialog', { name: /^quarta/ })
+    await expect(
+      popover.querySelectorAll('[data-calendar-item-id]'),
+    ).toHaveLength(1)
+    await userEvent.click(
+      within(popover).getByRole('button', {
         name: /^Mostrar todos os 4 itens de quarta/,
       }),
     )

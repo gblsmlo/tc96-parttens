@@ -53,7 +53,7 @@ export interface CalendarViewProps<TItem = unknown> {
   onItemReschedule?: (
     change: CalendarItemReschedule<TItem>,
   ) => boolean | Promise<boolean>
-  /** Clique no "+N" de uma célula cheia do mês. */
+  /** Título do dia no popover do "+N" de uma célula cheia do mês. */
   onSelectDay?: (date: CalendarDate) => void
   /** Incremento do arraste no time grid, em minutos. */
   snapMinutes?: number

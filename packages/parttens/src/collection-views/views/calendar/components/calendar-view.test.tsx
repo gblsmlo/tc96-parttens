@@ -14,7 +14,7 @@ Object.assign(globalThis, {
   ResizeObserver: MockResizeObserver,
 })
 
-const { cleanup, fireEvent, render, screen } = await import(
+const { act, cleanup, fireEvent, render, screen } = await import(
   '@testing-library/react'
 )
 const { CalendarView } = await import('./calendar-view')
@@ -126,30 +126,67 @@ describe('CalendarView month', () => {
     ).toHaveLength(4)
   })
 
-  test('collapses the overflow behind a +N control that reports the day', () => {
-    const day = '2026-08-12'
-    const items = ['a', 'b', 'c', 'd', 'e'].map((id, index) => ({
-      end: null,
-      id,
-      start: `${day}T1${index}:00:00.000Z`,
-      title: `Item ${id}`,
-    }))
+  const overflowDay = '2026-08-12'
+  const overflowItems = ['a', 'b', 'c', 'd', 'e'].map((id, index) => ({
+    end: null,
+    id,
+    start: `${overflowDay}T1${index}:00:00.000Z`,
+    title: `Item ${id}`,
+  }))
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
+  const openOverflow = async (name: RegExp) => {
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name }))
+      await settle()
+    })
+    return screen.getByRole('dialog', {
+      name: 'quarta-feira, 12 de agosto de 2026',
+    })
+  }
+
+  test('collapses the overflow behind a +N popover with the hidden items', async () => {
+    const { container } = renderCalendar(overflowItems, {
+      maxVisibleMonthItems: 3,
+    })
+
+    const cell = container.querySelector(
+      `[data-calendar-date="${overflowDay}"]`,
+    )
+    expect(cell?.querySelectorAll('[data-calendar-item-id]')).toHaveLength(3)
+    expect(
+      screen.getByRole('button', { name: /^Mostrar mais 2 itens de/ })
+        .textContent,
+    ).toBe('+2')
+
+    const popover = await openOverflow(/^Mostrar mais 2 itens de/)
+    expect(
+      Array.from(popover.querySelectorAll('[data-calendar-item-id]')).map(
+        (item) => item.getAttribute('data-calendar-item-id'),
+      ),
+    ).toEqual(['d', 'e'])
+    expect(
+      screen.queryByRole('button', { name: /Mostrar todos os/ }),
+    ).toBeNull()
+  })
+
+  test('reports the day from the popover title when onSelectDay is passed', async () => {
     let selectedDay: unknown = null
-    const { container } = renderCalendar(items, {
+    renderCalendar(overflowItems.slice(0, 4), {
       maxVisibleMonthItems: 3,
       onSelectDay: (date) => {
         selectedDay = date
       },
     })
 
-    const cell = container.querySelector(`[data-calendar-date="${day}"]`)
-    expect(cell?.querySelectorAll('[data-calendar-item-id]')).toHaveLength(3)
-
-    const overflow = screen.getByRole('button', {
-      name: /Mostrar todos os 5 itens/,
+    await openOverflow(/^Mostrar mais 1 item de/)
+    const title = screen.getByRole('button', {
+      name: /^Mostrar todos os 4 itens de/,
     })
-    expect(overflow.textContent).toBe('+2')
-    fireEvent.click(overflow)
+    expect(title.textContent).toBe('quarta-feira, 12 de agosto de 2026')
+    await act(async () => {
+      fireEvent.click(title)
+      await settle()
+    })
     expect(selectedDay).toEqual({ day: 12, month: 8, year: 2026 })
   })
 
