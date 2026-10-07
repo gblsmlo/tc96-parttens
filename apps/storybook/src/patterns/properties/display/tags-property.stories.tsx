@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TagsProperty, type TagsPropertyOption } from '@tc96/parttens'
 import { useState } from 'react'
-import { expect } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import {
   booleanArgType,
   propertyArgTypes,
@@ -75,8 +75,30 @@ export const Count: Story = {
 
     await expect(trigger.textContent).toContain('1')
     await expect(canvas.queryByText('Documents')).toBe(null)
+
+    await userEvent.click(trigger)
+    const option = await screen.findByRole('option', { name: 'Documents' })
+
+    await waitFor(() =>
+      expect(option.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+        trigger.getBoundingClientRect().bottom,
+      ),
+    )
   },
   render: () => <TagsPropertyExample display="count" />,
+}
+
+export const CountEmpty: Story = {
+  play: async ({ canvas }) => {
+    const trigger = await canvas.findByRole('button', { name: 'Tags' })
+
+    await expect(trigger.textContent).toBe('0')
+    await expect(trigger.dataset.empty).toBe('true')
+    await expect(trigger.getBoundingClientRect().height).toBe(24)
+  },
+  render: () => (
+    <TagsPropertyExample display="count" initialValue={[]} variant="badge" />
+  ),
 }
 
 export const ReadOnly: Story = {
@@ -90,10 +112,15 @@ export const ReadOnly: Story = {
 
 function TagsPropertyExample({
   display,
+  initialValue = ['documents'],
   variant = 'plain',
-}: Readonly<{ display?: 'chips' | 'count'; variant?: 'badge' | 'plain' }>) {
+}: Readonly<{
+  display?: 'chips' | 'count'
+  initialValue?: readonly string[]
+  variant?: 'badge' | 'plain'
+}>) {
   const options = initialOptions
-  const [value, setValue] = useState<readonly string[]>(['documents'])
+  const [value, setValue] = useState<readonly string[]>(initialValue)
 
   return (
     <div className="max-w-sm p-4">

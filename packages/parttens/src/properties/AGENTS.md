@@ -34,7 +34,6 @@ Handlers and surface:
 Dates:
 
 - `serializeDatePropertyValue` returns noon UTC of the picked day (`new Date(2026, 5, 19)` gives `2026-06-19T12:00:00.000Z`). Picking the current value closes without emitting.
-- An empty `DateProperty` renders the filled badge with `text-muted-foreground`, not the outline badge `muted` gives other empty states, so it sets no `data-empty`.
 - `DateRangeProperty` formats without a time zone and stays open after the first click, because the calendar returns `from` and `to` on the same day; only the clear button closes it.
 
 Select:

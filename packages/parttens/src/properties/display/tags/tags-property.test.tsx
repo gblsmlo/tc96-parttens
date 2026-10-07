@@ -17,6 +17,34 @@ const options = [
 ] as const
 
 describe('TagsProperty', () => {
+  test('renders the count trigger as an empty surface until a tag is chosen', () => {
+    const { rerender } = render(
+      <TagsProperty
+        display="count"
+        onValueChange={() => undefined}
+        options={options}
+        value={[]}
+        variant="badge"
+      />,
+    )
+
+    const trigger = () => screen.getByRole('button', { name: 'Tags' })
+    expect(trigger().textContent).toBe('0')
+    expect(trigger().getAttribute('data-empty')).toBe('true')
+
+    rerender(
+      <TagsProperty
+        display="count"
+        onValueChange={() => undefined}
+        options={options}
+        value={[options[0].value]}
+        variant="badge"
+      />,
+    )
+    expect(trigger().textContent).toBe('1')
+    expect(trigger().getAttribute('data-empty')).toBe(null)
+  })
+
   test('uses a labelled chip to open the editing controls', () => {
     const { container } = render(
       <TagsProperty
