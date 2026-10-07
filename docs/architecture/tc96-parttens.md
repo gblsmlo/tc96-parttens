@@ -331,6 +331,15 @@ Decisão de 2026-10-03, guiada pelos baselines do benchmark por view. Nas três 
 
 Contrato que passa a valer nas três: o renderizador só é re-executado quando sua identidade ou suas entradas mudam (o item; no calendar também data, posição e minutos do segmento; na tabela row, colunas visíveis e `table.options.meta`). Um renderizador que lê outro estado mantendo a identidade fica desatualizado. Os números antes e depois estão no `README.md` de cada view. No bench do calendar, o item arrastado não é contado e o cenário de arrasto não conta commits, porque o overlay e o tempo de animation frame do dnd-kit variam esses números; o harness ganhou a opção `commits: false` por cenário para isso.
 
+## Calendar: o bloco curto do time grid mostra o título
+
+Decisão de 2026-10-07. No bloco do time grid, o horário ocupava a primeira linha e o título a segunda; com a hora de 3rem, um item de 30 minutos tem 24px e só mostrava o horário, o mesmo valendo para itens que dividem o horário em faixas. O usuário precisava abrir o item para saber o que era.
+
+- O variant `block` do `CalendarEventChip` põe o horário depois do título (`order-last`), em todo bloco, para a ordem não trocar quando o redimensionamento cruza o limite abaixo.
+- Um bloco mais baixo que duas linhas (2,625rem: `py-1`, duas linhas de `leading-4` e o `gap-0.5`) põe título e horário numa linha só que quebra, com `py-0.5` e um espaço entre linhas (`gap-y-6`) que joga a segunda linha para fora do bloco: o horário aparece ao lado do título quando cabe e some quando não cabe. Com a hora de 3rem, isso vale para itens de até 45 minutos; o item de 15 minutos já ocupa a altura mínima de 2% do dia.
+- A altura vem de uma container query: o invólucro posicionado em `calendar-day-column.tsx` é `@container-size/calendar-item`. Ela acompanha a pré-visualização do redimensionamento, e a coluna não precisa conhecer as medidas do chip.
+- A ordem do DOM continua a do consumidor (horário, título); só a ordem visual muda, sem efeito no foco, porque nenhum dos dois é focável.
+
 ## Kanban: os dois layouts continuam renderizados
 
 Decisão de 2026-10-03. O `KanbanView` sempre renderiza o painel mobile (a coluna ativa, sem arrasto) e o quadro desktop, e o CSS mostra um deles; por isso o mount custa todos os cards mais a coluna ativa (120 em vez de 100 no 5 x 20, 1100 em vez de 1000 no 10 x 100). Renderizar um só layout por media query exigiria que o servidor escolhesse um deles, com flash do layout errado no mobile e baselines que dependem do `matchMedia` simulado; montar o painel depois só muda o custo de lugar, e uma árvore única ligaria o arrasto por toque no mobile. O ganho medido seria cerca de 1/(colunas + 1) do tempo de render (17 de 104 ms no 5 x 20), e o tempo de parede do 10 x 100 é dominado pelo dnd-kit, onde o painel mobile não registra nada. Responsividade está fora do escopo deste documento; revisitar quando entrar, com snapshot de servidor que renderize os dois painéis. Contrato: `renderCard` deve ser puro e não emitir ids de DOM, porque os cards da coluna ativa aparecem duas vezes.
