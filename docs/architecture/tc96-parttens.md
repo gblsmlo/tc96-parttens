@@ -349,6 +349,24 @@ Decisão de 2026-10-07. No bloco do time grid, o horário ocupava a primeira lin
 - A altura vem de uma container query: o invólucro posicionado em `calendar-day-column.tsx` é `@container-size/calendar-item`. Ela acompanha a pré-visualização do redimensionamento, e a coluna não precisa conhecer as medidas do chip.
 - A ordem do DOM continua a do consumidor (horário, título); só a ordem visual muda, sem efeito no foco, porque nenhum dos dois é focável.
 
+## Calendar: itens que dividem o horário em faixas estreitas
+
+Decisão de 2026-10-08 (issue #91). Três itens de 30 minutos no mesmo horário dividem a coluna do dia em três faixas; em modo semana a 1024px a coluna tem cerca de 124px e cada faixa 41,3px. O padding do bloco (`px-2` mais a borda inicial de 2px) deixava 23,3px para o título ("Li…", "R…", "E…").
+
+- Opção adotada: o variant `block` do `CalendarEventChip` reduz o padding horizontal para `px-px` quando o invólucro `@container-size/calendar-item` tem menos de 3,5rem de largura (`[@container_calendar-item_(width<3.5rem)]:px-px`). Faixas mais largas mantêm o padding de antes; a 1024px, duas faixas (62px) não são afetadas. O `px-px` do invólucro posicionado fica, para as faixas não se tocarem.
+- Resultado medido em Chromium a 1024px: a caixa do título passa de 23,3px para 37,3px.
+- Cascata (estilo Google Agenda) não se aplica: os três itens começam no mesmo minuto (13:00), e a cascata só ganha largura quando os inícios diferem. Com inícios iguais, o Google Agenda também divide lado a lado.
+- A meta da issue ("a primeira palavra de cada título visível") não é alcançável por geometria com três faixas de início igual a 1024px:
+
+| Item | Primeira palavra | Largura da palavra | Caixa do título (antes) | Caixa do título (depois) |
+| --- | --- | --- | --- | --- |
+| `lane-a` | Ligação | 45,1px | 23,3px | 37,3px |
+| `lane-b` | Revisão | 44,9px | 23,3px | 37,3px |
+| `lane-c` | Entrevista | 58,0px | 23,3px | 37,3px |
+
+  As três palavras somam cerca de 148px, mais padding, contra uma coluna de cerca de 124px. Mesmo sem nenhum padding a caixa teria no máximo 39px. Reduzir a fonte ou trocar o modelo de layout está fora desta decisão.
+- O título completo continua acessível pelo nome do gatilho de abertura (`aria-label="Abrir <título>"` no fixture); a story `ShortItems` verifica a caixa do título (mínimo de 35px) e esse nome. A story fixa a largura do quadro em 1024px, igual ao viewport da medição, em vez de mudar o viewport do vitest (`vitest/browser` não pode ser importado no Storybook em si).
+
 ## Kanban: os dois layouts continuam renderizados
 
 Decisão de 2026-10-03. O `KanbanView` sempre renderiza o painel mobile (a coluna ativa, sem arrasto) e o quadro desktop, e o CSS mostra um deles; por isso o mount custa todos os cards mais a coluna ativa (120 em vez de 100 no 5 x 20, 1100 em vez de 1000 no 10 x 100). Renderizar um só layout por media query exigiria que o servidor escolhesse um deles, com flash do layout errado no mobile e baselines que dependem do `matchMedia` simulado; montar o painel depois só muda o custo de lugar, e uma árvore única ligaria o arrasto por toque no mobile. O ganho medido seria cerca de 1/(colunas + 1) do tempo de render (17 de 104 ms no 5 x 20), e o tempo de parede do 10 x 100 é dominado pelo dnd-kit, onde o painel mobile não registra nada. Responsividade está fora do escopo deste documento; revisitar quando entrar, com snapshot de servidor que renderize os dois painéis. Contrato: `renderCard` deve ser puro e não emitir ids de DOM, porque os cards da coluna ativa aparecem duas vezes.
