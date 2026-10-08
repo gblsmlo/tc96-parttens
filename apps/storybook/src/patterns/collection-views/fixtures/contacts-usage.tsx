@@ -496,7 +496,6 @@ function ContactsWorkspace({
               loadingItemLabel: 'Carregando contato',
               renderGroupTitle: (group) => group.label,
             }}
-            renderKanbanItem={() => null}
             renderListItem={renderContactListRow(updateContact)}
           />
           {view === 'datatable' ? (
