@@ -94,7 +94,7 @@ export const CountEmpty: Story = {
   play: async ({ canvas }) => {
     const trigger = await canvas.findByRole('button', { name: 'Tags' })
 
-    await expect(trigger.textContent).toBe('0 Tag')
+    await expect(trigger.textContent).toBe('0 Tags')
     await expect(trigger.dataset.empty).toBe('true')
     await expect(trigger.getBoundingClientRect().height).toBe(24)
   },

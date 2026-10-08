@@ -29,7 +29,7 @@ describe('TagsProperty', () => {
     )
 
     const trigger = () => screen.getByRole('button', { name: 'Tags' })
-    expect(trigger().textContent).toBe('0 Tag')
+    expect(trigger().textContent).toBe('0 Tags')
     expect(trigger().getAttribute('data-empty')).toBe('true')
 
     rerender(
