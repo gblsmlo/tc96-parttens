@@ -129,6 +129,8 @@ export function FilterCheckboxSubmenu<TValue extends string>({
   )
 }
 
+const noop = () => undefined
+
 export interface CalendarToolbarProps {
   activeFilterCount: number
   'aria-label': string
@@ -138,6 +140,7 @@ export interface CalendarToolbarProps {
   mode: CalendarViewMode
   onAnchorChange: (anchor: Date) => void
   onClearFilters: () => void
+  onCreate?: () => void
   onModeChange: (mode: CalendarViewMode) => void
   today: Date
 }
@@ -151,6 +154,7 @@ export function CalendarToolbar({
   mode,
   onAnchorChange,
   onClearFilters,
+  onCreate = noop,
   onModeChange,
   today,
 }: Readonly<CalendarToolbarProps>) {
@@ -190,7 +194,7 @@ export function CalendarToolbar({
           >
             <ViewSettingsSection label="Filtros">{filters}</ViewSettingsSection>
           </ViewSettingsMenu>
-          <Action label={createLabel} onClick={() => undefined} />
+          <Action label={createLabel} onClick={onCreate} />
         </>
       }
       startSlot={

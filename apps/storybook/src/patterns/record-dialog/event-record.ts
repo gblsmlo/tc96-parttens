@@ -1,5 +1,6 @@
 import {
   addCalendarDays,
+  type CalendarDate,
   fromZonedDateTime,
   type SelectPropertyGroup,
   type SelectPropertyOption,
@@ -18,11 +19,36 @@ import { z } from 'zod'
 
 export const TIME_ZONE = 'America/Sao_Paulo'
 
-export const defaultSlot = {
+export interface EventSlot {
+  date: string
+  end: string
+  start: string
+}
+
+export const defaultSlot: EventSlot = {
   date: '2026-10-14T12:00:00.000Z',
   end: '15:00',
   start: '14:00',
 }
+
+const formatMinutes = (minutes: number) => {
+  const clamped = Math.min(minutes, 1439)
+  return `${String(Math.floor(clamped / 60)).padStart(2, '0')}:${String(clamped % 60).padStart(2, '0')}`
+}
+
+export const slotFromCalendar = ({
+  day,
+  endMinutes,
+  startMinutes,
+}: Readonly<{
+  day: CalendarDate
+  endMinutes: number
+  startMinutes: number
+}>): EventSlot => ({
+  date: new Date(Date.UTC(day.year, day.month - 1, day.day, 12)).toISOString(),
+  end: formatMinutes(endMinutes),
+  start: formatMinutes(startMinutes),
+})
 
 export const calendarGroups: SelectPropertyGroup[] = [
   {

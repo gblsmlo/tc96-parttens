@@ -357,7 +357,7 @@ export const CreateEvent: Story = {
 
 export const CreateEventInteraction: Story = {
   ...CreateEvent,
-  play: async ({ args }) => {
+  play: async () => {
     const dialog = await screen().findByRole('dialog', { name: 'New event' })
     const save = within(dialog).getByRole('button', { name: 'Save' })
     const title = within(dialog).getByRole('textbox', { name: 'Event title' })

@@ -9,7 +9,7 @@ import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import type { CalendarItemSegment, TimeGridLane } from '../lib/calendar-layout'
-import type { CalendarDate } from '../types'
+import type { CalendarDate, CalendarSlot } from '../types'
 import { CalendarAllDayCell } from './calendar-all-day-cell'
 import { CalendarDayColumn } from './calendar-day-column'
 
@@ -28,9 +28,11 @@ export interface CalendarTimeGridProps<TItem> {
   loading: boolean
   loadingItemLabel?: string
   nowMinutes: number | null
+  onSelectSlot?: (slot: CalendarSlot) => void
   range: readonly CalendarDate[]
   renderAllDaySegment: (segment: CalendarItemSegment<TItem>) => ReactNode
   renderSegment: (segment: CalendarItemSegment<TItem>) => ReactNode
+  snapMinutes: number
   timedSegmentsByDay: ReadonlyMap<string, CalendarItemSegment<TItem>[]>
   timeZoneLabel: string
   today: CalendarDate
@@ -47,9 +49,11 @@ export function CalendarTimeGrid<TItem>({
   loading,
   loadingItemLabel,
   nowMinutes,
+  onSelectSlot,
   range,
   renderAllDaySegment,
   renderSegment,
+  snapMinutes,
   timedSegmentsByDay,
   timeZoneLabel,
   today,
@@ -168,7 +172,9 @@ export function CalendarTimeGrid<TItem>({
               nowMinutes={nowMinutes}
               renderSegment={renderSegment}
               segments={timedSegmentsByDay.get(calendarDateKey(date)) ?? []}
+              snapMinutes={snapMinutes}
               {...(loadingItemLabel ? { loadingItemLabel } : {})}
+              {...(onSelectSlot ? { onSelectSlot } : {})}
             />
           ))}
         </div>

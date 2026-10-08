@@ -349,6 +349,17 @@ Decisão de 2026-10-07. No bloco do time grid, o horário ocupava a primeira lin
 - A altura vem de uma container query: o invólucro posicionado em `calendar-day-column.tsx` é `@container-size/calendar-item`. Ela acompanha a pré-visualização do redimensionamento, e a coluna não precisa conhecer as medidas do chip.
 - A ordem do DOM continua a do consumidor (horário, título); só a ordem visual muda, sem efeito no foco, porque nenhum dos dois é focável.
 
+## Calendar: `onSelectSlot` para criar a partir de um slot vazio
+
+Decisão de 2026-10-08, delegada pelo dono (issue #90). O `CalendarView` ganha `onSelectSlot?: (slot: CalendarSlot) => void`, com `CalendarSlot = { day: CalendarDate; startMinutes: number; endMinutes: number }`, no mesmo estilo de `onSelectDay` e `onItemReschedule`: o pattern só reporta, o consumidor abre o diálogo e grava (`CreateEvent` em `Patterns/RecordDialog`), sem busca nem persistência no pattern.
+
+- Só clique. O arraste para criar um intervalo fica fora desta unidade; a assinatura já comporta `endMinutes` maior que um passo.
+- `day` está no fuso da view (a coluna clicada). `startMinutes` é o ponto do clique arredondado para baixo ao múltiplo de `snapMinutes`; `endMinutes` é `startMinutes + snapMinutes`. O slot nunca passa da meia-noite: o último slot do dia termina em 1440. `snapMinutes` é o único controle do tamanho, sem prop nova.
+- Só a coluna do time grid dispara. Dispara quando o clique começa e termina no fundo da coluna: um clique num item, numa alça de redimensionar ou o fim de um arraste que solta sobre a coluna não conta. A área "dia inteiro" e as células do mês não disparam (o mês já tem `onSelectDay`).
+- Sem a prop, nada muda: a coluna não recebe handler, nem classe de cursor, nem elemento interativo. Em `loading` a prop é ignorada.
+- Teclado e tecnologia assistiva: o time grid é uma superfície de ponteiro, e a coluna não vira botão nem ganha tab stop (24 horas de slots seriam centenas de paradas de tabulação). O caminho acessível é a ação de criar da toolbar do consumidor, que abre o mesmo diálogo com os campos de dia e hora editáveis. Os itens continuam alcançáveis pelo teclado como antes.
+- Por que o contrato é de minutos e dia, e não de `Date`: o consumidor já recebe `CalendarDate` e minutos em `renderItem`, e converte com `fromZonedDateTime(slot, timeZone)`.
+
 ## Kanban: os dois layouts continuam renderizados
 
 Decisão de 2026-10-03. O `KanbanView` sempre renderiza o painel mobile (a coluna ativa, sem arrasto) e o quadro desktop, e o CSS mostra um deles; por isso o mount custa todos os cards mais a coluna ativa (120 em vez de 100 no 5 x 20, 1100 em vez de 1000 no 10 x 100). Renderizar um só layout por media query exigiria que o servidor escolhesse um deles, com flash do layout errado no mobile e baselines que dependem do `matchMedia` simulado; montar o painel depois só muda o custo de lugar, e uma árvore única ligaria o arrasto por toque no mobile. O ganho medido seria cerca de 1/(colunas + 1) do tempo de render (17 de 104 ms no 5 x 20), e o tempo de parede do 10 x 100 é dominado pelo dnd-kit, onde o painel mobile não registra nada. Responsividade está fora do escopo deste documento; revisitar quando entrar, com snapshot de servidor que renderize os dois painéis. Contrato: `renderCard` deve ser puro e não emitir ids de DOM, porque os cards da coluna ativa aparecem duas vezes.
