@@ -440,6 +440,36 @@ export const WithFooterInteraction: Story = {
   tags: interaction,
 }
 
+export const FooterClosingInteraction: Story = {
+  ...WithFooter,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const title = canvas.getByRole('button', { name: 'Details' })
+    const panel = canvasElement.querySelector(
+      '[data-slot="collapsible-panel"]',
+    ) as HTMLElement
+    const action = within(panel).getByRole('button', { name: 'Add property' })
+
+    await userEvent.click(title)
+    await waitFor(() =>
+      expect(panel.hasAttribute('data-ending-style')).toBe(true),
+    )
+    expect(panel.isConnected).toBe(true)
+    expect(panel.getAnimations().length).toBeGreaterThan(0)
+
+    expect(action.closest('[inert]')).not.toBeNull()
+    action.focus()
+    expect(document.activeElement).not.toBe(action)
+    title.focus()
+    await userEvent.tab()
+    expect(document.activeElement).not.toBe(action)
+
+    await waitFor(() => expect(panel.isConnected).toBe(false))
+    expect(canvas.queryByRole('button', { name: 'Add property' })).toBeNull()
+  },
+  tags: interaction,
+}
+
 export const Empty: Story = {
   args: {
     empty: true,
