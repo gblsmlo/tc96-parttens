@@ -6,7 +6,7 @@ import {
   type ListViewProps,
 } from '@tc96/parttens'
 import type { ReactElement } from 'react'
-import { expect, fn, userEvent } from 'storybook/test'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
 import { renderTaskListRow, useTasks } from '../fixtures/task-renderers'
 import { createCollection, initialTasks, type Task } from '../fixtures/tasks'
@@ -24,6 +24,7 @@ const openTask = fn()
 function Example({
   collapseEmptyGroups = false,
   density = 'comfortable',
+  empty = false,
   emptyGroup = false,
   groupBy = 'status',
   loading = false,
@@ -32,6 +33,7 @@ function Example({
 }: Readonly<{
   collapseEmptyGroups?: boolean
   density?: ListItemDensity
+  empty?: boolean
   emptyGroup?: boolean
   groupBy?: CollectionGroupingId | null
   loading?: boolean
@@ -45,8 +47,9 @@ function Example({
     <div className="min-w-0 p-4">
       <TasksListView
         collapseEmptyGroups={collapseEmptyGroups}
-        collection={createCollection(loading ? [] : visibleTasks)}
+        collection={createCollection(loading || empty ? [] : visibleTasks)}
         emptyGroupLabel="Nenhuma tarefa neste grupo."
+        emptyMessage="Nenhuma tarefa para exibir."
         grouping={groupBy}
         loading={loading}
         loadingItemLabel="Carregando tarefa"
@@ -170,6 +173,27 @@ export const Ungrouped: Story = {
 export const Loading: Story = {
   args: listArgs,
   render: () => <Example loading />,
+}
+
+export const EmptyUngrouped: Story = {
+  args: listArgs,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Without a dimension, an empty collection renders `emptyMessage` in the same `Empty` block an empty group uses. It stays hidden while `loading`.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByText('Nenhuma tarefa para exibir.'),
+    ).toBeInTheDocument()
+    await expect(
+      canvasElement.querySelector('[data-slot="list-item"]'),
+    ).toBeNull()
+  },
+  render: () => <Example empty groupBy={null} />,
 }
 
 export const EmptyGroupsCollapsed: Story = {

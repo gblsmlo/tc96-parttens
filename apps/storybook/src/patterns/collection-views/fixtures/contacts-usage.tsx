@@ -491,6 +491,7 @@ function ContactsWorkspace({
             list={{
               collapseEmptyGroups: true,
               emptyGroupLabel: 'Nenhum contato neste grupo.',
+              emptyMessage: 'Nenhum contato com esses filtros.',
               loading,
               loadingItemCount: 3,
               loadingItemLabel: 'Carregando contato',
