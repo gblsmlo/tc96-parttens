@@ -10,6 +10,7 @@ for (const path of [
   'record-group',
   'record-preview',
   'rich-text-editor',
+  'settings',
   'shared',
   'state-surface',
   'widgets',

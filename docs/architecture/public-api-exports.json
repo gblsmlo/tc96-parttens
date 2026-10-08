@@ -525,6 +525,12 @@
     "StateSurfaceKind",
     "StateSurfaceProps"
   ],
+  "settings": [
+    "SettingsRow",
+    "SettingsRowProps",
+    "SettingsSection",
+    "SettingsSectionProps"
+  ],
   "parttens": [
     "Achievement",
     "AchievementsWidget",
@@ -941,6 +947,10 @@
     "SelectedViewMenuProps",
     "SelectedViewSearch",
     "SelectedViewSearchProps",
+    "SettingsRow",
+    "SettingsRowProps",
+    "SettingsSection",
+    "SettingsSectionProps",
     "ShareBar",
     "ShareBarProps",
     "SlashMenuBlock",
