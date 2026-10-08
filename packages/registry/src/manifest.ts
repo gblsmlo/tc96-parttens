@@ -12,6 +12,7 @@ export const patternNames = [
   'widgets',
   'rich-text-editor',
   'state-surface',
+  'settings',
 ] as const
 export type PatternName = (typeof patternNames)[number]
 /** The consumer's components.json aliases the patterns import from. */

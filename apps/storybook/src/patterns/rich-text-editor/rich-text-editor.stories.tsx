@@ -294,6 +294,7 @@ export const FloatingToolbarBlockTypeSelect: Story = {
     await userEvent.click(trigger)
     await userEvent.click(await screen.findByRole('option', { name: 'Texto' }))
     await waitFor(() => expect(editor.querySelector('h2')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
     await expectVocabulary(lastValue(args.onValueChange))
   },
 }

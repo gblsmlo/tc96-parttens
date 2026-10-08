@@ -115,6 +115,7 @@ Install the @tc96/parttens patterns `collection-views` and `properties` in this 
 | `widgets` | Dashboard widgets in four groups: finance (market share, asset stats, risk score, balance, budget, cash flow, transactions, invoices), productivity (task progress, upcoming event, project card, agenda, world clock), CRM (pipeline, deals, activity feed, contact card) and gamification (level, streak, achievements, quests, progress HUD and footer), plus shared metric, stat list, avatar stack, progress ring, metric pill and the IconFrame element |
 | `rich-text-editor` | Notion-style block editor on headless Plate: paragraphs, headings, quote, nested lists, five marks, floating toolbar, `/` menu and a separate editable title |
 | `state-surface` | `StateSurface` for empty, no-result, error, permission and not-found, and `StateGuard`, which mounts its children only when the state is `data` |
+| `settings` | `SettingsSection`, a divided card of settings with an optional title, and `SettingsRow`, a row with title, description, an optional `startSlot` and the control in `endSlot`; values and controls belong to the consumer |
 
 Filter Builder and responsive layouts are out of scope for the first version.
 

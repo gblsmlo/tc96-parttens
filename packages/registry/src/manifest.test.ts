@@ -49,6 +49,9 @@ test('accepts the migrated checklist pattern', () => {
 test('accepts the state-surface pattern', () => {
   expect(selectPatterns(['state-surface'])).toEqual(['state-surface'])
 })
+test('accepts the settings pattern', () => {
+  expect(selectPatterns(['settings'])).toEqual(['settings'])
+})
 test('accepts the widgets pattern', () => {
   expect(selectPatterns(['widgets'])).toEqual(['widgets'])
 })
@@ -266,5 +269,24 @@ test('builds the state-surface item with COSS-only dependencies and no test file
     ),
   ).toBe(true)
   expect(paths).toContain('elements/src/icon-frame.tsx')
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
+test('builds the settings item shipping Text and no test files', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/settings.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('settings')
+  expect(paths).toContain('elements/src/text.tsx')
+  expect(paths).toContain('parttens/src/settings/index.ts')
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
