@@ -233,7 +233,9 @@ export const createDataTableColumns = (
         }
       />
     ),
+    enableResizing: false,
     id: 'select',
+    size: 40,
   },
   {
     accessorKey: 'title',
@@ -247,11 +249,14 @@ export const createDataTableColumns = (
     ),
     footer: ({ table }) => `${table.getRowCount()} tarefas`,
     header: 'Tarefa',
+    minSize: 160,
+    size: 320,
   },
   {
     accessorKey: 'status',
     cell: ({ row }) => <StatusField onChange={onChange} task={row.original} />,
     header: 'Status',
+    size: 170,
   },
   {
     accessorKey: 'priority',
@@ -266,6 +271,7 @@ export const createDataTableColumns = (
       <AssigneeField onChange={onChange} task={row.original} />
     ),
     header: 'Responsável',
+    size: 170,
   },
   {
     cell: ({ row }) => <DueField onChange={onChange} task={row.original} />,

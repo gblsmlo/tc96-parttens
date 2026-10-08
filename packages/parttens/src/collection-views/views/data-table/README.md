@@ -1,6 +1,6 @@
 # Data Table
 
-A semantic `<table>` on COSS `Table` and TanStack Table v9, with optional row selection, sorting and client-side pagination. Unlike `DataGrid`, it is not a WAI-ARIA grid: there is no roving focus, cell selection, column menu, resizing, pinning, grouping or virtualization, and the header is plain content. The consumer owns the cells (a checkbox, a sort button, a pagination control) and drives the instance from `useDataTable`. `DataGridPagination` also accepts this table.
+A semantic `<table>` on COSS `Table` and TanStack Table v9, with optional row selection, sorting and client-side pagination. Unlike `DataGrid`, it is not a WAI-ARIA grid: there is no roving focus, cell selection, column menu, pinning, grouping or virtualization, and column resizing is opt-in through `enableColumnResizing`, and the header is plain content. The consumer owns the cells (a checkbox, a sort button, a pagination control) and drives the instance from `useDataTable`. `DataGridPagination` also accepts this table.
 
 ## Cell renderers
 

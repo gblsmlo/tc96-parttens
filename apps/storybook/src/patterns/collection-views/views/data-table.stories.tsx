@@ -14,12 +14,15 @@ interface DataTableExampleProps {
   isLoading?: boolean
   /** Paginates on the client and composes the pagination footer below the table. */
   paginated?: boolean
+  /** Lets the user resize columns from the header edges. */
+  resizable?: boolean
 }
 
 function DataTableExample({
   data = initialTasks,
   isLoading = false,
   paginated = false,
+  resizable = false,
 }: Readonly<DataTableExampleProps>): ReactElement {
   const { tasks, updateTask } = useTasks(data)
   const columns = useMemo(
@@ -29,6 +32,7 @@ function DataTableExample({
   const { table } = useDataTable<Task>({
     columns,
     data: tasks,
+    enableColumnResizing: resizable,
     enablePagination: paginated,
     enableRowSelection: true,
     getRowId: (task) => task.id,
@@ -52,6 +56,7 @@ const meta = {
   argTypes: {
     isLoading: booleanArgType,
     paginated: booleanArgType,
+    resizable: booleanArgType,
   },
   component: DataTableExample,
   decorators: [
@@ -65,7 +70,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Semantic table collection view, built on the COSS `Table` and TanStack Table. The view has no frame: it is not a child of `CardFrame`. The consumer owns the columns and the state; the footer appears when a column declares `footer`. Status is a `SelectProperty`: the select emits the change and the example writes to the collection.',
+          'Semantic table collection view, built on the COSS `Table` and TanStack Table. The view draws the DataGrid frame by default (`bordered={false}` drops it) and is not a child of `CardFrame`. The consumer owns the columns and the state; the footer appears when a column declares `footer`. Status is a `SelectProperty`: the select emits the change and the example writes to the collection.',
       },
     },
     layout: 'centered',
@@ -120,6 +125,41 @@ export const EditStatus: Story = {
     await expect(
       canvas.getAllByRole('combobox', { name: 'Status: Em revisão' }),
     ).toHaveLength(3)
+  },
+}
+
+export const ResizableColumns: Story = {
+  args: { resizable: true },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Drag a header edge, or focus it and press the arrow keys, to resize a column; a double click restores its `size`. The last column takes the remaining width, so the table keeps filling its container until the sized columns overflow it and it scrolls.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const table = canvas.getByRole('table')
+    const container = table.parentElement as HTMLElement
+    const handle = canvas.getByRole('separator', {
+      name: 'Redimensionar coluna Tarefa',
+    })
+
+    await expect(table.getBoundingClientRect().width).toBeGreaterThanOrEqual(
+      container.clientWidth,
+    )
+    handle.focus()
+    await userEvent.keyboard('{ArrowRight}')
+    await expect(handle).toHaveAttribute('aria-valuenow', '328')
+    await expect(table.getBoundingClientRect().width).toBeGreaterThanOrEqual(
+      container.clientWidth,
+    )
+    await expect(
+      canvas.queryByRole('separator', {
+        name: 'Redimensionar coluna Estimativa',
+      }),
+    ).toBeNull()
   },
 }
 
