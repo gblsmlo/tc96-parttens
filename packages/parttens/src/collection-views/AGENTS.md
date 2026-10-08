@@ -65,6 +65,7 @@ Toolbar:
 | Attribute | Where | Read by |
 | --- | --- | --- |
 | `data-kanban-card-action`, `data-calendar-item-action` | controls inside `KanbanCard` and `CalendarEventChip` | the card and chip variants raise them above the open trigger with `z-10` |
+| `data-kanban-column-option="<column id>"` | the column buttons of `KanbanColumnSelector` (below `md`) | consumers, as the `finalFocus` fallback of `RecordPreview` when the moved card is not rendered; not styled |
 | `data-collapsed="true"` | `KanbanColumn`, the grid group row | the board width rule (`w-76`, `xl:w-88`) skips collapsed columns |
 | `data-kanban-card-draggable`, `data-kanban-card-drag-id`, `data-calendar-item-drag-id` | drag wrappers and handles | drag-scroll exclusion and focus restore after a move; not styled |
 | `data-slot="card"` | `KanbanCard` | header and footer variants via `in-[[data-slot=card]:has(>[data-slot=card-panel])]` |
