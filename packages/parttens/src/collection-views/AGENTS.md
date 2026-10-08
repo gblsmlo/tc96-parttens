@@ -98,7 +98,9 @@ bun scripts/bench/<view>.bench.ts --compare scripts/bench/results/<view>.base.js
 
 Run the bench of each view whose rendering changed. `--gate` exits 1 when a render counter rose or a scenario disappeared; timing only warns. Regenerate a baseline with `--json scripts/bench/results/<view>.base.json` on an idle machine and update the view's README table in the same change. The harness in `scripts/bench/` is copied from the tc96-marketplace `react-component-performance` skill; keep its `bench-harness v1` line.
 
-Stories in `apps/storybook/src/patterns/collection-views/` run axe with `test: 'error'` and share the task mock in `fixtures/`; only `default.stories.tsx` carries the toolbar and view switcher.
+Stories in `apps/storybook/src/patterns/collection-views/` run axe with `test: 'error'`. Fixtures in `fixtures/` are per usage: Tasks reads `tasks.ts`, Pipeline `deals.ts`, Contacts `contacts.ts` and Calendar `deal-activities.ts` over `deals.ts`. The `views/` stories read `tasks.ts`, except Calendar Interactions, which reads `events.ts`. `tasks.ts` also exports the people, time zone and clock every fixture imports, and the record-dialog stories import `contacts.ts`, so editing either reaches beyond one usage.
+
+The toolbar with the view switcher lives in the Tasks, Pipeline and Contacts usages (`usages/<usage>.stories.tsx`). The Calendar usage and `views/calendar/calendar-interactions.stories.tsx` carry `fixtures/calendar-toolbar.tsx`: period, range and filters, no view switcher.
 
 ## Pointers
 
