@@ -78,6 +78,7 @@ Data Grid attributes are listed in `views/data-grid/AGENTS.md`.
 
 - Variants live in `kanbanCardVariants` and `calendarEventChipVariants`; every class is a complete string so the Tailwind scanner sees it. A condition emits one class through a ternary.
 - The positioned wrapper of each time-grid item (`calendar-day-column.tsx`) is the size container `calendar-item`, which the chip's `block` variant queries: the time follows the title, and below two lines of height (2.625rem) both share one wrapping row whose second line falls outside the block, so a short item always shows its title and shows the time only when it fits.
+- `DataTable` draws the DataGrid frame (`rounded-md border bg-background`) unless `bordered={false}`, and its `thead` and the DataGrid header (pinned header cells included) share one `color-mix` of `var(--card)` with 2% black, 2% white in dark, so the two views read as the same surface.
 - Colors only from theme tokens; the kanban column tint is `color-mix` over `var(--card)` and the time-grid hour lines read `var(--border)`.
 - Hover-only affordances pair `group-hover` with `group-focus-within` and `pointer-coarse:opacity-100`, because `hover:` does not fire on touch in v4.
 - The calendar chip and `KanbanCard` draw `has-focus-visible:ring-2` on the `article` because the open trigger removes the native outline.

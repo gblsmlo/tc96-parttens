@@ -103,13 +103,21 @@ describe('DataTable', () => {
     )
   })
 
-  test('draws the DataGrid frame when bordered', () => {
-    const { container } = render(<CampaignTable bordered />)
+  test('draws the DataGrid frame by default', () => {
+    const { container } = render(<CampaignTable />)
     const frame = container.querySelector('[data-slot="table-container"]')
 
     expect(frame?.hasAttribute('data-bordered')).toBe(true)
     expect(frame?.className).toContain('rounded-md border bg-background')
     expect(frame?.className).toContain('overflow-x-auto')
+  })
+
+  test('drops the frame when bordered is false', () => {
+    const { container } = render(<CampaignTable bordered={false} />)
+    const frame = container.querySelector('[data-slot="table-container"]')
+
+    expect(frame?.hasAttribute('data-bordered')).toBe(false)
+    expect(frame?.className).not.toContain('border')
   })
 
   test('marks selected rows', () => {

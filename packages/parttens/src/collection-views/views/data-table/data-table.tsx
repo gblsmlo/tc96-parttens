@@ -33,7 +33,7 @@ export function DataTable<TData extends RowData>({
   isLoading = false,
   loadingRowCount = 5,
   emptyMessage = 'Nenhum registro para exibir.',
-  bordered = false,
+  bordered = true,
   className,
   style,
   ...props

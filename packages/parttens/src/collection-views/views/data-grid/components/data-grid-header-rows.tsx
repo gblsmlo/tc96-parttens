@@ -22,7 +22,7 @@ export function DataGridHeaderRows<TData extends RowData>({
 
   return (
     <div
-      className="sticky top-0 z-10 grid border-b bg-background"
+      className="sticky top-0 z-10 grid border-b bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)] dark:bg-[color-mix(in_srgb,var(--card),var(--color-white)_2%)]"
       data-slot="data-grid-header"
       role="rowgroup"
       style={{ minWidth: totalSize }}
@@ -54,7 +54,7 @@ export function DataGridHeaderRows<TData extends RowData>({
                         ? 'none'
                         : undefined
                 }
-                className="relative flex min-h-9 items-center border-e px-1.5 text-muted-foreground last:border-e-0 data-[pinned]:bg-background"
+                className="relative flex min-h-9 items-center border-e px-1.5 text-muted-foreground last:border-e-0 data-[pinned]:bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)] dark:data-[pinned]:bg-[color-mix(in_srgb,var(--card),var(--color-white)_2%)]"
                 data-column-id={header.column.id}
                 data-pinned={layout?.pinned || undefined}
                 data-slot="data-grid-header-cell"

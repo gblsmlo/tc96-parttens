@@ -70,7 +70,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Semantic table collection view, built on the COSS `Table` and TanStack Table. The view has no frame: it is not a child of `CardFrame`. The consumer owns the columns and the state; the footer appears when a column declares `footer`. Status is a `SelectProperty`: the select emits the change and the example writes to the collection.',
+          'Semantic table collection view, built on the COSS `Table` and TanStack Table. The view draws the DataGrid frame by default (`bordered={false}` drops it) and is not a child of `CardFrame`. The consumer owns the columns and the state; the footer appears when a column declares `footer`. Status is a `SelectProperty`: the select emits the change and the example writes to the collection.',
       },
     },
     layout: 'centered',
