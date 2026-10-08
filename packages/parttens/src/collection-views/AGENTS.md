@@ -46,7 +46,7 @@ Kanban:
 
 List, calendar and table:
 
-- `ListView` renders the flat collection with `h2` titles and grouped lists with `h3`. With `collapseEmptyGroups`, a manual choice wins, an untouched group reopens when it gets items, every group stays open while loading, and `onCollapsedGroupIdsChange` reports the effective list.
+- `ListView` renders the flat collection with `h2` titles and grouped lists with `h3`. An empty flat list (`grouping === null`, not loading) renders `emptyMessage` in the COSS `Empty` block, like an empty group. With `collapseEmptyGroups`, a manual choice wins, an untouched group reopens when it gets items, every group stays open while loading, and `onCollapsedGroupIdsChange` reports the effective list.
 - Calendar drops on a day or all-day cell keep the wall-clock time and the absolute duration (DST-safe); time-column drops snap the block's top edge to `snapMinutes`. The override lives until `getItemSchedule` matches it, and a drop resolving to the same window is ignored. Without `onItemReschedule` no handle or draggable marker exists (tested).
 - A calendar item drags from its whole body like a kanban card, except interactive descendants; `CalendarEventChipOpenTrigger` drags only past 5px (touch: 250ms delay, 5px tolerance). The grip handle, visible only on keyboard focus, is the keyboard and assistive-technology activator.
 - A full month cell collapses its overflow behind a "+N" `Popover` that lists only the hidden segments, so no item renders twice with the same drag id; an item drags out of the popup like any chip. With `onSelectDay`, the popup's day title is a `PopoverClose` that calls it; without it, the title is plain text.

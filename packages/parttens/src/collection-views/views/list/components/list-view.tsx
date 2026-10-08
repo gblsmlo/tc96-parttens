@@ -1,5 +1,6 @@
 'use client'
 
+import { Empty, EmptyDescription } from '@tc96/ui/empty'
 import { Separator } from '@tc96/ui/separator'
 import { Fragment, type ReactNode, useMemo, useState } from 'react'
 
@@ -29,6 +30,7 @@ export interface ListViewProps<TItem> {
   defaultCollapsedGroupIds?: readonly string[]
   separated?: boolean
   emptyGroupLabel?: ReactNode | ((group: CollectionGroup<TItem>) => ReactNode)
+  emptyMessage?: ReactNode
   getGroupActions?: (
     group: CollectionGroup<TItem>,
   ) => ListGroupActions | undefined
@@ -51,6 +53,7 @@ export function ListView<TItem>({
   defaultCollapsedGroupIds = [],
   separated = false,
   emptyGroupLabel = 'No items in this group.',
+  emptyMessage = 'No items to show.',
   getGroupActions,
   grouping,
   loading = false,
@@ -115,21 +118,27 @@ export function ListView<TItem>({
       {grouping === null && preparedGroups === undefined ? (
         <ListItemHeadingLevelContext.Provider value={2}>
           <div className="flex flex-col" data-slot="list-view-items">
-            {loading
-              ? skeletonKeys('loading', loadingItemCount).map((skeletonKey) => (
-                  <ListItemSkeleton
-                    key={skeletonKey}
-                    {...(loadingItemLabel ? { label: loadingItemLabel } : {})}
-                  />
-                ))
-              : collection.items.map((item, position) => (
-                  <Fragment key={collection.getKey(item)}>
-                    {separated && position > 0 ? (
-                      <Separator className="bg-border/40" />
-                    ) : null}
-                    <ListViewItem item={item} renderItem={renderItem} />
-                  </Fragment>
-                ))}
+            {loading ? (
+              skeletonKeys('loading', loadingItemCount).map((skeletonKey) => (
+                <ListItemSkeleton
+                  key={skeletonKey}
+                  {...(loadingItemLabel ? { label: loadingItemLabel } : {})}
+                />
+              ))
+            ) : collection.items.length ? (
+              collection.items.map((item, position) => (
+                <Fragment key={collection.getKey(item)}>
+                  {separated && position > 0 ? (
+                    <Separator className="bg-border/40" />
+                  ) : null}
+                  <ListViewItem item={item} renderItem={renderItem} />
+                </Fragment>
+              ))
+            ) : (
+              <Empty>
+                <EmptyDescription>{emptyMessage}</EmptyDescription>
+              </Empty>
+            )}
           </div>
         </ListItemHeadingLevelContext.Provider>
       ) : (
