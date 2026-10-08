@@ -23,12 +23,14 @@ const campaigns: Campaign[] = [
 
 type TableProps = Omit<Parameters<typeof DataTable<Campaign>>[0], 'table'> & {
   data?: Campaign[]
+  enableColumnResizing?: boolean
   enablePagination?: boolean
   withFooter?: boolean
 }
 
 function CampaignTable({
   data = campaigns,
+  enableColumnResizing = false,
   enablePagination = false,
   withFooter = false,
   ...props
@@ -44,12 +46,16 @@ function CampaignTable({
             type="checkbox"
           />
         ),
+        enableResizing: false,
         header: 'Seleção',
         id: 'select',
+        size: 40,
       },
       {
         accessorKey: 'title',
         header: 'Campanha',
+        minSize: 120,
+        size: 200,
         ...(withFooter ? { footer: 'Total' } : {}),
       },
       {
@@ -66,6 +72,7 @@ function CampaignTable({
       },
     ],
     data,
+    enableColumnResizing,
     enablePagination,
     enableRowSelection: true,
     getRowId: (campaign) => campaign.id,
@@ -144,5 +151,52 @@ describe('DataTable', () => {
     const { container } = render(<CampaignTable enablePagination />)
 
     expect(container.querySelectorAll('tbody tr')).toHaveLength(2)
+  })
+
+  test('keeps the auto layout without column resizing', () => {
+    const { container } = render(<CampaignTable />)
+
+    expect(container.querySelector('colgroup')).toBeNull()
+    expect(screen.queryByRole('separator')).toBeNull()
+  })
+
+  test('sizes every column but the last, which fills the remaining width', () => {
+    const { container } = render(<CampaignTable enableColumnResizing />)
+    const table = screen.getByRole('table')
+    const widths = Array.from(container.querySelectorAll('col')).map(
+      (col) => col.style.width,
+    )
+
+    expect(table.className).toContain('table-fixed')
+    expect(table.style.minWidth).toBe('390px')
+    expect(widths).toEqual(['40px', '200px', ''])
+  })
+
+  test('offers a handle only on resizable columns before the last', () => {
+    render(<CampaignTable enableColumnResizing />)
+
+    expect(
+      screen.getAllByRole('separator').map((handle) => handle.ariaLabel),
+    ).toEqual(['Redimensionar coluna Campanha'])
+  })
+
+  test('resizes a column with the arrow keys within its bounds', () => {
+    const { container } = render(<CampaignTable enableColumnResizing />)
+    const handle = screen.getByRole('separator', {
+      name: 'Redimensionar coluna Campanha',
+    })
+    const titleColumn = () => container.querySelectorAll('col')[1]
+
+    fireEvent.keyDown(handle, { key: 'ArrowRight' })
+    expect(titleColumn()?.style.width).toBe('208px')
+    expect(handle.getAttribute('aria-valuenow')).toBe('208')
+
+    for (let step = 0; step < 20; step += 1) {
+      fireEvent.keyDown(handle, { key: 'ArrowLeft' })
+    }
+    expect(titleColumn()?.style.width).toBe('120px')
+
+    fireEvent.doubleClick(handle)
+    expect(titleColumn()?.style.width).toBe('200px')
   })
 })
