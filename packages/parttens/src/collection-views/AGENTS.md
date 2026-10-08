@@ -31,7 +31,7 @@ Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the f
 
 Collection and outlet:
 
-- `CollectionViewOutlet` throws when the active view is `datagrid`, `datatable` or `calendar` and the matching prop is missing; `projectCollection` throws for `groupBy === null` and for an undeclared dimension. Tests assert the messages.
+- `CollectionViewOutlet` throws when the active view is `datagrid`, `datatable`, `calendar` or `kanban` (`renderKanbanItem`) and the matching prop is missing; `projectCollection` throws for `groupBy === null` and for an undeclared dimension. Tests assert the messages.
 - Prepared `groups` win over `projectCollection` in list and kanban, and an explicit `[]` never falls back to the source items.
 - `kanban.onMoveCard` receives the group of each side, so a handler never parses column ids; a column with no matching group rejects the move. Without it, drag is enabled by `onItemChange` plus `setGroupId` on the active dimension, and a reorder inside one group returns false, because the collection order is the consumer's. `kanban.onMoveCard` wins when both are passed.
 

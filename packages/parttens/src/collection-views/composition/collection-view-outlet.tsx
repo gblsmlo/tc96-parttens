@@ -69,7 +69,7 @@ export interface CollectionViewOutletProps<TItem extends RowData> {
   onItemChange?: (
     change: CollectionItemChange<TItem>,
   ) => boolean | Promise<boolean>
-  renderKanbanItem: (item: TItem) => ReactNode
+  renderKanbanItem?: (item: TItem) => ReactNode
   renderListItem: (item: TItem) => ReactNode
 }
 
@@ -86,12 +86,19 @@ export function CollectionViewOutlet<TItem extends RowData>({
   renderListItem,
 }: CollectionViewOutletProps<TItem>) {
   const { preferences } = useCollectionPreferences()
+  const canRenderKanban = Boolean(renderKanbanItem)
   const kanbanGroups = useMemo(
     () =>
-      preferences.view === 'kanban'
+      preferences.view === 'kanban' && canRenderKanban
         ? (groups ?? projectCollection(collection, preferences.groupBy))
         : [],
-    [collection, groups, preferences.groupBy, preferences.view],
+    [
+      canRenderKanban,
+      collection,
+      groups,
+      preferences.groupBy,
+      preferences.view,
+    ],
   )
   const columns = useMemo<KanbanColumnData<TItem>[]>(
     () =>
@@ -178,6 +185,12 @@ export function CollectionViewOutlet<TItem extends RowData>({
         {...list}
         groups={groups ?? list?.groups}
       />
+    )
+  }
+
+  if (!renderKanbanItem) {
+    throw new Error(
+      'CollectionViewOutlet: a view "kanban" exige a prop `renderKanbanItem`.',
     )
   }
 
