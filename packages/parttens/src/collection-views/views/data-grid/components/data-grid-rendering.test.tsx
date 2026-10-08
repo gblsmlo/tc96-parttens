@@ -257,6 +257,38 @@ describe('DataGrid cell invalidation', () => {
     expect(boxes[1]?.getAttribute('aria-checked')).toBe('false')
   })
 
+  test('hides the row number on a selected row without hover or focus', () => {
+    const { captured } = mountWith({
+      columns: [createSelectColumn<Item>(), ...columns],
+      enableRowSelection: true,
+    })
+
+    act(() => {
+      captured.table?.getRow('a').toggleSelected(true)
+    })
+
+    const hiddenByState = (marker: Element) => {
+      const rule = Array.from(marker.classList)
+        .map((name) =>
+          /^group-data-\[state=selected\](?:\/([\w-]+))?:opacity-0$/.exec(name),
+        )
+        .find(Boolean)
+      if (!rule) return false
+      const groupClass = rule[1] ? `group/${rule[1]}` : 'group'
+      let node = marker.parentElement
+      while (node && !node.classList.contains(groupClass)) {
+        node = node.parentElement
+      }
+      return node?.getAttribute('data-state') === 'selected'
+    }
+
+    const markers = document.querySelectorAll(
+      '[data-slot="data-grid-row-marker"]',
+    )
+    expect(hiddenByState(markers[0] as Element)).toBe(true)
+    expect(hiddenByState(markers[1] as Element)).toBe(false)
+  })
+
   test('re-renders cells when the column definitions change', () => {
     const { update } = mountWith({ columns: metaColumn() })
     const swapped: Options['columns'] = [
