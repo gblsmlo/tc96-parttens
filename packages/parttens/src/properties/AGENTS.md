@@ -48,7 +48,7 @@ Editing:
 
 - `EditableText` commits on blur and reads the draft from a ref, because the blur that Escape triggers would otherwise read unapplied state. Escape with a dirty draft restores and stops propagation; with a clean draft it bubbles, so in a dialog the first Escape cancels the edit and the second closes the dialog. A new `value` is ignored while focused.
 - Email and phone popups copy drafts from `value` on open, so a `value` change while open does not overwrite typing. Enter saves and stops propagation, because the Base UI popup closes on Enter. The form sets `noValidate`: the browser bubble would block submit before the pattern's pt-BR message.
-- `PhoneInput` takes the country from the number itself, even incomplete (`+551198`), before `defaultCountry`. `phoneNumberSchema` validates with the same library that formats the field; values are E.164. `PhoneProperty` shows every number through `nationalPhoneLabel` (same library, national format, no country code), in the label, the trigger summary and the remove button's name; the emitted value stays E.164.
+- `PhoneInput` takes the country from the number itself, even incomplete (`+551198`), before `defaultCountry`. `phoneNumberSchema` validates with the same library that formats the field; values are E.164. `PhoneProperty` shows every number through `internationalPhoneLabel` (same library, international format with country code; an unparseable value shows raw), in the label, the trigger summary and the remove button's name; the emitted value stays E.164.
 - `TextProperty` swallows a rejected clipboard promise. With the inline field the accessible name belongs to the field; a labelled `img` around it would announce the value twice.
 
 Markup:

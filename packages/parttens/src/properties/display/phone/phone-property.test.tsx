@@ -11,7 +11,7 @@ afterEach(cleanup)
 
 const PHONE = '+5511987654321'
 const OTHER = '+5511912345678'
-const PHONE_LABEL = '(11) 98765-4321'
+const PHONE_LABEL = '+55 11 98765 4321'
 
 const openAddPopover = async (name: string) => {
   await act(async () => fireEvent.click(screen.getByRole('button', { name })))
@@ -202,6 +202,12 @@ describe('PhoneProperty', () => {
       previousValue: [],
       removed: null,
     })
+  })
+
+  test('valor que a biblioteca não interpreta aparece como veio', () => {
+    render(<PhoneProperty value={['ramal 204']} />)
+
+    expect(screen.getByText('ramal 204')).toBeTruthy()
   })
 
   test('no arranjo `trigger`, o gatilho segue nomeando a propriedade preenchida', async () => {

@@ -1,5 +1,5 @@
 import {
-  formatPhoneNumber,
+  formatPhoneNumberIntl,
   isValidPhoneNumber,
   parsePhoneNumber,
 } from 'react-phone-number-input/input-max'
@@ -22,8 +22,8 @@ export function nationalDigits(value: string | null): string {
   return value.slice(callingCode.length + 1)
 }
 
-export function nationalPhoneLabel(value: string): string {
-  return formatPhoneNumber(value) || value
+export function internationalPhoneLabel(value: string): string {
+  return formatPhoneNumberIntl(value) || value
 }
 
 export interface PhoneNumberSchemaOptions {

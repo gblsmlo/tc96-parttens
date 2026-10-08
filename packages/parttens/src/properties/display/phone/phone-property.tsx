@@ -19,7 +19,7 @@ import {
   PhoneInput,
   phoneNumberSchema,
 } from '../phone-input/index'
-import { nationalPhoneLabel } from '../phone-input/phone-number'
+import { internationalPhoneLabel } from '../phone-input/phone-number'
 
 const invalidPhoneMessage = 'Informe um telefone válido.'
 const duplicatePhoneMessage = 'Este telefone já está na lista.'
@@ -128,7 +128,7 @@ export function PhoneProperty({
             <IconLabelProperty
               icon={PhoneIcon}
               key={phone}
-              label={nationalPhoneLabel(phone)}
+              label={internationalPhoneLabel(phone)}
               variant={variant}
             />
           ))
@@ -170,9 +170,9 @@ export function PhoneProperty({
 
   const summary =
     value.length > 1
-      ? `${nationalPhoneLabel(value[0])} +${value.length - 1}`
+      ? `${internationalPhoneLabel(value[0])} +${value.length - 1}`
       : value[0]
-        ? nationalPhoneLabel(value[0])
+        ? internationalPhoneLabel(value[0])
         : placeholder
 
   if (display === 'trigger') {
@@ -211,10 +211,10 @@ export function PhoneProperty({
           className="pe-0"
           icon={PhoneIcon}
           key={phone}
-          label={nationalPhoneLabel(phone)}
+          label={internationalPhoneLabel(phone)}
           trailing={
             <button
-              aria-label={`Remover telefone ${nationalPhoneLabel(phone)}`}
+              aria-label={`Remover telefone ${internationalPhoneLabel(phone)}`}
               className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
               disabled={disabled}
               onClick={() =>
