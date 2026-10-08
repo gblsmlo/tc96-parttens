@@ -283,10 +283,10 @@ Decidido em 2026-10-08 (#51), contraste do `Button` `destructive` no tema de exe
 | Rótulo branco, hover e pressionado, escuro | 4,14:1 | 5,54:1 |
 | `destructive-foreground` (`red-700`) sobre `destructive/8`, claro | 5,49:1 | 5,34:1 |
 | `destructive-foreground` (`red-400`) sobre `destructive/16`, escuro | 5,06:1 | 5,53:1 |
-| `text-destructive` sobre `background`, claro | 3,66:1 | 4,56:1 |
-| `text-destructive` sobre `background`, escuro | 4,96:1 | 3,67:1 |
+| Asterisco obrigatório (`destructive-foreground`) sobre `background`, claro | 3,66:1 | 6,15:1 |
+| Asterisco obrigatório (`destructive-foreground`) sobre `background`, escuro | 4,96:1 | 6,05:1 |
 
-O texto de erro, de alerta e do `Badge` usa `destructive-foreground`, que não mudou e segue acima de 4,5:1 nos dois temas. O ícone de `state-surface` (`var(--destructive)`, gráfico) fica em 3,67:1 no escuro sobre `background`, acima dos 3:1. A única regressão de texto é `text-destructive` no escuro: só o asterisco de campo obrigatório do `Editable` o usa como texto, e cai de 4,96:1 para 3,67:1. Não há valor que dê 4,5:1 nos dois lados no escuro: o rótulo branco exige fundo de luminância relativa abaixo de 0,18 e o texto sobre `stone-900` exige acima de 0,2. Os pares "antes" e as linhas de `destructive-foreground` e `text-destructive` são calculados a partir dos tokens; os do rótulo "depois" foram medidos nas cores computadas da story.
+O texto de erro, de alerta e do `Badge` usa `destructive-foreground`, que não mudou e segue acima de 4,5:1 nos dois temas. O ícone de `state-surface` (`var(--destructive)`, gráfico) fica em 3,67:1 no escuro sobre `background`, acima dos 3:1. O asterisco de campo obrigatório do `Editable` era o único texto em `text-destructive` e passou a `text-destructive-foreground`, o token de texto, como no `checklist`: 6,15:1 no claro e 6,05:1 no escuro sobre `background`, medidos no navegador em `getComputedStyle(label, '::after').color` (antes 3,66:1 e 4,96:1). Não há valor de `--destructive` que dê 4,5:1 nos dois lados no escuro, porque o rótulo branco exige fundo de luminância relativa abaixo de 0,18 e o texto sobre `stone-900` exige acima de 0,2; por isso o texto não usa `text-destructive`. Os pares "antes" e as linhas de `destructive-foreground` e `text-destructive` são calculados a partir dos tokens; os do rótulo "depois" foram medidos nas cores computadas da story.
 
 ## Validação proposta
 

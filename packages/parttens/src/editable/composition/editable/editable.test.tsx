@@ -53,6 +53,16 @@ describe('Editable', () => {
     expect(screen.queryByRole('textbox')).toBeNull()
   })
 
+  test('paints the required marker with the destructive foreground token', () => {
+    renderEditable({ required: true })
+    const label = screen.getByText('Title')
+    expect(label.hasAttribute('data-required')).toBe(true)
+    expect(label.className).toContain(
+      'data-required:after:text-destructive-foreground',
+    )
+    expect(label.className).not.toMatch(/after:text-destructive(?!-)/)
+  })
+
   test('cancels with Escape and restores the previous value', () => {
     const onCancel = mock()
     const changes: string[] = []

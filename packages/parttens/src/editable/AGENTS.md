@@ -59,7 +59,7 @@ State lives in `data-*` attributes and is styled by their variants, never by a p
 | `data-editing` | `editable`, `editable-area` | no |
 | `data-disabled` | `editable`, `editable-label`, `editable-area`, `editable-preview`, `editable-trigger` | `cursor-not-allowed opacity-50` on the label, area and preview |
 | `data-invalid` | `editable`, `editable-label` | no; the input carries `aria-invalid` instead |
-| `data-required` | `editable-label` | the `*` after the label, in `text-destructive` |
+| `data-required` | `editable-label` | the `*` after the label, in `text-destructive-foreground` |
 | `data-empty` | `editable-preview` | `text-muted-foreground` |
 | `data-readonly` | `editable-trigger` | no |
 | `data-orientation="horizontal\|vertical"` | `editable-toolbar` | no; the layout classes come from the prop |
