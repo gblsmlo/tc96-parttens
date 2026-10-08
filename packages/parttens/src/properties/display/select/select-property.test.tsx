@@ -143,6 +143,48 @@ describe('SelectProperty', () => {
     expect(changes).toEqual([null])
   })
 
+  test('keeps the empty option without an icon when the catalog has none', async () => {
+    const { rerender } = render(
+      <SelectProperty
+        action={() => undefined}
+        ariaLabel="Frequência"
+        emptyOptionLabel="Não repete"
+        options={[{ label: 'Diariamente', value: 'daily' }]}
+        value="daily"
+      />,
+    )
+
+    const trigger = screen.getByRole('combobox', {
+      name: 'Frequência: Diariamente',
+    })
+    fireEvent.pointerDown(trigger, { pointerId: 1, pointerType: 'mouse' })
+    fireEvent.mouseDown(trigger)
+    fireEvent.pointerUp(trigger, { pointerId: 1, pointerType: 'mouse' })
+    fireEvent.click(trigger)
+
+    const empty = await waitFor(() =>
+      screen.getByRole('option', { name: 'Não repete' }),
+    )
+    expect(empty.lastElementChild?.querySelector('svg')).toBeNull()
+    fireEvent.pointerDown(empty, { pointerType: 'mouse' })
+    fireEvent.click(empty)
+
+    rerender(
+      <SelectProperty
+        action={() => undefined}
+        ariaLabel="Frequência"
+        emptyOptionLabel="Não repete"
+        options={[{ label: 'Diariamente', value: 'daily' }]}
+        value={null}
+      />,
+    )
+    expect(
+      screen
+        .getByRole('combobox', { name: 'Frequência: Não repete' })
+        .querySelector('svg'),
+    ).toBeNull()
+  })
+
   test('falls back when the current value is outside the catalog', () => {
     const { container } = render(
       <SelectProperty
@@ -180,7 +222,7 @@ describe('SelectProperty', () => {
       'Prioridade: Sem prioridade',
     )
     expect(container.textContent).toContain('Sem prioridade')
-    expect(surface()?.querySelector('svg')).not.toBeNull()
+    expect(surface()?.querySelector('svg')).toBeNull()
   })
 
   test('reads as filled after moving from a value to the empty option', async () => {

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TagsProperty, type TagsPropertyOption } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor } from 'storybook/test'
+import { esperarIndicadorADireita } from '../../../test-utils/property-surface'
 import {
   booleanArgType,
   propertyArgTypes,
@@ -73,7 +74,7 @@ export const Count: Story = {
   play: async ({ canvas }) => {
     const trigger = await canvas.findByRole('button', { name: 'Tags' })
 
-    await expect(trigger.textContent).toContain('1')
+    await expect(trigger.textContent).toBe('1 Tag')
     await expect(canvas.queryByText('Documents')).toBe(null)
 
     await userEvent.click(trigger)
@@ -84,15 +85,16 @@ export const Count: Story = {
         trigger.getBoundingClientRect().bottom,
       ),
     )
+    await esperarIndicadorADireita(option)
   },
-  render: () => <TagsPropertyExample display="count" />,
+  render: () => <TagsPropertyExample display="count" variant="badge" />,
 }
 
 export const CountEmpty: Story = {
   play: async ({ canvas }) => {
     const trigger = await canvas.findByRole('button', { name: 'Tags' })
 
-    await expect(trigger.textContent).toBe('0')
+    await expect(trigger.textContent).toBe('0 Tag')
     await expect(trigger.dataset.empty).toBe('true')
     await expect(trigger.getBoundingClientRect().height).toBe(24)
   },

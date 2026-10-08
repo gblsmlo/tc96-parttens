@@ -42,6 +42,12 @@ const preview: Preview = {
       },
     },
     layout: 'centered',
+    options: {
+      storySort: {
+        includeNames: true,
+        method: 'alphabetical',
+      },
+    },
   },
   tags: ['autodocs', 'test'],
 }

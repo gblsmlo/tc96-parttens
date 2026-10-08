@@ -2,7 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SelectProperty, type SelectPropertyOption } from '@tc96/parttens'
 import { CircleDotIcon, MailIcon, PhoneIcon, UsersIcon } from 'lucide-react'
 import { useState } from 'react'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
+  esperarIndicadorADireita,
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
 } from '../../../test-utils/property-surface'
@@ -56,6 +58,22 @@ export const Plain: Story = {
 }
 
 export const Dropdown: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The selected option carries its check on the right, like every property select and the view settings menus.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('combobox', { name: 'Type: Meeting' }),
+    )
+    const option = await screen.findByRole('option', { name: 'Meeting' })
+    await waitFor(() => expect(option).toBeVisible())
+    await esperarIndicadorADireita(option)
+  },
   render: (args) => <SelectDropdownExample {...args} />,
 }
 

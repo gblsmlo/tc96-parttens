@@ -89,4 +89,4 @@ export function PropertySelectShell<
 }
 
 export const propertySelectItemClassName =
-  'flex [&>span:first-child:not(:last-child)]:hidden'
+  'grid-cols-[minmax(0,1fr)_.75rem] gap-4 pe-2.5 *:row-start-1 [&>*:last-child]:col-start-1 [&>span:first-child:not(:last-child)]:col-start-2 [&>span:first-child:not(:last-child)]:-me-0.5'

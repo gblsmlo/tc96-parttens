@@ -1,9 +1,13 @@
 import { describe, expect, test } from 'bun:test'
 import {
+  defaultScheduleRecurrenceOptions,
+  emptyScheduleValue,
   formatDateProperty,
   formatDateRangeProperty,
+  formatScheduleProperty,
   parseDatePropertyValue,
   propertyToneClassName,
+  scheduleRecurrenceLabel,
   serializeDatePropertyValue,
 } from './core'
 
@@ -20,6 +24,19 @@ describe('properties core', () => {
     expect(formatDateProperty(null, 'Sem data', 'en-US', 'UTC')).toBe(
       'Sem data',
     )
+  })
+
+  test('formats a schedule and its recurrence without rendering', () => {
+    expect(
+      formatScheduleProperty(
+        { ...emptyScheduleValue, from: new Date(2026, 9, 26) },
+        'Sem data',
+        'pt-BR',
+      ),
+    ).toBe('26 de out')
+    expect(
+      scheduleRecurrenceLabel('daily', defaultScheduleRecurrenceOptions),
+    ).toBe('Diariamente')
   })
 
   test('formats a date range without rendering', () => {

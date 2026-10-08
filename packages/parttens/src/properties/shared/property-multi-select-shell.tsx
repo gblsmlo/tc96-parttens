@@ -21,6 +21,7 @@ import {
   type ResolvedOption,
 } from './lib/property-options'
 import type { PropertyIcon } from './property-catalog'
+import { propertySelectItemClassName } from './property-select-shell'
 import type { PropertyVariant } from './property-surface'
 
 export type PropertyMultiSelectDropdownPlacement = Pick<
@@ -149,13 +150,17 @@ export function PropertyMultiSelectShell<TOption extends OptionLike>({
         anchor={renderTrigger ? triggerRef : undefined}
         align={dropdownPlacement?.align ?? 'end'}
         aria-label={ariaLabel}
-        className="w-64 min-w-0! max-w-[calc(100vw-2rem)]"
+        className="w-max min-w-0! max-w-[calc(100vw-2rem)]"
       >
         {isLoading ? <ComboboxStatus>{loadingLabel}</ComboboxStatus> : null}
         <ComboboxEmpty>{emptyLabel}</ComboboxEmpty>
         <ComboboxList aria-label={ariaLabel}>
           {(option: ResolvedOption<TOption>) => (
-            <ComboboxItem key={option.value} value={option}>
+            <ComboboxItem
+              className={propertySelectItemClassName}
+              key={option.value}
+              value={option}
+            >
               {renderOption(option)}
             </ComboboxItem>
           )}

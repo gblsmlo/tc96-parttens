@@ -17,6 +17,9 @@ import {
 
 const addTagLabel = 'Adicionar tag'
 
+const tagsCountLabel = (count: number) =>
+  `${count} ${count > 1 ? 'Tags' : 'Tag'}`
+
 export interface TagsPropertyOption<TValue extends string = string> {
   label: string
   value: TValue
@@ -84,7 +87,9 @@ export function TagsProperty<TValue extends string = string>({
             variant={variant}
           >
             <TagIcon aria-hidden="true" />
-            <span className="tabular-nums">{selectedOptions.length}</span>
+            <span className="tabular-nums">
+              {tagsCountLabel(selectedOptions.length)}
+            </span>
           </PropertySurface>
         ) : selectedOptions.length > 0 ? (
           selectedOptions.map((option) => (
@@ -144,7 +149,9 @@ export function TagsProperty<TValue extends string = string>({
                   variant={variant}
                 >
                   <TagIcon aria-hidden="true" />
-                  <span className="tabular-nums">{selectedOptions.length}</span>
+                  <span className="tabular-nums">
+                    {tagsCountLabel(selectedOptions.length)}
+                  </span>
                 </PropertySurface>
               )
             : undefined

@@ -11,6 +11,7 @@ afterEach(cleanup)
 
 const PHONE = '+5511987654321'
 const OTHER = '+5511912345678'
+const PHONE_LABEL = '(11) 98765-4321'
 
 const openAddPopover = async (name: string) => {
   await act(async () => fireEvent.click(screen.getByRole('button', { name })))
@@ -144,7 +145,7 @@ describe('PhoneProperty', () => {
 
     await act(async () =>
       fireEvent.click(
-        screen.getByRole('button', { name: `Remover telefone ${PHONE}` }),
+        screen.getByRole('button', { name: `Remover telefone ${PHONE_LABEL}` }),
       ),
     )
 
@@ -214,8 +215,10 @@ describe('PhoneProperty', () => {
 
     // Lado a lado com outra fileira, dois `+` iguais não dizem a qual pertencem:
     // aqui o gatilho continua mostrando o valor, e o `+1` conta o resto.
-    const trigger = screen.getByRole('button', { name: /Telefones: / })
-    expect(trigger.textContent).toContain('+1')
+    const trigger = screen.getByRole('button', {
+      name: `Telefones: ${PHONE_LABEL} +1`,
+    })
+    expect(trigger.textContent).toBe(`${PHONE_LABEL} +1`)
     expect(
       screen.queryByRole('button', { name: 'Adicionar telefone' }),
     ).toBeNull()
@@ -230,7 +233,8 @@ describe('PhoneProperty', () => {
     render(<PhoneProperty value={[PHONE]} />)
 
     expect(screen.queryByRole('button')).toBeNull()
-    expect(screen.getByText(PHONE)).toBeTruthy()
+    expect(screen.getByText(PHONE_LABEL)).toBeTruthy()
+    expect(screen.queryByText(PHONE)).toBeNull()
   })
 
   test('no arranjo `trigger`, o gatilho segue nomeando a propriedade preenchida', async () => {
@@ -272,7 +276,7 @@ describe('PhoneProperty', () => {
       screen.queryByRole('button', { name: 'Adicionar telefone' }),
     ).toBeNull()
     expect(
-      screen.getByRole('button', { name: `Remover telefone ${PHONE}` }),
+      screen.getByRole('button', { name: `Remover telefone ${PHONE_LABEL}` }),
     ).toBeTruthy()
   })
 
