@@ -30,6 +30,8 @@ Import direction: `composition/` → `components/` and `hooks/` → `core.ts`.
 
 The stories are in `apps/storybook/src/patterns/record-dialog/`; the shared lists, the zod schema and the payload shape live in `project-record.ts` there.
 
+Usages sit under `Patterns/RecordDialog/Usages` in `usages/`. `Contacts` is the `CreateRecord` body for the Contacts collection: name as title, a description textarea, and every other field as a property chip, without `stretchBody` so the popup keeps the height of its content. Cargo and Empresa share `CreatableProperty` (`creatable-property.tsx`), a COSS `Combobox` with search, the existing values and a footer button that creates the typed value. `CreateContactDialog` (`create-contact-dialog.tsx`) is controlled, and the Contacts usage of `Patterns/CollectionViews` mounts the same component from Novo contato.
+
 ## Public API
 
 ```ts
@@ -106,4 +108,4 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/record-dialog
 ```
 
-The stories are `Patterns/RecordDialog` (Default, Sizes, CreateRecord, CreateRecordWithForm) in `apps/storybook/src/patterns/record-dialog/`, with a `!dev` `<Story>Interaction` twin for each, and run axe with `test: 'error'`.
+The stories are `Patterns/RecordDialog` (Default, Sizes, CreateRecord, CreateRecordWithForm) in `apps/storybook/src/patterns/record-dialog/`, with a `!dev` `<Story>Interaction` twin for each, and `Patterns/RecordDialog/Usages/Contacts` (Default, CreateContact, CreateMore) in `usages/`; all run axe with `test: 'error'`.

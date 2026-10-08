@@ -15,7 +15,7 @@ const meta = {
       description: {
         component: [
           'The contacts of a sales team as a record screen over one collection: name, company, role, lifecycle stage, emails, phones, tags and last contact.',
-          'The `ViewSettingsMenu` switches between **Tabela** (DataTable), **Planilha** (DataGrid) and **Lista**, groups by stage, and filters by stage and tag. The selected view picker searches, duplicates, creates and deletes saved views, and Salvar preferência writes the layout and filters into the active one. Each value is a property that writes back to the same collection, and rows selected in the Table or the Spreadsheet open an `ActionBar` to delete them.',
+          'The `ViewSettingsMenu` switches between **Tabela** (DataTable), **Planilha** (DataGrid) and **Lista**, groups by stage, and filters by stage and tag. The selected view picker searches, duplicates, creates and deletes saved views, and Salvar preferência writes the layout and filters into the active one. Each value is a property that writes back to the same collection, rows selected in the Table or the Spreadsheet open an `ActionBar` to delete them, and Novo contato opens the `RecordDialog` of `Patterns/RecordDialog/Usages/Contacts`.',
         ].join('\n\n'),
       },
     },
@@ -143,6 +143,46 @@ export const DeleteSelection: Story = {
     }
     await expect(canvas.getByText('12 contatos')).toBeInTheDocument()
     await expect(canvas.queryByRole('button', { name: 'Excluir' })).toBeNull()
+  },
+}
+
+export const CreateContact: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Novo contato opens the `RecordDialog`; Criar contato adds Helena Duarte to the collection as a Lead, and the Table picks her up in the stage order.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Novo contato' }))
+    const dialog = within(
+      await screen.findByRole('dialog', { name: 'Novo contato' }),
+    )
+    await userEvent.type(
+      dialog.getByRole('textbox', { name: 'Nome' }),
+      'Helena Duarte',
+    )
+    await userEvent.click(dialog.getByRole('combobox', { name: 'Cargo' }))
+    await userEvent.type(
+      await screen.findByRole('combobox', { name: 'Buscar cargo' }),
+      'Gerente de marketing{Enter}',
+    )
+    await userEvent.click(dialog.getByRole('button', { name: /Criar contato/ }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    await expect(
+      rowOf(canvasElement, 'Helena Duarte').getByRole('combobox', {
+        name: 'Etapa: Lead',
+      }),
+    ).toBeTruthy()
+    await expect(
+      rowOf(canvasElement, 'Helena Duarte').getByText(/Gerente de marketing/),
+    ).toBeInTheDocument()
+    await expect(canvas.getByText('15 contatos')).toBeInTheDocument()
   },
 }
 

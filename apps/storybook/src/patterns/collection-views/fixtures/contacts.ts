@@ -6,11 +6,17 @@ import type {
 import {
   CircleDashedIcon,
   CircleDotIcon,
+  CircleIcon,
   CircleOffIcon,
   HandshakeIcon,
 } from 'lucide-react'
 
-export type ContactStage = 'lead' | 'qualified' | 'customer' | 'inactive'
+export type ContactStage =
+  | 'none'
+  | 'lead'
+  | 'qualified'
+  | 'customer'
+  | 'inactive'
 
 export type ContactTag =
   | 'decision-maker'
@@ -21,6 +27,7 @@ export type ContactTag =
 
 export interface Contact {
   company: string
+  description?: string
   emails: string[]
   id: string
   lastContactAt: string
@@ -32,6 +39,7 @@ export interface Contact {
 }
 
 export const stageOptions = [
+  { icon: CircleIcon, label: 'Sem etapa', tone: 'neutral', value: 'none' },
   { icon: CircleDashedIcon, label: 'Lead', tone: 'neutral', value: 'lead' },
   {
     icon: CircleDotIcon,

@@ -39,6 +39,7 @@ import {
   Trash2Icon,
 } from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
+import { CreateContactDialog } from '../../record-dialog/create-contact-dialog'
 import { SelectedViewPicker } from '../../shared/selected-view-picker'
 import {
   createContactGridColumns,
@@ -104,6 +105,9 @@ const matchesScope = (contact: Contact, scope: PresetScope) => {
   return true
 }
 
+const nextContactId = (contacts: readonly Contact[]) =>
+  `CT-${Math.max(300, ...contacts.map(({ id }) => Number(id.slice(3)))) + 1}`
+
 const toggle = <TValue,>(values: readonly TValue[], value: TValue) =>
   values.includes(value)
     ? values.filter((current) => current !== value)
@@ -123,6 +127,7 @@ function ContactsWorkspace({
   const [presetId, setPresetId] = useState('all')
   const [stageFilter, setStageFilter] = useState<readonly ContactStage[]>([])
   const [tagFilter, setTagFilter] = useState<readonly ContactTag[]>([])
+  const [creating, setCreating] = useState(false)
 
   const activePreset = presets.find(({ id }) => id === presetId) ?? presets[0]
 
@@ -428,7 +433,7 @@ function ContactsWorkspace({
                   </MenuSub>
                 </ViewSettingsSection>
               </ViewSettingsMenu>
-              <Action label="Novo contato" onClick={() => undefined} />
+              <Action label="Novo contato" onClick={() => setCreating(true)} />
             </>
           }
           startSlot={
@@ -516,6 +521,22 @@ function ContactsWorkspace({
           ) : null}
         </section>
       </div>
+      <CreateContactDialog
+        companies={contacts.map((contact) => contact.company)}
+        onCreate={(contact) =>
+          onContactsChange((current) => [
+            ...current,
+            {
+              ...contact,
+              id: nextContactId(current),
+              lastContactAt: new Date().toISOString(),
+            },
+          ])
+        }
+        onOpenChange={setCreating}
+        open={creating}
+        roles={contacts.map((contact) => contact.role)}
+      />
     </main>
   )
 }
