@@ -37,7 +37,7 @@ export function createSelectColumn<TData extends RowData>(
         {showRowNumbers ? (
           <span
             aria-hidden="true"
-            className="pointer-coarse:opacity-0 text-muted-foreground text-xs tabular-nums group-hover/marker:opacity-0 group-focus-within/marker:opacity-0 group-data-[state=selected]/marker:opacity-0"
+            className="pointer-coarse:opacity-0 text-muted-foreground text-xs tabular-nums group-hover/marker:opacity-0 group-focus-within/marker:opacity-0 group-data-[state=selected]:opacity-0"
             data-slot="data-grid-row-marker"
           >
             {row.index + 1}
