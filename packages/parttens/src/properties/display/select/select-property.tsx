@@ -77,7 +77,9 @@ export function SelectProperty({
     value === null ? undefined : catalog.find((o) => o.value === value)
   const emptyOption: SelectPropertyOption | null = emptyOptionLabel
     ? {
-        icon: CircleDashedIcon,
+        icon: catalog.some((option) => option.icon)
+          ? CircleDashedIcon
+          : undefined,
         label: emptyOptionLabel,
         tone: 'neutral',
         value: '',

@@ -59,3 +59,20 @@ export async function esperarAvatarComAresta(
   await expect(medida.width).toBe(aresta)
   await expect(medida.height).toBe(aresta)
 }
+
+export async function esperarIndicadorADireita(
+  option: HTMLElement,
+): Promise<void> {
+  const indicador = option.querySelector<HTMLElement>(
+    ':scope > span:first-child:not(:last-child)',
+  )
+  const rotulo = option.lastElementChild
+
+  if (!indicador || !rotulo) {
+    throw new Error('A opção selecionada não renderizou o indicador.')
+  }
+
+  await expect(indicador.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+    rotulo.getBoundingClientRect().right,
+  )
+}

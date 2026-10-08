@@ -29,7 +29,7 @@ describe('TagsProperty', () => {
     )
 
     const trigger = () => screen.getByRole('button', { name: 'Tags' })
-    expect(trigger().textContent).toBe('0')
+    expect(trigger().textContent).toBe('0 Tag')
     expect(trigger().getAttribute('data-empty')).toBe('true')
 
     rerender(
@@ -41,8 +41,19 @@ describe('TagsProperty', () => {
         variant="badge"
       />,
     )
-    expect(trigger().textContent).toBe('1')
+    expect(trigger().textContent).toBe('1 Tag')
     expect(trigger().getAttribute('data-empty')).toBe(null)
+
+    rerender(
+      <TagsProperty
+        display="count"
+        onValueChange={() => undefined}
+        options={options}
+        value={options.map((option) => option.value)}
+        variant="badge"
+      />,
+    )
+    expect(trigger().textContent).toBe('2 Tags')
   })
 
   test('uses a labelled chip to open the editing controls', () => {
@@ -246,7 +257,7 @@ describe('TagsProperty', () => {
     const popup = document.querySelector<HTMLElement>(
       '[data-slot="combobox-positioner"] > span',
     )
-    expect(popup?.className).toContain('w-64')
+    expect(popup?.className).toContain('w-max')
     expect(popup?.className).toContain('min-w-0!')
     expect(
       document.querySelector<HTMLElement>('[data-slot="combobox-positioner"]')

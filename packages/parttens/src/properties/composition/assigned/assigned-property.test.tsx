@@ -73,11 +73,12 @@ describe('AssignedProperty', () => {
     expect(
       await waitFor(() => screen.getByRole('option', { name: 'Ana Martins' })),
     ).toBeTruthy()
-    expect(screen.getByRole('option', { name: 'Gabriel Melo' })).toBeTruthy()
-    expect(screen.getByRole('option', { name: 'Marina Souza' })).toBeTruthy()
     expect(
-      document.body.querySelector('[data-slot="select-item-indicator"]'),
-    ).toBeNull()
+      screen
+        .getByRole('option', { name: 'Gabriel Melo' })
+        .querySelector(':scope > span:first-child:not(:last-child)'),
+    ).not.toBeNull()
+    expect(screen.getByRole('option', { name: 'Marina Souza' })).toBeTruthy()
 
     const marinaOption = screen.getByRole('option', { name: 'Marina Souza' })
     fireEvent.pointerDown(marinaOption, { pointerType: 'mouse' })

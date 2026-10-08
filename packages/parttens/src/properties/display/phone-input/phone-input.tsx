@@ -22,6 +22,7 @@ import type React from 'react'
 import type { ComponentRef } from 'react'
 import { useCallback, useRef, useState } from 'react'
 import PhoneNumberInput from 'react-phone-number-input/input-max'
+import { propertySelectItemClassName } from '../../shared/property-select-shell'
 import {
   findPhoneCountry,
   type PhoneCountry,
@@ -119,7 +120,7 @@ export function PhoneInput({
               align="start"
               anchor={fieldRef}
               aria-label="Selecionar país"
-              className="w-(--anchor-width) min-w-64"
+              className="w-max"
             >
               <ComboboxInput
                 aria-label="Buscar país"
@@ -132,7 +133,11 @@ export function PhoneInput({
               <ComboboxEmpty>Nenhum país encontrado.</ComboboxEmpty>
               <ComboboxList aria-label="Selecionar país">
                 {(item: PhoneCountry) => (
-                  <ComboboxItem key={item.code} value={item}>
+                  <ComboboxItem
+                    className={propertySelectItemClassName}
+                    key={item.code}
+                    value={item}
+                  >
                     <span className="flex w-full min-w-0 items-center gap-2">
                       <PhoneCountryFlag country={item} />
                       <span className="min-w-0 truncate">{item.name}</span>

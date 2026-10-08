@@ -6,6 +6,7 @@ import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 const PHONE = '+5511987654321'
 const OTHER = '+351912345678'
+const PHONE_LABEL = '(11) 98765-4321'
 
 const meta = {
   argTypes: propertyArgTypes,
@@ -123,9 +124,13 @@ export const ReadOnly: Story = {
     docs: {
       description: {
         story:
-          'Without an action the row offers neither add nor remove: the chip of someone who can only read. When empty, it declares the absence instead of staying blank.',
+          'Without an action the row offers neither add nor remove: the chip of someone who can only read. When empty, it declares the absence instead of staying blank. Every number shows in national format, without the country code; the value stays E.164.',
       },
     },
+  },
+  play: async ({ canvas }) => {
+    await expect(await canvas.findByText(PHONE_LABEL)).toBeTruthy()
+    await expect(canvas.queryByText(PHONE)).toBeNull()
   },
   render: () => (
     <div className="flex flex-col gap-3">
@@ -149,7 +154,9 @@ export const AddDisabled: Story = {
       canvas.queryByRole('button', { name: 'Adicionar telefone' }),
     ).toBe(null)
     await expect(
-      await canvas.findByRole('button', { name: `Remover telefone ${PHONE}` }),
+      await canvas.findByRole('button', {
+        name: `Remover telefone ${PHONE_LABEL}`,
+      }),
     ).toBeTruthy()
   },
   render: () => <PhoneField addDisabled initial={[PHONE]} />,
