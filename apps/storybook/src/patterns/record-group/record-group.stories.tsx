@@ -168,6 +168,28 @@ const rowsOf = (canvasElement: HTMLElement) =>
 const part = (row: HTMLElement, slot: 'label' | 'value') =>
   row.querySelector(`[data-slot="record-group-row-${slot}"]`) as HTMLElement
 
+const expectTermAndDescription = (
+  canvasElement: HTMLElement,
+  pairs: ReadonlyArray<readonly [string, string]>,
+) => {
+  const list = canvasElement.querySelector(
+    '[data-slot="record-group-content"]',
+  ) as HTMLElement
+  const rows = rowsOf(canvasElement)
+
+  expect(list.tagName).toBe('DL')
+  expect(rows).toHaveLength(pairs.length)
+  rows.forEach((row, index) => {
+    const [label, value] = pairs[index] as readonly [string, string]
+
+    expect(row.parentElement).toBe(list)
+    expect(part(row, 'label').tagName).toBe('DT')
+    expect(part(row, 'value').tagName).toBe('DD')
+    expect(part(row, 'label')).toHaveTextContent(label)
+    expect(part(row, 'value')).toHaveTextContent(value)
+  })
+}
+
 export const Default: Story = {}
 
 export const DefaultInteraction: Story = {
@@ -178,7 +200,12 @@ export const DefaultInteraction: Story = {
 
     expect(title).toHaveAttribute('aria-expanded', 'true')
     expect(canvas.getByRole('region', { name: 'Details' })).toBeVisible()
-    expect(rowsOf(canvasElement)).toHaveLength(detailRows.length)
+    expectTermAndDescription(canvasElement, [
+      ['Type', 'Document request'],
+      ['Owner', 'Mariana Souza'],
+      ['Reference code', 'REQ-1042'],
+      ['Due', 'Oct 21'],
+    ])
 
     const rows = rowsOf(canvasElement)
     const labelWidths = rows.map(
@@ -596,6 +623,9 @@ export const ReadOnlyPropertiesInteraction: Story = {
     const rows = rowsOf(canvasElement)
 
     expect(rows).toHaveLength(5)
+    expect(rows.map((row) => part(row, 'label').tagName)).toEqual(
+      Array(5).fill('DT'),
+    )
     for (const row of rows) {
       expect(part(row, 'value').querySelector(controlSelector)).toBeNull()
     }
@@ -615,64 +645,66 @@ function EditablePropertiesDemo() {
   const [labels, setLabels] = useState<readonly string[]>(['compliance'])
 
   return (
-    <RecordGroup title="Properties">
+    <>
       <p className="sr-only" data-testid="committed-title">
         {title}
       </p>
-      <RecordGroupRow label="Title" leading={<HashIcon aria-hidden="true" />}>
-        <TextProperty
-          ariaLabel="Title"
-          editing="inline"
-          onCommit={setTitle}
-          value={title}
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Status"
-        leading={<ShapesIcon aria-hidden="true" />}
-      >
-        <SelectProperty
-          ariaLabel="Status"
-          onValueChange={setStatus}
-          options={statusOptions}
-          value={status}
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Assignee"
-        leading={<UserIcon aria-hidden="true" />}
-      >
-        <PersonProperty
-          ariaLabel="Assignee"
-          onValueChange={setAssignee}
-          options={assigneeOptions}
-          value={assignee}
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Labels"
-        leading={<ShapesIcon aria-hidden="true" />}
-      >
-        <TagsProperty
-          ariaLabel="Labels"
-          onValueChange={setLabels}
-          options={labelOptions}
-          value={labels}
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Due"
-        leading={<CalendarDaysIcon aria-hidden="true" />}
-      >
-        <DateProperty
-          ariaLabel="Due date"
-          locale="en-US"
-          onValueChange={setDue}
-          timeZone="UTC"
-          value={due}
-        />
-      </RecordGroupRow>
-    </RecordGroup>
+      <RecordGroup title="Properties">
+        <RecordGroupRow label="Title" leading={<HashIcon aria-hidden="true" />}>
+          <TextProperty
+            ariaLabel="Title"
+            editing="inline"
+            onCommit={setTitle}
+            value={title}
+          />
+        </RecordGroupRow>
+        <RecordGroupRow
+          label="Status"
+          leading={<ShapesIcon aria-hidden="true" />}
+        >
+          <SelectProperty
+            ariaLabel="Status"
+            onValueChange={setStatus}
+            options={statusOptions}
+            value={status}
+          />
+        </RecordGroupRow>
+        <RecordGroupRow
+          label="Assignee"
+          leading={<UserIcon aria-hidden="true" />}
+        >
+          <PersonProperty
+            ariaLabel="Assignee"
+            onValueChange={setAssignee}
+            options={assigneeOptions}
+            value={assignee}
+          />
+        </RecordGroupRow>
+        <RecordGroupRow
+          label="Labels"
+          leading={<ShapesIcon aria-hidden="true" />}
+        >
+          <TagsProperty
+            ariaLabel="Labels"
+            onValueChange={setLabels}
+            options={labelOptions}
+            value={labels}
+          />
+        </RecordGroupRow>
+        <RecordGroupRow
+          label="Due"
+          leading={<CalendarDaysIcon aria-hidden="true" />}
+        >
+          <DateProperty
+            ariaLabel="Due date"
+            locale="en-US"
+            onValueChange={setDue}
+            timeZone="UTC"
+            value={due}
+          />
+        </RecordGroupRow>
+      </RecordGroup>
+    </>
   )
 }
 
@@ -717,8 +749,14 @@ export const EditablePropertiesInteraction: Story = {
 
     expectAligned(canvasElement)
     for (const row of rowsOf(canvasElement)) {
+      expect(part(row, 'value').tagName).toBe('DD')
       expect(part(row, 'value').querySelector(controlSelector)).not.toBeNull()
     }
+    expect(
+      within(part(statusRow as HTMLElement, 'value')).getByRole('combobox', {
+        name: /^Status/,
+      }),
+    ).toBeVisible()
 
     const title = canvas.getByRole('textbox', { name: 'Title' })
     await userEvent.clear(title)

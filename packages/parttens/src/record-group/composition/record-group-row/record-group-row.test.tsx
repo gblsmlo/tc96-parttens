@@ -55,3 +55,18 @@ test('renders leading only when passed', () => {
 
   expect(labelOf(rows()[0] as HTMLElement).querySelector('svg')).not.toBeNull()
 })
+
+test('exposes the label as a term and the value as its description', () => {
+  render(<RecordGroupRow label="Owner">Mariana Souza</RecordGroupRow>)
+
+  const [row] = rows() as [HTMLElement]
+  const term = labelOf(row)
+  const description = valueCellOf(row)
+
+  expect(row.tagName).toBe('DIV')
+  expect(term.tagName).toBe('DT')
+  expect(description.tagName).toBe('DD')
+  expect(term.parentElement).toBe(row)
+  expect(description.parentElement).toBe(row)
+  expect(term.nextElementSibling).toBe(description)
+})
