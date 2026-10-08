@@ -196,6 +196,7 @@
   --destructive-foreground: var(--color-red-700);
   --border: --alpha(var(--color-black) / 8%);
   --input: --alpha(var(--color-black) / 10%);
+  --switch-track: --alpha(var(--color-black) / 45%);
   --ring: var(--color-neutral-500);
   font-family:
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -251,6 +252,7 @@
   --destructive-foreground: var(--color-red-400);
   --border: --alpha(var(--color-white) / 6%);
   --input: --alpha(var(--color-white) / 8%);
+  --switch-track: --alpha(var(--color-white) / 38%);
   --ring: var(--color-neutral-500);
   --info: var(--color-blue-500);
   --info-foreground: var(--color-blue-400);
@@ -274,6 +276,10 @@
   --sidebar-primary: var(--color-stone-100);
   --sidebar-primary-foreground: var(--color-stone-800);
   --sidebar-ring: var(--color-stone-400);
+}
+
+[data-slot="switch"] {
+  --input: var(--switch-track);
 }
 
 @layer base {
