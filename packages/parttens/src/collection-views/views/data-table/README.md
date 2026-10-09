@@ -6,6 +6,14 @@ A semantic `<table>` on COSS `Table` and TanStack Table v9, with optional row se
 
 Rows are memoized below the component that calls `useDataTable`. A row re-renders when its `row`, its `selected` and `canSelect` state, the visible columns or `table.options.meta` change. A cell renderer must derive from its `row`, `column`, `cell` and `table.options.meta`. A custom cell that reads other table state (sorting, pagination, filters) during render is not re-rendered when that state changes, because the row is memoized. Pass what the cell needs through `meta`, or read it from the row.
 
+## Footer aggregations
+
+A column declares `meta.aggregations` (`count`, `sum`) with `DataTableColumnMeta`, plus optional `align`, `getAggregationValue` for a column without an accessor, and `formatAggregation`. Its footer cell becomes a menu with "Nenhum" and the listed operations; the result covers every row before pagination. `defaultAggregations` sets the initial choice by column id, `aggregations` with `onAggregationsChange` controls it, and `aggregationLabels` replaces the pt-BR labels. Without rows or while loading, the aggregated cells are left out.
+
+## Horizontal overflow
+
+The root `data-slot="data-table"` carries `data-overflow-start` and `data-overflow-end` while the columns run past that side of the container, and a fade over that edge shows the clipped content.
+
 ## Benchmark
 
 Reproduce from the repo root:

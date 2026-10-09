@@ -1,13 +1,16 @@
-import { afterEach, describe, expect, test } from 'bun:test'
+import { afterEach, describe, expect, mock, test } from 'bun:test'
 import type { ReactElement } from 'react'
 
 await import('../../test/dom')
 
-const { cleanup, fireEvent, render, screen } = await import(
+const { cleanup, fireEvent, render, screen, waitFor, within } = await import(
   '@testing-library/react'
 )
 const { DataTable } = await import('./data-table')
 const { useDataTable } = await import('./use-data-table')
+
+type DataTableColumnMeta<TData> =
+  import('./data-table-aggregation').DataTableColumnMeta<TData>
 
 interface Campaign {
   budget: number
@@ -25,6 +28,7 @@ type TableProps = Omit<Parameters<typeof DataTable<Campaign>>[0], 'table'> & {
   data?: Campaign[]
   enableColumnResizing?: boolean
   enablePagination?: boolean
+  withAggregation?: boolean
   withFooter?: boolean
 }
 
@@ -32,6 +36,7 @@ function CampaignTable({
   data = campaigns,
   enableColumnResizing = false,
   enablePagination = false,
+  withAggregation = false,
   withFooter = false,
   ...props
 }: Readonly<TableProps>): ReactElement {
@@ -61,6 +66,16 @@ function CampaignTable({
       {
         accessorKey: 'budget',
         header: 'Verba',
+        ...(withAggregation
+          ? {
+              meta: {
+                aggregations: ['count', 'sum'],
+                align: 'end',
+                formatAggregation: (value: number, aggregation: string) =>
+                  aggregation === 'sum' ? `R$ ${value}` : String(value),
+              } satisfies DataTableColumnMeta<Campaign>,
+            }
+          : {}),
         ...(withFooter
           ? {
               footer: ({ table }) =>
@@ -99,8 +114,32 @@ describe('DataTable', () => {
 
     expect(container.querySelector('[data-slot="card-frame"]')).toBeNull()
     expect(container.firstElementChild?.getAttribute('data-slot')).toBe(
-      'table-container',
+      'data-table',
     )
+    expect(
+      container.firstElementChild?.firstElementChild?.getAttribute('data-slot'),
+    ).toBe('table-container')
+  })
+
+  test('marks the clipped side while the columns overflow', () => {
+    const { container } = render(<CampaignTable />)
+    const root = container.querySelector(
+      '[data-slot="data-table"]',
+    ) as HTMLElement
+    const scroller = container.querySelector(
+      '[data-slot="table-container"]',
+    ) as HTMLElement
+    Object.defineProperty(scroller, 'clientWidth', { value: 300 })
+    Object.defineProperty(scroller, 'scrollWidth', { value: 900 })
+
+    fireEvent.scroll(scroller)
+    expect(root.hasAttribute('data-overflow-end')).toBe(true)
+    expect(root.hasAttribute('data-overflow-start')).toBe(false)
+
+    scroller.scrollLeft = 600
+    fireEvent.scroll(scroller)
+    expect(root.hasAttribute('data-overflow-end')).toBe(false)
+    expect(root.hasAttribute('data-overflow-start')).toBe(true)
   })
 
   test('draws the DataGrid frame by default', () => {
@@ -136,6 +175,92 @@ describe('DataTable', () => {
 
     rerender(<CampaignTable withFooter />)
     expect(container.querySelector('tfoot')?.textContent).toContain('400')
+  })
+
+  test('renders the footer when a column declares aggregations', () => {
+    const { container } = render(<CampaignTable withAggregation />)
+    const trigger = within(
+      container.querySelector('tfoot') as HTMLElement,
+    ).getByRole('button', { name: 'Calcular' })
+
+    expect(trigger.closest('[data-slot="data-table-aggregation"]')).toBeTruthy()
+  })
+
+  test('aggregates every row, not only the current page', () => {
+    const { container } = render(
+      <CampaignTable
+        defaultAggregations={{ budget: 'sum' }}
+        enablePagination
+        withAggregation
+      />,
+    )
+
+    expect(container.querySelectorAll('tbody tr')).toHaveLength(2)
+    expect(container.querySelector('tfoot')?.textContent).toContain(
+      'Soma R$ 400',
+    )
+  })
+
+  test('leaves out the aggregation footer without rows or while loading', () => {
+    const { container, rerender } = render(
+      <CampaignTable
+        data={[]}
+        defaultAggregations={{ budget: 'sum' }}
+        withAggregation
+      />,
+    )
+    expect(container.querySelector('tfoot')).toBeNull()
+
+    rerender(
+      <CampaignTable
+        defaultAggregations={{ budget: 'sum' }}
+        isLoading
+        withAggregation
+      />,
+    )
+    expect(container.querySelector('tfoot')).toBeNull()
+
+    rerender(<CampaignTable data={[]} withAggregation withFooter />)
+    expect(container.querySelector('tfoot')?.textContent).toBe('Total')
+  })
+
+  test('switches the aggregation from the footer menu', async () => {
+    const onAggregationsChange = mock()
+    const { container } = render(
+      <CampaignTable
+        defaultAggregations={{ budget: 'sum' }}
+        onAggregationsChange={onAggregationsChange}
+        withAggregation
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: /Soma/ }))
+    fireEvent.click(
+      await screen.findByRole('menuitemradio', { name: 'Contagem' }),
+    )
+
+    expect(onAggregationsChange).toHaveBeenCalledWith({ budget: 'count' })
+    await waitFor(() =>
+      expect(container.querySelector('tfoot')?.textContent).toContain(
+        'Contagem 3',
+      ),
+    )
+  })
+
+  test('follows controlled aggregations and ignores options a column lacks', () => {
+    const { container, rerender } = render(
+      <CampaignTable aggregations={{ budget: 'count' }} withAggregation />,
+    )
+    expect(container.querySelector('tfoot')?.textContent).toContain(
+      'Contagem 3',
+    )
+
+    rerender(<CampaignTable aggregations={{ title: 'sum' }} withAggregation />)
+    expect(
+      container
+        .querySelector('[data-slot="data-table-aggregation"]')
+        ?.getAttribute('data-aggregation'),
+    ).toBeNull()
   })
 
   test('shows the empty message without rows', () => {
