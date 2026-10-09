@@ -290,33 +290,6 @@ function Kpis() {
   )
 }
 
-const warningBadgeContrast = {
-  a11y: {
-    config: {
-      rules: [
-        {
-          id: 'color-contrast',
-          selector: '*:not([data-slot="deal-stage"][data-tone="warning"])',
-        },
-      ],
-    },
-  },
-}
-
-const invertedThemeContrast = {
-  a11y: {
-    config: {
-      rules: [
-        {
-          id: 'color-contrast',
-          selector:
-            '*:not([data-tone="inverted"] *):not([data-slot="deal-stage"][data-tone="warning"])',
-        },
-      ],
-    },
-  },
-}
-
 const meta = {
   title: 'Patterns/Widgets/CRM',
   parameters: { layout: 'fullscreen' },
@@ -326,7 +299,6 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Overview: Story = {
-  parameters: invertedThemeContrast,
   render: () => (
     <div className="grid min-h-screen place-items-center p-6 sm:p-10">
       <div className="grid w-full max-w-5xl gap-4">
@@ -387,7 +359,6 @@ export const Pipeline: Story = {
 
 export const Deals: Story = {
   decorators: [single('max-w-md')],
-  parameters: warningBadgeContrast,
   render: () => <TopDeals />,
   play: async ({ canvasElement }) => {
     const list = within(canvasElement).getByRole('list', { name: 'Top deals' })

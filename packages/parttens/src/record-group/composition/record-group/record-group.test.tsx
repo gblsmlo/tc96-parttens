@@ -19,6 +19,7 @@ const { act, cleanup, fireEvent, render, screen, waitFor } = await import(
   '@testing-library/react'
 )
 const { RecordGroup } = await import('./record-group')
+const { RecordGroupRow } = await import('../record-group-row/record-group-row')
 
 afterEach(async () => {
   await act(async () => {
@@ -444,4 +445,45 @@ test('does not touch the internal open state on the empty flip while controlled'
   )
 
   expect(trigger().getAttribute('aria-expanded')).toBe('false')
+})
+
+test('gives each row its own description list inside a plain body', () => {
+  render(
+    <RecordGroup title="Details">
+      <RecordGroupRow label="Owner">Mariana Souza</RecordGroupRow>
+      <RecordGroupRow label="Type">Request</RecordGroupRow>
+    </RecordGroup>,
+  )
+
+  const content = document.querySelector(
+    '[data-slot="record-group-content"]',
+  ) as HTMLElement
+
+  expect(content.tagName).toBe('DIV')
+  expect([...content.children].map((child) => child.tagName)).toEqual([
+    'DL',
+    'DL',
+  ])
+  expect(
+    [...content.children].every(
+      (child) =>
+        child.getAttribute('data-slot') === 'record-group-row' &&
+        child.firstElementChild?.tagName === 'DT' &&
+        child.lastElementChild?.tagName === 'DD',
+    ),
+  ).toBe(true)
+})
+
+test('keeps the body of an empty group a plain container for its message', async () => {
+  mount({ empty: true })
+
+  fireEvent.click(trigger())
+  await waitFor(() => expect(screen.queryByText('Body')).not.toBeNull())
+
+  const content = document.querySelector(
+    '[data-slot="record-group-content"]',
+  ) as HTMLElement
+
+  expect(content.tagName).toBe('DIV')
+  expect(content.querySelector('p')?.textContent).toBe('Body')
 })

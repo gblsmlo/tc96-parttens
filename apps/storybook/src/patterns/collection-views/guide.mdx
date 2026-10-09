@@ -70,7 +70,7 @@ const collection = useMemo<CollectionDefinition<Task>>(
 
 ## 3. Mount `CollectionViewOutlet`
 
-The outlet renders the active view. Give it a renderer for List and Kanban, and the props block of every other view you offer.
+The outlet renders the active view. Give it `renderListItem`, `renderKanbanItem` only when you offer Kanban, and the props block of every other view you offer.
 
 ```tsx
 <CollectionViewOutlet
@@ -86,7 +86,7 @@ The outlet renders the active view. Give it a renderer for List and Kanban, and 
 />
 ```
 
-- The outlet throws when the active view is `datagrid`, `datatable` or `calendar` and its prop is missing. Pass only the blocks for the views you offer in step 5.
+- The outlet throws when the active view is `datagrid`, `datatable`, `calendar` or `kanban` and its prop (`renderKanbanItem` for Kanban) is missing. Pass only the blocks for the views you offer in step 5.
 - Build `table` with `useDataGrid` or `useDataTable` in the same component, from the same filtered items.
 - `renderKanbanItem` must be pure and emit no DOM `id`: Kanban renders the mobile panel and the desktop board at once, so each card renders twice.
 

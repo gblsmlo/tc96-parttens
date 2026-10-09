@@ -128,13 +128,13 @@ export const CreateContact: Story = {
       ).toBeVisible(),
     )
 
-    await userEvent.click(dialog.getByRole('button', { name: 'Tags' }))
+    await userEvent.click(dialog.getByRole('button', { name: /^Tags:/ }))
     await userEvent.click(await screen.findByRole('option', { name: 'VIP' }))
     await userEvent.keyboard('{Escape}')
     await waitFor(() =>
-      expect(dialog.getByRole('button', { name: 'Tags' })).toHaveTextContent(
-        '1 Tag',
-      ),
+      expect(
+        dialog.getByRole('button', { name: 'Tags: 1 Tag' }),
+      ).toHaveTextContent('1 Tag'),
     )
     await expect(await findDialog()).toBeVisible()
     await expect(args.onCreate).not.toHaveBeenCalled()

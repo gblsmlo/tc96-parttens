@@ -43,6 +43,7 @@ export function KanbanColumnSelector({
             return (
               <Button
                 aria-pressed={selected}
+                data-kanban-column-option={column.value}
                 key={column.value}
                 onClick={() => onValueChange(column.value)}
                 size="sm"

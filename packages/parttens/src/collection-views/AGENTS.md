@@ -31,7 +31,7 @@ Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the f
 
 Collection and outlet:
 
-- `CollectionViewOutlet` throws when the active view is `datagrid`, `datatable` or `calendar` and the matching prop is missing; `projectCollection` throws for `groupBy === null` and for an undeclared dimension. Tests assert the messages.
+- `CollectionViewOutlet` throws when the active view is `datagrid`, `datatable`, `calendar` or `kanban` (`renderKanbanItem`) and the matching prop is missing; `projectCollection` throws for `groupBy === null` and for an undeclared dimension. Tests assert the messages.
 - Prepared `groups` win over `projectCollection` in list and kanban, and an explicit `[]` never falls back to the source items.
 - `kanban.onMoveCard` receives the group of each side, so a handler never parses column ids; a column with no matching group rejects the move. Without it, drag is enabled by `onItemChange` plus `setGroupId` on the active dimension, and a reorder inside one group returns false, because the collection order is the consumer's. `kanban.onMoveCard` wins when both are passed.
 
@@ -46,7 +46,7 @@ Kanban:
 
 List, calendar and table:
 
-- `ListView` renders the flat collection with `h2` titles and grouped lists with `h3`. With `collapseEmptyGroups`, a manual choice wins, an untouched group reopens when it gets items, every group stays open while loading, and `onCollapsedGroupIdsChange` reports the effective list.
+- `ListView` renders the flat collection with `h2` titles and grouped lists with `h3`. An empty flat list (`grouping === null`, not loading) renders `emptyMessage` in the COSS `Empty` block, like an empty group. With `collapseEmptyGroups`, a manual choice wins, an untouched group reopens when it gets items, every group stays open while loading, and `onCollapsedGroupIdsChange` reports the effective list.
 - Calendar drops on a day or all-day cell keep the wall-clock time and the absolute duration (DST-safe); time-column drops snap the block's top edge to `snapMinutes`. The override lives until `getItemSchedule` matches it, and a drop resolving to the same window is ignored. Without `onItemReschedule` no handle or draggable marker exists (tested).
 - A calendar item drags from its whole body like a kanban card, except interactive descendants; `CalendarEventChipOpenTrigger` drags only past 5px (touch: 250ms delay, 5px tolerance). The grip handle, visible only on keyboard focus, is the keyboard and assistive-technology activator.
 - A full month cell collapses its overflow behind a "+N" `Popover` that lists only the hidden segments, so no item renders twice with the same drag id; an item drags out of the popup like any chip. With `onSelectDay`, the popup's day title is a `PopoverClose` that calls it; without it, the title is plain text.
@@ -67,6 +67,7 @@ Toolbar:
 | Attribute | Where | Read by |
 | --- | --- | --- |
 | `data-kanban-card-action`, `data-calendar-item-action` | controls inside `KanbanCard` and `CalendarEventChip` | the card and chip variants raise them above the open trigger with `z-10` |
+| `data-kanban-column-option="<column id>"` | the column buttons of `KanbanColumnSelector` (below `md`) | consumers, as the `finalFocus` fallback of `RecordPreview` when the moved card is not rendered; not styled |
 | `data-collapsed="true"` | `KanbanColumn`, the grid group row | the board width rule (`w-76`, `xl:w-88`) skips collapsed columns |
 | `data-kanban-card-draggable`, `data-kanban-card-drag-id`, `data-calendar-item-drag-id` | drag wrappers and handles | drag-scroll exclusion and focus restore after a move; not styled |
 | `data-slot="card"` | `KanbanCard` | header and footer variants via `in-[[data-slot=card]:has(>[data-slot=card-panel])]` |

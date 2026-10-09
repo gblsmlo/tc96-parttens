@@ -159,16 +159,6 @@ export function UsageDocument({
 }
 
 export const usageParameters = {
-  a11y: {
-    config: {
-      rules: [
-        {
-          id: 'aria-hidden-focus',
-          selector: '[aria-hidden="true"]:not([data-base-ui-focus-guard])',
-        },
-      ],
-    },
-  },
   layout: 'padded',
 } as const
 
