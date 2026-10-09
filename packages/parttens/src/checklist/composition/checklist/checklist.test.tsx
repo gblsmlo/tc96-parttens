@@ -216,3 +216,58 @@ test('names due dates near today as Today and Yesterday', () => {
   expect(screen.getByText('Today')).toBeTruthy()
   expect(screen.getByText('Yesterday')).toBeTruthy()
 })
+
+function mountVariant(variant?: 'card' | 'plain') {
+  return render(
+    <Checklist
+      ariaLabel="Checklist"
+      items={items}
+      newItemTitle=""
+      onCreate={() => undefined}
+      onItemCompletionChange={() => undefined}
+      onItemDelete={() => undefined}
+      onItemMove={() => undefined}
+      onItemRename={() => undefined}
+      onNewItemTitleChange={() => undefined}
+      variant={variant}
+    />,
+  )
+}
+
+const handleOf = (title: string) =>
+  screen.getByRole('button', { name: `Reordenar ${title}` })
+
+test('card frames the list and keeps the drag handle outside the row', () => {
+  mountVariant()
+
+  const section = screen.getByRole('region', { name: 'Checklist' })
+  const list = section.querySelector('[data-slot="checklist-items"]')
+  const handle = handleOf('Primeira etapa')
+
+  expect(section.getAttribute('data-variant')).toBe('card')
+  expect(section.className).toContain('pt-2 pb-4')
+  expect(list?.className).toContain('border')
+  expect(handle.closest('[data-slot="checklist-row"]')).toBeNull()
+  expect(handle.className).toContain('-left-8')
+})
+
+test('plain drops the frame and puts the drag handle at the end of the row', () => {
+  mountVariant('plain')
+
+  const section = screen.getByRole('region', { name: 'Checklist' })
+  const list = section.querySelector('[data-slot="checklist-items"]')
+  const row = screen
+    .getByRole('checkbox', { name: 'Primeira etapa' })
+    .closest('[data-slot="checklist-row"]') as HTMLElement
+  const handle = handleOf('Primeira etapa')
+  const item = row.closest('[data-slot="checklist-item"]') as HTMLElement
+
+  expect(section.getAttribute('data-variant')).toBe('plain')
+  expect(section.className).not.toContain('pt-2')
+  expect(list?.className).not.toContain('border')
+  expect(item.className).toContain('rounded-md')
+  expect(row.className).toContain('h-9 px-2')
+  expect(row.contains(handle)).toBe(true)
+  expect(row.lastElementChild?.contains(handle)).toBe(true)
+  expect(handle.className.split(' ')).not.toContain('absolute')
+})

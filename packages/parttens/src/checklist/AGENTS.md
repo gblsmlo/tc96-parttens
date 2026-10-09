@@ -9,7 +9,7 @@ A controlled checklist: the consumer passes `items`, the draft title and callbac
 | `composition/checklist/` | `Checklist`: the `section`, the header and the `ol`, read-only or sortable; its test and barrel |
 | `components/` | the header, sortable row, read-only row, draft row, item card with `ChecklistTitle`, and metadata; never public |
 | `lib/` | due-date functions, dnd-kit sensors and drag handlers, every class string and `cva` variant |
-| `types/` | `ChecklistItem`, `ChecklistProps` and the `ChecklistDensity` re-export |
+| `types/` | `ChecklistItem`, `ChecklistProps` and the `ChecklistDensity` and `ChecklistVariant` re-exports |
 | `test/dom.ts` | the JSDOM setup the test imports; this pattern's own copy |
 | `core.ts` | React-free surface: the types, `ChecklistDueStatus` and the due-date functions; workspace only, not reached from the barrel |
 
@@ -45,6 +45,11 @@ Creating:
 - Enter submits the draft `form`; checking the draft checkbox creates the item already completed. The title is trimmed, and an empty or whitespace title is ignored.
 - `creating` disables the draft input and checkbox while the consumer persists. With no items the draft checkbox is replaced by a plus icon, so it cannot create a completed item.
 
+Variant:
+
+- `card` (default) frames the list in its own rounded border and pads the section; the drag handle sits outside the row, at `-left-8`.
+- `plain` drops the frame and the section padding, so a parent frame, such as `RecordGroup` `inset`, holds the rows. With `md` its row is 36px (`h-9 px-2`), the height of a `RecordGroupItem`; `card` with `md` stays 40px. `checklistRowVariants` sets both through compound variants. A parent with `overflow-hidden` (the `RecordGroup` panel) would clip a handle outside the row, so `plain` renders the handle in the row's action area, after the delete button.
+
 Copy:
 
 - Default copy is pt-BR (`X de Y concluídos`, the row and draft `aria-label`s, the handle tooltip); the metadata labels `Author`, `Due date` and `No due date` are English.
@@ -56,13 +61,13 @@ State lives in `data-*` attributes and is styled by their variants, never by a p
 | Attribute | Where | Styled by |
 | --- | --- | --- |
 | `data-completed` | the `li` | `group-data-completed:line-through` and `group-data-completed:text-muted-foreground` on the title |
-| `data-dragging` | the sortable `li` | `data-dragging:opacity-40` in `CHECKLIST_ITEM_CLASSNAME` |
+| `data-dragging` | the sortable `li` | `data-dragging:opacity-40` in `checklistItemVariants` |
 | `data-due="overdue\|today\|upcoming"` | `[data-slot=checklist-actions]` | `checklistDueDateVariants({ status })` on the `DateProperty` |
-| `data-density`, `data-readonly` | the `section` | consumers; the pattern uses the `density` variants instead |
+| `data-density`, `data-readonly`, `data-variant` | the `section` | consumers; the pattern uses the `density` and `variant` variants instead |
 
 `data-slot` names: `checklist`, `checklist-header`, `progress`, `progress-track`, `checklist-items`, `checklist-item`, `checklist-draft-item`, `checklist-row`, `checklist-drag-handle`, `checklist-title`, `checklist-actions`, `checklist-delete`.
 
-- Design axes are `cva` variants in `lib/variants.ts`: `density` on the row, the checkbox hit area and the draft input; `status` on the due date. Every class is a complete string, so the Tailwind scanner always sees it.
+- Design axes are `cva` variants in `lib/variants.ts`: `density` on the row, the checkbox hit area and the draft input; `variant` on the section padding, the list frame, the item radius and the drag handle placement; `status` on the due date. Every class is a complete string, so the Tailwind scanner always sees it.
 - `cn` appears only on the root `section`, where the consumer's `className` enters.
 - Colors only from theme tokens (`text-destructive-foreground`, `text-warning-foreground`, `text-muted-foreground`, `bg-primary`, `bg-muted`, `border-border/60`); no palette colors.
 - `scripts/override-exceptions.json` has no entry for this pattern.

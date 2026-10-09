@@ -3,9 +3,10 @@ import {
   Checklist,
   type ChecklistItem,
   type ChecklistProps,
+  RecordGroup,
 } from '@tc96/parttens'
 import { useState } from 'react'
-import { fn } from 'storybook/test'
+import { expect, fn, userEvent, waitFor } from 'storybook/test'
 
 const dueDate = (dayOffset: number) => {
   const now = new Date()
@@ -71,6 +72,7 @@ const meta = {
     density: { control: 'inline-radio', options: ['md', 'sm'] },
     readOnly: { control: 'boolean' },
     progress: { control: 'boolean' },
+    variant: { control: 'inline-radio', options: ['card', 'plain'] },
   },
   decorators: [
     (Story) => (
@@ -89,6 +91,52 @@ export const Default: Story = {}
 export const Empty: Story = { args: { items: [] } }
 export const Compact: Story = { args: { density: 'sm', progress: true } }
 export const ReadOnly: Story = { args: { readOnly: true } }
+
+export const Plain: Story = {
+  args: { title: undefined, variant: 'plain' },
+  play: async ({ canvasElement }) => {
+    const content = canvasElement.querySelector(
+      '[data-slot="record-group-content"]',
+    ) as HTMLElement
+    const list = canvasElement.querySelector(
+      '[data-slot="checklist-items"]',
+    ) as HTMLElement
+    const items = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(
+        '[data-slot="checklist-item"]',
+      ),
+    )
+
+    expect(getComputedStyle(content).borderTopWidth).toBe('1px')
+    expect(getComputedStyle(list).borderTopWidth).toBe('0px')
+    for (const item of items) {
+      const box = item.getBoundingClientRect()
+
+      expect(box.height).toBe(36)
+      const handle = (
+        item.querySelector('[data-slot="checklist-drag-handle"]') as HTMLElement
+      ).getBoundingClientRect()
+
+      expect(handle.left).toBeGreaterThanOrEqual(box.left)
+      expect(handle.right).toBeLessThanOrEqual(box.right + 0.5)
+    }
+
+    const handle = (items[0] as HTMLElement).querySelector(
+      '[data-slot="checklist-drag-handle"]',
+    ) as HTMLElement
+    expect(getComputedStyle(handle).opacity).toBe('0')
+    for (let step = 0; step < 20 && document.activeElement !== handle; step++) {
+      await userEvent.tab()
+    }
+    expect(handle).toHaveFocus()
+    await waitFor(() => expect(getComputedStyle(handle).opacity).toBe('1'))
+  },
+  render: (args) => (
+    <RecordGroup title="Tarefas" variant="inset">
+      <InteractiveChecklist {...args} />
+    </RecordGroup>
+  ),
+}
 
 function InteractiveChecklist(args: ChecklistProps) {
   const [items, setItems] = useState(args.items)

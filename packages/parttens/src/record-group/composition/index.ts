@@ -1,3 +1,6 @@
 export * from './record-group/index'
 export * from './record-group-action/index'
+export * from './record-group-item/index'
+export * from './record-group-link/index'
 export * from './record-group-row/index'
+export * from './record-group-subgroup/index'

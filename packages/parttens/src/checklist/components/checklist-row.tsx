@@ -14,10 +14,11 @@ import {
 } from '../lib/sortable'
 import {
   CHECKLIST_DELETE_BUTTON_CLASSNAME,
-  CHECKLIST_DRAG_HANDLE_CLASSNAME,
-  CHECKLIST_ITEM_CLASSNAME,
   type ChecklistDensity,
+  type ChecklistVariant,
   checklistCheckboxVariants,
+  checklistDragHandleVariants,
+  checklistItemVariants,
 } from '../lib/variants'
 import type { ChecklistItem, ChecklistProps } from '../types/index'
 import { ChecklistItemCard, ChecklistTitle } from './checklist-item-card'
@@ -26,6 +27,7 @@ import { ChecklistMetadata } from './checklist-metadata'
 export function ChecklistRow({
   authorOptions,
   density,
+  variant,
   item,
   itemCount,
   itemIndex,
@@ -41,6 +43,7 @@ export function ChecklistRow({
 }: Readonly<{
   authorOptions: readonly PersonPropertyOption[]
   density: ChecklistDensity
+  variant: ChecklistVariant
   item: ChecklistItem
   itemCount: number
   itemIndex: number
@@ -66,37 +69,41 @@ export function ChecklistRow({
     type: CHECKLIST_ITEM_TYPE,
   })
 
+  const dragHandle = (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Button
+            aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
+            aria-label={`Reordenar ${item.title}`}
+            className={checklistDragHandleVariants({ variant })}
+            data-slot="checklist-drag-handle"
+            disabled={itemCount < 2}
+            onKeyDown={(event) =>
+              handleMoveShortcut(event, itemIndex, itemCount, onMove)
+            }
+            ref={handleRef}
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+          />
+        }
+      >
+        <GripVerticalIcon aria-hidden="true" />
+      </TooltipTrigger>
+      <TooltipPopup>Arraste para ordenar acima ou abaixo</TooltipPopup>
+    </Tooltip>
+  )
+
   return (
     <li
-      className={CHECKLIST_ITEM_CLASSNAME}
+      className={checklistItemVariants({ variant })}
       data-completed={item.completed || undefined}
       data-dragging={isDragSource || undefined}
       data-slot="checklist-item"
       ref={ref}
     >
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button
-              aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
-              aria-label={`Reordenar ${item.title}`}
-              className={CHECKLIST_DRAG_HANDLE_CLASSNAME}
-              data-slot="checklist-drag-handle"
-              disabled={itemCount < 2}
-              onKeyDown={(event) =>
-                handleMoveShortcut(event, itemIndex, itemCount, onMove)
-              }
-              ref={handleRef}
-              size="icon-sm"
-              type="button"
-              variant="ghost"
-            />
-          }
-        >
-          <GripVerticalIcon aria-hidden="true" />
-        </TooltipTrigger>
-        <TooltipPopup>Arraste para ordenar acima ou abaixo</TooltipPopup>
-      </Tooltip>
+      {variant === 'card' ? dragHandle : null}
       <ChecklistItemCard
         action={
           <>
@@ -114,6 +121,7 @@ export function ChecklistRow({
                 onDelete={onDelete}
               />
             ) : null}
+            {variant === 'plain' ? dragHandle : null}
           </>
         }
         checkbox={
@@ -125,6 +133,7 @@ export function ChecklistRow({
           />
         }
         density={density}
+        variant={variant}
         title={
           <ChecklistTitle
             density={density}
