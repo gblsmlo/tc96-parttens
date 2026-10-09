@@ -11,7 +11,6 @@ import {
   SelectProperty,
   type SelectPropertyOption,
 } from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
 import {
   CalendarCheckIcon,
   CalendarPlusIcon,
@@ -26,11 +25,7 @@ import {
   UserRoundCheckIcon,
 } from 'lucide-react'
 import { useRef, useState } from 'react'
-import {
-  clearStored,
-  readStored,
-  writeStored,
-} from '../../../test-utils/usage-kit'
+import { readStored, writeStored } from '../../../test-utils/usage-kit'
 
 export interface CampaignBrief {
   body: RichTextValue
@@ -110,7 +105,6 @@ export function CampaignBriefEditor({
     () => readStored<CampaignBrief>(storageKey) ?? initial,
   )
   const [saved, setSaved] = useState(() => readStored(storageKey) !== null)
-  const [revision, setRevision] = useState(0)
   const title = useRef<EditorTitleHandle>(null)
   const body = useRef<RichTextEditorHandle>(null)
   const progress = countFilledSections(brief.body)
@@ -119,13 +113,6 @@ export function CampaignBriefEditor({
     const next = { ...brief, ...change }
     setBrief(next)
     setSaved(writeStored(storageKey, next))
-  }
-
-  const restore = () => {
-    clearStored(storageKey)
-    setBrief(initial)
-    setSaved(false)
-    setRevision((current) => current + 1)
   }
 
   const properties: readonly PropertyCollectionItem[] = [
@@ -180,31 +167,29 @@ export function CampaignBriefEditor({
   ]
 
   return (
-    <article
-      className="flex flex-col gap-6"
-      data-slot="campaign-brief"
-      key={revision}
-    >
+    <article className="flex flex-col gap-6" data-slot="campaign-brief">
       <header
-        className="flex flex-col gap-3 border-b pb-6"
+        className="mb-6 flex flex-col gap-3"
         data-slot="campaign-brief-header"
       >
-        <EditorTitle
-          defaultValue={brief.title}
-          emptyLabel="Briefing sem título"
-          onArrowDownAtEnd={() => body.current?.focusStart()}
-          onChange={(value) => update({ title: value })}
-          onEnter={() => body.current?.focusStart()}
-          ref={title}
-        />
-        <EditableText
-          ariaLabel="Descrição"
-          className="text-muted-foreground"
-          multiline
-          onCommit={(description) => update({ description })}
-          placeholder="Adicione uma descrição"
-          value={brief.description}
-        />
+        <div className="flex flex-col gap-1" data-slot="campaign-brief-heading">
+          <EditorTitle
+            defaultValue={brief.title}
+            emptyLabel="Briefing sem título"
+            onArrowDownAtEnd={() => body.current?.focusStart()}
+            onChange={(value) => update({ title: value })}
+            onEnter={() => body.current?.focusStart()}
+            ref={title}
+          />
+          <EditableText
+            ariaLabel="Descrição"
+            className="text-muted-foreground"
+            multiline
+            onCommit={(description) => update({ description })}
+            placeholder="Adicione uma descrição"
+            value={brief.description}
+          />
+        </div>
         <PropertyCollection
           ariaLabel="Propriedades do briefing"
           items={properties}
@@ -219,20 +204,15 @@ export function CampaignBriefEditor({
         ref={body}
       />
       <footer
-        className="flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-muted-foreground text-sm"
+        className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-sm"
         data-slot="campaign-brief-footer"
       >
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span data-slot="campaign-brief-progress">
-            {progress.filled} de {progress.total} seções preenchidas
-          </span>
-          <output aria-live="polite" data-slot="campaign-brief-status">
-            {saved ? 'Salvo neste navegador' : 'Ainda não salvo'}
-          </output>
-        </div>
-        <Button onClick={restore} size="sm" type="button" variant="outline">
-          Restaurar modelo
-        </Button>
+        <span data-slot="campaign-brief-progress">
+          {progress.filled} de {progress.total} seções preenchidas
+        </span>
+        <output aria-live="polite" data-slot="campaign-brief-status">
+          {saved ? 'Salvo neste navegador' : 'Ainda não salvo'}
+        </output>
       </footer>
     </article>
   )

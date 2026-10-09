@@ -115,7 +115,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A template page for writing a campaign brief. The header holds the title, a description and the inline property bar (primary objective, secondary objective, expected target); the body is the rich text editor seeded with one `h2` per brief section; the footer counts the sections with text, shows whether the draft is saved and restores the template.',
+          'A template page for writing a campaign brief. The header holds the title, a description and the inline property bar (primary objective, secondary objective, expected target); the body is the rich text editor seeded with one `h2` per brief section; the footer counts the sections with text and shows whether the draft is saved.',
       },
     },
   },
@@ -241,25 +241,18 @@ export const FillASection: Story = {
   },
 }
 
-export const RestoreTheTemplate: Story = {
+export const WriteADescription: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await userEvent.click(canvas.getByRole('textbox', { name: 'Descrição' }))
     await userEvent.keyboard('Campanha de outubro')
     await userEvent.tab()
+
     await waitFor(() =>
       expect(readStored<CampaignBrief>(storageKey)?.description).toBe(
         'Campanha de outubro',
       ),
     )
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Restaurar modelo' }),
-    )
-    await waitFor(() => expect(readStored(storageKey)).toBeNull())
-    await expect(
-      canvas.getByRole('textbox', { name: 'Descrição' }),
-    ).toHaveValue('')
-    await expect(canvas.getByText('Ainda não salvo')).toBeInTheDocument()
+    await expect(canvas.getByText('Salvo neste navegador')).toBeInTheDocument()
   },
 }

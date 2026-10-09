@@ -103,7 +103,7 @@ export function EditorTitle({
       data-slot="editor-title"
     >
       <h1
-        className="-mx-2 rounded-md px-2 font-semibold text-2xl text-foreground tracking-tight transition-colors duration-200 has-focus-visible:bg-muted motion-reduce:transition-none"
+        className="font-semibold text-2xl text-foreground tracking-tight"
         data-slot="editor-title-heading"
       >
         {value === '' ? <span className="sr-only">{emptyLabel}</span> : null}
