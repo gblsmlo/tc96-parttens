@@ -186,6 +186,10 @@ export const Aggregations: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const body = within(canvasElement.ownerDocument.body)
+    const closeMenu = async () => {
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+    }
 
     await userEvent.click(canvas.getByRole('button', { name: 'Soma 89 h' }))
     await userEvent.click(
@@ -196,6 +200,7 @@ export const Aggregations: Story = {
         canvas.getAllByRole('button', { name: 'Contagem 14' }),
       ).toHaveLength(2),
     )
+    await closeMenu()
 
     await userEvent.click(
       canvas.getAllByRole('button', { name: 'Calcular' })[0],
@@ -208,6 +213,7 @@ export const Aggregations: Story = {
         canvas.getAllByRole('button', { name: 'Contagem 14' }),
       ).toHaveLength(3),
     )
+    await closeMenu()
 
     await userEvent.click(
       canvas.getAllByRole('button', { name: 'Contagem 14' })[0],
@@ -220,6 +226,7 @@ export const Aggregations: Story = {
         canvas.getAllByRole('button', { name: 'Contagem 14' }),
       ).toHaveLength(2),
     )
+    await closeMenu()
   },
 }
 
