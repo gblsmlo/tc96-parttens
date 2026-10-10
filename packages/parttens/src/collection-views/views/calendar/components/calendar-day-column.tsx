@@ -5,12 +5,13 @@ import { pointerIntersection } from '@dnd-kit/collision'
 import { useDroppable } from '@dnd-kit/react'
 import { calendarDateKey } from '@tc96/helpers/calendar-date'
 import { cn } from '@tc96/utils'
-import type { ReactNode } from 'react'
-import { useId } from 'react'
+import type { MouseEvent, PointerEvent, ReactNode } from 'react'
+import { useId, useRef } from 'react'
 import type { CalendarItemSegment, TimeGridLane } from '../lib/calendar-layout'
 import { timeGridPosition } from '../lib/calendar-layout'
 import { createCalendarDropId } from '../lib/drag-and-drop'
-import type { CalendarDate } from '../types'
+import { slotFromOffset } from '../lib/slot'
+import type { CalendarDate, CalendarSlot } from '../types'
 import { CalendarItemSkeleton } from './calendar-item-skeleton'
 
 export interface CalendarDayColumnProps<TItem> {
@@ -23,8 +24,10 @@ export interface CalendarDayColumnProps<TItem> {
   loadingItemLabel?: string
   /** Minutos do instante corrente no fuso — posiciona a linha "agora". */
   nowMinutes: number | null
+  onSelectSlot?: (slot: CalendarSlot) => void
   renderSegment: (segment: CalendarItemSegment<TItem>) => ReactNode
   segments: readonly CalendarItemSegment<TItem>[]
+  snapMinutes?: number
 }
 
 export function CalendarDayColumn<TItem>({
@@ -36,8 +39,10 @@ export function CalendarDayColumn<TItem>({
   loading,
   loadingItemLabel,
   nowMinutes,
+  onSelectSlot,
   renderSegment,
   segments,
+  snapMinutes = 15,
 }: CalendarDayColumnProps<TItem>) {
   const instanceId = useId()
   const titleId = `calendar-day-column-title-${instanceId}`
@@ -51,6 +56,30 @@ export function CalendarDayColumn<TItem>({
     id: createCalendarDropId('time-column', dateKey, instanceId),
     type: 'calendar-time-column',
   })
+
+  const pressedOnSlot = useRef(false)
+  const selectSlot = onSelectSlot
+    ? {
+        onClick: (event: MouseEvent<HTMLDivElement>) => {
+          const pressed = pressedOnSlot.current
+          pressedOnSlot.current = false
+          if (!pressed || event.target !== event.currentTarget) return
+
+          const rect = event.currentTarget.getBoundingClientRect()
+          onSelectSlot({
+            day: date,
+            ...slotFromOffset({
+              height: rect.height,
+              offsetY: event.clientY - rect.top,
+              snapMinutes,
+            }),
+          })
+        },
+        onPointerDown: (event: PointerEvent<HTMLDivElement>) => {
+          pressedOnSlot.current = event.target === event.currentTarget
+        },
+      }
+    : {}
 
   return (
     <section
@@ -70,6 +99,7 @@ export function CalendarDayColumn<TItem>({
         data-calendar-date={dateKey}
         data-today={isToday ? '' : undefined}
         ref={ref}
+        {...selectSlot}
       >
         {loading ? (
           <div className="absolute inset-x-1 top-[30%] h-[6%]">

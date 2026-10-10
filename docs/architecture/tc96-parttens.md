@@ -366,23 +366,16 @@ Decisão de 2026-10-07. No bloco do time grid, o horário ocupava a primeira lin
 - A altura vem de uma container query: o invólucro posicionado em `calendar-day-column.tsx` é `@container-size/calendar-item`. Ela acompanha a pré-visualização do redimensionamento, e a coluna não precisa conhecer as medidas do chip.
 - A ordem do DOM continua a do consumidor (horário, título); só a ordem visual muda, sem efeito no foco, porque nenhum dos dois é focável.
 
-## Calendar: itens que dividem o horário em faixas estreitas
+## Calendar: `onSelectSlot` para criar a partir de um slot vazio
 
-Decisão de 2026-10-08 (issue #91). Três itens de 30 minutos no mesmo horário dividem a coluna do dia em três faixas; em modo semana a 1024px a coluna tem cerca de 124px e cada faixa 41,3px. O padding do bloco (`px-2` mais a borda inicial de 2px) deixava 23,3px para o título ("Li…", "R…", "E…").
+Decisão de 2026-10-08, delegada pelo dono (issue #90). O `CalendarView` ganha `onSelectSlot?: (slot: CalendarSlot) => void`, com `CalendarSlot = { day: CalendarDate; startMinutes: number; endMinutes: number }`, no mesmo estilo de `onSelectDay` e `onItemReschedule`: o pattern só reporta, o consumidor abre o diálogo e grava (`CreateEvent` em `Patterns/RecordDialog`), sem busca nem persistência no pattern.
 
-- Opção adotada: o variant `block` do `CalendarEventChip` reduz o padding horizontal para `px-px` quando o invólucro `@container-size/calendar-item` tem menos de 3,5rem de largura (`[@container_calendar-item_(width<3.5rem)]:px-px`). Faixas mais largas mantêm o padding de antes; a 1024px, duas faixas (62px) não são afetadas. O `px-px` do invólucro posicionado fica, para as faixas não se tocarem.
-- Resultado medido em Chromium a 1024px: a caixa do título passa de 23,3px para 37,3px.
-- Cascata (estilo Google Agenda) não se aplica: os três itens começam no mesmo minuto (13:00), e a cascata só ganha largura quando os inícios diferem. Com inícios iguais, o Google Agenda também divide lado a lado.
-- A meta da issue ("a primeira palavra de cada título visível") não é alcançável por geometria com três faixas de início igual a 1024px:
-
-| Item | Primeira palavra | Largura da palavra | Caixa do título (antes) | Caixa do título (depois) |
-| --- | --- | --- | --- | --- |
-| `lane-a` | Ligação | 45,1px | 23,3px | 37,3px |
-| `lane-b` | Revisão | 44,9px | 23,3px | 37,3px |
-| `lane-c` | Entrevista | 58,0px | 23,3px | 37,3px |
-
-  As três palavras somam cerca de 148px, mais padding, contra uma coluna de cerca de 124px. Mesmo sem nenhum padding a caixa teria no máximo 39px. Reduzir a fonte ou trocar o modelo de layout está fora desta decisão.
-- O título completo continua acessível pelo nome do gatilho de abertura (`aria-label="Abrir <título>"` no fixture); a story `ShortItems` verifica a caixa do título (mínimo de 35px) e esse nome. A story fixa a largura do quadro em 1024px, igual ao viewport da medição, em vez de mudar o viewport do vitest (`vitest/browser` não pode ser importado no Storybook em si).
+- Só clique. O arraste para criar um intervalo fica fora desta unidade; a assinatura já comporta `endMinutes` maior que um passo.
+- `day` está no fuso da view (a coluna clicada). `startMinutes` é o ponto do clique arredondado para baixo ao múltiplo de `snapMinutes`; `endMinutes` é `startMinutes + snapMinutes`. O slot nunca passa da meia-noite: o último slot do dia termina em 1440. `snapMinutes` é o único controle do tamanho, sem prop nova.
+- Só a coluna do time grid dispara. Dispara quando o clique começa e termina no fundo da coluna: um clique num item, numa alça de redimensionar ou o fim de um arraste que solta sobre a coluna não conta. A área "dia inteiro" e as células do mês não disparam (o mês já tem `onSelectDay`).
+- Sem a prop, nada muda: a coluna não recebe handler, nem classe de cursor, nem elemento interativo. Em `loading` a prop é ignorada.
+- Teclado e tecnologia assistiva: o time grid é uma superfície de ponteiro, e a coluna não vira botão nem ganha tab stop (24 horas de slots seriam centenas de paradas de tabulação). O caminho acessível é a ação de criar da toolbar do consumidor, que abre o mesmo diálogo com os campos de dia e hora editáveis. Os itens continuam alcançáveis pelo teclado como antes.
+- Por que o contrato é de minutos e dia, e não de `Date`: o consumidor já recebe `CalendarDate` e minutos em `renderItem`, e converte com `fromZonedDateTime(slot, timeZone)`.
 
 ## Kanban: os dois layouts continuam renderizados
 

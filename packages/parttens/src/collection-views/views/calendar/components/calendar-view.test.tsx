@@ -313,3 +313,119 @@ describe('CalendarView time grid', () => {
     })
   })
 })
+
+describe('CalendarView onSelectSlot', () => {
+  const timedItem = {
+    end: '2026-08-12T18:00:00.000Z',
+    id: 'timed',
+    start: '2026-08-12T17:00:00.000Z',
+    title: 'Reunião',
+  }
+
+  const column = (container: HTMLElement, day: string) => {
+    const element = container.querySelector<HTMLElement>(
+      `[data-slot="calendar-time-grid"] [data-calendar-date="${day}"]`,
+    )
+    if (!element) throw new Error(`column ${day} not found`)
+    element.getBoundingClientRect = () =>
+      ({ height: 1440, top: 100 }) as DOMRect
+    return element
+  }
+
+  const press = (target: Element, clientY: number) => {
+    fireEvent.pointerDown(target, { clientY })
+    fireEvent.click(target, { clientY })
+  }
+
+  test('reports the day and the snapped minutes of a click on an empty slot', () => {
+    const slots: unknown[] = []
+    const { container } = renderCalendar([timedItem], {
+      mode: 'week',
+      onSelectSlot: (slot) => slots.push(slot),
+    })
+
+    press(column(container, '2026-08-13'), 100 + 607)
+
+    expect(slots).toEqual([
+      {
+        day: { day: 13, month: 8, year: 2026 },
+        endMinutes: 615,
+        startMinutes: 600,
+      },
+    ])
+  })
+
+  test('uses snapMinutes as the slot length', () => {
+    const slots: unknown[] = []
+    const { container } = renderCalendar([], {
+      mode: 'day',
+      onSelectSlot: (slot) => slots.push(slot),
+      snapMinutes: 30,
+    })
+
+    press(column(container, '2026-08-12'), 100 + 610)
+
+    expect(slots).toEqual([
+      {
+        day: { day: 12, month: 8, year: 2026 },
+        endMinutes: 630,
+        startMinutes: 600,
+      },
+    ])
+  })
+
+  test('ignores a click on an item', () => {
+    const slots: unknown[] = []
+    const { container } = renderCalendar([timedItem], {
+      mode: 'day',
+      onSelectSlot: (slot) => slots.push(slot),
+    })
+    const chip = container.querySelector('[data-calendar-item-id="timed"]')
+    if (!chip) throw new Error('item not found')
+
+    press(chip, 100 + 840)
+
+    expect(slots).toEqual([])
+  })
+
+  test('ignores a click that did not start on the empty slot', () => {
+    const slots: unknown[] = []
+    const { container } = renderCalendar([timedItem], {
+      mode: 'day',
+      onSelectSlot: (slot) => slots.push(slot),
+    })
+    const target = column(container, '2026-08-12')
+    const chip = container.querySelector('[data-calendar-item-id="timed"]')
+    if (!chip) throw new Error('item not found')
+
+    fireEvent.pointerDown(chip, { clientY: 100 + 840 })
+    fireEvent.click(target, { clientY: 100 + 300 })
+
+    expect(slots).toEqual([])
+  })
+
+  test('does not fire while loading nor in the month grid', () => {
+    const slots: unknown[] = []
+    const onSelectSlot = (slot: unknown) => slots.push(slot)
+    const loading = renderCalendar([], {
+      loading: true,
+      mode: 'day',
+      onSelectSlot,
+    })
+    press(column(loading.container, '2026-08-12'), 200)
+    cleanup()
+
+    const month = renderCalendar([], { mode: 'month', onSelectSlot })
+    const cell = month.container.querySelector('[data-calendar-date]')
+    if (!cell) throw new Error('cell not found')
+    press(cell, 200)
+
+    expect(slots).toEqual([])
+  })
+
+  test('adds no pointer affordance without the prop', () => {
+    const { container } = renderCalendar([], { mode: 'day' })
+
+    expect(column(container, '2026-08-12').className).not.toContain('cursor-')
+  })
+})

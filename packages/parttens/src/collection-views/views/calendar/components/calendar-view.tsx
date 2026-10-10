@@ -21,6 +21,7 @@ import type {
   CalendarItemRenderContext,
   CalendarItemReschedule,
   CalendarItemSchedule,
+  CalendarSlot,
   CalendarViewMode,
 } from '../types'
 import { CalendarMonthGrid } from './calendar-month-grid'
@@ -53,6 +54,7 @@ export interface CalendarViewProps<TItem = unknown> {
   onItemReschedule?: (
     change: CalendarItemReschedule<TItem>,
   ) => boolean | Promise<boolean>
+  onSelectSlot?: (slot: CalendarSlot) => void
   /** Título do dia no popover do "+N" de uma célula cheia do mês. */
   onSelectDay?: (date: CalendarDate) => void
   /** Incremento do arraste no time grid, em minutos. */
@@ -78,6 +80,7 @@ export function CalendarView<TItem>({
   now: controlledNow,
   onItemReschedule,
   onSelectDay,
+  onSelectSlot,
   renderItem,
   snapMinutes = 15,
   timeZone,
@@ -292,10 +295,12 @@ export function CalendarView<TItem>({
             range={range}
             renderAllDaySegment={(segment) => renderSegment(segment, 'all-day')}
             renderSegment={(segment) => renderSegment(segment, 'time-grid')}
+            snapMinutes={snapMinutes}
             timedSegmentsByDay={timeGrid.timedSegmentsByDay}
             timeZoneLabel={labels.timeZoneLabel(now)}
             today={zonedNow.date}
             {...(loadingItemLabel ? { loadingItemLabel } : {})}
+            {...(onSelectSlot && !loading ? { onSelectSlot } : {})}
           />
         ) : null}
 
