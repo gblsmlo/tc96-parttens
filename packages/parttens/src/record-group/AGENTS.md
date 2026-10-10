@@ -35,6 +35,7 @@ Collapse:
 Footer and actions:
 
 - The footer lives inside `CollapsiblePanel`: it hides with the body, and a closed panel is unmounted, so the footer is not focusable and not in the accessibility tree. Use `actions` for controls that must stay visible when the group is closed.
+- Unmounting waits for the 200ms height transition, and Base UI leaves the panel focusable until then (measured in Chromium: the panel is mounted with `data-closed` and a running animation, and a footer button takes focus). The panel therefore gets `inert` as soon as the group is not open; `FooterClosingInteraction` checks focus and `inert` during the transition and the unmount after it. jsdom stubs `getAnimations`, so only the story sees this.
 - `actions` sits outside the trigger, so it is never part of the title's accessible name and stays visible when closed. `actions` and `footer` render only when passed.
 - `actionsAlign="between"` (the default) spreads `actions` to the end of the header; `start` places them 8px after the title, for a command that belongs to the title, such as a ghost button. Either way the title still wraps and `actions` never shrinks.
 

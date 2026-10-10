@@ -28,7 +28,9 @@ Import direction: `composition/` → `components/` and `hooks/` → `core.ts`.
 - `CreateRecord` (inline): borderless title and description, property chips pinned to the bottom with `stretchBody`. Use it for quick capture where the fields are few and the properties are optional.
 - `CreateRecordWithForm` (form): the same fields and payload as labeled COSS `Field` rows, scrolling in the panel without `stretchBody`. Use it for explicit entry, long bodies or required fields that need a visible label.
 
-The stories are in `apps/storybook/src/patterns/record-dialog/`; the shared lists, the zod schema and the payload shape live in `project-record.ts` there.
+`CreateEvent` is a third body for a calendar event or appointment, prefilled with a clicked slot: icon rows for when, guests, location and description, then a chip row where one grouped select holds the type (Event, Appointment) and the calendar. It has no `actions` shortcut and no `Create more`. It is the documented use of `errorMessage`: an end time before the start keeps the dialog open with the message.
+
+The stories are in `apps/storybook/src/patterns/record-dialog/`; the shared lists, the zod schema and the payload shape live in `project-record.ts` there, and in `event-record.ts` for `CreateEvent`.
 
 Usages sit under `Patterns/RecordDialog/Usages` in `usages/`. `Contacts` is the `CreateRecord` body for the Contacts collection: name as title, a description textarea, and every other field as a property chip, without `stretchBody` so the popup keeps the height of its content. Cargo and Empresa share `CreatableProperty` (`creatable-property.tsx`), a COSS `Combobox` with search, the existing values and a footer button that creates the typed value. `CreateContactDialog` (`create-contact-dialog.tsx`) is controlled, and the Contacts usage of `Patterns/CollectionViews` mounts the same component from Novo contato.
 
@@ -65,6 +67,7 @@ Behavior the tests fix:
 - Settle rule: the handler returning `true` calls `onOpenChange(false)`. `false`, a rejection or a synchronous throw keeps the dialog open and the field values untouched. Errors are swallowed; the consumer reports them through `errorMessage`.
 - Pending belongs to one open session. When `open` becomes false the pattern resets pending and ignores any settlement still in flight, so a late `true` never closes a reopened dialog, and nothing runs after unmount.
 - Pending is tracked by the pattern. While pending, Escape, outside press and the close button do not close, the cancel and submit buttons are disabled, a second submit is ignored, and the submit button shows `Spinner` and `submittingLabel` when given.
+- Focus: when the submit button had focus at submit and the handler settles `false`, rejects or throws, the pattern refocuses it once it is enabled again, because the disabled button drops focus while pending. A submit from a field (Mod+Enter) leaves focus where it was.
 - The consumer clears `errorMessage` at the start of the handler; the pattern never clears it.
 - `event.currentTarget` is null after the first `await`, so `onSubmit` reads `FormData` (or the form elements) synchronously, before awaiting anything.
 - Base UI `Form` renders `noValidate`: native constraints such as `required` or `type="email"` do not block the submit. Validation is the consumer's job inside `onSubmit`, returning `false` to keep the dialog open. The pattern does not call `checkValidity`.
@@ -108,4 +111,4 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/record-dialog
 ```
 
-The stories are `Patterns/RecordDialog` (Default, Sizes, CreateRecord, CreateRecordWithForm) in `apps/storybook/src/patterns/record-dialog/`, with a `!dev` `<Story>Interaction` twin for each, and `Patterns/RecordDialog/Usages/Contacts` (Default, CreateContact, CreateMore) in `usages/`; all run axe with `test: 'error'`.
+The stories are `Patterns/RecordDialog` (Default, Sizes, CreateRecord, CreateRecordWithForm, CreateEvent) in `apps/storybook/src/patterns/record-dialog/`, with a `!dev` `<Story>Interaction` twin for each (`FailedSubmit` and `ThrowingSubmit` check the focus rule above; `Sizes` widens the viewport with `page.viewport()` and restores it), and `Patterns/RecordDialog/Usages/Contacts` (Default, CreateContact, CreateMore) in `usages/`; all run axe with `test: 'error'`.

@@ -52,15 +52,26 @@ export function RecordDialog({
 }: RecordDialogProps) {
   const formId = useId()
   const formRef = useRef<HTMLFormElement>(null)
+  const submitRef = useRef<HTMLButtonElement>(null)
+  const restoreFocus = useRef<HTMLElement | null>(null)
   const modifier = useModifierHint(submitOnModEnter)
   const { pending, run } = useSettledAction(open, () => {
+    restoreFocus.current = null
     if (!keepOpenOnSuccess) return onOpenChange(false)
     formRef.current?.reset()
     formRef.current?.querySelector<HTMLElement>(FIRST_FIELD)?.focus()
   })
 
+  useEffect(() => {
+    if (pending) return
+    restoreFocus.current?.focus()
+    restoreFocus.current = null
+  }, [pending])
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    restoreFocus.current =
+      document.activeElement === submitRef.current ? submitRef.current : null
     void run(() => onSubmit(event))
   }
 
@@ -113,6 +124,7 @@ export function RecordDialog({
             data-slot="record-dialog-submit"
             disabled={pending || submitDisabled}
             form={formId}
+            ref={submitRef}
             type="submit"
           >
             {pending ? <Spinner aria-hidden="true" /> : null}

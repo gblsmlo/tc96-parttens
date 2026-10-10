@@ -46,5 +46,6 @@ export type {
   CalendarItemRenderContext,
   CalendarItemReschedule,
   CalendarItemSchedule,
+  CalendarSlot,
   CalendarViewMode,
 } from './types'
