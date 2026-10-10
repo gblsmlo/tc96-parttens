@@ -15,16 +15,21 @@ export interface StoredDocument {
   title: string
 }
 
-export function readStored(key: string): StoredDocument | null {
+export function readStored<TValue = StoredDocument>(
+  key: string,
+): TValue | null {
   try {
     const raw = window.localStorage.getItem(key)
-    return raw ? (JSON.parse(raw) as StoredDocument) : null
+    return raw ? (JSON.parse(raw) as TValue) : null
   } catch {
     return null
   }
 }
 
-export function writeStored(key: string, value: StoredDocument): boolean {
+export function writeStored<TValue = StoredDocument>(
+  key: string,
+  value: TValue,
+): boolean {
   try {
     window.localStorage.setItem(key, JSON.stringify(value))
     return true

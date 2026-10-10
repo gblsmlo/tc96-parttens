@@ -17,7 +17,7 @@ Controlled renderers for one collection: the consumer declares a `CollectionDefi
 
 `views/data-grid/` has its own `AGENTS.md` with its file map and invariants; read it before touching the grid.
 
-Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the five views; each view → its own folders, `shared/lib/project-collection.ts` and `types/`, and in `data-grid` the `ActionBarContext` type from `shared/components/action-bar.tsx`; `shared/` and `store/` → `types/`; views never import each other. Outside the folder, `shared/components/collection-filter-submenu.tsx` and the data-grid density and columns submenus import `packages/parttens/src/shared/components/menu-selection-item.tsx`, and `views/data-grid/components/data-grid-pagination.tsx` imports `packages/parttens/src/shared/components/collection-pagination.tsx`.
+Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the five views; each view → its own folders, `shared/lib/project-collection.ts` and `types/`, and in `data-grid` the `ActionBarContext` type from `shared/components/action-bar.tsx`; `shared/` and `store/` → `types/`; views never import each other. Outside the folder, `shared/components/collection-filter-submenu.tsx`, the data-grid density and columns submenus and `views/data-table/data-table-aggregation-cell.tsx` import `packages/parttens/src/shared/components/menu-selection-item.tsx`, and `views/data-grid/components/data-grid-pagination.tsx` imports `packages/parttens/src/shared/components/collection-pagination.tsx`.
 
 ## Dependents
 
@@ -54,6 +54,8 @@ List, calendar and table:
 - In the time grid, a timed item with an `end` gets two pointer-only resize edges (`aria-hidden`, no tab stop) on its top and bottom (top only on the first segment, bottom only on the last). The pointer drags an edge with pointer capture and a live preview that never touches the optimistic override; release goes through the same `onItemReschedule` commit as a drop. The keyboard path is the move handle, so an item keeps two tab stops like a kanban card: Alt+ArrowUp/ArrowDown moves the start and Shift+ArrowUp/ArrowDown the end, one grid line at a time, announced through `aria-keyshortcuts` and ignored while a drag is active. The moved edge lands on the `snapMinutes` wall-clock grid of `timeZone`, and the item keeps at least `snapMinutes` of duration. Items without `end`, all-day items and month chips do not resize.
 - `useDataTable` always registers pagination with `manualPagination: !enablePagination`, so without the flag the table yields every row.
 - With `enableColumnResizing`, `DataTable` switches to `table-fixed` with a `<colgroup>`: every visible column but the last takes `getSize()`, the last has no width and no handle so it absorbs the remaining space, and the table's `minWidth` is `getTotalSize()`, so it fills the container until the sizes overflow it and the container scrolls. Fixed cells clip with `overflow-hidden`. Without the flag the markup keeps the auto layout.
+- A `DataTable` column with `meta.aggregations` gets a footer menu (none, count, sum) instead of its `footer`. Aggregates read `getPrePaginatedRowModel()`, so they cover every page, like Notion. Count is the row count; sum skips values that are not finite numbers. Without rows or while loading, aggregated cells render nothing, and a footer with only aggregated columns is left out. The choice is uncontrolled through `defaultAggregations` or controlled through `aggregations`, and a choice the column does not list reads as none.
+- `DataTable` wraps the COSS `Table` in `data-slot="data-table"`, the positioned box for two `aria-hidden` fades over the scroll container's edges (issue #127): macOS overlay scrollbars hide while idle and a vertical wheel does not scroll sideways, so the overflow had no cue. `useHorizontalOverflow` reads the container through a ref object, not a state callback ref, so mount stays one commit in the bench.
 - Calendar, List and Data Table run the consumer's renderer in a memoized leaf below the stateful component: it re-runs only when its identity or inputs change, so a renderer that reads other state with a stable identity goes stale.
 
 Toolbar:
@@ -75,6 +77,8 @@ Toolbar:
 | `data-calendar-date`, `data-today`, `data-outside-month`, `data-calendar-mode` | calendar cells, columns, root | consumers and tests |
 | `data-calendar-item-resize="start\|end"` | the resize buttons on time-grid items | tests and the drag sensor, which never starts a move from an edge; the edge measures its `[data-calendar-date]` column to turn pixels into minutes |
 | `data-collection-grouping`, `data-interactive`, `data-bordered`, `data-layout` | `ListView`, `ListItem`, `DataTable`, view settings mode tab | consumers |
+| `data-slot="data-table"`, `data-overflow-start`, `data-overflow-end` | the `DataTable` root | the edge fades (`data-table-overflow-start`, `data-table-overflow-end`) through `group-data-*/data-table` |
+| `data-slot="data-table-aggregation"`, `data-aggregation` | the `DataTable` footer cell of an aggregated column | consumers and tests; with no aggregation the trigger hides behind `group-hover/footer` |
 
 Data Grid attributes are listed in `views/data-grid/AGENTS.md`.
 

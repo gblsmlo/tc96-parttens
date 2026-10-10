@@ -5,10 +5,11 @@ import { InputPrimitive } from '@tc96/ui/input'
 import { PlusIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import {
-  CHECKLIST_ITEM_CLASSNAME,
   type ChecklistDensity,
+  type ChecklistVariant,
   checklistCheckboxVariants,
   checklistDraftInputVariants,
+  checklistItemVariants,
 } from '../lib/variants'
 import type { ChecklistProps } from '../types/index'
 import { ChecklistItemCard } from './checklist-item-card'
@@ -17,6 +18,7 @@ export function ChecklistDraftRow({
   callToAction,
   creating,
   density,
+  variant,
   onCreate,
   onTitleChange,
   title,
@@ -24,6 +26,7 @@ export function ChecklistDraftRow({
   callToAction: boolean
   creating: boolean
   density: ChecklistDensity
+  variant: ChecklistVariant
   onCreate: ChecklistProps['onCreate']
   onTitleChange: ChecklistProps['onNewItemTitleChange']
   title: string
@@ -35,7 +38,10 @@ export function ChecklistDraftRow({
   }
 
   return (
-    <li className={CHECKLIST_ITEM_CLASSNAME} data-slot="checklist-draft-item">
+    <li
+      className={checklistItemVariants({ variant })}
+      data-slot="checklist-draft-item"
+    >
       <form
         onSubmit={(event) => {
           event.preventDefault()
@@ -45,6 +51,7 @@ export function ChecklistDraftRow({
         <ChecklistItemCard
           action={null}
           density={density}
+          variant={variant}
           checkbox={
             callToAction ? (
               <PlusIcon

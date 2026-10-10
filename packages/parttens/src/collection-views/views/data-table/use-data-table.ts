@@ -54,7 +54,7 @@ export type DataTableColumnDef<TData extends RowData> = ColumnDef<
 export interface UseDataTableOptions<TData extends RowData> {
   /** Row data. */
   data: TData[]
-  /** Column definitions. Declare `footer` on a column to render the table footer. */
+  /** Column definitions. Declare `footer` or `meta.aggregations` on a column to render the table footer. */
   columns: DataTableColumnDef<TData>[]
   /** Stable row identity. Strongly recommended so selection survives reordering. */
   getRowId?: (row: TData, index: number) => string

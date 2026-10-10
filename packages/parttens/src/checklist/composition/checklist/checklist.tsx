@@ -8,7 +8,7 @@ import { ChecklistHeader } from '../../components/checklist-header'
 import { ChecklistReadOnlyRow } from '../../components/checklist-read-only-row'
 import { ChecklistRow } from '../../components/checklist-row'
 import { handleDragEnd } from '../../lib/sortable'
-import { CHECKLIST_LIST_CLASSNAME } from '../../lib/variants'
+import { checklistListVariants, checklistVariants } from '../../lib/variants'
 import type { ChecklistProps } from '../../types/index'
 
 export function Checklist({
@@ -34,6 +34,7 @@ export function Checklist({
   readOnly = false,
   title,
   timeZone = 'UTC',
+  variant = 'card',
   ...props
 }: Readonly<ChecklistProps>): ReactElement {
   const completed = items.filter((item) => item.completed).length
@@ -41,10 +42,11 @@ export function Checklist({
   return (
     <section
       aria-label={ariaLabel}
-      className={cn('min-w-0 space-y-2 pt-2 pb-4', className)}
+      className={cn(checklistVariants({ variant }), className)}
       data-density={density}
       data-readonly={readOnly || undefined}
       data-slot="checklist"
+      data-variant={variant}
       {...props}
     >
       <ChecklistHeader
@@ -55,10 +57,14 @@ export function Checklist({
       />
 
       {readOnly ? (
-        <ol className={CHECKLIST_LIST_CLASSNAME} data-slot="checklist-items">
+        <ol
+          className={checklistListVariants({ variant })}
+          data-slot="checklist-items"
+        >
           {items.map((item) => (
             <ChecklistReadOnlyRow
               density={density}
+              variant={variant}
               item={item}
               key={item.id}
               authorOptions={authorOptions}
@@ -72,10 +78,14 @@ export function Checklist({
         <DragDropProvider
           onDragEnd={(event) => handleDragEnd(event, items, onItemMove)}
         >
-          <ol className={CHECKLIST_LIST_CLASSNAME} data-slot="checklist-items">
+          <ol
+            className={checklistListVariants({ variant })}
+            data-slot="checklist-items"
+          >
             {items.map((item, index) => (
               <ChecklistRow
                 density={density}
+                variant={variant}
                 item={item}
                 itemCount={items.length}
                 itemIndex={index}
@@ -100,6 +110,7 @@ export function Checklist({
               callToAction={items.length === 0}
               creating={creating}
               density={density}
+              variant={variant}
               onCreate={onCreate}
               onTitleChange={onNewItemTitleChange}
               title={newItemTitle}

@@ -1,8 +1,8 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import type { PersonPropertyOption } from '../../properties/display/person/person-property'
-import type { ChecklistDensity } from '../lib/variants'
+import type { ChecklistDensity, ChecklistVariant } from '../lib/variants'
 
-export type { ChecklistDensity } from '../lib/variants'
+export type { ChecklistDensity, ChecklistVariant } from '../lib/variants'
 
 export interface ChecklistItem {
   authorId?: string | null
@@ -35,4 +35,5 @@ export interface ChecklistProps
   readOnly?: boolean
   title?: ReactNode
   timeZone?: string
+  variant?: ChecklistVariant
 }

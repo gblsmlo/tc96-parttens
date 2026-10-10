@@ -1,9 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { DataGridPagination, DataTable, useDataTable } from '@tc96/parttens'
 import { type ReactElement, useMemo } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
+import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
-import { createDataTableColumns } from '../fixtures/task-fields'
+import {
+  createDataTableColumns,
+  taskTableAggregations,
+} from '../fixtures/task-fields'
 import { useTasks } from '../fixtures/task-renderers'
 import { initialTasks, type Task } from '../fixtures/tasks'
 
@@ -43,6 +46,7 @@ function DataTableExample({
     <div className="flex w-full min-w-0 flex-col gap-2 p-4">
       <DataTable
         aria-label="Tarefas do lançamento"
+        defaultAggregations={taskTableAggregations}
         emptyMessage="Nenhuma tarefa para exibir."
         isLoading={isLoading}
         table={table}
@@ -70,7 +74,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Semantic table collection view, built on the COSS `Table` and TanStack Table. The view draws the DataGrid frame by default (`bordered={false}` drops it) and is not a child of `CardFrame`. The consumer owns the columns and the state; the footer appears when a column declares `footer`. Status is a `SelectProperty`: the select emits the change and the example writes to the collection.',
+          'Semantic table collection view, built on the COSS `Table` and TanStack Table. The view draws the DataGrid frame by default (`bordered={false}` drops it) and is not a child of `CardFrame`. The consumer owns the columns and the state. A column with `meta.aggregations` gets a footer menu (Nenhum, Contagem, Soma) that totals every row before pagination; with no rows, or while loading, those cells and an otherwise empty footer are left out. A column with `footer` renders it as before. When the columns overflow the container, a fade on the clipped side shows that the table scrolls sideways. Status is a `SelectProperty`: the select emits the change and the example writes to the collection.',
       },
     },
     layout: 'centered',
@@ -86,8 +90,12 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    await expect(canvas.getByText('14 tarefas')).toBeTruthy()
-    await expect(canvas.getByText('89 h')).toBeTruthy()
+    await expect(
+      canvas.getByRole('button', { name: 'Contagem 14' }),
+    ).toBeInTheDocument()
+    await expect(
+      canvas.getByRole('button', { name: 'Soma 89 h' }),
+    ).toBeInTheDocument()
     await userEvent.click(
       canvas.getByRole('checkbox', { name: 'Selecionar todas as tarefas' }),
     )
@@ -163,8 +171,130 @@ export const ResizableColumns: Story = {
   },
 }
 
-export const Paginated: Story = { args: { paginated: true } }
+const footerOf = (canvasElement: HTMLElement) =>
+  canvasElement.querySelector('tfoot')
 
-export const Loading: Story = { args: { isLoading: true } }
+export const Aggregations: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Every column offers Contagem, and Estimativa adds Soma. Tarefa starts on Contagem and Estimativa on Soma; a column with nothing chosen shows Calcular only on hover or focus. Choosing Nenhum clears the cell.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const body = within(canvasElement.ownerDocument.body)
+    const closeMenu = async () => {
+      await userEvent.keyboard('{Escape}')
+      await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+    }
 
-export const Empty: Story = { args: { data: [] } }
+    await userEvent.click(canvas.getByRole('button', { name: 'Soma 89 h' }))
+    await userEvent.click(
+      await body.findByRole('menuitemradio', { name: 'Contagem' }),
+    )
+    await waitFor(() =>
+      expect(
+        canvas.getAllByRole('button', { name: 'Contagem 14' }),
+      ).toHaveLength(2),
+    )
+    await closeMenu()
+
+    await userEvent.click(
+      canvas.getAllByRole('button', { name: 'Calcular' })[0],
+    )
+    await userEvent.click(
+      await body.findByRole('menuitemradio', { name: 'Contagem' }),
+    )
+    await waitFor(() =>
+      expect(
+        canvas.getAllByRole('button', { name: 'Contagem 14' }),
+      ).toHaveLength(3),
+    )
+    await closeMenu()
+
+    await userEvent.click(
+      canvas.getAllByRole('button', { name: 'Contagem 14' })[0],
+    )
+    await userEvent.click(
+      await body.findByRole('menuitemradio', { name: 'Nenhum' }),
+    )
+    await waitFor(() =>
+      expect(
+        canvas.getAllByRole('button', { name: 'Contagem 14' }),
+      ).toHaveLength(2),
+    )
+    await closeMenu()
+  },
+}
+
+export const Paginated: Story = {
+  args: { paginated: true },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelectorAll('tbody tr')).toHaveLength(5)
+    await expect(
+      within(canvasElement).getByRole('button', { name: 'Contagem 14' }),
+    ).toBeInTheDocument()
+  },
+}
+
+export const Loading: Story = {
+  args: { isLoading: true },
+  play: async ({ canvasElement }) => {
+    await expect(footerOf(canvasElement)).toBeNull()
+  },
+}
+
+export const Empty: Story = {
+  args: { data: [] },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Without rows there is nothing to total, so the aggregation footer is left out.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByText('Nenhuma tarefa para exibir.'),
+    ).toBeInTheDocument()
+    await expect(footerOf(canvasElement)).toBeNull()
+  },
+}
+
+export const HorizontalScroll: Story = {
+  decorators: [
+    (Story) => (
+      <div className="max-w-xl">
+        <Story />
+      </div>
+    ),
+  ],
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The columns are wider than the container, so it scrolls sideways. A fade marks each clipped side: only the end at first, both mid-way, only the start at the end.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const root = canvasElement.querySelector(
+      '[data-slot="data-table"]',
+    ) as HTMLElement
+    const container = root.querySelector(
+      '[data-slot="table-container"]',
+    ) as HTMLElement
+
+    await expect(container.scrollWidth).toBeGreaterThan(container.clientWidth)
+    await waitFor(() => expect(root).toHaveAttribute('data-overflow-end'))
+    await expect(root).not.toHaveAttribute('data-overflow-start')
+
+    container.scrollLeft = container.scrollWidth
+    await waitFor(() => expect(root).toHaveAttribute('data-overflow-start'))
+    await expect(root).not.toHaveAttribute('data-overflow-end')
+  },
+}

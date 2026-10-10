@@ -15,7 +15,7 @@ export function RecordGroupRow({
   leading,
 }: Readonly<RecordGroupRowProps>): React.ReactElement {
   return (
-    <div
+    <dl
       className={cn(recordGroupRowVariants({ align }), className)}
       data-align={align}
       data-slot="record-group-row"
@@ -37,6 +37,6 @@ export function RecordGroupRow({
       >
         {children}
       </dd>
-    </div>
+    </dl>
   )
 }

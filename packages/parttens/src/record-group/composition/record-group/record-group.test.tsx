@@ -293,6 +293,32 @@ test('renders actions and footer only when passed', () => {
   ).toBe('Footer')
 })
 
+test('spreads the actions to the end by default', () => {
+  mount({ actions: <button type="button">Add</button> })
+
+  const header = document.querySelector('[data-slot="record-group-header"]')
+  expect(header?.getAttribute('data-actions-align')).toBe('between')
+  expect(header?.className.split(' ')).toContain('justify-between')
+})
+
+test('places the actions right after the title when aligned to start', () => {
+  mount({
+    actions: <button type="button">Add</button>,
+    actionsAlign: 'start',
+  })
+
+  const header = document.querySelector('[data-slot="record-group-header"]')
+  const classes = header?.className.split(' ')
+  expect(header?.getAttribute('data-actions-align')).toBe('start')
+  expect(classes).toContain('justify-start')
+  expect(classes).toContain('gap-2')
+  expect(classes).not.toContain('justify-between')
+  expect([...(header?.children ?? [])].map((child) => child.tagName)).toEqual([
+    'H2',
+    'DIV',
+  ])
+})
+
 test('renders the footer after the rows inside the panel', () => {
   mount({ footer: <p>Footer</p> })
 
@@ -354,6 +380,43 @@ test('defaults to the plain variant and exposes the variant as data-variant', ()
   ).toBe('card')
 })
 
+test('inset frames the content in a card and keeps the header outside it', () => {
+  mount({ variant: 'inset' })
+
+  const region = screen.getByRole('region', { name: 'Details' })
+  const content = region.querySelector(
+    '[data-slot="record-group-content"]',
+  ) as HTMLElement
+  const header = region.querySelector(
+    '[data-slot="record-group-header"]',
+  ) as HTMLElement
+
+  expect(region.getAttribute('data-variant')).toBe('inset')
+  expect(region.className).not.toContain('border')
+  expect(content.className).toContain('rounded-lg border bg-card')
+  expect(content.className).not.toContain('divide')
+  expect(content.className).not.toContain('after:')
+  expect(content.contains(header)).toBe(false)
+})
+
+test('keeps the empty padding on every variant', async () => {
+  for (const variant of ['card', 'inset', 'plain'] as const) {
+    const { unmount } = mount({ empty: true, variant })
+    fireEvent.click(trigger())
+    const content = await waitFor(() => {
+      const found = document.querySelector(
+        '[data-slot="record-group-content"]',
+      ) as HTMLElement
+      expect(found).not.toBeNull()
+      return found
+    })
+
+    expect(content.className).toContain('py-6')
+    expect(content.className).not.toContain('py-1')
+    unmount()
+  }
+})
+
 test('names the region and the trigger with the full title, never truncated', () => {
   const title =
     'A title long enough that it wraps in the header instead of being cut'
@@ -384,7 +447,7 @@ test('does not touch the internal open state on the empty flip while controlled'
   expect(trigger().getAttribute('aria-expanded')).toBe('false')
 })
 
-test('wraps the rows in a description list', () => {
+test('gives each row its own description list inside a plain body', () => {
   render(
     <RecordGroup title="Details">
       <RecordGroupRow label="Owner">Mariana Souza</RecordGroupRow>
@@ -396,10 +459,10 @@ test('wraps the rows in a description list', () => {
     '[data-slot="record-group-content"]',
   ) as HTMLElement
 
-  expect(content.tagName).toBe('DL')
+  expect(content.tagName).toBe('DIV')
   expect([...content.children].map((child) => child.tagName)).toEqual([
-    'DIV',
-    'DIV',
+    'DL',
+    'DL',
   ])
   expect(
     [...content.children].every(

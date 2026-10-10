@@ -11,10 +11,12 @@ import type { RecordGroupProps } from '../../core'
 import {
   recordGroupClassName,
   recordGroupContentVariants,
+  recordGroupHeaderVariants,
 } from '../../lib/variants'
 
 export function RecordGroup({
   actions,
+  actionsAlign = 'between',
   children,
   className,
   defaultOpen = true,
@@ -51,7 +53,8 @@ export function RecordGroup({
       render={<section />}
     >
       <div
-        className="flex min-h-9 items-center justify-between gap-2 px-1"
+        className={recordGroupHeaderVariants({ actionsAlign })}
+        data-actions-align={actionsAlign}
         data-slot="record-group-header"
       >
         <h2 className="min-w-0 font-medium text-sm" id={titleId}>
@@ -73,21 +76,12 @@ export function RecordGroup({
         ) : null}
       </div>
       <CollapsiblePanel inert={!isOpen}>
-        {empty ? (
-          <div
-            className={recordGroupContentVariants({ empty })}
-            data-slot="record-group-content"
-          >
-            {children}
-          </div>
-        ) : (
-          <dl
-            className={recordGroupContentVariants({ empty })}
-            data-slot="record-group-content"
-          >
-            {children}
-          </dl>
-        )}
+        <div
+          className={recordGroupContentVariants({ empty, variant })}
+          data-slot="record-group-content"
+        >
+          {children}
+        </div>
         {footer ? (
           <div className="px-3 py-2" data-slot="record-group-footer">
             {footer}

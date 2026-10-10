@@ -7,6 +7,7 @@ import {
   RecordGroupAction,
   RecordGroupRow,
   type RecordGroupRowAlign,
+  RecordGroupSubgroup,
   type RecordGroupVariant,
   SelectProperty,
   type SelectPropertyOption,
@@ -172,17 +173,18 @@ const expectTermAndDescription = (
   canvasElement: HTMLElement,
   pairs: ReadonlyArray<readonly [string, string]>,
 ) => {
-  const list = canvasElement.querySelector(
+  const body = canvasElement.querySelector(
     '[data-slot="record-group-content"]',
   ) as HTMLElement
   const rows = rowsOf(canvasElement)
 
-  expect(list.tagName).toBe('DL')
+  expect(body.tagName).toBe('DIV')
   expect(rows).toHaveLength(pairs.length)
   rows.forEach((row, index) => {
     const [label, value] = pairs[index] as readonly [string, string]
 
-    expect(row.parentElement).toBe(list)
+    expect(row.parentElement).toBe(body)
+    expect(row.tagName).toBe('DL')
     expect(part(row, 'label').tagName).toBe('DT')
     expect(part(row, 'value').tagName).toBe('DD')
     expect(part(row, 'label')).toHaveTextContent(label)
@@ -820,6 +822,61 @@ export const EditablePropertiesInteraction: Story = {
 
     await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
     expectAligned(canvasElement)
+  },
+  tags: interaction,
+}
+
+function SubgroupsDemo() {
+  return (
+    <RecordGroup title="Versões">
+      {[2, 1].map((version) => (
+        <RecordGroupSubgroup
+          key={version}
+          meta={version === 2 ? 'Rascunho' : 'Publicada'}
+          title={`Versão ${version}`}
+        >
+          <RecordGroupRow label="Objetivo">
+            <TextProperty
+              ariaLabel={`Objetivo da versão ${version}`}
+              value="Gerar novas consultas"
+              variant="plain"
+            />
+          </RecordGroupRow>
+        </RecordGroupSubgroup>
+      ))}
+    </RecordGroup>
+  )
+}
+
+export const Subgroups: Story = {
+  render: () => <SubgroupsDemo />,
+}
+
+export const SubgroupsInteraction: Story = {
+  ...Subgroups,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const latest = canvas.getByRole('button', { name: 'Versão 2 Rascunho' })
+
+    expect(canvas.getAllByRole('heading', { level: 3 })).toHaveLength(2)
+    expect(latest).toHaveAttribute('aria-expanded', 'false')
+    expect(rowsOf(canvasElement)).toHaveLength(0)
+
+    await userEvent.click(latest)
+    await waitFor(() => expect(latest).toHaveAttribute('aria-expanded', 'true'))
+    await waitFor(() => expect(rowsOf(canvasElement)).toHaveLength(1))
+
+    const title = latest.querySelector('span') as HTMLElement
+    const label = part(rowsOf(canvasElement)[0] as HTMLElement, 'label')
+
+    expect(
+      Math.abs(
+        label.getBoundingClientRect().left - title.getBoundingClientRect().left,
+      ),
+    ).toBeLessThan(1)
+    expect(
+      canvas.getByRole('button', { name: 'Versão 1 Publicada' }),
+    ).toHaveAttribute('aria-expanded', 'false')
   },
   tags: interaction,
 }
