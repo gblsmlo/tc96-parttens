@@ -174,6 +174,27 @@ describe('KanbanView', () => {
     ).toHaveLength(2)
   })
 
+  test('exposes each mobile column option through data-kanban-column-option', () => {
+    const { container } = render(
+      <KanbanView
+        columns={[
+          { cards: [{ id: 'task-1' }], count: 1, id: 'todo', title: 'Todo' },
+          { cards: [], count: 0, id: 'done', title: 'Done' },
+        ]}
+        getKey={(card) => card.id}
+        renderCard={(card) => <span>{card.id}</span>}
+      />,
+    )
+
+    const done = container.querySelector('[data-kanban-column-option="done"]')
+
+    expect(
+      container.querySelectorAll('[data-kanban-column-option]'),
+    ).toHaveLength(2)
+    expect(done?.textContent).toContain('Done')
+    expect(done?.getAttribute('aria-pressed')).toBe('false')
+  })
+
   test('server renders both the mobile panel and the desktop board', () => {
     const html = renderToString(
       <KanbanView

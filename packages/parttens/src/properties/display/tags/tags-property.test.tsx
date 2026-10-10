@@ -28,9 +28,9 @@ describe('TagsProperty', () => {
       />,
     )
 
-    const trigger = () => screen.getByRole('button', { name: 'Tags' })
-    expect(trigger().textContent).toBe('0 Tags')
-    expect(trigger().getAttribute('data-empty')).toBe('true')
+    const trigger = (name: string) => screen.getByRole('button', { name })
+    expect(trigger('Tags: 0 Tags').textContent).toBe('0 Tags')
+    expect(trigger('Tags: 0 Tags').getAttribute('data-empty')).toBe('true')
 
     rerender(
       <TagsProperty
@@ -41,8 +41,8 @@ describe('TagsProperty', () => {
         variant="badge"
       />,
     )
-    expect(trigger().textContent).toBe('1 Tag')
-    expect(trigger().getAttribute('data-empty')).toBe(null)
+    expect(trigger('Tags: 1 Tag').textContent).toBe('1 Tag')
+    expect(trigger('Tags: 1 Tag').getAttribute('data-empty')).toBe(null)
 
     rerender(
       <TagsProperty
@@ -53,7 +53,7 @@ describe('TagsProperty', () => {
         variant="badge"
       />,
     )
-    expect(trigger().textContent).toBe('2 Tags')
+    expect(trigger('Tags: 2 Tags').textContent).toBe('2 Tags')
   })
 
   test('uses a labelled chip to open the editing controls', () => {

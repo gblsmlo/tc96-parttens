@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CalendarView, type CalendarViewProps } from '@tc96/parttens'
 import type { ReactElement } from 'react'
-import { expect } from 'storybook/test'
+import { expect, waitFor } from 'storybook/test'
 import { booleanArgType } from '../../../../test-utils/story-arg-types'
 import {
   createTaskCalendarProps,
@@ -85,15 +85,17 @@ function Example({
   itemsOverride,
   loading = false,
   mode = 'week',
+  width,
 }: Readonly<{
   itemsOverride?: Task[]
   loading?: boolean
   mode?: 'day' | 'week'
+  width?: number
 }>) {
   const { tasks, updateTask } = useTasks(itemsOverride)
 
   return (
-    <div className="h-160 min-w-0 p-4">
+    <div className="h-160 min-w-0 p-4" style={width ? { width } : undefined}>
       <CalendarView
         {...createTaskCalendarProps(updateTask)}
         collection={createCollection(tasks)}
@@ -197,7 +199,7 @@ export const ShortItems: Story = {
     docs: {
       description: {
         story:
-          'Items of 15, 30, 45 and 60 minutes, and three 30-minute items sharing a slot. A block shows the title before the time; one shorter than two lines lays them on a single row and keeps the time only when it fits beside the title.',
+          'Items of 15, 30, 45 and 60 minutes, and three 30-minute items sharing a slot. Below 3.5rem of lane width a block drops its horizontal padding to 1px, which leaves the title about 37px in the 1024px-wide frame; the first word of each title still does not fit. A block shows the title before the time; one shorter than two lines lays them on a single row and keeps the time only when it fits beside the title.',
       },
     },
   },
@@ -248,8 +250,24 @@ export const ShortItems: Story = {
     const stacked = rectsOf('long-60')
     await expect(stacked.time.top).toBeGreaterThanOrEqual(stacked.title.bottom)
     await expect(stacked.time.bottom).toBeLessThanOrEqual(stacked.chip.bottom)
+
+    const titles = {
+      'lane-a': 'Ligação com cliente',
+      'lane-b': 'Revisão de PR',
+      'lane-c': 'Entrevista',
+    }
+    for (const [id, title] of Object.entries(titles)) {
+      await waitFor(() =>
+        expect(rectsOf(id).title.width).toBeGreaterThanOrEqual(35),
+      )
+      await expect(
+        canvasElement.querySelector(
+          `[data-calendar-item-id="${id}"] [aria-label="Abrir ${title}"]`,
+        ),
+      ).not.toBeNull()
+    }
   },
-  render: () => <Example itemsOverride={shortTasks} />,
+  render: () => <Example itemsOverride={shortTasks} width={1024} />,
 }
 
 export const AllDay: Story = {

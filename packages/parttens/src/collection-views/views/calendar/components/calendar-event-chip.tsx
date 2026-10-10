@@ -27,7 +27,7 @@ export const calendarEventChipVariants = cva(
       },
       display: {
         block:
-          'h-full w-full flex-col gap-0.5 px-2 py-1 [&_[data-slot=calendar-event-chip-time]]:order-last [&_[data-slot=calendar-event-chip-title]]:flex-initial [@container_calendar-item_(height<2.625rem)]:flex-row [@container_calendar-item_(height<2.625rem)]:flex-wrap [@container_calendar-item_(height<2.625rem)]:content-start [@container_calendar-item_(height<2.625rem)]:gap-x-1 [@container_calendar-item_(height<2.625rem)]:gap-y-6 [@container_calendar-item_(height<2.625rem)]:py-0.5',
+          'h-full w-full flex-col gap-0.5 px-2 py-1 [&_[data-slot=calendar-event-chip-time]]:order-last [&_[data-slot=calendar-event-chip-title]]:flex-initial [@container_calendar-item_(height<2.625rem)]:flex-row [@container_calendar-item_(height<2.625rem)]:flex-wrap [@container_calendar-item_(height<2.625rem)]:content-start [@container_calendar-item_(height<2.625rem)]:gap-x-1 [@container_calendar-item_(height<2.625rem)]:gap-y-6 [@container_calendar-item_(height<2.625rem)]:py-0.5 [@container_calendar-item_(width<3.5rem)]:px-px',
         chip: 'w-full items-center gap-1 px-1.5 py-0.5',
       },
       tone: {
