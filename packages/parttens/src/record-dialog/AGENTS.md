@@ -67,6 +67,7 @@ Behavior the tests fix:
 - Settle rule: the handler returning `true` calls `onOpenChange(false)`. `false`, a rejection or a synchronous throw keeps the dialog open and the field values untouched. Errors are swallowed; the consumer reports them through `errorMessage`.
 - Pending belongs to one open session. When `open` becomes false the pattern resets pending and ignores any settlement still in flight, so a late `true` never closes a reopened dialog, and nothing runs after unmount.
 - Pending is tracked by the pattern. While pending, Escape, outside press and the close button do not close, the cancel and submit buttons are disabled, a second submit is ignored, and the submit button shows `Spinner` and `submittingLabel` when given.
+- Focus: when the submit button had focus at submit and the handler settles `false`, rejects or throws, the pattern refocuses it once it is enabled again, because the disabled button drops focus while pending. A submit from a field (Mod+Enter) leaves focus where it was.
 - The consumer clears `errorMessage` at the start of the handler; the pattern never clears it.
 - `event.currentTarget` is null after the first `await`, so `onSubmit` reads `FormData` (or the form elements) synchronously, before awaiting anything.
 - Base UI `Form` renders `noValidate`: native constraints such as `required` or `type="email"` do not block the submit. Validation is the consumer's job inside `onSubmit`, returning `false` to keep the dialog open. The pattern does not call `checkValidity`.
@@ -110,4 +111,4 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/record-dialog
 ```
 
-The stories are `Patterns/RecordDialog` (Default, Sizes, CreateRecord, CreateRecordWithForm, CreateEvent) in `apps/storybook/src/patterns/record-dialog/`, with a `!dev` `<Story>Interaction` twin for each, and `Patterns/RecordDialog/Usages/Contacts` (Default, CreateContact, CreateMore) in `usages/`; all run axe with `test: 'error'`.
+The stories are `Patterns/RecordDialog` (Default, Sizes, CreateRecord, CreateRecordWithForm, CreateEvent) in `apps/storybook/src/patterns/record-dialog/`, with a `!dev` `<Story>Interaction` twin for each (`FailedSubmit` and `ThrowingSubmit` check the focus rule above; `Sizes` widens the viewport with `page.viewport()` and restores it), and `Patterns/RecordDialog/Usages/Contacts` (Default, CreateContact, CreateMore) in `usages/`; all run axe with `test: 'error'`.

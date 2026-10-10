@@ -10,9 +10,11 @@ import {
   waitFor,
   within,
 } from 'storybook/test'
+import { page } from 'vitest/browser'
 import { CreateEventDemo } from './create-event-demo'
 import { CreateRecordDemo } from './create-record-demo'
 import { CreateRecordWithFormDemo } from './create-record-with-form-demo'
+import { delay } from './delay'
 
 function ShellOnly() {
   const [open, setOpen] = useState(true)
@@ -32,6 +34,32 @@ function ShellOnly() {
         titleAncestor="Lemind"
       />
     </>
+  )
+}
+
+function FailingSubmit({ outcome }: { outcome: 'false' | 'throw' }) {
+  const [open, setOpen] = useState(true)
+  const [failed, setFailed] = useState(false)
+
+  return (
+    <RecordDialog
+      cancelLabel="Cancel"
+      errorMessage={failed ? 'Could not save.' : undefined}
+      onOpenChange={setOpen}
+      onSubmit={async () => {
+        setFailed(false)
+        await delay(150)
+        setFailed(true)
+        if (outcome === 'throw') throw new Error('rejected')
+        return false
+      }}
+      open={open}
+      submitLabel="Create"
+      submittingLabel="Creating"
+      title="New record"
+    >
+      <input aria-label="Name" defaultValue="Draft" />
+    </RecordDialog>
   )
 }
 
@@ -118,6 +146,53 @@ export const DefaultInteraction: Story = {
   tags: ['!dev', '!autodocs'],
 }
 
+export const FailedSubmit: Story = {
+  render: () => <FailingSubmit outcome="false" />,
+}
+
+export const FailedSubmitInteraction: Story = {
+  ...FailedSubmit,
+  play: async () => {
+    const dialog = await screen().findByRole('dialog', { name: 'New record' })
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Create' }),
+    )
+    await within(dialog).findByRole('button', { name: 'Creating' })
+    await within(dialog).findByText('Could not save.')
+
+    const create = within(dialog).getByRole('button', { name: 'Create' })
+    await waitFor(() => expect(create).toBeEnabled())
+    expect(dialog).toContainElement(document.activeElement as HTMLElement)
+    expect(document.activeElement).not.toBe(document.body)
+    expect(document.activeElement).toBe(create)
+  },
+  tags: ['!dev', '!autodocs'],
+}
+
+export const ThrowingSubmit: Story = {
+  render: () => <FailingSubmit outcome="throw" />,
+}
+
+export const ThrowingSubmitInteraction: Story = {
+  ...ThrowingSubmit,
+  play: async () => {
+    const dialog = await screen().findByRole('dialog', { name: 'New record' })
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Create' }),
+    )
+    await within(dialog).findByRole('button', { name: 'Creating' })
+    await within(dialog).findByText('Could not save.')
+
+    const create = within(dialog).getByRole('button', { name: 'Create' })
+    await waitFor(() => expect(create).toBeEnabled())
+    expect(dialog).toContainElement(document.activeElement as HTMLElement)
+    expect(document.activeElement).toBe(create)
+  },
+  tags: ['!dev', '!autodocs'],
+}
+
 export const Sizes: Story = {
   render: () => <SizesDemo />,
 }
@@ -127,29 +202,33 @@ const expectedMaxWidth = { default: 672, large: 896, small: 448 }
 export const SizesInteraction: Story = {
   ...Sizes,
   play: async () => {
-    const wide = window.matchMedia('(min-width: 640px)').matches
+    const { innerHeight, innerWidth } = window
+    await page.viewport(1280, 900)
 
-    for (const { label, size } of sizes) {
-      await userEvent.click(screen().getByRole('button', { name: label }))
-      const dialog = await screen().findByRole('dialog', {
-        name: `${label} dialog`,
-      })
+    try {
+      for (const { label, size } of sizes) {
+        await userEvent.click(screen().getByRole('button', { name: label }))
+        const dialog = await screen().findByRole('dialog', {
+          name: `${label} dialog`,
+        })
 
-      expect(dialog.getAttribute('data-size')).toBe(size)
-      const maxWidth = getComputedStyle(dialog).maxWidth
-      if (wide) {
-        expect(maxWidth).toBe(`${expectedMaxWidth[size]}px`)
-        expect(dialog.getBoundingClientRect().width).toBeLessThanOrEqual(
-          expectedMaxWidth[size] + 1,
+        expect(dialog.getAttribute('data-size')).toBe(size)
+        expect(getComputedStyle(dialog).maxWidth).toBe(
+          `${expectedMaxWidth[size]}px`,
         )
-      } else {
-        expect(maxWidth).toBe('none')
-      }
+        await waitFor(() =>
+          expect(dialog.getBoundingClientRect().width).toBe(
+            expectedMaxWidth[size],
+          ),
+        )
 
-      await userEvent.click(
-        within(dialog).getByRole('button', { name: 'Cancel' }),
-      )
-      await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
+        await userEvent.click(
+          within(dialog).getByRole('button', { name: 'Cancel' }),
+        )
+        await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
+      }
+    } finally {
+      await page.viewport(innerWidth, innerHeight)
     }
   },
   tags: ['!dev', '!autodocs'],
