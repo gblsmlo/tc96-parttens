@@ -20,7 +20,7 @@ export function RecordGroupRow({
       data-align={align}
       data-slot="record-group-row"
     >
-      <div
+      <dt
         className={recordGroupRowLabelVariants({ align })}
         data-slot="record-group-row-label"
       >
@@ -30,13 +30,13 @@ export function RecordGroupRow({
           </span>
         ) : null}
         <span className="truncate">{label}</span>
-      </div>
-      <div
+      </dt>
+      <dd
         className={recordGroupRowValueVariants({ align })}
         data-slot="record-group-row-value"
       >
         {children}
-      </div>
+      </dd>
     </div>
   )
 }

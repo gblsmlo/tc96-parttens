@@ -34,6 +34,8 @@ export function RecordGroup({
     if (wasEmpty && !controlled) setInternalOpen(true)
   }
 
+  const isOpen = controlled ? open : internalOpen
+
   return (
     <Collapsible
       aria-labelledby={titleId}
@@ -45,7 +47,7 @@ export function RecordGroup({
         if (!controlled) setInternalOpen(next)
         onOpenChange?.(next)
       }}
-      open={controlled ? open : internalOpen}
+      open={isOpen}
       render={<section />}
     >
       <div
@@ -70,13 +72,22 @@ export function RecordGroup({
           </div>
         ) : null}
       </div>
-      <CollapsiblePanel>
-        <div
-          className={recordGroupContentVariants({ empty })}
-          data-slot="record-group-content"
-        >
-          {children}
-        </div>
+      <CollapsiblePanel inert={!isOpen}>
+        {empty ? (
+          <div
+            className={recordGroupContentVariants({ empty })}
+            data-slot="record-group-content"
+          >
+            {children}
+          </div>
+        ) : (
+          <dl
+            className={recordGroupContentVariants({ empty })}
+            data-slot="record-group-content"
+          >
+            {children}
+          </dl>
+        )}
         {footer ? (
           <div className="px-3 py-2" data-slot="record-group-footer">
             {footer}

@@ -214,3 +214,18 @@ test('keeps focus on the trigger when finalFocus returns null', async () => {
 
   await waitFor(() => expect(document.activeElement).toBe(trigger))
 })
+
+test('moves focus to the column option when the moved card is not rendered', async () => {
+  const columnOption = addButton('Done')
+  columnOption.setAttribute('data-kanban-column-option', 'done')
+  const finalFocus = () =>
+    document.querySelector<HTMLElement>('[data-record-id="42"]') ??
+    document.querySelector<HTMLElement>('[data-kanban-column-option="done"]')
+  const { trigger, view, props } = mountWithTrigger(finalFocus)
+
+  await screen.findByRole('dialog')
+  trigger.remove()
+  view.rerender(<RecordPreview {...props} open={false} />)
+
+  await waitFor(() => expect(document.activeElement).toBe(columnOption))
+})

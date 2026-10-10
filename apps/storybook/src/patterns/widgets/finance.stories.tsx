@@ -253,22 +253,6 @@ function TotalBalance() {
   )
 }
 
-// O tom invertido aplica o .dark do tema ao widget. No tema escuro deste
-// Storybook, o muted-foreground sobre o card fica em 4,21:1 no texto pequeno;
-// o contraste segue verificado no restante da story.
-const invertedThemeContrast = {
-  a11y: {
-    config: {
-      rules: [
-        {
-          id: 'color-contrast',
-          selector: '*:not([data-tone="inverted"] *)',
-        },
-      ],
-    },
-  },
-}
-
 const meta = {
   title: 'Patterns/Widgets/Finance',
   parameters: { layout: 'fullscreen' },
@@ -278,7 +262,6 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Overview: Story = {
-  parameters: invertedThemeContrast,
   render: () => (
     <div className="grid min-h-screen place-items-center p-6 sm:p-10">
       <div className="grid w-full max-w-5xl gap-4 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
@@ -805,7 +788,6 @@ export const AssetStat: Story = {
 }
 
 export const AssetStatInverted: Story = {
-  parameters: invertedThemeContrast,
   decorators: [single('max-w-xs')],
   render: () => <ZcashReward tone="inverted" />,
 }

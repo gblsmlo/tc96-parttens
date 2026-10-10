@@ -18,7 +18,7 @@ import {
 const addTagLabel = 'Adicionar tag'
 
 const tagsCountLabel = (count: number) =>
-  `${count} ${count > 1 ? 'Tags' : 'Tag'}`
+  `${count} ${count === 1 ? 'Tag' : 'Tags'}`
 
 export interface TagsPropertyOption<TValue extends string = string> {
   label: string
@@ -136,7 +136,7 @@ export function TagsProperty<TValue extends string = string>({
           display === 'count'
             ? ({ anchorRef, open }) => (
                 <PropertySurface
-                  aria-label={ariaLabel}
+                  aria-label={`${ariaLabel}: ${tagsCountLabel(selectedOptions.length)}`}
                   muted={selectedOptions.length === 0}
                   render={
                     <button
