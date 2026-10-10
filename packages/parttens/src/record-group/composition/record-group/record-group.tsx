@@ -73,12 +73,21 @@ export function RecordGroup({
         ) : null}
       </div>
       <CollapsiblePanel inert={!isOpen}>
-        <div
-          className={recordGroupContentVariants({ empty })}
-          data-slot="record-group-content"
-        >
-          {children}
-        </div>
+        {empty ? (
+          <div
+            className={recordGroupContentVariants({ empty })}
+            data-slot="record-group-content"
+          >
+            {children}
+          </div>
+        ) : (
+          <dl
+            className={recordGroupContentVariants({ empty })}
+            data-slot="record-group-content"
+          >
+            {children}
+          </dl>
+        )}
         {footer ? (
           <div className="px-3 py-2" data-slot="record-group-footer">
             {footer}

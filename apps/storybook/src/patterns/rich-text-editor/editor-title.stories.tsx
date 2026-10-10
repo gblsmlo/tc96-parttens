@@ -28,16 +28,6 @@ const meta = {
     ),
   ],
   parameters: {
-    a11y: {
-      config: {
-        rules: [
-          {
-            id: 'aria-hidden-focus',
-            selector: '[aria-hidden="true"]:not([data-base-ui-focus-guard])',
-          },
-        ],
-      },
-    },
     layout: 'padded',
   },
   title: 'Patterns/Rich Text Editor/Editor Title',

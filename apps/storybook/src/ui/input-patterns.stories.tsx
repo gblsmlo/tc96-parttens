@@ -361,10 +361,14 @@ export const ClearButton: Story = {
 }
 
 export const PasswordStrengthIndicator: Story = {
-  // Exemplo do COSS: o requisito cumprido usa emerald-600, com contraste de
-  // 3,65:1. O exemplo é mantido como o COSS publica.
+  // Exemplo do COSS: o requisito cumprido usa emerald-600, 3,49:1 no tema claro
+  // e sem violação no escuro; o seletor deixa a regra só no tema escuro.
   parameters: {
-    a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
+    a11y: {
+      config: {
+        rules: [{ id: 'color-contrast', selector: '[data-theme="dark"] *' }],
+      },
+    },
   },
   render: () => <PasswordStrengthPattern />,
   play: async ({ canvasElement }) => {

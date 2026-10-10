@@ -211,14 +211,14 @@ function Clocks() {
   )
 }
 
+// Calendario do COSS: 3,14:1 no tema claro e 3,29:1 no escuro (abaixo de 4,5:1); o COSS segue sem alteracao.
 const calendarContrast = {
   a11y: {
     config: {
       rules: [
         {
           id: 'color-contrast',
-          selector:
-            '*:not([data-slot="calendar"] *):not([data-tone="inverted"] *)',
+          selector: '*:not([data-slot="calendar"] *)',
         },
       ],
     },

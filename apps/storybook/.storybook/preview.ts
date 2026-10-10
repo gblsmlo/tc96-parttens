@@ -9,6 +9,7 @@ const preview: Preview = {
 
       root.classList.toggle('dark', theme === 'dark')
       root.style.colorScheme = theme
+      document.body.dataset.theme = theme
 
       return Story()
     },
