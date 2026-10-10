@@ -30,6 +30,7 @@ Handlers and surface:
 - A display is read-only when `readOnly` is set or it has neither `action` nor `onValueChange` (`onCommit` for `TextProperty` and `EditableText`). With both, `action` runs and `onValueChange` does not. The rule lives in `shared/lib/property-change.ts`; `DateRangeProperty` has no `action` and keeps its own `!onValueChange` gate so the handler stays narrowed.
 - `PropertySurface` with `aria-label` and no `role` or `render` gets `role="img"`; with `render={<button />}` the button keeps its role. Select shells render `role="img"` read-only and `role="combobox"` otherwise.
 - `PropertyCollection` reports ids in catalog order, so a property turned back on returns to its place. With `visible` passed, a menu click only calls `onVisibleChange`.
+- The `PropertyCollection` menu lists the catalog with no group label: the owner removed `Propriedades` and the `menuLabel` prop on 2026-10-09.
 
 Dates:
 

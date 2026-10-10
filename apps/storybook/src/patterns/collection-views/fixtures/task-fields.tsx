@@ -1,7 +1,9 @@
 import {
   createSelectColumn,
   type DataGridColumnDef,
+  type DataTableAggregations,
   type DataTableColumnDef,
+  type DataTableColumnMeta,
   DateProperty,
   PersonProperty,
   type PersonPropertyOption,
@@ -209,6 +211,13 @@ export const createDataGridColumns = (
   },
 ]
 
+const countedColumn: DataTableColumnMeta<Task> = { aggregations: ['count'] }
+
+export const taskTableAggregations: DataTableAggregations = {
+  estimate: 'sum',
+  title: 'count',
+}
+
 export const createDataTableColumns = (
   onChange: UpdateTask,
 ): DataTableColumnDef<Task>[] => [
@@ -247,8 +256,8 @@ export const createDataTableColumns = (
         </span>
       </div>
     ),
-    footer: ({ table }) => `${table.getRowCount()} tarefas`,
     header: 'Tarefa',
+    meta: countedColumn,
     minSize: 160,
     size: 320,
   },
@@ -256,6 +265,7 @@ export const createDataTableColumns = (
     accessorKey: 'status',
     cell: ({ row }) => <StatusField onChange={onChange} task={row.original} />,
     header: 'Status',
+    meta: countedColumn,
     size: 170,
   },
   {
@@ -264,6 +274,7 @@ export const createDataTableColumns = (
       <PriorityField onChange={onChange} task={row.original} />
     ),
     header: 'Prioridade',
+    meta: countedColumn,
   },
   {
     accessorKey: 'assigneeId',
@@ -271,26 +282,25 @@ export const createDataTableColumns = (
       <AssigneeField onChange={onChange} task={row.original} />
     ),
     header: 'Responsável',
+    meta: countedColumn,
     size: 170,
   },
   {
     cell: ({ row }) => <DueField onChange={onChange} task={row.original} />,
     header: 'Prazo',
     id: 'due',
+    meta: countedColumn,
   },
   {
     accessorKey: 'estimate',
     cell: ({ row }) => (
       <EstimateField onChange={onChange} task={row.original} />
     ),
-    footer: ({ table }) => (
-      <span className="tabular-nums">
-        {table
-          .getPrePaginatedRowModel()
-          .rows.reduce((sum, row) => sum + row.original.estimate, 0)}{' '}
-        h
-      </span>
-    ),
     header: 'Estimativa',
+    meta: {
+      aggregations: ['count', 'sum'],
+      formatAggregation: (value, aggregation) =>
+        aggregation === 'sum' ? `${value} h` : String(value),
+    } satisfies DataTableColumnMeta<Task>,
   },
 ]

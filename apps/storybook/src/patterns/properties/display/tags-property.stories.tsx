@@ -72,7 +72,9 @@ export const Plain: Story = {
 /** In a collection row the width belongs to the other properties, so only the count shows and the same popover stays behind the trigger. */
 export const Count: Story = {
   play: async ({ canvas }) => {
-    const trigger = await canvas.findByRole('button', { name: 'Tags' })
+    const trigger = await canvas.findByRole('button', {
+      name: 'Tags: 1 Tag',
+    })
 
     await expect(trigger.textContent).toBe('1 Tag')
     await expect(canvas.queryByText('Documents')).toBe(null)
@@ -92,9 +94,11 @@ export const Count: Story = {
 
 export const CountEmpty: Story = {
   play: async ({ canvas }) => {
-    const trigger = await canvas.findByRole('button', { name: 'Tags' })
+    const trigger = await canvas.findByRole('button', {
+      name: 'Tags: 0 Tags',
+    })
 
-    await expect(trigger.textContent).toBe('0 Tag')
+    await expect(trigger.textContent).toBe('0 Tags')
     await expect(trigger.dataset.empty).toBe('true')
     await expect(trigger.getBoundingClientRect().height).toBe(24)
   },

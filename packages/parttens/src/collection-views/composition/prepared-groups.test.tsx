@@ -94,3 +94,25 @@ test('the outlet uses prepared groups in kanban mode without a grouping definiti
   expect(screen.getAllByText('Prepared item').length).toBeGreaterThan(0)
   expect(screen.queryByText('Ignored source item')).toBeNull()
 })
+
+test('the outlet forwards list.emptyMessage for an empty ungrouped list', () => {
+  const emptyCollection = {
+    ...collection,
+    items: [] as { id: string; title: string }[],
+  }
+
+  render(
+    <CollectionProvider
+      collection={emptyCollection}
+      preferences={{ groupBy: null, view: 'list' }}
+    >
+      <CollectionViewOutlet
+        collection={emptyCollection}
+        list={{ emptyMessage: 'Nothing here yet.' }}
+        renderListItem={(item) => <span>{item.title}</span>}
+        renderKanbanItem={(item) => <span>{item.title}</span>}
+      />
+    </CollectionProvider>,
+  )
+  expect(screen.getByText('Nothing here yet.')).toBeDefined()
+})

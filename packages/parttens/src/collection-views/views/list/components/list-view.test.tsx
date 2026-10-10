@@ -147,6 +147,54 @@ describe('ListView without grouping', () => {
     expect(titles).toEqual(['First item', 'Second item'])
   })
 
+  test('renders the empty message when the flat collection has no items', () => {
+    const { container } = render(
+      <ListView<TestItem>
+        collection={collectionOf([])}
+        emptyMessage="Nenhum contato para exibir."
+        grouping={null}
+        renderItem={(item) => <span>{item.title}</span>}
+      />,
+    )
+
+    expect(screen.getByText('Nenhum contato para exibir.')).toBeTruthy()
+    expect(container.querySelectorAll('[data-slot="list-item"]')).toHaveLength(
+      0,
+    )
+  })
+
+  test('falls back to the default message and hides it while loading or when items exist', () => {
+    const view = render(
+      <ListView<TestItem>
+        collection={collectionOf([])}
+        grouping={null}
+        renderItem={(item) => <span>{item.title}</span>}
+      />,
+    )
+    expect(screen.getByText('No items to show.')).toBeTruthy()
+
+    view.rerender(
+      <ListView<TestItem>
+        collection={collectionOf([])}
+        grouping={null}
+        loading
+        renderItem={(item) => <span>{item.title}</span>}
+      />,
+    )
+    expect(screen.queryByText('No items to show.')).toBeNull()
+
+    view.rerender(
+      <ListView<TestItem>
+        collection={collectionOf([
+          { id: 'item-1', statusId: 'done', title: 'First item' },
+        ])}
+        grouping={null}
+        renderItem={(item) => <span>{item.title}</span>}
+      />,
+    )
+    expect(screen.queryByText('No items to show.')).toBeNull()
+  })
+
   test('renders the requested skeleton count while loading', () => {
     const { container } = render(
       <ListView<TestItem>

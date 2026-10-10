@@ -29,11 +29,13 @@ type OutletProps = Omit<
 
 function Outlet({
   view,
+  withKanbanRenderer = true,
   withTable = false,
   ...props
 }: Readonly<
   OutletProps & {
-    view: 'calendar' | 'datatable'
+    view: 'calendar' | 'datatable' | 'kanban'
+    withKanbanRenderer?: boolean
     withTable?: boolean
   }
 >): ReactElement {
@@ -50,7 +52,9 @@ function Outlet({
     >
       <CollectionViewOutlet
         collection={collection}
-        renderKanbanItem={(item) => item.title}
+        {...(withKanbanRenderer
+          ? { renderKanbanItem: (item: Item) => item.title }
+          : {})}
         renderListItem={(item) => item.title}
         {...(withTable ? { datatable: { 'aria-label': 'Itens', table } } : {})}
         {...props}
@@ -77,6 +81,9 @@ describe('CollectionViewOutlet', () => {
       expect(() => render(<Outlet view="calendar" />)).toThrow(
         'a view "calendar" exige a prop `calendar`',
       )
+      expect(() =>
+        render(<Outlet view="kanban" withKanbanRenderer={false} />),
+      ).toThrow('a view "kanban" exige a prop `renderKanbanItem`')
     } finally {
       console.error = originalError
     }

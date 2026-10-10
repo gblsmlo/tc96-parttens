@@ -37,7 +37,7 @@ function deferred() {
   return { promise, reject, resolve }
 }
 
-function mount(
+async function mount(
   onSubmit: () => boolean | Promise<boolean>,
   props: Partial<ComponentProps<typeof RecordDialog>> = {},
 ) {
@@ -57,22 +57,25 @@ function mount(
       <input aria-label="Title" defaultValue="" />
     </RecordDialog>
   )
-  const view = render(ui(true))
+  const view = await act(async () => render(ui(true)))
   fireEvent.change(screen.getByLabelText('Title'), {
     target: { value: 'Draft title' },
   })
   return {
     changes,
-    setOpen: (open: boolean) => view.rerender(ui(open)),
+    setOpen: (open: boolean) =>
+      act(async () => {
+        view.rerender(ui(open))
+      }),
     unmount: view.unmount,
   }
 }
 
-function setup(
+async function setup(
   onSubmit: () => boolean | Promise<boolean>,
   props: Partial<ComponentProps<typeof RecordDialog>> = {},
 ) {
-  return mount(onSubmit, props).changes
+  return (await mount(onSubmit, props)).changes
 }
 
 const flush = () =>
@@ -84,8 +87,8 @@ const submit = () =>
   fireEvent.click(screen.getByRole('button', { name: 'Save' }))
 const pressEscape = () => fireEvent.keyDown(document.body, { key: 'Escape' })
 
-test('renders a dialog named by the title with the fields inside a form', () => {
-  setup(() => true)
+test('renders a dialog named by the title with the fields inside a form', async () => {
+  await setup(() => true)
 
   const dialog = screen.getByRole('dialog', { name: 'New card' })
   expect(dialog.querySelector('form')).toBeTruthy()
@@ -95,7 +98,7 @@ test('renders a dialog named by the title with the fields inside a form', () => 
 })
 
 test('prevents the native submit and closes when the handler returns true', async () => {
-  const changes = setup(() => true)
+  const changes = await setup(() => true)
 
   const form = screen.getByLabelText('Title').closest('form') as HTMLFormElement
   const notPrevented = fireEvent.submit(form)
@@ -105,7 +108,7 @@ test('prevents the native submit and closes when the handler returns true', asyn
 })
 
 test('stays open and keeps the field value when the handler returns false', async () => {
-  const changes = setup(() => false)
+  const changes = await setup(() => false)
 
   submit()
 
@@ -122,7 +125,7 @@ test('stays open and keeps the field value when the handler returns false', asyn
 })
 
 test('stays open when the handler throws', async () => {
-  const changes = setup(() => {
+  const changes = await setup(() => {
     throw new Error('boom')
   })
 
@@ -141,7 +144,7 @@ test('stays open when the handler throws', async () => {
 })
 
 test('stays open when the handler rejects', async () => {
-  const changes = setup(() => Promise.reject(new Error('boom')))
+  const changes = await setup(() => Promise.reject(new Error('boom')))
 
   submit()
 
@@ -156,7 +159,7 @@ test('stays open when the handler rejects', async () => {
 
 test('locks dismissal and buttons while the handler is pending', async () => {
   const pending = deferred()
-  const changes = setup(() => pending.promise)
+  const changes = await setup(() => pending.promise)
 
   submit()
 
@@ -181,7 +184,7 @@ test('locks dismissal and buttons while the handler is pending', async () => {
 test('ignores a second submit while pending', async () => {
   const pending = deferred()
   let calls = 0
-  setup(() => {
+  await setup(() => {
     calls += 1
     return pending.promise
   })
@@ -197,8 +200,8 @@ test('ignores a second submit while pending', async () => {
   )
 })
 
-test('closes through Escape and the cancel button when idle', () => {
-  const changes = setup(() => true)
+test('closes through Escape and the cancel button when idle', async () => {
+  const changes = await setup(() => true)
 
   pressEscape()
   fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
@@ -206,8 +209,8 @@ test('closes through Escape and the cancel button when idle', () => {
   expect(changes).toEqual([false, false])
 })
 
-test('announces the error message as an alert above the footer', () => {
-  setup(() => false, { errorMessage: 'Could not save' })
+test('announces the error message as an alert above the footer', async () => {
+  await setup(() => false, { errorMessage: 'Could not save' })
 
   const alert = screen.getByRole('alert')
   expect(alert.textContent).toBe('Could not save')
@@ -220,7 +223,7 @@ test('announces the error message as an alert above the footer', () => {
 
 test('does not close after unmount when the handler resolves true', async () => {
   const pending = deferred()
-  const { changes, unmount } = mount(() => pending.promise)
+  const { changes, unmount } = await mount(() => pending.promise)
 
   submit()
   await screen.findByRole('button', { name: 'Saving' })
@@ -233,12 +236,12 @@ test('does not close after unmount when the handler resolves true', async () => 
 
 test('is not locked after a reopen and ignores the late settlement', async () => {
   const pending = deferred()
-  const { changes, setOpen } = mount(() => pending.promise)
+  const { changes, setOpen } = await mount(() => pending.promise)
 
   submit()
   await screen.findByRole('button', { name: 'Saving' })
-  setOpen(false)
-  setOpen(true)
+  await setOpen(false)
+  await setOpen(true)
 
   const save = await screen.findByRole('button', { name: 'Save' })
   expect((save as HTMLButtonElement).disabled).toBe(false)
@@ -250,7 +253,7 @@ test('is not locked after a reopen and ignores the late settlement', async () =>
 })
 
 test('is not pending after a reopen following a failed submit', async () => {
-  const { setOpen } = mount(() => false)
+  const { setOpen } = await mount(() => false)
 
   submit()
   await waitFor(() =>
@@ -259,15 +262,15 @@ test('is not pending after a reopen following a failed submit', async () => {
         .disabled,
     ).toBe(false),
   )
-  setOpen(false)
-  setOpen(true)
+  await setOpen(false)
+  await setOpen(true)
 
   const save = await screen.findByRole('button', { name: 'Save' })
   expect((save as HTMLButtonElement).disabled).toBe(false)
 })
 
-test('reads the header as a trail with the ancestor before the title', () => {
-  setup(() => true)
+test('reads the header as a trail with the ancestor before the title', async () => {
+  await setup(() => true)
 
   const trail = document.querySelector('[data-slot="dialog-title-trail"]')
   expect(trail?.textContent).toBe('AcmeNew card')
@@ -276,20 +279,20 @@ test('reads the header as a trail with the ancestor before the title', () => {
   expect(trail?.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true')
 })
 
-test('names the dialog by the title only', () => {
-  setup(() => true)
+test('names the dialog by the title only', async () => {
+  await setup(() => true)
 
   expect(screen.getByRole('dialog', { name: 'New card' })).toBeTruthy()
   expect(screen.queryByRole('dialog', { name: /Acme/ })).toBeNull()
   expect(document.querySelector('nav')).toBeNull()
 })
 
-test('draws the top actions only when given', () => {
-  setup(() => true)
+test('draws the top actions only when given', async () => {
+  await setup(() => true)
   expect(document.querySelector('[data-slot="dialog-actions"]')).toBeNull()
   cleanup()
 
-  setup(() => true, {
+  await setup(() => true, {
     actions: (
       <button aria-label="Expand" type="button">
         +
@@ -302,14 +305,14 @@ test('draws the top actions only when given', () => {
   )
 })
 
-test('applies the size scale to the popup', () => {
-  setup(() => true, { size: 'large' })
+test('applies the size scale to the popup', async () => {
+  await setup(() => true, { size: 'large' })
 
   expect(screen.getByRole('dialog').className.includes('max-w-4xl')).toBe(true)
 })
 
-test('keeps the submit button tied to the form outside of it', () => {
-  setup(() => true)
+test('keeps the submit button tied to the form outside of it', async () => {
+  await setup(() => true)
 
   const form = screen.getByLabelText('Title').closest('form') as HTMLFormElement
   expect(
@@ -317,16 +320,16 @@ test('keeps the submit button tied to the form outside of it', () => {
   ).toBe(form.id)
 })
 
-test('renders no cancel button without a cancel label', () => {
-  setup(() => true, { cancelLabel: undefined })
+test('renders no cancel button without a cancel label', async () => {
+  await setup(() => true, { cancelLabel: undefined })
 
   expect(screen.queryByRole('button', { name: 'Cancel' })).toBeNull()
   expect(screen.getByRole('button', { name: 'Save' })).toBeTruthy()
 })
 
-test('disables the submit button while submitDisabled is set', () => {
+test('disables the submit button while submitDisabled is set', async () => {
   const calls: number[] = []
-  setup(
+  await setup(
     () => {
       calls.push(1)
       return true
@@ -340,16 +343,16 @@ test('disables the submit button while submitDisabled is set', () => {
   expect(calls).toEqual([])
 })
 
-test('renders only the title without an ancestor', () => {
-  setup(() => true, { titleAncestor: undefined })
+test('renders only the title without an ancestor', async () => {
+  await setup(() => true, { titleAncestor: undefined })
 
   expect(screen.getByRole('dialog', { name: 'New card' })).toBeTruthy()
   expect(document.querySelector('[data-slot="dialog-title-trail"]')).toBeNull()
   expect(document.querySelector('[data-slot="dialog-header"] svg')).toBeNull()
 })
 
-test('renders the footer start slot before the buttons', () => {
-  setup(() => true, { footerStart: <span>Create more</span> })
+test('renders the footer start slot before the buttons', async () => {
+  await setup(() => true, { footerStart: <span>Create more</span> })
 
   const start = document.querySelector('[data-slot="dialog-footer-start"]')
   expect(start?.textContent).toBe('Create more')
@@ -368,7 +371,7 @@ const modEnter = (key: 'metaKey' | 'ctrlKey') =>
 
 test('submits with Meta+Enter and Ctrl+Enter when enabled', async () => {
   let calls = 0
-  setup(
+  await setup(
     () => {
       calls += 1
       return false
@@ -388,8 +391,8 @@ test('submits with Meta+Enter and Ctrl+Enter when enabled', async () => {
   await waitFor(() => expect(calls).toBe(2))
 })
 
-test('shows the hint and the shortcut attribute only when enabled', () => {
-  setup(() => true, { submitOnModEnter: true })
+test('shows the hint and the shortcut attribute only when enabled', async () => {
+  await setup(() => true, { submitOnModEnter: true })
 
   const save = screen.getByRole('button', { name: /Save/ })
   expect(save.getAttribute('aria-keyshortcuts')).toBe(
@@ -398,7 +401,7 @@ test('shows the hint and the shortcut attribute only when enabled', () => {
   expect(save.querySelector('kbd')?.getAttribute('aria-hidden')).toBe('true')
   cleanup()
 
-  setup(() => true)
+  await setup(() => true)
   const plain = screen.getByRole('button', { name: 'Save' })
   expect(plain.getAttribute('aria-keyshortcuts')).toBeNull()
   expect(plain.querySelector('kbd')).toBeNull()
@@ -407,7 +410,7 @@ test('shows the hint and the shortcut attribute only when enabled', () => {
 test('ignores Mod+Enter without the option, while pending and while disabled', async () => {
   let calls = 0
   const pending = deferred()
-  setup(
+  await setup(
     () => {
       calls += 1
       return pending.promise
@@ -418,7 +421,7 @@ test('ignores Mod+Enter without the option, while pending and while disabled', a
   expect(calls).toBe(0)
   cleanup()
 
-  setup(
+  await setup(
     () => {
       calls += 1
       return pending.promise
@@ -433,7 +436,7 @@ test('ignores Mod+Enter without the option, while pending and while disabled', a
   await flush()
   cleanup()
 
-  setup(
+  await setup(
     () => {
       calls += 1
       return true
@@ -446,7 +449,7 @@ test('ignores Mod+Enter without the option, while pending and while disabled', a
 })
 
 test('keeps the dialog open, resets the form and focuses the first field', async () => {
-  const changes = setup(() => true, { keepOpenOnSuccess: true })
+  const changes = await setup(() => true, { keepOpenOnSuccess: true })
 
   const input = screen.getByLabelText('Title') as HTMLInputElement
   expect(input.value).toBe('Draft title')
@@ -459,7 +462,7 @@ test('keeps the dialog open, resets the form and focuses the first field', async
 })
 
 test('keeps the values when keepOpenOnSuccess is set and the handler fails', async () => {
-  setup(() => false, { keepOpenOnSuccess: true })
+  await setup(() => false, { keepOpenOnSuccess: true })
 
   submit()
   await flush()
@@ -490,8 +493,8 @@ test('renders no panel without children but keeps the header, footer and submit'
   await waitFor(() => expect(changes).toEqual([false]))
 })
 
-test('defaults to the default size with the 2xl width', () => {
-  setup(() => true)
+test('defaults to the default size with the 2xl width', async () => {
+  await setup(() => true)
 
   const dialog = screen.getByRole('dialog')
   expect(dialog.getAttribute('data-size')).toBe('default')
@@ -503,8 +506,8 @@ for (const [size, width] of [
   ['default', 'max-w-2xl'],
   ['large', 'max-w-4xl'],
 ] as const) {
-  test(`sets data-size and the width class for ${size}`, () => {
-    setup(() => true, { size })
+  test(`sets data-size and the width class for ${size}`, async () => {
+    await setup(() => true, { size })
 
     const dialog = screen.getByRole('dialog')
     expect(dialog.getAttribute('data-size')).toBe(size)
@@ -512,8 +515,8 @@ for (const [size, width] of [
   })
 }
 
-test('marks the body wrapper as stretched only with stretchBody', () => {
-  setup(() => true, { stretchBody: true })
+test('marks the body wrapper as stretched only with stretchBody', async () => {
+  await setup(() => true, { stretchBody: true })
 
   const body = document.querySelector('[data-slot="dialog-panel"]')
   expect(body?.hasAttribute('data-stretch')).toBe(true)
@@ -521,7 +524,7 @@ test('marks the body wrapper as stretched only with stretchBody', () => {
   expect(body?.contains(screen.getByLabelText('Title'))).toBe(true)
   cleanup()
 
-  setup(() => true)
+  await setup(() => true)
   expect(
     document
       .querySelector('[data-slot="dialog-panel"]')

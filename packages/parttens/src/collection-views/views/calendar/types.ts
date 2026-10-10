@@ -40,3 +40,9 @@ export interface CalendarItemReschedule<TItem = unknown> {
   sourceStart: Date
   start: Date
 }
+
+export interface CalendarSlot {
+  day: CalendarDate
+  endMinutes: number
+  startMinutes: number
+}

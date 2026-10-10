@@ -6,12 +6,20 @@ import {
   CalendarEventChipTitle,
   type CalendarItemRenderContext,
   type CalendarItemReschedule,
+  type CalendarSlot,
   CalendarView,
   type CalendarViewMode,
   toZonedDateTime,
 } from '@tc96/parttens'
 import { FlagIcon, TagIcon, UsersIcon } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
+import { CreateEventDialog } from '../../record-dialog/create-event-demo'
+import {
+  defaultSlot,
+  type EventSlot,
+  type EventValues,
+  slotFromCalendar,
+} from '../../record-dialog/event-record'
 import {
   CALENDAR_LOCALE,
   CALENDAR_WEEK_STARTS_ON,
@@ -28,7 +36,7 @@ import {
   type DealActivity,
   initialActivities,
 } from './deal-activities'
-import { type DealStage, initialDeals, stageOptions } from './deals'
+import { type Deal, type DealStage, initialDeals, stageOptions } from './deals'
 import {
   ANCHOR,
   formatMinutes,
@@ -46,6 +54,23 @@ const personOptions = people.map((person) => ({
 const stageByDealId = new Map(
   initialDeals.map((deal) => [deal.id, deal.stage] as const),
 )
+
+const toolbarSlot = (day: CalendarDate): EventSlot =>
+  slotFromCalendar({ day, endMinutes: 10 * 60, startMinutes: 9 * 60 })
+
+const activityFromEvent = (values: EventValues): DealActivity => {
+  const deal = initialDeals[0] as Deal
+  return {
+    dealId: deal.id,
+    end: values.end,
+    id: `ACT-NEW-${crypto.randomUUID()}`,
+    isAllDay: values.allDay,
+    kind: 'meeting',
+    ownerId: values.guests[0] ?? deal.ownerId,
+    start: values.start,
+    title: values.title,
+  }
+}
 
 const getActivitySchedule = (activity: DealActivity) => ({
   end: activity.end ? new Date(activity.end) : null,
@@ -124,6 +149,21 @@ export function CalendarUsage() {
     [],
   )
 
+  const [createRequest, setCreateRequest] = useState<{
+    id: number
+    open: boolean
+    slot: EventSlot
+  }>({ id: 0, open: false, slot: defaultSlot })
+
+  const requestCreate = useCallback((slot: EventSlot) => {
+    setCreateRequest((current) => ({ id: current.id + 1, open: true, slot }))
+  }, [])
+
+  const selectSlot = useCallback(
+    (slot: CalendarSlot) => requestCreate(slotFromCalendar(slot)),
+    [requestCreate],
+  )
+
   const openDay = useCallback((date: CalendarDate) => {
     setAnchor(toAnchor(date))
     setMode('day')
@@ -184,6 +224,9 @@ export function CalendarUsage() {
             setKindFilter([])
             setStageFilter([])
           }}
+          onCreate={() =>
+            requestCreate(toolbarSlot(toZonedDateTime(anchor, TIME_ZONE).date))
+          }
           onModeChange={setMode}
           today={ANCHOR}
         />
@@ -202,12 +245,25 @@ export function CalendarUsage() {
             now={NOW}
             onItemReschedule={rescheduleActivity}
             onSelectDay={openDay}
+            onSelectSlot={selectSlot}
             renderItem={renderActivity}
             timeZone={TIME_ZONE}
             weekStartsOn={CALENDAR_WEEK_STARTS_ON}
           />
         </section>
       </div>
+
+      <CreateEventDialog
+        key={createRequest.id}
+        onCreate={(values) =>
+          setActivities((current) => [...current, activityFromEvent(values)])
+        }
+        onOpenChange={(open) =>
+          setCreateRequest((current) => ({ ...current, open }))
+        }
+        open={createRequest.open}
+        slot={createRequest.slot}
+      />
     </main>
   )
 }

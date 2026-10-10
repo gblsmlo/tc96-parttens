@@ -7,6 +7,7 @@ import {
   RecordGroupAction,
   RecordGroupRow,
   type RecordGroupRowAlign,
+  RecordGroupSubgroup,
   type RecordGroupVariant,
   SelectProperty,
   type SelectPropertyOption,
@@ -168,6 +169,29 @@ const rowsOf = (canvasElement: HTMLElement) =>
 const part = (row: HTMLElement, slot: 'label' | 'value') =>
   row.querySelector(`[data-slot="record-group-row-${slot}"]`) as HTMLElement
 
+const expectTermAndDescription = (
+  canvasElement: HTMLElement,
+  pairs: ReadonlyArray<readonly [string, string]>,
+) => {
+  const body = canvasElement.querySelector(
+    '[data-slot="record-group-content"]',
+  ) as HTMLElement
+  const rows = rowsOf(canvasElement)
+
+  expect(body.tagName).toBe('DIV')
+  expect(rows).toHaveLength(pairs.length)
+  rows.forEach((row, index) => {
+    const [label, value] = pairs[index] as readonly [string, string]
+
+    expect(row.parentElement).toBe(body)
+    expect(row.tagName).toBe('DL')
+    expect(part(row, 'label').tagName).toBe('DT')
+    expect(part(row, 'value').tagName).toBe('DD')
+    expect(part(row, 'label')).toHaveTextContent(label)
+    expect(part(row, 'value')).toHaveTextContent(value)
+  })
+}
+
 export const Default: Story = {}
 
 export const DefaultInteraction: Story = {
@@ -178,7 +202,12 @@ export const DefaultInteraction: Story = {
 
     expect(title).toHaveAttribute('aria-expanded', 'true')
     expect(canvas.getByRole('region', { name: 'Details' })).toBeVisible()
-    expect(rowsOf(canvasElement)).toHaveLength(detailRows.length)
+    expectTermAndDescription(canvasElement, [
+      ['Type', 'Document request'],
+      ['Owner', 'Mariana Souza'],
+      ['Reference code', 'REQ-1042'],
+      ['Due', 'Oct 21'],
+    ])
 
     const rows = rowsOf(canvasElement)
     const labelWidths = rows.map(
@@ -440,6 +469,36 @@ export const WithFooterInteraction: Story = {
   tags: interaction,
 }
 
+export const FooterClosingInteraction: Story = {
+  ...WithFooter,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const title = canvas.getByRole('button', { name: 'Details' })
+    const panel = canvasElement.querySelector(
+      '[data-slot="collapsible-panel"]',
+    ) as HTMLElement
+    const action = within(panel).getByRole('button', { name: 'Add property' })
+
+    await userEvent.click(title)
+    await waitFor(() =>
+      expect(panel.hasAttribute('data-ending-style')).toBe(true),
+    )
+    expect(panel.isConnected).toBe(true)
+    expect(panel.getAnimations().length).toBeGreaterThan(0)
+
+    expect(action.closest('[inert]')).not.toBeNull()
+    action.focus()
+    expect(document.activeElement).not.toBe(action)
+    title.focus()
+    await userEvent.tab()
+    expect(document.activeElement).not.toBe(action)
+
+    await waitFor(() => expect(panel.isConnected).toBe(false))
+    expect(canvas.queryByRole('button', { name: 'Add property' })).toBeNull()
+  },
+  tags: interaction,
+}
+
 export const Empty: Story = {
   args: {
     empty: true,
@@ -596,6 +655,9 @@ export const ReadOnlyPropertiesInteraction: Story = {
     const rows = rowsOf(canvasElement)
 
     expect(rows).toHaveLength(5)
+    expect(rows.map((row) => part(row, 'label').tagName)).toEqual(
+      Array(5).fill('DT'),
+    )
     for (const row of rows) {
       expect(part(row, 'value').querySelector(controlSelector)).toBeNull()
     }
@@ -615,64 +677,66 @@ function EditablePropertiesDemo() {
   const [labels, setLabels] = useState<readonly string[]>(['compliance'])
 
   return (
-    <RecordGroup title="Properties">
+    <>
       <p className="sr-only" data-testid="committed-title">
         {title}
       </p>
-      <RecordGroupRow label="Title" leading={<HashIcon aria-hidden="true" />}>
-        <TextProperty
-          ariaLabel="Title"
-          editing="inline"
-          onCommit={setTitle}
-          value={title}
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Status"
-        leading={<ShapesIcon aria-hidden="true" />}
-      >
-        <SelectProperty
-          ariaLabel="Status"
-          onValueChange={setStatus}
-          options={statusOptions}
-          value={status}
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Assignee"
-        leading={<UserIcon aria-hidden="true" />}
-      >
-        <PersonProperty
-          ariaLabel="Assignee"
-          onValueChange={setAssignee}
-          options={assigneeOptions}
-          value={assignee}
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Labels"
-        leading={<ShapesIcon aria-hidden="true" />}
-      >
-        <TagsProperty
-          ariaLabel="Labels"
-          onValueChange={setLabels}
-          options={labelOptions}
-          value={labels}
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Due"
-        leading={<CalendarDaysIcon aria-hidden="true" />}
-      >
-        <DateProperty
-          ariaLabel="Due date"
-          locale="en-US"
-          onValueChange={setDue}
-          timeZone="UTC"
-          value={due}
-        />
-      </RecordGroupRow>
-    </RecordGroup>
+      <RecordGroup title="Properties">
+        <RecordGroupRow label="Title" leading={<HashIcon aria-hidden="true" />}>
+          <TextProperty
+            ariaLabel="Title"
+            editing="inline"
+            onCommit={setTitle}
+            value={title}
+          />
+        </RecordGroupRow>
+        <RecordGroupRow
+          label="Status"
+          leading={<ShapesIcon aria-hidden="true" />}
+        >
+          <SelectProperty
+            ariaLabel="Status"
+            onValueChange={setStatus}
+            options={statusOptions}
+            value={status}
+          />
+        </RecordGroupRow>
+        <RecordGroupRow
+          label="Assignee"
+          leading={<UserIcon aria-hidden="true" />}
+        >
+          <PersonProperty
+            ariaLabel="Assignee"
+            onValueChange={setAssignee}
+            options={assigneeOptions}
+            value={assignee}
+          />
+        </RecordGroupRow>
+        <RecordGroupRow
+          label="Labels"
+          leading={<ShapesIcon aria-hidden="true" />}
+        >
+          <TagsProperty
+            ariaLabel="Labels"
+            onValueChange={setLabels}
+            options={labelOptions}
+            value={labels}
+          />
+        </RecordGroupRow>
+        <RecordGroupRow
+          label="Due"
+          leading={<CalendarDaysIcon aria-hidden="true" />}
+        >
+          <DateProperty
+            ariaLabel="Due date"
+            locale="en-US"
+            onValueChange={setDue}
+            timeZone="UTC"
+            value={due}
+          />
+        </RecordGroupRow>
+      </RecordGroup>
+    </>
   )
 }
 
@@ -717,8 +781,14 @@ export const EditablePropertiesInteraction: Story = {
 
     expectAligned(canvasElement)
     for (const row of rowsOf(canvasElement)) {
+      expect(part(row, 'value').tagName).toBe('DD')
       expect(part(row, 'value').querySelector(controlSelector)).not.toBeNull()
     }
+    expect(
+      within(part(statusRow as HTMLElement, 'value')).getByRole('combobox', {
+        name: /^Status/,
+      }),
+    ).toBeVisible()
 
     const title = canvas.getByRole('textbox', { name: 'Title' })
     await userEvent.clear(title)
@@ -752,6 +822,61 @@ export const EditablePropertiesInteraction: Story = {
 
     await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
     expectAligned(canvasElement)
+  },
+  tags: interaction,
+}
+
+function SubgroupsDemo() {
+  return (
+    <RecordGroup title="Versões">
+      {[2, 1].map((version) => (
+        <RecordGroupSubgroup
+          key={version}
+          meta={version === 2 ? 'Rascunho' : 'Publicada'}
+          title={`Versão ${version}`}
+        >
+          <RecordGroupRow label="Objetivo">
+            <TextProperty
+              ariaLabel={`Objetivo da versão ${version}`}
+              value="Gerar novas consultas"
+              variant="plain"
+            />
+          </RecordGroupRow>
+        </RecordGroupSubgroup>
+      ))}
+    </RecordGroup>
+  )
+}
+
+export const Subgroups: Story = {
+  render: () => <SubgroupsDemo />,
+}
+
+export const SubgroupsInteraction: Story = {
+  ...Subgroups,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const latest = canvas.getByRole('button', { name: 'Versão 2 Rascunho' })
+
+    expect(canvas.getAllByRole('heading', { level: 3 })).toHaveLength(2)
+    expect(latest).toHaveAttribute('aria-expanded', 'false')
+    expect(rowsOf(canvasElement)).toHaveLength(0)
+
+    await userEvent.click(latest)
+    await waitFor(() => expect(latest).toHaveAttribute('aria-expanded', 'true'))
+    await waitFor(() => expect(rowsOf(canvasElement)).toHaveLength(1))
+
+    const title = latest.querySelector('span') as HTMLElement
+    const label = part(rowsOf(canvasElement)[0] as HTMLElement, 'label')
+
+    expect(
+      Math.abs(
+        label.getBoundingClientRect().left - title.getBoundingClientRect().left,
+      ),
+    ).toBeLessThan(1)
+    expect(
+      canvas.getByRole('button', { name: 'Versão 1 Publicada' }),
+    ).toHaveAttribute('aria-expanded', 'false')
   },
   tags: interaction,
 }

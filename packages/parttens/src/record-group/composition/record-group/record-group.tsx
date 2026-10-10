@@ -11,10 +11,12 @@ import type { RecordGroupProps } from '../../core'
 import {
   recordGroupClassName,
   recordGroupContentVariants,
+  recordGroupHeaderVariants,
 } from '../../lib/variants'
 
 export function RecordGroup({
   actions,
+  actionsAlign = 'between',
   children,
   className,
   defaultOpen = true,
@@ -34,6 +36,8 @@ export function RecordGroup({
     if (wasEmpty && !controlled) setInternalOpen(true)
   }
 
+  const isOpen = controlled ? open : internalOpen
+
   return (
     <Collapsible
       aria-labelledby={titleId}
@@ -45,11 +49,12 @@ export function RecordGroup({
         if (!controlled) setInternalOpen(next)
         onOpenChange?.(next)
       }}
-      open={controlled ? open : internalOpen}
+      open={isOpen}
       render={<section />}
     >
       <div
-        className="flex min-h-9 items-center justify-between gap-2 px-1"
+        className={recordGroupHeaderVariants({ actionsAlign })}
+        data-actions-align={actionsAlign}
         data-slot="record-group-header"
       >
         <h2 className="min-w-0 font-medium text-sm" id={titleId}>
@@ -70,9 +75,9 @@ export function RecordGroup({
           </div>
         ) : null}
       </div>
-      <CollapsiblePanel>
+      <CollapsiblePanel inert={!isOpen}>
         <div
-          className={recordGroupContentVariants({ empty })}
+          className={recordGroupContentVariants({ empty, variant })}
           data-slot="record-group-content"
         >
           {children}

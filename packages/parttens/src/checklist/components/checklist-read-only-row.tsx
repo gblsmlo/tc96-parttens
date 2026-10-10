@@ -4,9 +4,10 @@ import { Checkbox } from '@tc96/ui/checkbox'
 import type { ReactElement } from 'react'
 import type { PersonPropertyOption } from '../../properties/display/person/person-property'
 import {
-  CHECKLIST_ITEM_CLASSNAME,
   type ChecklistDensity,
+  type ChecklistVariant,
   checklistCheckboxVariants,
+  checklistItemVariants,
 } from '../lib/variants'
 import type { ChecklistItem, ChecklistProps } from '../types/index'
 import { ChecklistItemCard, ChecklistTitle } from './checklist-item-card'
@@ -15,6 +16,7 @@ import { ChecklistMetadata } from './checklist-metadata'
 export function ChecklistReadOnlyRow({
   authorOptions,
   density,
+  variant,
   item,
   locale,
   onItemClick,
@@ -22,6 +24,7 @@ export function ChecklistReadOnlyRow({
 }: Readonly<{
   authorOptions: readonly PersonPropertyOption[]
   density: ChecklistDensity
+  variant: ChecklistVariant
   item: ChecklistItem
   locale: string
   onItemClick?: ChecklistProps['onItemClick']
@@ -29,7 +32,7 @@ export function ChecklistReadOnlyRow({
 }>): ReactElement {
   return (
     <li
-      className={CHECKLIST_ITEM_CLASSNAME}
+      className={checklistItemVariants({ variant })}
       data-completed={item.completed || undefined}
       data-slot="checklist-item"
     >
@@ -52,6 +55,7 @@ export function ChecklistReadOnlyRow({
           />
         }
         density={density}
+        variant={variant}
         title={
           <ChecklistTitle
             density={density}

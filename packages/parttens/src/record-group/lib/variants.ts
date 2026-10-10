@@ -4,6 +4,7 @@ import type { RecordGroupVariant } from '../core'
 
 const recordGroupVariantStyles: Record<RecordGroupVariant, string> = {
   card: 'rounded-2xl border bg-card',
+  inset: 'gap-1',
   plain: '',
 }
 
@@ -12,12 +13,27 @@ export const recordGroupClassName = (
   className?: string,
 ) => cn('flex flex-col', recordGroupVariantStyles[variant], className)
 
-export const recordGroupContentVariants = cva('flex flex-col px-1 py-1', {
-  defaultVariants: { empty: false },
+export const recordGroupHeaderVariants = cva(
+  'flex min-h-9 items-center gap-2 px-1',
+  {
+    defaultVariants: { actionsAlign: 'between' },
+    variants: {
+      actionsAlign: { between: 'justify-between', start: 'justify-start' },
+    },
+  },
+)
+
+export const recordGroupContentVariants = cva('flex flex-col px-1', {
+  defaultVariants: { empty: false, variant: 'plain' },
   variants: {
     empty: {
-      false: 'gap-0.5',
+      false: 'gap-0.5 py-1',
       true: 'items-center justify-center py-6 text-center',
+    },
+    variant: {
+      card: null,
+      inset: 'rounded-lg border bg-card',
+      plain: null,
     },
   },
 })

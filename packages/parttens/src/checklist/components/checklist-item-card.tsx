@@ -9,6 +9,7 @@ import {
   CHECKLIST_TITLE_SIZE,
   CHECKLIST_TITLE_TEXT_CLASSNAME,
   type ChecklistDensity,
+  type ChecklistVariant,
   checklistRowVariants,
 } from '../lib/variants'
 import type { ChecklistItem, ChecklistProps } from '../types/index'
@@ -18,15 +19,17 @@ export function ChecklistItemCard({
   checkbox,
   density,
   title,
+  variant,
 }: Readonly<{
   action: ReactNode
   checkbox: ReactNode
   density: ChecklistDensity
   title: ReactNode
+  variant: ChecklistVariant
 }>): ReactElement {
   return (
     <div
-      className={checklistRowVariants({ density })}
+      className={checklistRowVariants({ density, variant })}
       data-slot="checklist-row"
     >
       <span className="flex shrink-0 items-center justify-center">

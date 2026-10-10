@@ -55,6 +55,7 @@ import {
 import {
   createDataGridColumns,
   createDataTableColumns,
+  taskTableAggregations,
   type UpdateTask,
 } from './task-fields'
 import {
@@ -596,6 +597,7 @@ function TasksWorkspace({
             datatable={{
               'aria-label': 'Tarefas do lançamento',
               bordered: true,
+              defaultAggregations: taskTableAggregations,
               isLoading: loading,
               emptyMessage: 'Nenhuma tarefa com esses filtros.',
               table: dataTable,

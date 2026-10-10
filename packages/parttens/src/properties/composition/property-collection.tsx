@@ -1,12 +1,6 @@
 'use client'
 
-import {
-  Menu,
-  MenuGroup,
-  MenuGroupLabel,
-  MenuPopup,
-  MenuTrigger,
-} from '@tc96/ui/menu'
+import { Menu, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { cn } from '@tc96/utils'
 import { EllipsisIcon } from 'lucide-react'
 import type React from 'react'
@@ -29,7 +23,6 @@ export interface PropertyCollectionProps {
   ariaLabel?: string
   className?: string
   defaultVisible?: readonly string[]
-  menuLabel?: string
   readOnly?: boolean
   triggerLabel?: string
   visible?: readonly string[]
@@ -41,7 +34,6 @@ export function PropertyCollection({
   className,
   defaultVisible,
   items,
-  menuLabel = 'Propriedades',
   onVisibleChange,
   readOnly = false,
   triggerLabel = 'Ajustar propriedades',
@@ -95,30 +87,27 @@ export function PropertyCollection({
             <EllipsisIcon aria-hidden className="size-3.5" />
           </MenuTrigger>
           <MenuPopup align="start">
-            <MenuGroup>
-              <MenuGroupLabel>{menuLabel}</MenuGroupLabel>
-              {items.map((item) => {
-                const Icon = item.icon
-                return (
-                  <MenuCheckboxOption
-                    checked={visibleSet.has(item.id)}
-                    closeOnClick={false}
-                    key={item.id}
-                    onCheckedChange={() => toggle(item.id)}
-                  >
-                    <span className="flex min-w-0 items-center gap-2">
-                      {Icon ? (
-                        <Icon
-                          aria-hidden
-                          className="size-4 text-muted-foreground"
-                        />
-                      ) : null}
-                      <span className="truncate">{item.label}</span>
-                    </span>
-                  </MenuCheckboxOption>
-                )
-              })}
-            </MenuGroup>
+            {items.map((item) => {
+              const Icon = item.icon
+              return (
+                <MenuCheckboxOption
+                  checked={visibleSet.has(item.id)}
+                  closeOnClick={false}
+                  key={item.id}
+                  onCheckedChange={() => toggle(item.id)}
+                >
+                  <span className="flex min-w-0 items-center gap-2">
+                    {Icon ? (
+                      <Icon
+                        aria-hidden
+                        className="size-4 text-muted-foreground"
+                      />
+                    ) : null}
+                    <span className="truncate">{item.label}</span>
+                  </span>
+                </MenuCheckboxOption>
+              )
+            })}
           </MenuPopup>
         </Menu>
       )}
