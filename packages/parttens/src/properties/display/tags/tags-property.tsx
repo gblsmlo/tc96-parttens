@@ -18,7 +18,7 @@ import {
 const addTagLabel = 'Adicionar tag'
 
 const tagsCountLabel = (count: number) =>
-  `${count} ${count > 1 ? 'Tags' : 'Tag'}`
+  `${count} ${count === 1 ? 'Tag' : 'Tags'}`
 
 export interface TagsPropertyOption<TValue extends string = string> {
   label: string
