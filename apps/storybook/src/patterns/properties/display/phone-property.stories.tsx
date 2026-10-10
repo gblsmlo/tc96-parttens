@@ -6,7 +6,7 @@ import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 const PHONE = '+5511987654321'
 const OTHER = '+351912345678'
-const PHONE_LABEL = '(11) 98765-4321'
+const PHONE_LABEL = '+55 11 98765 4321'
 
 const meta = {
   argTypes: propertyArgTypes,
@@ -63,6 +63,7 @@ export const WithPhones: Story = {
       name: 'Adicionar telefone',
     })
     await expect(trigger.textContent).toBe('')
+    await expect(await canvas.findByText(PHONE_LABEL)).toBeTruthy()
 
     const rect = trigger.getBoundingClientRect()
     await expect(rect.width).toBe(24)
@@ -112,9 +113,10 @@ export const PersistentTrigger: Story = {
     await expect(
       canvas.queryByRole('button', { name: 'Adicionar telefone' }),
     ).toBeNull()
-    await expect(
-      (await canvas.findByRole('button', { name: /Telefones: / })).textContent,
-    ).toContain('+1')
+    const trigger = await canvas.findByRole('button', {
+      name: `Telefones: ${PHONE_LABEL} +1`,
+    })
+    await expect(trigger.textContent).toBe(`${PHONE_LABEL} +1`)
   },
   render: () => <PhoneField display="trigger" initial={[PHONE, OTHER]} />,
 }
