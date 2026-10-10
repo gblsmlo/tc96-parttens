@@ -50,7 +50,7 @@ function ScheduleStory({
   )
 }
 
-// COSS calendar weekday and outside-month text is 3.14:1 (below 4.5:1); COSS stays unmodified, so only the contrast check is off.
+// COSS calendar weekday and outside-month text is 3.14:1 in light and 3.29:1 in dark (below 4.5:1); COSS stays unmodified, so only the contrast check is off.
 const cossCalendarContrast = {
   a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
 }

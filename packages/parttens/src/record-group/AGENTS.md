@@ -36,6 +36,8 @@ Footer and actions:
 
 Markup:
 
+- The rows body is a `dl` (`record-group-content`); each `RecordGroupRow` is a `div` wrapping a `dt` (label) and a `dd` (value), so a screen reader associates them. A `dd` hosts a `properties` editor and the editor keeps its own `ariaLabel` as name.
+- With `empty` the body is a `div`, because the empty message is not a `dl` child. In a group with rows, direct children of the body are `RecordGroupRow` only (or `div`, `script`, `template`); anything else goes in `footer`, `actions` or outside the group. `RecordGroupRow` is only valid inside `RecordGroup`.
 - The root is a `section` made by the COSS `Collapsible` through `render`; `aria-labelledby` points at the `h2` that wraps the trigger, so the region is named by the title.
 - Editability belongs to the value: a `properties` component in a row is read-only or editable through its own props, and `RecordGroupRow` stays presentation.
 - `RecordGroupAction` has no tooltip: `label` is its only accessible name and the icon is `aria-hidden`.
@@ -48,9 +50,9 @@ The pattern sets these attributes and styles none of them through a variant:
 | Attribute | Where |
 | --- | --- |
 | `data-slot="record-group"`, `data-variant="plain\|card"`, `data-empty="true"` | the `section`; `data-variant` always, `data-empty` only when `empty` |
-| `data-slot="record-group-header"`, `record-group-actions`, `record-group-content`, `record-group-footer` | the header, the actions wrapper, the rows wrapper and the footer wrapper |
+| `data-slot="record-group-header"`, `record-group-actions`, `record-group-content`, `record-group-footer` | the header, the actions wrapper, the rows wrapper (`dl`, or `div` when `empty`) and the footer wrapper |
 | `data-slot="record-group-row"`, `data-align="start\|between"` | every row |
-| `data-slot="record-group-row-label"`, `record-group-row-value` | the two cells of a row |
+| `data-slot="record-group-row-label"`, `record-group-row-value` | the `dt` and the `dd` of a row |
 
 - Alignment and emptiness reach the classes through the `cva` variants, and the group variant through `cn` in `recordGroupClassName`; no class is keyed on `data-align`, `data-empty` or `data-variant`.
 - The title is never truncated: it wraps inside the header, so a long title never pushes `actions` out, and the region and the trigger keep it as their name.

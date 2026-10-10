@@ -19,11 +19,6 @@ export const Primary: Story = {
   args: {
     variant: 'destructive',
   },
-  // O variant destructive do COSS pinta branco sobre red-500, com contraste de
-  // 3,8:1. O COSS não é alterado aqui.
-  parameters: {
-    a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
-  },
 }
 
 export const Ghost: Story = {

@@ -264,7 +264,7 @@ export function EditableLabel(props: EditableLabelProps) {
           'data-slot': 'editable-label',
         }),
         className: cn(
-          "font-medium text-sm leading-none data-required:after:ml-0.5 data-required:after:text-destructive data-required:after:content-['*'] data-disabled:cursor-not-allowed data-disabled:opacity-50",
+          "font-medium text-sm leading-none data-required:after:ml-0.5 data-required:after:text-destructive-foreground data-required:after:content-['*'] data-disabled:cursor-not-allowed data-disabled:opacity-50",
           className,
         ),
       },
