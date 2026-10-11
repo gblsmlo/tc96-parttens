@@ -168,7 +168,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A consumer composition of SettingsSection, SettingsRow and StateSurface with two label levels: labels and subtags. The label data, swatches, counts and menus live in this story, not in the pattern.',
+          'A consumer composition of SettingsSection, SettingsRow and StateSurface with two tag levels: tags and subtags. The tag data, swatches, counts and menus live in this story, not in the pattern.',
       },
     },
     layout: 'padded',
