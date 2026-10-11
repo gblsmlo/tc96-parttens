@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import ts from 'typescript'
-import { patternNames } from '../packages/registry/src/manifest'
+import { patternNames, patternSources } from '../packages/registry/src/manifest'
 
 // The public API is what a consumer imports from the patterns alias: each
 // pattern barrel the registry installs, and the aggregate entry.
@@ -9,7 +9,7 @@ const modules: Record<string, string> = {
   ...Object.fromEntries(
     patternNames.map((name) => [
       name,
-      `packages/parttens/src/${name}/index.ts`,
+      `packages/parttens/src/${patternSources[name]}/index.ts`,
     ]),
   ),
   parttens: 'packages/parttens/src/index.ts',

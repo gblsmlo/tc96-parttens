@@ -4,15 +4,15 @@ import { files } from './files'
 for (const path of [
   'checklist',
   'collection-views',
-  'editable',
-  'properties',
-  'record-dialog',
-  'record-group',
-  'record-preview',
+  'fields/editable',
+  'fields/properties',
+  'records/dialog',
+  'records/group',
+  'records/preview',
   'rich-text-editor',
-  'settings',
   'shared',
-  'state-surface',
+  'surfaces/settings',
+  'surfaces/state',
   'widgets',
 ]) {
   if (

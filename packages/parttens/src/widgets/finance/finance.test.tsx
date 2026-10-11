@@ -1,6 +1,6 @@
 import { afterEach, expect, test } from 'bun:test'
 
-await import('../../properties/test/dom')
+await import('../../fields/properties/test/dom')
 
 class ResizeObserverStub {
   disconnect() {}

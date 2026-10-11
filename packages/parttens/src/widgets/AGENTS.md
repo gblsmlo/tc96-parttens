@@ -13,7 +13,7 @@ Dashboard cards that show prepared numbers, lists, charts and progress, grouped 
 
 Import direction: `<domain>/` → `shared/`, `types/`, and files of the same domain only (`ShareBar` from `finance/market-share-widget.tsx`, `ActivityTimeline`, `XpMeter`); `shared/` → `types/`, never a domain; no domain imports another. Recharts is used only by the three chart widgets.
 
-The pattern has no `test/dom.ts`: every test file imports `properties/test/dom.ts`, so moving that file breaks these tests. The folder is not split into `composition/` and `components/`; grouping by domain is the layout.
+The pattern has no `test/dom.ts`: every test file imports `fields/properties/test/dom.ts`, so moving that file breaks these tests. The folder is not split into `composition/` and `components/`; grouping by domain is the layout.
 
 Six files still carry Portuguese JSDoc from before the no-comments rule (`shared/amount.tsx`, `shared/trend-indicator.tsx`, `finance/asset-list.tsx`, `finance/market-share-widget.tsx`, `finance/risk-score-widget.tsx`, `types/index.ts`); remove it when you next touch them.
 

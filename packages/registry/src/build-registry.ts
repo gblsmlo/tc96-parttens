@@ -7,6 +7,7 @@ import {
   defaultConfig,
   type PatternName,
   patternNames,
+  patternSources,
   prepareItem,
   type RegistryItem,
 } from './manifest'
@@ -42,7 +43,9 @@ const areas = ts
       !!area && !patternNames.includes(area as PatternName),
   )
 for (const pattern of patternNames) {
-  const pending = [resolve(`packages/parttens/src/${pattern}/index.ts`)]
+  const pending = [
+    resolve(`packages/parttens/src/${patternSources[pattern]}/index.ts`),
+  ]
   const seen = new Set<string>()
   const external = new Set<string>()
   const components = new Set<string>()
@@ -146,7 +149,7 @@ await writeFile(
   `${JSON.stringify(
     {
       name: '@tc96/parttens',
-      version: '0.11.0',
+      version: '0.12.0',
       description:
         'React patterns without business rules, installed as source on top of your COSS components.',
       keywords: ['coss', 'shadcn', 'react', 'patterns', 'registry', 'cli'],

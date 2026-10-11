@@ -1,6 +1,6 @@
 [
   {
-    "file": "packages/parttens/src/properties/display/person/person-option-content.tsx",
+    "file": "packages/parttens/src/fields/properties/display/person/person-option-content.tsx",
     "component": "AvatarFallback",
     "className": "bg-muted/40",
     "reason": "Fallback das properties de pessoa mais discreto que o avatar padrão do COSS: as iniciais acompanham um rótulo e não podem pesar mais que ele."
@@ -30,7 +30,7 @@
     "reason": "O separator entre itens da lista é mais discreto que o do COSS: as linhas agrupam itens sem competir com o conteúdo; `bg-border/40` mantém o token do tema com 40% da opacidade."
   },
   {
-    "file": "packages/parttens/src/record-dialog/components/dialog-shell.tsx",
+    "file": "packages/parttens/src/records/dialog/components/dialog-shell.tsx",
     "component": "DialogTitle",
     "className": "text-foreground",
     "reason": "Shell do dialog portado do Lemind: o título vem depois do ancestral em `text-muted-foreground` numa trilha, e `font-medium text-sm text-foreground` o traz ao tamanho do ancestral em vez do `text-xl` do COSS; `text-foreground` é o token do tema."

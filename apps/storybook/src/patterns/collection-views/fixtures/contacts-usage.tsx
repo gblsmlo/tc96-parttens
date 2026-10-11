@@ -39,7 +39,7 @@ import {
   Trash2Icon,
 } from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
-import { CreateContactDialog } from '../../record-dialog/create-contact-dialog'
+import { CreateContactDialog } from '../../records/dialog/create-contact-dialog'
 import { SelectedViewPicker } from '../../shared/selected-view-picker'
 import {
   createContactGridColumns,

@@ -12,7 +12,7 @@ Stack: Bun workspaces, React 19, TypeScript, Tailwind CSS v4, Base UI, Storybook
 
 ```text
 packages/
-  parttens/    pattern source (collection-views, properties, editable, checklist, record-dialog, record-preview, record-group, widgets, rich-text-editor)
+  parttens/    pattern source, grouped in families (see Pattern families)
   elements/    components COSS does not have (Text, IconFrame)
   helpers/     React-free functions (amount formatting, dates, rich text)
   ui/          COSS components, unmodified, locked by coss.lock.json
@@ -26,23 +26,38 @@ docs/architecture/  boundaries and decisions
 scripts/            boundary, COSS, override and public API checks
 ```
 
-## Pattern structure
+## Pattern families
 
-`collection-views`, `record-dialog` and `editable` set the internal layout of a pattern. Code is grouped by responsibility, and a layer exists only when it has code to hold:
+Patterns live under `packages/parttens/src/`, at the top level or inside a family folder. A family exists when at least two patterns share a domain; a pattern with no sibling stays at the top level.
 
 ```text
-packages/parttens/src/<pattern>/
+packages/parttens/src/
+  records/      dialog/ preview/ group/
+  surfaces/     state/ settings/
+  fields/       properties/ editable/
+  checklist/ collection-views/ rich-text-editor/ widgets/
+  shared/       not a pattern: building blocks the root barrel exports
+```
+
+The registry item name is not the folder: `patternSources` in `packages/registry/src/manifest.ts` maps each item (`record-dialog`) to its folder (`records/dialog`), and the folder is also the path the consumer receives under its patterns alias. Stories mirror the folders in `apps/storybook/src/patterns/` and in the sidebar (`Patterns/Records/Dialog`).
+
+## Pattern structure
+
+`collection-views`, `records/dialog` and `fields/editable` set the internal layout of a pattern. Code is grouped by responsibility, and a layer exists only when it has code to hold:
+
+```text
+packages/parttens/src/[<family>/]<pattern>/
   index.ts       public barrel; re-exports the layer barrels. The registry and the public API baseline read this file
   core.ts        React-free surface: the pattern's types and pure functions, for use without rendering
   composition/   the compound the consumer mounts, one folder per compound with its own index.ts and tests
-                 (editable/composition/editable/, collection-views/composition/)
-  components/    building blocks of one compound, never public (record-dialog/components/dialog-shell.tsx)
+                 (fields/editable/composition/editable/, collection-views/composition/)
+  components/    building blocks of one compound, never public (records/dialog/components/dialog-shell.tsx)
   shared/        components and helpers used by more than one view or display (collection-views/shared/components/, shared/lib/)
   views/         independently usable renderers, each with components/, hooks/, lib/, types.ts and index.ts (collection-views);
                  properties uses display/ for the same role
-  hooks/         React hooks (record-dialog/hooks/use-settled-action.ts, views/<view>/hooks/)
+  hooks/         React hooks (records/dialog/hooks/use-settled-action.ts, views/<view>/hooks/)
   lib/           pure functions and class variants (shared/lib/project-collection.ts, views/kanban/lib/drag-and-drop.ts)
-  store/         context, provider and shared state (editable/store/, collection-views/store/)
+  store/         context, provider and shared state (fields/editable/store/, collection-views/store/)
   types/         contracts shared across the pattern, with types/index.ts as the barrel; a type used by one file stays next to it
   test/dom.ts    the JSDOM setup the pattern's bun test files import; each pattern owns its copy
 ```
@@ -56,7 +71,7 @@ Files are kebab-case and named after what they export (`checklist-row.tsx` expor
 - **Overriding COSS styles needs a registered exception.** Any `className` that overrides a COSS component's border, radius, etc. must be listed with a reason in `scripts/override-exceptions.json`, or `bun run overrides:check` fails. Update the entry whenever the class changes.
 - **Public API baseline:** adding or removing exports changes `docs/architecture/public-api-exports.json`. Regenerate with `bun scripts/verify-public-api.ts --record` and mention it in the summary, since the diff may include unrelated pending exports.
 - Pattern `shared/` code is internal; export through the pattern's `index.ts` only when it is meant to be public.
-- Every pattern carries its own `AGENTS.md` at `packages/parttens/src/<pattern>/AGENTS.md`; a view with its own invariants may add one (`collection-views/views/data-grid/AGENTS.md`). Read it before changing that pattern. `packages/parttens/src/shared/AGENTS.md` covers the shared components the root barrel exports, and a new pattern ships with its own file. The sections, in order: an opening paragraph, `Map`, `Dependents`, `Invariants`, `Styling`, `Verify`, `Pointers`; `properties/AGENTS.md` is the reference.
+- Every pattern carries its own `AGENTS.md` at `packages/parttens/src/[<family>/]<pattern>/AGENTS.md`; a view with its own invariants may add one (`collection-views/views/data-grid/AGENTS.md`). Read it before changing that pattern. `packages/parttens/src/shared/AGENTS.md` covers the shared components the root barrel exports, and a new pattern ships with its own file. The sections, in order: an opening paragraph, `Map`, `Dependents`, `Invariants`, `Styling`, `Verify`, `Pointers`; `fields/properties/AGENTS.md` is the reference.
 - A pattern `AGENTS.md` holds only what `ls`, `grep` or `tsc` do not reveal: folders and import direction, code outside the pattern that imports it by file path, intentional behavior with its reason, the `data-*` contract and override exceptions, and the commands. It does not copy file lists, props, types, defaults, story lists or rules from this file; the public API is the pattern's `index.ts` and its entry in `docs/architecture/public-api-exports.json`. Update it when a folder, an external import by path, an invariant, a `data-*` attribute or a command changes.
 
 ## Commands
@@ -102,3 +117,16 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 - Work on a feature branch; `main` is the base for PRs.
 - Commit messages follow `feat: ...` style seen in `git log`.
 - Do not commit, push or publish unless asked. Before any npm publish, stop and ask the user to run `npm login`.
+
+## Specs
+
+Spec files live in `.specs/`, written as `Draft` and approved by the owner in the conversation (`WF-SPEC-06`). Decided on 2026-10-11.
+
+| Document | Keep | File |
+| --- | --- | --- |
+| PRD | on | `.specs/<capability>/requirements.md` |
+| Design doc or RFC | on | `.specs/<capability>/design.md` |
+| ADR | on | `.specs/adr/NNNN-<slug>.md` |
+| User experience | on | `.specs/<capability>/user-experience.md` |
+| Plan | on | `.specs/<capability>/tasks/NNNN-<slug>.md` |
+| Board items | off | none |

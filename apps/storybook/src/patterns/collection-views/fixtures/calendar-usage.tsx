@@ -13,13 +13,13 @@ import {
 } from '@tc96/parttens'
 import { FlagIcon, TagIcon, UsersIcon } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
-import { CreateEventDialog } from '../../record-dialog/create-event-demo'
+import { CreateEventDialog } from '../../records/dialog/create-event-demo'
 import {
   defaultSlot,
   type EventSlot,
   type EventValues,
   slotFromCalendar,
-} from '../../record-dialog/event-record'
+} from '../../records/dialog/event-record'
 import {
   CALENDAR_LOCALE,
   CALENDAR_WEEK_STARTS_ON,
