@@ -117,3 +117,16 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 - Work on a feature branch; `main` is the base for PRs.
 - Commit messages follow `feat: ...` style seen in `git log`.
 - Do not commit, push or publish unless asked. Before any npm publish, stop and ask the user to run `npm login`.
+
+## Specs
+
+Spec files live in `.specs/`, written as `Draft` and approved by the owner in the conversation (`WF-SPEC-06`). Decided on 2026-10-11.
+
+| Document | Keep | File |
+| --- | --- | --- |
+| PRD | on | `.specs/<capability>/requirements.md` |
+| Design doc or RFC | on | `.specs/<capability>/design.md` |
+| ADR | on | `.specs/adr/NNNN-<slug>.md` |
+| User experience | on | `.specs/<capability>/user-experience.md` |
+| Plan | on | `.specs/<capability>/tasks/NNNN-<slug>.md` |
+| Board items | off | none |

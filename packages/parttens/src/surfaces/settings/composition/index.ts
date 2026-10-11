@@ -1,2 +1,3 @@
-export * from './settings-row/index'
-export * from './settings-section/index'
+export * from './settings-collapsed'
+export * from './settings-row'
+export * from './settings-section'

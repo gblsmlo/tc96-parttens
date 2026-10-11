@@ -1,2 +1,9 @@
 export * from './composition/index'
-export type { SettingsRowProps, SettingsSectionProps } from './core'
+export type {
+  SettingsCollapsedProps,
+  SettingsRowProps,
+  SettingsSectionDescriptionProps,
+  SettingsSectionHeaderProps,
+  SettingsSectionProps,
+  SettingsSectionTitleProps,
+} from './core'

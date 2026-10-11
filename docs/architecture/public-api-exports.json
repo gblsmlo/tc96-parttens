@@ -539,10 +539,18 @@
     "StateSurfaceProps"
   ],
   "settings": [
+    "SettingsCollapsed",
+    "SettingsCollapsedProps",
     "SettingsRow",
     "SettingsRowProps",
     "SettingsSection",
-    "SettingsSectionProps"
+    "SettingsSectionDescription",
+    "SettingsSectionDescriptionProps",
+    "SettingsSectionHeader",
+    "SettingsSectionHeaderProps",
+    "SettingsSectionProps",
+    "SettingsSectionTitle",
+    "SettingsSectionTitleProps"
   ],
   "parttens": [
     "Achievement",
@@ -973,10 +981,18 @@
     "SelectedViewMenuProps",
     "SelectedViewSearch",
     "SelectedViewSearchProps",
+    "SettingsCollapsed",
+    "SettingsCollapsedProps",
     "SettingsRow",
     "SettingsRowProps",
     "SettingsSection",
+    "SettingsSectionDescription",
+    "SettingsSectionDescriptionProps",
+    "SettingsSectionHeader",
+    "SettingsSectionHeaderProps",
     "SettingsSectionProps",
+    "SettingsSectionTitle",
+    "SettingsSectionTitleProps",
     "ShareBar",
     "ShareBarProps",
     "SlashMenuBlock",
