@@ -239,7 +239,9 @@ test('builds the record-group item shipping the properties catalog it imports by
   const paths = item.files.map((file) => file.path)
 
   expect(item.name).toBe('record-group')
-  expect(paths).toContain('parttens/src/properties/shared/property-catalog.ts')
+  expect(paths).toContain(
+    'parttens/src/fields/properties/shared/property-catalog.ts',
+  )
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
   expect(
     item.registryDependencies?.every((dependency) =>
@@ -287,6 +289,6 @@ test('builds the settings item shipping Text and no test files', () => {
 
   expect(item.name).toBe('settings')
   expect(paths).toContain('elements/src/text.tsx')
-  expect(paths).toContain('parttens/src/settings/index.ts')
+  expect(paths).toContain('parttens/src/surfaces/settings/index.ts')
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })

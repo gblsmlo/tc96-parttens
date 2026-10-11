@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
-import type { PersonPropertyOption } from '../../properties/display/person/person-property'
+import type { PersonPropertyOption } from '../../fields/properties/display/person/person-property'
 import type { ChecklistDensity, ChecklistVariant } from '../lib/variants'
 
 export type { ChecklistDensity, ChecklistVariant } from '../lib/variants'

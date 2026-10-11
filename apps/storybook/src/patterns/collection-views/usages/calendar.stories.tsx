@@ -9,7 +9,7 @@ const meta = {
       description: {
         component: [
           'The sales calendar of the Pipeline usage as a `CalendarView` alone: calls, meetings, demos and proposals tied to each deal, plus the expected close date of every open deal as an all-day item.',
-          'The toolbar moves the period and switches Dia/Semana/Mês, and the `ViewSettingsMenu` filters by owner, activity type and deal stage. Dragging an activity or its top and bottom edges writes the new window through `onItemReschedule`. Nova atividade and a click on an empty slot of the time grid (`onSelectSlot`) open the `CreateEvent` dialog of `Patterns/RecordDialog`, and the saved event is added to the calendar. Interaction coverage lives in `Views/Calendar/Interactions`.',
+          'The toolbar moves the period and switches Dia/Semana/Mês, and the `ViewSettingsMenu` filters by owner, activity type and deal stage. Dragging an activity or its top and bottom edges writes the new window through `onItemReschedule`. Nova atividade and a click on an empty slot of the time grid (`onSelectSlot`) open the `CreateEvent` dialog of `Patterns/Records/Dialog`, and the saved event is added to the calendar. Interaction coverage lives in `Views/Calendar/Interactions`.',
         ].join('\n\n'),
       },
     },

@@ -1,11 +1,11 @@
 'use client'
 
 import type { ReactElement } from 'react'
-import { DateProperty } from '../../properties/display/date/date-property'
+import { DateProperty } from '../../fields/properties/display/date/date-property'
 import {
   PersonProperty,
   type PersonPropertyOption,
-} from '../../properties/display/person/person-property'
+} from '../../fields/properties/display/person/person-property'
 import {
   calendarDayOffset,
   dueStatus,

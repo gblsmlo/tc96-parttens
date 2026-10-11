@@ -20,7 +20,7 @@ Import direction: `rich-text-editor.tsx` → every other file except `editor-tit
 ## Dependents
 
 - `packages/parttens/src/index.ts` re-exports `rich-text-editor/index`. Storybook, including `apps/storybook/src/test-utils/usage-kit.tsx`, imports through `@tc96/parttens`; no code outside the folder imports one of its files by path.
-- The folder name is listed in `packages/registry/src/manifest.ts` (`patternNames`) and `scripts/test-patterns.ts`. Renaming it needs both updated.
+- The folder name is listed in `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts`. Renaming it needs both updated.
 - `packages/registry/src/build-registry.ts` turns every external import into a registry dependency versioned from `packages/parttens/package.json`, and throws `Missing dependency version` when the entry is absent. A new `@platejs/*` or `react-dnd` import needs its entry there.
 
 ## Invariants

@@ -7,6 +7,7 @@ import {
   defaultConfig,
   type PatternName,
   patternNames,
+  patternSources,
   prepareItem,
   type RegistryItem,
 } from './manifest'
@@ -42,7 +43,9 @@ const areas = ts
       !!area && !patternNames.includes(area as PatternName),
   )
 for (const pattern of patternNames) {
-  const pending = [resolve(`packages/parttens/src/${pattern}/index.ts`)]
+  const pending = [
+    resolve(`packages/parttens/src/${patternSources[pattern]}/index.ts`),
+  ]
   const seen = new Set<string>()
   const external = new Set<string>()
   const components = new Set<string>()

@@ -18,7 +18,7 @@ Import direction: `composition/` → `components/`, `lib/`, `types/`; `component
 ## Dependents
 
 - `packages/parttens/src/index.ts` re-exports `checklist/index`.
-- `packages/registry/src/manifest.ts` (`patternNames`) and `scripts/test-patterns.ts` list the folder name `checklist`. Renaming the folder breaks the registry and the pattern test run.
+- `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts` list the folder `checklist`. Renaming the folder breaks the registry and the pattern test run.
 - The stories import through `@tc96/parttens`, not by file path.
 
 ## Invariants

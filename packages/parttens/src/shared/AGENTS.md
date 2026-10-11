@@ -19,7 +19,7 @@ Patterns import the component files by path, not through `index.ts`, so renaming
 
 - `components/collection-pagination.tsx`: `collection-views/views/data-grid/components/data-grid-pagination.tsx`.
 - `components/menu-selection-item.tsx` (`MenuRadioOption`): `collection-views/views/data-grid/components/data-grid-density-submenu.tsx`, `collection-views/shared/components/collection-filter-submenu.tsx`.
-- `components/menu-selection-item.tsx` (`MenuCheckboxOption`): `collection-views/views/data-grid/components/data-grid-columns-submenu.tsx`, `properties/composition/property-collection.tsx`.
+- `components/menu-selection-item.tsx` (`MenuCheckboxOption`): `collection-views/views/data-grid/components/data-grid-columns-submenu.tsx`, `fields/properties/composition/property-collection.tsx`.
 - `components/collection-toolbar.tsx`: the tests `collection-views/views/data-grid/components/data-grid-search.test.tsx`, `collection-views/views/data-grid/components/data-grid-selection-summary.test.tsx`, `collection-views/shared/components/collection-filter-submenu.test.tsx` and `collection-views/shared/components/collection-search-field.test.tsx`.
 - `packages/registry/src/build-registry.ts` treats `./shared/index` in the root barrel as an area, not a pattern, and ships the area's barrel with every pattern whose files import it. A new file here must be reached from `index.ts` or from a pattern the registry follows.
 - Stories import from `@tc96/parttens`: `apps/storybook/src/patterns/shared/` and `apps/storybook/src/patterns/collection-views/default.stories.tsx`.

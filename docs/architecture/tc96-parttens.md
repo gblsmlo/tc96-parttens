@@ -19,51 +19,32 @@ apps/
 packages/
   ui/
   elements/
+  helpers/
   parttens/
     src/
-      collection-views/
-        store/
-        shared/
-        types/
-        views/
-        composition/
-      properties/
-        store/
-        shared/
-        types/
-        views/
-        composition/
-      record-preview/
-        composition/
-      record-group/
-        composition/
-        lib/
-        test/
-      settings/
-        composition/
-        test/
-      editable/
-        store/
-        shared/
-        types/
-        views/
-        composition/
+      records/
+        dialog/
+        preview/
+        group/
+      surfaces/
+        state/
+        settings/
+      fields/
+        properties/
+        editable/
       checklist/
-        composition/
-        components/
-        lib/
-        types/
-        test/
-      record-dialog/
-        composition/
-        hooks/
-        test/
+      collection-views/
+      rich-text-editor/
+      widgets/
+      shared/
       index.ts
   utils/
   registry/
 docs/
   architecture/
 ```
+
+Decidido em 2026-10-11, a pedido do dono: os patterns se agrupam em famílias quando pelo menos dois compartilham um domínio. `records/` reúne `dialog`, `preview` e `group`; `surfaces/` reúne `state` e `settings`; `fields/` reúne `properties` e `editable`. `checklist`, `collection-views`, `rich-text-editor` e `widgets` ficam no topo, sem família; `checklist` usa `properties` mas é um componente próprio, fora de `fields/`. Os nomes das pastas dentro da família são no singular (`records/dialog`, não `records/dialogs`). O nome do item do registry não muda (`record-dialog`, `state-surface`, `settings`, `properties`, `editable`): `patternSources` em `packages/registry/src/manifest.ts` liga cada item à sua pasta, e a pasta é também o caminho no consumidor (`<patterns>/records/dialog/`). O consumidor que já instalou um desses itens recebe a pasta nova no próximo `add` e apaga a antiga. As stories seguem as pastas, em `apps/storybook/src/patterns/` e na barra lateral (`Patterns/Records/Dialog`, `Patterns/Surfaces/State`, `Patterns/Fields/Properties`).
 
 A landing será acrescentada quando houver escopo concreto. A grafia `parttens` acompanha o nome escolhido para o produto e o contrato público.
 
@@ -148,7 +129,7 @@ Cada área tem um barrel próprio. O CLI gera o barrel agregado no projeto do co
 
 O barrel agregado é o `index.ts` no diretório do alias de patterns. A fonte é o agregado do workspace, `packages/parttens/src/index.ts`, distribuído no registry como `aggregate.json`. O CLI mantém as diretivas e cada re-export cujo módulo está instalado, contando execuções anteriores, de modo que o apelido `Kanban` acompanha `collection-views`. Uma área compartilhada como `shared/` entra no item de cada pattern que usa algum arquivo dela, com o barrel da área; hoje só `collection-views` usa `shared/`. O arquivo gerado começa com um comentário que o identifica e é regravado a cada `add`; um `index.ts` escrito pelo consumidor é preservado com aviso. Por isso o agregado do workspace só pode conter diretivas e re-exports.
 
-No Storybook, `Patterns/Collection Views/Overview` apresenta a mesma coleção em List, Kanban e Data Grid. As stories sob `Patterns/Collection Views/Views` documentam cada renderer isoladamente; `Shared Components` documenta toolbar e paginação. As stories de properties ficam em `Patterns/Properties/Display`; o agrupamento de properties fica em `Patterns/Properties/Groups`.
+No Storybook, `Patterns/Collection Views/Overview` apresenta a mesma coleção em List, Kanban e Data Grid. As stories sob `Patterns/Collection Views/Views` documentam cada renderer isoladamente; `Shared Components` documenta toolbar e paginação. As stories de properties ficam em `Patterns/Fields/Properties/Display`; o agrupamento de properties fica em `Patterns/Fields/Properties/Groups`.
 
 `parttens` depende de `ui`, `elements` e `utils`; `ui` e `elements` dependem de `utils`; `elements` não depende de `parttens`. Os três não dependem do registry. Dependências entre padrões são explícitas e não podem criar ciclos. Os fontes de UI têm uma implementação canônica, sem cópias mantidas por padrão.
 
@@ -339,6 +320,7 @@ O texto de erro, de alerta e do `Badge` usa `destructive-foreground`, que não m
 | UI do editor feita com COSS sobre plugins do Plate, sem os componentes do registry do Plate | Migrar para o Tiptap | A barra, o select de bloco e o botão de link já saem do COSS sem sobrescrita nem edição em `packages/ui`; o Plate entra só para estado, comandos e o modelo do documento |
 | Gamificação como quarto grupo de widgets, sobre `CardWidgetShell`, `Meter`, `IconFrame` e `ExpandableList` | Portar o `GamifiedProgress` do flash-card como um componente com três modelos | Um widget por responsabilidade compõe em qualquer grade e segue a escala, a moldura e o recolhimento dos demais widgets |
 | `record-group`: linha como `dl` com `dt` e `dd`, corpo `div` (2026-10-09; antes, de 2026-10-08, o corpo era o `dl`) | `dl` no corpo, que não aceita links, itens, subgrupos nem o `Checklist`; `role="group"` com `aria-labelledby` por linha, ou tabela | A associação rótulo e valor vem do HTML, sem `id` por linha nem semântica de colunas, e o corpo aceita qualquer bloco; ver [Acessibilidade dos patterns](#acessibilidade-dos-patterns) |
+| Famílias de patterns (`records/`, `surfaces/`, `fields/`) com o nome do item do registry separado da pasta (2026-10-11) | Pastas planas, ou renomear os itens do CLI junto com as pastas | A lista de patterns cresce e as famílias agrupam o que o consumidor procura junto; o comando `add record-dialog` continua o mesmo |
 
 ## Pontos ainda em revisão
 

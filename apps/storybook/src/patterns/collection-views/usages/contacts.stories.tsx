@@ -15,7 +15,7 @@ const meta = {
       description: {
         component: [
           'The contacts of a sales team as a record screen over one collection: name, company, role, lifecycle stage, emails, phones, tags and last contact.',
-          'The `ViewSettingsMenu` switches between **Tabela** (DataTable), **Planilha** (DataGrid) and **Lista**, groups by stage, and filters by stage and tag. The selected view picker searches, duplicates, creates and deletes saved views, and Salvar preferência writes the layout and filters into the active one. Each value is a property that writes back to the same collection, rows selected in the Table or the Spreadsheet open an `ActionBar` to delete them, and Novo contato opens the `RecordDialog` of `Patterns/RecordDialog/Usages/Contacts`.',
+          'The `ViewSettingsMenu` switches between **Tabela** (DataTable), **Planilha** (DataGrid) and **Lista**, groups by stage, and filters by stage and tag. The selected view picker searches, duplicates, creates and deletes saved views, and Salvar preferência writes the layout and filters into the active one. Each value is a property that writes back to the same collection, rows selected in the Table or the Spreadsheet open an `ActionBar` to delete them, and Novo contato opens the `RecordDialog` of `Patterns/Records/Dialog/Usages/Contacts`.',
         ].join('\n\n'),
       },
     },

@@ -15,6 +15,20 @@ export const patternNames = [
   'settings',
 ] as const
 export type PatternName = (typeof patternNames)[number]
+/** Folder under packages/parttens/src, kept as the path in the consumer. */
+export const patternSources: Record<PatternName, string> = {
+  'collection-views': 'collection-views',
+  properties: 'fields/properties',
+  editable: 'fields/editable',
+  checklist: 'checklist',
+  'record-dialog': 'records/dialog',
+  'record-preview': 'records/preview',
+  'record-group': 'records/group',
+  widgets: 'widgets',
+  'rich-text-editor': 'rich-text-editor',
+  'state-surface': 'surfaces/state',
+  settings: 'surfaces/settings',
+}
 /** The consumer's components.json aliases the patterns import from. */
 export interface Aliases {
   ui: string

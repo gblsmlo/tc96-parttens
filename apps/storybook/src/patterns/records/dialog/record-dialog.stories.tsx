@@ -1,0 +1,550 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { RecordDialog, type RecordDialogSize } from '@tc96/parttens'
+import { Button } from '@tc96/ui/button'
+import { useState } from 'react'
+import {
+  expect,
+  fireEvent,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from 'storybook/test'
+import { page } from 'vitest/browser'
+import { CreateEventDemo } from './create-event-demo'
+import { CreateRecordDemo } from './create-record-demo'
+import { CreateRecordWithFormDemo } from './create-record-with-form-demo'
+import { delay } from './delay'
+
+function ShellOnly() {
+  const [open, setOpen] = useState(true)
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)} variant="outline">
+        Open dialog
+      </Button>
+      <RecordDialog
+        cancelLabel="Cancel"
+        onOpenChange={setOpen}
+        onSubmit={() => true}
+        open={open}
+        submitLabel="Create"
+        title="New record"
+        titleAncestor="Lemind"
+      />
+    </>
+  )
+}
+
+function FailingSubmit({ outcome }: { outcome: 'false' | 'throw' }) {
+  const [open, setOpen] = useState(true)
+  const [failed, setFailed] = useState(false)
+
+  return (
+    <RecordDialog
+      cancelLabel="Cancel"
+      errorMessage={failed ? 'Could not save.' : undefined}
+      onOpenChange={setOpen}
+      onSubmit={async () => {
+        setFailed(false)
+        await delay(150)
+        setFailed(true)
+        if (outcome === 'throw') throw new Error('rejected')
+        return false
+      }}
+      open={open}
+      submitLabel="Create"
+      submittingLabel="Creating"
+      title="New record"
+    >
+      <input aria-label="Name" defaultValue="Draft" />
+    </RecordDialog>
+  )
+}
+
+const sizes = [
+  { label: 'Small', size: 'small' },
+  { label: 'Default', size: 'default' },
+  { label: 'Large', size: 'large' },
+] as const satisfies readonly { label: string; size: RecordDialogSize }[]
+
+function SizesDemo() {
+  const [open, setOpen] = useState<RecordDialogSize | null>(null)
+
+  return (
+    <>
+      <div className="flex gap-2">
+        {sizes.map(({ label, size }) => (
+          <Button key={size} onClick={() => setOpen(size)} variant="outline">
+            {label}
+          </Button>
+        ))}
+      </div>
+      {sizes.map(({ label, size }) => (
+        <RecordDialog
+          cancelLabel="Cancel"
+          key={size}
+          onOpenChange={(next) => setOpen(next ? size : null)}
+          onSubmit={() => true}
+          open={open === size}
+          size={size}
+          submitLabel="Create"
+          title={`${label} dialog`}
+          titleAncestor="Lemind"
+        >
+          <p className="text-muted-foreground text-sm">
+            A short body to compare the {label.toLowerCase()} width.
+          </p>
+        </RecordDialog>
+      ))}
+    </>
+  )
+}
+
+const meta = {
+  args: { onCreate: fn(), onOpenSingle: fn() },
+  component: CreateRecordDemo,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'RecordDialog on one shell with three sizes. CreateRecord is the inline body for quick capture; CreateRecordWithForm is the same payload as labeled fields for explicit entry; CreateEvent is the quick capture of a calendar event or appointment.',
+      },
+    },
+  },
+  tags: ['!autodocs'],
+  title: 'Patterns/Records/Dialog',
+} satisfies Meta<typeof CreateRecordDemo>
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+const screen = () => within(document.body)
+
+export const Default: Story = {
+  render: () => <ShellOnly />,
+}
+
+export const DefaultInteraction: Story = {
+  ...Default,
+  play: async () => {
+    const dialog = await screen().findByRole('dialog', { name: 'New record' })
+
+    expect(
+      document.querySelector('[data-slot="dialog-title-trail"]')?.textContent,
+    ).toBe('LemindNew record')
+    expect(within(dialog).getByRole('button', { name: 'Cancel' })).toBeVisible()
+    expect(document.querySelector('[data-slot="dialog-panel"]')).toBeNull()
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Create' }),
+    )
+    await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
+  },
+  tags: ['!dev', '!autodocs'],
+}
+
+export const FailedSubmit: Story = {
+  render: () => <FailingSubmit outcome="false" />,
+}
+
+export const FailedSubmitInteraction: Story = {
+  ...FailedSubmit,
+  play: async () => {
+    const dialog = await screen().findByRole('dialog', { name: 'New record' })
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Create' }),
+    )
+    await within(dialog).findByRole('button', { name: 'Creating' })
+    await within(dialog).findByText('Could not save.')
+
+    const create = within(dialog).getByRole('button', { name: 'Create' })
+    await waitFor(() => expect(create).toBeEnabled())
+    expect(dialog).toContainElement(document.activeElement as HTMLElement)
+    expect(document.activeElement).not.toBe(document.body)
+    expect(document.activeElement).toBe(create)
+  },
+  tags: ['!dev', '!autodocs'],
+}
+
+export const ThrowingSubmit: Story = {
+  render: () => <FailingSubmit outcome="throw" />,
+}
+
+export const ThrowingSubmitInteraction: Story = {
+  ...ThrowingSubmit,
+  play: async () => {
+    const dialog = await screen().findByRole('dialog', { name: 'New record' })
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Create' }),
+    )
+    await within(dialog).findByRole('button', { name: 'Creating' })
+    await within(dialog).findByText('Could not save.')
+
+    const create = within(dialog).getByRole('button', { name: 'Create' })
+    await waitFor(() => expect(create).toBeEnabled())
+    expect(dialog).toContainElement(document.activeElement as HTMLElement)
+    expect(document.activeElement).toBe(create)
+  },
+  tags: ['!dev', '!autodocs'],
+}
+
+export const Sizes: Story = {
+  render: () => <SizesDemo />,
+}
+
+const expectedMaxWidth = { default: 672, large: 896, small: 448 }
+
+export const SizesInteraction: Story = {
+  ...Sizes,
+  play: async () => {
+    const { innerHeight, innerWidth } = window
+    await page.viewport(1280, 900)
+
+    try {
+      for (const { label, size } of sizes) {
+        await userEvent.click(screen().getByRole('button', { name: label }))
+        const dialog = await screen().findByRole('dialog', {
+          name: `${label} dialog`,
+        })
+
+        expect(dialog.getAttribute('data-size')).toBe(size)
+        expect(getComputedStyle(dialog).maxWidth).toBe(
+          `${expectedMaxWidth[size]}px`,
+        )
+        await waitFor(() =>
+          expect(dialog.getBoundingClientRect().width).toBe(
+            expectedMaxWidth[size],
+          ),
+        )
+
+        await userEvent.click(
+          within(dialog).getByRole('button', { name: 'Cancel' }),
+        )
+        await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
+      }
+    } finally {
+      await page.viewport(innerWidth, innerHeight)
+    }
+  },
+  tags: ['!dev', '!autodocs'],
+}
+
+export const CreateRecord: Story = {
+  render: (args) => <CreateRecordDemo {...args} />,
+}
+
+export const CreateRecordInteraction: Story = {
+  ...CreateRecord,
+  tags: ['!dev', '!autodocs'],
+  play: async ({ args }) => {
+    const dialog = await screen().findByRole('dialog', { name: 'New project' })
+    const create = within(dialog).getByRole('button', {
+      name: 'Create Project',
+    })
+
+    expect(create).toBeDisabled()
+    const titleInput = within(dialog).getByRole('textbox', {
+      name: 'Project title',
+    })
+    await waitFor(() => expect(titleInput).toHaveFocus())
+    await userEvent.tab()
+    expect(titleInput).not.toHaveFocus()
+    const box = titleInput.getBoundingClientRect()
+    await userEvent.pointer({
+      coords: { clientX: box.right - 4, clientY: box.top + box.height / 2 },
+      keys: '[MouseLeft]',
+      target: titleInput,
+    })
+    expect(titleInput).toHaveFocus()
+    expect(within(dialog).queryByRole('button', { name: 'Cancel' })).toBeNull()
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Open as page' }),
+    )
+    expect(args.onOpenSingle).toHaveBeenCalledTimes(1)
+
+    const panel = document.querySelector('[data-slot="dialog-panel"]')
+    const chip = within(dialog).getByRole('combobox', { name: /^Status/ })
+    expect(
+      (panel?.getBoundingClientRect().bottom ?? 0) -
+        chip.getBoundingClientRect().bottom,
+    ).toBeLessThan(40)
+
+    await userEvent.type(
+      within(dialog).getByRole('textbox', { name: 'Project title' }),
+      'Aurora',
+    )
+    expect(create).toBeEnabled()
+
+    await userEvent.click(
+      within(dialog).getByRole('combobox', { name: /^Status/ }),
+    )
+    await userEvent.click(
+      await screen().findByRole('option', { name: 'In progress' }),
+    )
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole('combobox', { name: /^Status/ }),
+      ).toHaveTextContent('In progress'),
+    )
+
+    await userEvent.click(
+      within(dialog).getByRole('combobox', { name: /^Priority/ }),
+    )
+    await userEvent.click(await screen().findByRole('option', { name: 'High' }))
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole('combobox', { name: /^Priority/ }),
+      ).toHaveTextContent('High'),
+    )
+
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Repos' }))
+    await userEvent.click(
+      await screen().findByRole('menuitemcheckbox', { name: 'lemind/web' }),
+    )
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() =>
+      expect(within(dialog).getByRole('button', { name: 'web' })).toBeVisible(),
+    )
+    expect(screen().getByRole('dialog', { name: 'New project' })).toBeVisible()
+    expect(args.onCreate).not.toHaveBeenCalled()
+
+    await userEvent.click(create)
+
+    await waitFor(() =>
+      expect(args.onCreate).toHaveBeenCalledWith({
+        description: '',
+        lead: null,
+        priority: 'high',
+        repos: ['lemind/web'],
+        startDate: null,
+        status: 'in-progress',
+        targetDate: null,
+        title: 'Aurora',
+      }),
+    )
+    await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
+
+    await userEvent.click(screen().getByRole('button', { name: 'Open dialog' }))
+    const reopened = await screen().findByRole('dialog', {
+      name: 'New project',
+    })
+    await userEvent.click(
+      within(reopened).getByRole('switch', { name: 'Create more' }),
+    )
+    const next = within(reopened).getByRole('textbox', {
+      name: 'Project title',
+    })
+    await userEvent.type(next, 'Borealis')
+    await userEvent.keyboard('{Control>}{Enter}{/Control}')
+    await waitFor(() => expect(args.onCreate).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(next).toHaveValue(''))
+    expect(screen().getByRole('dialog', { name: 'New project' })).toBeVisible()
+  },
+}
+
+export const CreateRecordWithForm: Story = {
+  render: (args) => <CreateRecordWithFormDemo {...args} />,
+}
+
+export const CreateRecordWithFormInteraction: Story = {
+  ...CreateRecordWithForm,
+  play: async ({ args }) => {
+    const dialog = await screen().findByRole('dialog', { name: 'New project' })
+    const create = within(dialog).getByRole('button', {
+      name: /Create Project/,
+    })
+    const title = within(dialog).getByRole('textbox', { name: 'Title' })
+
+    expect(create).toBeDisabled()
+    await waitFor(() => expect(title).toHaveFocus())
+    await userEvent.type(title, 'Aurora')
+    expect(create).toBeEnabled()
+
+    await userEvent.click(
+      within(dialog).getByRole('combobox', { name: 'Status' }),
+    )
+    await userEvent.click(
+      await screen().findByRole('option', { name: 'In progress' }),
+    )
+    await userEvent.click(
+      within(dialog).getByRole('combobox', { name: 'Priority' }),
+    )
+    await userEvent.click(await screen().findByRole('option', { name: 'High' }))
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole('combobox', { name: 'Priority' }),
+      ).toHaveTextContent('High'),
+    )
+
+    await userEvent.keyboard('{Control>}{Enter}{/Control}')
+    await waitFor(() =>
+      expect(args.onCreate).toHaveBeenCalledWith({
+        description: '',
+        lead: null,
+        priority: 'high',
+        repos: [],
+        startDate: null,
+        status: 'in-progress',
+        targetDate: null,
+        title: 'Aurora',
+      }),
+    )
+    await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
+
+    await userEvent.click(screen().getByRole('button', { name: 'Open dialog' }))
+    const reopened = await screen().findByRole('dialog', {
+      name: 'New project',
+    })
+    await userEvent.click(
+      within(reopened).getByRole('switch', { name: 'Create more' }),
+    )
+    const next = within(reopened).getByRole('textbox', { name: 'Title' })
+    await userEvent.type(next, 'Borealis')
+    await userEvent.keyboard('{Control>}{Enter}{/Control}')
+    await waitFor(() => expect(args.onCreate).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(next).toHaveValue(''))
+    expect(screen().getByRole('dialog', { name: 'New project' })).toBeVisible()
+    expect(
+      within(reopened).getByRole('combobox', { name: 'Status' }),
+    ).toHaveTextContent('Planned')
+  },
+  tags: ['!dev', '!autodocs'],
+}
+
+const onCreateEvent = fn()
+
+export const CreateEvent: Story = {
+  beforeEach: () => {
+    onCreateEvent.mockClear()
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Quick capture of a calendar event or appointment, prefilled with the clicked slot. The payload carries `start` and `end` as ISO instants in the calendar time zone, or the whole day when All day is on.',
+      },
+    },
+  },
+  render: () => <CreateEventDemo onCreate={onCreateEvent} />,
+}
+
+export const CreateEventInteraction: Story = {
+  ...CreateEvent,
+  play: async () => {
+    const dialog = await screen().findByRole('dialog', { name: 'New event' })
+    const save = within(dialog).getByRole('button', { name: 'Save' })
+    const title = within(dialog).getByRole('textbox', { name: 'Event title' })
+
+    expect(save).toBeDisabled()
+    await waitFor(() => expect(title).toHaveFocus())
+    await userEvent.type(title, 'Discovery call')
+    expect(save).toBeEnabled()
+
+    await userEvent.click(
+      within(dialog).getByRole('combobox', { name: /^Calendar/ }),
+    )
+    await userEvent.click(
+      await screen().findByRole('option', { name: 'Appointment' }),
+    )
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole('combobox', { name: /^Calendar/ }),
+      ).toHaveTextContent('Appointment'),
+    )
+    await screen().findByRole('dialog', { name: 'New appointment' })
+
+    fireEvent.change(within(dialog).getByLabelText('Start time'), {
+      target: { value: '16:00' },
+    })
+    await userEvent.click(save)
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent(
+      'End time must be after the start time.',
+    )
+    expect(onCreateEvent).not.toHaveBeenCalled()
+    expect(dialog).toBeVisible()
+
+    fireEvent.change(within(dialog).getByLabelText('End time'), {
+      target: { value: '17:30' },
+    })
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Add guests' }),
+    )
+    await userEvent.click(
+      await screen().findByRole('option', { name: /Ana Souza/ }),
+    )
+    await userEvent.keyboard('{Escape}')
+    expect(
+      screen().getByRole('dialog', { name: 'New appointment' }),
+    ).toBeVisible()
+
+    await userEvent.type(
+      within(dialog).getByRole('textbox', { name: 'Location' }),
+      'Rua Augusta, 1500',
+    )
+
+    await userEvent.click(
+      within(dialog).getByRole('combobox', { name: /^Reminder/ }),
+    )
+    await userEvent.click(
+      await screen().findByRole('option', { name: '1 hour before' }),
+    )
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole('combobox', { name: /^Reminder/ }),
+      ).toHaveTextContent('1 hour before'),
+    )
+
+    await userEvent.click(save)
+    await waitFor(() =>
+      expect(onCreateEvent).toHaveBeenCalledWith({
+        allDay: false,
+        availability: 'busy',
+        calendar: 'appointment',
+        description: '',
+        end: '2026-10-14T20:30:00.000Z',
+        guests: ['ana'],
+        location: 'Rua Augusta, 1500',
+        reminderMinutes: 60,
+        start: '2026-10-14T19:00:00.000Z',
+        title: 'Discovery call',
+      }),
+    )
+    await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
+
+    await userEvent.click(screen().getByRole('button', { name: 'Open dialog' }))
+    const reopened = await screen().findByRole('dialog', { name: 'New event' })
+    await userEvent.type(
+      within(reopened).getByRole('textbox', { name: 'Event title' }),
+      'Team offsite',
+    )
+    await userEvent.click(
+      within(reopened).getByRole('switch', { name: 'All day' }),
+    )
+    expect(within(reopened).queryByLabelText('Start time')).toBeNull()
+
+    await userEvent.keyboard('{Control>}{Enter}{/Control}')
+    await waitFor(() =>
+      expect(onCreateEvent).toHaveBeenLastCalledWith({
+        allDay: true,
+        availability: 'busy',
+        calendar: 'event',
+        description: '',
+        end: '2026-10-15T03:00:00.000Z',
+        guests: [],
+        location: '',
+        reminderMinutes: 30,
+        start: '2026-10-14T03:00:00.000Z',
+        title: 'Team offsite',
+      }),
+    )
+    await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
+  },
+  tags: ['!dev', '!autodocs'],
+}
