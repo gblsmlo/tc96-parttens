@@ -71,8 +71,8 @@ function Swatch({ color }: { color: string }) {
   return <span aria-hidden="true" className={`size-3 rounded-full ${color}`} />
 }
 
-function TagRow({ label, parent }: { label: Tag; parent?: string }) {
-  const { color, leads, name, tasks } = label
+function TagRow({ tag, parent }: { tag: Tag; parent?: string }) {
+  const { color, leads, name, tasks } = tag
 
   return (
     <SettingsRow
@@ -122,7 +122,7 @@ function TagRow({ label, parent }: { label: Tag; parent?: string }) {
   )
 }
 
-function NewLabelButton() {
+function NewTagButton() {
   return (
     <Button size="sm" variant="outline">
       <PlusIcon aria-hidden="true" />
@@ -184,11 +184,11 @@ const interaction = ['!dev', '!autodocs']
 
 export const Default: Story = {
   render: () => (
-    <TagsSection actions={<NewLabelButton />}>
-      {tags.flatMap((label) => [
-        <TagRow key={label.name} label={label} />,
-        ...(label.subtags ?? []).map((subtags) => (
-          <TagRow key={subtags.name} label={subtags} parent={label.name} />
+    <TagsSection actions={<NewTagButton />}>
+      {tags.flatMap((tag) => [
+        <TagRow key={tag.name} tag={tag} />,
+        ...(tag.subtags ?? []).map((subtags) => (
+          <TagRow key={subtags.name} tag={subtags} parent={tag.name} />
         )),
       ])}
     </TagsSection>
@@ -208,9 +208,9 @@ export const DefaultInteraction: Story = {
     expect(canvas.getByText('0 leads · 2 tasks')).toBeVisible()
     expect(canvas.getByText('1 lead · 1 task')).toBeVisible()
 
-    const names = tags.flatMap((label) => [
-      label.name,
-      ...(label.subtags ?? []).map((subtags) => subtags.name),
+    const names = tags.flatMap((tag) => [
+      tag.name,
+      ...(tag.subtags ?? []).map((subtags) => subtags.name),
     ])
     for (const name of names) {
       expect(canvas.getByText(name)).toBeVisible()
@@ -229,7 +229,7 @@ export const Empty: Story = {
   render: () => (
     <TagsSection actions={null}>
       <StateSurface
-        actions={<NewLabelButton />}
+        actions={<NewTagButton />}
         description="Create a tag to organize leads and tasks."
         kind="empty"
         title="No tags yet"
