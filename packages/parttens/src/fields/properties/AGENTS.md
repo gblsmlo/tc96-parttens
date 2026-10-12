@@ -14,7 +14,7 @@ Controlled property displays (date, date range, editable text, email, flag, icon
 | `test/dom.ts` | the JSDOM setup the tests import |
 | `core.ts` | React-free surface: catalog types, `propertyToneClassName`, date formatters; workspace only, not reached from the barrel |
 
-Import direction: `composition/` → `display/`, `shared/`; `display/<property>/` → `hooks/`, `shared/`, other display folders; `hooks/` → `shared/lib/`; `shared/` → only COSS, Base UI, `@tc96/utils` and zod types, never a display, hook or composition. `composition/property-collection.tsx` also imports `MenuCheckboxOption` from `packages/parttens/src/shared/components/menu-selection-item.tsx`.
+Import direction: `composition/` → `display/`, `shared/`; `display/<property>/` → `hooks/`, `shared/`, other display folders; `display/editable-text/` → `fields/editable/index.ts` (`Editable`, `EditableField`), the only import into another pattern; `hooks/` → `shared/lib/`; `shared/` → only COSS, Base UI, `@tc96/utils` and zod types, never a display, hook or composition. `composition/property-collection.tsx` also imports `MenuCheckboxOption` from `packages/parttens/src/shared/components/menu-selection-item.tsx`.
 
 ## Dependents
 
@@ -47,7 +47,9 @@ Select:
 
 Editing:
 
-- `EditableText` commits on blur and reads the draft from a ref, because the blur that Escape triggers would otherwise read unapplied state. Escape with a dirty draft restores and stops propagation; with a clean draft it bubbles, so in a dialog the first Escape cancels the edit and the second closes the dialog. A new `value` is ignored while focused.
+- `EditableText` is an adapter over `Editable` + `EditableField`: the focus session, the dirty check, Enter, Escape propagation, `emptyValue` and the read-only `span` are the display session documented in `fields/editable/AGENTS.md`. What stays here is the contract of `properties`: `value: string | null` becomes the draft, and the submitted draft is trimmed, `''` commits `null`, `revertWhenEmpty` puts the confirmed value back, and a draft equal to the confirmed value commits nothing.
+- A new `value` replaces the draft only while not editing: `EditableText` controls `editing` and adjusts the draft during render when the confirmed value changes, with no Effect. A committed draft stays on screen until the consumer's `value` changes, so an asynchronous save does not flash the old value.
+- The `Editable` root renders as a `span` with `contents`, so no box enters the inline layouts of `TextProperty`, `EmailProperty` and `checklist`.
 - Email and phone popups copy drafts from `value` on open, so a `value` change while open does not overwrite typing. Enter saves and stops propagation, because the Base UI popup closes on Enter. The form sets `noValidate`: the browser bubble would block submit before the pattern's pt-BR message.
 - `PhoneInput` takes the country from the number itself, even incomplete (`+551198`), before `defaultCountry`. `phoneNumberSchema` validates with the same library that formats the field; values are E.164. `PhoneProperty` shows every number through `internationalPhoneLabel` (same library, international format with country code; an unparseable value shows raw), in the label, the trigger summary and the remove button's name; the emitted value stays E.164.
 - `TextProperty` swallows a rejected clipboard promise. With the inline field the accessible name belongs to the field; a labelled `img` around it would announce the value twice.
