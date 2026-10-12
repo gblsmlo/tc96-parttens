@@ -92,6 +92,17 @@ describe('ListRow', () => {
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 
+  test('openDisabled disables the row trigger', () => {
+    const onClick = mock()
+    render(<ListRow onClick={onClick} openDisabled title="Carteira" />)
+
+    const trigger = screen.getByRole('button', { name: 'Carteira' })
+    fireEvent.click(trigger)
+
+    expect(trigger.hasAttribute('disabled')).toBe(true)
+    expect(onClick).not.toHaveBeenCalled()
+  })
+
   test('without onClick there is no button and no hover', () => {
     const { container } = render(<ListRow title="Carteira" />)
 
