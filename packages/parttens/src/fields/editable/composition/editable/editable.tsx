@@ -107,15 +107,25 @@ export function Editable(props: EditableProps) {
   const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue)
   const [uncontrolledEditing, setUncontrolledEditing] =
     React.useState(defaultEditing)
-  const previousValueRef = React.useRef(defaultValue)
   const rootRef = React.useRef<HTMLDivElement>(null)
   const composedRef = useComposedRefs(ref, rootRef)
 
   const value = controlledValue ?? uncontrolledValue
   const editing = controlledEditing ?? uncontrolledEditing
 
+  const previousValueRef = React.useRef(value)
+  const restoreValueRef = React.useRef(value)
+  const valueRef = React.useRef(value)
+  const editingRef = React.useRef(editing)
+
+  React.useEffect(() => {
+    valueRef.current = value
+    editingRef.current = editing
+  }, [editing, value])
+
   const setValue = React.useCallback(
     (nextValue: string) => {
+      valueRef.current = nextValue
       if (controlledValue === undefined) {
         setUncontrolledValue(nextValue)
       }
@@ -126,6 +136,7 @@ export function Editable(props: EditableProps) {
 
   const setEditing = React.useCallback(
     (nextEditing: boolean) => {
+      editingRef.current = nextEditing
       if (controlledEditing === undefined) {
         setUncontrolledEditing(nextEditing)
       }
@@ -134,16 +145,23 @@ export function Editable(props: EditableProps) {
     [controlledEditing, onEditingChange],
   )
 
-  const beginEditing = React.useCallback(() => {
-    if (disabled || readOnly) return
-    previousValueRef.current = value
-    setEditing(true)
-    onEdit?.()
-  }, [disabled, onEdit, readOnly, setEditing, value])
+  const beginEditing = React.useCallback(
+    (initialDraft?: string) => {
+      if (disabled || readOnly) return
+      const draft = initialDraft ?? value
+      restoreValueRef.current = value
+      previousValueRef.current = draft
+      valueRef.current = value
+      if (draft !== value) setValue(draft)
+      setEditing(true)
+      onEdit?.()
+    },
+    [disabled, onEdit, readOnly, setEditing, setValue, value],
+  )
 
   const cancelEditing = React.useCallback(() => {
     if (disabled || readOnly) return
-    setValue(previousValueRef.current)
+    setValue(restoreValueRef.current)
     setEditing(false)
     onCancel?.()
   }, [disabled, onCancel, readOnly, setEditing, setValue])
@@ -153,6 +171,23 @@ export function Editable(props: EditableProps) {
     setEditing(false)
     onSubmit?.(value)
   }, [disabled, onSubmit, readOnly, setEditing, value])
+
+  const isDirty = React.useCallback(
+    () => editingRef.current && valueRef.current !== previousValueRef.current,
+    [],
+  )
+
+  const finishEditing = React.useCallback(() => {
+    if (disabled || readOnly || !editingRef.current) return
+    if (isDirty()) {
+      submitValue()
+      return
+    }
+    if (valueRef.current !== restoreValueRef.current) {
+      setValue(restoreValueRef.current)
+    }
+    setEditing(false)
+  }, [disabled, isDirty, readOnly, setEditing, setValue, submitValue])
 
   const context = React.useMemo<EditableContextValue>(
     () => ({
@@ -172,6 +207,8 @@ export function Editable(props: EditableProps) {
       invalid,
       beginEditing,
       cancelEditing,
+      finishEditing,
+      isDirty,
       submitValue,
       setValue,
       onEnterKeyDown,
@@ -194,6 +231,8 @@ export function Editable(props: EditableProps) {
       invalid,
       beginEditing,
       cancelEditing,
+      finishEditing,
+      isDirty,
       submitValue,
       setValue,
       onEnterKeyDown,
@@ -522,6 +561,158 @@ export function EditableInput(props: EditableInputProps) {
   return element
 }
 
+type EditableFieldElement = HTMLInputElement | HTMLTextAreaElement
+
+export interface EditableFieldProps
+  extends Omit<
+    React.ComponentProps<'input'>,
+    | 'defaultValue'
+    | 'onBlur'
+    | 'onChange'
+    | 'onFocus'
+    | 'onKeyDown'
+    | 'ref'
+    | 'value'
+  > {
+  emptyValue?: string
+  multiline?: boolean
+  ref?: React.Ref<EditableFieldElement>
+  render?: useRender.ComponentProps<'input'>['render']
+  onBlur?: React.FocusEventHandler<EditableFieldElement>
+  onChange?: React.ChangeEventHandler<EditableFieldElement>
+  onFocus?: React.FocusEventHandler<EditableFieldElement>
+  onKeyDown?: React.KeyboardEventHandler<EditableFieldElement>
+}
+
+export function EditableField(props: EditableFieldProps) {
+  const {
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
+    emptyValue,
+    multiline = false,
+    onBlur,
+    onChange,
+    onFocus,
+    onKeyDown,
+    className,
+    disabled,
+    readOnly,
+    required,
+    maxLength,
+    type,
+    render,
+    ref,
+    ...fieldProps
+  } = props
+  const context = useEditableContext('EditableField')
+  const isDisabled = disabled || context.disabled
+  const isReadOnly = readOnly || context.readOnly
+  const isRequired = required || context.required
+
+  const begin = () => {
+    if (context.editing) return
+    context.beginEditing(
+      emptyValue !== undefined && context.value === emptyValue ? '' : undefined,
+    )
+  }
+
+  const element = useRender({
+    defaultTagName: multiline ? 'textarea' : 'input',
+    ref,
+    props: mergeProps<'input'>(
+      {
+        id: context.inputId,
+        'aria-label': ariaLabel,
+        'aria-labelledby':
+          ariaLabelledBy ?? (ariaLabel ? undefined : context.labelId),
+        'aria-required': isRequired || undefined,
+        'aria-invalid': context.invalid || undefined,
+        dir: context.dir,
+        disabled: isDisabled,
+        required: isRequired,
+        ...dataAttributes({
+          'data-disabled': isDisabled ? '' : undefined,
+          'data-editing': context.editing ? '' : undefined,
+          'data-empty': !context.value ? '' : undefined,
+          'data-slot': 'editable-field',
+        }),
+        maxLength: maxLength ?? context.maxLength,
+        placeholder: context.placeholder,
+        value: context.value,
+        ...(multiline ? { rows: 1 } : { type }),
+        onFocus: (event: React.FocusEvent<EditableFieldElement>) => {
+          onFocus?.(event)
+          if (event.defaultPrevented || isDisabled) return
+          begin()
+        },
+        onBlur: (event: React.FocusEvent<EditableFieldElement>) => {
+          onBlur?.(event)
+          if (event.defaultPrevented || isDisabled) return
+          context.finishEditing()
+        },
+        onChange: (event: React.ChangeEvent<EditableFieldElement>) => {
+          onChange?.(event)
+          if (event.defaultPrevented || isDisabled) return
+          begin()
+          context.setValue(event.target.value)
+        },
+        onKeyDown: (event: React.KeyboardEvent<EditableFieldElement>) => {
+          onKeyDown?.(event)
+          if (event.defaultPrevented || isDisabled) return
+
+          const nativeEvent = event.nativeEvent
+          if (event.key === 'Escape') {
+            if (!context.isDirty()) return
+            context.onEscapeKeyDown?.(nativeEvent)
+            if (nativeEvent.defaultPrevented) return
+            event.stopPropagation()
+            context.cancelEditing()
+            event.currentTarget.blur()
+          } else if (event.key === 'Enter' && !multiline) {
+            context.onEnterKeyDown?.(nativeEvent)
+            if (nativeEvent.defaultPrevented) return
+            event.preventDefault()
+            event.currentTarget.blur()
+          }
+        },
+        className: cn(
+          'w-full bg-transparent outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
+          multiline && 'field-sizing-content resize-none',
+          className,
+        ),
+      },
+      fieldProps,
+    ),
+    render,
+    state: {
+      slot: 'editable-field',
+      ...(context.editing && { editing: '' }),
+      ...(isDisabled && { disabled: '' }),
+      ...(!context.value && { empty: '' }),
+    },
+  })
+
+  if (isReadOnly) {
+    const dataProps = Object.fromEntries(
+      Object.entries(fieldProps).filter(([key]) => key.startsWith('data-')),
+    )
+    return (
+      <span
+        className={className}
+        data-empty={!context.value ? '' : undefined}
+        data-readonly=""
+        data-slot="editable-field"
+        dir={context.dir}
+        {...dataProps}
+      >
+        {context.value || context.placeholder}
+      </span>
+    )
+  }
+
+  return element
+}
+
 export interface EditableTriggerProps
   extends React.ComponentProps<'button'>,
     useRender.ComponentProps<'button'> {
@@ -546,9 +737,13 @@ export function EditableTrigger(props: EditableTriggerProps) {
           'data-slot': 'editable-trigger',
         }),
         onClick:
-          context.triggerMode === 'click' ? context.beginEditing : undefined,
+          context.triggerMode === 'click'
+            ? () => context.beginEditing()
+            : undefined,
         onDoubleClick:
-          context.triggerMode === 'dblclick' ? context.beginEditing : undefined,
+          context.triggerMode === 'dblclick'
+            ? () => context.beginEditing()
+            : undefined,
         className: cn(
           'inline-flex h-8 w-fit items-center justify-center rounded-md border border-input bg-background px-3 font-medium text-sm shadow-xs outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50',
           className,

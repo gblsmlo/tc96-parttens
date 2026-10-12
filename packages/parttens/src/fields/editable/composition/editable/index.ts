@@ -4,6 +4,8 @@ export {
   type EditableAreaProps,
   EditableCancel,
   type EditableCancelProps,
+  EditableField,
+  type EditableFieldProps,
   EditableInput,
   type EditableInputProps,
   EditableLabel,
