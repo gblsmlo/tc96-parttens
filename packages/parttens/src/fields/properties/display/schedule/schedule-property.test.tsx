@@ -86,7 +86,7 @@ describe('ScheduleProperty', () => {
 
     expect(onValueChange).toHaveBeenCalledTimes(1)
     expect(onValueChange.mock.calls[0]?.[0].from).toEqual(new Date(2026, 9, 8))
-    await waitFor(() => expect(popup()).toBeNull())
+    await waitFor(() => expect(popup() === null).toBe(true))
     expect(screen.getByRole('button', { name: 'Data: 8 de out' })).toBeTruthy()
   })
 
@@ -181,7 +181,7 @@ describe('ScheduleProperty', () => {
     )
 
     expect(onValueChange).not.toHaveBeenCalled()
-    await waitFor(() => expect(popup()).toBeNull())
+    await waitFor(() => expect(popup() === null).toBe(true))
   })
 
   test('shows the reminders in option order and keeps the popup open on a pick', async () => {
