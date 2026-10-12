@@ -56,7 +56,7 @@ test('toggles the body and the trigger state when the title is clicked', async (
 
   fireEvent.click(trigger())
 
-  await waitFor(() => expect(screen.queryByText('Body') === null).toBe(true))
+  await waitFor(() => expect(screen.queryByText('Body')).toBeNull())
   expect(trigger().getAttribute('aria-expanded')).toBe('false')
   expect(trigger().hasAttribute('data-panel-open')).toBe(false)
 
@@ -199,7 +199,7 @@ test('lets a controlled open win over empty', async () => {
     </RecordGroup>,
   )
 
-  await waitFor(() => expect(screen.queryByText('Body') === null).toBe(true))
+  await waitFor(() => expect(screen.queryByText('Body')).toBeNull())
   expect(trigger().getAttribute('aria-expanded')).toBe('false')
 })
 
@@ -239,7 +239,7 @@ test('opens when empty flips to false and keeps a manual collapse across re-rend
   expect(trigger().getAttribute('aria-expanded')).toBe('true')
 
   fireEvent.click(trigger())
-  await waitFor(() => expect(screen.queryByText('Body') === null).toBe(true))
+  await waitFor(() => expect(screen.queryByText('Body')).toBeNull())
 
   rerender(
     <RecordGroup empty={false} title="Details">
@@ -268,7 +268,7 @@ test('keeps a manual collapse when a parent re-renders with the same empty value
   render(<Parent />)
 
   fireEvent.click(trigger())
-  await waitFor(() => expect(screen.queryByText('Body') === null).toBe(true))
+  await waitFor(() => expect(screen.queryByText('Body')).toBeNull())
   fireEvent.click(screen.getByRole('button', { name: /Rerender/ }))
 
   expect(trigger().getAttribute('aria-expanded')).toBe('false')
@@ -334,7 +334,7 @@ test('keeps actions outside the trigger and visible when closed', async () => {
   mount({ actions: <button type="button">Add</button> })
 
   fireEvent.click(trigger())
-  await waitFor(() => expect(screen.queryByText('Body') === null).toBe(true))
+  await waitFor(() => expect(screen.queryByText('Body')).toBeNull())
 
   const add = screen.getByRole('button', { name: 'Add' })
   expect(trigger().contains(add)).toBe(false)

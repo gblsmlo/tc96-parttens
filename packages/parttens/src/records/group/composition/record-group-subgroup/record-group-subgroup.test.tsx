@@ -65,7 +65,7 @@ test('opens from defaultOpen and reports every toggle', async () => {
 
   fireEvent.click(trigger())
 
-  await waitFor(() => expect(screen.queryByText('Body') === null).toBe(true))
+  await waitFor(() => expect(screen.queryByText('Body')).toBeNull())
   expect(changes).toEqual([false])
 })
 
