@@ -1,6 +1,7 @@
 export type {
   EditableAreaProps,
   EditableCancelProps,
+  EditableFieldProps,
   EditableInputProps,
   EditableLabelProps,
   EditablePreviewProps,

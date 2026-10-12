@@ -18,8 +18,10 @@ export interface EditableContextValue {
   readOnly: boolean
   required: boolean
   invalid: boolean
-  beginEditing: () => void
+  beginEditing: (initialDraft?: string) => void
   cancelEditing: () => void
+  finishEditing: () => void
+  isDirty: () => boolean
   submitValue: () => void
   setValue: (value: string) => void
   onEnterKeyDown?: (event: KeyboardEvent) => void
