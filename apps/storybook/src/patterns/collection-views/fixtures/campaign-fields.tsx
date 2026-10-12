@@ -97,7 +97,10 @@ export function PlacementsField({
   return (
     <TagsProperty<CampaignPlacement>
       ariaLabel="Posicionamentos"
-      display="chips"
+      countLabel={(count) =>
+        `${count} ${count === 1 ? 'posicionamento' : 'posicionamentos'}`
+      }
+      display="count"
       options={placementOptions}
       readOnly
       value={campaign.placements}
@@ -338,7 +341,7 @@ export const createCampaignGridColumns = (
     header: 'Posicionamentos',
     id: 'placements',
     meta: { label: 'Posicionamentos', type: 'multi-select' },
-    minSize: 340,
+    minSize: 180,
   },
   {
     accessorKey: 'startDate',

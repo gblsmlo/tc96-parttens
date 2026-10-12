@@ -107,6 +107,27 @@ export const CountEmpty: Story = {
   ),
 }
 
+export const CountCustomLabel: Story = {
+  play: async ({ canvas }) => {
+    const trigger = await canvas.findByRole('button', {
+      name: 'Posicionamentos: 2 posicionamentos',
+    })
+
+    await expect(trigger.textContent).toBe('2 posicionamentos')
+  },
+  render: () => (
+    <TagsPropertyExample
+      ariaLabel="Posicionamentos"
+      countLabel={(count) =>
+        `${count} ${count === 1 ? 'posicionamento' : 'posicionamentos'}`
+      }
+      display="count"
+      initialValue={['documents', 'return']}
+      variant="badge"
+    />
+  ),
+}
+
 export const ReadOnly: Story = {
   args: {
     options: initialOptions,
@@ -117,10 +138,14 @@ export const ReadOnly: Story = {
 }
 
 function TagsPropertyExample({
+  ariaLabel = 'Tags',
+  countLabel,
   display,
   initialValue = ['documents'],
   variant = 'plain',
 }: Readonly<{
+  ariaLabel?: string
+  countLabel?: (count: number) => string
   display?: 'chips' | 'count'
   initialValue?: readonly string[]
   variant?: 'badge' | 'plain'
@@ -131,7 +156,8 @@ function TagsPropertyExample({
   return (
     <div className="max-w-sm p-4">
       <TagsProperty
-        ariaLabel="Tags"
+        ariaLabel={ariaLabel}
+        countLabel={countLabel}
         display={display}
         onValueChange={setValue}
         options={options}
