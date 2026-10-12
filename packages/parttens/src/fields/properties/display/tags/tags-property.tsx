@@ -17,7 +17,7 @@ import {
 
 const addTagLabel = 'Adicionar tag'
 
-const tagsCountLabel = (count: number) =>
+const defaultCountLabel = (count: number) =>
   `${count} ${count === 1 ? 'Tag' : 'Tags'}`
 
 export interface TagsPropertyOption<TValue extends string = string> {
@@ -42,6 +42,7 @@ export interface TagsPropertyProps<TValue extends string = string> {
   ) => void
   ariaLabel?: string
   className?: string
+  countLabel?: (count: number) => string
   disabled?: boolean
   display?: 'chips' | 'count'
   dropdownPlacement?: TagsPropertyDropdownPlacement
@@ -56,6 +57,7 @@ export function TagsProperty<TValue extends string = string>({
   action,
   ariaLabel = 'Tags',
   className,
+  countLabel = defaultCountLabel,
   disabled = false,
   display = 'chips',
   dropdownPlacement,
@@ -72,6 +74,8 @@ export function TagsProperty<TValue extends string = string>({
     [options, value],
   )
 
+  const countText = countLabel(selectedOptions.length)
+
   if (!isEditable({ action, onValueChange, readOnly })) {
     return (
       <PropertyRow
@@ -87,9 +91,7 @@ export function TagsProperty<TValue extends string = string>({
             variant={variant}
           >
             <TagIcon aria-hidden="true" />
-            <span className="tabular-nums">
-              {tagsCountLabel(selectedOptions.length)}
-            </span>
+            <span className="tabular-nums">{countText}</span>
           </PropertySurface>
         ) : selectedOptions.length > 0 ? (
           selectedOptions.map((option) => (
@@ -136,7 +138,7 @@ export function TagsProperty<TValue extends string = string>({
           display === 'count'
             ? ({ anchorRef, open }) => (
                 <PropertySurface
-                  aria-label={`${ariaLabel}: ${tagsCountLabel(selectedOptions.length)}`}
+                  aria-label={`${ariaLabel}: ${countText}`}
                   muted={selectedOptions.length === 0}
                   render={
                     <button
@@ -149,9 +151,7 @@ export function TagsProperty<TValue extends string = string>({
                   variant={variant}
                 >
                   <TagIcon aria-hidden="true" />
-                  <span className="tabular-nums">
-                    {tagsCountLabel(selectedOptions.length)}
-                  </span>
+                  <span className="tabular-nums">{countText}</span>
                 </PropertySurface>
               )
             : undefined

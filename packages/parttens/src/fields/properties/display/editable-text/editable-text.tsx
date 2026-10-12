@@ -1,7 +1,8 @@
 'use client'
 
 import { cn } from '@tc96/utils'
-import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
+import { Editable, EditableField } from '../../../editable/index'
 
 export type EditableTextSize = 'sm' | 'base' | 'lg' | 'xl'
 
@@ -26,9 +27,6 @@ const sizeClassName: Record<EditableTextSize, string> = {
   xl: 'text-[2rem]',
 }
 
-const fieldClassName =
-  'w-full bg-transparent outline-none placeholder:text-muted-foreground'
-
 export function EditableText({
   ariaLabel,
   className,
@@ -44,107 +42,46 @@ export function EditableText({
 }: Readonly<EditableTextProps>) {
   const confirmed = value ?? ''
   const [draft, setDraft] = useState(confirmed)
-  const draftRef = useRef(draft)
-  const draftAtFocus = useRef(draft)
-  const isFocused = useRef(false)
+  const [editing, setEditing] = useState(false)
+  const [syncedValue, setSyncedValue] = useState(confirmed)
 
-  const writeDraft = (next: string) => {
-    draftRef.current = next
-    setDraft(next)
+  if (!editing && confirmed !== syncedValue) {
+    setSyncedValue(confirmed)
+    setDraft(confirmed)
   }
-
-  useEffect(() => {
-    if (isFocused.current) return
-    draftRef.current = value ?? ''
-    setDraft(value ?? '')
-  }, [value])
 
   const showsEmptyValue = !draft || draft === emptyValue
-  const emptyClassName = showsEmptyValue ? 'text-muted-foreground' : undefined
 
-  if (readOnly) {
-    return (
-      <span
-        className={cn(sizeClassName[size], emptyClassName, className)}
-        data-slot="editable-text"
-      >
-        {value ?? placeholder}
-      </span>
-    )
-  }
-
-  const isDirty = () => draftRef.current !== draftAtFocus.current
-
-  const commit = () => {
-    if (!isDirty()) return writeDraft(confirmed)
-    const next = draftRef.current.trim()
-    if (!next && revertWhenEmpty) return writeDraft(confirmed)
-    if (next !== confirmed) onCommit(next || null)
-  }
-
-  const handleKeyDown = (
-    event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    if (event.key === 'Escape') {
-      if (!isDirty()) return
-      event.stopPropagation()
-      writeDraft(confirmed)
-      event.currentTarget.blur()
-      return
-    }
-
-    if (event.key === 'Enter' && !multiline) {
-      event.preventDefault()
-      event.currentTarget.blur()
-    }
-  }
-
-  const fieldProps = {
-    'aria-label': ariaLabel,
-    'data-slot': 'editable-text',
-    onBlur: () => {
-      isFocused.current = false
-      commit()
-    },
-    onFocus: () => {
-      isFocused.current = true
-      if (emptyValue !== undefined && draftRef.current === emptyValue)
-        writeDraft('')
-      draftAtFocus.current = draftRef.current
-    },
-    onKeyDown: handleKeyDown,
-    placeholder,
-    value: draft,
-  }
-
-  if (multiline) {
-    return (
-      <textarea
-        {...fieldProps}
-        className={cn(
-          'field-sizing-content resize-none',
-          fieldClassName,
-          sizeClassName[size],
-          emptyClassName,
-          className,
-        )}
-        onChange={(event) => writeDraft(event.target.value)}
-        rows={1}
-      />
-    )
+  const submit = (next: string) => {
+    const trimmed = next.trim()
+    if (!trimmed && revertWhenEmpty) return setDraft(confirmed)
+    if (trimmed !== confirmed) onCommit(trimmed || null)
   }
 
   return (
-    <input
-      {...fieldProps}
-      className={cn(
-        fieldClassName,
-        sizeClassName[size],
-        emptyClassName,
-        className,
-      )}
-      onChange={(event) => writeDraft(event.target.value)}
-      type={type}
-    />
+    <Editable
+      className="contents"
+      editing={editing}
+      onEditingChange={setEditing}
+      onSubmit={submit}
+      onValueChange={setDraft}
+      placeholder={placeholder}
+      readOnly={readOnly}
+      render={<span />}
+      value={draft}
+    >
+      <EditableField
+        aria-label={ariaLabel}
+        className={cn(
+          sizeClassName[size],
+          showsEmptyValue && 'text-muted-foreground',
+          className,
+        )}
+        data-slot="editable-text"
+        emptyValue={emptyValue}
+        multiline={multiline}
+        type={type}
+      />
+    </Editable>
   )
 }
