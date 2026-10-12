@@ -2,6 +2,7 @@ export type {
   CollectionCalendarViewProps,
   CollectionDataGridViewProps,
   CollectionDataTableViewProps,
+  CollectionGalleryViewProps,
   CollectionKanbanCardMove,
   CollectionKanbanViewProps,
   CollectionListViewProps,

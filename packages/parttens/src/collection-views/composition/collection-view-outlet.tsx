@@ -17,6 +17,10 @@ import {
 } from '../views/data-grid/components/data-grid'
 import { DataTable, type DataTableProps } from '../views/data-table/data-table'
 import {
+  GalleryView,
+  type GalleryViewProps,
+} from '../views/gallery/components/gallery-view'
+import {
   KanbanView,
   type KanbanViewProps,
 } from '../views/kanban/components/kanban-view'
@@ -36,6 +40,11 @@ export type CollectionDataGridViewProps<TItem extends RowData> =
 
 export type CollectionDataTableViewProps<TItem extends RowData> =
   DataTableProps<TItem>
+
+export type CollectionGalleryViewProps<TItem> = Omit<
+  GalleryViewProps<TItem>,
+  'collection' | 'renderItem'
+>
 
 export interface CollectionKanbanCardMove<TItem> extends KanbanCardMove<TItem> {
   sourceGroup: CollectionGroup<TItem>
@@ -64,11 +73,13 @@ export interface CollectionViewOutletProps<TItem extends RowData> {
   calendar?: CollectionCalendarViewProps<TItem>
   datagrid?: CollectionDataGridViewProps<TItem>
   datatable?: CollectionDataTableViewProps<TItem>
+  gallery?: CollectionGalleryViewProps<TItem>
   kanban?: CollectionKanbanViewProps<TItem>
   list?: CollectionListViewProps<TItem>
   onItemChange?: (
     change: CollectionItemChange<TItem>,
   ) => boolean | Promise<boolean>
+  renderGalleryItem?: (item: TItem) => ReactNode
   renderKanbanItem?: (item: TItem) => ReactNode
   renderListItem: (item: TItem) => ReactNode
 }
@@ -79,9 +90,11 @@ export function CollectionViewOutlet<TItem extends RowData>({
   calendar,
   datagrid,
   datatable,
+  gallery,
   kanban,
   list,
   onItemChange,
+  renderGalleryItem,
   renderKanbanItem,
   renderListItem,
 }: CollectionViewOutletProps<TItem>) {
@@ -174,6 +187,22 @@ export function CollectionViewOutlet<TItem extends RowData>({
     }
 
     return <CalendarView collection={collection} {...calendar} />
+  }
+
+  if (preferences.view === 'gallery') {
+    if (!renderGalleryItem) {
+      throw new Error(
+        'CollectionViewOutlet: a view "gallery" exige a prop `renderGalleryItem`.',
+      )
+    }
+
+    return (
+      <GalleryView
+        collection={collection}
+        renderItem={renderGalleryItem}
+        {...gallery}
+      />
+    )
   }
 
   if (preferences.view === 'list') {

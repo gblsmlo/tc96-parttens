@@ -1,0 +1,152 @@
+{
+  "config": {
+    "iterations": 5,
+    "mountIterations": 3,
+    "threshold": 10,
+    "warmup": 1
+  },
+  "environment": {
+    "cpu": "Apple M4 x10",
+    "date": "2026-10-12T18:06:13.287Z",
+    "dom": "jsdom (no layout)",
+    "domVersion": "26.1.0",
+    "nodeEnv": "development (unset)",
+    "platform": "darwin-arm64",
+    "react": "19.1.1",
+    "runtime": "bun",
+    "runtimeVersion": "1.4.2",
+    "seed": 96,
+    "commit": "d284901"
+  },
+  "harness": "bench-harness v1",
+  "name": "GalleryView",
+  "results": [
+    {
+      "case": "gallery 100",
+      "kind": "mount",
+      "n": 3,
+      "profilerMs": {
+        "max": 5.959894000001441,
+        "median": 3.5447560000011435,
+        "min": 1.4022470000002158,
+        "p95": 5.959894000001441
+      },
+      "renders": {
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        },
+        "items": {
+          "max": 100,
+          "median": 100,
+          "min": 100
+        }
+      },
+      "scenario": "mount",
+      "wallMs": {
+        "max": 11.377291000000014,
+        "median": 4.501250000000027,
+        "min": 1.9298330000000306,
+        "p95": 11.377291000000014
+      },
+      "warmup": 0,
+      "heapMb": 0.6314735412597656
+    },
+    {
+      "case": "gallery 100",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 0.3230020000008835,
+        "median": 0.11391500000092947,
+        "min": 0.09404299999948762,
+        "p95": 0.3230020000008835
+      },
+      "renders": {
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        },
+        "items": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        }
+      },
+      "scenario": "parent re-render",
+      "wallMs": {
+        "max": 0.9786249999999654,
+        "median": 0.7780830000000378,
+        "min": 0.38516599999991286,
+        "p95": 0.9786249999999654
+      },
+      "warmup": 1
+    },
+    {
+      "case": "gallery 1000",
+      "kind": "mount",
+      "n": 3,
+      "profilerMs": {
+        "max": 10.4567860000044,
+        "median": 7.4632920000009335,
+        "min": 6.679328999995505,
+        "p95": 10.4567860000044
+      },
+      "renders": {
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        },
+        "items": {
+          "max": 1000,
+          "median": 1000,
+          "min": 1000
+        }
+      },
+      "scenario": "mount",
+      "wallMs": {
+        "max": 12.173250000000053,
+        "median": 9.013916999999992,
+        "min": 8.522874999999999,
+        "p95": 12.173250000000053
+      },
+      "warmup": 0,
+      "heapMb": 1.6049728393554688
+    },
+    {
+      "case": "gallery 1000",
+      "kind": "interaction",
+      "n": 5,
+      "profilerMs": {
+        "max": 3.997896000002811,
+        "median": 0.5199889999996685,
+        "min": 0.34911100000135775,
+        "p95": 3.997896000002811
+      },
+      "renders": {
+        "commits": {
+          "max": 1,
+          "median": 1,
+          "min": 1
+        },
+        "items": {
+          "max": 0,
+          "median": 0,
+          "min": 0
+        }
+      },
+      "scenario": "parent re-render",
+      "wallMs": {
+        "max": 8.108292000000006,
+        "median": 2.333332999999925,
+        "min": 1.0783330000000433,
+        "p95": 8.108292000000006
+      },
+      "warmup": 1
+    }
+  ],
+  "schema": "bench-result/v1"
+}

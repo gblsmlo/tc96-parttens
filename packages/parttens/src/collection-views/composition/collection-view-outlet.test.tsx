@@ -24,17 +24,19 @@ const collection = {
 
 type OutletProps = Omit<
   Parameters<typeof CollectionViewOutlet<Item>>[0],
-  'collection' | 'renderKanbanItem' | 'renderListItem'
+  'collection' | 'renderGalleryItem' | 'renderKanbanItem' | 'renderListItem'
 >
 
 function Outlet({
   view,
+  withGalleryRenderer = true,
   withKanbanRenderer = true,
   withTable = false,
   ...props
 }: Readonly<
   OutletProps & {
-    view: 'calendar' | 'datatable' | 'kanban'
+    view: 'calendar' | 'datatable' | 'gallery' | 'kanban'
+    withGalleryRenderer?: boolean
     withKanbanRenderer?: boolean
     withTable?: boolean
   }
@@ -52,6 +54,9 @@ function Outlet({
     >
       <CollectionViewOutlet
         collection={collection}
+        {...(withGalleryRenderer
+          ? { renderGalleryItem: (item: Item) => item.title }
+          : {})}
         {...(withKanbanRenderer
           ? { renderKanbanItem: (item: Item) => item.title }
           : {})}
@@ -64,6 +69,13 @@ function Outlet({
 }
 
 describe('CollectionViewOutlet', () => {
+  test('renders the GalleryView for the gallery view', () => {
+    const { container } = render(<Outlet view="gallery" />)
+
+    expect(container.querySelector('[data-slot="gallery-view"]')).toBeTruthy()
+    expect(screen.getByText('Primeiro item')).toBeTruthy()
+  })
+
   test('renders the DataTable for the datatable view', () => {
     render(<Outlet view="datatable" withTable />)
 
@@ -81,6 +93,9 @@ describe('CollectionViewOutlet', () => {
       expect(() => render(<Outlet view="calendar" />)).toThrow(
         'a view "calendar" exige a prop `calendar`',
       )
+      expect(() =>
+        render(<Outlet view="gallery" withGalleryRenderer={false} />),
+      ).toThrow('a view "gallery" exige a prop `renderGalleryItem`')
       expect(() =>
         render(<Outlet view="kanban" withKanbanRenderer={false} />),
       ).toThrow('a view "kanban" exige a prop `renderKanbanItem`')

@@ -1,6 +1,6 @@
 # Collection views pattern
 
-Controlled renderers for one collection: the consumer declares a `CollectionDefinition` (`items`, `getKey`, `getLabel`, `groupings`), `CollectionProvider` holds the `{ view, groupBy }` preferences, and `CollectionViewOutlet` mounts the active view: `KanbanView`, `ListView`, `DataGrid`, `DataTable` or `CalendarView`, each also usable alone. Kanban and Calendar drag with dnd-kit and report the move, which the consumer accepts or rejects; Data Grid and Data Table run on TanStack Table v9 instances from `useDataGrid` and `useDataTable`. The pattern never fetches, sorts, persists or ships CSS; its only state is the uncontrolled preferences, optimistic drag overrides, list and grid collapse state, and the TanStack table state those hooks keep locally.
+Controlled renderers for one collection: the consumer declares a `CollectionDefinition` (`items`, `getKey`, `getLabel`, `groupings`), `CollectionProvider` holds the `{ view, groupBy }` preferences, and `CollectionViewOutlet` mounts the active view: `KanbanView`, `ListView`, `GalleryView`, `DataGrid`, `DataTable` or `CalendarView`, each also usable alone. Kanban and Calendar drag with dnd-kit and report the move, which the consumer accepts or rejects; Data Grid and Data Table run on TanStack Table v9 instances from `useDataGrid` and `useDataTable`. The pattern never fetches, sorts, persists or ships CSS; its only state is the uncontrolled preferences, optimistic drag overrides, list and grid collapse state, and the TanStack table state those hooks keep locally.
 
 ## Map
 
@@ -11,13 +11,13 @@ Controlled renderers for one collection: the consumer declares a `CollectionDefi
 | `types/` | the collection contracts (definition, grouping, group, preferences, item change) |
 | `shared/components/` | toolbar pieces: search, selected view, view settings, filter submenu, presets, `ActionBar` |
 | `shared/lib/` | `projectCollection`, the one function that turns a collection plus a grouping into groups |
-| `views/<view>/` | `calendar`, `data-grid`, `data-table`, `kanban`, `list`; each with its own `index.ts` and a `README.md` holding its benchmark |
+| `views/<view>/` | `calendar`, `data-grid`, `data-table`, `gallery`, `kanban`, `list`; each with its own `index.ts` and a `README.md` holding its benchmark |
 | `test/` | `test/dom.ts`, the JSDOM setup the tests import, and `test/jsdom.d.ts` |
 | `core.ts` | React-free surface: collection, calendar, data-grid and kanban types, kanban drag helpers, date helpers; workspace only, not reached from the barrel |
 
 `views/data-grid/` has its own `AGENTS.md` with its file map and invariants; read it before touching the grid.
 
-Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the five views; each view → its own folders, `shared/lib/project-collection.ts` and `types/`, and in `data-grid` the `ActionBarContext` type from `shared/components/action-bar.tsx`; `shared/` and `store/` → `types/`; views never import each other. Outside the folder, `shared/components/collection-filter-submenu.tsx`, the data-grid density and columns submenus and `views/data-table/data-table-aggregation-cell.tsx` import `packages/parttens/src/shared/components/menu-selection-item.tsx`, and `views/data-grid/components/data-grid-pagination.tsx` imports `packages/parttens/src/shared/components/collection-pagination.tsx`.
+Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the six views; each view → its own folders and `types/`; list and kanban may also import `shared/lib/project-collection.ts`, gallery imports `shared/lib/skeleton-keys.ts`, and data-grid imports the `ActionBarContext` type from `shared/components/action-bar.tsx`; `shared/` and `store/` → `types/`; views never import each other. Outside the folder, `shared/components/collection-filter-submenu.tsx`, the data-grid density and columns submenus and `views/data-table/data-table-aggregation-cell.tsx` import `packages/parttens/src/shared/components/menu-selection-item.tsx`, and `views/data-grid/components/data-grid-pagination.tsx` imports `packages/parttens/src/shared/components/collection-pagination.tsx`.
 
 ## Dependents
 
@@ -31,7 +31,7 @@ Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the f
 
 Collection and outlet:
 
-- `CollectionViewOutlet` throws when the active view is `datagrid`, `datatable`, `calendar` or `kanban` (`renderKanbanItem`) and the matching prop is missing; `projectCollection` throws for `groupBy === null` and for an undeclared dimension. Tests assert the messages.
+- `CollectionViewOutlet` throws when the active view is `datagrid`, `datatable`, `calendar`, `gallery` or `kanban` (`renderKanbanItem`) and the matching prop is missing; `projectCollection` throws for `groupBy === null` and for an undeclared dimension. Tests assert the messages.
 - Prepared `groups` win over `projectCollection` in list and kanban, and an explicit `[]` never falls back to the source items.
 - `kanban.onMoveCard` receives the group of each side, so a handler never parses column ids; a column with no matching group rejects the move. Without it, drag is enabled by `onItemChange` plus `setGroupId` on the active dimension, and a reorder inside one group returns false, because the collection order is the consumer's. `kanban.onMoveCard` wins when both are passed.
 
@@ -42,10 +42,11 @@ Kanban:
 - The whole card drags except interactive descendants; `KanbanCardOpenTrigger` drags only past 5px (touch: 250ms delay, 5px tolerance). The grip handle, visible only on focus, is the keyboard and assistive-technology activator.
 - `KanbanView` always renders the mobile panel and the desktop board and lets CSS pick one, so the active column's cards render twice: `renderCard` must be pure and emit no DOM ids. Below `md` sorting is off; a collapsed column has no drop target.
 - The board drag-scrolls only while card drag is enabled, and a click within 500ms of a drag is suppressed.
-- `KanbanCard` stays an `article` (tested). `KanbanCardSkeleton` and `ListItemSkeleton` wrap the card in an `output` with `aria-busy`, because an `article` cannot be `status`. `KanbanBadge` accepts `tone` and ignores it.
+- `KanbanCard` stays an `article` (tested). `KanbanCardSkeleton`, `GalleryItemSkeleton` and `ListItemSkeleton` wrap the card in an `output` with `aria-busy`, because an `article` cannot be `status`. `KanbanBadge` accepts `tone` and ignores it.
 
-List, calendar and table:
+Gallery, list, calendar and table:
 
+- `GalleryView` renders the flat `collection.items` in source order and never groups, sorts or owns card anatomy. Loading renders `loadingItemCount` skeletons (four by default), and an empty collection renders `emptyMessage` through the COSS `Empty` block.
 - `ListView` renders the flat collection with `h2` titles and grouped lists with `h3`. An empty flat list (`grouping === null`, not loading) renders `emptyMessage` in the COSS `Empty` block, like an empty group. With `collapseEmptyGroups`, a manual choice wins, an untouched group reopens when it gets items, every group stays open while loading, and `onCollapsedGroupIdsChange` reports the effective list.
 - Calendar drops on a day or all-day cell keep the wall-clock time and the absolute duration (DST-safe); time-column drops snap the block's top edge to `snapMinutes`. The override lives until `getItemSchedule` matches it, and a drop resolving to the same window is ignored. Without `onItemReschedule` no handle or draggable marker exists (tested).
 - A calendar item drags from its whole body like a kanban card, except interactive descendants; `CalendarEventChipOpenTrigger` drags only past 5px (touch: 250ms delay, 5px tolerance). The grip handle, visible only on keyboard focus, is the keyboard and assistive-technology activator.
@@ -56,7 +57,7 @@ List, calendar and table:
 - With `enableColumnResizing`, `DataTable` switches to `table-fixed` with a `<colgroup>`: every visible column but the last takes `getSize()`, the last has no width and no handle so it absorbs the remaining space, and the table's `minWidth` is `getTotalSize()`, so it fills the container until the sizes overflow it and the container scrolls. Fixed cells clip with `overflow-hidden`. Without the flag the markup keeps the auto layout.
 - A `DataTable` column with `meta.aggregations` gets a footer menu (none, count, sum) instead of its `footer`. Aggregates read `getPrePaginatedRowModel()`, so they cover every page, like Notion. Count is the row count; sum skips values that are not finite numbers. Without rows or while loading, aggregated cells render nothing, and a footer with only aggregated columns is left out. The choice is uncontrolled through `defaultAggregations` or controlled through `aggregations`, and a choice the column does not list reads as none.
 - `DataTable` wraps the COSS `Table` in `data-slot="data-table"`, the positioned box for two `aria-hidden` fades over the scroll container's edges (issue #127): macOS overlay scrollbars hide while idle and a vertical wheel does not scroll sideways, so the overflow had no cue. `useHorizontalOverflow` reads the container through a ref object, not a state callback ref, so mount stays one commit in the bench.
-- Calendar, List and Data Table run the consumer's renderer in a memoized leaf below the stateful component: it re-runs only when its identity or inputs change, so a renderer that reads other state with a stable identity goes stale.
+- Calendar, Gallery, List and Data Table run the consumer's renderer in a memoized leaf below the stateful component: it re-runs only when its identity or inputs change, so a renderer that reads other state with a stable identity goes stale.
 
 Toolbar:
 
@@ -77,6 +78,7 @@ Toolbar:
 | `data-calendar-date`, `data-today`, `data-outside-month`, `data-calendar-mode` | calendar cells, columns, root | consumers and tests |
 | `data-calendar-item-resize="start\|end"` | the resize buttons on time-grid items | tests and the drag sensor, which never starts a move from an edge; the edge measures its `[data-calendar-date]` column to turn pixels into minutes |
 | `data-collection-grouping`, `data-interactive`, `data-bordered`, `data-layout` | `ListView`, `ListItem`, `DataTable`, view settings mode tab | consumers |
+| `data-slot="gallery-view"` | the `GalleryView` grid root | consumers and tests; not styled outside the view |
 | `data-slot="data-table"`, `data-overflow-start`, `data-overflow-end` | the `DataTable` root | the edge fades (`data-table-overflow-start`, `data-table-overflow-end`) through `group-data-*/data-table` |
 | `data-slot="data-table-aggregation"`, `data-aggregation` | the `DataTable` footer cell of an aggregated column | consumers and tests; with no aggregation the trigger hides behind `group-hover/footer` |
 
@@ -104,11 +106,11 @@ bun scripts/bench/<view>.bench.ts --compare scripts/bench/results/<view>.base.js
 
 Run the bench of each view whose rendering changed. `--gate` exits 1 when a render counter rose or a scenario disappeared; timing only warns. Regenerate a baseline with `--json scripts/bench/results/<view>.base.json` on an idle machine and update the view's README table in the same change. The harness in `scripts/bench/` is copied from the tc96-marketplace `react-component-performance` skill; keep its `bench-harness v1` line.
 
-Stories in `apps/storybook/src/patterns/collection-views/` run axe with `test: 'error'`. Fixtures in `fixtures/` are per usage: Tasks reads `tasks.ts`, Pipeline `deals.ts`, Contacts `contacts.ts` and Calendar `deal-activities.ts` over `deals.ts`. The `views/` stories read `tasks.ts`, except Calendar Interactions, which reads `events.ts`. `tasks.ts` also exports the people, time zone and clock every fixture imports, and the record-dialog stories import `contacts.ts`, so editing either reaches beyond one usage.
+Stories in `apps/storybook/src/patterns/collection-views/` run axe with `test: 'error'`. Fixtures in `fixtures/` are per usage: Tasks reads `tasks.ts`, Pipeline `deals.ts`, Contacts `contacts.ts` and Calendar `deal-activities.ts` over `deals.ts`. The `views/` stories read `tasks.ts`, except Calendar Interactions, which reads `events.ts`, and Gallery, which owns its document records. `tasks.ts` also exports the people, time zone and clock every fixture imports, and the record-dialog stories import `contacts.ts`, so editing either reaches beyond one usage.
 
 The toolbar with the view switcher lives in the Tasks, Pipeline and Contacts usages (`usages/<usage>.stories.tsx`). The Calendar usage and `views/calendar/calendar-interactions.stories.tsx` carry `fixtures/calendar-toolbar.tsx`: period, range and filters, no view switcher.
 
 ## Pointers
 
 - Public API: `index.ts` and the `collection-views` entry of `docs/architecture/public-api-exports.json`. `ListItemHeadingLevelContext` and the kanban drag helpers are not exported from the barrel. Exporting from a view's `hooks/`, `lib/` or an internal component needs a reason recorded in the architecture doc.
-- Decisions: `docs/architecture/tc96-parttens.md`, sections "Acessibilidade dos patterns", "Collection views: benchmark por view", "Calendar, List e Data Table: o renderizador do consumidor numa folha memoizada", "Calendar: `onSelectSlot` para criar a partir de um slot vazio", "Kanban: os dois layouts continuam renderizados", "Data Grid: linhas memoizadas e estado derivado" and "Data Grid: um commit por interação".
+- Decisions: `docs/architecture/tc96-parttens.md`, sections "Acessibilidade dos patterns", "Collection views: benchmark por view", "Gallery: grid controlado para registros", "Calendar, Gallery, List e Data Table: o renderizador do consumidor numa folha memoizada", "Calendar: `onSelectSlot` para criar a partir de um slot vazio", "Kanban: os dois layouts continuam renderizados", "Data Grid: linhas memoizadas e estado derivado" and "Data Grid: um commit por interação".

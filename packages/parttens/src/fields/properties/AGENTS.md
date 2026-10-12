@@ -78,7 +78,7 @@ The pattern sets these attributes and styles none of them through a variant:
 - Every `SelectItem` and `ComboboxItem` in a property (select, person, people, tags, reminders, schedule time, phone country) takes `propertySelectItemClassName` from `shared/property-select-shell.tsx`, which moves the COSS check from the left column to the right one with the `MenuRadioOption` grid (`.75rem`, `gap-4`, `pe-2.5`). `packages/ui` stays untouched; the `Select/Dropdown` and `Tags/Count` stories assert the position with `esperarIndicadorADireita`.
 - The multi-select and phone country popups take `w-max`, so the list is as wide as its longest option; Select popups already grow from the COSS `min-w-(--anchor-width)`.
 - Hover-only affordances pair hover with `group-focus-within` and `pointer-coarse:opacity-100` (or `focus-visible:opacity-100` in popup rows).
-- `scripts/override-exceptions.json` has one entry here: `AvatarFallback` with `bg-muted/40` in `display/person/person-option-content.tsx`. Changing those classes requires updating the entry.
+- `PersonAvatar` keeps its 10px initials and uses the COSS `bg-muted` fallback with a token `border-input` outline, matching avatar-only records without overriding the fallback background. `scripts/override-exceptions.json` registers the `border` and `border-input` classes on `AvatarFallback` with that reason.
 
 ## Verify
 
