@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
 import ts from 'typescript'
 import { files } from './files'
 
@@ -10,7 +11,8 @@ import { files } from './files'
  * ficam com o tema do consumidor. Excecao so com motivo, em
  * scripts/override-exceptions.json.
  *
- * A regra vale para componentes COSS com estilo. Partes sem estilo (os
+ * A regra vale para componentes COSS com estilo e para o CardSurface de
+ * packages/elements, que e a superficie de card dos patterns. Partes sem estilo (os
  * primitivos do base-ui, MenuTrigger, MenuRadioGroup) nao tem o que
  * sobrescrever: estiliza-las e como estilizar um elemento do proprio pattern.
  */
@@ -19,6 +21,10 @@ export interface OverrideException {
   component: string
   className: string
   reason: string
+}
+
+export const styledElements: Record<string, string[]> = {
+  'packages/elements/src/card-surface.tsx': ['CardSurface'],
 }
 
 const roots = ['packages/parttens/src', 'packages/elements/src']
@@ -112,7 +118,31 @@ async function styledExports(uiRoot: string, item: string) {
   return styled
 }
 
-async function cossBindings(ast: ts.SourceFile, uiRoot: string) {
+function resolvedStyledElement(
+  specifier: string,
+  file: string,
+  styled: Record<string, string[]>,
+) {
+  if (specifier.startsWith('@tc96/ui/')) return undefined
+  const resolved = ts.resolveModuleName(
+    specifier,
+    file,
+    compilerOptions,
+    ts.sys,
+  ).resolvedModule?.resolvedFileName
+  if (!resolved) return undefined
+  const real = ts.sys.realpath?.(resolved) ?? resolved
+  for (const [path, names] of Object.entries(styled))
+    if (resolve(path) === resolve(real)) return names
+  return undefined
+}
+
+async function cossBindings(
+  ast: ts.SourceFile,
+  uiRoot: string,
+  file: string,
+  elementModules: Record<string, string[]>,
+) {
   const names = new Set<string>()
   for (const statement of ast.statements) {
     if (
@@ -122,6 +152,17 @@ async function cossBindings(ast: ts.SourceFile, uiRoot: string) {
       continue
     const item = statement.moduleSpecifier.text.match(/^@tc96\/ui\/(.+)$/)?.[1]
     const bindings = statement.importClause?.namedBindings
+    const element = resolvedStyledElement(
+      statement.moduleSpecifier.text,
+      file,
+      elementModules,
+    )
+    if (element && bindings && ts.isNamedImports(bindings)) {
+      for (const specifier of bindings.elements)
+        if (element.includes((specifier.propertyName ?? specifier.name).text))
+          names.add(specifier.name.text)
+      continue
+    }
     if (!item || !bindings || !ts.isNamedImports(bindings)) continue
     const styled = await styledExports(uiRoot, item)
     for (const element of bindings.elements)
@@ -245,7 +286,11 @@ async function classStrings(
   return strings
 }
 
-export async function findOverrides(paths = roots, uiRoot = 'packages/ui/src') {
+export async function findOverrides(
+  paths = roots,
+  uiRoot = 'packages/ui/src',
+  styled = styledElements,
+) {
   const found: (Omit<OverrideException, 'reason'> & { line: number })[] = []
   for (const root of paths) {
     if (!existsSync(root)) continue
@@ -259,7 +304,7 @@ export async function findOverrides(paths = roots, uiRoot = 'packages/ui/src') {
         true,
         ts.ScriptKind.TSX,
       )
-      const coss = await cossBindings(ast, uiRoot)
+      const coss = await cossBindings(ast, uiRoot, file, styled)
       if (!coss.size) continue
       const scope = await scopeOf(file, ast)
       const elements: (ts.JsxOpeningElement | ts.JsxSelfClosingElement)[] = []
