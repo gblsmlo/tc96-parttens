@@ -1,3 +1,4 @@
+
 <div align="center">
 
 # @tc96/parttens
@@ -15,7 +16,7 @@ React patterns without business rules, installed as source on top of your COSS c
 ![Bun](https://img.shields.io/badge/Bun-tests-FBF0DF?style=flat&logo=bun&logoColor=white&labelColor=18181B)
 </div>
 
-<img width="1096" height="570" alt="screenshot" src="https://github.com/user-attachments/assets/fd6faf76-1075-416d-a720-ea9ce41d2d36" />
+<img width="1337" height="754" alt="Screenshot 2026-10-12 at 14 18 51" src="https://github.com/user-attachments/assets/7f2e0024-8ffe-46e1-a0a6-145c56a8ee96" />
 
 ## Overview
 
