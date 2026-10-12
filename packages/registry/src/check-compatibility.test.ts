@@ -117,7 +117,7 @@ function itemUsingDep(content: string): RegistryItem {
 }
 
 test('does not check against another major of a dependency installed later', async () => {
-  // shadcn brings zod 3 into node_modules; the patterns declare zod 4.
+  // Another package brings zod 3 into node_modules; the patterns declare zod 4.
   const root = await consumerWith({
     version: '3.25.0',
     types: 'export declare const legacy: number',

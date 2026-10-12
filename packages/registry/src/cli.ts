@@ -1,13 +1,19 @@
-import { spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
-import { mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises'
-import { createRequire } from 'node:module'
-import { tmpdir } from 'node:os'
+import { readFile, realpath } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
+import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { aggregateBarrel, writeBarrel } from './barrel'
 import { checkCompatibility } from './check-compatibility'
-import { findProjectRoot, readInstallConfig } from './config'
+import { findProjectRoot, readCossConfig, readInstallConfig } from './config'
+import { componentFile, loadItem, missingTheme, resolveItems } from './coss'
+import {
+  detectPackageManager,
+  installCommand,
+  installDependencies,
+  missingDependencies,
+} from './dependencies'
+import { diffLines, planFiles, targetPath, writeFiles } from './files'
 import {
   combineItems,
   omitInstalled,
@@ -17,12 +23,7 @@ import {
   selectPatterns,
 } from './manifest'
 
-const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view] [--force]\nPatterns: ${patternNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers and patterns default to the ui alias's siblings (@acme/ui gives @acme/elements) unless set.\nInstalls from @coss only the COSS components missing from the ui alias.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files are preserved unless you approve shadcn's overwrite prompt.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
-function targetPath(workspace: string, target: string | undefined) {
-  if (!target?.startsWith('~/'))
-    throw new Error(`Invalid registry target: ${target ?? 'missing'}`)
-  return resolve(workspace, target.slice(2))
-}
+const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers and patterns default to the ui alias's siblings (@acme/ui gives @acme/elements) unless set.\nInstalls only the COSS components missing from the ui alias, from registries.@coss in components.json or coss.com. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
 async function main() {
   const args = process.argv.slice(2)
   if (!args.length || args.includes('--help') || args.includes('-h')) {
@@ -36,8 +37,7 @@ async function main() {
     'registry',
   )
   const names: string[] = []
-  const flags: string[] = []
-  let preserveExisting = !process.stdin.isTTY
+  const flags = new Set<string>()
   let force = false
   for (let i = 0; i < args.length; i++) {
     const argument = args[i]
@@ -48,10 +48,17 @@ async function main() {
         throw new Error(`Missing value for ${argument}`)
       if (argument === '--cwd') cwd = resolve(value)
       else registryDirectory = resolve(value)
-    } else if (argument === '--preserve-existing') preserveExisting = true
-    else if (argument === '--force') force = true
-    else if (['--dry-run', '--diff', '--view', '--yes'].includes(argument))
-      flags.push(argument)
+    } else if (argument === '--force') force = true
+    else if (
+      [
+        '--dry-run',
+        '--diff',
+        '--view',
+        '--yes',
+        '--preserve-existing',
+      ].includes(argument)
+    )
+      flags.add(argument)
     else if (argument.startsWith('-'))
       throw new Error(`Unsupported option: ${argument}`)
     else names.push(argument)
@@ -59,6 +66,7 @@ async function main() {
   cwd = findProjectRoot(cwd)
   const selected = selectPatterns(names)
   const configuration = await readInstallConfig(cwd)
+  const coss = await readCossConfig(cwd)
   const items = await Promise.all(
     selected.map(
       async (name) =>
@@ -68,11 +76,31 @@ async function main() {
     ),
   )
   const workspace = await realpath(cwd)
-  const item = omitInstalled(
+  const show = (path: string) => relative(workspace, path)
+  const installed = (component: string) =>
+    existsSync(join(workspace, configuration.paths.ui, `${component}.tsx`))
+  const patterns = omitInstalled(
     prepareItem(combineItems(items), configuration),
-    (component) =>
-      existsSync(join(workspace, configuration.paths.ui, `${component}.tsx`)),
+    installed,
   )
+  const components = await resolveItems(
+    patterns.registryDependencies ?? [],
+    (name) => loadItem(coss.registry, name, workspace),
+    installed,
+  )
+  const item: RegistryItem = {
+    ...patterns,
+    files: [
+      ...components.map((component) =>
+        componentFile(component, configuration.aliases, configuration.paths.ui),
+      ),
+      ...patterns.files,
+    ],
+    dependencies: [
+      ...patterns.dependencies,
+      ...components.flatMap((component) => component.dependencies ?? []),
+    ],
+  }
   for (const file of item.files) {
     let ancestor = targetPath(workspace, file.target)
     while (!existsSync(ancestor)) ancestor = dirname(ancestor)
@@ -98,8 +126,8 @@ async function main() {
       return targets.has(file) || existsSync(file)
     }),
   )
-  const preview = flags.some((flag) =>
-    ['--dry-run', '--diff', '--view'].includes(flag),
+  const preview = ['--dry-run', '--diff', '--view'].some((flag) =>
+    flags.has(flag),
   )
   const before = await checkCompatibility(workspace, item)
   console.log(
@@ -126,71 +154,94 @@ async function main() {
     console.warn('Incompatible, installing anyway because of --force.')
   }
   console.log(
-    item.registryDependencies?.length
-      ? `Missing COSS components, installed by shadcn: ${item.registryDependencies.join(', ')}.`
+    components.length
+      ? `Missing COSS components, installed from ${coss.registry}: ${components.map((component) => component.name).join(', ')}.`
       : 'Every COSS component the patterns use is already installed; keeping yours.',
   )
-  const temporary = await mkdtemp(join(tmpdir(), 'tc96-registry-'))
-  try {
-    const manifest = join(temporary, 'selected.json')
-    const installation =
-      preserveExisting && !preview
-        ? {
-            ...item,
-            files: item.files.filter(
-              (file) => !existsSync(targetPath(workspace, file.target)),
-            ),
-          }
-        : item
-    if (installation.files.length === 0 && !preview) {
-      console.log('All selected files already exist; preserving them.')
-    }
-    if (preview)
-      console.log(
-        `${relative(workspace, barrelPath)}, written after installation unless the consumer wrote that file:\n${barrel}`,
-      )
-    await writeFile(manifest, JSON.stringify(installation, null, 2))
-    const require = createRequire(import.meta.url)
-    const shadcn = require.resolve('shadcn')
-    const result = spawnSync(
-      process.execPath,
-      [shadcn, 'add', manifest, '--cwd', workspace, ...flags],
-      { stdio: 'inherit' },
+  const stylesheet =
+    coss.stylesheet && existsSync(join(workspace, coss.stylesheet))
+      ? await readFile(join(workspace, coss.stylesheet), 'utf8')
+      : undefined
+  const theme = missingTheme(components, stylesheet)
+  if (theme.length)
+    console.warn(
+      `${
+        stylesheet
+          ? `${coss.stylesheet} does not define`
+          : 'components.json names no readable tailwind.css to check for'
+      } theme tokens these COSS components use. tc96 does not edit your CSS; add the ones you need:\n${theme
+        .map(({ item, rules }) => `${item}:\n${rules.join('\n')}`)
+        .join('\n')}`,
     )
-    if (result.status !== 0)
-      throw new Error(
-        `shadcn installation failed (${result.status ?? result.signal}).`,
-      )
-    if (!preview) {
-      const missing = item.files.filter(
-        (file) => !existsSync(targetPath(workspace, file.target)),
-      )
-      if (missing.length)
-        throw new Error(
-          `Installation incomplete: ${missing.map((file) => file.target).join(', ')}`,
-        )
-      const after = await checkCompatibility(workspace, item, true)
-      console.log(`Installed TypeScript compatibility: ${after.status}.`)
-      if (after.status !== 'compatible') {
-        for (const diagnostic of after.diagnostics.slice(0, 20))
-          console.error(diagnostic)
-        throw new Error(
-          'Installation requires consumer fixes; see diagnostics above. Preserved files were not overwritten automatically.',
-        )
-      }
-      const barrelFile = relative(workspace, barrelPath)
-      console.log(
-        (await writeBarrel(barrelPath, barrel)) === 'preserved'
-          ? `${barrelFile} was not generated by tc96-parttens and was preserved; export the installed patterns from it yourself.`
-          : `${barrelFile} exports the installed patterns.`,
-      )
-      console.log(
-        `Installed: ${selected.join(', ')}. Visual and behavioral compatibility still require consumer validation.`,
-      )
+  const planned = await planFiles(workspace, item.files)
+  const dependencies = missingDependencies(workspace, item.dependencies)
+  if (preview) {
+    const labels = {
+      create: 'create',
+      unchanged: 'unchanged',
+      conflict: 'exists and differs, preserved unless you approve',
     }
-  } finally {
-    await rm(temporary, { recursive: true, force: true })
+    for (const file of planned)
+      console.log(`${labels[file.status]}: ${show(file.path)}`)
+    if (flags.has('--view'))
+      for (const file of planned.filter(({ status }) => status !== 'unchanged'))
+        console.log(`--- ${show(file.path)}\n${file.content}`)
+    if (flags.has('--diff'))
+      for (const file of planned.filter(({ status }) => status === 'conflict'))
+        console.log(
+          `--- ${show(file.path)}\n${diffLines(file.current ?? '', file.content)}`,
+        )
+    console.log(
+      dependencies.length
+        ? `Dependencies to install: ${installCommand(workspace, detectPackageManager(workspace), dependencies).join(' ')}`
+        : 'Every npm dependency is already installed.',
+    )
+    console.log(
+      `${show(barrelPath)}, written after installation unless the consumer wrote that file:\n${barrel}`,
+    )
+    return
   }
+  const terminal =
+    process.stdin.isTTY &&
+    !flags.has('--yes') &&
+    !flags.has('--preserve-existing')
+      ? createInterface({ input: process.stdin, output: process.stdout })
+      : undefined
+  const result = await writeFiles(
+    planned,
+    terminal &&
+      (async (path) =>
+        /^y(es)?$/i.test(
+          (
+            await terminal.question(
+              `${show(path)} differs from the registry. Overwrite it? (y/N) `,
+            )
+          ).trim(),
+        )),
+  ).finally(() => terminal?.close())
+  console.log(`Wrote ${result.written.length} files.`)
+  if (result.preserved.length)
+    console.log(
+      `Preserved ${result.preserved.length} existing files that differ from the registry:\n${result.preserved.map((path) => `  ${show(path)}`).join('\n')}`,
+    )
+  if (dependencies.length) installDependencies(workspace, dependencies)
+  const after = await checkCompatibility(workspace, item, true)
+  console.log(`Installed TypeScript compatibility: ${after.status}.`)
+  if (after.status !== 'compatible') {
+    for (const diagnostic of after.diagnostics.slice(0, 20))
+      console.error(diagnostic)
+    throw new Error(
+      'Installation requires consumer fixes; see diagnostics above. Preserved files were not overwritten automatically.',
+    )
+  }
+  console.log(
+    (await writeBarrel(barrelPath, barrel)) === 'preserved'
+      ? `${show(barrelPath)} was not generated by tc96-parttens and was preserved; export the installed patterns from it yourself.`
+      : `${show(barrelPath)} exports the installed patterns.`,
+  )
+  console.log(
+    `Installed: ${selected.join(', ')}. Visual and behavioral compatibility still require consumer validation.`,
+  )
 }
 main().catch((error: unknown) => {
   console.error(error instanceof Error ? error.message : error)

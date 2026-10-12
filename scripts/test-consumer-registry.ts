@@ -13,7 +13,7 @@ import {
 // and leaves its UI untouched. Two runs check that the generated barrel keeps
 // earlier patterns and, once all are installed, exports the workspace
 // aggregate's public API. The consumer lacks one COSS component the patterns
-// use, which shadcn installs from @coss; the ones it has are kept.
+// use, which the CLI installs from @coss; the ones it has are kept.
 const baseline: Record<string, string[]> = JSON.parse(
   await readFile('docs/architecture/public-api-exports.json', 'utf8'),
 )

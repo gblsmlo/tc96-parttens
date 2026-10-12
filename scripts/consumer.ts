@@ -51,7 +51,7 @@ export interface Consumer {
   patterns: string
 }
 
-// Copies apps/example and installs COSS into it the way shadcn would: the
+// Copies apps/example and installs COSS into it the way the CLI does: the
 // locked snapshot in packages/ui, with imports rewritten to the consumer's
 // aliases. The consumer then customizes its button with a marker class.
 export async function createConsumer(name: string): Promise<Consumer> {

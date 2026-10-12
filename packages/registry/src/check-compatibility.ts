@@ -1,6 +1,10 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { resolve } from 'node:path'
 import ts from 'typescript'
+import {
+  compatibleVersion,
+  installedVersion,
+  parseDependency,
+} from './dependencies'
 import type { RegistryItem } from './manifest'
 
 export interface CompatibilityReport {
@@ -10,37 +14,17 @@ export interface CompatibilityReport {
   deferred: string[]
   existingFiles: string[]
 }
-/** Version of a package as Node resolves it from the consumer root. */
-function installedVersion(root: string, name: string): string | undefined {
-  for (let directory = root; ; directory = dirname(directory)) {
-    const manifest = join(directory, 'node_modules', name, 'package.json')
-    if (existsSync(manifest))
-      return JSON.parse(readFileSync(manifest, 'utf8')).version
-    if (dirname(directory) === directory) return undefined
-  }
-}
-
-/** Same major, and same minor below 1.0, as semver ranges treat them. */
-function compatibleVersion(installed: string, declared: string) {
-  const [major, minor] = installed.match(/\d+/g) ?? []
-  const [wantedMajor, wantedMinor] = declared.match(/\d+/g) ?? []
-  return major === wantedMajor && (major !== '0' || minor === wantedMinor)
-}
-
 /**
  * Item dependencies the consumer does not have yet in a compatible version.
- * shadcn installs them, so before that their types say nothing about the
- * consumer: another major can sit in node_modules, e.g. shadcn's own zod 3.
+ * The CLI installs them, so before that their types say nothing about the
+ * consumer: another major can sit in node_modules, brought by another package.
  */
 export function pendingDependencies(root: string, item: RegistryItem) {
-  const pending: { name: string; declared: string; installed?: string }[] = []
+  const pending: { name: string; declared?: string; installed?: string }[] = []
   for (const dependency of item.dependencies) {
-    const separator = dependency.lastIndexOf('@')
-    if (separator <= 0) continue
-    const name = dependency.slice(0, separator)
-    const declared = dependency.slice(separator + 1)
+    const { name, declared } = parseDependency(dependency)
     const installed = installedVersion(root, name)
-    if (!installed || !compatibleVersion(installed, declared))
+    if (!installed || (declared && !compatibleVersion(installed, declared)))
       pending.push({ name, declared, installed })
   }
   return pending
@@ -167,7 +151,7 @@ export async function checkCompatibility(
   }
   const pendingLines = pending.map(
     ({ name, declared, installed: found }) =>
-      `${name}@${declared} is not installed yet${found ? ` (found ${found})` : ''}; its types are checked after installation.`,
+      `${declared ? `${name}@${declared}` : name} is not installed yet${found ? ` (found ${found})` : ''}; its types are checked after installation.`,
   )
   return {
     status: incompatible

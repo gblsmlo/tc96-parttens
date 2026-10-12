@@ -1,7 +1,7 @@
 import { expect, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { patternNames } from './manifest'
@@ -132,6 +132,135 @@ test('a dry run lists pending dependencies once instead of one error per import'
     expect(result.stdout).toContain('1 dependencies are not installed yet')
     expect(result.stdout).toContain('absent-package')
     expect(result.stdout).not.toContain('TS2882')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+const installRegistryDirectory = join(
+  import.meta.dir,
+  '..',
+  'fixtures',
+  'cli-install',
+)
+const stylesheet = ':root {\n  --destructive-foreground: red;\n}\n'
+
+async function installConsumer() {
+  const root = await consumer()
+  const tsconfig = JSON.parse(
+    await readFile(join(root, 'tsconfig.json'), 'utf8'),
+  )
+  tsconfig.compilerOptions.jsx = 'react-jsx'
+  await writeFile(join(root, 'tsconfig.json'), JSON.stringify(tsconfig))
+  await rm(join(root, 'src/ui/button.ts'))
+  await writeFile(
+    join(root, 'src/ui/button.tsx'),
+    'export function Button(props: { variant: "outline" }) { return props }\n',
+  )
+  await writeFile(join(root, 'src/styles.css'), stylesheet)
+  await writeFile(
+    join(root, 'components.json'),
+    JSON.stringify({
+      tailwind: { css: 'src/styles.css' },
+      aliases: { ui: '@consumer/ui', utils: '@consumer/utils' },
+      registries: {
+        '@coss': join(installRegistryDirectory, 'coss/{name}.json'),
+      },
+    }),
+  )
+  return root
+}
+
+function install(root: string, ...flags: string[]) {
+  return spawnSync(
+    process.execPath,
+    [
+      join(import.meta.dir, 'cli.ts'),
+      'add',
+      'checklist',
+      '--cwd',
+      root,
+      '--registry-dir',
+      installRegistryDirectory,
+      ...flags,
+    ],
+    { encoding: 'utf8' },
+  )
+}
+
+test('installs the patterns and the missing COSS components, leaving the CSS and components.json alone', async () => {
+  const root = await installConsumer()
+  try {
+    const components = await readFile(join(root, 'components.json'), 'utf8')
+    const result = install(root)
+    expect(result.stderr).not.toContain('Error')
+    expect(result.status).toBe(0)
+    expect(await readFile(join(root, 'src/ui/badge.tsx'), 'utf8')).toBe(
+      'import { Button } from "@consumer/ui/button"\nexport const badge = Button({ variant: "outline" })\n',
+    )
+    expect(
+      await readFile(join(root, 'src/patterns/checklist/proof.ts'), 'utf8'),
+    ).toBe(
+      'import { badge } from "@consumer/ui/badge"\nexport const proof = badge\n',
+    )
+    expect(
+      await readFile(join(root, 'src/patterns/index.ts'), 'utf8'),
+    ).toContain("export * from './checklist/proof'")
+    expect(result.stdout).toContain('Compatibility: compatible')
+    expect(result.stdout).toContain('coss/{name}.json: badge.')
+    expect(result.stderr).toContain(':root {\n  --info: blue;\n}')
+    expect(result.stderr).toContain('.dark {\n  --info: navy;\n}')
+    expect(result.stderr).not.toContain('--destructive-foreground')
+    expect(await readFile(join(root, 'src/styles.css'), 'utf8')).toBe(
+      stylesheet,
+    )
+    expect(await readFile(join(root, 'components.json'), 'utf8')).toBe(
+      components,
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('preserves an existing file that differs and keeps installed components', async () => {
+  const root = await installConsumer()
+  const proof = join(root, 'src/patterns/checklist/proof.ts')
+  try {
+    expect(install(root).status).toBe(0)
+    await writeFile(proof, 'export const proof = "mine"\n')
+    const result = install(root)
+    expect(result.status).toBe(0)
+    expect(result.stdout).toContain(
+      'Preserved 1 existing files that differ from the registry:\n  src/patterns/checklist/proof.ts',
+    )
+    expect(result.stdout).toContain(
+      'Every COSS component the patterns use is already installed',
+    )
+    expect(await readFile(proof, 'utf8')).toBe('export const proof = "mine"\n')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('a dry run lists the plan and the diff without writing', async () => {
+  const root = await installConsumer()
+  const proof = join(root, 'src/patterns/checklist/proof.ts')
+  try {
+    await mkdir(join(root, 'src/patterns/checklist'), { recursive: true })
+    await writeFile(proof, 'export const proof = "mine"\n')
+    const result = install(root, '--dry-run', '--diff')
+    expect(result.status).toBe(0)
+    expect(result.stdout).toContain('create: src/ui/badge.tsx')
+    expect(result.stdout).toContain(
+      'exists and differs, preserved unless you approve: src/patterns/checklist/proof.ts',
+    )
+    expect(result.stdout).toContain('-export const proof = "mine"')
+    expect(result.stdout).toContain('+export const proof = badge')
+    expect(result.stdout).toContain(
+      'Every npm dependency is already installed.',
+    )
+    expect(existsSync(join(root, 'src/ui/badge.tsx'))).toBe(false)
+    expect(await readFile(proof, 'utf8')).toBe('export const proof = "mine"\n')
   } finally {
     await rm(root, { recursive: true, force: true })
   }

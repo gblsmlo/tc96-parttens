@@ -1,0 +1,16 @@
+{
+  "name": "badge",
+  "type": "registry:ui",
+  "dependencies": [],
+  "registryDependencies": ["@coss/button"],
+  "files": [
+    {
+      "path": "registry/default/ui/badge.tsx",
+      "content": "import { Button } from \"@/registry/default/ui/button\"\nexport const badge = Button({ variant: \"outline\" })\n"
+    }
+  ],
+  "cssVars": {
+    "light": { "destructive-foreground": "red", "info": "blue" },
+    "dark": { "info": "navy" }
+  }
+}

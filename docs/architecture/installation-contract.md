@@ -1,9 +1,11 @@
 # Contrato de instalação
 
-Prova real executada com shadcn 4.21.0: dois itens locais, com uma dependência compartilhada, instalaram três arquivos em `packages/patterns/src` e `packages/visual/src`. Os imports configurados foram preservados.
+O CLI grava os arquivos, busca os componentes COSS e instala as dependências npm com código próprio em `packages/registry/src`, decidido em 2026-10-11 no [ADR 0001](../../.specs/adr/0001-instalador-proprio.md). Até essa data a escrita era delegada ao shadcn 4.21.0; a prova daquela época instalou dois itens locais, com uma dependência compartilhada, em `packages/patterns/src` e `packages/visual/src`, preservando os imports configurados.
 
-Aliases precisam de entradas exatas no tsconfig além dos wildcards. `registry:file` com target `~/packages/...` permite destinos explícitos no monorepo. A camada do produto gera manifests temporários com imports e destinos configurados e delega a escrita ao shadcn. Não existe mecanismo alternativo de cópia.
+Aliases precisam de entradas exatas no tsconfig além dos wildcards. Cada arquivo tem um target `~/<caminho>`, relativo à raiz do consumidor e calculado a partir do diretório que o alias resolve. Um target que sai do workspace é recusado antes de qualquer escrita.
 
-O shadcn decide sobrescrita com prompts sem `--overwrite`. O produto não passa essa flag automaticamente nem usa confirmação global para conflitos. A pré-verificação de exports e tipos tem resultado separado da equivalência visual.
+Arquivo que não existe é criado, arquivo igual é mantido e arquivo diferente é preservado. Só um terminal interativo pergunta, arquivo por arquivo, e `--yes` desliga a pergunta; não há confirmação global nem `--overwrite`. `--dry-run`, `--view` e `--diff` não gravam. A pré-verificação de exports e tipos tem resultado separado da equivalência visual.
 
-O comando usa Node/npm. O registry acompanha o artefato do CLI para não exigir hospedagem durante a validação local. A origem pode ser um registry HTTP no consumo direto pelo shadcn.
+Os componentes COSS que faltam vêm de `registries.@coss` (string com `{name}`) ou de `https://coss.com/ui/r/{name}.json`. O CLI segue as `registryDependencies`, pula os componentes que o consumidor já tem e reescreve os imports para `ui` e `utils`. Tokens de tema são listados, nunca gravados no CSS do consumidor. Um item fora do formato reprova a instalação.
+
+O comando usa Node. As dependências npm que faltam são instaladas com o gerenciador detectado pelo `packageManager` ou pelo lockfile. O registry dos patterns acompanha o artefato do CLI para não exigir hospedagem.

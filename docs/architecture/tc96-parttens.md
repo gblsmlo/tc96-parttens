@@ -174,11 +174,11 @@ O nome npm só importa para o CLI. Decidido em 2026-10-01: `@tc96/parttens`, na 
 Decidido em 2026-10-01. O tc96 reutiliza patterns em projetos que já usam COSS, com a menor sobrescrita de estilo possível. A UI base não é opinativa e usa os componentes COSS sem alterações.
 
 - O COSS vence a API própria. Os patterns usam a API do COSS. Saem `size` `sm | md | lg`, `variant: 'primary'`, `buttonSizes`, `inputSizes` e o `control-radius`. O `Text`, que não existe no COSS, migra para `packages/elements`. O `tc96/ui` público é removido, sem re-export.
-- O consumidor é dono dos componentes COSS. Os patterns declaram `registryDependencies` do COSS como `@coss/<item>`; o CLI deixa de fora as que o projeto já tem, e o shadcn instala as que faltam. O tc96 não distribui UI. Ver [Dependências do COSS](#dependências-do-coss).
+- O consumidor é dono dos componentes COSS. Os patterns declaram `registryDependencies` do COSS como `@coss/<item>`; o CLI deixa de fora as que o projeto já tem e instala as que faltam, sem o shadcn desde 2026-10-11 ([ADR 0001](../../.specs/adr/0001-instalador-proprio.md)). O tc96 não distribui UI. Ver [Dependências do COSS](#dependências-do-coss).
 - O `cn` também é do consumidor. Os imports de `@tc96/utils` são reescritos para o `aliases.utils` do `components.json` do consumidor, e o arquivo não é distribuído.
 - Os patterns não redefinem tema. Tokens, `:root`, `.dark` e utilitários próprios pertencem ao consumidor.
 
-`packages/ui` continua no workspace, privado, como a UI que um consumidor COSS teria. Ele é gerado por `bun run sync:coss`, que grava cada item do registry do COSS como publicado e só troca os aliases de import (`@/registry/default/...`) pelos do workspace, como o `shadcn add` faria. Nunca é editado à mão. O lock `packages/ui/coss.lock.json` registra, por item, a URL `coss.com/ui/r/<item>.json`, o hash do conteúdo publicado e o hash do arquivo gravado. O `check:coss` compara cada arquivo com o lock, e o `check:coss --remote` compara com o registry. O diretório fica fora do Biome. Os patterns só importam `@tc96/ui/<item>` presente no lock.
+`packages/ui` continua no workspace, privado, como a UI que um consumidor COSS teria. Ele é gerado por `bun run sync:coss`, que grava cada item do registry do COSS como publicado e só troca os aliases de import (`@/registry/default/...`) pelos do workspace, com o mesmo módulo que o CLI usa no consumidor (`packages/registry/src/coss.ts`). Nunca é editado à mão. O lock `packages/ui/coss.lock.json` registra, por item, a URL `coss.com/ui/r/<item>.json`, o hash do conteúdo publicado e o hash do arquivo gravado. O `check:coss` compara cada arquivo com o lock, e o `check:coss --remote` compara com o registry. O diretório fica fora do Biome. Os patterns só importam `@tc96/ui/<item>` presente no lock.
 
 Situação em 2026-10-01: os 27 itens de `packages/ui/src` são o COSS sem alterações. Antes, 8 deles divergiam (button, input, input-group, group, calendar, combobox, sheet e textarea) e havia cópias em `compat/`. O COSS fixa `@base-ui/react` 1.8.0 e usa `@daypicker/react` no calendar, e o workspace acompanha essas versões.
 
@@ -233,7 +233,7 @@ apps/
   web/                 templates e páginas da aplicação
 ```
 
-- `ui` e `utils` vêm dos aliases que o shadcn já define. O shadcn instala ali os componentes COSS.
+- `ui` e `utils` são os aliases padrão do `components.json`, o arquivo que o `shadcn init` cria num projeto COSS. O CLI instala ali os componentes COSS que faltam.
 - `elements`, `helpers` e `patterns` são aliases acrescentados ao mesmo objeto `aliases`. O shadcn 4.21 valida `aliases` com um `z.object` não estrito, que aceita e ignora chaves desconhecidas; o objeto de topo é estrito, por isso as chaves novas ficam dentro de `aliases`. O CLI do tc96 lê o arquivo bruto para obter esses três aliases.
 - Imports só descem de camada: `patterns` importa `elements`, `ui`, `utils` e `helpers`; `elements` importa `ui`, `utils` e `helpers`; `ui` não importa nenhuma das outras; `helpers` e `utils` não importam React nem UI.
 - Cada alias precisa de entrada exata e de wildcard nos `paths` do `tsconfig` da raiz, conforme o [contrato de instalação](installation-contract.md).
@@ -248,6 +248,15 @@ Decidido em 2026-10-01, depois de medir o shadcn 4.21 no consumidor de exemplo, 
 - **Reaproveitamento:** o CLI deixa de fora as dependências cujo `<ui>/<item>.tsx` já existe antes de chamar o shadcn. Medido: o shadcn pula arquivo igual, e não sobrescreve variável de tema que o consumidor alterou, mas pergunta antes de sobrescrever um componente personalizado, mesmo com `--yes`. Responder sim apaga a personalização; sem terminal, ele para na pergunta e sai com status 0 sem gravar os arquivos. A pergunta ainda pode aparecer quando um componente que falta depende de outro personalizado, como ao rodar `shadcn add @coss/<item>`. Um componente instalado numa versão antiga do COSS aparece na verificação de tipos depois da instalação.
 - **Persistência dos aliases:** `shadcn add` mantém `elements` e `patterns`. `shadcn init --force` regrava o `components.json` do zero, sem essas chaves e com outro alias `ui`. O CLI avisa sem reaplicar: a mensagem lista as chaves que faltam e cita o `init --force`. Não há outra fonte para reaplicar os valores, e o `ui` alterado precisa de revisão do consumidor. `shadcn apply` não foi medido.
 
+Decidido em 2026-10-11 ([ADR 0001](../../.specs/adr/0001-instalador-proprio.md)): o CLI deixa de chamar o shadcn e instala com código próprio em `packages/registry/src`. As medições acima descrevem o shadcn 4.21 e ficam como histórico. Hoje:
+
+- **Origem:** `registries.@coss` do `components.json`, quando é uma string com `{name}` (URL ou caminho relativo à raiz); sem ela, `https://coss.com/ui/r/{name}.json`. A forma objeto, com `headers`, é recusada. O CLI não grava `registries.@coss`.
+- **Reaproveitamento:** os componentes com `<ui>/<item>.tsx` continuam de fora, inclusive nas `registryDependencies` dos que faltam. Nenhum componente instalado é regravado, então não há pergunta para o COSS. Os que faltam entram como arquivos virtuais na verificação de tipos antes da instalação.
+- **Formato:** cada item tem um único arquivo `registry/default/ui/<item>.tsx`. Mais arquivos, `envVars`, `devDependencies`, `tailwind`, dependência fora de `@coss/` ou import `@/` sem alias reprovam a instalação.
+- **Tema:** medido em 2026-10-11, 5 dos 34 itens do lock declaram `cssVars` (badge, button, field e menu em `light` e `dark`; skeleton em `theme`, com um `@keyframes` em `css`). O CLI não edita o CSS do consumidor: lista os tokens e as regras que o arquivo de `tailwind.css` não menciona, prontos para copiar. A busca é textual e só nesse arquivo.
+- **Dependências npm:** instala as que o `package.json` da raiz do consumidor não declara e as ausentes ou de major incompatível, num comando do gerenciador detectado pelo `packageManager` ou pelo lockfile; `pnpm` com `pnpm-workspace.yaml` recebe `-w`. Um pacote achado só como dependência transitiva ou acima da raiz conta como ausente: medido em 2026-10-11 no `test:consumer:registry`, aceitá-lo deixou duas cópias de `@platejs/core` e reprovou a verificação de tipos do `rich-text-editor`.
+- **Persistência dos aliases:** o CLI não regrava o `components.json`; o aviso sobre o `init --force` continua para quem roda o shadcn por conta própria.
+
 Contrato proposto do comando:
 
 ```sh
@@ -256,7 +265,7 @@ npx @tc96/parttens add collection-views properties
 
 O CLI aceita vários padrões, resolve dependências compartilhadas uma vez e ajusta imports para os pacotes do consumidor. Os imports `@tc96/ui`, `@tc96/utils`, `@tc96/elements`, `@tc96/helpers` e `@tc96/parttens` são reescritos para `aliases.ui`, `aliases.utils`, `aliases.elements`, `aliases.helpers` e `aliases.patterns` do consumidor. Exemplo: `@tc96/ui/button` se torna `@lemind/ui/button`.
 
-Decisão confirmada: utilizar o instalador do shadcn. `tc96-parttens` será uma camada fina de configuração, seleção e verificações; não terá um segundo mecanismo de cópia e resolução de dependências. O registry será compatível com o schema do shadcn. Validar destinos em monorepo e aliases personalizados antes de finalizar esse adaptador. Bun não será exigido para executar o CLI via npm.
+Decisão confirmada: utilizar o instalador do shadcn. `tc96-parttens` será uma camada fina de configuração, seleção e verificações; não terá um segundo mecanismo de cópia e resolução de dependências. O registry será compatível com o schema do shadcn. Validar destinos em monorepo e aliases personalizados antes de finalizar esse adaptador. Bun não será exigido para executar o CLI via npm. Substituída em 2026-10-11 ([ADR 0001](../../.specs/adr/0001-instalador-proprio.md)): o CLI grava os arquivos, busca o COSS e instala as dependências npm com código próprio; o formato do registry continua compatível com o schema do shadcn, mas deixou de ser requisito.
 
 Preservar arquivos existentes por padrão; perguntar antes de sobrescrever. A primeira versão oferece comparação e orientação para incorporar correções manualmente, sem atualização ou mesclagem automática.
 
@@ -321,7 +330,7 @@ O texto de erro, de alerta e do `Badge` usa `destructive-foreground`, que não m
 | UI base é COSS sem alterações, com API COSS; `tc96/ui` removido | Manter a API própria de `tc96/ui` | Reutilizar patterns sobre o COSS do consumidor com a menor sobrescrita |
 | Componentes COSS de posse do consumidor via `registryDependencies` | tc96 mantém cópia vendorizada | O tema e as personalizações do consumidor valem sem cópia paralela |
 | `registryDependencies` como `@coss/<item>` | URL completa do item COSS | Mesma forma que o COSS usa; respeita o endereço de `@coss` configurado pelo consumidor |
-| CLI deixa de fora os componentes COSS já instalados | Passar tudo e deixar o shadcn decidir | O shadcn pergunta antes de sobrescrever componente personalizado, mesmo com `--yes`, e para sem terminal |
+| CLI deixa de fora os componentes COSS já instalados | Passar tudo e deixar o instalador decidir | Componente do consumidor nunca é regravado; até 2026-10-11, o shadcn perguntava antes de sobrescrever componente personalizado, mesmo com `--yes`, e parava sem terminal |
 | Avisar quando `elements` ou `patterns` somem do `components.json`, sem reaplicar | Guardar uma cópia dos aliases | Uma configuração só; o `init --force` também troca o `ui`, que o consumidor precisa revisar |
 | `Text` e outros componentes fora do COSS em `packages/elements`, distribuídos pelo registry com destino configurável | Manter em `packages/ui` | `packages/ui` só contém COSS sem alterações |
 | `Title` removido; `Text` cobre títulos pelas variantes e `size` segue a escala do Tailwind (`xs`…`8xl`, padrão `base`) | Manter `Title` como alias com `font-heading` e `semibold` | Dois nomes para a mesma peça; a escala `sm | md | lg` não cobria os títulos de página e os valores grandes dos widgets |
@@ -330,7 +339,7 @@ O texto de erro, de alerta e do `Badge` usa `destructive-foreground`, que não m
 | Grupos preparados com agrupamento antigo preservado | Remover projeção interna | Separar operações novas sem quebrar comportamento atual |
 | UI compartilhada e destino configurável | UI duplicada por padrão | Reaproveitar a base e as personalizações do consumidor |
 | Correções locais manuais | Mesclagem automática | Escopo definido para a primeira versão |
-| Instalador do shadcn com camada fina do produto | Instalador próprio | Reutilizar o mecanismo adotado pelo COSS |
+| Instalador próprio no CLI; antes "Instalador do shadcn com camada fina do produto", substituída em 2026-10-11 ([ADR 0001](../../.specs/adr/0001-instalador-proprio.md)) | Manter o shadcn, ou imprimir os comandos para o consumidor instalar o COSS e o npm | O CLI já resolvia aliases, destinos, reescrita e tipos; o shadcn trazia Babel, ts-morph, recast, postcss, o SDK de MCP e zod 3, e comportamentos que a doc contornava |
 | Sem Filter Builder nem responsividade | Todo o catálogo e mobile | Exclusões explícitas do usuário |
 | Editor de texto sobre o Plate headless, portado do flash-card em 2026-10-03 | Editor próprio sobre `contenteditable` ou outra biblioteca (Tiptap, Lexical) | Reaproveitar o editor já validado, com menu `/`, barra flutuante, atalhos markdown e vocabulário fechado; a dependência entra no item do registry como o `recharts` |
 | UI do editor feita com COSS sobre plugins do Plate, sem os componentes do registry do Plate | Migrar para o Tiptap | A barra, o select de bloco e o botão de link já saem do COSS sem sobrescrita nem edição em `packages/ui`; o Plate entra só para estado, comandos e o modelo do documento |
@@ -341,7 +350,6 @@ O texto de erro, de alerta e do `Badge` usa `destructive-foreground`, que não m
 ## Pontos ainda em revisão
 
 - Aprovação da estratégia de validação e do limite da verificação de compatibilidade.
-- Configuração e integração do CLI com shadcn, preservando o comando desejado e validando destinos em monorepo.
 - Metas mensuráveis por view e matriz inicial de ambientes SSR/navegadores.
 - Execução da migração conforme o [plano em revisão](../plans/2026-09-29-reestruturacao-tc96-parttens.md).
 
