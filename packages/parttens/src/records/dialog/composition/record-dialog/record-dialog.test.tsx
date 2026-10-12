@@ -196,8 +196,12 @@ test('ignores a second submit while pending', async () => {
   expect(calls).toBe(1)
   pending.resolve(false)
   await waitFor(() =>
-    expect(screen.queryByRole('button', { name: 'Saving' })).toBeNull(),
+    expect(
+      (screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(false),
   )
+  expect(calls).toBe(1)
 })
 
 test('closes through Escape and the cancel button when idle', async () => {
