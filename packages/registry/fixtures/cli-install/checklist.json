@@ -1,0 +1,13 @@
+{
+  "name": "checklist",
+  "type": "registry:block",
+  "dependencies": [],
+  "registryDependencies": ["@coss/badge"],
+  "files": [
+    {
+      "path": "parttens/src/checklist/proof.ts",
+      "type": "registry:file",
+      "content": "import { badge } from \"@tc96/ui/badge\"\nexport const proof = badge\n"
+    }
+  ]
+}

@@ -10,12 +10,12 @@ description: Instale os fontes dos patterns no seu projeto COSS.
 ## Requisitos
 
 - React 19, TypeScript e Tailwind CSS 4.
-- COSS configurado com shadcn, com `components.json` na raiz do monorepo.
+- COSS configurado, com `components.json` na raiz do monorepo. É o arquivo que o `shadcn init` cria; o CLI só o lê e não precisa do shadcn.
 - Node e npm para executar o CLI. Bun não é exigido.
 
 ## Aliases
 
-Acrescente `elements`, `helpers` e `patterns` aos aliases que o shadcn já define:
+Acrescente `elements`, `helpers` e `patterns` aos aliases `ui` e `utils` do `components.json`:
 
 ```json
 {
@@ -35,7 +35,7 @@ Cada alias também precisa de entrada exata e de wildcard em `paths` no
 que o wildcard de cada alias resolve e reescreve os imports para `ui` e `utils`, que
 continuam sendo seus.
 
-O `shadcn init --force` regrava o `components.json` sem `elements`, `helpers`
+Se você usa o shadcn, o `shadcn init --force` regrava o `components.json` sem `elements`, `helpers`
 e `patterns`, e troca o alias `ui`. Se rodar esse comando, acrescente as três
 chaves de novo e revise o `ui`; o CLI avisa quando elas faltam.
 
@@ -53,20 +53,40 @@ Os widgets de finanças, produtividade, CRM e gamificação vêm juntos em `npx 
 
 O editor de texto estilo Notion vem em `npx @tc96/parttens add rich-text-editor`. Ele usa o Plate headless (`platejs` e os plugins `@platejs/basic-nodes`, `@platejs/list-classic`, `@platejs/slash-command` e `@platejs/combobox`), instalados como dependências do pattern.
 
-Os componentes COSS que os patterns usam e que faltam no seu `ui` são
-instalados pelo shadcn a partir de `@coss`, respeitando o endereço que você
-configurar em `registries`. Os que você já tem ficam como estão, inclusive os
-personalizados.
+Os componentes COSS que os patterns usam e que faltam no seu `ui` são baixados
+pelo próprio CLI de `https://coss.com/ui/r/{name}.json`, ou do endereço que você
+configurar em `registries`:
 
-O CLI delega a escrita ao shadcn e reescreve os imports para os seus aliases.
-Depois, gera o `index.ts` no diretório de `patterns`, que exporta todos os
-patterns instalados, inclusive os de execuções anteriores:
+```json
+{
+  "registries": {
+    "@coss": "https://coss.example.com/r/{name}.json"
+  }
+}
+```
+
+O endereço é uma URL ou um caminho relativo à raiz, sempre com `{name}`; a
+forma com `headers` não é suportada. Os componentes que você já tem ficam como
+estão, inclusive os personalizados.
+
+Alguns componentes COSS declaram tokens de tema, como o `--info` do `badge` e o
+`--animate-skeleton` do `skeleton`. O CLI não edita o seu CSS: procura cada
+token no arquivo de `tailwind.css` do `components.json` e lista os que não
+encontrar, prontos para copiar.
+
+O CLI grava os arquivos, reescreve os imports para os seus aliases e instala as
+dependências npm que faltam com o gerenciador do seu lockfile (bun, pnpm, yarn
+ou npm). Depois, gera o `index.ts` no diretório de `patterns`, que exporta todos
+os patterns instalados, inclusive os de execuções anteriores:
 
 ```tsx
 import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
 ```
 
-Arquivos existentes são preservados; o shadcn pergunta antes de sobrescrever.
+Arquivos existentes que diferem são preservados. Num terminal, o CLI pergunta
+antes de sobrescrever cada um; com `--yes` ou sem terminal, preserva sem
+perguntar. `--dry-run` lista o que mudaria, `--view` mostra os arquivos novos e
+`--diff` as diferenças nos existentes, sem gravar nada.
 O `index.ts` é do CLI e é regravado a cada `add`. Se você já tinha um
 `index.ts` seu nesse diretório, o CLI não mexe nele e avisa para exportar os
 patterns instalados por conta própria.

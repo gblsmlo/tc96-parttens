@@ -152,7 +152,7 @@ await writeFile(
       version: '0.12.0',
       description:
         'React patterns without business rules, installed as source on top of your COSS components.',
-      keywords: ['coss', 'shadcn', 'react', 'patterns', 'registry', 'cli'],
+      keywords: ['coss', 'react', 'patterns', 'registry', 'cli'],
       type: 'module',
       license: 'MIT',
       engines: { node: '>=22' },
@@ -160,7 +160,7 @@ await writeFile(
       // Pacote com escopo nasce restrito no npm; o CLI e publico.
       publishConfig: { access: 'public' },
       files: ['cli.js', 'registry', 'README.md', 'LICENSE'],
-      dependencies: { shadcn: '4.21.0', typescript: '6.0.3' },
+      dependencies: { typescript: '6.0.3' },
     },
     null,
     2,

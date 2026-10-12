@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises'
+import { resolveItems } from '../packages/registry/src/coss'
 import {
   type CossLock,
-  type CossRegistryItem,
   fetchItem,
   itemContent,
   lockPath,
@@ -20,19 +20,16 @@ const requested = process.argv.slice(2)
 const queue = requested.length ? requested : Object.keys(lock.items)
 if (!queue.length) throw new Error('Usage: bun scripts/sync-coss.ts <items...>')
 
-const fetched = new Map<string, CossRegistryItem>()
-while (queue.length) {
-  const name = queue.shift() as string
-  if (fetched.has(name)) continue
-  const item = await fetchItem(`${registry}/${name}.json`)
-  fetched.set(name, item)
-  for (const dependency of item.registryDependencies ?? [])
-    queue.push(dependency.replace(/^@coss\//, ''))
-}
+const fetched = await resolveItems(
+  queue,
+  (name) => fetchItem(`${registry}/${name}.json`),
+  () => false,
+)
 
 const next: CossLock = { registry, items: { ...lock.items } }
 const dependencies = new Set<string>()
-for (const [name, item] of fetched) {
+for (const item of fetched) {
+  const { name } = item
   const upstream = itemContent(item)
   const content = normalizeImports(upstream)
   await writeFile(`${sourceDirectory}/${name}.tsx`, content)
@@ -48,5 +45,5 @@ next.items = Object.fromEntries(
 )
 await writeFile(lockPath, `${JSON.stringify(next, null, 2)}\n`)
 console.log(
-  `Synced ${fetched.size} COSS items. npm dependencies: ${[...dependencies].sort().join(', ')}`,
+  `Synced ${fetched.length} COSS items. npm dependencies: ${[...dependencies].sort().join(', ')}`,
 )

@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import ts from 'typescript'
+import { cossSource } from './coss'
 import {
   type Aliases,
   type InstallConfig,
@@ -12,10 +13,10 @@ import {
 
 const requiredAliasNames = ['ui', 'utils'] as const
 
-// The consumer's components.json is the only configuration. shadcn defines
-// ui and utils; elements, helpers and patterns are tc96 keys read from the same
-// aliases object. When one is absent it is derived from the ui alias by
-// replacing its last segment, so "@acme/ui" yields "@acme/patterns".
+// The consumer's components.json is the only configuration. ui and utils are
+// its standard aliases; elements, helpers and patterns are tc96 keys read from
+// the same aliases object. When one is absent it is derived from the ui alias
+// by replacing its last segment, so "@acme/ui" yields "@acme/patterns".
 export function readAliases(components: unknown): Aliases {
   const aliases =
     (components as { aliases?: Partial<Aliases> } | null)?.aliases ?? {}
@@ -42,7 +43,7 @@ export function readAliases(components: unknown): Aliases {
   }
 }
 
-// Files are written where the tsconfig resolves each alias, as shadcn does.
+// Files are written where the tsconfig resolves each alias.
 export function resolveAliasPath(
   root: string,
   alias: string,
@@ -103,4 +104,16 @@ export async function readInstallConfig(root: string): Promise<InstallConfig> {
     ]),
   ) as Record<PathName, string>
   return validateConfig({ aliases, paths })
+}
+
+/** The COSS registry and the stylesheet that components.json names. */
+export async function readCossConfig(root: string) {
+  const components = JSON.parse(
+    await readFile(join(root, 'components.json'), 'utf8'),
+  )
+  const css = components?.tailwind?.css
+  return {
+    registry: cossSource(components),
+    stylesheet: typeof css === 'string' && css ? css : undefined,
+  }
 }

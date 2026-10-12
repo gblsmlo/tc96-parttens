@@ -52,7 +52,6 @@
     "typescript": "6.0.3",
     "esbuild": "0.25.10",
     "@biomejs/biome": "2.3.4",
-    "shadcn": "4.21.0",
     "@dnd-kit/abstract": "0.5.0",
     "@dnd-kit/collision": "0.5.0",
     "@dnd-kit/dom": "0.5.0",

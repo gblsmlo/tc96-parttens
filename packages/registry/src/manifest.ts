@@ -66,7 +66,7 @@ export interface RegistryItem {
   type: string
   files: RegistryFile[]
   dependencies: string[]
-  /** COSS components, as @coss/<item>; shadcn installs the missing ones. */
+  /** COSS components, as @coss/<item>; the CLI installs the missing ones. */
   registryDependencies?: string[]
   $schema?: string
 }
@@ -224,9 +224,8 @@ export function combineItems(items: RegistryItem[]): RegistryItem {
 export function cossDependency(item: string) {
   return `@coss/${item}`
 }
-// shadcn asks before overwriting a COSS component the consumer customized,
-// even with --yes, and stops without a terminal. Components the consumer
-// already has are left out, so it only installs the missing ones.
+// The consumer owns its COSS components, customized or not: the ones it
+// already has are left out, so only the missing ones are installed.
 export function omitInstalled(
   item: RegistryItem,
   installed: (component: string) => boolean,
