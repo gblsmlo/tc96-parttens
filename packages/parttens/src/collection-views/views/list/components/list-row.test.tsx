@@ -75,6 +75,23 @@ describe('ListRow', () => {
     ).toBe(true)
   })
 
+  test('openLabel names the row trigger', () => {
+    const onClick = mock()
+    render(
+      <ListRow
+        onClick={onClick}
+        openLabel="Abrir contato: Carteira"
+        title="Carteira"
+      />,
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Abrir contato: Carteira' }),
+    )
+
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
   test('without onClick there is no button and no hover', () => {
     const { container } = render(<ListRow title="Carteira" />)
 

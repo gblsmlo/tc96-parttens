@@ -37,6 +37,7 @@ export interface ListRowProps extends Omit<ListItemProps, 'title'> {
   icon?: ReactNode
   iconFrame?: ListRowIconFrame
   onClick?: MouseEventHandler<HTMLButtonElement>
+  openLabel?: string
   properties?: ReactNode
   title: ReactNode
   value?: ReactNode
@@ -73,6 +74,7 @@ export function ListRow({
   iconFrame,
   interactive,
   onClick,
+  openLabel,
   properties,
   title,
   value,
@@ -95,6 +97,7 @@ export function ListRow({
         <ListItemTitle>
           {onClick ? (
             <ListItemTitleTrigger
+              aria-label={openLabel}
               className="outline-none after:absolute after:inset-0 after:rounded-[inherit] focus-visible:after:ring-2 focus-visible:after:ring-ring"
               onClick={onClick}
             >
