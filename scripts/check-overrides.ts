@@ -133,7 +133,7 @@ function resolvedStyledElement(
   if (!resolved) return undefined
   const real = ts.sys.realpath?.(resolved) ?? resolved
   for (const [path, names] of Object.entries(styled))
-    if (resolve(path) === resolve(real)) return names
+    if (resolve(ts.sys.realpath?.(path) ?? path) === resolve(real)) return names
   return undefined
 }
 
