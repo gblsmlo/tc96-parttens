@@ -54,7 +54,9 @@ function ListRowDescription({
   return (
     <ListItemDescription>
       {nodes.map((node, position) => (
-        <Fragment key={isValidElement(node) ? node.key : String(node)}>
+        <Fragment
+          key={isValidElement(node) ? node.key : `${position}:${String(node)}`}
+        >
           {position > 0 ? (
             <span aria-hidden="true" className="px-1">
               ·

@@ -47,6 +47,17 @@ describe('ListRow', () => {
     )
   })
 
+  test('keeps repeated description segments', () => {
+    const { container } = render(
+      <ListRow description={['Pendente', 'Pendente']} title="Carteira" />,
+    )
+
+    const description = container.querySelector(
+      '[data-slot="list-item-description"]',
+    )
+    expect(description?.textContent).toBe('Pendente·Pendente')
+  })
+
   test('omits empty slots', () => {
     const { container } = render(<ListRow title="Carteira" description={[]} />)
 
