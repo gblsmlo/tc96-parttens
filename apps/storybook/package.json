@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NODE_OPTIONS=--disable-warning=DEP0205 storybook dev -p 6006 --no-open",
-    "build": "NODE_OPTIONS=--disable-warning=DEP0205 storybook build",
+    "dev": "storybook dev -p 6006 --no-open",
+    "build": "storybook build",
     "lint:ci": "biome ci .storybook src vite.config.ts vitest.config.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
