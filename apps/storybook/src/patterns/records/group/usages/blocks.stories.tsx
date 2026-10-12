@@ -45,6 +45,24 @@ const regionOf = (canvasElement: HTMLElement, name: string) =>
 const listboxClosed = () =>
   waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
 
+const briefLabels = [
+  'Objetivo primário',
+  'Objetivo secundário',
+  'Alvo esperado',
+]
+
+const expectWholeLabels = async (
+  scope: HTMLElement,
+  labels: readonly string[],
+) => {
+  for (const label of labels) {
+    const text = within(scope).getByText(label, {
+      selector: '[data-slot="record-group-row-label"] > span',
+    })
+    await expect(text.scrollWidth).toBeLessThanOrEqual(text.clientWidth)
+  }
+}
+
 export const Tasks: Story = {
   parameters: describe(
     'Tracks work to do: a `Checklist` in `plain` inside a `RecordGroup` in `inset`, so the rows sit in the group card at the same 36px as list rows. Check, rename, reorder, delete and add items.',
@@ -109,9 +127,9 @@ export const Briefing: Story = {
     await expect(getComputedStyle(trigger).textAlign).toBe('start')
 
     await userEvent.click(trigger)
-    const briefing = within(
-      await screen.findByRole('dialog', { name: 'Briefing' }),
-    )
+    const dialog = await screen.findByRole('dialog', { name: 'Briefing' })
+    const briefing = within(dialog)
+    await expectWholeLabels(dialog, briefLabels)
     const status = briefing.getByTestId('brief-status')
     const saveDraft = briefing.getByRole('button', { name: 'Salvar rascunho' })
     const publish = briefing.getByRole('button', { name: 'Publicar versão' })
@@ -160,9 +178,9 @@ export const Versions: Story = {
     await expect(first).not.toHaveAttribute('aria-expanded')
 
     await userEvent.click(first)
-    const preview = within(
-      await screen.findByRole('dialog', { name: 'Versão 1' }),
-    )
+    const dialog = await screen.findByRole('dialog', { name: 'Versão 1' })
+    const preview = within(dialog)
+    await expectWholeLabels(dialog, briefLabels)
     await waitFor(() =>
       expect(preview.getByText('Publicada em 26/09/2026')).toBeVisible(),
     )
@@ -259,6 +277,10 @@ export const Details: Story = {
     'Keeps secondary data: field rows edited in place, with “Sem …” for an empty value.',
   ),
   play: async ({ canvasElement }) => {
+    await expectWholeLabels(
+      within(canvasElement).getByRole('region', { name: 'Mais informações' }),
+      ['Data de nascimento', 'CPF', 'Profissão', 'Origem'],
+    )
     const details = regionOf(canvasElement, 'Mais informações')
     await expect(details.getByRole('textbox', { name: 'CPF' })).toHaveValue(
       '123.456.789-09',

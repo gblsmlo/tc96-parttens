@@ -223,7 +223,9 @@ export const DefaultInteraction: Story = {
 
     for (const row of rows) {
       const label = part(row, 'label').getBoundingClientRect()
+      const text = part(row, 'label').lastElementChild as HTMLElement
       const value = part(row, 'value').getBoundingClientRect()
+      expect(text.scrollWidth).toBeLessThanOrEqual(text.clientWidth)
       expect(value.left).toBeGreaterThanOrEqual(label.right - 0.5)
     }
 
@@ -281,7 +283,7 @@ export const LongLabelStartInteraction: Story = {
 
     expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
     expect(new Set(widths).size).toBe(1)
-    expect(widths[0]).toBeLessThanOrEqual(120)
+    expect(widths[0]).toBeCloseTo(144, 0)
     expect(value).toBeVisible()
     expect(value).toHaveTextContent('Oct 21')
   },
@@ -309,7 +311,7 @@ export const LongLabelBetweenInteraction: Story = {
     const valueBox = valueText.getBoundingClientRect()
 
     expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
-    expect(label.getBoundingClientRect().width).toBeLessThanOrEqual(120)
+    expect(label.getBoundingClientRect().width).toBeLessThanOrEqual(144)
     expect(value).toBeVisible()
     expect(valueBox.width).toBeGreaterThan(0)
     expect(valueBox.left).toBeGreaterThanOrEqual(
