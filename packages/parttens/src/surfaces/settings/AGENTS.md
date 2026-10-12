@@ -12,7 +12,7 @@ Controlled frames for a settings screen: `SettingsSection` (a divided card of ro
 | `test/dom.ts` | the JSDOM setup the tests import; this pattern's own copy |
 | `core.ts` | React-free surface: the prop types, reached from the barrel only as types |
 
-Import direction: `composition/` → `core.ts`. Outgoing: `@tc96/elements/text`, `@tc96/ui/card`, `@tc96/ui/collapsible`, `@tc96/utils`, `lucide-react` and React. The registry item depends on the COSS card and collapsible. `composition/settings-section/settings-section.test.tsx` imports `SettingsRow` by file path.
+Import direction: `composition/` → `core.ts`. Outgoing: `@tc96/elements/text`, `@tc96/elements/card-surface`, `@tc96/ui/collapsible`, `@tc96/utils`, `lucide-react` and React. The registry item depends on the `card-surface` element and the COSS collapsible. `composition/settings-section/settings-section.test.tsx` imports `SettingsRow` by file path.
 
 ## Dependents
 
@@ -37,14 +37,14 @@ Import direction: `composition/` → `core.ts`. Outgoing: `@tc96/elements/text`,
 | `data-slot="settings-section"` | the root, `section` or `div` |
 | `data-slot="settings-section-header"`, `settings-section-actions` | the header row above the card and its right cell, drawn only when `actions` is passed |
 | `data-slot="settings-section-title"`, `settings-section-description` | the `h2` and the `p` inside the header |
-| `data-slot="settings-section-rows"` | the divided wrapper of the rows, inside the COSS `Card` (`data-slot="card"`) |
+| `data-slot="settings-section-rows"` | the divided wrapper of the rows, inside the `CardSurface` (`data-slot="card"`) |
 | `data-slot="settings-row"` | every row |
 | `data-slot="settings-row-start"`, `settings-row-heading`, `settings-row-end` | the three cells of a row, in that order |
 | `data-slot="settings-row-title"`, `settings-row-description` | the two paragraphs inside the heading |
 | `data-slot="settings-collapsed"` | the named collapsible `section` |
 | `data-slot="settings-collapsed-title"`, `settings-collapsed-actions`, `settings-collapsed-items` | the heading, separate actions and panel content |
 
-- The card is the COSS `Card` with no class: its radius, border, background and shadow stay the primitive's, so `scripts/override-exceptions.json` has no entry here. `divide-y px-6` sits on the inner `settings-section-rows` wrapper because `divide-*` on `Card` is a border override; `px-6` is the horizontal padding of the COSS card sections.
+- The card is `CardSurface` with no class: radius (`rounded-lg` by default, `--card-radius`), border, background and shadow stay the surface's, so `scripts/override-exceptions.json` has no entry here. `divide-y px-6` sits on the inner `settings-section-rows` wrapper because `divide-*` on the card is a border override; `px-6` is the horizontal padding of the COSS card sections.
 - `startSlot` sizes only a direct `svg` child (`[&>svg]:size-4`), so an `IconFrame` keeps its own size.
 - The 24px between the text and the control is `gap-3` on the row plus `ms-3` on the end cell. No class is keyed on a `data-slot`.
 - `SettingsCollapsed` uses the muted rounded header with a chevron next to its title. The usage supplies `first:pt-2 last:pb-2` on the group and wraps groups in one child of `SettingsSection`, leaving 8px inside the card without separators between groups.
