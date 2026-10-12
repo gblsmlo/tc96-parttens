@@ -3,8 +3,8 @@ import { CardPanel } from '@tc96/ui/card'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { Amount } from '../shared/amount'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import { TrendIndicator } from '../shared/trend-indicator'
+import { WidgetShell } from '../shared/widget-shell'
 
 export interface AssetStatWidgetProps
   extends Omit<ComponentProps<'div'>, 'children' | 'title'> {
@@ -34,7 +34,7 @@ export function AssetStatWidget({
 }: Readonly<AssetStatWidgetProps>): ReactElement {
   const titleId = useId()
   const card = (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="asset-stat"
@@ -72,7 +72,7 @@ export function AssetStatWidget({
           </div>
         </div>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 
   return tone === 'inverted' ? (

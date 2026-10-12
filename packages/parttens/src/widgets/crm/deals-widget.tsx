@@ -5,12 +5,12 @@ import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { AvatarStack, type AvatarStackPerson } from '../shared/avatar-stack'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import {
   ExpandableList,
   type WidgetExpandProps,
 } from '../shared/expandable-list'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 import type { WidgetTone } from '../types'
 
 export interface DealStage {
@@ -152,7 +152,7 @@ export function DealsWidget({
   const titleId = useId()
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="deals"
@@ -185,6 +185,6 @@ export function DealsWidget({
           </p>
         )}
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

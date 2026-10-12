@@ -7,8 +7,8 @@ import { ScrollAreaPrimitive, ScrollBar } from '@tc96/ui/scroll-area'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId, useState } from 'react'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 
 export type TransactionKind = 'credit' | 'debit'
 
@@ -167,7 +167,7 @@ export function TransactionsWidget({
   )
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-expanded={hidden > 0 ? String(expanded) : undefined}
@@ -235,6 +235,6 @@ export function TransactionsWidget({
           list
         )}
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

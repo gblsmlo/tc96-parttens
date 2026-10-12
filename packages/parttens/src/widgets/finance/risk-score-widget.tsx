@@ -3,10 +3,9 @@ import { MeterPrimitive } from '@tc96/ui/meter'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
-
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import { StatList, type WidgetStat } from '../shared/stat-list'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 import type { WidgetTone } from '../types'
 
 export type RiskScoreStat = WidgetStat
@@ -57,7 +56,7 @@ export function RiskScoreWidget({
     meterLabel ?? (typeof title === 'string' ? title : 'Pontuação')
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="risk-score"
@@ -89,6 +88,6 @@ export function RiskScoreWidget({
           </div>
         </MeterPrimitive.Root>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

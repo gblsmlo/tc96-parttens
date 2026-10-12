@@ -100,7 +100,7 @@ export const checklistListVariants = cva('', {
   },
   variants: {
     variant: {
-      card: 'rounded-xl border border-border/60',
+      card: null,
       plain: 'flex flex-col gap-0.5',
     },
   },
@@ -114,7 +114,7 @@ export const checklistItemVariants = cva(
     },
     variants: {
       variant: {
-        card: 'first:rounded-t-xl last:rounded-b-xl',
+        card: 'first:rounded-t-[calc(var(--card-surface-radius)-1px)] last:rounded-b-[calc(var(--card-surface-radius)-1px)]',
         plain: 'rounded-md',
       },
     },

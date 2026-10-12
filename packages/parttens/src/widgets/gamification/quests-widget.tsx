@@ -6,12 +6,12 @@ import { cn } from '@tc96/utils'
 import { CheckIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import {
   ExpandableList,
   type WidgetExpandProps,
 } from '../shared/expandable-list'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 import type { Quest } from './types'
 
 export interface QuestsWidgetProps
@@ -54,7 +54,7 @@ export function QuestsWidget({
     ) : null)
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="quests"
@@ -125,6 +125,6 @@ export function QuestsWidget({
           )}
         </ExpandableList>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

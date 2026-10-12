@@ -9,12 +9,12 @@ import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { AvatarStack, type AvatarStackPerson } from '../shared/avatar-stack'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import {
   ExpandableList,
   type WidgetExpandProps,
 } from '../shared/expandable-list'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 
 export interface ProjectSubtask {
   done: boolean
@@ -76,7 +76,7 @@ export function ProjectCardWidget({
   const value = Math.round(Math.min(1, Math.max(0, ratio)) * 100)
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="project-card"
@@ -196,6 +196,6 @@ export function ProjectCardWidget({
         ) : null}
         {footer}
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

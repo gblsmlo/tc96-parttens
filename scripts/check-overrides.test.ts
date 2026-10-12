@@ -1,8 +1,8 @@
 import { afterEach, expect, test } from 'bun:test'
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { classify, findOverrides } from './check-overrides'
+import { classify, findOverrides, styledElements } from './check-overrides'
 
 let root = ''
 
@@ -30,7 +30,9 @@ async function overrides(sources: Record<string, string>) {
     await mkdir(dirname(join(root, path)), { recursive: true })
     await writeFile(join(root, path), content)
   }
-  const found = await findOverrides([join(root, 'src')], join(root, 'ui'))
+  const found = await findOverrides([join(root, 'src')], join(root, 'ui'), {
+    [join(root, 'src/elements/card-surface.tsx')]: ['CardSurface'],
+  })
   return found.map(({ className, component }) => `${component} ${className}`)
 }
 
@@ -107,4 +109,66 @@ export const A = () => <Button className={buttonVariants()} />
 `,
     }),
   ).toEqual(['Button coss:button.buttonVariants'])
+})
+
+const surface = `export function CardSurface({ className }) {
+  return <div className={cn("rounded-lg", className)} data-slot="card" />
+}`
+
+test('treats CardSurface as a styled component: radius, border, shadow and color need an exception', async () => {
+  expect(
+    await overrides({
+      'src/elements/card-surface.tsx': surface,
+      'src/a.tsx': `import { CardSurface } from './elements/card-surface'
+export const A = () => <>
+  <CardSurface className="min-w-0 border-transparent" />
+  <CardSurface className="rounded-2xl border-border shadow-md bg-muted" />
+  <CardSurface className={cn('p-4', '[--card-radius:1rem]')} />
+</>
+`,
+    }),
+  ).toEqual([
+    'CardSurface rounded-2xl',
+    'CardSurface border-border',
+    'CardSurface shadow-md',
+    'CardSurface bg-muted',
+  ])
+})
+
+test('CardSurface checks follow a renamed import, a parent-relative path and ignore other modules', async () => {
+  expect(
+    await overrides({
+      'src/elements/card-surface.tsx': surface,
+      'src/elements/icon-frame.tsx': 'export const IconFrame = () => null',
+      'src/deep/a.tsx': `import { CardSurface as Surface } from '../elements/card-surface'
+import { IconFrame } from '../elements/icon-frame'
+export const A = () => <>
+  <Surface className="rounded-full" />
+  <IconFrame className="rounded-full bg-muted" />
+</>
+`,
+    }),
+  ).toEqual(['Surface rounded-full'])
+})
+
+test('documents the limit: a barrel re-export of CardSurface is not followed', async () => {
+  expect(
+    await overrides({
+      'src/elements/card-surface.tsx': surface,
+      'src/elements/index.ts': "export { CardSurface } from './card-surface'",
+      'src/a.tsx': `import { CardSurface } from './elements'
+export const A = () => <CardSurface className="rounded-full" />
+`,
+    }),
+  ).toEqual([])
+})
+
+test('every styled element module exports the names the check lists', async () => {
+  for (const [path, names] of Object.entries(styledElements)) {
+    const source = await readFile(path, 'utf8')
+    for (const name of names)
+      expect(source).toMatch(
+        new RegExp(`export (?:async )?(?:function|const|class) ${name}\\b`),
+      )
+  }
 })

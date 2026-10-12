@@ -5,13 +5,13 @@ import { CardPanel } from '@tc96/ui/card'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { Amount } from '../shared/amount'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import {
   ExpandableList,
   type WidgetExpandProps,
 } from '../shared/expandable-list'
 import { WidgetHeader } from '../shared/widget-header'
 import { WidgetPeriodToggle } from '../shared/widget-period-toggle'
+import { WidgetShell } from '../shared/widget-shell'
 import type { WidgetPeriodOption } from '../types'
 
 export interface PipelineStage {
@@ -73,7 +73,7 @@ export function PipelineWidget<TPeriod extends string = string>({
   )
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="pipeline"
@@ -144,6 +144,6 @@ export function PipelineWidget<TPeriod extends string = string>({
           )}
         </ExpandableList>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

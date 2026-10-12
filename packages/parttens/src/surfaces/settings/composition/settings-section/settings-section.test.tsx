@@ -41,6 +41,9 @@ test('with header it is a region named by the h2 above the card', () => {
     'card',
   )
   expect(
+    container.querySelector('[data-slot="card"]')?.className,
+  ).not.toContain('rounded-2xl')
+  expect(
     container.querySelectorAll(
       '[data-slot="card"] > [data-slot="settings-section-rows"] > [data-slot="settings-row"]',
     ),
@@ -83,11 +86,12 @@ test('without header it is only the card, with no heading or landmark', () => {
 
   expect(screen.queryByRole('region')).toBeNull()
   expect(screen.queryByRole('heading')).toBeNull()
-  expect(
-    container.querySelector(
-      '[data-slot="settings-section"] > [data-slot="card"]',
-    ),
-  ).not.toBeNull()
+  const card = container.querySelector(
+    '[data-slot="settings-section"] > [data-slot="card"]',
+  ) as HTMLElement
+
+  expect(card).not.toBeNull()
+  expect(card.className).toContain('--card-surface-radius')
 })
 
 test('two sections with headers get distinct heading ids', () => {

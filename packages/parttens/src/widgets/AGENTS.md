@@ -1,6 +1,6 @@
 # Widgets pattern
 
-Dashboard cards that show prepared numbers, lists, charts and progress, grouped by domain (`crm`, `finance`, `gamification`, `productivity`) and all mounted on one frame, `CardWidgetShell`, with the same building blocks (`WidgetHeader`, `Amount`, `TrendIndicator`, `WidgetPeriodToggle`, `StatList`, `AvatarStack`, `ExpandableList`, `ProgressRing`, `MetricPill`, `IconFrame`). The consumer passes values already computed and labelled, and receives period changes, expansion, subtask toggles, day selection and link copies through callbacks; which tone a score deserves, which period is active and what the labels say are props. The pattern never fetches, stores derived values or ships CSS; its only state is the uncontrolled expansion of lists, the uncontrolled selected day of `AgendaWidget` and the ticking clock of `WorldClockWidget`.
+Dashboard cards that show prepared numbers, lists, charts and progress, grouped by domain (`crm`, `finance`, `gamification`, `productivity`) and all mounted on one frame, `WidgetShell`, with the same building blocks (`WidgetHeader`, `Amount`, `TrendIndicator`, `WidgetPeriodToggle`, `StatList`, `AvatarStack`, `ExpandableList`, `ProgressRing`, `MetricPill`, `IconFrame`). The consumer passes values already computed and labelled, and receives period changes, expansion, subtask toggles, day selection and link copies through callbacks; which tone a score deserves, which period is active and what the labels say are props. The pattern never fetches, stores derived values or ships CSS; its only state is the uncontrolled expansion of lists, the uncontrolled selected day of `AgendaWidget` and the ticking clock of `WorldClockWidget`.
 
 ## Map
 
@@ -21,14 +21,14 @@ Six files still carry Portuguese JSDoc from before the no-comments rule (`shared
 
 - `packages/parttens/src/index.ts` re-exports `widgets/index`; the stories import from `@tc96/parttens`, not by path.
 - `packages/registry/src/manifest.ts` and `scripts/test-patterns.ts` list `widgets`; `packages/registry/src/manifest.test.ts` asserts the path `parttens/src/widgets/index.ts`. Renaming the folder or the barrel breaks both.
-- `scripts/override-exceptions.json` names `shared/card-widget-shell.tsx` by path; moving it fails `bun run overrides:check`.
+- `WidgetShell` (`shared/widget-shell.tsx`) renders `CardSurface` from `@tc96/elements/card-surface`; the registry item for `widgets` depends on that element.
 
 ## Invariants
 
 Frame and regions:
 
-- Every card widget renders `CardWidgetShell` with `aria-labelledby` pointing at a `useId()` title, so it is a `region` named by its title; tests query `getByRole('region', { name })`. Exceptions: `AssetStatWidget` is named by `name` plus `symbol`, `ContactWidget` by `person.label`, `WorldClockWidget` by `aria-label={label}`. `ProgressHud` (a `section` with a required `aria-label`) and `ProgressFooter` (a plain `div`) do not use the shell.
-- `widgets.test.tsx` asserts the shell keeps `border-border/80`, `shadow-none`, `before:hidden` and the consumer's `className`, and drops the Card's `shadow-xs`.
+- Every card widget renders `WidgetShell` with `aria-labelledby` pointing at a `useId()` title, so it is a `region` named by its title; tests query `getByRole('region', { name })`. Exceptions: `AssetStatWidget` is named by `name` plus `symbol`, `ContactWidget` by `person.label`, `WorldClockWidget` by `aria-label={label}`. `ProgressHud` (a `section` with a required `aria-label`) and `ProgressFooter` (a plain `div`) do not use the shell.
+- `widgets.test.tsx` asserts the shell is a `section[data-slot="card"]` with `border` and `border-transparent` and neither `border-border/80` nor `border-0`, keeps `shadow-xs/5` and the consumer's `className`.
 - `tone="inverted"` on `MetricWidget`, `AssetStatWidget` and `TaskProgressWidget` wraps the card in `<div className="dark contents">` and sets `data-tone` on the shell; the dark palette comes from the consumer's theme, not from the pattern.
 
 Numbers:
@@ -68,7 +68,7 @@ No class is keyed on a `data-*` attribute (no `data-*:` or `group-data-*:` varia
 | `data-expanded="true\|false"` | `[data-slot=expandable-list]` and the `TransactionsWidget` shell, only when items exceed `visibleCount` |
 | `data-empty`, `data-over`, `data-kind`, `data-done`, `data-unlocked`, `data-active`, `data-today`, `data-channel` | progress ring, budget category, transaction item, quest, achievement, streak day, contact channel |
 
-- `CardWidgetShell` is the only place for card radius, border and shadow. `scripts/override-exceptions.json` has two entries for it (`component: "Card"`): `border-border/80`, because the widget gives up the Card shadow and needs a lighter border, and `rounded-lg`, to match the Kanban card and column `--radius` instead of the Card's `rounded-2xl`. Changing either class requires updating its entry; `shadow-none before:hidden` is a neutral override and needs none.
+- `CardSurface` owns card radius, border and shadow; `WidgetShell` adds only `min-w-0 border-transparent`. The border is transparent, not `border-0`, so the fill area keeps its 1px inset and the `before:` highlight corner stays aligned. `border-transparent` is a neutral override: `scripts/override-exceptions.json` has no entry for the shell. Borderless widgets separate from the page at about 1.04:1 light and 1.05:1 dark; that is a consumer token note (`--card` or shadow), not a pattern fix.
 - Colors only from theme tokens and the `--chart-1` to `--chart-5` variables, never palette classes. An item without `color` gets `var(--chart-${(index % 5) + 1})`; gamification defaults to `var(--warning-foreground)` and `var(--success-foreground)`.
 - The `sm` `AvatarStack` uses `text-[0.625rem]`, the single spelling for ~10px text across the patterns until the consumer adds a `--text-2xs` token.
 

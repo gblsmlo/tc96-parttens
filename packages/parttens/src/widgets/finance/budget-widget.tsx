@@ -6,13 +6,13 @@ import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { Amount } from '../shared/amount'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import {
   ExpandableList,
   type WidgetExpandProps,
 } from '../shared/expandable-list'
 import { WidgetHeader } from '../shared/widget-header'
 import { WidgetPeriodToggle } from '../shared/widget-period-toggle'
+import { WidgetShell } from '../shared/widget-shell'
 import type { WidgetPeriodOption } from '../types'
 
 export interface BudgetCategory {
@@ -75,7 +75,7 @@ export function BudgetWidget<TPeriod extends string = string>({
   )
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="budget"
@@ -167,6 +167,6 @@ export function BudgetWidget<TPeriod extends string = string>({
           )}
         </ExpandableList>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

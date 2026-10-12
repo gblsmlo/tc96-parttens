@@ -5,12 +5,12 @@ import { Calendar } from '@tc96/ui/calendar'
 import { CardPanel } from '@tc96/ui/card'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId, useState } from 'react'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import {
   ExpandableList,
   type WidgetExpandProps,
 } from '../shared/expandable-list'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 
 export interface AgendaEvent {
   color?: string
@@ -75,7 +75,7 @@ export function AgendaWidget({
   const dayEvents = events.filter((event) => event.date === currentKey)
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="agenda"
@@ -141,6 +141,6 @@ export function AgendaWidget({
           </p>
         )}
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

@@ -18,7 +18,7 @@ const {
   AssetListItem,
   AssetStatWidget,
   BalanceWidget,
-  CardWidgetShell,
+  WidgetShell,
   MarketShareWidget,
   RiskScoreWidget,
   TrendIndicator,
@@ -184,22 +184,32 @@ test('balance widget describes its chart for screen readers', () => {
   expect(periods).toEqual(['1m'])
 })
 
-test('card widget shell drops the native shadow and strengthens the border', () => {
+test('widget shell keeps a transparent border and the card shadow', () => {
   const { container } = render(
-    <CardWidgetShell aria-label="Moldura" className="p-2">
+    <WidgetShell aria-label="Moldura" className="p-2">
       conteúdo
-    </CardWidgetShell>,
+    </WidgetShell>,
   )
   const shell = container.querySelector('section[data-slot="card"]')
   expect(shell).toBeTruthy()
+  const tokens = (shell?.className ?? '').split(/\s+/)
   for (const token of [
-    'border-border/80',
-    'shadow-none',
-    'before:hidden',
+    'border',
+    'border-transparent',
+    'shadow-xs/5',
+    'not-dark:bg-clip-padding',
+    'bg-card',
+    'min-w-0',
     'p-2',
   ])
-    expect(shell?.className).toContain(token)
-  expect(shell?.className).not.toContain('shadow-xs')
+    expect(tokens).toContain(token)
+  for (const token of [
+    'border-border/80',
+    'border-0',
+    'shadow-none',
+    'before:hidden',
+  ])
+    expect(tokens).not.toContain(token)
   expect(screen.getByRole('region', { name: 'Moldura' })).toBeTruthy()
 })
 

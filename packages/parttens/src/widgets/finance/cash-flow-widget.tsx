@@ -13,10 +13,10 @@ import {
   YAxis,
 } from 'recharts'
 import { Amount } from '../shared/amount'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import { StatList } from '../shared/stat-list'
 import { WidgetHeader } from '../shared/widget-header'
 import { WidgetPeriodToggle } from '../shared/widget-period-toggle'
+import { WidgetShell } from '../shared/widget-shell'
 import type { WidgetPeriodOption } from '../types'
 
 export interface CashFlowPoint {
@@ -119,7 +119,7 @@ export function CashFlowWidget<TPeriod extends string = string>({
   )
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="cash-flow"
@@ -242,6 +242,6 @@ export function CashFlowWidget<TPeriod extends string = string>({
           </ul>
         </div>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

@@ -11,8 +11,6 @@ export type { AmountProps } from './amount'
 export { Amount } from './amount'
 export type { AvatarStackPerson, AvatarStackProps } from './avatar-stack'
 export { AvatarStack } from './avatar-stack'
-export type { CardWidgetShellProps } from './card-widget-shell'
-export { CardWidgetShell } from './card-widget-shell'
 export type {
   ExpandableListProps,
   WidgetExpandProps,
@@ -37,3 +35,5 @@ export type {
 export { TrendIndicator } from './trend-indicator'
 export type { WidgetPeriodToggleProps } from './widget-period-toggle'
 export { WidgetPeriodToggle } from './widget-period-toggle'
+export type { WidgetShellProps } from './widget-shell'
+export { WidgetShell } from './widget-shell'

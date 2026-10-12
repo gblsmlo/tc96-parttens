@@ -1,6 +1,5 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/react-vite'
 import {
-  CardWidgetShell,
   clampRatio,
   formatAmount,
   IconFrame,
@@ -9,6 +8,7 @@ import {
   StatList,
   TrendIndicator,
   WidgetPeriodToggle,
+  WidgetShell,
 } from '@tc96/parttens'
 import { Badge } from '@tc96/ui/badge'
 import { CardPanel } from '@tc96/ui/card'
@@ -158,7 +158,7 @@ function ProgressCard({
 function ComparisonCard() {
   const titleId = useId()
   return (
-    <CardWidgetShell aria-labelledby={titleId} data-widget="metric-comparison">
+    <WidgetShell aria-labelledby={titleId} data-widget="metric-comparison">
       <CardPanel className="grid gap-4 p-5">
         <h3 className="text-muted-foreground text-sm" id={titleId}>
           Revenue
@@ -178,7 +178,7 @@ function ComparisonCard() {
           ]}
         />
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }
 
@@ -239,7 +239,7 @@ function DonutCard({
   const titleId = useId()
   const ratio = clampRatio(used, total)
   return (
-    <CardWidgetShell aria-labelledby={titleId} data-widget="metric-donut">
+    <WidgetShell aria-labelledby={titleId} data-widget="metric-donut">
       <CardPanel className="grid gap-4 p-5">
         <h3 className="text-muted-foreground text-sm" id={titleId}>
           Storage used
@@ -259,7 +259,7 @@ function DonutCard({
           </div>
         </div>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }
 

@@ -7,8 +7,8 @@ import { MailIcon, MessageCircleIcon, PhoneIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import type { AvatarStackPerson } from '../shared/avatar-stack'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import type { WidgetExpandProps } from '../shared/expandable-list'
+import { WidgetShell } from '../shared/widget-shell'
 import { type Activity, ActivityTimeline } from './activity-timeline'
 
 export interface ContactChannelLabels {
@@ -84,7 +84,7 @@ export function ContactWidget({
   ].filter((channel) => channel !== null)
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="contact"
@@ -167,6 +167,6 @@ export function ContactWidget({
           </div>
         ) : null}
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

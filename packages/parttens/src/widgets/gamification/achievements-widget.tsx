@@ -3,12 +3,12 @@ import { CardPanel } from '@tc96/ui/card'
 import { LockKeyholeIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import {
   ExpandableList,
   type WidgetExpandProps,
 } from '../shared/expandable-list'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 import type { Achievement } from './types'
 
 export interface AchievementsWidgetProps
@@ -44,7 +44,7 @@ export function AchievementsWidget({
   )
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="achievements"
@@ -99,6 +99,6 @@ export function AchievementsWidget({
           )}
         </ExpandableList>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

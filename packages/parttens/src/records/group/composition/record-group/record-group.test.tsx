@@ -380,8 +380,45 @@ test('defaults to the plain variant and exposes the variant as data-variant', ()
   ).toBe('card')
 })
 
-test('inset frames the content in a card and keeps the header outside it', () => {
-  mount({ variant: 'inset' })
+test('card is the only child of the section and holds the header, the content and the footer', () => {
+  mount({ footer: <p>Footer</p>, variant: 'card' })
+
+  const region = screen.getByRole('region', { name: 'Details' })
+  const card = region.firstElementChild as HTMLElement
+
+  expect(region.getAttribute('data-slot')).toBe('record-group')
+  expect(region.children).toHaveLength(1)
+  expect(card.getAttribute('data-slot')).toBe('card')
+  expect(card.className).not.toContain('rounded-2xl')
+  for (const slot of [
+    'record-group-header',
+    'record-group-content',
+    'record-group-footer',
+  ]) {
+    expect(card.querySelector(`[data-slot="${slot}"]`)).not.toBeNull()
+  }
+})
+
+test('only inset keeps the 4px gap between the header and the card', () => {
+  for (const variant of ['card', 'inset', 'plain'] as const) {
+    const { unmount } = mount({ variant })
+    const region = screen.getByRole('region', { name: 'Details' })
+
+    expect(region.className.split(' ').includes('gap-1')).toBe(
+      variant === 'inset',
+    )
+    unmount()
+  }
+})
+
+test('plain draws no card surface', () => {
+  mount()
+
+  expect(document.querySelector('[data-slot="card"]')).toBeNull()
+})
+
+test('inset frames the content in a card and keeps the header and the footer outside it', () => {
+  mount({ footer: <p>Footer</p>, variant: 'inset' })
 
   const region = screen.getByRole('region', { name: 'Details' })
   const content = region.querySelector(
@@ -393,10 +430,21 @@ test('inset frames the content in a card and keeps the header outside it', () =>
 
   expect(region.getAttribute('data-variant')).toBe('inset')
   expect(region.className).not.toContain('border')
-  expect(content.className).toContain('rounded-lg border bg-card')
+  const card = content.parentElement as HTMLElement
+  const footer = region.querySelector(
+    '[data-slot="record-group-footer"]',
+  ) as HTMLElement
+
+  expect(card.getAttribute('data-slot')).toBe('card')
+  expect(region.querySelectorAll('[data-slot="card"]')).toHaveLength(1)
+  expect(card.children).toHaveLength(1)
+  expect(card.firstElementChild).toBe(content)
+  expect(card.contains(header)).toBe(false)
+  expect(card.contains(footer)).toBe(false)
+  expect(region.contains(footer)).toBe(true)
+  expect(content.className).not.toContain('rounded')
   expect(content.className).not.toContain('divide')
   expect(content.className).not.toContain('after:')
-  expect(content.contains(header)).toBe(false)
 })
 
 test('keeps the empty padding on every variant', async () => {

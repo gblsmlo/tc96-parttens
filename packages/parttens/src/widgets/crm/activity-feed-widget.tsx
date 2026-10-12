@@ -1,9 +1,9 @@
 import { CardPanel } from '@tc96/ui/card'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import type { WidgetExpandProps } from '../shared/expandable-list'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 import { type Activity, ActivityTimeline } from './activity-timeline'
 
 export interface ActivityFeedWidgetProps
@@ -29,7 +29,7 @@ export function ActivityFeedWidget({
   const titleId = useId()
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="activity-feed"
@@ -46,6 +46,6 @@ export function ActivityFeedWidget({
           {...(expand ? { expand } : {})}
         />
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

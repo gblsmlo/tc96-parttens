@@ -116,11 +116,29 @@ test('renders checklist items as flat rows inside one outlined list', () => {
   )
 
   const list = document.querySelector('[data-slot="checklist-items"]')
-  expect(list?.className).toContain('rounded-xl')
-  expect(list?.className).toContain('border')
-  expect(list?.querySelectorAll('[data-slot="card"]')).toHaveLength(0)
+  const card = list?.parentElement
+  expect(list?.tagName).toBe('OL')
+  expect(card?.getAttribute('data-slot')).toBe('card')
+  expect(card?.className).toContain('rounded-(--card-surface-radius)')
+  expect(card?.className).not.toContain('overflow-hidden')
+  expect(list?.hasAttribute('class')).toBe(false)
+  for (const frameClass of ['rounded', 'border', 'bg-card', 'shadow']) {
+    expect(list?.className ?? '').not.toContain(frameClass)
+  }
+  expect(
+    document.querySelectorAll(
+      'section[data-slot="checklist"] [data-slot="card"]',
+    ),
+  ).toHaveLength(1)
   const firstRow = list?.querySelector('li')
   expect(firstRow?.className).toContain('hover:bg-muted/60')
+  expect(firstRow?.className).toContain(
+    'first:rounded-t-[calc(var(--card-surface-radius)-1px)]',
+  )
+  expect(firstRow?.className).toContain(
+    'last:rounded-b-[calc(var(--card-surface-radius)-1px)]',
+  )
+  expect(firstRow?.className).not.toContain('rounded-xl')
 })
 
 test('opens an item from its row while keeping completion separate', () => {
@@ -242,11 +260,14 @@ test('card frames the list and keeps the drag handle outside the row', () => {
 
   const section = screen.getByRole('region', { name: 'Checklist' })
   const list = section.querySelector('[data-slot="checklist-items"]')
+  const card = list?.parentElement
   const handle = handleOf('Primeira etapa')
 
   expect(section.getAttribute('data-variant')).toBe('card')
   expect(section.className).toContain('pt-2 pb-4')
-  expect(list?.className).toContain('border')
+  expect(card?.getAttribute('data-slot')).toBe('card')
+  expect(card?.className).toContain('border')
+  expect(card?.className).not.toContain('overflow-hidden')
   expect(handle.closest('[data-slot="checklist-row"]')).toBeNull()
   expect(handle.className).toContain('-left-8')
 })
@@ -265,6 +286,7 @@ test('plain drops the frame and puts the drag handle at the end of the row', () 
   expect(section.getAttribute('data-variant')).toBe('plain')
   expect(section.className).not.toContain('pt-2')
   expect(list?.className).not.toContain('border')
+  expect(section.querySelector('[data-slot="card"]')).toBeNull()
   expect(item.className).toContain('rounded-md')
   expect(row.className).toContain('h-9 px-2')
   expect(row.contains(handle)).toBe(true)
