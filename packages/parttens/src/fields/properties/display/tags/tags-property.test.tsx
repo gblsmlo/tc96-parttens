@@ -282,3 +282,74 @@ describe('TagsProperty', () => {
     ).toBeNull()
   })
 })
+
+const placementsCountLabel = (count: number) =>
+  `${count} ${count === 1 ? 'posicionamento' : 'posicionamentos'}`
+
+describe('TagsProperty countLabel', () => {
+  test('names what the editable count trigger counts', () => {
+    const { rerender } = render(
+      <TagsProperty
+        ariaLabel="Posicionamentos"
+        countLabel={placementsCountLabel}
+        display="count"
+        onValueChange={() => undefined}
+        options={options}
+        value={[]}
+        variant="badge"
+      />,
+    )
+
+    const trigger = (name: string) => screen.getByRole('button', { name })
+    expect(trigger('Posicionamentos: 0 posicionamentos').textContent).toBe(
+      '0 posicionamentos',
+    )
+
+    rerender(
+      <TagsProperty
+        ariaLabel="Posicionamentos"
+        countLabel={placementsCountLabel}
+        display="count"
+        onValueChange={() => undefined}
+        options={options}
+        value={[options[0].value]}
+        variant="badge"
+      />,
+    )
+    expect(trigger('Posicionamentos: 1 posicionamento').textContent).toBe(
+      '1 posicionamento',
+    )
+
+    rerender(
+      <TagsProperty
+        ariaLabel="Posicionamentos"
+        countLabel={placementsCountLabel}
+        display="count"
+        onValueChange={() => undefined}
+        options={options}
+        value={options.map((option) => option.value)}
+        variant="badge"
+      />,
+    )
+    expect(trigger('Posicionamentos: 2 posicionamentos').textContent).toBe(
+      '2 posicionamentos',
+    )
+  })
+
+  test('renders the custom text on the read-only count surface', () => {
+    render(
+      <TagsProperty
+        ariaLabel="Posicionamentos"
+        countLabel={placementsCountLabel}
+        display="count"
+        options={options}
+        readOnly
+        value={options.map((option) => option.value)}
+        variant="badge"
+      />,
+    )
+
+    expect(screen.getByText('2 posicionamentos')).toBeTruthy()
+    expect(screen.queryByText('2 Tags')).toBeNull()
+  })
+})
