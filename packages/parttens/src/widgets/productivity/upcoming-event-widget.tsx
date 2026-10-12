@@ -8,7 +8,7 @@ import { cn } from '@tc96/utils'
 import { CopyIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
-import { CardWidgetShell } from '../shared/card-widget-shell'
+import { WidgetShell } from '../shared/widget-shell'
 
 const halfHourMs = 30 * 60 * 1000
 
@@ -88,7 +88,7 @@ export function UpcomingEventWidget({
   )
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="upcoming-event"
@@ -197,6 +197,6 @@ export function UpcomingEventWidget({
           </div>
         ) : null}
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

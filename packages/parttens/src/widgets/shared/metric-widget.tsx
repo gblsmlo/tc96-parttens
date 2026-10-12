@@ -3,8 +3,8 @@ import { CardPanel } from '@tc96/ui/card'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { Amount } from './amount'
-import { CardWidgetShell } from './card-widget-shell'
 import { TrendIndicator } from './trend-indicator'
+import { WidgetShell } from './widget-shell'
 
 export interface MetricWidgetProps
   extends Omit<ComponentProps<'div'>, 'children' | 'title'> {
@@ -34,7 +34,7 @@ export function MetricWidget({
 }: Readonly<MetricWidgetProps>): ReactElement {
   const titleId = useId()
   const card = (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-tone={tone}
@@ -75,7 +75,7 @@ export function MetricWidget({
         </div>
         {children}
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 
   return tone === 'inverted' ? (

@@ -5,10 +5,11 @@ import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import { ChecklistDraftRow } from '../../components/checklist-draft-row'
 import { ChecklistHeader } from '../../components/checklist-header'
+import { ChecklistList } from '../../components/checklist-list'
 import { ChecklistReadOnlyRow } from '../../components/checklist-read-only-row'
 import { ChecklistRow } from '../../components/checklist-row'
 import { handleDragEnd } from '../../lib/sortable'
-import { checklistListVariants, checklistVariants } from '../../lib/variants'
+import { checklistVariants } from '../../lib/variants'
 import type { ChecklistProps } from '../../types/index'
 
 export function Checklist({
@@ -57,10 +58,7 @@ export function Checklist({
       />
 
       {readOnly ? (
-        <ol
-          className={checklistListVariants({ variant })}
-          data-slot="checklist-items"
-        >
+        <ChecklistList variant={variant}>
           {items.map((item) => (
             <ChecklistReadOnlyRow
               density={density}
@@ -73,15 +71,12 @@ export function Checklist({
               timeZone={timeZone}
             />
           ))}
-        </ol>
+        </ChecklistList>
       ) : (
         <DragDropProvider
           onDragEnd={(event) => handleDragEnd(event, items, onItemMove)}
         >
-          <ol
-            className={checklistListVariants({ variant })}
-            data-slot="checklist-items"
-          >
+          <ChecklistList variant={variant}>
             {items.map((item, index) => (
               <ChecklistRow
                 density={density}
@@ -115,7 +110,7 @@ export function Checklist({
               onTitleChange={onNewItemTitleChange}
               title={newItemTitle}
             />
-          </ol>
+          </ChecklistList>
         </DragDropProvider>
       )}
 

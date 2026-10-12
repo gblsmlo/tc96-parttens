@@ -5,10 +5,10 @@ import { CardPanel } from '@tc96/ui/card'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import { TrendIndicator } from '../shared/trend-indicator'
 import { WidgetHeader } from '../shared/widget-header'
 import { WidgetPeriodToggle } from '../shared/widget-period-toggle'
+import { WidgetShell } from '../shared/widget-shell'
 import type { WidgetPeriodOption } from '../types'
 
 export interface MarketShareSegment {
@@ -123,7 +123,7 @@ export function MarketShareWidget<TPeriod extends string = string>({
   const titleId = useId()
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="market-share"
@@ -159,6 +159,6 @@ export function MarketShareWidget<TPeriod extends string = string>({
         </div>
         {children}
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

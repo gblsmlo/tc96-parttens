@@ -13,10 +13,10 @@ import {
   YAxis,
 } from 'recharts'
 import { Amount } from '../shared/amount'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import { TrendIndicator } from '../shared/trend-indicator'
 import { WidgetHeader } from '../shared/widget-header'
 import { WidgetPeriodToggle } from '../shared/widget-period-toggle'
+import { WidgetShell } from '../shared/widget-shell'
 import type { WidgetPeriodOption } from '../types'
 
 export interface BalancePoint {
@@ -86,7 +86,7 @@ export function BalanceWidget<TPeriod extends string = string>({
   const gradientId = `balance-gradient-${useId().replace(/[^a-zA-Z0-9]/g, '')}`
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="balance"
@@ -181,6 +181,6 @@ export function BalanceWidget<TPeriod extends string = string>({
           </ResponsiveContainer>
         </div>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

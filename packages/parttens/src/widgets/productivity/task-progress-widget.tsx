@@ -5,11 +5,11 @@ import { CardPanel } from '@tc96/ui/card'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import { StatList, type WidgetStat } from '../shared/stat-list'
 import { TrendIndicator } from '../shared/trend-indicator'
 import { WidgetHeader } from '../shared/widget-header'
 import { WidgetPeriodToggle } from '../shared/widget-period-toggle'
+import { WidgetShell } from '../shared/widget-shell'
 import type { WidgetPeriodOption } from '../types'
 
 export interface TaskProgressPoint {
@@ -79,7 +79,7 @@ export function TaskProgressWidget<TPeriod extends string = string>({
 }: Readonly<TaskProgressWidgetProps<TPeriod>>): ReactElement {
   const titleId = useId()
   const card = (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-tone={tone}
@@ -166,7 +166,7 @@ export function TaskProgressWidget<TPeriod extends string = string>({
         </div>
         {stats?.length ? <StatList stats={stats} /> : null}
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 
   return tone === 'inverted' ? (

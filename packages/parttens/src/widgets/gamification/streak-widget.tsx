@@ -4,8 +4,8 @@ import { cn } from '@tc96/utils'
 import { FlameIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 import type { StreakDay } from './types'
 
 export interface StreakWidgetProps
@@ -41,7 +41,7 @@ export function StreakWidget({
   const titleId = useId()
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="streak"
@@ -110,6 +110,6 @@ export function StreakWidget({
           </ol>
         </div>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

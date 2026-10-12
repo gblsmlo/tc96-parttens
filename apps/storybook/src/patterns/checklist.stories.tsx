@@ -5,7 +5,7 @@ import {
   type ChecklistProps,
   RecordGroup,
 } from '@tc96/parttens'
-import { useState } from 'react'
+import { type CSSProperties, useState } from 'react'
 import { expect, fn, userEvent, waitFor } from 'storybook/test'
 
 const dueDate = (dayOffset: number) => {
@@ -92,6 +92,29 @@ export const Empty: Story = { args: { items: [] } }
 export const Compact: Story = { args: { density: 'sm', progress: true } }
 export const ReadOnly: Story = { args: { readOnly: true } }
 
+export const CardRadius: Story = {
+  play: async ({ canvasElement }) => {
+    const list = canvasElement.querySelector(
+      '[data-slot="checklist-items"]',
+    ) as HTMLElement
+    const card = list.parentElement as HTMLElement
+    const rows = list.querySelectorAll<HTMLElement>('li')
+    const first = rows[0] as HTMLElement
+    const last = rows[rows.length - 1] as HTMLElement
+
+    expect(getComputedStyle(card).borderTopLeftRadius).toBe('24px')
+    expect(getComputedStyle(first).borderTopLeftRadius).toBe('23px')
+    expect(getComputedStyle(first).borderBottomLeftRadius).toBe('0px')
+    expect(getComputedStyle(last).borderBottomRightRadius).toBe('23px')
+    expect(getComputedStyle(last).borderTopRightRadius).toBe('0px')
+  },
+  render: (args) => (
+    <div style={{ '--card-radius': '24px' } as CSSProperties}>
+      <InteractiveChecklist {...args} />
+    </div>
+  ),
+}
+
 export const Plain: Story = {
   args: { title: undefined, variant: 'plain' },
   play: async ({ canvasElement }) => {
@@ -107,7 +130,10 @@ export const Plain: Story = {
       ),
     )
 
-    expect(getComputedStyle(content).borderTopWidth).toBe('1px')
+    expect(
+      getComputedStyle(content.closest('[data-slot="card"]') as HTMLElement)
+        .borderTopWidth,
+    ).toBe('1px')
     expect(getComputedStyle(list).borderTopWidth).toBe('0px')
     for (const item of items) {
       const box = item.getBoundingClientRect()

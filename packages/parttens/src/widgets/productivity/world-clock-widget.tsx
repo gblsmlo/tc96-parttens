@@ -5,7 +5,7 @@ import { CardPanel } from '@tc96/ui/card'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useEffect, useState } from 'react'
-import { CardWidgetShell } from '../shared/card-widget-shell'
+import { WidgetShell } from '../shared/widget-shell'
 
 export interface WorldClock {
   id: string
@@ -49,7 +49,7 @@ export function WorldClockWidget({
   const dateTime = instant.toISOString()
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-label={label}
       className={className}
       data-widget="world-clock"
@@ -95,6 +95,6 @@ export function WorldClockWidget({
           })}
         </div>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

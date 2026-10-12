@@ -1,5 +1,6 @@
 'use client'
 
+import { CardSurface } from '@tc96/elements/card-surface'
 import {
   Collapsible,
   CollapsiblePanel,
@@ -38,20 +39,17 @@ export function RecordGroup({
 
   const isOpen = controlled ? open : internalOpen
 
-  return (
-    <Collapsible
-      aria-labelledby={titleId}
-      className={recordGroupClassName(variant, className)}
-      data-empty={empty ? 'true' : undefined}
-      data-slot="record-group"
-      data-variant={variant}
-      onOpenChange={(next) => {
-        if (!controlled) setInternalOpen(next)
-        onOpenChange?.(next)
-      }}
-      open={isOpen}
-      render={<section />}
+  const content = (
+    <div
+      className={recordGroupContentVariants({ empty })}
+      data-slot="record-group-content"
     >
+      {children}
+    </div>
+  )
+
+  const parts = (
+    <>
       <div
         className={recordGroupHeaderVariants({ actionsAlign })}
         data-actions-align={actionsAlign}
@@ -76,18 +74,31 @@ export function RecordGroup({
         ) : null}
       </div>
       <CollapsiblePanel inert={!isOpen}>
-        <div
-          className={recordGroupContentVariants({ empty, variant })}
-          data-slot="record-group-content"
-        >
-          {children}
-        </div>
+        {variant === 'inset' ? <CardSurface>{content}</CardSurface> : content}
         {footer ? (
           <div className="px-3 py-2" data-slot="record-group-footer">
             {footer}
           </div>
         ) : null}
       </CollapsiblePanel>
+    </>
+  )
+
+  return (
+    <Collapsible
+      aria-labelledby={titleId}
+      className={recordGroupClassName(variant, className)}
+      data-empty={empty ? 'true' : undefined}
+      data-slot="record-group"
+      data-variant={variant}
+      onOpenChange={(next) => {
+        if (!controlled) setInternalOpen(next)
+        onOpenChange?.(next)
+      }}
+      open={isOpen}
+      render={<section />}
+    >
+      {variant === 'card' ? <CardSurface>{parts}</CardSurface> : parts}
     </Collapsible>
   )
 }

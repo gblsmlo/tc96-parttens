@@ -3,12 +3,12 @@ import { CardPanel } from '@tc96/ui/card'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { Amount } from '../shared/amount'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import {
   ExpandableList,
   type WidgetExpandProps,
 } from '../shared/expandable-list'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 import type { WidgetTone } from '../types'
 import { ShareBar } from './market-share-widget'
 
@@ -55,7 +55,7 @@ export function InvoiceStatusWidget({
   const total = statuses.reduce((sum, status) => sum + status.value, 0)
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="invoice-status"
@@ -113,6 +113,6 @@ export function InvoiceStatusWidget({
           )}
         </ExpandableList>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

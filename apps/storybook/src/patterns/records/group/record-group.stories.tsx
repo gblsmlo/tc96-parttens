@@ -366,8 +366,13 @@ export const CardInteraction: Story = {
       '[data-slot="record-group"]',
     ) as HTMLElement
 
+    const surface = section.querySelector(
+      ':scope > [data-slot="card"]',
+    ) as HTMLElement
+
     expect(section).toHaveAttribute('data-variant', 'card')
-    expect(getComputedStyle(section).backgroundColor).not.toBe(
+    expect(surface).not.toBeNull()
+    expect(getComputedStyle(surface).backgroundColor).not.toBe(
       'rgba(0, 0, 0, 0)',
     )
   },

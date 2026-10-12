@@ -2,9 +2,9 @@ import { type AmountFormatOptions, formatAmount } from '@tc96/helpers/format'
 import { CardPanel } from '@tc96/ui/card'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
-import { CardWidgetShell } from '../shared/card-widget-shell'
 import { clampRatio, ProgressRing } from '../shared/progress-ring'
 import { WidgetHeader } from '../shared/widget-header'
+import { WidgetShell } from '../shared/widget-shell'
 import type { XpProgress } from './types'
 import { XpMeter } from './xp-meter'
 
@@ -51,7 +51,7 @@ export function LevelWidget({
   const remaining = Math.max(xp.target - xp.current, 0)
 
   return (
-    <CardWidgetShell
+    <WidgetShell
       aria-labelledby={titleId}
       className={className}
       data-widget="level"
@@ -92,6 +92,6 @@ export function LevelWidget({
           </div>
         </div>
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }

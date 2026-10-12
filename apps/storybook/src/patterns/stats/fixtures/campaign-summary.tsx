@@ -1,11 +1,11 @@
 import {
   Amount,
   type AmountFormatOptions,
-  CardWidgetShell,
   clampRatio,
   formatAmount,
   IconFrame,
   ProgressRing,
+  WidgetShell,
 } from '@tc96/parttens'
 import { CardPanel } from '@tc96/ui/card'
 import { MeterPrimitive } from '@tc96/ui/meter'
@@ -53,7 +53,7 @@ function SummaryCard({
 }>): ReactElement {
   const titleId = useId()
   return (
-    <CardWidgetShell aria-labelledby={titleId} data-widget="campaign-summary">
+    <WidgetShell aria-labelledby={titleId} data-widget="campaign-summary">
       <CardPanel className="grid content-start gap-4 p-5">
         <div className="flex h-9 items-center justify-between gap-3">
           <h3 className="truncate text-muted-foreground text-sm" id={titleId}>
@@ -66,7 +66,7 @@ function SummaryCard({
         </div>
         {children}
       </CardPanel>
-    </CardWidgetShell>
+    </WidgetShell>
   )
 }
 

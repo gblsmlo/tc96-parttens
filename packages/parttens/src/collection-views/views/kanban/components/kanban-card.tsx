@@ -2,6 +2,7 @@
 
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
+import { CardSurface, type CardSurfaceProps } from '@tc96/elements/card-surface'
 import {
   CardAction,
   CardContent,
@@ -22,18 +23,15 @@ import {
 
 export type KanbanCardDisplay = 'full' | 'compact'
 
-const kanbanCardSurfaceVariants = cva(
-  'relative flex flex-col rounded-lg border border-border/80 bg-card not-dark:bg-clip-padding text-card-foreground shadow-xs/5 before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:before:shadow-[0_-1px_--theme(--color-white/6%)]',
-  {
-    defaultVariants: { density: 'md' },
-    variants: {
-      density: {
-        md: '[--card-padding:--spacing(6)] [--card-section-gap:--spacing(4)]',
-        sm: '[--card-padding:--spacing(4)] [--card-section-gap:--spacing(2)]',
-      },
+const kanbanCardSurfaceVariants = cva(null, {
+  defaultVariants: { density: 'md' },
+  variants: {
+    density: {
+      md: '[--card-padding:--spacing(6)] [--card-section-gap:--spacing(4)]',
+      sm: '[--card-padding:--spacing(4)] [--card-section-gap:--spacing(2)]',
     },
   },
-)
+})
 
 export const kanbanCardVariants = cva(
   'relative isolate min-w-0 w-full overflow-hidden transition-colors hover:border-border hover:bg-card/60 has-focus-visible:ring-2 has-focus-visible:ring-primary has-focus-visible:ring-offset-2 has-focus-visible:ring-offset-background [&_[data-kanban-card-action]]:relative [&_[data-kanban-card-action]]:z-10',
@@ -129,30 +127,29 @@ export function KanbanCard({
   density = 'sm',
   dimmed = false,
   display = 'full',
+  ref,
   render,
   selected = false,
   variant = 'default',
   ...props
 }: KanbanCardProps): ReactElement {
-  const defaultProps = {
-    className: cn(
-      kanbanCardSurfaceVariants({ density }),
-      kanbanCardVariants({ dimmed, selected, variant }),
-      className,
-    ),
-    'data-density': density,
-    'data-display': display,
-    'data-pattern': 'kanban-card',
-    'data-slot': 'card',
-    'data-state': selected ? 'selected' : undefined,
-    'data-variant': variant,
-  }
-
-  const card = useRender({
-    defaultTagName: 'article',
-    props: mergeProps<'article'>(defaultProps, props),
-    render,
-  })
+  const card = (
+    <CardSurface
+      className={cn(
+        kanbanCardSurfaceVariants({ density }),
+        kanbanCardVariants({ dimmed, selected, variant }),
+        className,
+      )}
+      data-density={density}
+      data-display={display}
+      data-pattern="kanban-card"
+      data-state={selected ? 'selected' : undefined}
+      data-variant={variant}
+      render={render ?? <article />}
+      ref={ref as CardSurfaceProps['ref']}
+      {...props}
+    />
+  )
 
   return (
     <KanbanCardDisplayContext.Provider value={display}>
