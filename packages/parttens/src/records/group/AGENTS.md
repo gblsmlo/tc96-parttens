@@ -81,7 +81,7 @@ The pattern sets these attributes and styles none of them through a variant:
 
 - Alignment, the header `actionsAlign` and emptiness reach the classes through the `cva` variants, and the group variant through `cn` in `recordGroupClassName` and the `variant` axis of `recordGroupContentVariants`; no class is keyed on `data-align`, `data-actions-align`, `data-empty` or `data-variant`.
 - The title is never truncated: it wraps inside the header, so a long title never pushes `actions` out, and the region and the trigger keep it as their name.
-- The row label is capped at a Tailwind scale step: fixed in `start`, a maximum in `between`, and it truncates past it.
+- The row label is capped at one Tailwind scale step: fixed in `start`, a maximum in `between`, and it truncates past it. The step fits pt-BR field labels of about 20 characters without `leading` (issue #129); `leading` sits inside the column and takes 24px of it (icon and gap).
 - `between` rows are a two-track grid: the label track takes what the value leaves and truncates first, but keeps a floor so a long value never crushes it onto the leading icon; past the floor the value shrinks inside its cell, and the row never overflows horizontally.
 - `start` fixes the label column in `recordGroupRowLabelVariants`, so every row shares one width whatever its label length.
 - `RecordGroupSubgroup` aligns its chevron with the row labels (`px-2`) and indents its content by `ps-5`, so a row label inside it starts under the subgroup title.
@@ -97,7 +97,7 @@ bun test --isolate packages/parttens/src/records/group
 bunx biome check packages/parttens/src/records/group
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 bun test packages/registry
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/record-group
+cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/patterns/records/group
 ```
 
 The stories are in `apps/storybook/src/patterns/records/group/`, with a `!dev` `<Story>Interaction` twin each, and run axe with `test: 'error'`. `lists.stories.tsx` (`Patterns/Records/Group/Lists`) covers `RecordGroupItem` with each trailing control (a `trailing` control on `Default`), in `plain` and `inset`, and `RecordGroupLink` in `Links`. `usages/blocks.stories.tsx` (`Patterns/Records/Group/Usages`) shows one group per job (Tasks, Access, Briefing, Versions, Linked Records, Document, Document Empty, Billing, Details, Stage) at 420px wide, the width of a record page footer, with fixtures in `fixtures/blocks.tsx`; a record page composes the groups its use case needs.
