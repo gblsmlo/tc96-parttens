@@ -47,6 +47,17 @@ describe('ListRow', () => {
     )
   })
 
+  test('keeps repeated description segments', () => {
+    const { container } = render(
+      <ListRow description={['Pendente', 'Pendente']} title="Carteira" />,
+    )
+
+    const description = container.querySelector(
+      '[data-slot="list-item-description"]',
+    )
+    expect(description?.textContent).toBe('Pendente·Pendente')
+  })
+
   test('omits empty slots', () => {
     const { container } = render(<ListRow title="Carteira" description={[]} />)
 
@@ -73,6 +84,34 @@ describe('ListRow', () => {
         .querySelector('[data-slot="list-item"]')
         ?.hasAttribute('data-interactive'),
     ).toBe(true)
+  })
+
+  test('openLabel names the row trigger', () => {
+    const onClick = mock()
+    render(
+      <ListRow
+        onClick={onClick}
+        openLabel="Abrir contato: Carteira"
+        title="Carteira"
+      />,
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Abrir contato: Carteira' }),
+    )
+
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  test('openDisabled disables the row trigger', () => {
+    const onClick = mock()
+    render(<ListRow onClick={onClick} openDisabled title="Carteira" />)
+
+    const trigger = screen.getByRole('button', { name: 'Carteira' })
+    fireEvent.click(trigger)
+
+    expect(trigger.hasAttribute('disabled')).toBe(true)
+    expect(onClick).not.toHaveBeenCalled()
   })
 
   test('without onClick there is no button and no hover', () => {

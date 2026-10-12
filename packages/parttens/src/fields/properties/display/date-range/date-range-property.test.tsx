@@ -27,6 +27,33 @@ describe('DateRangeProperty', () => {
     expect(screen.getByText('Mar 2 – Apr 15')).toBeTruthy()
   })
 
+  test('shows displayLabel instead of the formatted range', () => {
+    render(
+      <DateRangeProperty
+        displayLabel="02/03/2026 – 15/04/2026"
+        locale="en-US"
+        readOnly
+        value={{ from: march, to: april }}
+      />,
+    )
+
+    expect(screen.getByText('02/03/2026 – 15/04/2026')).toBeTruthy()
+    expect(screen.queryByText('Mar 2 – Apr 15')).toBeNull()
+  })
+
+  test('keeps the fallback when the range is empty, even with displayLabel', () => {
+    render(
+      <DateRangeProperty
+        displayLabel="02/03/2026 – 15/04/2026"
+        fallback="Sem período"
+        readOnly
+        value={undefined}
+      />,
+    )
+
+    expect(screen.getByText('Sem período')).toBeTruthy()
+  })
+
   test('names an open-ended range by the end it has', () => {
     const { rerender } = render(
       <DateRangeProperty

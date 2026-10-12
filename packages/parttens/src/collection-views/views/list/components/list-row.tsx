@@ -37,6 +37,8 @@ export interface ListRowProps extends Omit<ListItemProps, 'title'> {
   icon?: ReactNode
   iconFrame?: ListRowIconFrame
   onClick?: MouseEventHandler<HTMLButtonElement>
+  openDisabled?: boolean
+  openLabel?: string
   properties?: ReactNode
   title: ReactNode
   value?: ReactNode
@@ -52,7 +54,9 @@ function ListRowDescription({
   return (
     <ListItemDescription>
       {nodes.map((node, position) => (
-        <Fragment key={isValidElement(node) ? node.key : String(node)}>
+        <Fragment
+          key={isValidElement(node) ? node.key : `${position}:${String(node)}`}
+        >
           {position > 0 ? (
             <span aria-hidden="true" className="px-1">
               ·
@@ -73,6 +77,8 @@ export function ListRow({
   iconFrame,
   interactive,
   onClick,
+  openDisabled,
+  openLabel,
   properties,
   title,
   value,
@@ -95,6 +101,8 @@ export function ListRow({
         <ListItemTitle>
           {onClick ? (
             <ListItemTitleTrigger
+              aria-label={openLabel}
+              disabled={openDisabled}
               className="outline-none after:absolute after:inset-0 after:rounded-[inherit] focus-visible:after:ring-2 focus-visible:after:ring-ring"
               onClick={onClick}
             >

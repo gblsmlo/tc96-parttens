@@ -23,6 +23,7 @@ export interface DateRangePropertyProps {
   className?: string
   clearLabel?: string
   disabled?: boolean
+  displayLabel?: string
   dropdownPlacement?: PropertyPopoverDropdownPlacement
   fallback?: string
   fromLabel?: string
@@ -41,6 +42,7 @@ export function DateRangeProperty({
   className,
   clearLabel = 'Limpar período',
   disabled = false,
+  displayLabel,
   dropdownPlacement,
   fallback = 'Sem período',
   fromLabel,
@@ -53,11 +55,12 @@ export function DateRangeProperty({
   variant = 'badge',
 }: Readonly<DateRangePropertyProps>) {
   const [open, setOpen] = useState(false)
-  const label = formatDateRangeProperty(value, fallback, locale, {
+  const formatted = formatDateRangeProperty(value, fallback, locale, {
     fromLabel,
     untilLabel,
   })
-  const isEmpty = label === fallback
+  const isEmpty = formatted === fallback
+  const label = isEmpty ? formatted : (displayLabel ?? formatted)
 
   if (readOnly || !onValueChange) {
     return (
