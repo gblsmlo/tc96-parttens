@@ -1,0 +1,5 @@
+[tools]
+node = "26.11.1"
+
+[env]
+NODE_OPTIONS = "--disable-warning=DEP0205"
