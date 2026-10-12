@@ -36,6 +36,7 @@
     "bench:views": "bun scripts/bench-views.ts",
     "bench:data-grid": "bun scripts/bench/data-grid.bench.ts",
     "bench:data-table": "bun scripts/bench/data-table.bench.ts",
+    "bench:gallery": "bun scripts/bench/gallery.bench.ts",
     "bench:list": "bun scripts/bench/list.bench.ts",
     "bench:kanban": "bun scripts/bench/kanban.bench.ts",
     "bench:calendar": "bun scripts/bench/calendar.bench.ts",

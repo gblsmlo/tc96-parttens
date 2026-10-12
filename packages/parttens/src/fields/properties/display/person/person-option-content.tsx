@@ -23,7 +23,7 @@ export function PersonAvatar({
   return (
     <Avatar className={cn('size-4 text-sm', className)}>
       {option?.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
-      <AvatarFallback className="bg-muted/40 text-[0.625rem]">
+      <AvatarFallback className="border border-input text-[0.625rem]">
         {option ? (
           resolveInitials(option)
         ) : (

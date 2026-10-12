@@ -53,10 +53,13 @@ describe('PersonAvatar', () => {
     expect(avatar()?.className).not.toContain('size-4')
   })
 
-  test('keeps the muted fallback surface', () => {
+  test('matches the outlined fallback used by avatar-only records', () => {
     const { container } = render(<PersonAvatar option={option} />)
+    const fallback = fallbackOf(container)
 
-    expect(fallbackOf(container)?.className).toContain('bg-muted/40')
+    expect(fallback?.className).toContain('border')
+    expect(fallback?.className).toContain('border-input')
+    expect(fallback?.className).not.toContain('bg-muted/40')
   })
 })
 

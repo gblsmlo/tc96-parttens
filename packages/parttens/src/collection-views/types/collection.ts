@@ -5,6 +5,7 @@ export type CollectionViewMode =
   | 'calendar'
   | 'datagrid'
   | 'datatable'
+  | 'gallery'
   | 'kanban'
   | 'list'
 
