@@ -285,6 +285,33 @@ function FourModesViewSettingsControl() {
   )
 }
 
+const spreadsheetModes: readonly ViewSettingsMode<
+  'datagrid' | 'datatable' | 'kanban'
+>[] = [
+  { icon: Table2Icon, label: 'Tabela', value: 'datatable' },
+  { icon: LayoutGridIcon, label: 'Kanban', value: 'kanban' },
+  { icon: Table2Icon, label: 'Planilha', value: 'datagrid' },
+]
+
+function ThreeModesViewSettingsControl() {
+  const [layout, setLayout] = useState<'datagrid' | 'datatable' | 'kanban'>(
+    'datatable',
+  )
+
+  return (
+    <ViewSettingsMenu
+      mode={layout}
+      modes={spreadsheetModes}
+      onClearFilters={() => undefined}
+      onModeChange={setLayout}
+    >
+      <ViewSettingsSection label="Exibição">
+        <MenuItem disabled>Densidade padrão</MenuItem>
+      </ViewSettingsSection>
+    </ViewSettingsMenu>
+  )
+}
+
 function ToolbarProposal() {
   return (
     <CollectionProvider collection={demoCollection}>
@@ -689,6 +716,46 @@ export const ViewSettings: Story = {
       <CollectionToolbar
         aria-label="Ajustes da coleção"
         endSlot={<MergedViewSettingsControl />}
+        variant="plain"
+      />
+    </Frame>
+  ),
+}
+
+export const ViewSettingsThreeModes: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Com três modos de rótulo longo (Tabela, Kanban e Planilha), o menu alarga para caber os três labels inteiros, sem reticências.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Exibição' }),
+    )
+    const menu = within(await screen.findByRole('menu'))
+    const tabs = menu.getAllByRole('menuitemradio')
+    await expect(tabs.map((tab) => tab.textContent)).toEqual([
+      'Tabela',
+      'Kanban',
+      'Planilha',
+    ])
+    for (const tab of tabs) {
+      await expect(tab).toHaveAttribute('data-layout', 'inline')
+      const label = tab.querySelector('.truncate')
+      if (!(label instanceof HTMLElement))
+        throw new Error('The mode tab did not render its label.')
+      await waitFor(() =>
+        expect(label.scrollWidth).toBeLessThanOrEqual(label.clientWidth),
+      )
+    }
+  },
+  render: () => (
+    <Frame>
+      <CollectionToolbar
+        endSlot={<ThreeModesViewSettingsControl />}
         variant="plain"
       />
     </Frame>
