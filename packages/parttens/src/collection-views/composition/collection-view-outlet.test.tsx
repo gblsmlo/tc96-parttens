@@ -35,14 +35,16 @@ function Outlet({
   view,
   withGalleryRenderer = true,
   withKanbanRenderer = true,
+  withListRenderer = true,
   withTable = false,
   ...props
 }: Readonly<
   OutletProps & {
     onRowClick?: CollectionDataTableViewProps<Item>['onRowClick']
-    view: 'calendar' | 'datatable' | 'gallery' | 'kanban'
+    view: 'calendar' | 'datatable' | 'gallery' | 'kanban' | 'list'
     withGalleryRenderer?: boolean
     withKanbanRenderer?: boolean
+    withListRenderer?: boolean
     withTable?: boolean
   }
 >): ReactElement {
@@ -65,7 +67,9 @@ function Outlet({
         {...(withKanbanRenderer
           ? { renderKanbanItem: (item: Item) => item.title }
           : {})}
-        renderListItem={(item) => item.title}
+        {...(withListRenderer
+          ? { renderListItem: (item: Item) => item.title }
+          : {})}
         {...(withTable
           ? { datatable: { 'aria-label': 'Itens', onRowClick, table } }
           : {})}
@@ -88,6 +92,12 @@ describe('CollectionViewOutlet', () => {
 
     expect(screen.getByRole('table', { name: 'Itens' })).toBeTruthy()
     expect(screen.getByText('Primeiro item')).toBeTruthy()
+  })
+
+  test('renders a view that is not the list without renderListItem', () => {
+    render(<Outlet view="datatable" withListRenderer={false} withTable />)
+
+    expect(screen.getByRole('table', { name: 'Itens' })).toBeTruthy()
   })
 
   test('forwards datatable.onRowClick to the row trigger', () => {
@@ -116,6 +126,9 @@ describe('CollectionViewOutlet', () => {
       expect(() =>
         render(<Outlet view="kanban" withKanbanRenderer={false} />),
       ).toThrow('a view "kanban" exige a prop `renderKanbanItem`')
+      expect(() =>
+        render(<Outlet view="list" withListRenderer={false} />),
+      ).toThrow('a view "list" exige a prop `renderListItem`')
     } finally {
       console.error = originalError
     }
