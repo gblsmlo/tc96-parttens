@@ -36,7 +36,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'RecordDialog as the create step of the Contacts collection, built like CreateRecord: the name as a borderless title, a short description below it, and every other field as a property chip. Etapa starts at Lead and offers Sem etapa before it. Cargo and Empresa share one combobox chip: search, the existing roles or companies of the collection, and a footer that creates the typed name and selects it. The Contacts usage of `Patterns/CollectionViews` opens the same dialog from Novo contato.',
+          'RecordDialog as the create step of the Contacts collection, built like Inline Properties: the name as a borderless title, a short description below it, and every other field as a property chip. Etapa starts at Lead and offers Sem etapa before it. Cargo and Empresa share one combobox chip: search, the existing roles or companies of the collection, and a footer that creates the typed name and selects it. The Contacts usage of `Patterns/CollectionViews` opens the same dialog from Novo contato.',
       },
     },
   },
