@@ -109,6 +109,7 @@ export function PropertyMultiSelectShell<TOption extends OptionLike>({
       ) : (
         <ComboboxChips
           className={cn(
+            '**:data-[slot=combobox-chip]:rounded-sm **:data-[slot=combobox-chip]:text-sm',
             variant === 'plain' &&
               'min-h-7 border-transparent! bg-transparent! p-0 shadow-none! before:hidden focus-within:ring-0 sm:min-h-6',
           )}

@@ -27,6 +27,23 @@ describe('PropertyAddTrigger', () => {
     expect(trigger.querySelector('svg')).toBeTruthy()
   })
 
+  test('draws the empty glyph at the size of the other empty chips', () => {
+    render(
+      <PropertyAddTrigger
+        addLabel="Adicionar e-mail"
+        hasValue={false}
+        icon={MailIcon}
+        placeholder="Sem e-mail"
+      />,
+    )
+
+    const glyph = screen
+      .getByRole('button', { name: 'Adicionar e-mail' })
+      .querySelector('svg')
+    expect(glyph?.classList.contains('size-3')).toBe(true)
+    expect(glyph?.classList.contains('size-3.5')).toBe(false)
+  })
+
   test('with a value, it collapses to a sign and keeps the accessible name', () => {
     render(
       <PropertyAddTrigger
