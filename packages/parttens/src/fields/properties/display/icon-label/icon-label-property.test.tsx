@@ -38,6 +38,27 @@ describe('IconLabelProperty', () => {
     ).toBe('property-icon')
   })
 
+  test('exposes ariaLabel as an img role without trailing', () => {
+    const { unmount } = render(
+      <IconLabelProperty ariaLabel="Criado em" label="27/09/2026" />,
+    )
+    expect(
+      screen.getByRole('img', { name: 'Criado em: 27/09/2026' }),
+    ).toBeTruthy()
+    unmount()
+
+    render(
+      <IconLabelProperty
+        ariaLabel="Criado em"
+        label="27/09/2026"
+        variant="plain"
+      />,
+    )
+    expect(
+      screen.getByRole('img', { name: 'Criado em: 27/09/2026' }),
+    ).toBeTruthy()
+  })
+
   test('renders plain text without badge styling', () => {
     render(<IconLabelProperty label="Manual" variant="plain" />)
 

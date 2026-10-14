@@ -54,7 +54,7 @@ export function IconLabelProperty({
       className={cn('max-w-full', hidesTrailing && 'group/property', className)}
       muted={muted}
       render={render}
-      role={trailing && ariaLabel ? 'group' : undefined}
+      {...(trailing && ariaLabel ? { role: 'group' } : {})}
       variant={variant}
     >
       {leading}
