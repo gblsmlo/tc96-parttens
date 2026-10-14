@@ -72,6 +72,55 @@ async function openPopup(canvasElement: HTMLElement, trigger: RegExp) {
 const presets = () =>
   within(screen.getByRole('list', { name: 'Atalhos de data' }))
 
+const shortWindow = {
+  globals: { viewport: { isRotated: false, value: 'shortWindow' } },
+  parameters: {
+    viewport: {
+      options: {
+        shortWindow: {
+          name: 'Short window',
+          styles: { height: '600px', width: '1270px' },
+        },
+      },
+    },
+  },
+}
+
+function popupFrame() {
+  const frame = document.querySelector<HTMLElement>(
+    '[data-slot="popover-popup"]',
+  )
+  if (!frame) throw new Error('The schedule popup frame did not mount.')
+  return frame
+}
+
+async function openSections(canvasElement: HTMLElement) {
+  const popup = await openPopup(canvasElement, /^Data:/)
+  for (const name of ['Hora', 'Repetir', 'Lembretes']) {
+    await userEvent.click(popup.getByRole('button', { name }))
+  }
+  return popup
+}
+
+async function expectPopupInsideWindow() {
+  await waitFor(() => {
+    const frame = popupFrame()
+    const { bottom, top } = frame.getBoundingClientRect()
+    expect(frame).not.toHaveAttribute('data-starting-style')
+    expect(top).toBeGreaterThanOrEqual(0)
+    expect(bottom).toBeLessThanOrEqual(window.innerHeight)
+  })
+}
+
+async function expectLastControlReachable(popup: ReturnType<typeof within>) {
+  const add = popup.getByRole('button', { name: 'Adicionar lembrete' })
+  add.scrollIntoView({ block: 'end' })
+  const frame = popupFrame().getBoundingClientRect()
+  const control = add.getBoundingClientRect()
+  await expect(control.top).toBeGreaterThanOrEqual(frame.top)
+  await expect(control.bottom).toBeLessThanOrEqual(frame.bottom)
+}
+
 const meta = {
   args: {
     ariaLabel: 'Data',
@@ -387,5 +436,59 @@ export const EnglishLabels: Story = {
         { name: /^Next week/ },
       ),
     ).toHaveTextContent('Mon, Oct 12')
+  },
+}
+
+export const AllSections: Story = {
+  globals: shortWindow.globals,
+  parameters: {
+    ...cossCalendarContrast,
+    ...shortWindow.parameters,
+    docs: {
+      description: {
+        story:
+          'The popup grows when **Hora**, **Repetir** and **Lembretes** open. It follows its content and stops at the space the window leaves, and the dropdown scrolls inside instead of leaving the window. The story runs in a 1270×600 window, shorter than the three sections together.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const popup = await openSections(canvasElement)
+    const scroller = popupFrame().firstElementChild as HTMLElement
+
+    await expectPopupInsideWindow()
+    await expect(scroller.scrollHeight).toBeGreaterThan(scroller.clientHeight)
+    await expectLastControlReachable(popup)
+  },
+}
+
+export const BelowTrigger: Story = {
+  args: { dropdownPlacement: { collisionAvoidance: { side: 'none' } } },
+  globals: shortWindow.globals,
+  parameters: {
+    ...cossCalendarContrast,
+    ...shortWindow.parameters,
+    docs: {
+      description: {
+        story:
+          "`dropdownPlacement.collisionAvoidance` with `{ side: 'none' }` keeps the dropdown below the trigger. Without it the dropdown moves to the side of the trigger when it does not fit below; with it the dropdown grows downward and scrolls once it reaches the window edge.",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: /^Data:/,
+    })
+    const popup = await openPopup(canvasElement, /^Data:/)
+    await expect(popupFrame()).toHaveAttribute('data-side', 'bottom')
+    await expect(popupFrame().getBoundingClientRect().top).toBeGreaterThan(
+      trigger.getBoundingClientRect().bottom,
+    )
+
+    for (const name of ['Hora', 'Repetir', 'Lembretes']) {
+      await userEvent.click(popup.getByRole('button', { name }))
+    }
+    await expectPopupInsideWindow()
+    await expect(popupFrame()).toHaveAttribute('data-side', 'bottom')
+    await expectLastControlReachable(popup)
   },
 }

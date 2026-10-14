@@ -1,13 +1,10 @@
 'use client'
 
-import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
+import { Popover, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
 import { CalendarIcon, RepeatIcon } from 'lucide-react'
 import { useState } from 'react'
-import type {
-  PropertyCalendarProps,
-  PropertyPopoverDropdownPlacement,
-} from '../../shared/property-calendar-popover'
+import type { PropertyCalendarProps } from '../../shared/property-calendar-popover'
 import {
   PropertySurface,
   type PropertyVariant,
@@ -17,6 +14,10 @@ import {
   type SchedulePropertyLabels,
 } from './schedule-labels'
 import { SchedulePopup } from './schedule-popup'
+import {
+  SchedulePopupFrame,
+  type SchedulePropertyDropdownPlacement,
+} from './schedule-popup-frame'
 import type { ScheduleTimeControl } from './schedule-time-section'
 import {
   defaultScheduleRecurrenceOptions,
@@ -28,8 +29,6 @@ import {
   scheduleRecurrenceLabel,
   startOfLocalDay,
 } from './schedule-value'
-
-export type SchedulePropertyDropdownPlacement = PropertyPopoverDropdownPlacement
 
 export interface SchedulePropertyProps {
   ariaLabel: string
@@ -131,13 +130,7 @@ export function ScheduleProperty({
       >
         <ScheduleSurfaceContent label={label} repeats={Boolean(repeatLabel)} />
       </PopoverTrigger>
-      <PopoverPopup
-        align="start"
-        aria-label={ariaLabel}
-        className="w-auto"
-        side="bottom"
-        {...dropdownPlacement}
-      >
+      <SchedulePopupFrame ariaLabel={ariaLabel} placement={dropdownPlacement}>
         <SchedulePopup
           calendarProps={calendarProps}
           dateOnly={dateOnly}
@@ -153,7 +146,7 @@ export function ScheduleProperty({
           today={today}
           value={value}
         />
-      </PopoverPopup>
+      </SchedulePopupFrame>
     </Popover>
   )
 }

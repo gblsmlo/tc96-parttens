@@ -261,6 +261,31 @@ describe('ScheduleProperty', () => {
     expect(body.queryByRole('button', { name: 'Lembretes' })).toBeNull()
   })
 
+  test('mounts the popup without the COSS viewport, so the positioner follows its content', async () => {
+    render(<Harness value={{ ...emptyScheduleValue, from: october26 }} />)
+    await openPopup()
+
+    expect(screen.getByRole('dialog', { name: 'Data' })).toBeTruthy()
+    expect(document.querySelector('[data-slot="popover-popup"]')).not.toBeNull()
+    expect(document.querySelector('[data-slot="popover-viewport"]')).toBeNull()
+  })
+
+  test('takes collisionAvoidance in dropdownPlacement and opens below the trigger', async () => {
+    render(
+      <Harness
+        dropdownPlacement={{ collisionAvoidance: { side: 'none' } }}
+        value={{ ...emptyScheduleValue, from: october26 }}
+      />,
+    )
+    await openPopup()
+
+    expect(
+      document
+        .querySelector('[data-slot="popover-popup"]')
+        ?.getAttribute('data-side'),
+    ).toBe('bottom')
+  })
+
   test('replaces the copy through labels', async () => {
     render(<Harness labels={{ noDate: 'No date', today: 'Today' }} />)
     await openPopup()
