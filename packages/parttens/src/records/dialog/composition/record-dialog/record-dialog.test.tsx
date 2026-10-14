@@ -157,6 +157,40 @@ test('stays open when the handler rejects', async () => {
   expect(changes).toEqual([])
 })
 
+const focusSave = () => {
+  const save = screen.getByRole('button', {
+    name: 'Save',
+  }) as HTMLButtonElement
+  save.focus()
+  return save
+}
+
+test('keeps focus on the submit button when the handler throws', async () => {
+  await setup(() => {
+    throw new Error('boom')
+  })
+  const save = focusSave()
+
+  submit()
+
+  await waitFor(() => expect(save.disabled).toBe(false))
+  expect(document.activeElement).toBe(save)
+})
+
+test('returns focus to the submit button when the handler rejects', async () => {
+  await setup(() => {
+    ;(document.activeElement as HTMLElement).blur()
+    return Promise.reject(new Error('boom'))
+  })
+  const save = focusSave()
+
+  submit()
+
+  await screen.findByRole('button', { name: 'Saving' })
+  await waitFor(() => expect(save.disabled).toBe(false))
+  expect(document.activeElement).toBe(save)
+})
+
 test('locks dismissal and buttons while the handler is pending', async () => {
   const pending = deferred()
   const changes = await setup(() => pending.promise)

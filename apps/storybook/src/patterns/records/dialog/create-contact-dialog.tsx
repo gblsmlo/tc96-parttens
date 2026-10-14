@@ -5,9 +5,6 @@ import {
   SelectProperty,
   TagsProperty,
 } from '@tc96/parttens'
-import { Field, FieldLabel } from '@tc96/ui/field'
-import { Input } from '@tc96/ui/input'
-import { Textarea } from '@tc96/ui/textarea'
 import { BriefcaseIcon, Building2Icon } from 'lucide-react'
 import { useState } from 'react'
 import {
@@ -24,6 +21,7 @@ import {
 } from './creatable-property'
 import { CreateMoreSwitch } from './create-more'
 import { delay } from './delay'
+import { RecordHeadline } from './record-headline'
 
 export type NewContact = Omit<Contact, 'id' | 'lastContactAt'>
 
@@ -125,25 +123,14 @@ export function CreateContactDialog({
       titleAncestor="Contatos"
     >
       <div className="flex flex-col gap-3">
-        <Field name="name">
-          <FieldLabel className="sr-only">Nome</FieldLabel>
-          <Input
-            autoFocus
-            className="w-full font-semibold text-lg [&_input]:px-0 [&_input]:placeholder:text-muted-foreground/60 [&_input]:focus:placeholder:text-muted-foreground"
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Nome do contato"
-            unstyled
-            value={name}
-          />
-        </Field>
-        <Field name="description">
-          <FieldLabel className="sr-only">Descrição</FieldLabel>
-          <Textarea
-            className="w-full [&_textarea]:min-h-20 [&_textarea]:resize-none [&_textarea]:px-0 [&_textarea]:placeholder:text-muted-foreground/60 [&_textarea]:focus:placeholder:text-muted-foreground"
-            placeholder="Adicionar descrição..."
-            unstyled
-          />
-        </Field>
+        <RecordHeadline
+          descriptionLabel="Descrição"
+          descriptionPlaceholder="Adicionar descrição..."
+          onTitleChange={setName}
+          title={name}
+          titleLabel="Nome"
+          titlePlaceholder="Nome do contato"
+        />
         <div className="flex flex-wrap items-center gap-2">
           <SelectProperty
             ariaLabel="Etapa"

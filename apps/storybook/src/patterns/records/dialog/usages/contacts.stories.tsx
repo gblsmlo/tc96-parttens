@@ -72,7 +72,7 @@ export const CreateContact: Story = {
     await expect(create).toBeEnabled()
     const description = dialog.getByRole('textbox', { name: 'Descrição' })
     await userEvent.type(description, 'Conheceu o time no evento de outubro.')
-    await expect(description.getBoundingClientRect().height).toBeCloseTo(80, 0)
+    await expect(description.getBoundingClientRect().height).toBeCloseTo(64, 0)
 
     await userEvent.click(dialog.getByRole('combobox', { name: 'Cargo' }))
     await userEvent.type(

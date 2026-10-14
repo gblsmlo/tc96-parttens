@@ -56,6 +56,11 @@ Editing:
 - `PhoneInput` takes the country from the number itself, even incomplete (`+551198`), before `defaultCountry`. `phoneNumberSchema` validates with the same library that formats the field; values are E.164. `PhoneProperty` shows every number through `internationalPhoneLabel` (same library, international format with country code; an unparseable value shows raw), in the label, the trigger summary and the remove button's name; the emitted value stays E.164.
 - `TextProperty` swallows a rejected clipboard promise. With the inline field the accessible name belongs to the field; a labelled `img` around it would announce the value twice.
 
+Errors:
+
+- A property has no invalid state: `PropertySurface` sets no `aria-invalid` or error styling, no display takes an `invalid` prop and `RecordGroupRow` has no message slot. Field-level errors stay with the consumer, who validates in its own handler and reports through the surface that owns the form (`RecordDialog` shows `errorMessage` as a `role="alert"` above the footer). The exception is the entry lists of `EmailProperty` and `PhoneProperty`: their popups parse typed text with zod, so `PropertyEntryForm` marks the bad row `invalid`. A pick from options or a calendar cannot be malformed, so what the consumer rejects is the record, not the value.
+- The `Failed Submit` stories under `Patterns/Records/Dialog` therefore show the alert and the kept values, not an error on a property.
+
 Markup:
 
 - `AttachmentProperty` puts the link inside the surface: a button inside an anchor is invalid markup. The right-hand affordance is always remove; `action` only decides how the target opens.

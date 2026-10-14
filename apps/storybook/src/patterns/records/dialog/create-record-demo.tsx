@@ -123,6 +123,7 @@ export function CreateRecordDemo({
       >
         <div className="flex flex-1 flex-col gap-3">
           <RecordHeadline
+            descriptionLabel="Description"
             descriptionPlaceholder="Add description..."
             onTitleChange={setTitle}
             stretch
