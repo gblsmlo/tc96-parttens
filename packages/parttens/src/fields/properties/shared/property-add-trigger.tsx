@@ -34,7 +34,12 @@ export function PropertyAddTrigger({
       muted={muted}
       render={<button disabled={disabled} type="button" />}
     >
-      {Glyph ? <Glyph aria-hidden="true" className="size-3.5" /> : null}
+      {Glyph ? (
+        <Glyph
+          aria-hidden="true"
+          className={hasValue ? 'size-3.5' : 'size-3'}
+        />
+      ) : null}
       {hasValue ? null : <span className="truncate">{placeholder}</span>}
     </PropertySurface>
   )

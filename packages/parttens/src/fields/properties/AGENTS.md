@@ -65,6 +65,8 @@ Markup:
 
 - `AttachmentProperty` puts the link inside the surface: a button inside an anchor is invalid markup. The right-hand affordance is always remove; `action` only decides how the target opens.
 - The multi-select add chip (`PeopleProperty`, `TagsProperty`, the `ScheduleProperty` reminders) is a `PropertySurface` button, the same surface as the empty chip of `PersonProperty`: muted outline with a `size-3` icon and `gap-1.5` while empty, and a filled `w-6` plus chip once there is a value. Its accessible name is the placeholder while empty and `addLabel` with a value. It is not a COSS `Button`, which differed in radius, icon size and fill.
+- `PropertyAddTrigger` (email, phone, attachments) follows the same standard: `size-3` glyph while empty, `size-3.5` plus once there is a value.
+- The selected-value chip of `PeopleProperty` and `TagsProperty` stays the COSS `ComboboxChip`, which cannot take a `className` without losing its own. The chips container sets `text-sm` and `rounded-sm` on it, so text size and radius match a `PropertySurface` chip; the radius is a registered override in `scripts/override-exceptions.json`. Fill and height stay COSS.
 - Default copy is pt-BR; the fallback `ariaLabel`s `Date`, `Person` and `Period` are English.
 
 ## Styling
