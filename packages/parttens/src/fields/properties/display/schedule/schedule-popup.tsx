@@ -1,21 +1,23 @@
 'use client'
 
-import { Button } from '@tc96/ui/button'
 import { Calendar } from '@tc96/ui/calendar'
 import { Separator } from '@tc96/ui/separator'
 import { cn } from '@tc96/utils'
-import { ClockIcon } from 'lucide-react'
-import { type ReactNode, useState } from 'react'
+import { useRef, useState } from 'react'
 import type { PropertyCalendarProps } from '../../shared/property-calendar-popover'
-import type { PropertyIcon } from '../../shared/property-catalog'
+import { ScheduleDetailView } from './schedule-detail-view'
+import {
+  ScheduleFooterDrillIn,
+  ScheduleFooterRows,
+} from './schedule-footer-rows'
 import type { SchedulePropertyLabels } from './schedule-labels'
 import { buildSchedulePresets, type SchedulePreset } from './schedule-presets'
-import { ScheduleRecurrenceSection } from './schedule-recurrence-section'
-import { ScheduleRemindersSection } from './schedule-reminders-section'
-import {
-  type ScheduleTimeControl,
-  ScheduleTimeSection,
-} from './schedule-time-section'
+import type {
+  ScheduleFooterLayout,
+  ScheduleFooterProps,
+  ScheduleSection,
+} from './schedule-section'
+import type { ScheduleTimeControl } from './schedule-time-section'
 import type {
   ScheduleRecurrenceOption,
   ScheduleReminderOption,
@@ -58,35 +60,6 @@ function PresetList({
   )
 }
 
-function FooterToggle({
-  active,
-  children,
-  disabled = false,
-  icon: Icon,
-  onClick,
-}: Readonly<{
-  active: boolean
-  children: ReactNode
-  disabled?: boolean
-  icon?: PropertyIcon
-  onClick: () => void
-}>) {
-  return (
-    <Button
-      aria-pressed={active}
-      className="flex-1"
-      disabled={disabled}
-      onClick={onClick}
-      size="sm"
-      type="button"
-      variant={active ? 'secondary' : 'ghost'}
-    >
-      {Icon ? <Icon aria-hidden /> : null}
-      {children}
-    </Button>
-  )
-}
-
 export interface SchedulePopupProps {
   dateOnly: boolean
   labels: SchedulePropertyLabels
@@ -99,6 +72,7 @@ export interface SchedulePopupProps {
   today: Date
   value: ScheduleValue
   calendarProps?: PropertyCalendarProps
+  footerLayout?: ScheduleFooterLayout
   recurrenceEnabled?: boolean
   remindersEnabled?: boolean
 }
@@ -106,6 +80,7 @@ export interface SchedulePopupProps {
 export function SchedulePopup({
   calendarProps,
   dateOnly,
+  footerLayout = 'rows',
   labels,
   locale,
   onChange,
@@ -120,15 +95,37 @@ export function SchedulePopup({
 }: Readonly<SchedulePopupProps>) {
   const recurrenceEnabled = recurrenceEnabledProp ?? Boolean(value.from)
   const remindersEnabled = remindersEnabledProp ?? Boolean(value.from)
-  const [timeOpen, setTimeOpen] = useState(false)
-  const [recurrenceOpen, setRecurrenceOpen] = useState(false)
-  const [remindersOpen, setRemindersOpen] = useState(false)
+  const [active, setActive] = useState<ScheduleSection | null>(null)
   const [month, setMonth] = useState(value.from ?? today)
+  const returnFocusRef = useRef<ScheduleSection | null>(null)
   const presets = buildSchedulePresets(today, labels, locale)
+  const drillIn = footerLayout === 'drill-in'
+  const enabled = {
+    reminders: remindersEnabled,
+    repeat: recurrenceEnabled,
+    time: true,
+  }
 
   const finish = () => {
-    if (!timeOpen && !recurrenceOpen && !remindersOpen) onDone()
+    if (!active) onDone()
   }
+
+  const select = (section: ScheduleSection) => {
+    setActive((current) => (current === section ? null : section))
+  }
+
+  const back = () => {
+    returnFocusRef.current = active
+    setActive(null)
+  }
+
+  const restoreFocus =
+    (section: ScheduleSection) => (element: HTMLButtonElement | null) => {
+      if (element && returnFocusRef.current === section) {
+        returnFocusRef.current = null
+        element.focus()
+      }
+    }
 
   const pick = (day: Date | null) => {
     if (day?.getTime() !== value.from?.getTime()) {
@@ -142,78 +139,59 @@ export function SchedulePopup({
     finish()
   }
 
+  const footerProps: ScheduleFooterProps = {
+    active,
+    calendarProps,
+    enabled,
+    labels,
+    locale,
+    onChange,
+    onSelect: select,
+    recurrenceOptions,
+    reminderOptions,
+    timeControl,
+    value,
+  }
+  const detail = drillIn && active && enabled[active] ? active : null
+
   return (
     <div className="flex w-72 flex-col" data-slot="schedule-popup">
-      <div className="p-1">
-        <PresetList label={labels.presets} onPick={pick} presets={presets} />
-      </div>
-      <Separator className="my-2" />
-      <Calendar
-        {...calendarProps}
-        className={cn(
-          'w-full px-1 [--cell-size:--spacing(10)] sm:[--cell-size:--spacing(10)]',
-          calendarProps?.className,
-        )}
-        mode="single"
-        month={month}
-        onMonthChange={setMonth}
-        onSelect={(day) => (day ? pick(day) : finish())}
-        selected={value.from ?? undefined}
-        today={today}
-      />
-      {dateOnly ? null : (
-        <>
-          <Separator className="my-2" />
-          <div className="flex gap-2 p-2">
-            <FooterToggle
-              active={timeOpen}
-              icon={ClockIcon}
-              onClick={() => setTimeOpen((open) => !open)}
-            >
-              {labels.time}
-            </FooterToggle>
-            <FooterToggle
-              active={recurrenceOpen}
-              disabled={!recurrenceEnabled}
-              onClick={() => setRecurrenceOpen((open) => !open)}
-            >
-              {labels.repeat}
-            </FooterToggle>
-            <FooterToggle
-              active={remindersOpen}
-              disabled={!remindersEnabled}
-              onClick={() => setRemindersOpen((open) => !open)}
-            >
-              {labels.reminders}
-            </FooterToggle>
+      {detail ? (
+        <ScheduleDetailView {...footerProps} onBack={back} section={detail} />
+      ) : (
+        <div className="flex flex-col">
+          <div className="p-1">
+            <PresetList
+              label={labels.presets}
+              onPick={pick}
+              presets={presets}
+            />
           </div>
-          {timeOpen ? (
-            <ScheduleTimeSection
-              labels={labels}
-              onChange={onChange}
-              timeControl={timeControl}
-              value={value}
-            />
-          ) : null}
-          {recurrenceOpen && recurrenceEnabled ? (
-            <ScheduleRecurrenceSection
-              calendarProps={calendarProps}
-              labels={labels}
-              locale={locale}
-              onChange={onChange}
-              options={recurrenceOptions}
-              value={value}
-            />
-          ) : null}
-          {remindersOpen && remindersEnabled ? (
-            <ScheduleRemindersSection
-              labels={labels}
-              onChange={onChange}
-              options={reminderOptions}
-              value={value}
-            />
-          ) : null}
-        </>
+          <Separator className="my-2" />
+          <Calendar
+            {...calendarProps}
+            className={cn(
+              'w-full px-1 [--cell-size:--spacing(10)] sm:[--cell-size:--spacing(10)]',
+              calendarProps?.className,
+            )}
+            mode="single"
+            month={month}
+            onMonthChange={setMonth}
+            onSelect={(day) => (day ? pick(day) : finish())}
+            selected={value.from ?? undefined}
+            today={today}
+          />
+          {dateOnly ? null : (
+            <>
+              <Separator className="my-2" />
+              {drillIn ? (
+                <ScheduleFooterDrillIn {...footerProps} rowRef={restoreFocus} />
+              ) : (
+                <ScheduleFooterRows {...footerProps} />
+              )}
+            </>
+          )}
+        </div>
       )}
     </div>
   )

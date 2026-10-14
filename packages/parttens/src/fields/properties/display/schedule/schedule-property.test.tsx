@@ -95,10 +95,10 @@ describe('ScheduleProperty', () => {
     const body = await openPopup()
 
     const time = body.getByRole('button', { name: 'Hora' })
-    expect(time.getAttribute('aria-pressed')).toBe('false')
+    expect(time.getAttribute('aria-expanded')).toBe('false')
     expect(body.queryByRole('switch', { name: 'Dia inteiro' })).toBeNull()
     await act(async () => fireEvent.click(time))
-    expect(time.getAttribute('aria-pressed')).toBe('true')
+    expect(time.getAttribute('aria-expanded')).toBe('true')
 
     await act(async () =>
       fireEvent.click(presets().getByRole('button', { name: /^Hoje/ })),
@@ -197,7 +197,7 @@ describe('ScheduleProperty', () => {
     const body = await openPopup()
 
     const reminders = body.getByRole('button', { name: 'Lembretes' })
-    expect(reminders.getAttribute('aria-pressed')).toBe('false')
+    expect(reminders.getAttribute('aria-expanded')).toBe('false')
     expect(body.queryByRole('button', { name: /^Remover lembrete/ })).toBeNull()
     await act(async () => fireEvent.click(reminders))
 
@@ -226,15 +226,6 @@ describe('ScheduleProperty', () => {
     expect(
       body.getByRole('button', { name: 'Lembretes' }).hasAttribute('disabled'),
     ).toBe(false)
-  })
-
-  test('leaves the Repetir toggle without an icon', async () => {
-    render(<Harness value={{ ...emptyScheduleValue, from: october26 }} />)
-    const body = await openPopup()
-
-    expect(
-      body.getByRole('button', { name: 'Repetir' }).querySelector('svg'),
-    ).toBeNull()
   })
 
   test('disables Repetir without an anchor unless the consumer enables it', async () => {

@@ -18,6 +18,7 @@ import {
   SchedulePopupFrame,
   type SchedulePropertyDropdownPlacement,
 } from './schedule-popup-frame'
+import type { ScheduleFooterLayout } from './schedule-section'
 import type { ScheduleTimeControl } from './schedule-time-section'
 import {
   defaultScheduleRecurrenceOptions,
@@ -38,6 +39,7 @@ export interface SchedulePropertyProps {
   dateOnly?: boolean
   dropdownPlacement?: SchedulePropertyDropdownPlacement
   fallback?: string
+  footerLayout?: ScheduleFooterLayout
   labels?: Partial<SchedulePropertyLabels>
   locale?: string
   readOnly?: boolean
@@ -72,6 +74,7 @@ export function ScheduleProperty({
   dateOnly = false,
   dropdownPlacement,
   fallback,
+  footerLayout,
   labels: labelOverrides,
   locale = 'pt-BR',
   onOpenChange,
@@ -134,6 +137,7 @@ export function ScheduleProperty({
         <SchedulePopup
           calendarProps={calendarProps}
           dateOnly={dateOnly}
+          footerLayout={footerLayout}
           labels={labels}
           locale={locale}
           onChange={onValueChange}

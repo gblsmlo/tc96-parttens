@@ -1,6 +1,7 @@
 export interface SchedulePropertyLabels {
   addReminder: string
   allDay: string
+  back: string
   end: string
   frequency: string
   nextWeek: string
@@ -23,6 +24,7 @@ export interface SchedulePropertyLabels {
 export const defaultSchedulePropertyLabels: SchedulePropertyLabels = {
   addReminder: 'Adicionar lembrete',
   allDay: 'Dia inteiro',
+  back: 'Voltar',
   end: 'Fim',
   frequency: 'Frequência',
   nextWeek: 'Próxima semana',
