@@ -105,7 +105,7 @@ To veto or reroute a Kanban move with both groups in hand, pass `kanban.onMoveCa
 
 - `CollectionSearchField` commits on submit and when emptied, not per keystroke. Filter the items with the committed value.
 - `ViewSettingsMenu` takes `modes` (the views you offer), `mode` and `onModeChange`. Put grouping, sorting, density, columns and filters in `ViewSettingsSection` children.
-- For DataGrid, reuse `DataGridSortSubmenu`, `DataGridDensitySubmenu` and `DataGridColumnsSubmenu` with the same `table`.
+- For DataGrid, reuse `DataGridSortSubmenu`, `DataGridDensitySubmenu` and `DataGridColumnsSubmenu` with the same `table`. For DataTable, `DataTableColumnsSubmenu` lists the hideable columns by `meta.label`.
 - `ActionBar` shows bulk actions for selected rows; DataGrid takes it through `datagrid.selectionActions`.
 
 ## 6. Cover loading, empty and error

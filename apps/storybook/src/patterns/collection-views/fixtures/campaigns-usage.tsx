@@ -10,6 +10,7 @@ import {
   DataGridDensitySubmenu,
   DataGridPagination,
   DataGridSortSubmenu,
+  DataTableColumnsSubmenu,
   MenuCheckboxOption,
   MenuRadioOption,
   useCollectionPreferences,
@@ -43,7 +44,6 @@ import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import { SelectedViewPicker } from '../../shared/selected-view-picker'
 import {
   campaignTableAggregations,
-  campaignTableColumnLabels,
   createCampaignGridColumns,
   createCampaignTableColumns,
   renderCampaignListRow,
@@ -403,29 +403,7 @@ function CampaignsWorkspace({
                   </>
                 ) : null}
                 {view === 'datatable' ? (
-                  <MenuSub>
-                    <MenuSubTrigger>
-                      <Table2Icon aria-hidden="true" />
-                      Colunas
-                    </MenuSubTrigger>
-                    <MenuSubPopup>
-                      {dataTable
-                        .getAllLeafColumns()
-                        .filter((column) => column.id !== 'select')
-                        .map((column) => (
-                          <MenuCheckboxOption
-                            checked={column.getIsVisible()}
-                            closeOnClick={false}
-                            key={column.id}
-                            onCheckedChange={(checked) =>
-                              column.toggleVisibility(Boolean(checked))
-                            }
-                          >
-                            {campaignTableColumnLabels[column.id] ?? column.id}
-                          </MenuCheckboxOption>
-                        ))}
-                    </MenuSubPopup>
-                  </MenuSub>
+                  <DataTableColumnsSubmenu table={dataTable} />
                 ) : null}
               </ViewSettingsSection>
               <MenuSeparator />

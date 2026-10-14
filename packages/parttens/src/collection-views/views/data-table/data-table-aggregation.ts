@@ -21,6 +21,7 @@ export interface DataTableColumnMeta<TData> {
     aggregation: DataTableAggregation,
   ) => ReactNode
   getAggregationValue?: (row: TData) => number | null | undefined
+  label?: string
 }
 
 export const defaultAggregationLabels: DataTableAggregationLabels = {

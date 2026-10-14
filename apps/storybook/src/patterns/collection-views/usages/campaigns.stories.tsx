@@ -186,3 +186,61 @@ export const ObjectiveFilter: Story = {
     ).toBeInTheDocument()
   },
 }
+
+export const ToggleColumns: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The Colunas submenu of the Table is `DataTableColumnsSubmenu`: it lists the hideable columns by their `meta.label` (the selection column stays out) and toggles each one in the table.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const body = within(canvasElement.ownerDocument.body)
+
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Orçamento' }),
+    ).toBeInTheDocument()
+
+    await userEvent.click(canvas.getByRole('button', { name: /Exibição/ }))
+    await userEvent.click(
+      await body.findByRole('menuitem', { name: 'Colunas' }),
+    )
+    await expect(
+      (await body.findAllByRole('menuitemcheckbox')).map(
+        (option) => option.textContent,
+      ),
+    ).toEqual([
+      'Campanha',
+      'Status',
+      'Aprendizado',
+      'Orçamento',
+      'Valor usado',
+      'Resultados',
+      'Custo por resultado',
+      'Alcance',
+      'CTR',
+      'Veiculação',
+    ])
+
+    await userEvent.click(
+      await body.findByRole('menuitemcheckbox', { name: 'Orçamento' }),
+    )
+    await waitFor(() =>
+      expect(
+        canvas.queryByRole('columnheader', { name: 'Orçamento' }),
+      ).toBeNull(),
+    )
+
+    await userEvent.click(
+      await body.findByRole('menuitemcheckbox', { name: 'Orçamento' }),
+    )
+    await waitFor(() =>
+      expect(
+        canvas.getByRole('columnheader', { name: 'Orçamento' }),
+      ).toBeInTheDocument(),
+    )
+  },
+}

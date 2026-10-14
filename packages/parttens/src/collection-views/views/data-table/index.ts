@@ -6,6 +6,8 @@ export type {
   DataTableAggregations,
   DataTableColumnMeta,
 } from './data-table-aggregation'
+export type { DataTableColumnsSubmenuProps } from './data-table-columns-submenu'
+export { DataTableColumnsSubmenu } from './data-table-columns-submenu'
 export type {
   DataTableColumnDef,
   DataTableFeatures,
