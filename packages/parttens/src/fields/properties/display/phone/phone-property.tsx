@@ -189,7 +189,11 @@ export function PhoneProperty({
               render={<button disabled={disabled} type="button" />}
               variant={variant === 'plain' ? 'plain' : 'badge'}
             >
-              <PhoneIcon aria-hidden="true" className="size-3" />
+              <PhoneIcon
+                aria-hidden="true"
+                className="size-3"
+                data-slot="property-icon"
+              />
               <span className="truncate">{summary}</span>
             </PropertySurface>
           }

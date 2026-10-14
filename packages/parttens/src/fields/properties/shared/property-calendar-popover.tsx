@@ -63,7 +63,7 @@ export function PropertyCalendarPopover({
           />
         }
       >
-        <Icon aria-hidden className="size-3" />
+        <Icon aria-hidden className="size-3" data-slot="property-icon" />
         <span className="truncate">{label}</span>
       </PopoverTrigger>
       <PopoverPopup

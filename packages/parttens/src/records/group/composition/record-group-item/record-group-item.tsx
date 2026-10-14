@@ -1,6 +1,10 @@
 import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import type { RecordGroupItemProps } from '../../core'
+import {
+  recordGroupRowHeightClassName,
+  recordGroupRowPaddingClassName,
+} from '../../lib/variants'
 
 export function RecordGroupItem({
   children,
@@ -11,7 +15,9 @@ export function RecordGroupItem({
   return (
     <div
       className={cn(
-        'flex min-h-9 min-w-0 items-center gap-2 px-2 text-sm',
+        'flex min-w-0 items-center gap-2 text-sm',
+        recordGroupRowHeightClassName,
+        recordGroupRowPaddingClassName,
         className,
       )}
       data-slot="record-group-item"

@@ -183,6 +183,7 @@ function SelectPropertyContent({
             'size-3',
             option?.tone ? propertyToneClassName[option.tone] : undefined,
           )}
+          data-slot="property-icon"
         />
       ) : null}
       <span className="truncate">{label}</span>

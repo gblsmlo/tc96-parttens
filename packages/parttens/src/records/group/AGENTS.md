@@ -57,6 +57,7 @@ Subgroups:
 
 Markup:
 
+- When a `RecordGroupRow` has `leading`, its value cell hides every `[data-slot=property-icon]` (the `leading` axis of `recordGroupRowValueVariants`), so the icon sits on the label and not on the value too. A control's own icon in a popup or dropdown is outside the cell and stays. The selector is the `properties` data contract; the group imports nothing from `properties` at runtime.
 - Each `RecordGroupRow` is its own `dl` wrapping a `dt` (label) and a `dd` (value), so a screen reader associates them. A `dd` hosts a `properties` editor and the editor keeps its own `ariaLabel` as name.
 - The body (`record-group-content`) is a `div`, empty or not, because it also holds links, items, subgroups and a `Checklist`, which a `dl` does not accept. A row is valid anywhere: in the body, in a subgroup or in a preview.
 - The root is a `section` made by the COSS `Collapsible` through `render`; `aria-labelledby` points at the `h2` that wraps the trigger, so the region is named by the title.
@@ -82,13 +83,14 @@ The pattern sets these attributes and styles none of them through a variant:
 
 - Alignment, the header `actionsAlign` and emptiness reach the classes through the `cva` variants, and the group variant through `cn` in `recordGroupClassName` (`gap-1` for `inset`); the frame is `CardSurface`, and `recordGroupContentVariants` keeps only the `empty` axis; no class is keyed on `data-align`, `data-actions-align`, `data-empty` or `data-variant`.
 - The title is never truncated: it wraps inside the header, so a long title never pushes `actions` out, and the region and the trigger keep it as their name.
-- The row label is capped at one Tailwind scale step: fixed in `start`, a maximum in `between`, and it truncates past it. The step fits pt-BR field labels of about 20 characters without `leading` (issue #129); `leading` sits inside the column and takes 24px of it (icon and gap).
+- The row label is capped at one Tailwind scale step: fixed in `start`, a maximum in `between`, and it truncates past it. `start` is `w-28` (112px), set by the owner on 2026-10-14: it fits labels up to about 15 characters without `leading`, and longer ones truncate (issue #129 had asked for 20, which needed `w-36`); `leading` sits inside the column and takes 24px of it (icon and gap).
 - `between` rows are a two-track grid: the label track takes what the value leaves and truncates first, but keeps a floor so a long value never crushes it onto the leading icon; past the floor the value shrinks inside its cell, and the row never overflows horizontally.
 - `start` fixes the label column in `recordGroupRowLabelVariants`, so every row shares one width whatever its label length.
-- `RecordGroupSubgroup` aligns its chevron with the row labels (`px-2`) and indents its content by `ps-5`, so a row label inside it starts under the subgroup title.
+- `RecordGroupSubgroup` aligns its chevron with the row labels (the row padding variable) and indents its content by `ps-5`, so a row label inside it starts under the subgroup title, in every variant.
 - `RecordGroup` wraps `CardSurface`, it does not become it: the `section` keeps `data-slot="record-group"` and the card keeps `data-slot="card"`. `className` styles the `section`, not the visible card, so a per-instance radius goes through `[--card-radius:...]`, which the card inherits. `lib/variants.ts` carries no `rounded-*`, `border` or `bg-card`.
-- `inset` keeps the header and footer outside the card and frames only the rows wrapper, with the same `px-1 py-1` gutter and `gap-0.5` as `plain`, and no divider between rows.
-- `RecordGroupItem` and `RecordGroupLink` share the row height (`min-h-9`), padding (`px-2`) and the half-row cap of the trailing part, so items, links and fields line up in one group.
+- `inset` keeps the header and footer outside the card and frames only the rows wrapper, with the `px-1 py-1` gutter, `gap-0.5` and `px-2` rows that `card` shares, and no divider between rows.
+- `RecordGroupRow`, `RecordGroupItem`, `RecordGroupLink` and the `RecordGroupSubgroup` trigger share one row box and the half-row cap of the trailing part, so they line up in one group. The box is three CSS variables set by the content wrapper, read through `recordGroupRowHeightClassName`, `recordGroupRowPaddingClassName` and `recordGroupRowGapClassName` (also the gap of the subgroup content): `inset` and `card` set 36px, `px-2` and `gap-0.5`; `plain` sets none, and the fallbacks are 32px, no padding and no gap. A row outside any group, such as in a `RecordPreview` body, therefore matches `plain`.
+- `plain` has no horizontal gutter at all: the header, the trigger, the content wrapper and the rows carry no `px`, so the chevron, the titles and the row labels share the group's left edge. `inset` and `card` keep `px-1` on the header, the trigger and the content wrapper.
 - The chevron rotates from the trigger's own `data-panel-open` (`group-data-panel-open/trigger:`), set by Base UI.
 - `scripts/override-exceptions.json` has no entry here: the trigger is an unstyled Base UI part and `Button` and `CollapsiblePanel` get no color, radius or border class.
 

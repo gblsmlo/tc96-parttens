@@ -62,6 +62,9 @@ test('renders through the consumer element and keeps its handlers', () => {
   expect(clicks).toBe(1)
   expect(button.getAttribute('data-slot')).toBe('record-group-link')
   expect(button.className).toContain('extra')
-  expect(button.className).toContain('min-h-9')
+  expect(button.className).toContain(
+    'min-h-[var(--record-group-row-height,calc(var(--spacing)*8))]',
+  )
+  expect(button.className).toContain('px-[var(--record-group-row-padding,0px)]')
   expect(button.className).toContain('text-start')
 })

@@ -165,7 +165,7 @@ function PersonPropertyContent<TValue extends string = string>({
 
   return (
     <PersonOptionContent
-      avatarClassName={variant === 'badge' ? 'size-4' : 'size-7'}
+      avatarClassName={variant === 'badge' ? 'size-4' : 'size-5'}
       option={option}
     />
   )

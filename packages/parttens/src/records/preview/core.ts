@@ -19,3 +19,8 @@ export interface RecordPreviewActionProps {
   label: string
   onClick?: () => void
 }
+
+export interface RecordPreviewBodyProps {
+  children?: ReactNode
+  className?: string
+}

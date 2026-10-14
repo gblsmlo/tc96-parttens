@@ -283,7 +283,7 @@ export const LongLabelStartInteraction: Story = {
 
     expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
     expect(new Set(widths).size).toBe(1)
-    expect(widths[0]).toBeCloseTo(144, 0)
+    expect(widths[0]).toBeCloseTo(112, 0)
     expect(value).toBeVisible()
     expect(value).toHaveTextContent('Oct 21')
   },
@@ -667,6 +667,16 @@ export const ReadOnlyPropertiesInteraction: Story = {
     )
     for (const row of rows) {
       expect(part(row, 'value').querySelector(controlSelector)).toBeNull()
+    }
+    const valueIcons = rows.flatMap((row) => [
+      ...part(row, 'value').querySelectorAll('[data-slot="property-icon"]'),
+    ])
+    expect(valueIcons.length).toBeGreaterThan(0)
+    for (const icon of valueIcons) {
+      expect(getComputedStyle(icon).display).toBe('none')
+    }
+    for (const row of rows) {
+      expect(part(row, 'label').querySelector('svg')).not.toBeNull()
     }
     expect(
       within(canvasElement).getByText('Quarterly access review'),

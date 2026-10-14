@@ -13,6 +13,7 @@ import {
   recordGroupClassName,
   recordGroupContentVariants,
   recordGroupHeaderVariants,
+  recordGroupTriggerVariants,
 } from '../../lib/variants'
 
 export function RecordGroup({
@@ -41,7 +42,7 @@ export function RecordGroup({
 
   const content = (
     <div
-      className={recordGroupContentVariants({ empty })}
+      className={recordGroupContentVariants({ empty, variant })}
       data-slot="record-group-content"
     >
       {children}
@@ -51,12 +52,14 @@ export function RecordGroup({
   const parts = (
     <>
       <div
-        className={recordGroupHeaderVariants({ actionsAlign })}
+        className={recordGroupHeaderVariants({ actionsAlign, variant })}
         data-actions-align={actionsAlign}
         data-slot="record-group-header"
       >
         <h2 className="min-w-0 font-medium text-sm" id={titleId}>
-          <CollapsibleTrigger className="group/trigger flex min-w-0 items-center gap-1 rounded-md px-1 py-1 outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <CollapsibleTrigger
+            className={recordGroupTriggerVariants({ variant })}
+          >
             <ChevronDownIcon
               aria-hidden="true"
               className="size-4 shrink-0 -rotate-90 transition-transform group-data-panel-open/trigger:rotate-0"
