@@ -49,6 +49,14 @@ export interface ViewSettingsSectionProps {
   label: ReactNode
 }
 
+const popupWidth = (modeCount: number) => {
+  if (modeCount < 2) return 'w-56'
+  if (modeCount === 2) return 'w-64'
+  // Com três modos a linha única trunca "Tabela", "Kanban" e "Planilha" em 16rem.
+  if (modeCount === 3) return 'w-72'
+  return 'w-96'
+}
+
 /**
  * Superfície única de ajustes da view: filtro avançado e configuração deixam de
  * ser dois gatilhos vizinhos e passam a ser seções de um só menu.
@@ -82,12 +90,7 @@ export function ViewSettingsMenu<TMode extends string = string>({
         <SlidersHorizontalIcon aria-hidden="true" />
         {triggerLabel}
       </CollectionToolbarMenuTrigger>
-      <MenuPopup
-        align="end"
-        // Tabs empilhadas (4+ modos) precisam de largura para que ícone e
-        // rótulo de cada modo respirem; abaixo disso, a linha única cabe em 16rem.
-        className={hasModeTabs ? (modes.length < 4 ? 'w-64' : 'w-96') : 'w-56'}
-      >
+      <MenuPopup align="end" className={popupWidth(modes.length)}>
         {hasModeTabs ? (
           <ViewSettingsModeTabs
             modes={modes}

@@ -17,7 +17,7 @@ Controlled renderers for one collection: the consumer declares a `CollectionDefi
 
 `views/data-grid/` has its own `AGENTS.md` with its file map and invariants; read it before touching the grid.
 
-Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the six views; each view → its own folders and `types/`; list and kanban may also import `shared/lib/project-collection.ts`, list and data-table import `shared/lib/interactive-descendants.ts`, gallery imports `shared/lib/skeleton-keys.ts`, and data-grid imports the `ActionBarContext` type from `shared/components/action-bar.tsx`; `shared/` and `store/` → `types/`; views never import each other. Outside the folder, `shared/components/collection-filter-submenu.tsx`, the data-grid density and columns submenus and `views/data-table/data-table-aggregation-cell.tsx` import `packages/parttens/src/shared/components/menu-selection-item.tsx`, and `views/data-grid/components/data-grid-pagination.tsx` imports `packages/parttens/src/shared/components/collection-pagination.tsx`.
+Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the six views; each view → its own folders and `types/`; list and kanban may also import `shared/lib/project-collection.ts`, list and data-table import `shared/lib/interactive-descendants.ts`, gallery imports `shared/lib/skeleton-keys.ts`, and data-grid imports the `ActionBarContext` type from `shared/components/action-bar.tsx`; `shared/` and `store/` → `types/`; views never import each other. Outside the folder, `shared/components/collection-filter-submenu.tsx`, the data-grid density and columns submenus, `views/data-table/data-table-columns-submenu.tsx` and `views/data-table/data-table-aggregation-cell.tsx` import `packages/parttens/src/shared/components/menu-selection-item.tsx`, and `views/data-grid/components/data-grid-pagination.tsx` imports `packages/parttens/src/shared/components/collection-pagination.tsx`.
 
 ## Dependents
 
@@ -31,7 +31,7 @@ Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the s
 
 Collection and outlet:
 
-- `CollectionViewOutlet` throws when the active view is `datagrid`, `datatable`, `calendar`, `gallery` or `kanban` (`renderKanbanItem`) and the matching prop is missing; `projectCollection` throws for `groupBy === null` and for an undeclared dimension. Tests assert the messages.
+- `CollectionViewOutlet` throws when the active view is `list` (`renderListItem`), `datagrid`, `datatable`, `calendar`, `gallery` (`renderGalleryItem`) or `kanban` (`renderKanbanItem`) and the matching prop is missing; `projectCollection` throws for `groupBy === null` and for an undeclared dimension. Tests assert the messages.
 - Prepared `groups` win over `projectCollection` in list and kanban, and an explicit `[]` never falls back to the source items.
 - `kanban.onMoveCard` receives the group of each side, so a handler never parses column ids; a column with no matching group rejects the move. Without it, drag is enabled by `onItemChange` plus `setGroupId` on the active dimension, and a reorder inside one group returns false, because the collection order is the consumer's. `kanban.onMoveCard` wins when both are passed.
 

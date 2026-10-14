@@ -81,7 +81,7 @@ export interface CollectionViewOutletProps<TItem extends RowData> {
   ) => boolean | Promise<boolean>
   renderGalleryItem?: (item: TItem) => ReactNode
   renderKanbanItem?: (item: TItem) => ReactNode
-  renderListItem: (item: TItem) => ReactNode
+  renderListItem?: (item: TItem) => ReactNode
 }
 
 export function CollectionViewOutlet<TItem extends RowData>({
@@ -206,6 +206,12 @@ export function CollectionViewOutlet<TItem extends RowData>({
   }
 
   if (preferences.view === 'list') {
+    if (!renderListItem) {
+      throw new Error(
+        'CollectionViewOutlet: a view "list" exige a prop `renderListItem`.',
+      )
+    }
+
     return (
       <ListView
         collection={collection}

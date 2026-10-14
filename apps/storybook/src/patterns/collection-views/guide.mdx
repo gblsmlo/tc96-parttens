@@ -70,7 +70,7 @@ const collection = useMemo<CollectionDefinition<Task>>(
 
 ## 3. Mount `CollectionViewOutlet`
 
-The outlet renders the active view. Give it `renderListItem`, `renderKanbanItem` only when you offer Kanban, and the props block of every other view you offer.
+The outlet renders the active view. Give it `renderListItem` only when you offer List, `renderKanbanItem` only when you offer Kanban, and the props block of every other view you offer.
 
 ```tsx
 <CollectionViewOutlet
@@ -86,7 +86,7 @@ The outlet renders the active view. Give it `renderListItem`, `renderKanbanItem`
 />
 ```
 
-- The outlet throws when the active view is `datagrid`, `datatable`, `calendar` or `kanban` and its prop (`renderKanbanItem` for Kanban) is missing. Pass only the blocks for the views you offer in step 5.
+- The outlet throws when the active view is `list`, `datagrid`, `datatable`, `calendar`, `gallery` or `kanban` and its prop (`renderListItem` for List, `renderGalleryItem` for Gallery, `renderKanbanItem` for Kanban) is missing. Pass only the blocks for the views you offer in step 5.
 - Build `table` with `useDataGrid` or `useDataTable` in the same component, from the same filtered items.
 - `renderKanbanItem` must be pure and emit no DOM `id`: Kanban renders the mobile panel and the desktop board at once, so each card renders twice.
 
@@ -105,7 +105,7 @@ To veto or reroute a Kanban move with both groups in hand, pass `kanban.onMoveCa
 
 - `CollectionSearchField` commits on submit and when emptied, not per keystroke. Filter the items with the committed value.
 - `ViewSettingsMenu` takes `modes` (the views you offer), `mode` and `onModeChange`. Put grouping, sorting, density, columns and filters in `ViewSettingsSection` children.
-- For DataGrid, reuse `DataGridSortSubmenu`, `DataGridDensitySubmenu` and `DataGridColumnsSubmenu` with the same `table`.
+- For DataGrid, reuse `DataGridSortSubmenu`, `DataGridDensitySubmenu` and `DataGridColumnsSubmenu` with the same `table`. For DataTable, `DataTableColumnsSubmenu` lists the hideable columns by `meta.label`.
 - `ActionBar` shows bulk actions for selected rows; DataGrid takes it through `datagrid.selectionActions`.
 
 ## 6. Cover loading, empty and error

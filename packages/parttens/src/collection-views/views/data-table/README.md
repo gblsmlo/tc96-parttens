@@ -14,6 +14,10 @@ Rows are memoized below the component that calls `useDataTable`. A row re-render
 
 A column declares `meta.aggregations` (`count`, `sum`) with `DataTableColumnMeta`, plus optional `align`, `getAggregationValue` for a column without an accessor, and `formatAggregation`. Its footer cell becomes a menu with "Nenhum" and the listed operations; the result covers every row before pagination. `defaultAggregations` sets the initial choice by column id, `aggregations` with `onAggregationsChange` controls it, and `aggregationLabels` replaces the pt-BR labels. Without rows or while loading, the aggregated cells are left out.
 
+## Columns submenu
+
+`DataTableColumnsSubmenu` is the `DataGridColumnsSubmenu` of the Table: a `ViewSettingsMenu` section that lists `getAllLeafColumns()` with `getCanHide()` and toggles each one's visibility. Each option reads `meta.label` (`DataTableColumnMeta`) and falls back to the column id, so give a column such as `select` `enableHiding: false` to keep it out. The submenu renders nothing when no column can hide, and `label` replaces the pt-BR "Colunas".
+
 ## Horizontal overflow
 
 The root `data-slot="data-table"` carries `data-overflow-start` and `data-overflow-end` while the columns run past that side of the container, and a fade over that edge shows the clipped content.

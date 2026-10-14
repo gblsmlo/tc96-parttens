@@ -178,7 +178,7 @@ const numeric = (value: string) => (
 const countOf = (count: number, singular: string, plural: string) =>
   `${count} ${count === 1 ? singular : plural}`
 
-export const campaignTableColumnLabels: Record<string, string> = {
+const campaignTableColumnLabels: Record<string, string> = {
   budget: 'Orçamento',
   costPerResult: 'Custo por resultado',
   ctr: 'CTR',
@@ -193,6 +193,14 @@ export const campaignTableColumnLabels: Record<string, string> = {
 
 const numericHeader = (id: string) => () =>
   numeric(campaignTableColumnLabels[id])
+
+const labeled = (
+  id: string,
+  meta: DataTableColumnMeta<Campaign>,
+): DataTableColumnMeta<Campaign> => ({
+  ...meta,
+  label: campaignTableColumnLabels[id],
+})
 
 const countedColumn: DataTableColumnMeta<Campaign> = {
   aggregations: ['count'],
@@ -392,6 +400,7 @@ export const createCampaignTableColumns = (
         }
       />
     ),
+    enableHiding: false,
     id: 'select',
   },
   {
@@ -411,7 +420,7 @@ export const createCampaignTableColumns = (
       </div>
     ),
     header: 'Campanha',
-    meta: countedColumn,
+    meta: labeled('name', countedColumn),
   },
   {
     accessorKey: 'status',
@@ -419,56 +428,56 @@ export const createCampaignTableColumns = (
       <StatusField campaign={row.original} onChange={onChange} />
     ),
     header: 'Status',
-    meta: countedColumn,
+    meta: labeled('status', countedColumn),
   },
   {
     cell: ({ row }) => <LearningField campaign={row.original} />,
     header: 'Aprendizado',
     id: 'learning',
-    meta: countedColumn,
+    meta: labeled('learning', countedColumn),
   },
   {
     accessorKey: 'budget',
     cell: ({ row }) => numeric(formatBudget(row.original)),
     header: numericHeader('budget'),
-    meta: countedNumericColumn,
+    meta: labeled('budget', countedNumericColumn),
   },
   {
     accessorKey: 'spend',
     cell: ({ row }) => numeric(formatCurrency(row.original.spend)),
     header: numericHeader('spend'),
-    meta: summedColumn(formatCurrency),
+    meta: labeled('spend', summedColumn(formatCurrency)),
   },
   {
     accessorKey: 'results',
     cell: ({ row }) => <ResultsField campaign={row.original} />,
     header: numericHeader('results'),
-    meta: countedNumericColumn,
+    meta: labeled('results', countedNumericColumn),
   },
   {
     cell: ({ row }) =>
       numeric(formatOptional(costPerResult(row.original), formatCurrency)),
     header: numericHeader('costPerResult'),
     id: 'costPerResult',
-    meta: countedNumericColumn,
+    meta: labeled('costPerResult', countedNumericColumn),
   },
   {
     accessorKey: 'reach',
     cell: ({ row }) => numeric(formatCount(row.original.reach)),
     header: numericHeader('reach'),
-    meta: summedColumn(formatCount),
+    meta: labeled('reach', summedColumn(formatCount)),
   },
   {
     cell: ({ row }) =>
       numeric(formatOptional(clickThroughRate(row.original), formatRate)),
     header: numericHeader('ctr'),
     id: 'ctr',
-    meta: countedNumericColumn,
+    meta: labeled('ctr', countedNumericColumn),
   },
   {
     accessorKey: 'startDate',
     cell: ({ row }) => <ScheduleField campaign={row.original} />,
     header: 'Veiculação',
-    meta: countedColumn,
+    meta: labeled('startDate', countedColumn),
   },
 ]
