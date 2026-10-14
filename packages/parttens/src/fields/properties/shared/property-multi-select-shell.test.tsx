@@ -72,6 +72,16 @@ describe('PropertyMultiSelectShell', () => {
     expect(trigger.querySelector('svg')?.classList.contains('lucide-tag')).toBe(
       true,
     )
+    expect(trigger.getAttribute('data-slot')).toBe('property-surface')
+    expect(trigger.getAttribute('data-empty')).toBe('true')
+    expect(trigger.querySelector('svg')?.classList.contains('size-3')).toBe(
+      true,
+    )
+    expect(
+      document
+        .querySelector('[data-slot="combobox-chips"]')
+        ?.classList.contains('focus-within:ring-0'),
+    ).toBe(true)
   })
 
   test('with values, chips name their removal and the add chip collapses to a plus', () => {
@@ -82,7 +92,8 @@ describe('PropertyMultiSelectShell', () => {
     ).toBeTruthy()
     const trigger = screen.getByRole('button', { name: 'Adicionar tag' })
     expect(trigger.textContent).toBe('')
-    expect(trigger.className).toContain('size-6')
+    expect(trigger.className).toContain('w-6')
+    expect(trigger.hasAttribute('data-empty')).toBe(false)
   })
 
   test('reports the added option with the previous value', async () => {

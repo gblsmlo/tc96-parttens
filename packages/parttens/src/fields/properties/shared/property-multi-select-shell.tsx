@@ -1,6 +1,5 @@
 'use client'
 
-import { Button } from '@tc96/ui/button'
 import {
   Combobox,
   ComboboxChip,
@@ -22,7 +21,7 @@ import {
 } from './lib/property-options'
 import type { PropertyIcon } from './property-catalog'
 import { propertySelectItemClassName } from './property-select-shell'
-import type { PropertyVariant } from './property-surface'
+import { PropertySurface, type PropertyVariant } from './property-surface'
 
 export type PropertyMultiSelectDropdownPlacement = Pick<
   ComponentProps<typeof ComboboxPopup>,
@@ -111,7 +110,7 @@ export function PropertyMultiSelectShell<TOption extends OptionLike>({
         <ComboboxChips
           className={cn(
             variant === 'plain' &&
-              'min-h-7 border-transparent! bg-transparent! p-0 shadow-none! before:hidden sm:min-h-6',
+              'min-h-7 border-transparent! bg-transparent! p-0 shadow-none! before:hidden focus-within:ring-0 sm:min-h-6',
           )}
         >
           {selectedOptions.map((option) => (
@@ -122,27 +121,24 @@ export function PropertyMultiSelectShell<TOption extends OptionLike>({
               {renderOption(option)}
             </ComboboxChip>
           ))}
-          <Button
+          <PropertySurface
             aria-label={hasValue ? addLabel : undefined}
             className={cn(
-              '[&_svg]:mx-0',
-              hasValue ? 'size-6 px-0 sm:size-6' : 'h-6 gap-1 sm:h-6',
+              hasValue ? 'w-6 px-0' : 'gap-1.5 text-muted-foreground',
             )}
-            disabled={disabled}
+            muted={!hasValue}
             onClick={openList}
-            size="sm"
-            type="button"
-            variant="secondary"
+            render={<button disabled={disabled} type="button" />}
           >
             {hasValue ? (
               <PlusIcon aria-hidden="true" className="size-3.5" />
             ) : (
               <>
-                <AddIcon aria-hidden="true" className="size-3.5" />
+                <AddIcon aria-hidden="true" className="size-3" />
                 {placeholder}
               </>
             )}
-          </Button>
+          </PropertySurface>
         </ComboboxChips>
       )}
       <ComboboxPopup

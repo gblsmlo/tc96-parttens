@@ -9,7 +9,7 @@ const meta = {
       description: {
         component: [
           'The sales calendar of the Pipeline usage as a `CalendarView` alone: calls, meetings, demos and proposals tied to each deal, plus the expected close date of every open deal as an all-day item.',
-          'The toolbar moves the period and switches Dia/Semana/Mês, and the `ViewSettingsMenu` filters by owner, activity type and deal stage. Dragging an activity or its top and bottom edges writes the new window through `onItemReschedule`. Nova atividade and a click on an empty slot of the time grid (`onSelectSlot`) open the `CreateEvent` dialog of `Patterns/Records/Dialog`, and the saved event is added to the calendar. Interaction coverage lives in `Views/Calendar/Interactions`.',
+          'The toolbar moves the period and switches Dia/Semana/Mês, and the `ViewSettingsMenu` filters by owner, activity type and deal stage. Dragging an activity or its top and bottom edges writes the new window through `onItemReschedule`. Nova atividade and a click on an empty slot of the time grid (`onSelectSlot`) open the `CreateEvent` dialog of `Patterns/Records/Dialog/Create/Row Properties`, and the saved event is added to the calendar. Interaction coverage lives in `Views/Calendar/Interactions`.',
         ].join('\n\n'),
       },
     },
@@ -42,8 +42,9 @@ export const CreateActivity: Story = {
     const dialog = within(
       await screen.findByRole('dialog', { name: 'New event' }),
     )
-    expect(dialog.getByLabelText('Start time')).toHaveValue('09:00')
-    expect(dialog.getByLabelText('End time')).toHaveValue('10:00')
+    expect(dialog.getByRole('button', { name: /^Date:/ })).toHaveTextContent(
+      'Oct 14 · 09:00 – 10:00',
+    )
     await userEvent.type(
       dialog.getByRole('textbox', { name: 'Event title' }),
       'Revisão de contrato',
@@ -90,8 +91,9 @@ export const CreateActivityFromSlot: Story = {
     const dialog = within(
       await screen.findByRole('dialog', { name: 'New event' }),
     )
-    expect(dialog.getByLabelText('Start time')).toHaveValue('10:30')
-    expect(dialog.getByLabelText('End time')).toHaveValue('10:45')
+    expect(dialog.getByRole('button', { name: /^Date:/ })).toHaveTextContent(
+      'Oct 15 · 10:30 – 10:45',
+    )
     await userEvent.type(
       dialog.getByRole('textbox', { name: 'Event title' }),
       'Alinhamento rápido',

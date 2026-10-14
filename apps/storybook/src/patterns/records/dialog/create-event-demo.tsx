@@ -1,49 +1,34 @@
 import {
-  DateProperty,
   PeopleProperty,
   RecordDialog,
+  RecordGroupRow,
+  ScheduleProperty,
   SelectProperty,
+  TextProperty,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { Field, FieldLabel } from '@tc96/ui/field'
-import { Input } from '@tc96/ui/input'
-import { Switch } from '@tc96/ui/switch'
-import { Textarea } from '@tc96/ui/textarea'
-import {
-  AlignLeftIcon,
-  ClockIcon,
-  type LucideIcon,
-  MapPinIcon,
-  UsersIcon,
-} from 'lucide-react'
-import { type ReactNode, useId, useState } from 'react'
+import { MapPinIcon } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { CreateMoreSwitch } from './create-more'
 import { delay } from './delay'
 import {
   availabilityOptions,
-  calendarGroups,
+  calendarOptions,
   defaultSlot,
   dialogTitles,
   type EventSlot,
   type EventValues,
   eventSchema,
   eventWindow,
-  reminderOptions,
+  scheduleDay,
+  scheduleLabels,
+  scheduleRecurrenceOptions,
+  scheduleReminderOptions,
+  slotSchedule,
+  typeOptions,
 } from './event-record'
 import { people } from './project-record'
-
-function EventRow({
-  children,
-  icon: Icon,
-}: Readonly<{ children: ReactNode; icon: LucideIcon }>) {
-  return (
-    <div className="flex gap-3">
-      <span className="flex h-7 shrink-0 items-center">
-        <Icon aria-hidden className="size-4 text-muted-foreground" />
-      </span>
-      <div className="grid min-w-0 flex-1 gap-1">{children}</div>
-    </div>
-  )
-}
+import { RecordHeadline } from './record-headline'
 
 export function CreateEventDialog({
   onCreate,
@@ -51,39 +36,45 @@ export function CreateEventDialog({
   open,
   slot = defaultSlot,
 }: Readonly<{
-  onCreate: (values: EventValues) => void
+  onCreate: (values: EventValues) => void | Promise<void>
   onOpenChange: (open: boolean) => void
   open: boolean
   slot?: EventSlot
 }>) {
-  const allDayId = useId()
   const [title, setTitle] = useState('')
-  const [date, setDate] = useState(slot.date)
-  const [start, setStart] = useState(slot.start)
-  const [end, setEnd] = useState(slot.end)
-  const [allDay, setAllDay] = useState(false)
+  const [schedule, setSchedule] = useState(() => slotSchedule(slot))
   const [guests, setGuests] = useState<readonly string[]>([])
-  const [calendar, setCalendar] = useState('event')
+  const [location, setLocation] = useState<string | null>(null)
+  // Mod+Enter submits in the same event as the blur that commits Location, before React re-renders.
+  const committedLocation = useRef<string | null>(null)
+  const [type, setType] = useState('event')
+  const [calendar, setCalendar] = useState('personal')
   const [availability, setAvailability] = useState('busy')
-  const [reminder, setReminder] = useState('30')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [createMore, setCreateMore] = useState(false)
 
   const reset = () => {
     setTitle('')
-    setDate(slot.date)
-    setStart(slot.start)
-    setEnd(slot.end)
-    setAllDay(false)
+    setSchedule(slotSchedule(slot))
     setGuests([])
-    setCalendar('event')
+    setLocation(null)
+    committedLocation.current = null
+    setType('event')
+    setCalendar('personal')
     setAvailability('busy')
-    setReminder('30')
     setErrorMessage(null)
   }
 
   return (
     <RecordDialog
       errorMessage={errorMessage}
+      footerStart={
+        <CreateMoreSwitch
+          checked={createMore}
+          onCheckedChange={setCreateMore}
+        />
+      }
+      keepOpenOnSuccess={createMore}
       onOpenChange={(next) => {
         onOpenChange(next)
         if (!next) reset()
@@ -92,22 +83,38 @@ export function CreateEventDialog({
         setErrorMessage(null)
         const data = new FormData(event.currentTarget)
         const parsed = eventSchema.safeParse({
-          allDay,
+          allDay: schedule.allDay,
           availability,
           calendar,
           description: String(data.get('description') ?? ''),
+          frequency: schedule.frequency,
           guests,
-          location: String(data.get('location') ?? ''),
-          reminderMinutes: reminder === 'none' ? null : Number(reminder),
+          location: committedLocation.current ?? '',
+          reminderMinutes: schedule.reminders.map(Number),
           title,
-          ...eventWindow({ allDay, date, end, start }),
+          type,
+          until: schedule.until,
+          ...eventWindow({
+            allDay: schedule.allDay,
+            day: scheduleDay(schedule),
+            end: schedule.endTime,
+            start: schedule.startTime,
+          }),
         })
         if (!parsed.success) {
           setErrorMessage(parsed.error.issues[0]?.message ?? null)
           return false
         }
         await delay(150)
-        onCreate(parsed.data)
+        try {
+          await onCreate(parsed.data)
+        } catch (error) {
+          setErrorMessage(
+            error instanceof Error ? error.message : 'Could not save.',
+          )
+          return false
+        }
+        if (createMore) reset()
         return true
       }}
       open={open}
@@ -115,120 +122,76 @@ export function CreateEventDialog({
       submitLabel="Save"
       submitOnModEnter
       submittingLabel="Saving"
-      title={dialogTitles[calendar] ?? 'New event'}
+      title={dialogTitles[type] ?? 'New event'}
       titleAncestor="Calendar"
     >
       <div className="grid gap-4">
-        <Field name="title">
-          <FieldLabel className="sr-only">Event title</FieldLabel>
-          <Input
-            autoFocus
-            className="w-full font-semibold text-lg [&_input]:px-0 [&_input]:placeholder:text-muted-foreground/60 [&_input]:focus:placeholder:text-muted-foreground"
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder="Add title"
-            unstyled
-            value={title}
-          />
-        </Field>
-        <EventRow icon={ClockIcon}>
-          <div className="flex flex-wrap items-center gap-2">
-            <DateProperty
-              allowClear={false}
+        <RecordHeadline
+          descriptionPlaceholder="Add notes or a meeting link"
+          onTitleChange={setTitle}
+          title={title}
+          titleLabel="Event title"
+          titlePlaceholder="Add title"
+        />
+        <div>
+          <RecordGroupRow label="Date">
+            <ScheduleProperty
               ariaLabel="Date"
+              labels={scheduleLabels}
               locale="en-US"
-              onValueChange={(value) => {
-                if (value) setDate(value)
-              }}
-              timeZone="UTC"
-              value={date}
+              onValueChange={setSchedule}
+              recurrenceOptions={scheduleRecurrenceOptions}
+              reminderOptions={scheduleReminderOptions}
+              value={schedule}
             />
-            {allDay ? null : (
-              <>
-                <Input
-                  aria-label="Start time"
-                  className="w-28"
-                  nativeInput
-                  onChange={(event) => setStart(event.currentTarget.value)}
-                  size="sm"
-                  type="time"
-                  value={start}
-                />
-                <span aria-hidden className="text-muted-foreground text-sm">
-                  –
-                </span>
-                <Input
-                  aria-label="End time"
-                  className="w-28"
-                  nativeInput
-                  onChange={(event) => setEnd(event.currentTarget.value)}
-                  size="sm"
-                  type="time"
-                  value={end}
-                />
-              </>
-            )}
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={allDay}
-                id={allDayId}
-                onCheckedChange={setAllDay}
-              />
-              <label className="text-sm" htmlFor={allDayId}>
-                All day
-              </label>
-            </div>
-          </div>
-        </EventRow>
-        <EventRow icon={UsersIcon}>
-          <div className="flex min-h-7 items-center">
+          </RecordGroupRow>
+          <RecordGroupRow label="Guests">
             <PeopleProperty
               ariaLabel="Guests"
+              dropdownPlacement={{ align: 'start' }}
               onValueChange={setGuests}
               options={people}
               placeholder="Add guests"
               value={guests}
             />
-          </div>
-        </EventRow>
-        <EventRow icon={MapPinIcon}>
-          <Field name="location">
-            <FieldLabel className="sr-only">Location</FieldLabel>
-            <Input
-              className="w-full [&_input]:px-0 [&_input]:placeholder:text-muted-foreground/60 [&_input]:focus:placeholder:text-muted-foreground"
-              placeholder="Add location"
-              unstyled
+          </RecordGroupRow>
+          <RecordGroupRow label="Location">
+            <TextProperty
+              ariaLabel="Location"
+              editing="inline"
+              fallback="Add location"
+              icon={MapPinIcon}
+              onCommit={(next) => {
+                committedLocation.current = next
+                setLocation(next)
+              }}
+              value={location}
             />
-          </Field>
-        </EventRow>
-        <EventRow icon={AlignLeftIcon}>
-          <Field name="description">
-            <FieldLabel className="sr-only">Description</FieldLabel>
-            <Textarea
-              className="w-full [&_textarea]:min-h-16 [&_textarea]:resize-none [&_textarea]:px-0 [&_textarea]:pt-0.5 [&_textarea]:placeholder:text-muted-foreground/60 [&_textarea]:focus:placeholder:text-muted-foreground"
-              placeholder="Add description"
-              unstyled
+          </RecordGroupRow>
+          <RecordGroupRow label="Type">
+            <SelectProperty
+              ariaLabel="Type"
+              onValueChange={(value) => setType(value ?? 'event')}
+              options={typeOptions}
+              value={type}
             />
-          </Field>
-        </EventRow>
-        <div className="flex min-h-7 flex-wrap items-center gap-2">
-          <SelectProperty
-            ariaLabel="Calendar"
-            groups={calendarGroups}
-            onValueChange={(value) => setCalendar(value ?? 'event')}
-            value={calendar}
-          />
-          <SelectProperty
-            ariaLabel="Availability"
-            onValueChange={(value) => setAvailability(value ?? 'busy')}
-            options={availabilityOptions}
-            value={availability}
-          />
-          <SelectProperty
-            ariaLabel="Reminder"
-            onValueChange={(value) => setReminder(value ?? 'none')}
-            options={reminderOptions}
-            value={reminder}
-          />
+          </RecordGroupRow>
+          <RecordGroupRow label="Calendar">
+            <SelectProperty
+              ariaLabel="Calendar"
+              onValueChange={(value) => setCalendar(value ?? 'personal')}
+              options={calendarOptions}
+              value={calendar}
+            />
+          </RecordGroupRow>
+          <RecordGroupRow label="Availability">
+            <SelectProperty
+              ariaLabel="Availability"
+              onValueChange={(value) => setAvailability(value ?? 'busy')}
+              options={availabilityOptions}
+              value={availability}
+            />
+          </RecordGroupRow>
         </div>
       </div>
     </RecordDialog>
@@ -237,7 +200,9 @@ export function CreateEventDialog({
 
 export function CreateEventDemo({
   onCreate,
-}: Readonly<{ onCreate: (values: EventValues) => void }>) {
+}: Readonly<{
+  onCreate: (values: EventValues) => void | Promise<void>
+}>) {
   const [open, setOpen] = useState(true)
 
   return (

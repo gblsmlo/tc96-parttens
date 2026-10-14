@@ -103,7 +103,7 @@ describe('TagsProperty', () => {
     expect(
       trigger.querySelector('svg')?.classList.contains('lucide-plus'),
     ).toBe(true)
-    expect(trigger.className).toContain('size-6')
+    expect(trigger.className).toContain('w-6')
   })
 
   test('renders the editable multi-value collection as a plain property', () => {

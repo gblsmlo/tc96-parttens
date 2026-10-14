@@ -2,13 +2,14 @@ import {
   addCalendarDays,
   type CalendarDate,
   fromZonedDateTime,
-  type SelectPropertyGroup,
+  type SchedulePropertyLabels,
+  type ScheduleRecurrenceOption,
+  type ScheduleReminderOption,
+  type ScheduleValue,
   type SelectPropertyOption,
   toZonedDateTime,
 } from '@tc96/parttens'
 import {
-  BellIcon,
-  BellOffIcon,
   BriefcaseIcon,
   CalendarIcon,
   CircleIcon,
@@ -50,37 +51,25 @@ export const slotFromCalendar = ({
   start: formatMinutes(startMinutes),
 })
 
-export const calendarGroups: SelectPropertyGroup[] = [
+export const typeOptions: SelectPropertyOption[] = [
+  { icon: CalendarIcon, label: 'Event', tone: 'neutral', value: 'event' },
   {
-    label: 'Type',
-    options: [
-      { icon: CalendarIcon, label: 'Event', tone: 'neutral', value: 'event' },
-      {
-        icon: HandshakeIcon,
-        label: 'Appointment',
-        tone: 'neutral',
-        value: 'appointment',
-      },
-    ],
+    icon: HandshakeIcon,
+    label: 'Appointment',
+    tone: 'neutral',
+    value: 'appointment',
   },
+]
+
+export const calendarOptions: SelectPropertyOption[] = [
   {
-    label: 'Calendar',
-    options: [
-      {
-        icon: CircleIcon,
-        label: 'Appointments',
-        tone: 'danger',
-        value: 'appointments',
-      },
-      { icon: CircleIcon, label: 'Sales', tone: 'info', value: 'sales' },
-      {
-        icon: CircleIcon,
-        label: 'Personal',
-        tone: 'success',
-        value: 'personal',
-      },
-    ],
+    icon: CircleIcon,
+    label: 'Appointments',
+    tone: 'danger',
+    value: 'appointments',
   },
+  { icon: CircleIcon, label: 'Sales', tone: 'info', value: 'sales' },
+  { icon: CircleIcon, label: 'Personal', tone: 'success', value: 'personal' },
 ]
 
 export const dialogTitles: Record<string, string> = {
@@ -92,21 +81,42 @@ export const availabilityOptions: SelectPropertyOption[] = [
   { icon: CoffeeIcon, label: 'Free', tone: 'neutral', value: 'free' },
 ]
 
-export const reminderOptions: SelectPropertyOption[] = [
-  { icon: BellOffIcon, label: 'No reminder', tone: 'neutral', value: 'none' },
-  {
-    icon: BellIcon,
-    label: '10 minutes before',
-    tone: 'neutral',
-    value: '10',
-  },
-  {
-    icon: BellIcon,
-    label: '30 minutes before',
-    tone: 'neutral',
-    value: '30',
-  },
-  { icon: BellIcon, label: '1 hour before', tone: 'neutral', value: '60' },
+export const scheduleLabels: Partial<SchedulePropertyLabels> = {
+  addReminder: 'Add reminder',
+  allDay: 'All day',
+  back: 'Back',
+  end: 'End',
+  frequency: 'Frequency',
+  nextWeek: 'Next week',
+  noDate: 'No date',
+  noReminders: 'No reminders found.',
+  noRepeat: 'Does not repeat',
+  presets: 'Date shortcuts',
+  reminders: 'Reminders',
+  removeReminder: 'Remove reminder',
+  repeat: 'Repeat',
+  start: 'Start',
+  thisWeekend: 'This weekend',
+  time: 'Time',
+  today: 'Today',
+  tomorrow: 'Tomorrow',
+  until: 'Until',
+  untilFallback: 'No end date',
+}
+
+export const scheduleRecurrenceOptions: readonly ScheduleRecurrenceOption[] = [
+  { label: 'Daily', value: 'daily' },
+  { label: 'Weekdays', value: 'weekdays' },
+  { label: 'Weekly', value: 'weekly' },
+  { label: 'Monthly', value: 'monthly' },
+  { label: 'Yearly', value: 'yearly' },
+]
+
+export const scheduleReminderOptions: readonly ScheduleReminderOption[] = [
+  { label: '10 minutes before', value: '10' },
+  { label: '30 minutes before', value: '30' },
+  { label: '1 hour before', value: '60' },
+  { label: '1 day before', value: '1440' },
 ]
 
 export const endBeforeStartMessage = 'End time must be after the start time.'
@@ -116,20 +126,17 @@ export const eventSchema = z
   .object({
     allDay: z.boolean(),
     availability: z.enum(['busy', 'free']),
-    calendar: z.enum([
-      'event',
-      'appointment',
-      'appointments',
-      'sales',
-      'personal',
-    ]),
+    calendar: z.enum(['appointments', 'sales', 'personal']),
     description: z.string().trim(),
     end: z.iso.datetime({ error: missingTimeMessage }),
+    frequency: z.string().nullable(),
     guests: z.array(z.string()),
     location: z.string().trim(),
-    reminderMinutes: z.number().int().positive().nullable(),
+    reminderMinutes: z.array(z.number().int().positive()),
     start: z.iso.datetime({ error: missingTimeMessage }),
     title: z.string().trim().min(1),
+    type: z.enum(['event', 'appointment']),
+    until: z.string().nullable(),
   })
   .refine((event) => event.end > event.start, {
     error: endBeforeStartMessage,
@@ -137,6 +144,28 @@ export const eventSchema = z
   })
 
 export type EventValues = z.infer<typeof eventSchema>
+
+export const slotSchedule = (slot: EventSlot): ScheduleValue => {
+  const { day, month, year } = toZonedDateTime(new Date(slot.date), 'UTC').date
+  return {
+    allDay: false,
+    endTime: slot.end,
+    frequency: null,
+    from: new Date(year, month - 1, day),
+    reminders: ['30'],
+    startTime: slot.start,
+    until: null,
+  }
+}
+
+export const scheduleDay = (schedule: ScheduleValue): CalendarDate | null =>
+  schedule.from
+    ? {
+        day: schedule.from.getDate(),
+        month: schedule.from.getMonth() + 1,
+        year: schedule.from.getFullYear(),
+      }
+    : null
 
 const parseMinutes = (time: string) => {
   const match = /^(\d{2}):(\d{2})$/.exec(time)
@@ -146,11 +175,16 @@ const parseMinutes = (time: string) => {
 
 export function eventWindow({
   allDay,
-  date,
+  day,
   end,
   start,
-}: Readonly<{ allDay: boolean; date: string; end: string; start: string }>) {
-  const day = toZonedDateTime(new Date(date), 'UTC').date
+}: Readonly<{
+  allDay: boolean
+  day: CalendarDate | null
+  end: string
+  start: string
+}>) {
+  if (!day) return { end: null, start: null }
   if (allDay) {
     return {
       end: fromZonedDateTime(

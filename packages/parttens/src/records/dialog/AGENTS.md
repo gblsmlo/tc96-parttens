@@ -25,14 +25,14 @@ Import direction: `composition/` → `components/` and `hooks/` → `core.ts`.
 
 `RecordDialog` has two documented bodies on the same shell, both with the `actions` open-as-page shortcut, the `Create more` switch in `footerStart` bound to `keepOpenOnSuccess`, and `submitOnModEnter`:
 
-- `CreateRecord` (inline): borderless title and description, property chips pinned to the bottom with `stretchBody`. Use it for quick capture where the fields are few and the properties are optional.
-- `CreateRecordWithForm` (form): the same fields and payload as labeled COSS `Field` rows, scrolling in the panel without `stretchBody`. Use it for explicit entry, long bodies or required fields that need a visible label.
+- `InlineProperties` (inline): borderless title and description, property chips pinned to the bottom with `stretchBody`. Use it for quick capture where the fields are few and the properties are optional.
+- `SimpleForm` (form): the same fields and payload as labeled COSS `Field` rows, scrolling in the panel without `stretchBody`. Use it for explicit entry, long bodies or required fields that need a visible label.
 
-`CreateEvent` is a third body for a calendar event or appointment, prefilled with a clicked slot: icon rows for when, guests, location and description, then a chip row where one grouped select holds the type (Event, Appointment) and the calendar. It has no `actions` shortcut and no `Create more`. It is the documented use of `errorMessage`: an end time before the start keeps the dialog open with the message.
+`RowProperties` is a third body for a calendar event or appointment, prefilled with a clicked slot: a borderless title and description, then a list of `RecordGroupRow` rows whose values are `properties` displays. The order goes from what places the event to what classifies it: Date (a `ScheduleProperty` that owns the day, times, all day, repeat and reminders), Guests, Location (an inline `TextProperty`), Type (Event or Appointment, what it is), Calendar (where it is filed) and Availability (Busy, Free). Type and Calendar are separate selects because they are independent choices, and the title follows Type. The last three have defaults, so they come last. Each row label is also the `ariaLabel` of its value. An inline `TextProperty` commits on blur, and Mod+Enter submits in the same event, so the consumer keeps the committed value in a ref. It has no `actions` shortcut; `Create more` is in `footerStart` and puts every field back to its default after a save. It is the documented use of `errorMessage`: an end time before the start, or a failed save, keeps the dialog open with the message.
 
-The stories are in `apps/storybook/src/patterns/records/dialog/`; the shared lists, the zod schema and the payload shape live in `project-record.ts` there, and in `event-record.ts` for `CreateEvent`.
+The stories are in `apps/storybook/src/patterns/records/dialog/`; the shared lists, the zod schema and the payload shape live in `project-record.ts` there, and in `event-record.ts` for `RowProperties`.
 
-Usages sit under `Patterns/Records/Dialog/Usages` in `usages/`. `Contacts` is the `CreateRecord` body for the Contacts collection: name as title, a description textarea, and every other field as a property chip, without `stretchBody` so the popup keeps the height of its content. Cargo and Empresa share `CreatableProperty` (`creatable-property.tsx`), a COSS `Combobox` with search, the existing values and a footer button that creates the typed value. `CreateContactDialog` (`create-contact-dialog.tsx`) is controlled, and the Contacts usage of `Patterns/CollectionViews` mounts the same component from Novo contato.
+Usages sit under `Patterns/Records/Dialog/Usages` in `usages/`. `Contacts` is the `InlineProperties` body for the Contacts collection: name as title, a description textarea, and every other field as a property chip, without `stretchBody` so the popup keeps the height of its content. Cargo and Empresa share `CreatableProperty` (`creatable-property.tsx`), a COSS `Combobox` with search, the existing values and a footer button that creates the typed value. `CreateContactDialog` (`create-contact-dialog.tsx`) is controlled, and the Contacts usage of `Patterns/CollectionViews` mounts the same component from Novo contato.
 
 ## Public API
 
@@ -108,7 +108,12 @@ Behavior the tests fix:
 bun test --isolate packages/parttens/src/records/dialog
 bunx biome check packages/parttens/src/records/dialog
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/record-dialog
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/records/dialog
 ```
 
-The stories are `Patterns/Records/Dialog` (Default, Sizes, CreateRecord, CreateRecordWithForm, CreateEvent) in `apps/storybook/src/patterns/records/dialog/`, with a `!dev` `<Story>Interaction` twin for each (`FailedSubmit` and `ThrowingSubmit` check the focus rule above; `Sizes` widens the viewport with `page.viewport()` and restores it), and `Patterns/Records/Dialog/Usages/Contacts` (Default, CreateContact, CreateMore) in `usages/`; all run axe with `test: 'error'`.
+The stories are in `apps/storybook/src/patterns/records/dialog/`, with a `!dev` `<Story>Interaction` twin for each, and all run axe with `test: 'error'`:
+
+- `Patterns/Records/Dialog`: Sizes, which widens the viewport with `page.viewport()` and restores it.
+- `Patterns/Records/Dialog/Create`, the create presentations in `create/`: `Inline Properties`, `Row Properties` and `Simple Form`. The first two render the title and description through `record-headline.tsx`, so size, placeholder color and spacing change in one place.
+- `Patterns/Records/Dialog/Failed Submit` (`failed-submit.stories.tsx`): the same Inline Properties and Row Properties bodies with an `onCreate` that throws. The demos report it through `errorMessage`, and the stories check the settle rule above: the dialog stays open, the title and properties keep their values and focus returns to the submit button.
+- `Patterns/Records/Dialog/Usages/Contacts` (Default, CreateContact, CreateMore) in `usages/`.

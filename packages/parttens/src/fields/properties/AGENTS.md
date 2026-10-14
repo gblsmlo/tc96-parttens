@@ -59,7 +59,7 @@ Editing:
 Markup:
 
 - `AttachmentProperty` puts the link inside the surface: a button inside an anchor is invalid markup. The right-hand affordance is always remove; `action` only decides how the target opens.
-- The multi-select add chip resets `[&_svg]:mx-0` because COSS `Button` brings `[&_svg]:-mx-0.5`.
+- The multi-select add chip (`PeopleProperty`, `TagsProperty`, the `ScheduleProperty` reminders) is a `PropertySurface` button, the same surface as the empty chip of `PersonProperty`: muted outline with a `size-3` icon and `gap-1.5` while empty, and a filled `w-6` plus chip once there is a value. Its accessible name is the placeholder while empty and `addLabel` with a value. It is not a COSS `Button`, which differed in radius, icon size and fill.
 - Default copy is pt-BR; the fallback `ariaLabel`s `Date`, `Person` and `Period` are English.
 
 ## Styling
