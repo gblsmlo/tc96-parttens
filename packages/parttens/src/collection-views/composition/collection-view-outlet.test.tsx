@@ -1,9 +1,12 @@
-import { afterEach, describe, expect, test } from 'bun:test'
+import { afterEach, describe, expect, mock, test } from 'bun:test'
 import type { ReactElement } from 'react'
+import type { CollectionDataTableViewProps } from './collection-view-outlet'
 
 await import('../test/dom')
 
-const { cleanup, render, screen } = await import('@testing-library/react')
+const { cleanup, fireEvent, render, screen } = await import(
+  '@testing-library/react'
+)
 const { CollectionProvider } = await import('../store/collection-provider')
 const { CollectionViewOutlet } = await import('./collection-view-outlet')
 const { useDataTable } = await import('../views/data-table/use-data-table')
@@ -28,6 +31,7 @@ type OutletProps = Omit<
 >
 
 function Outlet({
+  onRowClick,
   view,
   withGalleryRenderer = true,
   withKanbanRenderer = true,
@@ -35,6 +39,7 @@ function Outlet({
   ...props
 }: Readonly<
   OutletProps & {
+    onRowClick?: CollectionDataTableViewProps<Item>['onRowClick']
     view: 'calendar' | 'datatable' | 'gallery' | 'kanban'
     withGalleryRenderer?: boolean
     withKanbanRenderer?: boolean
@@ -61,7 +66,9 @@ function Outlet({
           ? { renderKanbanItem: (item: Item) => item.title }
           : {})}
         renderListItem={(item) => item.title}
-        {...(withTable ? { datatable: { 'aria-label': 'Itens', table } } : {})}
+        {...(withTable
+          ? { datatable: { 'aria-label': 'Itens', onRowClick, table } }
+          : {})}
         {...props}
       />
     </CollectionProvider>
@@ -81,6 +88,16 @@ describe('CollectionViewOutlet', () => {
 
     expect(screen.getByRole('table', { name: 'Itens' })).toBeTruthy()
     expect(screen.getByText('Primeiro item')).toBeTruthy()
+  })
+
+  test('forwards datatable.onRowClick to the row trigger', () => {
+    const onRowClick = mock()
+    render(<Outlet onRowClick={onRowClick} view="datatable" withTable />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir registro' }))
+
+    expect(onRowClick).toHaveBeenCalledTimes(1)
+    expect(onRowClick.mock.calls[0][0].id).toBe('a')
   })
 
   test('requires the props of the views that need consumer configuration', () => {

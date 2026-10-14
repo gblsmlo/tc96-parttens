@@ -1,6 +1,6 @@
 'use client'
 
-import { flexRender, type RowData } from '@tanstack/react-table'
+import { flexRender, type Row, type RowData } from '@tanstack/react-table'
 import { Skeleton } from '@tc96/ui/skeleton'
 import {
   Table,
@@ -25,7 +25,7 @@ import {
 import { DataTableAggregationCell } from './data-table-aggregation-cell'
 import { DataTableResizeHandle } from './data-table-resize-handle'
 import { DataTableRow } from './data-table-row'
-import type { DataTableTable } from './use-data-table'
+import type { DataTableFeatures, DataTableTable } from './use-data-table'
 import { useHorizontalOverflow } from './use-horizontal-overflow'
 
 export interface DataTableProps<TData extends RowData>
@@ -40,7 +40,11 @@ export interface DataTableProps<TData extends RowData>
   defaultAggregations?: DataTableAggregations
   onAggregationsChange?: (aggregations: DataTableAggregations) => void
   aggregationLabels?: Partial<DataTableAggregationLabels>
+  onRowClick?: (row: Row<DataTableFeatures, TData>) => void
+  getRowOpenLabel?: (row: Row<DataTableFeatures, TData>) => string
 }
+
+const defaultRowOpenLabel = 'Abrir registro'
 
 const columnMetaOf = <TData,>(column: {
   columnDef: { meta?: unknown }
@@ -57,6 +61,8 @@ export function DataTable<TData extends RowData>({
   defaultAggregations = {},
   onAggregationsChange,
   aggregationLabels,
+  onRowClick,
+  getRowOpenLabel,
   className,
   style,
   ...props
@@ -171,6 +177,12 @@ export function DataTable<TData extends RowData>({
                 canSelect={row.getCanSelect()}
                 key={row.id}
                 meta={meta}
+                onRowClick={onRowClick}
+                openLabel={
+                  onRowClick
+                    ? (getRowOpenLabel?.(row) ?? defaultRowOpenLabel)
+                    : undefined
+                }
                 row={row}
                 selected={row.getIsSelected()}
                 visibleColumns={visibleColumns}
