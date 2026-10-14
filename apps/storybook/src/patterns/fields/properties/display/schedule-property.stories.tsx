@@ -72,6 +72,53 @@ async function openPopup(canvasElement: HTMLElement, trigger: RegExp) {
 const presets = () =>
   within(screen.getByRole('list', { name: 'Atalhos de data' }))
 
+const shortWindow = {
+  globals: { viewport: { isRotated: false, value: 'shortWindow' } },
+  parameters: {
+    viewport: {
+      options: {
+        shortWindow: {
+          name: 'Short window',
+          styles: { height: '600px', width: '1270px' },
+        },
+      },
+    },
+  },
+}
+
+function popupFrame() {
+  const frame = document.querySelector<HTMLElement>(
+    '[data-slot="popover-popup"]',
+  )
+  if (!frame) throw new Error('The schedule popup frame did not mount.')
+  return frame
+}
+
+async function openTime(canvasElement: HTMLElement) {
+  const popup = await openPopup(canvasElement, /^Data:/)
+  await userEvent.click(popup.getByRole('button', { name: 'Hora' }))
+  return popup
+}
+
+async function expectPopupInsideWindow() {
+  await waitFor(() => {
+    const frame = popupFrame()
+    const { bottom, top } = frame.getBoundingClientRect()
+    expect(frame).not.toHaveAttribute('data-starting-style')
+    expect(top).toBeGreaterThanOrEqual(0)
+    expect(bottom).toBeLessThanOrEqual(window.innerHeight)
+  })
+}
+
+async function expectLastControlReachable(popup: ReturnType<typeof within>) {
+  const allDay = popup.getByRole('switch', { name: 'Dia inteiro' })
+  allDay.scrollIntoView({ block: 'end' })
+  const frame = popupFrame().getBoundingClientRect()
+  const control = allDay.getBoundingClientRect()
+  await expect(control.top).toBeGreaterThanOrEqual(frame.top)
+  await expect(control.bottom).toBeLessThanOrEqual(frame.bottom)
+}
+
 const meta = {
   args: {
     ariaLabel: 'Data',
@@ -84,6 +131,10 @@ const meta = {
     ...propertyVariantArgType,
     calendarProps: { control: false },
     dateOnly: booleanArgType,
+    footerLayout: {
+      control: 'inline-radio',
+      options: ['rows', 'drill-in'],
+    },
     readOnly: booleanArgType,
     recurrenceEnabled: booleanArgType,
     remindersEnabled: booleanArgType,
@@ -96,7 +147,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'When something happens: one day, optional start and end times, a recurrence and reminders. The trigger opens one dropdown with presets (today, tomorrow, this weekend, next week, no date) carrying their weekday on the right, a calendar, and a footer whose **Hora**, **Repetir** and **Lembretes** open sections inside the dropdown. Picking a day closes the dropdown unless one of those sections is open, because then the user is not done. All three start closed even with a stored value. Copy defaults to pt-BR and is replaced through `labels`; the calendar language comes from `calendarProps.locale`, as in `DateRangeProperty`.',
+          'When something happens: one day, optional start and end times, a recurrence and reminders. The trigger opens one dropdown with presets (today, tomorrow, this weekend, next week, no date) carrying their weekday on the right, a calendar, and a footer that lists **Hora**, **Repetir** and **Lembretes** as rows, each with its current value. A row opens its editor right under itself, one row at a time, or with `footerLayout="drill-in"` takes over the dropdown. Picking a day closes the dropdown unless one of those sections is open, because then the user is not done. All three start closed even with a stored value. Copy defaults to pt-BR and is replaced through `labels`; the calendar language comes from `calendarProps.locale`, as in `DateRangeProperty`.',
       },
     },
   },
@@ -114,7 +165,7 @@ export const Default: Story = {
     docs: {
       description: {
         story:
-          'A timed, weekly value. The recurrence shows as a glyph on the surface and in full in the accessible name. With **Hora** open, a preset changes the day and keeps the dropdown open.',
+          'A timed, weekly value. The recurrence shows as a glyph on the surface and in full in the accessible name. The footer rows read the current value without opening anything, and a row opens its editor under itself, one at a time. With **Hora** open, a preset changes the day and keeps the dropdown open.',
       },
     },
   },
@@ -130,12 +181,27 @@ export const Default: Story = {
     await expect(presets().getAllByRole('button')).toHaveLength(5)
 
     const time = popup.getByRole('button', { name: 'Hora' })
-    await expect(time).toHaveAttribute('aria-pressed', 'false')
+    const repeat = popup.getByRole('button', { name: 'Repetir' })
+    await expect(time).toHaveAttribute('aria-expanded', 'false')
+    await expect(time).toHaveAccessibleDescription('14:00 – 16:00')
+    await expect(repeat).toHaveAccessibleDescription(
+      'Semanalmente · Até 18 de dez.',
+    )
     await expect(
       popup.queryByRole('switch', { name: 'Dia inteiro' }),
     ).not.toBeInTheDocument()
 
+    await userEvent.click(repeat)
+    await expect(repeat).toHaveAttribute('aria-expanded', 'true')
+    await expect(
+      within(popup.getByRole('group', { name: 'Repetir' })).getByRole(
+        'combobox',
+        { name: /^Frequência/ },
+      ),
+    ).toBeInTheDocument()
+
     await userEvent.click(time)
+    await expect(repeat).toHaveAttribute('aria-expanded', 'false')
     await expect(
       popup.getByRole('switch', { name: 'Dia inteiro' }),
     ).not.toBeChecked()
@@ -172,10 +238,10 @@ export const Reminders: Story = {
   play: async ({ args, canvasElement }) => {
     const popup = await openPopup(canvasElement, /^Data:/)
     const reminders = popup.getByRole('button', { name: 'Lembretes' })
-    await expect(reminders).toHaveAttribute('aria-pressed', 'false')
+    await expect(reminders).toHaveAttribute('aria-expanded', 'false')
 
     await userEvent.click(reminders)
-    await expect(reminders).toHaveAttribute('aria-pressed', 'true')
+    await expect(reminders).toHaveAttribute('aria-expanded', 'true')
     const chipNames = () =>
       popup
         .getAllByRole('button', { name: /^Remover lembrete/ })
@@ -336,6 +402,7 @@ export const EnglishLabels: Story = {
     labels: {
       addReminder: 'Add reminder',
       allDay: 'All day',
+      back: 'Back',
       end: 'End',
       frequency: 'Frequency',
       nextWeek: 'Next week',
@@ -387,5 +454,85 @@ export const EnglishLabels: Story = {
         { name: /^Next week/ },
       ),
     ).toHaveTextContent('Mon, Oct 12')
+  },
+}
+
+export const ShortWindow: Story = {
+  globals: shortWindow.globals,
+  parameters: {
+    ...cossCalendarContrast,
+    ...shortWindow.parameters,
+    docs: {
+      description: {
+        story:
+          'The dropdown follows its content and stops at the space the window leaves, and it scrolls inside instead of leaving the window. A footer row opening its editor grows it further. The story runs in a 1270×600 window, shorter than the dropdown itself.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const popup = await openTime(canvasElement)
+    const scroller = popupFrame().firstElementChild as HTMLElement
+
+    await expectPopupInsideWindow()
+    await expect(scroller.scrollHeight).toBeGreaterThan(scroller.clientHeight)
+    await expectLastControlReachable(popup)
+  },
+}
+
+export const BelowTrigger: Story = {
+  args: { dropdownPlacement: { collisionAvoidance: { side: 'none' } } },
+  globals: shortWindow.globals,
+  parameters: {
+    ...cossCalendarContrast,
+    ...shortWindow.parameters,
+    docs: {
+      description: {
+        story:
+          "`dropdownPlacement.collisionAvoidance` with `{ side: 'none' }` keeps the dropdown below the trigger. Without it the dropdown moves to the side of the trigger when it does not fit below; with it the dropdown grows downward and scrolls once it reaches the window edge.",
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: /^Data:/,
+    })
+    const popup = await openPopup(canvasElement, /^Data:/)
+    await expect(popupFrame()).toHaveAttribute('data-side', 'bottom')
+    await expect(popupFrame().getBoundingClientRect().top).toBeGreaterThan(
+      trigger.getBoundingClientRect().bottom,
+    )
+
+    await userEvent.click(popup.getByRole('button', { name: 'Hora' }))
+    await expectPopupInsideWindow()
+    await expect(popupFrame()).toHaveAttribute('data-side', 'bottom')
+    await expectLastControlReachable(popup)
+  },
+}
+
+export const DrillIn: Story = {
+  args: { footerLayout: 'drill-in' },
+  parameters: {
+    ...cossCalendarContrast,
+    docs: {
+      description: {
+        story:
+          '`footerLayout="drill-in"`. The footer keeps the list of rows with their values, but a row takes over the whole dropdown with its editor and a Voltar button. The dropdown shrinks to the editor instead of growing, and a day picked back in the main view closes it as before.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const popup = await openPopup(canvasElement, /^Data:/)
+    await userEvent.click(popup.getByRole('button', { name: 'Repetir' }))
+
+    const back = popup.getByRole('button', { name: 'Voltar' })
+    await expect(back).toHaveFocus()
+    await expect(
+      screen.queryByRole('list', { name: 'Atalhos de data' }),
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(back)
+    await expect(popup.getByRole('button', { name: 'Repetir' })).toHaveFocus()
+
+    await userEvent.click(popup.getByRole('button', { name: 'Repetir' }))
   },
 }

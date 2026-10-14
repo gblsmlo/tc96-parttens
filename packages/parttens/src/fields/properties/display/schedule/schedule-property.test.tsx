@@ -95,10 +95,10 @@ describe('ScheduleProperty', () => {
     const body = await openPopup()
 
     const time = body.getByRole('button', { name: 'Hora' })
-    expect(time.getAttribute('aria-pressed')).toBe('false')
+    expect(time.getAttribute('aria-expanded')).toBe('false')
     expect(body.queryByRole('switch', { name: 'Dia inteiro' })).toBeNull()
     await act(async () => fireEvent.click(time))
-    expect(time.getAttribute('aria-pressed')).toBe('true')
+    expect(time.getAttribute('aria-expanded')).toBe('true')
 
     await act(async () =>
       fireEvent.click(presets().getByRole('button', { name: /^Hoje/ })),
@@ -197,7 +197,7 @@ describe('ScheduleProperty', () => {
     const body = await openPopup()
 
     const reminders = body.getByRole('button', { name: 'Lembretes' })
-    expect(reminders.getAttribute('aria-pressed')).toBe('false')
+    expect(reminders.getAttribute('aria-expanded')).toBe('false')
     expect(body.queryByRole('button', { name: /^Remover lembrete/ })).toBeNull()
     await act(async () => fireEvent.click(reminders))
 
@@ -228,15 +228,6 @@ describe('ScheduleProperty', () => {
     ).toBe(false)
   })
 
-  test('leaves the Repetir toggle without an icon', async () => {
-    render(<Harness value={{ ...emptyScheduleValue, from: october26 }} />)
-    const body = await openPopup()
-
-    expect(
-      body.getByRole('button', { name: 'Repetir' }).querySelector('svg'),
-    ).toBeNull()
-  })
-
   test('disables Repetir without an anchor unless the consumer enables it', async () => {
     const first = render(<Harness />)
     let body = await openPopup()
@@ -259,6 +250,31 @@ describe('ScheduleProperty', () => {
     expect(body.queryByRole('button', { name: 'Hora' })).toBeNull()
     expect(body.queryByRole('button', { name: 'Repetir' })).toBeNull()
     expect(body.queryByRole('button', { name: 'Lembretes' })).toBeNull()
+  })
+
+  test('mounts the popup without the COSS viewport, so the positioner follows its content', async () => {
+    render(<Harness value={{ ...emptyScheduleValue, from: october26 }} />)
+    await openPopup()
+
+    expect(screen.getByRole('dialog', { name: 'Data' })).toBeTruthy()
+    expect(document.querySelector('[data-slot="popover-popup"]')).not.toBeNull()
+    expect(document.querySelector('[data-slot="popover-viewport"]')).toBeNull()
+  })
+
+  test('takes collisionAvoidance in dropdownPlacement and opens below the trigger', async () => {
+    render(
+      <Harness
+        dropdownPlacement={{ collisionAvoidance: { side: 'none' } }}
+        value={{ ...emptyScheduleValue, from: october26 }}
+      />,
+    )
+    await openPopup()
+
+    expect(
+      document
+        .querySelector('[data-slot="popover-popup"]')
+        ?.getAttribute('data-side'),
+    ).toBe('bottom')
   })
 
   test('replaces the copy through labels', async () => {

@@ -24,7 +24,7 @@ export function ScheduleRecurrenceSection({
   return (
     <div className="flex flex-col gap-2 p-2" data-slot="schedule-recurrence">
       <div className="flex h-8 items-center justify-between gap-2 text-sm">
-        {labels.repeat}
+        {labels.frequency}
         <SelectProperty
           ariaLabel={labels.frequency}
           emptyOptionLabel={labels.noRepeat}

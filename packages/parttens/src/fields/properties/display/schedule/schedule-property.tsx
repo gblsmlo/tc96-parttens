@@ -1,13 +1,10 @@
 'use client'
 
-import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
+import { Popover, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
 import { CalendarIcon, RepeatIcon } from 'lucide-react'
 import { useState } from 'react'
-import type {
-  PropertyCalendarProps,
-  PropertyPopoverDropdownPlacement,
-} from '../../shared/property-calendar-popover'
+import type { PropertyCalendarProps } from '../../shared/property-calendar-popover'
 import {
   PropertySurface,
   type PropertyVariant,
@@ -17,6 +14,11 @@ import {
   type SchedulePropertyLabels,
 } from './schedule-labels'
 import { SchedulePopup } from './schedule-popup'
+import {
+  SchedulePopupFrame,
+  type SchedulePropertyDropdownPlacement,
+} from './schedule-popup-frame'
+import type { ScheduleFooterLayout } from './schedule-section'
 import type { ScheduleTimeControl } from './schedule-time-section'
 import {
   defaultScheduleRecurrenceOptions,
@@ -29,8 +31,6 @@ import {
   startOfLocalDay,
 } from './schedule-value'
 
-export type SchedulePropertyDropdownPlacement = PropertyPopoverDropdownPlacement
-
 export interface SchedulePropertyProps {
   ariaLabel: string
   value: ScheduleValue
@@ -39,6 +39,7 @@ export interface SchedulePropertyProps {
   dateOnly?: boolean
   dropdownPlacement?: SchedulePropertyDropdownPlacement
   fallback?: string
+  footerLayout?: ScheduleFooterLayout
   labels?: Partial<SchedulePropertyLabels>
   locale?: string
   readOnly?: boolean
@@ -73,6 +74,7 @@ export function ScheduleProperty({
   dateOnly = false,
   dropdownPlacement,
   fallback,
+  footerLayout,
   labels: labelOverrides,
   locale = 'pt-BR',
   onOpenChange,
@@ -131,16 +133,11 @@ export function ScheduleProperty({
       >
         <ScheduleSurfaceContent label={label} repeats={Boolean(repeatLabel)} />
       </PopoverTrigger>
-      <PopoverPopup
-        align="start"
-        aria-label={ariaLabel}
-        className="w-auto"
-        side="bottom"
-        {...dropdownPlacement}
-      >
+      <SchedulePopupFrame ariaLabel={ariaLabel} placement={dropdownPlacement}>
         <SchedulePopup
           calendarProps={calendarProps}
           dateOnly={dateOnly}
+          footerLayout={footerLayout}
           labels={labels}
           locale={locale}
           onChange={onValueChange}
@@ -153,7 +150,7 @@ export function ScheduleProperty({
           today={today}
           value={value}
         />
-      </PopoverPopup>
+      </SchedulePopupFrame>
     </Popover>
   )
 }
