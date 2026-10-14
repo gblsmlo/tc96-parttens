@@ -10,7 +10,6 @@ import {
   waitFor,
   within,
 } from 'storybook/test'
-import { page } from 'vitest/browser'
 import { CreateEventDemo } from './create-event-demo'
 import { CreateRecordDemo } from './create-record-demo'
 import { CreateRecordWithFormDemo } from './create-record-with-form-demo'
@@ -202,6 +201,7 @@ const expectedMaxWidth = { default: 672, large: 896, small: 448 }
 export const SizesInteraction: Story = {
   ...Sizes,
   play: async () => {
+    const { page } = await import('vitest/browser')
     const { innerHeight, innerWidth } = window
     await page.viewport(1280, 900)
 
