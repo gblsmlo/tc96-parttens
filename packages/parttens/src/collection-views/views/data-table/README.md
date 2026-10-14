@@ -4,7 +4,11 @@ A semantic `<table>` on COSS `Table` and TanStack Table v9, with optional row se
 
 ## Cell renderers
 
-Rows are memoized below the component that calls `useDataTable`. A row re-renders when its `row`, its `selected` and `canSelect` state, the visible columns or `table.options.meta` change. A cell renderer must derive from its `row`, `column`, `cell` and `table.options.meta`. A custom cell that reads other table state (sorting, pagination, filters) during render is not re-rendered when that state changes, because the row is memoized. Pass what the cell needs through `meta`, or read it from the row.
+Rows are memoized below the component that calls `useDataTable`. A row re-renders when its `row`, its `selected` and `canSelect` state, the visible columns or `table.options.meta` change. A cell renderer must derive from its `row`, `column`, `cell` and `table.options.meta`. A custom cell that reads other table state (sorting, pagination, filters) during render is not re-rendered when that state changes, because the row is memoized. Pass what the cell needs through `meta`, or read it from the row. `onRowClick` also reaches the memoized row by identity, so keep it stable (`useCallback`) like `columns`; an inline handler re-renders every row on each parent render.
+
+## Row click
+
+`onRowClick(row)` opens a record from any part of a row, like `ListRow` and `KanbanCard`. Each body row gets a button in its first cell, stretched over the row and named by `getRowOpenLabel(row)` (default "Abrir registro"). A click on the selection checkbox, an editable property or a button the consumer put in a cell keeps its own handler and never calls `onRowClick`. The row carries `data-interactive` and the pointer cursor only while the prop is set. Cell content that is not interactive stops receiving the pointer, so its text cannot be selected with the mouse.
 
 ## Footer aggregations
 

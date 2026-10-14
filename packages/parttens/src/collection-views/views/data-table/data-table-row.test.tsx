@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from 'bun:test'
+import { afterEach, describe, expect, mock, test } from 'bun:test'
 import type { ReactElement } from 'react'
 
 await import('../../test/dom')
@@ -9,6 +9,7 @@ const { act, cleanup, fireEvent, render, screen } = await import(
 const { DataTable } = await import('./data-table')
 const { useDataTable } = await import('./use-data-table')
 
+import type { DataTableProps } from './data-table'
 import type { DataTableColumnDef, DataTableTable } from './use-data-table'
 
 interface Campaign {
@@ -65,7 +66,9 @@ interface HarnessProps {
   columns?: DataTableColumnDef<Campaign>[]
   data?: Campaign[]
   enableRowSelection?: boolean
+  getRowOpenLabel?: DataTableProps<Campaign>['getRowOpenLabel']
   meta?: CampaignMeta
+  onRowClick?: DataTableProps<Campaign>['onRowClick']
   onTable?: (table: DataTableTable<Campaign>) => void
 }
 
@@ -75,7 +78,9 @@ function Harness({
   columns = defaultColumns,
   data = campaigns,
   enableRowSelection = true,
+  getRowOpenLabel,
   meta,
+  onRowClick,
   onTable,
 }: Readonly<HarnessProps>): ReactElement {
   const { table } = useDataTable<Campaign>({
@@ -87,7 +92,14 @@ function Harness({
   })
   onTable?.(table)
 
-  return <DataTable aria-label="Campanhas" table={table} />
+  return (
+    <DataTable
+      aria-label="Campanhas"
+      getRowOpenLabel={getRowOpenLabel}
+      onRowClick={onRowClick}
+      table={table}
+    />
+  )
 }
 
 afterEach(() => {
@@ -233,5 +245,129 @@ describe('DataTable rows', () => {
 
     act(() => table?.setSorting([{ desc: true, id: 'budget' }]))
     expect(renders.count).toBe(0)
+  })
+})
+
+describe('DataTable row click', () => {
+  const triggers = (container: HTMLElement) =>
+    container.querySelectorAll('[data-slot="data-table-row-trigger"]')
+
+  test('without onRowClick no row carries a trigger or the interactive mark', () => {
+    const { container } = render(<Harness />)
+
+    expect(triggers(container)).toHaveLength(0)
+    expect(container.querySelectorAll('tr[data-interactive]')).toHaveLength(0)
+    expect(container.querySelectorAll('td.pointer-events-none')).toHaveLength(0)
+  })
+
+  test('each body row gets one trigger, in its first cell, with the default label', () => {
+    const { container } = render(<Harness onRowClick={() => undefined} />)
+
+    expect(triggers(container)).toHaveLength(campaigns.length)
+    expect(
+      container.querySelectorAll('tbody tr[data-interactive]'),
+    ).toHaveLength(campaigns.length)
+    for (const trigger of triggers(container)) {
+      expect(trigger.tagName).toBe('BUTTON')
+      expect(trigger.getAttribute('aria-label')).toBe('Abrir registro')
+      expect(trigger.closest('td')?.previousElementSibling).toBeNull()
+    }
+    expect(
+      container.querySelectorAll('thead [data-slot="data-table-row-trigger"]'),
+    ).toHaveLength(0)
+  })
+
+  test('getRowOpenLabel names each trigger after its row', () => {
+    render(
+      <Harness
+        getRowOpenLabel={(row) => `Abrir ${row.original.title}`}
+        onRowClick={() => undefined}
+      />,
+    )
+
+    expect(
+      screen.getByRole('button', { name: 'Abrir Aniversariantes' }),
+    ).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: 'Abrir Indicação premiada' }),
+    ).toBeTruthy()
+  })
+
+  test('clicking the trigger calls onRowClick once with that row', () => {
+    const onRowClick = mock()
+    render(
+      <Harness
+        getRowOpenLabel={(row) => `Abrir ${row.original.title}`}
+        onRowClick={onRowClick}
+      />,
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Abrir Aniversariantes' }),
+    )
+
+    expect(onRowClick).toHaveBeenCalledTimes(1)
+    expect(onRowClick.mock.calls[0][0].id).toBe('b')
+    expect(onRowClick.mock.calls[0][0].original).toEqual(campaigns[1])
+  })
+
+  test('clicking the selection checkbox selects the row without calling onRowClick', () => {
+    const onRowClick = mock()
+    const { container } = render(<Harness onRowClick={onRowClick} />)
+
+    fireEvent.click(screen.getByLabelText('Selecionar Aniversariantes'))
+
+    expect(onRowClick).not.toHaveBeenCalled()
+    expect(
+      container.querySelectorAll('tr[data-state="selected"]'),
+    ).toHaveLength(1)
+  })
+
+  test('cells let only interactive descendants take the pointer', () => {
+    const { container } = render(<Harness onRowClick={() => undefined} />)
+
+    const cell = container.querySelector('tbody td') as HTMLElement
+
+    expect(cell.className).toContain('pointer-events-none')
+    expect(cell.className).toContain('[role=checkbox]')
+  })
+
+  test('a parent render with the same handler skips every row', () => {
+    const onRowClick = () => undefined
+    const getRowOpenLabel = () => 'Abrir'
+    const { rerender } = render(
+      <Harness getRowOpenLabel={getRowOpenLabel} onRowClick={onRowClick} />,
+    )
+    renders.count = 0
+
+    rerender(
+      <Harness getRowOpenLabel={getRowOpenLabel} onRowClick={onRowClick} />,
+    )
+
+    expect(renders.count).toBe(0)
+  })
+
+  test('a new label re-renders only the affected trigger', () => {
+    const onRowClick = () => undefined
+    const { rerender } = render(
+      <Harness
+        getRowOpenLabel={(row) => `Abrir ${row.original.title}`}
+        onRowClick={onRowClick}
+      />,
+    )
+
+    rerender(
+      <Harness
+        getRowOpenLabel={(row) => `Ver ${row.original.title}`}
+        onRowClick={onRowClick}
+      />,
+    )
+
+    expect(
+      screen.getByRole('button', { name: 'Ver Aniversariantes' }),
+    ).toBeTruthy()
+    expect(
+      screen.queryByRole('button', { name: 'Abrir Aniversariantes' }),
+    ).toBeNull()
   })
 })

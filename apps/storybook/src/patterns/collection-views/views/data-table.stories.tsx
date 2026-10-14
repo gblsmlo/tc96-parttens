@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DataGridPagination, DataTable, useDataTable } from '@tc96/parttens'
+import {
+  DataGridPagination,
+  DataTable,
+  type DataTableColumnDef,
+  type DataTableProps,
+  useDataTable,
+} from '@tc96/parttens'
 import { type ReactElement, useMemo } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
 import {
   createDataTableColumns,
@@ -10,11 +16,35 @@ import {
 import { useTasks } from '../fixtures/task-renderers'
 import { initialTasks, type Task } from '../fixtures/tasks'
 
+const openTask = fn()
+const addNote = fn()
+
+const noteColumn: DataTableColumnDef<Task> = {
+  cell: ({ row }) => (
+    <button
+      aria-label={`Anotar ${row.original.title}`}
+      className="text-sm underline"
+      onClick={() => addNote(row.original)}
+      type="button"
+    >
+      Anotar
+    </button>
+  ),
+  header: 'Nota',
+  id: 'note',
+}
+
+const taskOpenLabel: NonNullable<DataTableProps<Task>['getRowOpenLabel']> = (
+  row,
+) => `Abrir ${row.original.title}`
+
 interface DataTableExampleProps {
   /** Displayed collection. Pass an empty list to see the empty message. */
   data?: Task[]
   /** Replaces the rows with loading skeletons. */
   isLoading?: boolean
+  /** Opens the record of a row clicked outside its controls. */
+  onOpenTask?: (task: Task) => void
   /** Paginates on the client and composes the pagination footer below the table. */
   paginated?: boolean
   /** Lets the user resize columns from the header edges. */
@@ -24,13 +54,21 @@ interface DataTableExampleProps {
 function DataTableExample({
   data = initialTasks,
   isLoading = false,
+  onOpenTask,
   paginated = false,
   resizable = false,
 }: Readonly<DataTableExampleProps>): ReactElement {
   const { tasks, updateTask } = useTasks(data)
   const columns = useMemo(
-    () => createDataTableColumns(updateTask),
-    [updateTask],
+    () => [
+      ...createDataTableColumns(updateTask),
+      ...(onOpenTask ? [noteColumn] : []),
+    ],
+    [onOpenTask, updateTask],
+  )
+  const onRowClick = useMemo<DataTableProps<Task>['onRowClick']>(
+    () => (onOpenTask ? (row) => onOpenTask(row.original) : undefined),
+    [onOpenTask],
   )
   const { table } = useDataTable<Task>({
     columns,
@@ -48,7 +86,9 @@ function DataTableExample({
         aria-label="Tarefas do lançamento"
         defaultAggregations={taskTableAggregations}
         emptyMessage="Nenhuma tarefa para exibir."
+        getRowOpenLabel={taskOpenLabel}
         isLoading={isLoading}
+        onRowClick={onRowClick}
         table={table}
       />
       {paginated ? <DataGridPagination table={table} /> : null}
@@ -133,6 +173,75 @@ export const EditStatus: Story = {
     await expect(
       canvas.getAllByRole('combobox', { name: 'Status: Em revisão' }),
     ).toHaveLength(3)
+  },
+}
+
+export const OpenRecord: Story = {
+  args: { onOpenTask: openTask },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'With `onRowClick`, a click on any part of a row outside its controls opens the record. A button in the first cell, labelled by `getRowOpenLabel`, stretches over the row; the selection checkbox, the editable fields and a plain button in a cell (here Anotar) sit above it and keep their own click. Tab reaches the trigger before the controls of its row.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    openTask.mockClear()
+    addNote.mockClear()
+    const canvas = within(canvasElement)
+    const [first, second] = initialTasks
+    const rows = canvasElement.querySelectorAll<HTMLElement>('tbody tr')
+    const hitAt = (element: HTMLElement) => {
+      const { height, left, top, width } = element.getBoundingClientRect()
+
+      return element.ownerDocument.elementFromPoint(
+        left + width / 2,
+        top + height / 2,
+      )
+    }
+    const plainCell = rows[0].querySelectorAll('td')[1]
+    const checkbox = canvas.getByRole('checkbox', {
+      name: `Selecionar ${first.title}`,
+    })
+    const status = canvas.getAllByRole('combobox')[0]
+    const note = canvas.getByRole('button', { name: `Anotar ${first.title}` })
+
+    const trigger = hitAt(plainCell) as HTMLElement
+    await expect(trigger).toHaveAttribute('data-slot', 'data-table-row-trigger')
+    await expect(trigger).toHaveAccessibleName(`Abrir ${first.title}`)
+    await userEvent.click(trigger)
+    await expect(openTask).toHaveBeenCalledTimes(1)
+    await expect(openTask).toHaveBeenLastCalledWith(
+      expect.objectContaining({ id: first.id }),
+    )
+
+    await expect(checkbox.contains(hitAt(checkbox))).toBe(true)
+    await expect(status.contains(hitAt(status))).toBe(true)
+    await userEvent.click(checkbox)
+    await expect(checkbox).toHaveAttribute('aria-checked', 'true')
+    await expect(rows[0]).toHaveAttribute('data-state', 'selected')
+    await expect(openTask).toHaveBeenCalledTimes(1)
+
+    note.scrollIntoView({ inline: 'nearest' })
+    await expect(hitAt(note)).toBe(note)
+    await userEvent.click(note)
+    await expect(addNote).toHaveBeenCalledTimes(1)
+    await expect(openTask).toHaveBeenCalledTimes(1)
+
+    canvas.getByRole('checkbox', { name: `Selecionar ${second.title}` }).focus()
+    await userEvent.tab({ shift: true })
+    const secondTrigger = canvas.getByRole('button', {
+      name: `Abrir ${second.title}`,
+    })
+    await expect(secondTrigger).toHaveFocus()
+    await expect(getComputedStyle(secondTrigger).boxShadow).not.toBe('none')
+    await userEvent.keyboard('{Enter}')
+    await userEvent.keyboard(' ')
+    await expect(openTask).toHaveBeenCalledTimes(3)
+    await expect(openTask).toHaveBeenLastCalledWith(
+      expect.objectContaining({ id: second.id }),
+    )
   },
 }
 
