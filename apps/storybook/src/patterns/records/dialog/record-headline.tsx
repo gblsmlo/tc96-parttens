@@ -3,6 +3,7 @@ import { Input } from '@tc96/ui/input'
 import { Textarea } from '@tc96/ui/textarea'
 
 export function RecordHeadline({
+  descriptionLabel,
   descriptionPlaceholder,
   onTitleChange,
   stretch = false,
@@ -10,6 +11,7 @@ export function RecordHeadline({
   titleLabel,
   titlePlaceholder,
 }: Readonly<{
+  descriptionLabel: string
   descriptionPlaceholder: string
   onTitleChange: (title: string) => void
   stretch?: boolean
@@ -31,7 +33,7 @@ export function RecordHeadline({
         />
       </Field>
       <Field className={stretch ? 'flex-1' : undefined} name="description">
-        <FieldLabel className="sr-only">Description</FieldLabel>
+        <FieldLabel className="sr-only">{descriptionLabel}</FieldLabel>
         <Textarea
           className={`w-full [&_textarea]:resize-none [&_textarea]:px-0 [&_textarea]:pt-0.5 [&_textarea]:placeholder:text-muted-foreground/60 [&_textarea]:focus:placeholder:text-muted-foreground ${stretch ? 'flex-1 [&_textarea]:min-h-24' : '[&_textarea]:min-h-16'}`}
           placeholder={descriptionPlaceholder}

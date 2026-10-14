@@ -15,7 +15,7 @@ A dialog for acting on a record. `RecordDialog` covers create and edit: an inter
 | `composition/index.ts` | re-exports the compound | through the barrel |
 | `components/dialog-shell.tsx` | `DialogShell`: popup with the size scale, actions, header trail, panel, error and footer, on the COSS `Dialog` | no |
 | `composition/record-dialog/record-dialog.tsx` | `RecordDialog` | yes |
-| `composition/record-dialog/record-dialog.test.tsx` | JSDOM tests: settle rule, pending lock, alert, submit prevention | — |
+| `composition/record-dialog/record-dialog.test.tsx` | JSDOM tests: settle rule, pending lock, focus return, alert, submit prevention | — |
 | `hooks/use-settled-action.ts` | `useSettledAction`: pending state, re-entry guard and the settle rule | no |
 | `test/dom.ts` | the JSDOM setup the test files import; a copy owned by this pattern | — |
 
@@ -67,7 +67,7 @@ Behavior the tests fix:
 - Settle rule: the handler returning `true` calls `onOpenChange(false)`. `false`, a rejection or a synchronous throw keeps the dialog open and the field values untouched. Errors are swallowed; the consumer reports them through `errorMessage`.
 - Pending belongs to one open session. When `open` becomes false the pattern resets pending and ignores any settlement still in flight, so a late `true` never closes a reopened dialog, and nothing runs after unmount.
 - Pending is tracked by the pattern. While pending, Escape, outside press and the close button do not close, the cancel and submit buttons are disabled, a second submit is ignored, and the submit button shows `Spinner` and `submittingLabel` when given.
-- Focus: when the submit button had focus at submit and the handler settles `false`, rejects or throws, the pattern refocuses it once it is enabled again, because the disabled button drops focus while pending. A submit from a field (Mod+Enter) leaves focus where it was.
+- Focus: when the submit button had focus at submit and the handler settles `false` or rejects, the pattern refocuses it once it is enabled again, because the disabled button drops focus while pending. A synchronous throw never renders the pending state, so the button keeps focus on its own. A submit from a field (Mod+Enter) leaves focus where it was.
 - The consumer clears `errorMessage` at the start of the handler; the pattern never clears it.
 - `event.currentTarget` is null after the first `await`, so `onSubmit` reads `FormData` (or the form elements) synchronously, before awaiting anything.
 - Base UI `Form` renders `noValidate`: native constraints such as `required` or `type="email"` do not block the submit. Validation is the consumer's job inside `onSubmit`, returning `false` to keep the dialog open. The pattern does not call `checkValidity`.
@@ -114,6 +114,6 @@ cd apps/storybook && bunx vitest run --project=storybook src/patterns/records/di
 The stories are in `apps/storybook/src/patterns/records/dialog/`, with a `!dev` `<Story>Interaction` twin for each, and all run axe with `test: 'error'`:
 
 - `Patterns/Records/Dialog`: Sizes, which widens the viewport with `page.viewport()` and restores it.
-- `Patterns/Records/Dialog/Create`, the create presentations in `create/`: `Inline Properties`, `Row Properties` and `Simple Form`. The first two render the title and description through `record-headline.tsx`, so size, placeholder color and spacing change in one place.
+- `Patterns/Records/Dialog/Create`, the create presentations in `create/`: `Inline Properties`, `Row Properties` and `Simple Form`. The first two and the Contacts usage render the title and description through `record-headline.tsx`, so size, placeholder color, spacing and the description label change in one place.
 - `Patterns/Records/Dialog/Failed Submit` (`failed-submit.stories.tsx`): the same Inline Properties and Row Properties bodies with an `onCreate` that throws. The demos report it through `errorMessage`, and the stories check the settle rule above: the dialog stays open, the title and properties keep their values and focus returns to the submit button.
 - `Patterns/Records/Dialog/Usages/Contacts` (Default, CreateContact, CreateMore) in `usages/`.

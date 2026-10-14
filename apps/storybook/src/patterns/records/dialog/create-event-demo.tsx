@@ -127,6 +127,7 @@ export function CreateEventDialog({
     >
       <div className="grid gap-4">
         <RecordHeadline
+          descriptionLabel="Description"
           descriptionPlaceholder="Add notes or a meeting link"
           onTitleChange={setTitle}
           title={title}
