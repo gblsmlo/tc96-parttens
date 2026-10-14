@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, test } from 'bun:test'
+import { CircleIcon } from 'lucide-react'
 
 await import('../../test/dom')
 
@@ -43,6 +44,21 @@ const options = [
 ]
 
 describe('SelectProperty', () => {
+  test('marks the option icon of the value as property-icon', () => {
+    render(
+      <SelectProperty
+        ariaLabel="Prioridade"
+        options={[{ icon: CircleIcon, label: 'Reunião', value: 'meeting' }]}
+        readOnly
+        value="meeting"
+      />,
+    )
+
+    expect(document.querySelector('svg')?.getAttribute('data-slot')).toBe(
+      'property-icon',
+    )
+  })
+
   test('stays a value while nobody can change it', () => {
     const { container } = render(
       <SelectProperty ariaLabel="Tipo" options={options} value="meeting" />,

@@ -28,6 +28,16 @@ describe('IconLabelProperty', () => {
     expect(document.querySelector('svg[aria-hidden="true"]')).toBeTruthy()
   })
 
+  test('marks the icon as property-icon', () => {
+    render(<IconLabelProperty icon={CircleIcon} label="Manual" />)
+
+    expect(
+      document
+        .querySelector('svg[aria-hidden="true"]')
+        ?.getAttribute('data-slot'),
+    ).toBe('property-icon')
+  })
+
   test('renders plain text without badge styling', () => {
     render(<IconLabelProperty label="Manual" variant="plain" />)
 

@@ -32,7 +32,10 @@ export function RecordGroupRow({
         <span className="truncate">{label}</span>
       </dt>
       <dd
-        className={recordGroupRowValueVariants({ align })}
+        className={recordGroupRowValueVariants({
+          align,
+          leading: Boolean(leading),
+        })}
         data-slot="record-group-row-value"
       >
         {children}

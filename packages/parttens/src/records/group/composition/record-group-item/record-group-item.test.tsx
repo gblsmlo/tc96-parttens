@@ -51,5 +51,8 @@ test('merges the consumer className', () => {
   ) as HTMLElement
 
   expect(item.className).toContain('extra')
-  expect(item.className).toContain('min-h-9')
+  expect(item.className).toContain(
+    'min-h-[var(--record-group-row-height,calc(var(--spacing)*8))]',
+  )
+  expect(item.className).toContain('px-[var(--record-group-row-padding,0px)]')
 })

@@ -1,6 +1,6 @@
 # Record preview pattern
 
-A controlled, modal right-side sheet that previews a record (`RecordPreview`), plus an icon action for its header (`RecordPreviewAction`). It has no content of its own. The consumer owns the open state, the URL, the record lookup, loading and error states, widgets and any confirmation; the pattern never fetches or ships CSS and keeps no state besides a ref to its popup.
+A controlled, modal right-side sheet that previews a record (`RecordPreview`), an icon action for its header (`RecordPreviewAction`) and the column that stacks the groups of its body (`RecordPreviewBody`). It has no content of its own. The consumer owns the open state, the URL, the record lookup, loading and error states, widgets and any confirmation; the pattern never fetches or ships CSS and keeps no state besides a ref to its popup.
 
 ## Map
 
@@ -9,9 +9,10 @@ A controlled, modal right-side sheet that previews a record (`RecordPreview`), p
 | `core.ts` | React-free surface: the prop types |
 | `composition/record-preview/` | `RecordPreview` on the COSS `Sheet`, its test and barrel |
 | `composition/record-preview-action/` | `RecordPreviewAction` on the COSS `Button` and `Tooltip`, its test and barrel |
+| `composition/record-preview-body/` | `RecordPreviewBody`, its test and barrel |
 | `test/dom.ts` | the JSDOM setup the tests import; a copy owned by this pattern |
 
-Import direction: `composition/` → `core.ts`. Composition imports only COSS (`button`, `sheet`, `tooltip`) and `lucide-react`.
+Import direction: `composition/` → `core.ts`. Composition imports only COSS (`button`, `sheet`, `tooltip`), `@tc96/utils` (`cn`, in `RecordPreviewBody`) and `lucide-react`.
 
 ## Dependents
 
@@ -37,6 +38,7 @@ Import direction: `composition/` → `core.ts`. Composition imports only COSS (`
 | Attribute | Where |
 | --- | --- |
 | `data-slot="record-preview-header-actions"` | the wrapper of `actions`, only when `actions` is passed |
+| `data-slot="record-preview-body"` | the `RecordPreviewBody` column, a `div` with `flex flex-col gap-1`; `className` merges after it |
 
 - `data-slot` names on the popup, panel, footer and title are left to COSS (`sheet-popup`, `sheet-panel`, `sheet-footer`, `sheet-title`).
 - No class overrides a COSS border or radius; `scripts/override-exceptions.json` has no entry for this pattern. Changing that requires a new entry.

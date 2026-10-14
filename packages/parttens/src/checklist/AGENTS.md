@@ -48,7 +48,7 @@ Creating:
 Variant:
 
 - `card` (default) wraps the `ol[data-slot="checklist-items"]` in a `CardSurface` (`data-slot="card"`, the only card in the section; the `ol` carries no radius, border or background) and pads the section; the first and last rows read `--card-surface-radius` minus 1px, so the row corners follow `--card-radius` from an ancestor. The list must not get `overflow-hidden`: the drag handle sits outside the row, at `-left-8`.
-- `plain` drops the frame and the section padding, so a parent frame, such as `RecordGroup` `inset`, holds the rows. With `md` its row is 36px (`h-9 px-2`), the height of a `RecordGroupItem`; `card` with `md` stays 40px. `checklistRowVariants` sets both through compound variants. A parent with `overflow-hidden` (the `RecordGroup` panel) would clip a handle outside the row, so `plain` renders the handle in the row's action area, after the delete button.
+- `plain` drops the frame and the section padding, so a parent frame, such as `RecordGroup` `inset`, holds the rows. With `md` its row is 36px (`h-9 px-2`), the height of a `RecordGroupItem` in `inset`; `card` with `md` stays 40px. `checklistRowVariants` sets both through compound variants. A parent with `overflow-hidden` (the `RecordGroup` panel) would clip a handle outside the row, so `plain` renders the handle in the row's action area, after the delete button.
 
 Copy:
 

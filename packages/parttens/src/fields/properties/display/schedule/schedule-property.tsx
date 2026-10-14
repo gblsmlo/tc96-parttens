@@ -59,7 +59,7 @@ function ScheduleSurfaceContent({
 }: Readonly<{ label: string; repeats: boolean }>) {
   return (
     <>
-      <CalendarIcon aria-hidden className="size-3" />
+      <CalendarIcon aria-hidden className="size-3" data-slot="property-icon" />
       <span className="truncate">{label}</span>
       {repeats ? <RepeatIcon aria-hidden className="size-3" /> : null}
     </>

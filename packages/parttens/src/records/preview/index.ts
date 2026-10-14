@@ -1,2 +1,6 @@
 export * from './composition/index'
-export type { RecordPreviewActionProps, RecordPreviewProps } from './core'
+export type {
+  RecordPreviewActionProps,
+  RecordPreviewBodyProps,
+  RecordPreviewProps,
+} from './core'

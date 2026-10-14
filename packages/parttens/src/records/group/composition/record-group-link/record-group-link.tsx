@@ -5,6 +5,10 @@ import { useRender } from '@base-ui/react/use-render'
 import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import type { RecordGroupLinkProps } from '../../core'
+import {
+  recordGroupRowHeightClassName,
+  recordGroupRowPaddingClassName,
+} from '../../lib/variants'
 
 export function RecordGroupLink({
   children,
@@ -39,7 +43,9 @@ export function RecordGroupLink({
       </>
     ),
     className: cn(
-      'flex min-h-9 min-w-0 items-center gap-2 rounded-md px-2 text-start text-sm outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring',
+      'flex min-w-0 items-center gap-2 rounded-md text-start text-sm outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring',
+      recordGroupRowHeightClassName,
+      recordGroupRowPaddingClassName,
       className,
     ),
     'data-slot': 'record-group-link',

@@ -67,6 +67,7 @@ The pattern sets these attributes and styles none of them through a variant:
 | Attribute | Where |
 | --- | --- |
 | `data-slot="property-surface"`, `data-variant="badge\|plain"` | every `PropertySurface` |
+| `data-slot="property-icon"` | the icon that names the value: `IconLabelProperty` (so date, date range, text, email, phone, reference), `SelectProperty` option icon, `ScheduleProperty` calendar, the calendar popover trigger, the email and phone trigger. Not the add, remove, copy or repeat icons. `RecordGroupRow` hides it when the row has `leading` |
 | `data-empty="true"` | `PropertySurface` when `muted` |
 | `data-slot`, `data-variant` | the row of email, people, phone, tags |
 | `data-display="chips\|count"` | `[data-slot=tags-property]` |

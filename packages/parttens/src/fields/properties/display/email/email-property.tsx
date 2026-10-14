@@ -186,7 +186,11 @@ export function EmailProperty({
               render={<button disabled={disabled} type="button" />}
               variant={variant === 'plain' ? 'plain' : 'badge'}
             >
-              <MailIcon aria-hidden="true" className="size-3" />
+              <MailIcon
+                aria-hidden="true"
+                className="size-3"
+                data-slot="property-icon"
+              />
               <span className="truncate">{summary}</span>
             </PropertySurface>
           }

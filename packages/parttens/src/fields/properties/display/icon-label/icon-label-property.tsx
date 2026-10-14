@@ -59,7 +59,11 @@ export function IconLabelProperty({
     >
       {leading}
       {Icon ? (
-        <Icon aria-hidden className={cn('size-3', iconClassName)} />
+        <Icon
+          aria-hidden
+          className={cn('size-3', iconClassName)}
+          data-slot="property-icon"
+        />
       ) : null}
       <span className="truncate">{label}</span>
       {hidesTrailing ? (

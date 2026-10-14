@@ -363,6 +363,8 @@
     "RecordPreview",
     "RecordPreviewAction",
     "RecordPreviewActionProps",
+    "RecordPreviewBody",
+    "RecordPreviewBodyProps",
     "RecordPreviewProps"
   ],
   "record-group": [
@@ -953,6 +955,8 @@
     "RecordPreview",
     "RecordPreviewAction",
     "RecordPreviewActionProps",
+    "RecordPreviewBody",
+    "RecordPreviewBodyProps",
     "RecordPreviewProps",
     "ReferenceProperty",
     "ReferencePropertyKind",

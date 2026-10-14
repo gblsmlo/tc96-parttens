@@ -56,6 +56,28 @@ test('renders leading only when passed', () => {
   expect(labelOf(rows()[0] as HTMLElement).querySelector('svg')).not.toBeNull()
 })
 
+test('hides the property icons of the value only when the label has an icon', () => {
+  const value = <svg data-slot="property-icon" />
+  const { unmount } = render(
+    <RecordGroupRow label="Status">{value}</RecordGroupRow>,
+  )
+
+  expect(valueCellOf(rows()[0] as HTMLElement).className).not.toContain(
+    'property-icon',
+  )
+
+  unmount()
+  render(
+    <RecordGroupRow label="Status" leading={<svg />}>
+      {value}
+    </RecordGroupRow>,
+  )
+
+  expect(valueCellOf(rows()[0] as HTMLElement).className).toContain(
+    '[&_[data-slot=property-icon]]:hidden',
+  )
+})
+
 test('is a description list with the label as its term and the value as its description', () => {
   render(<RecordGroupRow label="Owner">Mariana Souza</RecordGroupRow>)
 

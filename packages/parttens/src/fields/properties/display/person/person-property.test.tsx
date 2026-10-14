@@ -9,7 +9,7 @@ afterEach(cleanup)
 
 const options = [{ fallback: 'AS', label: 'Ana Souza', value: 'ana' }] as const
 
-// A aresta do avatar por superfície — 20px no badge, 28px no plain — é asseverada nas
+// A aresta do avatar por superfície — 16px no badge, 20px no plain — é asseverada nas
 // stories `Patterns/Fields/Properties/Person`, em geometria renderizada. Aqui fica o que não é
 // aparência: o rótulo acessível, a supressão do texto e o estado vazio.
 describe('PersonProperty', () => {

@@ -67,7 +67,7 @@ export const Default: Story = {
 export const Plain: Story = {
   play: async ({ canvasElement }) => {
     await esperarSuperficiePlana(canvasElement)
-    await esperarAvatarComAresta(canvasElement, 28)
+    await esperarAvatarComAresta(canvasElement, 20)
   },
   args: {
     options,
