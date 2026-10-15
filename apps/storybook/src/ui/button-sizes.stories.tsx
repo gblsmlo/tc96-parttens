@@ -5,6 +5,7 @@ import { expect, within } from 'storybook/test'
 const meta = {
   title: 'UI/Button/Sizes',
   component: Button,
+  tags: ['!autodocs'],
   args: {
     children: 'Button',
     type: 'button',
