@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-vite'
+import { storySourcePlugin } from './story-source-plugin.ts'
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(ts|tsx)'],
@@ -19,6 +20,10 @@ const config: StorybookConfig = {
     name: '@storybook/react-vite',
     options: {},
   },
+  viteFinal: (config) => ({
+    ...config,
+    plugins: [...(config.plugins ?? []), storySourcePlugin()],
+  }),
 }
 
 export default config

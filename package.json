@@ -25,6 +25,7 @@
     "storybook:build": "bun run --cwd apps/storybook build",
     "storybook:typecheck": "bun run --cwd apps/storybook typecheck",
     "storybook:lint": "bun run --cwd apps/storybook lint:ci",
+    "story:source": "bun scripts/story-source.ts",
     "docs:build": "bun run --cwd apps/docs build",
     "docs:dev": "bun run --cwd apps/docs dev",
     "lint:ci": "biome check scripts packages/registry/src",
