@@ -4,6 +4,7 @@ import { Button } from '@tc96/ui/button'
 const meta = {
   title: 'UI/Button/Destructive',
   component: Button,
+  tags: ['!autodocs'],
   args: {
     children: 'Remove',
   },

@@ -43,7 +43,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       projects: [
-        storybookProject('storybook', {}),
+        storybookProject('storybook', { theme: 'light' }),
         storybookProject('storybook-dark', { theme: 'dark' }),
       ],
     },
