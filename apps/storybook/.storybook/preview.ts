@@ -36,6 +36,9 @@ const preview: Preview = {
     a11y: {
       test: 'error',
     },
+    docs: {
+      codePanel: true,
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

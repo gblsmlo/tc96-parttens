@@ -87,7 +87,7 @@ bun run check:coss && bun run boundaries:check && bun run overrides:check
 bun run verify:public-api
 bun run test                 # ui/utils, helpers, boundaries, patterns, registry
 bun run storybook:test       # vitest browser + axe (a11y violations fail)
-bun run story:source <id>    # exact source of one story; needs the dev server
+bun run story:source <id>    # one story as a ready-to-use component; needs the dev server
 bun run check                # full gate; run before a release or PR
 ```
 
@@ -112,7 +112,7 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 - Do not give story wrappers a background, so the page inherits `bg-background` and card contrast stays visible.
 - When refining a visual pattern, also audit contrast (WCAG 4.5:1 for text, 3:1 for graphics, with the numeric ratios), spacing and composition, check a light and dark screenshot of the story, and record scale decisions in the architecture doc. Token findings are notes for the consumer, not fixes in `packages/ui`.
 - Stories must pass axe: `a11y.test` is set to `error`.
-- The Storybook MCP is for props, API and docs only. Its story snippets keep only the `render` body and drop local helpers, data, decorators and icon imports, so never copy UI from them. To copy a story or variant, take the story ID from `docs-list` (`withStoryIds: true`) and run `bun run story:source <id>`: it prints the story with the helpers, data, decorators and imports it uses, without `play`, `argTypes` or `a11y` parameters. Relative imports (`../fixtures/...`) stay as imports; read those files too.
+- The Storybook MCP is for props, API and docs only. Its story snippets keep only the `render` body and drop local helpers, data and icon imports, so never copy UI from them. To copy a story or variant, take the story ID from `docs-list` (`withStoryIds: true`) and run `bun run story:source <id>`: it prints the story as `export default function <Story>()` with args inlined as props and the helpers, data and imports it uses, without decorators or Storybook APIs; `--story` prints the story module instead. The Code panel and the docs page show the same output. Relative imports (`../fixtures/...`) stay as imports; read those files too.
 
 ## Git
 

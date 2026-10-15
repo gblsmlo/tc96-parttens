@@ -1,8 +1,9 @@
 import { readFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
 
-interface ImportBinding {
+export interface ImportBinding {
   module: string
   imported: string
   kind: 'default' | 'namespace' | 'named'
@@ -15,45 +16,15 @@ interface IndexEntry {
   exportName?: string
 }
 
-const storybookDir = resolve(import.meta.dir, '../apps/storybook')
+const root = fileURLToPath(new URL('..', import.meta.url))
+const storybookDir = resolve(root, 'apps/storybook')
 const omittedStoryKeys = new Set(['play', 'tags', 'name', 'argTypes'])
 const omittedMetaKeys = new Set(['argTypes'])
 const omittedParameterKeys = new Set(['a11y'])
 
 export function extractStory(text: string, exportName: string) {
-  const source = ts.createSourceFile(
-    'story.tsx',
-    text,
-    ts.ScriptTarget.Latest,
-    true,
-    ts.ScriptKind.TSX,
-  )
-  const declarations = new Map<string, ts.Statement>()
-  const imports = new Map<string, ImportBinding>()
-  let meta: ts.Statement | undefined
-
-  for (const statement of source.statements) {
-    if (ts.isImportDeclaration(statement)) {
-      collectImports(statement, imports)
-    } else if (ts.isExportAssignment(statement)) {
-      meta = statement
-    } else if (ts.isVariableStatement(statement)) {
-      for (const declaration of statement.declarationList.declarations) {
-        for (const name of bindingNames(declaration.name)) {
-          declarations.set(name, statement)
-        }
-      }
-    } else if (
-      (ts.isFunctionDeclaration(statement) ||
-        ts.isClassDeclaration(statement) ||
-        ts.isTypeAliasDeclaration(statement) ||
-        ts.isInterfaceDeclaration(statement) ||
-        ts.isEnumDeclaration(statement)) &&
-      statement.name
-    ) {
-      declarations.set(statement.name.text, statement)
-    }
-  }
+  const source = parseTsx(text)
+  const { declarations, imports, meta } = indexStatements(source)
 
   const story = declarations.get(exportName)
   if (!story) throw new Error(`export not found: ${exportName}`)
@@ -141,7 +112,47 @@ export function extractStory(text: string, exportName: string) {
   return `${printImports(usedImports, imports).join('\n')}\n\n${body.join('\n\n')}`
 }
 
-function collectImports(
+export function parseTsx(text: string) {
+  return ts.createSourceFile(
+    'story.tsx',
+    text,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  )
+}
+
+export function indexStatements(source: ts.SourceFile) {
+  const declarations = new Map<string, ts.Statement>()
+  const imports = new Map<string, ImportBinding>()
+  let meta: ts.Statement | undefined
+
+  for (const statement of source.statements) {
+    if (ts.isImportDeclaration(statement)) {
+      collectImports(statement, imports)
+    } else if (ts.isExportAssignment(statement)) {
+      meta = statement
+    } else if (ts.isVariableStatement(statement)) {
+      for (const declaration of statement.declarationList.declarations) {
+        for (const name of bindingNames(declaration.name)) {
+          declarations.set(name, statement)
+        }
+      }
+    } else if (
+      (ts.isFunctionDeclaration(statement) ||
+        ts.isClassDeclaration(statement) ||
+        ts.isTypeAliasDeclaration(statement) ||
+        ts.isInterfaceDeclaration(statement) ||
+        ts.isEnumDeclaration(statement)) &&
+      statement.name
+    ) {
+      declarations.set(statement.name.text, statement)
+    }
+  }
+  return { declarations, imports, meta }
+}
+
+export function collectImports(
   statement: ts.ImportDeclaration,
   imports: Map<string, ImportBinding>,
 ) {
@@ -180,7 +191,10 @@ function collectImports(
   }
 }
 
-function printImports(used: Set<string>, imports: Map<string, ImportBinding>) {
+export function printImports(
+  used: Set<string>,
+  imports: Map<string, ImportBinding>,
+) {
   const modules = new Map<
     string,
     { defaultName?: string; namespace?: string; named: string[] }
@@ -245,7 +259,7 @@ function printWithout(
   return text.replace(/\{\n\s*\}/g, '{}')
 }
 
-function references(node: ts.Node, omitted: Set<ts.Node>) {
+export function references(node: ts.Node, omitted: Set<ts.Node>) {
   const found = new Set<string>()
   const visit = (current: ts.Node) => {
     if (omitted.has(current)) return
@@ -258,7 +272,7 @@ function references(node: ts.Node, omitted: Set<ts.Node>) {
   return found
 }
 
-function isMemberName(identifier: ts.Identifier) {
+export function isMemberName(identifier: ts.Identifier) {
   const parent = identifier.parent
   return (
     ((ts.isPropertyAccessExpression(parent) ||
@@ -271,14 +285,14 @@ function isMemberName(identifier: ts.Identifier) {
   )
 }
 
-function bindingNames(name: ts.BindingName): string[] {
+export function bindingNames(name: ts.BindingName): string[] {
   if (ts.isIdentifier(name)) return [name.text]
   return name.elements.flatMap((element) =>
     ts.isOmittedExpression(element) ? [] : bindingNames(element.name),
   )
 }
 
-function propertyName(property: ts.ObjectLiteralElementLike) {
+export function propertyName(property: ts.ObjectLiteralElementLike) {
   if (!property.name) return undefined
   if (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) {
     return property.name.text
@@ -286,7 +300,7 @@ function propertyName(property: ts.ObjectLiteralElementLike) {
   return undefined
 }
 
-function unwrap(node: ts.Expression): ts.Expression {
+export function unwrap(node: ts.Expression): ts.Expression {
   if (
     ts.isSatisfiesExpression(node) ||
     ts.isAsExpression(node) ||
@@ -297,7 +311,7 @@ function unwrap(node: ts.Expression): ts.Expression {
   return node
 }
 
-function objectOf(statement: ts.Statement) {
+export function objectOf(statement: ts.Statement) {
   if (!ts.isVariableStatement(statement)) return undefined
   const initializer = statement.declarationList.declarations[0]?.initializer
   const value = initializer && unwrap(initializer)
@@ -350,7 +364,7 @@ function storyObjects(
   return [...objects]
 }
 
-function isStoryExport(statement: ts.Statement) {
+export function isStoryExport(statement: ts.Statement) {
   return (
     ts.isVariableStatement(statement) &&
     (statement.modifiers?.some(
@@ -360,7 +374,7 @@ function isStoryExport(statement: ts.Statement) {
   )
 }
 
-function returnedObjects(fn: ts.FunctionLikeDeclaration) {
+export function returnedObjects(fn: ts.FunctionLikeDeclaration) {
   if (!fn.body) return []
   if (!ts.isBlock(fn.body)) {
     const value = unwrap(fn.body)
@@ -379,7 +393,7 @@ function returnedObjects(fn: ts.FunctionLikeDeclaration) {
   return objects
 }
 
-function resolveObject(
+export function resolveObject(
   expression: ts.Expression,
   declarations: Map<string, ts.Statement>,
 ) {
@@ -390,7 +404,7 @@ function resolveObject(
   return statement && objectOf(statement)
 }
 
-function metaObjectOf(
+export function metaObjectOf(
   meta: ts.Statement,
   declarations: Map<string, ts.Statement>,
 ) {
@@ -398,9 +412,10 @@ function metaObjectOf(
   return resolveObject(meta.expression, declarations)
 }
 
-async function main(storyId: string | undefined) {
+async function main(argv: string[]) {
+  const storyId = argv.find((arg) => !arg.startsWith('--'))
   if (!storyId) {
-    console.error('usage: bun run story:source <story-id>')
+    console.error('usage: bun run story:source <story-id> [--story]')
     process.exit(1)
   }
   const url = process.env.STORYBOOK_URL ?? 'http://localhost:6006'
@@ -420,10 +435,12 @@ async function main(storyId: string | undefined) {
     process.exit(1)
   }
   const file = resolve(storybookDir, entry.importPath)
-  const code = extractStory(await readFile(file, 'utf8'), entry.exportName)
-  console.log(
-    `// ${relative(resolve(import.meta.dir, '..'), file)} :: ${entry.exportName}\n${code}`,
-  )
+  const text = await readFile(file, 'utf8')
+  const { storySnippets } = await import('./story-component.ts')
+  const [code] = argv.includes('--story')
+    ? [extractStory(text, entry.exportName)]
+    : storySnippets(text, [entry.exportName])
+  console.log(`// ${relative(root, file)} :: ${entry.exportName}\n${code}`)
 }
 
-if (import.meta.main) await main(process.argv[2])
+if (import.meta.main) await main(process.argv.slice(2))
