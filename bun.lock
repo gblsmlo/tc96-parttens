@@ -114,6 +114,7 @@
     "packages/elements": {
       "name": "@tc96/elements",
       "dependencies": {
+        "@tc96/ui": "workspace:*",
         "@tc96/utils": "workspace:*",
         "class-variance-authority": "0.7.1",
       },
