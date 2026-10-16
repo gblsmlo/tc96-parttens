@@ -1,5 +1,11 @@
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  type AvatarSize,
+  avatarVariants,
+} from '@tc96/elements/avatar'
 import { resolveInitials } from '@tc96/helpers/initials'
-import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement } from 'react'
 
@@ -15,13 +21,8 @@ export interface AvatarStackProps
   'aria-label'?: string
   max?: number
   people: readonly AvatarStackPerson[]
-  size?: 'default' | 'sm'
+  size?: Extract<AvatarSize, 'default' | 'sm'>
 }
-
-const sizes = {
-  default: 'size-7 text-xs',
-  sm: 'size-6 text-[0.625rem]',
-} as const
 
 export function AvatarStack({
   'aria-label': ariaLabel = 'Pessoas',
@@ -46,7 +47,7 @@ export function AvatarStack({
           className="flex rounded-full border border-input bg-card"
           key={person.id}
         >
-          <Avatar className={sizes[size]}>
+          <Avatar size={size}>
             {person.imageUrl ? (
               <AvatarImage alt="" src={person.imageUrl} />
             ) : null}
@@ -60,7 +61,7 @@ export function AvatarStack({
           <span
             className={cn(
               'inline-flex shrink-0 items-center justify-center rounded-full bg-muted font-medium text-muted-foreground tabular-nums',
-              sizes[size],
+              avatarVariants({ size }),
             )}
             data-slot="avatar-stack-overflow"
           >

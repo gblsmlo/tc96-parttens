@@ -21,7 +21,7 @@ Six files still carry Portuguese JSDoc from before the no-comments rule (`shared
 
 - `packages/parttens/src/index.ts` re-exports `widgets/index`; the stories import from `@tc96/parttens`, not by path.
 - `packages/registry/src/manifest.ts` and `scripts/test-patterns.ts` list `widgets`; `packages/registry/src/manifest.test.ts` asserts the path `parttens/src/widgets/index.ts`. Renaming the folder or the barrel breaks both.
-- `WidgetShell` (`shared/widget-shell.tsx`) renders `CardSurface` from `@tc96/elements/card-surface`; the registry item for `widgets` depends on that element.
+- `WidgetShell` (`shared/widget-shell.tsx`) renders `CardSurface` from `@tc96/elements/card-surface`; the registry item for `widgets` depends on that element. `AvatarStack`, `ActivityTimeline` and `ContactWidget` import `@tc96/elements/avatar` the same way.
 
 ## Invariants
 
@@ -50,7 +50,7 @@ Charts, time and markup:
 - `WorldClockWidget` renders every clock from one instant; without `now` it ticks every second, with `now` it never ticks. `AgendaWidget` keys events by `calendarDateKey` and `calendarProps` cannot override `mode`, `modifiers`, `onSelect` or `selected`.
 - `UpcomingEventWidget` defaults the window to 30 minutes on each side and calls `copyToClipboard(joinHref)` before `onCopy(joinHref)`.
 - `ContactWidget` builds a channel link only for a value it receives and renders it as a COSS `Button` through `render={<a />}`; WhatsApp opens with `target="_blank" rel="noreferrer"`.
-- Every avatar (`AvatarStack`, `ActivityTimeline`, `ContactWidget`) sits in a `rounded-full border border-input bg-card` wrapper so the COSS fallback stays visible on the card.
+- Every avatar (`AvatarStack`, `ActivityTimeline`, `ContactWidget`) is the `@tc96/elements/avatar` `Avatar` with a `size`, never a size class, and sits in a `rounded-full border border-input bg-card` wrapper so the COSS fallback stays visible on the card. The `AvatarStack` overflow chip takes its box from `avatarVariants`, so it stays the size of the avatars.
 - `ProgressFooter` renders the ring `empty` and omits `srLabel` when `score.value` is `null`.
 - Default labels are pt-BR strings exposed as props; the CRM, finance and productivity stories pass English labels, the gamification stories keep the defaults.
 
@@ -70,7 +70,7 @@ No class is keyed on a `data-*` attribute (no `data-*:` or `group-data-*:` varia
 
 - `CardSurface` owns card radius, border and shadow; `WidgetShell` adds only `min-w-0 border-transparent`. The border is transparent, not `border-0`, so the fill area keeps its 1px inset and the `before:` highlight corner stays aligned. `border-transparent` is a neutral override: `scripts/override-exceptions.json` has no entry for the shell. Borderless widgets separate from the page at about 1.04:1 light and 1.05:1 dark; that is a consumer token note (`--card` or shadow), not a pattern fix.
 - Colors only from theme tokens and the `--chart-1` to `--chart-5` variables, never palette classes. An item without `color` gets `var(--chart-${(index % 5) + 1})`; gamification defaults to `var(--warning-foreground)` and `var(--success-foreground)`.
-- The `sm` `AvatarStack` uses `text-[0.625rem]`, the single spelling for ~10px text across the patterns until the consumer adds a `--text-2xs` token.
+- The `sm` Avatar of `@tc96/elements` uses `text-[0.625rem]`, the single spelling for ~10px text across the patterns until the consumer adds a `--text-2xs` token.
 
 ## Verify
 

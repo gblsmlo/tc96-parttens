@@ -40,17 +40,18 @@ describe('PersonAvatar', () => {
     ).toBe(true)
   })
 
-  test('is 16px with 10px initials unless a size is passed', () => {
+  test('is the sm Avatar unless a size is passed', () => {
     const { container, rerender } = render(<PersonAvatar option={option} />)
     const avatar = () => container.querySelector('[data-slot="avatar"]')
 
-    expect(avatar()?.className).toContain('size-4')
-    expect(fallbackOf(container)?.className).toContain('text-[0.625rem]')
+    expect(avatar()?.getAttribute('data-size')).toBe('sm')
+    expect(avatar()?.className).toContain('size-6')
 
-    rerender(<PersonAvatar className="size-7" option={option} />)
+    rerender(<PersonAvatar option={option} size="lg" />)
 
-    expect(avatar()?.className).toContain('size-7')
-    expect(avatar()?.className).not.toContain('size-4')
+    expect(avatar()?.getAttribute('data-size')).toBe('lg')
+    expect(avatar()?.className).toContain('size-10')
+    expect(avatar()?.className).not.toContain('size-6')
   })
 
   test('matches the outlined fallback used by avatar-only records', () => {
@@ -85,15 +86,5 @@ describe('PersonOptionContent', () => {
 
     expect(getByText('Owner').className).toContain('hidden')
     expect(getByText('Owner').className).toContain('sm:inline')
-  })
-
-  test('forwards the avatar size', () => {
-    const { container } = render(
-      <PersonOptionContent avatarClassName="size-7" option={option} />,
-    )
-
-    expect(
-      container.querySelector('[data-slot="avatar"]')?.className,
-    ).toContain('size-7')
   })
 })

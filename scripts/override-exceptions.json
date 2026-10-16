@@ -1,17 +1,5 @@
 [
   {
-    "file": "packages/parttens/src/fields/properties/display/person/person-option-content.tsx",
-    "component": "AvatarFallback",
-    "className": "border",
-    "reason": "O fallback sem imagem precisa do mesmo contorno visível usado nos avatares de registros; a borda distingue o círculo do fundo do card sem alterar o Avatar quando há imagem."
-  },
-  {
-    "file": "packages/parttens/src/fields/properties/display/person/person-option-content.tsx",
-    "component": "AvatarFallback",
-    "className": "border-input",
-    "reason": "O contorno do fallback usa o token input, o mesmo tratamento dos avatares de registros, para acompanhar os temas do consumidor."
-  },
-  {
     "file": "packages/parttens/src/collection-views/views/list/components/list-group.tsx",
     "component": "Separator",
     "className": "bg-border/40",

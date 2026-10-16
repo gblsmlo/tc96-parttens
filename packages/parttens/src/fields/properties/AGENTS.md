@@ -89,7 +89,8 @@ The pattern sets these attributes and styles none of them through a variant:
 - Every `SelectItem` and `ComboboxItem` in a property (select, person, people, tags, reminders, schedule time, phone country) takes `propertySelectItemClassName` from `shared/property-select-shell.tsx`, which moves the COSS check from the left column to the right one with the `MenuRadioOption` grid (`.75rem`, `gap-4`, `pe-2.5`). `packages/ui` stays untouched; the `Select/Dropdown` and `Tags/Count` stories assert the position with `esperarIndicadorADireita`.
 - The multi-select and phone country popups take `w-max`, so the list is as wide as its longest option; Select popups already grow from the COSS `min-w-(--anchor-width)`.
 - Hover-only affordances pair hover with `group-focus-within` and `pointer-coarse:opacity-100` (or `focus-visible:opacity-100` in popup rows).
-- `PersonAvatar` keeps its 10px initials and uses the COSS `bg-muted` fallback with a token `border-input` outline, matching avatar-only records without overriding the fallback background. `scripts/override-exceptions.json` registers the `border` and `border-input` classes on `AvatarFallback` with that reason.
+- `PersonAvatar` is the `@tc96/elements/avatar` `Avatar`, `sm` (24px, 10px initials) unless a `size` is passed, with the COSS `bg-muted` fallback and a token `border-input` outline, matching avatar-only records without overriding the fallback background. `AvatarFallback` comes from `@tc96/elements/avatar`, so `overrides:check` no longer lists these two classes.
+- A badge that holds a `PersonAvatar` (`PersonProperty`, `PersonPropertyBadge`, the read-only chips of `PeopleProperty`) takes `propertyBadgeWithAvatarClassName` (`h-8`), because the smallest Avatar is taller than the `h-6` property badge; plain surfaces and the `ComboboxChip` grow with their content.
 
 ## Verify
 

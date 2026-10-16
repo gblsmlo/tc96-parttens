@@ -1,5 +1,5 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@tc96/elements/avatar'
 import { resolveInitials } from '@tc96/helpers/initials'
-import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import type { AvatarStackPerson } from '../shared/avatar-stack'
@@ -57,13 +57,13 @@ export function ActivityTimeline({
         <ol className={className} data-slot="activity-feed-list" {...props}>
           {shown.map((activity) => (
             <li
-              className="relative grid grid-cols-[auto_1fr] gap-3 pb-5 last:pb-0 not-last:before:absolute not-last:before:start-3.5 not-last:before:top-8 not-last:before:bottom-0 not-last:before:w-px not-last:before:bg-border/60"
+              className="relative grid grid-cols-[auto_1fr] gap-3 pb-5 last:pb-0 not-last:before:absolute not-last:before:start-4 not-last:before:top-9 not-last:before:bottom-0 not-last:before:w-px not-last:before:bg-border/60"
               data-slot="activity-feed-item"
               key={activity.id}
             >
-              <span className="relative flex size-7">
+              <span className="relative flex size-8">
                 <span className="flex rounded-full border border-input bg-card">
-                  <Avatar className="size-7">
+                  <Avatar>
                     {activity.person.imageUrl ? (
                       <AvatarImage alt="" src={activity.person.imageUrl} />
                     ) : null}
