@@ -411,7 +411,7 @@ test('only inset keeps the 4px gap between the header and the card', () => {
   }
 })
 
-test('only plain drops the horizontal padding of the header and the trigger', () => {
+test('only inset pads the header horizontally', () => {
   for (const variant of ['card', 'inset', 'plain'] as const) {
     const { unmount } = mount({ variant })
     const header = document.querySelector(
@@ -419,8 +419,16 @@ test('only plain drops the horizontal padding of the header and the trigger', ()
     ) as HTMLElement
 
     expect(header.className.split(' ').includes('px-1')).toBe(
-      variant !== 'plain',
+      variant === 'inset',
     )
+    unmount()
+  }
+})
+
+test('only plain drops the horizontal padding of the trigger', () => {
+  for (const variant of ['card', 'inset', 'plain'] as const) {
+    const { unmount } = mount({ variant })
+
     expect(trigger().className.split(' ').includes('px-1')).toBe(
       variant !== 'plain',
     )
@@ -428,13 +436,14 @@ test('only plain drops the horizontal padding of the header and the trigger', ()
   }
 })
 
-test('only plain packs the rows: no gutter, no padding, no gap and the 32px row height', () => {
+test('only plain packs the rows: no gutter, no gap and the 32px row height, and no variant pads them', () => {
   const roomy = [
     'px-1',
     '[--record-group-row-gap:calc(var(--spacing)*0.5)]',
     '[--record-group-row-height:calc(var(--spacing)*9)]',
-    '[--record-group-row-padding:calc(var(--spacing)*2)]',
   ]
+  const hoverOffset = '[--record-group-hover-offset:calc(var(--spacing)*2)]'
+  const plainHeight = '[--record-group-row-height:calc(var(--spacing)*8)]'
 
   for (const variant of ['card', 'inset', 'plain'] as const) {
     const { unmount } = mount({ variant })
@@ -446,15 +455,53 @@ test('only plain packs the rows: no gutter, no padding, no gap and the 32px row 
     for (const roomyClass of roomy) {
       expect(classes.includes(roomyClass)).toBe(variant !== 'plain')
     }
+    expect(
+      classes.some((name) => name.includes('--record-group-row-padding')),
+    ).toBe(false)
+    expect(classes).toContain(hoverOffset)
+    expect(classes.includes(plainHeight)).toBe(variant === 'plain')
     expect(classes).toContain('gap-[var(--record-group-row-gap,0px)]')
     unmount()
   }
+})
+
+test('inset and card give the rows the same box', () => {
+  const contentClasses = (variant: 'card' | 'inset') => {
+    const { unmount } = mount({ variant })
+    const content = document.querySelector(
+      '[data-slot="record-group-content"]',
+    ) as HTMLElement
+    const classes = content.className.split(' ').sort()
+    unmount()
+    return classes
+  }
+
+  expect(contentClasses('inset')).toEqual(contentClasses('card'))
 })
 
 test('plain draws no card surface', () => {
   mount()
 
   expect(document.querySelector('[data-slot="card"]')).toBeNull()
+})
+
+test('card and inset shells are flat muted panels padded by 3', () => {
+  for (const variant of ['card', 'inset'] as const) {
+    const { unmount } = mount({ variant })
+    const shell = document.querySelector('[data-slot="card"]') as HTMLElement
+    const classes = shell.className.split(' ')
+
+    for (const shellClass of [
+      'bg-muted/72',
+      'p-3',
+      'shadow-none',
+      'before:hidden',
+    ])
+      expect(classes).toContain(shellClass)
+    for (const cardClass of ['bg-card', 'shadow-xs/5'])
+      expect(classes).not.toContain(cardClass)
+    unmount()
+  }
 })
 
 test('inset frames the content in a card and keeps the header and the footer outside it', () => {

@@ -268,8 +268,11 @@ test('card frames the list and keeps the drag handle outside the row', () => {
   expect(card?.getAttribute('data-slot')).toBe('card')
   expect(card?.className).toContain('border')
   expect(card?.className).not.toContain('overflow-hidden')
+  expect(
+    section.querySelector('[data-slot="checklist-item"]')?.className,
+  ).not.toContain('hover-offset')
   expect(handle.closest('[data-slot="checklist-row"]')).toBeNull()
-  expect(handle.className).toContain('-left-8')
+  expect(handle.className).toContain('-right-6')
 })
 
 test('plain drops the frame and puts the drag handle at the end of the row', () => {
@@ -288,7 +291,10 @@ test('plain drops the frame and puts the drag handle at the end of the row', () 
   expect(list?.className).not.toContain('border')
   expect(section.querySelector('[data-slot="card"]')).toBeNull()
   expect(item.className).toContain('rounded-md')
-  expect(row.className).toContain('h-9 px-2')
+  expect(item.className).toContain('-mx-[var(--record-group-hover-offset,0px)]')
+  expect(row.className).toContain(
+    'h-[var(--record-group-row-height,calc(var(--spacing)*9))] px-2',
+  )
   expect(row.contains(handle)).toBe(true)
   expect(row.lastElementChild?.contains(handle)).toBe(true)
   expect(handle.className.split(' ')).not.toContain('absolute')

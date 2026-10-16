@@ -20,6 +20,7 @@ Import direction: `composition/` → `components/`, `lib/`, `types/`; `component
 - `packages/parttens/src/index.ts` re-exports `checklist/index`.
 - `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts` list the folder `checklist`. Renaming the folder breaks the registry and the pattern test run.
 - The stories import through `@tc96/parttens`, not by file path.
+- `records/group/lib/variants.ts` defines the CSS variables that `checklist/lib/variants.ts` reads in `plain`: `--record-group-hover-offset` (`recordGroupHoverOffset`, read by `checklistItemVariants`) and `--record-group-row-height` (read by `checklistRowVariants`). Renaming either there breaks the checklist without a type error.
 
 ## Invariants
 
@@ -47,8 +48,9 @@ Creating:
 
 Variant:
 
-- `card` (default) wraps the `ol[data-slot="checklist-items"]` in a `CardSurface` (`data-slot="card"`, the only card in the section; the `ol` carries no radius, border or background) and pads the section; the first and last rows read `--card-surface-radius` minus 1px, so the row corners follow `--card-radius` from an ancestor. The list must not get `overflow-hidden`: the drag handle sits outside the row, at `-left-8`.
-- `plain` drops the frame and the section padding, so a parent frame, such as `RecordGroup` `inset`, holds the rows. With `md` its row is 36px (`h-9 px-2`), the height of a `RecordGroupItem` in `inset`; `card` with `md` stays 40px. `checklistRowVariants` sets both through compound variants. A parent with `overflow-hidden` (the `RecordGroup` panel) would clip a handle outside the row, so `plain` renders the handle in the row's action area, after the delete button.
+- `card` (default) wraps the `ol[data-slot="checklist-items"]` in a `CardSurface` (`data-slot="card"`, the only card in the section; the `ol` carries no radius, border or background) and pads the section; the first and last rows read `--card-surface-radius` minus 1px, so the row corners follow `--card-radius` from an ancestor. The list must not get `overflow-hidden`: the drag handle sits outside the row, on the right at `-right-6` (`right: -24px`, set by the owner on 2026-10-15; it was `-left-8`), so it extends 24px past the row and 23px past the card border.
+- `plain` drops the frame and the section padding, so a parent frame, such as `RecordGroup` `inset`, holds the rows. With `md` its row height is `--record-group-row-height`, defined by `RecordGroup` (set by the owner on 2026-10-15): 32px in a `plain` group and 36px in `card` and `inset`, the height of a `RecordGroupItem` in each; outside a group the variable is unset and the row falls back to 36px. The row keeps `px-2`. `card` with `md` stays 40px (`h-10 px-3`) and `sm` stays 32px (`h-8 px-2`), whatever the group. `checklistRowVariants` sets these through compound variants. A parent with `overflow-hidden` (the `RecordGroup` panel) would clip a handle outside the row, so `plain` renders the handle in the row's action area, after the delete button.
+- The `plain` item (the `li`, which carries the hover) takes `-mx-[var(--record-group-hover-offset,0px)]`, set by the owner on 2026-10-15. `RecordGroup` defines that variable as 8px in every variant, so inside a group the hover extends 8px past the content edge while the row keeps its `px-2` and the checkbox lines up with a `RecordGroupItem` icon; outside a group the variable is unset and the margin is 0. The draft row and the read-only row use the same `li` classes. `card` has no offset: its hover stays inside the frame.
 
 Copy:
 

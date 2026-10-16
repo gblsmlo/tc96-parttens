@@ -6,8 +6,8 @@ import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import type { RecordGroupLinkProps } from '../../core'
 import {
+  recordGroupLinkOffsetClassName,
   recordGroupRowHeightClassName,
-  recordGroupRowPaddingClassName,
 } from '../../lib/variants'
 
 export function RecordGroupLink({
@@ -45,7 +45,7 @@ export function RecordGroupLink({
     className: cn(
       'flex min-w-0 items-center gap-2 rounded-md text-start text-sm outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring',
       recordGroupRowHeightClassName,
-      recordGroupRowPaddingClassName,
+      recordGroupLinkOffsetClassName,
       className,
     ),
     'data-slot': 'record-group-link',

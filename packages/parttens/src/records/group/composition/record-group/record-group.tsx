@@ -12,7 +12,9 @@ import type { RecordGroupProps } from '../../core'
 import {
   recordGroupClassName,
   recordGroupContentVariants,
-  recordGroupHeaderVariants,
+  recordGroupHeaderClassName,
+  recordGroupPanelClassName,
+  recordGroupShellClassName,
   recordGroupTriggerVariants,
 } from '../../lib/variants'
 
@@ -52,7 +54,7 @@ export function RecordGroup({
   const parts = (
     <>
       <div
-        className={recordGroupHeaderVariants({ actionsAlign, variant })}
+        className={recordGroupHeaderClassName(variant, actionsAlign)}
         data-actions-align={actionsAlign}
         data-slot="record-group-header"
       >
@@ -76,8 +78,17 @@ export function RecordGroup({
           </div>
         ) : null}
       </div>
-      <CollapsiblePanel inert={!isOpen}>
-        {variant === 'inset' ? <CardSurface>{content}</CardSurface> : content}
+      <CollapsiblePanel
+        className={recordGroupPanelClassName(variant)}
+        inert={!isOpen}
+      >
+        {variant === 'inset' ? (
+          <CardSurface className={recordGroupShellClassName}>
+            {content}
+          </CardSurface>
+        ) : (
+          content
+        )}
         {footer ? (
           <div className="px-3 py-2" data-slot="record-group-footer">
             {footer}
@@ -101,7 +112,11 @@ export function RecordGroup({
       open={isOpen}
       render={<section />}
     >
-      {variant === 'card' ? <CardSurface>{parts}</CardSurface> : parts}
+      {variant === 'card' ? (
+        <CardSurface className={recordGroupShellClassName}>{parts}</CardSurface>
+      ) : (
+        parts
+      )}
     </Collapsible>
   )
 }

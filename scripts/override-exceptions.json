@@ -124,5 +124,11 @@
     "component": "ComboboxChips",
     "className": "**:data-[slot=combobox-chip]:rounded-sm",
     "reason": "O chip do valor selecionado e o ComboboxChip do COSS, com raio de `radius-md - 1px` (7px), enquanto todo chip de PropertySurface usa o `rounded-sm` do Badge (6px); o ComboboxChip nao repassa className sem trocar a classe inteira, entao o raio entra pelo container."
+  },
+  {
+    "file": "packages/parttens/src/records/group/composition/record-group/record-group.tsx",
+    "component": "CardSurface",
+    "className": "bg-muted/72",
+    "reason": "O invólucro dos variantes `card` e `inset` do RecordGroup é um painel rebaixado, sem sombra, e não o card elevado do CardSurface; `bg-muted/72` usa o token do tema com 72% de opacidade no lugar de `bg-card`."
   }
 ]
