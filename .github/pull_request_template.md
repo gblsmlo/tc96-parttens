@@ -16,6 +16,9 @@
 
 ## Other info
 
-- Issue:
-- Fixes:
+<!-- Closes: one "Closes #N" line per issue this PR resolves; GitHub closes it when the PR merges into main. -->
+<!-- Repeat the keyword for each issue: "Closes #1, #2" closes only #1. Keep "Closes: none" when nothing is resolved. -->
+<!-- References: issues and PRs this one only mentions, including issues opened while working on it. -->
+
+- Closes: none
 - References:
