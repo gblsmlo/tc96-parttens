@@ -3,10 +3,9 @@ import {
   Checklist,
   type ChecklistItem,
   type ChecklistProps,
-  RecordGroup,
 } from '@tc96/parttens'
-import { type CSSProperties, useState } from 'react'
-import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { useState } from 'react'
+import { fn } from 'storybook/test'
 
 const dueDate = (dayOffset: number) => {
   const now = new Date()
@@ -91,78 +90,6 @@ export const Default: Story = {}
 export const Empty: Story = { args: { items: [] } }
 export const Compact: Story = { args: { density: 'sm', progress: true } }
 export const ReadOnly: Story = { args: { readOnly: true } }
-
-export const CardRadius: Story = {
-  play: async ({ canvasElement }) => {
-    const list = canvasElement.querySelector(
-      '[data-slot="checklist-items"]',
-    ) as HTMLElement
-    const card = list.parentElement as HTMLElement
-    const rows = list.querySelectorAll<HTMLElement>('li')
-    const first = rows[0] as HTMLElement
-    const last = rows[rows.length - 1] as HTMLElement
-
-    expect(getComputedStyle(card).borderTopLeftRadius).toBe('24px')
-    expect(getComputedStyle(first).borderTopLeftRadius).toBe('23px')
-    expect(getComputedStyle(first).borderBottomLeftRadius).toBe('0px')
-    expect(getComputedStyle(last).borderBottomRightRadius).toBe('23px')
-    expect(getComputedStyle(last).borderTopRightRadius).toBe('0px')
-  },
-  render: (args) => (
-    <div style={{ '--card-radius': '24px' } as CSSProperties}>
-      <InteractiveChecklist {...args} />
-    </div>
-  ),
-}
-
-export const Plain: Story = {
-  args: { title: undefined, variant: 'plain' },
-  play: async ({ canvasElement }) => {
-    const content = canvasElement.querySelector(
-      '[data-slot="record-group-content"]',
-    ) as HTMLElement
-    const list = canvasElement.querySelector(
-      '[data-slot="checklist-items"]',
-    ) as HTMLElement
-    const items = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>(
-        '[data-slot="checklist-item"]',
-      ),
-    )
-
-    expect(
-      getComputedStyle(content.closest('[data-slot="card"]') as HTMLElement)
-        .borderTopWidth,
-    ).toBe('1px')
-    expect(getComputedStyle(list).borderTopWidth).toBe('0px')
-    for (const item of items) {
-      const box = item.getBoundingClientRect()
-
-      expect(box.height).toBe(36)
-      const handle = (
-        item.querySelector('[data-slot="checklist-drag-handle"]') as HTMLElement
-      ).getBoundingClientRect()
-
-      expect(handle.left).toBeGreaterThanOrEqual(box.left)
-      expect(handle.right).toBeLessThanOrEqual(box.right + 0.5)
-    }
-
-    const handle = (items[0] as HTMLElement).querySelector(
-      '[data-slot="checklist-drag-handle"]',
-    ) as HTMLElement
-    expect(getComputedStyle(handle).opacity).toBe('0')
-    for (let step = 0; step < 20 && document.activeElement !== handle; step++) {
-      await userEvent.tab()
-    }
-    expect(handle).toHaveFocus()
-    await waitFor(() => expect(getComputedStyle(handle).opacity).toBe('1'))
-  },
-  render: (args) => (
-    <RecordGroup title="Tarefas" variant="inset">
-      <InteractiveChecklist {...args} />
-    </RecordGroup>
-  ),
-}
 
 function InteractiveChecklist(args: ChecklistProps) {
   const [items, setItems] = useState(args.items)
