@@ -119,6 +119,7 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 
 - Work on a feature branch; `main` is the base for PRs.
 - Commit messages follow `feat: ...` style seen in `git log`.
+- A PR closes the issues it resolves with `Closes #N` in its body, one keyword per issue (`Closes #1, #2` closes only #1). Issues opened while working on it go under References. After `gh pr create`, confirm with `gh pr view <n> --json closingIssuesReferences`.
 - Do not commit, push or publish unless asked. Before any npm publish, stop and ask the user to run `npm login`.
 
 ## Specs
