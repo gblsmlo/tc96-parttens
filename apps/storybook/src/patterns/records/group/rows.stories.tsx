@@ -72,7 +72,7 @@ export const DefaultInteraction: Story = {
     expectTermAndDescription(canvasElement, [
       ['Type', 'Document request'],
       ['Owner', 'Mariana Souza'],
-      ['Reference code', 'REQ-1042'],
+      ['Reference', 'REQ-1042'],
       ['Due', 'Oct 21'],
     ])
 
