@@ -24,15 +24,16 @@ export function PersonAvatar({
   option: PersonPropertyOption | null
   size?: AvatarSize
 }>) {
+  const resolved = option ? resolveInitials(option) : null
+  const fallback =
+    size === 'xs' && resolved !== null
+      ? (Array.from(resolved)[0] ?? '')
+      : resolved
   return (
     <Avatar size={size}>
       {option?.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
       <AvatarFallback className="border border-input">
-        {option ? (
-          resolveInitials(option)
-        ) : (
-          <UserIcon aria-hidden className="size-3" />
-        )}
+        {fallback ?? <UserIcon aria-hidden className="size-3" />}
       </AvatarFallback>
     </Avatar>
   )
@@ -40,12 +41,14 @@ export function PersonAvatar({
 
 export function PersonOptionContent({
   option,
+  size,
 }: Readonly<{
   option: PersonPropertyOption
+  size?: AvatarSize
 }>) {
   return (
     <span className="flex min-w-0 items-center gap-1.5">
-      <PersonAvatar option={option} />
+      <PersonAvatar option={option} size={size} />
       <span className="min-w-0 truncate">{option.label}</span>
       {option.supportingLabel ? (
         <span className="hidden text-muted-foreground text-xs sm:inline">

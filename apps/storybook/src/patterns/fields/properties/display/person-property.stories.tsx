@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PersonProperty, type PersonPropertyOption } from '@tc96/parttens'
 import { useState } from 'react'
+import { userEvent, within } from 'storybook/test'
 import {
   esperarAvatarComAresta,
   esperarSuperficieDeBadge,
@@ -55,7 +56,7 @@ type Story = StoryObj<typeof PersonProperty<ExamplePerson>>
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     await esperarSuperficieDeBadge(canvasElement)
-    await esperarAvatarComAresta(canvasElement, 24)
+    await esperarAvatarComAresta(canvasElement, 16)
   },
   args: {
     options,
@@ -67,7 +68,7 @@ export const Default: Story = {
 export const Plain: Story = {
   play: async ({ canvasElement }) => {
     await esperarSuperficiePlana(canvasElement)
-    await esperarAvatarComAresta(canvasElement, 24)
+    await esperarAvatarComAresta(canvasElement, 16)
   },
   args: {
     options,
@@ -79,7 +80,7 @@ export const Plain: Story = {
 
 export const AvatarOnly: Story = {
   play: async ({ canvasElement }) => {
-    await esperarAvatarComAresta(canvasElement, 24)
+    await esperarAvatarComAresta(canvasElement, 16)
   },
   args: {
     ariaLabel: 'Assignee',
@@ -100,6 +101,16 @@ export const AvatarOnly: Story = {
 }
 
 export const Trigger: Story = {
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body)
+
+    await esperarAvatarComAresta(canvasElement, 16)
+    await userEvent.click(within(canvasElement).getByRole('combobox'))
+    await esperarAvatarComAresta(
+      await body.findByRole('option', { name: /Ana Martins/ }),
+      24,
+    )
+  },
   parameters: {
     docs: {
       description: {

@@ -29,6 +29,18 @@ describe('PersonAvatar', () => {
     expect(fallbackOf(container)?.textContent).toBe('G!')
   })
 
+  test('shows a single letter at xs, from the initials or the explicit fallback', () => {
+    const { container, rerender } = render(
+      <PersonAvatar option={option} size="xs" />,
+    )
+
+    expect(fallbackOf(container)?.textContent).toBe('G')
+
+    rerender(<PersonAvatar option={{ ...option, fallback: 'AB' }} size="xs" />)
+
+    expect(fallbackOf(container)?.textContent).toBe('A')
+  })
+
   test('shows the user icon when there is no person', () => {
     const { container } = render(<PersonAvatar option={null} />)
 
