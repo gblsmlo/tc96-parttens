@@ -65,6 +65,11 @@ test('renders through the consumer element and keeps its handlers', () => {
   expect(button.className).toContain(
     'min-h-[var(--record-group-row-height,calc(var(--spacing)*8))]',
   )
-  expect(button.className).toContain('px-[var(--record-group-row-padding,0px)]')
+  expect(button.className).toContain(
+    '-mx-[var(--record-group-hover-offset,0px)]',
+  )
+  expect(button.className).toContain(
+    'px-[calc(var(--record-group-row-padding,0px)+var(--record-group-hover-offset,0px))]',
+  )
   expect(button.className).toContain('text-start')
 })

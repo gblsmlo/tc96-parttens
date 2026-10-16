@@ -1,22 +1,27 @@
 import { cn } from '@tc96/utils'
 import { cva } from 'class-variance-authority'
-import type { RecordGroupVariant } from '../core'
+import type { RecordGroupActionsAlign, RecordGroupVariant } from '../core'
 
 export const recordGroupClassName = (
   variant: RecordGroupVariant,
   className?: string,
 ) => cn('flex flex-col', variant === 'inset' && 'gap-1', className)
 
-export const recordGroupHeaderVariants = cva(
-  'flex min-h-6 items-center gap-2',
-  {
-    defaultVariants: { actionsAlign: 'between', variant: 'plain' },
-    variants: {
-      actionsAlign: { between: 'justify-between', start: 'justify-start' },
-      variant: { card: 'px-1', inset: 'px-1', plain: '' },
-    },
+export const recordGroupShellClassName =
+  'bg-muted/72 p-3 shadow-none before:hidden'
+
+const recordGroupHeaderVariants = cva('flex min-h-6 items-center gap-2', {
+  defaultVariants: { actionsAlign: 'between' },
+  variants: {
+    actionsAlign: { between: 'justify-between', start: 'justify-start' },
   },
-)
+})
+
+export const recordGroupHeaderClassName = (
+  variant: RecordGroupVariant,
+  actionsAlign: RecordGroupActionsAlign,
+) =>
+  cn(recordGroupHeaderVariants({ actionsAlign }), variant === 'inset' && 'px-1')
 
 export const recordGroupTriggerVariants = cva(
   'group/trigger flex min-w-0 items-center gap-1 rounded-md py-1 outline-none focus-visible:ring-2 focus-visible:ring-ring',
@@ -35,8 +40,24 @@ export const recordGroupRowPaddingClassName =
 export const recordGroupRowGapClassName =
   'gap-[var(--record-group-row-gap,0px)]'
 
+export const recordGroupLinkOffsetClassName =
+  '-mx-[var(--record-group-hover-offset,0px)] px-[calc(var(--record-group-row-padding,0px)+var(--record-group-hover-offset,0px))]'
+
 const recordGroupRoomyRows =
-  'px-1 [--record-group-row-gap:calc(var(--spacing)*0.5)] [--record-group-row-height:calc(var(--spacing)*9)] [--record-group-row-padding:calc(var(--spacing)*2)]'
+  'px-1 [--record-group-row-gap:calc(var(--spacing)*0.5)] [--record-group-row-height:calc(var(--spacing)*9)]'
+
+const recordGroupHoverOffset =
+  '[--record-group-hover-offset:calc(var(--spacing)*2)]'
+
+const recordGroupCardRows = cn(recordGroupRoomyRows, recordGroupHoverOffset)
+
+const recordGroupPlainRows = cn(
+  '[--record-group-row-height:calc(var(--spacing)*8)]',
+  recordGroupHoverOffset,
+)
+
+export const recordGroupPanelClassName = (variant: RecordGroupVariant) =>
+  cn(variant !== 'inset' && '-mx-2 px-2')
 
 export const recordGroupContentVariants = cva(
   `flex flex-col ${recordGroupRowGapClassName}`,
@@ -48,9 +69,9 @@ export const recordGroupContentVariants = cva(
         true: 'items-center justify-center py-6 text-center',
       },
       variant: {
-        card: recordGroupRoomyRows,
-        inset: recordGroupRoomyRows,
-        plain: '',
+        card: recordGroupCardRows,
+        inset: recordGroupCardRows,
+        plain: recordGroupPlainRows,
       },
     },
   },

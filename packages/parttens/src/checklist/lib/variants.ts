@@ -4,7 +4,11 @@ import type { EditableTextSize } from '../../fields/properties/display/editable-
 export const checklistRowVariants = cva('flex min-w-0 items-center gap-2', {
   compoundVariants: [
     { class: 'h-10 px-3', density: 'md', variant: 'card' },
-    { class: 'h-9 px-2', density: 'md', variant: 'plain' },
+    {
+      class: 'h-[var(--record-group-row-height,calc(var(--spacing)*9))] px-2',
+      density: 'md',
+      variant: 'plain',
+    },
   ],
   defaultVariants: {
     density: 'md',
@@ -115,7 +119,7 @@ export const checklistItemVariants = cva(
     variants: {
       variant: {
         card: 'first:rounded-t-[calc(var(--card-surface-radius)-1px)] last:rounded-b-[calc(var(--card-surface-radius)-1px)]',
-        plain: 'rounded-md',
+        plain: 'rounded-md -mx-[var(--record-group-hover-offset,0px)]',
       },
     },
   },
@@ -129,7 +133,7 @@ export const checklistDragHandleVariants = cva(
     },
     variants: {
       variant: {
-        card: '-left-8 -translate-y-1/2 invisible absolute top-1/2 z-10 focus-visible:visible group-hover:visible',
+        card: '-right-6 -translate-y-1/2 invisible absolute top-1/2 z-10 focus-visible:visible group-hover:visible',
         plain: 'shrink-0',
       },
     },
