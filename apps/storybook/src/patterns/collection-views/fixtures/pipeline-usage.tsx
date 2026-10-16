@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback } from '@tc96/elements/avatar'
 import { Text } from '@tc96/elements/text'
 import { formatShortDate } from '@tc96/helpers/date'
 import { formatAmount } from '@tc96/helpers/format'
@@ -161,13 +162,12 @@ function DealCard({ deal }: Readonly<{ deal: Deal }>) {
             </KanbanCardCountAction>
           </span>
         </div>
-        <span
-          className="ml-auto grid size-6 shrink-0 place-items-center rounded-full bg-muted text-[10px] text-foreground"
-          title={owner?.name}
-        >
-          <span aria-hidden>{owner?.initials}</span>
-          <span className="sr-only">Responsável: {owner?.name}</span>
-        </span>
+        <Avatar className="ml-auto" size="sm" title={owner?.name}>
+          <AvatarFallback>
+            <span aria-hidden>{owner?.initials}</span>
+            <span className="sr-only">Responsável: {owner?.name}</span>
+          </AvatarFallback>
+        </Avatar>
       </KanbanCardFooter>
     </KanbanCard>
   )

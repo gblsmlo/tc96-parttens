@@ -55,7 +55,7 @@ type Story = StoryObj<typeof PersonProperty<ExamplePerson>>
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     await esperarSuperficieDeBadge(canvasElement)
-    await esperarAvatarComAresta(canvasElement, 16)
+    await esperarAvatarComAresta(canvasElement, 24)
   },
   args: {
     options,
@@ -67,7 +67,7 @@ export const Default: Story = {
 export const Plain: Story = {
   play: async ({ canvasElement }) => {
     await esperarSuperficiePlana(canvasElement)
-    await esperarAvatarComAresta(canvasElement, 20)
+    await esperarAvatarComAresta(canvasElement, 24)
   },
   args: {
     options,
@@ -79,7 +79,7 @@ export const Plain: Story = {
 
 export const AvatarOnly: Story = {
   play: async ({ canvasElement }) => {
-    await esperarAvatarComAresta(canvasElement, 16)
+    await esperarAvatarComAresta(canvasElement, 24)
   },
   args: {
     ariaLabel: 'Assignee',

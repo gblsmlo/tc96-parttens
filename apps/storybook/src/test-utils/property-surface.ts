@@ -38,8 +38,7 @@ export async function esperarSuperficiePlana(
 }
 
 /**
- * O avatar de uma property muda de aresta conforme a superfície: 20px dentro do badge
- * de 24px, 28px na superfície plana. Em jsdom isso era `toContain('size-5')` — uma
+ * Mede a aresta computada do avatar. Em jsdom isso era `toContain('size-6')`, uma
  * string que passa mesmo se outra classe vencer o merge do Tailwind.
  */
 export async function esperarAvatarComAresta(

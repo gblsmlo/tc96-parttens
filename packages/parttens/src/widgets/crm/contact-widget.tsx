@@ -1,5 +1,5 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@tc96/elements/avatar'
 import { resolveInitials } from '@tc96/helpers/initials'
-import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { CardPanel } from '@tc96/ui/card'
@@ -93,7 +93,7 @@ export function ContactWidget({
       <CardPanel className="grid gap-5 p-5">
         <div className="flex items-start gap-3">
           <span className="flex shrink-0 rounded-full border border-input bg-card">
-            <Avatar className="size-12 text-sm">
+            <Avatar size="xl">
               {person.imageUrl ? (
                 <AvatarImage alt="" src={person.imageUrl} />
               ) : null}

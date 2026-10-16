@@ -11,6 +11,8 @@ export type PropertyVariant = 'badge' | 'plain'
 export const propertyBadgeClassName =
   'h-6 min-w-6 px-[calc(--spacing(2.5)-1px)] text-sm sm:h-6 sm:min-w-6 sm:text-sm'
 
+export const propertyBadgeWithAvatarClassName = 'h-8 min-w-8 sm:h-8 sm:min-w-8'
+
 export interface PropertySurfaceProps extends useRender.ComponentProps<'span'> {
   variant?: PropertyVariant
   muted?: boolean

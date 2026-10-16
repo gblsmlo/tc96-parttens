@@ -1,8 +1,12 @@
 'use client'
 
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  type AvatarSize,
+} from '@tc96/elements/avatar'
 import { resolveInitials } from '@tc96/helpers/initials'
-import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
-import { cn } from '@tc96/utils'
 import { UserIcon } from 'lucide-react'
 
 export interface PersonPropertyOption<TValue extends string = string> {
@@ -14,16 +18,16 @@ export interface PersonPropertyOption<TValue extends string = string> {
 }
 
 export function PersonAvatar({
-  className,
   option,
+  size = 'sm',
 }: Readonly<{
-  className?: string
   option: PersonPropertyOption | null
+  size?: AvatarSize
 }>) {
   return (
-    <Avatar className={cn('size-4 text-sm', className)}>
+    <Avatar size={size}>
       {option?.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
-      <AvatarFallback className="border border-input text-[0.625rem]">
+      <AvatarFallback className="border border-input">
         {option ? (
           resolveInitials(option)
         ) : (
@@ -35,15 +39,13 @@ export function PersonAvatar({
 }
 
 export function PersonOptionContent({
-  avatarClassName,
   option,
 }: Readonly<{
-  avatarClassName?: string
   option: PersonPropertyOption
 }>) {
   return (
     <span className="flex min-w-0 items-center gap-1.5">
-      <PersonAvatar className={avatarClassName} option={option} />
+      <PersonAvatar option={option} />
       <span className="min-w-0 truncate">{option.label}</span>
       {option.supportingLabel ? (
         <span className="hidden text-muted-foreground text-xs sm:inline">

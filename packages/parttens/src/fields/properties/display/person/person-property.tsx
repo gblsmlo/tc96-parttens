@@ -13,6 +13,7 @@ import {
 import {
   PropertySurface,
   type PropertyVariant,
+  propertyBadgeWithAvatarClassName,
 } from '../../shared/property-surface'
 import {
   PersonAvatar,
@@ -64,7 +65,10 @@ export function PersonProperty<TValue extends string = string>({
   return (
     <PropertySelectShell
       ariaLabel={`${accessibleLabel}: ${selectedOption?.label ?? placeholder}`}
-      className={className}
+      className={cn(
+        variant === 'badge' && propertyBadgeWithAvatarClassName,
+        className,
+      )}
       disabled={disabled}
       dropdownPlacement={dropdownPlacement}
       items={options}
@@ -85,7 +89,6 @@ export function PersonProperty<TValue extends string = string>({
           display={display}
           option={option}
           placeholder={placeholder}
-          variant={variant}
         />
       )}
       variant={variant}
@@ -98,11 +101,7 @@ export function PersonProperty<TValue extends string = string>({
           className={propertySelectItemClassName}
           value={option}
         >
-          <PersonPropertyContent
-            option={option}
-            placeholder={placeholder}
-            variant={variant}
-          />
+          <PersonPropertyContent option={option} placeholder={placeholder} />
         </SelectItem>
       ))}
     </PropertySelectShell>
@@ -127,7 +126,11 @@ export function PersonPropertyBadge<TValue extends string = string>({
   return (
     <PropertySurface
       aria-label={ariaLabel}
-      className={cn('max-w-full', className)}
+      className={cn(
+        'max-w-full',
+        variant === 'badge' && propertyBadgeWithAvatarClassName,
+        className,
+      )}
       muted={!option}
       variant={variant}
     >
@@ -135,7 +138,6 @@ export function PersonPropertyBadge<TValue extends string = string>({
         display={display}
         option={option}
         placeholder={placeholder}
-        variant={variant}
       />
     </PropertySurface>
   )
@@ -145,12 +147,10 @@ function PersonPropertyContent<TValue extends string = string>({
   display,
   option,
   placeholder,
-  variant,
 }: Readonly<{
   display?: 'avatar' | 'full'
   option: PersonPropertyOption<TValue> | null
   placeholder: string
-  variant: PropertyVariant
 }>) {
   if (display === 'avatar') return <PersonAvatar option={option} />
 
@@ -163,10 +163,5 @@ function PersonPropertyContent<TValue extends string = string>({
     )
   }
 
-  return (
-    <PersonOptionContent
-      avatarClassName={variant === 'badge' ? 'size-4' : 'size-5'}
-      option={option}
-    />
-  )
+  return <PersonOptionContent option={option} />
 }
