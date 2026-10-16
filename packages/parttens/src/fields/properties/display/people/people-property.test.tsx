@@ -62,10 +62,44 @@ describe('PeopleProperty', () => {
     )
 
     expect(screen.getByText('Bruno Lima')).toBeTruthy()
-    expect(container.querySelector('[data-slot="avatar"]')).toBeTruthy()
+    expect(
+      container
+        .querySelector('[data-slot="avatar"]')
+        ?.getAttribute('data-size'),
+    ).toBe('xs')
     expect(
       screen.getByRole('button', { name: 'Remover Bruno Lima' }),
     ).toBeTruthy()
+  })
+
+  test('draws the options with the sm avatar', async () => {
+    render(
+      <PeopleProperty
+        ariaLabel="Participantes da tarefa"
+        onValueChange={() => undefined}
+        options={options}
+        value={['person-1']}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar pessoa' }))
+    const option = await screen.findByRole('option', { name: /Ana Souza/ })
+
+    expect(
+      option.querySelector('[data-slot="avatar"]')?.getAttribute('data-size'),
+    ).toBe('sm')
+  })
+
+  test('draws read-only people with the xs avatar', () => {
+    const { container } = render(
+      <PeopleProperty options={options} readOnly value={['person-1']} />,
+    )
+
+    expect(
+      container
+        .querySelector('[data-slot="avatar"]')
+        ?.getAttribute('data-size'),
+    ).toBe('xs')
   })
 
   test('returns the next collection when a person is selected', async () => {

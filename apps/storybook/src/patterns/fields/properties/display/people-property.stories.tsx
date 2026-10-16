@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PeopleProperty, type PeoplePropertyOption } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
+import { esperarAvatarComAresta } from '../../../../test-utils/property-surface'
 import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
 
 type ExamplePerson = string
@@ -44,12 +45,13 @@ export const SelectAndRemove: Story = {
     // The Combobox popover renders in a portal, outside `canvasElement`.
     const body = within(canvasElement.ownerDocument.body)
 
+    await esperarAvatarComAresta(canvasElement, 16)
     await userEvent.click(
       await canvas.findByRole('button', { name: 'Adicionar pessoa' }),
     )
-    await userEvent.click(
-      await body.findByRole('option', { name: /Ana Souza/ }),
-    )
+    const option = await body.findByRole('option', { name: /Ana Souza/ })
+    await esperarAvatarComAresta(option, 24)
+    await userEvent.click(option)
     await expect(canvas.getByText('Ana Souza')).toBeInTheDocument()
 
     await userEvent.click(

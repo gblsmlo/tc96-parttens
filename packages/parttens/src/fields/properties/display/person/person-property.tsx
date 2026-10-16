@@ -1,5 +1,6 @@
 'use client'
 
+import type { AvatarSize } from '@tc96/elements/avatar'
 import { SelectItem } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
 import { UserPlusIcon } from 'lucide-react'
@@ -13,7 +14,6 @@ import {
 import {
   PropertySurface,
   type PropertyVariant,
-  propertyBadgeWithAvatarClassName,
 } from '../../shared/property-surface'
 import {
   PersonAvatar,
@@ -65,10 +65,7 @@ export function PersonProperty<TValue extends string = string>({
   return (
     <PropertySelectShell
       ariaLabel={`${accessibleLabel}: ${selectedOption?.label ?? placeholder}`}
-      className={cn(
-        variant === 'badge' && propertyBadgeWithAvatarClassName,
-        className,
-      )}
+      className={className}
       disabled={disabled}
       dropdownPlacement={dropdownPlacement}
       items={options}
@@ -86,6 +83,7 @@ export function PersonProperty<TValue extends string = string>({
       readOnly={!isEditable({ action, onValueChange, readOnly })}
       renderValue={(option) => (
         <PersonPropertyContent
+          avatarSize="xs"
           display={display}
           option={option}
           placeholder={placeholder}
@@ -126,15 +124,12 @@ export function PersonPropertyBadge<TValue extends string = string>({
   return (
     <PropertySurface
       aria-label={ariaLabel}
-      className={cn(
-        'max-w-full',
-        variant === 'badge' && propertyBadgeWithAvatarClassName,
-        className,
-      )}
+      className={cn('max-w-full', className)}
       muted={!option}
       variant={variant}
     >
       <PersonPropertyContent
+        avatarSize="xs"
         display={display}
         option={option}
         placeholder={placeholder}
@@ -144,15 +139,19 @@ export function PersonPropertyBadge<TValue extends string = string>({
 }
 
 function PersonPropertyContent<TValue extends string = string>({
+  avatarSize,
   display,
   option,
   placeholder,
 }: Readonly<{
+  avatarSize?: AvatarSize
   display?: 'avatar' | 'full'
   option: PersonPropertyOption<TValue> | null
   placeholder: string
 }>) {
-  if (display === 'avatar') return <PersonAvatar option={option} />
+  if (display === 'avatar') {
+    return <PersonAvatar option={option} size={avatarSize} />
+  }
 
   if (!option) {
     return (
@@ -163,5 +162,5 @@ function PersonPropertyContent<TValue extends string = string>({
     )
   }
 
-  return <PersonOptionContent option={option} />
+  return <PersonOptionContent option={option} size={avatarSize} />
 }

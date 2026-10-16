@@ -47,6 +47,7 @@ export interface PropertyMultiSelectShellProps<TOption extends OptionLike> {
   options: readonly TOption[]
   placeholder: string
   removeLabel: (option: ResolvedOption<TOption>) => string
+  renderChip?: (option: ResolvedOption<TOption>) => ReactNode
   renderOption: (option: ResolvedOption<TOption>) => ReactNode
   selectedOptions: ResolvedOption<TOption>[]
   value: readonly TOption['value'][]
@@ -73,6 +74,7 @@ export function PropertyMultiSelectShell<TOption extends OptionLike>({
   options,
   placeholder,
   removeLabel,
+  renderChip,
   renderOption,
   renderTrigger,
   selectedOptions,
@@ -119,7 +121,7 @@ export function PropertyMultiSelectShell<TOption extends OptionLike>({
               key={option.value}
               removeProps={{ 'aria-label': removeLabel(option) }}
             >
-              {renderOption(option)}
+              {(renderChip ?? renderOption)(option)}
             </ComboboxChip>
           ))}
           <PropertySurface

@@ -13,7 +13,6 @@ import { PropertyRow } from '../../shared/property-row'
 import {
   PropertySurface,
   type PropertyVariant,
-  propertyBadgeWithAvatarClassName,
 } from '../../shared/property-surface'
 import {
   PersonOptionContent,
@@ -81,16 +80,8 @@ export function PeopleProperty<TValue extends string = string>({
       >
         {selectedOptions.length > 0 ? (
           selectedOptions.map((option) => (
-            <PropertySurface
-              className={
-                variant === 'badge'
-                  ? propertyBadgeWithAvatarClassName
-                  : undefined
-              }
-              key={option.value}
-              variant={variant}
-            >
-              <PersonOptionContent option={option} />
+            <PropertySurface key={option.value} variant={variant}>
+              <PersonOptionContent option={option} size="xs" />
             </PropertySurface>
           ))
         ) : (
@@ -124,6 +115,9 @@ export function PeopleProperty<TValue extends string = string>({
         options={options}
         placeholder={placeholder}
         removeLabel={(option) => `Remover ${option.label}`}
+        renderChip={(option) => (
+          <PersonOptionContent option={option} size="xs" />
+        )}
         renderOption={(option) => <PersonOptionContent option={option} />}
         selectedOptions={selectedOptions}
         value={value}

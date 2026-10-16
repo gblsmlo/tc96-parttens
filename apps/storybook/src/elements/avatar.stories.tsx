@@ -23,7 +23,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Avatar do COSS com quatro tamanhos: `sm` (size-6), `default` (size-8), `lg` (size-10) e `xl` (size-12). Compõe com `AvatarImage` e `AvatarFallback`; o texto do fallback acompanha o tamanho.',
+          'Avatar do COSS com cinco tamanhos: `xs` (size-4), `sm` (size-6),`default` (size-8), `lg` (size-10) e `xl` (size-12). Compõe com `AvatarImage` e `AvatarFallback`; o texto do fallback acompanha o tamanho.',
       },
     },
   },
@@ -55,9 +55,9 @@ export const Sizes: Story = {
     const avatars = within(canvasElement)
       .getByTestId('sizes')
       .querySelectorAll('[data-slot="avatar"]')
-    await expect(avatars).toHaveLength(4)
-    await expect(avatars[0]).toHaveAttribute('data-size', 'sm')
-    await expect(avatars[3]).toHaveAttribute('data-size', 'xl')
+    await expect(avatars).toHaveLength(5)
+    await expect(avatars[0]).toHaveAttribute('data-size', 'xs')
+    await expect(avatars[4]).toHaveAttribute('data-size', 'xl')
   },
 }
 

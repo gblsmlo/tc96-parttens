@@ -13,6 +13,7 @@ export const avatarVariants = cva('', {
   },
   variants: {
     size: {
+      xs: 'size-4 text-[0.625rem]',
       sm: 'size-6 text-[0.625rem]',
       default: 'size-8 text-xs',
       lg: 'size-10 text-sm',
@@ -21,7 +22,7 @@ export const avatarVariants = cva('', {
   },
 })
 
-export const avatarSizes = ['sm', 'default', 'lg', 'xl'] as const
+export const avatarSizes = ['xs', 'sm', 'default', 'lg', 'xl'] as const
 export type AvatarSize = (typeof avatarSizes)[number]
 
 export interface AvatarProps extends React.ComponentProps<typeof UiAvatar> {

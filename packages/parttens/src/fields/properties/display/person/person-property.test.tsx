@@ -9,9 +9,9 @@ afterEach(cleanup)
 
 const options = [{ fallback: 'AS', label: 'Ana Souza', value: 'ana' }] as const
 
-// A aresta do avatar por superfície — 16px no badge, 20px no plain — é asseverada nas
-// stories `Patterns/Fields/Properties/Person`, em geometria renderizada. Aqui fica o que não é
-// aparência: o rótulo acessível, a supressão do texto e o estado vazio.
+// A aresta do avatar — 16px no valor, 24px na lista do select — é asseverada nas
+// stories `Patterns/Fields/Properties/Display/Person`, em geometria renderizada. Aqui fica o que
+// não é aparência: o rótulo acessível, a supressão do texto e o estado vazio.
 describe('PersonProperty', () => {
   test('renders only the avatar while preserving the accessible person label', () => {
     render(
@@ -27,6 +27,18 @@ describe('PersonProperty', () => {
 
     expect(screen.getByLabelText('Responsável: Ana Souza')).toBeTruthy()
     expect(screen.queryByText('Ana Souza')).toBeNull()
+  })
+
+  test('draws the value with the xs avatar', () => {
+    const { container } = render(
+      <PersonProperty options={options} readOnly value="ana" />,
+    )
+
+    expect(
+      container
+        .querySelector('[data-slot="avatar"]')
+        ?.getAttribute('data-size'),
+    ).toBe('xs')
   })
 
   test('keeps an empty avatar visually identifiable when no person is assigned', () => {
