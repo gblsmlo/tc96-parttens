@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority'
-import type { EditableTextSize } from '../../fields/properties/display/editable-text/editable-text'
+import type { EditableTextSize } from '../../properties/display/editable-text/editable-text'
 
 export const checklistRowVariants = cva('flex min-w-0 items-center gap-2', {
   compoundVariants: [

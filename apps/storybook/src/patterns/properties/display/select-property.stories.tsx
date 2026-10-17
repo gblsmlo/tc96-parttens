@@ -7,8 +7,8 @@ import {
   esperarIndicadorADireita,
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
-} from '../../../../test-utils/property-surface'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/property-surface'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 // The catalog belongs to the consumer: here it mimics any domain enumeration.
 const catalog: SelectPropertyOption[] = [
@@ -36,7 +36,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Select',
+  title: 'Patterns/Properties/Display/Select',
 } satisfies Meta<typeof SelectProperty>
 
 export default meta

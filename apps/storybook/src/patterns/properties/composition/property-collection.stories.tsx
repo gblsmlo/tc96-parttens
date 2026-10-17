@@ -21,7 +21,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { expect, screen, userEvent, within } from 'storybook/test'
-import { booleanArgType } from '../../../../test-utils/story-arg-types'
+import { booleanArgType } from '../../../test-utils/story-arg-types'
 
 const people = [
   { label: 'Bruno Lima', value: 'person-1' },
@@ -69,7 +69,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Groups',
+  title: 'Patterns/Properties/Groups',
 } satisfies Meta<typeof PropertyCollection>
 
 export default meta

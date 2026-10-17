@@ -8,8 +8,8 @@ import { useState } from 'react'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
-} from '../../../../test-utils/property-surface'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/property-surface'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 type ExampleAssignee = 'ana' | 'gabriel' | 'marina'
 
@@ -45,7 +45,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Assigned',
+  title: 'Patterns/Properties/Display/Assigned',
 } satisfies Meta<typeof AssignedProperty>
 
 export default meta

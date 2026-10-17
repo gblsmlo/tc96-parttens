@@ -8,11 +8,11 @@ import {
 } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
-import { esperarSuperficieDeBadge } from '../../../../test-utils/property-surface'
+import { esperarSuperficieDeBadge } from '../../../test-utils/property-surface'
 import {
   booleanArgType,
   propertyVariantArgType,
-} from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/story-arg-types'
 
 const storyToday = new Date(2026, 9, 7)
 
@@ -152,7 +152,7 @@ const meta = {
     },
   },
   render: (args) => <ScheduleStory {...args} />,
-  title: 'Patterns/Fields/Properties/Display/Schedule',
+  title: 'Patterns/Properties/Display/Schedule',
 } satisfies Meta<typeof ScheduleProperty>
 
 export default meta

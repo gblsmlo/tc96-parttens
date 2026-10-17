@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PeopleProperty, type PeoplePropertyOption } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
-import { esperarAvatarComAresta } from '../../../../test-utils/property-surface'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+import { esperarAvatarComAresta } from '../../../test-utils/property-surface'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 type ExamplePerson = string
 
@@ -24,7 +24,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/People',
+  title: 'Patterns/Properties/Display/People',
 } satisfies Meta<typeof PeopleProperty>
 
 export default meta

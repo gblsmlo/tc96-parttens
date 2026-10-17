@@ -10,7 +10,7 @@ afterEach(cleanup)
 const options = [{ fallback: 'AS', label: 'Ana Souza', value: 'ana' }] as const
 
 // A aresta do avatar — 16px no valor, 24px na lista do select — é asseverada nas
-// stories `Patterns/Fields/Properties/Display/Person`, em geometria renderizada. Aqui fica o que
+// stories `Patterns/Properties/Display/Person`, em geometria renderizada. Aqui fica o que
 // não é aparência: o rótulo acessível, a supressão do texto e o estado vazio.
 describe('PersonProperty', () => {
   test('renders only the avatar while preserving the accessible person label', () => {

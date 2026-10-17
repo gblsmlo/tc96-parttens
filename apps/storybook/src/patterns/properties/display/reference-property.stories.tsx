@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ReferenceProperty } from '@tc96/parttens'
-import { propertyVariantArgType } from '../../../../test-utils/story-arg-types'
+import { propertyVariantArgType } from '../../../test-utils/story-arg-types'
 
 const meta = {
   argTypes: {
@@ -19,7 +19,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Reference',
+  title: 'Patterns/Properties/Display/Reference',
 } satisfies Meta<typeof ReferenceProperty>
 
 export default meta

@@ -1,6 +1,6 @@
 import type { useRender } from '@base-ui/react/use-render'
 import type { ReactNode } from 'react'
-import type { PropertyIcon } from '../../fields/properties/shared/property-catalog'
+import type { PropertyIcon } from '../../properties/shared/property-catalog'
 
 export type RecordGroupVariant = 'card' | 'inset' | 'plain'
 

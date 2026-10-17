@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TagsProperty, type TagsPropertyOption } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor } from 'storybook/test'
-import { esperarIndicadorADireita } from '../../../../test-utils/property-surface'
+import { esperarIndicadorADireita } from '../../../test-utils/property-surface'
 import {
   booleanArgType,
   propertyArgTypes,
-} from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/story-arg-types'
 
 type ExampleTag = string
 
@@ -31,7 +31,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Tags',
+  title: 'Patterns/Properties/Display/Tags',
 } satisfies Meta<typeof TagsProperty>
 
 export default meta

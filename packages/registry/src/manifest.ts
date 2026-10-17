@@ -18,8 +18,8 @@ export type PatternName = (typeof patternNames)[number]
 /** Folder under packages/parttens/src, kept as the path in the consumer. */
 export const patternSources: Record<PatternName, string> = {
   'collection-views': 'collection-views',
-  properties: 'fields/properties',
-  editable: 'fields/editable',
+  properties: 'properties',
+  editable: 'editable',
   checklist: 'checklist',
   'record-dialog': 'records/dialog',
   'record-preview': 'records/preview',

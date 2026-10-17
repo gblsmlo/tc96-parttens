@@ -14,14 +14,14 @@ Controlled property displays (date, date range, editable text, email, flag, icon
 | `test/dom.ts` | the JSDOM setup the tests import |
 | `core.ts` | React-free surface: catalog types, `propertyToneClassName`, date formatters; workspace only, not reached from the barrel |
 
-Import direction: `composition/` → `display/`, `shared/`; `display/<property>/` → `hooks/`, `shared/`, other display folders; `display/editable-text/` → `fields/editable/index.ts` (`Editable`, `EditableField`), the only import into another pattern; `hooks/` → `shared/lib/`; `shared/` → only COSS, Base UI, `@tc96/utils` and zod types, never a display, hook or composition. `composition/property-collection.tsx` also imports `MenuCheckboxOption` from `packages/parttens/src/shared/components/menu-selection-item.tsx`.
+Import direction: `composition/` → `display/`, `shared/`; `display/<property>/` → `hooks/`, `shared/`, other display folders; `display/editable-text/` → `editable/index.ts` (`Editable`, `EditableField`), the only import into another pattern; `hooks/` → `shared/lib/`; `shared/` → only COSS, Base UI, `@tc96/utils` and zod types, never a display, hook or composition. `composition/property-collection.tsx` also imports `MenuCheckboxOption` from `packages/parttens/src/shared/components/menu-selection-item.tsx`.
 
 ## Dependents
 
 - `checklist` imports by file path, not through the barrel: `display/date/date-property.tsx`, `display/person/person-property.tsx` (`PersonProperty`, `PersonPropertyOption`) and `display/editable-text/editable-text.tsx` (`EditableText`, `EditableTextSize`). Renaming or moving these breaks `checklist`. The path is deliberate: an import through the barrel would make the `checklist` registry item ship every file of `properties`.
 - `record-group` imports `shared/property-catalog.ts` (`PropertyIcon`) by file path, as a type, from its `core.ts`. Renaming or moving it breaks `record-group`.
-- `widgets` tests import `fields/properties/test/dom.ts`. Moving it breaks `widgets`.
-- `packages/parttens/src/index.ts` re-exports `fields/properties/index`.
+- `widgets` tests import `properties/test/dom.ts`. Moving it breaks `widgets`.
+- `packages/parttens/src/index.ts` re-exports `properties/index`.
 
 ## Invariants
 
@@ -49,7 +49,7 @@ Select:
 
 Editing:
 
-- `EditableText` is an adapter over `Editable` + `EditableField`: the focus session, the dirty check, Enter, Escape propagation, `emptyValue` and the read-only `span` are the display session documented in `fields/editable/AGENTS.md`. What stays here is the contract of `properties`: `value: string | null` becomes the draft, and the submitted draft is trimmed, `''` commits `null`, `revertWhenEmpty` puts the confirmed value back, and a draft equal to the confirmed value commits nothing.
+- `EditableText` is an adapter over `Editable` + `EditableField`: the focus session, the dirty check, Enter, Escape propagation, `emptyValue` and the read-only `span` are the display session documented in `editable/AGENTS.md`. What stays here is the contract of `properties`: `value: string | null` becomes the draft, and the submitted draft is trimmed, `''` commits `null`, `revertWhenEmpty` puts the confirmed value back, and a draft equal to the confirmed value commits nothing.
 - A new `value` replaces the draft only while not editing: `EditableText` controls `editing` and adjusts the draft during render when the confirmed value changes, with no Effect. A committed draft stays on screen until the consumer's `value` changes, so an asynchronous save does not flash the old value.
 - The `Editable` root renders as a `span` with `contents`, so no box enters the inline layouts of `TextProperty`, `EmailProperty` and `checklist`.
 - Email and phone popups copy drafts from `value` on open, so a `value` change while open does not overwrite typing. Enter saves and stops propagation, because the Base UI popup closes on Enter. The form sets `noValidate`: the browser bubble would block submit before the pattern's pt-BR message.
@@ -95,13 +95,13 @@ The pattern sets these attributes and styles none of them through a variant:
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/fields/properties
-bunx biome check packages/parttens/src/fields/properties
+bun test --isolate packages/parttens/src/properties
+bunx biome check packages/parttens/src/properties
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/properties
 ```
 
-Stories in `apps/storybook/src/patterns/fields/properties/` run axe with `test: 'error'`.
+Stories in `apps/storybook/src/patterns/properties/` run axe with `test: 'error'`.
 
 ## Pointers
 

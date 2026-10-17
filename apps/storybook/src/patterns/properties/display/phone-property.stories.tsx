@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PhoneProperty } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, screen, userEvent } from 'storybook/test'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 const PHONE = '+5511987654321'
 const OTHER = '+351912345678'
@@ -19,7 +19,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Phone',
+  title: 'Patterns/Properties/Display/Phone',
 } satisfies Meta<typeof PhoneProperty>
 
 export default meta

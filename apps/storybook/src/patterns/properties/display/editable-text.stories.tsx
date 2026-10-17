@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EditableText } from '@tc96/parttens'
 import { expect, fn, userEvent, within } from 'storybook/test'
-import { booleanArgType } from '../../../../test-utils/story-arg-types'
+import { booleanArgType } from '../../../test-utils/story-arg-types'
 
 const onCommit = fn()
 
@@ -28,7 +28,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Editable Text',
+  title: 'Patterns/Properties/Display/Editable Text',
 } satisfies Meta<typeof EditableText>
 
 export default meta

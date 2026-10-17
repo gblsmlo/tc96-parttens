@@ -10,11 +10,11 @@ import { useState } from 'react'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
-} from '../../../../test-utils/property-surface'
+} from '../../../test-utils/property-surface'
 import {
   booleanArgType,
   propertyArgTypes,
-} from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/story-arg-types'
 
 const meta = {
   argTypes: {
@@ -31,7 +31,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Date',
+  title: 'Patterns/Properties/Display/Date',
 } satisfies Meta<typeof DateProperty>
 
 export default meta

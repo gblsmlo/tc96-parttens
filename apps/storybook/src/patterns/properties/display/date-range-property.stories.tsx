@@ -10,11 +10,11 @@ import { expect, screen, userEvent, within } from 'storybook/test'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
-} from '../../../../test-utils/property-surface'
+} from '../../../test-utils/property-surface'
 import {
   booleanArgType,
   propertyArgTypes,
-} from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/story-arg-types'
 
 const meta = {
   argTypes: {
@@ -30,7 +30,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/DateRange',
+  title: 'Patterns/Properties/Display/DateRange',
 } satisfies Meta<typeof DateRangeProperty>
 
 export default meta

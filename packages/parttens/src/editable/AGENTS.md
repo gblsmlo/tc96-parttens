@@ -17,10 +17,10 @@ Import direction: `composition/` → `store/`; `store/` imports only `react`; `t
 
 ## Dependents
 
-- `packages/parttens/src/index.ts` re-exports `fields/editable/index`.
-- `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts` list the folder `fields/editable` for the registry item `editable`. Renaming the folder requires updating both.
+- `packages/parttens/src/index.ts` re-exports `editable/index`.
+- `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts` list the folder `editable` for the registry item `editable`. Renaming the folder requires updating both.
 - The registry starts at `index.ts` and ships every file it reaches through imports: today `index.ts`, `composition/editable/index.ts`, `editable.tsx` and `store/editable-store.ts`. A new file ships only if one of these imports it.
-- `fields/properties/display/editable-text/editable-text.tsx` imports `Editable` and `EditableField` through `index.ts`, so the `properties` registry item (and every item that reaches `EditableText`, such as `checklist`) ships the four files above. Changing the display session changes `EditableText`, `TextProperty`, `EmailProperty` and the `checklist` title.
+- `properties/display/editable-text/editable-text.tsx` imports `Editable` and `EditableField` through `index.ts`, so the `properties` registry item (and every item that reaches `EditableText`, such as `checklist`) ships the four files above. Changing the display session changes `EditableText`, `TextProperty`, `EmailProperty` and the `checklist` title.
 
 ## Invariants
 
@@ -84,12 +84,12 @@ State lives in `data-*` attributes and is styled by their variants, never by a p
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/fields/editable
-bunx biome check packages/parttens/src/fields/editable
+bun test --isolate packages/parttens/src/editable
+bunx biome check packages/parttens/src/editable
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 ```
 
-There is no story for this compound: `Patterns/Fields/Properties/Display/Editable Text` exercises `EditableField` through `EditableText`, and the `Editable` story in `apps/storybook/src/ui/input.stories.tsx` is a COSS `Input` story. `composition/editable/editable.test.tsx` covers the standard parts and the display session; a change to the session also runs `bun test --isolate packages/parttens/src/fields/properties packages/parttens/src/checklist`.
+There is no story for this compound: `Patterns/Properties/Display/Editable Text` exercises `EditableField` through `EditableText`, and the `Editable` story in `apps/storybook/src/ui/input.stories.tsx` is a COSS `Input` story. `composition/editable/editable.test.tsx` covers the standard parts and the display session; a change to the session also runs `bun test --isolate packages/parttens/src/properties packages/parttens/src/checklist`.
 
 ## Pointers
 

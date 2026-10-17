@@ -6,7 +6,7 @@ import { Checkbox } from '@tc96/ui/checkbox'
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@tc96/ui/tooltip'
 import { GripVerticalIcon, Trash2Icon } from 'lucide-react'
 import type { ReactElement } from 'react'
-import type { PersonPropertyOption } from '../../fields/properties/display/person/person-property'
+import type { PersonPropertyOption } from '../../properties/display/person/person-property'
 import {
   CHECKLIST_ITEM_TYPE,
   CHECKLIST_SENSORS,

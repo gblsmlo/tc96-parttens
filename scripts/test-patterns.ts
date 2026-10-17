@@ -4,8 +4,8 @@ import { files } from './files'
 for (const path of [
   'checklist',
   'collection-views',
-  'fields/editable',
-  'fields/properties',
+  'editable',
+  'properties',
   'records/dialog',
   'records/group',
   'records/preview',

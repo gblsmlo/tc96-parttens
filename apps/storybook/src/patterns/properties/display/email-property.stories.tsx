@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EmailProperty } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, screen, userEvent } from 'storybook/test'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 const EMAIL = 'ana.souza@example.com'
 const OTHER = 'bruno.lima@example.com'
@@ -18,7 +18,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Email',
+  title: 'Patterns/Properties/Display/Email',
 } satisfies Meta<typeof EmailProperty>
 
 export default meta

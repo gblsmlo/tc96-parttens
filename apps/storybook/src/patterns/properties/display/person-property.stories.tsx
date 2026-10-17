@@ -6,8 +6,8 @@ import {
   esperarAvatarComAresta,
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
-} from '../../../../test-utils/property-surface'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/property-surface'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 type ExamplePerson = 'ana' | 'gabriel' | 'marina'
 
@@ -46,7 +46,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Person',
+  title: 'Patterns/Properties/Display/Person',
 } satisfies Meta<typeof PersonProperty>
 
 export default meta
