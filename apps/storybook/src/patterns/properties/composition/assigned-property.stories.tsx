@@ -8,8 +8,8 @@ import { useState } from 'react'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
-} from '../../../../test-utils/property-surface'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/property-surface'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 type ExampleAssignee = 'ana' | 'gabriel' | 'marina'
 
@@ -45,7 +45,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Assigned',
+  title: 'Patterns/Properties/Display/Assigned',
 } satisfies Meta<typeof AssignedProperty>
 
 export default meta
@@ -84,7 +84,24 @@ export const Trigger: Story = {
       },
     },
   },
-  render: () => <AssignedPropertyTriggerStory />,
+  args: {
+    dropdownPlacement: { align: 'start', side: 'bottom', sideOffset: 8 },
+    options,
+    placeholder: 'Add assignee',
+    value: 'gabriel',
+  },
+  decorators: [
+    (Story) => (
+      <div className="p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  render: function Trigger(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <AssignedProperty {...args} onValueChange={setValue} value={value} />
+  },
 }
 
 export const Empty: Story = {
@@ -94,20 +111,4 @@ export const Empty: Story = {
     readOnly: true,
     value: null,
   },
-}
-
-function AssignedPropertyTriggerStory() {
-  const [value, setValue] = useState<ExampleAssignee | null>('gabriel')
-
-  return (
-    <div className="p-4">
-      <AssignedProperty
-        dropdownPlacement={{ align: 'start', side: 'bottom', sideOffset: 8 }}
-        options={options}
-        placeholder="Add assignee"
-        value={value}
-        onValueChange={setValue}
-      />
-    </div>
-  )
 }

@@ -290,12 +290,12 @@ export function storyComponent(
     let inlined = true
     const name = parameter.name
 
-    if (ts.isIdentifier(name)) {
+    const inlineObject = (objectName: string, objectArgs: Arg[]) => {
       const visit = (node: ts.Node) => {
         if (
           ts.isJsxSpreadAttribute(node) &&
           ts.isIdentifier(node.expression) &&
-          node.expression.text === name.text
+          node.expression.text === objectName
         ) {
           const siblings = node.parent.properties
           const index = siblings.indexOf(node)
@@ -318,9 +318,13 @@ export function storyComponent(
           ) {
             after.add('children')
           }
-          const attributes = args.some(({ key }) => key && before.has(key))
+          const attributes = objectArgs.some(
+            ({ key }) => key && before.has(key),
+          )
             ? undefined
-            : attributesOf(args.filter(({ key }) => !key || !after.has(key)))
+            : attributesOf(
+                objectArgs.filter(({ key }) => !key || !after.has(key)),
+              )
           if (attributes) {
             edits.push([
               node.getStart(source),
@@ -335,7 +339,7 @@ export function storyComponent(
         if (
           ts.isPropertyAccessExpression(node) &&
           ts.isIdentifier(node.expression) &&
-          node.expression.text === name.text
+          node.expression.text === objectName
         ) {
           const child = childOf(node, values.get(node.name.text))
           edits.push(
@@ -351,8 +355,9 @@ export function storyComponent(
         }
         if (
           ts.isIdentifier(node) &&
-          node.text === name.text &&
-          !isMemberName(node)
+          node.text === objectName &&
+          !isMemberName(node) &&
+          !isBinding(node)
         ) {
           inlined = false
           return
@@ -360,13 +365,22 @@ export function storyComponent(
         ts.forEachChild(node, visit)
       }
       visit(body)
+    }
+
+    if (ts.isIdentifier(name)) {
+      inlineObject(name.text, args)
     } else if (ts.isObjectBindingPattern(name)) {
       const bound = new Map<string, string>()
+      const boundKeys = new Set<string>()
+      let rest: string | undefined
       for (const element of name.elements) {
-        if (element.dotDotDotToken || !ts.isIdentifier(element.name)) {
-          return undefined
+        if (!ts.isIdentifier(element.name)) return undefined
+        if (element.dotDotDotToken) {
+          rest = element.name.text
+          continue
         }
         const key = element.propertyName?.getText(source) ?? element.name.text
+        boundKeys.add(key)
         const value = values.get(key)
         if (value && isFnCall(unwrap(value))) {
           hoisted.push(`const ${element.name.text} = ${valueText(value)}`)
@@ -397,6 +411,12 @@ export function storyComponent(
         ts.forEachChild(node, visit)
       }
       visit(body)
+      if (rest) {
+        inlineObject(
+          rest,
+          args.filter(({ key }) => key !== undefined && !boundKeys.has(key)),
+        )
+      }
     } else {
       return undefined
     }

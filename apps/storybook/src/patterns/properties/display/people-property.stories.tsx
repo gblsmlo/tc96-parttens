@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PeopleProperty, type PeoplePropertyOption } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
-import { esperarAvatarComAresta } from '../../../../test-utils/property-surface'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+import { esperarAvatarComAresta } from '../../../test-utils/property-surface'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 type ExamplePerson = string
 
@@ -15,7 +15,19 @@ const initialOptions: PeoplePropertyOption<ExamplePerson>[] = [
 
 const meta = {
   argTypes: propertyArgTypes,
+  args: {
+    ariaLabel: 'Participants',
+    options: initialOptions,
+    value: ['person-1'],
+  },
   component: PeopleProperty,
+  decorators: [
+    (Story) => (
+      <div className="max-w-sm p-4">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     docs: {
       description: {
@@ -24,7 +36,12 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/People',
+  render: function People(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <PeopleProperty {...args} onValueChange={setValue} value={value} />
+  },
+  title: 'Patterns/Properties/Display/People',
 } satisfies Meta<typeof PeopleProperty>
 
 export default meta
@@ -60,7 +77,6 @@ export const SelectAndRemove: Story = {
     await expect(canvas.queryByText('Bruno Lima')).not.toBeInTheDocument()
     await expect(canvas.getByText('Ana Souza')).toBeInTheDocument()
   },
-  render: () => <PeoplePropertyExample />,
 }
 
 export const Empty: Story = {
@@ -72,30 +88,12 @@ export const Empty: Story = {
       },
     },
   },
-  render: () => <PeoplePropertyExample initial={[]} />,
+  args: { value: [] },
 }
 
 export const ReadOnly: Story = {
   args: {
-    options: initialOptions,
     readOnly: true,
     value: ['person-1', 'person-2'],
   },
-}
-
-function PeoplePropertyExample({
-  initial = ['person-1'],
-}: Readonly<{ initial?: readonly ExamplePerson[] }>) {
-  const [value, setValue] = useState<readonly ExamplePerson[]>(initial)
-
-  return (
-    <div className="max-w-sm p-4">
-      <PeopleProperty
-        ariaLabel="Participants"
-        onValueChange={setValue}
-        options={initialOptions}
-        value={value}
-      />
-    </div>
-  )
 }

@@ -2,13 +2,14 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EmailProperty } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, screen, userEvent } from 'storybook/test'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 const EMAIL = 'ana.souza@example.com'
 const OTHER = 'bruno.lima@example.com'
 
 const meta = {
   argTypes: propertyArgTypes,
+  args: { value: [] },
   component: EmailProperty,
   parameters: {
     docs: {
@@ -18,17 +19,17 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Email',
+  render: function Email(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <EmailProperty {...args} onValueChange={setValue} value={value} />
+  },
+  title: 'Patterns/Properties/Display/Email',
 } satisfies Meta<typeof EmailProperty>
 
 export default meta
 
 type Story = StoryObj<typeof EmailProperty>
-
-function EmailField({ initial = [] as string[], ...props }) {
-  const [value, setValue] = useState<readonly string[]>(initial)
-  return <EmailProperty {...props} onValueChange={setValue} value={value} />
-}
 
 export const Empty: Story = {
   parameters: {
@@ -46,7 +47,6 @@ export const Empty: Story = {
 
     await expect(trigger.textContent).toContain('Sem e-mail')
   },
-  render: () => <EmailField />,
 }
 
 export const WithEmails: Story = {
@@ -66,7 +66,7 @@ export const WithEmails: Story = {
     await expect(trigger.textContent).toBe('')
     await expect(canvas.getByText(EMAIL)).toBeTruthy()
   },
-  render: () => <EmailField initial={[EMAIL, OTHER]} />,
+  args: { value: [EMAIL, OTHER] },
 }
 
 export const Adding: Story = {
@@ -91,11 +91,9 @@ export const Adding: Story = {
       )
     })
   },
-  render: () => <EmailField />,
 }
 
 export const InlineEditing: Story = {
-  args: { editing: 'inline' },
   parameters: {
     docs: {
       description: {
@@ -134,11 +132,10 @@ export const InlineEditing: Story = {
       },
     )
   },
-  render: () => <EmailField editing="inline" />,
+  args: { editing: 'inline' },
 }
 
 export const PersistentTrigger: Story = {
-  args: { display: 'trigger' },
   parameters: {
     docs: {
       description: {
@@ -155,11 +152,10 @@ export const PersistentTrigger: Story = {
       (await canvas.findByRole('button', { name: /E-mails: / })).textContent,
     ).toContain('+1')
   },
-  render: () => <EmailField display="trigger" initial={[EMAIL, OTHER]} />,
+  args: { display: 'trigger', value: [EMAIL, OTHER] },
 }
 
 export const ReadOnly: Story = {
-  args: { readOnly: true },
   parameters: {
     docs: {
       description: {
@@ -167,5 +163,5 @@ export const ReadOnly: Story = {
       },
     },
   },
-  render: () => <EmailField initial={[EMAIL]} readOnly />,
+  args: { value: [EMAIL], readOnly: true },
 }

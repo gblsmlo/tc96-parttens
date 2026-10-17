@@ -22,7 +22,7 @@ Import direction: `composition/` → `lib/`, `core.ts`. `RecordGroupLink` import
 
 - `packages/parttens/src/index.ts` re-exports `records/group/index`.
 - `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts` list the folder `records/group` for the registry item `record-group`. Renaming the folder breaks the registry and the pattern test run.
-- `packages/registry/src/manifest.test.ts` asserts the built item ships `parttens/src/fields/properties/shared/property-catalog.ts`.
+- `packages/registry/src/manifest.test.ts` asserts the built item ships `parttens/src/properties/shared/property-catalog.ts`.
 - `checklist/lib/variants.ts` reads two CSS variables that the content wrapper sets, in `plain`: `--record-group-hover-offset` (`checklistItemVariants`) and `--record-group-row-height` (`checklistRowVariants`, `md`). They are strings in classes, not imports, so renaming either here breaks the checklist without a type error.
 
 ## Invariants

@@ -4,11 +4,11 @@ import { BotIcon, CircleIcon } from 'lucide-react'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
-} from '../../../../test-utils/property-surface'
+} from '../../../test-utils/property-surface'
 import {
   booleanArgType,
   propertyVariantArgType,
-} from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/story-arg-types'
 
 const meta = {
   argTypes: {
@@ -25,7 +25,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Flag',
+  title: 'Patterns/Properties/Display/Flag',
 } satisfies Meta<typeof FlagProperty>
 
 export default meta

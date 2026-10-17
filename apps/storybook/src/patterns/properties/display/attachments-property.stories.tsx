@@ -23,7 +23,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Attachments',
+  title: 'Patterns/Properties/Display/Attachments',
 } satisfies Meta<typeof AttachmentsProperty>
 
 export default meta

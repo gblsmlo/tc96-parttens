@@ -2,7 +2,7 @@
 
 import { Checkbox } from '@tc96/ui/checkbox'
 import type { ReactElement } from 'react'
-import type { PersonPropertyOption } from '../../fields/properties/display/person/person-property'
+import type { PersonPropertyOption } from '../../properties/display/person/person-property'
 import {
   type ChecklistDensity,
   type ChecklistVariant,

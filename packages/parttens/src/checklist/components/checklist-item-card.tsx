@@ -2,7 +2,7 @@
 
 import { Text } from '@tc96/elements/text'
 import type { ReactElement, ReactNode } from 'react'
-import { EditableText } from '../../fields/properties/display/editable-text/editable-text'
+import { EditableText } from '../../properties/display/editable-text/editable-text'
 import {
   CHECKLIST_TITLE_BUTTON_CLASSNAME,
   CHECKLIST_TITLE_CLASSNAME,

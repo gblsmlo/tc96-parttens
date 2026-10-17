@@ -7,8 +7,8 @@ import {
   esperarIndicadorADireita,
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
-} from '../../../../test-utils/property-surface'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/property-surface'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 // The catalog belongs to the consumer: here it mimics any domain enumeration.
 const catalog: SelectPropertyOption[] = [
@@ -36,7 +36,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Select',
+  title: 'Patterns/Properties/Display/Select',
 } satisfies Meta<typeof SelectProperty>
 
 export default meta
@@ -74,7 +74,11 @@ export const Dropdown: Story = {
     await waitFor(() => expect(option).toBeVisible())
     await esperarIndicadorADireita(option)
   },
-  render: (args) => <SelectDropdownExample {...args} />,
+  render: function Dropdown(args) {
+    const [value, setValue] = useState<string | null>('meeting')
+
+    return <SelectProperty {...args} onValueChange={setValue} value={value} />
+  },
 }
 
 export const NoIcon: Story = {
@@ -98,13 +102,12 @@ export const ClearValue: Story = {
       },
     },
   },
-  render: (args) => (
-    <SelectDropdownExample
-      {...args}
-      emptyOptionLabel="No type"
-      placeholder="Type"
-    />
-  ),
+  args: { emptyOptionLabel: 'No type', placeholder: 'Type' },
+  render: function ClearValue(args) {
+    const [value, setValue] = useState<string | null>('meeting')
+
+    return <SelectProperty {...args} onValueChange={setValue} value={value} />
+  },
 }
 
 export const OutsideCatalog: Story = {
@@ -151,12 +154,4 @@ export const Grouped: Story = {
 
 export const Disabled: Story = {
   args: { disabled: true, value: 'other', onValueChange: () => undefined },
-}
-
-function SelectDropdownExample(
-  args: React.ComponentProps<typeof SelectProperty>,
-) {
-  const [value, setValue] = useState<string | null>('meeting')
-
-  return <SelectProperty {...args} onValueChange={setValue} value={value} />
 }

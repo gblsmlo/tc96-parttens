@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PhoneProperty } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, screen, userEvent } from 'storybook/test'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 const PHONE = '+5511987654321'
 const OTHER = '+351912345678'
@@ -10,6 +10,7 @@ const PHONE_LABEL = '+55 11 98765 4321'
 
 const meta = {
   argTypes: propertyArgTypes,
+  args: { value: [] },
   component: PhoneProperty,
   parameters: {
     docs: {
@@ -19,17 +20,17 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Phone',
+  render: function Phone(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <PhoneProperty {...args} onValueChange={setValue} value={value} />
+  },
+  title: 'Patterns/Properties/Display/Phone',
 } satisfies Meta<typeof PhoneProperty>
 
 export default meta
 
 type Story = StoryObj<typeof PhoneProperty>
-
-function PhoneField({ initial = [] as string[], ...props }) {
-  const [value, setValue] = useState<readonly string[]>(initial)
-  return <PhoneProperty {...props} onValueChange={setValue} value={value} />
-}
 
 export const Empty: Story = {
   parameters: {
@@ -46,7 +47,6 @@ export const Empty: Story = {
     })
     await expect(trigger.textContent).toContain('Sem telefone')
   },
-  render: () => <PhoneField />,
 }
 
 export const WithPhones: Story = {
@@ -69,7 +69,7 @@ export const WithPhones: Story = {
     await expect(rect.width).toBe(24)
     await expect(rect.height).toBe(24)
   },
-  render: () => <PhoneField initial={[PHONE, OTHER]} />,
+  args: { value: [PHONE, OTHER] },
 }
 
 export const Adding: Story = {
@@ -96,11 +96,10 @@ export const Adding: Story = {
       },
     )
   },
-  render: () => <PhoneField initial={[PHONE]} />,
+  args: { value: [PHONE] },
 }
 
 export const PersistentTrigger: Story = {
-  args: { display: 'trigger' },
   parameters: {
     docs: {
       description: {
@@ -118,7 +117,7 @@ export const PersistentTrigger: Story = {
     })
     await expect(trigger.textContent).toBe(`${PHONE_LABEL} +1`)
   },
-  render: () => <PhoneField display="trigger" initial={[PHONE, OTHER]} />,
+  args: { display: 'trigger', value: [PHONE, OTHER] },
 }
 
 export const ReadOnly: Story = {
@@ -161,7 +160,7 @@ export const AddDisabled: Story = {
       }),
     ).toBeTruthy()
   },
-  render: () => <PhoneField addDisabled initial={[PHONE]} />,
+  args: { addDisabled: true, value: [PHONE] },
 }
 
 export const WithRejection: Story = {
@@ -173,7 +172,5 @@ export const WithRejection: Story = {
       },
     },
   },
-  render: () => (
-    <PhoneField errorMessage="Another contact with this phone already exists." />
-  ),
+  args: { errorMessage: 'Another contact with this phone already exists.' },
 }

@@ -132,7 +132,7 @@
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o CardSurface nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/fields/properties/shared/property-multi-select-shell.tsx",
+    "file": "packages/parttens/src/properties/shared/property-multi-select-shell.tsx",
     "component": "ComboboxChips",
     "className": "**:data-[slot=combobox-chip]:rounded-sm",
     "reason": "O chip do valor selecionado e o ComboboxChip do COSS, com raio de `radius-md - 1px` (7px), enquanto todo chip de PropertySurface usa o `rounded-sm` do Badge (6px); o ComboboxChip nao repassa className sem trocar a classe inteira, entao o raio entra pelo container."

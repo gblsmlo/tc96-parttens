@@ -6,8 +6,8 @@ import {
   esperarAvatarComAresta,
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
-} from '../../../../test-utils/property-surface'
-import { propertyArgTypes } from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/property-surface'
+import { propertyArgTypes } from '../../../test-utils/story-arg-types'
 
 type ExamplePerson = 'ana' | 'gabriel' | 'marina'
 
@@ -46,7 +46,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Person',
+  title: 'Patterns/Properties/Display/Person',
 } satisfies Meta<typeof PersonProperty>
 
 export default meta
@@ -119,7 +119,24 @@ export const Trigger: Story = {
       },
     },
   },
-  render: () => <PersonDropdownExample />,
+  args: {
+    ariaLabel: 'Assignee',
+    options,
+    placeholder: 'Add members',
+    value: 'gabriel',
+  },
+  decorators: [
+    (Story) => (
+      <div className="p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  render: function Trigger(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <PersonProperty {...args} onValueChange={setValue} value={value} />
+  },
 }
 
 export const Owner: Story = {
@@ -131,7 +148,25 @@ export const Owner: Story = {
       },
     },
   },
-  render: () => <OwnerPropertyExample />,
+  args: {
+    ariaLabel: 'Owner',
+    dropdownPlacement: { align: 'start', side: 'bottom', sideOffset: 8 },
+    options,
+    placeholder: 'Add owner',
+    value: 'ana',
+  },
+  decorators: [
+    (Story) => (
+      <div className="p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  render: function Owner(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <PersonProperty {...args} onValueChange={setValue} value={value} />
+  },
 }
 
 export const Empty: Story = {
@@ -141,37 +176,4 @@ export const Empty: Story = {
     readOnly: true,
     value: null,
   },
-}
-
-function PersonDropdownExample() {
-  const [value, setValue] = useState<ExamplePerson | null>('gabriel')
-
-  return (
-    <div className="p-4">
-      <PersonProperty
-        ariaLabel="Assignee"
-        options={options}
-        placeholder="Add members"
-        value={value}
-        onValueChange={setValue}
-      />
-    </div>
-  )
-}
-
-function OwnerPropertyExample() {
-  const [value, setValue] = useState<ExamplePerson | null>('ana')
-
-  return (
-    <div className="p-4">
-      <PersonProperty
-        ariaLabel="Owner"
-        dropdownPlacement={{ align: 'start', side: 'bottom', sideOffset: 8 }}
-        options={options}
-        placeholder="Add owner"
-        value={value}
-        onValueChange={setValue}
-      />
-    </div>
-  )
 }

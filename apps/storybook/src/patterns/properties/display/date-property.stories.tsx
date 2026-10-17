@@ -10,11 +10,11 @@ import { useState } from 'react'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
-} from '../../../../test-utils/property-surface'
+} from '../../../test-utils/property-surface'
 import {
   booleanArgType,
   propertyArgTypes,
-} from '../../../../test-utils/story-arg-types'
+} from '../../../test-utils/story-arg-types'
 
 const meta = {
   argTypes: {
@@ -31,7 +31,7 @@ const meta = {
       },
     },
   },
-  title: 'Patterns/Fields/Properties/Display/Date',
+  title: 'Patterns/Properties/Display/Date',
 } satisfies Meta<typeof DateProperty>
 
 export default meta
@@ -86,7 +86,25 @@ export const Trigger: Story = {
       },
     },
   },
-  render: () => <DatePropertyPickerStory />,
+  args: {
+    ariaLabel: 'Target date',
+    fallback: 'No target',
+    locale: 'en-US',
+    timeZone: 'UTC',
+    value: '2026-06-19T12:00:00.000Z',
+  },
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-80 items-start p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  render: function Trigger(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <DateProperty {...args} onValueChange={setValue} value={value} />
+  },
 }
 
 export const DateAndTime: Story = {
@@ -98,34 +116,41 @@ export const DateAndTime: Story = {
       },
     },
   },
-  render: () => <DateTimePropertyStory />,
-}
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-104 items-start p-16">
+        <Story />
+      </div>
+    ),
+  ],
+  render: function DateAndTime() {
+    const [value, setValue] = useState<string | null>(
+      '2026-06-19T14:30:00.000Z',
+    )
+    const selectedDate =
+      parseStoryDate(value) ?? new Date('2026-06-19T14:30:00.000Z')
+    const [draftDate, setDraftDate] = useState<Date>(selectedDate)
+    const [draftTime, setDraftTime] = useState(
+      formatTimeInputValue(selectedDate),
+    )
+    const label = formatDateTimePropertyLabel(value, 'Schedule')
 
-function DateTimePropertyStory() {
-  const [value, setValue] = useState<string | null>('2026-06-19T14:30:00.000Z')
-  const selectedDate =
-    parseStoryDate(value) ?? new Date('2026-06-19T14:30:00.000Z')
-  const [draftDate, setDraftDate] = useState<Date>(selectedDate)
-  const [draftTime, setDraftTime] = useState(formatTimeInputValue(selectedDate))
-  const label = formatDateTimePropertyLabel(value, 'Schedule')
+    const handleDateSelect = (date: Date | undefined) => {
+      if (!date) return
+      setDraftDate(date)
+      setValue(serializeDateTimeValue(date, draftTime))
+    }
 
-  const handleDateSelect = (date: Date | undefined) => {
-    if (!date) return
-    setDraftDate(date)
-    setValue(serializeDateTimeValue(date, draftTime))
-  }
+    const handleTimeChange = (nextTime: string) => {
+      setDraftTime(nextTime)
+      setValue(serializeDateTimeValue(draftDate, nextTime))
+    }
 
-  const handleTimeChange = (nextTime: string) => {
-    setDraftTime(nextTime)
-    setValue(serializeDateTimeValue(draftDate, nextTime))
-  }
+    const handleClear = () => {
+      setValue(null)
+    }
 
-  const handleClear = () => {
-    setValue(null)
-  }
-
-  return (
-    <div className="flex min-h-104 items-start p-16">
+    return (
       <Popover>
         <PopoverTrigger
           aria-label={`Schedule: ${label}`}
@@ -187,25 +212,8 @@ function DateTimePropertyStory() {
           </div>
         </PopoverPopup>
       </Popover>
-    </div>
-  )
-}
-
-function DatePropertyPickerStory() {
-  const [value, setValue] = useState<string | null>('2026-06-19T12:00:00.000Z')
-
-  return (
-    <div className="flex min-h-80 items-start p-4">
-      <DateProperty
-        ariaLabel="Target date"
-        fallback="No target"
-        locale="en-US"
-        timeZone="UTC"
-        value={value}
-        onValueChange={setValue}
-      />
-    </div>
-  )
+    )
+  },
 }
 
 function formatDateTimePropertyLabel(
