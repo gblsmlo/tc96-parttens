@@ -13,7 +13,7 @@ Stack: Bun workspaces, React 19, TypeScript, Tailwind CSS v4, Base UI, Storybook
 ```text
 packages/
   parttens/    pattern source, grouped in families (see Pattern families)
-  elements/    components COSS does not have (Text, IconFrame, CardSurface)
+  elements/    components COSS does not have (Text, IconFrame)
   helpers/     React-free functions (amount formatting, dates, rich text)
   ui/          COSS components, unmodified, locked by coss.lock.json
   utils/       shared helpers (cn)
@@ -100,7 +100,7 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 - **No comments in pattern or component code** (no JSDoc, no inline notes). The component name, its types and `docs/architecture/tc96-parttens.md` carry the explanation. Exception: exported functions in `packages/helpers` get JSDoc in English, with `@param` when a parameter is not obvious and `@returns` when it helps.
 - Use `cn` from `@tc96/utils` for class merging and import COSS components through `@tc96/ui/<component>`.
 - Components are controlled: the consumer passes prepared data and handles events. No fetching, filtering, sorting or persistence inside a pattern.
-- Widgets render through `WidgetShell` (`packages/parttens/src/widgets/shared/widget-shell.tsx`), which is `CardSurface` with a transparent border. Card radius, border and shadow decisions live in `CardSurface` (`packages/elements/src/card-surface.tsx`); do not restate them in a pattern.
+- Widgets render through `WidgetShell` (`packages/parttens/src/widgets/shared/widget-shell.tsx`), which is the COSS `Card` with a transparent border. Card radius is the consumer's: the example theme sets it on `[data-slot="card"]` (`apps/example/packages/ui/src/styles.css`), so a pattern never restates radius, border or shadow on a card.
 - Prefer composition and the existing shared widgets (`IconFrame`, metric, stat list, avatar stack, progress ring, metric pill) over new one-off markup.
 - The rich text editor is Plate (Slate) configured in `packages/parttens/src/rich-text-editor/plugins.tsx`; its vocabulary is `RICH_TEXT_ELEMENTS` and `RICH_TEXT_MARKS`, and the document never carries node ids or the `/` menu input.
 - Docs and architecture decisions are in Portuguese; code, stories, README and this file are in English.

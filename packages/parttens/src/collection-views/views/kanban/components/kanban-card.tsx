@@ -2,8 +2,8 @@
 
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
-import { CardSurface, type CardSurfaceProps } from '@tc96/elements/card-surface'
 import {
+  Card,
   CardAction,
   CardContent,
   CardDescription,
@@ -34,7 +34,7 @@ const kanbanCardSurfaceVariants = cva(null, {
 })
 
 export const kanbanCardVariants = cva(
-  'relative isolate min-w-0 w-full overflow-hidden transition-colors hover:border-border hover:bg-card/60 has-focus-visible:ring-2 has-focus-visible:ring-primary has-focus-visible:ring-offset-2 has-focus-visible:ring-offset-background [&_[data-kanban-card-action]]:relative [&_[data-kanban-card-action]]:z-10',
+  'relative isolate min-w-0 w-full overflow-hidden transition-colors hover:bg-card/60 has-focus-visible:ring-2 has-focus-visible:ring-primary has-focus-visible:ring-offset-2 has-focus-visible:ring-offset-background [&_[data-kanban-card-action]]:relative [&_[data-kanban-card-action]]:z-10',
   {
     defaultVariants: {
       dimmed: false,
@@ -134,7 +134,7 @@ export function KanbanCard({
   ...props
 }: KanbanCardProps): ReactElement {
   const card = (
-    <CardSurface
+    <Card
       className={cn(
         kanbanCardSurfaceVariants({ density }),
         kanbanCardVariants({ dimmed, selected, variant }),
@@ -146,7 +146,7 @@ export function KanbanCard({
       data-state={selected ? 'selected' : undefined}
       data-variant={variant}
       render={render ?? <article />}
-      ref={ref as CardSurfaceProps['ref']}
+      ref={ref as ComponentProps<typeof Card>['ref']}
       {...props}
     />
   )

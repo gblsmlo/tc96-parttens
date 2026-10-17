@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { CardSurface } from '@tc96/elements/card-surface'
 import { Text } from '@tc96/elements/text'
 import {
   DateProperty,
@@ -7,6 +6,7 @@ import {
   PersonProperty,
   type PersonPropertyOption,
 } from '@tc96/parttens'
+import { Card } from '@tc96/ui/card'
 import { Separator } from '@tc96/ui/separator'
 import { FileTextIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
@@ -78,7 +78,7 @@ const createCollection = (items: readonly DocumentRecord[]) => ({
 })
 
 const renderDocument = (document: DocumentRecord) => (
-  <CardSurface className="h-full min-h-52 overflow-hidden" render={<article />}>
+  <Card className="h-full min-h-52 overflow-hidden" render={<article />}>
     <div className="flex flex-1 flex-col p-4">
       <Text className="flex min-w-0 items-center gap-1" size="xs" truncate>
         <FileTextIcon aria-hidden="true" className="size-3" />
@@ -115,7 +115,7 @@ const renderDocument = (document: DocumentRecord) => (
         </div>
       </div>
     </div>
-  </CardSurface>
+  </Card>
 )
 
 interface GalleryExampleProps {

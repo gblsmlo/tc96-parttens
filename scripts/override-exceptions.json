@@ -43,93 +43,87 @@
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
-    "className": "hover:border-border",
-    "reason": "O card interativo do Kanban escurece a borda de 80% para o token cheio no hover; o CardSurface so define o estado de repouso."
-  },
-  {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "hover:bg-card/60",
-    "reason": "O card interativo do Kanban afrouxa o fundo para 60% no hover, o retorno visual de que o card e clicavel; o CardSurface so define o estado de repouso."
+    "reason": "O card interativo do Kanban afrouxa o fundo para 60% no hover, o retorno visual de que o card e clicavel; o Card so define o estado de repouso."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "has-focus-visible:ring-2",
-    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o CardSurface nao tem estado de foco."
+    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "has-focus-visible:ring-primary",
-    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o CardSurface nao tem estado de foco."
+    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "has-focus-visible:ring-offset-2",
-    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o CardSurface nao tem estado de foco."
+    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "has-focus-visible:ring-offset-background",
-    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o CardSurface nao tem estado de foco."
+    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "border-dashed",
-    "reason": "Somente o estilo da borda muda (tracejada), e apenas enquanto o card esta dimmed, para marcar o lugar de origem durante o arraste; largura e cor da borda continuam do CardSurface."
+    "reason": "Somente o estilo da borda muda (tracejada), e apenas enquanto o card esta dimmed, para marcar o lugar de origem durante o arraste; largura e cor da borda continuam do Card."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "ring-2",
-    "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o CardSurface nao tem estado de selecao."
+    "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "ring-primary/40",
-    "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o CardSurface nao tem estado de selecao."
+    "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "ring-offset-2",
-    "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o CardSurface nao tem estado de selecao."
+    "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "ring-offset-background",
-    "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o CardSurface nao tem estado de selecao."
+    "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "focus-visible:ring-2",
-    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o CardSurface nao tem estado de foco."
+    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "focus-visible:ring-primary",
-    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o CardSurface nao tem estado de foco."
+    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "focus-visible:ring-offset-2",
-    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o CardSurface nao tem estado de foco."
+    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
     "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "focus-visible:ring-offset-background",
-    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o CardSurface nao tem estado de foco."
+    "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
     "file": "packages/parttens/src/properties/shared/property-multi-select-shell.tsx",
@@ -139,8 +133,8 @@
   },
   {
     "file": "packages/parttens/src/records/group/composition/record-group/record-group.tsx",
-    "component": "CardSurface",
+    "component": "Card",
     "className": "bg-muted/72",
-    "reason": "O invólucro dos variantes `card` e `inset` do RecordGroup é um painel rebaixado, sem sombra, e não o card elevado do CardSurface; `bg-muted/72` usa o token do tema com 72% de opacidade no lugar de `bg-card`."
+    "reason": "O invólucro dos variantes `card` e `inset` do RecordGroup é um painel rebaixado, sem sombra, e não o card elevado do Card; `bg-muted/72` usa o token do tema com 72% de opacidade no lugar de `bg-card`."
   }
 ]

@@ -1,4 +1,4 @@
-import { CardSurface } from '@tc96/elements/card-surface'
+import { Card } from '@tc96/ui/card'
 import { Skeleton } from '@tc96/ui/skeleton'
 import type { ReactElement } from 'react'
 
@@ -11,7 +11,7 @@ export function GalleryItemSkeleton({
 }: GalleryItemSkeletonProps): ReactElement {
   return (
     <output aria-busy="true" aria-label={label} className="contents">
-      <CardSurface
+      <Card
         aria-hidden="true"
         className="min-h-52 pointer-events-none select-none"
         render={<article />}
@@ -30,7 +30,7 @@ export function GalleryItemSkeleton({
             <Skeleton className="h-3 w-24" />
           </div>
         </div>
-      </CardSurface>
+      </Card>
     </output>
   )
 }

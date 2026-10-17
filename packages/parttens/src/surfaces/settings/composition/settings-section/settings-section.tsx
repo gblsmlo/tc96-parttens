@@ -1,4 +1,4 @@
-import { CardSurface } from '@tc96/elements/card-surface'
+import { Card } from '@tc96/ui/card'
 import { cn } from '@tc96/utils'
 import { type ReactElement, useId } from 'react'
 import type { SettingsSectionProps } from '../../core'
@@ -11,11 +11,11 @@ export function SettingsSection({
 }: Readonly<SettingsSectionProps>): ReactElement {
   const titleId = `settings-section-title-${useId()}`
   const card = (
-    <CardSurface>
+    <Card>
       <div className="divide-y px-6" data-slot="settings-section-rows">
         {children}
       </div>
-    </CardSurface>
+    </Card>
   )
 
   if (!header) {

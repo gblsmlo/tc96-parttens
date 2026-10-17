@@ -389,7 +389,6 @@ test('card is the only child of the section and holds the header, the content an
   expect(region.getAttribute('data-slot')).toBe('record-group')
   expect(region.children).toHaveLength(1)
   expect(card.getAttribute('data-slot')).toBe('card')
-  expect(card.className).not.toContain('rounded-2xl')
   for (const slot of [
     'record-group-header',
     'record-group-content',

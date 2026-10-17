@@ -21,7 +21,7 @@ Six files still carry Portuguese JSDoc from before the no-comments rule (`shared
 
 - `packages/parttens/src/index.ts` re-exports `widgets/index`; the stories import from `@tc96/parttens`, not by path.
 - `packages/registry/src/manifest.ts` and `scripts/test-patterns.ts` list `widgets`; `packages/registry/src/manifest.test.ts` asserts the path `parttens/src/widgets/index.ts`. Renaming the folder or the barrel breaks both.
-- `WidgetShell` (`shared/widget-shell.tsx`) renders `CardSurface` from `@tc96/elements/card-surface`; the registry item for `widgets` depends on that element. `AvatarStack`, `ActivityTimeline` and `ContactWidget` import `@tc96/elements/avatar` the same way.
+- `WidgetShell` (`shared/widget-shell.tsx`) renders `Card` from `@tc96/ui/card`; the registry item for `widgets` depends on that COSS component. `AvatarStack`, `ActivityTimeline` and `ContactWidget` import `@tc96/elements/avatar` the same way.
 
 ## Invariants
 
@@ -68,7 +68,7 @@ No class is keyed on a `data-*` attribute (no `data-*:` or `group-data-*:` varia
 | `data-expanded="true\|false"` | `[data-slot=expandable-list]` and the `TransactionsWidget` shell, only when items exceed `visibleCount` |
 | `data-empty`, `data-over`, `data-kind`, `data-done`, `data-unlocked`, `data-active`, `data-today`, `data-channel` | progress ring, budget category, transaction item, quest, achievement, streak day, contact channel |
 
-- `CardSurface` owns card radius, border and shadow; `WidgetShell` adds only `min-w-0 border-transparent`. The border is transparent, not `border-0`, so the fill area keeps its 1px inset and the `before:` highlight corner stays aligned. `border-transparent` is a neutral override: `scripts/override-exceptions.json` has no entry for the shell. Borderless widgets separate from the page at about 1.04:1 light and 1.05:1 dark; that is a consumer token note (`--card` or shadow), not a pattern fix.
+- `Card` owns border and shadow, and the consumer theme owns the radius; `WidgetShell` adds only `min-w-0 border-transparent`. The border is transparent, not `border-0`, so the fill area keeps its 1px inset and the `before:` highlight corner stays aligned. `border-transparent` is a neutral override: `scripts/override-exceptions.json` has no entry for the shell. Borderless widgets separate from the page at about 1.04:1 light and 1.05:1 dark; that is a consumer token note (`--card` or shadow), not a pattern fix.
 - Colors only from theme tokens and the `--chart-1` to `--chart-5` variables, never palette classes. An item without `color` gets `var(--chart-${(index % 5) + 1})`; gamification defaults to `var(--warning-foreground)` and `var(--success-foreground)`.
 - The `sm` Avatar of `@tc96/elements` uses `text-[0.625rem]`, the single spelling for ~10px text across the patterns until the consumer adds a `--text-2xs` token.
 
