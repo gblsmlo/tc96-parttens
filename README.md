@@ -27,11 +27,28 @@ React patterns without business rules, installed as source on top of your COSS c
 - **Layered**: imports only go down a layer (`patterns` → `elements` → `ui` → `utils`), checked by a boundaries script
 - **Tested**: Storybook stories, bun tests, consumer install checks and a view benchmark
 
-## Installation
+## Get Started
+
+Install one or more patterns by name:
 
 ```bash
 npx @tc96/parttens add collection-views properties
 ```
+
+The Record family has three items: `record-dialog`, `record-preview` and `record-group`.
+
+```bash
+npx @tc96/parttens add record-dialog record-preview record-group
+```
+
+Preview what would change before writing anything, or compare installed files with the current version:
+
+```bash
+npx @tc96/parttens add record-dialog --dry-run
+npx @tc96/parttens add record-dialog --diff
+```
+
+If the repo blocks `npx`, use `bunx @tc96/parttens add ...` or `pnpm dlx @tc96/parttens add ...`.
 
 Before copying anything, the CLI type-checks the patterns against your own `ui` components. If they do not type-check, it stops with exit code 1, in a `--dry-run` too. Fix the diagnostics it prints, or pass `--force` to install anyway.
 

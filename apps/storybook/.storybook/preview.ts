@@ -78,6 +78,8 @@ const preview: Preview = {
     layout: 'centered',
     options: {
       storySort: (a, b) => {
+        if (a.title === 'Get Started') return b.title === 'Get Started' ? 0 : -1
+        if (b.title === 'Get Started') return 1
         const byFolder = (a.title.split('/')[0] ?? '').localeCompare(
           b.title.split('/')[0] ?? '',
         )
