@@ -19,7 +19,7 @@ test('stacks its children in a column with a 4px gap', () => {
     '[data-slot="record-preview-body"]',
   ) as HTMLElement
 
-  expect(body.className.split(' ')).toEqual(['flex', 'flex-col', 'gap-1'])
+  expect(body.className.split(' ')).toEqual(['flex', 'flex-col', 'gap-4'])
   expect([...body.children].map((child) => child.textContent)).toEqual([
     'First',
     'Second',
@@ -34,5 +34,5 @@ test('merges the consumer className', () => {
   ) as HTMLElement
 
   expect(body.className.split(' ')).toContain('extra')
-  expect(body.className.split(' ')).toContain('gap-1')
+  expect(body.className.split(' ')).toContain('gap-4')
 })
