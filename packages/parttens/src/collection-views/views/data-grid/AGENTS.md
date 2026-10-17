@@ -20,7 +20,7 @@ Import direction: `components/` → `hooks/`, `lib/`, `types.ts`; `hooks/` → `
 - `collection-views/core.ts` imports `lib/data-grid-features.ts` and `types.ts` by path.
 - `collection-views/index.ts` re-exports `index.ts` whole.
 - `scripts/bench/data-grid.bench.ts` imports this folder's `index.ts` and queries the slots `data-grid-row`, `data-grid-cell` and `data-grid-group-row`.
-- `apps/storybook/src/patterns/collection-views/views/data-grid.stories.tsx` and `apps/storybook/src/patterns/collection-views/default.stories.tsx` query the slots `data-grid`, `data-grid-body` and `data-grid-header`.
+- `apps/storybook/src/patterns/collection-views/views/data-grid.stories.tsx` queries the slots `data-grid`, `data-grid-body` and `data-grid-header`; `apps/storybook/src/patterns/collection-views/usages/tasks.stories.tsx` and `usages/contacts.stories.tsx` query `data-grid`.
 
 ## Invariants
 
@@ -89,7 +89,7 @@ ARIA and layout:
 bun test --isolate packages/parttens/src/collection-views/views/data-grid
 bunx biome check packages/parttens/src/collection-views/views/data-grid
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/collection-views/views/data-grid.stories.tsx src/patterns/collection-views/default.stories.tsx
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/collection-views/views/data-grid.stories.tsx src/patterns/collection-views/usages/tasks.stories.tsx src/patterns/collection-views/usages/contacts.stories.tsx
 bun scripts/bench/data-grid.bench.ts --compare scripts/bench/results/data-grid.base.json --gate
 ```
 
