@@ -44,7 +44,7 @@ describe('kanbanCardVariants', () => {
 })
 
 describe('KanbanCard', () => {
-  test('takes its surface from CardSurface and keeps its own states on top', () => {
+  test('takes its surface from the COSS Card and keeps its own states on top', () => {
     const { container } = render(
       <>
         <KanbanCard data-testid="rest" />
@@ -56,9 +56,8 @@ describe('KanbanCard', () => {
     const dimmed = container.querySelector('[data-testid="dimmed"]')
 
     expect(rest?.getAttribute('data-slot')).toBe('card')
-    expect(rest?.className).toContain('rounded-(--card-surface-radius)')
+    expect(rest?.className).toContain('rounded-2xl')
     expect(rest?.className).toContain('shadow-xs/5')
-    expect(rest?.className).not.toContain('rounded-lg')
     expect(rest?.getAttribute('data-density')).toBe('sm')
     expect(rest?.className).toContain('[--card-padding:--spacing(4)]')
     expect(dimmed?.className).toContain('shadow-none')

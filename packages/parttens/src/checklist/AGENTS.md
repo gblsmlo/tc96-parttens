@@ -7,7 +7,7 @@ A controlled checklist: the consumer passes `items`, the draft title and callbac
 | Folder | Holds |
 | --- | --- |
 | `composition/checklist/` | `Checklist`: the `section`, the header and the `ol`, read-only or sortable; its test and barrel |
-| `components/` | the header, list (`ol`, wrapped in `CardSurface` in `card`), sortable row, read-only row, draft row, item card with `ChecklistTitle`, and metadata; never public |
+| `components/` | the header, list (`ol`, wrapped in `Card` in `card`), sortable row, read-only row, draft row, item card with `ChecklistTitle`, and metadata; never public |
 | `lib/` | due-date functions, dnd-kit sensors and drag handlers, every class string and `cva` variant |
 | `types/` | `ChecklistItem`, `ChecklistProps` and the `ChecklistDensity` and `ChecklistVariant` re-exports |
 | `test/dom.ts` | the JSDOM setup the test imports; this pattern's own copy |
@@ -48,7 +48,7 @@ Creating:
 
 Variant:
 
-- `card` (default) wraps the `ol[data-slot="checklist-items"]` in a `CardSurface` (`data-slot="card"`, the only card in the section; the `ol` carries no radius, border or background) and pads the section; the first and last rows read `--card-surface-radius` minus 1px, so the row corners follow `--card-radius` from an ancestor. The list must not get `overflow-hidden`: the drag handle sits outside the row, on the right at `-right-6` (`right: -24px`, set by the owner on 2026-10-15; it was `-left-8`), so it extends 24px past the row and 23px past the card border.
+- `card` (default) wraps the `ol[data-slot="checklist-items"]` in a `Card` (`data-slot="card"`, the only card in the section; the `ol` carries no radius, border or background) and pads the section; the first and last rows read `--card-surface-radius` (set by the consumer theme's `[data-slot="card"]` rule, falling back to `--radius-2xl`, the COSS card radius) minus 1px, so the row corners follow the card. The list must not get `overflow-hidden`: the drag handle sits outside the row, on the right at `-right-6` (`right: -24px`, set by the owner on 2026-10-15; it was `-left-8`), so it extends 24px past the row and 23px past the card border.
 - `plain` drops the frame and the section padding, so a parent frame, such as `RecordGroup` `inset`, holds the rows. With `md` its row height is `--record-group-row-height`, defined by `RecordGroup` (set by the owner on 2026-10-15): 32px in a `plain` group and 36px in `card` and `inset`, the height of a `RecordGroupItem` in each; outside a group the variable is unset and the row falls back to 36px. The row keeps `px-2`. `card` with `md` stays 40px (`h-10 px-3`) and `sm` stays 32px (`h-8 px-2`), whatever the group. `checklistRowVariants` sets these through compound variants. A parent with `overflow-hidden` (the `RecordGroup` panel) would clip a handle outside the row, so `plain` renders the handle in the row's action area, after the delete button.
 - The `plain` item (the `li`, which carries the hover) takes `-mx-[var(--record-group-hover-offset,0px)]`, set by the owner on 2026-10-15. `RecordGroup` defines that variable as 8px in every variant, so inside a group the hover extends 8px past the content edge while the row keeps its `px-2` and the checkbox lines up with a `RecordGroupItem` icon; outside a group the variable is unset and the margin is 0. The draft row and the read-only row use the same `li` classes. `card` has no offset: its hover stays inside the frame.
 
@@ -69,9 +69,9 @@ State lives in `data-*` attributes and is styled by their variants, never by a p
 
 `data-slot` names: `checklist`, `checklist-header`, `progress`, `progress-track`, `checklist-items`, `checklist-item`, `checklist-draft-item`, `checklist-row`, `checklist-drag-handle`, `checklist-title`, `checklist-actions`, `checklist-delete`.
 
-- Design axes are `cva` variants in `lib/variants.ts`: `density` on the row, the checkbox hit area and the draft input; `variant` on the section padding, the plain list layout (`flex flex-col gap-0.5`; the card frame is `CardSurface`), the item radius and the drag handle placement; `status` on the due date. Every class is a complete string, so the Tailwind scanner always sees it.
+- Design axes are `cva` variants in `lib/variants.ts`: `density` on the row, the checkbox hit area and the draft input; `variant` on the section padding, the plain list layout (`flex flex-col gap-0.5`; the card frame is `Card`), the item radius and the drag handle placement; `status` on the due date. Every class is a complete string, so the Tailwind scanner always sees it.
 - `cn` appears only on the root `section`, where the consumer's `className` enters.
-- Colors only from theme tokens (`text-destructive-foreground`, `text-warning-foreground`, `text-muted-foreground`, `bg-primary`, `bg-muted`); `CardSurface` supplies `bg-card` and the frame; no palette colors.
+- Colors only from theme tokens (`text-destructive-foreground`, `text-warning-foreground`, `text-muted-foreground`, `bg-primary`, `bg-muted`); `Card` supplies `bg-card` and the frame; no palette colors.
 - `scripts/override-exceptions.json` has no entry for this pattern.
 
 ## Verify

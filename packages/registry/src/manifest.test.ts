@@ -240,7 +240,8 @@ test('builds the record-group item shipping the properties catalog it imports by
 
   expect(item.name).toBe('record-group')
   expect(paths).toContain('parttens/src/properties/shared/property-catalog.ts')
-  expect(paths).toContain('elements/src/card-surface.tsx')
+  expect(paths).not.toContain('elements/src/card-surface.tsx')
+  expect(item.registryDependencies).toContain('@coss/card')
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
   expect(
     item.registryDependencies?.every((dependency) =>
@@ -287,9 +288,9 @@ test('builds the settings item shipping Text and no test files', () => {
   const paths = item.files.map((file) => file.path)
 
   expect(item.name).toBe('settings')
-  expect(item.registryDependencies).toEqual(['@coss/collapsible'])
+  expect(item.registryDependencies).toEqual(['@coss/card', '@coss/collapsible'])
   expect(paths).toContain('elements/src/text.tsx')
-  expect(paths).toContain('elements/src/card-surface.tsx')
+  expect(paths).not.toContain('elements/src/card-surface.tsx')
   expect(paths).toContain('parttens/src/surfaces/settings/index.ts')
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })

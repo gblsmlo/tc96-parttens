@@ -1,8 +1,8 @@
-import { CardSurface } from '@tc96/elements/card-surface'
+import { Card } from '@tc96/ui/card'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement } from 'react'
 
-export interface WidgetShellProps extends ComponentProps<typeof CardSurface> {}
+export interface WidgetShellProps extends ComponentProps<typeof Card> {}
 
 export function WidgetShell({
   className,
@@ -10,7 +10,7 @@ export function WidgetShell({
   ...props
 }: Readonly<WidgetShellProps>): ReactElement {
   return (
-    <CardSurface
+    <Card
       className={cn('min-w-0 border-transparent', className)}
       render={render}
       {...props}

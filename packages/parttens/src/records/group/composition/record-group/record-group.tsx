@@ -1,6 +1,6 @@
 'use client'
 
-import { CardSurface } from '@tc96/elements/card-surface'
+import { Card } from '@tc96/ui/card'
 import {
   Collapsible,
   CollapsiblePanel,
@@ -83,9 +83,7 @@ export function RecordGroup({
         inert={!isOpen}
       >
         {variant === 'inset' ? (
-          <CardSurface className={recordGroupShellClassName}>
-            {content}
-          </CardSurface>
+          <Card className={recordGroupShellClassName}>{content}</Card>
         ) : (
           content
         )}
@@ -113,7 +111,7 @@ export function RecordGroup({
       render={<section />}
     >
       {variant === 'card' ? (
-        <CardSurface className={recordGroupShellClassName}>{parts}</CardSurface>
+        <Card className={recordGroupShellClassName}>{parts}</Card>
       ) : (
         parts
       )}

@@ -11,8 +11,8 @@ import { files } from './files'
  * ficam com o tema do consumidor. Excecao so com motivo, em
  * scripts/override-exceptions.json.
  *
- * A regra vale para componentes COSS com estilo e para o CardSurface de
- * packages/elements, que e a superficie de card dos patterns. Partes sem estilo (os
+ * A regra vale para componentes COSS com estilo e para os modulos de
+ * styledElements. Partes sem estilo (os
  * primitivos do base-ui, MenuTrigger, MenuRadioGroup) nao tem o que
  * sobrescrever: estiliza-las e como estilizar um elemento do proprio pattern.
  */
@@ -23,9 +23,7 @@ export interface OverrideException {
   reason: string
 }
 
-export const styledElements: Record<string, string[]> = {
-  'packages/elements/src/card-surface.tsx': ['CardSurface'],
-}
+export const styledElements: Record<string, string[]> = {}
 
 const roots = ['packages/parttens/src', 'packages/elements/src']
 const exceptionsPath = 'scripts/override-exceptions.json'

@@ -118,7 +118,7 @@ export const checklistItemVariants = cva(
     },
     variants: {
       variant: {
-        card: 'first:rounded-t-[calc(var(--card-surface-radius)-1px)] last:rounded-b-[calc(var(--card-surface-radius)-1px)]',
+        card: 'first:rounded-t-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)] last:rounded-b-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]',
         plain: 'rounded-md -mx-[var(--record-group-hover-offset,0px)]',
       },
     },

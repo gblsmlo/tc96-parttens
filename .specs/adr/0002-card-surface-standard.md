@@ -1,6 +1,6 @@
 # 0002. A superfície de card padrão vive em `packages/elements` como `CardSurface`, com o raio lido de uma variável opcional do consumidor
 
-- **Status:** Approved (pelo dono na conversa de 2026-10-11, com a emenda da seção Emenda do dono)
+- **Status:** Superseded em 2026-10-17 pela ADR 0003 (era Approved pelo dono na conversa de 2026-10-11, com a emenda da seção Emenda do dono)
 - **Date:** 2026-10-11
 - **Origin:** pedido do dono na conversa de 2026-10-11 ("padronizar a ui com card-bg rounder border; KanbanCard é um padrão aprovado; se algum consumer quiser referenciar, ele poderá fazê-lo")
 - **Supersedes:** em parte, `docs/architecture/tc96-parttens.md:105` (só a frase do card do `SettingsSection` ser o `Card` do COSS sem classe, com `rounded-2xl`; invólucro `settings-section-rows`, `px-6`, linha de status e foco do `SettingsCollapsed` ficam como estão); o raio `rounded-2xl` do variante `card` em `docs/architecture/tc96-parttens.md:75`; o `rounded-lg border bg-card` do variante `inset` em `docs/architecture/tc96-parttens.md:85`; a moldura `rounded-xl border-border/60` do variante `card` do `Checklist` (`docs/architecture/tc96-parttens.md:111`, `packages/parttens/src/checklist/lib/variants.ts:103`); a regra "o `CardWidgetShell` é o único lugar de raio, borda e sombra" (`AGENTS.md`, seção Code conventions; `packages/parttens/src/widgets/AGENTS.md:71`)

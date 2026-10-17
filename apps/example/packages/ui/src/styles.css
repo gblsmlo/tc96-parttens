@@ -282,6 +282,17 @@
   --input: var(--switch-track);
 }
 
+@layer utilities {
+  [data-slot="card"] {
+    --card-surface-radius: var(--card-radius, var(--radius-lg));
+    border-radius: var(--card-surface-radius);
+  }
+
+  [data-slot="card"]::before {
+    border-radius: calc(var(--card-surface-radius) - 1px);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

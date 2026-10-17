@@ -73,7 +73,7 @@ Toolbar:
 | `data-kanban-column-option="<column id>"` | the column buttons of `KanbanColumnSelector` (below `md`) | consumers, as the `finalFocus` fallback of `RecordPreview` when the moved card is not rendered; not styled |
 | `data-collapsed="true"` | `KanbanColumn`, the grid group row | the board width rule (`w-76`, `xl:w-88`) skips collapsed columns |
 | `data-kanban-card-draggable`, `data-kanban-card-drag-id`, `data-calendar-item-drag-id` | drag wrappers and handles | drag-scroll exclusion and focus restore after a move; not styled |
-| `data-slot="card"` | `KanbanCard`, from `CardSurface` | header and footer variants via `in-[[data-slot=card]:has(>[data-slot=card-panel])]` |
+| `data-slot="card"` | `KanbanCard`, from the COSS `Card` | header and footer variants via `in-[[data-slot=card]:has(>[data-slot=card-panel])]` |
 | `data-state="selected"` | `DataTable` rows, `KanbanCard` | consumers; the card uses its `selected` variant |
 | `data-density`, `data-display`, `data-variant`, `data-tone`, `data-completed` | `ListItem`, `KanbanCard`, `CalendarEventChip` | consumers; the pattern styles through `cva` variants or ternaries |
 | `data-calendar-date`, `data-today`, `data-outside-month`, `data-calendar-mode` | calendar cells, columns, root | consumers and tests |
@@ -94,7 +94,7 @@ Data Grid attributes are listed in `views/data-grid/AGENTS.md`.
 - The calendar chip and `KanbanCard` draw `has-focus-visible:ring-2` on the `article` because the open trigger removes the native outline.
 - Time-grid hour labels are `text-[0.625rem]` pending a `--text-2xs` token in the consumer's theme.
 - Not findings: `outline-none` next to `focus-visible:` and the `dark:` opacity steps on chip tones follow COSS.
-- `scripts/override-exceptions.json` has two `Separator` entries with `bg-border/40` (`views/list/components/list-group.tsx` and `list-view.tsx`) and 15 `CardSurface` entries in `kanban-card.tsx`, each with the reason of its own state (hover border and fill, the `has-focus-visible` ring, the dashed border while `dimmed`, selection): the check classifies `ring-*` as border and `border-dashed` as border style, with or without a state prefix. The card radius is `--card-radius` (default `--radius-lg`) read by `CardSurface`, so `KanbanCard` has no radius class; the column and the `ListView` frame keep a fixed radius outside the surface.
+- `scripts/override-exceptions.json` has two `Separator` entries with `bg-border/40` (`views/list/components/list-group.tsx` and `list-view.tsx`) and 14 `Card` entries in `kanban-card.tsx`, each with the reason of its own state (hover fill, the `has-focus-visible` ring, the dashed border while `dimmed`, selection): the check classifies `ring-*` as border and `border-dashed` as border style, with or without a state prefix. The card radius comes from the consumer theme's `[data-slot="card"]` rule, so `KanbanCard` has no radius class; the column and the `ListView` frame keep a fixed radius outside the surface.
 
 ## Verify
 

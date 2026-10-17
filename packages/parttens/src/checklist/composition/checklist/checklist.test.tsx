@@ -119,7 +119,7 @@ test('renders checklist items as flat rows inside one outlined list', () => {
   const card = list?.parentElement
   expect(list?.tagName).toBe('OL')
   expect(card?.getAttribute('data-slot')).toBe('card')
-  expect(card?.className).toContain('rounded-(--card-surface-radius)')
+  expect(card?.className).toContain('rounded-2xl')
   expect(card?.className).not.toContain('overflow-hidden')
   expect(list?.hasAttribute('class')).toBe(false)
   for (const frameClass of ['rounded', 'border', 'bg-card', 'shadow']) {
@@ -133,10 +133,10 @@ test('renders checklist items as flat rows inside one outlined list', () => {
   const firstRow = list?.querySelector('li')
   expect(firstRow?.className).toContain('hover:bg-muted/60')
   expect(firstRow?.className).toContain(
-    'first:rounded-t-[calc(var(--card-surface-radius)-1px)]',
+    'first:rounded-t-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]',
   )
   expect(firstRow?.className).toContain(
-    'last:rounded-b-[calc(var(--card-surface-radius)-1px)]',
+    'last:rounded-b-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]',
   )
   expect(firstRow?.className).not.toContain('rounded-xl')
 })
