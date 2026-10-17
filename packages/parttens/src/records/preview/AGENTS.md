@@ -38,7 +38,7 @@ Import direction: `composition/` → `core.ts`. Composition imports only COSS (`
 | Attribute | Where |
 | --- | --- |
 | `data-slot="record-preview-header-actions"` | the wrapper of `actions`, only when `actions` is passed |
-| `data-slot="record-preview-body"` | the `RecordPreviewBody` column, a `div` with `flex flex-col gap-1`; `className` merges after it |
+| `data-slot="record-preview-body"` | the `RecordPreviewBody` column, a `div` with `flex flex-col gap-4`; `className` merges after it |
 
 - `data-slot` names on the popup, panel, footer and title are left to COSS (`sheet-popup`, `sheet-panel`, `sheet-footer`, `sheet-title`).
 - No class overrides a COSS border or radius; `scripts/override-exceptions.json` has no entry for this pattern. Changing that requires a new entry.
