@@ -1,0 +1,44 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Get Started" />
+
+# Get Started
+
+`@tc96/parttens` copies React patterns as source into your workspace, on top of your own COSS components. Install one or more patterns by name:
+
+```bash
+npx @tc96/parttens add collection-views properties
+```
+
+The Record family has three items: `record-dialog`, `record-preview` and `record-group`.
+
+```bash
+npx @tc96/parttens add record-dialog record-preview record-group
+```
+
+Preview what would change before writing anything, or compare installed files with the current version:
+
+```bash
+npx @tc96/parttens add record-dialog --dry-run
+npx @tc96/parttens add record-dialog --diff
+```
+
+If the repo blocks `npx`, use `bunx @tc96/parttens add ...` or `pnpm dlx @tc96/parttens add ...`.
+
+Before copying anything, the CLI type-checks the patterns against your own `ui` components. If they do not type-check, it stops with exit code 1, in a `--dry-run` too. Fix the diagnostics it prints, or pass `--force` to install anyway.
+
+## Use
+
+Import from your `patterns` alias:
+
+```tsx
+import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
+```
+
+## Requirements
+
+- React 19, TypeScript and Tailwind CSS 4
+- COSS set up with shadcn, with `components.json` at the monorepo root
+- Node and npm to run the CLI. Bun is not required
+
+The consumer layout and the aliases the CLI reads are in the root `README.md`.
