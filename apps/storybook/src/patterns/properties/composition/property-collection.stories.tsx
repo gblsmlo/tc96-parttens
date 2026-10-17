@@ -58,6 +58,7 @@ const priorityOptions: readonly SelectPropertyOption[] = [
 
 const meta = {
   argTypes: {
+    items: { control: false },
     readOnly: booleanArgType,
   },
   component: PropertyCollection,
@@ -75,168 +76,6 @@ const meta = {
 export default meta
 
 type Story = StoryObj<typeof PropertyCollection>
-
-function TaskCollectionExample({
-  readOnly = false,
-}: Readonly<{ readOnly?: boolean }>) {
-  const [status, setStatus] = useState<string | null>('inProgress')
-  const [priority, setPriority] = useState<string | null>('high')
-  const [assignee, setAssignee] = useState<string | null>(null)
-  const [dueDate, setDueDate] = useState<string | null>(null)
-  const [tags, setTags] = useState<readonly string[]>([])
-
-  return (
-    <PropertyCollection
-      ariaLabel="Task properties"
-      items={[
-        {
-          defaultVisible: true,
-          icon: CircleDotIcon,
-          id: 'status',
-          label: 'Status',
-          render: () => (
-            <SelectProperty
-              ariaLabel="Status"
-              onValueChange={setStatus}
-              options={statusOptions}
-              value={status}
-            />
-          ),
-        },
-        {
-          defaultVisible: true,
-          icon: SignalHighIcon,
-          id: 'priority',
-          label: 'Priority',
-          render: () => (
-            <SelectProperty
-              ariaLabel="Priority"
-              onValueChange={setPriority}
-              options={priorityOptions}
-              value={priority}
-            />
-          ),
-        },
-        {
-          defaultVisible: true,
-          icon: UserCircleIcon,
-          id: 'assignee',
-          label: 'Assignee',
-          render: () => (
-            <PersonProperty
-              ariaLabel="Assignee"
-              onValueChange={setAssignee}
-              options={people}
-              placeholder="Set assignee"
-              value={assignee}
-            />
-          ),
-        },
-        {
-          defaultVisible: true,
-          icon: CalendarDaysIcon,
-          id: 'dueDate',
-          label: 'Due date',
-          render: () => (
-            <DateProperty
-              ariaLabel="Due date"
-              fallback="Set due date"
-              locale="pt-BR"
-              onValueChange={setDueDate}
-              value={dueDate}
-            />
-          ),
-        },
-        {
-          icon: TagIcon,
-          id: 'tags',
-          label: 'Tags',
-          render: () => (
-            <TagsProperty
-              ariaLabel="Tags"
-              onValueChange={setTags}
-              options={tagOptions}
-              value={tags}
-            />
-          ),
-        },
-      ]}
-      readOnly={readOnly}
-    />
-  )
-}
-
-function LeadCollectionExample() {
-  const [status, setStatus] = useState<string | null>('todo')
-  const [owner, setOwner] = useState<string | null>('person-2')
-  const [nextContact, setNextContact] = useState<string | null>('2026-08-28')
-  const [tags, setTags] = useState<readonly string[]>(['return'])
-
-  return (
-    <PropertyCollection
-      ariaLabel="Lead properties"
-      items={[
-        {
-          defaultVisible: true,
-          icon: CircleDotIcon,
-          id: 'status',
-          label: 'Status',
-          render: () => (
-            <SelectProperty
-              ariaLabel="Status"
-              onValueChange={setStatus}
-              options={statusOptions}
-              value={status}
-            />
-          ),
-        },
-        {
-          defaultVisible: true,
-          icon: UserCircleIcon,
-          id: 'owner',
-          label: 'Dono',
-          render: () => (
-            <PersonProperty
-              ariaLabel="Owner"
-              onValueChange={setOwner}
-              options={people}
-              placeholder="Set owner"
-              value={owner}
-            />
-          ),
-        },
-        {
-          defaultVisible: true,
-          icon: TagIcon,
-          id: 'tags',
-          label: 'Tags',
-          render: () => (
-            <TagsProperty
-              ariaLabel="Tags"
-              onValueChange={setTags}
-              options={tagOptions}
-              value={tags}
-            />
-          ),
-        },
-        {
-          icon: CalendarDaysIcon,
-          id: 'nextContact',
-          label: 'Next contact',
-          render: () => (
-            <DateProperty
-              ariaLabel="Next contact"
-              fallback="Schedule contact"
-              locale="pt-BR"
-              onValueChange={setNextContact}
-              value={nextContact}
-            />
-          ),
-        },
-      ]}
-    />
-  )
-}
 
 export const Task: Story = {
   play: async ({ canvas }) => {
@@ -259,7 +98,93 @@ export const Task: Story = {
       },
     },
   },
-  render: (args) => <TaskCollectionExample readOnly={args.readOnly} />,
+  args: { ariaLabel: 'Task properties' },
+  render: function Task(args) {
+    const [status, setStatus] = useState<string | null>('inProgress')
+    const [priority, setPriority] = useState<string | null>('high')
+    const [assignee, setAssignee] = useState<string | null>(null)
+    const [dueDate, setDueDate] = useState<string | null>(null)
+    const [tags, setTags] = useState<readonly string[]>([])
+
+    return (
+      <PropertyCollection
+        {...args}
+        items={[
+          {
+            defaultVisible: true,
+            icon: CircleDotIcon,
+            id: 'status',
+            label: 'Status',
+            render: () => (
+              <SelectProperty
+                ariaLabel="Status"
+                onValueChange={setStatus}
+                options={statusOptions}
+                value={status}
+              />
+            ),
+          },
+          {
+            defaultVisible: true,
+            icon: SignalHighIcon,
+            id: 'priority',
+            label: 'Priority',
+            render: () => (
+              <SelectProperty
+                ariaLabel="Priority"
+                onValueChange={setPriority}
+                options={priorityOptions}
+                value={priority}
+              />
+            ),
+          },
+          {
+            defaultVisible: true,
+            icon: UserCircleIcon,
+            id: 'assignee',
+            label: 'Assignee',
+            render: () => (
+              <PersonProperty
+                ariaLabel="Assignee"
+                onValueChange={setAssignee}
+                options={people}
+                placeholder="Set assignee"
+                value={assignee}
+              />
+            ),
+          },
+          {
+            defaultVisible: true,
+            icon: CalendarDaysIcon,
+            id: 'dueDate',
+            label: 'Due date',
+            render: () => (
+              <DateProperty
+                ariaLabel="Due date"
+                fallback="Set due date"
+                locale="pt-BR"
+                onValueChange={setDueDate}
+                value={dueDate}
+              />
+            ),
+          },
+          {
+            icon: TagIcon,
+            id: 'tags',
+            label: 'Tags',
+            render: () => (
+              <TagsProperty
+                ariaLabel="Tags"
+                onValueChange={setTags}
+                options={tagOptions}
+                value={tags}
+              />
+            ),
+          },
+        ]}
+      />
+    )
+  },
 }
 
 export const Lead: Story = {
@@ -271,10 +196,83 @@ export const Lead: Story = {
       },
     },
   },
-  render: () => <LeadCollectionExample />,
+  args: { ariaLabel: 'Lead properties' },
+  render: function Lead(args) {
+    const [status, setStatus] = useState<string | null>('todo')
+    const [owner, setOwner] = useState<string | null>('person-2')
+    const [nextContact, setNextContact] = useState<string | null>('2026-08-28')
+    const [tags, setTags] = useState<readonly string[]>(['return'])
+
+    return (
+      <PropertyCollection
+        {...args}
+        items={[
+          {
+            defaultVisible: true,
+            icon: CircleDotIcon,
+            id: 'status',
+            label: 'Status',
+            render: () => (
+              <SelectProperty
+                ariaLabel="Status"
+                onValueChange={setStatus}
+                options={statusOptions}
+                value={status}
+              />
+            ),
+          },
+          {
+            defaultVisible: true,
+            icon: UserCircleIcon,
+            id: 'owner',
+            label: 'Dono',
+            render: () => (
+              <PersonProperty
+                ariaLabel="Owner"
+                onValueChange={setOwner}
+                options={people}
+                placeholder="Set owner"
+                value={owner}
+              />
+            ),
+          },
+          {
+            defaultVisible: true,
+            icon: TagIcon,
+            id: 'tags',
+            label: 'Tags',
+            render: () => (
+              <TagsProperty
+                ariaLabel="Tags"
+                onValueChange={setTags}
+                options={tagOptions}
+                value={tags}
+              />
+            ),
+          },
+          {
+            icon: CalendarDaysIcon,
+            id: 'nextContact',
+            label: 'Next contact',
+            render: () => (
+              <DateProperty
+                ariaLabel="Next contact"
+                fallback="Schedule contact"
+                locale="pt-BR"
+                onValueChange={setNextContact}
+                value={nextContact}
+              />
+            ),
+          },
+        ]}
+      />
+    )
+  },
 }
 
 export const ReadOnly: Story = {
+  ...Task,
+  args: { ariaLabel: 'Task properties', readOnly: true },
   play: async ({ canvas }) => {
     await expect(
       canvas.queryByRole('button', { name: 'Ajustar propriedades' }),
@@ -288,7 +286,6 @@ export const ReadOnly: Story = {
       },
     },
   },
-  render: () => <TaskCollectionExample readOnly />,
 }
 
 export const NoDefaults: Story = {
@@ -304,38 +301,36 @@ export const NoDefaults: Story = {
       options.map((option) => option.getAttribute('aria-checked')),
     ).toEqual(['false', 'false'])
   },
-  render: () => (
-    <PropertyCollection
-      ariaLabel="Properties"
-      items={[
-        {
-          icon: CircleDotIcon,
-          id: 'status',
-          label: 'Status',
-          render: () => (
-            <SelectProperty
-              ariaLabel="Status"
-              options={statusOptions}
-              readOnly
-              value="todo"
-            />
-          ),
-        },
-        {
-          icon: CalendarDaysIcon,
-          id: 'dueDate',
-          label: 'Due date',
-          render: () => (
-            <DateProperty
-              ariaLabel="Due date"
-              fallback="Set due date"
-              locale="pt-BR"
-              readOnly
-              value={null}
-            />
-          ),
-        },
-      ]}
-    />
-  ),
+  args: {
+    ariaLabel: 'Properties',
+    items: [
+      {
+        icon: CircleDotIcon,
+        id: 'status',
+        label: 'Status',
+        render: () => (
+          <SelectProperty
+            ariaLabel="Status"
+            options={statusOptions}
+            readOnly
+            value="todo"
+          />
+        ),
+      },
+      {
+        icon: CalendarDaysIcon,
+        id: 'dueDate',
+        label: 'Due date',
+        render: () => (
+          <DateProperty
+            ariaLabel="Due date"
+            fallback="Set due date"
+            locale="pt-BR"
+            readOnly
+            value={null}
+          />
+        ),
+      },
+    ],
+  },
 }

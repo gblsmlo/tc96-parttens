@@ -15,7 +15,19 @@ const initialOptions: PeoplePropertyOption<ExamplePerson>[] = [
 
 const meta = {
   argTypes: propertyArgTypes,
+  args: {
+    ariaLabel: 'Participants',
+    options: initialOptions,
+    value: ['person-1'],
+  },
   component: PeopleProperty,
+  decorators: [
+    (Story) => (
+      <div className="max-w-sm p-4">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     docs: {
       description: {
@@ -23,6 +35,11 @@ const meta = {
           'Collection of people in the chip anatomy that `TagsProperty` already fixes: each chip here carries an avatar and a name, as `PersonProperty` already draws for the single value. The add trigger stays as the last element and becomes just the `+` once someone is applied.',
       },
     },
+  },
+  render: function People(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <PeopleProperty {...args} onValueChange={setValue} value={value} />
   },
   title: 'Patterns/Properties/Display/People',
 } satisfies Meta<typeof PeopleProperty>
@@ -60,7 +77,6 @@ export const SelectAndRemove: Story = {
     await expect(canvas.queryByText('Bruno Lima')).not.toBeInTheDocument()
     await expect(canvas.getByText('Ana Souza')).toBeInTheDocument()
   },
-  render: () => <PeoplePropertyExample />,
 }
 
 export const Empty: Story = {
@@ -72,30 +88,12 @@ export const Empty: Story = {
       },
     },
   },
-  render: () => <PeoplePropertyExample initial={[]} />,
+  args: { value: [] },
 }
 
 export const ReadOnly: Story = {
   args: {
-    options: initialOptions,
     readOnly: true,
     value: ['person-1', 'person-2'],
   },
-}
-
-function PeoplePropertyExample({
-  initial = ['person-1'],
-}: Readonly<{ initial?: readonly ExamplePerson[] }>) {
-  const [value, setValue] = useState<readonly ExamplePerson[]>(initial)
-
-  return (
-    <div className="max-w-sm p-4">
-      <PeopleProperty
-        ariaLabel="Participants"
-        onValueChange={setValue}
-        options={initialOptions}
-        value={value}
-      />
-    </div>
-  )
 }

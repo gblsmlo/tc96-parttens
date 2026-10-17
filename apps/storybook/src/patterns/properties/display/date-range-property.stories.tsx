@@ -1,10 +1,6 @@
 import { ptBR } from '@daypicker/react/locale'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  type DateRange,
-  DateRangeProperty,
-  type DateRangePropertyProps,
-} from '@tc96/parttens'
+import { DateRangeProperty } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, screen, userEvent, within } from 'storybook/test'
 import {
@@ -108,7 +104,29 @@ export const Trigger: Story = {
     await userEvent.click(within(canvasElement).getByRole('button'))
     await expect(await screen.findByText('June 2026')).toBeInTheDocument()
   },
-  render: () => <DateRangePropertyPickerStory />,
+  args: {
+    ariaLabel: 'Period',
+    fallback: 'No period',
+    value: {
+      from: new Date('2026-06-19T12:00:00.000Z'),
+      to: new Date('2026-06-26T12:00:00.000Z'),
+    },
+    locale: 'en-US',
+  },
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-136 items-start p-16">
+        <Story />
+      </div>
+    ),
+  ],
+  render: function Trigger(args) {
+    const [value, setValue] = useState(args.value)
+
+    return (
+      <DateRangeProperty {...args} onValueChange={setValue} value={value} />
+    )
+  },
 }
 
 export const CalendarLocale: Story = {
@@ -125,33 +143,28 @@ export const CalendarLocale: Story = {
     await userEvent.click(within(canvasElement).getByRole('button'))
     await expect(await screen.findByText('junho 2026')).toBeInTheDocument()
   },
-  render: () => (
-    <DateRangePropertyPickerStory
-      calendarProps={{ locale: ptBR }}
-      locale="pt-BR"
-    />
-  ),
-}
+  args: {
+    ariaLabel: 'Period',
+    fallback: 'No period',
+    value: {
+      from: new Date('2026-06-19T12:00:00.000Z'),
+      to: new Date('2026-06-26T12:00:00.000Z'),
+    },
+    calendarProps: { locale: ptBR },
+    locale: 'pt-BR',
+  },
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-136 items-start p-16">
+        <Story />
+      </div>
+    ),
+  ],
+  render: function CalendarLocale(args) {
+    const [value, setValue] = useState(args.value)
 
-function DateRangePropertyPickerStory({
-  calendarProps,
-  locale = 'en-US',
-}: Readonly<Pick<DateRangePropertyProps, 'calendarProps' | 'locale'>>) {
-  const [value, setValue] = useState<DateRange | undefined>({
-    from: new Date('2026-06-19T12:00:00.000Z'),
-    to: new Date('2026-06-26T12:00:00.000Z'),
-  })
-
-  return (
-    <div className="flex min-h-136 items-start p-16">
-      <DateRangeProperty
-        ariaLabel="Period"
-        calendarProps={calendarProps}
-        fallback="No period"
-        locale={locale}
-        value={value}
-        onValueChange={setValue}
-      />
-    </div>
-  )
+    return (
+      <DateRangeProperty {...args} onValueChange={setValue} value={value} />
+    )
+  },
 }

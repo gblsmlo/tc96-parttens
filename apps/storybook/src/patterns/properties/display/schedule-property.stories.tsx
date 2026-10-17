@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   emptyScheduleValue,
   ScheduleProperty,
-  type SchedulePropertyProps,
   type ScheduleValue,
 } from '@tc96/parttens'
 import { useState } from 'react'
@@ -24,30 +23,6 @@ const scheduledValue: ScheduleValue = {
   reminders: ['30', '1440'],
   startTime: '14:00',
   until: '2026-12-18T12:00:00.000Z',
-}
-
-function ScheduleStory({
-  onValueChange,
-  value: initialValue,
-  ...props
-}: Readonly<SchedulePropertyProps>) {
-  const [value, setValue] = useState(initialValue)
-
-  return (
-    <div className="flex min-h-176 items-start p-4">
-      <ScheduleProperty
-        {...props}
-        onValueChange={
-          onValueChange &&
-          ((next) => {
-            setValue(next)
-            onValueChange(next)
-          })
-        }
-        value={value}
-      />
-    </div>
-  )
 }
 
 // COSS calendar weekday and outside-month text is 3.14:1 in light and 3.29:1 in dark (below 4.5:1); COSS stays unmodified, so only the contrast check is off.
@@ -123,7 +98,7 @@ const meta = {
   args: {
     ariaLabel: 'Data',
     calendarProps: { locale: ptBR },
-    onValueChange: fn(),
+    onValueChange: fn((_value: ScheduleValue) => {}),
     today: storyToday,
     value: scheduledValue,
   },
@@ -143,6 +118,13 @@ const meta = {
     value: { control: false },
   },
   component: ScheduleProperty,
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-176 items-start p-4">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     docs: {
       description: {
@@ -151,7 +133,20 @@ const meta = {
       },
     },
   },
-  render: (args) => <ScheduleStory {...args} />,
+  render: function Schedule({ onValueChange, ...args }) {
+    const [value, setValue] = useState(args.value)
+
+    return (
+      <ScheduleProperty
+        {...args}
+        onValueChange={(next) => {
+          setValue(next)
+          onValueChange?.(next)
+        }}
+        value={value}
+      />
+    )
+  },
   title: 'Patterns/Properties/Display/Schedule',
 } satisfies Meta<typeof ScheduleProperty>
 

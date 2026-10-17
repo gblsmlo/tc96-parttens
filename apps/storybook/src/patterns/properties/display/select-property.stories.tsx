@@ -74,7 +74,11 @@ export const Dropdown: Story = {
     await waitFor(() => expect(option).toBeVisible())
     await esperarIndicadorADireita(option)
   },
-  render: (args) => <SelectDropdownExample {...args} />,
+  render: function Dropdown(args) {
+    const [value, setValue] = useState<string | null>('meeting')
+
+    return <SelectProperty {...args} onValueChange={setValue} value={value} />
+  },
 }
 
 export const NoIcon: Story = {
@@ -98,13 +102,12 @@ export const ClearValue: Story = {
       },
     },
   },
-  render: (args) => (
-    <SelectDropdownExample
-      {...args}
-      emptyOptionLabel="No type"
-      placeholder="Type"
-    />
-  ),
+  args: { emptyOptionLabel: 'No type', placeholder: 'Type' },
+  render: function ClearValue(args) {
+    const [value, setValue] = useState<string | null>('meeting')
+
+    return <SelectProperty {...args} onValueChange={setValue} value={value} />
+  },
 }
 
 export const OutsideCatalog: Story = {
@@ -151,12 +154,4 @@ export const Grouped: Story = {
 
 export const Disabled: Story = {
   args: { disabled: true, value: 'other', onValueChange: () => undefined },
-}
-
-function SelectDropdownExample(
-  args: React.ComponentProps<typeof SelectProperty>,
-) {
-  const [value, setValue] = useState<string | null>('meeting')
-
-  return <SelectProperty {...args} onValueChange={setValue} value={value} />
 }

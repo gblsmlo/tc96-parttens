@@ -101,7 +101,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/properties
 ```
 
-Stories in `apps/storybook/src/patterns/properties/` run axe with `test: 'error'`.
+Stories in `apps/storybook/src/patterns/properties/` (`Patterns/Properties/...`) run axe with `test: 'error'`. Since 2026-10-17 they render the display directly, with no helper component, so the Code panel shows code the consumer can paste: each meta sets `component` and the args, and an editable story keeps its value in a named `render` with `useState` (`render: function Trigger(args)`). A display that also reports to an `onValueChange` spy destructures it (`render: function Schedule({ onValueChange, ...args })`), and the spy gets a typed implementation (`fn((_value: ScheduleValue) => {})`) so the copied handler type-checks. Layout wrappers such as `p-4` or `min-h-176` are decorators, not markup in the render. `Editable Text` has no `Sizes` story: the `size` control on `Default` covers the scale.
 
 ## Pointers
 

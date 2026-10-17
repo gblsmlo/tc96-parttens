@@ -3,12 +3,10 @@ import { EditableText } from '@tc96/parttens'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { booleanArgType } from '../../../test-utils/story-arg-types'
 
-const onCommit = fn()
-
 const meta = {
   args: {
     ariaLabel: 'Title',
-    onCommit,
+    onCommit: fn(),
     placeholder: 'Untitled',
     value: 'Check the contract signatures',
   },
@@ -37,18 +35,17 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: { size: 'sm' },
-  play: async ({ canvasElement }) => {
+  play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement)
-    onCommit.mockClear()
 
     const field = canvas.getByLabelText<HTMLInputElement>('Title')
     await userEvent.click(field)
     await userEvent.clear(field)
     await userEvent.type(field, 'Contract signed')
-    await expect(onCommit).not.toHaveBeenCalled()
+    await expect(args.onCommit).not.toHaveBeenCalled()
 
     await userEvent.tab()
-    await expect(onCommit).toHaveBeenCalledWith('Contract signed')
+    await expect(args.onCommit).toHaveBeenCalledWith('Contract signed')
   },
 }
 
@@ -62,17 +59,16 @@ export const CommitsOnEnter: Story = {
       },
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement)
-    onCommit.mockClear()
 
     const field = canvas.getByLabelText<HTMLInputElement>('Title')
     await userEvent.click(field)
     await userEvent.clear(field)
     await userEvent.type(field, 'Contract signed{Enter}')
 
-    await expect(onCommit).toHaveBeenCalledTimes(1)
-    await expect(onCommit).toHaveBeenCalledWith('Contract signed')
+    await expect(args.onCommit).toHaveBeenCalledTimes(1)
+    await expect(args.onCommit).toHaveBeenCalledWith('Contract signed')
   },
 }
 
@@ -86,9 +82,8 @@ export const DiscardsOnEscape: Story = {
       },
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement)
-    onCommit.mockClear()
 
     const field = canvas.getByLabelText<HTMLInputElement>('Title')
     await userEvent.click(field)
@@ -96,7 +91,7 @@ export const DiscardsOnEscape: Story = {
     await userEvent.type(field, 'Discarded draft{Escape}')
 
     await expect(field.value).toBe('Check the contract signatures')
-    await expect(onCommit).not.toHaveBeenCalled()
+    await expect(args.onCommit).not.toHaveBeenCalled()
   },
 }
 
@@ -134,9 +129,8 @@ export const RevertWhenEmpty: Story = {
       },
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement)
-    onCommit.mockClear()
 
     const field = canvas.getByLabelText<HTMLInputElement>('Title')
     await userEvent.click(field)
@@ -144,7 +138,7 @@ export const RevertWhenEmpty: Story = {
 
     await userEvent.tab()
     await expect(field.value).toBe('Untitled')
-    await expect(onCommit).not.toHaveBeenCalled()
+    await expect(args.onCommit).not.toHaveBeenCalled()
   },
 }
 
@@ -164,28 +158,4 @@ export const ReadOnly: Story = {
       },
     },
   },
-}
-
-export const Sizes: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'The scale covers the four steps the surfaces use: `sm` in the property row, `base` in the body, `lg` and `xl` in the record identity.',
-      },
-    },
-  },
-  render: (args) => (
-    <div className="space-y-4">
-      {(['sm', 'base', 'lg', 'xl'] as const).map((size) => (
-        <EditableText
-          {...args}
-          ariaLabel={`Title ${size}`}
-          key={size}
-          size={size}
-          value={`Title in ${size}`}
-        />
-      ))}
-    </div>
-  ),
 }

@@ -22,7 +22,20 @@ const meta = {
     display: { control: 'inline-radio', options: ['chips', 'count'] },
     isLoading: booleanArgType,
   },
+  args: {
+    ariaLabel: 'Tags',
+    options: initialOptions,
+    value: ['documents'],
+    variant: 'plain',
+  },
   component: TagsProperty,
+  decorators: [
+    (Story) => (
+      <div className="max-w-sm p-4">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     docs: {
       description: {
@@ -30,6 +43,11 @@ const meta = {
           'Neutral property for tag collections with plain as the default variant and secondary badges for the selected values. The add trigger uses the tag and plus icons, stays as the last element and lets the chips wrap onto new lines; the popover keeps its own width and does not follow the row.',
       },
     },
+  },
+  render: function Tags(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <TagsProperty {...args} onValueChange={setValue} value={value} />
   },
   title: 'Patterns/Properties/Display/Tags',
 } satisfies Meta<typeof TagsProperty>
@@ -54,10 +72,10 @@ export const Trigger: Story = {
       },
     },
   },
-  render: () => <TagsPropertyExample />,
 }
 
 export const Plain: Story = {
+  args: { variant: 'plain' },
   parameters: {
     docs: {
       description: {
@@ -66,7 +84,6 @@ export const Plain: Story = {
       },
     },
   },
-  render: () => <TagsPropertyExample variant="plain" />,
 }
 
 /** In a collection row the width belongs to the other properties, so only the count shows and the same popover stays behind the trigger. */
@@ -89,7 +106,7 @@ export const Count: Story = {
     )
     await esperarIndicadorADireita(option)
   },
-  render: () => <TagsPropertyExample display="count" variant="badge" />,
+  args: { display: 'count', variant: 'badge' },
 }
 
 export const CountEmpty: Story = {
@@ -102,9 +119,7 @@ export const CountEmpty: Story = {
     await expect(trigger.dataset.empty).toBe('true')
     await expect(trigger.getBoundingClientRect().height).toBe(24)
   },
-  render: () => (
-    <TagsPropertyExample display="count" initialValue={[]} variant="badge" />
-  ),
+  args: { display: 'count', value: [], variant: 'badge' },
 }
 
 export const CountCustomLabel: Story = {
@@ -115,55 +130,20 @@ export const CountCustomLabel: Story = {
 
     await expect(trigger.textContent).toBe('2 posicionamentos')
   },
-  render: () => (
-    <TagsPropertyExample
-      ariaLabel="Posicionamentos"
-      countLabel={(count) =>
-        `${count} ${count === 1 ? 'posicionamento' : 'posicionamentos'}`
-      }
-      display="count"
-      initialValue={['documents', 'return']}
-      variant="badge"
-    />
-  ),
+  args: {
+    ariaLabel: 'Posicionamentos',
+    countLabel: (count) =>
+      `${count} ${count === 1 ? 'posicionamento' : 'posicionamentos'}`,
+    display: 'count',
+    value: ['documents', 'return'],
+    variant: 'badge',
+  },
 }
 
 export const ReadOnly: Story = {
   args: {
-    options: initialOptions,
     readOnly: true,
     value: ['documents', 'urgent'],
     variant: 'plain',
   },
-}
-
-function TagsPropertyExample({
-  ariaLabel = 'Tags',
-  countLabel,
-  display,
-  initialValue = ['documents'],
-  variant = 'plain',
-}: Readonly<{
-  ariaLabel?: string
-  countLabel?: (count: number) => string
-  display?: 'chips' | 'count'
-  initialValue?: readonly string[]
-  variant?: 'badge' | 'plain'
-}>) {
-  const options = initialOptions
-  const [value, setValue] = useState<readonly string[]>(initialValue)
-
-  return (
-    <div className="max-w-sm p-4">
-      <TagsProperty
-        ariaLabel={ariaLabel}
-        countLabel={countLabel}
-        display={display}
-        onValueChange={setValue}
-        options={options}
-        value={value}
-        variant={variant}
-      />
-    </div>
-  )
 }
