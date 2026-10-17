@@ -22,36 +22,8 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
-import { RecordGroupDemo } from './fixtures/group-demo'
+import { recordGroupArgTypes } from '../../../test-utils/story-arg-types'
 import { part, rowsOf } from './fixtures/group-dom'
-
-const meta = {
-  args: { title: 'Details' },
-  component: RecordGroupDemo,
-  decorators: [
-    (Story) => (
-      <div className="w-96">
-        <Story />
-      </div>
-    ),
-  ],
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'Rows whose value is a `properties` component, read-only or editable. Editability belongs to the value, so `RecordGroupRow` stays presentation.',
-      },
-    },
-  },
-  tags: ['!autodocs'],
-  title: 'Patterns/Records/Group/Properties',
-} satisfies Meta<typeof RecordGroupDemo>
-
-export default meta
-
-type Story = StoryObj<typeof meta>
-
-const interaction = ['!dev', '!autodocs']
 
 const statusOptions: SelectPropertyOption[] = [
   {
@@ -75,75 +47,89 @@ const labelOptions: TagsPropertyOption[] = [
   { label: 'Urgent', value: 'urgent' },
 ]
 
-function PropertiesDemo() {
-  return (
-    <RecordGroup title="Properties">
-      <RecordGroupRow label="Title" leading={<HashIcon aria-hidden="true" />}>
-        <TextProperty
-          ariaLabel="Title"
-          value="Quarterly access review"
-          variant="plain"
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Status"
-        leading={<ShapesIcon aria-hidden="true" />}
-      >
-        <SelectProperty
-          ariaLabel="Status"
-          options={statusOptions}
-          readOnly
-          value="progress"
-          variant="plain"
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Assignee"
-        leading={<UserIcon aria-hidden="true" />}
-      >
-        <PersonProperty
-          ariaLabel="Assignee"
-          options={assigneeOptions}
-          readOnly
-          value="mariana"
-          variant="plain"
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Labels"
-        leading={<ShapesIcon aria-hidden="true" />}
-      >
-        <TagsProperty
-          ariaLabel="Labels"
-          options={labelOptions}
-          readOnly
-          value={['compliance']}
-          variant="plain"
-        />
-      </RecordGroupRow>
-      <RecordGroupRow
-        label="Due"
-        leading={<CalendarDaysIcon aria-hidden="true" />}
-      >
-        <DateProperty
-          ariaLabel="Due date"
-          locale="en-US"
-          readOnly
-          timeZone="UTC"
-          value="2026-10-21T12:00:00.000Z"
-          variant="plain"
-        />
-      </RecordGroupRow>
-    </RecordGroup>
-  )
-}
+const meta = {
+  argTypes: recordGroupArgTypes,
+  args: {
+    children: (
+      <>
+        <RecordGroupRow label="Title" leading={<HashIcon aria-hidden />}>
+          <TextProperty
+            ariaLabel="Title"
+            value="Quarterly access review"
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="Status" leading={<ShapesIcon aria-hidden />}>
+          <SelectProperty
+            ariaLabel="Status"
+            options={statusOptions}
+            readOnly
+            value="progress"
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="Assignee" leading={<UserIcon aria-hidden />}>
+          <PersonProperty
+            ariaLabel="Assignee"
+            options={assigneeOptions}
+            readOnly
+            value="mariana"
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="Labels" leading={<ShapesIcon aria-hidden />}>
+          <TagsProperty
+            ariaLabel="Labels"
+            options={labelOptions}
+            readOnly
+            value={['compliance']}
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="Due" leading={<CalendarDaysIcon aria-hidden />}>
+          <DateProperty
+            ariaLabel="Due date"
+            locale="en-US"
+            readOnly
+            timeZone="UTC"
+            value="2026-10-21T12:00:00.000Z"
+            variant="plain"
+          />
+        </RecordGroupRow>
+      </>
+    ),
+    title: 'Properties',
+  },
+  component: RecordGroup,
+  decorators: [
+    (Story) => (
+      <div className="w-96">
+        <Story />
+      </div>
+    ),
+  ],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Rows whose value is a `properties` component, read-only or editable. Editability belongs to the value, so `RecordGroupRow` stays presentation.',
+      },
+    },
+  },
+  tags: ['!autodocs'],
+  title: 'Patterns/Records/Group/Properties',
+} satisfies Meta<typeof RecordGroup>
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+const interaction = ['!dev', '!autodocs']
 
 const controlSelector =
   'button, a[href], input, textarea, select, [role="combobox"], [role="textbox"]'
 
-export const ReadOnlyProperties: Story = {
-  render: () => <PropertiesDemo />,
-}
+export const ReadOnlyProperties: Story = {}
 
 export const ReadOnlyPropertiesInteraction: Story = {
   ...ReadOnlyProperties,
@@ -175,20 +161,17 @@ export const ReadOnlyPropertiesInteraction: Story = {
   tags: interaction,
 }
 
-function EditablePropertiesDemo() {
-  const [title, setTitle] = useState<string | null>('Quarterly access review')
-  const [status, setStatus] = useState<string | null>('progress')
-  const [assignee, setAssignee] = useState<string | null>('mariana')
-  const [due, setDue] = useState<string | null>('2026-10-21T12:00:00.000Z')
-  const [labels, setLabels] = useState<readonly string[]>(['compliance'])
+export const EditableProperties: Story = {
+  render: function EditableProperties(args) {
+    const [title, setTitle] = useState<string | null>('Quarterly access review')
+    const [status, setStatus] = useState<string | null>('progress')
+    const [assignee, setAssignee] = useState<string | null>('mariana')
+    const [due, setDue] = useState<string | null>('2026-10-21T12:00:00.000Z')
+    const [labels, setLabels] = useState<readonly string[]>(['compliance'])
 
-  return (
-    <>
-      <p className="sr-only" data-testid="committed-title">
-        {title}
-      </p>
-      <RecordGroup title="Properties">
-        <RecordGroupRow label="Title" leading={<HashIcon aria-hidden="true" />}>
+    return (
+      <RecordGroup {...args}>
+        <RecordGroupRow label="Title" leading={<HashIcon aria-hidden />}>
           <TextProperty
             ariaLabel="Title"
             editing="inline"
@@ -196,10 +179,7 @@ function EditablePropertiesDemo() {
             value={title}
           />
         </RecordGroupRow>
-        <RecordGroupRow
-          label="Status"
-          leading={<ShapesIcon aria-hidden="true" />}
-        >
+        <RecordGroupRow label="Status" leading={<ShapesIcon aria-hidden />}>
           <SelectProperty
             ariaLabel="Status"
             onValueChange={setStatus}
@@ -207,10 +187,7 @@ function EditablePropertiesDemo() {
             value={status}
           />
         </RecordGroupRow>
-        <RecordGroupRow
-          label="Assignee"
-          leading={<UserIcon aria-hidden="true" />}
-        >
+        <RecordGroupRow label="Assignee" leading={<UserIcon aria-hidden />}>
           <PersonProperty
             ariaLabel="Assignee"
             onValueChange={setAssignee}
@@ -218,10 +195,7 @@ function EditablePropertiesDemo() {
             value={assignee}
           />
         </RecordGroupRow>
-        <RecordGroupRow
-          label="Labels"
-          leading={<ShapesIcon aria-hidden="true" />}
-        >
+        <RecordGroupRow label="Labels" leading={<ShapesIcon aria-hidden />}>
           <TagsProperty
             ariaLabel="Labels"
             onValueChange={setLabels}
@@ -229,10 +203,7 @@ function EditablePropertiesDemo() {
             value={labels}
           />
         </RecordGroupRow>
-        <RecordGroupRow
-          label="Due"
-          leading={<CalendarDaysIcon aria-hidden="true" />}
-        >
+        <RecordGroupRow label="Due" leading={<CalendarDaysIcon aria-hidden />}>
           <DateProperty
             ariaLabel="Due date"
             locale="en-US"
@@ -242,12 +213,8 @@ function EditablePropertiesDemo() {
           />
         </RecordGroupRow>
       </RecordGroup>
-    </>
-  )
-}
-
-export const EditableProperties: Story = {
-  render: () => <EditablePropertiesDemo />,
+    )
+  },
 }
 
 const centerOf = (element: HTMLElement) => {
@@ -301,7 +268,7 @@ export const EditablePropertiesInteraction: Story = {
     await userEvent.type(title, 'Access review, final')
     await userEvent.tab()
     await waitFor(() =>
-      expect(canvas.getByTestId('committed-title')).toHaveTextContent(
+      expect(canvas.getByRole('textbox', { name: 'Title' })).toHaveValue(
         'Access review, final',
       ),
     )

@@ -3,7 +3,6 @@ import {
   RecordGroup,
   RecordGroupItem,
   RecordGroupLink,
-  type RecordGroupVariant,
   SelectProperty,
   type SelectPropertyOption,
 } from '@tc96/parttens'
@@ -11,11 +10,7 @@ import { Input } from '@tc96/ui/input'
 import { FileTextIcon, ReceiptTextIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
-
-type ListTrailing = 'input' | 'property' | 'read-only'
-
-const longTitle =
-  'Parcela 3 do contrato de honorários da ação revisional bancária, renegociada em setembro'
+import { recordGroupArgTypes } from '../../../test-utils/story-arg-types'
 
 const statusOptions: readonly SelectPropertyOption[] = [
   { label: 'Paga', value: 'paid' },
@@ -23,122 +18,52 @@ const statusOptions: readonly SelectPropertyOption[] = [
   { label: 'Atrasada', value: 'overdue' },
 ]
 
-const installments = [
-  { amount: '1.200,00', id: 'parcela-1', status: 'paid', title: 'Parcela 1' },
-  {
-    amount: '1.200,00',
-    id: 'parcela-2',
-    status: 'scheduled',
-    title: 'Parcela 2',
-  },
-  {
-    amount: '1.200,00',
-    id: 'parcela-3',
-    status: 'scheduled',
-    title: longTitle,
-  },
-]
-
-interface ListDemoProps {
-  trailing?: ListTrailing
-  variant?: RecordGroupVariant
-}
-
-function ListDemo({
-  trailing = 'read-only',
-  variant,
-}: Readonly<ListDemoProps>) {
-  const [status, setStatus] = useState<Record<string, string | null>>(() =>
-    Object.fromEntries(installments.map((item) => [item.id, item.status])),
-  )
-  const [amount, setAmount] = useState<Record<string, string>>(() =>
-    Object.fromEntries(installments.map((item) => [item.id, item.amount])),
-  )
-
-  return (
-    <RecordGroup title="Parcelas" variant={variant}>
-      {installments.map((item) => (
-        <RecordGroupItem
-          key={item.id}
-          leading={<ReceiptTextIcon aria-hidden="true" />}
-          title={item.title}
-        >
-          {trailing === 'input' ? (
-            <Input
-              aria-label={`Valor da ${item.title}`}
-              className="w-28"
-              inputMode="decimal"
-              onChange={(event) =>
-                setAmount((current) => ({
-                  ...current,
-                  [item.id]: event.target.value,
-                }))
-              }
-              size="sm"
-              value={amount[item.id]}
-            />
-          ) : (
-            <SelectProperty
-              ariaLabel={`Status da ${item.title}`}
-              onValueChange={(next) =>
-                setStatus((current) => ({ ...current, [item.id]: next }))
-              }
-              options={statusOptions}
-              readOnly={trailing === 'read-only'}
-              value={status[item.id] ?? null}
-              variant="plain"
-            />
-          )}
-        </RecordGroupItem>
-      ))}
-    </RecordGroup>
-  )
-}
-
-function LinksDemo() {
-  return (
-    <RecordGroup title="Parcelas">
-      <RecordGroupLink
-        href="#/parcelas/1"
-        leading={<ReceiptTextIcon aria-hidden="true" />}
-        meta="Paga"
-      >
-        Parcela 1
-      </RecordGroupLink>
-      <RecordGroupLink
-        href="#/parcelas/2"
-        leading={<ReceiptTextIcon aria-hidden="true" />}
-        meta="Prevista"
-      >
-        Parcela 2
-      </RecordGroupLink>
-      <RecordGroupLink
-        href="#/parcelas/3"
-        leading={<ReceiptTextIcon aria-hidden="true" />}
-        meta="Prevista"
-      >
-        {longTitle}
-      </RecordGroupLink>
-      <RecordGroupLink
-        href="#/documentos/contrato-assinado.pdf"
-        leading={<FileTextIcon aria-hidden="true" />}
-        meta="PDF · 12/08/2026"
-      >
-        contrato-assinado.pdf
-      </RecordGroupLink>
-    </RecordGroup>
-  )
-}
-
 const meta = {
-  args: { trailing: 'read-only' },
-  argTypes: {
-    trailing: {
-      control: 'inline-radio',
-      options: ['read-only', 'property', 'input'],
-    },
+  argTypes: recordGroupArgTypes,
+  args: {
+    children: (
+      <>
+        <RecordGroupItem
+          leading={<ReceiptTextIcon aria-hidden />}
+          title="Parcela 1"
+        >
+          <SelectProperty
+            ariaLabel="Status da Parcela 1"
+            options={statusOptions}
+            readOnly
+            value="paid"
+            variant="plain"
+          />
+        </RecordGroupItem>
+        <RecordGroupItem
+          leading={<ReceiptTextIcon aria-hidden />}
+          title="Parcela 2"
+        >
+          <SelectProperty
+            ariaLabel="Status da Parcela 2"
+            options={statusOptions}
+            readOnly
+            value="scheduled"
+            variant="plain"
+          />
+        </RecordGroupItem>
+        <RecordGroupItem
+          leading={<ReceiptTextIcon aria-hidden />}
+          title="Parcela 3 do contrato de honorários da ação revisional bancária, renegociada em setembro"
+        >
+          <SelectProperty
+            ariaLabel="Status da Parcela 3"
+            options={statusOptions}
+            readOnly
+            value="scheduled"
+            variant="plain"
+          />
+        </RecordGroupItem>
+      </>
+    ),
+    title: 'Parcelas',
   },
-  component: ListDemo,
+  component: RecordGroup,
   decorators: [
     (Story) => (
       <div className="w-96">
@@ -156,7 +81,7 @@ const meta = {
   },
   tags: ['!autodocs'],
   title: 'Patterns/Records/Group/Lists',
-} satisfies Meta<typeof ListDemo>
+} satisfies Meta<typeof RecordGroup>
 
 export default meta
 
@@ -215,8 +140,65 @@ export const DefaultInteraction: Story = {
   tags: interaction,
 }
 
-export const DefaultPropertyInteraction: Story = {
-  args: { trailing: 'property' },
+export const EditableProperty: Story = {
+  render: function EditableProperty(args) {
+    const [status, setStatus] = useState<Record<string, string | null>>({
+      'parcela-1': 'paid',
+      'parcela-2': 'scheduled',
+      'parcela-3': 'scheduled',
+    })
+
+    return (
+      <RecordGroup {...args}>
+        <RecordGroupItem
+          leading={<ReceiptTextIcon aria-hidden />}
+          title="Parcela 1"
+        >
+          <SelectProperty
+            ariaLabel="Status da Parcela 1"
+            onValueChange={(next) =>
+              setStatus((current) => ({ ...current, 'parcela-1': next }))
+            }
+            options={statusOptions}
+            value={status['parcela-1'] ?? null}
+            variant="plain"
+          />
+        </RecordGroupItem>
+        <RecordGroupItem
+          leading={<ReceiptTextIcon aria-hidden />}
+          title="Parcela 2"
+        >
+          <SelectProperty
+            ariaLabel="Status da Parcela 2"
+            onValueChange={(next) =>
+              setStatus((current) => ({ ...current, 'parcela-2': next }))
+            }
+            options={statusOptions}
+            value={status['parcela-2'] ?? null}
+            variant="plain"
+          />
+        </RecordGroupItem>
+        <RecordGroupItem
+          leading={<ReceiptTextIcon aria-hidden />}
+          title="Parcela 3 do contrato de honorários da ação revisional bancária, renegociada em setembro"
+        >
+          <SelectProperty
+            ariaLabel="Status da Parcela 3"
+            onValueChange={(next) =>
+              setStatus((current) => ({ ...current, 'parcela-3': next }))
+            }
+            options={statusOptions}
+            value={status['parcela-3'] ?? null}
+            variant="plain"
+          />
+        </RecordGroupItem>
+      </RecordGroup>
+    )
+  },
+}
+
+export const EditablePropertyInteraction: Story = {
+  ...EditableProperty,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
@@ -231,8 +213,77 @@ export const DefaultPropertyInteraction: Story = {
   tags: interaction,
 }
 
-export const DefaultInputInteraction: Story = {
-  args: { trailing: 'input' },
+export const WithInput: Story = {
+  render: function WithInput(args) {
+    const [amount, setAmount] = useState({
+      'parcela-1': '1.200,00',
+      'parcela-2': '1.200,00',
+      'parcela-3': '1.200,00',
+    })
+
+    return (
+      <RecordGroup {...args}>
+        <RecordGroupItem
+          leading={<ReceiptTextIcon aria-hidden />}
+          title="Parcela 1"
+        >
+          <Input
+            aria-label="Valor da Parcela 1"
+            className="w-28"
+            inputMode="decimal"
+            onChange={(event) =>
+              setAmount((current) => ({
+                ...current,
+                'parcela-1': event.target.value,
+              }))
+            }
+            size="sm"
+            value={amount['parcela-1']}
+          />
+        </RecordGroupItem>
+        <RecordGroupItem
+          leading={<ReceiptTextIcon aria-hidden />}
+          title="Parcela 2"
+        >
+          <Input
+            aria-label="Valor da Parcela 2"
+            className="w-28"
+            inputMode="decimal"
+            onChange={(event) =>
+              setAmount((current) => ({
+                ...current,
+                'parcela-2': event.target.value,
+              }))
+            }
+            size="sm"
+            value={amount['parcela-2']}
+          />
+        </RecordGroupItem>
+        <RecordGroupItem
+          leading={<ReceiptTextIcon aria-hidden />}
+          title="Parcela 3 do contrato de honorários da ação revisional bancária, renegociada em setembro"
+        >
+          <Input
+            aria-label="Valor da Parcela 3"
+            className="w-28"
+            inputMode="decimal"
+            onChange={(event) =>
+              setAmount((current) => ({
+                ...current,
+                'parcela-3': event.target.value,
+              }))
+            }
+            size="sm"
+            value={amount['parcela-3']}
+          />
+        </RecordGroupItem>
+      </RecordGroup>
+    )
+  },
+}
+
+export const WithInputInteraction: Story = {
+  ...WithInput,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const amount = canvas.getByRole('textbox', {
@@ -288,7 +339,41 @@ export const InsetInteraction: Story = {
 }
 
 export const Links: Story = {
-  render: () => <LinksDemo />,
+  args: {
+    children: (
+      <>
+        <RecordGroupLink
+          href="#/parcelas/1"
+          leading={<ReceiptTextIcon aria-hidden />}
+          meta="Paga"
+        >
+          Parcela 1
+        </RecordGroupLink>
+        <RecordGroupLink
+          href="#/parcelas/2"
+          leading={<ReceiptTextIcon aria-hidden />}
+          meta="Prevista"
+        >
+          Parcela 2
+        </RecordGroupLink>
+        <RecordGroupLink
+          href="#/parcelas/3"
+          leading={<ReceiptTextIcon aria-hidden />}
+          meta="Prevista"
+        >
+          Parcela 3 do contrato de honorários da ação revisional bancária,
+          renegociada em setembro
+        </RecordGroupLink>
+        <RecordGroupLink
+          href="#/documentos/contrato-assinado.pdf"
+          leading={<FileTextIcon aria-hidden />}
+          meta="PDF · 12/08/2026"
+        >
+          contrato-assinado.pdf
+        </RecordGroupLink>
+      </>
+    ),
+  },
 }
 
 export const LinksInteraction: Story = {

@@ -1,10 +1,37 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import {
+  DateProperty,
+  RecordGroup,
+  RecordGroupAction,
+  type RecordGroupActionProps,
+  RecordGroupRow,
+  TextProperty,
+} from '@tc96/parttens'
+import { Button } from '@tc96/ui/button'
+import { CalendarDaysIcon, PlusIcon, ShapesIcon, UserIcon } from 'lucide-react'
+import type { ReactElement } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-import { RecordGroupDemo } from './fixtures/group-demo'
+import { recordGroupArgTypes } from '../../../test-utils/story-arg-types'
 
 const meta = {
-  args: { title: 'Details' },
-  component: RecordGroupDemo,
+  argTypes: recordGroupArgTypes,
+  args: {
+    children: (
+      <>
+        <RecordGroupRow label="Type" leading={<ShapesIcon aria-hidden />}>
+          <TextProperty value="Document request" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow label="Owner" leading={<UserIcon aria-hidden />}>
+          <TextProperty value="Mariana Souza" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow label="Due" leading={<CalendarDaysIcon aria-hidden />}>
+          <DateProperty readOnly value="2026-10-21" variant="plain" />
+        </RecordGroupRow>
+      </>
+    ),
+    title: 'Details',
+  },
+  component: RecordGroup,
   decorators: [
     (Story) => (
       <div className="w-96">
@@ -22,7 +49,7 @@ const meta = {
   },
   tags: ['!autodocs'],
   title: 'Patterns/Records/Group/Header and Footer',
-} satisfies Meta<typeof RecordGroupDemo>
+} satisfies Meta<typeof RecordGroup>
 
 export default meta
 
@@ -30,25 +57,27 @@ type Story = StoryObj<typeof meta>
 
 const interaction = ['!dev', '!autodocs']
 
-const longTitle =
-  'Customer onboarding, compliance review and contract renewal details for the current quarter'
-
 export const LongTitle: Story = {
-  args: { actionLabel: 'Add property', title: longTitle },
+  args: {
+    actions: <RecordGroupAction icon={PlusIcon} label="Add property" />,
+    title:
+      'Customer onboarding, compliance review and contract renewal details for the current quarter',
+  },
 }
 
 export const LongTitleInteraction: Story = {
   ...LongTitle,
-  play: async ({ canvasElement }) => {
+  play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement)
-    const trigger = canvas.getByRole('button', { name: longTitle })
+    const title = args.title as string
+    const trigger = canvas.getByRole('button', { name: title })
     const text = trigger.querySelector('span') as HTMLElement
     const header = canvasElement.querySelector(
       '[data-slot="record-group-header"]',
     ) as HTMLElement
     const action = canvas.getByRole('button', { name: 'Add property' })
 
-    expect(canvas.getByRole('region', { name: longTitle })).toBeVisible()
+    expect(canvas.getByRole('region', { name: title })).toBeVisible()
     expect(text.scrollWidth).toBeLessThanOrEqual(text.clientWidth)
     expect(action).toBeVisible()
     expect(action.getBoundingClientRect().right).toBeLessThanOrEqual(
@@ -60,7 +89,11 @@ export const LongTitleInteraction: Story = {
 }
 
 export const WithAction: Story = {
-  args: { actionLabel: 'Add property', onAction: fn(), title: 'Details' },
+  args: {
+    actions: (
+      <RecordGroupAction icon={PlusIcon} label="Add property" onClick={fn()} />
+    ),
+  },
 }
 
 export const WithActionInteraction: Story = {
@@ -69,14 +102,16 @@ export const WithActionInteraction: Story = {
     const canvas = within(canvasElement)
     const action = canvas.getByRole('button', { name: 'Add property' })
     const title = canvas.getByRole('button', { name: 'Details' })
+    const { onClick } = (args.actions as ReactElement<RecordGroupActionProps>)
+      .props
 
     expect(action).toHaveAccessibleName('Add property')
-    expect(action.getAttribute('aria-label')).toBe(args.actionLabel)
+    expect(action.getAttribute('aria-label')).toBe('Add property')
     expect(action.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
     expect(canvas.getByRole('region', { name: 'Details' })).toBeVisible()
 
     await userEvent.click(action)
-    expect(args.onAction).toHaveBeenCalledTimes(1)
+    expect(onClick).toHaveBeenCalledTimes(1)
     expect(title).toHaveAttribute('aria-expanded', 'true')
 
     await userEvent.click(title)
@@ -87,7 +122,9 @@ export const WithActionInteraction: Story = {
 }
 
 export const WithFooter: Story = {
-  args: { footerLabel: 'Add property', title: 'Details' },
+  args: {
+    footer: <Button variant="ghost">Add property</Button>,
+  },
 }
 
 export const WithFooterInteraction: Story = {

@@ -6,7 +6,6 @@ import {
   SelectProperty,
   TextProperty,
 } from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
 import { MapPinIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { CreateMoreSwitch } from './create-more'
@@ -196,26 +195,5 @@ export function CreateEventDialog({
         </div>
       </div>
     </RecordDialog>
-  )
-}
-
-export function CreateEventDemo({
-  onCreate,
-}: Readonly<{
-  onCreate: (values: EventValues) => void | Promise<void>
-}>) {
-  const [open, setOpen] = useState(true)
-
-  return (
-    <>
-      <Button onClick={() => setOpen(true)} variant="outline">
-        Open dialog
-      </Button>
-      <CreateEventDialog
-        onCreate={onCreate}
-        onOpenChange={setOpen}
-        open={open}
-      />
-    </>
   )
 }
