@@ -22,7 +22,7 @@ Patterns import the component files by path, not through `index.ts`, so renaming
 - `components/menu-selection-item.tsx` (`MenuCheckboxOption`): `collection-views/views/data-grid/components/data-grid-columns-submenu.tsx`, `properties/composition/property-collection.tsx`.
 - `components/collection-toolbar.tsx`: the tests `collection-views/views/data-grid/components/data-grid-search.test.tsx`, `collection-views/views/data-grid/components/data-grid-selection-summary.test.tsx`, `collection-views/shared/components/collection-filter-submenu.test.tsx` and `collection-views/shared/components/collection-search-field.test.tsx`.
 - `packages/registry/src/build-registry.ts` treats `./shared/index` in the root barrel as an area, not a pattern, and ships the area's barrel with every pattern whose files import it. A new file here must be reached from `index.ts` or from a pattern the registry follows.
-- Stories import from `@tc96/parttens`: `apps/storybook/src/patterns/shared/` and `apps/storybook/src/patterns/collection-views/default.stories.tsx`.
+- Stories import from `@tc96/parttens`: `apps/storybook/src/patterns/shared/`, and the collection-views usages through their fixtures in `apps/storybook/src/patterns/collection-views/fixtures/`.
 
 ## Invariants
 
@@ -63,7 +63,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/shared/pagination.stories.tsx src/patterns/shared/toolbar.stories.tsx
 ```
 
-Stories in `apps/storybook/src/patterns/shared/` run axe with `test: 'error'`.
+Stories in `apps/storybook/src/patterns/shared/` (`Patterns/Toolbar`, `Patterns/Pagination`) run axe with `test: 'error'`. Since 2026-10-17 they render the component directly, with no helper component, so the Code panel shows code the consumer can paste: each meta sets `component` and the args, a slot whose content has no state is JSX in `args` (`centerSlot` in `WithCenterSlot`), and slot content with state lives in the story's named `render` (`render: function Default(args)`). Each play runs in a `!dev` `<Story>Interaction` twin; the selected view and view settings plays (search, options, favorites, create, the menu sections) are twins of the toolbar's `Default`, because they act on the same state. The pagination meta keeps the page in `useState` and reports to a typed `onPageChange` spy, so `page` has no control. The toolbar stories are typed `StoryObj<typeof CollectionToolbar>`, not `StoryObj<typeof meta>`: `CollectionToolbarProps` is a union, and with `typeof meta` the story args collapse to `never`. The layout wrapper (`w-full max-w-6xl p-6`) is a decorator.
 
 ## Pointers
 

@@ -1,25 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CollectionPagination } from '@tc96/parttens'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
+import { expect, fn, userEvent, within } from 'storybook/test'
+import { collectionPaginationArgTypes } from '../../test-utils/story-arg-types'
 
 const meta = {
   args: {
     label: 'Paginação de contatos',
-    onPageChange: () => undefined,
+    onPageChange: fn((_page: number) => {}),
     page: 2,
     pageCount: 4,
   },
-  argTypes: {
-    page: { control: { min: 1, type: 'number' } },
-    pageCount: { control: { min: 0, type: 'number' } },
-    pageSize: { control: { min: 1, type: 'number' } },
-    total: { control: { min: 0, type: 'number' } },
-  },
+  argTypes: collectionPaginationArgTypes,
   component: CollectionPagination,
   decorators: [
     (Story) => (
-      <div className="w-full max-w-2xl rounded-lg border border-border bg-background">
+      <div className="w-full max-w-2xl rounded-lg border border-border">
         <Story />
       </div>
     ),
@@ -33,6 +29,20 @@ const meta = {
     },
     layout: 'padded',
   },
+  render: function Pagination({ onPageChange, ...args }) {
+    const [page, setPage] = useState(args.page)
+
+    return (
+      <CollectionPagination
+        {...args}
+        onPageChange={(next) => {
+          setPage(next)
+          onPageChange(next)
+        }}
+        page={page}
+      />
+    )
+  },
   title: 'Patterns/Pagination',
 } satisfies Meta<typeof CollectionPagination>
 
@@ -40,55 +50,62 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+const interaction = ['!dev', '!autodocs']
+
 export const Default: Story = {}
 
-export const WithRangeSummary: Story = {
-  args: { page: 3, pageCount: 3, pageSize: 25, total: 57 },
-  play: async ({ canvasElement }) => {
-    const screen = within(canvasElement)
+export const DefaultInteraction: Story = {
+  ...Default,
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
 
-    await expect(screen.getByText('51–57 de 57')).toBeInTheDocument()
-    await expect(
-      screen.getByRole('button', { name: 'Próxima página' }),
-    ).toBeDisabled()
-    await expect(
-      screen.getByRole('button', { name: 'Última página' }),
-    ).toBeDisabled()
-  },
-}
-
-function Controlled() {
-  const [page, setPage] = useState(1)
-
-  return (
-    <CollectionPagination
-      label="Paginação de casos e processos"
-      onPageChange={setPage}
-      page={page}
-      pageCount={5}
-      pageSize={25}
-      total={112}
-    />
-  )
-}
-
-export const ControlledPaging: Story = {
-  play: async ({ canvasElement }) => {
-    const screen = within(canvasElement)
-
-    await expect(
-      screen.getByRole('button', { name: 'Primeira página' }),
-    ).toBeDisabled()
+    await expect(canvas.getByText('2 / 4')).toBeInTheDocument()
     await userEvent.click(
-      screen.getByRole('button', { name: 'Próxima página' }),
+      canvas.getByRole('button', { name: 'Próxima página' }),
     )
-    await expect(screen.getByText('2 / 5')).toBeInTheDocument()
-    await expect(screen.getByText('26–50 de 112')).toBeInTheDocument()
-    await userEvent.click(screen.getByRole('button', { name: 'Última página' }))
-    await expect(screen.getByText('101–112 de 112')).toBeInTheDocument()
+    await expect(args.onPageChange).toHaveBeenLastCalledWith(3)
+    await expect(canvas.getByText('3 / 4')).toBeInTheDocument()
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Primeira página' }),
+    )
+    await expect(args.onPageChange).toHaveBeenLastCalledWith(1)
     await expect(
-      screen.getByRole('button', { name: 'Próxima página' }),
+      canvas.getByRole('button', { name: 'Página anterior' }),
     ).toBeDisabled()
   },
-  render: () => <Controlled />,
+  tags: interaction,
+}
+
+export const WithRangeSummary: Story = {
+  args: { page: 1, pageCount: 3, pageSize: 25, total: 57 },
+}
+
+export const WithRangeSummaryInteraction: Story = {
+  ...WithRangeSummary,
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.getByText('1–25 de 57')).toBeInTheDocument()
+    await expect(
+      canvas.getByRole('button', { name: 'Primeira página' }),
+    ).toBeDisabled()
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Próxima página' }),
+    )
+    await expect(canvas.getByText('2 / 3')).toBeInTheDocument()
+    await expect(canvas.getByText('26–50 de 57')).toBeInTheDocument()
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Última página' }))
+    await expect(args.onPageChange).toHaveBeenLastCalledWith(3)
+    await expect(canvas.getByText('51–57 de 57')).toBeInTheDocument()
+    await expect(
+      canvas.getByRole('button', { name: 'Próxima página' }),
+    ).toBeDisabled()
+    await expect(
+      canvas.getByRole('button', { name: 'Última página' }),
+    ).toBeDisabled()
+  },
+  tags: interaction,
 }

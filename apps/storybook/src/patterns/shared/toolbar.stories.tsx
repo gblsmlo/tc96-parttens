@@ -1,13 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Action,
-  type CollectionDefinition,
-  CollectionProvider,
   CollectionSearchField,
   CollectionToolbar,
   FilterRadioSubmenu,
   MenuCheckboxOption,
   MenuRadioOption,
+  SelectedViewCreate,
+  SelectedViewItem,
+  SelectedViewItems,
+  SelectedViewMenu,
+  SelectedViewSearch,
   ViewSettingsMenu,
   type ViewSettingsMode,
   ViewSettingsSection,
@@ -22,59 +25,47 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
+import { Separator } from '@tc96/ui/separator'
 import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
 import {
   ArrowDownUpIcon,
   CalendarDaysIcon,
   CircleDotIcon,
+  CopyPlusIcon,
   LayoutGridIcon,
   Rows3Icon,
   ShapesIcon,
   SignalHighIcon,
+  StarIcon,
   Table2Icon,
   TagsIcon,
+  Trash2Icon,
   UserRoundIcon,
 } from 'lucide-react'
-import { type ReactNode, useState } from 'react'
+import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
-import { SelectedViewPicker } from './selected-view-picker'
+import { collectionToolbarArgTypes } from '../../test-utils/story-arg-types'
 
-interface DemoItem {
-  assigneeId: string | null
+interface SavedView {
   id: string
-  statusId: string | null
-  title: string
+  label: string
 }
 
-type FilterKey = 'assignee' | 'date' | 'priority' | 'status' | 'tags'
-type Filters = Record<FilterKey, string[]>
+const views: SavedView[] = [
+  { id: 'recent', label: 'Pessoas contatadas recentemente' },
+  { id: 'all', label: 'Todas as pessoas' },
+  { id: 'overdue', label: 'Aguardando retorno' },
+]
 
-const demoCollection: CollectionDefinition<DemoItem> = {
-  getKey: (item) => item.id,
-  getLabel: (item) => item.title,
-  groupings: [
-    {
-      getGroupId: (item) => item.statusId,
-      id: 'status',
-      label: 'Status',
-      options: [
-        { id: 'todo', label: 'A fazer' },
-        { id: 'in-progress', label: 'Em andamento' },
-        { id: 'review', label: 'Em revisão' },
-        { id: 'done', label: 'Concluído' },
-      ],
-    },
-    {
-      getGroupId: (item) => item.assigneeId,
-      id: 'assignee',
-      label: 'Responsável',
-      options: [
-        { id: 'ana', label: 'Ana Souza' },
-        { id: 'bruno', label: 'Bruno Lima' },
-      ],
-    },
-  ],
-  items: [],
+type FilterKey = 'assignee' | 'date' | 'priority' | 'status' | 'tags'
+type Filters = Record<FilterKey, readonly string[]>
+
+const noFilters: Filters = {
+  assignee: [],
+  date: [],
+  priority: [],
+  status: [],
+  tags: [],
 }
 
 const filterDefinitions = [
@@ -116,175 +107,6 @@ const viewModes: readonly ViewSettingsMode<'kanban' | 'list' | 'datagrid'>[] = [
   { icon: Table2Icon, label: 'Tabela', value: 'datagrid' },
 ]
 
-function createEmptyFilters(): Filters {
-  return { assignee: [], date: [], priority: [], status: [], tags: [] }
-}
-
-function Frame({ children }: Readonly<{ children: ReactNode }>) {
-  return <div className="w-full max-w-6xl p-6">{children}</div>
-}
-
-const selectedViews = [
-  { id: 'recent', label: 'Pessoas contatadas recentemente' },
-  { id: 'all', label: 'Todas as pessoas' },
-  { id: 'overdue', label: 'Aguardando retorno' },
-] as const
-
-function SelectedViewControl({
-  searchable = true,
-  withCreate = true,
-  withOptions = true,
-}: Readonly<{
-  searchable?: boolean
-  withCreate?: boolean
-  withOptions?: boolean
-}>) {
-  const [selectedId, setSelectedId] = useState<string>('recent')
-  const [event, setEvent] = useState('')
-
-  return (
-    <>
-      <SelectedViewPicker
-        footer="Criado pela equipe · 30 set 2026"
-        onCreate={withCreate ? () => setEvent('criar') : undefined}
-        onDelete={() => setEvent('excluir')}
-        onDuplicate={() => setEvent('duplicar')}
-        onRename={() => setEvent('renomear')}
-        onSelect={setSelectedId}
-        searchable={searchable}
-        selectedId={selectedId}
-        views={selectedViews}
-        withOptions={withOptions}
-      />
-      <span className="sr-only" data-story-event>
-        {event}
-      </span>
-    </>
-  )
-}
-
-/**
- * Superfície única: o que antes eram dois gatilhos vizinhos (Filtrar e
- * Configurações) vira um menu com seções. O pacote traz a moldura, a contagem e o
- * limpar; as seções e suas opções continuam do consumer.
- */
-function MergedViewSettingsControl() {
-  const [density, setDensity] = useState<'comfortable' | 'compact'>(
-    'comfortable',
-  )
-  const [filters, setFilters] = useState<Filters>(createEmptyFilters)
-  const [layout, setLayout] = useState<'kanban' | 'list' | 'datagrid'>('kanban')
-  const [sort, setSort] = useState<'due' | 'updated'>('due')
-  const activeCount = Object.values(filters).reduce(
-    (count, values) => count + values.length,
-    0,
-  )
-
-  const toggleFilter = (key: FilterKey, value: string) => {
-    setFilters((current) => ({
-      ...current,
-      [key]: current[key].includes(value)
-        ? current[key].filter((currentValue) => currentValue !== value)
-        : [...current[key], value],
-    }))
-  }
-
-  const modified = activeCount > 0 || layout !== 'kanban' || sort !== 'due'
-
-  return (
-    <ViewSettingsMenu
-      activeFilterCount={activeCount}
-      mode={layout}
-      modes={viewModes}
-      onClearFilters={() => setFilters(createEmptyFilters())}
-      onModeChange={setLayout}
-      onSavePreference={() => undefined}
-      savePreferenceDisabled={!modified}
-    >
-      <ViewSettingsSection label="Exibição">
-        <MenuSub>
-          <MenuSubTrigger>
-            <Rows3Icon aria-hidden="true" />
-            Densidade
-          </MenuSubTrigger>
-          <MenuSubPopup>
-            <MenuRadioGroup
-              onValueChange={(value) => setDensity(value as typeof density)}
-              value={density}
-            >
-              <MenuRadioOption value="comfortable">Confortável</MenuRadioOption>
-              <MenuRadioOption value="compact">Compacta</MenuRadioOption>
-            </MenuRadioGroup>
-          </MenuSubPopup>
-        </MenuSub>
-        <MenuSub>
-          <MenuSubTrigger>
-            <CalendarDaysIcon aria-hidden="true" />
-            Ordenar por
-          </MenuSubTrigger>
-          <MenuSubPopup>
-            <MenuRadioGroup
-              onValueChange={(value) => setSort(value as typeof sort)}
-              value={sort}
-            >
-              <MenuRadioOption value="due">Prazo</MenuRadioOption>
-              <MenuRadioOption value="updated">Atualização</MenuRadioOption>
-            </MenuRadioGroup>
-          </MenuSubPopup>
-        </MenuSub>
-      </ViewSettingsSection>
-      <MenuSeparator />
-      <ViewSettingsSection label="Filtros">
-        {filterDefinitions.map(({ icon: Icon, id, label, options }) => (
-          <MenuSub key={id}>
-            <MenuSubTrigger>
-              <Icon aria-hidden="true" />
-              {label}
-            </MenuSubTrigger>
-            <MenuSubPopup>
-              <MenuGroup>
-                <MenuGroupLabel>{label}</MenuGroupLabel>
-                {options.map((option) => (
-                  <MenuCheckboxOption
-                    checked={filters[id].includes(option)}
-                    closeOnClick={false}
-                    key={option}
-                    onCheckedChange={() => toggleFilter(id, option)}
-                  >
-                    {option}
-                  </MenuCheckboxOption>
-                ))}
-              </MenuGroup>
-            </MenuSubPopup>
-          </MenuSub>
-        ))}
-      </ViewSettingsSection>
-    </ViewSettingsMenu>
-  )
-}
-
-function FourModesViewSettingsControl() {
-  const [layout, setLayout] = useState<
-    'kanban' | 'list' | 'datagrid' | 'calendar'
-  >('list')
-
-  return (
-    <ViewSettingsMenu
-      mode={layout}
-      modes={[
-        ...viewModes,
-        { icon: CalendarDaysIcon, label: 'Agenda', value: 'calendar' },
-      ]}
-      onClearFilters={() => undefined}
-      onModeChange={setLayout}
-    >
-      <ViewSettingsSection label="Exibição">
-        <MenuItem disabled>Densidade padrão</MenuItem>
-      </ViewSettingsSection>
-    </ViewSettingsMenu>
-  )
-}
-
 const spreadsheetModes: readonly ViewSettingsMode<
   'datagrid' | 'datatable' | 'kanban'
 >[] = [
@@ -293,113 +115,29 @@ const spreadsheetModes: readonly ViewSettingsMode<
   { icon: Table2Icon, label: 'Planilha', value: 'datagrid' },
 ]
 
-function ThreeModesViewSettingsControl() {
-  const [layout, setLayout] = useState<'datagrid' | 'datatable' | 'kanban'>(
-    'datatable',
-  )
-
-  return (
-    <ViewSettingsMenu
-      mode={layout}
-      modes={spreadsheetModes}
-      onClearFilters={() => undefined}
-      onModeChange={setLayout}
-    >
-      <ViewSettingsSection label="Exibição">
-        <MenuItem disabled>Densidade padrão</MenuItem>
-      </ViewSettingsSection>
-    </ViewSettingsMenu>
-  )
-}
-
-function ToolbarProposal() {
-  return (
-    <CollectionProvider collection={demoCollection}>
-      <CollectionToolbar
-        aria-label="Controles da coleção"
-        endSlot={
-          <>
-            <MergedViewSettingsControl />
-            <Action label="Nova tarefa" onClick={() => undefined} />
-          </>
-        }
-        startSlot={<SelectedViewControl />}
-        variant="plain"
-      />
-    </CollectionProvider>
-  )
-}
-
-/**
- * Coleção que não alterna layout: a busca fica visível à esquerda e o menu
- * carrega só ordenação e um filtro de valor único.
- */
-function SingleValueToolbar() {
-  const [search, setSearch] = useState('')
-  const [sort, setSort] = useState('name_asc')
-  const [type, setType] = useState('')
-  const activeCount = [search, type].filter(Boolean).length
-
-  return (
-    <CollectionToolbar
-      aria-label="Controles da coleção"
-      endSlot={
-        <>
-          <ViewSettingsMenu
-            activeFilterCount={activeCount}
-            onClearFilters={() => {
-              setSearch('')
-              setType('')
-            }}
-          >
-            <ViewSettingsSection label="Exibição">
-              <FilterRadioSubmenu
-                clearLabel="Nome (A–Z)"
-                icon={ArrowDownUpIcon}
-                label="Ordenar por"
-                onValueChange={(value) => setSort(value || 'name_asc')}
-                options={[
-                  ['name_desc', 'Nome (Z–A)'],
-                  ['created_desc', 'Mais recentes'],
-                ]}
-                value={sort === 'name_asc' ? '' : sort}
-              />
-            </ViewSettingsSection>
-            <MenuSeparator />
-            <ViewSettingsSection label="Filtros">
-              <FilterRadioSubmenu
-                icon={ShapesIcon}
-                label="Tipo"
-                onValueChange={setType}
-                options={[
-                  ['person', 'Pessoa'],
-                  ['organization', 'Organização'],
-                ]}
-                value={type}
-              />
-            </ViewSettingsSection>
-          </ViewSettingsMenu>
-          <Action label="Novo contato" onClick={() => undefined} />
-        </>
-      }
-      startSlot={
-        <CollectionSearchField
-          label="Buscar contatos"
-          onCommit={setSearch}
-          placeholder="Nome, e-mail ou telefone"
-          value={search}
-        />
-      }
-      variant="plain"
-    />
-  )
-}
+const agendaModes: readonly ViewSettingsMode<
+  'kanban' | 'list' | 'datagrid' | 'calendar'
+>[] = [
+  { icon: LayoutGridIcon, label: 'Kanban', value: 'kanban' },
+  { icon: Rows3Icon, label: 'Lista', value: 'list' },
+  { icon: Table2Icon, label: 'Tabela', value: 'datagrid' },
+  { icon: CalendarDaysIcon, label: 'Agenda', value: 'calendar' },
+]
 
 const meta = {
-  argTypes: {
-    variant: { control: 'inline-radio', options: ['default', 'plain', 'text'] },
+  args: {
+    'aria-label': 'Controles da coleção',
+    variant: 'plain',
   },
+  argTypes: collectionToolbarArgTypes,
   component: CollectionToolbar,
+  decorators: [
+    (Story) => (
+      <div className="w-full max-w-6xl p-6">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: 'fullscreen',
   },
@@ -408,41 +146,261 @@ const meta = {
 
 export default meta
 
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<typeof CollectionToolbar>
+
+const interaction = ['!dev', '!autodocs']
 
 export const Default: Story = {
   parameters: {
     docs: {
       description: {
         story:
-          'Contrato canônico, o mesmo que a página de Tarefas compõe: view selecionada no slot esquerdo; à direita um só gatilho de Exibição, com filtro e configuração como seções, seguido da ação de inclusão. A permissão é do consumer — sem ela a ação simplesmente não é composta.',
+          'Contrato canônico, o mesmo que a página de Tarefas compõe. No slot esquerdo, a view selecionada: o popover reúne busca, as views (as favoritas num grupo próprio no início), as opções da view ativa e a criação de uma nova view. À direita, um só gatilho de Exibição, com as tabs de layout no topo e filtro e configuração como seções, seguido da ação de inclusão. A contagem no gatilho inclui apenas filtros ativos. A permissão é do consumer — sem ela a ação simplesmente não é composta.',
       },
     },
   },
-  render: () => (
-    <Frame>
-      <ToolbarProposal />
-    </Frame>
-  ),
-}
+  render: function Default(args) {
+    const [savedViews, setSavedViews] = useState(views)
+    const [selectedId, setSelectedId] = useState('recent')
+    const [favoriteIds, setFavoriteIds] = useState<string[]>([])
+    const [query, setQuery] = useState('')
+    const [layout, setLayout] = useState<'kanban' | 'list' | 'datagrid'>(
+      'kanban',
+    )
+    const [density, setDensity] = useState<'comfortable' | 'compact'>(
+      'comfortable',
+    )
+    const [sort, setSort] = useState<'due' | 'updated'>('due')
+    const [filters, setFilters] = useState(noFilters)
 
-export const WithSelectedView: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'A view selecionada ocupa o início da toolbar. O popover reúne busca, views selecionáveis, opções contextuais e criação de uma nova view.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Pessoas contatadas recentemente' }),
+    const selected = savedViews.find((view) => view.id === selectedId)
+    const visibleViews = savedViews.filter((view) =>
+      view.label
+        .toLocaleLowerCase('pt-BR')
+        .includes(query.toLocaleLowerCase('pt-BR')),
+    )
+    const favoriteViews = visibleViews.filter((view) =>
+      favoriteIds.includes(view.id),
+    )
+    const otherViews = visibleViews.filter(
+      (view) => !favoriteIds.includes(view.id),
+    )
+    const activeFilterCount = Object.values(filters).reduce(
+      (count, values) => count + values.length,
+      0,
+    )
+    const modified =
+      activeFilterCount > 0 || layout !== 'kanban' || sort !== 'due'
+
+    const addView = (label: string) => {
+      const id = crypto.randomUUID()
+      setSavedViews((current) => [...current, { id, label }])
+      setSelectedId(id)
+    }
+
+    const deleteView = (id: string) => {
+      const remaining = savedViews.filter((view) => view.id !== id)
+      setSavedViews(remaining)
+      setFavoriteIds((current) => current.filter((item) => item !== id))
+      setSelectedId(remaining[0]?.id ?? '')
+    }
+
+    const toggleFilter = (key: FilterKey, value: string) => {
+      setFilters((current) => ({
+        ...current,
+        [key]: current[key].includes(value)
+          ? current[key].filter((item) => item !== value)
+          : [...current[key], value],
+      }))
+    }
+
+    const viewIcon = (
+      <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
+        <LayoutGridIcon aria-hidden="true" className="size-3" />
+      </span>
     )
 
-    const popover = within(await screen.findByRole('dialog'))
-    // O popover entra com animação de opacidade; espera terminar de abrir.
+    const renderView = (view: SavedView) => {
+      const favorite = favoriteIds.includes(view.id)
+
+      return (
+        <SelectedViewItem
+          icon={viewIcon}
+          key={view.id}
+          label={view.label}
+          onSelect={() => setSelectedId(view.id)}
+          options={
+            view.id === selectedId ? (
+              <>
+                <MenuItem
+                  className="whitespace-nowrap"
+                  onClick={() =>
+                    setFavoriteIds((current) =>
+                      favorite
+                        ? current.filter((item) => item !== view.id)
+                        : [...current, view.id],
+                    )
+                  }
+                >
+                  <StarIcon
+                    aria-hidden="true"
+                    fill={favorite ? 'currentColor' : 'none'}
+                  />
+                  {favorite
+                    ? 'Remover dos favoritos'
+                    : 'Adicionar aos favoritos'}
+                </MenuItem>
+                <MenuItem onClick={() => addView(`${view.label} (cópia)`)}>
+                  <CopyPlusIcon aria-hidden="true" />
+                  Duplicar
+                </MenuItem>
+                <MenuSeparator />
+                <MenuItem
+                  disabled={savedViews.length === 1}
+                  onClick={() => deleteView(view.id)}
+                  variant="destructive"
+                >
+                  <Trash2Icon aria-hidden="true" />
+                  Excluir
+                </MenuItem>
+                <div className="mt-1 border-t px-2 pt-2 pb-1 text-muted-foreground text-xs">
+                  Criado pela equipe · 30 set 2026
+                </div>
+              </>
+            ) : undefined
+          }
+          selected={view.id === selectedId}
+        />
+      )
+    }
+
+    return (
+      <CollectionToolbar
+        {...args}
+        endSlot={
+          <>
+            <ViewSettingsMenu
+              activeFilterCount={activeFilterCount}
+              mode={layout}
+              modes={viewModes}
+              onClearFilters={() => setFilters(noFilters)}
+              onModeChange={setLayout}
+              onSavePreference={() => undefined}
+              savePreferenceDisabled={!modified}
+            >
+              <ViewSettingsSection label="Exibição">
+                <MenuSub>
+                  <MenuSubTrigger>
+                    <Rows3Icon aria-hidden="true" />
+                    Densidade
+                  </MenuSubTrigger>
+                  <MenuSubPopup>
+                    <MenuRadioGroup onValueChange={setDensity} value={density}>
+                      <MenuRadioOption value="comfortable">
+                        Confortável
+                      </MenuRadioOption>
+                      <MenuRadioOption value="compact">
+                        Compacta
+                      </MenuRadioOption>
+                    </MenuRadioGroup>
+                  </MenuSubPopup>
+                </MenuSub>
+                <MenuSub>
+                  <MenuSubTrigger>
+                    <CalendarDaysIcon aria-hidden="true" />
+                    Ordenar por
+                  </MenuSubTrigger>
+                  <MenuSubPopup>
+                    <MenuRadioGroup onValueChange={setSort} value={sort}>
+                      <MenuRadioOption value="due">Prazo</MenuRadioOption>
+                      <MenuRadioOption value="updated">
+                        Atualização
+                      </MenuRadioOption>
+                    </MenuRadioGroup>
+                  </MenuSubPopup>
+                </MenuSub>
+              </ViewSettingsSection>
+              <MenuSeparator />
+              <ViewSettingsSection label="Filtros">
+                {filterDefinitions.map(({ icon: Icon, id, label, options }) => (
+                  <MenuSub key={id}>
+                    <MenuSubTrigger>
+                      <Icon aria-hidden="true" />
+                      {label}
+                    </MenuSubTrigger>
+                    <MenuSubPopup>
+                      <MenuGroup>
+                        <MenuGroupLabel>{label}</MenuGroupLabel>
+                        {options.map((option) => (
+                          <MenuCheckboxOption
+                            checked={filters[id].includes(option)}
+                            closeOnClick={false}
+                            key={option}
+                            onCheckedChange={() => toggleFilter(id, option)}
+                          >
+                            {option}
+                          </MenuCheckboxOption>
+                        ))}
+                      </MenuGroup>
+                    </MenuSubPopup>
+                  </MenuSub>
+                ))}
+              </ViewSettingsSection>
+            </ViewSettingsMenu>
+            <Action label="Nova tarefa" onClick={() => undefined} />
+          </>
+        }
+        startSlot={
+          <SelectedViewMenu
+            icon={viewIcon}
+            label={selected?.label ?? 'Selecionar view'}
+          >
+            <SelectedViewSearch onValueChange={setQuery} value={query} />
+            {favoriteViews.length ? (
+              <SelectedViewItems label="Favoritos">
+                <p
+                  aria-hidden="true"
+                  className="px-2 py-1 font-medium text-muted-foreground text-xs"
+                >
+                  Favoritos
+                </p>
+                {favoriteViews.map(renderView)}
+              </SelectedViewItems>
+            ) : null}
+            {favoriteViews.length && otherViews.length ? <Separator /> : null}
+            {otherViews.length ? (
+              <SelectedViewItems>
+                {otherViews.map(renderView)}
+              </SelectedViewItems>
+            ) : null}
+            {visibleViews.length ? null : (
+              <p className="px-2 py-1.5 text-muted-foreground text-sm">
+                Nenhuma view encontrada
+              </p>
+            )}
+            <Separator />
+            <SelectedViewCreate onClick={() => addView('Nova view')} />
+          </SelectedViewMenu>
+        }
+      />
+    )
+  },
+}
+
+const openSelectedView = async (canvasElement: HTMLElement, label: string) => {
+  await userEvent.click(
+    within(canvasElement).getByRole('button', { name: label }),
+  )
+  return within(await screen.findByRole('dialog', { name: label }))
+}
+
+export const SelectedViewInteraction: Story = {
+  ...Default,
+  play: async ({ canvasElement }) => {
+    const popover = await openSelectedView(
+      canvasElement,
+      'Pessoas contatadas recentemente',
+    )
     await waitFor(() =>
       expect(
         popover.getByRole('searchbox', { name: 'Buscar views' }),
@@ -455,33 +413,16 @@ export const WithSelectedView: Story = {
       popover.getByRole('button', { name: 'Criar nova view' }),
     ).toBeVisible()
   },
-  render: () => (
-    <Frame>
-      <CollectionToolbar
-        aria-label="View selecionada da coleção"
-        startSlot={<SelectedViewControl />}
-        variant="plain"
-      />
-    </Frame>
-  ),
+  tags: interaction,
 }
 
-export const WithSelectedViewAndSearch: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'A busca filtra as views do popover sem alterar a view selecionada.',
-      },
-    },
-  },
+export const SearchViewsInteraction: Story = {
+  ...Default,
   play: async ({ canvasElement }) => {
-    await userEvent.click(
-      within(canvasElement).getByRole('button', {
-        name: 'Pessoas contatadas recentemente',
-      }),
+    const popover = await openSelectedView(
+      canvasElement,
+      'Pessoas contatadas recentemente',
     )
-    const popover = within(await screen.findByRole('dialog'))
     await userEvent.type(
       popover.getByRole('searchbox', { name: 'Buscar views' }),
       'retorno',
@@ -496,112 +437,51 @@ export const WithSelectedViewAndSearch: Story = {
         null,
       ),
     )
-  },
-  render: () => (
-    <Frame>
-      <CollectionToolbar startSlot={<SelectedViewControl />} variant="plain" />
-    </Frame>
-  ),
-}
-
-export const Items: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'A lista pode ser composta sozinha, com um item ativo e alternativas.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Pessoas contatadas recentemente' }),
-    )
-    const popover = within(await screen.findByRole('dialog'))
-    await expect(popover.queryByRole('searchbox')).toBe(null)
     await expect(
-      popover.queryByRole('button', { name: 'Criar nova view' }),
-    ).toBe(null)
-    await userEvent.click(
-      popover.getByRole('button', { name: 'Todas as pessoas' }),
-    )
-    await expect(
-      canvas.getByRole('button', { name: 'Todas as pessoas' }),
-    ).toBeVisible()
-  },
-  render: () => (
-    <Frame>
-      <CollectionToolbar
-        startSlot={
-          <SelectedViewControl
-            searchable={false}
-            withCreate={false}
-            withOptions={false}
-          />
-        }
-        variant="plain"
-      />
-    </Frame>
-  ),
-}
-
-export const ItemOptions: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'O botão de reticências abre as ações contextuais da view ativa.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    await userEvent.click(
       within(canvasElement).getByRole('button', {
         name: 'Pessoas contatadas recentemente',
       }),
-    )
+    ).toBeVisible()
+  },
+  tags: interaction,
+}
+
+export const ViewOptionsInteraction: Story = {
+  ...Default,
+  play: async ({ canvasElement }) => {
+    await openSelectedView(canvasElement, 'Pessoas contatadas recentemente')
     await userEvent.click(
       await screen.findByRole('button', {
         name: 'Opções de Pessoas contatadas recentemente',
       }),
     )
     await expect(
-      await screen.findByRole('menuitem', { name: 'Renomear' }),
-    ).toBeVisible()
-    await expect(
       await screen.findByRole('menuitem', { name: 'Excluir' }),
     ).toBeVisible()
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Duplicar' }),
+    )
+    await expect(
+      await within(canvasElement).findByRole('button', {
+        name: 'Pessoas contatadas recentemente (cópia)',
+      }),
+    ).toBeVisible()
   },
-  render: () => (
-    <Frame>
-      <CollectionToolbar startSlot={<SelectedViewControl />} variant="plain" />
-    </Frame>
-  ),
+  tags: interaction,
 }
 
-export const Favorites: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Favoritar uma view move o item para o grupo Favoritos no início do popover, separado das demais views. A ação pode ser revertida pelo mesmo menu de opções.',
-      },
-    },
-  },
+export const FavoritesInteraction: Story = {
+  ...Default,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Pessoas contatadas recentemente' }),
+    const picker = await openSelectedView(
+      canvasElement,
+      'Pessoas contatadas recentemente',
     )
     await userEvent.click(
-      within(await screen.findByRole('dialog')).getByRole('button', {
-        name: 'Aguardando retorno',
-      }),
+      picker.getByRole('button', { name: 'Aguardando retorno' }),
     )
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Aguardando retorno' }),
-    )
+    await openSelectedView(canvasElement, 'Aguardando retorno')
     await userEvent.click(
       await screen.findByRole('button', {
         name: 'Opções de Aguardando retorno',
@@ -621,7 +501,7 @@ export const Favorites: Story = {
     const viewLabels = popover
       .getAllByRole('button')
       .map((item) => item.textContent)
-      .filter((label) => selectedViews.some((view) => view.label === label))
+      .filter((label) => views.some((view) => view.label === label))
     await expect(viewLabels).toEqual([
       'Aguardando retorno',
       'Pessoas contatadas recentemente',
@@ -629,50 +509,28 @@ export const Favorites: Story = {
     ])
     await expect(popover.getAllByRole('separator')).toHaveLength(2)
   },
-  render: () => (
-    <Frame>
-      <CollectionToolbar startSlot={<SelectedViewControl />} variant="plain" />
-    </Frame>
-  ),
+  tags: interaction,
 }
 
-export const CreateNewView: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'A ação de criação fica após os itens, com callback definido pelo consumer.',
-      },
-    },
-  },
+export const CreateViewInteraction: Story = {
+  ...Default,
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Pessoas contatadas recentemente' }),
+    const popover = await openSelectedView(
+      canvasElement,
+      'Pessoas contatadas recentemente',
     )
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Criar nova view' }),
+      popover.getByRole('button', { name: 'Criar nova view' }),
     )
     await expect(
-      canvasElement.querySelector('[data-story-event]')?.textContent,
-    ).toBe('criar')
+      await within(canvasElement).findByRole('button', { name: 'Nova view' }),
+    ).toBeVisible()
   },
-  render: () => (
-    <Frame>
-      <CollectionToolbar startSlot={<SelectedViewControl />} variant="plain" />
-    </Frame>
-  ),
+  tags: interaction,
 }
 
-export const ViewSettings: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'As tabs de layout ficam no topo do menu Exibição, antes das seções. Até três modos, ícone e label ficam inline. A contagem no gatilho inclui apenas filtros ativos.',
-      },
-    },
-  },
+export const ViewSettingsInteraction: Story = {
+  ...Default,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
@@ -711,15 +569,79 @@ export const ViewSettings: Story = {
       menu.getByRole('menuitem', { name: /Salvar preferência/ }),
     ).toHaveAttribute('data-disabled')
   },
-  render: () => (
-    <Frame>
+  tags: interaction,
+}
+
+export const Items: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A lista pode ser composta sozinha, com um item ativo e alternativas, sem busca, opções nem criação.',
+      },
+    },
+  },
+  render: function Items(args) {
+    const [selectedId, setSelectedId] = useState('recent')
+    const selected = views.find((view) => view.id === selectedId)
+
+    const viewIcon = (
+      <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
+        <LayoutGridIcon aria-hidden="true" className="size-3" />
+      </span>
+    )
+
+    return (
       <CollectionToolbar
-        aria-label="Ajustes da coleção"
-        endSlot={<MergedViewSettingsControl />}
-        variant="plain"
+        {...args}
+        startSlot={
+          <SelectedViewMenu
+            icon={viewIcon}
+            label={selected?.label ?? 'Selecionar view'}
+          >
+            <SelectedViewItems>
+              {views.map((view) => (
+                <SelectedViewItem
+                  icon={viewIcon}
+                  key={view.id}
+                  label={view.label}
+                  onSelect={() => setSelectedId(view.id)}
+                  selected={view.id === selectedId}
+                />
+              ))}
+            </SelectedViewItems>
+          </SelectedViewMenu>
+        }
       />
-    </Frame>
-  ),
+    )
+  },
+}
+
+export const ItemsInteraction: Story = {
+  ...Items,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const popover = await openSelectedView(
+      canvasElement,
+      'Pessoas contatadas recentemente',
+    )
+    await expect(popover.queryByRole('searchbox')).toBe(null)
+    await expect(
+      popover.queryByRole('button', { name: 'Criar nova view' }),
+    ).toBe(null)
+    await expect(
+      popover.queryByRole('button', {
+        name: 'Opções de Pessoas contatadas recentemente',
+      }),
+    ).toBe(null)
+    await userEvent.click(
+      popover.getByRole('button', { name: 'Todas as pessoas' }),
+    )
+    await expect(
+      canvas.getByRole('button', { name: 'Todas as pessoas' }),
+    ).toBeVisible()
+  },
+  tags: interaction,
 }
 
 export const ViewSettingsThreeModes: Story = {
@@ -731,6 +653,49 @@ export const ViewSettingsThreeModes: Story = {
       },
     },
   },
+  render: function ViewSettingsThreeModes(args) {
+    const [layout, setLayout] = useState<'datagrid' | 'datatable' | 'kanban'>(
+      'datatable',
+    )
+    const [density, setDensity] = useState<'comfortable' | 'compact'>(
+      'comfortable',
+    )
+
+    return (
+      <CollectionToolbar
+        {...args}
+        endSlot={
+          <ViewSettingsMenu
+            mode={layout}
+            modes={spreadsheetModes}
+            onClearFilters={() => undefined}
+            onModeChange={setLayout}
+          >
+            <ViewSettingsSection label="Exibição">
+              <MenuSub>
+                <MenuSubTrigger>
+                  <Rows3Icon aria-hidden="true" />
+                  Densidade
+                </MenuSubTrigger>
+                <MenuSubPopup>
+                  <MenuRadioGroup onValueChange={setDensity} value={density}>
+                    <MenuRadioOption value="comfortable">
+                      Confortável
+                    </MenuRadioOption>
+                    <MenuRadioOption value="compact">Compacta</MenuRadioOption>
+                  </MenuRadioGroup>
+                </MenuSubPopup>
+              </MenuSub>
+            </ViewSettingsSection>
+          </ViewSettingsMenu>
+        }
+      />
+    )
+  },
+}
+
+export const ViewSettingsThreeModesInteraction: Story = {
+  ...ViewSettingsThreeModes,
   play: async ({ canvasElement }) => {
     await userEvent.click(
       within(canvasElement).getByRole('button', { name: 'Exibição' }),
@@ -752,14 +717,7 @@ export const ViewSettingsThreeModes: Story = {
       )
     }
   },
-  render: () => (
-    <Frame>
-      <CollectionToolbar
-        endSlot={<ThreeModesViewSettingsControl />}
-        variant="plain"
-      />
-    </Frame>
-  ),
+  tags: interaction,
 }
 
 export const ViewSettingsFourModes: Story = {
@@ -771,6 +729,49 @@ export const ViewSettingsFourModes: Story = {
       },
     },
   },
+  render: function ViewSettingsFourModes(args) {
+    const [layout, setLayout] = useState<
+      'kanban' | 'list' | 'datagrid' | 'calendar'
+    >('list')
+    const [density, setDensity] = useState<'comfortable' | 'compact'>(
+      'comfortable',
+    )
+
+    return (
+      <CollectionToolbar
+        {...args}
+        endSlot={
+          <ViewSettingsMenu
+            mode={layout}
+            modes={agendaModes}
+            onClearFilters={() => undefined}
+            onModeChange={setLayout}
+          >
+            <ViewSettingsSection label="Exibição">
+              <MenuSub>
+                <MenuSubTrigger>
+                  <Rows3Icon aria-hidden="true" />
+                  Densidade
+                </MenuSubTrigger>
+                <MenuSubPopup>
+                  <MenuRadioGroup onValueChange={setDensity} value={density}>
+                    <MenuRadioOption value="comfortable">
+                      Confortável
+                    </MenuRadioOption>
+                    <MenuRadioOption value="compact">Compacta</MenuRadioOption>
+                  </MenuRadioGroup>
+                </MenuSubPopup>
+              </MenuSub>
+            </ViewSettingsSection>
+          </ViewSettingsMenu>
+        }
+      />
+    )
+  },
+}
+
+export const ViewSettingsFourModesInteraction: Story = {
+  ...ViewSettingsFourModes,
   play: async ({ canvasElement }) => {
     await userEvent.click(
       within(canvasElement).getByRole('button', { name: 'Exibição' }),
@@ -780,14 +781,7 @@ export const ViewSettingsFourModes: Story = {
       await expect(tab).toHaveAttribute('data-layout', 'stacked')
     }
   },
-  render: () => (
-    <Frame>
-      <CollectionToolbar
-        endSlot={<FourModesViewSettingsControl />}
-        variant="plain"
-      />
-    </Frame>
-  ),
+  tags: interaction,
 }
 
 export const WithSearch: Story = {
@@ -795,10 +789,73 @@ export const WithSearch: Story = {
     docs: {
       description: {
         story:
-          'Busca visível no slot esquerdo, para a coleção em que procurar é a interação principal — o menu esconderia o controle mais usado da tela. Os filtros de valor único usam o submenu compartilhado, que trata "todos" como ausência de filtro e devolve string vazia.',
+          'Busca visível no slot esquerdo, para a coleção em que procurar é a interação principal — o menu esconderia o controle mais usado da tela. A coleção não alterna layout, então o menu carrega só ordenação e um filtro de valor único, pelo submenu compartilhado, que trata "todos" como ausência de filtro e devolve string vazia.',
       },
     },
   },
+  render: function WithSearch(args) {
+    const [search, setSearch] = useState('')
+    const [sort, setSort] = useState('name_asc')
+    const [type, setType] = useState('')
+    const activeFilterCount = [search, type].filter(Boolean).length
+
+    return (
+      <CollectionToolbar
+        {...args}
+        endSlot={
+          <>
+            <ViewSettingsMenu
+              activeFilterCount={activeFilterCount}
+              onClearFilters={() => {
+                setSearch('')
+                setType('')
+              }}
+            >
+              <ViewSettingsSection label="Exibição">
+                <FilterRadioSubmenu
+                  clearLabel="Nome (A–Z)"
+                  icon={ArrowDownUpIcon}
+                  label="Ordenar por"
+                  onValueChange={(value) => setSort(value || 'name_asc')}
+                  options={[
+                    ['name_desc', 'Nome (Z–A)'],
+                    ['created_desc', 'Mais recentes'],
+                  ]}
+                  value={sort === 'name_asc' ? '' : sort}
+                />
+              </ViewSettingsSection>
+              <MenuSeparator />
+              <ViewSettingsSection label="Filtros">
+                <FilterRadioSubmenu
+                  icon={ShapesIcon}
+                  label="Tipo"
+                  onValueChange={setType}
+                  options={[
+                    ['person', 'Pessoa'],
+                    ['organization', 'Organização'],
+                  ]}
+                  value={type}
+                />
+              </ViewSettingsSection>
+            </ViewSettingsMenu>
+            <Action label="Novo contato" onClick={() => undefined} />
+          </>
+        }
+        startSlot={
+          <CollectionSearchField
+            label="Buscar contatos"
+            onCommit={setSearch}
+            placeholder="Nome, e-mail ou telefone"
+            value={search}
+          />
+        }
+      />
+    )
+  },
+}
+
+export const WithSearchInteraction: Story = {
+  ...WithSearch,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
@@ -813,14 +870,16 @@ export const WithSearch: Story = {
       canvas.getByRole('button', { name: 'Exibição (1)' }),
     ).toBeTruthy()
   },
-  render: () => (
-    <Frame>
-      <SingleValueToolbar />
-    </Frame>
-  ),
+  tags: interaction,
 }
 
 export const WithText: Story = {
+  args: {
+    'aria-label': 'Controles das tarefas',
+    description: 'Acompanhe e organize o trabalho da equipe.',
+    title: 'Tarefas',
+    variant: 'text',
+  },
   parameters: {
     docs: {
       description: {
@@ -829,6 +888,54 @@ export const WithText: Story = {
       },
     },
   },
+  render: function WithText(args) {
+    const [layout, setLayout] = useState<'kanban' | 'list' | 'datagrid'>(
+      'kanban',
+    )
+    const [density, setDensity] = useState<'comfortable' | 'compact'>(
+      'comfortable',
+    )
+
+    return (
+      <CollectionToolbar
+        {...args}
+        endSlot={
+          <>
+            <ViewSettingsMenu
+              mode={layout}
+              modes={viewModes}
+              onClearFilters={() => undefined}
+              onModeChange={setLayout}
+            >
+              <ViewSettingsSection label="Exibição">
+                <MenuSub>
+                  <MenuSubTrigger>
+                    <Rows3Icon aria-hidden="true" />
+                    Densidade
+                  </MenuSubTrigger>
+                  <MenuSubPopup>
+                    <MenuRadioGroup onValueChange={setDensity} value={density}>
+                      <MenuRadioOption value="comfortable">
+                        Confortável
+                      </MenuRadioOption>
+                      <MenuRadioOption value="compact">
+                        Compacta
+                      </MenuRadioOption>
+                    </MenuRadioGroup>
+                  </MenuSubPopup>
+                </MenuSub>
+              </ViewSettingsSection>
+            </ViewSettingsMenu>
+            <Action label="Nova tarefa" onClick={() => undefined} />
+          </>
+        }
+      />
+    )
+  },
+}
+
+export const WithTextInteraction: Story = {
+  ...WithText,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const toolbar = canvas.getByRole('toolbar', {
@@ -847,25 +954,19 @@ export const WithText: Story = {
       canvas.getByRole('button', { name: 'Nova tarefa' }),
     ).toBeVisible()
   },
-  render: () => (
-    <Frame>
-      <CollectionToolbar
-        aria-label="Controles das tarefas"
-        description="Acompanhe e organize o trabalho da equipe."
-        endSlot={
-          <>
-            <MergedViewSettingsControl />
-            <Action label="Nova tarefa" onClick={() => undefined} />
-          </>
-        }
-        title="Tarefas"
-        variant="text"
-      />
-    </Frame>
-  ),
+  tags: interaction,
 }
 
 export const WithCenterSlot: Story = {
+  args: {
+    centerSlot: (
+      <ToggleGroup aria-label="Período" defaultValue={['week']}>
+        <ToggleGroupItem value="day">Dia</ToggleGroupItem>
+        <ToggleGroupItem value="week">Semana</ToggleGroupItem>
+        <ToggleGroupItem value="month">Mês</ToggleGroupItem>
+      </ToggleGroup>
+    ),
+  },
   parameters: {
     docs: {
       description: {
@@ -874,6 +975,72 @@ export const WithCenterSlot: Story = {
       },
     },
   },
+  render: function WithCenterSlot(args) {
+    const [selectedId, setSelectedId] = useState('recent')
+    const [density, setDensity] = useState<'comfortable' | 'compact'>(
+      'comfortable',
+    )
+    const selected = views.find((view) => view.id === selectedId)
+
+    const viewIcon = (
+      <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
+        <LayoutGridIcon aria-hidden="true" className="size-3" />
+      </span>
+    )
+
+    return (
+      <CollectionToolbar
+        {...args}
+        endSlot={
+          <>
+            <ViewSettingsMenu onClearFilters={() => undefined}>
+              <ViewSettingsSection label="Exibição">
+                <MenuSub>
+                  <MenuSubTrigger>
+                    <Rows3Icon aria-hidden="true" />
+                    Densidade
+                  </MenuSubTrigger>
+                  <MenuSubPopup>
+                    <MenuRadioGroup onValueChange={setDensity} value={density}>
+                      <MenuRadioOption value="comfortable">
+                        Confortável
+                      </MenuRadioOption>
+                      <MenuRadioOption value="compact">
+                        Compacta
+                      </MenuRadioOption>
+                    </MenuRadioGroup>
+                  </MenuSubPopup>
+                </MenuSub>
+              </ViewSettingsSection>
+            </ViewSettingsMenu>
+            <Action label="Nova tarefa" onClick={() => undefined} />
+          </>
+        }
+        startSlot={
+          <SelectedViewMenu
+            icon={viewIcon}
+            label={selected?.label ?? 'Selecionar view'}
+          >
+            <SelectedViewItems>
+              {views.map((view) => (
+                <SelectedViewItem
+                  icon={viewIcon}
+                  key={view.id}
+                  label={view.label}
+                  onSelect={() => setSelectedId(view.id)}
+                  selected={view.id === selectedId}
+                />
+              ))}
+            </SelectedViewItems>
+          </SelectedViewMenu>
+        }
+      />
+    )
+  },
+}
+
+export const WithCenterSlotInteraction: Story = {
+  ...WithCenterSlot,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const toolbar = canvas.getByRole('toolbar', {
@@ -895,24 +1062,5 @@ export const WithCenterSlot: Story = {
       ),
     ).toBeLessThan(1)
   },
-  render: () => (
-    <Frame>
-      <CollectionToolbar
-        centerSlot={
-          <ToggleGroup aria-label="Período" defaultValue={['week']}>
-            <ToggleGroupItem value="day">Dia</ToggleGroupItem>
-            <ToggleGroupItem value="week">Semana</ToggleGroupItem>
-            <ToggleGroupItem value="month">Mês</ToggleGroupItem>
-          </ToggleGroup>
-        }
-        endSlot={
-          <>
-            <MergedViewSettingsControl />
-            <Action label="Nova tarefa" onClick={() => undefined} />
-          </>
-        }
-        startSlot={<SelectedViewControl />}
-      />
-    </Frame>
-  ),
+  tags: interaction,
 }

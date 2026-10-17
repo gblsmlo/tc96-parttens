@@ -68,3 +68,28 @@ export const recordDialogArgTypes = {
   submitDisabled: boolean,
   submitOnModEnter: boolean,
 } as const
+
+const text = { control: 'text' } as const
+
+/**
+ * `CollectionToolbar`: variante, os textos e os slots de JSX sem controle. As
+ * props são uma união, e o docgen não lista `title` nem `description`.
+ */
+export const collectionToolbarArgTypes = {
+  'aria-label': text,
+  centerSlot: withoutControl,
+  children: withoutControl,
+  description: text,
+  endSlot: withoutControl,
+  startSlot: withoutControl,
+  title: text,
+  variant: { control: 'inline-radio', options: ['default', 'plain', 'text'] },
+} as const
+
+/** `CollectionPagination`: a página corrente mora na story, o resto é número. */
+export const collectionPaginationArgTypes = {
+  page: withoutControl,
+  pageCount: { control: { min: 0, type: 'number' } },
+  pageSize: { control: { min: 1, type: 'number' } },
+  total: { control: { min: 0, type: 'number' } },
+} as const

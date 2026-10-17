@@ -46,12 +46,12 @@ import {
   UsersIcon,
 } from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
-import { SelectedViewPicker } from '../../shared/selected-view-picker'
 import {
   resetPersistedMock,
   usePersistedState,
   useSimulatedFetch,
 } from './persisted-mock'
+import { SelectedViewPicker } from './selected-view-picker'
 import {
   createDataGridColumns,
   createDataTableColumns,
