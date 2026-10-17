@@ -155,6 +155,10 @@ await writeFile(
       keywords: ['coss', 'react', 'patterns', 'registry', 'cli'],
       type: 'module',
       license: 'MIT',
+      repository: {
+        type: 'git',
+        url: 'git+https://github.com/gblsmlo/tc96-parttens.git',
+      },
       engines: { node: '>=22' },
       bin: { 'tc96-parttens': 'cli.js' },
       // Pacote com escopo nasce restrito no npm; o CLI e publico.
