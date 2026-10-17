@@ -232,6 +232,21 @@ export const Toggle: Story = {
   },
 }
 
+export const Rest: StoryObj<{
+  onSave: (value: string) => void
+  title: string
+}> = {
+  args: { onSave: fn((_value: string) => {}), title: 'Details' },
+  render: function Rest({ onSave, ...args }) {
+    const [open, setOpen] = useState(true)
+    return (
+      <Group {...args} onOpenChange={(next) => { setOpen(next); onSave?.('x') }} open={open}>
+        {args.title}
+      </Group>
+    )
+  },
+}
+
 export const Handlers: StoryObj<{ onSave: (value: string) => void }> = {
   args: { onSave: fn(async (_value: string) => {}) },
   render: function Handlers({ onSave }) {
@@ -263,5 +278,17 @@ test('declares fn handlers at the top and drops storybook/test', () => {
   expect(code).toContain('const onSave = async (_value: string) => {}')
   expect(code).toContain("onClick={() => onSave('a')}")
   expect(code).not.toContain('fn(')
+  expect(code).not.toContain('storybook')
+})
+
+test('spreads the rest of destructured args as props', () => {
+  const code = storyComponent(slots, 'Rest') as string
+
+  expect(code).toContain('const onSave = (_value: string) => {}')
+  expect(code).toContain('<Group')
+  expect(code).toContain('title="Details"')
+  expect(code).toContain("onSave?.('x')")
+  expect(code).toContain("{'Details'}")
+  expect(code).not.toContain('args')
   expect(code).not.toContain('storybook')
 })
