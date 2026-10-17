@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/react-vite'
 import '../../example/packages/ui/src/styles.css'
+import { DocsPage } from './docs-page.tsx'
 
 type ThemeMode = 'system' | 'light' | 'dark'
 
@@ -68,6 +69,7 @@ const preview: Preview = {
     },
     docs: {
       codePanel: true,
+      page: DocsPage,
     },
     controls: {
       matchers: {
