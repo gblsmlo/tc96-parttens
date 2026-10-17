@@ -42,6 +42,7 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      maxWorkers: 2,
       projects: [
         storybookProject('storybook', { theme: 'light' }),
         storybookProject('storybook-dark', { theme: 'dark' }),
