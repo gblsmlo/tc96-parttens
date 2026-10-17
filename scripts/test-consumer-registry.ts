@@ -1,7 +1,8 @@
+import { existsSync } from 'node:fs'
 import { readFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import ts from 'typescript'
-import { patternNames } from '../packages/registry/src/manifest'
+import { patternNames, patternSources } from '../packages/registry/src/manifest'
 import {
   type Consumer,
   createConsumer,
@@ -9,11 +10,6 @@ import {
   saveReport,
 } from './consumer'
 
-// Every pattern installs into the example consumer, compiles against its COSS
-// and leaves its UI untouched. Two runs check that the generated barrel keeps
-// earlier patterns and, once all are installed, exports the workspace
-// aggregate's public API. The consumer lacks one COSS component the patterns
-// use, which the CLI installs from @coss; the ones it has are kept.
 const baseline: Record<string, string[]> = JSON.parse(
   await readFile('docs/architecture/public-api-exports.json', 'utf8'),
 )
@@ -50,12 +46,6 @@ function expectExports(actual: string[], expected: string[], when: string) {
 const all = baseline.parttens ?? []
 const first = ['collection-views', 'properties']
 const later = patternNames.filter((name) => !first.includes(name))
-const firstNames = new Set(first.flatMap((name) => baseline[name] ?? []))
-const laterOnly = new Set(
-  later
-    .flatMap((name) => baseline[name] ?? [])
-    .filter((name) => !firstNames.has(name)),
-)
 const missingComponent = 'empty'
 const consumer = await createConsumer('consumer-registry')
 await rm(join(consumer.root, consumer.ui, `${missingComponent}.tsx`))
@@ -65,6 +55,20 @@ if (JSON.stringify(firstRun.addedUi) !== JSON.stringify(expectedUi))
   throw new Error(
     `Expected the CLI to add only ${expectedUi}, added: ${firstRun.addedUi.join(', ') || 'nothing'}`,
   )
+const installedFirst = patternNames.filter((name) =>
+  existsSync(
+    join(consumer.root, consumer.patterns, patternSources[name], 'index.ts'),
+  ),
+)
+const firstNames = new Set(
+  installedFirst.flatMap((name) => baseline[name] ?? []),
+)
+const laterOnly = new Set(
+  patternNames
+    .filter((name) => !installedFirst.includes(name))
+    .flatMap((name) => baseline[name] ?? [])
+    .filter((name) => !firstNames.has(name)),
+)
 expectExports(
   barrelExports(consumer),
   all.filter((name) => !laterOnly.has(name)),
