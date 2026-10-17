@@ -333,6 +333,17 @@ Decidido em 2026-10-08 (#51), contraste do `Button` `destructive` no tema de exe
 
 O texto de erro, de alerta e do `Badge` usa `destructive-foreground`, que não mudou e segue acima de 4,5:1 nos dois temas. O ícone de `state-surface` (`var(--destructive)`, gráfico) fica em 3,67:1 no escuro sobre `background`, acima dos 3:1. O asterisco de campo obrigatório do `Editable` era o único texto em `text-destructive` e passou a `text-destructive-foreground`, o token de texto, como no `checklist`: 6,15:1 no claro e 6,05:1 no escuro sobre `background`, medidos no navegador em `getComputedStyle(label, '::after').color` (antes 3,66:1 e 4,96:1). Não há valor de `--destructive` que dê 4,5:1 nos dois lados no escuro, porque o rótulo branco exige fundo de luminância relativa abaixo de 0,18 e o texto sobre `stone-900` exige acima de 0,2; por isso o texto não usa `text-destructive`. Os pares "antes" e as linhas de `destructive-foreground` e `text-destructive` são calculados a partir dos tokens; os do rótulo "depois" foram medidos nas cores computadas da story.
 
+Decidido em 2026-10-17, contraste da dica de atalho do `RecordDialog`. Com `submitOnModEnter`, o botão de enviar mostra um `Kbd` (`⌘ ↵` ou `Ctrl ↵`) dentro do `Button` padrão, que é `bg-primary`. O `Kbd` do COSS pinta `bg-muted text-muted-foreground`, par feito para `background` e `muted`; sobre `primary` o texto de 12 px ficava abaixo de 4,5:1 nos dois temas, e o axe reprovava no `storybook-dark` as stories que terminam com o diálogo aberto e o botão habilitado (o envio que falha). A causa é a composição do pattern, não um token do consumidor: `muted-foreground` não promete contraste sobre `primary`. O `Kbd` passou a `bg-primary-foreground/16 text-primary-foreground`, o par que o tema garante para `primary`, o mesmo do rótulo, com duas exceções em `scripts/override-exceptions.json` e sem mudança em `packages/ui`. Medido com o axe 4.13 nas cores computadas da story `Patterns/Records/Dialog/Failed Submit`, com o botão em foco e o diálogo aberto depois do erro; o hover é `bg-primary/90` sobre o `popover` (texto 4,5:1):
+
+| Par | Antes | Depois |
+| --- | --- | --- |
+| Dica, repouso, claro | 2,69:1 | 8,81:1 |
+| Dica, hover, claro | 2,03:1 | 6,64:1 |
+| Dica, repouso, escuro | 3,00:1 | 10,22:1 |
+| Dica, hover, escuro | 2,50:1 | 8,52:1 |
+
+O rótulo do botão não mudou: 14,52:1 no claro e 13,90:1 no escuro, 10,75:1 e 11,48:1 no hover. A tecla se distingue do botão por 1,65:1 no claro e 1,36:1 no escuro (calculado dos tokens); ela é `aria-hidden` e decorativa, porque o texto da dica já carrega a informação, então fica fora do 3:1 de gráfico. A dica não usa opacidade no texto para não perder mais contraste do que a tecla já tira. Nota para o consumidor: o tema de exemplo tem folga, com o par `primary`/`primary-foreground` acima de 13:1; num tema com esse par perto de 4,5:1, a tecla de 16% leva a dica abaixo do mínimo, e o caminho é subir o contraste do par no tema.
+
 ## Validação proposta
 
 - Fronteiras: impedir imports em direção proibida, ciclos e UI duplicada por padrão. `packages/parttens` só importa `@tc96/ui/<item>` presente no lock COSS.

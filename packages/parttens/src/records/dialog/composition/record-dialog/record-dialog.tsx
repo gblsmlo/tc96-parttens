@@ -130,7 +130,11 @@ export function RecordDialog({
             {pending ? <Spinner aria-hidden="true" /> : null}
             {pending ? (submittingLabel ?? submitLabel) : submitLabel}
             {submitOnModEnter ? (
-              <Kbd aria-hidden="true" data-slot="record-dialog-submit-hint">
+              <Kbd
+                aria-hidden="true"
+                className="bg-primary-foreground/16 text-primary-foreground"
+                data-slot="record-dialog-submit-hint"
+              >
                 {modifier} ↵
               </Kbd>
             ) : null}

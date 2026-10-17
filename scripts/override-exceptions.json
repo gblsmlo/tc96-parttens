@@ -18,6 +18,18 @@
     "reason": "Shell do dialog portado do Lemind: o título vem depois do ancestral em `text-muted-foreground` numa trilha, e `font-medium text-sm text-foreground` o traz ao tamanho do ancestral em vez do `text-xl` do COSS; `text-foreground` é o token do tema."
   },
   {
+    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog.tsx",
+    "component": "Kbd",
+    "className": "text-primary-foreground",
+    "reason": "A dica de atalho fica dentro do botão de enviar, que é `bg-primary`. O `text-muted-foreground` do `Kbd` do COSS é par de `background` e `muted` e ficava em 2,69:1 no claro e 3,00:1 no escuro sobre `primary` (axe, texto de 12 px); `text-primary-foreground` é o par que o tema garante para `primary`, o mesmo do rótulo do botão."
+  },
+  {
+    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog.tsx",
+    "component": "Kbd",
+    "className": "bg-primary-foreground/16",
+    "reason": "O `bg-muted` do `Kbd` do COSS é 4% de preto ou de branco e some sobre o `bg-primary` do botão de enviar; `bg-primary-foreground/16` é a tecla clara sobre o botão escuro (e o inverso no escuro), com o texto acima de 4,5:1 nos dois temas."
+  },
+  {
     "file": "packages/parttens/src/collection-views/views/data-table/data-table.tsx",
     "component": "TableHeader",
     "className": "not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)]",
