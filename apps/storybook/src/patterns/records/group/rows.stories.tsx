@@ -1,16 +1,37 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
 import {
-  detailRows,
-  longLabelRows,
-  longValueRows,
-  RecordGroupDemo,
-} from './fixtures/group-demo'
+  DateProperty,
+  RecordGroup,
+  RecordGroupRow,
+  TextProperty,
+} from '@tc96/parttens'
+import { CalendarDaysIcon, HashIcon, ShapesIcon, UserIcon } from 'lucide-react'
+import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { recordGroupArgTypes } from '../../../test-utils/story-arg-types'
 import { part, rowsOf } from './fixtures/group-dom'
 
 const meta = {
-  args: { title: 'Details' },
-  component: RecordGroupDemo,
+  argTypes: recordGroupArgTypes,
+  args: {
+    children: (
+      <>
+        <RecordGroupRow label="Type" leading={<ShapesIcon aria-hidden />}>
+          <TextProperty value="Document request" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow label="Owner" leading={<UserIcon aria-hidden />}>
+          <TextProperty value="Mariana Souza" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow label="Reference" leading={<HashIcon aria-hidden />}>
+          <TextProperty value="REQ-1042" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow label="Due" leading={<CalendarDaysIcon aria-hidden />}>
+          <DateProperty readOnly value="2026-10-21" variant="plain" />
+        </RecordGroupRow>
+      </>
+    ),
+    title: 'Details',
+  },
+  component: RecordGroup,
   decorators: [
     (Story) => (
       <div className="w-96">
@@ -28,7 +49,7 @@ const meta = {
   },
   tags: ['!autodocs'],
   title: 'Patterns/Records/Group/Rows',
-} satisfies Meta<typeof RecordGroupDemo>
+} satisfies Meta<typeof RecordGroup>
 
 export default meta
 
@@ -102,15 +123,46 @@ export const DefaultInteraction: Story = {
 
     await userEvent.click(title)
     await waitFor(() => expect(title).toHaveAttribute('aria-expanded', 'true'))
-    await waitFor(() =>
-      expect(rowsOf(canvasElement)).toHaveLength(detailRows.length),
-    )
+    await waitFor(() => expect(rowsOf(canvasElement)).toHaveLength(4))
   },
   tags: interaction,
 }
 
 export const AlignBetween: Story = {
-  args: { align: 'between', title: 'Details (between)' },
+  args: {
+    children: (
+      <>
+        <RecordGroupRow
+          align="between"
+          label="Type"
+          leading={<ShapesIcon aria-hidden />}
+        >
+          <TextProperty value="Document request" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow
+          align="between"
+          label="Owner"
+          leading={<UserIcon aria-hidden />}
+        >
+          <TextProperty value="Mariana Souza" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow
+          align="between"
+          label="Reference"
+          leading={<HashIcon aria-hidden />}
+        >
+          <TextProperty value="REQ-1042" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow
+          align="between"
+          label="Due"
+          leading={<CalendarDaysIcon aria-hidden />}
+        >
+          <DateProperty readOnly value="2026-10-21" variant="plain" />
+        </RecordGroupRow>
+      </>
+    ),
+  },
 }
 
 export const AlignBetweenInteraction: Story = {
@@ -118,7 +170,7 @@ export const AlignBetweenInteraction: Story = {
   play: async ({ canvasElement }) => {
     const rows = rowsOf(canvasElement)
 
-    expect(rows).toHaveLength(detailRows.length)
+    expect(rows).toHaveLength(4)
     for (const row of rows) {
       const box = row.getBoundingClientRect()
       const paddingEnd = Number.parseFloat(getComputedStyle(row).paddingRight)
@@ -134,7 +186,21 @@ export const AlignBetweenInteraction: Story = {
 }
 
 export const LongLabelStart: Story = {
-  args: { rows: longLabelRows, title: 'Long label (start)' },
+  args: {
+    children: (
+      <>
+        <RecordGroupRow label="Type" leading={<ShapesIcon aria-hidden />}>
+          <TextProperty value="Document request" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow
+          label="Expected delivery date agreed with the customer after the second review"
+          leading={<CalendarDaysIcon aria-hidden />}
+        >
+          <DateProperty readOnly value="2026-10-21" variant="plain" />
+        </RecordGroupRow>
+      </>
+    ),
+  },
 }
 
 export const LongLabelStartInteraction: Story = {
@@ -159,9 +225,24 @@ export const LongLabelStartInteraction: Story = {
 
 export const LongLabelBetween: Story = {
   args: {
-    align: 'between',
-    rows: longLabelRows,
-    title: 'Long label (between)',
+    children: (
+      <>
+        <RecordGroupRow
+          align="between"
+          label="Type"
+          leading={<ShapesIcon aria-hidden />}
+        >
+          <TextProperty value="Document request" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow
+          align="between"
+          label="Expected delivery date agreed with the customer after the second review"
+          leading={<CalendarDaysIcon aria-hidden />}
+        >
+          <DateProperty readOnly value="2026-10-21" variant="plain" />
+        </RecordGroupRow>
+      </>
+    ),
   },
 }
 
@@ -192,9 +273,27 @@ export const LongLabelBetweenInteraction: Story = {
 
 export const LongValueBetween: Story = {
   args: {
-    align: 'between',
-    rows: longValueRows,
-    title: 'Long value (between)',
+    children: (
+      <>
+        <RecordGroupRow
+          align="between"
+          label="Type"
+          leading={<ShapesIcon aria-hidden />}
+        >
+          <TextProperty value="Document request" variant="plain" />
+        </RecordGroupRow>
+        <RecordGroupRow
+          align="between"
+          label="Owner"
+          leading={<UserIcon aria-hidden />}
+        >
+          <TextProperty
+            value="Mariana de Souza Albuquerque Figueiredo e Silva, Customer Success Department"
+            variant="plain"
+          />
+        </RecordGroupRow>
+      </>
+    ),
   },
 }
 

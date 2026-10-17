@@ -1,82 +1,37 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RecordPreview, RecordPreviewAction } from '@tc96/parttens'
+import {
+  RecordPreview,
+  RecordPreviewAction,
+  type RecordPreviewActionProps,
+} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Maximize2Icon } from 'lucide-react'
-import { useState } from 'react'
+import { type ReactElement, useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-
-interface PreviewDemoProps {
-  defaultOpen?: boolean
-  footer?: boolean
-  longBody?: boolean
-  longTitle?: boolean
-  onOpenPage?: () => void
-}
+import { recordPreviewArgTypes } from '../../../test-utils/story-arg-types'
 
 const lines = Array.from({ length: 24 }, (_, index) => index + 1)
 
-function PreviewDemo({
-  defaultOpen = false,
-  footer = false,
-  longBody = false,
-  longTitle = false,
-  onOpenPage,
-}: Readonly<PreviewDemoProps>) {
-  const [open, setOpen] = useState(defaultOpen)
-
-  return (
-    <>
-      <Button onClick={() => setOpen(true)} variant="outline">
-        Open preview
-      </Button>
-      <RecordPreview
-        actions={
-          <RecordPreviewAction label="Open as page" onClick={onOpenPage}>
-            <Maximize2Icon aria-hidden="true" />
-          </RecordPreviewAction>
-        }
-        closeLabel="Close preview"
-        description="Sprint 12"
-        footer={
-          footer ? (
-            <>
-              <Button onClick={() => setOpen(false)} variant="ghost">
-                Cancel
-              </Button>
-              <Button>Restore</Button>
-            </>
-          ) : undefined
-        }
-        onOpenChange={setOpen}
-        open={open}
-        title={
-          longTitle
-            ? 'Rework the onboarding flow so that the sign-up, the e-mail check and the first project share one continuous path'
-            : 'Implement onboarding'
-        }
-      >
-        {longBody ? (
-          <div className="flex flex-col gap-2">
-            {lines.map((line) => (
-              <p className="text-sm" key={line}>
-                Line {line} of the record body. The panel scrolls while the
-                header and the footer stay in place.
-              </p>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm">
-            The shell has no content of its own: the consumer passes the body.
-          </p>
-        )}
-      </RecordPreview>
-    </>
-  )
-}
-
 const meta = {
-  args: { onOpenPage: fn() },
-  component: PreviewDemo,
+  argTypes: recordPreviewArgTypes,
+  args: {
+    actions: (
+      <RecordPreviewAction label="Open as page" onClick={fn()}>
+        <Maximize2Icon aria-hidden />
+      </RecordPreviewAction>
+    ),
+    children: (
+      <p className="text-sm">
+        The shell has no content of its own: the consumer passes the body.
+      </p>
+    ),
+    closeLabel: 'Close preview',
+    description: 'Sprint 12',
+    onOpenChange: fn(),
+    open: false,
+    title: 'Implement onboarding',
+  },
+  component: RecordPreview,
   parameters: {
     docs: {
       description: {
@@ -85,9 +40,23 @@ const meta = {
       },
     },
   },
+  render: function Preview(args) {
+    const [open, setOpen] = useState(args.open)
+
+    return (
+      <>
+        <Button onClick={() => setOpen(true)} variant="outline">
+          Open preview
+        </Button>
+        <RecordPreview {...args} onOpenChange={setOpen} open={open}>
+          {args.children}
+        </RecordPreview>
+      </>
+    )
+  },
   tags: ['!autodocs'],
   title: 'Patterns/Records/Preview',
-} satisfies Meta<typeof PreviewDemo>
+} satisfies Meta<typeof RecordPreview>
 
 export default meta
 
@@ -95,11 +64,24 @@ type Story = StoryObj<typeof meta>
 
 const screen = () => within(document.body)
 
+const longBody = (
+  <div className="flex flex-col gap-2">
+    {lines.map((line) => (
+      <p className="text-sm" key={line}>
+        Line {line} of the record body. The panel scrolls while the header and
+        the footer stay in place.
+      </p>
+    ))}
+  </div>
+)
+
 export const Default: Story = {}
 
 export const DefaultInteraction: Story = {
   ...Default,
   play: async ({ args, canvasElement }) => {
+    const { onClick } = (args.actions as ReactElement<RecordPreviewActionProps>)
+      .props
     const trigger = within(canvasElement).getByRole('button', {
       name: 'Open preview',
     })
@@ -121,7 +103,7 @@ export const DefaultInteraction: Story = {
     await userEvent.click(
       within(dialog).getByRole('button', { name: 'Open as page' }),
     )
-    expect(args.onOpenPage).toHaveBeenCalledTimes(1)
+    expect(onClick).toHaveBeenCalledTimes(1)
 
     await userEvent.keyboard('{Escape}')
     await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
@@ -131,7 +113,33 @@ export const DefaultInteraction: Story = {
 }
 
 export const WithFooter: Story = {
-  args: { defaultOpen: true, footer: true, longBody: true },
+  args: { children: longBody, open: true },
+  render: function WithFooter(args) {
+    const [open, setOpen] = useState(args.open)
+
+    return (
+      <>
+        <Button onClick={() => setOpen(true)} variant="outline">
+          Open preview
+        </Button>
+        <RecordPreview
+          {...args}
+          footer={
+            <>
+              <Button onClick={() => setOpen(false)} variant="ghost">
+                Cancel
+              </Button>
+              <Button>Restore</Button>
+            </>
+          }
+          onOpenChange={setOpen}
+          open={open}
+        >
+          {args.children}
+        </RecordPreview>
+      </>
+    )
+  },
 }
 
 export const WithFooterInteraction: Story = {
@@ -163,7 +171,7 @@ export const WithFooterInteraction: Story = {
 
 export const WithoutFooterInteraction: Story = {
   ...Default,
-  args: { defaultOpen: true },
+  args: { open: true },
   play: async () => {
     const dialog = await screen().findByRole('dialog', {
       name: 'Implement onboarding',
@@ -175,7 +183,12 @@ export const WithoutFooterInteraction: Story = {
 }
 
 export const LongContent: Story = {
-  args: { defaultOpen: true, longBody: true, longTitle: true },
+  args: {
+    children: longBody,
+    open: true,
+    title:
+      'Rework the onboarding flow so that the sign-up, the e-mail check and the first project share one continuous path',
+  },
 }
 
 export const LongContentInteraction: Story = {

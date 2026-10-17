@@ -1,17 +1,155 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import {
+  Checklist,
+  type ChecklistItem,
+  DateProperty,
+  PeopleProperty,
+  type PeoplePropertyOption,
+  RecordGroup,
+  RecordGroupLink,
+  RecordGroupRow,
+  RecordPreview,
+  SelectProperty,
+  type SelectPropertyOption,
+  TextProperty,
+} from '@tc96/parttens'
+import { Badge } from '@tc96/ui/badge'
+import { Button } from '@tc96/ui/button'
+import {
+  CalendarClockIcon,
+  ClipboardListIcon,
+  FileTextIcon,
+  HistoryIcon,
+  ReceiptTextIcon,
+} from 'lucide-react'
+import { type ReactNode, useState } from 'react'
+
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { usageParameters } from '../../../../test-utils/usage-kit'
-import {
-  AccessBlock,
-  BillingBlock,
-  BriefingBlock,
-  DetailsBlock,
-  DocumentBlock,
-  LinkedRecordsBlock,
-  StageBlock,
-  TasksBlock,
-  VersionsBlock,
-} from '../fixtures/blocks'
+
+const today = '09/10/2026'
+
+const yesNoOptions: readonly SelectPropertyOption[] = [
+  { label: 'Sim', value: 'yes' },
+  { label: 'Não', value: 'no' },
+]
+
+const peopleOptions: readonly PeoplePropertyOption[] = [
+  { label: 'Ana Souza', value: 'ana' },
+  { label: 'Gabriel Melo', value: 'gabriel' },
+  { label: 'Pedro Rocha', value: 'pedro' },
+]
+
+interface BriefValues {
+  expectedTarget: string | null
+  primaryObjective: string | null
+  secondaryObjective: string | null
+}
+
+interface BriefVersion {
+  number: number
+  savedAt: string
+  status: 'draft' | 'published'
+  values: BriefValues
+}
+
+const objectiveOptions: readonly SelectPropertyOption[] = [
+  { label: 'Gerar novas consultas', value: 'new-appointments' },
+  { label: 'Divulgar área de atuação', value: 'practice-area' },
+  { label: 'Fortalecer indicação', value: 'referrals' },
+]
+
+const targetOptions: readonly SelectPropertyOption[] = [
+  { label: 'Consulta agendada', value: 'booked-appointment' },
+  { label: 'Conversa no WhatsApp', value: 'whatsapp-conversation' },
+]
+
+const briefFields: readonly {
+  key: keyof BriefValues
+  label: string
+  empty: string
+  options: readonly SelectPropertyOption[]
+}[] = [
+  {
+    empty: 'Sem objetivo 1',
+    key: 'primaryObjective',
+    label: 'Objetivo 1',
+    options: objectiveOptions,
+  },
+  {
+    empty: 'Sem objetivo 2',
+    key: 'secondaryObjective',
+    label: 'Objetivo 2',
+    options: objectiveOptions,
+  },
+  {
+    empty: 'Sem alvo esperado',
+    key: 'expectedTarget',
+    label: 'Alvo esperado',
+    options: targetOptions,
+  },
+]
+
+const initialVersions: readonly BriefVersion[] = [
+  {
+    number: 2,
+    savedAt: '08/10/2026',
+    status: 'draft',
+    values: {
+      expectedTarget: 'whatsapp-conversation',
+      primaryObjective: 'new-appointments',
+      secondaryObjective: null,
+    },
+  },
+  {
+    number: 1,
+    savedAt: '26/09/2026',
+    status: 'published',
+    values: {
+      expectedTarget: 'booked-appointment',
+      primaryObjective: 'new-appointments',
+      secondaryObjective: null,
+    },
+  },
+]
+
+const statusBadges = {
+  draft: <Badge variant="warning">Rascunho</Badge>,
+  published: <Badge variant="success">Publicada</Badge>,
+} satisfies Record<BriefVersion['status'], ReactNode>
+
+const sameValues = (a: BriefValues, b: BriefValues) =>
+  briefFields.every(({ key }) => a[key] === b[key])
+
+const installments = [
+  { id: 'parcela-1', name: 'Parcela 1', status: 'Paga · 10/09/2026' },
+  { id: 'parcela-2', name: 'Parcela 2', status: 'Prevista · 10/10/2026' },
+  { id: 'parcela-3', name: 'Parcela 3', status: 'Prevista · 10/11/2026' },
+]
+
+const paymentMethodOptions: readonly SelectPropertyOption[] = [
+  { label: 'Boleto', value: 'boleto' },
+  { label: 'Pix', value: 'pix' },
+  { label: 'Cartão', value: 'card' },
+]
+
+const sourceOptions: readonly SelectPropertyOption[] = [
+  { label: 'Instagram', value: 'instagram' },
+  { label: 'Indicação', value: 'referral' },
+  { label: 'Google', value: 'google' },
+]
+
+const interestOptions: readonly SelectPropertyOption[] = [
+  { label: 'Revisional bancária', value: 'banking' },
+  { label: 'Trabalhista', value: 'labor' },
+  { label: 'Família', value: 'family' },
+]
+
+const urgencyOptions: readonly SelectPropertyOption[] = [
+  { label: 'Alta', value: 'high' },
+  { label: 'Média', value: 'medium' },
+  { label: 'Baixa', value: 'low' },
+]
 
 const meta = {
   decorators: [
@@ -93,7 +231,62 @@ export const Tasks: Story = {
       await tasks.findByRole('checkbox', { name: 'Protocolar petição' }),
     ).not.toBeChecked()
   },
-  render: () => <TasksBlock />,
+  render: function Tasks() {
+    const [items, setItems] = useState<readonly ChecklistItem[]>([
+      { completed: true, id: 'extracts', title: 'Baixar extratos de 2024' },
+      { completed: false, id: 'appeal', title: 'Redigir contestação' },
+    ])
+    const [newItemTitle, setNewItemTitle] = useState('')
+
+    return (
+      <RecordGroup title="Tarefas" variant="inset">
+        <Checklist
+          ariaLabel="Lista de tarefas"
+          items={items}
+          locale="pt-BR"
+          newItemTitle={newItemTitle}
+          onCreate={(title, completed) => {
+            setItems((current) => [
+              ...current,
+              { completed, id: `item-${current.length + 1}`, title },
+            ])
+            setNewItemTitle('')
+          }}
+          onItemCompletionChange={(id, completed) =>
+            setItems((current) =>
+              current.map((item) =>
+                item.id === id ? { ...item, completed } : item,
+              ),
+            )
+          }
+          onItemDelete={(id) =>
+            setItems((current) => current.filter((item) => item.id !== id))
+          }
+          onItemMove={(id, targetIndex) =>
+            setItems((current) => {
+              const moving = current.find((item) => item.id === id)
+              if (!moving) return current
+              const rest = current.filter((item) => item.id !== id)
+              return [
+                ...rest.slice(0, targetIndex),
+                moving,
+                ...rest.slice(targetIndex),
+              ]
+            })
+          }
+          onItemRename={(id, title) =>
+            setItems((current) =>
+              current.map((item) =>
+                item.id === id ? { ...item, title } : item,
+              ),
+            )
+          }
+          onNewItemTitleChange={setNewItemTitle}
+          variant="plain"
+        />
+      </RecordGroup>
+    )
+  },
 }
 
 export const Access: Story = {
@@ -109,7 +302,35 @@ export const Access: Story = {
     await waitFor(() => expect(access.getByText('Sim')).toBeVisible())
     await listboxClosed()
   },
-  render: () => <AccessBlock />,
+  render: function Access() {
+    const [isPrivate, setIsPrivate] = useState<string | null>('no')
+    const [participants, setParticipants] = useState<readonly string[]>([
+      'ana',
+      'gabriel',
+    ])
+
+    return (
+      <RecordGroup title="Acesso">
+        <RecordGroupRow label="Privado">
+          <SelectProperty
+            ariaLabel="Privado"
+            onValueChange={setIsPrivate}
+            options={yesNoOptions}
+            value={isPrivate}
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="Participantes">
+          <PeopleProperty
+            ariaLabel="Participantes"
+            onValueChange={setParticipants}
+            options={peopleOptions}
+            value={participants}
+          />
+        </RecordGroupRow>
+      </RecordGroup>
+    )
+  },
 }
 
 export const Briefing: Story = {
@@ -157,7 +378,86 @@ export const Briefing: Story = {
     await waitFor(() => expect(trigger).toHaveFocus())
     await expect(trigger).toHaveAccessibleName('Briefing Publicada')
   },
-  render: () => <BriefingBlock />,
+  render: function Briefing() {
+    const [versions, setVersions] = useState(initialVersions)
+    const latest = versions[0] as BriefVersion
+    const [brief, setBrief] = useState<BriefValues>(latest.values)
+    const [open, setOpen] = useState(false)
+    const dirty = !sameValues(brief, latest.values)
+
+    const commit = (status: BriefVersion['status']) =>
+      setVersions((current) => {
+        const [head, ...rest] = current as [BriefVersion, ...BriefVersion[]]
+        const next = { savedAt: today, status, values: brief }
+        return head.status === 'draft'
+          ? [{ ...head, ...next }, ...rest]
+          : [{ ...next, number: head.number + 1 }, ...current]
+      })
+
+    const status = dirty
+      ? 'Alterações não salvas'
+      : latest.status === 'draft'
+        ? `Rascunho salvo em ${latest.savedAt}`
+        : `Versão ${latest.number} publicada em ${latest.savedAt}`
+
+    return (
+      <>
+        <RecordGroup title="Briefing">
+          <RecordGroupLink
+            leading={<ClipboardListIcon aria-hidden />}
+            meta={statusBadges[latest.status]}
+            onClick={() => setOpen(true)}
+            render={<button type="button" />}
+          >
+            Briefing
+          </RecordGroupLink>
+        </RecordGroup>
+        <RecordPreview
+          closeLabel="Fechar"
+          description={
+            <span aria-live="polite" data-testid="brief-status">
+              {status}
+            </span>
+          }
+          footer={
+            <>
+              <Button
+                disabled={!dirty}
+                onClick={() => commit('draft')}
+                variant="outline"
+              >
+                Salvar rascunho
+              </Button>
+              <Button
+                disabled={!dirty && latest.status === 'published'}
+                onClick={() => commit('published')}
+              >
+                Publicar versão
+              </Button>
+            </>
+          }
+          onOpenChange={setOpen}
+          open={open}
+          title="Briefing"
+        >
+          {briefFields.map((field) => (
+            <RecordGroupRow key={field.key} label={field.label}>
+              <SelectProperty
+                ariaLabel={field.label}
+                fallback={field.empty}
+                onValueChange={(value) =>
+                  setBrief((current) => ({ ...current, [field.key]: value }))
+                }
+                options={field.options}
+                value={brief[field.key]}
+                variant="plain"
+              />
+            </RecordGroupRow>
+          ))}
+        </RecordPreview>
+      </>
+    )
+  },
 }
 
 export const Versions: Story = {
@@ -186,7 +486,58 @@ export const Versions: Story = {
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     await waitFor(() => expect(first).toHaveFocus())
   },
-  render: () => <VersionsBlock />,
+  render: function Versions() {
+    const [open, setOpen] = useState(false)
+    const [previewNumber, setPreviewNumber] = useState(1)
+    const previewed = initialVersions.find(
+      (version) => version.number === previewNumber,
+    ) as BriefVersion
+
+    return (
+      <>
+        <RecordGroup title="Versões">
+          {initialVersions.map((version) => (
+            <RecordGroupLink
+              key={version.number}
+              leading={<HistoryIcon aria-hidden />}
+              meta={statusBadges[version.status]}
+              onClick={() => {
+                setPreviewNumber(version.number)
+                setOpen(true)
+              }}
+              render={<button type="button" />}
+            >
+              {`Versão ${version.number}`}
+            </RecordGroupLink>
+          ))}
+        </RecordGroup>
+        <RecordPreview
+          closeLabel="Fechar"
+          description={
+            previewed.status === 'draft'
+              ? `Rascunho salvo em ${previewed.savedAt}`
+              : `Publicada em ${previewed.savedAt}`
+          }
+          onOpenChange={setOpen}
+          open={open}
+          title={`Versão ${previewed.number}`}
+        >
+          {briefFields.map((field) => (
+            <RecordGroupRow key={field.key} label={field.label}>
+              <SelectProperty
+                ariaLabel={`${field.label} da versão ${previewed.number}`}
+                fallback={field.empty}
+                options={field.options}
+                readOnly
+                value={previewed.values[field.key]}
+                variant="plain"
+              />
+            </RecordGroupRow>
+          ))}
+        </RecordPreview>
+      </>
+    )
+  },
 }
 
 export const LinkedRecords: Story = {
@@ -203,7 +554,22 @@ export const LinkedRecords: Story = {
     ])
     await expect(links[1]).toHaveAttribute('href', '#/lancamentos/parcela-2')
   },
-  render: () => <LinkedRecordsBlock />,
+  render: function LinkedRecords() {
+    return (
+      <RecordGroup title="Parcelas">
+        {installments.map((installment) => (
+          <RecordGroupLink
+            href={`#/lancamentos/${installment.id}`}
+            key={installment.id}
+            leading={<ReceiptTextIcon aria-hidden />}
+            meta={installment.status}
+          >
+            {installment.name}
+          </RecordGroupLink>
+        ))}
+      </RecordGroup>
+    )
+  },
 }
 
 export const Document: Story = {
@@ -217,11 +583,23 @@ export const Document: Story = {
       }),
     ).toHaveAttribute('href', '#/documentos/contrato-assinado.pdf')
   },
-  render: () => <DocumentBlock />,
+  render: function Document() {
+    return (
+      <RecordGroup title="Documento">
+        <RecordGroupLink
+          href="#/documentos/contrato-assinado.pdf"
+          leading={<FileTextIcon aria-hidden />}
+          meta="PDF · 12/08/2026"
+        >
+          contrato-assinado.pdf
+        </RecordGroupLink>
+      </RecordGroup>
+    )
+  },
 }
 
-export const DocumentEmpty: StoryObj<typeof DocumentBlock> = {
-  args: { onAttachDocument: fn(), signed: false },
+export const DocumentEmpty: StoryObj<{ onAttachDocument: () => void }> = {
+  args: { onAttachDocument: fn() },
   parameters: describe(
     'Asks for the missing file: the group starts closed while empty, and opening it shows the absence and the command that attaches one.',
   ),
@@ -241,7 +619,19 @@ export const DocumentEmpty: StoryObj<typeof DocumentBlock> = {
     )
     await expect(args.onAttachDocument).toHaveBeenCalledTimes(1)
   },
-  render: (args) => <DocumentBlock {...args} />,
+  render: ({ onAttachDocument }) => (
+    <RecordGroup
+      empty
+      footer={
+        <Button onClick={onAttachDocument} size="sm" variant="outline">
+          Anexar documento
+        </Button>
+      }
+      title="Documento"
+    >
+      <p className="text-muted-foreground text-sm">Sem documento assinado</p>
+    </RecordGroup>
+  ),
 }
 
 export const Billing: Story = {
@@ -265,7 +655,55 @@ export const Billing: Story = {
       charge.getByRole('button', { name: 'Emitir segunda via' }),
     ).toBeEnabled()
   },
-  render: () => <BillingBlock />,
+  render: function Billing() {
+    const [method, setMethod] = useState<string | null>(null)
+    const [issuedAt, setIssuedAt] = useState<string | null>(null)
+
+    return (
+      <RecordGroup
+        footer={
+          <Button
+            disabled={method === null}
+            onClick={() => setIssuedAt(today)}
+            size="sm"
+            variant={issuedAt ? 'outline' : 'default'}
+          >
+            {issuedAt ? 'Emitir segunda via' : 'Emitir cobrança'}
+          </Button>
+        }
+        title="Cobrança"
+      >
+        <RecordGroupRow label="Meio">
+          <SelectProperty
+            ariaLabel="Meio"
+            fallback="Sem meio"
+            onValueChange={setMethod}
+            options={paymentMethodOptions}
+            value={method}
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="Vencimento">
+          <DateProperty
+            ariaLabel="Vencimento"
+            locale="pt-BR"
+            readOnly
+            timeZone="UTC"
+            value="2026-10-10T12:00:00.000Z"
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="Emissão">
+          <TextProperty
+            ariaLabel="Emissão"
+            fallback="Não emitida"
+            value={issuedAt ? `Emitida em ${issuedAt}` : null}
+            variant="plain"
+          />
+        </RecordGroupRow>
+      </RecordGroup>
+    )
+  },
 }
 
 export const Details: Story = {
@@ -288,7 +726,57 @@ export const Details: Story = {
     await userEvent.tab()
     await expect(occupation).toHaveValue('Engenheira')
   },
-  render: () => <DetailsBlock />,
+  render: function Details() {
+    const [birthDate, setBirthDate] = useState<string | null>(
+      '1988-03-14T12:00:00.000Z',
+    )
+    const [cpf, setCpf] = useState<string | null>('123.456.789-09')
+    const [occupation, setOccupation] = useState<string | null>(null)
+    const [source, setSource] = useState<string | null>('referral')
+
+    return (
+      <RecordGroup title="Mais informações">
+        <RecordGroupRow label="Nascimento">
+          <DateProperty
+            ariaLabel="Nascimento"
+            locale="pt-BR"
+            onValueChange={setBirthDate}
+            timeZone="UTC"
+            value={birthDate}
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="CPF">
+          <TextProperty
+            ariaLabel="CPF"
+            editing="inline"
+            onCommit={setCpf}
+            value={cpf}
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="Profissão">
+          <TextProperty
+            ariaLabel="Profissão"
+            editing="inline"
+            fallback="Sem profissão"
+            onCommit={setOccupation}
+            value={occupation}
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="Origem">
+          <SelectProperty
+            ariaLabel="Origem"
+            onValueChange={setSource}
+            options={sourceOptions}
+            value={source}
+            variant="plain"
+          />
+        </RecordGroupRow>
+      </RecordGroup>
+    )
+  },
 }
 
 export const Stage: Story = {
@@ -309,5 +797,39 @@ export const Stage: Story = {
     await waitFor(() => expect(stage.getByText('Alta')).toBeVisible())
     await listboxClosed()
   },
-  render: () => <StageBlock />,
+  render: function Stage() {
+    const [interest, setInterest] = useState<string | null>('banking')
+    const [urgency, setUrgency] = useState<string | null>(null)
+
+    return (
+      <RecordGroup title="Novo Lead">
+        <RecordGroupRow label="Interesse">
+          <SelectProperty
+            ariaLabel="Interesse"
+            onValueChange={setInterest}
+            options={interestOptions}
+            value={interest}
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupRow label="Urgência">
+          <SelectProperty
+            ariaLabel="Urgência"
+            fallback="Sem urgência"
+            onValueChange={setUrgency}
+            options={urgencyOptions}
+            value={urgency}
+            variant="plain"
+          />
+        </RecordGroupRow>
+        <RecordGroupLink
+          href="#/agenda/consulta-inicial"
+          leading={<CalendarClockIcon aria-hidden />}
+          meta="Agendada · 14/10 às 10:00"
+        >
+          Consulta inicial
+        </RecordGroupLink>
+      </RecordGroup>
+    )
+  },
 }

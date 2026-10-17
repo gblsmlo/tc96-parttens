@@ -8,30 +8,12 @@ import { CreateContactDialog, type NewContact } from '../create-contact-dialog'
 const companies = initialContacts.map((contact) => contact.company)
 const roles = initialContacts.map((contact) => contact.role)
 
-function CreateContactDemo({
-  onCreate,
-}: Readonly<{ onCreate: (contact: NewContact) => void }>) {
-  const [open, setOpen] = useState(true)
-
-  return (
-    <>
-      <Button onClick={() => setOpen(true)} variant="outline">
-        Novo contato
-      </Button>
-      <CreateContactDialog
-        companies={companies}
-        onCreate={onCreate}
-        onOpenChange={setOpen}
-        open={open}
-        roles={roles}
-      />
-    </>
-  )
+interface ContactsArgs {
+  onCreate: (contact: NewContact) => void
 }
 
 const meta = {
-  args: { onCreate: fn() },
-  component: CreateContactDemo,
+  args: { onCreate: fn((_contact: NewContact) => {}) },
   parameters: {
     docs: {
       description: {
@@ -40,13 +22,31 @@ const meta = {
       },
     },
   },
+  render: function Contacts({ onCreate }) {
+    const [open, setOpen] = useState(true)
+
+    return (
+      <>
+        <Button onClick={() => setOpen(true)} variant="outline">
+          Novo contato
+        </Button>
+        <CreateContactDialog
+          companies={companies}
+          onCreate={onCreate}
+          onOpenChange={setOpen}
+          open={open}
+          roles={roles}
+        />
+      </>
+    )
+  },
   tags: ['!autodocs'],
   title: 'Patterns/Records/Dialog/Usages/Contacts',
-} satisfies Meta<typeof CreateContactDemo>
+} satisfies Meta<ContactsArgs>
 
 export default meta
 
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<ContactsArgs>
 
 const findDialog = () => screen.findByRole('dialog', { name: 'Novo contato' })
 

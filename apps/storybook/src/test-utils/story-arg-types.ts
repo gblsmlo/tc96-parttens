@@ -33,3 +33,38 @@ export const propertyArgTypes = {
 } as const
 
 export const booleanArgType = boolean
+
+const withoutControl = { control: false } as const
+
+/** `RecordGroup`: variantes, alinhamento das ações e os slots de JSX sem controle. */
+export const recordGroupArgTypes = {
+  actions: withoutControl,
+  actionsAlign: { control: 'inline-radio', options: ['between', 'start'] },
+  children: withoutControl,
+  defaultOpen: boolean,
+  empty: boolean,
+  footer: withoutControl,
+  open: withoutControl,
+  variant: { control: 'inline-radio', options: ['plain', 'card', 'inset'] },
+} as const
+
+/** `RecordPreview`: o estado aberto mora na story, os slots são JSX. */
+export const recordPreviewArgTypes = {
+  actions: withoutControl,
+  children: withoutControl,
+  footer: withoutControl,
+  open: withoutControl,
+} as const
+
+/** `RecordDialog`: tamanhos, os booleanos do envio e os slots de JSX. */
+export const recordDialogArgTypes = {
+  actions: withoutControl,
+  children: withoutControl,
+  footerStart: withoutControl,
+  keepOpenOnSuccess: boolean,
+  open: withoutControl,
+  size: { control: 'inline-radio', options: ['small', 'default', 'large'] },
+  stretchBody: boolean,
+  submitDisabled: boolean,
+  submitOnModEnter: boolean,
+} as const

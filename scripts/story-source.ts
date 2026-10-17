@@ -439,7 +439,7 @@ async function main(argv: string[]) {
   const { storySnippets } = await import('./story-component.ts')
   const [code] = argv.includes('--story')
     ? [extractStory(text, entry.exportName)]
-    : storySnippets(text, [entry.exportName])
+    : storySnippets(text, [entry.exportName], file)
   console.log(`// ${relative(root, file)} :: ${entry.exportName}\n${code}`)
 }
 
