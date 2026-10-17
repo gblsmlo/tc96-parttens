@@ -45,11 +45,7 @@ const regionOf = (canvasElement: HTMLElement, name: string) =>
 const listboxClosed = () =>
   waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
 
-const briefLabels = [
-  'Objetivo primário',
-  'Objetivo secundário',
-  'Alvo esperado',
-]
+const briefLabels = ['Objetivo 1', 'Objetivo 2', 'Alvo esperado']
 
 const expectWholeLabels = async (
   scope: HTMLElement,
@@ -137,7 +133,7 @@ export const Briefing: Story = {
     await expect(saveDraft).toBeDisabled()
 
     await userEvent.click(
-      briefing.getByRole('combobox', { name: /^Objetivo secundário/ }),
+      briefing.getByRole('combobox', { name: /^Objetivo 2/ }),
     )
     await userEvent.click(
       await screen.findByRole('option', { name: 'Fortalecer indicação' }),
@@ -279,7 +275,7 @@ export const Details: Story = {
   play: async ({ canvasElement }) => {
     await expectWholeLabels(
       within(canvasElement).getByRole('region', { name: 'Mais informações' }),
-      ['Data de nascimento', 'CPF', 'Profissão', 'Origem'],
+      ['Nascimento', 'CPF', 'Profissão', 'Origem'],
     )
     const details = regionOf(canvasElement, 'Mais informações')
     await expect(details.getByRole('textbox', { name: 'CPF' })).toHaveValue(

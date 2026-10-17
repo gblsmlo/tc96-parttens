@@ -152,15 +152,15 @@ const briefFields: readonly {
   options: readonly SelectPropertyOption[]
 }[] = [
   {
-    empty: 'Sem objetivo primário',
+    empty: 'Sem objetivo 1',
     key: 'primaryObjective',
-    label: 'Objetivo primário',
+    label: 'Objetivo 1',
     options: objectiveOptions,
   },
   {
-    empty: 'Sem objetivo secundário',
+    empty: 'Sem objetivo 2',
     key: 'secondaryObjective',
-    label: 'Objetivo secundário',
+    label: 'Objetivo 2',
     options: objectiveOptions,
   },
   {
@@ -465,9 +465,9 @@ export function DetailsBlock() {
 
   return (
     <RecordGroup title="Mais informações">
-      <RecordGroupRow label="Data de nascimento">
+      <RecordGroupRow label="Nascimento">
         <DateProperty
-          ariaLabel="Data de nascimento"
+          ariaLabel="Nascimento"
           locale="pt-BR"
           onValueChange={setBirthDate}
           timeZone="UTC"

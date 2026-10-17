@@ -26,7 +26,7 @@ interface RowFixture {
 export const detailRows: RowFixture[] = [
   { icon: ShapesIcon, kind: 'text', label: 'Type', value: 'Document request' },
   { icon: UserIcon, kind: 'text', label: 'Owner', value: 'Mariana Souza' },
-  { icon: HashIcon, kind: 'text', label: 'Reference code', value: 'REQ-1042' },
+  { icon: HashIcon, kind: 'text', label: 'Reference', value: 'REQ-1042' },
   { icon: CalendarDaysIcon, kind: 'date', label: 'Due', value: '2026-10-21' },
 ]
 
