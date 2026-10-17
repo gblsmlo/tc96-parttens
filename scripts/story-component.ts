@@ -1,9 +1,12 @@
 import { spawnSync } from 'node:child_process'
-import { resolve } from 'node:path'
+import { existsSync, readFileSync, statSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
 import {
+  bindingNames,
   extractStory,
+  type ImportBinding,
   indexStatements,
   isMemberName,
   isStoryExport,
@@ -18,14 +21,31 @@ import {
 
 type Props = Map<string, ts.Expression>
 type Arg = { key?: string; value: ts.Expression }
+type Read = (path: string) => string
+type Module = ReturnType<typeof indexStatements> & {
+  path: string
+  source: ts.SourceFile
+  included: Set<ts.Statement>
+  dependencies: Set<Module>
+}
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const biome = resolve(root, 'node_modules/.bin/biome')
 const separator = '// @@story-component@@'
 const identifier = /^[A-Za-z_$][\w$]*$/
 const jsxAttribute = /^[A-Za-z_$][\w$-]*$/
+const storybookModule = /^(@storybook\/|storybook(\/|$))/
+const moduleExtensions = ['', '.tsx', '.ts', '/index.tsx', '/index.ts']
+export const inlineLimit = 150
 
-export function storyComponent(text: string, exportName: string) {
+const readText: Read = (path) => readFileSync(path, 'utf8')
+
+export function storyComponent(
+  text: string,
+  exportName: string,
+  file?: string,
+  read: Read = readText,
+) {
   const source = parseTsx(text)
   const { declarations, imports, meta } = indexStatements(source)
   const story = declarations.get(exportName)
@@ -170,9 +190,41 @@ export function storyComponent(text: string, exportName: string) {
   const args = metaArgs && storyArgs && merged(metaArgs, storyArgs)
 
   const usesStorybookFn = imports.get('fn')?.module === 'storybook/test'
-  const valueText = (expression: ts.Expression) => {
+  const isFnCall = (node: ts.Node) =>
+    usesStorybookFn &&
+    ts.isCallExpression(node) &&
+    ts.isIdentifier(node.expression) &&
+    node.expression.text === 'fn'
+  const hoisted: string[] = []
+  const valueText = (expression: ts.Node): string => {
     const text = expression.getText(source)
-    return usesStorybookFn ? text.replace(/\bfn\(\)/g, '() => {}') : text
+    if (!usesStorybookFn) return text
+    const offset = expression.getStart(source)
+    const edits: [number, number, string][] = []
+    const visit = (node: ts.Node) => {
+      if (
+        ts.isCallExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        node.expression.text === 'fn'
+      ) {
+        const [implementation] = node.arguments
+        edits.push([
+          node.getStart(source) - offset,
+          node.getEnd() - offset,
+          implementation ? valueText(implementation) : '() => {}',
+        ])
+        return
+      }
+      ts.forEachChild(node, visit)
+    }
+    visit(expression)
+    return edits
+      .sort((a, b) => b[0] - a[0])
+      .reduce(
+        (result, [start, end, replacement]) =>
+          result.slice(0, start) + replacement + result.slice(end),
+        text,
+      )
   }
   const argsLiteral = (args: Arg[]) =>
     `{ ${args
@@ -219,6 +271,20 @@ export function storyComponent(text: string, exportName: string) {
       return isPrimary(unwrap(value))
         ? valueText(value)
         : `(${valueText(value)})`
+    }
+    const childOf = (node: ts.Node, value: ts.Expression | undefined) => {
+      const jsx = value && unwrap(value)
+      if (
+        !jsx ||
+        !ts.isJsxExpression(node.parent) ||
+        !(
+          ts.isJsxElement(node.parent.parent) ||
+          ts.isJsxFragment(node.parent.parent)
+        )
+      ) {
+        return undefined
+      }
+      return jsxChildren(jsx, valueText)
     }
     const edits: [number, number, string][] = []
     let inlined = true
@@ -271,11 +337,16 @@ export function storyComponent(text: string, exportName: string) {
           ts.isIdentifier(node.expression) &&
           node.expression.text === name.text
         ) {
-          edits.push([
-            node.getStart(source),
-            node.getEnd(),
-            expressionOf(node.name.text),
-          ])
+          const child = childOf(node, values.get(node.name.text))
+          edits.push(
+            child
+              ? [node.parent.getStart(source), node.parent.getEnd(), child]
+              : [
+                  node.getStart(source),
+                  node.getEnd(),
+                  expressionOf(node.name.text),
+                ],
+          )
           return
         }
         if (
@@ -296,6 +367,11 @@ export function storyComponent(text: string, exportName: string) {
           return undefined
         }
         const key = element.propertyName?.getText(source) ?? element.name.text
+        const value = values.get(key)
+        if (value && isFnCall(unwrap(value))) {
+          hoisted.push(`const ${element.name.text} = ${valueText(value)}`)
+          continue
+        }
         bound.set(
           element.name.text,
           values.has(key) || !element.initializer
@@ -344,11 +420,12 @@ export function storyComponent(text: string, exportName: string) {
       if (renderer.parameters.length > 1) return undefined
       const [parameter] = renderer.parameters
       if (parameter && !args) return undefined
+      hoisted.length = 0
       const inlined = inlineArgs(renderer, args ?? [])
       const declaration =
         parameter && args && inlined === undefined
           ? `const ${parameter.name.getText(source)} = ${argsLiteral(args)}\n`
-          : ''
+          : hoisted.map((line) => `${line}\n`).join('')
       const code = inlined ?? renderer.body.getText(source)
       body = ts.isBlock(renderer.body)
         ? `${declaration}${code.slice(1, -1)}`
@@ -372,7 +449,7 @@ export function storyComponent(text: string, exportName: string) {
       childValue &&
       (ts.isStringLiteral(childValue) && /^[^{}<>]*$/.test(childValue.text)
         ? childValue.text
-        : `{${valueText(childValue)}}`)
+        : (jsxChildren(childValue, valueText) ?? `{${valueText(childValue)}}`))
     const open = [name, ...attributes].join(' ')
     body =
       content === undefined
@@ -401,16 +478,36 @@ export function storyComponent(text: string, exportName: string) {
     queue.push(...references(local, new Set()))
   }
 
-  const locals = generated.statements
-    .filter((statement) => included.has(statement))
-    .map((statement) => statement.getText(generated))
+  const locals = generated.statements.filter((statement) =>
+    included.has(statement),
+  )
+  const inlined =
+    file &&
+    inlineModules(file, read, usedImports, generatedIndex.imports, [
+      exportName,
+      ...locals.flatMap(declaredNames),
+    ])
+  const bindings = inlined ? inlined.imports : generatedIndex.imports
+  const used = inlined ? new Set(inlined.imports.keys()) : usedImports
   return [
-    printImports(usedImports, generatedIndex.imports).join('\n'),
-    ...locals,
+    printImports(sortedImports(used, bindings), bindings).join('\n'),
+    ...(inlined ? inlined.statements : []),
+    ...locals.map((statement) => statement.getText(generated)),
     component,
   ]
     .filter(Boolean)
     .join('\n\n')
+}
+
+function jsxChildren(
+  node: ts.Expression,
+  text: (expression: ts.Expression) => string,
+) {
+  if (ts.isJsxFragment(node)) return text(node).slice(2, -3)
+  if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
+    return text(node)
+  }
+  return undefined
 }
 
 function isPrimary(node: ts.Expression) {
@@ -444,8 +541,179 @@ function isBinding(node: ts.Node) {
   )
 }
 
-export function storySnippets(text: string, names: string[]) {
-  const components = names.map((name) => storyComponent(text, name))
+function sortedImports(used: Set<string>, imports: Map<string, ImportBinding>) {
+  const rank = (module: string) => {
+    if (module.startsWith('.')) return 2
+    return module.startsWith('@tc96/') ? 1 : 0
+  }
+  const moduleOf = (name: string) => (imports.get(name) as ImportBinding).module
+  return new Set(
+    [...used].sort(
+      (a, b) =>
+        rank(moduleOf(a)) - rank(moduleOf(b)) ||
+        moduleOf(a).localeCompare(moduleOf(b)),
+    ),
+  )
+}
+
+function inlineModules(
+  file: string,
+  read: Read,
+  used: Set<string>,
+  imports: Map<string, ImportBinding>,
+  storyNames: string[],
+) {
+  const external = new Map<string, ImportBinding>()
+  const owners = new Map(storyNames.map((name) => [name, file]))
+  const modules = new Map<string, Module>()
+
+  const addExternal = (name: string, binding: ImportBinding) => {
+    const current = external.get(name)
+    if (owners.has(name) || storybookModule.test(binding.module)) return false
+    if (
+      current &&
+      (current.module !== binding.module ||
+        current.imported !== binding.imported ||
+        current.kind !== binding.kind)
+    ) {
+      return false
+    }
+    external.set(name, {
+      ...binding,
+      typeOnly: binding.typeOnly && (current?.typeOnly ?? true),
+    })
+    return true
+  }
+
+  const load = (from: string, specifier: string) => {
+    const base = resolve(dirname(from), specifier)
+    const path = moduleExtensions
+      .map((extension) => `${base}${extension}`)
+      .find(
+        (candidate) => existsSync(candidate) && statSync(candidate).isFile(),
+      )
+    if (!path) return undefined
+    const cached = modules.get(path)
+    if (cached) return cached
+    const source = parseTsx(read(path))
+    const module: Module = {
+      ...indexStatements(source),
+      dependencies: new Set(),
+      included: new Set(),
+      path,
+      source,
+    }
+    modules.set(path, module)
+    return module
+  }
+
+  const take = (
+    from: string,
+    binding: ImportBinding,
+    name: string,
+  ): Module | undefined => {
+    if (binding.kind !== 'named' || binding.imported !== name) return undefined
+    const module = load(from, binding.module)
+    const statement = module?.declarations.get(name)
+    if (!module || !statement || !isExported(statement)) return undefined
+    return include(module, statement) ? module : undefined
+  }
+
+  const include = (module: Module, statement: ts.Statement): boolean => {
+    if (module.included.has(statement)) return true
+    module.included.add(statement)
+    for (const name of declaredNames(statement)) {
+      const owner = owners.get(name)
+      if ((owner && owner !== module.path) || external.has(name)) return false
+      owners.set(name, module.path)
+    }
+    for (const name of references(statement, new Set())) {
+      const local = module.declarations.get(name)
+      if (local) {
+        if (!include(module, local)) return false
+        continue
+      }
+      const binding = module.imports.get(name)
+      if (!binding) continue
+      if (binding.module.startsWith('.')) {
+        const dependency = take(module.path, binding, name)
+        if (!dependency) return false
+        module.dependencies.add(dependency)
+      } else if (!addExternal(name, binding)) {
+        return false
+      }
+    }
+    return true
+  }
+
+  const roots = new Set<Module>()
+  for (const name of used) {
+    const binding = imports.get(name) as ImportBinding
+    if (!binding.module.startsWith('.')) {
+      if (!addExternal(name, binding)) return undefined
+    }
+  }
+  for (const name of used) {
+    const binding = imports.get(name) as ImportBinding
+    if (!binding.module.startsWith('.')) continue
+    const module = take(file, binding, name)
+    if (!module) return undefined
+    roots.add(module)
+  }
+  if (roots.size === 0) return undefined
+
+  const ordered: Module[] = []
+  const visited = new Set<Module>()
+  const visit = (module: Module) => {
+    if (visited.has(module)) return
+    visited.add(module)
+    for (const dependency of module.dependencies) visit(dependency)
+    ordered.push(module)
+  }
+  for (const module of roots) visit(module)
+
+  const statements = ordered.flatMap((module) =>
+    module.source.statements
+      .filter((statement) => module.included.has(statement))
+      .map((statement) =>
+        statement.getText(module.source).replace(/^export\s+/, ''),
+      ),
+  )
+  const lines = statements.reduce(
+    (total, statement) => total + statement.split('\n').length,
+    0,
+  )
+  if (lines > inlineLimit) return undefined
+  return { imports: external, statements }
+}
+
+function declaredNames(statement: ts.Statement) {
+  if (ts.isVariableStatement(statement)) {
+    return statement.declarationList.declarations.flatMap((declaration) =>
+      bindingNames(declaration.name),
+    )
+  }
+  const name = (statement as { name?: ts.Node }).name
+  return name && ts.isIdentifier(name) ? [name.text] : []
+}
+
+function isExported(statement: ts.Statement) {
+  return (
+    ts.canHaveModifiers(statement) &&
+    (ts
+      .getModifiers(statement)
+      ?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword) ??
+      false)
+  )
+}
+
+export function storySnippets(
+  text: string,
+  names: string[],
+  file?: string,
+  read?: Read,
+) {
+  const components = names.map((name) => storyComponent(text, name, file, read))
   const formatted = formatTsx(
     components.filter((component) => component !== undefined),
   )

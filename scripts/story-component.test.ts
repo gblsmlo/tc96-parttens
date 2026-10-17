@@ -1,5 +1,13 @@
 import { expect, test } from 'bun:test'
-import { formatTsx, storyComponent, storySnippets } from './story-component'
+import { mkdtempSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import {
+  formatTsx,
+  inlineLimit,
+  storyComponent,
+  storySnippets,
+} from './story-component'
 
 const stories = `import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Badge } from '@tc96/ui/badge'
@@ -103,4 +111,157 @@ export default function Default() {
   )
 }
 `)
+})
+
+function fixtureStory(files: Record<string, string>, story: string) {
+  const dir = mkdtempSync(join(tmpdir(), 'story-component-'))
+  for (const [name, content] of Object.entries(files)) {
+    writeFileSync(join(dir, name), content)
+  }
+  const file = join(dir, 'demo.stories.tsx')
+  writeFileSync(file, story)
+  return (name: string) => storyComponent(story, name, file)
+}
+
+const demoStory = `import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Demo } from './demo'
+
+const meta = { title: 'Demo' } satisfies Meta
+
+export default meta
+
+export const Default: StoryObj = { render: () => <Demo /> }
+`
+
+test('inlines small relative fixtures with their own imports', () => {
+  const component = fixtureStory(
+    {
+      'data.ts': "export const label = 'Save'\nexport const unused = 1\n",
+      'demo.tsx': `import { Button } from '@tc96/ui/button'
+import { label } from './data'
+
+export function Demo() {
+  return <Button>{label}</Button>
+}
+`,
+    },
+    demoStory,
+  )
+  const code = component('Default') as string
+
+  expect(code).toBe(`import { Button } from '@tc96/ui/button'
+
+const label = 'Save'
+
+function Demo() {
+  return <Button>{label}</Button>
+}
+
+export default function Default() {
+return (<Demo />)
+}`)
+})
+
+test('keeps the relative import when the fixture is too long', () => {
+  const rows = Array.from({ length: inlineLimit }, (_, i) => `  ${i},`)
+  const component = fixtureStory(
+    {
+      'demo.tsx': `const rows = [\n${rows.join('\n')}\n]\n\nexport function Demo() {\n  return <p>{rows.length}</p>\n}\n`,
+    },
+    demoStory,
+  )
+
+  expect(component('Default')).toContain("import { Demo } from './demo'")
+})
+
+test('keeps the relative import when an inlined name collides', () => {
+  const component = fixtureStory(
+    {
+      'demo.tsx': `import { Button } from '@tc96/ui/button'
+
+const Text = Button
+
+export function Demo() {
+  return <Text />
+}
+`,
+    },
+    demoStory
+      .replace(
+        "import { Demo } from './demo'",
+        "import { Text } from '@tc96/elements/text'\nimport { Demo } from './demo'",
+      )
+      .replace('<Demo />', '<><Text /><Demo /></>'),
+  )
+
+  expect(component('Default')).toContain("import { Demo } from './demo'")
+})
+
+const slots = `import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Group, Row } from '@tc96/parttens'
+import { useState } from 'react'
+import { fn } from 'storybook/test'
+
+const meta = {
+  args: {
+    children: (
+      <>
+        <Row label="Type" />
+        <Row label="Owner" />
+      </>
+    ),
+    title: 'Details',
+  },
+  component: Group,
+} satisfies Meta<typeof Group>
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {}
+
+export const Toggle: Story = {
+  render: function Toggle(args) {
+    const [open, setOpen] = useState(true)
+    return (
+      <Group {...args} onOpenChange={setOpen} open={open}>
+        {args.children}
+      </Group>
+    )
+  },
+}
+
+export const Handlers: StoryObj<{ onSave: (value: string) => void }> = {
+  args: { onSave: fn(async (_value: string) => {}) },
+  render: function Handlers({ onSave }) {
+    return <button onClick={() => onSave('a')} type="button" />
+  },
+}
+`
+
+test('prints a JSX children arg as children', () => {
+  const code = storyComponent(slots, 'Default') as string
+
+  expect(code).toContain('<Group title="Details">')
+  expect(code).toContain('<Row label="Type" />')
+  expect(code).not.toContain('{<>')
+  expect(code).not.toContain('children=')
+})
+
+test('replaces a children member read with the JSX it holds', () => {
+  const code = storyComponent(slots, 'Toggle') as string
+
+  expect(code).toContain('<Row label="Owner" />')
+  expect(code).not.toContain('args')
+  expect(code).not.toContain('children=')
+})
+
+test('declares fn handlers at the top and drops storybook/test', () => {
+  const code = storyComponent(slots, 'Handlers') as string
+
+  expect(code).toContain('const onSave = async (_value: string) => {}')
+  expect(code).toContain("onClick={() => onSave('a')}")
+  expect(code).not.toContain('fn(')
+  expect(code).not.toContain('storybook')
 })
