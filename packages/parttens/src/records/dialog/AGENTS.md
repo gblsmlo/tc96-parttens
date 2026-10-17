@@ -102,14 +102,21 @@ Behavior the tests fix:
 
 `data-slot` names: `record-dialog-form`, `dialog-error`, `record-dialog-submit-hint`, `record-dialog-cancel`, `record-dialog-submit`.
 
+Override exceptions, registered in `scripts/override-exceptions.json`:
+
+- `DialogTitle` in `components/dialog-shell.tsx`: `text-foreground`, so the title matches the muted ancestor in size and keeps the theme's text token.
+- The submit hint `Kbd` (`record-dialog-submit-hint`) in `record-dialog.tsx`: `bg-primary-foreground/16 text-primary-foreground`. The hint sits on the `bg-primary` submit button, and the COSS `Kbd` pair `bg-muted text-muted-foreground` is meant for `background` and `muted`: on `primary` it measured 2.69:1 in light and 3.00:1 in dark, and axe failed the dialog stories that end with the submit enabled. `primary-foreground` is the pair the theme promises for `primary`, the same as the button label. The ratios are in `docs/architecture/tc96-parttens.md`, under Acessibilidade dos patterns.
+
 ## Verify
 
 ```bash
 bun test --isolate packages/parttens/src/records/dialog
 bunx biome check packages/parttens/src/records/dialog
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/records/dialog
+cd apps/storybook && bunx vitest run src/patterns/records/dialog
 ```
+
+Run both Storybook projects (`storybook` and `storybook-dark`): color contrast differs per theme, and the submit hint failed only in `storybook-dark`.
 
 The stories are in `apps/storybook/src/patterns/records/dialog/`, with a `!dev` `<Story>Interaction` twin for each, and all run axe with `test: 'error'`:
 
