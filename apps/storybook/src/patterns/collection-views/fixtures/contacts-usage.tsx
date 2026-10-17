@@ -40,7 +40,6 @@ import {
 } from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import { CreateContactDialog } from '../../records/dialog/create-contact-dialog'
-import { SelectedViewPicker } from '../../shared/selected-view-picker'
 import {
   createContactGridColumns,
   createContactTableColumns,
@@ -57,6 +56,7 @@ import {
   stageOptions,
   tagOptions,
 } from './contacts'
+import { SelectedViewPicker } from './selected-view-picker'
 
 export type ContactViewMode = Extract<
   CollectionViewMode,

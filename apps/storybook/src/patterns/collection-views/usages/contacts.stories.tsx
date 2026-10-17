@@ -243,7 +243,7 @@ export const ManageSavedViews: Story = {
     docs: {
       description: {
         story:
-          'The selected view picker of the `Patterns/Toolbar` With Selected View story: search, saved views, the options of the active view and Criar nova view. Duplicar copies the active view, Criar nova view saves the current layout and filters, and Excluir falls back to the first view.',
+          'The selected view picker of the `Patterns/Toolbar` Default story: search, saved views, the options of the active view and Criar nova view. Duplicar copies the active view, Criar nova view saves the current layout and filters, and Excluir falls back to the first view.',
       },
     },
   },

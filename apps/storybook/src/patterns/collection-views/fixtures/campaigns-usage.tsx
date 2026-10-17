@@ -41,7 +41,6 @@ import {
   Trash2Icon,
 } from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
-import { SelectedViewPicker } from '../../shared/selected-view-picker'
 import {
   campaignTableAggregations,
   createCampaignGridColumns,
@@ -60,6 +59,7 @@ import {
   initialCampaigns as seedCampaigns,
   statusOptions,
 } from './campaigns'
+import { SelectedViewPicker } from './selected-view-picker'
 
 export type CampaignViewMode = Extract<
   CollectionViewMode,

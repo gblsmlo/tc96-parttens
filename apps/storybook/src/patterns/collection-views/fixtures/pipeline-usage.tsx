@@ -38,7 +38,6 @@ import {
   UsersIcon,
 } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
-import { SelectedViewPicker } from '../../shared/selected-view-picker'
 import {
   createDealCollection,
   type Deal,
@@ -52,6 +51,7 @@ import {
   KanbanCardCountAction,
   KanbanCardMoreActions,
 } from './kanban-card-actions'
+import { SelectedViewPicker } from './selected-view-picker'
 import { people, peopleById, TIME_ZONE } from './tasks'
 
 const LOCALE = 'pt-BR'
