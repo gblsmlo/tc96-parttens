@@ -68,6 +68,7 @@ Copy: default labels are pt-BR props; the date block formats with `Intl.DateTime
 - No `cva`: every class is a literal string. Dragging is `isDragging && 'opacity-50'` through `cn`, not a `data-*` attribute.
 - Colors only from theme tokens with opacity modifiers; highlight is `bg-warning/30 text-foreground dark:bg-warning/25`, not a palette yellow.
 - The drag handle wrapper is `opacity-0` and shows with `group-hover/block:opacity-100`, `focus-within:opacity-100` and `pointer-coarse:opacity-100`, because `hover:` does not fire on touch.
+- `renderPlaceholder` overrides Slate's inline `opacity: 0.333` with `opacity: 1`, so the placeholder renders at `text-muted-foreground`: composited, it measured 1.60:1 (light) and 1.69:1 (dark) on the dialog popup, and 5.73:1 and 5.07:1 after. The ratios are in `docs/architecture/tc96-parttens.md`, under Acessibilidade dos patterns; the `Placeholder` story leaves the editor empty so axe checks the pair.
 - The caret is the focus indicator: the editable and the title field carry `outline-none`, and the title's `h1` draws no focus background, removed by the owner on 2026-10-09.
 - `scripts/override-exceptions.json` has no entry for this pattern.
 

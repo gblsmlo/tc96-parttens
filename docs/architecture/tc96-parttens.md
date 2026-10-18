@@ -352,6 +352,17 @@ Decidido em 2026-10-17, contraste da dica de atalho do `RecordDialog`. Com `subm
 
 O rótulo do botão não mudou: 14,52:1 no claro e 13,90:1 no escuro, 10,75:1 e 11,48:1 no hover. A tecla se distingue do botão por 1,65:1 no claro e 1,36:1 no escuro (calculado dos tokens); ela é `aria-hidden` e decorativa, porque o texto da dica já carrega a informação, então fica fora do 3:1 de gráfico. A dica não usa opacidade no texto para não perder mais contraste do que a tecla já tira. Nota para o consumidor: o tema de exemplo tem folga, com o par `primary`/`primary-foreground` acima de 13:1; num tema com esse par perto de 4,5:1, a tecla de 16% leva a dica abaixo do mínimo, e o ajuste é uma regra no `styles.css` restrita a `[data-slot="record-dialog-submit-hint"]`, sem mudar o valor dos tokens (regra de contraste de 2026-10-17, no registro de decisões).
 
+Decidido em 2026-10-18 (dono), contraste do placeholder do `RichTextEditor`. O Slate aplica `opacity: 0.333` inline no `span[data-slate-placeholder]`, por cima do `text-muted-foreground` que o pattern dá ao placeholder, e a cor composta ficava abaixo de 2:1. Nenhuma story pegava, porque as que abrem o editor vazio digitam antes de o axe rodar; a violação apareceu na story `Create` de `Patterns/Records/Dialog/Usages/Notes`. O `renderPlaceholder` passa a sobrescrever só a opacidade (`style={{ ...attributes.style, opacity: 1 }}`): os tokens não mudaram, e o placeholder fica no `muted-foreground` que o tema promete para `background` e para o popup. A story `Patterns/Rich Text Editor/Placeholder` deixa o editor vazio para o axe checar o par.
+
+| Par | Antes | Depois |
+| --- | --- | --- |
+| Placeholder sobre o popup do `Dialog`, claro | 1,60:1 | 5,73:1 |
+| Placeholder sobre `background`, claro | 1,59:1 | 5,48:1 |
+| Placeholder sobre o popup do `Dialog`, escuro | 1,69:1 | 5,07:1 |
+| Placeholder sobre `background`, escuro | 1,70:1 | 5,34:1 |
+
+Medido no navegador: as cores computadas do tema de exemplo foram convertidas para sRGB e a opacidade foi composta em sRGB, como faz o axe; o "antes" sobre o popup bate com os 1,6:1 e 1,69:1 que o axe reportou.
+
 ## Validação proposta
 
 - Fronteiras: impedir imports em direção proibida, ciclos e UI duplicada por padrão. `packages/parttens` só importa `@tc96/ui/<item>` presente no lock COSS.

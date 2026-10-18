@@ -196,6 +196,19 @@ export const Empty: Story = {
   },
 }
 
+export const Placeholder: Story = {
+  play: async ({ canvasElement }) => {
+    const editor = within(canvasElement).getByRole('textbox', { name: 'Nota' })
+    const placeholder = editor.querySelector('[data-slate-placeholder]')
+
+    await expect(placeholder).toBeVisible()
+    await expect(placeholder).toHaveTextContent(
+      'Escreva sua nota, ou digite / para escolher um bloco',
+    )
+    await expect(getComputedStyle(placeholder as Element).opacity).toBe('1')
+  },
+}
+
 export const BoldMark = markStory('bold')
 export const ItalicMark = markStory('italic')
 export const UnderlineMark = markStory('underline')
