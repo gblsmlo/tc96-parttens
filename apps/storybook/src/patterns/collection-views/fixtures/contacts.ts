@@ -18,6 +18,8 @@ export type ContactStage =
   | 'customer'
   | 'inactive'
 
+export type ContactDocumentType = 'cpf' | 'cnpj'
+
 export type ContactTag =
   | 'decision-maker'
   | 'referral'
@@ -28,6 +30,8 @@ export type ContactTag =
 export interface Contact {
   company: string
   description?: string
+  document?: string
+  documentType?: ContactDocumentType
   emails: string[]
   id: string
   lastContactAt: string
@@ -52,6 +56,18 @@ export const stageOptions = [
 ] as const satisfies readonly (SelectPropertyOption & {
   value: ContactStage
 })[]
+
+export const documentTypeOptions = [
+  { label: 'CPF', value: 'cpf' },
+  { label: 'CNPJ', value: 'cnpj' },
+] as const satisfies readonly (SelectPropertyOption & {
+  value: ContactDocumentType
+})[]
+
+export const isContactDocumentType = (
+  value: string,
+): value is ContactDocumentType =>
+  documentTypeOptions.some((option) => option.value === value)
 
 export const tagOptions: readonly TagsPropertyOption<ContactTag>[] = [
   { label: 'Decisor', value: 'decision-maker' },

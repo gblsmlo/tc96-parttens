@@ -127,7 +127,12 @@ function renderPlaceholder({
   children,
 }: RenderPlaceholderProps): ReactElement {
   return (
-    <span {...attributes} aria-hidden="true" className="text-muted-foreground">
+    <span
+      {...attributes}
+      aria-hidden="true"
+      className="text-muted-foreground"
+      style={{ ...attributes.style, opacity: 1 }}
+    >
       {children}
     </span>
   )

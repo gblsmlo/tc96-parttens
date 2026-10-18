@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Avatar, AvatarFallback } from '@tc96/elements/avatar'
 import {
   Checklist,
   type ChecklistItem,
@@ -6,8 +7,11 @@ import {
   PeopleProperty,
   type PeoplePropertyOption,
   RecordGroup,
+  RecordGroupAction,
+  RecordGroupItem,
   RecordGroupLink,
   RecordGroupRow,
+  type RecordGroupVariant,
   RecordPreview,
   SelectProperty,
   type SelectPropertyOption,
@@ -16,18 +20,42 @@ import {
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import {
+  Building2Icon,
   CalendarClockIcon,
+  CalendarPlusIcon,
   ClipboardListIcon,
+  FileSignatureIcon,
   FileTextIcon,
   HistoryIcon,
+  type LucideIcon,
+  MailIcon,
+  PlusIcon,
   ReceiptTextIcon,
+  TargetIcon,
+  UserPlusIcon,
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { recordGroupArgTypes } from '../../../../test-utils/story-arg-types'
 import { usageParameters } from '../../../../test-utils/usage-kit'
+import { NoteDialog } from '../../dialog/note-dialog'
+import {
+  initialNotes,
+  type Note,
+  noteAge,
+  noteAuthor,
+  noteAuthors,
+  notePreview,
+  noteRecordName,
+  notesNow,
+  noteTitle,
+} from '../../dialog/note-record'
 
 const today = '09/10/2026'
+
+const delay = (milliseconds: number) =>
+  new Promise<void>((resolve) => setTimeout(resolve, milliseconds))
 
 const yesNoOptions: readonly SelectPropertyOption[] = [
   { label: 'Sim', value: 'yes' },
@@ -151,7 +179,53 @@ const urgencyOptions: readonly SelectPropertyOption[] = [
   { label: 'Baixa', value: 'low' },
 ]
 
+interface RecordTrigger {
+  icon: LucideIcon
+  id: string
+  label: string
+  meta: ReactNode
+}
+
+const initialTriggers: readonly RecordTrigger[] = [
+  {
+    icon: FileSignatureIcon,
+    id: 'contract',
+    label: 'Gerar contrato',
+    meta: null,
+  },
+  {
+    icon: MailIcon,
+    id: 'documents',
+    label: 'Solicitar documentos',
+    meta: null,
+  },
+  {
+    icon: CalendarPlusIcon,
+    id: 'appointment',
+    label: 'Agendar consulta',
+    meta: null,
+  },
+  {
+    icon: UserPlusIcon,
+    id: 'contact',
+    label: 'Criar contato',
+    meta: null,
+  },
+  {
+    icon: TargetIcon,
+    id: 'lead',
+    label: 'Criar Lead',
+    meta: null,
+  },
+]
+
+interface UsageArgs {
+  variant: RecordGroupVariant
+}
+
 const meta = {
+  args: { variant: 'plain' },
+  argTypes: { variant: recordGroupArgTypes.variant },
   decorators: [
     (Story) => (
       <div className="w-105 max-w-full">
@@ -164,16 +238,16 @@ const meta = {
     docs: {
       description: {
         component:
-          'Groups a record page composes to edit and add content, one story per job. Each is a single `RecordGroup`, open here; a page picks the groups its use case needs and passes `defaultOpen={false}` when its footer opens closed.',
+          'Groups a record page composes to edit and add content, one story per job. Each is a single `RecordGroup`, open here; a page picks the groups its use case needs and passes `defaultOpen={false}` when its footer opens closed. Every story takes the `variant` control (`card`, `inset`, `plain`).',
       },
     },
   },
   title: 'Patterns/Records/Group/Usages',
-} satisfies Meta
+} satisfies Meta<UsageArgs>
 
 export default meta
 
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<UsageArgs>
 
 const describe = (story: string) => ({ docs: { description: { story } } })
 
@@ -198,19 +272,20 @@ const expectWholeLabels = async (
 }
 
 export const Tasks: Story = {
+  args: { variant: 'inset' },
   parameters: describe(
-    'Tracks work to do: a `Checklist` in `plain` inside a `RecordGroup` in `inset`, so the rows sit in the group card at the same 36px as list rows. Check, rename, reorder, delete and add items.',
+    'Tracks work to do: a `Checklist` in `plain` inside a `RecordGroup` (`inset` by default), so its rows take the 32px row height of the group. Check, rename, reorder, delete and add items.',
   ),
-  play: async ({ canvasElement }) => {
+  play: async ({ args, canvasElement }) => {
     const group = within(canvasElement).getByRole('region', { name: 'Tarefas' })
     const tasks = within(group)
 
-    await expect(group).toHaveAttribute('data-variant', 'inset')
+    await expect(group).toHaveAttribute('data-variant', args.variant)
     await expect(
       tasks.getByRole('region', { name: 'Lista de tarefas' }),
     ).toHaveAttribute('data-variant', 'plain')
     for (const item of group.querySelectorAll('[data-slot="checklist-item"]')) {
-      await expect(item.getBoundingClientRect().height).toBe(36)
+      await expect(item.getBoundingClientRect().height).toBe(32)
     }
 
     await userEvent.click(
@@ -231,7 +306,7 @@ export const Tasks: Story = {
       await tasks.findByRole('checkbox', { name: 'Protocolar petição' }),
     ).not.toBeChecked()
   },
-  render: function Tasks() {
+  render: function Tasks({ variant }) {
     const [items, setItems] = useState<readonly ChecklistItem[]>([
       { completed: true, id: 'extracts', title: 'Baixar extratos de 2024' },
       { completed: false, id: 'appeal', title: 'Redigir contestação' },
@@ -239,7 +314,7 @@ export const Tasks: Story = {
     const [newItemTitle, setNewItemTitle] = useState('')
 
     return (
-      <RecordGroup title="Tarefas" variant="inset">
+      <RecordGroup title="Tarefas" variant={variant}>
         <Checklist
           ariaLabel="Lista de tarefas"
           items={items}
@@ -289,6 +364,71 @@ export const Tasks: Story = {
   },
 }
 
+export const Triggers: StoryObj<
+  UsageArgs & { onRun: (id: string) => Promise<void> }
+> = {
+  args: { onRun: fn(() => delay(400)) },
+  parameters: describe(
+    'Runs commands on the record: each row is a trigger (icon and command) rendered as a `button`, with the `meta` slot on the right left empty for now. The row is busy while its command runs and keeps focus.',
+  ),
+  play: async ({ args, canvasElement }) => {
+    const triggers = regionOf(canvasElement, 'Ações')
+    const contract = triggers.getByRole('button', { name: 'Gerar contrato' })
+
+    await expect(
+      Array.from(
+        canvasElement.querySelectorAll('[data-slot="record-group-link"]'),
+        (row) => row.textContent,
+      ),
+    ).toEqual([
+      'Gerar contrato',
+      'Solicitar documentos',
+      'Agendar consulta',
+      'Criar contato',
+      'Criar Lead',
+    ])
+    await expect(
+      canvasElement.querySelector('[data-slot="record-group-link-meta"]'),
+    ).toBeNull()
+
+    await userEvent.click(contract)
+    await expect(args.onRun).toHaveBeenCalledWith('contract')
+    await expect(contract).toHaveAttribute('aria-busy', 'true')
+    await userEvent.click(contract)
+    await expect(args.onRun).toHaveBeenCalledTimes(1)
+
+    await waitFor(() => expect(contract).toHaveAttribute('aria-busy', 'false'))
+    await expect(contract).toHaveFocus()
+  },
+  render: function Triggers({ onRun, variant }) {
+    const [runningId, setRunningId] = useState<string | null>(null)
+
+    const run = async (id: string) => {
+      if (runningId) return
+      setRunningId(id)
+      await onRun(id)
+      setRunningId(null)
+    }
+
+    return (
+      <RecordGroup title="Ações" variant={variant}>
+        {initialTriggers.map(({ icon: Icon, id, label, meta }) => (
+          <RecordGroupLink
+            aria-busy={runningId === id}
+            key={id}
+            leading={<Icon aria-hidden />}
+            meta={meta}
+            onClick={() => run(id)}
+            render={<button type="button" />}
+          >
+            {label}
+          </RecordGroupLink>
+        ))}
+      </RecordGroup>
+    )
+  },
+}
+
 export const Access: Story = {
   parameters: describe(
     'Sets who sees the record: field rows with a label and a `properties` value in `plain`, edited in place.',
@@ -302,7 +442,7 @@ export const Access: Story = {
     await waitFor(() => expect(access.getByText('Sim')).toBeVisible())
     await listboxClosed()
   },
-  render: function Access() {
+  render: function Access({ variant }) {
     const [isPrivate, setIsPrivate] = useState<string | null>('no')
     const [participants, setParticipants] = useState<readonly string[]>([
       'ana',
@@ -310,7 +450,7 @@ export const Access: Story = {
     ])
 
     return (
-      <RecordGroup title="Acesso">
+      <RecordGroup title="Acesso" variant={variant}>
         <RecordGroupRow label="Privado">
           <SelectProperty
             ariaLabel="Privado"
@@ -378,7 +518,7 @@ export const Briefing: Story = {
     await waitFor(() => expect(trigger).toHaveFocus())
     await expect(trigger).toHaveAccessibleName('Briefing Publicada')
   },
-  render: function Briefing() {
+  render: function Briefing({ variant }) {
     const [versions, setVersions] = useState(initialVersions)
     const latest = versions[0] as BriefVersion
     const [brief, setBrief] = useState<BriefValues>(latest.values)
@@ -402,7 +542,7 @@ export const Briefing: Story = {
 
     return (
       <>
-        <RecordGroup title="Briefing">
+        <RecordGroup title="Briefing" variant={variant}>
           <RecordGroupLink
             leading={<ClipboardListIcon aria-hidden />}
             meta={statusBadges[latest.status]}
@@ -486,7 +626,7 @@ export const Versions: Story = {
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     await waitFor(() => expect(first).toHaveFocus())
   },
-  render: function Versions() {
+  render: function Versions({ variant }) {
     const [open, setOpen] = useState(false)
     const [previewNumber, setPreviewNumber] = useState(1)
     const previewed = initialVersions.find(
@@ -495,7 +635,7 @@ export const Versions: Story = {
 
     return (
       <>
-        <RecordGroup title="Versões">
+        <RecordGroup title="Versões" variant={variant}>
           {initialVersions.map((version) => (
             <RecordGroupLink
               key={version.number}
@@ -554,9 +694,9 @@ export const LinkedRecords: Story = {
     ])
     await expect(links[1]).toHaveAttribute('href', '#/lancamentos/parcela-2')
   },
-  render: function LinkedRecords() {
+  render: function LinkedRecords({ variant }) {
     return (
-      <RecordGroup title="Parcelas">
+      <RecordGroup title="Parcelas" variant={variant}>
         {installments.map((installment) => (
           <RecordGroupLink
             href={`#/lancamentos/${installment.id}`}
@@ -583,9 +723,9 @@ export const Document: Story = {
       }),
     ).toHaveAttribute('href', '#/documentos/contrato-assinado.pdf')
   },
-  render: function Document() {
+  render: function Document({ variant }) {
     return (
-      <RecordGroup title="Documento">
+      <RecordGroup title="Documento" variant={variant}>
         <RecordGroupLink
           href="#/documentos/contrato-assinado.pdf"
           leading={<FileTextIcon aria-hidden />}
@@ -598,40 +738,38 @@ export const Document: Story = {
   },
 }
 
-export const DocumentEmpty: StoryObj<{ onAttachDocument: () => void }> = {
-  args: { onAttachDocument: fn() },
+export const Empty: Story = {
   parameters: describe(
-    'Asks for the missing file: the group starts closed while empty, and opening it shows the absence and the command that attaches one.',
+    'Shows that the record has no file yet: the group starts closed while empty, and opening it shows the absence as text at the start of the content, with no vertical padding and no footer.',
   ),
-  play: async ({ args, canvasElement }) => {
+  play: async ({ canvasElement }) => {
     const trigger = within(canvasElement).getByRole('button', {
       name: 'Documento',
     })
     await expect(trigger).toHaveAttribute('aria-expanded', 'false')
 
     await userEvent.click(trigger)
-    const documentBlock = regionOf(canvasElement, 'Documento')
-    await expect(
-      await documentBlock.findByText('Sem documento assinado'),
-    ).toBeVisible()
-    await userEvent.click(
-      await documentBlock.findByRole('button', { name: 'Anexar documento' }),
+    const message = await regionOf(canvasElement, 'Documento').findByText(
+      'Sem documento assinado',
     )
-    await expect(args.onAttachDocument).toHaveBeenCalledTimes(1)
+    await expect(message).toBeVisible()
+    const content = canvasElement.querySelector(
+      '[data-slot="record-group-content"]',
+    ) as HTMLElement
+    await expect(getComputedStyle(content).paddingTop).toBe('0px')
+    await expect(getComputedStyle(content).paddingBottom).toBe('0px')
+    await expect(getComputedStyle(message).textAlign).toBe('start')
+    await expect(
+      canvasElement.querySelector('[data-slot="record-group-footer"]'),
+    ).toBeNull()
   },
-  render: ({ onAttachDocument }) => (
-    <RecordGroup
-      empty
-      footer={
-        <Button onClick={onAttachDocument} size="sm" variant="outline">
-          Anexar documento
-        </Button>
-      }
-      title="Documento"
-    >
-      <p className="text-muted-foreground text-sm">Sem documento assinado</p>
-    </RecordGroup>
-  ),
+  render: function Empty({ variant }) {
+    return (
+      <RecordGroup empty title="Documento" variant={variant}>
+        <p className="text-muted-foreground text-sm">Sem documento assinado</p>
+      </RecordGroup>
+    )
+  },
 }
 
 export const Billing: Story = {
@@ -655,7 +793,7 @@ export const Billing: Story = {
       charge.getByRole('button', { name: 'Emitir segunda via' }),
     ).toBeEnabled()
   },
-  render: function Billing() {
+  render: function Billing({ variant }) {
     const [method, setMethod] = useState<string | null>(null)
     const [issuedAt, setIssuedAt] = useState<string | null>(null)
 
@@ -672,6 +810,7 @@ export const Billing: Story = {
           </Button>
         }
         title="Cobrança"
+        variant={variant}
       >
         <RecordGroupRow label="Meio">
           <SelectProperty
@@ -726,7 +865,7 @@ export const Details: Story = {
     await userEvent.tab()
     await expect(occupation).toHaveValue('Engenheira')
   },
-  render: function Details() {
+  render: function Details({ variant }) {
     const [birthDate, setBirthDate] = useState<string | null>(
       '1988-03-14T12:00:00.000Z',
     )
@@ -735,7 +874,7 @@ export const Details: Story = {
     const [source, setSource] = useState<string | null>('referral')
 
     return (
-      <RecordGroup title="Mais informações">
+      <RecordGroup title="Mais informações" variant={variant}>
         <RecordGroupRow label="Nascimento">
           <DateProperty
             ariaLabel="Nascimento"
@@ -797,12 +936,12 @@ export const Stage: Story = {
     await waitFor(() => expect(stage.getByText('Alta')).toBeVisible())
     await listboxClosed()
   },
-  render: function Stage() {
+  render: function Stage({ variant }) {
     const [interest, setInterest] = useState<string | null>('banking')
     const [urgency, setUrgency] = useState<string | null>(null)
 
     return (
-      <RecordGroup title="Novo Lead">
+      <RecordGroup title="Novo Lead" variant={variant}>
         <RecordGroupRow label="Interesse">
           <SelectProperty
             ariaLabel="Interesse"
@@ -830,6 +969,276 @@ export const Stage: Story = {
           Consulta inicial
         </RecordGroupLink>
       </RecordGroup>
+    )
+  },
+}
+
+interface ActivityEntry {
+  actor: { initials: string; name: string }
+  ago: string
+  at: string
+  id: string
+  summary: ReactNode
+}
+
+const gabriel = { initials: 'G', name: 'Gabriel Melo' }
+
+const activityEntries: readonly ActivityEntry[] = [
+  {
+    actor: gabriel,
+    ago: 'há 1 mês',
+    at: '2026-09-09T14:20',
+    id: 'company',
+    summary: (
+      <>
+        <span className="text-muted-foreground">alterou</span> Empresa{' '}
+        <span className="text-muted-foreground">para</span>{' '}
+        <span className="inline-flex items-center gap-1 align-bottom">
+          <Building2Icon aria-hidden className="size-4 text-muted-foreground" />
+          PayPal
+        </span>
+      </>
+    ),
+  },
+  {
+    actor: gabriel,
+    ago: 'há 1 mês',
+    at: '2026-09-09T14:18',
+    id: 'attributes',
+    summary: (
+      <>
+        <span className="text-muted-foreground">alterou</span> 2 atributos
+      </>
+    ),
+  },
+  {
+    actor: gabriel,
+    ago: 'há 1 mês',
+    at: '2026-09-09T14:15',
+    id: 'created',
+    summary: (
+      <>
+        <span className="text-muted-foreground">criou</span> Pessoa
+      </>
+    ),
+  },
+]
+
+export const Activity: StoryObj<UsageArgs & { onViewAll: () => void }> = {
+  args: { onViewAll: fn(), variant: 'inset' },
+  argTypes: { onViewAll: { control: false } },
+  parameters: describe(
+    'Shows what changed on the record, newest first: each entry is a `RecordGroupItem` with the author avatar, a sentence with the names in ink and the verbs muted, and the relative date as a `time` in the trailing slot. `Ver tudo` in `actions` opens the full history.',
+  ),
+  play: async ({ args, canvasElement }) => {
+    const activity = regionOf(canvasElement, 'Atividade')
+
+    await expect(
+      canvasElement.querySelector('[data-slot="record-group"]'),
+    ).toHaveAttribute('data-variant', args.variant)
+    await expect(
+      Array.from(
+        canvasElement.querySelectorAll('[data-slot="record-group-item-title"]'),
+        (title) => title.textContent,
+      ),
+    ).toEqual([
+      'Gabriel Melo alterou Empresa para PayPal',
+      'Gabriel Melo alterou 2 atributos',
+      'Gabriel Melo criou Pessoa',
+    ])
+    await expect(
+      Array.from(canvasElement.querySelectorAll('time'), (time) =>
+        time.getAttribute('datetime'),
+      ),
+    ).toEqual(['2026-09-09T14:20', '2026-09-09T14:18', '2026-09-09T14:15'])
+
+    await userEvent.click(activity.getByRole('button', { name: 'Ver tudo' }))
+    await expect(args.onViewAll).toHaveBeenCalledTimes(1)
+  },
+  render: function Activity({ onViewAll, variant }) {
+    return (
+      <RecordGroup
+        actions={
+          <Button onClick={onViewAll} size="xs" variant="ghost">
+            Ver tudo
+          </Button>
+        }
+        title="Atividade"
+        variant={variant}
+      >
+        {activityEntries.map(({ actor, ago, at, id, summary }) => (
+          <RecordGroupItem
+            key={id}
+            leading={
+              <Avatar aria-hidden size="xs">
+                <AvatarFallback>{actor.initials}</AvatarFallback>
+              </Avatar>
+            }
+            title={
+              <>
+                {actor.name} {summary}
+              </>
+            }
+          >
+            <time className="text-muted-foreground" dateTime={at}>
+              {ago}
+            </time>
+          </RecordGroupItem>
+        ))}
+      </RecordGroup>
+    )
+  },
+}
+
+const authorInitial = (id: string) =>
+  noteAuthors.find((author) => author.value === id)?.label.charAt(0) ?? ''
+
+export const Notes: StoryObj<
+  UsageArgs & { onCopyLink: (id: string) => void; onViewAll: () => void }
+> = {
+  args: {
+    onCopyLink: fn((_id: string) => {}),
+    onViewAll: fn(),
+    variant: 'inset',
+  },
+  argTypes: {
+    onCopyLink: { control: false },
+    onViewAll: { control: false },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Keeps the notes of the record, newest first: the title carries the count, and each note is a `RecordGroupLink` rendered as a `button` with the author avatar, the title in ink, the first lines of the body muted and the relative date as a `time` in `meta`. A row opens the note in the `NoteDialog` of `Patterns/Records/Dialog/Usages/Notes`, + opens it empty, and a save moves the note to the top. One `NoteDialog` serves every request and resets its fields when `note` changes. `Ver tudo` opens the full list.',
+      },
+      source: { inlineLimit: 250 },
+    },
+  },
+  play: async ({ args, canvasElement }) => {
+    const group = within(canvasElement).getByRole('region', {
+      name: /^Notas/,
+    })
+    const notes = within(group)
+    const names = () =>
+      Array.from(
+        group.querySelectorAll('[data-slot="record-group-link-name"]'),
+        (name) => name.textContent,
+      )
+
+    await expect(group).toHaveAttribute('data-variant', args.variant)
+    await expect(group).toHaveAccessibleName('Notas 2')
+    await expect(names()).toEqual([
+      'Preferências de contato Prefere contato por WhatsApp depois das 18h.',
+      'Nota sem título Esta nota não tem conteúdo',
+    ])
+    await expect(
+      Array.from(group.querySelectorAll('time'), (time) => time.textContent),
+    ).toEqual(['há 2 minutos', 'há 3 dias'])
+
+    await userEvent.click(notes.getByRole('button', { name: 'Ver tudo' }))
+    await expect(args.onViewAll).toHaveBeenCalledTimes(1)
+
+    await userEvent.click(notes.getByRole('button', { name: 'Nova nota' }))
+    const created = within(
+      await screen.findByRole('dialog', { name: 'Nova nota' }),
+    )
+    await userEvent.type(
+      created.getByRole('textbox', { name: 'Título da nota' }),
+      'Ligação de retorno',
+    )
+    await userEvent.click(created.getByRole('button', { name: /Criar nota/ }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    await expect(group).toHaveAccessibleName('Notas 3')
+    await expect(names()[0]).toBe(
+      'Ligação de retorno Esta nota não tem conteúdo',
+    )
+    await expect(group.querySelector('time')).toHaveTextContent('agora')
+
+    const contact = notes.getByRole('button', {
+      name: /^Preferências de contato/,
+    })
+    await userEvent.click(contact)
+    const edited = within(
+      await screen.findByRole('dialog', { name: 'Editar nota' }),
+    )
+    await expect(
+      edited.getByRole('textbox', { name: 'Título da nota' }),
+    ).toHaveValue('Preferências de contato')
+    await userEvent.click(edited.getByRole('button', { name: 'Copiar link' }))
+    await expect(args.onCopyLink).toHaveBeenCalledWith('note-contact')
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+  },
+  render: function Notes({ onCopyLink, onViewAll, variant }) {
+    const [notes, setNotes] = useState<readonly Note[]>(initialNotes)
+    const [editing, setEditing] = useState<Note | null>(null)
+    const [open, setOpen] = useState(false)
+
+    const openNote = (note: Note | null) => {
+      setEditing(note)
+      setOpen(true)
+    }
+
+    return (
+      <>
+        <RecordGroup
+          actions={
+            <>
+              <Button onClick={onViewAll} size="xs" variant="ghost">
+                Ver tudo
+              </Button>
+              <RecordGroupAction
+                icon={PlusIcon}
+                label="Nova nota"
+                onClick={() => openNote(null)}
+              />
+            </>
+          }
+          title={
+            <span className="inline-flex items-center gap-1.5">
+              Notas <Badge variant="outline">{notes.length}</Badge>
+            </span>
+          }
+          variant={variant}
+        >
+          {notes.map((note) => (
+            <RecordGroupLink
+              key={note.id}
+              leading={
+                <Avatar aria-hidden size="xs">
+                  <AvatarFallback>{authorInitial(note.author)}</AvatarFallback>
+                </Avatar>
+              }
+              meta={
+                <time dateTime={note.updatedAt}>{noteAge(note.updatedAt)}</time>
+              }
+              onClick={() => openNote(note)}
+              render={<button type="button" />}
+            >
+              {noteTitle(note)}{' '}
+              <span className="text-muted-foreground">{notePreview(note)}</span>
+            </RecordGroupLink>
+          ))}
+        </RecordGroup>
+        <NoteDialog
+          note={editing}
+          onCopyLink={onCopyLink}
+          onOpenChange={setOpen}
+          onSave={(values) =>
+            setNotes((current) => {
+              const saved: Note = {
+                author: editing?.author ?? noteAuthor,
+                id: editing?.id ?? `note-${current.length + 1}`,
+                ...values,
+                updatedAt: notesNow,
+              }
+              return [saved, ...current.filter((note) => note.id !== saved.id)]
+            })
+          }
+          open={open}
+          recordName={noteRecordName}
+        />
+      </>
     )
   },
 }
