@@ -1,9 +1,36 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import {
+  PeopleProperty,
+  RecordDialog,
+  RecordGroupRow,
+  ScheduleProperty,
+  SelectProperty,
+  TextProperty,
+} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { useState } from 'react'
+import { Field, FieldLabel } from '@tc96/ui/field'
+import { Input } from '@tc96/ui/input'
+import { Switch } from '@tc96/ui/switch'
+import { Textarea } from '@tc96/ui/textarea'
+import { MapPinIcon } from 'lucide-react'
+import { useId, useRef, useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
-import { CreateEventDialog } from '../create-event-dialog'
-import type { EventSlot, EventValues } from '../event-record'
+import {
+  availabilityOptions,
+  calendarOptions,
+  dialogTitles,
+  type EventSlot,
+  type EventValues,
+  eventSchema,
+  eventWindow,
+  scheduleDay,
+  scheduleLabels,
+  scheduleRecurrenceOptions,
+  scheduleReminderOptions,
+  slotSchedule,
+  typeOptions,
+} from '../event-record'
+import { people } from '../project-record'
 
 interface CalendarArgs {
   onCreate: (values: EventValues) => void | Promise<void>
@@ -27,26 +54,193 @@ const meta = {
     docs: {
       description: {
         component: [
-          'RecordDialog as the create step of the Calendar usage, with the body of `Create/Row Properties`: a borderless title and description, then Date, Guests, Location, Type, Calendar and Availability as rows. `CreateEventDialog` takes the `slot` the calendar picked and starts the Date row on that day and window. `Patterns/CollectionViews/Usages/Calendar` opens it from Nova atividade with the anchor day at 09:00-10:00, and from an empty slot of the time grid through `onSelectSlot` and `slotFromCalendar`, then adds the saved event to the calendar.',
+          'RecordDialog as the create step of the Calendar usage, with the body of `Create/Row Properties`: a borderless title and description, then Date, Guests, Location, Type, Calendar and Availability as rows. The Date row starts on the day and window of the `slot` the calendar picked. `Patterns/CollectionViews/Usages/Calendar` opens the same dialog from Nova atividade with the anchor day at 09:00-10:00, and from an empty slot of the time grid through `onSelectSlot` and `slotFromCalendar`, then adds the saved event to the calendar.',
           'The dialog reads `slot` when it mounts and puts every field back to it on close, so the calendar gives it a new `key` for each request instead of passing a new slot to an open dialog.',
         ].join('\n\n'),
       },
     },
   },
   render: function Create({ onCreate, slot }) {
+    const initialSchedule = slotSchedule(slot)
     const [open, setOpen] = useState(true)
+    const [title, setTitle] = useState('')
+    const [schedule, setSchedule] = useState(initialSchedule)
+    const [guests, setGuests] = useState<readonly string[]>([])
+    const [location, setLocation] = useState<string | null>(null)
+    // Mod+Enter submits in the same event as the blur that commits Location, before React re-renders.
+    const committedLocation = useRef<string | null>(null)
+    const [type, setType] = useState('event')
+    const [calendar, setCalendar] = useState('personal')
+    const [availability, setAvailability] = useState('busy')
+    const [errorMessage, setErrorMessage] = useState<string | null>(null)
+    const [createMore, setCreateMore] = useState(false)
+    const createMoreId = useId()
+
+    const reset = () => {
+      setTitle('')
+      setSchedule(initialSchedule)
+      setGuests([])
+      setLocation(null)
+      committedLocation.current = null
+      setType('event')
+      setCalendar('personal')
+      setAvailability('busy')
+      setErrorMessage(null)
+    }
 
     return (
       <>
         <Button onClick={() => setOpen(true)} variant="outline">
           Nova atividade
         </Button>
-        <CreateEventDialog
-          onCreate={onCreate}
-          onOpenChange={setOpen}
+        <RecordDialog
+          errorMessage={errorMessage}
+          footerStart={
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={createMore}
+                id={createMoreId}
+                onCheckedChange={setCreateMore}
+              />
+              <label className="text-sm" htmlFor={createMoreId}>
+                Create more
+              </label>
+            </div>
+          }
+          keepOpenOnSuccess={createMore}
+          onOpenChange={(next) => {
+            setOpen(next)
+            if (!next) reset()
+          }}
+          onSubmit={async (event) => {
+            setErrorMessage(null)
+            const data = new FormData(event.currentTarget)
+            const parsed = eventSchema.safeParse({
+              allDay: schedule.allDay,
+              availability,
+              calendar,
+              description: String(data.get('description') ?? ''),
+              frequency: schedule.frequency,
+              guests,
+              location: committedLocation.current ?? '',
+              reminderMinutes: schedule.reminders.map(Number),
+              title,
+              type,
+              until: schedule.until,
+              ...eventWindow({
+                allDay: schedule.allDay,
+                day: scheduleDay(schedule),
+                end: schedule.endTime,
+                start: schedule.startTime,
+              }),
+            })
+            if (!parsed.success) {
+              setErrorMessage(parsed.error.issues[0]?.message ?? null)
+              return false
+            }
+            try {
+              await onCreate(parsed.data)
+            } catch (error) {
+              setErrorMessage(
+                error instanceof Error ? error.message : 'Could not save.',
+              )
+              return false
+            }
+            if (createMore) reset()
+            return true
+          }}
           open={open}
-          slot={slot}
-        />
+          submitDisabled={title.trim() === ''}
+          submitLabel="Save"
+          submitOnModEnter
+          submittingLabel="Saving"
+          title={dialogTitles[type] ?? 'New event'}
+          titleAncestor="Calendar"
+        >
+          <div className="grid gap-4">
+            <div className="grid gap-1">
+              <Field name="title">
+                <FieldLabel className="sr-only">Event title</FieldLabel>
+                <Input
+                  autoFocus
+                  className="w-full font-semibold text-lg [&_input]:px-0 [&_input]:placeholder:text-muted-foreground/60 [&_input]:focus:placeholder:text-muted-foreground"
+                  onChange={(event) => setTitle(event.target.value)}
+                  placeholder="Add title"
+                  unstyled
+                  value={title}
+                />
+              </Field>
+              <Field name="description">
+                <FieldLabel className="sr-only">Description</FieldLabel>
+                <Textarea
+                  className="w-full [&_textarea]:min-h-16 [&_textarea]:resize-none [&_textarea]:px-0 [&_textarea]:pt-0.5 [&_textarea]:placeholder:text-muted-foreground/60 [&_textarea]:focus:placeholder:text-muted-foreground"
+                  placeholder="Add notes or a meeting link"
+                  unstyled
+                />
+              </Field>
+            </div>
+            <div>
+              <RecordGroupRow label="Date">
+                <ScheduleProperty
+                  ariaLabel="Date"
+                  labels={scheduleLabels}
+                  locale="en-US"
+                  onValueChange={setSchedule}
+                  recurrenceOptions={scheduleRecurrenceOptions}
+                  reminderOptions={scheduleReminderOptions}
+                  value={schedule}
+                />
+              </RecordGroupRow>
+              <RecordGroupRow label="Guests">
+                <PeopleProperty
+                  ariaLabel="Guests"
+                  dropdownPlacement={{ align: 'start' }}
+                  onValueChange={setGuests}
+                  options={people}
+                  placeholder="Add guests"
+                  value={guests}
+                />
+              </RecordGroupRow>
+              <RecordGroupRow label="Location">
+                <TextProperty
+                  ariaLabel="Location"
+                  editing="inline"
+                  fallback="Add location"
+                  icon={MapPinIcon}
+                  onCommit={(next) => {
+                    committedLocation.current = next
+                    setLocation(next)
+                  }}
+                  value={location}
+                />
+              </RecordGroupRow>
+              <RecordGroupRow label="Type">
+                <SelectProperty
+                  ariaLabel="Type"
+                  onValueChange={(value) => setType(value ?? 'event')}
+                  options={typeOptions}
+                  value={type}
+                />
+              </RecordGroupRow>
+              <RecordGroupRow label="Calendar">
+                <SelectProperty
+                  ariaLabel="Calendar"
+                  onValueChange={(value) => setCalendar(value ?? 'personal')}
+                  options={calendarOptions}
+                  value={calendar}
+                />
+              </RecordGroupRow>
+              <RecordGroupRow label="Availability">
+                <SelectProperty
+                  ariaLabel="Availability"
+                  onValueChange={(value) => setAvailability(value ?? 'busy')}
+                  options={availabilityOptions}
+                  value={availability}
+                />
+              </RecordGroupRow>
+            </div>
+          </div>
+        </RecordDialog>
       </>
     )
   },
