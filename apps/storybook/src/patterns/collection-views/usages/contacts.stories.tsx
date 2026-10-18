@@ -151,7 +151,7 @@ export const CreateContact: Story = {
     docs: {
       description: {
         story:
-          'Novo contato opens the `RecordDialog`; Criar contato adds Helena Duarte to the collection as a Lead, and the Table picks her up in the stage order.',
+          'Novo contato opens the `RecordDialog`; Criar contato adds Helena Duarte to the collection as Sem etapa, and the Table picks her up in the stage order.',
       },
     },
   },
@@ -166,6 +166,14 @@ export const CreateContact: Story = {
       dialog.getByRole('textbox', { name: 'Nome' }),
       'Helena Duarte',
     )
+    await userEvent.click(
+      dialog.getByRole('button', { name: 'Mais propriedades' }),
+    )
+    await userEvent.click(
+      await screen.findByRole('menuitemcheckbox', { name: 'Cargo' }),
+    )
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
     await userEvent.click(dialog.getByRole('combobox', { name: 'Cargo' }))
     await userEvent.type(
       await screen.findByRole('combobox', { name: 'Buscar cargo' }),
@@ -176,7 +184,7 @@ export const CreateContact: Story = {
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     await expect(
       rowOf(canvasElement, 'Helena Duarte').getByRole('combobox', {
-        name: 'Etapa: Lead',
+        name: 'Etapa: Sem etapa',
       }),
     ).toBeTruthy()
     await expect(
