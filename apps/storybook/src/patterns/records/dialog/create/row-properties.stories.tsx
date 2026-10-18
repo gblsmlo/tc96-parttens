@@ -44,6 +44,7 @@ const meta = {
         component:
           'RecordDialog as quick capture with the properties as rows: a borderless title and description, then labeled rows (`RecordGroupRow`) whose values are property displays.',
       },
+      source: { inlineLimit: 200 },
     },
   },
   render: function RowProperties({ onCreate }) {
