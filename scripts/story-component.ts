@@ -185,6 +185,29 @@ export function storyComponent(
   const metaProps = metaObject ? propsOf(metaObject) : new Map()
   if (!storyProps || !metaProps) return undefined
 
+  function numberAt(expression: ts.Expression | undefined, path: string[]) {
+    let value = expression && unwrap(expression)
+    for (const key of path) {
+      const object =
+        value &&
+        (ts.isObjectLiteralExpression(value)
+          ? value
+          : resolveLocalObject(value))
+      const property = object?.properties.find(
+        (entry): entry is ts.PropertyAssignment =>
+          ts.isPropertyAssignment(entry) && propertyName(entry) === key,
+      )
+      value = property && unwrap(property.initializer)
+    }
+    return value && ts.isNumericLiteral(value) ? Number(value.text) : undefined
+  }
+
+  const limitPath = ['docs', 'source', 'inlineLimit']
+  const limit =
+    numberAt(storyProps.get('parameters'), limitPath) ??
+    numberAt(metaProps.get('parameters'), limitPath) ??
+    inlineLimit
+
   const metaArgs = argsOf(metaProps.get('args'))
   const storyArgs = argsOf(storyProps.get('args'))
   const args = metaArgs && storyArgs && merged(metaArgs, storyArgs)
@@ -503,10 +526,14 @@ export function storyComponent(
   )
   const inlined =
     file &&
-    inlineModules(file, read, usedImports, generatedIndex.imports, [
-      exportName,
-      ...locals.flatMap(declaredNames),
-    ])
+    inlineModules(
+      file,
+      read,
+      usedImports,
+      generatedIndex.imports,
+      [exportName, ...locals.flatMap(declaredNames)],
+      limit,
+    )
   const bindings = inlined ? inlined.imports : generatedIndex.imports
   const used = inlined ? new Set(inlined.imports.keys()) : usedImports
   return [
@@ -582,6 +609,7 @@ function inlineModules(
   used: Set<string>,
   imports: Map<string, ImportBinding>,
   storyNames: string[],
+  limit: number,
 ) {
   const external = new Map<string, ImportBinding>()
   const owners = new Map(storyNames.map((name) => [name, file]))
@@ -703,7 +731,7 @@ function inlineModules(
     (total, statement) => total + statement.split('\n').length,
     0,
   )
-  if (lines > inlineLimit) return undefined
+  if (lines > limit) return undefined
   return { imports: external, statements }
 }
 

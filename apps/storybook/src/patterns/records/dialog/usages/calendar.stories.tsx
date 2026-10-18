@@ -58,6 +58,7 @@ const meta = {
           'The dialog reads `slot` when it mounts and puts every field back to it on close, so the calendar gives it a new `key` for each request instead of passing a new slot to an open dialog.',
         ].join('\n\n'),
       },
+      source: { inlineLimit: 200 },
     },
   },
   render: function Create({ onCreate, slot }) {

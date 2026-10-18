@@ -174,6 +174,23 @@ test('keeps the relative import when the fixture is too long', () => {
   expect(component('Default')).toContain("import { Demo } from './demo'")
 })
 
+test('inlines a long fixture when the story raises the limit', () => {
+  const rows = Array.from({ length: inlineLimit }, (_, i) => `  ${i},`)
+  const component = fixtureStory(
+    {
+      'demo.tsx': `const rows = [\n${rows.join('\n')}\n]\n\nexport function Demo() {\n  return <p>{rows.length}</p>\n}\n`,
+    },
+    demoStory.replace(
+      "{ title: 'Demo' }",
+      `{ parameters: { docs: { source: { inlineLimit: ${inlineLimit + 10} } } }, title: 'Demo' }`,
+    ),
+  )
+  const code = component('Default') as string
+
+  expect(code).not.toContain("from './demo'")
+  expect(code).toContain('function Demo()')
+})
+
 test('keeps the relative import when an inlined name collides', () => {
   const component = fixtureStory(
     {
