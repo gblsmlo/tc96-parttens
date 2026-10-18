@@ -31,6 +31,36 @@
       "upstream": "sha256-b59dbc0bd5d61694fcf1948fb8134795b0f5a1bf0a28d8d6bc817297c73a006e",
       "file": "sha256-59843cf8efe49f85af80a12eb6ded74f3b5f78cd83c84f7fe386c5cb473543d3"
     },
+    "chat": {
+      "url": "https://coss.com/ui/r/chat.json",
+      "upstream": "sha256-653ecfc848c2f975034eb504f8a0d379b6b43c91b6dba327596a8e3ed4ea039d",
+      "file": "sha256-cc140e027892371b03e8258b704d99cb02c64da2a92109008c3bc8344415e7fd",
+      "paths": [
+        "chat/chat-bubble.tsx",
+        "chat/chat-collapsible-message.tsx",
+        "chat/chat-conversation.tsx",
+        "chat/chat-date-pill.tsx",
+        "chat/chat-delivery-indicator.tsx",
+        "chat/chat-jump-to-latest-button.tsx",
+        "chat/chat-members.tsx",
+        "chat/chat-message-actions.tsx",
+        "chat/chat-message-bubble.tsx",
+        "chat/chat-message-info.tsx",
+        "chat/chat-message-layout.tsx",
+        "chat/chat-message-text.tsx",
+        "chat/chat-message.tsx",
+        "chat/chat-reaction-chip.tsx",
+        "chat/chat-reaction-picker.tsx",
+        "chat/chat-reply-preview.tsx",
+        "chat/chat-reply-reference.tsx",
+        "chat/chat-states.tsx",
+        "chat/chat-typing-indicator.tsx",
+        "chat/chat-unread-divider.tsx",
+        "chat/hooks/use-chat-popup-dismissal.ts",
+        "chat/hooks/use-chat-scroll.ts",
+        "chat/lib/split-chat-message-preview.ts"
+      ]
+    },
     "checkbox": {
       "url": "https://coss.com/ui/r/checkbox.json",
       "upstream": "sha256-a1b8b4180a39a47c47bd2b50e432d0911da6efe3b963b065b3b5cb8893760047",
@@ -45,6 +75,43 @@
       "url": "https://coss.com/ui/r/combobox.json",
       "upstream": "sha256-df233af98aa9141b3418489d20b71a693aa3d8672a3962e3d19576fb21383087",
       "file": "sha256-6197ad99e2ae5c17fc776c3dd1f0bdb794471b246d5baef14c34b03def184872"
+    },
+    "composer": {
+      "url": "https://coss.com/ui/r/composer.json",
+      "upstream": "sha256-b095930353dfcfee0c0e0d1f9d76e142813807e22afba5cfbc0f8e5183bc521d",
+      "file": "sha256-5d4ec3f1ceb49afef5b5f324642a60182bc73de81e0ec309e76c094e7b1b076c"
+    },
+    "composer-clipboard": {
+      "url": "https://coss.com/ui/r/composer-clipboard.json",
+      "upstream": "sha256-0c9d85b0a2068ef37d6bb86e55075a3c0bd2f391cc636f68c0f3fd91fdf97667",
+      "file": "sha256-0c9d85b0a2068ef37d6bb86e55075a3c0bd2f391cc636f68c0f3fd91fdf97667",
+      "paths": [
+        "lib/composer-clipboard.ts"
+      ]
+    },
+    "composer-document": {
+      "url": "https://coss.com/ui/r/composer-document.json",
+      "upstream": "sha256-d938a2b3c9b10206dee463045ee14d704e8ff092fe1f31ce9317bab5ff02fedc",
+      "file": "sha256-9d02c953f92b1fa2953d55a5ec0b313f00d539b00d247101148e7268114d3a18",
+      "paths": [
+        "lib/composer-document.ts"
+      ]
+    },
+    "composer-editor": {
+      "url": "https://coss.com/ui/r/composer-editor.json",
+      "upstream": "sha256-d2e2b65cad6530854be0f111475d56cdeb5614fe34bb0120e67fe9997c37f42c",
+      "file": "sha256-87acf3de1f9ba69d7569092e69edeef0d0277ee9998d5628f87bd3acc3b04422",
+      "paths": [
+        "lib/composer-editor.ts"
+      ]
+    },
+    "composer-query": {
+      "url": "https://coss.com/ui/r/composer-query.json",
+      "upstream": "sha256-35afd934063e1b7b7a6aa3611e006cc1740a0e732338a9bdaf94eaf8d08cacb7",
+      "file": "sha256-35afd934063e1b7b7a6aa3611e006cc1740a0e732338a9bdaf94eaf8d08cacb7",
+      "paths": [
+        "lib/composer-query.ts"
+      ]
     },
     "dialog": {
       "url": "https://coss.com/ui/r/dialog.json",
@@ -170,6 +237,22 @@
       "url": "https://coss.com/ui/r/tooltip.json",
       "upstream": "sha256-0ac59089d1d813b7eb1cd9e08ed2ff3b3931e4024df649ddb45b1eb43d50f694",
       "file": "sha256-e11a923ef009df57c6dc8dd23878c90adf1b6e363455ccbca4832df1a7ea25e0"
+    },
+    "use-composer-editor": {
+      "url": "https://coss.com/ui/r/use-composer-editor.json",
+      "upstream": "sha256-6a7f24fae95f1372bf1e2476ff32c4745ada9b2656b9afaf53b40e6f370b53f8",
+      "file": "sha256-a1341a6c1847e6ee096ab84bb04bf61e572965884b7161b02af8534fc59e0071",
+      "paths": [
+        "hooks/use-composer-editor.ts"
+      ]
+    },
+    "use-media-query": {
+      "url": "https://coss.com/ui/r/use-media-query.json",
+      "upstream": "sha256-17d75ccaf898415db77dd72659c9b1fdb9338290ae54e8371b772e0b221c9fca",
+      "file": "sha256-17d75ccaf898415db77dd72659c9b1fdb9338290ae54e8371b772e0b221c9fca",
+      "paths": [
+        "hooks/use-media-query.ts"
+      ]
     }
   }
 }

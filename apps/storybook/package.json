@@ -18,6 +18,7 @@
     "@tc96/parttens": "workspace:*",
     "@tc96/ui": "workspace:*",
     "lucide-react": "1.28.0",
+    "motion": "14.0.0",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "tailwindcss": "4.3.3",
