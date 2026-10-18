@@ -171,7 +171,8 @@ export const ObjectiveFilter: Story = {
     await userEvent.click(
       await body.findByRole('menuitemcheckbox', { name: 'Vendas' }),
     )
-    await userEvent.keyboard('[Escape]')
+    await userEvent.keyboard('[Escape][Escape]')
+    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
 
     await waitFor(() =>
       expect(canvas.queryByText('Blog · Guia de presentes')).toBeNull(),

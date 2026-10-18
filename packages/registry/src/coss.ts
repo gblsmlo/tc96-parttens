@@ -42,6 +42,10 @@ export function normalizeImports(
       /(["'])@\/registry\/default\/ui\/([^"']+)\1/g,
       `$1${aliases.ui}/$2$1`,
     )
+    .replace(
+      /(["'])@\/registry\/default\/((?:hooks|lib)\/[^"']+)\1/g,
+      `$1${aliases.ui}/$2$1`,
+    )
 }
 
 export function itemContent(item: CossRegistryItem) {
