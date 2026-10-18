@@ -42,6 +42,7 @@
     "bench:kanban": "bun scripts/bench/kanban.bench.ts",
     "bench:calendar": "bun scripts/bench/calendar.bench.ts",
     "pack:check": "bun scripts/pack-check.ts",
+    "release": "bun scripts/release.ts",
     "test:boundaries": "bun test --isolate scripts"
   },
   "devDependencies": {
