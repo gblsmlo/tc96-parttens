@@ -1,10 +1,10 @@
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { join, relative, resolve } from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import ts from 'typescript'
 import { readAliases, resolveAliasPath } from '../packages/registry/src/config'
-import { readLock, sourceDirectory } from './coss'
+import { lockedPaths, readLock, sourceDirectory } from './coss'
 import { files } from './files'
 
 export const npmCache = resolve('.test-output/npm-cache')
@@ -68,21 +68,24 @@ export async function createConsumer(name: string): Promise<Consumer> {
   const { options } = ts.parseJsonConfigFileContent(config.config, ts.sys, root)
   const ui = resolveAliasPath(root, aliases.ui, options)
   const patterns = resolveAliasPath(root, aliases.patterns, options)
-  for (const item of Object.keys((await readLock()).items)) {
-    let content = (await readFile(`${sourceDirectory}/${item}.tsx`, 'utf8'))
-      .replace(/(["'])@tc96\/ui\//g, `$1${aliases.ui}/`)
-      .replace(/(["'])@tc96\/utils\1/g, `$1${aliases.utils}$1`)
-    if (item === 'button') {
-      const customized = content.replace(
-        'cva(\n  "',
-        `cva(\n  "${buttonMarker} `,
-      )
-      if (customized === content)
-        throw new Error('Cannot find the button base classes to customize')
-      content = customized
+  const lock = await readLock()
+  for (const [item, locked] of Object.entries(lock.items))
+    for (const path of lockedPaths(item, locked)) {
+      let content = (await readFile(`${sourceDirectory}/${path}`, 'utf8'))
+        .replace(/(["'])@tc96\/ui\//g, `$1${aliases.ui}/`)
+        .replace(/(["'])@tc96\/utils\1/g, `$1${aliases.utils}$1`)
+      if (item === 'button') {
+        const customized = content.replace(
+          'cva(\n  "',
+          `cva(\n  "${buttonMarker} `,
+        )
+        if (customized === content)
+          throw new Error('Cannot find the button base classes to customize')
+        content = customized
+      }
+      await mkdir(dirname(join(root, ui, path)), { recursive: true })
+      await writeFile(join(root, ui, path), content)
     }
-    await writeFile(join(root, ui, `${item}.tsx`), content)
-  }
   const manifest = JSON.parse(
     await readFile(join(root, 'package.json'), 'utf8'),
   )

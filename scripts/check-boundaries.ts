@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { relative } from 'node:path'
 import ts from 'typescript'
-import { readLock } from './coss'
+import { lockedPaths, readLock } from './coss'
 import { files } from './files'
 
 const allowed: Record<string, string[]> = {
@@ -12,7 +12,11 @@ const allowed: Record<string, string[]> = {
   parttens: ['ui', 'elements', 'utils', 'helpers'],
   registry: [],
 }
-const cossItems = new Set(Object.keys((await readLock()).items))
+const cossModules = new Set(
+  Object.entries((await readLock()).items).flatMap(([name, locked]) =>
+    lockedPaths(name, locked).map((path) => path.replace(/\.tsx?$/, '')),
+  ),
+)
 const graph = new Map<string, string[]>()
 const violations: string[] = []
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)
@@ -48,8 +52,8 @@ for (const owner of Object.keys(allowed)) {
         violations.push(`${file}: ${owner} cannot depend on ${dependency}`)
       }
       if (dependency === 'ui') {
-        const item = specifier.match(/^@tc96\/ui\/([^/]+)$/)?.[1]
-        if (!item || !cossItems.has(item))
+        const module = specifier.match(/^@tc96\/ui\/(.+)$/)?.[1]
+        if (!module || !cossModules.has(module))
           violations.push(`${file}: ${specifier} is not a locked COSS item`)
       }
       if (

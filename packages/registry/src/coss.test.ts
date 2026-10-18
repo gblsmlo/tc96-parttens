@@ -42,6 +42,14 @@ test('rewrites the registry aliases to the given ones', () => {
   ).toBe(
     'import { cn } from "@acme/ui/lib/utils";\nimport { Spinner } from \'@acme/ui/spinner\';',
   )
+  expect(
+    normalizeImports(
+      'import { a } from "@/registry/default/lib/composer-editor";\nimport { b } from "@/registry/default/hooks/use-media-query";',
+      aliases,
+    ),
+  ).toBe(
+    'import { a } from "@acme/ui/lib/composer-editor";\nimport { b } from "@acme/ui/hooks/use-media-query";',
+  )
 })
 
 test('reads the @coss registry from components.json', () => {
