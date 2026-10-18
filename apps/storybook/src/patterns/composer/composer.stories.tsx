@@ -12,7 +12,7 @@ import {
 import { ArrowUpIcon } from 'lucide-react'
 import type { ComponentProps } from 'react'
 import { expect, fn, userEvent } from 'storybook/test'
-import type { UsageDocsParameters } from '../../.storybook/docs-page.tsx'
+import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
 
 const usage = `
 import {
@@ -154,7 +154,7 @@ const meta = {
       </ComposerActions>
     </Composer>
   ),
-  title: 'UI/Composer',
+  title: 'Patterns/Composer',
 } satisfies Meta<ComposerStoryProps>
 
 export default meta

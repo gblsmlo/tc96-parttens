@@ -133,7 +133,7 @@ const meta = {
     </Composer>
   ),
   tags: ['!autodocs'],
-  title: 'UI/Composer/Mentions',
+  title: 'Patterns/Composer/Mentions',
 } satisfies Meta<MentionsStoryProps>
 
 export default meta
