@@ -120,7 +120,6 @@ Run both Storybook projects (`storybook` and `storybook-dark`): color contrast d
 
 The stories are in `apps/storybook/src/patterns/records/dialog/`, with a `!dev` `<Story>Interaction` twin for each, and all run axe with `test: 'error'`:
 
-- `Patterns/Records/Dialog`: Sizes, which widens the viewport with `page.viewport()` and restores it.
-- `Patterns/Records/Dialog/Create`, the create presentations in `create/`: `Inline Properties`, `Row Properties` and `Simple Form`. The first two and the Contacts usage render the title and description through `record-headline.tsx`, so size, placeholder color, spacing and the description label change in one place.
-- `Patterns/Records/Dialog/Failed Submit` (`failed-submit.stories.tsx`): the same Inline Properties and Row Properties bodies with an `onCreate` that throws. The demos report it through `errorMessage`, and the stories check the settle rule above: the dialog stays open, the title and properties keep their values and focus returns to the submit button.
-- `Patterns/Records/Dialog/Usages/Contacts` (Default, CreateContact, CreateMore) in `usages/`.
+- `Patterns/Records/Dialog`: one story per size, which widens the viewport with `page.viewport()` and restores it.
+- `Patterns/Records/Dialog/Create`, the create presentations in `create/`: `Inline Properties`, `Row Properties` and `Simple Form`, each written inline in its story so the Code panel shows the whole body. The `FailedSubmit` story of the first two swaps in an `onCreate` that throws and checks the settle rule above: the dialog stays open, the title and properties keep their values and focus returns to the submit button.
+- `Patterns/Records/Dialog/Usages`, in `usages/`: `Contacts` and `Calendar` document `create-contact-dialog.tsx` and `create-event-dialog.tsx`, the dialogs that `collection-views/fixtures/contacts-usage.tsx` and `calendar-usage.tsx` import by path for the Contacts and Calendar usages of `Patterns/CollectionViews`. Both render the title and description through `record-headline.tsx`; `create-event-dialog.tsx` has the body of `Create/Row Properties`, so a change to one goes to the other.

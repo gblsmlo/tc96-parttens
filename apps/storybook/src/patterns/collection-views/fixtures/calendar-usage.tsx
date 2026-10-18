@@ -13,7 +13,7 @@ import {
 } from '@tc96/parttens'
 import { FlagIcon, TagIcon, UsersIcon } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
-import { CreateEventDialog } from '../../records/dialog/create-event-demo'
+import { CreateEventDialog } from '../../records/dialog/create-event-dialog'
 import {
   defaultSlot,
   type EventSlot,
