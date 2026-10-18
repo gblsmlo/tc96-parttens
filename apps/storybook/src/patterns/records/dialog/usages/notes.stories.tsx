@@ -32,7 +32,7 @@ const meta = {
     docs: {
       description: {
         component: [
-          'RecordDialog as the note editor of a record, at the `large` size with `stretchBody`: the record name as the ancestor, then an `EditorTitle`, the author and Vínculos as `plain` property chips, and a `RichTextEditor` that fills the rest of the dialog. Enter or ArrowDown at the end of the title moves to the body, and ArrowUp at its first line goes back. Vínculos ties the note to other records: a menu with one submenu per kind (Contato, Lead, Contratos, Reunião), each holding checkbox items, with the number linked in that kind next to its name; the chip shows the one link with its kind icon or the count. A new note can be saved with a title or a body; an empty one cannot.',
+          'RecordDialog as the note editor of a record, at the `large` size with `stretchBody`: the record name as the ancestor, then an `EditorTitle`, the author and Vínculos as `plain` property chips, and a `RichTextEditor` that fills the rest of the dialog. Enter or ArrowDown at the end of the title moves to the body, and ArrowUp at its first line goes back. Vínculos ties the note to other records: a menu with one submenu per kind (Contato, Lead, Contratos, Reunião), each holding `MenuCheckboxOption` items with the check on the right, with the number linked in that kind next to its name; the chip shows the one link with its kind icon or the count. A new note can be saved with a title or a body; an empty one cannot.',
           'The Notes usage of `Patterns/Records/Group/Usages` lists the notes of the record and opens the same dialog instance from a row or from the + action, and the dialog resets its fields when `note` changes.',
         ].join('\n\n'),
       },
@@ -78,6 +78,11 @@ const toggleLink = async (kind: string, name: string, checked: boolean) => {
   await waitFor(() =>
     expect(item).toHaveAttribute('aria-checked', String(checked)),
   )
+  if (checked) {
+    const label = item.firstElementChild?.getBoundingClientRect()
+    const check = item.lastElementChild?.getBoundingClientRect()
+    await expect(check?.left).toBeGreaterThan(label?.right ?? Infinity)
+  }
 }
 
 const closeMenu = async () => {
