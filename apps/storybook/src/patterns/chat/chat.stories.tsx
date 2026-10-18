@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { ChatDeliveryIndicator } from '@tc96/ui/chat/chat-delivery-indicator'
 import { ChatMessage } from '@tc96/ui/chat/chat-message'
 import { ChatMessageText } from '@tc96/ui/chat/chat-message-text'
-import { expect, within } from 'storybook/test'
+import { expect } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
 
 const usage = `
@@ -122,27 +122,43 @@ const docs = {
   usage,
 } satisfies UsageDocsParameters & Record<string, unknown>
 
-function CaseyAvatar() {
-  return (
+const avatars = {
+  Casey: (
     <Avatar aria-hidden="true" className="size-7 text-xs">
       <AvatarFallback>C</AvatarFallback>
     </Avatar>
-  )
+  ),
+  None: undefined,
+}
+
+const footers = {
+  None: undefined,
+  'Read at 09:42': (
+    <>
+      <span>09:42</span>
+      <ChatDeliveryIndicator label="Read" status="read" />
+    </>
+  ),
 }
 
 const meta = {
   args: {
     author: 'Casey',
-    avatar: <CaseyAvatar />,
+    avatar: 'Casey',
     children: 'Can you review the onboarding copy before Friday?',
     side: 'incoming',
   },
   argTypes: {
-    side: { control: 'inline-radio', options: ['incoming', 'outgoing'] },
-    grouped: { control: 'boolean' },
-    bubble: { control: 'boolean' },
-    animateEntrance: { control: 'boolean' },
-    highlighted: { control: 'boolean' },
+    avatar: {
+      control: 'select',
+      mapping: avatars,
+      options: Object.keys(avatars),
+    },
+    footer: {
+      control: 'select',
+      mapping: footers,
+      options: Object.keys(footers),
+    },
   },
   component: ChatMessage,
   decorators: [
@@ -153,7 +169,7 @@ const meta = {
     ),
   ],
   parameters: { docs },
-  title: 'UI/Chat',
+  title: 'Patterns/Chat',
 } satisfies Meta<typeof ChatMessage>
 
 export default meta
@@ -170,12 +186,7 @@ export const Incoming: Story = {
 export const Outgoing: Story = {
   args: {
     children: 'Sure, I will send notes tomorrow morning.',
-    footer: (
-      <>
-        <span>09:42</span>
-        <ChatDeliveryIndicator label="Read" status="read" />
-      </>
-    ),
+    footer: 'Read at 09:42',
     side: 'outgoing',
   },
   play: async ({ canvas, canvasElement }) => {
@@ -187,22 +198,18 @@ export const Outgoing: Story = {
 }
 
 export const Grouped: Story = {
-  render: (args) => (
-    <div className="flex flex-col gap-1">
-      <ChatMessage {...args}>The draft is in the shared folder.</ChatMessage>
-      <ChatMessage {...args} grouped>
-        Second pass is on the pricing section.
-      </ChatMessage>
-    </div>
-  ),
-  play: async ({ canvasElement }) => {
-    const [first, second] = canvasElement.querySelectorAll(
-      '[data-slot="chat-message"]',
-    )
-    if (!(first instanceof HTMLElement && second instanceof HTMLElement))
-      throw new Error('The grouped messages did not render.')
-    await expect(within(first).getByText('Casey')).toBeVisible()
-    await expect(within(second).queryByText('Casey')).toBeNull()
+  args: {
+    children: 'Second pass is on the pricing section.',
+    grouped: true,
+  },
+  play: async ({ canvas, canvasElement }) => {
+    await expect(canvas.queryByText('Casey')).toBeNull()
+    await expect(
+      canvasElement.querySelector('[data-slot="chat-message-avatar"]'),
+    ).toBeEmptyDOMElement()
+    await expect(
+      canvasElement.querySelector('[data-slot="chat-message-bubble"]'),
+    ).toHaveAttribute('data-grouped')
   },
 }
 
@@ -216,9 +223,17 @@ export const WithMentions: Story = {
     ),
   },
   play: async ({ canvas }) => {
-    const mention = canvas.getByText('@Jordan')
-    await expect(mention).toHaveClass('font-medium')
+    await expect(canvas.getByText('@Jordan')).toHaveClass('font-medium')
     await expect(canvas.queryByText('@someone')).toBeNull()
+  },
+}
+
+export const Highlighted: Story = {
+  args: { highlighted: true },
+  play: async ({ canvasElement }) => {
+    await expect(
+      canvasElement.querySelector('[data-slot="chat-message-bubble"]'),
+    ).toHaveClass('origin-center')
   },
 }
 
