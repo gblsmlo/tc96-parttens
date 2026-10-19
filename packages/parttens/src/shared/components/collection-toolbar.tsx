@@ -69,7 +69,7 @@ export function CollectionToolbar({
               className="truncate leading-tight"
               family="heading"
               render={<h2>{title}</h2>}
-              size="lg"
+              size="base"
               weight="semibold"
             />
             <Text
