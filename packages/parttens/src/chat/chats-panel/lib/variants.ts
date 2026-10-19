@@ -42,7 +42,7 @@ export const chatsPanelUnreadBadgeClassName =
   'absolute -end-1 -top-1 rounded-full outline-2 outline-background outline-solid'
 
 export const chatsPanelChannelClassName =
-  'absolute -end-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-background outline-2 outline-background outline-solid [&_svg]:size-full'
+  'absolute -end-1 -bottom-1 size-4 rounded-full bg-background object-contain outline-2 outline-background outline-solid'
 
 export const chatsPanelTextClassName = 'flex min-w-0 flex-1 flex-col gap-0.5'
 

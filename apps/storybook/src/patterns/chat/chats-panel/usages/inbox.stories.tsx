@@ -25,7 +25,6 @@ import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { chatsPanelArgTypes } from '../../../../test-utils/story-arg-types'
 import {
   type Channel,
-  ChannelMark,
   ChatAvatar,
   type ChatSummary,
   channels,
@@ -37,7 +36,7 @@ type ChatSort = 'name' | 'oldest' | 'recent'
 type ReadStatus = '' | 'read' | 'unread'
 
 const channelOptions = Object.entries(channels).map(
-  ([value, { label }]) => [value, label] as const,
+  ([value, { title }]) => [value, title] as const,
 )
 
 const readStatusOptions = [
@@ -210,8 +209,7 @@ const meta = {
             {visibleChats.map((chat) => (
               <ChatsPanelItem
                 avatar={<ChatAvatar chat={chat} />}
-                channel={<ChannelMark channel={chat.channel} />}
-                channelLabel={channels[chat.channel].label}
+                channel={channels[chat.channel]}
                 key={chat.id}
                 name={chat.name}
                 onClick={() => {

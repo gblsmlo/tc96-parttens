@@ -15,13 +15,7 @@ import { InboxIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
 import { chatsPanelArgTypes } from '../../../test-utils/story-arg-types'
-import {
-  ChannelMark,
-  ChatAvatar,
-  channels,
-  chats,
-  unreadLabel,
-} from './fixtures/chats'
+import { ChatAvatar, channels, chats, unreadLabel } from './fixtures/chats'
 
 const usage = `
 import {
@@ -30,6 +24,7 @@ import {
   ChatsPanelList,
   ChatsPanelSkeleton,
 } from '@acme/patterns'
+import messenger from '@thesvg/icons/messenger'
 
 <ChatsPanel actions={viewSettings} className="h-full" title="Chat" variant="card">
   {loading ? (
@@ -39,8 +34,7 @@ import {
       {chats.map((chat) => (
         <ChatsPanelItem
           avatar={<Avatar>…</Avatar>}
-          channel={<MessengerLogo />}
-          channelLabel="Messenger"
+          channel={messenger}
           key={chat.id}
           name={chat.name}
           onClick={() => openChat(chat.id)}
@@ -69,7 +63,7 @@ const docs = {
     },
     {
       description:
-        'One conversation, a `li` with a `button` (or the consumer element through `render`). `avatar` takes the avatar, `unreadCount` puts a `Badge` on its top corner and `channel` a brand mark on its bottom corner; the slot is hidden from screen readers, which read `channelLabel` and `unreadLabel` after `name`. `time` and `preview` fill the two lines, and `selected` sets `aria-current`.',
+        'One conversation, a `li` with a `button` (or the consumer element through `render`). `avatar` takes the avatar, `unreadCount` puts a `Badge` on its top corner and `channel`, an icon module from `@thesvg/icons` (a peer dependency), draws its brand mark as an `img` on its bottom corner; the slot is hidden from screen readers, which read the icon `title` (or `channelLabel`) and `unreadLabel` after `name`. `time` and `preview` fill the two lines, and `selected` sets `aria-current`.',
       name: 'ChatsPanelItem',
     },
     {
@@ -107,8 +101,7 @@ const meta = {
         {chats.map((chat) => (
           <ChatsPanelItem
             avatar={<ChatAvatar chat={chat} />}
-            channel={<ChannelMark channel={chat.channel} />}
-            channelLabel={channels[chat.channel].label}
+            channel={channels[chat.channel]}
             key={chat.id}
             name={chat.name}
             preview={chat.lastMessage}

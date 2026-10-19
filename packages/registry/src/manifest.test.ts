@@ -318,6 +318,7 @@ test('builds the chats-panel item from the chat folder with COSS-only dependenci
     '@coss/scroll-area',
     '@coss/skeleton',
   ])
+  expect(item.dependencies).toContain('@thesvg/icons@3.4.1')
   expect(paths).toContain('parttens/src/chat/chats-panel/index.ts')
   expect(paths.every((path) => path.startsWith('parttens/src/chat/'))).toBe(
     true,

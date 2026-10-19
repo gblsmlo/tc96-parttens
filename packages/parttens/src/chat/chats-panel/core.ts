@@ -1,4 +1,5 @@
 import type { useRender } from '@base-ui/react/use-render'
+import type { IconModule } from '@thesvg/icons'
 import type { ComponentProps, ReactNode } from 'react'
 
 export type ChatsPanelVariant = 'card' | 'inset' | 'plain'
@@ -20,7 +21,7 @@ export type ChatsPanelListProps = ComponentProps<'ul'>
 export interface ChatsPanelItemProps
   extends Omit<useRender.ComponentProps<'button'>, 'children' | 'name'> {
   avatar: ReactNode
-  channel?: ReactNode
+  channel?: Pick<IconModule, 'svg' | 'title'>
   channelLabel?: string
   name: ReactNode
   preview?: ReactNode

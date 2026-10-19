@@ -32,7 +32,10 @@ export function ChatsPanelItem({
   ...props
 }: Readonly<ChatsPanelItemProps>): ReactElement {
   const unread = unreadCount > 0
-  const spokenDetails = [channelLabel, unread ? unreadLabel : undefined]
+  const spokenDetails = [
+    channelLabel ?? channel?.title,
+    unread ? unreadLabel : undefined,
+  ]
     .filter(Boolean)
     .join(', ')
 
@@ -52,12 +55,12 @@ export function ChatsPanelItem({
             </Badge>
           ) : null}
           {channel ? (
-            <span
+            <img
+              alt=""
               className={chatsPanelChannelClassName}
               data-slot="chats-panel-item-channel"
-            >
-              {channel}
-            </span>
+              src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(channel.svg)}`}
+            />
           ) : null}
         </span>
         <span className={chatsPanelTextClassName}>

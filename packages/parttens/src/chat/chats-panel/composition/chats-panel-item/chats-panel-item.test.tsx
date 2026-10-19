@@ -10,13 +10,17 @@ const { ChatsPanelItem } = await import('./chats-panel-item')
 
 afterEach(cleanup)
 
+const messenger = {
+  svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#0866FF" d="M0 0h24v24H0z"/></svg>',
+  title: 'Messenger',
+}
+
 function mount(props: Partial<ComponentProps<typeof ChatsPanelItem>> = {}) {
   return render(
     <ul>
       <ChatsPanelItem
         avatar={<span>MC</span>}
-        channel={<svg data-testid="brand" />}
-        channelLabel="Messenger"
+        channel={messenger}
         name="Marina Costa"
         preview="Consegue me mandar a proposta?"
         time="00:29"
@@ -50,7 +54,28 @@ test('hides the avatar slot, with its badge and channel mark, from assistive tec
 
   expect(slot?.getAttribute('aria-hidden')).toBe('true')
   expect(slot?.querySelector('[data-slot="badge"]')?.textContent).toBe('2')
-  expect(slot?.contains(screen.getByTestId('brand'))).toBe(true)
+  expect(
+    slot?.querySelector('[data-slot="chats-panel-item-channel"]'),
+  ).not.toBeNull()
+})
+
+test('draws the channel svg as an img with an empty alt', () => {
+  mount()
+
+  const mark = item().querySelector('[data-slot="chats-panel-item-channel"]')
+
+  expect(mark?.tagName).toBe('IMG')
+  expect(mark?.getAttribute('alt')).toBe('')
+  expect(mark?.getAttribute('src')).toBe(
+    `data:image/svg+xml;charset=utf-8,${encodeURIComponent(messenger.svg)}`,
+  )
+})
+
+test('speaks channelLabel over the icon title when both are passed', () => {
+  mount({ channelLabel: 'Facebook Messenger' })
+
+  expect(trigger().textContent).toContain('Facebook Messenger')
+  expect(trigger().textContent).not.toContain('Marina CostaMessenger')
 })
 
 test('speaks the unread label and inks the preview when there are unread messages', () => {
