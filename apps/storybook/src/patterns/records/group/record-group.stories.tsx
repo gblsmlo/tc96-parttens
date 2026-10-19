@@ -48,7 +48,7 @@ const docs = {
   api: [
     {
       description:
-        'Root component. A titled `section` on the COSS `Collapsible`, named by its `h2` title. Controlled through `open` and `onOpenChange`, uncontrolled through `defaultOpen`. `variant` is `plain`, `card` or `inset`, and `empty` starts it closed and centers the content.',
+        'Root component. A titled `section` on the COSS `Collapsible`, named by its `h2` title. Controlled through `open` and `onOpenChange`, uncontrolled through `defaultOpen`. `variant` is `card`, `inset` or `plain`, and `empty` starts it closed and drops the vertical padding of the content.',
       name: 'RecordGroup',
     },
     {
@@ -90,7 +90,7 @@ const meta = {
     actionsAlign: { control: 'inline-radio', options: ['between', 'start'] },
     defaultOpen: { control: 'boolean' },
     empty: { control: 'boolean' },
-    variant: { control: 'inline-radio', options: ['plain', 'card', 'inset'] },
+    variant: { control: 'inline-radio', options: ['card', 'inset', 'plain'] },
   },
   component: RecordGroup,
   decorators: [
@@ -173,13 +173,8 @@ export const EmptyInteraction: Story = {
     await waitFor(() => {
       const contentBox = content.getBoundingClientRect()
       const messageBox = message.getBoundingClientRect()
-      expect(
-        Math.abs(
-          messageBox.left +
-            messageBox.width / 2 -
-            (contentBox.left + contentBox.width / 2),
-        ),
-      ).toBeLessThan(1)
+      expect(Math.abs(messageBox.left - contentBox.left)).toBeLessThan(1)
+      expect(Math.abs(messageBox.top - contentBox.top)).toBeLessThan(1)
     })
     expect(
       canvasElement.querySelector('[data-slot="record-group-footer"]'),

@@ -435,14 +435,10 @@ test('only plain drops the horizontal padding of the trigger', () => {
   }
 })
 
-test('only plain packs the rows: no gutter, no gap and the 32px row height, and no variant pads them', () => {
-  const roomy = [
-    'px-1',
-    '[--record-group-row-gap:calc(var(--spacing)*0.5)]',
-    '[--record-group-row-height:calc(var(--spacing)*9)]',
-  ]
+test('only plain packs the rows: no gutter and no gap, every variant sets the 32px row height, and no variant pads them', () => {
+  const roomy = ['px-1', '[--record-group-row-gap:calc(var(--spacing)*0.5)]']
   const hoverOffset = '[--record-group-hover-offset:calc(var(--spacing)*2)]'
-  const plainHeight = '[--record-group-row-height:calc(var(--spacing)*8)]'
+  const rowHeight = '[--record-group-row-height:calc(var(--spacing)*8)]'
 
   for (const variant of ['card', 'inset', 'plain'] as const) {
     const { unmount } = mount({ variant })
@@ -458,7 +454,7 @@ test('only plain packs the rows: no gutter, no gap and the 32px row height, and 
       classes.some((name) => name.includes('--record-group-row-padding')),
     ).toBe(false)
     expect(classes).toContain(hoverOffset)
-    expect(classes.includes(plainHeight)).toBe(variant === 'plain')
+    expect(classes).toContain(rowHeight)
     expect(classes).toContain('gap-[var(--record-group-row-gap,0px)]')
     unmount()
   }
@@ -533,7 +529,7 @@ test('inset frames the content in a card and keeps the header and the footer out
   expect(content.className).not.toContain('after:')
 })
 
-test('keeps the empty padding on every variant', async () => {
+test('drops the vertical padding and the centering when empty, on every variant', async () => {
   for (const variant of ['card', 'inset', 'plain'] as const) {
     const { unmount } = mount({ empty: true, variant })
     fireEvent.click(trigger())
@@ -545,8 +541,16 @@ test('keeps the empty padding on every variant', async () => {
       return found
     })
 
-    expect(content.className).toContain('py-6')
-    expect(content.className).not.toContain('py-1')
+    const classes = content.className.split(' ')
+    for (const removed of [
+      'py-1',
+      'py-6',
+      'items-center',
+      'justify-center',
+      'text-center',
+    ]) {
+      expect(classes).not.toContain(removed)
+    }
     unmount()
   }
 })

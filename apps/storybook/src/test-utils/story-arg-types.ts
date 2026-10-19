@@ -45,7 +45,7 @@ export const recordGroupArgTypes = {
   empty: boolean,
   footer: withoutControl,
   open: withoutControl,
-  variant: { control: 'inline-radio', options: ['plain', 'card', 'inset'] },
+  variant: { control: 'inline-radio', options: ['card', 'inset', 'plain'] },
 } as const
 
 /** `RecordPreview`: o estado aberto mora na story, os slots são JSX. */

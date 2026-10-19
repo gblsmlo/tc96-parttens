@@ -18,7 +18,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'RecordDialog as the create step of the Contacts collection, built like Inline Properties: the name as a borderless title, a short description below it, and every other field as a property chip. Etapa starts at Lead and offers Sem etapa before it. Cargo and Empresa share one combobox chip: search, the existing roles or companies of the collection, and a footer that creates the typed name and selects it. The Contacts usage of `Patterns/CollectionViews` opens the same dialog from Novo contato.',
+          'RecordDialog as the create step of the Contacts collection, built like Inline Properties: the name as a borderless title, a short description below it, and every other field as a property chip. Telefone, E-mail, Tipo (CPF or CNPJ) and Documento are always shown. The ... chip opens a menu whose switches show or hide Etapa, Tags, Empresa and Cargo; Etapa starts at Sem etapa and has no Lead. Empresa and Cargo share one combobox chip: search, the existing roles or companies of the collection, and a footer that creates the typed name and selects it. The Contacts usage of `Patterns/CollectionViews` opens the same dialog from Novo contato.',
       },
     },
   },
@@ -48,6 +48,22 @@ export default meta
 
 type Story = StoryObj<ContactsArgs>
 
+const showProperties = async (
+  dialog: ReturnType<typeof within>,
+  labels: readonly string[],
+) => {
+  await userEvent.click(
+    dialog.getByRole('button', { name: 'Mais propriedades' }),
+  )
+  for (const label of labels) {
+    const item = await screen.findByRole('menuitemcheckbox', { name: label })
+    await userEvent.click(item)
+    await waitFor(() => expect(item).toHaveAttribute('aria-checked', 'true'))
+  }
+  await userEvent.keyboard('{Escape}')
+  await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
+}
+
 const findDialog = () => screen.findByRole('dialog', { name: 'Novo contato' })
 
 export const Default: Story = {}
@@ -57,7 +73,7 @@ export const CreateContact: Story = {
     docs: {
       description: {
         story:
-          'Criar contato stays disabled until the name has text, and the description comes from the form. Gerente de compras comes from the existing roles; Agência Norte is not in the list, so the Empresa footer creates and selects it. Stage, email and tags come from the other chips, and the payload closes the dialog.',
+          'Criar contato stays disabled until the name has text, and the description comes from the form. Gerente de compras comes from the existing roles; Agência Norte is not in the list, so the Empresa footer creates and selects it. Tipo is CPF with its Documento, Etapa, Empresa, Cargo and Tags are switched on from the ... menu, and email and tags come from their chips, and the payload closes the dialog.',
       },
     },
   },
@@ -73,6 +89,16 @@ export const CreateContact: Story = {
     const description = dialog.getByRole('textbox', { name: 'Descrição' })
     await userEvent.type(description, 'Conheceu o time no evento de outubro.')
     await expect(description.getBoundingClientRect().height).toBeCloseTo(64, 0)
+
+    await userEvent.click(dialog.getByRole('combobox', { name: /^Tipo/ }))
+    await userEvent.click(await screen.findByRole('option', { name: 'CPF' }))
+    await userEvent.click(dialog.getByRole('button', { name: 'Documento' }))
+    await userEvent.type(
+      dialog.getByRole('textbox', { name: 'Documento' }),
+      '123.456.789-09{Enter}',
+    )
+    await expect(dialog.queryByRole('combobox', { name: 'Cargo' })).toBeNull()
+    await showProperties(dialog, ['Etapa', 'Tags', 'Empresa', 'Cargo'])
 
     await userEvent.click(dialog.getByRole('combobox', { name: 'Cargo' }))
     await userEvent.type(
@@ -144,6 +170,8 @@ export const CreateContact: Story = {
       expect(args.onCreate).toHaveBeenCalledWith({
         company: 'Agência Norte',
         description: 'Conheceu o time no evento de outubro.',
+        document: '123.456.789-09',
+        documentType: 'cpf',
         emails: ['helena@agencianorte.example'],
         name: 'Helena Duarte',
         phones: [],
@@ -170,6 +198,7 @@ export const CreateMore: Story = {
     const name = dialog.getByRole('textbox', { name: 'Nome' })
 
     await userEvent.click(dialog.getByRole('switch', { name: 'Criar mais' }))
+    await showProperties(dialog, ['Etapa', 'Empresa', 'Cargo'])
     await userEvent.type(name, 'Helena Duarte')
     await userEvent.type(
       dialog.getByRole('textbox', { name: 'Descrição' }),
@@ -230,7 +259,7 @@ export const CreateMore: Story = {
     ).toBeVisible()
     await expect(
       dialog.getByRole('combobox', { name: /^Etapa/ }),
-    ).toHaveTextContent('Lead')
+    ).toHaveTextContent('Sem etapa')
 
     await userEvent.type(name, 'Otávio Ramos')
     await userEvent.click(dialog.getByRole('combobox', { name: /^Etapa/ }))

@@ -1,16 +1,27 @@
 import {
   EmailProperty,
   PhoneProperty,
+  PropertySurface,
   RecordDialog,
   SelectProperty,
   TagsProperty,
+  TextProperty,
 } from '@tc96/parttens'
-import { BriefcaseIcon, Building2Icon } from 'lucide-react'
+import { Menu, MenuCheckboxItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+import {
+  BriefcaseIcon,
+  Building2Icon,
+  EllipsisIcon,
+  FileTextIcon,
+} from 'lucide-react'
 import { useState } from 'react'
 import {
   type Contact,
+  type ContactDocumentType,
   type ContactStage,
   type ContactTag,
+  documentTypeOptions,
+  isContactDocumentType,
   isContactStage,
   stageOptions,
   tagOptions,
@@ -24,6 +35,20 @@ import { delay } from './delay'
 import { RecordHeadline } from './record-headline'
 
 export type NewContact = Omit<Contact, 'id' | 'lastContactAt'>
+
+const stageChoices = stageOptions.filter((option) => option.value !== 'lead')
+
+type OptionalProperty = 'stage' | 'tags' | 'company' | 'role'
+
+const optionalProperties: readonly {
+  key: OptionalProperty
+  label: string
+}[] = [
+  { key: 'stage', label: 'Etapa' },
+  { key: 'tags', label: 'Tags' },
+  { key: 'company', label: 'Empresa' },
+  { key: 'role', label: 'Cargo' },
+]
 
 const uniqueSorted = (items: readonly string[]) =>
   [...new Set(items)].sort((a, b) => a.localeCompare(b, 'pt-BR'))
@@ -65,7 +90,14 @@ export function CreateContactDialog({
   const [createdRoles, setCreatedRoles] = useState<string[]>([])
   const [company, setCompany] = useState<string | null>(null)
   const [createdCompanies, setCreatedCompanies] = useState<string[]>([])
-  const [stage, setStage] = useState<ContactStage>('lead')
+  const [documentType, setDocumentType] = useState<ContactDocumentType | null>(
+    null,
+  )
+  const [document, setDocument] = useState<string | null>(null)
+  const [visible, setVisible] = useState<ReadonlySet<OptionalProperty>>(
+    new Set(),
+  )
+  const [stage, setStage] = useState<ContactStage>('none')
   const [emails, setEmails] = useState<readonly string[]>([])
   const [phones, setPhones] = useState<readonly string[]>([])
   const [tags, setTags] = useState<readonly ContactTag[]>([])
@@ -74,11 +106,21 @@ export function CreateContactDialog({
     setName('')
     setRole(null)
     setCompany(null)
-    setStage('lead')
+    setStage('none')
+    setDocumentType(null)
+    setDocument(null)
     setEmails([])
     setPhones([])
     setTags([])
   }
+
+  const setPropertyVisible = (key: OptionalProperty, shown: boolean) =>
+    setVisible((current) => {
+      const next = new Set(current)
+      if (shown) next.add(key)
+      else next.delete(key)
+      return next
+    })
 
   return (
     <RecordDialog
@@ -104,6 +146,8 @@ export function CreateContactDialog({
         onCreate({
           company: company ?? '',
           description,
+          document: document ?? undefined,
+          documentType: documentType ?? undefined,
           emails: [...emails],
           name: trimmedName,
           phones: [...phones],
@@ -132,37 +176,13 @@ export function CreateContactDialog({
           titlePlaceholder="Nome do contato"
         />
         <div className="flex flex-wrap items-center gap-2">
-          <SelectProperty
-            ariaLabel="Etapa"
-            onValueChange={(value) => {
-              if (value && isContactStage(value)) setStage(value)
-            }}
-            options={stageOptions}
-            value={stage}
-          />
-          <CreatableProperty
-            ariaLabel="Cargo"
-            icon={BriefcaseIcon}
-            items={uniqueSorted([...roles, ...createdRoles])}
-            labels={roleLabels}
-            onCreate={(created) => {
-              setCreatedRoles((current) => [...current, created])
-              setRole(created)
-            }}
-            onValueChange={setRole}
-            value={role}
-          />
-          <CreatableProperty
-            ariaLabel="Empresa"
-            icon={Building2Icon}
-            items={uniqueSorted([...companies, ...createdCompanies])}
-            labels={companyLabels}
-            onCreate={(created) => {
-              setCreatedCompanies((current) => [...current, created])
-              setCompany(created)
-            }}
-            onValueChange={setCompany}
-            value={company}
+          <PhoneProperty
+            ariaLabel="Telefones"
+            display="trigger"
+            onValueChange={setPhones}
+            placeholder="Telefone"
+            value={phones}
+            variant="badge"
           />
           <EmailProperty
             ariaLabel="E-mails"
@@ -172,22 +192,98 @@ export function CreateContactDialog({
             value={emails}
             variant="badge"
           />
-          <PhoneProperty
-            ariaLabel="Telefones"
-            display="trigger"
-            onValueChange={setPhones}
-            placeholder="Telefone"
-            value={phones}
-            variant="badge"
+          <SelectProperty
+            ariaLabel="Tipo"
+            onValueChange={(value) =>
+              setDocumentType(
+                value && isContactDocumentType(value) ? value : null,
+              )
+            }
+            options={documentTypeOptions}
+            placeholder="Tipo"
+            value={documentType}
           />
-          <TagsProperty<ContactTag>
-            ariaLabel="Tags"
-            display="count"
-            onValueChange={setTags}
-            options={tagOptions}
-            value={tags}
-            variant="badge"
+          <TextProperty
+            addLabel="Documento"
+            ariaLabel="Documento"
+            fallback="Documento"
+            icon={FileTextIcon}
+            inputPlaceholder={
+              documentType === 'cnpj' ? '00.000.000/0000-00' : '000.000.000-00'
+            }
+            onCommit={setDocument}
+            value={document}
           />
+          {visible.has('stage') ? (
+            <SelectProperty
+              ariaLabel="Etapa"
+              onValueChange={(value) => {
+                if (value && isContactStage(value)) setStage(value)
+              }}
+              options={stageChoices}
+              value={stage}
+            />
+          ) : null}
+          {visible.has('tags') ? (
+            <TagsProperty<ContactTag>
+              ariaLabel="Tags"
+              display="count"
+              onValueChange={setTags}
+              options={tagOptions}
+              value={tags}
+              variant="badge"
+            />
+          ) : null}
+          {visible.has('company') ? (
+            <CreatableProperty
+              ariaLabel="Empresa"
+              icon={Building2Icon}
+              items={uniqueSorted([...companies, ...createdCompanies])}
+              labels={companyLabels}
+              onCreate={(created) => {
+                setCreatedCompanies((current) => [...current, created])
+                setCompany(created)
+              }}
+              onValueChange={setCompany}
+              value={company}
+            />
+          ) : null}
+          {visible.has('role') ? (
+            <CreatableProperty
+              ariaLabel="Cargo"
+              icon={BriefcaseIcon}
+              items={uniqueSorted([...roles, ...createdRoles])}
+              labels={roleLabels}
+              onCreate={(created) => {
+                setCreatedRoles((current) => [...current, created])
+                setRole(created)
+              }}
+              onValueChange={setRole}
+              value={role}
+            />
+          ) : null}
+          <Menu>
+            <MenuTrigger
+              aria-label="Mais propriedades"
+              render={
+                <PropertySurface muted render={<button type="button" />} />
+              }
+            >
+              <EllipsisIcon aria-hidden className="size-3.5" />
+            </MenuTrigger>
+            <MenuPopup align="start">
+              {optionalProperties.map(({ key, label }) => (
+                <MenuCheckboxItem
+                  checked={visible.has(key)}
+                  key={key}
+                  onCheckedChange={(shown) => setPropertyVisible(key, shown)}
+                  variant="switch"
+                >
+                  {label}
+                </MenuCheckboxItem>
+              ))}
+            </MenuPopup>
+          </Menu>
         </div>
       </div>
     </RecordDialog>
