@@ -72,6 +72,7 @@
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "@base-ui/react": "1.8.0",
+    "@thesvg/icons": "3.4.1",
     "recharts": "3.10.1",
     "react-is": "19.1.1",
     "platejs": "53.3.14",

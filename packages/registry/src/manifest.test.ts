@@ -52,6 +52,9 @@ test('accepts the state-surface pattern', () => {
 test('accepts the settings pattern', () => {
   expect(selectPatterns(['settings'])).toEqual(['settings'])
 })
+test('accepts the chats-panel pattern', () => {
+  expect(selectPatterns(['chats-panel'])).toEqual(['chats-panel'])
+})
 test('accepts the widgets pattern', () => {
   expect(selectPatterns(['widgets'])).toEqual(['widgets'])
 })
@@ -292,5 +295,33 @@ test('builds the settings item shipping Text and no test files', () => {
   expect(paths).toContain('elements/src/text.tsx')
   expect(paths).not.toContain('elements/src/card-surface.tsx')
   expect(paths).toContain('parttens/src/surfaces/settings/index.ts')
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
+test('builds the chats-panel item from the chat folder with COSS-only dependencies', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/chats-panel.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('chats-panel')
+  expect(item.registryDependencies).toEqual([
+    '@coss/badge',
+    '@coss/card',
+    '@coss/scroll-area',
+    '@coss/skeleton',
+  ])
+  expect(item.dependencies).toContain('@thesvg/icons@3.4.1')
+  expect(paths).toContain('parttens/src/chat/chats-panel/index.ts')
+  expect(paths.every((path) => path.startsWith('parttens/src/chat/'))).toBe(
+    true,
+  )
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })

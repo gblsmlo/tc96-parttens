@@ -1,5 +1,6 @@
 'use client'
 
+export * from './chat/chats-panel/index'
 export * from './checklist/index'
 export * from './collection-views/index'
 export { KanbanView as Kanban } from './collection-views/index'
