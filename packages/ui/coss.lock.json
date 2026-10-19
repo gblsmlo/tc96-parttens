@@ -3,8 +3,8 @@
   "items": {
     "alert-dialog": {
       "url": "https://coss.com/ui/r/alert-dialog.json",
-      "upstream": "sha256-e6e8d2aee4115cb2e2d5bba7e3f16941a2cfaa12a2bceae70d605b1751706d82",
-      "file": "sha256-a668753bc39920936658b7a22dabe534d9791c65509a40bc7dcd76053247870e"
+      "upstream": "sha256-d44513e3a157229eea1a9190aadbc479e356b47eb13c98e1a91ce4366fa11cf6",
+      "file": "sha256-c3e00f2286d188fb430a74094b238aed5acd6a46fb304b0981181d825119ee3f"
     },
     "avatar": {
       "url": "https://coss.com/ui/r/avatar.json",
@@ -23,8 +23,8 @@
     },
     "calendar": {
       "url": "https://coss.com/ui/r/calendar.json",
-      "upstream": "sha256-e9046da3021b3bb1e77ae657cdacac79a15f71e99596984fbcd54f26f3b60179",
-      "file": "sha256-68406fc9cf2c6466a058784ede7c01ac9b625b2096b05b7ab35762c0a35a9fff"
+      "upstream": "sha256-547ebebda2747dadee61815f41448a2b6cecce3ad125806666df7595013896f0",
+      "file": "sha256-f61f08ad72728b7d2b0d42825cf2c658ae7555741eb268d9c4975fef4cfeb337"
     },
     "card": {
       "url": "https://coss.com/ui/r/card.json",
@@ -73,8 +73,8 @@
     },
     "combobox": {
       "url": "https://coss.com/ui/r/combobox.json",
-      "upstream": "sha256-df233af98aa9141b3418489d20b71a693aa3d8672a3962e3d19576fb21383087",
-      "file": "sha256-6197ad99e2ae5c17fc776c3dd1f0bdb794471b246d5baef14c34b03def184872"
+      "upstream": "sha256-2cca986d7883560337fbd35009ee13648c9600a6633bb08c79de635c6dd15692",
+      "file": "sha256-56cbb30574e816242ea3169f3993cee7fbc3c3af15e6ee46730606efdabe4787"
     },
     "composer": {
       "url": "https://coss.com/ui/r/composer.json",
@@ -115,13 +115,13 @@
     },
     "dialog": {
       "url": "https://coss.com/ui/r/dialog.json",
-      "upstream": "sha256-14ad87a5f81d7753e9a954aa0624df49168eccc2c8d3074a41ea0a8bed3970d5",
-      "file": "sha256-0e96b7bf52e77ff9c9bafb8c115e2853383641ad7e1387df1adb0ed90fbd830f"
+      "upstream": "sha256-29e99f5d39307acd3781ee0c8f78aabe6d637f667fb3b7893820e4621ddcce7b",
+      "file": "sha256-279f0307bdd391e083c190e01ced9d457fc8787d8c79c8d0928d0b1b41cf14ec"
     },
     "empty": {
       "url": "https://coss.com/ui/r/empty.json",
-      "upstream": "sha256-57341b5a985ba2cc229e4832ab8624b060d172706b678dd99a682fbb476d4aa9",
-      "file": "sha256-cd2f8af473c4d50e3ee187afd7aa2e30a5199470af77ec71593c3bb09d38c53a"
+      "upstream": "sha256-c1d099ad14211cfd92dbf10c169c9e178e85ec82d0160d4f814ac73be3df257b",
+      "file": "sha256-aa601ee19e4146e815d4312c56409d18be4fc250c7031c947af1d82a541b761f"
     },
     "field": {
       "url": "https://coss.com/ui/r/field.json",
@@ -155,8 +155,8 @@
     },
     "menu": {
       "url": "https://coss.com/ui/r/menu.json",
-      "upstream": "sha256-aeb2ebda24c8c90453fd7087bae8f14510f98e4eee75da5c084dfecaa56f2625",
-      "file": "sha256-38d635c449ee3cd9c72b24a8a94c23bf86f751813d329cce1ae634de431759be"
+      "upstream": "sha256-19ed2b219a4a3606488d6bf66d13055bce7b6d5d438f77a1caea5648e4c44aae",
+      "file": "sha256-f84a79ef7e6642c7c68446131a079fffbf49b01932503d752872355b1bac0087"
     },
     "meter": {
       "url": "https://coss.com/ui/r/meter.json",
@@ -190,8 +190,8 @@
     },
     "sheet": {
       "url": "https://coss.com/ui/r/sheet.json",
-      "upstream": "sha256-74ce70050415c0ac6ad033a4d6770f023a736a9f24540c994e88c6934c16d9a4",
-      "file": "sha256-395a5588bd54036d2c90f6c0b6e3a990950102a778366e3bb66fdad87465f66d"
+      "upstream": "sha256-f1d3361a490c9d9a49a4289604aaf6995cb0b138728c3068ba94ee6c9337978a",
+      "file": "sha256-97abb61b313b194c7c1c962bafd6fbf062cebbdc3e6e0b8f066345456b7df08b"
     },
     "skeleton": {
       "url": "https://coss.com/ui/r/skeleton.json",
@@ -205,8 +205,8 @@
     },
     "switch": {
       "url": "https://coss.com/ui/r/switch.json",
-      "upstream": "sha256-2b3bada3d7234149b4d29918d5e312e62919938c2ae0ee61db81350438ad43c4",
-      "file": "sha256-2aaad467f69eed3c915303c2a496a5196cec03722da85675608180b434eb7fc2"
+      "upstream": "sha256-713321db777570c883348696495f9b12f47f63f1d567b8eab42c27a8d0625c36",
+      "file": "sha256-21c24962ab42aaea96209cc89367f12b7dabadc93416aa8be06121f89dca5795"
     },
     "table": {
       "url": "https://coss.com/ui/r/table.json",
