@@ -136,5 +136,11 @@
     "component": "Card",
     "className": "bg-muted/72",
     "reason": "O invólucro dos variantes `card` e `inset` do RecordGroup é um painel rebaixado, sem sombra, e não o card elevado do Card; `bg-muted/72` usa o token do tema com 72% de opacidade no lugar de `bg-card`."
+  },
+  {
+    "file": "packages/parttens/src/chat/chats-panel/composition/chats-panel/chats-panel.tsx",
+    "component": "Card",
+    "className": "bg-muted/72",
+    "reason": "Os variantes `card` e `inset` do ChatsPanel usam o mesmo painel rebaixado do RecordGroup, sem sombra, no lugar do card elevado; `bg-muted/72` usa o token do tema com 72% de opacidade no lugar de `bg-card`."
   }
 ]

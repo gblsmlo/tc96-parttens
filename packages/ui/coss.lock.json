@@ -8,8 +8,8 @@
     },
     "avatar": {
       "url": "https://coss.com/ui/r/avatar.json",
-      "upstream": "sha256-a742f2d7c3aa1a867799e66fa7f3b37615e455906fa0117b66c49cfedca0a4f1",
-      "file": "sha256-663eecf04ca0f4d60e877808a4815ae2d8576bfe2350e9146fe353456c4101a2"
+      "upstream": "sha256-2fe6b7b5551b8867a42f764d7616d8a271409432ce696d32611d0d4b74341e9b",
+      "file": "sha256-43da412eb5fd9423b526915afc944e154338faa3c5fdec2a3f573e25a4c0e359"
     },
     "badge": {
       "url": "https://coss.com/ui/r/badge.json",

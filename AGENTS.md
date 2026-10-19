@@ -28,12 +28,13 @@ scripts/            boundary, COSS, override and public API checks
 
 ## Pattern families
 
-Patterns live under `packages/parttens/src/`, at the top level or inside a family folder. A family exists when at least two patterns share a domain; a pattern with no sibling stays at the top level.
+Patterns live under `packages/parttens/src/`, at the top level or inside a family folder. A family exists when at least two patterns share a domain; a pattern with no sibling stays at the top level. `chat/` is the exception, chosen by the owner on 2026-10-19: it holds only `chats-panel` so far, so the pattern sits with the COSS chat stories under `Patterns/Chat`.
 
 ```text
 packages/parttens/src/
   records/      dialog/ preview/ group/
   surfaces/     state/ settings/
+  chat/         chats-panel/
   checklist/ collection-views/ editable/ properties/ rich-text-editor/ widgets/
   shared/       not a pattern: building blocks the root barrel exports
 ```
