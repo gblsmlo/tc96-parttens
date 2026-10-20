@@ -58,3 +58,20 @@ export interface RecordGroupSubgroupProps {
   open?: boolean
   title: ReactNode
 }
+
+export type RecordGroupMetricsColumns = 1 | 2
+
+export interface RecordGroupMetricsProps {
+  children?: ReactNode
+  className?: string
+  columns?: RecordGroupMetricsColumns
+}
+
+export interface RecordGroupMetricProps {
+  className?: string
+  icon?: ReactNode
+  label: ReactNode
+  progress?: number
+  target?: ReactNode
+  value: ReactNode
+}

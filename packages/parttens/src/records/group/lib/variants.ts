@@ -60,7 +60,7 @@ export const recordGroupPanelClassName = (variant: RecordGroupVariant) =>
   cn(variant !== 'inset' && '-mx-2 px-2')
 
 export const recordGroupContentVariants = cva(
-  `flex flex-col ${recordGroupRowGapClassName}`,
+  `flex flex-col ${recordGroupRowGapClassName} has-[[data-slot=record-group-metrics]]:p-0`,
   {
     defaultVariants: { empty: false, variant: 'plain' },
     variants: {
@@ -119,3 +119,11 @@ export const recordGroupRowValueVariants = cva(
     },
   },
 )
+
+export const recordGroupMetricsVariants = cva('grid gap-2', {
+  defaultVariants: { columns: 2 },
+  variants: { columns: { 1: 'grid-cols-1', 2: 'grid-cols-2' } },
+})
+
+export const recordGroupMetricShellClassName =
+  'h-full gap-2 border-0 p-3 shadow-none before:hidden'

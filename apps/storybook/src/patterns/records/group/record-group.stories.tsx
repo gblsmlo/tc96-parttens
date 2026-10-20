@@ -11,6 +11,8 @@ import {
   RecordGroupAction,
   RecordGroupItem,
   RecordGroupLink,
+  RecordGroupMetric,
+  RecordGroupMetrics,
   RecordGroupRow,
   RecordGroupSubgroup,
   SelectProperty,
@@ -41,6 +43,19 @@ import {
   <RecordGroupSubgroup title="History" meta="3 changes">
     <RecordGroupRow label="Created">{createdAt}</RecordGroupRow>
   </RecordGroupSubgroup>
+</RecordGroup>
+
+<RecordGroup title="Indicators">
+  <RecordGroupMetrics>
+    <RecordGroupMetric
+      icon={<UsersIcon aria-hidden="true" />}
+      label="Leads"
+      progress={leads / plannedLeads}
+      target={\`of \${plannedLeads} planned\`}
+      value={leads}
+    />
+    <RecordGroupMetric label="Conversion" value={conversion} />
+  </RecordGroupMetrics>
 </RecordGroup>
 `
 
@@ -75,6 +90,16 @@ const docs = {
       description:
         'Collapsible subitem inside a group, with an `h3` title. Starts closed (`defaultOpen` is `false`) and reads `meta` with the title.',
       name: 'RecordGroupSubgroup',
+    },
+    {
+      description:
+        'Grid of `RecordGroupMetric` tiles inside a group. `columns` is `2` (the default) or `1`.',
+      name: 'RecordGroupMetrics',
+    },
+    {
+      description:
+        'Indicator tile: a `dl` wrapping the COSS `Card`, with `label` and `icon` in the `dt` and `value` in the `dd`. `target` reads after the value, muted: the planned amount (planned leads, a goal) or a unit, and `progress` (a ratio from 0 to 1, clamped) adds a COSS `Meter` named by the label. The consumer formats every number.',
+      name: 'RecordGroupMetric',
     },
   ],
   description: {
