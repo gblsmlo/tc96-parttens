@@ -142,5 +142,17 @@
     "component": "Card",
     "className": "bg-muted/72",
     "reason": "Os variantes `card` e `inset` do ChatsPanel usam o mesmo painel rebaixado do RecordGroup, sem sombra, no lugar do card elevado; `bg-muted/72` usa o token do tema com 72% de opacidade no lugar de `bg-card`."
+  },
+  {
+    "file": "packages/parttens/src/wizard/composition/wizard/wizard.tsx",
+    "component": "Card",
+    "className": "bg-muted",
+    "reason": "O Card externo do Wizard é o plano de fundo, rebaixado e sem sombra, onde ficam a navegação das etapas e o Card do conteúdo, que continua o card elevado do COSS; `bg-muted` usa o token do tema, a pedido do dono, no lugar de `bg-card`, e o card do conteúdo fica 1,14:1 mais claro que ele no tema claro."
+  },
+  {
+    "file": "packages/parttens/src/wizard/composition/wizard/wizard.tsx",
+    "component": "Card",
+    "className": "dark:bg-sidebar",
+    "reason": "No escuro, `bg-muted` (branco a 4%) fica mais claro que o `bg-card` e o card do conteúdo parecia afundado (1,05:1 mais escuro); o token `sidebar` do tema é mais escuro que o fundo, e o card do conteúdo volta a ficar à frente, 1,19:1 mais claro."
   }
 ]

@@ -35,7 +35,7 @@ packages/parttens/src/
   records/      dialog/ preview/ group/
   surfaces/     state/ settings/
   chat/         chats-panel/
-  checklist/ collection-views/ editable/ properties/ rich-text-editor/ widgets/
+  checklist/ collection-views/ editable/ properties/ rich-text-editor/ widgets/ wizard/
   shared/       not a pattern: building blocks the root barrel exports
 ```
 

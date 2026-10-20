@@ -579,6 +579,21 @@
     "ChatsPanelVariant",
     "chatsPanelSkeletonWidths"
   ],
+  "wizard": [
+    "Wizard",
+    "WizardFooter",
+    "WizardFooterProps",
+    "WizardNext",
+    "WizardNextProps",
+    "WizardPrevious",
+    "WizardPreviousProps",
+    "WizardProps",
+    "WizardStep",
+    "WizardStepStatus",
+    "adjacentWizardStep",
+    "wizardStepStatus",
+    "wizardStepStatuses"
+  ],
   "parttens": [
     "Achievement",
     "AchievementsWidget",
@@ -1099,12 +1114,23 @@
     "WidgetShellProps",
     "WidgetStat",
     "WidgetTone",
+    "Wizard",
+    "WizardFooter",
+    "WizardFooterProps",
+    "WizardNext",
+    "WizardNextProps",
+    "WizardPrevious",
+    "WizardPreviousProps",
+    "WizardProps",
+    "WizardStep",
+    "WizardStepStatus",
     "WorldClock",
     "WorldClockWidget",
     "WorldClockWidgetProps",
     "XpProgress",
     "ZonedDateTime",
     "addCalendarDays",
+    "adjacentWizardStep",
     "applyBlock",
     "calendarDateKey",
     "calendarEventChipVariants",
@@ -1146,6 +1172,8 @@
     "useCollectionPreferences",
     "useDataGrid",
     "useDataTable",
-    "whatsappHref"
+    "whatsappHref",
+    "wizardStepStatus",
+    "wizardStepStatuses"
   ]
 }

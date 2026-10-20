@@ -55,6 +55,9 @@ test('accepts the settings pattern', () => {
 test('accepts the chats-panel pattern', () => {
   expect(selectPatterns(['chats-panel'])).toEqual(['chats-panel'])
 })
+test('accepts the wizard pattern', () => {
+  expect(selectPatterns(['wizard'])).toEqual(['wizard'])
+})
 test('accepts the widgets pattern', () => {
   expect(selectPatterns(['widgets'])).toEqual(['widgets'])
 })
@@ -323,5 +326,32 @@ test('builds the chats-panel item from the chat folder with COSS-only dependenci
   expect(paths.every((path) => path.startsWith('parttens/src/chat/'))).toBe(
     true,
   )
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
+test('builds the wizard item from its folder with IconFrame and COSS dependencies', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/wizard.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('wizard')
+  expect(item.registryDependencies).toEqual(['@coss/button', '@coss/card'])
+  expect(paths).toContain('parttens/src/wizard/index.ts')
+  expect(paths).toContain('elements/src/icon-frame.tsx')
+  expect(
+    paths.every(
+      (path) =>
+        path.startsWith('parttens/src/wizard/') ||
+        path === 'elements/src/icon-frame.tsx',
+    ),
+  ).toBe(true)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
