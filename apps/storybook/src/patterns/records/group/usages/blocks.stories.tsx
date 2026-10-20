@@ -10,6 +10,8 @@ import {
   RecordGroupAction,
   RecordGroupItem,
   RecordGroupLink,
+  RecordGroupMetric,
+  RecordGroupMetrics,
   RecordGroupRow,
   type RecordGroupVariant,
   RecordPreview,
@@ -20,19 +22,23 @@ import {
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import {
+  BadgeCheckIcon,
   Building2Icon,
   CalendarClockIcon,
   CalendarPlusIcon,
   ClipboardListIcon,
   FileSignatureIcon,
   FileTextIcon,
+  HandshakeIcon,
   HistoryIcon,
   type LucideIcon,
   MailIcon,
+  PercentIcon,
   PlusIcon,
   ReceiptTextIcon,
   TargetIcon,
   UserPlusIcon,
+  UsersIcon,
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 
@@ -968,6 +974,67 @@ export const Stage: Story = {
         >
           Consulta inicial
         </RecordGroupLink>
+      </RecordGroup>
+    )
+  },
+}
+
+export const Indicators: Story = {
+  parameters: describe(
+    'Follows the numbers of a campaign pipeline: leads against the planned leads, with a meter, and plain counts for conversion, success and the deals in negotiation. The consumer computes and formats every number.',
+  ),
+  play: async ({ canvasElement }) => {
+    const indicators = regionOf(canvasElement, 'Indicadores')
+    const terms = indicators
+      .getAllByRole('term')
+      .map((term) => term.textContent)
+
+    await expect(terms).toEqual([
+      'Leads',
+      'Conversão',
+      'Sucesso',
+      'Em negociação',
+    ])
+    await expect(indicators.getByText('de 120 planejados')).toBeVisible()
+    await expect(
+      indicators.getByRole('meter', { name: 'Leads' }),
+    ).toHaveAttribute('aria-valuenow', '70')
+    for (const label of terms) {
+      const text = indicators.getByText(label as string)
+      await expect(text.scrollWidth).toBeLessThanOrEqual(text.clientWidth)
+    }
+  },
+  render: function Indicators({ variant }) {
+    const leads = 84
+    const plannedLeads = 120
+
+    return (
+      <RecordGroup title="Indicadores" variant={variant}>
+        <RecordGroupMetrics>
+          <RecordGroupMetric
+            icon={<UsersIcon aria-hidden />}
+            label="Leads"
+            progress={leads / plannedLeads}
+            target={`de ${plannedLeads} planejados`}
+            value={leads}
+          />
+          <RecordGroupMetric
+            icon={<PercentIcon aria-hidden />}
+            label="Conversão"
+            value="18,5%"
+          />
+          <RecordGroupMetric
+            icon={<BadgeCheckIcon aria-hidden />}
+            label="Sucesso"
+            target="vendas"
+            value={12}
+          />
+          <RecordGroupMetric
+            icon={<HandshakeIcon aria-hidden />}
+            label="Em negociação"
+            value={9}
+          />
+        </RecordGroupMetrics>
       </RecordGroup>
     )
   },
