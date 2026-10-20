@@ -115,8 +115,16 @@ describe('formatWeekdayAndDay', () => {
   const date = new Date('2026-10-20T12:00:00.000Z')
 
   test('shows the weekday name and the day in the locale', () => {
-    expect(formatWeekdayAndDay(date, 'en-US', 'UTC')).toBe('Tuesday 20')
-    expect(formatWeekdayAndDay(date, 'pt-BR', 'UTC')).toBe('terça-feira, 20')
+    // ICU orders them per runtime: `Tuesday 20` on macOS, `20 Tuesday` on Linux.
+    const english = formatWeekdayAndDay(date, 'en-US', 'UTC')
+    const portuguese = formatWeekdayAndDay(date, 'pt-BR', 'UTC')
+
+    expect(english).toContain('Tuesday')
+    expect(english).toMatch(/\b20\b/)
+    expect(english).not.toMatch(/Oct|2026/)
+    expect(portuguese).toContain('terça-feira')
+    expect(portuguese).toMatch(/\b20\b/)
+    expect(portuguese).not.toMatch(/out|2026/)
   })
 })
 
