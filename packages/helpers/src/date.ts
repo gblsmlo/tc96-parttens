@@ -4,6 +4,16 @@ import { toZonedDateTime } from './zoned-date-time'
 const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 const MILLISECONDS_IN_DAY = 86_400_000
 
+const DATE_FORMAT_OPTIONS = {
+  long: { dateStyle: 'long' },
+  medium: { dateStyle: 'medium' },
+  short: { day: 'numeric', month: 'short' },
+  weekdayAndDay: { day: 'numeric', weekday: 'long' },
+} satisfies Record<string, Intl.DateTimeFormatOptions>
+
+const dateFormatters = new Map<string, Intl.DateTimeFormat>()
+const relativeDayFormatters = new Map<string, Intl.RelativeTimeFormat>()
+
 /**
  * Type guard for a `Date` whose time is not `NaN`.
  *
@@ -68,11 +78,61 @@ export function formatShortDate(
   locale: string,
   timeZone?: string,
 ): string {
-  return new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'short',
-    ...(timeZone ? { timeZone } : {}),
-  }).format(date)
+  return getDateFormatter('short', locale, timeZone).format(date)
+}
+
+/**
+ * Formats a date with day, abbreviated month and year, as a date picker
+ * trigger shows it.
+ *
+ * @param date - A valid date.
+ * @param locale - A BCP 47 locale tag such as `pt-BR`.
+ * @param timeZone - An IANA time zone; when omitted the date is read in the
+ * runtime's local zone.
+ * @returns The formatted date, such as `Oct 20, 2026` or `20 de out. de 2026`.
+ */
+export function formatMediumDate(
+  date: Date,
+  locale: string,
+  timeZone?: string,
+): string {
+  return getDateFormatter('medium', locale, timeZone).format(date)
+}
+
+/**
+ * Formats a date with day, full month name and year.
+ *
+ * @param date - A valid date.
+ * @param locale - A BCP 47 locale tag such as `pt-BR`.
+ * @param timeZone - An IANA time zone; when omitted the date is read in the
+ * runtime's local zone.
+ * @returns The formatted date, such as `October 20, 2026` or
+ * `20 de outubro de 2026`.
+ */
+export function formatLongDate(
+  date: Date,
+  locale: string,
+  timeZone?: string,
+): string {
+  return getDateFormatter('long', locale, timeZone).format(date)
+}
+
+/**
+ * Formats the weekday name with the day of the month, as a day heading over a
+ * list of time slots.
+ *
+ * @param date - A valid date.
+ * @param locale - A BCP 47 locale tag such as `pt-BR`.
+ * @param timeZone - An IANA time zone; when omitted the date is read in the
+ * runtime's local zone.
+ * @returns The formatted day, such as `Tuesday 20` or `terça-feira, 20`.
+ */
+export function formatWeekdayAndDay(
+  date: Date,
+  locale: string,
+  timeZone?: string,
+): string {
+  return getDateFormatter('weekdayAndDay', locale, timeZone).format(date)
 }
 
 /**
@@ -104,11 +164,77 @@ export function dayOffsetInTimeZone(
  * @param locale - A BCP 47 locale tag such as `pt-BR`.
  */
 export function formatRelativeDay(dayOffset: number, locale: string): string {
-  const label = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(
-    dayOffset,
-    'day',
-  )
+  const label = getRelativeDayFormatter(locale).format(dayOffset, 'day')
   return label.charAt(0).toLocaleUpperCase(locale) + label.slice(1)
+}
+
+/**
+ * Moves a date by a number of local calendar days, keeping its time of day.
+ *
+ * @param date - The starting date; it is not mutated.
+ * @param days - Days to add; negative values move backwards.
+ */
+export function addDays(date: Date, days: number): Date {
+  const next = new Date(date)
+  next.setDate(next.getDate() + days)
+  return next
+}
+
+/**
+ * Moves a date by a number of months. When the target month is shorter, the
+ * day is clamped to its last day, so January 31 plus one month is the end of
+ * February instead of early March.
+ *
+ * @param date - The starting date; it is not mutated.
+ * @param months - Months to add; negative values move backwards.
+ */
+export function addMonths(date: Date, months: number): Date {
+  const next = new Date(date)
+  next.setDate(1)
+  next.setMonth(next.getMonth() + months)
+  const lastDay = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate()
+  next.setDate(Math.min(date.getDate(), lastDay))
+  return next
+}
+
+/**
+ * Moves a date by a number of years. February 29 becomes February 28 in a
+ * common year.
+ *
+ * @param date - The starting date; it is not mutated.
+ * @param years - Years to add; negative values move backwards.
+ */
+export function addYears(date: Date, years: number): Date {
+  return addMonths(date, years * 12)
+}
+
+/** Building an `Intl` formatter costs ~50 formats, so one is kept per key. */
+function getDateFormatter(
+  style: keyof typeof DATE_FORMAT_OPTIONS,
+  locale: string,
+  timeZone?: string,
+): Intl.DateTimeFormat {
+  const key = `${style}|${locale}|${timeZone ?? ''}`
+  const cached = dateFormatters.get(key)
+  if (cached) return cached
+
+  const formatter = new Intl.DateTimeFormat(locale, {
+    ...DATE_FORMAT_OPTIONS[style],
+    ...(timeZone ? { timeZone } : {}),
+  })
+  dateFormatters.set(key, formatter)
+
+  return formatter
+}
+
+function getRelativeDayFormatter(locale: string): Intl.RelativeTimeFormat {
+  const cached = relativeDayFormatters.get(locale)
+  if (cached) return cached
+
+  const formatter = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+  relativeDayFormatters.set(locale, formatter)
+
+  return formatter
 }
 
 /** Days since the Unix epoch for a calendar date, ignoring time zones. */

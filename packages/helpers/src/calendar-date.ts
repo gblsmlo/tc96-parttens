@@ -49,6 +49,29 @@ export function parseCalendarDateKey(key: string): CalendarDate | null {
 }
 
 /**
+ * Reads the local calendar day of a `Date`, dropping its time.
+ *
+ * @param date - A valid date, such as the one a date picker selects.
+ */
+export function calendarDateFromDate(date: Date): CalendarDate {
+  return {
+    day: date.getDate(),
+    month: date.getMonth() + 1,
+    year: date.getFullYear(),
+  }
+}
+
+/**
+ * Builds the local midnight `Date` of a calendar date, the value a date
+ * picker expects for a day.
+ *
+ * @param date - The calendar date to convert.
+ */
+export function calendarDateToDate(date: CalendarDate): Date {
+  return new Date(date.year, date.month - 1, date.day)
+}
+
+/**
  * Moves a calendar date by a number of days, rolling over months and years.
  *
  * @param date - The starting date.
