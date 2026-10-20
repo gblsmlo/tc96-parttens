@@ -183,6 +183,11 @@
       "upstream": "sha256-ff9b981ce4e68b86a266f69480c59967c7065aacfa2d4ce927d91a1eff0035cf",
       "file": "sha256-eaf1bd47b90affa9148ddf1ea0ad425dd82dfeefec4a3d096abeba372846d9de"
     },
+    "radio-group": {
+      "url": "https://coss.com/ui/r/radio-group.json",
+      "upstream": "sha256-b2479e9967f0ba48d1acbb58a4fff7b919aa746bb8a61cbbff389baac02abbb7",
+      "file": "sha256-e6065df573227066b3287d4d393877b29e5eae344da4e694f3e0e2618b89bfba"
+    },
     "scroll-area": {
       "url": "https://coss.com/ui/r/scroll-area.json",
       "upstream": "sha256-6274eace4599cba26e731b0f02cd2307d2207947162ccc575e45984e87aa269f",
