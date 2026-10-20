@@ -135,6 +135,7 @@ Install the @tc96/parttens patterns `collection-views` and `properties` in this 
 | `state-surface` | `StateSurface` for empty, no-result, error, permission and not-found, and `StateGuard`, which mounts its children only when the state is `data` |
 | `settings` | `SettingsSection`, a divided card of settings with an optional title, and `SettingsRow`, a row with title, description, an optional `startSlot` and the control in `endSlot`; values and controls belong to the consumer |
 | `chats-panel` | `ChatsPanel`, a titled list of conversations for an inbox in a `plain`, `card` or `inset` shell, `ChatsPanelItem`, a row with avatar, unread count, channel mark (an `@thesvg/icons` icon, a peer dependency), time and preview, `ChatsPanelList`, its list, and `ChatsPanelSkeleton`, a loading list in the shape of the rows; sorting, filtering and selection belong to the consumer |
+| `wizard` | `Wizard`, a multi-step flow in a card with the steps in a side nav (an `IconFrame` with the icon, a check or the number, title and description) and the current step in a panel, `WizardFooter`, its row of actions, and `WizardPrevious` and `WizardNext`, which move to the adjacent step and let the consumer cancel the move to validate; the step, its data and the submission belong to the consumer |
 
 Filter Builder and responsive layouts are out of scope for the first version.
 

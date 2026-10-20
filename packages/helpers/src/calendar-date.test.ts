@@ -2,7 +2,9 @@ import { describe, expect, test } from 'bun:test'
 
 import {
   addCalendarDays,
+  calendarDateFromDate,
   calendarDateKey,
+  calendarDateToDate,
   calendarRange,
   compareCalendarDates,
   parseCalendarDateKey,
@@ -30,6 +32,28 @@ describe('calendarDateKey', () => {
       year: 2024,
     })
     expect(parseCalendarDateKey('2026-02-29')).toBeNull()
+  })
+})
+
+describe('calendarDateFromDate', () => {
+  test('reads the local day and drops the time', () => {
+    expect(calendarDateFromDate(new Date(2026, 10, 27, 23, 59))).toEqual({
+      day: 27,
+      month: 11,
+      year: 2026,
+    })
+  })
+})
+
+describe('calendarDateToDate', () => {
+  test('builds local midnight and round-trips through calendarDateFromDate', () => {
+    const date = calendarDateToDate({ day: 29, month: 2, year: 2028 })
+    expect(date).toEqual(new Date(2028, 1, 29))
+    expect(calendarDateFromDate(date)).toEqual({
+      day: 29,
+      month: 2,
+      year: 2028,
+    })
   })
 })
 

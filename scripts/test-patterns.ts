@@ -15,6 +15,7 @@ for (const path of [
   'surfaces/settings',
   'surfaces/state',
   'widgets',
+  'wizard',
 ]) {
   if (
     !(await files(`packages/parttens/src/${path}`)).some((file) =>

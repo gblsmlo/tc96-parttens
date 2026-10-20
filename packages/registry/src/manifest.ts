@@ -14,6 +14,7 @@ export const patternNames = [
   'state-surface',
   'settings',
   'chats-panel',
+  'wizard',
 ] as const
 export type PatternName = (typeof patternNames)[number]
 /** Folder under packages/parttens/src, kept as the path in the consumer. */
@@ -30,6 +31,7 @@ export const patternSources: Record<PatternName, string> = {
   'state-surface': 'surfaces/state',
   settings: 'surfaces/settings',
   'chats-panel': 'chat/chats-panel',
+  wizard: 'wizard',
 }
 /** The consumer's components.json aliases the patterns import from. */
 export interface Aliases {

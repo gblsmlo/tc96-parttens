@@ -102,3 +102,10 @@ export const chatsPanelArgTypes = {
   title: text,
   variant: { control: 'inline-radio', options: ['card', 'inset', 'plain'] },
 } as const
+
+export const wizardArgTypes = {
+  children: withoutControl,
+  className: text,
+  label: text,
+  steps: withoutControl,
+} as const

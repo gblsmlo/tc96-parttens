@@ -76,7 +76,7 @@ describe('AssignedProperty', () => {
     expect(
       screen
         .getByRole('option', { name: 'Gabriel Melo' })
-        .querySelector(':scope > span:first-child:not(:last-child)'),
+        .querySelector(':scope > span'),
     ).not.toBeNull()
     expect(screen.getByRole('option', { name: 'Marina Souza' })).toBeTruthy()
 

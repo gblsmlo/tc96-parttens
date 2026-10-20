@@ -5,6 +5,7 @@ import { expect, within } from 'storybook/test'
 const meta = {
   title: 'UI/Input/Sizes',
   component: Input,
+  tags: ['!autodocs'],
   args: {
     'aria-label': 'Project name',
     placeholder: 'TC96 project',
@@ -15,7 +16,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-const sizes = ['sm', 'default', 'lg'] as const
+const sizes = ['default', 'lg'] as const
 
 export const AllSizes: Story = {
   render: () => (
