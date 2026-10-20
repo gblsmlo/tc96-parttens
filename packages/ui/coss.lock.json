@@ -74,7 +74,7 @@
     "combobox": {
       "url": "https://coss.com/ui/r/combobox.json",
       "upstream": "sha256-2cca986d7883560337fbd35009ee13648c9600a6633bb08c79de635c6dd15692",
-      "file": "sha256-56cbb30574e816242ea3169f3993cee7fbc3c3af15e6ee46730606efdabe4787"
+      "file": "sha256-12428ecd84eeaf8fb5c0a14845d8cd633e3553687db0d5f14d49c01597df787f"
     },
     "composer": {
       "url": "https://coss.com/ui/r/composer.json",
@@ -181,7 +181,7 @@
     "select": {
       "url": "https://coss.com/ui/r/select.json",
       "upstream": "sha256-aa8821bbb4bd6b8b52a6cbaaf8d995f48b1001ad93d4bfa4e5b91b5e6d5f66a0",
-      "file": "sha256-c317e1c3deb1409bf5d07b1d977fa1f9b08287ff7d091f4ac0c210fe0795daef"
+      "file": "sha256-2fb9697205f1d9f6777aa08dd90776c5406acd3e138eee496ad50a377a36409e"
     },
     "separator": {
       "url": "https://coss.com/ui/r/separator.json",

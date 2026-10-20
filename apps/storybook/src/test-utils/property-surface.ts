@@ -62,10 +62,8 @@ export async function esperarAvatarComAresta(
 export async function esperarIndicadorADireita(
   option: HTMLElement,
 ): Promise<void> {
-  const indicador = option.querySelector<HTMLElement>(
-    ':scope > span:first-child:not(:last-child)',
-  )
-  const rotulo = option.lastElementChild
+  const indicador = option.querySelector<HTMLElement>(':scope > span')
+  const rotulo = option.querySelector<HTMLElement>(':scope > div')
 
   if (!indicador || !rotulo) {
     throw new Error('A opção selecionada não renderizou o indicador.')

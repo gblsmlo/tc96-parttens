@@ -67,7 +67,7 @@ Files are kebab-case and named after what they export (`checklist-row.tsx` expor
 ## Rules that are enforced by scripts
 
 - **Layering:** imports only go down: `parttens` → `elements` → `ui` → `utils` (`helpers` is React-free). Checked by `bun run boundaries:check`.
-- **`packages/ui` is read-only.** It is a COSS snapshot; `bun run check:coss` rejects any file that is not a COSS item. Never edit it by hand; use `bun run sync:coss`. Themes and tokens belong to the consumer, not to `packages/ui`.
+- **`packages/ui` is read-only.** It is a COSS snapshot; `bun run check:coss` rejects any file that is not a COSS item. Never edit it by hand; use `bun run sync:coss`. Themes and tokens belong to the consumer, not to `packages/ui`. The one exception, chosen by the owner on 2026-10-20: `SelectItem` and `ComboboxItem` keep the selection check in a trailing column; `sync:coss` reverts it, so after a sync reapply the edit and record the new `file` hash in `coss.lock.json`.
 - **Overriding COSS styles needs a registered exception.** Any `className` that overrides a COSS component's border, radius, etc. must be listed with a reason in `scripts/override-exceptions.json`, or `bun run overrides:check` fails. Update the entry whenever the class changes.
 - **Public API baseline:** adding or removing exports changes `docs/architecture/public-api-exports.json`. Regenerate with `bun scripts/verify-public-api.ts --record` and mention it in the summary, since the diff may include unrelated pending exports.
 - Pattern `shared/` code is internal; export through the pattern's `index.ts` only when it is meant to be public.
