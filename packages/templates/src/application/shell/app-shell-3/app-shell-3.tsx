@@ -96,7 +96,7 @@ export function AppShell3({
           />
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <ShellHeader
           actions={
             notifications || actions ? (

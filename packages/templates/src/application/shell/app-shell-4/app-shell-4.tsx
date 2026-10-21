@@ -132,7 +132,7 @@ export function AppShell4({
           ) : null}
         </Sidebar>
       </Sidebar>
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <ShellHeader
           actions={
             <>

@@ -10,6 +10,13 @@ const meta = {
     },
   },
   component: ContactsUsage,
+  decorators: [
+    (Story) => (
+      <main className="flex min-h-screen flex-col p-6">
+        <Story />
+      </main>
+    ),
+  ],
   parameters: {
     docs: {
       description: {

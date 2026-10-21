@@ -4,6 +4,13 @@ import { PipelineUsage } from '../fixtures/pipeline-usage'
 
 const meta = {
   component: PipelineUsage,
+  decorators: [
+    (Story) => (
+      <main className="flex min-h-screen flex-col p-6">
+        <Story />
+      </main>
+    ),
+  ],
   parameters: {
     docs: {
       description: {

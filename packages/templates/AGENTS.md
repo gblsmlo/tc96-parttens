@@ -19,6 +19,7 @@ Import direction: a template folder → its group's `shared/` and its own files;
 - `packages/registry/src/manifest.ts` lists every template in `templateNames` and maps it to its folder in `templateSources`; `manifest.test.ts` fails when a folder with an `index.ts` is missing from the map.
 - `scripts/verify-public-api.ts` records each template `index.ts` as `template:<name>` in `docs/architecture/public-api-exports.json`.
 - `apps/storybook/src/application/shell/` (stories titled `Application/Shell/AppShell{n}`, at the sidebar root) imports each template through `@tc96/templates/<path>` and the fixtures import the shared types through the `app-shell-1`, `app-shell-3` and `app-shell-4` barrels.
+- `apps/storybook/src/templates/fixtures/app-shell.tsx` imports `AppShell1` and the `application/shell/fixtures/shell-data.tsx` fixtures; `withAppShell` wraps every `Templates/*` page as a decorator, with the active nav item and the breadcrumb of that page.
 - Nothing in `packages/` imports `@tc96/templates`; `boundaries:check` enforces it.
 
 ## Invariants
@@ -31,6 +32,7 @@ Import direction: a template folder → its group's `shared/` and its own files;
 - `ShellSearch` owns its open state and the ⌘K / Ctrl+K listener on `document`; picking a route closes the dialog, then calls `onNavigate(href)`.
 - `AppShell4` nests two `Sidebar collapsible="none"` (rail and section panel) inside one `Sidebar collapsible="icon"`, with `--sidebar-width` set to the icon width plus `16rem`; collapsing clips the panel and picking a section calls `setOpen(true)`. The workspace switcher and the account menu run `compact` in the rail, with their tooltips always shown.
 - The section of `AppShell4` is controlled by `sectionId`; the template keeps no copy of it.
+- Every shell gives `SidebarInset` `min-w-0`. The inset is a flex item of the provider's row, so without it a wide child (a `DataTable`, a `KanbanView`) widens the inset past the viewport and the page scrolls sideways instead of the child's own container.
 
 ## Styling
 
@@ -42,11 +44,11 @@ Import direction: a template folder → its group's `shared/` and its own files;
 ## Verify
 
 ```bash
-bunx biome check packages/templates apps/storybook/src/application
+bunx biome check packages/templates apps/storybook/src/application apps/storybook/src/templates
 bun run typecheck && bun run storybook:typecheck
 bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 bun test --isolate packages/registry/src
-cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/application
+cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/application src/templates
 bun run test:consumer:registry
 ```
 

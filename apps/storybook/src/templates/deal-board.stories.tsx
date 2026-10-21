@@ -1,15 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, within } from 'storybook/test'
 import { PipelineUsage } from '../patterns/collection-views/fixtures/pipeline-usage'
+import { appShellDocs, withAppShell } from './fixtures/app-shell'
 
 const meta = {
   component: PipelineUsage,
+  decorators: [
+    withAppShell({
+      breadcrumbs: [{ label: 'Pipeline de vendas' }],
+      href: '/pipeline',
+    }),
+  ],
   parameters: {
     docs: {
       description: {
         component:
-          'A deal board page: the `Patterns/CollectionViews/Usages/Pipeline` screen with its header, toolbar and `KanbanView` grouped by stage.',
+          'A deal board page: the `Patterns/CollectionViews/Usages/Pipeline` screen with its header, toolbar and `KanbanView` grouped by stage. It renders inside `Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
       },
+      story: appShellDocs,
     },
     layout: 'fullscreen',
   },

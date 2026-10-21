@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn, userEvent, within } from 'storybook/test'
+import { appShellDocs, withAppShell } from '../fixtures/app-shell'
 import { WorkspaceSettingsTemplate } from './workspace-settings-template'
 
 const meta = {
@@ -8,12 +9,19 @@ const meta = {
     onSavePreferences: fn(),
   },
   component: WorkspaceSettingsTemplate,
+  decorators: [
+    withAppShell({
+      breadcrumbs: [{ label: 'Configurações' }],
+      href: '/settings',
+    }),
+  ],
   parameters: {
     docs: {
       description: {
         component:
-          'A workspace settings page: two `SettingsSection`s of `SettingsRow`s, each with its own save action that stays disabled until a value in that section changes.',
+          'A workspace settings page: two `SettingsSection`s of `SettingsRow`s, each with its own save action that stays disabled until a value in that section changes. It renders inside `Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
       },
+      story: appShellDocs,
     },
     layout: 'fullscreen',
   },
