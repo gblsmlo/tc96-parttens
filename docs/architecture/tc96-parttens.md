@@ -377,6 +377,8 @@ Decidido em 2026-10-18 (dono), contraste do placeholder do `RichTextEditor`. O S
 
 Medido no navegador: as cores computadas do tema de exemplo foram convertidas para sRGB e a opacidade foi composta em sRGB, como faz o axe; o "antes" sobre o popup bate com os 1,6:1 e 1,69:1 que o axe reportou.
 
+Decidido em 2026-10-21, tipo do `renderPlaceholder`. O registro fixa `platejs@53.3.14`, mas ele pede `@platejs/core ^53.3.14`, e o npm do consumidor resolve a última da faixa: medido no `test:consumer:registry`, `@platejs/core@53.3.18` com `slate-react@0.145.1`, enquanto o `bun.lock` tem `53.3.14` com `0.126.4`. No `slate-react@0.145.1` o `RenderPlaceholderProps` passou a exigir `'aria-hidden'`, e o `EditableProps` do próprio Plate, que tipa o prop do `PlateContent`, não; a função tipada com `RenderPlaceholderProps` reprovava a verificação de tipos do consumidor (TS2322). O pattern tipa o argumento com `PlateContentProps['renderPlaceholder']`, que compila nas duas versões sem afrouxar a checagem. Fixar `@platejs/core` no registro foi descartado: ele não é importado pelo pattern, então não vira dependência do item, e fixá-lo travaria o consumidor numa versão que o `platejs` já aceita substituir.
+
 ## Validação proposta
 
 - Fronteiras: impedir imports em direção proibida, ciclos e UI duplicada por padrão. `packages/parttens` só importa `@tc96/ui/<item>` presente no lock COSS.

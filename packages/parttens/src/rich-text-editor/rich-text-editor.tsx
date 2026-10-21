@@ -13,7 +13,7 @@ import {
 import {
   Plate,
   PlateContent,
-  type RenderPlaceholderProps,
+  type PlateContentProps,
   useEditorRef,
   usePlateEditor,
 } from 'platejs/react'
@@ -122,10 +122,14 @@ const defaultBlockLabels = {
   ul: 'Lista com marcadores',
 } as const satisfies Record<RichTextBlock, string>
 
+type PlaceholderProps = Parameters<
+  NonNullable<PlateContentProps['renderPlaceholder']>
+>[0]
+
 function renderPlaceholder({
   attributes,
   children,
-}: RenderPlaceholderProps): ReactElement {
+}: PlaceholderProps): ReactElement {
   return (
     <span
       {...attributes}
