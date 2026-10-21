@@ -1,0 +1,13 @@
+{
+  "name": "app-shell-1",
+  "type": "registry:block",
+  "dependencies": [],
+  "registryDependencies": ["@coss/sidebar"],
+  "files": [
+    {
+      "path": "templates/src/application/shell/app-shell-1/index.ts",
+      "type": "registry:file",
+      "content": "import { sidebar } from \"@tc96/ui/sidebar\"\nexport const AppShell1 = sidebar\n"
+    }
+  ]
+}

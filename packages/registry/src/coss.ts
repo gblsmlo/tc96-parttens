@@ -48,17 +48,26 @@ export function normalizeImports(
     )
 }
 
-export function itemContent(item: CossRegistryItem) {
+/**
+ * Where a COSS item goes under the ui directory: a component at its root, a
+ * hook in hooks/. Items with more files are not installed.
+ */
+export function cossFiles(name: string) {
+  return {
+    [`registry/default/ui/${name}.tsx`]: `${name}.tsx`,
+    [`registry/default/hooks/${name}.ts`]: `hooks/${name}.ts`,
+  }
+}
+
+export function itemFile(item: CossRegistryItem) {
   const [file, ...rest] = item.files
-  if (
-    !file ||
-    rest.length ||
-    file.path !== `registry/default/ui/${item.name}.tsx`
-  )
+  const path =
+    file && !rest.length ? cossFiles(item.name)[file.path] : undefined
+  if (!file || !path)
     throw new Error(
-      `${item.name}: expected one file at registry/default/ui/${item.name}.tsx`,
+      `${item.name}: expected one file at registry/default/ui/${item.name}.tsx or registry/default/hooks/${item.name}.ts`,
     )
-  return file.content
+  return { path, content: file.content }
 }
 
 // components.json may point @coss at a mirror. Only the string form is read;
@@ -128,15 +137,16 @@ export function componentFile(
     if (value && Object.keys(value).length)
       throw new Error(`${item.name}: COSS items with ${key} are not supported`)
   }
-  const content = normalizeImports(itemContent(item), aliases)
+  const file = itemFile(item)
+  const content = normalizeImports(file.content, aliases)
   const unresolved = content.match(/(["'])(@\/[^"']*)\1/)
   if (unresolved)
     throw new Error(`${item.name}: import ${unresolved[2]} has no alias`)
   return {
-    path: `coss/${item.name}.tsx`,
+    path: `coss/${file.path}`,
     type: 'registry:ui',
     content,
-    target: `~/${directory}/${item.name}.tsx`,
+    target: `~/${directory}/${file.path}`,
   }
 }
 

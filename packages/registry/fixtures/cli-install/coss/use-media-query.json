@@ -1,0 +1,11 @@
+{
+  "name": "use-media-query",
+  "type": "registry:hook",
+  "dependencies": [],
+  "files": [
+    {
+      "path": "registry/default/hooks/use-media-query.ts",
+      "content": "export function useMediaQuery() {\n  return true\n}\n"
+    }
+  ]
+}

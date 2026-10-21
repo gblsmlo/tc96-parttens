@@ -27,6 +27,12 @@
       ],
       "@tc96/parttens": [
         "./packages/parttens/src/index.ts"
+      ],
+      "@tc96/parttens/*": [
+        "./packages/parttens/src/*"
+      ],
+      "@tc96/templates/*": [
+        "./packages/templates/src/*"
       ]
     }
   },

@@ -10,6 +10,7 @@ const allowed: Record<string, string[]> = {
   ui: ['utils'],
   elements: ['ui', 'utils', 'helpers'],
   parttens: ['ui', 'elements', 'utils', 'helpers'],
+  templates: ['parttens', 'ui', 'elements', 'utils', 'helpers'],
   registry: [],
 }
 const cossModules = new Set(

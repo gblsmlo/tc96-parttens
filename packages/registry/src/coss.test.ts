@@ -131,6 +131,29 @@ test('targets the ui directory with the consumer aliases', () => {
   })
 })
 
+test('targets the hooks directory for a COSS hook', () => {
+  expect(
+    componentFile(
+      {
+        name: 'use-media-query',
+        files: [
+          {
+            path: 'registry/default/hooks/use-media-query.ts',
+            content: 'export function useMediaQuery() {}',
+          },
+        ],
+      },
+      aliases,
+      'packages/ui/src',
+    ),
+  ).toEqual({
+    path: 'coss/hooks/use-media-query.ts',
+    type: 'registry:ui',
+    content: 'export function useMediaQuery() {}',
+    target: '~/packages/ui/src/hooks/use-media-query.ts',
+  })
+})
+
 test('fails on items it cannot install faithfully', () => {
   expect(() =>
     componentFile(
@@ -154,6 +177,16 @@ test('fails on items it cannot install faithfully', () => {
           { path: 'registry/default/ui/sidebar.tsx', content: '' },
           { path: 'registry/default/hooks/use-sidebar.ts', content: '' },
         ],
+      },
+      aliases,
+      'src/ui',
+    ),
+  ).toThrow('expected one file')
+  expect(() =>
+    componentFile(
+      {
+        name: 'utils',
+        files: [{ path: 'registry/default/lib/utils.ts', content: '' }],
       },
       aliases,
       'src/ui',

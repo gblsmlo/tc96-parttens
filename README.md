@@ -58,6 +58,22 @@ Before copying anything, the CLI type-checks the patterns against your own `ui` 
 import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
 ```
 
+### Templates
+
+Whole layouts install the same way. The first ones are application shells, `app-shell-1` to `app-shell-4`:
+
+```bash
+npx @tc96/parttens add app-shell-1
+```
+
+A template is written where the `templates` alias resolves (`@acme/ui` gives `@acme/templates`, or set `aliases.templates` in `components.json`), and is imported from its folder:
+
+```tsx
+import { AppShell1 } from '@acme/templates/application/shell/app-shell-1'
+```
+
+The `tsconfig` `paths` entry for `templates` is needed only when you install a template. The Templates page in Storybook lists every template and its options.
+
 ### How it works
 
 - **Your COSS components:** if a COSS component is missing, it is installed through shadcn. If you already have it, yours is reused, customizations included
@@ -75,12 +91,13 @@ import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
 tc96 expects a layered design system, in the spirit of atomic design, configured by one `components.json` at the monorepo root:
 
 ```text
-components.json        aliases: ui, utils (elements, helpers and patterns default to siblings of ui)
+components.json        aliases: ui, utils (elements, helpers, patterns and templates default to siblings of ui)
 packages/
   ui/                  atoms: COSS components
   elements/            components COSS does not have, such as Text and IconFrame
   helpers/             React-free functions, such as amount formatting and rich text helpers
   patterns/            organisms: tc96 patterns
+  templates/           installed templates, such as application shells (optional)
 apps/
   web/                 templates and pages
 ```

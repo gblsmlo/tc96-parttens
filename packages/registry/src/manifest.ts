@@ -33,6 +33,24 @@ export const patternSources: Record<PatternName, string> = {
   'chats-panel': 'chat/chats-panel',
   wizard: 'wizard',
 }
+export const templateNames = [
+  'app-shell-1',
+  'app-shell-2',
+  'app-shell-3',
+  'app-shell-4',
+] as const
+export type TemplateName = (typeof templateNames)[number]
+/** Folder under packages/templates/src, kept as the path in the consumer. */
+export const templateSources: Record<TemplateName, string> = {
+  'app-shell-1': 'application/shell/app-shell-1',
+  'app-shell-2': 'application/shell/app-shell-2',
+  'app-shell-3': 'application/shell/app-shell-3',
+  'app-shell-4': 'application/shell/app-shell-4',
+}
+export type ItemName = PatternName | TemplateName
+export function isTemplate(name: string): name is TemplateName {
+  return templateNames.includes(name as TemplateName)
+}
 /** The consumer's components.json aliases the patterns import from. */
 export interface Aliases {
   ui: string
@@ -40,6 +58,7 @@ export interface Aliases {
   elements: string
   helpers: string
   patterns: string
+  templates: string
 }
 export const aliasNames = [
   'ui',
@@ -47,6 +66,7 @@ export const aliasNames = [
   'elements',
   'helpers',
   'patterns',
+  'templates',
 ] as const
 /**
  * Directories the aliases resolve to. Only elements, helpers and patterns are
@@ -57,7 +77,8 @@ export const pathNames = ['ui', 'elements', 'helpers', 'patterns'] as const
 export type PathName = (typeof pathNames)[number]
 export interface InstallConfig {
   aliases: Aliases
-  paths: Record<PathName, string>
+  /** templates is resolved only when a template is installed. */
+  paths: Record<PathName, string> & { templates?: string }
 }
 export interface RegistryFile {
   path: string
@@ -81,23 +102,28 @@ export const defaultConfig: InstallConfig = {
     elements: '@tc96/elements',
     helpers: '@tc96/helpers',
     patterns: '@tc96/patterns',
+    templates: '@tc96/templates',
   },
   paths: {
     ui: 'packages/ui/src',
     elements: 'packages/elements/src',
     helpers: 'packages/helpers/src',
     patterns: 'packages/patterns/src',
+    templates: 'packages/templates/src',
   },
 }
-export function selectPatterns(names: string[]): PatternName[] {
-  if (!names.length) throw new Error('Choose at least one pattern.')
+export function selectItems(names: string[]): ItemName[] {
+  if (!names.length) throw new Error('Choose at least one pattern or template.')
   return [
     ...new Set(
       names.map((name) => {
         const resolved = name === 'view' ? 'collection-views' : name
-        if (!patternNames.includes(resolved as PatternName))
-          throw new Error(`Unknown pattern: ${name}`)
-        return resolved as PatternName
+        if (
+          !patternNames.includes(resolved as PatternName) &&
+          !isTemplate(resolved)
+        )
+          throw new Error(`Unknown pattern or template: ${name}`)
+        return resolved as ItemName
       }),
     ),
   ]
@@ -108,8 +134,9 @@ export function validateConfig(value: InstallConfig): InstallConfig {
     if (typeof alias !== 'string' || !/^[@#a-zA-Z]/.test(alias))
       throw new Error(`Invalid ${name} alias.`)
   }
-  for (const name of pathNames) {
+  for (const name of [...pathNames, 'templates'] as const) {
     const destination = value.paths?.[name]
+    if (name === 'templates' && destination === undefined) continue
     if (typeof destination !== 'string')
       throw new Error(`Invalid ${name} path.`)
     const path = normalize(destination).replaceAll('\\', '/')
@@ -145,10 +172,11 @@ export function prepareItem(
 ): RegistryItem {
   const config = validateConfig(configuration)
   assertDistributable(item)
-  const destinations: Record<string, string> = {
+  const destinations: Record<string, string | undefined> = {
     parttens: config.paths.patterns,
     elements: config.paths.elements,
     helpers: config.paths.helpers,
+    templates: config.paths.templates,
   }
   const aliases: Record<string, string> = {
     ...config.aliases,
@@ -176,7 +204,7 @@ export function prepareItem(
           ts.isStringLiteral(node.moduleSpecifier)
         ) {
           const match = node.moduleSpecifier.text.match(
-            /^@tc96\/(ui|utils|elements|helpers|parttens)(\/.*)?$/,
+            /^@tc96\/(ui|utils|elements|helpers|parttens|patterns|templates)(\/.*)?$/,
           )
           if (match) {
             const alias = aliases[match[1] ?? '']

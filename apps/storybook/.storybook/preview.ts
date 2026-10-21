@@ -86,6 +86,8 @@ const preview: Preview = {
           b.title.split('/')[0] ?? '',
         )
         if (byFolder !== 0) return byFolder
+        const aDoc = /^[^/]+\/Doc$/.test(a.title)
+        if (aDoc !== /^[^/]+\/Doc$/.test(b.title)) return aDoc ? -1 : 1
         if (b.title.startsWith(`${a.title}/`)) return -1
         if (a.title.startsWith(`${b.title}/`)) return 1
         return 0

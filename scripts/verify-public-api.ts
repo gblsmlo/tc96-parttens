@@ -1,10 +1,16 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import ts from 'typescript'
-import { patternNames, patternSources } from '../packages/registry/src/manifest'
+import {
+  patternNames,
+  patternSources,
+  templateNames,
+  templateSources,
+} from '../packages/registry/src/manifest'
 
 // The public API is what a consumer imports from the patterns alias: each
-// pattern barrel the registry installs, and the aggregate entry.
+// pattern barrel the registry installs, and the aggregate entry. Each template
+// is imported from its own folder in the templates alias.
 const modules: Record<string, string> = {
   ...Object.fromEntries(
     patternNames.map((name) => [
@@ -13,6 +19,12 @@ const modules: Record<string, string> = {
     ]),
   ),
   parttens: 'packages/parttens/src/index.ts',
+  ...Object.fromEntries(
+    templateNames.map((name) => [
+      `template:${name}`,
+      `packages/templates/src/${templateSources[name]}/index.ts`,
+    ]),
+  ),
 }
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)
 const parsed = ts.parseJsonConfigFileContent(

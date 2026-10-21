@@ -16,7 +16,7 @@ Cada linha abaixo é uma página que compõe patterns e entra como template, nã
 
 | Template | Rota de origem | Composição |
 | --- | --- | --- |
-| `app-shell` | todas | rail de ícones + sidebar de seção + topbar (workspace switcher, busca com escopo e ⌘K, Create, notificações) + header de página (breadcrumb, filtro de período, Export) |
+| `app-shell` (instalável desde 2026-10-21: `app-shell-4`, [ADR 0005](../../.specs/adr/0005-installable-templates.md)) | todas | rail de ícones + sidebar de seção + topbar (workspace switcher, busca com escopo e ⌘K, Create, notificações) + header de página (breadcrumb, filtro de período, Export) |
 | `dashboard-home` | `/` | 4 KPI cards + card Performance + Quota Coverage + Pipeline Sourced + tabela Team Performance |
 | `day-agenda` | `/today` | grid de cards de reunião |
 | `activity-feed` | `/activity-feed`, `/activities` | timeline rica, agrupada por dia, com tabs de tipo |
@@ -43,7 +43,7 @@ Cada linha abaixo é uma página que compõe patterns e entra como template, nã
 
 | Componente | Onde aparece | Catálogo |
 | --- | --- | --- |
-| Rail de ícones + sidebar de seção com grupos e contadores | todas | Novo (`app-shell`, só template) |
+| Rail de ícones + sidebar de seção com grupos e contadores | todas | Template instalável `app-shell-4` (2026-10-21) |
 | Sidebar com facetas e mini barra por valor (Lifecycle) | `/contacts` | Novo |
 | Card de anúncio dispensável empilhado (Read more / Dismiss) | sidebar Overview | Novo |
 | Card de rodapé de sidebar: quota, live metrics com sparkline, security status, upgrade | sidebar de cada seção | Estender `widgets` (`MetricWidget`, `ProgressRing`) |

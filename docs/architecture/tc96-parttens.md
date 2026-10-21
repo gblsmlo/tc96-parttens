@@ -38,6 +38,12 @@ packages/
       widgets/
       shared/
       index.ts
+  templates/
+    src/
+      application/
+        shell/
+          app-shell-1/ … app-shell-4/
+          shared/
   utils/
   registry/
 docs/
@@ -53,6 +59,7 @@ A landing será acrescentada quando houver escopo concreto. A grafia `parttens` 
 - `ui`: componentes COSS sem alterações, no papel da UI do consumidor, exceto o indicador de seleção de `SelectItem` e `ComboboxItem` (ver [UI base sem opinião](#ui-base-sem-opinião), 2026-10-20).
 - `elements`: componentes próprios do tc96 que não existem no COSS, como `Text` e `IconFrame`. Usam só os tokens do tema do consumidor. Decidido em 2026-10-03: o elemento `Title` foi removido e `Text` absorve os títulos pelas variantes `family="heading"`, `weight` e `size` (com `render={<h2 />}` para a semântica); `size` segue a escala do Tailwind, de `xs` a `8xl`, com `base` como padrão, e o antigo `md` deixou de existir. O `Checklist` usa `Text` no título e nos itens; a story `Elements/Text` reúne tamanhos, pesos, cores, famílias, títulos e truncamento.
 - `parttens`: padrões, com componentes, hooks, tipos e testes próximos de cada padrão.
+- `templates`: templates instaláveis, como os App Shells; compõem `parttens`, `elements` e `ui`, e nada os importa ([ADR 0005](../../.specs/adr/0005-installable-templates.md), 2026-10-21).
 - `utils`: funções compartilhadas sem React ou dependências visuais.
 - `registry`: manifestos, geração e ferramentas para instalação dos fontes.
 
@@ -277,6 +284,7 @@ packages/
   elements/            componentes próprios fora do COSS, como Text e IconFrame (aliases.elements)
   helpers/             funções sem React, como a formatação de valores (aliases.helpers)
   patterns/            organismos: patterns do tc96 (aliases.patterns)
+  templates/           templates instalados, como os App Shells (aliases.templates, opcional)
 apps/
   web/                 templates e páginas da aplicação
 ```
@@ -422,6 +430,7 @@ Decidido em 2026-10-21, tipo do `renderPlaceholder`. O registro fixa `platejs@53
 | Contraste se resolve sem mudar o valor dos tokens (2026-10-17, dono): num ponto, o elemento usa o par da superfície onde fica, com opacidade quando precisa de tom (`bg-primary-foreground/16 text-primary-foreground` na dica do `RecordDialog`), e a sobrescrita do COSS entra em `scripts/override-exceptions.json`; quando o componente falha em todo lugar, uma regra no `styles.css` do tema restrita ao `data-slot`, como `[data-slot="switch"] { --input: var(--switch-track); }` | Trocar o valor do token no `:root` ou no `.dark`, como `--destructive` passou a `red-600` em 2026-10-08, antes desta regra | O valor do token muda todos os pares que o usam para corrigir um só; a correção fica onde o elemento encontra a superfície, e o tema mantém os valores |
 | `lib/variants.ts` guarda toda variante de classe do pattern, inclusive a usada por um só componente (2026-10-17, dono, na revisão de estrutura de `checklist` e `records/group`) | Levar para dentro do componente a variante de consumidor único que não gera tipo: 8 das 16 exportações de `checklist/lib/variants.ts` e 10 das 13 de `records/group/lib/variants.ts` | Uma regra só para as classes em todos os patterns; as variantes compartilhadas e as que geram tipo público (`ChecklistDensity`, `ChecklistVariant` e `ChecklistDueStatus` saem de `VariantProps`) ficariam em `lib/` de qualquer forma, e a revisão não achou violação de fronteira |
 | Check de seleção de `SelectItem` e `ComboboxItem` na coluna da direita, editado em `packages/ui` (2026-10-20, dono) | Manter o COSS e mover o check só nos patterns, por classe compartilhada ou regra de tema por `data-slot` | O dono quis o check à direita como padrão do componente, como já estava em `MenuRadioOption`, `MenuCheckboxOption` e nas properties; o consumidor recebe o COSS original, por isso as properties mantêm a classe própria |
+| Templates instaláveis em `packages/templates`, com item no registry e destino no alias `templates` (2026-10-21, dono, [ADR 0005](../../.specs/adr/0005-installable-templates.md)) | Manter templates só no Storybook ([ADR 0004](../../.specs/adr/0004-templates-only-in-storybook.md)), ou uma família `templates/` em `packages/parttens` | O consumidor instala um shell com COSS faltante, dependências e verificação de tipos; o template fica fora do barrel e do baseline dos patterns |
 
 ## Pontos ainda em revisão
 
@@ -496,3 +505,16 @@ Decisão de 2026-10-14 (issue #151). A `ListRow` e o `KanbanCard` abrem o regist
 - O alvo certo do clique vem do `pointer-events`, como na `ListRow`: toda célula é `pointer-events-none` e os descendentes interativos (seletor `interactiveDescendants`, agora em `shared/lib/interactive-descendants.ts` para as duas views) voltam a `pointer-events-auto`. Uma área sem controle deixa o clique passar até o gatilho; o checkbox de seleção, uma propriedade editável ou um botão de célula recebem o clique e nunca abrem o registro. O custo é que o texto dessas linhas deixa de ser selecionável com o mouse.
 - O nome acessível é `getRowOpenLabel(row)` e, sem ele, "Abrir registro". A `DataTable` resolve o rótulo e entrega a string à linha, então um rótulo novo re-renderiza a linha afetada sem exigir identidade estável da função. O handler chega por identidade: um `onRowClick` inline re-renderiza todas as linhas a cada render do pai, como um `columns` instável, e o consumidor o mantém estável.
 - Foco e teclado: o gatilho é um botão comum, na ordem do DOM antes dos controles da própria linha, e desenha o anel (`focus-visible:ring-2 ring-inset`) porque tira o outline nativo. A linha só ganha `cursor-pointer` e `data-interactive` quando `onRowClick` existe; sem ele o markup é o de antes.
+
+## Templates: App Shells
+
+Decidido em 2026-10-21, a pedido do dono ([ADR 0005](../../.specs/adr/0005-installable-templates.md), plano `.specs/app-shell-templates/tasks/0001-app-shell-templates.md`). Os quatro primeiros templates instaláveis ficam em `packages/templates/src/application/shell/`: `app-shell-1` (sidebar que recolhe para ícones), `app-shell-2` (sidebar flutuante com busca ⌘K), `app-shell-3` (sidebar inset com projetos, painel de uso e notificações) e `app-shell-4` (trilho de seções e navegação da seção ativa). A anatomia de cada um segue os blocos App Shell do ReUI (1, 2, 3 e 9, 8 e 16) e o `app-shell` do mapeamento do Verve CRM; nenhum código, classe ou dado do ReUI entrou no repositório, porque os blocos são Pro. As stories ficam em `Templates/Application/Shell/AppShell{n}`, e `Templates/Doc` documenta os comandos.
+
+- **Composição:** os quatro montam o `Sidebar` do COSS, sincronizado em 2026-10-21 com `breadcrumb`, `command` e `autocomplete` (`bun run sync:coss sidebar breadcrumb command`). As peças comuns (seletor de workspace, navegação em grupos, menu da conta, cabeçalho com breadcrumb, busca ⌘K, notificações, tipos e rótulos) ficam em `shell/shared/` e seguem com cada item que as importa; as próprias de um shell ficam na pasta dele (`app-shell-3/project-nav.tsx`, `usage-card.tsx`, `app-shell-4/section-rail.tsx`).
+- **Dados e navegação:** tudo vem por props tipadas. Cada link passa por `renderLink: (href) => ReactElement`, com `a` como padrão, para o roteador do consumidor; o Base UI funde classes, `aria-current` e o texto no elemento pelo `render`. A busca navega por código, então `AppShell2` e `AppShell4` recebem `onNavigate`. O template não lê o cookie `sidebar_state` que o COSS grava: o consumidor passa `defaultOpen` ou controla `open`. Tema só por `theme` e `onThemeChange`, sem `next-themes`.
+- **Pattern por caminho de arquivo:** o template importa um módulo de pattern pelo arquivo (`@tc96/parttens/widgets/shared/progress-ring`), não pelo barrel, para o item levar só esse arquivo; `@tc96/parttens` passou a exportar `./*` para `./src/*.tsx`, como o `@tc96/ui`, e o `tsconfig.base.json` ganhou `@tc96/parttens/*`. O build grava esse import como `@tc96/patterns/...`, e o CLI reescreve esse prefixo para o alias `patterns` do consumidor.
+- **CLI:** `add` aceita patterns e templates na mesma lista. O caminho do alias `templates` só é resolvido quando a seleção tem template; o `index.ts` de patterns só é regravado quando o item traz arquivos de `parttens/`. O instalador de COSS passou a aceitar item de um arquivo em `registry/default/hooks/<item>.ts`, gravado em `<ui>/hooks/<item>.ts`: o `sidebar` depende de `use-media-query`, que antes reprovava a instalação.
+- **Tema do exemplo:** a regra `a { color: inherit; text-decoration: none; }` de `apps/example/packages/ui/src/styles.css` ficava fora de camada e vencia todo utilitário do Tailwind; o item ativo do sidebar, um `a`, perdia o `text-sidebar-accent-foreground` e media 4,19:1 no claro. A regra passou para `@layer base`, sem mudar valor de token; nota para o consumidor, também em `Templates/Doc`.
+- **Contraste (medido em 2026-10-21, `AppShell1/Default`):** item ativo 13,3:1 (claro) e 16,03:1 (escuro); item comum, rótulo de grupo e contador 4,58:1 e 18,11:1; página atual do breadcrumb 14,52:1 e 16,03:1; link do breadcrumb 5,48:1 e 5,34:1. As iniciais do avatar no menu da conta herdavam o `sidebar-foreground` sobre o `bg-border` do fallback e mediam 3,83:1 no claro; o `AvatarFallback` recebe `text-foreground`, o par que ele tem no resto do app, e passa a 12,15:1 e 16,22:1. O `overrides:check` não vê o `AvatarFallback` reexportado por `@tc96/elements/avatar` (o mesmo vale para `person-option-content.tsx`) e recusa exceção que não detecta, por isso o registro fica aqui. O quadro do logo do workspace usa `bg-sidebar-primary text-sidebar-primary-foreground`, o par do sidebar, porque o `bg-muted` do `IconFrame` sumia sobre o `bg-sidebar` no escuro.
+- **Testes:** cada shell tem `play` para landmarks, `aria-current`, menus e callbacks, em claro e escuro com axe. `AppShell1/Mobile` usa o viewport `mobile2` (414px), abaixo dos 800px do `max-md` do COSS, e confere a navegação dentro do `Sheet`. O `useArgs` do Storybook não re-renderiza no `storybook:test`, então `AppShell4` mantém a seção em estado local semeado pelo arg `sectionId`.
+

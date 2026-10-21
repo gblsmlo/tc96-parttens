@@ -14,8 +14,8 @@ import {
 const requiredAliasNames = ['ui', 'utils'] as const
 
 // The consumer's components.json is the only configuration. ui and utils are
-// its standard aliases; elements, helpers and patterns are tc96 keys read from
-// the same aliases object. When one is absent it is derived from the ui alias
+// its standard aliases; elements, helpers, patterns and templates are tc96 keys
+// read from the same aliases object. When one is absent it is derived from the ui alias
 // by replacing its last segment, so "@acme/ui" yields "@acme/patterns".
 export function readAliases(components: unknown): Aliases {
   const aliases =
@@ -30,7 +30,7 @@ export function readAliases(components: unknown): Aliases {
   const { ui, utils } = aliases as Pick<Aliases, 'ui' | 'utils'>
   const derive = (name: string) =>
     ui.includes('/') ? `${ui.slice(0, ui.lastIndexOf('/'))}/${name}` : name
-  const pick = (name: 'elements' | 'helpers' | 'patterns') =>
+  const pick = (name: 'elements' | 'helpers' | 'patterns' | 'templates') =>
     typeof aliases[name] === 'string' && aliases[name]
       ? aliases[name]
       : derive(name)
@@ -40,6 +40,7 @@ export function readAliases(components: unknown): Aliases {
     elements: pick('elements'),
     helpers: pick('helpers'),
     patterns: pick('patterns'),
+    templates: pick('templates'),
   }
 }
 
@@ -72,7 +73,12 @@ export function findProjectRoot(start: string): string {
   return directory
 }
 
-export async function readInstallConfig(root: string): Promise<InstallConfig> {
+// The templates path is read only when a template is installed, so a consumer
+// that installs patterns alone needs no templates entry in its tsconfig.
+export async function readInstallConfig(
+  root: string,
+  { templates = false } = {},
+): Promise<InstallConfig> {
   const componentsPath = join(root, 'components.json')
   if (!existsSync(componentsPath))
     throw new Error(
@@ -87,22 +93,23 @@ export async function readInstallConfig(root: string): Promise<InstallConfig> {
     throw new Error('Cannot read the consumer tsconfig.json.')
   const { options } = ts.parseJsonConfigFileContent(read.config, ts.sys, root)
   const uiPath = resolveAliasPath(root, aliases.ui, options)
+  const resolveSibling = (name: Exclude<PathName, 'ui'> | 'templates') =>
+    resolveAliasPath(
+      root,
+      aliases[name],
+      options,
+      `./${uiPath
+        .split('/')
+        .map((segment) => (segment === 'ui' ? name : segment))
+        .join('/')}`,
+    )
   const paths = Object.fromEntries(
     pathNames.map((name) => [
       name,
-      name === 'ui'
-        ? uiPath
-        : resolveAliasPath(
-            root,
-            aliases[name],
-            options,
-            `./${uiPath
-              .split('/')
-              .map((segment) => (segment === 'ui' ? name : segment))
-              .join('/')}`,
-          ),
+      name === 'ui' ? uiPath : resolveSibling(name),
     ]),
-  ) as Record<PathName, string>
+  ) as InstallConfig['paths']
+  if (templates) paths.templates = resolveSibling('templates')
   return validateConfig({ aliases, paths })
 }
 

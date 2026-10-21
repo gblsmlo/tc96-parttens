@@ -5,11 +5,14 @@ import { join, resolve } from 'node:path'
 import {
   assertDistributable,
   combineItems,
+  defaultConfig,
   type InstallConfig,
   omitInstalled,
   prepareItem,
   type RegistryItem,
-  selectPatterns,
+  selectItems,
+  templateNames,
+  templateSources,
   validateConfig,
 } from './manifest'
 
@@ -20,12 +23,14 @@ const config: InstallConfig = {
     elements: '@consumer/atoms',
     helpers: '@consumer/toolkit',
     patterns: '@consumer/patterns',
+    templates: '@consumer/templates',
   },
   paths: {
     ui: 'packages/visual/src',
     elements: 'packages/atoms/src',
     helpers: 'packages/toolkit/src',
     patterns: 'packages/patterns/src',
+    templates: 'apps/web/src/templates',
   },
 }
 function item(path: string, content: string): RegistryItem {
@@ -38,33 +43,72 @@ function item(path: string, content: string): RegistryItem {
 }
 
 test('selects several patterns once and maps legacy view to collection-views', () => {
-  expect(selectPatterns(['view', 'properties', 'collection-views'])).toEqual([
+  expect(selectItems(['view', 'properties', 'collection-views'])).toEqual([
     'collection-views',
     'properties',
   ])
 })
 test('accepts the migrated checklist pattern', () => {
-  expect(selectPatterns(['checklist', 'checklist'])).toEqual(['checklist'])
+  expect(selectItems(['checklist', 'checklist'])).toEqual(['checklist'])
 })
 test('accepts the state-surface pattern', () => {
-  expect(selectPatterns(['state-surface'])).toEqual(['state-surface'])
+  expect(selectItems(['state-surface'])).toEqual(['state-surface'])
 })
 test('accepts the settings pattern', () => {
-  expect(selectPatterns(['settings'])).toEqual(['settings'])
+  expect(selectItems(['settings'])).toEqual(['settings'])
 })
 test('accepts the chats-panel pattern', () => {
-  expect(selectPatterns(['chats-panel'])).toEqual(['chats-panel'])
+  expect(selectItems(['chats-panel'])).toEqual(['chats-panel'])
 })
 test('accepts the wizard pattern', () => {
-  expect(selectPatterns(['wizard'])).toEqual(['wizard'])
+  expect(selectItems(['wizard'])).toEqual(['wizard'])
 })
 test('accepts the widgets pattern', () => {
-  expect(selectPatterns(['widgets'])).toEqual(['widgets'])
+  expect(selectItems(['widgets'])).toEqual(['widgets'])
+})
+test('accepts templates next to patterns', () => {
+  expect(selectItems(['app-shell-1', 'widgets', 'app-shell-1'])).toEqual([
+    'app-shell-1',
+    'widgets',
+  ])
+})
+test('maps template files and imports to the templates destination', () => {
+  const result = prepareItem(
+    item(
+      'templates/src/application/shell/app-shell-1/app-shell-1.tsx',
+      'import { Sidebar } from "@tc96/ui/sidebar"\nimport { ProgressRing } from "@tc96/parttens/widgets/shared/progress-ring"\nimport { NavMain } from "@tc96/templates/application/shell/shared/nav-main"\n',
+    ),
+    config,
+  )
+  expect(result.files[0]).toMatchObject({
+    target:
+      '~/apps/web/src/templates/application/shell/app-shell-1/app-shell-1.tsx',
+    content:
+      'import { Sidebar } from "@consumer/visual/sidebar"\nimport { ProgressRing } from "@consumer/patterns/widgets/shared/progress-ring"\nimport { NavMain } from "@consumer/templates/application/shell/shared/nav-main"\n',
+  })
+  const built = prepareItem(
+    item(
+      'templates/src/application/shell/app-shell-1/app-shell-1.tsx',
+      'import { ProgressRing } from "@tc96/parttens/widgets/shared/progress-ring"\n',
+    ),
+    defaultConfig,
+  )
+  expect(prepareItem(built, config).files[0]?.content).toBe(
+    'import { ProgressRing } from "@consumer/patterns/widgets/shared/progress-ring"\n',
+  )
+  expect(() =>
+    prepareItem(
+      item('templates/src/application/shell/app-shell-1/index.ts', ''),
+      { ...config, paths: { ...config.paths, templates: undefined } },
+    ),
+  ).toThrow('Invalid registry path')
 })
 test('rejects unknown or excluded patterns', () => {
-  expect(() => selectPatterns(['filter-builder'])).toThrow('Unknown pattern')
-  expect(() => selectPatterns(['detail-sheet'])).toThrow('Unknown pattern')
-  expect(() => selectPatterns([])).toThrow('Choose')
+  expect(() => selectItems(['filter-builder'])).toThrow(
+    'Unknown pattern or template',
+  )
+  expect(() => selectItems(['detail-sheet'])).toThrow('Unknown pattern')
+  expect(() => selectItems([])).toThrow('Choose')
 })
 test('maps destinations and imports without corrupting arbitrary string contents', () => {
   const result = prepareItem(
@@ -353,5 +397,52 @@ test('builds the wizard item from its folder with IconFrame and COSS dependencie
         path === 'elements/src/icon-frame.tsx',
     ),
   ).toBe(true)
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
+test('lists every template folder in templateSources', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const folders = [
+    ...new Bun.Glob('*/*/*/index.ts').scanSync(
+      join(root, 'packages/templates/src'),
+    ),
+  ]
+    .map((path) => path.replace(/\/index\.ts$/, ''))
+    .sort()
+  expect(folders).toEqual(Object.values(templateSources).sort())
+  expect(Object.keys(templateSources).sort()).toEqual([...templateNames].sort())
+})
+
+test('builds the app-shell-1 item with the shell shared files and the sidebar from COSS', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/app-shell-1.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('app-shell-1')
+  expect(item.registryDependencies).toContain('@coss/sidebar')
+  expect(item.registryDependencies).toContain('@coss/breadcrumb')
+  expect(paths).toContain(
+    'templates/src/application/shell/app-shell-1/index.ts',
+  )
+  expect(paths).toContain(
+    'templates/src/application/shell/shared/shell-nav.tsx',
+  )
+  expect(
+    paths.every(
+      (path) =>
+        path.startsWith('templates/src/application/shell/') ||
+        path.startsWith('elements/src/') ||
+        path.startsWith('helpers/src/'),
+    ),
+  ).toBe(true)
+  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })

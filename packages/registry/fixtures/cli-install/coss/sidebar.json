@@ -1,0 +1,15 @@
+{
+  "name": "sidebar",
+  "type": "registry:ui",
+  "dependencies": [],
+  "registryDependencies": [
+    "@coss/use-media-query",
+    "@coss/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/default/ui/sidebar.tsx",
+      "content": "import { useMediaQuery } from \"@/registry/default/hooks/use-media-query\"\nexport const sidebar = useMediaQuery\n"
+    }
+  ]
+}

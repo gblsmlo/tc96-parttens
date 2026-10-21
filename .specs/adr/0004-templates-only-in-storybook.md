@@ -2,6 +2,7 @@
 
 - **Status:** Accepted (dono, na conversa de 2026-10-20)
 - **Date:** 2026-10-20
+- **Amended by:** [ADR 0005](0005-installable-templates.md), em 2026-10-21: templates instaláveis vivem em `packages/templates` e têm item no registry; os templates daqui continuam só no Storybook
 - **Origin:** mapeamento do Verve CRM (`docs/plans/2026-10-20-verve-crm-mapeamento.md`), pedido do dono: "Full page devem ser montada em Templates"
 
 ## Context

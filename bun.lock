@@ -87,6 +87,7 @@
         "@tc96/elements": "workspace:*",
         "@tc96/helpers": "workspace:*",
         "@tc96/parttens": "workspace:*",
+        "@tc96/templates": "workspace:*",
         "@tc96/ui": "workspace:*",
         "@thesvg/icons": "3.4.1",
         "lucide-react": "1.28.0",
@@ -177,6 +178,22 @@
       "name": "@tc96/registry",
       "dependencies": {
         "typescript": "6.0.3",
+      },
+    },
+    "packages/templates": {
+      "name": "@tc96/templates",
+      "dependencies": {
+        "@tc96/elements": "workspace:*",
+        "@tc96/helpers": "workspace:*",
+        "@tc96/parttens": "workspace:*",
+        "@tc96/ui": "workspace:*",
+        "@tc96/utils": "workspace:*",
+        "lucide-react": "1.28.0",
+      },
+      "peerDependencies": {
+        "@base-ui/react": "1.8.0",
+        "react": "19.1.1",
+        "react-dom": "19.1.1",
       },
     },
     "packages/ui": {
@@ -638,6 +655,8 @@
     "@tc96/registry": ["@tc96/registry@workspace:packages/registry"],
 
     "@tc96/storybook": ["@tc96/storybook@workspace:apps/storybook"],
+
+    "@tc96/templates": ["@tc96/templates@workspace:packages/templates"],
 
     "@tc96/ui": ["@tc96/ui@workspace:packages/ui"],
 

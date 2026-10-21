@@ -1185,5 +1185,20 @@
     "whatsappHref",
     "wizardStepStatus",
     "wizardStepStatuses"
+  ],
+  "template:app-shell-1": [
+    "AppShell1",
+    "AppShell1Props",
+    "AppShellBaseProps",
+    "ShellAction",
+    "ShellBreadcrumbItem",
+    "ShellLabels",
+    "ShellNavGroup",
+    "ShellNavItem",
+    "ShellNavSubItem",
+    "ShellRenderLink",
+    "ShellTheme",
+    "ShellUser",
+    "ShellWorkspace"
   ]
 }
