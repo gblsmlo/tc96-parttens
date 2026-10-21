@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AppShell2 } from '@tc96/templates/application/shell/app-shell-2'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
+import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
 import {
   ShellHeaderActions,
   ShellPagePlaceholder,
@@ -80,7 +80,7 @@ const meta = {
   },
   component: AppShell2,
   parameters: { docs, layout: 'fullscreen' },
-  title: 'Templates/Application/Shell/AppShell2',
+  title: 'Application/Shell/AppShell2',
 } satisfies Meta<typeof AppShell2>
 
 export default meta

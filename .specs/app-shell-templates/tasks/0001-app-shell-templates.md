@@ -224,5 +224,7 @@ T1 a T8 feitos na mesma sessão, em `feat/storybook-templates`. Desvios do plano
 - **`test:consumer:registry`:** a etapa dos patterns posteriores já reprovava em `HEAD` (TS2322 do `rich-text-editor` com os tipos do Slate que o npm resolve no consumidor). A correção, feita numa sessão à parte, tipa o `renderPlaceholder` pelo prop do `PlateContent` e foi trazida para esta branch; o teste passa de ponta a ponta: instala os patterns iniciais, os quatro shells (com `autocomplete`, `breadcrumb`, `command`, `sidebar` e `hooks/use-media-query.ts`) e os demais patterns, e o consumidor compila em cada etapa.
 - **`AppShell4`** mantém a seção em estado local semeado pelo arg, porque o `useArgs` não re-renderiza no `storybook:test`.
 
+- **Stories na raiz:** depois do commit `0a4f000`, o dono pediu `Application` fora de `Templates`, na raiz da sidebar. As stories passaram a `Application/Shell/AppShell{n}`, em `apps/storybook/src/application/shell/`; os títulos `Templates/Application/...` acima são os do plano original.
+
 T9 (gate e revisão independente) fica para o PR.
 

@@ -169,7 +169,7 @@ const meta = {
     ),
   ],
   parameters: { docs },
-  title: 'Patterns/Chat',
+  title: 'UI/Chat',
 } satisfies Meta<typeof ChatMessage>
 
 export default meta

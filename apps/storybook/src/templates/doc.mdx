@@ -6,7 +6,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 A template is a whole layout, such as an application shell or a page, composed of your COSS components, the `elements` and the patterns. There are two kinds:
 
-- **Installable templates**, under `Templates/<Category>/<Group>/`. The CLI copies them as source into your workspace, like a pattern.
+- **Installable templates**, at the root of the sidebar by category and group, such as `Application/Shell/AppShell1`. The CLI copies them as source into your workspace, like a pattern.
 - **Storybook-only templates**, such as `Templates/Contacts` and `Templates/Workspace Settings`. Copy them from the Code panel of the story.
 
 ## Install
@@ -98,9 +98,7 @@ export function AppLayout() {
 
 ## Catalog
 
-| Template | Install | Layout |
-| --- | --- | --- |
-| [AppShell1](?path=/docs/templates-application-shell-appshell1--doc) | `npx @tc96/parttens add app-shell-1` | Sidebar that collapses to an icon rail: workspace switcher, grouped navigation with nested items, counters and pinned items with their own menu, account menu, breadcrumb header |
-| [AppShell2](?path=/docs/templates-application-shell-appshell2--doc) | `npx @tc96/parttens add app-shell-2` | Floating sidebar with a ⌘K page search under the workspace switcher |
-| [AppShell3](?path=/docs/templates-application-shell-appshell3--doc) | `npx @tc96/parttens add app-shell-3` | Inset sidebar with projects and progress rings, a usage panel, and a notifications popover in the header |
-| [AppShell4](?path=/docs/templates-application-shell-appshell4--doc) | `npx @tc96/parttens add app-shell-4` | Icon rail of sections beside the navigation of the active section, with ⌘K search, notifications and a Create action in the header |
+- **[AppShell1](?path=/docs/application-shell-appshell1--doc)**, `npx @tc96/parttens add app-shell-1`: sidebar that collapses to an icon rail, with workspace switcher, grouped navigation with nested items, counters and pinned items with their own menu, account menu and a breadcrumb header.
+- **[AppShell2](?path=/docs/application-shell-appshell2--doc)**, `npx @tc96/parttens add app-shell-2`: floating sidebar with a ⌘K page search under the workspace switcher.
+- **[AppShell3](?path=/docs/application-shell-appshell3--doc)**, `npx @tc96/parttens add app-shell-3`: inset sidebar with projects and progress rings, a usage panel, and a notifications popover in the header.
+- **[AppShell4](?path=/docs/application-shell-appshell4--doc)**, `npx @tc96/parttens add app-shell-4`: icon rail of sections beside the navigation of the active section, with ⌘K search, notifications and a Create action in the header.

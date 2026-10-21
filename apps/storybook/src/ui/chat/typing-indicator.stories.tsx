@@ -14,7 +14,7 @@ const meta = {
     },
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Typing Indicator',
+  title: 'UI/Chat/Typing Indicator',
 } satisfies Meta<typeof ChatTypingIndicator>
 
 export default meta

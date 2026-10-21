@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AppShell3 } from '@tc96/templates/application/shell/app-shell-3'
 import { expect, fn, userEvent, within } from 'storybook/test'
-import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
+import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
 import {
   ShellHeaderActions,
   ShellPagePlaceholder,
@@ -90,7 +90,7 @@ const meta = {
   },
   component: AppShell3,
   parameters: { docs, layout: 'fullscreen' },
-  title: 'Templates/Application/Shell/AppShell3',
+  title: 'Application/Shell/AppShell3',
 } satisfies Meta<typeof AppShell3>
 
 export default meta

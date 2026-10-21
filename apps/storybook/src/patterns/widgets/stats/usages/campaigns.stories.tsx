@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, within } from 'storybook/test'
-import { initialCampaigns } from '../../collection-views/fixtures/campaigns'
+import { initialCampaigns } from '../../../collection-views/fixtures/campaigns'
 import { CampaignSummary } from '../fixtures/campaign-summary'
 
 const pausedNames = ['Blog · Guia de presentes', 'Atendimento via WhatsApp']
@@ -24,7 +24,7 @@ const meta = {
     },
     layout: 'fullscreen',
   },
-  title: 'Patterns/Stats/Usages/Campaigns',
+  title: 'Patterns/Widgets/Stats/Usages/Campaigns',
 } satisfies Meta<typeof CampaignSummary>
 
 export default meta

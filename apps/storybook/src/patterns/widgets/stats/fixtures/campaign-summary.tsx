@@ -16,7 +16,7 @@ import {
   isLearning,
   LEARNING_PHASE_RESULTS,
   objectiveOptions,
-} from '../../collection-views/fixtures/campaigns'
+} from '../../../collection-views/fixtures/campaigns'
 
 const LOCALE = 'pt-BR'
 const VISIBLE_OBJECTIVES = 3

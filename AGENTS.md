@@ -29,7 +29,7 @@ scripts/            boundary, COSS, override and public API checks
 
 ## Pattern families
 
-Patterns live under `packages/parttens/src/`, at the top level or inside a family folder. A family exists when at least two patterns share a domain; a pattern with no sibling stays at the top level. `chat/` is the exception, chosen by the owner on 2026-10-19: it holds only `chats-panel` so far, so the pattern sits with the COSS chat stories under `Patterns/Chat`.
+Patterns live under `packages/parttens/src/`, at the top level or inside a family folder. A family exists when at least two patterns share a domain; a pattern with no sibling stays at the top level. `chat/` is the exception, chosen by the owner on 2026-10-19: it holds only `chats-panel` so far. Since 2026-10-21 the COSS chat stories live in `UI/Chat`, and `Patterns/Chat` holds the `chats-panel` stories and the usages that use patterns.
 
 ```text
 packages/parttens/src/
@@ -109,7 +109,8 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 
 ## Visual work (widgets, stories, theme)
 
-- Stories live in `apps/storybook/src/patterns/`. The Storybook theme is the example app's `styles.css`, imported by `.storybook/preview.ts`; do not add a separate theme file or CSS rule in Storybook.
+- The sidebar follows the layers, from the base to whole screens: `Get Started`, `UI` (COSS, alias `ui`), `Elements`, `Patterns`, `Application` (installable templates, alias `templates`) and `Templates` (`Templates/Doc` and the Storybook-only screens). The order is fixed in `storySort` (`.storybook/preview.ts`), which Storybook evaluates as plain JavaScript, so it takes no type annotations; a new root goes into its list. A story sits under the layer of what it renders: one that imports only `@tc96/ui` is `UI/...` even when it composes several COSS parts, `Patterns/...` needs a pattern, and building blocks of `packages/parttens/src/shared/` are `Patterns/Shared/...`. Story files mirror the title (`apps/storybook/src/ui/chat/`, `patterns/widgets/stats/`, `application/shell/`).
+- Pattern stories live in `apps/storybook/src/patterns/`. The Storybook theme is the example app's `styles.css`, imported by `.storybook/preview.ts`; do not add a separate theme file or CSS rule in Storybook.
 - Do not give story wrappers a background, so the page inherits `bg-background` and card contrast stays visible.
 - When refining a visual pattern, also audit contrast (WCAG 4.5:1 for text, 3:1 for graphics, with the numeric ratios), spacing and composition, check a light and dark screenshot of the story, and record scale decisions in the architecture doc.
 - Contrast fixes never change token values. The values in the theme's `:root` and `.dark` stay as they are, and `packages/ui` is never edited. A failing pair means an element sits on a surface its tokens were not made for, so fix it where the element meets the surface:

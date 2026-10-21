@@ -138,7 +138,7 @@ const meta = {
     )
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Message Actions',
+  title: 'UI/Chat/Message Actions',
 } satisfies Meta<MessageActionsArgs>
 
 export default meta

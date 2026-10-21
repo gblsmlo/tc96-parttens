@@ -21,7 +21,7 @@ const meta = {
     },
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Loading State',
+  title: 'UI/Chat/Loading State',
 } satisfies Meta<typeof ChatLoadingState>
 
 export default meta

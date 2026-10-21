@@ -231,7 +231,7 @@ const meta = {
     )
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Usages/Reply',
+  title: 'UI/Chat/Usages/Reply',
 } satisfies Meta<ReplyArgs>
 
 export default meta

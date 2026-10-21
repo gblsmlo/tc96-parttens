@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AppShell4 } from '@tc96/templates/application/shell/app-shell-4'
 import { type ReactElement, useState } from 'react'
 import { expect, fn, userEvent, within } from 'storybook/test'
-import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
+import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
 import {
   ShellHeaderActions,
   ShellPagePlaceholder,
@@ -100,7 +100,7 @@ const meta = {
   component: AppShell4,
   parameters: { docs, layout: 'fullscreen' },
   render: (args) => <ControlledSection key={args.sectionId} {...args} />,
-  title: 'Templates/Application/Shell/AppShell4',
+  title: 'Application/Shell/AppShell4',
 } satisfies Meta<typeof AppShell4>
 
 export default meta

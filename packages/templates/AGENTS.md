@@ -18,7 +18,7 @@ Import direction: a template folder → its group's `shared/` and its own files;
 
 - `packages/registry/src/manifest.ts` lists every template in `templateNames` and maps it to its folder in `templateSources`; `manifest.test.ts` fails when a folder with an `index.ts` is missing from the map.
 - `scripts/verify-public-api.ts` records each template `index.ts` as `template:<name>` in `docs/architecture/public-api-exports.json`.
-- `apps/storybook/src/templates/application/shell/` imports each template through `@tc96/templates/<path>` and the fixtures import the shared types through the `app-shell-1`, `app-shell-3` and `app-shell-4` barrels.
+- `apps/storybook/src/application/shell/` (stories titled `Application/Shell/AppShell{n}`, at the sidebar root) imports each template through `@tc96/templates/<path>` and the fixtures import the shared types through the `app-shell-1`, `app-shell-3` and `app-shell-4` barrels.
 - Nothing in `packages/` imports `@tc96/templates`; `boundaries:check` enforces it.
 
 ## Invariants
@@ -42,11 +42,11 @@ Import direction: a template folder → its group's `shared/` and its own files;
 ## Verify
 
 ```bash
-bunx biome check packages/templates apps/storybook/src/templates
+bunx biome check packages/templates apps/storybook/src/application
 bun run typecheck && bun run storybook:typecheck
 bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 bun test --isolate packages/registry/src
-cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/templates/application
+cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/application
 bun run test:consumer:registry
 ```
 

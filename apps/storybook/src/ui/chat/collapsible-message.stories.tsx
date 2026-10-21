@@ -43,7 +43,7 @@ const meta = {
     },
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Collapsible Message',
+  title: 'UI/Chat/Collapsible Message',
 } satisfies Meta<typeof ChatCollapsibleMessage>
 
 export default meta

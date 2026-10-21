@@ -63,7 +63,7 @@ const meta = {
     },
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Member Section',
+  title: 'UI/Chat/Member Section',
 } satisfies Meta<typeof ChatMemberSection>
 
 export default meta

@@ -171,7 +171,7 @@ const meta = {
     )
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Usages/Conversation',
+  title: 'UI/Chat/Usages/Conversation',
 } satisfies Meta<ConversationArgs>
 
 export default meta

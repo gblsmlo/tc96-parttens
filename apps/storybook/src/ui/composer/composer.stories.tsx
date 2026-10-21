@@ -154,7 +154,7 @@ const meta = {
       </ComposerActions>
     </Composer>
   ),
-  title: 'Patterns/Composer',
+  title: 'UI/Composer',
 } satisfies Meta<ComposerStoryProps>
 
 export default meta

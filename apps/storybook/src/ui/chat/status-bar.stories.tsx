@@ -54,7 +54,7 @@ const meta = {
     },
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Status Bar',
+  title: 'UI/Chat/Status Bar',
 } satisfies Meta<typeof ChatStatusBar>
 
 export default meta

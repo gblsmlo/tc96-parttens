@@ -25,7 +25,7 @@ const meta = {
     },
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Reply Reference',
+  title: 'UI/Chat/Reply Reference',
 } satisfies Meta<typeof ChatReplyReference>
 
 export default meta

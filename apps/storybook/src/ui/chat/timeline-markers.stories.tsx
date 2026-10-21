@@ -23,7 +23,7 @@ const meta = {
     },
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Timeline Markers',
+  title: 'UI/Chat/Timeline Markers',
 } satisfies Meta<typeof ChatUnreadDivider>
 
 export default meta

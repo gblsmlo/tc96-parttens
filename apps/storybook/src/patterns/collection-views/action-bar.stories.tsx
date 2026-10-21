@@ -4,7 +4,7 @@ import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
 import { fn } from 'storybook/test'
 
 const meta = {
-  title: 'Patterns/ActionBar',
+  title: 'Patterns/CollectionViews/ActionBar',
   component: ActionBar,
   parameters: {
     layout: 'centered',

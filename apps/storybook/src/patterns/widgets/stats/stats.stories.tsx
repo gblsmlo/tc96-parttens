@@ -338,7 +338,7 @@ const meta = {
     },
     layout: 'fullscreen',
   },
-  title: 'Patterns/Stats',
+  title: 'Patterns/Widgets/Stats',
 } satisfies Meta
 
 export default meta

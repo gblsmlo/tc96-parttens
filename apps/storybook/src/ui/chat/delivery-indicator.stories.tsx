@@ -29,7 +29,7 @@ const meta = {
     )
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Delivery Indicator',
+  title: 'UI/Chat/Delivery Indicator',
 } satisfies Meta<typeof ChatDeliveryIndicator>
 
 export default meta

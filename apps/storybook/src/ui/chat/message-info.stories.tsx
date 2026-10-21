@@ -58,7 +58,7 @@ const meta = {
     },
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Message Info',
+  title: 'UI/Chat/Message Info',
 } satisfies Meta<typeof ChatMessageInfo>
 
 export default meta

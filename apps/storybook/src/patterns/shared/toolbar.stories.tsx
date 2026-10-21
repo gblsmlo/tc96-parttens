@@ -141,7 +141,7 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
-  title: 'Patterns/Toolbar',
+  title: 'Patterns/Shared/Toolbar',
 } satisfies Meta<typeof CollectionToolbar>
 
 export default meta

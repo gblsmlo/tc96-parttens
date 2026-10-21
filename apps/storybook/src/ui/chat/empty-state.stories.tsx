@@ -63,7 +63,7 @@ const meta = {
     },
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Chat/Empty State',
+  title: 'UI/Chat/Empty State',
 } satisfies Meta<typeof ChatEmptyState>
 
 export default meta
