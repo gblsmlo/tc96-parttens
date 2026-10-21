@@ -131,7 +131,7 @@ export function WorkspaceSettingsTemplate({
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-8 p-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8">
       <header>
         <h1 className="font-semibold text-2xl">Configurações</h1>
         <p className="text-muted-foreground text-sm">
@@ -266,6 +266,6 @@ export function WorkspaceSettingsTemplate({
           title="Resumo semanal"
         />
       </SettingsSection>
-    </main>
+    </div>
   )
 }

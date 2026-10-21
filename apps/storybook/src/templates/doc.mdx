@@ -7,7 +7,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
 A template is a whole layout, such as an application shell or a page, composed of your COSS components, the `elements` and the patterns. There are two kinds:
 
 - **Installable templates**, at the root of the sidebar by category and group, such as `Application/Shell/AppShell1`. The CLI copies them as source into your workspace, like a pattern.
-- **Storybook-only templates**, such as `Templates/Contacts` and `Templates/Workspace Settings`. Copy them from the Code panel of the story.
+- **Storybook-only templates**, such as `Templates/Contacts` and `Templates/Workspace Settings`. Each page renders inside [AppShell1](?path=/docs/application-shell-appshell1--doc), the layout it mounts in. Copy the page from the Code panel of the story, which shows only the page, and render it in the `children` of your shell (the `<Outlet />` of the layout route).
 
 ## Install
 

@@ -76,7 +76,7 @@ export function AppShell1({
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <ShellHeader
           actions={actions}
           breadcrumbs={breadcrumbs}

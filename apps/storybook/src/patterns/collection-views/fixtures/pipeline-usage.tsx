@@ -245,7 +245,7 @@ export function PipelineUsage({
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-4 p-6">
+    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4">
       <header className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-semibold text-2xl">Pipeline de vendas</h1>
@@ -339,6 +339,6 @@ export function PipelineUsage({
           />
         </section>
       </div>
-    </main>
+    </div>
   )
 }

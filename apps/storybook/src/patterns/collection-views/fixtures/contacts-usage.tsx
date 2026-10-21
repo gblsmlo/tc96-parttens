@@ -284,7 +284,7 @@ function ContactsWorkspace({
     .rows.map((row) => row.original)
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-4 p-6">
+    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4">
       <header>
         <h1 className="font-semibold text-2xl">Contatos</h1>
         <p className="text-muted-foreground text-sm">
@@ -537,7 +537,7 @@ function ContactsWorkspace({
         open={creating}
         roles={contacts.map((contact) => contact.role)}
       />
-    </main>
+    </div>
   )
 }
 
