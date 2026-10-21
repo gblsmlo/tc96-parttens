@@ -6,7 +6,13 @@ import { fileURLToPath } from 'node:url'
 import { aggregateBarrel, writeBarrel } from './barrel'
 import { checkCompatibility } from './check-compatibility'
 import { findProjectRoot, readCossConfig, readInstallConfig } from './config'
-import { componentFile, loadItem, missingTheme, resolveItems } from './coss'
+import {
+  componentFile,
+  cossFiles,
+  loadItem,
+  missingTheme,
+  resolveItems,
+} from './coss'
 import {
   detectPackageManager,
   installCommand,
@@ -16,14 +22,16 @@ import {
 import { diffLines, planFiles, targetPath, writeFiles } from './files'
 import {
   combineItems,
+  isTemplate,
   omitInstalled,
   patternNames,
   prepareItem,
   type RegistryItem,
-  selectPatterns,
+  selectItems,
+  templateNames,
 } from './manifest'
 
-const help = `tc96-parttens add <patterns...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers and patterns default to the ui alias's siblings (@acme/ui gives @acme/elements) unless set.\nInstalls only the COSS components missing from the ui alias, from registries.@coss in components.json or coss.com. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
+const help = `tc96-parttens add <patterns or templates...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nTemplates: ${templateNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers, patterns and templates default to the ui alias's siblings (@acme/ui gives @acme/elements) unless set; the templates path is needed only to install a template.\nInstalls only the COSS components missing from the ui alias, from registries.@coss in components.json or coss.com. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
 async function main() {
   const args = process.argv.slice(2)
   if (!args.length || args.includes('--help') || args.includes('-h')) {
@@ -64,8 +72,10 @@ async function main() {
     else names.push(argument)
   }
   cwd = findProjectRoot(cwd)
-  const selected = selectPatterns(names)
-  const configuration = await readInstallConfig(cwd)
+  const selected = selectItems(names)
+  const configuration = await readInstallConfig(cwd, {
+    templates: selected.some(isTemplate),
+  })
   const coss = await readCossConfig(cwd)
   const items = await Promise.all(
     selected.map(
@@ -77,8 +87,12 @@ async function main() {
   )
   const workspace = await realpath(cwd)
   const show = (path: string) => relative(workspace, path)
+  // COSS utils is the consumer's cn, reached through aliases.utils.
   const installed = (component: string) =>
-    existsSync(join(workspace, configuration.paths.ui, `${component}.tsx`))
+    component === 'utils' ||
+    Object.values(cossFiles(component)).some((path) =>
+      existsSync(join(workspace, configuration.paths.ui, path)),
+    )
   const patterns = omitInstalled(
     prepareItem(combineItems(items), configuration),
     installed,
@@ -114,6 +128,10 @@ async function main() {
   // The barrel exports what is installed after this run: earlier patterns on
   // disk plus the files about to be written.
   const barrelPath = join(workspace, configuration.paths.patterns, 'index.ts')
+  // A template that uses no pattern leaves the patterns barrel alone.
+  const withPatterns = item.files.some(({ path }) =>
+    path.startsWith('parttens/'),
+  )
   const targets = new Set(
     item.files.map((file) => targetPath(workspace, file.target)),
   )
@@ -196,9 +214,10 @@ async function main() {
         ? `Dependencies to install: ${installCommand(workspace, detectPackageManager(workspace), dependencies).join(' ')}`
         : 'Every npm dependency is already installed.',
     )
-    console.log(
-      `${show(barrelPath)}, written after installation unless the consumer wrote that file:\n${barrel}`,
-    )
+    if (withPatterns)
+      console.log(
+        `${show(barrelPath)}, written after installation unless the consumer wrote that file:\n${barrel}`,
+      )
     return
   }
   const terminal =
@@ -234,11 +253,12 @@ async function main() {
       'Installation requires consumer fixes; see diagnostics above. Preserved files were not overwritten automatically.',
     )
   }
-  console.log(
-    (await writeBarrel(barrelPath, barrel)) === 'preserved'
-      ? `${show(barrelPath)} was not generated by tc96-parttens and was preserved; export the installed patterns from it yourself.`
-      : `${show(barrelPath)} exports the installed patterns.`,
-  )
+  if (withPatterns)
+    console.log(
+      (await writeBarrel(barrelPath, barrel)) === 'preserved'
+        ? `${show(barrelPath)} was not generated by tc96-parttens and was preserved; export the installed patterns from it yourself.`
+        : `${show(barrelPath)} exports the installed patterns.`,
+    )
   console.log(
     `Installed: ${selected.join(', ')}. Visual and behavioral compatibility still require consumer validation.`,
   )

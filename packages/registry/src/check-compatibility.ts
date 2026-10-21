@@ -72,7 +72,7 @@ export async function checkCompatibility(
     if (ts.sys.fileExists(path)) existingFiles.push(path)
     if (/\.tsx?$/.test(path)) {
       const existingUI =
-        !file.path.startsWith('parttens/') && ts.sys.fileExists(path)
+        !/^(parttens|templates)\//.test(file.path) && ts.sys.fileExists(path)
       if (!installed && !existingUI) virtual.set(path, file.content)
     }
   }

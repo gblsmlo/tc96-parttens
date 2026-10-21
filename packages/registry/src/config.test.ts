@@ -53,6 +53,7 @@ test('reads non-default aliases and resolves their paths from tsconfig', async (
       elements: '@acme/atoms',
       helpers: '@acme/toolkit',
       patterns: '@acme/organisms',
+      templates: '@acme/templates',
     },
     paths: {
       ui: 'packages/ui/src',
@@ -61,6 +62,27 @@ test('reads non-default aliases and resolves their paths from tsconfig', async (
       patterns: 'libs/organisms',
     },
   })
+})
+
+test('resolves the templates path only when a template is installed', async () => {
+  const paths = {
+    '@acme/ui/*': ['./packages/ui/src/*'],
+    '@acme/elements/*': ['./packages/elements/src/*'],
+    '@acme/helpers/*': ['./packages/helpers/src/*'],
+    '@acme/patterns/*': ['./packages/patterns/src/*'],
+  }
+  const root = await consumer({ ui: '@acme/ui', utils: '@acme/utils' }, paths)
+  expect((await readInstallConfig(root)).paths.templates).toBeUndefined()
+  await expect(readInstallConfig(root, { templates: true })).rejects.toThrow(
+    '"@acme/templates/*": ["./packages/templates/src/*"]',
+  )
+  const app = await consumer(
+    { ui: '@acme/ui', utils: '@acme/utils', templates: '@/templates' },
+    { ...paths, '@/templates/*': ['./apps/web/src/templates/*'] },
+  )
+  expect(
+    (await readInstallConfig(app, { templates: true })).paths.templates,
+  ).toBe('apps/web/src/templates')
 })
 
 test('derives the tc96 aliases from the ui alias when absent', () => {
@@ -72,6 +94,7 @@ test('derives the tc96 aliases from the ui alias when absent', () => {
     elements: '@acme/elements',
     helpers: '@acme/helpers',
     patterns: '@acme/patterns',
+    templates: '@acme/templates',
   })
   expect(
     readAliases({

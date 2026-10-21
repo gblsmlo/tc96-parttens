@@ -80,12 +80,27 @@ const preview: Preview = {
     layout: 'centered',
     options: {
       storySort: (a, b) => {
-        if (a.title === 'Get Started') return b.title === 'Get Started' ? 0 : -1
-        if (b.title === 'Get Started') return 1
-        const byFolder = (a.title.split('/')[0] ?? '').localeCompare(
-          b.title.split('/')[0] ?? '',
-        )
+        const roots = [
+          'Get Started',
+          'UI',
+          'Elements',
+          'Patterns',
+          'Application',
+          'Templates',
+        ]
+        const rootA = a.title.split('/')[0] ?? ''
+        const rootB = b.title.split('/')[0] ?? ''
+        const rankA = roots.includes(rootA)
+          ? roots.indexOf(rootA)
+          : roots.length
+        const rankB = roots.includes(rootB)
+          ? roots.indexOf(rootB)
+          : roots.length
+        if (rankA !== rankB) return rankA - rankB
+        const byFolder = rootA.localeCompare(rootB)
         if (byFolder !== 0) return byFolder
+        const aDoc = /^[^/]+\/Doc$/.test(a.title)
+        if (aDoc !== /^[^/]+\/Doc$/.test(b.title)) return aDoc ? -1 : 1
         if (b.title.startsWith(`${a.title}/`)) return -1
         if (a.title.startsWith(`${b.title}/`)) return 1
         return 0

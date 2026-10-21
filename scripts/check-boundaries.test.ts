@@ -5,7 +5,15 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 const script = join(import.meta.dir, 'check-boundaries.ts')
-const owners = ['utils', 'helpers', 'ui', 'elements', 'parttens', 'registry']
+const owners = [
+  'utils',
+  'helpers',
+  'ui',
+  'elements',
+  'parttens',
+  'templates',
+  'registry',
+]
 let root = ''
 
 async function workspace(sources: Record<string, string>) {
@@ -74,6 +82,32 @@ test('rejects elements depending on patterns', async () => {
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain('elements cannot depend on parttens')
+})
+
+test('lets templates depend on patterns, elements and ui', async () => {
+  const result = await workspace({
+    'packages/templates/src/a.tsx':
+      "import { WidgetShell } from '@tc96/parttens'\nimport { Text } from '@tc96/elements/text'\nimport { Button } from '@tc96/ui/button'\n",
+  })
+  expect(result.status).toBe(0)
+})
+
+test('rejects patterns depending on templates', async () => {
+  const result = await workspace({
+    'packages/parttens/src/a.ts':
+      "import { AppShell1 } from '@tc96/templates/application/shell/app-shell-1'\n",
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain('parttens cannot depend on templates')
+})
+
+test('rejects templates depending on the registry', async () => {
+  const result = await workspace({
+    'packages/templates/src/a.ts':
+      "import { patternNames } from '@tc96/registry'\n",
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain('templates cannot depend on registry')
 })
 
 test('rejects a ui import that is not a locked COSS item', async () => {

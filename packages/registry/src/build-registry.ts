@@ -5,11 +5,14 @@ import ts from 'typescript'
 import {
   cossDependency,
   defaultConfig,
+  type ItemName,
   type PatternName,
   patternNames,
   patternSources,
   prepareItem,
   type RegistryItem,
+  templateNames,
+  templateSources,
 } from './manifest'
 
 const root = resolve('.')
@@ -42,10 +45,20 @@ const areas = ts
     (area): area is string =>
       !!area && !patternNames.includes(area as PatternName),
   )
-for (const pattern of patternNames) {
-  const pending = [
-    resolve(`packages/parttens/src/${patternSources[pattern]}/index.ts`),
-  ]
+// A template's item carries the pattern, elements and helpers files it imports,
+// walked the same way as a pattern's.
+const entries: [ItemName, string][] = [
+  ...patternNames.map((name): [ItemName, string] => [
+    name,
+    `packages/parttens/src/${patternSources[name]}/index.ts`,
+  ]),
+  ...templateNames.map((name): [ItemName, string] => [
+    name,
+    `packages/templates/src/${templateSources[name]}/index.ts`,
+  ]),
+]
+for (const [name, entry] of entries) {
+  const pending = [resolve(entry)]
   const seen = new Set<string>()
   const external = new Set<string>()
   const components = new Set<string>()
@@ -96,7 +109,7 @@ for (const pattern of patternNames) {
     }
   }
   const item: RegistryItem = {
-    name: pattern,
+    name,
     type: 'registry:block',
     files: sources.sort((a, b) => a.path.localeCompare(b.path)),
     dependencies: [...external].sort().map(
@@ -113,7 +126,7 @@ for (const pattern of patternNames) {
     registryDependencies: [...components].sort(),
   }
   await writeFile(
-    join(output, `${pattern}.json`),
+    join(output, `${name}.json`),
     `${JSON.stringify(prepareItem(item, defaultConfig), null, 2)}\n`,
   )
 }
@@ -127,7 +140,7 @@ await writeFile(
 )
 const cliOutput = resolve('dist/cli')
 await mkdir(join(cliOutput, 'registry'), { recursive: true })
-for (const name of [...patternNames, 'view', 'aggregate'])
+for (const name of [...patternNames, ...templateNames, 'view', 'aggregate'])
   await writeFile(
     join(cliOutput, `registry/${name}.json`),
     await readFile(join(output, `${name}.json`)),
@@ -181,5 +194,5 @@ await writeFile(
   `${readme.slice(0, publicEnd).trimEnd()}\n`,
 )
 console.log(
-  `Generated ${patternNames.length} registry items, the legacy view entry, the aggregate and the Node CLI artifact.`,
+  `Generated ${patternNames.length} pattern and ${templateNames.length} template registry items, the legacy view entry, the aggregate and the Node CLI artifact.`,
 )

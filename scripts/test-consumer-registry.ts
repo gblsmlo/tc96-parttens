@@ -2,13 +2,20 @@ import { existsSync } from 'node:fs'
 import { readFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import ts from 'typescript'
-import { patternNames, patternSources } from '../packages/registry/src/manifest'
+import { readAliases, resolveAliasPath } from '../packages/registry/src/config'
+import {
+  patternNames,
+  patternSources,
+  templateNames,
+  templateSources,
+} from '../packages/registry/src/manifest'
 import {
   type Consumer,
   createConsumer,
   installPatterns,
   saveReport,
 } from './consumer'
+import { files } from './files'
 
 const baseline: Record<string, string[]> = JSON.parse(
   await readFile('docs/architecture/public-api-exports.json', 'utf8'),
@@ -74,6 +81,49 @@ expectExports(
   all.filter((name) => !laterOnly.has(name)),
   first.join(' and '),
 )
+// The shells need COSS items and a COSS hook the consumer does not have yet.
+const shellComponents = [
+  'autocomplete.tsx',
+  'breadcrumb.tsx',
+  'command.tsx',
+  'hooks/use-media-query.ts',
+  'sidebar.tsx',
+].map((path) => join(consumer.ui, path))
+for (const path of shellComponents) await rm(join(consumer.root, path))
+const templatesRun = await installPatterns(consumer, [...templateNames])
+if (
+  JSON.stringify([...templatesRun.addedUi].sort()) !==
+  JSON.stringify([...shellComponents].sort())
+)
+  throw new Error(
+    `Expected the templates to add ${shellComponents.join(', ')}, added: ${templatesRun.addedUi.join(', ') || 'nothing'}`,
+  )
+const config = ts.readConfigFile(
+  join(consumer.root, 'tsconfig.json'),
+  ts.sys.readFile,
+)
+const templatesPath = resolveAliasPath(
+  consumer.root,
+  readAliases(
+    JSON.parse(await readFile(join(consumer.root, 'components.json'), 'utf8')),
+  ).templates,
+  ts.parseJsonConfigFileContent(config.config, ts.sys, consumer.root).options,
+)
+for (const name of templateNames)
+  if (
+    !existsSync(
+      join(consumer.root, templatesPath, templateSources[name], 'index.ts'),
+    )
+  )
+    throw new Error(`The CLI did not install ${name}`)
+for (const file of await files(join(consumer.root, templatesPath)))
+  if ((await readFile(file, 'utf8')).includes('@tc96/'))
+    throw new Error(`${file} still imports @tc96/*`)
+expectExports(
+  barrelExports(consumer),
+  all.filter((name) => !laterOnly.has(name)),
+  'the templates, which leave the patterns barrel alone',
+)
 const laterRun = await installPatterns(consumer, later)
 if (laterRun.addedUi.length)
   throw new Error(`Unexpected COSS files: ${laterRun.addedUi.join(', ')}`)
@@ -81,9 +131,12 @@ expectExports(barrelExports(consumer), all, 'every pattern')
 await saveReport('consumer-registry', {
   passed: true,
   patterns: patternNames,
+  templates: templateNames,
   installedFiles: laterRun.files,
   installedCossComponents: firstRun.addedUi,
+  templateCossComponents: templatesRun.addedUi,
   patternsPath: consumer.patterns,
+  templatesPath,
   barrelExports: all.length,
   uiUntouched: consumer.ui,
 })

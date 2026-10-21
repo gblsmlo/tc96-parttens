@@ -15,6 +15,7 @@ packages/
   parttens/    pattern source, grouped in families (see Pattern families)
   elements/    components COSS does not have (Text, IconFrame)
   helpers/     React-free functions (amount formatting, dates, rich text)
+  templates/   installable templates (application shells), above parttens; see packages/templates/AGENTS.md
   ui/          COSS components, unmodified, locked by coss.lock.json
   utils/       shared helpers (cn)
   registry/    registry build and the CLI published as @tc96/parttens
@@ -28,7 +29,7 @@ scripts/            boundary, COSS, override and public API checks
 
 ## Pattern families
 
-Patterns live under `packages/parttens/src/`, at the top level or inside a family folder. A family exists when at least two patterns share a domain; a pattern with no sibling stays at the top level. `chat/` is the exception, chosen by the owner on 2026-10-19: it holds only `chats-panel` so far, so the pattern sits with the COSS chat stories under `Patterns/Chat`.
+Patterns live under `packages/parttens/src/`, at the top level or inside a family folder. A family exists when at least two patterns share a domain; a pattern with no sibling stays at the top level. `chat/` is the exception, chosen by the owner on 2026-10-19: it holds only `chats-panel` so far. Since 2026-10-21 the COSS chat stories live in `UI/Chat`, and `Patterns/Chat` holds the `chats-panel` stories and the usages that use patterns.
 
 ```text
 packages/parttens/src/
@@ -66,7 +67,7 @@ Files are kebab-case and named after what they export (`checklist-row.tsx` expor
 
 ## Rules that are enforced by scripts
 
-- **Layering:** imports only go down: `parttens` → `elements` → `ui` → `utils` (`helpers` is React-free). Checked by `bun run boundaries:check`.
+- **Layering:** imports only go down: `templates` → `parttens` → `elements` → `ui` → `utils` (`helpers` is React-free). Checked by `bun run boundaries:check`.
 - **`packages/ui` is read-only.** It is a COSS snapshot; `bun run check:coss` rejects any file that is not a COSS item. Never edit it by hand; use `bun run sync:coss`. Themes and tokens belong to the consumer, not to `packages/ui`. The one exception, chosen by the owner on 2026-10-20: `SelectItem` and `ComboboxItem` keep the selection check in a trailing column; `sync:coss` reverts it, so after a sync reapply the edit and record the new `file` hash in `coss.lock.json`.
 - **Overriding COSS styles needs a registered exception.** Any `className` that overrides a COSS component's border, radius, etc. must be listed with a reason in `scripts/override-exceptions.json`, or `bun run overrides:check` fails. Update the entry whenever the class changes.
 - **Public API baseline:** adding or removing exports changes `docs/architecture/public-api-exports.json`. Regenerate with `bun scripts/verify-public-api.ts --record` and mention it in the summary, since the diff may include unrelated pending exports.
@@ -108,7 +109,8 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 
 ## Visual work (widgets, stories, theme)
 
-- Stories live in `apps/storybook/src/patterns/`. The Storybook theme is the example app's `styles.css`, imported by `.storybook/preview.ts`; do not add a separate theme file or CSS rule in Storybook.
+- The sidebar follows the layers, from the base to whole screens: `Get Started`, `UI` (COSS, alias `ui`), `Elements`, `Patterns`, `Application` (installable templates, alias `templates`) and `Templates` (`Templates/Doc` and the Storybook-only screens). The order is fixed in `storySort` (`.storybook/preview.ts`), which Storybook evaluates as plain JavaScript, so it takes no type annotations; a new root goes into its list. A story sits under the layer of what it renders: one that imports only `@tc96/ui` is `UI/...` even when it composes several COSS parts, `Patterns/...` needs a pattern, and building blocks of `packages/parttens/src/shared/` are `Patterns/Shared/...`. Story files mirror the title (`apps/storybook/src/ui/chat/`, `patterns/widgets/stats/`, `application/shell/`).
+- Pattern stories live in `apps/storybook/src/patterns/`. The Storybook theme is the example app's `styles.css`, imported by `.storybook/preview.ts`; do not add a separate theme file or CSS rule in Storybook.
 - Do not give story wrappers a background, so the page inherits `bg-background` and card contrast stays visible.
 - When refining a visual pattern, also audit contrast (WCAG 4.5:1 for text, 3:1 for graphics, with the numeric ratios), spacing and composition, check a light and dark screenshot of the story, and record scale decisions in the architecture doc.
 - Contrast fixes never change token values. The values in the theme's `:root` and `.dark` stay as they are, and `packages/ui` is never edited. A failing pair means an element sits on a surface its tokens were not made for, so fix it where the element meets the surface:

@@ -1,0 +1,104 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Templates/Doc" />
+
+# Templates
+
+A template is a whole layout, such as an application shell or a page, composed of your COSS components, the `elements` and the patterns. There are two kinds:
+
+- **Installable templates**, at the root of the sidebar by category and group, such as `Application/Shell/AppShell1`. The CLI copies them as source into your workspace, like a pattern.
+- **Storybook-only templates**, such as `Templates/Contacts` and `Templates/Workspace Settings`. Copy them from the Code panel of the story.
+
+## Install
+
+Install a template by name:
+
+```bash
+npx @tc96/parttens add app-shell-1
+```
+
+Install several at once, or a template next to patterns:
+
+```bash
+npx @tc96/parttens add app-shell-1 app-shell-3
+npx @tc96/parttens add app-shell-4 collection-views
+```
+
+Preview what would change before writing anything, print the new files, or compare installed files with the current version:
+
+```bash
+npx @tc96/parttens add app-shell-1 --dry-run
+npx @tc96/parttens add app-shell-1 --view
+npx @tc96/parttens add app-shell-1 --diff
+```
+
+If the repo blocks `npx`, use `bunx @tc96/parttens add ...` or `pnpm dlx @tc96/parttens add ...`. Run `npx @tc96/parttens --help` for the list of patterns and templates.
+
+## Configure the templates alias
+
+Templates are written where the `templates` alias resolves. The alias is optional in `components.json`: without it the CLI derives it from `ui`, so `@acme/ui` gives `@acme/templates`. Your `tsconfig.json` needs a `paths` entry for it, and only when you install a template; installing patterns alone does not ask for it.
+
+```json
+"@acme/templates/*": ["./packages/templates/src/*"]
+```
+
+To keep templates inside the app instead of a package, set the alias and point it there:
+
+```json
+// components.json
+"aliases": { "ui": "@acme/ui", "utils": "@acme/ui/lib/utils", "templates": "@/templates" }
+
+// apps/web/tsconfig.json
+"@/templates/*": ["./src/templates/*"]
+```
+
+## What the CLI installs
+
+For `add app-shell-1`, the CLI:
+
+- writes `application/shell/app-shell-1/` and the group's `application/shell/shared/` under the templates path;
+- installs only the COSS components you do not have yet (`sidebar`, `breadcrumb`, `menu`, …) and the COSS hooks they need (`hooks/use-media-query.ts`) in your `ui` directory;
+- writes the `elements` and `helpers` files the template uses, and the pattern files it imports: `app-shell-3` brings `widgets/shared/progress-ring.tsx`;
+- type-checks the template against your own components before writing, and preserves any file of yours that differs unless you approve.
+
+It never edits your CSS.
+
+## Use
+
+Import the template from its folder and mount it in the layout route of your app:
+
+```tsx
+import { AppShell1 } from '@acme/templates/application/shell/app-shell-1'
+import { Link, Outlet } from '@tanstack/react-router'
+
+export function AppLayout() {
+  return (
+    <AppShell1
+      breadcrumbs={breadcrumbs}
+      defaultOpen={sidebarCookie !== 'false'}
+      navigation={navigation}
+      onWorkspaceChange={switchWorkspace}
+      renderLink={(href) => <Link to={href} />}
+      user={user}
+      workspaceId={workspaceId}
+      workspaces={workspaces}
+    >
+      <Outlet />
+    </AppShell1>
+  )
+}
+```
+
+- **Links:** every link renders through `renderLink`, so your router owns navigation. `AppShell2` and `AppShell4` also take `onNavigate` for the ⌘K search, which navigates from code.
+- **Sidebar state:** COSS writes the `sidebar_state` cookie on every toggle. Read it on the server or in the loader and pass `defaultOpen`, or control the sidebar with `open` and `onOpenChange`.
+- **Theme:** the account menu shows Light, Dark and System only when you pass `theme` and `onThemeChange`. The template never applies a theme.
+- **Texts:** every text the template owns is in `labels`, with pt-BR defaults.
+- **Tokens:** the COSS sidebar reads `--sidebar`, `--sidebar-foreground`, `--sidebar-accent`, `--sidebar-accent-foreground`, `--sidebar-border`, `--sidebar-primary`, `--sidebar-primary-foreground` and `--sidebar-ring`. Define them in your theme next to the other COSS tokens.
+- **Links in your theme:** a rule such as `a { color: inherit }` outside `@layer base` beats every Tailwind utility, so the active item of the sidebar loses its color. Keep it in `@layer base`.
+
+## Catalog
+
+- **[AppShell1](?path=/docs/application-shell-appshell1--doc)**, `npx @tc96/parttens add app-shell-1`: sidebar that collapses to an icon rail, with workspace switcher, grouped navigation with nested items, counters and pinned items with their own menu, account menu and a breadcrumb header.
+- **[AppShell2](?path=/docs/application-shell-appshell2--doc)**, `npx @tc96/parttens add app-shell-2`: floating sidebar with a ⌘K page search under the workspace switcher.
+- **[AppShell3](?path=/docs/application-shell-appshell3--doc)**, `npx @tc96/parttens add app-shell-3`: inset sidebar with projects and progress rings, a usage panel, and a notifications popover in the header.
+- **[AppShell4](?path=/docs/application-shell-appshell4--doc)**, `npx @tc96/parttens add app-shell-4`: icon rail of sections beside the navigation of the active section, with ⌘K search, notifications and a Create action in the header.

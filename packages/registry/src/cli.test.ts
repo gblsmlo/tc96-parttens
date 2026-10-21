@@ -4,9 +4,9 @@ import { existsSync } from 'node:fs'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { patternNames } from './manifest'
+import { patternNames, templateNames } from './manifest'
 
-test('help lists every pattern', () => {
+test('help lists every pattern and template', () => {
   const result = spawnSync(
     process.execPath,
     [join(import.meta.dir, 'cli.ts'), '--help'],
@@ -14,6 +14,7 @@ test('help lists every pattern', () => {
   )
   expect(result.status).toBe(0)
   expect(result.stdout).toContain(`Patterns: ${patternNames.join(' ')}\n`)
+  expect(result.stdout).toContain(`Templates: ${templateNames.join(' ')}\n`)
 })
 
 const pendingRegistryDirectory = join(
@@ -172,12 +173,16 @@ async function installConsumer() {
 }
 
 function install(root: string, ...flags: string[]) {
+  return installItem(root, 'checklist', ...flags)
+}
+
+function installItem(root: string, name: string, ...flags: string[]) {
   return spawnSync(
     process.execPath,
     [
       join(import.meta.dir, 'cli.ts'),
       'add',
-      'checklist',
+      name,
       '--cwd',
       root,
       '--registry-dir',
@@ -261,6 +266,58 @@ test('a dry run lists the plan and the diff without writing', async () => {
     )
     expect(existsSync(join(root, 'src/ui/badge.tsx'))).toBe(false)
     expect(await readFile(proof, 'utf8')).toBe('export const proof = "mine"\n')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('a template needs the templates path, which patterns alone do not', async () => {
+  const root = await installConsumer()
+  try {
+    const result = installItem(root, 'app-shell-1')
+    expect(result.status).not.toBe(0)
+    expect(result.stderr).toContain(
+      '"@consumer/templates/*": ["./src/templates/*"]',
+    )
+    expect(install(root).status).toBe(0)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('installs a template with the COSS hook its components need', async () => {
+  const root = await installConsumer()
+  try {
+    const tsconfig = JSON.parse(
+      await readFile(join(root, 'tsconfig.json'), 'utf8'),
+    )
+    tsconfig.compilerOptions.paths['@consumer/templates/*'] = [
+      './src/templates/*',
+    ]
+    await writeFile(join(root, 'tsconfig.json'), JSON.stringify(tsconfig))
+    const result = installItem(root, 'app-shell-1')
+    expect(result.stderr).not.toContain('Error')
+    expect(result.status).toBe(0)
+    expect(
+      await readFile(join(root, 'src/ui/hooks/use-media-query.ts'), 'utf8'),
+    ).toBe('export function useMediaQuery() {\n  return true\n}\n')
+    expect(await readFile(join(root, 'src/ui/sidebar.tsx'), 'utf8')).toBe(
+      'import { useMediaQuery } from "@consumer/ui/hooks/use-media-query"\nexport const sidebar = useMediaQuery\n',
+    )
+    expect(
+      await readFile(
+        join(root, 'src/templates/application/shell/app-shell-1/index.ts'),
+        'utf8',
+      ),
+    ).toBe(
+      'import { sidebar } from "@consumer/ui/sidebar"\nexport const AppShell1 = sidebar\n',
+    )
+    expect(existsSync(join(root, 'src/patterns/index.ts'))).toBe(false)
+    const again = installItem(root, 'app-shell-1')
+    expect(again.status).toBe(0)
+    expect(again.stdout).toContain(
+      'Every COSS component the patterns use is already installed',
+    )
   } finally {
     await rm(root, { recursive: true, force: true })
   }

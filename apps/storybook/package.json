@@ -16,6 +16,7 @@
     "@tc96/elements": "workspace:*",
     "@tc96/helpers": "workspace:*",
     "@tc96/parttens": "workspace:*",
+    "@tc96/templates": "workspace:*",
     "@tc96/ui": "workspace:*",
     "@thesvg/icons": "3.4.1",
     "lucide-react": "1.28.0",

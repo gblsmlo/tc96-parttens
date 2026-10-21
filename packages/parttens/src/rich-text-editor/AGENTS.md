@@ -22,6 +22,7 @@ Import direction: `rich-text-editor.tsx` → every other file except `editor-tit
 - `packages/parttens/src/index.ts` re-exports `rich-text-editor/index`. Storybook, including `apps/storybook/src/test-utils/usage-kit.tsx`, imports through `@tc96/parttens`; no code outside the folder imports one of its files by path.
 - The folder name is listed in `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts`. Renaming it needs both updated.
 - `packages/registry/src/build-registry.ts` turns every external import into a registry dependency versioned from `packages/parttens/package.json`, and throws `Missing dependency version` when the entry is absent. A new `@platejs/*` or `react-dnd` import needs its entry there.
+- The registry pins `platejs`, but its `@platejs/core` range floats, so npm in a consumer resolves a newer core and `slate-react` than `bun.lock` (53.3.18 and 0.145.1 against 53.3.14 and 0.126.4 on 2026-10-21). Type Plate callbacks from the prop that receives them (`renderPlaceholder` takes `PlateContentProps['renderPlaceholder']`), not from the `slate-react` type Plate re-exports: `RenderPlaceholderProps` gained a required `'aria-hidden'` that Plate's own type for the `PlateContent` prop does not declare, and `bun run test:consumer:registry` is the only check that sees the newer types.
 
 ## Invariants
 

@@ -4,5 +4,6 @@ export {
   defaultConfig,
   patternNames,
   prepareItem,
-  selectPatterns,
+  selectItems,
+  templateNames,
 } from './manifest'
