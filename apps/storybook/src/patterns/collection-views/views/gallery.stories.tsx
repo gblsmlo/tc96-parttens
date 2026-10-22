@@ -6,7 +6,13 @@ import {
   PersonProperty,
   type PersonPropertyOption,
 } from '@tc96/parttens'
-import { Card } from '@tc96/ui/card'
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@tc96/ui/card'
 import { Separator } from '@tc96/ui/separator'
 import { FileTextIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
@@ -79,42 +85,33 @@ const createCollection = (items: readonly DocumentRecord[]) => ({
 
 const renderDocument = (document: DocumentRecord) => (
   <Card className="h-full min-h-52 overflow-hidden" render={<article />}>
-    <div className="flex flex-1 flex-col p-4">
+    <CardHeader>
       <Text className="flex min-w-0 items-center gap-1" size="xs" truncate>
         <FileTextIcon aria-hidden="true" className="size-3" />
         <span className="truncate">{document.source}</span>
       </Text>
-
-      <div className="mt-3 grid gap-0.5">
-        <Text render={<h2>{document.title}</h2>} size="sm" weight="medium" />
-        <Text
-          foreground="muted"
-          render={<p>{document.description}</p>}
-          size="sm"
-        />
-      </div>
-
-      <div className="mt-auto pt-4">
-        <Separator />
-        <div className="flex min-w-0 items-center justify-between gap-3 pt-3">
-          <DateProperty
-            ariaLabel="Updated at"
-            displayLabel={document.updatedAtLabel}
-            readOnly
-            value={document.updatedAt}
-            variant="plain"
-          />
-          <PersonProperty
-            ariaLabel="Owner"
-            display="avatar"
-            options={owners}
-            readOnly
-            value={document.ownerId}
-            variant="plain"
-          />
-        </div>
-      </div>
-    </div>
+      <CardTitle render={<h2>{document.title}</h2>} />
+      <CardDescription render={<p>{document.description}</p>} />
+    </CardHeader>
+    <Separator className="mt-auto" />
+    <CardFooter className="min-w-0 justify-between gap-3">
+      <DateProperty
+        ariaLabel="Updated at"
+        className="text-muted-foreground text-xs"
+        displayLabel={document.updatedAtLabel}
+        readOnly
+        value={document.updatedAt}
+        variant="plain"
+      />
+      <PersonProperty
+        ariaLabel="Owner"
+        display="avatar"
+        options={owners}
+        readOnly
+        value={document.ownerId}
+        variant="plain"
+      />
+    </CardFooter>
   </Card>
 )
 

@@ -1,4 +1,5 @@
-import { Card } from '@tc96/ui/card'
+import { Card, CardFooter, CardHeader } from '@tc96/ui/card'
+import { Separator } from '@tc96/ui/separator'
 import { Skeleton } from '@tc96/ui/skeleton'
 import type { ReactElement } from 'react'
 
@@ -16,20 +17,16 @@ export function GalleryItemSkeleton({
         className="min-h-52 pointer-events-none select-none"
         render={<article />}
       >
-        <div className="flex flex-1 flex-col p-4">
+        <CardHeader>
           <Skeleton className="h-3 w-1/3" />
-          <div className="mt-4 grid gap-2">
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-3 w-4/5" />
-          </div>
-          <div className="mt-auto flex items-center justify-between gap-4 pt-8">
-            <div className="flex items-center gap-2">
-              <Skeleton className="size-6 rounded-full" />
-              <Skeleton className="h-3 w-20" />
-            </div>
-            <Skeleton className="h-3 w-24" />
-          </div>
-        </div>
+          <Skeleton className="h-4.5 w-1/2" />
+          <Skeleton className="h-3.5 w-4/5" />
+        </CardHeader>
+        <Separator className="mt-auto" />
+        <CardFooter className="justify-between gap-3">
+          <Skeleton className="h-3 w-28" />
+          <Skeleton className="size-4 rounded-full" />
+        </CardFooter>
       </Card>
     </output>
   )
