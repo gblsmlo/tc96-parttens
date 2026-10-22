@@ -49,6 +49,22 @@ npx @tc96/parttens add app-shell-1
 
 The consumer layout and the aliases the CLI reads are in the root `README.md`.
 
+## Themes
+
+Patterns carry no theme: colors, radius and fonts come from your COSS tokens. This Storybook renders with the theme of the example consumer in the tc96 repo (`apps/example/packages/ui/src/styles.css`). Pick a preset with the paintbrush in the toolbar, and light or dark with the sun and moon:
+
+- **Default**: the tc96 example theme.
+- **Stone, Neutral, Slate, Zinc**: the COSS color recipe on each Tailwind gray.
+- **42 tweakcn presets**, such as Claude, Vercel, Supabase and Doom 64, with their colors, radius and fonts. Shadows are left out, because COSS components add their own.
+
+A preset is a set of token rules that an attribute on `html` turns on, next to the `dark` class:
+
+```html
+<html data-theme-preset="zinc" class="dark">
+```
+
+To use one, copy its rules from `apps/example/packages/ui/src/themes/` into your stylesheet. The tweakcn presets name web fonts, which your app has to load, and keep their published colors: some of their token pairs fall below WCAG contrast, and the architecture doc lists them for each preset.
+
 ## How this Storybook is organized
 
 The sidebar follows the layers of your design system, from the smallest parts to whole screens. Each section is named after the alias where its code lives in your workspace, so what you browse here is what you install:
