@@ -1,7 +1,9 @@
 'use client'
 
 import { AssistantPanel } from '@tc96/parttens/chat/assistant/composition/assistant-panel/assistant-panel'
+import { mergeAssistantLabels } from '@tc96/parttens/chat/assistant/core'
 import { useMediaQuery } from '@tc96/ui/hooks/use-media-query'
+import { Sheet, SheetPopup } from '@tc96/ui/sheet'
 import type { ReactElement } from 'react'
 import type { FlowAssistantConfig, FlowPageLabels } from './types'
 import type { FlowPageState } from './use-flow-page-state'
@@ -42,11 +44,20 @@ export function FlowAssistant({
 
   if (wide) return panel
   return (
-    <div
-      className="fixed inset-0 z-50 bg-background"
-      data-slot="flow-assistant-fullscreen"
+    <Sheet
+      onOpenChange={(next) => {
+        if (!next) state.setAssistantOpen(false)
+      }}
+      open
     >
-      {panel}
-    </div>
+      <SheetPopup
+        aria-label={mergeAssistantLabels(labels.assistant).title}
+        className="h-full w-full max-w-none p-0"
+        data-slot="flow-assistant-fullscreen"
+        showCloseButton={false}
+      >
+        {panel}
+      </SheetPopup>
+    </Sheet>
   )
 }

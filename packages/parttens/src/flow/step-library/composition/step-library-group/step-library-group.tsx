@@ -11,6 +11,7 @@ import { FlowStepLibraryItem } from '../step-library-item/step-library-item'
 
 export function FlowStepLibraryGroup({
   collapsed = false,
+  disabled = false,
   group,
   icons,
   onAdd,
@@ -28,6 +29,7 @@ export function FlowStepLibraryGroup({
       {group.types.map((type) => (
         <FlowStepLibraryItem
           collapsed={collapsed}
+          disabled={disabled}
           icon={icons?.[type.id]}
           key={type.id}
           onAdd={onAdd}

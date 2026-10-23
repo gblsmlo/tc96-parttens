@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@tc96/ui/button'
 import { cn } from '@tc96/utils'
 import { MessageCircleQuestionIcon } from 'lucide-react'

@@ -28,6 +28,11 @@ export function useFlowShortcuts({
   return useCallback(
     (event: KeyboardEvent) => {
       if (event.defaultPrevented || isTextEntry(event.target)) return
+      if (
+        !(event.target instanceof Node) ||
+        !event.currentTarget.contains(event.target)
+      )
+        return
       if (event.ctrlKey || event.metaKey || event.altKey) return
       if (event.shiftKey && event.code === 'Digit1') {
         event.preventDefault()

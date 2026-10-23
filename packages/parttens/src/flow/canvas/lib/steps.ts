@@ -62,7 +62,17 @@ const menuActions: readonly FlowStepAction[] = [
   'add-branch',
   'delete',
 ]
+const mutatingActions: readonly FlowStepAction[] = [
+  'add-after',
+  'add-branch',
+  'duplicate',
+  'delete',
+]
 const triggerHidden: readonly FlowStepAction[] = ['duplicate', 'delete']
+
+export function isMutatingAction(action: FlowStepAction): boolean {
+  return mutatingActions.includes(action)
+}
 
 export function resolveStepKind(
   step: FlowStep,

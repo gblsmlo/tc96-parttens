@@ -28,6 +28,7 @@ Import direction: `composition/` → `components/`, `lib/`, `types/`, `core.ts`;
 ## Invariants
 
 - The item is a `button` named by `type.label` (`aria-label`), `draggable`, with `aria-describedby` for the description. `onDragStart` writes `serializeStepTransfer(type)` under `FLOW_STEP_TRANSFER_TYPE`, the label as `text/plain` and `effectAllowed = 'copy'`. A click calls `onAdd(type)` with the same object; keyboard use goes through the click.
+- `disabled` disables every item (`disabled` button, not `draggable`); the template passes its `locked` through it.
 - Each group is a `fieldset` with a `legend`, so its name is the group label. Groups keep the order of `groups`, and steps keep the order of their group. `groupStepTypes` groups by `group` in order of first appearance.
 - `loading` puts `aria-busy` on the section and renders the skeleton instead of the groups; with no groups and no loading it renders `Empty`.
 - `FlowRunCard` is a `role="region"` named by `labels.title`. Its progress is `completed / total` rounded, zero when `total` is zero, and its `Progress` is named `<title>: <n>%`. The description is the `note` when there is one, otherwise the `summary` label with `{completed}` and `{total}`.

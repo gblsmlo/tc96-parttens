@@ -9,8 +9,10 @@ import { groupStepTypes } from '@tc96/parttens/flow/step-library/core'
 import { MenuItem, MenuSeparator } from '@tc96/ui/menu'
 import { NetworkIcon } from 'lucide-react'
 import { type ReactElement, useMemo } from 'react'
+import { createFlowEditorHandlers } from '../shared/create-flow-editor-handlers'
 import { FlowAssistant } from '../shared/flow-assistant'
 import { FlowConfirmDialog } from '../shared/flow-confirm-dialog'
+import { FlowDeleteDialog } from '../shared/flow-delete-dialog'
 import { FlowPageHeader } from '../shared/flow-page-header'
 import { FlowPageLayout } from '../shared/flow-page-layout'
 import { FlowStepInspector } from '../shared/flow-step-inspector'
@@ -18,7 +20,6 @@ import { FlowToolButton } from '../shared/flow-tool-button'
 import { agentPageLabels, resolveFlowPageLabels } from '../shared/labels'
 import { renderAnchor } from '../shared/render-link'
 import type { FlowEditorProps } from '../shared/types'
-import { useFlowEditor } from '../shared/use-flow-editor'
 import { useFlowPageState } from '../shared/use-flow-page-state'
 
 export interface AgentBuilderProps extends FlowEditorProps {
@@ -45,6 +46,7 @@ export function AgentBuilder(props: Readonly<AgentBuilderProps>): ReactElement {
     onRun,
     onSelectedStepChange,
     onStepsChange,
+    onStepsChangeEnd,
     owners,
     renderLink = renderAnchor,
     run,
@@ -59,7 +61,7 @@ export function AgentBuilder(props: Readonly<AgentBuilderProps>): ReactElement {
     [labelsProp],
   )
   const state = useFlowPageState()
-  const editor = useFlowEditor(props, state)
+  const editor = createFlowEditorHandlers(props, state)
   const summary = run ?? flowRunSummary(steps)
   const groups = useMemo(() => groupStepTypes(stepTypes), [stepTypes])
 
@@ -79,12 +81,14 @@ export function AgentBuilder(props: Readonly<AgentBuilderProps>): ReactElement {
             onStepAction={editor.onStepAction}
             onStepDrop={editor.onStepDrop}
             onStepsChange={onStepsChange}
+            onStepsChangeEnd={onStepsChangeEnd}
             selectedStepId={selectedStepId}
             stepTypes={stepTypes}
             steps={steps}
           >
             <FlowCanvasControls>
               <FlowToolButton
+                disabled={state.locked}
                 label={labels.organizeTree}
                 onClick={() => editor.tidy('vertical')}
                 size="sm"
@@ -101,6 +105,7 @@ export function AgentBuilder(props: Readonly<AgentBuilderProps>): ReactElement {
             breadcrumbs={breadcrumbs}
             labels={labels}
             name={name}
+            addStepDisabled={state.locked}
             onAddStep={() => state.openInspector('create')}
             onAskAi={assistant ? () => state.setAssistantOpen(true) : undefined}
             onRun={onRun}
@@ -161,6 +166,7 @@ export function AgentBuilder(props: Readonly<AgentBuilderProps>): ReactElement {
             icons={icons}
             labels={labels.library}
             loading={loading}
+            disabled={state.locked}
             onAdd={editor.onLibraryAdd}
           >
             {steps.length > 0 ? (
@@ -178,25 +184,12 @@ export function AgentBuilder(props: Readonly<AgentBuilderProps>): ReactElement {
         open={state.confirmingClear}
         title={labels.clearDialogTitle}
       />
-      <FlowConfirmDialog
-        cancelLabel={labels.cancel}
-        confirmLabel={labels.deleteConfirm}
-        description={labels.deleteDialogDescription(
-          editor.pendingDeleteName,
-          connections.filter(
-            (connection) =>
-              connection.source === state.pendingDelete ||
-              connection.target === state.pendingDelete,
-          ).length,
-        )}
-        onConfirm={() => {
-          if (state.pendingDelete) editor.deleteStep(state.pendingDelete)
-        }}
-        onOpenChange={(open) => {
-          if (!open) state.setPendingDelete(null)
-        }}
-        open={state.pendingDelete !== null}
-        title={labels.deleteDialogTitle(editor.pendingDeleteName)}
+      <FlowDeleteDialog
+        connections={connections}
+        labels={labels}
+        onDelete={editor.deleteStep}
+        state={state}
+        stepName={editor.pendingDeleteName}
       />
     </>
   )

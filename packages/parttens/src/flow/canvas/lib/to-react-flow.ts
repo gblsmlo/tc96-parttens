@@ -68,26 +68,6 @@ export function toEdges(
   }))
 }
 
-export function stepsFromNodes(
-  nodes: readonly FlowNodeType[],
-  steps: readonly FlowStep[],
-): FlowStep[] {
-  const positions = new Map(nodes.map((node) => [node.id, node.position]))
-  return steps.map((step) => {
-    const position = positions.get(step.id)
-    if (!position) return { ...step }
-    return { ...step, position: { x: position.x, y: position.y } }
-  })
-}
-
-export function connectionsFromEdges(
-  edges: readonly FlowEdgeType[],
-  connections: readonly FlowConnection[],
-): FlowConnection[] {
-  const ids = new Set(edges.map((edge) => edge.id))
-  return connections.filter((connection) => ids.has(connection.id))
-}
-
 export function connectionFromReactFlow(connection: {
   source: string
   target: string
@@ -116,6 +96,14 @@ export function moveSteps(
     const position = moves.get(step.id)
     return position ? { ...step, position: { ...position } } : { ...step }
   })
+}
+
+export function endsDrag(
+  changes: readonly NodeChange<FlowNodeType>[],
+): boolean {
+  return changes.some(
+    (change) => change.type === 'position' && change.dragging === false,
+  )
 }
 
 export function measuredFromChanges(

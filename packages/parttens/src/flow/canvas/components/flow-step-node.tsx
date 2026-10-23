@@ -49,7 +49,7 @@ function FlowStepNodeView({
   selected,
 }: Readonly<NodeProps<FlowNodeType>>): ReactElement {
   const { step, leaf } = data
-  const { direction, labels, onStepAction, stepMenu, stepTypes } =
+  const { direction, labels, locked, onStepAction, stepMenu, stepTypes } =
     useFlowCanvasContext('FlowStepNode')
   const kind = resolveStepKind(step, stepTypes)
   const status: FlowRunStatus = step.run?.status ?? 'not-run'
@@ -148,6 +148,7 @@ function FlowStepNodeView({
       {vertical && leaf ? (
         <div className={flowNodeAddLeafClassName}>
           <FlowControlButton
+            disabled={locked}
             label={labels.addAfterLeaf(step.name)}
             onClick={() => onStepAction?.('add-after', step.id)}
             size="icon-xs"

@@ -154,23 +154,35 @@ export function tidyTree(
   )
   const rootNodes: TreeNode[] = []
   const stack: TreeNode[] = []
-  for (const root of roots) {
-    const node = nodes.get(root.id)
-    if (!node) continue
-    rootNodes.push(node)
-    placed.add(root.id)
-    stack.push(node)
-    while (stack.length) {
-      const current = stack.pop()
+  const expand = (pending: TreeNode[]) => {
+    while (pending.length) {
+      const current = pending.pop()
       if (!current?.id) continue
       for (const connection of outgoingOf(current.id, connections)) {
         const child = nodes.get(connection.target)
         if (!child || placed.has(connection.target)) continue
         placed.add(connection.target)
         current.children.push(child)
-        stack.push(child)
+        pending.push(child)
       }
     }
+  }
+  for (const root of roots) {
+    const node = nodes.get(root.id)
+    if (!node) continue
+    rootNodes.push(node)
+    placed.add(root.id)
+    stack.push(node)
+    expand(stack)
+  }
+  for (const step of steps) {
+    if (placed.has(step.id)) continue
+    const node = nodes.get(step.id)
+    if (!node) continue
+    rootNodes.push(node)
+    placed.add(step.id)
+    stack.push(node)
+    expand(stack)
   }
   if (!rootNodes.length) return steps.map((step) => ({ ...step }))
 
@@ -221,6 +233,8 @@ export function flowRunSummary(
   if (failed) return { ...summary, status: 'failed', note: failed.run?.note }
   if (steps.some((step) => step.run?.status === 'running'))
     return { ...summary, status: 'running' }
+  if (total > 0 && steps.every((step) => step.run?.status === 'skipped'))
+    return { ...summary, status: 'skipped' }
   if (
     completed > 0 &&
     steps.every(

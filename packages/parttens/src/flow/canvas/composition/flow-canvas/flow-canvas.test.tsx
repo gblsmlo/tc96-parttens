@@ -186,3 +186,48 @@ test('the shortcuts popover trigger is a named button', () => {
     screen.getByRole('button', { name: 'Atalhos de teclado' }),
   ).toBeTruthy()
 })
+
+test('locked disables the mutating controls and keeps view and edit', () => {
+  render(
+    <FlowCanvas
+      connections={connections}
+      direction="vertical"
+      locked
+      selectedStepId="mail"
+      stepTypes={stepTypes}
+      steps={steps}
+    />,
+  )
+  const disabled = (name: string) =>
+    (screen.getAllByRole('button', { name })[0] as HTMLButtonElement).disabled
+  expect(disabled('Excluir Enviar e-mail')).toBe(true)
+  expect(disabled('Duplicar Enviar e-mail')).toBe(true)
+  expect(disabled('Adicionar um passo depois de Enviar e-mail')).toBe(true)
+  expect(disabled('Editar Enviar e-mail')).toBe(false)
+  expect(disabled('Ver Enviar e-mail')).toBe(false)
+  expect(disabled('Adicionar um passo aqui')).toBe(true)
+  expect(disabled('Remover esta conexão')).toBe(true)
+})
+
+test('a locked canvas shows the select mode even after switching to pan', () => {
+  const { rerender } = render(
+    <FlowCanvas connections={connections} steps={steps} />,
+  )
+  const region = screen.getByRole('region', { name: 'Canvas do fluxo' })
+  fireEvent.keyDown(region, { key: 'h' })
+  expect(region.getAttribute('data-mode')).toBe('pan')
+  rerender(<FlowCanvas connections={connections} locked steps={steps} />)
+  expect(region.getAttribute('data-mode')).toBe('select')
+})
+
+test('shortcuts ignore key events whose target is outside the canvas', () => {
+  render(<FlowCanvas connections={connections} steps={steps} />)
+  const region = screen.getByRole('region', { name: 'Canvas do fluxo' })
+  const outside = document.createElement('button')
+  document.body.append(outside)
+  const event = new window.KeyboardEvent('keydown', { key: 'h' })
+  Object.defineProperty(event, 'target', { value: outside })
+  fireEvent(region, event)
+  expect(region.getAttribute('data-mode')).toBe('select')
+  outside.remove()
+})

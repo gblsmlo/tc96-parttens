@@ -1,3 +1,5 @@
+'use client'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/elements/avatar'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'
@@ -58,7 +60,7 @@ export function FlowInspectorDetails({
                     {item.owner.avatarUrl ? (
                       <AvatarImage alt="" src={item.owner.avatarUrl} />
                     ) : null}
-                    <AvatarFallback>
+                    <AvatarFallback className="text-foreground">
                       {initialsOf(item.owner.name)}
                     </AvatarFallback>
                   </Avatar>

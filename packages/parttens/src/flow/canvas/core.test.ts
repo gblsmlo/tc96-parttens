@@ -106,7 +106,7 @@ test('tidyTree spaces levels and siblings by nodeSize and gap', () => {
   expect((large('a')?.y ?? 0) - (large('root')?.y ?? 0)).toBe(80 + 30)
 })
 
-test('tidyTree lays out a forest and keeps unreachable steps in place', () => {
+test('tidyTree places steps reachable only through a cycle, without overlap', () => {
   const cycle = [step('x'), step('y')].map((one, index) => ({
     ...one,
     position: { x: 7 + index, y: 9 },
@@ -116,7 +116,10 @@ test('tidyTree lays out a forest and keeps unreachable steps in place', () => {
     [...connections, link('x', 'y'), link('y', 'x')],
     options,
   )
-  expect(laid.find((one) => one.id === 'x')?.position).toEqual({ x: 7, y: 9 })
+  const at = (id: string) => laid.find((one) => one.id === id)?.position
+  expect(at('x')).not.toEqual({ x: 7, y: 9 })
+  expect(at('x')?.y).toBeLessThan(at('y')?.y ?? 0)
+  expect(overlaps(laid, [100, 40])).toBe(false)
   expect(tidyTree([], [], options)).toEqual([])
 })
 
@@ -164,6 +167,9 @@ test('flowRunSummary counts completed only for success', () => {
     flowRunSummary([step('a', 'success'), step('b', 'skipped')]),
   ).toMatchObject({ status: 'success', completed: 1, total: 2 })
   expect(flowRunSummary([step('a', 'skipped')]).completed).toBe(0)
+  expect(
+    flowRunSummary([step('a', 'skipped'), step('b', 'skipped')]).status,
+  ).toBe('skipped')
 })
 
 test('flowRunSummary reports failed, not-run and partial runs', () => {

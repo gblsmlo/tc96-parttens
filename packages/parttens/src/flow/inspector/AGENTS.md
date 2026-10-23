@@ -52,6 +52,7 @@ Renderers:
 
 - The tab list sits in a `div` with the `border-b`, because a border class on `TabsList` is a COSS override. Colors are theme tokens only: status icons use `--*-foreground` (4.5:1 or more on `background`), never a palette class.
 - The `Alert` icon takes `[&>svg]:text-warning-foreground` because COSS `--warning` is 1.99:1 on the light background; `overrides:check` does not track color and rejects an exception for it. The ratios are in `docs/architecture/tc96-parttens.md`, section "Patterns: Flow Inspector".
+- The owner initials of `AvatarFallback` in `flow-inspector-details` use `text-foreground`, the same fix as the canvas node (`muted-foreground` on `bg-border` is 4,25:1 in the dark theme).
 - No class overrides a COSS component's border, radius or shadow, so `scripts/override-exceptions.json` has no entry for this pattern.
 
 ## Verify

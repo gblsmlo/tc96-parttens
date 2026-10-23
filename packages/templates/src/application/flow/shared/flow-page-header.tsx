@@ -18,6 +18,7 @@ import type { FlowRenderLink } from './render-link'
 import type { FlowBreadcrumbItem, FlowPageLabels } from './types'
 
 export interface FlowPageHeaderProps {
+  addStepDisabled?: boolean
   breadcrumbs?: FlowBreadcrumbItem[]
   children?: ReactNode
   labels: FlowPageLabels
@@ -30,6 +31,7 @@ export interface FlowPageHeaderProps {
 }
 
 export function FlowPageHeader({
+  addStepDisabled = false,
   breadcrumbs = [],
   children,
   labels,
@@ -77,6 +79,7 @@ export function FlowPageHeader({
         {onAddStep ? (
           <Button
             aria-label={labels.addStep}
+            disabled={addStepDisabled}
             onClick={onAddStep}
             variant="outline"
           >

@@ -3,11 +3,10 @@ import { Position } from '@xyflow/react'
 import type { FlowConnection, FlowStep } from '../core'
 import {
   connectionFromReactFlow,
-  connectionsFromEdges,
+  endsDrag,
   measuredFromChanges,
   moveSteps,
   selectionFromChanges,
-  stepsFromNodes,
   toEdges,
   toNodes,
 } from './to-react-flow'
@@ -59,20 +58,18 @@ test('toEdges animates taken connections and keeps the connection in data', () =
   )
 })
 
-test('stepsFromNodes returns the steps with the positions of the nodes', () => {
-  const nodes = toNodes(steps, options).map((node) =>
-    node.id === 'a' ? { ...node, position: { x: 7, y: 9 } } : node,
-  )
-  const next = stepsFromNodes(nodes, steps)
-  expect(next[0]?.position).toEqual({ x: 7, y: 9 })
-  expect(next[1]?.position).toEqual({ x: 100, y: 40 })
-  expect(steps[0]?.position).toEqual({ x: 0, y: 0 })
-})
-
-test('connectionsFromEdges keeps only the connections that still have an edge', () => {
-  const edges = toEdges(connections)
-  expect(connectionsFromEdges(edges, connections)).toEqual(connections)
-  expect(connectionsFromEdges([], connections)).toEqual([])
+test('endsDrag is true only for a position change that stopped dragging', () => {
+  expect(
+    endsDrag([
+      { dragging: true, id: 'a', position: { x: 1, y: 1 }, type: 'position' },
+    ]),
+  ).toBe(false)
+  expect(
+    endsDrag([
+      { dragging: false, id: 'a', position: { x: 1, y: 1 }, type: 'position' },
+    ]),
+  ).toBe(true)
+  expect(endsDrag([{ id: 'a', selected: true, type: 'select' }])).toBe(false)
 })
 
 test('connectionFromReactFlow drops a null sourceHandle', () => {

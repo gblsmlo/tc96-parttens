@@ -10,7 +10,6 @@ import type { ReactElement, ReactNode } from 'react'
 import { FlowControlButton } from '../../components/flow-control-button'
 import { flowControlsPanelClassName } from '../../lib/variants'
 import { useFlowCanvasContext } from '../../store/flow-canvas-context'
-import type { FlowCanvasMode } from '../../types'
 
 export interface FlowCanvasControlsProps {
   children?: ReactNode
@@ -38,8 +37,7 @@ export function FlowCanvasControls({
         aria-label={labels.mode}
         onValueChange={(value) => {
           const next = value[0]
-          if (next === 'select' || next === 'pan')
-            setMode(next as FlowCanvasMode)
+          if (next === 'select' || next === 'pan') setMode(next)
         }}
         size="sm"
         value={[mode]}

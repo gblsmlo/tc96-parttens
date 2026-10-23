@@ -17,8 +17,9 @@ import {
 } from '@tc96/ui/menu'
 import { LockIcon, LockOpenIcon, Redo2Icon, Undo2Icon } from 'lucide-react'
 import { type ReactElement, useMemo } from 'react'
+import { createFlowEditorHandlers } from '../shared/create-flow-editor-handlers'
 import { FlowAssistant } from '../shared/flow-assistant'
-import { FlowConfirmDialog } from '../shared/flow-confirm-dialog'
+import { FlowDeleteDialog } from '../shared/flow-delete-dialog'
 import { FlowPageHeader } from '../shared/flow-page-header'
 import { FlowPageLayout } from '../shared/flow-page-layout'
 import { FlowStepInspector } from '../shared/flow-step-inspector'
@@ -26,7 +27,6 @@ import { FlowToolButton } from '../shared/flow-tool-button'
 import { resolveFlowPageLabels, workflowPageLabels } from '../shared/labels'
 import { renderAnchor } from '../shared/render-link'
 import type { FlowEditorProps } from '../shared/types'
-import { useFlowEditor } from '../shared/use-flow-editor'
 import { useFlowPageState } from '../shared/use-flow-page-state'
 
 export interface WorkflowEditorProps extends FlowEditorProps {
@@ -58,6 +58,7 @@ export function WorkflowEditor(
     onRun,
     onSelectedStepChange,
     onStepsChange,
+    onStepsChangeEnd,
     onUndo,
     owners,
     renderLink = renderAnchor,
@@ -73,7 +74,7 @@ export function WorkflowEditor(
     [labelsProp],
   )
   const state = useFlowPageState()
-  const editor = useFlowEditor(props, state)
+  const editor = createFlowEditorHandlers(props, state)
   const summary = run ?? flowRunSummary(steps)
   const groups = useMemo(() => groupStepTypes(stepTypes), [stepTypes])
 
@@ -94,6 +95,7 @@ export function WorkflowEditor(
             onStepAction={editor.onStepAction}
             onStepDrop={editor.onStepDrop}
             onStepsChange={onStepsChange}
+            onStepsChangeEnd={onStepsChangeEnd}
             selectedStepId={selectedStepId}
             snapToGrid={state.snapToGrid}
             stepTypes={stepTypes}
@@ -137,6 +139,7 @@ export function WorkflowEditor(
             breadcrumbs={breadcrumbs}
             labels={labels}
             name={name}
+            addStepDisabled={state.locked}
             onAddStep={() => state.openInspector('create')}
             onAskAi={assistant ? () => state.setAssistantOpen(true) : undefined}
             onRun={onRun}
@@ -151,7 +154,10 @@ export function WorkflowEditor(
               >
                 {labels.snapToGrid}
               </MenuCheckboxItem>
-              <MenuItem onClick={() => editor.tidy('horizontal')}>
+              <MenuItem
+                disabled={state.locked}
+                onClick={() => editor.tidy('horizontal')}
+              >
                 {labels.tidy}
               </MenuItem>
             </MenuGroup>
@@ -199,6 +205,7 @@ export function WorkflowEditor(
             icons={icons}
             labels={labels.library}
             loading={loading}
+            disabled={state.locked}
             onAdd={editor.onLibraryAdd}
           >
             {steps.length > 0 ? (
@@ -207,25 +214,12 @@ export function WorkflowEditor(
           </FlowStepLibrary>
         )}
       />
-      <FlowConfirmDialog
-        cancelLabel={labels.cancel}
-        confirmLabel={labels.deleteConfirm}
-        description={labels.deleteDialogDescription(
-          editor.pendingDeleteName,
-          connections.filter(
-            (connection) =>
-              connection.source === state.pendingDelete ||
-              connection.target === state.pendingDelete,
-          ).length,
-        )}
-        onConfirm={() => {
-          if (state.pendingDelete) editor.deleteStep(state.pendingDelete)
-        }}
-        onOpenChange={(open) => {
-          if (!open) state.setPendingDelete(null)
-        }}
-        open={state.pendingDelete !== null}
-        title={labels.deleteDialogTitle(editor.pendingDeleteName)}
+      <FlowDeleteDialog
+        connections={connections}
+        labels={labels}
+        onDelete={editor.deleteStep}
+        state={state}
+        stepName={editor.pendingDeleteName}
       />
     </>
   )

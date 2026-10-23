@@ -1,3 +1,5 @@
+'use client'
+
 import { Badge } from '@tc96/ui/badge'
 import { cn } from '@tc96/utils'
 import type { FlowRunStatus } from '../../../canvas/core'

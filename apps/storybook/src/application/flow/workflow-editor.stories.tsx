@@ -65,7 +65,7 @@ const docs = {
     },
     {
       description:
-        '`onStepAdd(type, options?)` runs when a library item is clicked, a type is dropped on the canvas (`options.position`) or the create form is submitted (`options.after`, `options.connection`, `options.values`). `onStepChange(stepId, values)` runs when the edit form is saved, `onStepDelete(stepId)` after the confirmation (asked only when the step has connections), `onStepDuplicate(stepId)`, `onStepsChange(steps)` on every drag tick and on Reorganizar, `onConnect`, `onConnectionsChange`, `onSelectedStepChange`, `onRun`, `onCopyJson`, `onUndo` and `onRedo` (with `canUndo` and `canRedo`).',
+        '`onStepAdd(type, options?)` runs when a library item is clicked, a type is dropped on the canvas (`options.position`) or the create form is submitted (`options.after`, `options.connection`, `options.values`). `onStepChange(stepId, values)` runs when the edit form is saved, `onStepDelete(stepId)` after the confirmation (asked only when the step has connections), `onStepDuplicate(stepId)`, `onStepsChange(steps)` on every drag tick and on Reorganizar, `onStepsChangeEnd(steps)` once per drag and once per Reorganizar (one undo entry), `onConnect`, `onConnectionsChange`, `onSelectedStepChange`, `onRun`, `onCopyJson`, `onUndo` and `onRedo` (with `canUndo` and `canRedo`).',
       name: 'callbacks',
     },
     {
@@ -150,6 +150,7 @@ const meta = {
         onStepDelete={state.remove}
         onStepDuplicate={state.duplicate}
         onStepsChange={state.setSteps}
+        onStepsChangeEnd={state.setStepsEnd}
         onUndo={state.undo}
         selectedStepId={state.selectedStepId}
         steps={state.steps}
@@ -200,6 +201,29 @@ export const Default: Story = {
   },
 }
 
+export const Locked: Story = {
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.click(canvas.getByRole('button', { name: 'Travar canvas' }))
+    await expect(
+      canvas.getByRole('button', { name: 'Adicionar passo' }),
+    ).toBeDisabled()
+    await expect(
+      canvas.getByRole('button', { name: 'Enviar e-mail' }),
+    ).toBeDisabled()
+    await userEvent.click(canvas.getByText('Novo lead'))
+    await expect(
+      await canvas.findByRole('button', { name: 'Editar Novo lead' }),
+    ).toBeEnabled()
+    await expect(
+      canvas.getByRole('button', {
+        name: 'Adicionar um passo depois de Novo lead',
+      }),
+    ).toBeDisabled()
+    await expect(args.onStepAdd).not.toHaveBeenCalled()
+  },
+}
+
 export const Empty: Story = {
   args: { connections: [], steps: [] },
   play: async ({ canvasElement }) => {
@@ -246,10 +270,15 @@ export const Mobile: Story = {
 
     await userEvent.click(canvas.getByRole('button', { name: 'Pergunte à IA' }))
     await expect(
-      canvasElement.querySelector('[data-slot="flow-assistant-fullscreen"]'),
+      await screen().findByRole('dialog', { name: 'Assistente' }),
     ).toBeVisible()
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Encerrar' }))
+    await userEvent.click(
+      await screen().findByRole('button', { name: 'Encerrar' }),
+    )
+    await waitFor(() =>
+      expect(screen().queryByRole('dialog', { name: 'Assistente' })).toBeNull(),
+    )
     await userEvent.click(canvas.getByText('Novo lead'))
     await userEvent.click(
       await canvas.findByRole('button', { name: 'Ver Novo lead' }),

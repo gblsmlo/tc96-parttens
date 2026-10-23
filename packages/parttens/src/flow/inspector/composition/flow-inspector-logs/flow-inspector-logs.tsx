@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@tc96/ui/button'
 import {
   Empty,

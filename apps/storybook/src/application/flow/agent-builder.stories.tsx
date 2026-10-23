@@ -57,7 +57,7 @@ const docs = {
     },
     {
       description:
-        '`onStepsChange(steps)` receives the whole list: on every drag tick and, after Organizar árvore, with the positions of `tidyTree` (`flowStepNodeSize` and a 48 by 88 gap) so no two nodes overlap. `onStepAdd(type, options?)` carries `options.after` (the parent) when the step comes from Adicionar ramo, the edge "+" or the create form.',
+        '`onStepsChange(steps)` receives the whole list: on every drag tick (`onStepsChangeEnd(steps)` once when the drag ends, and after Organizar árvore) and, after Organizar árvore, with the positions of `tidyTree` (`flowStepNodeSize` and a 48 by 88 gap) so no two nodes overlap. `onStepAdd(type, options?)` carries `options.after` (the parent) when the step comes from Adicionar ramo, the edge "+" or the create form.',
       name: 'onStepsChange, onStepAdd',
     },
     {
@@ -146,6 +146,7 @@ const meta = {
         onStepDelete={state.remove}
         onStepDuplicate={state.duplicate}
         onStepsChange={state.setSteps}
+        onStepsChangeEnd={state.setStepsEnd}
         selectedStepId={state.selectedStepId}
         steps={state.steps}
       />
@@ -240,7 +241,7 @@ export const Mobile: Story = {
     ).toHaveAttribute('data-collapsed')
     await userEvent.click(canvas.getByRole('button', { name: 'Pergunte à IA' }))
     await expect(
-      canvasElement.querySelector('[data-slot="flow-assistant-fullscreen"]'),
+      await screen().findByRole('dialog', { name: 'Assistente' }),
     ).toBeVisible()
   },
 }

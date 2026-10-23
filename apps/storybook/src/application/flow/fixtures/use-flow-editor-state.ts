@@ -11,7 +11,16 @@ import type {
   FlowStepType,
   FlowStepValues,
 } from '@tc96/templates/application/flow/workflow-editor'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+
+let idCounter = 0
+
+function uniqueId(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+    return crypto.randomUUID().slice(0, 8)
+  idCounter += 1
+  return `${Date.now().toString(36)}${idCounter}`
+}
 
 interface Snapshot {
   connections: FlowConnection[]
@@ -65,6 +74,7 @@ export function useFlowEditorState(
   const [past, setPast] = useState<Snapshot[]>([])
   const [future, setFuture] = useState<Snapshot[]>([])
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null)
+  const dragStart = useRef<Snapshot | null>(null)
   const { connections, steps } = snapshot
 
   const commit = (next: Snapshot) => {
@@ -75,7 +85,7 @@ export function useFlowEditorState(
 
   const add = (type: FlowStepType, options: FlowStepAddOptions = {}) => {
     listeners.onStepAdd?.(type, options)
-    const id = `${type.id}-${steps.length + 1}`
+    const id = `${type.id}-${uniqueId()}`
     const parent = steps.find((step) => step.id === options.after)
     const position =
       options.position ??
@@ -153,7 +163,7 @@ export function useFlowEditorState(
         ...steps,
         {
           ...source,
-          id: `${source.id}-copy-${steps.length + 1}`,
+          id: `${source.id}-copy-${uniqueId()}`,
           name: `${source.name} (cópia)`,
           position: { x: source.position.x + 32, y: source.position.y + 32 },
           run: undefined,
@@ -204,6 +214,17 @@ export function useFlowEditorState(
     setSelectedStepId,
     setSteps: (next: FlowStep[]) => {
       listeners.onStepsChange?.(next)
+      dragStart.current ??= snapshot
+      setSnapshot({ connections, steps: next })
+    },
+    setStepsEnd: (next: FlowStep[]) => {
+      listeners.onStepsChangeEnd?.(next)
+      const start = dragStart.current
+      dragStart.current = null
+      if (start) {
+        setPast((current) => [...current, start])
+        setFuture([])
+      }
       setSnapshot({ connections, steps: next })
     },
     steps,

@@ -10,6 +10,7 @@ export interface FlowStepLibraryProps {
   children?: ReactNode
   className?: string
   collapsed?: boolean
+  disabled?: boolean
   groups: readonly FlowStepGroup[]
   icons?: Record<string, ReactNode>
   labels?: Partial<FlowStepLibraryLabels>
@@ -19,6 +20,7 @@ export interface FlowStepLibraryProps {
 
 export interface FlowStepLibraryGroupProps {
   collapsed?: boolean
+  disabled?: boolean
   group: FlowStepGroup
   icons?: Record<string, ReactNode>
   onAdd: (type: FlowStepType) => void
@@ -26,6 +28,7 @@ export interface FlowStepLibraryGroupProps {
 
 export interface FlowStepLibraryItemProps {
   collapsed?: boolean
+  disabled?: boolean
   icon?: ReactNode
   onAdd: (type: FlowStepType) => void
   type: FlowStepType

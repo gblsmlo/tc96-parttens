@@ -2,7 +2,12 @@ import { Group } from '@tc96/ui/group'
 import { NodeToolbar, Position } from '@xyflow/react'
 import type { ReactElement } from 'react'
 import type { FlowStep } from '../core'
-import { flowActionIcons, resolveStepKind, stepActionsFor } from '../lib/steps'
+import {
+  flowActionIcons,
+  isMutatingAction,
+  resolveStepKind,
+  stepActionsFor,
+} from '../lib/steps'
 import { useFlowCanvasContext } from '../store/flow-canvas-context'
 import { FlowControlButton } from './flow-control-button'
 
@@ -10,7 +15,7 @@ export function FlowStepToolbar({
   step,
   visible,
 }: Readonly<{ step: FlowStep; visible: boolean }>): ReactElement {
-  const { labels, onStepAction, stepTypes } =
+  const { labels, locked, onStepAction, stepTypes } =
     useFlowCanvasContext('FlowStepToolbar')
   const kind = resolveStepKind(step, stepTypes)
   return (
@@ -24,6 +29,7 @@ export function FlowStepToolbar({
           const Icon = flowActionIcons[action]
           return (
             <FlowControlButton
+              disabled={locked && isMutatingAction(action)}
               key={action}
               label={labels.actions[action](step.name)}
               onClick={() => onStepAction?.(action, step.id)}

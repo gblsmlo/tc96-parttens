@@ -1,3 +1,5 @@
+'use client'
+
 import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
 import { ScrollArea } from '@tc96/ui/scroll-area'
 import { Sheet, SheetPopup } from '@tc96/ui/sheet'

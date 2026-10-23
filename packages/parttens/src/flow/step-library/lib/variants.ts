@@ -16,7 +16,7 @@ export const flowStepGroupLabelClassName =
   'float-left w-full px-2 font-medium text-muted-foreground text-xs'
 
 export const flowStepLibraryItemVariants = cva(
-  'flex w-full min-w-0 cursor-grab items-center gap-3 rounded-lg p-2 text-start text-sm outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing',
+  'flex w-full min-w-0 cursor-grab items-center gap-3 rounded-lg p-2 text-start text-sm outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing disabled:pointer-events-none disabled:opacity-64',
   {
     defaultVariants: { collapsed: false },
     variants: {

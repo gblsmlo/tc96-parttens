@@ -20,6 +20,7 @@ export function FlowStepLibrary({
   children,
   className,
   collapsed = false,
+  disabled = false,
   groups,
   icons,
   labels,
@@ -63,6 +64,7 @@ export function FlowStepLibrary({
             {groups.map((group) => (
               <FlowStepLibraryGroup
                 collapsed={collapsed}
+                disabled={disabled}
                 group={group}
                 icons={icons}
                 key={group.label}

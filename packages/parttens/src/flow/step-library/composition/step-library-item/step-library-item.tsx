@@ -23,6 +23,7 @@ const kindIcons = {
 
 export function FlowStepLibraryItem({
   collapsed = false,
+  disabled = false,
   icon,
   onAdd,
   type,
@@ -30,15 +31,17 @@ export function FlowStepLibraryItem({
   const descriptionId = useId()
   const kind = type.kind ?? 'action'
   const KindIcon = kindIcons[kind]
+  const describes = Boolean(type.description) && !collapsed
 
   return (
     <button
-      aria-describedby={type.description ? descriptionId : undefined}
+      aria-describedby={describes ? descriptionId : undefined}
       aria-label={type.label}
       className={cn(flowStepLibraryItemVariants({ collapsed }))}
       data-kind={kind}
+      disabled={disabled}
       data-slot="flow-step-library-item"
-      draggable
+      draggable={!disabled}
       onClick={() => onAdd(type)}
       onDragStart={(event) => {
         event.dataTransfer.setData(

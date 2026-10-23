@@ -162,6 +162,7 @@ export interface FlowEditorProps {
   onStepDelete?: (stepId: string) => void
   onStepDuplicate?: (stepId: string) => void
   onStepsChange?: (steps: FlowStep[]) => void
+  onStepsChangeEnd?: (steps: FlowStep[]) => void
   owners?: readonly FlowOwner[]
   renderLink?: FlowRenderLink
   run?: FlowRunSummary

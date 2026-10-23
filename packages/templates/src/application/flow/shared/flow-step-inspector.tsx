@@ -169,7 +169,7 @@ export function FlowStepInspector({
         >
           {labels.cancel}
         </Button>
-        <Button form={formId} type="submit">
+        <Button disabled={creating && state.locked} form={formId} type="submit">
           {creating ? labels.add : labels.save}
         </Button>
       </>
@@ -209,6 +209,7 @@ export function FlowStepInspector({
         step && !creating && kind !== 'trigger' ? (
           <Button
             aria-label={labels.delete}
+            disabled={state.locked}
             onClick={() => onDelete(step.id)}
             size="icon-sm"
             variant="ghost"
@@ -217,7 +218,7 @@ export function FlowStepInspector({
           </Button>
         ) : undefined
       }
-      icon={step ? icons?.[step.type] : undefined}
+      icon={step && !creating ? icons?.[step.type] : undefined}
       labels={labels.inspector}
       logs={
         <FlowInspectorLogs

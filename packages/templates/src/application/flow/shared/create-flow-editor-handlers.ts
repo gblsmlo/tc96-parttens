@@ -14,7 +14,7 @@ const tidyGap: Record<FlowDirection, readonly [number, number]> = {
   vertical: [48, 88],
 }
 
-export function useFlowEditor(
+export function createFlowEditorHandlers(
   {
     connections,
     onSelectedStepChange,
@@ -23,6 +23,7 @@ export function useFlowEditor(
     onStepDelete,
     onStepDuplicate,
     onStepsChange,
+    onStepsChangeEnd,
     selectedStepId,
     stepTypes,
     steps,
@@ -37,6 +38,7 @@ export function useFlowEditor(
   }
 
   const requestDelete = (stepId: string) => {
+    if (state.locked) return
     const attached = connections.filter(
       (connection) =>
         connection.source === stepId || connection.target === stepId,
@@ -53,14 +55,18 @@ export function useFlowEditor(
     if (action === 'view' || action === 'edit') {
       onSelectedStepChange?.(stepId)
       state.openInspector(action)
-    } else if (action === 'add-after' || action === 'add-branch') {
+      return
+    }
+    if (state.locked) return
+    if (action === 'add-after' || action === 'add-branch')
       state.openInspector('create', { after: stepId, connection })
-    } else if (action === 'duplicate') onStepDuplicate?.(stepId)
+    else if (action === 'duplicate') onStepDuplicate?.(stepId)
     else requestDelete(stepId)
   }
 
   const onSubmit = (values: FlowStepValues) => {
     if (state.mode === 'create') {
+      if (state.locked) return
       const type = stepTypes.find((item) => item.id === values.type)
       if (type)
         onStepAdd?.(type, {
@@ -75,21 +81,26 @@ export function useFlowEditor(
     state.setMode('view')
   }
 
-  const tidy = (direction: FlowDirection) =>
-    onStepsChange?.(
-      tidyTree(steps, connections, {
-        direction,
-        gap: tidyGap[direction],
-        nodeSize: flowStepNodeSize,
-      }),
-    )
+  const tidy = (direction: FlowDirection) => {
+    if (state.locked) return
+    const tidied = tidyTree(steps, connections, {
+      direction,
+      gap: tidyGap[direction],
+      nodeSize: flowStepNodeSize,
+    })
+    onStepsChange?.(tidied)
+    onStepsChangeEnd?.(tidied)
+  }
 
   return {
     deleteStep,
-    onLibraryAdd: (type: FlowStepType) => onStepAdd?.(type),
+    onLibraryAdd: (type: FlowStepType) => {
+      if (!state.locked) onStepAdd?.(type)
+    },
     onStepAction,
-    onStepDrop: (type: FlowStepType, position: FlowPosition) =>
-      onStepAdd?.(type, { position }),
+    onStepDrop: (type: FlowStepType, position: FlowPosition) => {
+      if (!state.locked) onStepAdd?.(type, { position })
+    },
     onSubmit,
     pendingDeleteName:
       steps.find((step) => step.id === state.pendingDelete)?.name ?? '',

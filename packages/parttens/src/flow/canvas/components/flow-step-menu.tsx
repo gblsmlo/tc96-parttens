@@ -3,13 +3,18 @@ import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { EllipsisIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { FlowStep } from '../core'
-import { flowActionIcons, resolveStepKind, stepActionsFor } from '../lib/steps'
+import {
+  flowActionIcons,
+  isMutatingAction,
+  resolveStepKind,
+  stepActionsFor,
+} from '../lib/steps'
 import { useFlowCanvasContext } from '../store/flow-canvas-context'
 
 export function FlowStepMenu({
   step,
 }: Readonly<{ step: FlowStep }>): ReactElement {
-  const { labels, onStepAction, stepTypes } =
+  const { labels, locked, onStepAction, stepTypes } =
     useFlowCanvasContext('FlowStepMenu')
   const kind = resolveStepKind(step, stepTypes)
   return (
@@ -31,6 +36,7 @@ export function FlowStepMenu({
           const Icon = flowActionIcons[action]
           return (
             <MenuItem
+              disabled={locked && isMutatingAction(action)}
               key={action}
               onClick={() => onStepAction?.(action, step.id)}
               variant={action === 'delete' ? 'destructive' : 'default'}

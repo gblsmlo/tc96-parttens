@@ -43,7 +43,7 @@ const agentGroups = groupStepTypes(agentStepTypes)
 
 const meta = {
   args: {
-    className: 'h-[32rem] w-72 rounded-xl border bg-card p-4',
+    className: 'h-[32rem] w-72 rounded-xl border p-4',
     groups: workflowGroups,
     onAdd: fn((_type) => {}),
   },
@@ -104,7 +104,7 @@ export const WithRunCardNotRun: Story = {
 
 export const Collapsed: Story = {
   args: {
-    className: 'h-[32rem] rounded-xl border bg-card p-3',
+    className: 'h-[32rem] rounded-xl border p-3',
     collapsed: true,
   },
 }

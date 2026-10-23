@@ -6,7 +6,12 @@ import {
 } from '@tc96/ui/context-menu'
 import type { ComponentProps, ReactElement } from 'react'
 import type { FlowStep } from '../core'
-import { flowActionIcons, resolveStepKind, stepActionsFor } from '../lib/steps'
+import {
+  flowActionIcons,
+  isMutatingAction,
+  resolveStepKind,
+  stepActionsFor,
+} from '../lib/steps'
 import { useFlowCanvasContext } from '../store/flow-canvas-context'
 
 export interface FlowStepContextMenuProps extends ComponentProps<'div'> {
@@ -18,7 +23,7 @@ export function FlowStepContextMenu({
   step,
   ...props
 }: Readonly<FlowStepContextMenuProps>): ReactElement {
-  const { labels, onStepAction, stepTypes } = useFlowCanvasContext(
+  const { labels, locked, onStepAction, stepTypes } = useFlowCanvasContext(
     'FlowStepContextMenu',
   )
   const kind = resolveStepKind(step, stepTypes)
@@ -30,6 +35,7 @@ export function FlowStepContextMenu({
           const Icon = flowActionIcons[action]
           return (
             <ContextMenuItem
+              disabled={locked && isMutatingAction(action)}
               key={action}
               onClick={() => onStepAction?.(action, step.id)}
               variant={action === 'delete' ? 'destructive' : 'default'}

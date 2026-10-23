@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { type AssistantMessage, AssistantPanel } from '@tc96/parttens'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { suggestions } from '../fixtures/assistant'
 
@@ -18,6 +18,9 @@ function WorkflowAssistant() {
   const [typing, setTyping] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const [open, setOpen] = useState(true)
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  useEffect(() => () => clearTimeout(timer.current), [])
 
   const ask = (text: string, answer: string) => {
     setMessages((current) => [
@@ -25,7 +28,8 @@ function WorkflowAssistant() {
       { id: `u${current.length}`, role: 'user', text },
     ])
     setTyping(true)
-    setTimeout(() => {
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => {
       setMessages((current) => [
         ...current,
         { id: `a${current.length}`, role: 'assistant', text: answer },

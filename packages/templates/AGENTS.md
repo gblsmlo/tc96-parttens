@@ -11,7 +11,7 @@ Installable templates: whole layouts that compose COSS components, `elements`, `
 | `src/application/shell/shared/` | types, labels, `renderAnchor`, `ShellNav`, `WorkspaceSwitcher`, `UserMenu`, `ShellHeader`, `ShellSearch`, `ShellNotifications` |
 | `src/application/shell/app-shell-3/` | also `project-nav.tsx` and `usage-card.tsx`, used only there |
 | `src/application/shell/app-shell-4/` | also `section-rail.tsx`, used only there |
-| `src/application/flow/shared/` | types, labels, `renderAnchor`, `useFlowPageState` (ephemeral state), `useFlowEditor` (the handlers both editors share), `FlowPageHeader`, `FlowPageLayout`, `FlowStepInspector` (the inspector assembly), `StepForm`, `FlowAssistant`, `FlowConfirmDialog`, `FlowToolButton` |
+| `src/application/flow/shared/` | types, labels, `renderAnchor`, `useFlowPageState` (ephemeral state), `createFlowEditorHandlers` (the handlers both editors share; no hooks), `FlowPageHeader`, `FlowPageLayout`, `FlowStepInspector` (the inspector assembly), `StepForm`, `FlowAssistant`, `FlowConfirmDialog`, `FlowDeleteDialog` (the step delete confirmation both editors mount), `FlowToolButton` |
 | `src/application/flow/workflow-editor/` | `WorkflowEditor` only: horizontal canvas, undo, redo, lock, minimap, grid snapping |
 | `src/application/flow/agent-builder/` | `AgentBuilder` only: vertical canvas, Organizar árvore, Limpar resultados, Restaurar exemplo |
 
@@ -42,8 +42,10 @@ Import direction: a template folder → its group's `shared/` and its own files;
 - Both flow templates keep the selection, the steps and every result in the consumer (`selectedStepId` and `onSelectedStepChange` are props); the template state is the inspector (open, `view` | `edit` | `create`, tab, log filter), the assistant (open, expanded), `snapToGrid`, `locked` and the two confirmation dialogs.
 - A library click or a canvas drop calls `onStepAdd(type, { position? })` at once; the header Adicionar passo, the node "+" and Adicionar ramo open the inspector in `create` mode, and submitting calls `onStepAdd(type, { after?, connection?, values })`. Saving the edit form calls `onStepChange(stepId, values)`. Deleting a step with connections asks through an `AlertDialog` first.
 - `onStepsChange` receives the whole list. Reorganizar (workflow, `horizontal`) and Organizar árvore (agent, `vertical`) pass `tidyTree` the `flowStepNodeSize` and a gap of 96 by 48 and 48 by 88.
+- `locked` makes the template read-only for mutations: `createFlowEditorHandlers` ignores `add-after`, `add-branch`, `duplicate`, `delete`, the library add, the drop, the tidy and the create submit, and the controls render `disabled` (header Adicionar passo, Reorganizar and Organizar árvore, the library items, the inspector delete and the create submit). `view` and `edit` stay enabled.
+- `onStepsChangeEnd(steps)` is forwarded from the canvas (one call per drag) and also called once after a tidy, so a consumer records one undo entry per gesture; the story fixture `use-flow-editor-state.ts` does it.
 - The form validates only the name (`FieldError`, `aria-invalid`, focus on the field). Caminho is the label of the first incoming connection; Responsável matches `step.owner.name` against `owners`.
-- Below `md` the library is `collapsed`, the inspector is the `Sheet` of the pattern and the assistant is a fixed full-screen layer (`data-slot="flow-assistant-fullscreen"`) with `placement="docked"`; from `md` the assistant is `floating` in the canvas wrapper, which is the positioned ancestor.
+- Below `md` the library is `collapsed`, the inspector is the `Sheet` of the pattern and the assistant is a full-screen COSS `Sheet` (`data-slot="flow-assistant-fullscreen"` on the popup; role, focus trap and Escape, which closes it) with `placement="docked"`; from `md` the assistant is `floating` in the canvas wrapper, which is the positioned ancestor.
 - The page frame (`flow-page`) takes `min-h-160` and `flex-1`, so it needs a flex column parent with a height, like the content area of the shells.
 
 ## Styling

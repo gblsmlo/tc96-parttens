@@ -10,8 +10,9 @@ import {
 } from '@xyflow/react'
 import {
   type ReactElement,
+  type ReactNode,
   useCallback,
-  useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -19,12 +20,14 @@ import {
 import { FlowCanvasEmpty } from '../../components/flow-canvas-empty'
 import { FlowStepEdge } from '../../components/flow-step-edge'
 import { FlowStepNode } from '../../components/flow-step-node'
+import type { FlowConnection, FlowStepAction, FlowStepType } from '../../core'
 import { useFlowDrop } from '../../hooks/use-flow-drop'
 import { useFlowShortcuts } from '../../hooks/use-flow-shortcuts'
 import { resolveFlowCanvasLabels } from '../../lib/labels'
 import { resolveStepKind, resolveStepTypeLabel } from '../../lib/steps'
 import {
   connectionFromReactFlow,
+  endsDrag,
   type MeasuredSizes,
   measuredFromChanges,
   moveSteps,
@@ -40,13 +43,20 @@ import {
   FlowCanvasContext,
   type FlowCanvasContextValue,
 } from '../../store/flow-canvas-context'
-import type { FlowCanvasMode, FlowCanvasProps, FlowNodeType } from '../../types'
+import type {
+  FlowCanvasMode,
+  FlowCanvasProps,
+  FlowNodeType,
+  FlowPosition,
+} from '../../types'
 
 const nodeTypes = { step: FlowStepNode }
 const edgeTypes = { step: FlowStepEdge }
 const gridSize: [number, number] = [16, 16]
 const fitViewOptions = { padding: 0.2 }
 const panOnDragButtons = [1, 2]
+const emptyStepTypes: readonly FlowStepType[] = []
+const emptyIcons: Record<string, ReactNode> = {}
 
 function FlowCanvasContent({
   children,
@@ -64,31 +74,68 @@ function FlowCanvasContent({
   onStepAction,
   onStepDrop,
   onStepsChange,
+  onStepsChangeEnd,
   selectedStepId = null,
   snapToGrid = false,
   stepMenu,
   stepTypes,
   steps,
 }: Readonly<FlowCanvasProps>): ReactElement {
-  const [mode, setMode] = useState<FlowCanvasMode>('select')
+  const [modeState, setMode] = useState<FlowCanvasMode>('select')
+  const mode: FlowCanvasMode = locked ? 'select' : modeState
   const [measured, setMeasured] = useState<MeasuredSizes>({})
   const labels = useMemo(
     () => resolveFlowCanvasLabels(labelsProp),
     [labelsProp],
   )
-  const types = stepTypes ?? []
+  const types = stepTypes ?? emptyStepTypes
   const vertical = direction === 'vertical'
   const selected = useRef<string | null>(selectedStepId)
-  selected.current = selectedStepId
+  const latest = useRef({
+    onConnect,
+    onConnectionsChange,
+    onSelect,
+    onStepAction,
+    onStepDrop,
+    onStepsChange,
+    onStepsChangeEnd,
+  })
 
-  const emitSelect = useCallback(
-    (id: string | null) => {
-      if (id === selected.current) return
-      selected.current = id
-      onSelect?.(id)
-    },
-    [onSelect],
+  useLayoutEffect(() => {
+    selected.current = selectedStepId
+    latest.current = {
+      onConnect,
+      onConnectionsChange,
+      onSelect,
+      onStepAction,
+      onStepDrop,
+      onStepsChange,
+      onStepsChangeEnd,
+    }
+  })
+
+  const handleConnectionsChange = useCallback(
+    (next: FlowConnection[]) => latest.current.onConnectionsChange?.(next),
+    [],
   )
+  const handleStepAction = useCallback(
+    (action: FlowStepAction, stepId: string, connection?: FlowConnection) => {
+      const { onStepAction: act } = latest.current
+      if (connection) act?.(action, stepId, connection)
+      else act?.(action, stepId)
+    },
+    [],
+  )
+  const handleStepDrop = useCallback(
+    (type: FlowStepType, position: FlowPosition) =>
+      latest.current.onStepDrop?.(type, position),
+    [],
+  )
+  const emitSelect = useCallback((id: string | null) => {
+    if (id === selected.current) return
+    selected.current = id
+    latest.current.onSelect?.(id)
+  }, [])
 
   const nodes = useMemo(
     () =>
@@ -127,24 +174,25 @@ function FlowCanvasContent({
     (changes: NodeChange<FlowNodeType>[]) => {
       setMeasured((current) => measuredFromChanges(current, changes))
       const moved = moveSteps(steps, changes)
-      if (moved) onStepsChange?.(moved)
+      if (moved) latest.current.onStepsChange?.(moved)
+      if (moved && endsDrag(changes)) latest.current.onStepsChangeEnd?.(moved)
       const selection = selectionFromChanges(changes, selected.current)
       if (selection.changed) emitSelect(selection.id)
     },
-    [emitSelect, onStepsChange, steps],
+    [emitSelect, steps],
   )
 
   const selectedStep = steps.find((step) => step.id === selectedStepId)
   const onDelete = useCallback(() => {
     if (!selectedStep || locked) return
     if (resolveStepKind(selectedStep, types) === 'trigger') return
-    onStepAction?.('delete', selectedStep.id)
-  }, [locked, onStepAction, selectedStep, types])
+    handleStepAction('delete', selectedStep.id)
+  }, [handleStepAction, locked, selectedStep, types])
 
   const onKeyDown = useFlowShortcuts({ onDelete, onMode: setMode })
   const drop = useFlowDrop({
     disabled: locked || loading,
-    onStepDrop,
+    onStepDrop: handleStepDrop,
     snapToGrid,
   })
 
@@ -153,12 +201,12 @@ function FlowCanvasContent({
       connections,
       direction,
       edgeControls: edgeControls ?? vertical,
-      icons: icons ?? {},
+      icons: icons ?? emptyIcons,
       labels,
       locked,
       mode,
-      onConnectionsChange,
-      onStepAction,
+      onConnectionsChange: handleConnectionsChange,
+      onStepAction: handleStepAction,
       setMode,
       stepMenu: stepMenu ?? vertical,
       stepTypes: types,
@@ -171,17 +219,13 @@ function FlowCanvasContent({
       labels,
       locked,
       mode,
-      onConnectionsChange,
-      onStepAction,
+      handleConnectionsChange,
+      handleStepAction,
       stepMenu,
       types,
       vertical,
     ],
   )
-
-  useEffect(() => {
-    if (locked) setMode('select')
-  }, [locked])
 
   return (
     <FlowCanvasContext.Provider value={context}>
@@ -215,7 +259,7 @@ function FlowCanvasContent({
           nodesDraggable={!locked && mode === 'select'}
           nodeTypes={nodeTypes}
           onConnect={(connection) =>
-            onConnect?.(connectionFromReactFlow(connection))
+            latest.current.onConnect?.(connectionFromReactFlow(connection))
           }
           onDragOver={drop.onDragOver}
           onDrop={drop.onDrop}

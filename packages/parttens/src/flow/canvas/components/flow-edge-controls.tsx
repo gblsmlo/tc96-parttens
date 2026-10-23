@@ -8,11 +8,12 @@ import { FlowControlButton } from './flow-control-button'
 export function FlowEdgeControls({
   connection,
 }: Readonly<{ connection: FlowConnection }>): ReactElement {
-  const { connections, labels, onConnectionsChange, onStepAction } =
+  const { connections, labels, locked, onConnectionsChange, onStepAction } =
     useFlowCanvasContext('FlowEdgeControls')
   return (
     <div className={flowEdgeControlsClassName} data-slot="flow-edge-controls">
       <FlowControlButton
+        disabled={locked}
         label={labels.edgeAdd(connection.label)}
         onClick={() =>
           onStepAction?.('add-after', connection.source, connection)
@@ -23,6 +24,7 @@ export function FlowEdgeControls({
         <PlusIcon aria-hidden="true" />
       </FlowControlButton>
       <FlowControlButton
+        disabled={locked}
         label={labels.edgeRemove(connection.label)}
         onClick={() =>
           onConnectionsChange?.(

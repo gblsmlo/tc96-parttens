@@ -64,6 +64,7 @@ export interface FlowCanvasProps {
   className?: string
   children?: ReactNode
   onStepsChange?: (steps: FlowStep[]) => void
+  onStepsChangeEnd?: (steps: FlowStep[]) => void
   onConnectionsChange?: (connections: FlowConnection[]) => void
   onConnect?: (connection: FlowConnectInput) => void
   onSelect?: (stepId: string | null) => void
