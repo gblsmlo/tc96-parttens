@@ -61,6 +61,10 @@ Object.assign(globalThis, {
   ResizeObserver: ResizeObserverMock,
   DOMMatrixReadOnly: DOMMatrixReadOnlyMock,
 })
+Object.assign(window, {
+  ResizeObserver: ResizeObserverMock,
+  DOMMatrixReadOnly: DOMMatrixReadOnlyMock,
+})
 Object.defineProperties(window.HTMLElement.prototype, {
   offsetHeight: {
     configurable: true,

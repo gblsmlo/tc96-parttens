@@ -439,10 +439,19 @@ test('builds flow-canvas with the d3-hierarchy version of parttens and no React 
     ).toBe(false)
 })
 
-test.todo(
-  'builds flow-canvas with @xyflow/react@12.12.0 (T1 of flow-editors adds the first React Flow import to the pattern)',
-  () => {},
-)
+test('builds flow-canvas with @xyflow/react@12.12.0 now that the pattern imports React Flow', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const canvas: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/flow-canvas.json'), 'utf8'),
+  )
+  expect(canvas.dependencies).toContain('@xyflow/react@12.12.0')
+})
 
 test('resolves the core entry of a pattern from a template import', () => {
   const root = resolve(import.meta.dir, '../../..')
