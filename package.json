@@ -12,6 +12,7 @@
     "overrides:check": "bun scripts/check-overrides.ts",
     "check:coss": "bun scripts/check-coss.ts",
     "sync:coss": "bun scripts/sync-coss.ts",
+    "sync:themes": "bun scripts/sync-themes.ts",
     "typecheck": "tsc --noEmit",
     "test:ui": "bun test --isolate packages/elements/src packages/utils/src",
     "test:helpers": "bun test --isolate packages/helpers/src",

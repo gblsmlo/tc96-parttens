@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/react-vite'
 import '../../example/packages/ui/src/styles.css'
+import { themePresets } from '../../example/packages/ui/src/themes/presets.ts'
 import { DocsPage } from './docs-page.tsx'
 
 type ThemeMode = 'system' | 'light' | 'dark'
@@ -26,6 +27,28 @@ const applyTheme = () => {
   document.body.dataset.theme = theme
 }
 
+const presetFontsId = 'theme-preset-fonts'
+
+const applyPreset = (value: unknown) => {
+  const preset = themePresets.find((item) => item.value === value)
+  const root = document.documentElement
+  if (!preset || preset.value === 'default') {
+    delete root.dataset.themePreset
+  } else {
+    root.dataset.themePreset = preset.value
+  }
+
+  const current = document.getElementById(presetFontsId)
+  if (current?.getAttribute('href') === preset?.fontsHref) return
+  current?.remove()
+  if (!preset?.fontsHref) return
+  const link = document.createElement('link')
+  link.id = presetFontsId
+  link.rel = 'stylesheet'
+  link.href = preset.fontsHref
+  document.head.append(link)
+}
+
 const listenToSystem = () => {
   if (listeningToSystem) return
   listeningToSystem = true
@@ -40,11 +63,24 @@ const preview: Preview = {
       mode = toThemeMode(context.globals.theme)
       listenToSystem()
       applyTheme()
+      applyPreset(context.globals.themePreset)
 
       return Story()
     },
   ],
   globalTypes: {
+    themePreset: {
+      description: 'Theme preset from the example theme',
+      toolbar: {
+        dynamicTitle: true,
+        icon: 'paintbrush',
+        items: themePresets.map(({ value, title, source }) => ({
+          value,
+          title,
+          right: source,
+        })),
+      },
+    },
     theme: {
       description: 'Global color theme',
       toolbar: {
@@ -60,6 +96,7 @@ const preview: Preview = {
   },
   initialGlobals: {
     theme: 'dark',
+    themePreset: 'default',
   },
   parameters: {
     // Uma violação do axe reprova o storybook:test. Exceções ficam na story,
