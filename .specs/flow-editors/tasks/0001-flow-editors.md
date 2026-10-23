@@ -274,7 +274,7 @@ T0 ─┬─ T1 (canvas) ──────┐
   - **Out of this Task:** histórico de conversas, anexos reais, streaming.
   - **Ships alone safely because:** item completo na família `chat`; nada existente o importa.
 
-- [ ] **T5 · Templates `workflow-editor` e `agent-builder` com `shared/` e documentação [ENGINEERING + DOCS]**
+- [x] **T5 · Templates `workflow-editor` e `agent-builder` com `shared/` e documentação [ENGINEERING + DOCS]**
   - **Owner:** `tc96-frontend:frontend-developer`, com `tc96-frontend:storybook-story` e `tc96-frontend:storybook-test`
   - **Depends on:** T1, T2, T3, T4
   - **Inputs:** ADR 0005 (D1, D3, D4, D6, D8); ADR 0006 (D1, D4, D8); `user-experience.md` inteiro
@@ -402,3 +402,14 @@ Cada sessão acrescenta aqui a data, a Task, e cada desvio do plano com o lugar 
 - A story `Error` tem o export `Failed` com `name: 'Error'`, porque o Biome proíbe sombrear o global `Error`; o ID é `patterns-chat-assistant--failed`.
 - `test/dom.ts` do assistente acrescenta, sobre a cópia do `chats-panel`, os globais de formulário, `document.fonts`, `ResizeObserver` e `getAnimations` que o `Composer` e o `ScrollArea` do COSS pedem em JSDOM.
 - `bun run build:registry` e `bun scripts/verify-public-api.ts --record` regravaram o baseline com os exports do `chat-assistant`; o `bun install` na worktree foi necessário (sem `node_modules`).
+
+**2026-10-23 · T5** (templates `workflow-editor` e `agent-builder`, branch `claude/flow-editors-t5-templates-5cf6ed` a partir de `85f0a67`). Evidência da tabela da T5 verde, exceto os screenshots anexados ao PR (não há PR nesta sessão; a leitura visual e os contrastes estão em `docs/architecture/tc96-parttens.md`, "Templates: editores de fluxo"). `bun run test` verde; `vitest` nos dois temas: 20 testes (10 stories), axe sem violação; `bun run story:source` de `Default` dos dois imprime `export default function Default()`. Desvios:
+
+- `flowStepNodeSize` saiu de `flow/canvas/lib/steps.ts` para `flow/canvas/core.ts` (o `exports` de `@tc96/parttens` só resolve `.tsx` e `./*/core`; o barrel do canvas continua exportando o nome). Registrado em `flow/canvas/AGENTS.md` e na doc de arquitetura. Única mudança em pattern.
+- Contrato dos templates: props planas (`steps`, `connections`, `stepTypes`, ...) e não um objeto `flow`; `onStepAdd(type, options?)` serve à biblioteca, ao arraste e ao formulário de criação (o inspector abre em `create` por "Adicionar passo", "+" do nó e "Adicionar ramo"). Registrado em `packages/templates/AGENTS.md` e na doc de arquitetura.
+- `shared/` ganhou arquivos além da lista do plano: `render-link.tsx`, `use-flow-editor.ts` (handlers comuns), `flow-step-inspector.tsx` (montagem do inspector), `flow-assistant.tsx`, `flow-confirm-dialog.tsx` e `flow-tool-button.tsx`. Registrado em `packages/templates/AGENTS.md`.
+- Os tipos de rótulo do canvas, do inspector e dos atalhos vêm de `ComponentProps<typeof ...>`, porque `types/index.ts` dos patterns não é alcançável pelo `exports` de `@tc96/parttens`. Registrado na doc de arquitetura.
+- O breadcrumb do cabeçalho se chama "Trilha do fluxo": o do shell ("Trilha de navegação") repetia o landmark e o axe reprovava (`landmark-unique`).
+- Ficaram de fora "Selecionar todos os passos" do menu (o canvas não tem seleção múltipla), as dicas em tooltip dos rótulos do formulário e o avatar no select de Responsável; "Copiar como JSON" é só o callback `onCopyJson`. Mobile: biblioteca `collapsed` (só ícones), não `Sheet`. Registrado na doc de arquitetura.
+- Registry: os filtros `existsSync` de `build-registry.ts` e `verify-public-api.ts` saíram; o `test.todo` das pastas de template voltou a teste; `manifest.test.ts` ganhou o teste de que `workflow-editor.json` e `agent-builder.json` levam só `application/flow/`, `flow/`, `chat/assistant/`, `elements` e `helpers`, com `@xyflow/react@12.12.0` e `d3-hierarchy@3.1.2`. `bun scripts/verify-public-api.ts --record` acrescentou só `template:workflow-editor` e `template:agent-builder`.
+- Os dois templates não pedem exceção em `scripts/override-exceptions.json`; `apps/storybook/.storybook/preview.ts` não mudou (`Application` já está na ordem). A medida de contraste da borda do campo inválido (1,36:1 no escuro) é do `Input` do COSS e está registrada, sem mudar token.

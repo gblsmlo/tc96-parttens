@@ -11,11 +11,11 @@ A controlled graph editor on `@xyflow/react`: `FlowCanvas` (its own `ReactFlowPr
 | `composition/flow-canvas-minimap/` | `FlowCanvasMinimap` |
 | `components/` | the node (`flow-step-node.tsx`), the edge and its controls, the node toolbar, context menu and actions menu, the shortcuts popover, the empty state and small helpers; never public except `FlowShortcutsPopover` |
 | `hooks/` | `useFlowShortcuts` (key handler for the canvas wrapper) and `useFlowDrop` (`onDragOver` and `onDrop` over `screenToFlowPosition`) |
-| `lib/` | `to-react-flow.ts` (steps and connections to nodes and edges and back, move, selection and measured-size helpers), `steps.ts` (kind, icons, action lists, `flowStepNodeSize`), `labels.ts` (pt-BR defaults), `variants.ts` (every class) |
+| `lib/` | `to-react-flow.ts` (steps and connections to nodes and edges and back, move, selection and measured-size helpers), `steps.ts` (kind, icons, action lists), `labels.ts` (pt-BR defaults), `variants.ts` (every class) |
 | `store/` | `flow-canvas-context.ts`: mode, labels, icons, connections and callbacks for the node, edge and controls |
 | `types/` | the props, labels and the React Flow node and edge types |
 | `test/dom.ts` | the JSDOM setup the tests import: `ResizeObserver` and `DOMMatrixReadOnly` on `globalThis` and `window`, offset sizes and `getBBox` |
-| `core.ts` | the React-free vocabulary of the whole `flow` family (`FlowStep`, `FlowConnection`, `tidyTree`, `parseStepTransfer`, ...), with `core.test.ts`; owned by the plan, not edited by the canvas |
+| `core.ts` | the React-free vocabulary of the whole `flow` family (`FlowStep`, `FlowConnection`, `tidyTree`, `flowStepNodeSize`, `parseStepTransfer`, ...), with `core.test.ts`; owned by the plan, not edited by the canvas. `flowStepNodeSize` moved here from `lib/steps.ts` in T5 so a template reaches it through `@tc96/parttens/flow/canvas/core`, the only `.ts` entry of the `exports` map |
 
 Import direction: `composition/` → `components/`, `hooks/`, `lib/`, `store/`, `types/`, `core.ts`; `components/` → `lib/`, `store/`, `types/`, `core.ts`, `@tc96/elements` and COSS; `lib/`, `hooks/` and `store/` → `core.ts` and `types/`. `@xyflow/react` is imported only inside this folder (`scripts/check-boundaries.test.ts`). No import into another pattern.
 

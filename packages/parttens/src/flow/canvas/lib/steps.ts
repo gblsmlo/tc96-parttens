@@ -23,8 +23,6 @@ import type {
   FlowStepType,
 } from '../core'
 
-export const flowStepNodeSize = [256, 100] as const
-
 export const flowKindIcons: Record<FlowStepKind, LucideIcon> = {
   action: PlayIcon,
   condition: GitBranchIcon,

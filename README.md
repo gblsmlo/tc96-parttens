@@ -74,6 +74,23 @@ import { AppShell1 } from '@acme/templates/application/shell/app-shell-1'
 
 The `tsconfig` `paths` entry for `templates` is needed only when you install a template. The Templates page in Storybook lists every template and its options.
 
+#### Templates: flow editors
+
+`workflow-editor` and `agent-builder` are two editor pages with the same anatomy: a page header (name, shortcuts, ask the AI, add step, run, actions menu), a step library on the left, a canvas on React Flow in the middle, an inspector with Build, Status and Logs on the right and an AI assistant card over the canvas. `workflow-editor` lays the steps out horizontally, with undo, redo, lock and a minimap; `agent-builder` lays them out as a vertical tree, with edge controls and an "Organizar árvore" button.
+
+```bash
+npx @tc96/parttens add workflow-editor
+npx @tc96/parttens add agent-builder
+```
+
+Both bring `@xyflow/react` and `d3-hierarchy`, the `tabs`, `context-menu`, `progress` and `alert` COSS components and the `flow-canvas`, `flow-step-library`, `flow-inspector` and `chat-assistant` pattern files they import. Import the React Flow stylesheet once in your global CSS; without it the canvas does not place nodes or edges:
+
+```css
+@import '@xyflow/react/dist/base.css';
+```
+
+The template is controlled: you pass the steps, the connections, the selection, the run state and the logs, and receive `onStepAdd`, `onStepChange`, `onStepsChange`, `onConnect`, `onRun` and the other callbacks. It never fetches, saves, keeps a history or calls a model; every text is in `labels`, in pt-BR by default.
+
 ### How it works
 
 - **Your COSS components:** if a COSS component is missing, it is installed through shadcn. If you already have it, yours is reused, customizations included

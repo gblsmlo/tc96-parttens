@@ -430,23 +430,18 @@ test('builds the wizard item from its folder with IconFrame and COSS dependencie
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
-test.todo(
-  'lists every template folder in templateSources (T5 of flow-editors creates the workflow-editor and agent-builder folders)',
-  () => {
-    const root = resolve(import.meta.dir, '../../..')
-    const folders = [
-      ...new Bun.Glob('*/*/*/index.ts').scanSync(
-        join(root, 'packages/templates/src'),
-      ),
-    ]
-      .map((path) => path.replace(/\/index\.ts$/, ''))
-      .sort()
-    expect(folders).toEqual(Object.values(templateSources).sort())
-    expect(Object.keys(templateSources).sort()).toEqual(
-      [...templateNames].sort(),
-    )
-  },
-)
+test('lists every template folder in templateSources', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const folders = [
+    ...new Bun.Glob('*/*/*/index.ts').scanSync(
+      join(root, 'packages/templates/src'),
+    ),
+  ]
+    .map((path) => path.replace(/\/index\.ts$/, ''))
+    .sort()
+  expect(folders).toEqual(Object.values(templateSources).sort())
+  expect(Object.keys(templateSources).sort()).toEqual([...templateNames].sort())
+})
 
 test('builds flow-canvas with the d3-hierarchy version of parttens and no React Flow in the other flow items', () => {
   const root = resolve(import.meta.dir, '../../..')
@@ -536,4 +531,37 @@ test('builds the app-shell-1 item with the shell shared files and the sidebar fr
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
+test('builds the flow templates from application/flow, the flow patterns, the assistant, elements and helpers only', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  for (const name of ['workflow-editor', 'agent-builder']) {
+    const item: RegistryItem = JSON.parse(
+      readFileSync(join(root, `dist/registry/${name}.json`), 'utf8'),
+    )
+    const paths = item.files.map((file) => file.path)
+
+    expect(item.name).toBe(name)
+    expect(item.dependencies).toContain('@xyflow/react@12.12.0')
+    expect(item.dependencies).toContain('d3-hierarchy@3.1.2')
+    expect(paths).toContain(`templates/src/application/flow/${name}/index.ts`)
+    expect(
+      paths.every(
+        (path) =>
+          path.startsWith('templates/src/application/flow/') ||
+          path.startsWith('parttens/src/flow/') ||
+          path.startsWith('parttens/src/chat/assistant/') ||
+          path.startsWith('elements/src/') ||
+          path.startsWith('helpers/src/'),
+      ),
+    ).toBe(true)
+    expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+    expect(paths.some((path) => path.includes('application/shell'))).toBe(false)
+  }
 })
