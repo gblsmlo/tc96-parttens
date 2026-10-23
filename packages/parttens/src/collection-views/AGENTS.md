@@ -110,7 +110,7 @@ Run the bench of each view whose rendering changed. `--gate` exits 1 when a rend
 
 Stories in `apps/storybook/src/patterns/collection-views/` run axe with `test: 'error'`. Fixtures in `fixtures/` are per usage: Tasks reads `tasks.ts`, Pipeline `deals.ts`, Contacts `contacts.ts` and Calendar `deal-activities.ts` over `deals.ts`. The `views/` stories read `tasks.ts`, except Calendar Interactions, which reads `events.ts`, and Gallery, which owns its document records. `tasks.ts` also exports the people, time zone and clock every fixture imports, and the record-dialog stories import `contacts.ts`, so editing either reaches beyond one usage.
 
-The toolbar with the view switcher lives in the Tasks, Pipeline and Contacts usages (`usages/<usage>.stories.tsx`). The Calendar usage and `views/calendar/calendar-interactions.stories.tsx` carry `fixtures/calendar-toolbar.tsx`: period, range and filters, no view switcher.
+The toolbar with the view switcher lives in the Tasks, Pipeline and Contacts usages (`usages/<usage>.stories.tsx`). Each usage story writes its screen in the meta's named `render`, so the Code panel shows the composition; `fixtures/contacts-usage.tsx` and `fixtures/pipeline-usage.tsx` copy the Contacts and Pipeline screens for `apps/storybook/src/templates/contacts.stories.tsx` and `deal-board.stories.tsx`, so a change to one goes to the other. The Calendar usage and `views/calendar/calendar-interactions.stories.tsx` carry `fixtures/calendar-toolbar.tsx`: period, range and filters, no view switcher.
 
 ## Pointers
 
