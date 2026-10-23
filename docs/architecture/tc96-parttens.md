@@ -599,3 +599,27 @@ Uma story fica na camada do que renderiza. Por isso, no mesmo dia:
 
 Os IDs dessas stories mudaram (`patterns-toolbar` virou `patterns-shared-toolbar`, `patterns-chat-*` virou `ui-chat-*`); as referências do repositório foram atualizadas. Como `Patterns/CollectionViews` e `Patterns/Widgets` não têm story raiz, `ActionBar` e `Stats` continuam com a própria página `Doc`.
 
+
+## Patterns: Chat Assistant
+
+Decidido em 2026-10-23 (ADR 0006 D9, plano `.specs/flow-editors/tasks/0001-flow-editors.md`, T4). `chat/assistant` (item `chat-assistant`) é o cartão de um assistente de IA para um editor: `AssistantPanel`, `AssistantSuggestions` e `AssistantComposer`, sobre o COSS `Card`, `Badge`, `Button`, `Tooltip`, `chat/*` (`ChatConversation`, `ChatMessage`, `ChatTypingIndicator`, `useChatScroll`) e `composer`. É controlado: o consumidor passa `messages`, `suggestions`, `typing` e `expanded` e responde `onSend`, `onSuggestion`, `onAttach`, `onNewChat`, `onHistory`, `onExpandedChange`, `onEnd` e `onRetry`; o pattern não chama modelo, não busca e não persiste. O item depende de `@coss/chat` e `@coss/composer`.
+
+- **Posição.** `placement="floating"` é um `absolute` no canto inferior final do ancestral posicionado mais próximo (o canvas), com a sombra no invólucro `section` e não no `Card`, para não sobrescrever a sombra do COSS; `docked` ocupa o pai. `expanded` só muda o tamanho do cartão flutuante; "Minimizado" é `expanded={false}`, o tamanho compacto, e não um cabeçalho recolhido. Cada botão do cabeçalho só existe com o callback.
+- **Compositor.** Usa `ComposerInput` como `textarea` (texto puro), `Enter` envia e `Shift + Enter` quebra a linha, como o `Composer` do COSS; o envio entrega o texto aparado e limpa o campo, e um rascunho em branco não envia.
+- **Exceção de sobrescrita.** `ComposerInput` recebe `placeholder:text-muted-foreground` (registrado em `scripts/override-exceptions.json`).
+
+Auditoria de contraste (2026-10-23, medida no Storybook com o tema `Default`; texto precisa de 4,5:1, gráficos de 3:1; nenhum valor de token foi mudado):
+
+| Par | Claro | Escuro |
+| --- | --- | --- |
+| título e saudação (`foreground` sobre o cartão) | 15,17 | 15,23 |
+| descrição, "Experimente perguntar", aviso fixo e hora (`muted-foreground` sobre o cartão) | 5,73 | 5,07 |
+| balão do assistente (`foreground` sobre `foreground/4`) | 14,06 | 13,67 |
+| balão do usuário (`foreground` sobre `foreground/12`) | 11,95 | 10,65 |
+| sugestão e ícones do cabeçalho e do compositor | 14,52 a 15,17 | 13,90 a 15,23 |
+| erro: texto da mensagem e botão Tentar de novo | 14,06 e 15,17 | 13,67 e 12,62 |
+| erro: ícone `destructive-foreground` (gráfico) | 5,95 | 5,16 |
+| placeholder do compositor antes (`muted-foreground/72`, COSS) | 3,08 | 3,15 |
+| placeholder do compositor depois (`placeholder:text-muted-foreground`) | 5,48 | 4,71 |
+
+O placeholder é o único par que falhava: o texto de orientação do compositor precisa de 4,5:1, e o ajuste entrou onde o elemento encontra a superfície, como exceção registrada, sem tocar `packages/ui`. O axe passa nos dois temas (`bunx vitest run --project=storybook --project=storybook-dark src/patterns/chat/assistant`). A posição flutuante sobre um canvas real só se prova no viewport (T5).

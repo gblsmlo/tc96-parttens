@@ -154,5 +154,11 @@
     "component": "Card",
     "className": "dark:bg-sidebar",
     "reason": "No escuro, `bg-muted` (branco a 4%) fica mais claro que o `bg-card` e o card do conteúdo parecia afundado (1,05:1 mais escuro); o token `sidebar` do tema é mais escuro que o fundo, e o card do conteúdo volta a ficar à frente, 1,19:1 mais claro."
+  },
+  {
+    "file": "packages/parttens/src/chat/assistant/composition/assistant-composer/assistant-composer.tsx",
+    "component": "ComposerInput",
+    "className": "placeholder:text-muted-foreground",
+    "reason": "O placeholder do ComposerInput usa `muted-foreground` a 72% sobre o fundo do compositor e mede 3,15:1 no escuro e 3,08:1 no claro; o texto de orientação do assistente precisa de 4,5:1, e `placeholder:text-muted-foreground` com opacidade total mede 4,71:1 no escuro e 5,48:1 no claro sobre o fundo do compositor, sem mudar nenhum valor de token."
   }
 ]

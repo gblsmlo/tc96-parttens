@@ -33,7 +33,7 @@ for (const pkg of ['elements', 'helpers', 'parttens']) {
 // aliases, never followed into the distributed files. Each ui component
 // becomes a COSS registry dependency.
 const consumerOwned = /^@tc96\/(ui|utils)(\/|$)/
-const uiComponent = /^@tc96\/ui\/([^/]+)$/
+const uiComponent = /^@tc96\/ui\/(?:([^/]+)|(chat)\/.+)$/
 // The aggregate re-exports the pattern barrels and shared areas such as
 // shared/. An area's barrel ships with every pattern that uses the area, so
 // the consumer's generated barrel can export it.
@@ -84,7 +84,8 @@ for (const [name, entry] of entries) {
     })
     for (const imported of ts.preProcessFile(content).importedFiles) {
       const specifier = imported.fileName
-      const component = specifier.match(uiComponent)?.[1]
+      const match = specifier.match(uiComponent)
+      const component = match?.[1] ?? match?.[2]
       if (component) components.add(cossDependency(component))
       if (consumerOwned.test(specifier)) continue
       if (specifier.startsWith('.') || specifier.startsWith('@tc96/')) {
