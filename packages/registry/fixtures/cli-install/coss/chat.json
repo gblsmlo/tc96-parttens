@@ -1,0 +1,20 @@
+{
+  "name": "chat",
+  "type": "registry:component",
+  "dependencies": ["motion@14.0.0"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/default/chat/chat-bubble.tsx",
+      "content": "import { useChatScroll } from \"@/registry/default/chat/hooks/use-chat-scroll\"\nexport const ChatBubble = useChatScroll\n"
+    },
+    {
+      "path": "registry/default/chat/hooks/use-chat-scroll.ts",
+      "content": "import { split } from \"@/registry/default/chat/lib/split-chat-message-preview\"\nexport const useChatScroll = split\n"
+    },
+    {
+      "path": "registry/default/chat/lib/split-chat-message-preview.ts",
+      "content": "export const split = 1\n"
+    }
+  ]
+}

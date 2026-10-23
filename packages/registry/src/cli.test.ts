@@ -322,3 +322,37 @@ test('installs a template with the COSS hook its components need', async () => {
     await rm(root, { recursive: true, force: true })
   }
 })
+
+test('installs a multi-file COSS item under its folder with its npm dependency', async () => {
+  const root = await installConsumer()
+  try {
+    const result = installItem(root, 'chat-assistant', '--dry-run')
+    expect(result.stderr).not.toContain('Error')
+    expect(result.status).toBe(0)
+    for (const file of [
+      'chat/chat-bubble.tsx',
+      'chat/hooks/use-chat-scroll.ts',
+      'chat/lib/split-chat-message-preview.ts',
+    ])
+      expect(result.stdout).toContain(`create: src/ui/${file}`)
+    expect(result.stdout).toContain('Missing COSS components')
+    expect(result.stdout).toContain('motion@14.0.0')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('a folder named after a multi-file COSS item counts as installed', async () => {
+  const root = await installConsumer()
+  try {
+    await mkdir(join(root, 'src/ui/chat'), { recursive: true })
+    const result = installItem(root, 'chat-assistant', '--dry-run')
+    expect(result.status).toBe(0)
+    expect(result.stdout).toContain(
+      'Every COSS component the patterns use is already installed',
+    )
+    expect(result.stdout).not.toContain('create: src/ui/chat/')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})

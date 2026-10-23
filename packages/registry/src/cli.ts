@@ -7,8 +7,8 @@ import { aggregateBarrel, writeBarrel } from './barrel'
 import { checkCompatibility } from './check-compatibility'
 import { findProjectRoot, readCossConfig, readInstallConfig } from './config'
 import {
-  componentFile,
-  cossFiles,
+  componentFiles,
+  cossInstalledPaths,
   loadItem,
   missingTheme,
   resolveItems,
@@ -90,7 +90,7 @@ async function main() {
   // COSS utils is the consumer's cn, reached through aliases.utils.
   const installed = (component: string) =>
     component === 'utils' ||
-    Object.values(cossFiles(component)).some((path) =>
+    cossInstalledPaths(component).some((path) =>
       existsSync(join(workspace, configuration.paths.ui, path)),
     )
   const patterns = omitInstalled(
@@ -105,8 +105,12 @@ async function main() {
   const item: RegistryItem = {
     ...patterns,
     files: [
-      ...components.map((component) =>
-        componentFile(component, configuration.aliases, configuration.paths.ui),
+      ...components.flatMap((component) =>
+        componentFiles(
+          component,
+          configuration.aliases,
+          configuration.paths.ui,
+        ),
       ),
       ...patterns.files,
     ],

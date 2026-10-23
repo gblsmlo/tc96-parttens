@@ -1,0 +1,13 @@
+{
+  "name": "chat-assistant",
+  "type": "registry:block",
+  "dependencies": [],
+  "registryDependencies": ["@coss/chat"],
+  "files": [
+    {
+      "path": "parttens/src/chat/proof.ts",
+      "type": "registry:file",
+      "content": "import { ChatBubble } from \"@tc96/ui/chat/chat-bubble\"\nexport const proof = ChatBubble\n"
+    }
+  ]
+}
