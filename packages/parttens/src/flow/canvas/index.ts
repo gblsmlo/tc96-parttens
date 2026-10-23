@@ -1,3 +1,6 @@
+export type { FlowShortcutsPopoverProps } from './components/flow-shortcuts-popover'
+export { FlowShortcutsPopover } from './components/flow-shortcuts-popover'
+export * from './composition/index'
 export type {
   FlowConnection,
   FlowDirection,
@@ -19,3 +22,12 @@ export {
   serializeStepTransfer,
   tidyTree,
 } from './core'
+export { flowStepNodeSize } from './lib/steps'
+export type {
+  FlowCanvasLabels,
+  FlowCanvasMode,
+  FlowCanvasProps,
+  FlowConnectInput,
+  FlowPosition,
+  FlowShortcutsLabels,
+} from './types'

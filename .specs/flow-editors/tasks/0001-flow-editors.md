@@ -184,7 +184,7 @@ T0 ─┬─ T1 (canvas) ──────┐
   - **Out of this Task:** qualquer componente React da família; stories.
   - **Ships alone safely because:** adiciona dependências, tipos e itens COSS sem mudar nenhum pattern existente.
 
-- [ ] **T1 · Pattern `flow/canvas` sobre React Flow [ENGINEERING]**
+- [x] **T1 · Pattern `flow/canvas` sobre React Flow [ENGINEERING]**
   - **Owner:** `tc96-frontend:frontend-developer`, com `tc96-frontend:storybook-story` para as stories e `tc96-frontend:storybook-test` para os `play`
   - **Depends on:** T0
   - **Inputs:** ADR 0006 (D3, D4, D5, D6, D7, D10); `user-experience.md` §2 "Canvas", §3, §4
@@ -358,3 +358,15 @@ Cada sessão acrescenta aqui a data, a Task, e cada desvio do plano com o lugar 
 - `manifest.test.ts`: o teste das pastas de template e o teste de que `flow-canvas` declara `@xyflow/react@12.12.0` ficam `test.todo` (o segundo porque o item só ganha o import do React Flow na T1). Ativos: `d3-hierarchy@3.1.2` em `flow-canvas`, ausência de `@xyflow/react` nos outros três itens, e a resolução de `@tc96/parttens/flow/canvas/core` a partir de um template.
 - `bun scripts/verify-public-api.ts --record` acrescentou também `template:app-shell-2`, `-3`, `-4` e seus exports, pendentes antes desta Task e sem relação com ela.
 - `TidyTreeOptions` foi exportado além do contrato, e `nodeSize` e `gap` são `readonly [number, number]`.
+
+**2026-10-23 · T1** (branch `claude/flow-editors-t1-canvas-7299a1`, cortada de `feat/flow-editors` no commit `8a92850`). Evidência da tabela da T1 verde, exceto os screenshots anexados ao PR (não há PR nesta sessão; as razões de contraste e a leitura visual estão em `docs/architecture/tc96-parttens.md`, "Patterns: Flow Canvas"). Desvios:
+
+- `--xy-*` por classe, não pelo tema do exemplo: as variáveis do React Flow são redefinidas na raiz `.react-flow` com classes arbitrárias do Tailwind sobre token (`lib/variants.ts`), então `apps/example/packages/ui/src/styles.css` não mudou; o que `base.css` escreve direto em propriedade (`stroke` da aresta, fundo do handle, cor do link de atribuição) usa o modificador `!`. Registrado em `docs/architecture/tc96-parttens.md` e no `AGENTS.md` do pattern.
+- `onStepsChange` recebe a lista inteira com o passo movido (React Flow controlado), e `onStepAction` ganhou um terceiro argumento opcional, a conexão, para o "+" da aresta (`add-after` com `connection.source` e a conexão); remover conexão chama `onConnectionsChange`. `core.ts` não mudou. Registrado em `AGENTS.md`, "Invariants".
+- `flowStepNodeSize` (256 por 100) sai do barrel do canvas para o consumidor passar ao `tidyTree`; `FlowShortcutsPopover` também é público. Baseline `public-api-exports.json` regravado com os 14 exports novos (só do canvas).
+- Em modo controlado o React Flow não dá `measured` ao nó sem as mudanças `dimensions`; o canvas as guarda em estado efêmero (sem elas o minimapa não desenhava nó algum). Registrado em `docs/architecture/tc96-parttens.md`.
+- Handles com `role="button"` porque o axe recusa `aria-label` em `div` sem papel; não são operáveis por teclado (o React Flow não os torna focáveis), então "`Tab` passa pelos handles" da `user-experience.md` §4 não foi atendido. Registrado em `AGENTS.md`.
+- `test/dom.ts` (da T0) passou a pôr `ResizeObserver` e `DOMMatrixReadOnly` também em `window`; o React Flow lê `window.DOMMatrixReadOnly`.
+- O `FlowStepNode` não mostra `FlowStepRun.note`; as métricas aparecem só no rodapé vertical (agent) e a duração só no horizontal (workflow). A `note` fica para o inspector (T3).
+- `manifest.test.ts`: o `test.todo` de `@xyflow/react@12.12.0` em `flow-canvas` virou teste ativo.
+- `storybook:test` do React Flow no vitest browser fechou sem mocks (`ResizeObserver` e medidas reais); o único aviso foi `ResizeObserver loop completed with undelivered notifications` no log do `storybook dev`, benigno e sem efeito nos testes.

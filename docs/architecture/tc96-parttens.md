@@ -587,6 +587,37 @@ Decidido em 2026-10-21, a pedido do dono ([ADR 0005](../../.specs/adr/0005-insta
 - **`min-w-0` no `SidebarInset`:** achado ao pôr `Templates/Contacts` no shell. O inset é item flex da linha do `SidebarProvider` e ficava com `min-width: auto`; a `DataTable` de 1191px alargava o inset para 1225px ao lado do sidebar de 256px, e a página de 1440px rolava na horizontal (1481px) com o Novo contato cortado. Os quatro shells passam `className="min-w-0"` ao `SidebarInset`, uma classe de layout fora do `overrides:check`; o inset volta a 1184px e a tabela rola no próprio container.
 - **Testes:** cada shell tem `play` para landmarks, `aria-current`, menus e callbacks, em claro e escuro com axe. `AppShell1/Mobile` usa o viewport `mobile2` (414px), abaixo dos 800px do `max-md` do COSS, e confere a navegação dentro do `Sheet`. O `useArgs` do Storybook não re-renderiza no `storybook:test`, então `AppShell4` mantém a seção em estado local semeado pelo arg `sectionId`.
 
+## Patterns: Flow Canvas
+
+Decidido em 2026-10-23 ([ADR 0006](../../.specs/adr/0006-flow-family-on-react-flow.md), plano `.specs/flow-editors/tasks/0001-flow-editors.md`, Task T1). `flow/canvas` é o pattern sobre `@xyflow/react` 12.12.0; os outros patterns da família não o importam.
+
+- **Nota ao consumidor:** o `base.css` do React Flow é folha de biblioteca e o consumidor a importa uma vez, no CSS global (`@import '@xyflow/react/dist/base.css';`). Sem ela o canvas não posiciona nós nem arestas. O Storybook a importa em `.storybook/preview.ts`.
+- **Cores sem tema novo:** `base.css` lê o que o React Flow pinta por variáveis `--xy-*` com valor padrão (`--xy-edge-stroke`, `--xy-minimap-*`, `--xy-background-pattern-dots-color`, `--xy-attribution-background-color`). O pattern as redefine na raiz `.react-flow` com classes arbitrárias do Tailwind sobre o token (`[--xy-edge-stroke:var(--color-muted-foreground)]`), então nenhuma regra entra no `styles.css` do exemplo e o tema do consumidor vale sem passo extra. O que `base.css` escreve direto em propriedade (`stroke`, `background-color` do handle) fica fora de camada e vence uma utilidade comum; por isso a aresta e o handle usam o modificador `!` (`stroke-muted-foreground!`, `bg-muted-foreground!`). O link de atribuição ("React Flow") fica visível, com a cor `text-muted-foreground!`: o `#999` da folha dava 2,73:1 no claro.
+- **Um `FlowCanvas` para os dois editores:** `direction` troca os lados dos handles e, em `vertical`, liga por padrão os controles de aresta e o menu do nó; `flowStepNodeSize` (256 por 100) é o tamanho que o consumidor passa ao `tidyTree`. O canvas nunca reposiciona.
+- **Nó:** `ContextMenu` do COSS no cartão do nó; os handles ficam fora do gatilho, irmãos do cartão, por isso o menu não interfere na conexão. O `ariaLabel` e o `aria-roledescription` vão pelo próprio nó do React Flow (`ariaLabel`, `domAttributes`), e os handles levam `role="button"` com o nome "Conectar a partir de/em ...": sem papel o axe recusa `aria-label` em `div` (`aria-prohibited-attr`).
+- **Medidas do nó:** em modo controlado o React Flow só põe `measured` no nó quando o consumidor aplica as mudanças `dimensions`; o canvas guarda as medidas num estado efêmero e as devolve em `nodes`. Sem isso o minimapa não desenhava nenhum nó.
+- **Contraste (medido em 2026-10-23, `Horizontal` e `Vertical`, tema `Default`; texto 4,5:1, gráfico 3:1):**
+
+| Par | Claro | Escuro |
+| --- | --- | --- |
+| título do nó sobre `card` | 15,17:1 | 15,23:1 |
+| descrição e rodapé do nó (`muted-foreground`) | 5,73:1 | 5,07:1 |
+| badge `Sucesso` / `Falhou` | 4,99:1 / 5,59:1 | 6,63:1 / 5,30:1 |
+| badge `Não executado` / `Ignorado` | 14,52:1 / 13,91:1 | 14,15:1 / 13,67:1 |
+| rótulo da aresta | 14,52:1 | 14,97:1 |
+| iniciais do responsável (`text-foreground` sobre `border`) | 12,72:1 | 12,89:1 (antes 4,25:1 com `muted-foreground`, texto de 10 px, axe) |
+| aresta (gráfico) / aresta percorrida | 5,48:1 / 14,52:1 | 5,34:1 / 16,03:1 |
+| handle (gráfico) | 5,73:1 | 5,07:1 |
+| borda do nó selecionado (`primary`) | 14,52:1 | 16,03:1 |
+| anel de foco (`ring`) | 4,54:1 | 3,69:1 |
+| nó do minimapa sobre o fundo do minimapa | 5,73:1 | 5,07:1 |
+| nível de zoom e botões dos controles | 15,17:1 e 13,19:1 | 14,15:1 e 12,11:1 |
+| link de atribuição | 5,48:1 (antes 2,73:1) | 5,34:1 |
+
+  A borda do cartão do nó (`border`) mede 1,19:1 e 1,17:1: é moldura, a leitura do nó está no texto e no badge, e o nó selecionado e o foco têm os pares acima. Os pontos do fundo são decoração.
+- **Espaçamento e composição:** conferidos em captura do claro e do escuro de `Horizontal`, `Selected` e `Vertical` num viewport de 800 por 600. O título e a descrição do nó truncam em uma linha ao lado do badge; os controles ficam no canto inferior esquerdo e o minimapa, a partir de `md`, no inferior direito; o React Flow não reserva a área dos dois painéis no `fitView`, então num viewport estreito os painéis podem cobrir uma folha do grafo.
+- **Testes:** `bun test` cobre `to-react-flow` nos dois sentidos, o `onDrop` com um `DataTransfer` montado à mão (JSDOM não tem `DragEvent`, então o evento é um `MouseEvent` com `dataTransfer` definido), os atalhos e o `aria-busy`; os `play` de `Horizontal` e `Vertical` cobrem seleção, toolbar, menu de contexto e controles de aresta, em claro e escuro com axe.
+
 ## Storybook: sidebar por camada
 
 Decidido em 2026-10-21, a pedido do dono: a sidebar segue a progressão do atomic design (peças base, peças compostas, blocos de produto, layouts e telas), sem o vocabulário dele, com o nome das camadas que o CLI instala. As raízes ficam nesta ordem, fixada no `storySort` de `apps/storybook/.storybook/preview.ts`: `Get Started`, `UI` (COSS, alias `ui`), `Elements` (alias `elements`), `Patterns` (alias `patterns`), `Application` (templates instaláveis, alias `templates`) e `Templates` (`Templates/Doc` e as telas que vivem só no Storybook, ADR 0004). Antes a ordem era alfabética e punha `Application` antes de `UI`. O `Get Started` ganhou a seção "How this Storybook is organized" com a mesma tabela.
