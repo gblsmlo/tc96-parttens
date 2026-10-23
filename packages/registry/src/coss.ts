@@ -39,35 +39,30 @@ export function normalizeImports(
       `$1${aliases.utils}$1`,
     )
     .replace(
-      /(["'])@\/registry\/default\/ui\/([^"']+)\1/g,
-      `$1${aliases.ui}/$2$1`,
-    )
-    .replace(
-      /(["'])@\/registry\/default\/((?:hooks|lib)\/[^"']+)\1/g,
+      /(["'])@\/registry\/default\/(?:ui\/)?([^"']+)\1/g,
       `$1${aliases.ui}/$2$1`,
     )
 }
 
 /**
- * Where a COSS item goes under the ui directory: a component at its root, a
- * hook in hooks/. Items with more files are not installed.
+ * Paths under the ui directory where an installed COSS item leaves a trace: a
+ * component at the root, a hook in hooks/, or a folder named after an item
+ * with several files.
  */
-export function cossFiles(name: string) {
-  return {
-    [`registry/default/ui/${name}.tsx`]: `${name}.tsx`,
-    [`registry/default/hooks/${name}.ts`]: `hooks/${name}.ts`,
-  }
+export function cossInstalledPaths(name: string) {
+  return [`${name}.tsx`, `hooks/${name}.ts`, name]
 }
 
-export function itemFile(item: CossRegistryItem) {
-  const [file, ...rest] = item.files
-  const path =
-    file && !rest.length ? cossFiles(item.name)[file.path] : undefined
-  if (!file || !path)
-    throw new Error(
-      `${item.name}: expected one file at registry/default/ui/${item.name}.tsx or registry/default/hooks/${item.name}.ts`,
-    )
-  return { path, content: file.content }
+/**
+ * Where a registry file goes under the ui directory: the registry/default
+ * prefix and the ui/ segment are dropped, other folders are kept.
+ */
+export function cossPath(item: string, path: string) {
+  const relative = path.match(/^registry\/default\/(?:ui\/)?(.+)$/)?.[1]
+  if (!relative) throw new Error(`${item}: ${path} is outside registry/default`)
+  if (relative === 'lib/utils.ts')
+    throw new Error(`${item}: lib/utils.ts is the consumer's own utils`)
+  return relative
 }
 
 // components.json may point @coss at a mirror. Only the string form is read;
@@ -126,28 +121,33 @@ export async function resolveItems(
   return [...items.values()].sort((a, b) => a.name.localeCompare(b.name))
 }
 
-/** The item's component, with imports rewritten to the consumer's aliases. */
-export function componentFile(
+/** The item's files, with imports rewritten to the consumer's aliases. */
+export function componentFiles(
   item: CossRegistryItem,
   aliases: CossAliases,
   directory: string,
-): RegistryFile {
+): RegistryFile[] {
   for (const key of ['envVars', 'devDependencies', 'tailwind'] as const) {
     const value = item[key]
     if (value && Object.keys(value).length)
       throw new Error(`${item.name}: COSS items with ${key} are not supported`)
   }
-  const file = itemFile(item)
-  const content = normalizeImports(file.content, aliases)
-  const unresolved = content.match(/(["'])(@\/[^"']*)\1/)
-  if (unresolved)
-    throw new Error(`${item.name}: import ${unresolved[2]} has no alias`)
-  return {
-    path: `coss/${file.path}`,
-    type: 'registry:ui',
-    content,
-    target: `~/${directory}/${file.path}`,
-  }
+  if (!item.files.length) throw new Error(`${item.name}: has no files`)
+  return item.files.map((file) => {
+    const path = cossPath(item.name, file.path)
+    const content = normalizeImports(file.content, aliases)
+    const unresolved = content.match(/(["'])(@\/[^"']*)\1/)
+    if (unresolved)
+      throw new Error(
+        `${item.name}: import ${unresolved[2]} in ${path} has no alias`,
+      )
+    return {
+      path: `coss/${path}`,
+      type: 'registry:ui',
+      content,
+      target: `~/${directory}/${path}`,
+    }
+  })
 }
 
 export interface MissingTheme {

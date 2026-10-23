@@ -2,6 +2,7 @@ import { expect, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
+import ts from 'typescript'
 import {
   assertDistributable,
   combineItems,
@@ -373,6 +374,35 @@ test('builds the chats-panel item from the chat folder with COSS-only dependenci
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
+test('builds the chat-assistant item with the COSS chat and composer dependencies', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/chat-assistant.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('chat-assistant')
+  expect(item.registryDependencies).toEqual([
+    '@coss/badge',
+    '@coss/button',
+    '@coss/card',
+    '@coss/chat',
+    '@coss/composer',
+    '@coss/tooltip',
+  ])
+  expect(paths).toContain('parttens/src/chat/assistant/index.ts')
+  expect(paths.every((path) => path.startsWith('parttens/src/chat/'))).toBe(
+    true,
+  )
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
 test('builds the wizard item from its folder with IconFrame and COSS dependencies', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(
@@ -413,6 +443,62 @@ test('lists every template folder in templateSources', () => {
   expect(Object.keys(templateSources).sort()).toEqual([...templateNames].sort())
 })
 
+test('builds flow-canvas with the d3-hierarchy version of parttens and no React Flow in the other flow items', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const read = (name: string): RegistryItem =>
+    JSON.parse(readFileSync(join(root, `dist/registry/${name}.json`), 'utf8'))
+  const canvas = read('flow-canvas')
+  expect(canvas.dependencies).toContain('d3-hierarchy@3.1.2')
+  for (const name of ['flow-step-library', 'flow-inspector', 'chat-assistant'])
+    expect(
+      read(name).dependencies.some((dependency) =>
+        dependency.startsWith('@xyflow/react@'),
+      ),
+    ).toBe(false)
+})
+
+test('builds flow-canvas with @xyflow/react@12.12.0 now that the pattern imports React Flow', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const canvas: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/flow-canvas.json'), 'utf8'),
+  )
+  expect(canvas.dependencies).toContain('@xyflow/react@12.12.0')
+})
+
+test('resolves the core entry of a pattern from a template import', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const configuration = ts.readConfigFile(
+    join(root, 'tsconfig.json'),
+    ts.sys.readFile,
+  )
+  const parsed = ts.parseJsonConfigFileContent(
+    configuration.config,
+    ts.sys,
+    root,
+  )
+  const resolved = ts.resolveModuleName(
+    '@tc96/parttens/flow/canvas/core',
+    join(root, 'packages/templates/src/application/flow/shared/types.ts'),
+    parsed.options,
+    ts.sys,
+  ).resolvedModule
+  expect(resolved?.resolvedFileName).toBe(
+    join(root, 'packages/parttens/src/flow/canvas/core.ts'),
+  )
+})
+
 test('builds the app-shell-1 item with the shell shared files and the sidebar from COSS', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(
@@ -445,4 +531,37 @@ test('builds the app-shell-1 item with the shell shared files and the sidebar fr
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
+test('builds the flow templates from application/flow, the flow patterns, the assistant, elements and helpers only', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  for (const name of ['workflow-editor', 'agent-builder']) {
+    const item: RegistryItem = JSON.parse(
+      readFileSync(join(root, `dist/registry/${name}.json`), 'utf8'),
+    )
+    const paths = item.files.map((file) => file.path)
+
+    expect(item.name).toBe(name)
+    expect(item.dependencies).toContain('@xyflow/react@12.12.0')
+    expect(item.dependencies).toContain('d3-hierarchy@3.1.2')
+    expect(paths).toContain(`templates/src/application/flow/${name}/index.ts`)
+    expect(
+      paths.every(
+        (path) =>
+          path.startsWith('templates/src/application/flow/') ||
+          path.startsWith('parttens/src/flow/') ||
+          path.startsWith('parttens/src/chat/assistant/') ||
+          path.startsWith('elements/src/') ||
+          path.startsWith('helpers/src/'),
+      ),
+    ).toBe(true)
+    expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+    expect(paths.some((path) => path.includes('application/shell'))).toBe(false)
+  }
 })

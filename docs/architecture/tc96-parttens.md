@@ -377,6 +377,7 @@ Decidido em 2026-10-11 ([ADR 0001](../../.specs/adr/0001-instalador-proprio.md))
 - **Formato:** cada item tem um único arquivo `registry/default/ui/<item>.tsx`. Mais arquivos, `envVars`, `devDependencies`, `tailwind`, dependência fora de `@coss/` ou import `@/` sem alias reprovam a instalação.
 - **Tema:** medido em 2026-10-11, 5 dos 34 itens do lock declaram `cssVars` (badge, button, field e menu em `light` e `dark`; skeleton em `theme`, com um `@keyframes` em `css`). O CLI não edita o CSS do consumidor: lista os tokens e as regras que o arquivo de `tailwind.css` não menciona, prontos para copiar. A busca é textual e só nesse arquivo.
 - **Dependências npm:** instala as que o `package.json` da raiz do consumidor não declara e as ausentes ou de major incompatível, num comando do gerenciador detectado pelo `packageManager` ou pelo lockfile; `pnpm` com `pnpm-workspace.yaml` recebe `-w`. Um pacote achado só como dependência transitiva ou acima da raiz conta como ausente: medido em 2026-10-11 no `test:consumer:registry`, aceitá-lo deixou duas cópias de `@platejs/core` e reprovou a verificação de tipos do `rich-text-editor`.
+- **Itens de vários arquivos:** decidido em 2026-10-23 (Amendment 001 do [ADR 0005](../../.specs/adr/0005-installable-templates.md)). O `chat` do COSS tem 23 arquivos em `chat/`, e o CLI grava cada um sob `<ui>/` com o mapa do `sync:coss` (sem `registry/default/` e sem `ui/`), reescrevendo `@/registry/default/<dir>/<resto>` para `<aliases.ui>/<dir>/<resto>`. A pasta `<ui>/<item>/` conta como item instalado, e as dependências npm do item (`motion@14.0.0`) seguem o fluxo acima. A linha **Formato** vale para o que sobra: `envVars`, `devDependencies`, `tailwind`, dependência fora de `@coss/` e import `@/` sem alias reprovam; um único arquivo por item deixou de ser exigido.
 - **Persistência dos aliases:** o CLI não regrava o `components.json`; o aviso sobre o `init --force` continua para quem roda o shadcn por conta própria.
 
 Contrato proposto do comando:
@@ -453,6 +454,32 @@ Medido no navegador: as cores computadas do tema de exemplo foram convertidas pa
 
 Decidido em 2026-10-21, tipo do `renderPlaceholder`. O registro fixa `platejs@53.3.14`, mas ele pede `@platejs/core ^53.3.14`, e o npm do consumidor resolve a última da faixa: medido no `test:consumer:registry`, `@platejs/core@53.3.18` com `slate-react@0.145.1`, enquanto o `bun.lock` tem `53.3.14` com `0.126.4`. No `slate-react@0.145.1` o `RenderPlaceholderProps` passou a exigir `'aria-hidden'`, e o `EditableProps` do próprio Plate, que tipa o prop do `PlateContent`, não; a função tipada com `RenderPlaceholderProps` reprovava a verificação de tipos do consumidor (TS2322). O pattern tipa o argumento com `PlateContentProps['renderPlaceholder']`, que compila nas duas versões sem afrouxar a checagem. Fixar `@platejs/core` no registro foi descartado: ele não é importado pelo pattern, então não vira dependência do item, e fixá-lo travaria o consumidor numa versão que o `platejs` já aceita substituir.
 
+## Patterns: Flow Inspector
+
+Decidido em 2026-10-23 ([ADR 0006](../../.specs/adr/0006-flow-family-on-react-flow.md), D8; plano `.specs/flow-editors/tasks/0001-flow-editors.md`, Task T3). `flow/inspector` é o painel lateral dos detalhes de um passo: o quadro (`FlowInspector`) e três renderizadores de leitura (`FlowInspectorDetails`, `FlowInspectorStatus`, `FlowInspectorLogs`). O formulário de edição é do consumidor, por `build`; o pattern não busca, não filtra e não persiste.
+
+- **Dock e `Sheet`:** a partir de `md` (800px, `useMediaQuery('md')` do COSS) o inspector é um `aside` nomeado "Detalhes do passo", com a largura na variável `--flow-inspector-width` (prop `width`, `24rem`), `data-docked="true"` aberto e largura zero com `inert` fechado; o conteúdo interno mantém a largura cheia, então a transição de 200 ms (`motion-reduce:transition-none`) só revela o painel, sem reflow. Abaixo de `md` renderiza um `Sheet` com o mesmo corpo, sem botão de fechar do COSS (o cabeçalho tem o seu) e `onClose` em Esc e no clique fora.
+- **Quadro:** `build`, `status` e `logs` são o conteúdo de cada aba, `children` é o rodapé, `headerActions` entra antes do botão "Fechar detalhes do passo", que o pattern sempre desenha. `disabledTabs` desabilita a aba (o Base UI usa `aria-disabled`, não `disabled`). `unconnected` mostra o `Alert` "Nada chega a este passo." só em Build.
+- **Controlado:** as entradas de log chegam já filtradas; `filter` e `onFilterChange` só guiam o `ToggleGroup`, que expõe `aria-pressed`, não `radio`. Os textos visíveis são `labels` em pt-BR, com padrão em `defaultFlowInspectorLabels`.
+- **Contraste (medido em 2026-10-23, tema `Default`, cores do Tailwind 4.3.3 em sRGB e alfa composto sobre `background`):**
+
+| Par | Claro | Escuro |
+| --- | --- | --- |
+| Valor (`foreground`) sobre `background` | 14,56:1 | 16,04:1 |
+| Rótulo, contagem e descrição (`muted-foreground`) sobre `background` | 5,45:1 | 5,35:1 |
+| `Badge` sucesso, texto sobre o fundo tingido | 4,78:1 | 7,04:1 |
+| `Badge` info | 5,96:1 | 5,52:1 |
+| `Badge` erro | 5,34:1 | 5,53:1 |
+| `Badge` aviso | 4,56:1 | 7,59:1 |
+| `Badge` outline | 14,56:1 | 15,05:1 |
+| Ícone de estado do log (sucesso, falha, em execução, ignorado), gráfico, sobre `background` | 5,14:1, 6,15:1, 6,54:1, 4,84:1 | 9,05:1, 6,05:1, 6,63:1, 10,19:1 |
+| Ícone de log não executado (`muted-foreground`) | 5,45:1 | 5,35:1 |
+| Texto do `Alert` (`foreground`, `muted-foreground`) sobre a superfície do alerta | 14,13:1, 5,29:1 | 15,08:1, 5,03:1 |
+| Ícone do `Alert` `warning` com `--warning`, antes | 1,99:1 | 7,66:1 |
+| Ícone do `Alert` `warning` com `--warning-foreground`, depois | 4,70:1 | 9,58:1 |
+
+  O ícone do `Alert` `warning` do COSS usa `--warning`, que no claro não chega a 3:1; o inspector aplica `[&>svg]:text-warning-foreground` no `Alert`. `overrides:check` só acompanha borda, raio e sombra, e rejeitou uma exceção de cor como sem uso, então a classe não entra em `scripts/override-exceptions.json`. Nenhum valor de token mudou, e o axe das oito stories passa no claro e no escuro.
+
 ## Validação proposta
 
 - Fronteiras: impedir imports em direção proibida, ciclos e UI duplicada por padrão. `packages/parttens` só importa `@tc96/ui/<item>` presente no lock COSS.
@@ -499,6 +526,7 @@ Decidido em 2026-10-21, tipo do `renderPlaceholder`. O registro fixa `platejs@53
 | Templates instaláveis em `packages/templates`, com item no registry e destino no alias `templates` (2026-10-21, dono, [ADR 0005](../../.specs/adr/0005-installable-templates.md)) | Manter templates só no Storybook ([ADR 0004](../../.specs/adr/0004-templates-only-in-storybook.md)), ou uma família `templates/` em `packages/parttens` | O consumidor instala um shell com COSS faltante, dependências e verificação de tipos; o template fica fora do barrel e do baseline dos patterns |
 | Sidebar do Storybook por camada, com o nome dos aliases (2026-10-21, dono) | Ordem alfabética, ou os nomes do atomic design (Atoms, Molecules, Organisms, Templates, Pages) | A progressão do atomic design orienta a ordem, mas o nome de cada seção é o alias onde o código cai no consumidor; trocar o vocabulário mudaria o ID de todas as stories |
 | Presets de tema por `data-theme-preset` no tema do exemplo: base colors do COSS escritos à mão e presets do tweakcn gerados pelo `sync:themes` (2026-10-21, dono) | Um arquivo de tema por preset trocado no build, ou `data-theme`, já usado pelo Storybook para o modo | O `Default` e o modo claro ou escuro ficam como estavam, e um preset se aplica ao `html` ou a uma subárvore sem trocar o CSS carregado; o gerador mantém os 42 presets do tweakcn iguais ao registry |
+| Família `flow` em `packages/parttens/src/flow/` (`canvas`, `step-library`, `inspector`) mais `chat/assistant`, com `@xyflow/react` 12.12.0 como dependência só de `flow/canvas`, a exemplo do Plate e do recharts; o consumidor importa `@xyflow/react/dist/base.css` no CSS global; `d3-hierarchy` 3.1.2 faz o tidy tree em `flow/canvas/core.ts`, sem React (2026-10-23, proposta; [ADR 0006](../../.specs/adr/0006-flow-family-on-react-flow.md)) | Um pattern `flow/editor` único, canvas próprio em SVG, `dagre` ou `elkjs` para a árvore | Cada item do registry leva só a dependência que usa e o React Flow já entrega viewport, arestas, conexão e minimapa |
 
 ## Pontos ainda em revisão
 
@@ -588,6 +616,37 @@ Decidido em 2026-10-21, a pedido do dono ([ADR 0005](../../.specs/adr/0005-insta
 - **`min-w-0` no `SidebarInset`:** achado ao pôr `Templates/Contacts` no shell. O inset é item flex da linha do `SidebarProvider` e ficava com `min-width: auto`; a `DataTable` de 1191px alargava o inset para 1225px ao lado do sidebar de 256px, e a página de 1440px rolava na horizontal (1481px) com o Novo contato cortado. Os quatro shells passam `className="min-w-0"` ao `SidebarInset`, uma classe de layout fora do `overrides:check`; o inset volta a 1184px e a tabela rola no próprio container.
 - **Testes:** cada shell tem `play` para landmarks, `aria-current`, menus e callbacks, em claro e escuro com axe. `AppShell1/Mobile` usa o viewport `mobile2` (414px), abaixo dos 800px do `max-md` do COSS, e confere a navegação dentro do `Sheet`. O `useArgs` do Storybook não re-renderiza no `storybook:test`, então `AppShell4` mantém a seção em estado local semeado pelo arg `sectionId`.
 
+## Patterns: Flow Canvas
+
+Decidido em 2026-10-23 ([ADR 0006](../../.specs/adr/0006-flow-family-on-react-flow.md), plano `.specs/flow-editors/tasks/0001-flow-editors.md`, Task T1). `flow/canvas` é o pattern sobre `@xyflow/react` 12.12.0; os outros patterns da família não o importam.
+
+- **Nota ao consumidor:** o `base.css` do React Flow é folha de biblioteca e o consumidor a importa uma vez, no CSS global (`@import '@xyflow/react/dist/base.css';`). Sem ela o canvas não posiciona nós nem arestas. O Storybook a importa em `.storybook/preview.ts`.
+- **Cores sem tema novo:** `base.css` lê o que o React Flow pinta por variáveis `--xy-*` com valor padrão (`--xy-edge-stroke`, `--xy-minimap-*`, `--xy-background-pattern-dots-color`, `--xy-attribution-background-color`). O pattern as redefine na raiz `.react-flow` com classes arbitrárias do Tailwind sobre o token (`[--xy-edge-stroke:var(--color-muted-foreground)]`), então nenhuma regra entra no `styles.css` do exemplo e o tema do consumidor vale sem passo extra. O que `base.css` escreve direto em propriedade (`stroke`, `background-color` do handle) fica fora de camada e vence uma utilidade comum; por isso a aresta e o handle usam o modificador `!` (`stroke-muted-foreground!`, `bg-muted-foreground!`). O link de atribuição ("React Flow") fica visível, com a cor `text-muted-foreground!`: o `#999` da folha dava 2,73:1 no claro.
+- **Um `FlowCanvas` para os dois editores:** `direction` troca os lados dos handles e, em `vertical`, liga por padrão os controles de aresta e o menu do nó; `flowStepNodeSize` (256 por 100) é o tamanho que o consumidor passa ao `tidyTree`. O canvas nunca reposiciona.
+- **Nó:** `ContextMenu` do COSS no cartão do nó; os handles ficam fora do gatilho, irmãos do cartão, por isso o menu não interfere na conexão. O `ariaLabel` e o `aria-roledescription` vão pelo próprio nó do React Flow (`ariaLabel`, `domAttributes`), e os handles levam `role="button"` com o nome "Conectar a partir de/em ...": sem papel o axe recusa `aria-label` em `div` (`aria-prohibited-attr`).
+- **Medidas do nó:** em modo controlado o React Flow só põe `measured` no nó quando o consumidor aplica as mudanças `dimensions`; o canvas guarda as medidas num estado efêmero e as devolve em `nodes`. Sem isso o minimapa não desenhava nenhum nó.
+- **Contraste (medido em 2026-10-23, `Horizontal` e `Vertical`, tema `Default`; texto 4,5:1, gráfico 3:1):**
+
+| Par | Claro | Escuro |
+| --- | --- | --- |
+| título do nó sobre `card` | 15,17:1 | 15,23:1 |
+| descrição e rodapé do nó (`muted-foreground`) | 5,73:1 | 5,07:1 |
+| badge `Sucesso` / `Falhou` | 4,99:1 / 5,59:1 | 6,63:1 / 5,30:1 |
+| badge `Não executado` / `Ignorado` | 14,52:1 / 13,91:1 | 14,15:1 / 13,67:1 |
+| rótulo da aresta | 14,52:1 | 14,97:1 |
+| iniciais do responsável (`text-foreground` sobre `border`) | 12,72:1 | 12,89:1 (antes 4,25:1 com `muted-foreground`, texto de 10 px, axe) |
+| aresta (gráfico) / aresta percorrida | 5,48:1 / 14,52:1 | 5,34:1 / 16,03:1 |
+| handle (gráfico) | 5,73:1 | 5,07:1 |
+| borda do nó selecionado (`primary`) | 14,52:1 | 16,03:1 |
+| anel de foco (`ring`) | 4,54:1 | 3,69:1 |
+| nó do minimapa sobre o fundo do minimapa | 5,73:1 | 5,07:1 |
+| nível de zoom e botões dos controles | 15,17:1 e 13,19:1 | 14,15:1 e 12,11:1 |
+| link de atribuição | 5,48:1 (antes 2,73:1) | 5,34:1 |
+
+  A borda do cartão do nó (`border`) mede 1,19:1 e 1,17:1: é moldura, a leitura do nó está no texto e no badge, e o nó selecionado e o foco têm os pares acima. Os pontos do fundo são decoração.
+- **Espaçamento e composição:** conferidos em captura do claro e do escuro de `Horizontal`, `Selected` e `Vertical` num viewport de 800 por 600. O título e a descrição do nó truncam em uma linha ao lado do badge; os controles ficam no canto inferior esquerdo e o minimapa, a partir de `md`, no inferior direito; o React Flow não reserva a área dos dois painéis no `fitView`, então num viewport estreito os painéis podem cobrir uma folha do grafo.
+- **Testes:** `bun test` cobre `to-react-flow` nos dois sentidos, o `onDrop` com um `DataTransfer` montado à mão (JSDOM não tem `DragEvent`, então o evento é um `MouseEvent` com `dataTransfer` definido), os atalhos e o `aria-busy`; os `play` de `Horizontal` e `Vertical` cobrem seleção, toolbar, menu de contexto e controles de aresta, em claro e escuro com axe.
+
 ## Storybook: sidebar por camada
 
 Decidido em 2026-10-21, a pedido do dono: a sidebar segue a progressão do atomic design (peças base, peças compostas, blocos de produto, layouts e telas), sem o vocabulário dele, com o nome das camadas que o CLI instala. As raízes ficam nesta ordem, fixada no `storySort` de `apps/storybook/.storybook/preview.ts`: `Get Started`, `UI` (COSS, alias `ui`), `Elements` (alias `elements`), `Patterns` (alias `patterns`), `Application` (templates instaláveis, alias `templates`) e `Templates` (`Templates/Doc` e as telas que vivem só no Storybook, ADR 0004). Antes a ordem era alfabética e punha `Application` antes de `UI`. O `Get Started` ganhou a seção "How this Storybook is organized" com a mesma tabela.
@@ -600,3 +659,77 @@ Uma story fica na camada do que renderiza. Por isso, no mesmo dia:
 
 Os IDs dessas stories mudaram (`patterns-toolbar` virou `patterns-shared-toolbar`, `patterns-chat-*` virou `ui-chat-*`); as referências do repositório foram atualizadas. Como `Patterns/CollectionViews` e `Patterns/Widgets` não têm story raiz, `ActionBar` e `Stats` continuam com a própria página `Doc`.
 
+
+## Patterns: Flow Step Library
+
+A biblioteca de passos (`flow/step-library`, item `flow-step-library`) é o painel à esquerda dos editores de fluxo. Decisões da T2 do plano `flow-editors`:
+
+- O grupo é um `fieldset` com `legend`, não um `div role="group"`: o lint de semântica (`useSemanticElements`) pede o elemento nativo, e o nome do grupo continua sendo o rótulo.
+- `collapsed` é uma prop além do contrato do plano: mantém só os ícones (3,5rem), com os nomes em `sr-only` e `aria-label`. Não há colapso por viewport no pattern; abaixo de `md` o template (T5) decide.
+- O item `flow-step-library` leva `flow/canvas/core.ts` pelo import dos tipos e de `serializeStepTransfer`, então carrega `d3-hierarchy` junto. `@xyflow/react` fica de fora (`build:registry`).
+- Cor e raio vêm de tokens e de `Card`, `Badge`, `Progress` e `Skeleton` do COSS sem sobrescrita: `scripts/override-exceptions.json` não ganhou entrada.
+
+Contraste medido no Storybook (`Patterns/Flow/Step Library`, `Default` com o cartão `Failed`), pelo texto do elemento contra o fundo efetivo do ancestral:
+
+| Elemento | Claro | Escuro | Limite |
+| --- | --- | --- | --- |
+| Título e nome do passo (`foreground`) | 15,17 | 15,23 | 4,5:1 |
+| Dica, rótulo do grupo, descrição do passo, descrição do cartão (`muted-foreground`) | 5,73 | 5,07 | 4,5:1 |
+| Badge `Falhou` (`destructive`, texto branco) | 4,77 | 4,77 | 4,5:1 |
+| Ícone do passo contra o quadro `IconFrame` | 13,91 | 13,64 | 3:1 |
+| Indicador do progresso contra a trilha (`bg-primary` contra `bg-input`) | 4,02 | 12,09 | 3:1 |
+| Trilha do progresso contra o cartão | 1,26 | 1,26 | 3:1 (não atende) |
+
+A trilha fica abaixo de 3:1 contra o cartão porque o token `input` é a superfície do campo, não a borda de um controle; o progresso é lido pelo indicador contra a trilha, que atende nos dois temas. Não há token alterado: a nota fica para o consumidor, que pode escurecer `--input` no seu tema se quiser a trilha mais marcada (regra de sobrescrita por `data-slot="progress-track"`, se a auditoria do consumidor pedir). As medidas foram tomadas com o tema `Default` do exemplo, esperando a transição de cor (500 ms do indicador) antes de ler.
+
+## Patterns: Chat Assistant
+
+Decidido em 2026-10-23 (ADR 0006 D9, plano `.specs/flow-editors/tasks/0001-flow-editors.md`, T4). `chat/assistant` (item `chat-assistant`) é o cartão de um assistente de IA para um editor: `AssistantPanel`, `AssistantSuggestions` e `AssistantComposer`, sobre o COSS `Card`, `Badge`, `Button`, `Tooltip`, `chat/*` (`ChatConversation`, `ChatMessage`, `ChatTypingIndicator`, `useChatScroll`) e `composer`. É controlado: o consumidor passa `messages`, `suggestions`, `typing` e `expanded` e responde `onSend`, `onSuggestion`, `onAttach`, `onNewChat`, `onHistory`, `onExpandedChange`, `onEnd` e `onRetry`; o pattern não chama modelo, não busca e não persiste. O item depende de `@coss/chat` e `@coss/composer`.
+
+- **Posição.** `placement="floating"` é um `absolute` no canto inferior final do ancestral posicionado mais próximo (o canvas), com a sombra no invólucro `section` e não no `Card`, para não sobrescrever a sombra do COSS; `docked` ocupa o pai. `expanded` só muda o tamanho do cartão flutuante; "Minimizado" é `expanded={false}`, o tamanho compacto, e não um cabeçalho recolhido. Cada botão do cabeçalho só existe com o callback.
+- **Compositor.** Usa `ComposerInput` como `textarea` (texto puro), `Enter` envia e `Shift + Enter` quebra a linha, como o `Composer` do COSS; o envio entrega o texto aparado e limpa o campo, e um rascunho em branco não envia.
+- **Exceção de sobrescrita.** `ComposerInput` recebe `placeholder:text-muted-foreground` (registrado em `scripts/override-exceptions.json`).
+
+Auditoria de contraste (2026-10-23, medida no Storybook com o tema `Default`; texto precisa de 4,5:1, gráficos de 3:1; nenhum valor de token foi mudado):
+
+| Par | Claro | Escuro |
+| --- | --- | --- |
+| título e saudação (`foreground` sobre o cartão) | 15,17 | 15,23 |
+| descrição, "Experimente perguntar", aviso fixo e hora (`muted-foreground` sobre o cartão) | 5,73 | 5,07 |
+| balão do assistente (`foreground` sobre `foreground/4`) | 14,06 | 13,67 |
+| balão do usuário (`foreground` sobre `foreground/12`) | 11,95 | 10,65 |
+| sugestão e ícones do cabeçalho e do compositor | 14,52 a 15,17 | 13,90 a 15,23 |
+| erro: texto da mensagem e botão Tentar de novo | 14,06 e 15,17 | 13,67 e 12,62 |
+| erro: ícone `destructive-foreground` (gráfico) | 5,95 | 5,16 |
+| placeholder do compositor antes (`muted-foreground/72`, COSS) | 3,08 | 3,15 |
+| placeholder do compositor depois (`placeholder:text-muted-foreground`) | 5,48 | 4,71 |
+
+O placeholder é o único par que falhava: o texto de orientação do compositor precisa de 4,5:1, e o ajuste entrou onde o elemento encontra a superfície, como exceção registrada, sem tocar `packages/ui`. O axe passa nos dois temas (`bunx vitest run --project=storybook --project=storybook-dark src/patterns/chat/assistant`). A posição flutuante sobre um canvas real só se prova no viewport (T5).
+
+## Templates: editores de fluxo
+
+Decidido em 2026-10-23 ([ADR 0006](../../.specs/adr/0006-flow-family-on-react-flow.md) D1, D4 e D8, plano `.specs/flow-editors/tasks/0001-flow-editors.md`, Task T5). `workflow-editor` e `agent-builder` ficam em `packages/templates/src/application/flow/` e montam a anatomia das duas telas do Flowly sobre os patterns `flow/canvas`, `flow/step-library`, `flow/inspector` e `chat/assistant`; as peças comuns (cabeçalho, layout de três painéis, formulário de passo, montagem do inspector, assistente, diálogo de confirmação, estado efêmero, rótulos) ficam em `application/flow/shared/` e seguem com cada item que as importa. Stories em `Application/Flow/WorkflowEditor` e `Application/Flow/AgentBuilder`.
+
+- **Nota ao consumidor:** o `base.css` do React Flow é folha de biblioteca; o consumidor a importa uma vez, no CSS global (`@import '@xyflow/react/dist/base.css';`). O Storybook a importa em `.storybook/preview.ts`. Os templates não leem nenhuma variável `--xy-*` do tema: o canvas as redefine por classe sobre token (ver "Patterns: Flow Canvas"), então `apps/example/packages/ui/src/styles.css` não mudou. `Templates/Doc` e o README repetem a linha.
+- **Controlados, sem modelo:** os dois recebem `steps`, `connections`, `stepTypes`, `icons`, `selectedStepId`, `run`, `logs`, `stepStats`, `owners` e `assistant` por props e devolvem `onStepAdd(type, options?)`, `onStepChange(stepId, values)`, `onStepDelete`, `onStepDuplicate`, `onStepsChange(steps)`, `onConnect`, `onConnectionsChange`, `onSelectedStepChange`, `onRun` e `onCopyJson`; o `workflow-editor` acrescenta `canUndo`, `canRedo`, `onUndo` e `onRedo`, o `agent-builder` `onClearResults` e `onRestoreExample`. Histórico, ids, execução e persistência são do consumidor (as stories os guardam em `fixtures/use-flow-editor-state.ts`). O estado do template é só efêmero (`use-flow-page-state.ts`): inspector aberto, modo `view` | `edit` | `create`, aba, filtro dos logs, assistente aberto e expandido, `snapToGrid`, `locked` e as duas confirmações.
+- **Adicionar um passo:** clicar num item da biblioteca ou soltá-lo no canvas chama `onStepAdd(type, { position? })` de imediato (caminho do teclado e do arraste). "Adicionar passo" do cabeçalho, o "+" do nó e "Adicionar ramo" abrem o inspector em `create` (Status e Logs desabilitadas, "Ainda não adicionado") e o envio chama `onStepAdd(type, { after, connection?, values })`; o Tipo padrão é o primeiro que não é gatilho. Excluir um passo com conexões pede confirmação num `AlertDialog` (`onStepDelete` só roda depois), e "Limpar resultados" também.
+- **Formulário:** `step-form.tsx` sobre `Field`, `Input`, `Textarea` e `Select` do COSS. Só o nome é obrigatório: o erro sai em `FieldError` ligado por `aria-describedby`, o campo recebe `aria-invalid` e o foco, e nada é enviado. "Caminho" (agent) é o rótulo da primeira conexão de entrada e "Responsável" (workflow) casa `step.owner.name` com `owners`.
+- **Mobile:** abaixo de `md` a biblioteca é `collapsed` (só ícones), o inspector é o `Sheet` do pattern e o assistente é um `Sheet` do COSS em tela cheia (papel de diálogo, foco preso, Escape encerra) com `placement="docked"`; a partir de `md` o assistente é `floating` no invólucro do canvas, o ancestral posicionado. A biblioteca como `Sheet` no móvel segue no backlog do plano.
+- **Sem exceção de sobrescrita:** os templates não sobrescrevem borda, raio, cor ou sombra de peça do COSS; `scripts/override-exceptions.json` não ganhou entrada. O quadro da página (`flow-page`) é um `div` com `border` e `rounded-xl` sobre token.
+
+Contraste (medido em 2026-10-23 no Storybook, tema `Default`, pelo texto de cada nó de `flow-page` contra o fundo efetivo composto; texto 4,5:1, gráfico 3:1; nenhum token mudou):
+
+| Par | Claro | Escuro |
+| --- | --- | --- |
+| rótulo do formulário (`foreground` sobre o inspector) | 14,52 | 16,03 |
+| erro de nome (`FieldError`) | 6,15 | 6,05 |
+| breadcrumb, dica e rótulo de grupo da biblioteca, descrição do nó (`muted-foreground`) | 5,48 | 5,07 |
+| badge `Falhou` e `Falhou` do cartão da última execução (texto branco sobre `destructive`) | 4,77 | 4,77 |
+| menor texto de todo `flow-page`: `Default` do workflow (claro) e `Failed` do workflow (escuro) e do agent (claro) | 5,48 (`Failed`: 4,77) | 5,07 (`Failed`: 4,77) |
+| borda do campo inválido (gráfico) | 3,27 | 1,36 |
+
+A borda do campo inválido é do `Input` do COSS (`border-destructive/64` com foco): no escuro mede 1,36:1, abaixo de 3:1; o erro não depende dela, porque o texto do `FieldError` mede 6,05:1 e o campo leva `aria-invalid` e o foco, e o token `destructive` não muda. Ratios do canvas, da biblioteca, do inspector e do assistente estão nas seções de cada pattern. O axe passa nas 10 stories, nos dois temas (`bunx vitest run --project=storybook --project=storybook-dark src/application/flow`, 20 testes).
+
+Leitura visual (1280 por 800, claro e escuro, sem screenshot anexado): `WorkflowEditor` `Empty`, `Failed` e `Default` com o inspector em visualização, e `AgentBuilder` `Failed`. Escala: o quadro tem `min-h-160` e ocupa o resto da área de conteúdo do shell; com a biblioteca (20rem) e o inspector fechado, o `fitView` põe o grafo horizontal do `lead-routing` (cinco colunas de 320px) em 36% e a árvore do `collections-agent` em 62%; com o inspector aberto (24rem) o canvas fica com cerca de 300px e o minimapa e os controles passam a cobrir parte do grafo, como nota o canvas. `Mobile` (414px) só foi conferido por `play` e axe, não em captura. Os ícones de marca do agent que o SVG pinta de preto (`anthropic`, `resend`) levam `dark:invert` na story; um consumidor com marca escura sobre o `IconFrame` faz o mesmo.
+
+Desvios do plano, decididos na T5: `flowStepNodeSize` passou de `lib/steps.ts` para `flow/canvas/core.ts` (o `exports` de `@tc96/parttens` só resolve `.tsx` e `./*/core`, então o template não alcançaria o arquivo antigo; o barrel do canvas continua exportando o nome); os tipos de rótulos do canvas e do inspector vêm de `ComponentProps<typeof ...>` porque `types/index.ts` dos patterns também não é alcançável por esse `exports`; o `breadcrumb` do cabeçalho tem o nome padrão "Trilha do fluxo" porque o do shell, "Trilha de navegação", repete o landmark (`landmark-unique` do axe); ficaram de fora "Selecionar todos os passos" do menu (o canvas não tem seleção múltipla), as dicas em tooltip dos rótulos do formulário e o avatar no select de Responsável.

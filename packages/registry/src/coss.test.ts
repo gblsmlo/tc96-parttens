@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
   type CossRegistryItem,
-  componentFile,
+  componentFiles,
   cossRegistry,
   cossSource,
   loadItem,
@@ -118,22 +118,24 @@ test('rejects dependencies outside @coss and renamed items', async () => {
 
 test('targets the ui directory with the consumer aliases', () => {
   expect(
-    componentFile(
+    componentFiles(
       item('badge', 'import { cn } from "@/lib/utils"'),
       aliases,
       'packages/ui/src',
     ),
-  ).toEqual({
-    path: 'coss/badge.tsx',
-    type: 'registry:ui',
-    content: 'import { cn } from "@acme/ui/lib/utils"',
-    target: '~/packages/ui/src/badge.tsx',
-  })
+  ).toEqual([
+    {
+      path: 'coss/badge.tsx',
+      type: 'registry:ui',
+      content: 'import { cn } from "@acme/ui/lib/utils"',
+      target: '~/packages/ui/src/badge.tsx',
+    },
+  ])
 })
 
 test('targets the hooks directory for a COSS hook', () => {
   expect(
-    componentFile(
+    componentFiles(
       {
         name: 'use-media-query',
         files: [
@@ -146,44 +148,33 @@ test('targets the hooks directory for a COSS hook', () => {
       aliases,
       'packages/ui/src',
     ),
-  ).toEqual({
-    path: 'coss/hooks/use-media-query.ts',
-    type: 'registry:ui',
-    content: 'export function useMediaQuery() {}',
-    target: '~/packages/ui/src/hooks/use-media-query.ts',
-  })
+  ).toEqual([
+    {
+      path: 'coss/hooks/use-media-query.ts',
+      type: 'registry:ui',
+      content: 'export function useMediaQuery() {}',
+      target: '~/packages/ui/src/hooks/use-media-query.ts',
+    },
+  ])
 })
 
 test('fails on items it cannot install faithfully', () => {
   expect(() =>
-    componentFile(
+    componentFiles(
       item('chart', 'import { useMobile } from "@/hooks/use-mobile"'),
       aliases,
       'src/ui',
     ),
-  ).toThrow('@/hooks/use-mobile has no alias')
+  ).toThrow('@/hooks/use-mobile in chart.tsx has no alias')
   expect(() =>
-    componentFile(
+    componentFiles(
       item('form', '', { envVars: { KEY: '' } }),
       aliases,
       'src/ui',
     ),
   ).toThrow('envVars')
   expect(() =>
-    componentFile(
-      {
-        name: 'sidebar',
-        files: [
-          { path: 'registry/default/ui/sidebar.tsx', content: '' },
-          { path: 'registry/default/hooks/use-sidebar.ts', content: '' },
-        ],
-      },
-      aliases,
-      'src/ui',
-    ),
-  ).toThrow('expected one file')
-  expect(() =>
-    componentFile(
+    componentFiles(
       {
         name: 'utils',
         files: [{ path: 'registry/default/lib/utils.ts', content: '' }],
@@ -191,7 +182,76 @@ test('fails on items it cannot install faithfully', () => {
       aliases,
       'src/ui',
     ),
-  ).toThrow('expected one file')
+  ).toThrow('own utils')
+  expect(() =>
+    componentFiles(
+      { name: 'odd', files: [{ path: 'elsewhere/odd.tsx', content: '' }] },
+      aliases,
+      'src/ui',
+    ),
+  ).toThrow('outside registry/default')
+  expect(() =>
+    componentFiles(
+      item('chat', '', {
+        files: [
+          { path: 'registry/default/chat/a.tsx', content: '' },
+          {
+            path: 'registry/default/chat/b.tsx',
+            content: 'import x from "@/hooks/use-mobile"',
+          },
+        ],
+      }),
+      aliases,
+      'src/ui',
+    ),
+  ).toThrow('@/hooks/use-mobile in chat/b.tsx has no alias')
+})
+
+test('maps every file of a multi-file item and rewrites its imports', () => {
+  expect(
+    componentFiles(
+      {
+        name: 'chat',
+        files: [
+          {
+            path: 'registry/default/chat/chat-bubble.tsx',
+            content:
+              'import { m } from "@/registry/default/chat/chat-message-bubble"\nimport { cn } from "@/lib/utils"',
+          },
+          {
+            path: 'registry/default/chat/hooks/use-chat-scroll.ts',
+            content: 'import { b } from "@/registry/default/ui/button"',
+          },
+          {
+            path: 'registry/default/chat/lib/split-chat-message-preview.ts',
+            content: 'import { h } from "@/registry/default/hooks/use-x"',
+          },
+        ],
+      },
+      aliases,
+      'src/ui',
+    ),
+  ).toEqual([
+    {
+      path: 'coss/chat/chat-bubble.tsx',
+      type: 'registry:ui',
+      content:
+        'import { m } from "@acme/ui/chat/chat-message-bubble"\nimport { cn } from "@acme/ui/lib/utils"',
+      target: '~/src/ui/chat/chat-bubble.tsx',
+    },
+    {
+      path: 'coss/chat/hooks/use-chat-scroll.ts',
+      type: 'registry:ui',
+      content: 'import { b } from "@acme/ui/button"',
+      target: '~/src/ui/chat/hooks/use-chat-scroll.ts',
+    },
+    {
+      path: 'coss/chat/lib/split-chat-message-preview.ts',
+      type: 'registry:ui',
+      content: 'import { h } from "@acme/ui/hooks/use-x"',
+      target: '~/src/ui/chat/lib/split-chat-message-preview.ts',
+    },
+  ])
 })
 
 test('lists the theme tokens and rules the stylesheet does not mention', () => {

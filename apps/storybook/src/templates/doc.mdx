@@ -102,3 +102,20 @@ export function AppLayout() {
 - **[AppShell2](?path=/docs/application-shell-appshell2--doc)**, `npx @tc96/parttens add app-shell-2`: floating sidebar with a ⌘K page search under the workspace switcher.
 - **[AppShell3](?path=/docs/application-shell-appshell3--doc)**, `npx @tc96/parttens add app-shell-3`: inset sidebar with projects and progress rings, a usage panel, and a notifications popover in the header.
 - **[AppShell4](?path=/docs/application-shell-appshell4--doc)**, `npx @tc96/parttens add app-shell-4`: icon rail of sections beside the navigation of the active section, with ⌘K search, notifications and a Create action in the header.
+
+### Flow editors
+
+Two editor pages on React Flow, in `Application/Flow`. They bring `@xyflow/react` and `d3-hierarchy`, the four flow pattern items they import and the COSS `tabs`, `context-menu`, `progress` and `alert`.
+
+| Template | Install | What it is |
+| --- | --- | --- |
+| **[WorkflowEditor](?path=/docs/application-flow-workfloweditor--doc)** | `npx @tc96/parttens add workflow-editor` | step library, horizontal canvas with undo, redo, lock and minimap, inspector with a Responsável form, assistant |
+| **[AgentBuilder](?path=/docs/application-flow-agentbuilder--doc)** | `npx @tc96/parttens add agent-builder` | step library, vertical canvas with edge controls and Organizar árvore, inspector with a Caminho form, assistant |
+
+React Flow ships its own stylesheet, which you import once in your global CSS next to your theme; without it the canvas does not place nodes or edges. The templates read no `--xy-*` variable from your theme: the colors come from tokens by class.
+
+```css
+@import '@xyflow/react/dist/base.css';
+```
+
+Both templates are controlled. You pass `steps`, `connections`, `stepTypes`, `icons`, `selectedStepId`, `run`, `logs` and `assistant`, and receive `onStepAdd`, `onStepChange`, `onStepDelete`, `onStepsChange`, `onConnect`, `onSelectedStepChange` and `onRun`. History, execution, persistence and every id are yours; the template keeps only the open inspector, its mode and tab, the assistant and the grid snapping.

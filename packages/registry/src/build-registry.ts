@@ -32,7 +32,7 @@ for (const pkg of ['elements', 'helpers', 'parttens']) {
 // aliases, never followed into the distributed files. Each ui component
 // becomes a COSS registry dependency.
 const consumerOwned = /^@tc96\/(ui|utils)(\/|$)/
-const uiComponent = /^@tc96\/ui\/([^/]+)$/
+const uiComponent = /^@tc96\/ui\/(?:([^/]+)|(chat)\/.+)$/
 // The aggregate re-exports the pattern barrels and shared areas such as
 // shared/. An area's barrel ships with every pattern that uses the area, so
 // the consumer's generated barrel can export it.
@@ -83,7 +83,8 @@ for (const [name, entry] of entries) {
     })
     for (const imported of ts.preProcessFile(content).importedFiles) {
       const specifier = imported.fileName
-      const component = specifier.match(uiComponent)?.[1]
+      const match = specifier.match(uiComponent)
+      const component = match?.[1] ?? match?.[2]
       if (component) components.add(cossDependency(component))
       if (consumerOwned.test(specifier)) continue
       if (specifier.startsWith('.') || specifier.startsWith('@tc96/')) {
@@ -140,7 +141,7 @@ await writeFile(
 )
 const cliOutput = resolve('dist/cli')
 await mkdir(join(cliOutput, 'registry'), { recursive: true })
-for (const name of [...patternNames, ...templateNames, 'view', 'aggregate'])
+for (const name of [...entries.map(([name]) => name), 'view', 'aggregate'])
   await writeFile(
     join(cliOutput, `registry/${name}.json`),
     await readFile(join(output, `${name}.json`)),
@@ -194,5 +195,5 @@ await writeFile(
   `${readme.slice(0, publicEnd).trimEnd()}\n`,
 )
 console.log(
-  `Generated ${patternNames.length} pattern and ${templateNames.length} template registry items, the legacy view entry, the aggregate and the Node CLI artifact.`,
+  `Generated ${entries.length} pattern and template registry items, the legacy view entry, the aggregate and the Node CLI artifact.`,
 )

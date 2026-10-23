@@ -1,5 +1,6 @@
 import { afterEach, expect, test } from 'bun:test'
 import { spawnSync } from 'node:child_process'
+import { readdirSync, readFileSync } from 'node:fs'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -124,4 +125,20 @@ test('rejects the removed ui barrel', async () => {
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain('@tc96/ui is not a locked COSS item')
+})
+
+test('keeps @xyflow/react inside the flow canvas pattern', () => {
+  const repository = join(import.meta.dir, '..')
+  const offenders = ['packages/parttens/src', 'packages/templates/src']
+    .flatMap((folder) =>
+      readdirSync(join(repository, folder), { recursive: true }).map((path) =>
+        join(folder, String(path)),
+      ),
+    )
+    .filter((path) => /\.(ts|tsx)$/.test(path))
+    .filter((path) =>
+      /['"]@xyflow\/react/.test(readFileSync(join(repository, path), 'utf8')),
+    )
+    .filter((path) => !path.startsWith('packages/parttens/src/flow/canvas/'))
+  expect(offenders).toEqual([])
 })
