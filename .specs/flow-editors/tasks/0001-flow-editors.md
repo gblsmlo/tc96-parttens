@@ -256,7 +256,7 @@ T0 ─┬─ T1 (canvas) ──────┐
   - **Out of this Task:** os campos do formulário de Build (T5, `shared/step-form.tsx`); dock redimensionável (backlog).
   - **Ships alone safely because:** item completo; serve a qualquer tela com painel lateral de detalhes.
 
-- [ ] **T4 · Pattern `chat/assistant` sobre o COSS chat e composer [ENGINEERING]**
+- [x] **T4 · Pattern `chat/assistant` sobre o COSS chat e composer [ENGINEERING]**
   - **Owner:** `tc96-frontend:frontend-developer`
   - **Depends on:** T0
   - **Inputs:** ADR 0006 (D9); `user-experience.md` §2 "Assistente", §4
@@ -393,3 +393,12 @@ Cada sessão acrescenta aqui a data, a Task, e cada desvio do plano com o lugar 
 - O Base UI desabilita a aba com `aria-disabled` e `pointer-events: none`, não com o atributo `disabled`; as stories e os testes asseguram `aria-disabled`.
 - O "primeiro campo focado ao abrir" é do formulário da story (`autoFocus` no Tipo): o dock não move o foco, só o `Sheet` do Base UI move.
 - `bun scripts/verify-public-api.ts --record` só acrescentou as exportações do inspector. `packages/registry/src/cli.test.ts` estoura os 5 s padrão sob carga ("preserves an existing file"); passa com `--timeout 60000`.
+
+**2026-10-23 · T4** (pattern `chat/assistant`). Evidência da tabela da T4 toda verde. Desvios:
+
+- `packages/registry/src/build-registry.ts`: o regex `uiComponent` só reconhecia `@tc96/ui/<componente>`, então `@tc96/ui/chat/<parte>` não gerava `@coss/chat` em `registryDependencies`; passou a mapear `@tc96/ui/chat/*` para `@coss/chat`, com teste em `manifest.test.ts` (`chat-assistant` declara `@coss/chat` e `@coss/composer`). Fora da pasta da T4, mas exigido pela aceitação; as outras fases com `chat/*` herdam a correção.
+- `ComposerInput` recebe `placeholder:text-muted-foreground`, porque o placeholder do COSS (`muted-foreground/72`) media 3,08:1 no claro e 3,15:1 no escuro; exceção em `scripts/override-exceptions.json`, razões em `docs/architecture/tc96-parttens.md` ("Patterns: Chat Assistant") e em `chat/assistant/AGENTS.md`.
+- "Minimizado" é `expanded={false}` (tamanho compacto do cartão flutuante), não um cabeçalho recolhido: o contrato controlado do plano só tem `expanded`; registrado no `AGENTS.md` do pattern e na doc de arquitetura. Cada botão do cabeçalho só renderiza com o callback; `onRetry(id)` entrou além da lista do plano, para a ação "tentar de novo".
+- A story `Error` tem o export `Failed` com `name: 'Error'`, porque o Biome proíbe sombrear o global `Error`; o ID é `patterns-chat-assistant--failed`.
+- `test/dom.ts` do assistente acrescenta, sobre a cópia do `chats-panel`, os globais de formulário, `document.fonts`, `ResizeObserver` e `getAnimations` que o `Composer` e o `ScrollArea` do COSS pedem em JSDOM.
+- `bun run build:registry` e `bun scripts/verify-public-api.ts --record` regravaram o baseline com os exports do `chat-assistant`; o `bun install` na worktree foi necessário (sem `node_modules`).

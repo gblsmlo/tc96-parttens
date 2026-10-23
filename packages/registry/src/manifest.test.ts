@@ -374,6 +374,35 @@ test('builds the chats-panel item from the chat folder with COSS-only dependenci
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
+test('builds the chat-assistant item with the COSS chat and composer dependencies', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/chat-assistant.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('chat-assistant')
+  expect(item.registryDependencies).toEqual([
+    '@coss/badge',
+    '@coss/button',
+    '@coss/card',
+    '@coss/chat',
+    '@coss/composer',
+    '@coss/tooltip',
+  ])
+  expect(paths).toContain('parttens/src/chat/assistant/index.ts')
+  expect(paths.every((path) => path.startsWith('parttens/src/chat/'))).toBe(
+    true,
+  )
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
 test('builds the wizard item from its folder with IconFrame and COSS dependencies', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(
