@@ -599,3 +599,25 @@ Uma story fica na camada do que renderiza. Por isso, no mesmo dia:
 
 Os IDs dessas stories mudaram (`patterns-toolbar` virou `patterns-shared-toolbar`, `patterns-chat-*` virou `ui-chat-*`); as referências do repositório foram atualizadas. Como `Patterns/CollectionViews` e `Patterns/Widgets` não têm story raiz, `ActionBar` e `Stats` continuam com a própria página `Doc`.
 
+
+## Patterns: Flow Step Library
+
+A biblioteca de passos (`flow/step-library`, item `flow-step-library`) é o painel à esquerda dos editores de fluxo. Decisões da T2 do plano `flow-editors`:
+
+- O grupo é um `fieldset` com `legend`, não um `div role="group"`: o lint de semântica (`useSemanticElements`) pede o elemento nativo, e o nome do grupo continua sendo o rótulo.
+- `collapsed` é uma prop além do contrato do plano: mantém só os ícones (3,5rem), com os nomes em `sr-only` e `aria-label`. Não há colapso por viewport no pattern; abaixo de `md` o template (T5) decide.
+- O item `flow-step-library` leva `flow/canvas/core.ts` pelo import dos tipos e de `serializeStepTransfer`, então carrega `d3-hierarchy` junto. `@xyflow/react` fica de fora (`build:registry`).
+- Cor e raio vêm de tokens e de `Card`, `Badge`, `Progress` e `Skeleton` do COSS sem sobrescrita: `scripts/override-exceptions.json` não ganhou entrada.
+
+Contraste medido no Storybook (`Patterns/Flow/Step Library`, `Default` com o cartão `Failed`), pelo texto do elemento contra o fundo efetivo do ancestral:
+
+| Elemento | Claro | Escuro | Limite |
+| --- | --- | --- | --- |
+| Título e nome do passo (`foreground`) | 15,17 | 15,23 | 4,5:1 |
+| Dica, rótulo do grupo, descrição do passo, descrição do cartão (`muted-foreground`) | 5,73 | 5,07 | 4,5:1 |
+| Badge `Falhou` (`destructive`, texto branco) | 4,77 | 4,77 | 4,5:1 |
+| Ícone do passo contra o quadro `IconFrame` | 13,91 | 13,64 | 3:1 |
+| Indicador do progresso contra a trilha (`bg-primary` contra `bg-input`) | 4,02 | 12,09 | 3:1 |
+| Trilha do progresso contra o cartão | 1,26 | 1,26 | 3:1 (não atende) |
+
+A trilha fica abaixo de 3:1 contra o cartão porque o token `input` é a superfície do campo, não a borda de um controle; o progresso é lido pelo indicador contra a trilha, que atende nos dois temas. Não há token alterado: a nota fica para o consumidor, que pode escurecer `--input` no seu tema se quiser a trilha mais marcada (regra de sobrescrita por `data-slot="progress-track"`, se a auditoria do consumidor pedir). As medidas foram tomadas com o tema `Default` do exemplo, esperando a transição de cor (500 ms do indicador) antes de ler.

@@ -218,7 +218,7 @@ T0 ─┬─ T1 (canvas) ──────┐
   - **Out of this Task:** biblioteca, inspector, assistente, templates; undo/redo (callbacks só).
   - **Ships alone safely because:** o item `flow-canvas` fica completo e instalável sozinho; nada existente o importa.
 
-- [ ] **T2 · Pattern `flow/step-library` [ENGINEERING]**
+- [x] **T2 · Pattern `flow/step-library` [ENGINEERING]**
   - **Owner:** `tc96-frontend:frontend-developer`
   - **Depends on:** T0
   - **Inputs:** ADR 0006 (D7, D10); `user-experience.md` §2 "Biblioteca de passos", §4
@@ -358,3 +358,17 @@ Cada sessão acrescenta aqui a data, a Task, e cada desvio do plano com o lugar 
 - `manifest.test.ts`: o teste das pastas de template e o teste de que `flow-canvas` declara `@xyflow/react@12.12.0` ficam `test.todo` (o segundo porque o item só ganha o import do React Flow na T1). Ativos: `d3-hierarchy@3.1.2` em `flow-canvas`, ausência de `@xyflow/react` nos outros três itens, e a resolução de `@tc96/parttens/flow/canvas/core` a partir de um template.
 - `bun scripts/verify-public-api.ts --record` acrescentou também `template:app-shell-2`, `-3`, `-4` e seus exports, pendentes antes desta Task e sem relação com ela.
 - `TidyTreeOptions` foi exportado além do contrato, e `nodeSize` e `gap` são `readonly [number, number]`.
+
+**2026-10-23 · T2** (`flow/step-library`, branch `claude/flow-editors-t2-step-library-5d354b` a partir de `8a92850`). Evidência da tabela da T2 toda verde: biome, `bun test packages/parttens/src/flow/step-library` (12 testes), typecheck, storybook typecheck e lint, `check:coss`, `boundaries:check`, `overrides:check`, `verify:public-api` sem `--record`, `build:registry` (`flow-step-library.json` sem `@xyflow/react`), `vitest run` do `src/patterns/flow/step-library` nos dois projetos (16 testes, axe sem violação). Desvios:
+
+- `FlowStepLibrary` ganhou a prop `collapsed` (só ícones, 3,5rem), fora do contrato da Task: registrada em `docs/architecture/tc96-parttens.md`, seção "Patterns: Flow Step Library", e em `flow/step-library/AGENTS.md`.
+- O grupo é `fieldset` com `legend` em vez de `div role="group"`, porque o lint de semântica pede o elemento nativo; registrado em `docs/architecture/tc96-parttens.md` (mesma seção).
+- `FlowRunCard` recebe `run: FlowRunSummary` e `labels`, em vez de `title`, `status` e `progress` soltos; o texto de resumo (`summary`, com `{completed}` e `{total}`) é label, nada em pt-BR fixo no componente. Registrado em `flow/step-library/AGENTS.md`.
+- `core.ts` exporta também `defaultFlowStepLibraryLabels`, `defaultFlowRunCardLabels` e os tipos de label; o barrel do pattern exporta `groupStepTypes`. Registrado em `flow/step-library/AGENTS.md` e no baseline `docs/architecture/public-api-exports.json` (gravado com `--record`; o diff traz só os exports do pattern, 14 nomes, dois deles os defaults).
+- O item traz `d3-hierarchy` no `dependencies` do registry, porque importa `flow/canvas/core.ts` (ADR 0006 D2); `@xyflow/react` ficou de fora. Registrado em `docs/architecture/tc96-parttens.md` e em `flow/step-library/AGENTS.md`.
+- As stories de `WithRunCard` são três exports (`WithRunCardFailed`, `WithRunCardPassed`, `WithRunCardNotRun`) em vez de uma story com argumento, e há `AgentGroups` além da lista da Task, para mostrar o fixture do agente. Registrado no próprio arquivo de stories.
+- O `play` de `Default` clica no item e confere `onAdd`; o arraste não é coberto no `play`, porque o Storybook não passa `dataTransfer`. O payload é conferido só no `bun test` (`step-library.test.tsx`), como a Task pede. Registrado em `flow/step-library/AGENTS.md`.
+- Auditoria de contraste no `Default` com o cartão `Failed`: todo texto ≥ 4,5:1 no claro e no escuro; o indicador do progresso ≥ 4:1 contra a trilha. A trilha do progresso fica em 1,26:1 contra o cartão (abaixo de 3:1); o token `input` não muda, a nota está em `docs/architecture/tc96-parttens.md`.
+- O `bun test` imprime avisos de `act(...)` vindos do `ScrollArea` do COSS (estado interno do Base UI); os testes passam e os avisos não vêm do pattern.
+- Storybook de verificação subiu na porta 6016, porque a 6006 estava ocupada por outra sessão; nada foi gravado nela.
+
