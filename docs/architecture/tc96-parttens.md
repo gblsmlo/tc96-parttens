@@ -451,6 +451,32 @@ Medido no navegador: as cores computadas do tema de exemplo foram convertidas pa
 
 Decidido em 2026-10-21, tipo do `renderPlaceholder`. O registro fixa `platejs@53.3.14`, mas ele pede `@platejs/core ^53.3.14`, e o npm do consumidor resolve a última da faixa: medido no `test:consumer:registry`, `@platejs/core@53.3.18` com `slate-react@0.145.1`, enquanto o `bun.lock` tem `53.3.14` com `0.126.4`. No `slate-react@0.145.1` o `RenderPlaceholderProps` passou a exigir `'aria-hidden'`, e o `EditableProps` do próprio Plate, que tipa o prop do `PlateContent`, não; a função tipada com `RenderPlaceholderProps` reprovava a verificação de tipos do consumidor (TS2322). O pattern tipa o argumento com `PlateContentProps['renderPlaceholder']`, que compila nas duas versões sem afrouxar a checagem. Fixar `@platejs/core` no registro foi descartado: ele não é importado pelo pattern, então não vira dependência do item, e fixá-lo travaria o consumidor numa versão que o `platejs` já aceita substituir.
 
+## Patterns: Flow Inspector
+
+Decidido em 2026-10-23 ([ADR 0006](../../.specs/adr/0006-flow-family-on-react-flow.md), D8; plano `.specs/flow-editors/tasks/0001-flow-editors.md`, Task T3). `flow/inspector` é o painel lateral dos detalhes de um passo: o quadro (`FlowInspector`) e três renderizadores de leitura (`FlowInspectorDetails`, `FlowInspectorStatus`, `FlowInspectorLogs`). O formulário de edição é do consumidor, por `build`; o pattern não busca, não filtra e não persiste.
+
+- **Dock e `Sheet`:** a partir de `md` (800px, `useMediaQuery('md')` do COSS) o inspector é um `aside` nomeado "Detalhes do passo", com a largura na variável `--flow-inspector-width` (prop `width`, `24rem`), `data-docked="true"` aberto e largura zero com `inert` fechado; o conteúdo interno mantém a largura cheia, então a transição de 200 ms (`motion-reduce:transition-none`) só revela o painel, sem reflow. Abaixo de `md` renderiza um `Sheet` com o mesmo corpo, sem botão de fechar do COSS (o cabeçalho tem o seu) e `onClose` em Esc e no clique fora.
+- **Quadro:** `build`, `status` e `logs` são o conteúdo de cada aba, `children` é o rodapé, `headerActions` entra antes do botão "Fechar detalhes do passo", que o pattern sempre desenha. `disabledTabs` desabilita a aba (o Base UI usa `aria-disabled`, não `disabled`). `unconnected` mostra o `Alert` "Nada chega a este passo." só em Build.
+- **Controlado:** as entradas de log chegam já filtradas; `filter` e `onFilterChange` só guiam o `ToggleGroup`, que expõe `aria-pressed`, não `radio`. Os textos visíveis são `labels` em pt-BR, com padrão em `defaultFlowInspectorLabels`.
+- **Contraste (medido em 2026-10-23, tema `Default`, cores do Tailwind 4.3.3 em sRGB e alfa composto sobre `background`):**
+
+| Par | Claro | Escuro |
+| --- | --- | --- |
+| Valor (`foreground`) sobre `background` | 14,56:1 | 16,04:1 |
+| Rótulo, contagem e descrição (`muted-foreground`) sobre `background` | 5,45:1 | 5,35:1 |
+| `Badge` sucesso, texto sobre o fundo tingido | 4,78:1 | 7,04:1 |
+| `Badge` info | 5,96:1 | 5,52:1 |
+| `Badge` erro | 5,34:1 | 5,53:1 |
+| `Badge` aviso | 4,56:1 | 7,59:1 |
+| `Badge` outline | 14,56:1 | 15,05:1 |
+| Ícone de estado do log (sucesso, falha, em execução, ignorado), gráfico, sobre `background` | 5,14:1, 6,15:1, 6,54:1, 4,84:1 | 9,05:1, 6,05:1, 6,63:1, 10,19:1 |
+| Ícone de log não executado (`muted-foreground`) | 5,45:1 | 5,35:1 |
+| Texto do `Alert` (`foreground`, `muted-foreground`) sobre a superfície do alerta | 14,13:1, 5,29:1 | 15,08:1, 5,03:1 |
+| Ícone do `Alert` `warning` com `--warning`, antes | 1,99:1 | 7,66:1 |
+| Ícone do `Alert` `warning` com `--warning-foreground`, depois | 4,70:1 | 9,58:1 |
+
+  O ícone do `Alert` `warning` do COSS usa `--warning`, que no claro não chega a 3:1; o inspector aplica `[&>svg]:text-warning-foreground` no `Alert`. `overrides:check` só acompanha borda, raio e sombra, e rejeitou uma exceção de cor como sem uso, então a classe não entra em `scripts/override-exceptions.json`. Nenhum valor de token mudou, e o axe das oito stories passa no claro e no escuro.
+
 ## Validação proposta
 
 - Fronteiras: impedir imports em direção proibida, ciclos e UI duplicada por padrão. `packages/parttens` só importa `@tc96/ui/<item>` presente no lock COSS.

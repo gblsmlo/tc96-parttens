@@ -237,7 +237,7 @@ T0 ─┬─ T1 (canvas) ──────┐
   - **Out of this Task:** soltar no canvas (T1); o cartão colapsado no móvel como `Sheet` (backlog).
   - **Ships alone safely because:** item completo sem dependência do React Flow.
 
-- [ ] **T3 · Pattern `flow/inspector` [ENGINEERING]**
+- [x] **T3 · Pattern `flow/inspector` [ENGINEERING]**
   - **Owner:** `tc96-frontend:frontend-developer`
   - **Depends on:** T0
   - **Inputs:** ADR 0006 (D8, D10); `user-experience.md` §2 "Inspector", §3, §4 (formulários, foco)
@@ -358,3 +358,14 @@ Cada sessão acrescenta aqui a data, a Task, e cada desvio do plano com o lugar 
 - `manifest.test.ts`: o teste das pastas de template e o teste de que `flow-canvas` declara `@xyflow/react@12.12.0` ficam `test.todo` (o segundo porque o item só ganha o import do React Flow na T1). Ativos: `d3-hierarchy@3.1.2` em `flow-canvas`, ausência de `@xyflow/react` nos outros três itens, e a resolução de `@tc96/parttens/flow/canvas/core` a partir de um template.
 - `bun scripts/verify-public-api.ts --record` acrescentou também `template:app-shell-2`, `-3`, `-4` e seus exports, pendentes antes desta Task e sem relação com ela.
 - `TidyTreeOptions` foi exportado além do contrato, e `nodeSize` e `gap` são `readonly [number, number]`.
+
+**2026-10-23 · T3** (`flow/inspector`; evidência da tabela da T3 toda verde, com `bun test --isolate` em 30 testes, vitest nos dois temas com axe em 16 testes e `flow-inspector.json` sem `@xyflow/react`). Desvios:
+
+- O contrato fala em "`children` do cabeçalho": o pattern recebe `headerActions` e desenha sempre o botão "Fechar detalhes do passo" depois dele; `build`, `status` e `logs` são o conteúdo de cada aba e `children` é o rodapé (o plano diz "rodapé por `children`"). Registrado em `flow/inspector/AGENTS.md` (Invariants).
+- `FlowStepStats` é `{ entered, completed }` (a taxa de abandono é calculada por `flowStepAbandonment`); `FlowLogFilter` (`'step' | 'all'`) foi exportado além do contrato. O `FlowInspectorLogs` recebe as entradas já filtradas (padrão "sem filtro dentro do pattern"). `docs/architecture/tc96-parttens.md`, "Patterns: Flow Inspector".
+- `flow-inspector.json` declara `d3-hierarchy@3.1.2` porque o item leva `flow/canvas/core.ts` (ADR D2, que importa `d3-hierarchy`); não declara `@xyflow/react`.
+- O ícone do `Alert` `warning` usa `[&>svg]:text-warning-foreground` (1,99:1 → 4,70:1 no claro). `overrides:check` não acompanha cor e rejeitou a exceção como sem uso, então ela não entra em `scripts/override-exceptions.json`; ficou em `AGENTS.md` (Styling) e na seção "Patterns: Flow Inspector".
+- A borda do separador das abas está num `div` em volta do `TabsList`, para não sobrescrever a borda de um item COSS.
+- O Base UI desabilita a aba com `aria-disabled` e `pointer-events: none`, não com o atributo `disabled`; as stories e os testes asseguram `aria-disabled`.
+- O "primeiro campo focado ao abrir" é do formulário da story (`autoFocus` no Tipo): o dock não move o foco, só o `Sheet` do Base UI move.
+- `bun scripts/verify-public-api.ts --record` só acrescentou as exportações do inspector. `packages/registry/src/cli.test.ts` estoura os 5 s padrão sob carga ("preserves an existing file"); passa com `--timeout 60000`.
