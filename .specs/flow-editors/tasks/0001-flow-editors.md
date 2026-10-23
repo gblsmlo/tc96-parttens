@@ -309,7 +309,7 @@ T0 ─┬─ T1 (canvas) ──────┐
   - **Out of this Task:** instalar num consumidor (T6); página no `apps/docs`.
   - **Ships alone safely because:** os dois itens só compõem o que T1 a T4 entregaram; nada existente muda.
 
-- [ ] **T6 · Gate, consumidor real e revisão independente [VALIDATION]**
+- [x] **T6 · Gate, consumidor real e revisão independente [VALIDATION]**
   - **Owner:** `tc96-core:qa-engineer` para a leitura; `tc96-core:code-reviewer` em contexto novo para a revisão; `tc96-core:repo-operator` para o PR
   - **Depends on:** T0 a T5
   - **Inputs:** este plano; `Registro da execução`
@@ -429,3 +429,12 @@ Cada sessão acrescenta aqui a data, a Task, e cada desvio do plano com o lugar 
   - Fica para depois, por decisão do dono: alargar `scripts/check-overrides.ts`; um formatador de duração único entre canvas e inspector; os papéis dos handles do React Flow.
 
 **2026-10-23 · T6 (CLI)** `test:consumer:registry` reprovava ao instalar `workflow-editor`: o `chat-assistant` declara `@coss/chat`, item de 23 arquivos que o CLI recusava (`expected one file`). `packages/registry/src/coss.ts` passa a mapear vários arquivos por item como o `sync:coss` (`componentFiles`, `cossInstalledPaths`, `normalizeImports` com `@/registry/default/<dir>/<resto>`), o `cli.ts` conta a pasta `<ui>/<item>/` como instalada, e as dependências npm do item já seguiam o fluxo. Registrado no Amendment 001 do ADR 0005 e em `docs/architecture/tc96-parttens.md` (Dependências do COSS).
+
+**2026-10-23 · T6 (gate)** (orquestrador, worktree de integração em `feat/flow-editors`). `bun run check` rodado por etapas, porque o processo de fundo caiu duas vezes com o reinício da sessão: `check:coss`, `boundaries:check`, `overrides:check`, `typecheck`, `lint:ci`, `storybook:typecheck` e `storybook:lint` exit 0; `bun run test` com 22 arquivos e 0 falhas; `bun run build`, `verify:public-api`, `storybook:build` e `docs:build` exit 0. Leituras e desvios:
+
+- `storybook:test` completo: 1424 testes passaram em 266 arquivos nos dois temas; quatro arquivos (`templates/contact-detail` e `properties/display/flag-property`, claro e escuro) falharam só no import ("Failed to fetch dynamically imported module") sob carga de processos concorrentes e passam isolados (4 arquivos, 10 testes). A story `Typing` do assistente ganhou `waitFor`, porque o indicador anima a entrada e o `toBeVisible` corria antes.
+- `test:consumer:registry` exit 0 depois de o CLI aprender itens COSS multiarquivo (`chat`), ver "T6 (CLI)"; a versão anterior reprovava com `chat: expected one file`. O consumidor do teste já nasce com `chat/` (semeado de `packages/ui/src`), então a instalação multiarquivo de ponta a ponta fica coberta pelos testes `--dry-run` de `cli.test.ts`, e o teste de consumidor prova que um `chat/` existente conta como instalado.
+- Revisão independente (`tc96-core:code-reviewer`, contexto novo): aprovada sem bloqueador; onze should-fix e os nits baratos aplicados, ver "T6 (revisão)". Follow-ups registrados: alargar `scripts/check-overrides.ts` para cores em elementos reexportados, um formatador de duração comum ao canvas e ao inspector, e o papel dos handles do React Flow.
+- Leitura visual feita no Storybook da worktree nos dois temas (patterns e templates); a única correção visual foi a inversão dos ícones monocromáticos do fixture do agent builder (`invert dark:invert-0`).
+- Screenshots não vão anexados ao PR; as razões de contraste estão em `docs/architecture/tc96-parttens.md`.
+- PR aberto de `feat/flow-editors` para `main`; publicação no npm fica para a release própria, com pausa para o `npm login` do dono.
