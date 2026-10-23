@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AssistantPanel } from '@tc96/parttens'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
 import { failedMessages, messages, suggestions } from './fixtures/assistant'
 
@@ -128,9 +128,11 @@ export const Conversation: Story = {
 export const Typing: Story = {
   args: { messages: messages.slice(0, 1), typing: true },
   play: async ({ canvasElement }) => {
-    await expect(
-      within(panel(canvasElement)).getByText('O assistente está digitando'),
-    ).toBeVisible()
+    await waitFor(() =>
+      expect(
+        within(panel(canvasElement)).getByText('O assistente está digitando'),
+      ).toBeVisible(),
+    )
   },
 }
 
