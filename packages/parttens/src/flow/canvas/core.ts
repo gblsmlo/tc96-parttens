@@ -67,6 +67,8 @@ export interface TidyTreeOptions {
   gap: readonly [number, number]
 }
 
+export const flowStepNodeSize = [256, 100] as const
+
 export const FLOW_STEP_TRANSFER_TYPE = 'application/x-tc96-flow-step'
 
 const stepKinds: readonly string[] = ['trigger', 'action', 'condition']

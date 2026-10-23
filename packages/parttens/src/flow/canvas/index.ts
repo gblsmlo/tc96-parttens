@@ -16,13 +16,13 @@ export type {
 export {
   FLOW_STEP_TRANSFER_TYPE,
   flowRunSummary,
+  flowStepNodeSize,
   incomingOf,
   outgoingOf,
   parseStepTransfer,
   serializeStepTransfer,
   tidyTree,
 } from './core'
-export { flowStepNodeSize } from './lib/steps'
 export type {
   FlowCanvasLabels,
   FlowCanvasMode,

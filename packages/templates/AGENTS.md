@@ -1,6 +1,6 @@
 # Templates package
 
-Installable templates: whole layouts that compose COSS components, `elements`, `helpers` and pattern modules, copied into the consumer by `tc96-parttens add <template>` ([ADR 0005](../../.specs/adr/0005-installable-templates.md)). The first group is `application/shell/` with `AppShell1` to `AppShell4`. A template is controlled like a pattern: data comes through props, links through `renderLink`, events through callbacks; it never fetches, persists, reads cookies or applies a theme. Templates that only live in Storybook (`Templates/Contacts` and the other CRM pages) stay in `apps/storybook/src/templates/` under [ADR 0004](../../.specs/adr/0004-templates-only-in-storybook.md).
+Installable templates: whole layouts that compose COSS components, `elements`, `helpers` and pattern modules, copied into the consumer by `tc96-parttens add <template>` ([ADR 0005](../../.specs/adr/0005-installable-templates.md)). The first group is `application/shell/` with `AppShell1` to `AppShell4`; the second is `application/flow/` with `WorkflowEditor` and `AgentBuilder`. A template is controlled like a pattern: data comes through props, links through `renderLink`, events through callbacks; it never fetches, persists, reads cookies or applies a theme. Templates that only live in Storybook (`Templates/Contacts` and the other CRM pages) stay in `apps/storybook/src/templates/` under [ADR 0004](../../.specs/adr/0004-templates-only-in-storybook.md).
 
 ## Map
 
@@ -11,6 +11,9 @@ Installable templates: whole layouts that compose COSS components, `elements`, `
 | `src/application/shell/shared/` | types, labels, `renderAnchor`, `ShellNav`, `WorkspaceSwitcher`, `UserMenu`, `ShellHeader`, `ShellSearch`, `ShellNotifications` |
 | `src/application/shell/app-shell-3/` | also `project-nav.tsx` and `usage-card.tsx`, used only there |
 | `src/application/shell/app-shell-4/` | also `section-rail.tsx`, used only there |
+| `src/application/flow/shared/` | types, labels, `renderAnchor`, `useFlowPageState` (ephemeral state), `useFlowEditor` (the handlers both editors share), `FlowPageHeader`, `FlowPageLayout`, `FlowStepInspector` (the inspector assembly), `StepForm`, `FlowAssistant`, `FlowConfirmDialog`, `FlowToolButton` |
+| `src/application/flow/workflow-editor/` | `WorkflowEditor` only: horizontal canvas, undo, redo, lock, minimap, grid snapping |
+| `src/application/flow/agent-builder/` | `AgentBuilder` only: vertical canvas, Organizar árvore, Limpar resultados, Restaurar exemplo |
 
 Import direction: a template folder → its group's `shared/` and its own files; `shared/` → COSS, `@tc96/elements`, `@tc96/helpers`, never a template folder; no template imports another template. Patterns come by file path (`@tc96/parttens/widgets/shared/progress-ring`), never through the `@tc96/parttens` barrel, so the item ships only that file.
 
@@ -20,6 +23,8 @@ Import direction: a template folder → its group's `shared/` and its own files;
 - `scripts/verify-public-api.ts` records each template `index.ts` as `template:<name>` in `docs/architecture/public-api-exports.json`.
 - `apps/storybook/src/application/shell/` (stories titled `Application/Shell/AppShell{n}`, at the sidebar root) imports each template through `@tc96/templates/<path>` and the fixtures import the shared types through the `app-shell-1`, `app-shell-3` and `app-shell-4` barrels.
 - `apps/storybook/src/templates/fixtures/app-shell.tsx` imports `AppShell1` and the `application/shell/fixtures/shell-data.tsx` fixtures; `withAppShell` wraps every `Templates/*` page as a decorator, with the active nav item and the breadcrumb of that page.
+- `apps/storybook/src/application/flow/` (stories titled `Application/Flow/WorkflowEditor` and `Application/Flow/AgentBuilder`) imports each template through `@tc96/templates/application/flow/<name>`; its fixtures (`lead-routing.tsx`, `collections-agent.tsx`, `use-flow-editor-state.ts`) keep the history and the ids the templates leave to the consumer. The stories reuse `withAppShell`.
+- The flow templates import the patterns by file path: `flow/canvas/composition/flow-canvas/flow-canvas` (and `-controls`, `-minimap`), `flow/canvas/components/flow-shortcuts-popover`, `flow/canvas/core` (`tidyTree`, `flowStepNodeSize`, `flowRunSummary`), `flow/step-library/composition/...`, `flow/inspector/composition/...` and `chat/assistant/composition/assistant-panel/assistant-panel`. Renaming one of those files breaks the templates; `manifest.test.ts` asserts that `workflow-editor.json` carries only `application/flow/`, `flow/`, `chat/assistant/`, `elements` and `helpers` files, with `@xyflow/react` and `d3-hierarchy` in `dependencies`.
 - Nothing in `packages/` imports `@tc96/templates`; `boundaries:check` enforces it.
 
 ## Invariants
@@ -34,8 +39,16 @@ Import direction: a template folder → its group's `shared/` and its own files;
 - The section of `AppShell4` is controlled by `sectionId`; the template keeps no copy of it.
 - Every shell gives `SidebarInset` `min-w-0`. The inset is a flex item of the provider's row, so without it a wide child (a `DataTable`, a `KanbanView`) widens the inset past the viewport and the page scrolls sideways instead of the child's own container.
 
+- Both flow templates keep the selection, the steps and every result in the consumer (`selectedStepId` and `onSelectedStepChange` are props); the template state is the inspector (open, `view` | `edit` | `create`, tab, log filter), the assistant (open, expanded), `snapToGrid`, `locked` and the two confirmation dialogs.
+- A library click or a canvas drop calls `onStepAdd(type, { position? })` at once; the header Adicionar passo, the node "+" and Adicionar ramo open the inspector in `create` mode, and submitting calls `onStepAdd(type, { after?, connection?, values })`. Saving the edit form calls `onStepChange(stepId, values)`. Deleting a step with connections asks through an `AlertDialog` first.
+- `onStepsChange` receives the whole list. Reorganizar (workflow, `horizontal`) and Organizar árvore (agent, `vertical`) pass `tidyTree` the `flowStepNodeSize` and a gap of 96 by 48 and 48 by 88.
+- The form validates only the name (`FieldError`, `aria-invalid`, focus on the field). Caminho is the label of the first incoming connection; Responsável matches `step.owner.name` against `owners`.
+- Below `md` the library is `collapsed`, the inspector is the `Sheet` of the pattern and the assistant is a fixed full-screen layer (`data-slot="flow-assistant-fullscreen"`) with `placement="docked"`; from `md` the assistant is `floating` in the canvas wrapper, which is the positioned ancestor.
+- The page frame (`flow-page`) takes `min-h-160` and `flex-1`, so it needs a flex column parent with a height, like the content area of the shells.
+
 ## Styling
 
+- The flow templates add no override on a COSS part; the page frame is a plain `div` with `border` and `rounded-xl` on tokens. Their contrast ratios are in `docs/architecture/tc96-parttens.md` (Templates: editores de fluxo).
 - No border, radius, color or shadow class on a COSS part except where listed in `scripts/override-exceptions.json`; layout, size and typography classes are allowed (`SidebarHeader className="h-14 justify-center px-4"`, `Separator className="me-2 h-4"`, `Badge className="absolute -end-1 -top-1"`).
 - `AvatarFallback className="text-foreground"` in `shared/user-menu.tsx`: the fallback sits on `bg-border` and inherited the muted `sidebar-foreground` (3.83:1 light). `overrides:check` does not see `AvatarFallback` re-exported by `@tc96/elements/avatar`, so the reason and ratios are in `docs/architecture/tc96-parttens.md` (Templates: App Shells).
 - The workspace logo is an `IconFrame` with `bg-sidebar-primary text-sidebar-primary-foreground`, the sidebar's own pair; `bg-muted` vanished on `bg-sidebar` in dark.
@@ -56,4 +69,5 @@ bun run test:consumer:registry
 
 - [ADR 0005](../../.specs/adr/0005-installable-templates.md) and the plan `.specs/app-shell-templates/tasks/0001-app-shell-templates.md`.
 - `docs/architecture/tc96-parttens.md`, section Templates: App Shells, for contrast ratios and the decisions behind the shells.
-- `apps/storybook/src/templates/doc.mdx` (`Templates/Doc`) for the consumer commands.
+- `apps/storybook/src/templates/doc.mdx` (`Templates/Doc`) for the consumer commands and the `base.css` line of the flow editors.
+- [ADR 0006](../../.specs/adr/0006-flow-family-on-react-flow.md) and the plan `.specs/flow-editors/tasks/0001-flow-editors.md` for the flow templates.

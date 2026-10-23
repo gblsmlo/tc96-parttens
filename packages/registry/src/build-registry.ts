@@ -1,4 +1,3 @@
-import { existsSync } from 'node:fs'
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
 import { build } from 'esbuild'
@@ -57,7 +56,7 @@ const entries: [ItemName, string][] = [
     name,
     `packages/templates/src/${templateSources[name]}/index.ts`,
   ]),
-].filter(([, entry]) => existsSync(entry))
+]
 for (const [name, entry] of entries) {
   const pending = [resolve(entry)]
   const seen = new Set<string>()
