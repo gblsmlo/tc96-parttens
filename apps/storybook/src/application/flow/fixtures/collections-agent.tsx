@@ -9,6 +9,7 @@ import type {
 } from '@tc96/templates/application/flow/agent-builder'
 import type { IconModule } from '@thesvg/icons'
 import anthropic from '@thesvg/icons/anthropic'
+import clickup from '@thesvg/icons/clickup'
 import neon from '@thesvg/icons/neon'
 import resend from '@thesvg/icons/resend'
 import stripe from '@thesvg/icons/stripe'
@@ -18,7 +19,7 @@ function brand(icon: IconModule, mono = false): ReactNode {
   return (
     <img
       alt=""
-      className={mono ? 'size-4 dark:invert' : 'size-4'}
+      className={mono ? 'size-4 invert dark:invert-0' : 'size-4'}
       src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(icon.svg)}`}
     />
   )
@@ -57,7 +58,7 @@ export const collectionsIcons: Record<string, ReactNode> = {
   decide: brand(anthropic, true),
   email: brand(resend, true),
   invoice: brand(stripe),
-  schedule: brand(neon),
+  schedule: brand(clickup),
 }
 
 const tokens = ['1.842 tokens', 'US$ 0,031']
