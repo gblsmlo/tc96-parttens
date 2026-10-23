@@ -15,6 +15,10 @@ export const patternNames = [
   'settings',
   'chats-panel',
   'wizard',
+  'flow-canvas',
+  'flow-step-library',
+  'flow-inspector',
+  'chat-assistant',
 ] as const
 export type PatternName = (typeof patternNames)[number]
 /** Folder under packages/parttens/src, kept as the path in the consumer. */
@@ -32,12 +36,18 @@ export const patternSources: Record<PatternName, string> = {
   settings: 'surfaces/settings',
   'chats-panel': 'chat/chats-panel',
   wizard: 'wizard',
+  'flow-canvas': 'flow/canvas',
+  'flow-step-library': 'flow/step-library',
+  'flow-inspector': 'flow/inspector',
+  'chat-assistant': 'chat/assistant',
 }
 export const templateNames = [
   'app-shell-1',
   'app-shell-2',
   'app-shell-3',
   'app-shell-4',
+  'workflow-editor',
+  'agent-builder',
 ] as const
 export type TemplateName = (typeof templateNames)[number]
 /** Folder under packages/templates/src, kept as the path in the consumer. */
@@ -46,6 +56,8 @@ export const templateSources: Record<TemplateName, string> = {
   'app-shell-2': 'application/shell/app-shell-2',
   'app-shell-3': 'application/shell/app-shell-3',
   'app-shell-4': 'application/shell/app-shell-4',
+  'workflow-editor': 'application/flow/workflow-editor',
+  'agent-builder': 'application/flow/agent-builder',
 }
 export type ItemName = PatternName | TemplateName
 export function isTemplate(name: string): name is TemplateName {

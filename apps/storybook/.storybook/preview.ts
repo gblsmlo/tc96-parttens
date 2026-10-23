@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/react-vite'
 import '../../example/packages/ui/src/styles.css'
+import '@xyflow/react/dist/base.css'
 import { themePresets } from '../../example/packages/ui/src/themes/presets.ts'
 import { DocsPage } from './docs-page.tsx'
 

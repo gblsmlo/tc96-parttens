@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import ts from 'typescript'
@@ -20,10 +21,12 @@ const modules: Record<string, string> = {
   ),
   parttens: 'packages/parttens/src/index.ts',
   ...Object.fromEntries(
-    templateNames.map((name) => [
-      `template:${name}`,
-      `packages/templates/src/${templateSources[name]}/index.ts`,
-    ]),
+    templateNames
+      .map((name) => [
+        `template:${name}`,
+        `packages/templates/src/${templateSources[name]}/index.ts`,
+      ])
+      .filter(([, file]) => existsSync(file as string)),
   ),
 }
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)

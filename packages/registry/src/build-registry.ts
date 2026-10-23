@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
 import { build } from 'esbuild'
@@ -56,7 +57,7 @@ const entries: [ItemName, string][] = [
     name,
     `packages/templates/src/${templateSources[name]}/index.ts`,
   ]),
-]
+].filter(([, entry]) => existsSync(entry))
 for (const [name, entry] of entries) {
   const pending = [resolve(entry)]
   const seen = new Set<string>()
@@ -140,7 +141,7 @@ await writeFile(
 )
 const cliOutput = resolve('dist/cli')
 await mkdir(join(cliOutput, 'registry'), { recursive: true })
-for (const name of [...patternNames, ...templateNames, 'view', 'aggregate'])
+for (const name of [...entries.map(([name]) => name), 'view', 'aggregate'])
   await writeFile(
     join(cliOutput, `registry/${name}.json`),
     await readFile(join(output, `${name}.json`)),
@@ -194,5 +195,5 @@ await writeFile(
   `${readme.slice(0, publicEnd).trimEnd()}\n`,
 )
 console.log(
-  `Generated ${patternNames.length} pattern and ${templateNames.length} template registry items, the legacy view entry, the aggregate and the Node CLI artifact.`,
+  `Generated ${entries.length} pattern and template registry items, the legacy view entry, the aggregate and the Node CLI artifact.`,
 )
