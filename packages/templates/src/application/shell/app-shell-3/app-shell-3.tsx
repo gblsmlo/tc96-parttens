@@ -8,6 +8,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from '@tc96/ui/sidebar'
+import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
 import { renderAnchor } from '../shared/render-link'
@@ -43,6 +44,7 @@ export function AppShell3({
   onThemeChange,
   onWorkspaceChange,
   open,
+  padded = true,
   projects,
   renderLink = renderAnchor,
   theme,
@@ -117,7 +119,9 @@ export function AppShell3({
           labels={labels}
           renderLink={renderLink}
         />
-        <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+        <div className={cn('flex flex-1 flex-col', padded && 'gap-4 p-4')}>
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

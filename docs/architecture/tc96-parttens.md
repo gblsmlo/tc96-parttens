@@ -625,19 +625,21 @@ Decidido em 2026-10-23 ([ADR 0006](../../.specs/adr/0006-flow-family-on-react-fl
 - **Um `FlowCanvas` para os dois editores:** `direction` troca os lados dos handles e, em `vertical`, liga por padrão os controles de aresta e o menu do nó; `flowStepNodeSize` (256 por 100) é o tamanho que o consumidor passa ao `tidyTree`. O canvas nunca reposiciona.
 - **Nó:** `ContextMenu` do COSS no cartão do nó; os handles ficam fora do gatilho, irmãos do cartão, por isso o menu não interfere na conexão. O `ariaLabel` e o `aria-roledescription` vão pelo próprio nó do React Flow (`ariaLabel`, `domAttributes`), e os handles levam `role="button"` com o nome "Conectar a partir de/em ...": sem papel o axe recusa `aria-label` em `div` (`aria-prohibited-attr`).
 - **Medidas do nó:** em modo controlado o React Flow só põe `measured` no nó quando o consumidor aplica as mudanças `dimensions`; o canvas guarda as medidas num estado efêmero e as devolve em `nodes`. Sem isso o minimapa não desenhava nenhum nó.
+- **Tokens base no nó (decidido em 2026-10-24, a pedido do dono):** o nó virou o `Card` do COSS dentro do gatilho do menu de contexto, com a borda, o raio e a sombra do tema, e o estado deixou de colorir o nó: só `failed` usa `destructive`; sucesso, execução e ignorado usam badge `outline`/`secondary` e texto `muted-foreground`, também no cartão da última execução e no inspetor. Antes, uma execução bem-sucedida deixava todos os nós em `success` (verde). Os ícones de marca das fixtures (Neon, Stripe) são dados do consumidor e não mudaram.
 - **Contraste (medido em 2026-10-23, `Horizontal` e `Vertical`, tema `Default`; texto 4,5:1, gráfico 3:1):**
 
 | Par | Claro | Escuro |
 | --- | --- | --- |
 | título do nó sobre `card` | 15,17:1 | 15,23:1 |
 | descrição e rodapé do nó (`muted-foreground`) | 5,73:1 | 5,07:1 |
-| badge `Sucesso` / `Falhou` | 4,99:1 / 5,59:1 | 6,63:1 / 5,30:1 |
+| badge `Sucesso` / `Falhou` | 14,52:1 / 4,77:1 (antes 4,99:1 / 5,59:1, `success` e `error`) | 14,15:1 / 4,77:1 (antes 6,63:1 / 5,30:1) |
+| rodapé de `Falhou` (`destructive-foreground`) | 6,42:1 | 5,75:1 |
 | badge `Não executado` / `Ignorado` | 14,52:1 / 13,91:1 | 14,15:1 / 13,67:1 |
 | rótulo da aresta | 14,52:1 | 14,97:1 |
 | iniciais do responsável (`text-foreground` sobre `border`) | 12,72:1 | 12,89:1 (antes 4,25:1 com `muted-foreground`, texto de 10 px, axe) |
 | aresta (gráfico) / aresta percorrida | 5,48:1 / 14,52:1 | 5,34:1 / 16,03:1 |
 | handle (gráfico) | 5,73:1 | 5,07:1 |
-| borda do nó selecionado (`primary`) | 14,52:1 | 16,03:1 |
+| anel do nó selecionado (`ring-primary`) | 14,52:1 | 16,03:1 |
 | anel de foco (`ring`) | 4,54:1 | 3,69:1 |
 | nó do minimapa sobre o fundo do minimapa | 5,73:1 | 5,07:1 |
 | nível de zoom e botões dos controles | 15,17:1 e 13,19:1 | 14,15:1 e 12,11:1 |
@@ -715,7 +717,7 @@ Decidido em 2026-10-23 ([ADR 0006](../../.specs/adr/0006-flow-family-on-react-fl
 - **Adicionar um passo:** clicar num item da biblioteca ou soltá-lo no canvas chama `onStepAdd(type, { position? })` de imediato (caminho do teclado e do arraste). "Adicionar passo" do cabeçalho, o "+" do nó e "Adicionar ramo" abrem o inspector em `create` (Status e Logs desabilitadas, "Ainda não adicionado") e o envio chama `onStepAdd(type, { after, connection?, values })`; o Tipo padrão é o primeiro que não é gatilho. Excluir um passo com conexões pede confirmação num `AlertDialog` (`onStepDelete` só roda depois), e "Limpar resultados" também.
 - **Formulário:** `step-form.tsx` sobre `Field`, `Input`, `Textarea` e `Select` do COSS. Só o nome é obrigatório: o erro sai em `FieldError` ligado por `aria-describedby`, o campo recebe `aria-invalid` e o foco, e nada é enviado. "Caminho" (agent) é o rótulo da primeira conexão de entrada e "Responsável" (workflow) casa `step.owner.name` com `owners`.
 - **Mobile:** abaixo de `md` a biblioteca é `collapsed` (só ícones), o inspector é o `Sheet` do pattern e o assistente é um `Sheet` do COSS em tela cheia (papel de diálogo, foco preso, Escape encerra) com `placement="docked"`; a partir de `md` o assistente é `floating` no invólucro do canvas, o ancestral posicionado. A biblioteca como `Sheet` no móvel segue no backlog do plano.
-- **Sem exceção de sobrescrita:** os templates não sobrescrevem borda, raio, cor ou sombra de peça do COSS; `scripts/override-exceptions.json` não ganhou entrada. O quadro da página (`flow-page`) é um `div` com `border` e `rounded-xl` sobre token.
+- **Sem exceção de sobrescrita:** os templates não sobrescrevem borda, raio, cor ou sombra de peça do COSS; `scripts/override-exceptions.json` não ganhou entrada. O quadro da página (`flow-page`) é um `div` com `border` e `rounded-xl` sobre token. Decidido em 2026-10-24, a pedido do dono: no `AgentBuilder` com `actionsContainer`, as ações vão para o cabeçalho do App Shell por portal, o breadcrumb fica só no shell (Agentes › Agente de cobrança) e o quadro perde `border` e `rounded-xl`, para a página não ficar num card dentro do shell.
 
 Contraste (medido em 2026-10-23 no Storybook, tema `Default`, pelo texto de cada nó de `flow-page` contra o fundo efetivo composto; texto 4,5:1, gráfico 3:1; nenhum token mudou):
 

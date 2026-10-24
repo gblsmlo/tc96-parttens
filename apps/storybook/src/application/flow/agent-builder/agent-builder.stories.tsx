@@ -6,8 +6,8 @@ import {
   type FlowStep,
 } from '@tc96/templates/application/flow/agent-builder'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
-import { withAppShell } from '../../templates/fixtures/app-shell'
+import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
+import { withAppShell } from '../../../templates/fixtures/app-shell'
 import {
   collectionsConnections,
   collectionsFailedSteps,
@@ -18,18 +18,25 @@ import {
   collectionsSteps,
   collectionsStepTypes,
   collectionsSuggestions,
-} from './fixtures/collections-agent'
+} from '../fixtures/collections-agent'
 import {
   useFlowAssistant,
   useFlowEditorState,
-} from './fixtures/use-flow-editor-state'
+} from '../fixtures/use-flow-editor-state'
 
 const usage = `
 // npx @tc96/parttens add agent-builder
 // import '@xyflow/react/dist/base.css' in your global CSS
 import { AgentBuilder } from '@acme/templates/application/flow/agent-builder'
 
+<AppShell1
+  actions={<div ref={setActionsContainer} />}
+  padded={false}
+  breadcrumbs={[{ href: '/agents', label: 'Agentes' }, { label: 'Agente de cobrança' }]}
+  {...shell}
+>
 <AgentBuilder
+  actionsContainer={actionsContainer}
   assistant={{ messages, onSend: ask, suggestions }}
   connections={connections}
   icons={{ decide: <img alt="" src={anthropicSrc} /> }}
@@ -46,6 +53,7 @@ import { AgentBuilder } from '@acme/templates/application/flow/agent-builder'
   stepTypes={stepTypes}
   steps={steps}
 />
+</AppShell1>
 `
 
 const docs = {
@@ -59,6 +67,11 @@ const docs = {
       description:
         '`onStepsChange(steps)` receives the whole list: on every drag tick (`onStepsChangeEnd(steps)` once when the drag ends, and after Organizar árvore) and, after Organizar árvore, with the positions of `tidyTree` (`flowStepNodeSize` and a 48 by 88 gap) so no two nodes overlap. `onStepAdd(type, options?)` carries `options.after` (the parent) when the step comes from Adicionar ramo, the edge "+" or the create form.',
       name: 'onStepsChange, onStepAdd',
+    },
+    {
+      description:
+        'An element in the app header (the `actions` slot of an App Shell). When set, the actions (Atalhos, Pergunte à IA, Adicionar passo, Executar teste and the Ações menu) render there through a portal, the page drops its own header and breadcrumb (the shell carries Agentes › Agente de cobrança) and loses its card frame. `null` while the slot mounts renders no actions; leave it out to keep the in-page header.',
+      name: 'actionsContainer',
     },
     {
       description:
@@ -102,7 +115,6 @@ const meta = {
       onSuggestion: fn(),
       suggestions: collectionsSuggestions,
     },
-    breadcrumbs: [{ href: '/agents', label: 'Agentes' }],
     connections: collectionsConnections,
     icons: collectionsIcons,
     logs: collectionsLogs,
@@ -123,7 +135,16 @@ const meta = {
   },
   component: AgentBuilder,
   decorators: [
-    withAppShell({ breadcrumbs: [{ label: 'Agentes' }], href: '/agents' }),
+    withAppShell({
+      actionsArg: 'actionsContainer',
+      breadcrumbs: [
+        { href: '/agents', label: 'Agentes' },
+        { label: 'Agente de cobrança' },
+      ],
+      href: '/agents',
+      padded: false,
+      root: false,
+    }),
   ],
   globals: { viewport: { isRotated: false, value: 'desktop' } },
   parameters: { docs, layout: 'fullscreen' },

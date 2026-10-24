@@ -12,13 +12,13 @@ export const flowCanvasEmptyClassName =
   'pointer-events-none absolute inset-0 z-10 flex items-center justify-center'
 
 export const flowStepNodeVariants = cva(
-  'flex w-64 flex-col rounded-xl border bg-card text-card-foreground shadow-xs/5 transition-shadow group-focus-visible/step:ring-2 group-focus-visible/step:ring-ring',
+  'gap-0 transition-shadow group-focus-visible/step:ring-2 group-focus-visible/step:ring-ring',
   {
     defaultVariants: { selected: false },
     variants: {
       selected: {
-        false: 'border-border',
-        true: 'border-primary ring-2 ring-primary/32',
+        false: '',
+        true: 'ring-2 ring-primary',
       },
     },
   },
@@ -54,9 +54,9 @@ export const flowStatusTextVariants = cva('flex min-w-0 items-center gap-1', {
       failed: 'text-destructive-foreground',
       idle: 'text-muted-foreground',
       'not-run': 'text-muted-foreground',
-      running: 'text-info-foreground',
+      running: 'text-muted-foreground',
       skipped: 'text-muted-foreground',
-      success: 'text-success-foreground',
+      success: 'text-muted-foreground',
     } satisfies Record<FlowRunStatus, string>,
   },
 })
@@ -87,7 +87,7 @@ export const flowEdgeControlsClassName =
   'flex items-center gap-1 opacity-0 transition-opacity focus-within:opacity-100 hover:opacity-100 pointer-coarse:opacity-100'
 
 export const flowControlsPanelClassName =
-  'm-4 flex items-center gap-2 rounded-xl border bg-popover p-1 shadow-sm/5'
+  'm-4 flex items-center gap-2 rounded-xl border bg-card p-1 text-card-foreground shadow-xs/5'
 
 export const flowMinimapClassName =
   'm-4 hidden overflow-hidden rounded-xl border! shadow-sm/5 md:block'

@@ -20,9 +20,9 @@ const statusBadges: Record<FlowRunStatus, BadgeProps['variant']> = {
   failed: 'destructive',
   idle: 'outline',
   'not-run': 'outline',
-  running: 'info',
+  running: 'outline',
   skipped: 'outline',
-  success: 'success',
+  success: 'outline',
 }
 
 export function FlowRunCard({

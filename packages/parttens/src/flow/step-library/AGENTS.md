@@ -44,7 +44,8 @@ Import direction: `composition/` → `components/`, `lib/`, `types/`, `core.ts`;
 | `data-kind="trigger\|action\|condition"` | each item; the icon is `IconFrame` with the `icons` entry for the type id or the Lucide icon of its `kind` |
 | `data-slot="flow-run-card"`, `data-status` | the run card, with the run status |
 
-- The run card uses the COSS `Card` with its default border and shadow; the pattern does not restate them. The `Badge` variant maps the status: `success` for success, `destructive` for failed, `info` for running, `outline` for the rest.
+- The run card uses the COSS `Card` with its default border and shadow; the pattern does not restate them. The `Badge` variant maps the status: `destructive` for failed, `outline` for the rest; success and running carry no status color, as in the canvas.
+- Spacing is on a 12px scale, chosen by the owner on 2026-10-24: the panel is `w-80` (`w-17` collapsed) with `border-e`; the header and footer take `p-3` (the footer with `border-t` in place of a `Separator`), the groups `px-1 pb-3` with `gap-3` between groups and `gap-0.5` between items, so the item pill (`p-2`) sits 4px in and the title, hint, group label, item icon and run card all start 12px from the panel edge.
 - No class here overrides a border, radius, colour or shadow of a COSS part, so `scripts/override-exceptions.json` has no entry for this pattern.
 
 ## Verify

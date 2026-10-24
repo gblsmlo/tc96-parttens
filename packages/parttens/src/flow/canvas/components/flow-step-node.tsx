@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/elements/avatar'
 import { Badge, type BadgeProps } from '@tc96/ui/badge'
+import { Card } from '@tc96/ui/card'
 import { cn } from '@tc96/utils'
 import { Handle, type NodeProps } from '@xyflow/react'
 import { PlusIcon } from 'lucide-react'
@@ -28,12 +29,12 @@ import { FlowStepMenu } from './flow-step-menu'
 import { FlowStepToolbar } from './flow-step-toolbar'
 
 const statusBadgeVariants: Record<FlowRunStatus, BadgeProps['variant']> = {
-  failed: 'error',
+  failed: 'destructive',
   idle: 'outline',
   'not-run': 'outline',
-  running: 'info',
+  running: 'outline',
   skipped: 'secondary',
-  success: 'success',
+  success: 'outline',
 }
 
 function initials(name: string): string {
@@ -68,66 +69,68 @@ function FlowStepNodeView({
     <>
       <FlowStepToolbar step={step} visible={selected} />
       <FlowStepContextMenu
-        className={cn(flowStepNodeVariants({ selected }))}
+        className="w-64"
         data-kind={kind}
         data-slot="flow-step-node"
         data-status={status}
         step={step}
       >
-        <div className={flowStepNodeHeaderClassName}>
-          <FlowStepIcon kind={kind} step={step} />
-          <div className={flowStepNodeTextClassName}>
-            <span className={flowStepNodeTitleClassName}>{step.name}</span>
-            {step.description ? (
-              <span className={flowStepNodeDescriptionClassName}>
-                {step.description}
-              </span>
-            ) : null}
-          </div>
-          {stepMenu ? (
-            <FlowStepMenu step={step} />
-          ) : (
-            <Badge variant={statusBadgeVariants[status]}>
-              {labels.statuses[status]}
-            </Badge>
-          )}
-        </div>
-        {showFooter ? (
-          <div className={flowStepNodeFooterClassName}>
-            {vertical ? (
-              <>
-                <span className={flowStatusTextVariants({ status })}>
-                  <FlowStatusIcon status={status} />
-                  <span className="truncate">
-                    {metrics ?? labels.statuses[status]}
-                  </span>
+        <Card className={cn(flowStepNodeVariants({ selected }))}>
+          <div className={flowStepNodeHeaderClassName}>
+            <FlowStepIcon kind={kind} step={step} />
+            <div className={flowStepNodeTextClassName}>
+              <span className={flowStepNodeTitleClassName}>{step.name}</span>
+              {step.description ? (
+                <span className={flowStepNodeDescriptionClassName}>
+                  {step.description}
                 </span>
-                <Badge
-                  className="ms-auto"
-                  variant={statusBadgeVariants[status]}
-                >
-                  {labels.statuses[status]}
-                </Badge>
-              </>
+              ) : null}
+            </div>
+            {stepMenu ? (
+              <FlowStepMenu step={step} />
             ) : (
-              <>
-                {step.owner ? (
-                  <Avatar size="xs">
-                    {step.owner.avatarUrl ? (
-                      <AvatarImage alt="" src={step.owner.avatarUrl} />
-                    ) : null}
-                    <AvatarFallback className="text-foreground">
-                      {initials(step.owner.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                ) : null}
-                {duration ? (
-                  <span className="ms-auto tabular-nums">{duration}</span>
-                ) : null}
-              </>
+              <Badge variant={statusBadgeVariants[status]}>
+                {labels.statuses[status]}
+              </Badge>
             )}
           </div>
-        ) : null}
+          {showFooter ? (
+            <div className={flowStepNodeFooterClassName}>
+              {vertical ? (
+                <>
+                  <span className={flowStatusTextVariants({ status })}>
+                    <FlowStatusIcon status={status} />
+                    <span className="truncate">
+                      {metrics ?? labels.statuses[status]}
+                    </span>
+                  </span>
+                  <Badge
+                    className="ms-auto"
+                    variant={statusBadgeVariants[status]}
+                  >
+                    {labels.statuses[status]}
+                  </Badge>
+                </>
+              ) : (
+                <>
+                  {step.owner ? (
+                    <Avatar size="xs">
+                      {step.owner.avatarUrl ? (
+                        <AvatarImage alt="" src={step.owner.avatarUrl} />
+                      ) : null}
+                      <AvatarFallback className="text-foreground">
+                        {initials(step.owner.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                  ) : null}
+                  {duration ? (
+                    <span className="ms-auto tabular-nums">{duration}</span>
+                  ) : null}
+                </>
+              )}
+            </div>
+          ) : null}
+        </Card>
       </FlowStepContextMenu>
       {kind === 'trigger' ? null : (
         <Handle

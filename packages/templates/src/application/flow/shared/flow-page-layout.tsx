@@ -7,6 +7,7 @@ import type { ReactElement, ReactNode } from 'react'
 export interface FlowPageLayoutProps {
   canvas: ReactNode
   className?: string
+  framed?: boolean
   header: ReactNode
   inspector: ReactNode
   overlay?: ReactNode
@@ -16,6 +17,7 @@ export interface FlowPageLayoutProps {
 export function FlowPageLayout({
   canvas,
   className,
+  framed = true,
   header,
   inspector,
   overlay,
@@ -26,7 +28,8 @@ export function FlowPageLayout({
   return (
     <div
       className={cn(
-        'flex min-h-160 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border bg-background',
+        'flex min-h-160 min-w-0 flex-1 flex-col overflow-hidden bg-background',
+        framed && 'rounded-xl border',
         className,
       )}
       data-slot="flow-page"
@@ -34,7 +37,10 @@ export function FlowPageLayout({
       {header}
       <div className="flex min-h-0 min-w-0 flex-1">
         {renderLibrary(!wide)}
-        <div className="relative min-w-0 flex-1" data-slot="flow-page-canvas">
+        <div
+          className={cn('relative min-w-0 flex-1', !framed && 'p-4')}
+          data-slot="flow-page-canvas"
+        >
           {canvas}
           {overlay}
         </div>

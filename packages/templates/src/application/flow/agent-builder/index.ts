@@ -18,4 +18,7 @@ export type {
   FlowStepType,
   FlowStepValues,
 } from '../shared/types'
-export { AgentBuilder, type AgentBuilderProps } from './agent-builder'
+export {
+  AgentBuilder,
+  type AgentBuilderProps,
+} from './compositions/agent-builder'

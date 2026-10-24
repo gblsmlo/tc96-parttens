@@ -218,7 +218,8 @@ export function WorkflowEditor(
         connections={connections}
         labels={labels}
         onDelete={editor.deleteStep}
-        state={state}
+        onPendingDeleteChange={state.setPendingDelete}
+        pendingDelete={state.pendingDelete}
         stepName={editor.pendingDeleteName}
       />
     </>
