@@ -160,5 +160,29 @@
     "component": "ComposerInput",
     "className": "placeholder:text-muted-foreground",
     "reason": "O placeholder do ComposerInput usa `muted-foreground` a 72% sobre o fundo do compositor e mede 3,15:1 no escuro e 3,08:1 no claro; o texto de orientação do assistente precisa de 4,5:1, e `placeholder:text-muted-foreground` com opacidade total mede 4,71:1 no escuro e 5,48:1 no claro sobre o fundo do compositor, sem mudar nenhum valor de token."
+  },
+  {
+    "file": "packages/parttens/src/flow/canvas/components/flow-step-node.tsx",
+    "component": "Card",
+    "className": "ring-2",
+    "reason": "O nó selecionado ganha um anel de 2px por fora do `Card` do COSS; o anel soma com a sombra do card (Tailwind compõe `--tw-ring-shadow` e `--tw-shadow`) e não troca borda, raio nem fundo."
+  },
+  {
+    "file": "packages/parttens/src/flow/canvas/components/flow-step-node.tsx",
+    "component": "Card",
+    "className": "ring-primary",
+    "reason": "O anel do nó selecionado usa `primary`, o mesmo par de seleção do canvas (aresta tomada, linha de conexão); a borda do `Card` fica a do tema."
+  },
+  {
+    "file": "packages/parttens/src/flow/canvas/components/flow-step-node.tsx",
+    "component": "Card",
+    "className": "group-focus-visible/step:ring-2",
+    "reason": "O foco do teclado fica no wrapper do React Flow (`group/step`), não no card; o anel de 2px aparece no `Card` quando o wrapper recebe `focus-visible`."
+  },
+  {
+    "file": "packages/parttens/src/flow/canvas/components/flow-step-node.tsx",
+    "component": "Card",
+    "className": "group-focus-visible/step:ring-ring",
+    "reason": "O anel de foco do teclado no `Card` do nó usa o token `ring`, o mesmo dos controles do COSS."
   }
 ]

@@ -98,6 +98,7 @@ export interface AppShellBaseProps {
   onThemeChange?: (theme: ShellTheme) => void
   onWorkspaceChange?: (workspaceId: string) => void
   open?: boolean
+  padded?: boolean
   renderLink?: ShellRenderLink
   theme?: ShellTheme
   user: ShellUser

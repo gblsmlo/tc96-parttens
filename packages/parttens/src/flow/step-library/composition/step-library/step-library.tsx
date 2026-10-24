@@ -2,7 +2,6 @@
 
 import { Empty, EmptyDescription } from '@tc96/ui/empty'
 import { ScrollArea } from '@tc96/ui/scroll-area'
-import { Separator } from '@tc96/ui/separator'
 import { cn } from '@tc96/utils'
 import { type ReactElement, useId } from 'react'
 import { FlowStepLibrarySkeleton } from '../../components/step-library-skeleton'
@@ -79,15 +78,12 @@ export function FlowStepLibrary({
         )}
       </ScrollArea>
       {children ? (
-        <>
-          <Separator />
-          <div
-            className={flowStepLibraryFooterClassName}
-            data-slot="flow-step-library-footer"
-          >
-            {children}
-          </div>
-        </>
+        <div
+          className={flowStepLibraryFooterClassName}
+          data-slot="flow-step-library-footer"
+        >
+          {children}
+        </div>
       ) : null}
     </section>
   )

@@ -1,19 +1,19 @@
 import type { FlowRunStatus } from '../../canvas/core'
 
 export const flowStatusBadgeVariant = {
-  failed: 'error',
+  failed: 'destructive',
   idle: 'outline',
   'not-run': 'outline',
-  running: 'info',
-  skipped: 'warning',
-  success: 'success',
+  running: 'outline',
+  skipped: 'secondary',
+  success: 'outline',
 } as const satisfies Record<FlowRunStatus, string>
 
 export const flowStatusIconClassName = {
   failed: 'text-destructive-foreground',
   idle: 'text-muted-foreground',
   'not-run': 'text-muted-foreground',
-  running: 'text-info-foreground motion-safe:animate-spin',
-  skipped: 'text-warning-foreground',
-  success: 'text-success-foreground',
+  running: 'text-muted-foreground motion-safe:animate-spin',
+  skipped: 'text-muted-foreground',
+  success: 'text-muted-foreground',
 } as const satisfies Record<FlowRunStatus, string>

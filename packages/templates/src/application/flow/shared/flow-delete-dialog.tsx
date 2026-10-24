@@ -4,24 +4,24 @@ import type { FlowConnection } from '@tc96/parttens/flow/canvas/core'
 import type { ReactElement } from 'react'
 import { FlowConfirmDialog } from './flow-confirm-dialog'
 import type { FlowPageLabels } from './types'
-import type { FlowPageState } from './use-flow-page-state'
 
 export interface FlowDeleteDialogProps {
   connections: readonly FlowConnection[]
   labels: FlowPageLabels
   onDelete: (stepId: string) => void
+  onPendingDeleteChange: (stepId: string | null) => void
+  pendingDelete: string | null
   stepName: string
-  state: FlowPageState
 }
 
 export function FlowDeleteDialog({
   connections,
   labels,
   onDelete,
+  onPendingDeleteChange,
+  pendingDelete,
   stepName,
-  state,
 }: Readonly<FlowDeleteDialogProps>): ReactElement {
-  const { pendingDelete, setPendingDelete } = state
   return (
     <FlowConfirmDialog
       cancelLabel={labels.cancel}
@@ -38,7 +38,7 @@ export function FlowDeleteDialog({
         if (pendingDelete) onDelete(pendingDelete)
       }}
       onOpenChange={(open) => {
-        if (!open) setPendingDelete(null)
+        if (!open) onPendingDeleteChange(null)
       }}
       open={pendingDelete !== null}
       title={labels.deleteDialogTitle(stepName)}

@@ -10,6 +10,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from '@tc96/ui/sidebar'
+import { cn } from '@tc96/utils'
 import { SearchIcon } from 'lucide-react'
 import type { CSSProperties, ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
@@ -53,6 +54,7 @@ export function AppShell4({
   onThemeChange,
   onWorkspaceChange,
   open,
+  padded = true,
   renderLink = renderAnchor,
   sectionId,
   sections,
@@ -163,7 +165,9 @@ export function AppShell4({
           labels={labels}
           renderLink={renderLink}
         />
-        <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+        <div className={cn('flex flex-1 flex-col', padded && 'gap-4 p-4')}>
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )
