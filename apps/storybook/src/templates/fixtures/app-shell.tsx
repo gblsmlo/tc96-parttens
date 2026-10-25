@@ -4,6 +4,7 @@ import {
   type ShellBreadcrumbItem,
   type ShellNavGroup,
 } from '@tc96/templates/application/shell/app-shell-1'
+import { type ReactNode, useState } from 'react'
 import {
   shellNavigation,
   shellUser,
@@ -22,23 +23,64 @@ const navigationFor = (href: string): ShellNavGroup[] =>
   }))
 
 export interface AppShellPage {
+  actionsArg?: string
   breadcrumbs: ShellBreadcrumbItem[]
   href: string
+  padded?: boolean
+  root?: boolean
 }
 
-export const withAppShell =
-  ({ breadcrumbs, href }: AppShellPage): Decorator =>
-  (Story) => (
+interface AppShellFrameProps extends Omit<AppShellPage, 'actionsArg'> {
+  children: (actionsContainer: HTMLDivElement | null) => ReactNode
+  slot: boolean
+}
+
+function AppShellFrame({
+  breadcrumbs,
+  children,
+  href,
+  padded,
+  root = true,
+  slot,
+}: Readonly<AppShellFrameProps>) {
+  const [actionsContainer, setActionsContainer] =
+    useState<HTMLDivElement | null>(null)
+  return (
     <AppShell1
-      breadcrumbs={[{ href: '/', label: 'Risine CRM' }, ...breadcrumbs]}
+      actions={
+        slot ? (
+          <div className="flex items-center gap-2" ref={setActionsContainer} />
+        ) : undefined
+      }
+      breadcrumbs={
+        root
+          ? [{ href: '/', label: 'Risine CRM' }, ...breadcrumbs]
+          : breadcrumbs
+      }
       navigation={navigationFor(href)}
+      padded={padded}
       user={shellUser}
       userActions={shellUserActions}
       workspaceId="risine"
       workspaces={shellWorkspaces}
     >
-      <Story />
+      {children(actionsContainer)}
     </AppShell1>
+  )
+}
+
+export const withAppShell =
+  ({ actionsArg, ...page }: AppShellPage): Decorator =>
+  (Story, context) => (
+    <AppShellFrame {...page} slot={actionsArg !== undefined}>
+      {(actionsContainer) =>
+        actionsArg ? (
+          <Story args={{ ...context.args, [actionsArg]: actionsContainer }} />
+        ) : (
+          <Story />
+        )
+      }
+    </AppShellFrame>
   )
 
 export const appShellDocs = { height: '42rem', inline: false }

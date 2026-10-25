@@ -17,17 +17,20 @@ import { Fragment, type ReactElement, type ReactNode } from 'react'
 import type { FlowRenderLink } from './render-link'
 import type { FlowBreadcrumbItem, FlowPageLabels } from './types'
 
-export interface FlowPageHeaderProps {
+export interface FlowPageActionsProps {
   addStepDisabled?: boolean
-  breadcrumbs?: FlowBreadcrumbItem[]
   children?: ReactNode
   labels: FlowPageLabels
-  name: string
   onAddStep?: () => void
   onAskAi?: () => void
   onRun?: () => void
-  renderLink: FlowRenderLink
   running?: boolean
+}
+
+export interface FlowPageHeaderProps extends FlowPageActionsProps {
+  breadcrumbs?: FlowBreadcrumbItem[]
+  name: string
+  renderLink: FlowRenderLink
 }
 
 export function FlowPageHeader({
@@ -68,52 +71,75 @@ export function FlowPageHeader({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="flex items-center gap-2">
-        <FlowShortcutsPopover labels={labels.shortcuts} />
-        {onAskAi ? (
-          <Button aria-label={labels.askAi} onClick={onAskAi} variant="outline">
-            <SparklesIcon aria-hidden="true" />
-            <span className="max-sm:sr-only">{labels.askAi}</span>
-          </Button>
-        ) : null}
-        {onAddStep ? (
-          <Button
-            aria-label={labels.addStep}
-            disabled={addStepDisabled}
-            onClick={onAddStep}
-            variant="outline"
-          >
-            <PlusIcon aria-hidden="true" />
-            <span className="max-sm:sr-only">{labels.addStep}</span>
-          </Button>
-        ) : null}
-        {onRun ? (
-          <Button aria-label={labels.run} disabled={running} onClick={onRun}>
-            {running ? (
-              <Spinner aria-hidden="true" />
-            ) : (
-              <PlayIcon aria-hidden="true" />
-            )}
-            <span className="max-sm:sr-only">{labels.run}</span>
-          </Button>
-        ) : null}
-        {children ? (
-          <Menu>
-            <MenuTrigger
-              render={
-                <Button
-                  aria-label={labels.actions}
-                  size="icon"
-                  variant="outline"
-                />
-              }
-            >
-              <EllipsisIcon aria-hidden="true" />
-            </MenuTrigger>
-            <MenuPopup align="end">{children}</MenuPopup>
-          </Menu>
-        ) : null}
-      </div>
+      <FlowPageActions
+        addStepDisabled={addStepDisabled}
+        labels={labels}
+        onAddStep={onAddStep}
+        onAskAi={onAskAi}
+        onRun={onRun}
+        running={running}
+      >
+        {children}
+      </FlowPageActions>
     </header>
+  )
+}
+
+export function FlowPageActions({
+  addStepDisabled = false,
+  children,
+  labels,
+  onAddStep,
+  onAskAi,
+  onRun,
+  running = false,
+}: Readonly<FlowPageActionsProps>): ReactElement {
+  return (
+    <div className="flex items-center gap-2">
+      <FlowShortcutsPopover labels={labels.shortcuts} />
+      {onAskAi ? (
+        <Button aria-label={labels.askAi} onClick={onAskAi} variant="outline">
+          <SparklesIcon aria-hidden="true" />
+          <span className="max-sm:sr-only">{labels.askAi}</span>
+        </Button>
+      ) : null}
+      {onAddStep ? (
+        <Button
+          aria-label={labels.addStep}
+          disabled={addStepDisabled}
+          onClick={onAddStep}
+          variant="outline"
+        >
+          <PlusIcon aria-hidden="true" />
+          <span className="max-sm:sr-only">{labels.addStep}</span>
+        </Button>
+      ) : null}
+      {onRun ? (
+        <Button aria-label={labels.run} disabled={running} onClick={onRun}>
+          {running ? (
+            <Spinner aria-hidden="true" />
+          ) : (
+            <PlayIcon aria-hidden="true" />
+          )}
+          <span className="max-sm:sr-only">{labels.run}</span>
+        </Button>
+      ) : null}
+      {children ? (
+        <Menu>
+          <MenuTrigger
+            render={
+              <Button
+                aria-label={labels.actions}
+                size="icon"
+                variant="outline"
+              />
+            }
+          >
+            <EllipsisIcon aria-hidden="true" />
+          </MenuTrigger>
+          <MenuPopup align="end">{children}</MenuPopup>
+        </Menu>
+      ) : null}
+    </div>
   )
 }
