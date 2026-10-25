@@ -92,11 +92,11 @@ export const CreateContact: Story = {
 
     await userEvent.click(dialog.getByRole('combobox', { name: /^Tipo/ }))
     await userEvent.click(await screen.findByRole('option', { name: 'CPF' }))
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
     await userEvent.click(dialog.getByRole('button', { name: 'Documento' }))
-    await userEvent.type(
-      dialog.getByRole('textbox', { name: 'Documento' }),
-      '123.456.789-09{Enter}',
-    )
+    const documentInput = dialog.getByRole('textbox', { name: 'Documento' })
+    await waitFor(() => expect(documentInput).toHaveFocus())
+    await userEvent.type(documentInput, '123.456.789-09{Enter}')
     await expect(dialog.queryByRole('combobox', { name: 'Cargo' })).toBeNull()
     await showProperties(dialog, ['Etapa', 'Tags', 'Empresa', 'Cargo'])
 

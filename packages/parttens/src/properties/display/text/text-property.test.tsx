@@ -2,7 +2,9 @@ import { afterEach, describe, expect, test } from 'bun:test'
 
 await import('../../test/dom')
 
-const { cleanup, render, screen } = await import('@testing-library/react')
+const { cleanup, fireEvent, render, screen } = await import(
+  '@testing-library/react'
+)
 const { TextProperty } = await import('./text-property')
 
 afterEach(cleanup)
@@ -25,5 +27,34 @@ describe('TextProperty', () => {
     render(<TextProperty value="Manual" variant="plain" />)
 
     expect(screen.getByText('Manual')).toBeTruthy()
+  })
+  test('focuses the field the add button opens, so typing starts the edit', () => {
+    render(
+      <TextProperty
+        addLabel="Documento"
+        ariaLabel="Documento"
+        onCommit={() => undefined}
+        value={null}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Documento' }))
+
+    const field = screen.getByRole('textbox', { name: 'Documento' })
+    expect(document.activeElement).toBe(field)
+    expect(field.hasAttribute('data-editing')).toBe(true)
+  })
+
+  test('does not take focus with inline editing', () => {
+    render(
+      <TextProperty
+        ariaLabel="Documento"
+        editing="inline"
+        onCommit={() => undefined}
+        value={null}
+      />,
+    )
+
+    expect(document.activeElement).toBe(document.body)
   })
 })
