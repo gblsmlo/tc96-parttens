@@ -8,6 +8,7 @@ export type EditableTextSize = 'sm' | 'base' | 'lg' | 'xl'
 
 export interface EditableTextProps {
   ariaLabel: string
+  autoFocus?: boolean
   className?: string
   emptyValue?: string
   multiline?: boolean
@@ -29,6 +30,7 @@ const sizeClassName: Record<EditableTextSize, string> = {
 
 export function EditableText({
   ariaLabel,
+  autoFocus = false,
   className,
   emptyValue,
   multiline = false,
@@ -72,6 +74,7 @@ export function EditableText({
     >
       <EditableField
         aria-label={ariaLabel}
+        autoFocus={autoFocus}
         className={cn(
           sizeClassName[size],
           showsEmptyValue && 'text-muted-foreground',
