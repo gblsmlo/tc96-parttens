@@ -60,6 +60,10 @@ export const templateSources: Record<TemplateName, string> = {
   'agent-builder': 'application/flow/agent-builder',
 }
 export type ItemName = PatternName | TemplateName
+/** Areas under packages/parttens/src that ship with an item no file of it imports. */
+export const itemAreas: Partial<Record<ItemName, string[]>> = {
+  collection: ['toolbar'],
+}
 export function isTemplate(name: string): name is TemplateName {
   return templateNames.includes(name as TemplateName)
 }

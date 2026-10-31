@@ -641,7 +641,7 @@ Decisão de 2026-10-31, do dono (issue #237). Componente com página própria na
 
 - `shared/` fica só com `MenuRadioOption` e `MenuCheckboxOption`; o lugar final deles fica para o fim desta reorganização, por decisão do dono.
 - Cada pasta é uma área do registry (o barrel raiz a reexporta e ela não está em `patternNames`), e uma área só vai com os itens cujos arquivos a importam. Com isso o item `properties`, que importa `shared/` só pelo `MenuCheckboxOption`, deixou de levar a paginação e a toolbar; `collection` leva `action-bar/` e `pagination/` porque o Data Grid importa os dois por caminho.
-- Nenhum arquivo de runtime de um pattern importa `toolbar/`, então nenhum item do registry o leva hoje, e `bun run test:consumer:registry` falha porque `CollectionToolbar` e o `ViewSwitcher` somem do barrel do consumidor. Antes eles chegavam com `collection`: a toolbar pelo `shared/` inteiro e o `ViewSwitcher` pelo barrel da collection. A forma de entregar `toolbar/` está pendente de decisão.
+- Nenhum arquivo de runtime de um pattern importa `toolbar/`, então o registry não a levava: o `@tc96/parttens@0.20.0` no npm saiu sem `CollectionToolbar` e sem `ViewSwitcher*`, embora o código na tag os tenha, e `bun run test:consumer:registry` falhava. Decisão do dono: `toolbar/` continua na raiz de `packages/parttens/src/`, como `pagination/`, e o item `collection` a leva pelo `itemAreas` de `packages/registry/src/manifest.ts`, que o `build-registry.ts` semeia na caminhada de arquivos do item. O `build-registry.ts` também falha quando uma área que o agregado exporta não vai em nenhum item, e o `test:consumer:registry` passa a cobrir a toolbar pelo barrel.
 
 ## Templates: App Shells
 
