@@ -1,5 +1,6 @@
 'use client'
 
+export * from './action-bar/index'
 export * from './chat/assistant/index'
 export * from './chat/chats-panel/index'
 export * from './checklist/index'

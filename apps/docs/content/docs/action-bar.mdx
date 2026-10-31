@@ -1,0 +1,99 @@
+---
+title: Action Bar
+description: Barra contextual com as ações sobre os registros selecionados.
+---
+
+Use quando o usuário seleciona um ou mais registros e precisa agir sobre eles
+de uma vez: enviar, arquivar, mover, excluir.
+
+A barra é controlada. Ela não guarda a seleção nem executa nada: você passa
+`selectedCount`, `selectedRows` e `actions`, e trata `onSelect` e
+`onClearSelection`.
+
+## Instalação
+
+`ActionBar` não é um pattern com item próprio no CLI. Ela vai junto com o item
+`collection`, cujo Data Grid a importa.
+
+```sh
+npx @tc96/parttens add collection
+```
+
+## Uso
+
+```tsx
+import { ActionBar } from '@acme/patterns'
+
+<ActionBar
+  actions={[
+    { items: [{ label: 'Arquivar', onSelect: archive }] },
+    {
+      items: [
+        {
+          label: 'Mais opções',
+          submenu: [
+            {
+              items: [
+                { label: 'Excluir', onSelect: remove, variant: 'destructive' },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ]}
+  onClearSelection={clearSelection}
+  selectedCount={selectedRows.length}
+  selectedRows={selectedRows}
+/>
+```
+
+## Comportamento
+
+- Não renderiza nada enquanto `selectedCount` é menor que 1.
+- Mostra a contagem ("N selecionado(s)"), cada grupo de `actions` com um divisor
+  entre os grupos e, só com `onClearSelection`, o botão de limpar a seleção.
+- Um item com `submenu` abre seus grupos em um popover acima da barra e nunca
+  chama o próprio `onSelect`.
+- Todo `onSelect`, do item ou do submenu, recebe `{ selectedCount, selectedRows }`.
+- A posição flutuante é sua. A barra não se posiciona: o Data Grid e a moldura
+  da coleção a encaixam onde precisam.
+
+## Referência da API
+
+### ActionBar
+
+| Prop | Tipo | Descrição |
+| --- | --- | --- |
+| `actions` | `ActionBarGroup[]` | Grupos de ações, separados por divisores |
+| `selectedCount` | `number` | Quantidade selecionada; abaixo de 1 a barra some |
+| `selectedRows` | `readonly TData[]` | Registros selecionados, repassados ao `onSelect` |
+| `onClearSelection` | `() => void` | Mostra o botão de limpar quando definido |
+| `className` | `string` | Classes extras na raiz |
+
+### ActionBarGroup
+
+| Prop | Tipo | Descrição |
+| --- | --- | --- |
+| `items` | `ActionBarItem[]` | Ações do grupo |
+| `label` | `string` | Rótulo do grupo; aparece só dentro de um `submenu` |
+| `id` | `string` | Chave estável, se `label` e itens não bastam |
+
+### ActionBarItem
+
+| Prop | Tipo | Descrição |
+| --- | --- | --- |
+| `label` | `string` | Texto e nome acessível da ação |
+| `icon` | `ReactNode` | Ícone antes do texto |
+| `shortcut` | `string` | Atalho mostrado ao lado do texto |
+| `variant` | `'default' \| 'primary' \| 'destructive'` | Aparência da ação |
+| `disabled` | `boolean` | Desativa a ação |
+| `onSelect` | `(context: ActionBarContext) => void` | Chamado ao acionar |
+| `submenu` | `ActionBarGroup[]` | Abre os grupos em um popover acima da barra |
+| `id` | `string` | Chave estável, se o `label` se repete |
+
+## Acessibilidade
+
+A raiz é `role="toolbar"` com o nome "Ações dos itens selecionados". O botão de
+limpar se chama "Limpar seleção". O elemento tem `data-slot="action-bar"` para
+testes e para o seu CSS; o componente não o estiliza.
