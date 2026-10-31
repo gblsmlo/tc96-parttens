@@ -183,7 +183,7 @@ await writeFile(
   `${JSON.stringify(
     {
       name: '@tc96/parttens',
-      version: '0.20.0',
+      version: '0.20.1',
       description:
         'React patterns without business rules, installed as source on top of your COSS components.',
       keywords: ['coss', 'react', 'patterns', 'registry', 'cli'],
