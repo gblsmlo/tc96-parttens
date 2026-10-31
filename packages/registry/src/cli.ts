@@ -14,6 +14,7 @@ import {
   resolveItems,
 } from './coss'
 import {
+  dependencyTarget,
   detectPackageManager,
   installCommand,
   installDependencies,
@@ -31,7 +32,7 @@ import {
   templateNames,
 } from './manifest'
 
-const help = `tc96-parttens add <patterns or templates...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nTemplates: ${templateNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers, patterns and templates default to the ui alias's siblings (@acme/ui gives @acme/elements) unless set; the templates path is needed only to install a template.\nInstalls only the COSS components missing from the ui alias, from registries.@coss in components.json or coss.com. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
+const help = `tc96-parttens add <patterns or templates...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nTemplates: ${templateNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers, patterns and templates replace the last segment of the ui alias (@acme/ui/components gives @acme/ui/patterns, @acme/ui gives @acme/patterns) unless set; the templates path is needed only to install a template.\nInstalls only the COSS components missing from the ui alias, from registries.@coss in components.json or coss.com. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile, into the workspace package that holds the patterns path.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
 async function main() {
   const args = process.argv.slice(2)
   if (!args.length || args.includes('--help') || args.includes('-h')) {
@@ -196,7 +197,8 @@ async function main() {
         .join('\n')}`,
     )
   const planned = await planFiles(workspace, item.files)
-  const dependencies = missingDependencies(workspace, item.dependencies)
+  const target = dependencyTarget(workspace, configuration.paths.patterns)
+  const dependencies = missingDependencies(workspace, item.dependencies, target)
   if (preview) {
     const labels = {
       create: 'create',
@@ -215,7 +217,7 @@ async function main() {
         )
     console.log(
       dependencies.length
-        ? `Dependencies to install: ${installCommand(workspace, detectPackageManager(workspace), dependencies).join(' ')}`
+        ? `Dependencies to install: ${installCommand(workspace, detectPackageManager(workspace), dependencies, target).join(' ')}`
         : 'Every npm dependency is already installed.',
     )
     if (withPatterns)
@@ -247,7 +249,7 @@ async function main() {
     console.log(
       `Preserved ${result.preserved.length} existing files that differ from the registry:\n${result.preserved.map((path) => `  ${show(path)}`).join('\n')}`,
     )
-  if (dependencies.length) installDependencies(workspace, dependencies)
+  if (dependencies.length) installDependencies(workspace, dependencies, target)
   const after = await checkCompatibility(workspace, item, true)
   console.log(`Installed TypeScript compatibility: ${after.status}.`)
   if (after.status !== 'compatible') {

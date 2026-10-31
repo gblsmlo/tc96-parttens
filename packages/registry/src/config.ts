@@ -16,7 +16,7 @@ const requiredAliasNames = ['ui', 'utils'] as const
 // The consumer's components.json is the only configuration. ui and utils are
 // its standard aliases; elements, helpers, patterns and templates are tc96 keys
 // read from the same aliases object. When one is absent it is derived from the ui alias
-// by replacing its last segment, so "@acme/ui" yields "@acme/patterns".
+// by replacing its last segment, so "@acme/ui/components" yields "@acme/ui/patterns".
 export function readAliases(components: unknown): Aliases {
   const aliases =
     (components as { aliases?: Partial<Aliases> } | null)?.aliases ?? {}
@@ -93,16 +93,16 @@ export async function readInstallConfig(
     throw new Error('Cannot read the consumer tsconfig.json.')
   const { options } = ts.parseJsonConfigFileContent(read.config, ts.sys, root)
   const uiPath = resolveAliasPath(root, aliases.ui, options)
+  const uiSegments = uiPath.split('/')
+  const nested = aliases.ui.split('/').at(-1) === uiSegments.at(-1)
+  const suggestPath = (name: string) =>
+    nested
+      ? [...uiSegments.slice(0, -1), name].join('/')
+      : uiSegments
+          .map((segment) => (segment === 'ui' ? name : segment))
+          .join('/')
   const resolveSibling = (name: Exclude<PathName, 'ui'> | 'templates') =>
-    resolveAliasPath(
-      root,
-      aliases[name],
-      options,
-      `./${uiPath
-        .split('/')
-        .map((segment) => (segment === 'ui' ? name : segment))
-        .join('/')}`,
-    )
+    resolveAliasPath(root, aliases[name], options, `./${suggestPath(name)}`)
   const paths = Object.fromEntries(
     pathNames.map((name) => [
       name,

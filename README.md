@@ -105,16 +105,19 @@ The template is controlled: you pass the steps, the connections, the selection, 
 
 ### Consumer structure
 
-tc96 expects a layered design system, in the spirit of atomic design, configured by one `components.json` at the monorepo root:
+tc96 expects a layered design system, in the spirit of atomic design, inside one `ui` workspace package and configured by one `components.json` at the monorepo root:
 
 ```text
-components.json        aliases: ui, utils (elements, helpers, patterns and templates default to siblings of ui)
+components.json        aliases: ui, utils (elements, helpers, patterns and templates replace the last segment of ui)
 packages/
-  ui/                  atoms: COSS components
-  elements/            components COSS does not have, such as Text and IconFrame
-  helpers/             React-free functions, such as amount formatting and rich text helpers
-  patterns/            organisms: tc96 patterns
-  templates/           installed templates, such as application shells (optional)
+  ui/
+    package.json       exports ./components/*, ./elements/*, ./helpers/*, ./patterns/*, ./lib/*
+    src/
+      components/      atoms: COSS components
+      elements/        components COSS does not have, such as Text and IconFrame
+      helpers/         React-free functions, such as amount formatting and rich text helpers
+      patterns/        organisms: tc96 patterns
+      lib/utils.ts     cn
 apps/
   web/                 templates and pages
 ```
@@ -122,17 +125,16 @@ apps/
 ```json
 {
   "aliases": {
-    "components": "@acme/ui",
-    "ui": "@acme/ui",
+    "components": "@acme/ui/components",
+    "ui": "@acme/ui/components",
     "utils": "@acme/ui/lib/utils",
-    "elements": "@acme/elements",
-    "helpers": "@acme/helpers",
-    "patterns": "@acme/patterns"
+    "lib": "@acme/ui/lib",
+    "hooks": "@acme/ui/hooks"
   }
 }
 ```
 
-Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`, and `elements` can import `ui` and `utils`. Each alias also needs exact and wildcard entries in the root `tsconfig` `paths`.
+This is the shadcn monorepo layout. `elements`, `helpers` and `patterns` are derived as `@acme/ui/elements`, `@acme/ui/helpers` and `@acme/ui/patterns`; set them in `aliases` only to place a layer elsewhere, such as a separate `@acme/patterns` package. Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`, and `elements` can import `ui` and `utils`. Each alias also needs exact and wildcard entries in the root `tsconfig` `paths` (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`). The CLI adds the patterns' npm dependencies to the workspace package that holds the `patterns` path, `packages/ui/package.json` here.
 
 ### Install with an AI agent
 
@@ -141,15 +143,15 @@ Paste this into your coding agent, replacing the pattern names:
 ````text
 Install the @tc96/parttens patterns `collection` and `properties` in this project.
 
-1. Find the root `components.json`. It must define `aliases.ui` and `aliases.utils`. `aliases.elements`, `aliases.helpers` and `aliases.patterns` are optional and default to siblings of `ui` (`@acme/ui` gives `@acme/elements`). If the file is missing, stop and ask me; do not run `shadcn init --force`, which rewrites it.
-2. For `ui`, `elements`, `helpers` and `patterns`, check that the root `tsconfig.json` `paths` has an exact entry and a wildcard entry (`"@acme/patterns/*": ["./packages/patterns/src/*"]`) and that each alias points to an existing workspace package. If something is missing, show me the change and wait for my approval before editing.
+1. Find the root `components.json`. It must define `aliases.ui` and `aliases.utils`. `aliases.elements`, `aliases.helpers` and `aliases.patterns` are optional and replace the last segment of `ui` (`@acme/ui/components` gives `@acme/ui/elements`, `@acme/ui` gives `@acme/elements`). If the file is missing, stop and ask me; do not run `shadcn init --force`, which rewrites it.
+2. For `ui`, `elements`, `helpers` and `patterns`, check that the root `tsconfig.json` `paths` has an exact entry and a wildcard entry (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`) and that the `ui` package's `package.json` `exports` covers each layer. If something is missing, show me the change and wait for my approval before editing.
 3. Preview first, from any directory inside the repo (the CLI searches upward for `components.json`; use `--cwd` to override):
    npx @tc96/parttens add collection properties --dry-run
    Read the output. If it lists files that already exist or a destination I did not expect, such as a legacy folder with the same name, stop and ask me. If it stops with "do not type-check against your components", report the diagnostics and wait; do not add `--force`.
 4. Install:
    npx @tc96/parttens add collection properties
    Answer no to any shadcn prompt that would overwrite a file I own. If the repo blocks npx, use `bunx` or `pnpm dlx`.
-5. Do not edit the installed files or the COSS components in `ui`. Import from the `patterns` alias (`import { CollectionLayoutOutlet } from '@acme/patterns'`).
+5. Do not edit the installed files or the COSS components in `ui`. Import from the `patterns` alias (`import { CollectionLayoutOutlet } from '@acme/ui/patterns'`).
 6. Run the typecheck and lint scripts of the workspace that received the files, and report what was installed, where, and any errors.
 ````
 
