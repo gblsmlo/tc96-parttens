@@ -14,7 +14,7 @@ Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/elements/text
 ## Dependents
 
 - No file outside the folder imports `components/` by path; stories import through `@tc96/parttens`.
-- No runtime file of a pattern imports this folder, so no registry item ships it today.
+- No runtime file of a pattern imports this folder. The `collection` registry item ships it through `itemAreas` in `packages/registry/src/manifest.ts`, and `build-registry.ts` fails when an area the aggregate exports ships with no item.
 
 ## Invariants
 

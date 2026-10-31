@@ -6,6 +6,7 @@ import {
   cossDependency,
   defaultConfig,
   type ItemName,
+  itemAreas,
   type PatternName,
   patternNames,
   patternSources,
@@ -57,8 +58,19 @@ const entries: [ItemName, string][] = [
     `packages/templates/src/${templateSources[name]}/index.ts`,
   ]),
 ]
+for (const area of Object.values(itemAreas).flat())
+  if (!areas.includes(area))
+    throw new Error(
+      `itemAreas names ${area}, which the aggregate does not export`,
+    )
+const shippedAreas = new Set<string>()
 for (const [name, entry] of entries) {
-  const pending = [resolve(entry)]
+  const pending = [
+    resolve(entry),
+    ...(itemAreas[name] ?? []).map((area) =>
+      resolve(`packages/parttens/src/${area}/index.ts`),
+    ),
+  ]
   const seen = new Set<string>()
   const external = new Set<string>()
   const components = new Set<string>()
@@ -109,6 +121,9 @@ for (const [name, entry] of entries) {
       }
     }
   }
+  for (const area of areas)
+    if (sources.some(({ path }) => path.startsWith(`parttens/src/${area}/`)))
+      shippedAreas.add(area)
   const item: RegistryItem = {
     name,
     type: 'registry:block',
@@ -131,6 +146,11 @@ for (const [name, entry] of entries) {
     `${JSON.stringify(prepareItem(item, defaultConfig), null, 2)}\n`,
   )
 }
+const unshipped = areas.filter((area) => !shippedAreas.has(area))
+if (unshipped.length)
+  throw new Error(
+    `No registry item ships ${unshipped.join(', ')}, which the aggregate exports; add it to itemAreas.`,
+  )
 await writeFile(
   join(output, 'aggregate.json'),
   `${JSON.stringify({ path: 'parttens/src/index.ts', content: aggregate }, null, 2)}\n`,
