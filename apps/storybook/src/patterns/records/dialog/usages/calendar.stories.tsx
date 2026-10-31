@@ -54,7 +54,7 @@ const meta = {
     docs: {
       description: {
         component: [
-          'RecordDialog as the create step of the Calendar usage, with the body of `Create/Row Properties`: a borderless title and description, then Date, Guests, Location, Type, Calendar and Availability as rows. The Date row starts on the day and window of the `slot` the calendar picked. `Patterns/CollectionViews/Usages/Calendar` opens the same dialog from Nova atividade with the anchor day at 09:00-10:00, and from an empty slot of the time grid through `onSelectSlot` and `slotFromCalendar`, then adds the saved event to the calendar.',
+          'RecordDialog as the create step of the Calendar usage, with the body of `Create/Row Properties`: a borderless title and description, then Date, Guests, Location, Type, Calendar and Availability as rows. The Date row starts on the day and window of the `slot` the calendar picked. `Patterns/Collection/Usages/Calendar` opens the same dialog from Nova atividade with the anchor day at 09:00-10:00, and from an empty slot of the time grid through `onSelectSlot` and `slotFromCalendar`, then adds the saved event to the calendar.',
           'The dialog reads `slot` when it mounts and puts every field back to it on close, so the calendar gives it a new `key` for each request instead of passing a new slot to an open dialog.',
         ].join('\n\n'),
       },

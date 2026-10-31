@@ -139,6 +139,12 @@ const preview: Preview = {
         if (byFolder !== 0) return byFolder
         const aDoc = /^[^/]+\/Doc$/.test(a.title)
         if (aDoc !== /^[^/]+\/Doc$/.test(b.title)) return aDoc ? -1 : 1
+        if (rootA !== 'Get Started') {
+          const folderA = a.title.split('/')[1] ?? ''
+          const folderB = b.title.split('/')[1] ?? ''
+          const bySubfolder = folderA.localeCompare(folderB)
+          if (bySubfolder !== 0) return bySubfolder
+        }
         if (b.title.startsWith(`${a.title}/`)) return -1
         if (a.title.startsWith(`${b.title}/`)) return 1
         return 0

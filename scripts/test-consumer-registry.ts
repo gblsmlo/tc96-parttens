@@ -51,7 +51,7 @@ function expectExports(actual: string[], expected: string[], when: string) {
     )
 }
 const all = baseline.parttens ?? []
-const first = ['collection-views', 'properties']
+const first = ['collection', 'properties']
 const later = patternNames.filter((name) => !first.includes(name))
 const missingComponent = 'empty'
 const consumer = await createConsumer('consumer-registry')

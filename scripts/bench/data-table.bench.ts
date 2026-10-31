@@ -8,13 +8,13 @@ import {
 } from './bench-harness'
 
 const { DataTable, useDataTable } = await import(
-  '../../packages/parttens/src/collection-views/views/data-table'
+  '../../packages/parttens/src/collection/layouts/data-table'
 )
 
 type TableColumn =
-  import('../../packages/parttens/src/collection-views/views/data-table').DataTableColumnDef<Row>
+  import('../../packages/parttens/src/collection/layouts/data-table').DataTableColumnDef<Row>
 type TableInstance =
-  import('../../packages/parttens/src/collection-views/views/data-table').DataTableTable<Row>
+  import('../../packages/parttens/src/collection/layouts/data-table').DataTableTable<Row>
 
 type Row = Record<string, string | number> & { id: string }
 

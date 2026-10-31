@@ -8,12 +8,12 @@ import { BuildingIcon, PlusIcon } from 'lucide-react'
 import {
   type Contact,
   initialContacts,
-} from '../../patterns/collection-views/fixtures/contacts'
+} from '../../patterns/collection/fixtures/contacts'
 import {
   type Deal,
   initialDeals,
   isOpenStage,
-} from '../../patterns/collection-views/fixtures/deals'
+} from '../../patterns/collection/fixtures/deals'
 
 const LOCALE = 'pt-BR'
 
@@ -60,11 +60,11 @@ const formatPipeline = (value: number) =>
 const pluralize = (count: number, one: string, other: string) =>
   `${count} ${count === 1 ? one : other}`
 
-const createCompanyCollection = (items: readonly Company[]) => ({
+const createCompanyCollection = (records: readonly Company[]) => ({
   getKey: (company: Company) => company.name,
   getLabel: (company: Company) => company.name,
   groupings: [],
-  items,
+  records,
 })
 
 function CompanyCard({ company }: Readonly<{ company: Company }>) {
@@ -164,9 +164,9 @@ export function CompaniesTemplate({
         collection={createCompanyCollection(companies)}
         emptyMessage="Nenhuma empresa cadastrada."
         loading={loading}
-        loadingItemCount={8}
-        loadingItemLabel="Carregando empresa"
-        renderItem={(company) => <CompanyCard company={company} />}
+        loadingRecordCount={8}
+        loadingRecordLabel="Carregando empresa"
+        renderRecord={(company) => <CompanyCard company={company} />}
       />
     </div>
   )

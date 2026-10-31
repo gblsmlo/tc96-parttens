@@ -1,0 +1,172 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Patterns/Collection/Guide" />
+
+# Collection: how to build a collection screen
+
+Follow the steps in order, then use "Where to read next" for the docs entry behind each part.
+
+## 0. When to use
+
+Use it when one screen shows one collection of records in more than one layout: List, Kanban, Calendar, Spreadsheet (`DataGrid`) or Table (`DataTable`), with saved views, search and filters around them.
+
+- If the screen only ever shows one layout, mount that layout alone (`ListView`, `KanbanView`, `CalendarView`, `DataGrid`, `DataTable`) and skip steps 4 and 5.
+- If you need one record rather than the set, use `RecordPreview`, `RecordDialog` or `RecordGroup`. The collection hands you the record; those patterns show or edit it.
+- If you need a value inside a cell or a card (status, person, date), use the property displays, not a layout.
+
+Four terms keep the parts apart:
+
+| Term | Meaning | In the code |
+| --- | --- | --- |
+| Record | One item with properties: a person, a task, a campaign | each card, row or cell; `RecordPreview`, `RecordDialog`, `RecordGroup` |
+| Collection | The set of records plus how to key, label and group them | `CollectionDefinition`, `CollectionProvider` |
+| Layout | The renderer that shows the records | `CollectionLayoutOutlet` and the `*View` components |
+| View | A saved, named setup: layout, grouping and filters | `ViewSwitcherMenu`, `PresetsMenu` |
+
+## 1. Install
+
+```bash
+npx @tc96/parttens add collection properties
+```
+
+- `collection` brings the layouts, the outlet, the provider, the toolbar pieces, the view switcher, pagination and selection actions. `properties` brings the cell and card values the layouts render.
+- Preview first with `--dry-run`, or compare installed files with `--diff`. The CLI type-checks the patterns against your own `ui` components and stops with exit code 1 when they do not match.
+- If the repo blocks `npx`, use `bunx @tc96/parttens add ...` or `pnpm dlx @tc96/parttens add ...`.
+- Import from your `patterns` alias:
+
+```tsx
+import { CollectionLayoutOutlet, CollectionProvider } from '@acme/patterns'
+```
+
+The aliases the CLI reads and the layout it expects are in Get Started.
+
+## 2. Decide what your code owns
+
+The pattern is controlled. It never fetches, filters, searches, sorts or persists. Your code owns:
+
+- the records, already fetched and filtered, and the write that saves an edit;
+- search terms, filters and saved views (presets);
+- persistence of the `{ layout, groupBy }` preferences, if they must survive a reload.
+
+The pattern owns only the active layout and grouping (when uncontrolled), drag overrides while a move settles, collapse state and the TanStack table state of `useDataGrid` and `useDataTable`.
+
+## 3. Declare the collection
+
+Build a `CollectionDefinition<TRecord>` from the records you already filtered. Every grouping the user can pick is a dimension in `groupings`.
+
+```tsx
+import type { CollectionDefinition } from '@tc96/parttens'
+
+const groupings: CollectionDefinition<Task>['groupings'] = [
+  {
+    id: 'status',
+    label: 'Status',
+    options: statusOptions.map((option) => ({ id: option.value, label: option.label })),
+    getGroupId: (task) => task.status,
+    setGroupId: (task, groupId) =>
+      groupId && isStatus(groupId) ? { ...task, status: groupId } : task,
+  },
+]
+
+const collection = useMemo<CollectionDefinition<Task>>(
+  () => ({
+    records: visibleTasks,
+    getKey: (task) => task.id,
+    getLabel: (task) => task.title,
+    groupings,
+  }),
+  [visibleTasks],
+)
+```
+
+- `setGroupId` is the write pair of `getGroupId`. Without it, a Kanban card cannot be dragged to another column of that dimension.
+- `getGroupId` returning `null` puts the record in the unassigned group; set `unassignedLabel` to name it.
+- Kanban needs a grouping or prepared `groups`; `groupBy: null` throws there. List and DataGrid render it ungrouped.
+
+## 4. Wrap the screen in `CollectionProvider`
+
+`CollectionLayoutOutlet` and `useCollectionPreferences` throw outside it.
+
+```tsx
+<CollectionProvider
+  collection={collection}
+  preferences={preferences}
+  onPreferencesChange={setPreferences}
+>
+  <TasksWorkspace />
+</CollectionProvider>
+```
+
+- Controlled: pass `preferences` and `onPreferencesChange` when you persist them. Uncontrolled: pass `defaultPreferences`.
+- Inside, change the layout or grouping with `setPreferences(next, 'layout')` or `setPreferences(next, 'grouping')` from `useCollectionPreferences()`.
+
+## 5. Mount `CollectionLayoutOutlet`
+
+The outlet renders the active layout. Give it `renderListRecord` only when you offer List, `renderKanbanRecord` only when you offer Kanban, and the props block of every other layout you offer.
+
+```tsx
+<CollectionLayoutOutlet
+  collection={collection}
+  renderListRecord={renderTaskListRow}
+  renderKanbanRecord={renderTaskKanbanCard}
+  onRecordChange={({ record }) => saveTask(record)}
+  list={{ emptyGroupLabel: 'No tasks in this group.' }}
+  kanban={{ emptyColumnLabel: 'No tasks in this column.' }}
+  datagrid={{ 'aria-label': 'Tasks', table: dataGridTable }}
+  datatable={{ 'aria-label': 'Tasks', table: dataTable }}
+  calendar={calendarProps}
+/>
+```
+
+- The outlet throws when the active layout is `list`, `datagrid`, `datatable`, `calendar`, `gallery` or `kanban` and its prop (`renderListRecord` for List, `renderGalleryRecord` for Gallery, `renderKanbanRecord` for Kanban) is missing. Pass only the blocks for the layouts you offer in step 7.
+- Build `table` with `useDataGrid` or `useDataTable` in the same component, from the same filtered records.
+- `renderKanbanRecord` must be pure and emit no DOM `id`: Kanban renders the mobile panel and the desktop board at once, so each card renders twice.
+
+## 6. Handle writes
+
+There are two write paths, and both end in your code:
+
+- A move between groups (Kanban drag) calls `onRecordChange({ record, previousRecord, grouping })` with the record already rebuilt by `setGroupId`. Save it and return `true`, or return `false` (or reject) to roll the card back. While a returned promise is pending, the card stays in the target column.
+- An edit inside a row, card or cell (status select, assignee, due date) is your renderer or column calling your own update function. The pattern does not see it.
+
+To veto or reroute a Kanban move with both groups in hand, pass `kanban.onMoveCard` instead; it wins over `onRecordChange`.
+
+## 7. Add the toolbar
+
+`CollectionToolbar` lays out the controls; everything inside it reads and writes your state.
+
+- `ViewSwitcherMenu` switches between saved views. Keep the list, the active id and the favorites in your state; `ViewSwitcherItems`, `ViewSwitcherItem`, `ViewSwitcherSearch` and `ViewSwitcherCreate` compose its popover.
+- `CollectionSearchField` commits on submit and when emptied, not per keystroke. Filter the records with the committed value.
+- `ViewSettingsMenu` takes `modes` (the layouts you offer), `mode` and `onModeChange`. Put grouping, sorting, density, columns and filters in `ViewSettingsSection` children.
+- For DataGrid, reuse `DataGridSortSubmenu`, `DataGridDensitySubmenu` and `DataGridColumnsSubmenu` with the same `table`. For DataTable, `DataTableColumnsSubmenu` lists the hideable columns by `meta.label`.
+- `ActionBar` shows bulk actions for selected rows; DataGrid takes it through `datagrid.selectionActions`.
+
+## 8. Cover loading, empty and error
+
+Each layout has its own props: `loading` on List, Kanban and Calendar, `isLoading` on DataGrid and DataTable, and an empty label on each. Decide them per layout before calling the screen done.
+
+## Where to read next
+
+| You need | `docs-show` id |
+| --- | --- |
+| A full screen with all five layouts, toolbar, filters, presets and persistence | `patterns-collection-usages-tasks` |
+| A record screen with Table, Spreadsheet and List, multi-value properties (emails, phones, tags) and bulk actions | `patterns-collection-usages-contacts` |
+| A metrics-heavy record screen: Meta Ads campaigns with numeric columns, a totals footer and bulk status actions | `patterns-collection-usages-campaigns` |
+| List rows, grouping and collapse | `patterns-collection-layouts-list` |
+| Kanban board, cards and drag | `patterns-collection-usages-pipeline`, `patterns-collection-layouts-kanban-cards` |
+| Kanban loading and error | `patterns-collection-layouts-kanban-loading-board`, `patterns-collection-layouts-kanban-surfaces-error` |
+| Calendar month, time grid, navigation, drag and resize | `patterns-collection-usages-calendar`, `patterns-collection-layouts-calendar-interactions`, `patterns-collection-layouts-calendar-month`, `patterns-collection-layouts-calendar-time-grid` |
+| Spreadsheet with editable cells | `patterns-collection-layouts-data-grid` |
+| Read-only table | `patterns-collection-layouts-data-table` |
+| Saved views: search, favorites, options, create | `patterns-collection-views-view-switcher` |
+| Toolbar and pagination | `patterns-toolbar`, `patterns-pagination` |
+| Cell and card values (status, person, date) | the `patterns-fields-properties-display-*` entries |
+
+## Done when
+
+- The patterns are installed and the aliases resolve.
+- Every layout in `modes` has its props block in the outlet.
+- Every grouping offered in Kanban has `setGroupId`, or drag is intentionally off.
+- Search, filters and presets live in your state, and the records passed to `collection` are already filtered.
+- Loading and empty states exist for each layout you offer.
+- `test-run` passes for the stories you added, axe included.

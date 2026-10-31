@@ -137,7 +137,7 @@ await writeFile(
 )
 await writeFile(
   join(output, 'view.json'),
-  await readFile(join(output, 'collection-views.json')),
+  await readFile(join(output, 'collection.json')),
 )
 const cliOutput = resolve('dist/cli')
 await mkdir(join(cliOutput, 'registry'), { recursive: true })

@@ -32,7 +32,7 @@ React patterns without business rules, installed as source on top of your COSS c
 Install one or more patterns by name:
 
 ```bash
-npx @tc96/parttens add collection-views properties
+npx @tc96/parttens add collection properties
 ```
 
 The Record family has three items: `record-dialog`, `record-preview` and `record-group`.
@@ -55,7 +55,7 @@ Before copying anything, the CLI type-checks the patterns against your own `ui` 
 **Quick Start:**
 
 ```tsx
-import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
+import { CollectionLayoutOutlet, TextProperty } from '@acme/patterns'
 ```
 
 ### Templates
@@ -139,17 +139,17 @@ Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`
 Paste this into your coding agent, replacing the pattern names:
 
 ````text
-Install the @tc96/parttens patterns `collection-views` and `properties` in this project.
+Install the @tc96/parttens patterns `collection` and `properties` in this project.
 
 1. Find the root `components.json`. It must define `aliases.ui` and `aliases.utils`. `aliases.elements`, `aliases.helpers` and `aliases.patterns` are optional and default to siblings of `ui` (`@acme/ui` gives `@acme/elements`). If the file is missing, stop and ask me; do not run `shadcn init --force`, which rewrites it.
 2. For `ui`, `elements`, `helpers` and `patterns`, check that the root `tsconfig.json` `paths` has an exact entry and a wildcard entry (`"@acme/patterns/*": ["./packages/patterns/src/*"]`) and that each alias points to an existing workspace package. If something is missing, show me the change and wait for my approval before editing.
 3. Preview first, from any directory inside the repo (the CLI searches upward for `components.json`; use `--cwd` to override):
-   npx @tc96/parttens add collection-views properties --dry-run
+   npx @tc96/parttens add collection properties --dry-run
    Read the output. If it lists files that already exist or a destination I did not expect, such as a legacy folder with the same name, stop and ask me. If it stops with "do not type-check against your components", report the diagnostics and wait; do not add `--force`.
 4. Install:
-   npx @tc96/parttens add collection-views properties
+   npx @tc96/parttens add collection properties
    Answer no to any shadcn prompt that would overwrite a file I own. If the repo blocks npx, use `bunx` or `pnpm dlx`.
-5. Do not edit the installed files or the COSS components in `ui`. Import from the `patterns` alias (`import { CollectionViewOutlet } from '@acme/patterns'`).
+5. Do not edit the installed files or the COSS components in `ui`. Import from the `patterns` alias (`import { CollectionLayoutOutlet } from '@acme/patterns'`).
 6. Run the typecheck and lint scripts of the workspace that received the files, and report what was installed, where, and any errors.
 ````
 
@@ -157,7 +157,7 @@ Install the @tc96/parttens patterns `collection-views` and `properties` in this 
 
 | Pattern | Contents |
 | --- | --- |
-| `collection-views` | List, Kanban, Data Grid and Calendar views, toolbar, pagination, selection |
+| `collection` | List, Kanban, Data Grid and Calendar layouts, toolbar, pagination, selection |
 | `properties` | Text, Date, Select, Person and other property displays, plus property groups |
 | `editable` | Inline editing compound |
 | `checklist` | Controlled item creation, completion, renaming, ordering, deletion and progress |
@@ -178,7 +178,7 @@ Filter Builder and responsive layouts are out of scope for the first version.
 There is no package to update. To compare your installed files with the current version, run:
 
 ```bash
-npx @tc96/parttens add collection-views --diff
+npx @tc96/parttens add collection --diff
 ```
 
 Then apply the changes you want by hand.

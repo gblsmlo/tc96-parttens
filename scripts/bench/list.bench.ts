@@ -14,7 +14,7 @@ import {
 const { createElement, useState } = await import('react')
 const { flushSync } = await import('react-dom')
 const { ListItem, ListItemBody, ListItemDescription, ListItemTitle, ListView } =
-  await import('../../packages/parttens/src/collection-views/views/list/index')
+  await import('../../packages/parttens/src/collection/layouts/list/index')
 
 interface Task {
   id: string
@@ -32,36 +32,36 @@ const statusOptions = Array.from({ length: GROUPS }, (_, index) => ({
 
 function buildCollection(size: number) {
   const random = seededRandom(SEED)
-  const items: Task[] = Array.from({ length: size }, (_, index) => ({
+  const records: Task[] = Array.from({ length: size }, (_, index) => ({
     id: `task-${index}`,
     note: `Note ${Math.floor(random() * 1e6)}`,
     statusId: `s${index % GROUPS}`,
     title: `Task ${index}`,
   }))
   return {
-    getKey: (item: Task) => item.id,
-    getLabel: (item: Task) => item.title,
+    getKey: (record: Task) => record.id,
+    getLabel: (record: Task) => record.title,
     groupings: [
       {
-        getGroupId: (item: Task) => item.statusId,
+        getGroupId: (record: Task) => record.statusId,
         id: 'status',
         label: 'Status',
         options: statusOptions,
       },
     ],
-    items,
+    records,
   }
 }
 
-const renderItem = countRenders((item: Task) => {
+const renderRecord = countRenders((record: Task) => {
   return createElement(
     ListItem,
     null,
     createElement(
       ListItemBody,
       null,
-      createElement(ListItemTitle, null, item.title),
-      createElement(ListItemDescription, null, item.note),
+      createElement(ListItemTitle, null, record.title),
+      createElement(ListItemDescription, null, record.note),
     ),
   )
 }, 'items')
@@ -91,7 +91,7 @@ function Harness({
     createElement(ListView<Task>, {
       collection,
       grouping: grouped ? 'status' : null,
-      renderItem,
+      renderRecord,
     }),
   )
 }
