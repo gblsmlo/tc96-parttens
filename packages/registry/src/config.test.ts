@@ -122,6 +122,34 @@ test('suggests the missing tsconfig path from the ui path', async () => {
   )
 })
 
+test('suggests a nested tsconfig path when the ui alias names its folder', async () => {
+  const root = await consumer(
+    { ui: '@acme/ui/components', utils: '@acme/ui/lib/utils' },
+    { '@acme/ui/components/*': ['./packages/ui/src/components/*'] },
+  )
+  await expect(readInstallConfig(root)).rejects.toThrow(
+    '"@acme/ui/elements/*": ["./packages/ui/src/elements/*"]',
+  )
+})
+
+test('resolves every layer inside one ui package', async () => {
+  const root = await consumer(
+    { ui: '@acme/ui/components', utils: '@acme/ui/lib/utils' },
+    {
+      '@acme/ui/components/*': ['./packages/ui/src/components/*'],
+      '@acme/ui/elements/*': ['./packages/ui/src/elements/*'],
+      '@acme/ui/helpers/*': ['./packages/ui/src/helpers/*'],
+      '@acme/ui/patterns/*': ['./packages/ui/src/patterns/*'],
+    },
+  )
+  expect((await readInstallConfig(root)).paths).toEqual({
+    ui: 'packages/ui/src/components',
+    elements: 'packages/ui/src/elements',
+    helpers: 'packages/ui/src/helpers',
+    patterns: 'packages/ui/src/patterns',
+  })
+})
+
 test('requires components.json in the consumer', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tc96-config-'))
   roots.push(root)

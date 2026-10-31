@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { dirname, join, relative } from 'node:path'
 
 /** Version of a package as Node resolves it from the consumer root. */
 export function installedVersion(
@@ -53,20 +53,60 @@ function declaredDependencies(root: string) {
  * only as a transitive dependency or above the root can resolve to a second
  * copy, so it is installed too. A declared range wins over a bare name.
  */
-export function missingDependencies(root: string, dependencies: string[]) {
+export function missingDependencies(
+  root: string,
+  dependencies: string[],
+  target?: DependencyTarget,
+) {
   const wanted = new Map<string, string | undefined>()
   for (const dependency of dependencies) {
     const { name, declared } = parseDependency(dependency)
     if (!wanted.has(name) || declared) wanted.set(name, declared)
   }
-  const own = declaredDependencies(root)
+  const owner = target ? join(root, target.directory) : root
+  const own = new Set([
+    ...declaredDependencies(root),
+    ...declaredDependencies(owner),
+  ])
   return [...wanted]
     .filter(([name, declared]) => {
-      const installed = own.has(name) && installedVersion(root, name)
+      const installed = own.has(name) && installedVersion(owner, name)
       return !installed || (declared && !compatibleVersion(installed, declared))
     })
     .map(([name, declared]) => (declared ? `${name}@${declared}` : name))
     .sort()
+}
+
+export type DependencyTarget = { directory: string; name: string }
+
+function isWorkspaceRoot(root: string) {
+  const manifest = join(root, 'package.json')
+  return (
+    existsSync(join(root, 'pnpm-workspace.yaml')) ||
+    (existsSync(manifest) &&
+      JSON.parse(readFileSync(manifest, 'utf8')).workspaces !== undefined)
+  )
+}
+
+/** The workspace package that owns a directory, when it is not the root. */
+export function dependencyTarget(
+  root: string,
+  directory: string,
+): DependencyTarget | undefined {
+  if (!isWorkspaceRoot(root)) return undefined
+  for (
+    let current = join(root, directory);
+    current !== root && current !== dirname(current);
+    current = dirname(current)
+  ) {
+    const manifest = join(current, 'package.json')
+    if (existsSync(manifest))
+      return {
+        directory: relative(root, current).replaceAll('\\', '/'),
+        name: String(JSON.parse(readFileSync(manifest, 'utf8')).name ?? ''),
+      }
+  }
+  return undefined
 }
 
 export type PackageManager = 'bun' | 'pnpm' | 'yarn' | 'npm'
@@ -92,7 +132,18 @@ export function installCommand(
   root: string,
   manager: PackageManager,
   dependencies: string[],
+  target?: DependencyTarget,
 ) {
+  if (target) {
+    if (manager === 'npm')
+      return ['npm', 'install', '-w', target.directory, ...dependencies]
+    if (manager === 'yarn' && target.name)
+      return ['yarn', 'workspace', target.name, 'add', ...dependencies]
+    if (manager === 'pnpm')
+      return ['pnpm', 'add', '--dir', target.directory, ...dependencies]
+    if (manager === 'bun')
+      return ['bun', 'add', '--cwd', target.directory, ...dependencies]
+  }
   if (manager === 'npm') return ['npm', 'install', ...dependencies]
   const workspaceRoot =
     manager === 'pnpm' && existsSync(join(root, 'pnpm-workspace.yaml'))
@@ -101,8 +152,17 @@ export function installCommand(
   return [manager, 'add', ...workspaceRoot, ...dependencies]
 }
 
-export function installDependencies(root: string, dependencies: string[]) {
-  const command = installCommand(root, detectPackageManager(root), dependencies)
+export function installDependencies(
+  root: string,
+  dependencies: string[],
+  target?: DependencyTarget,
+) {
+  const command = installCommand(
+    root,
+    detectPackageManager(root),
+    dependencies,
+    target,
+  )
   console.log(`Installing dependencies: ${command.join(' ')}`)
   const result = spawnSync(command[0] as string, command.slice(1), {
     cwd: root,

@@ -15,25 +15,40 @@ description: Instale os fontes dos patterns no seu projeto COSS.
 
 ## Aliases
 
-Acrescente `elements`, `helpers` e `patterns` aos aliases `ui` e `utils` do `components.json`:
+O tc96 instala as camadas dentro de um único pacote `ui`, no layout de monorepo
+do shadcn:
+
+```text
+packages/ui/src/
+  components/   COSS
+  elements/     componentes que o COSS não tem
+  helpers/      funções sem React
+  patterns/     patterns do tc96
+  lib/utils.ts  cn
+```
 
 ```json
 {
   "aliases": {
-    "components": "@acme/ui",
-    "ui": "@acme/ui",
-    "utils": "@acme/ui/lib/utils",
-    "elements": "@acme/elements",
-    "helpers": "@acme/helpers",
-    "patterns": "@acme/patterns"
+    "components": "@acme/ui/components",
+    "ui": "@acme/ui/components",
+    "utils": "@acme/ui/lib/utils"
   }
 }
 ```
 
+`elements`, `helpers` e `patterns` são derivados do `ui` trocando o último
+segmento (`@acme/ui/elements`, `@acme/ui/helpers`, `@acme/ui/patterns`).
+Declare-os em `aliases` só para pôr uma camada em outro lugar, como um pacote
+`@acme/patterns` separado.
+
 Cada alias também precisa de entrada exata e de wildcard em `paths` no
-`tsconfig` da raiz. O CLI grava `elements`, `helpers` e `patterns` no diretório
-que o wildcard de cada alias resolve e reescreve os imports para `ui` e `utils`, que
-continuam sendo seus.
+`tsconfig` da raiz (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`),
+e o `exports` do `package.json` do `ui` precisa cobrir cada camada. O CLI grava
+`elements`, `helpers` e `patterns` no diretório que o wildcard de cada alias
+resolve, reescreve os imports para `ui` e `utils`, que continuam sendo seus, e
+instala as dependências npm no pacote do workspace que contém o diretório de
+`patterns`.
 
 Se você usa o shadcn, o `shadcn init --force` regrava o `components.json` sem `elements`, `helpers`
 e `patterns`, e troca o alias `ui`. Se rodar esse comando, acrescente as três
