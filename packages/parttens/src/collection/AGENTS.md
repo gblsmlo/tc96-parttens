@@ -6,10 +6,10 @@ Controlled renderers for one collection: the consumer declares a `CollectionDefi
 
 | Folder | Holds |
 | --- | --- |
-| `composition/` | `CollectionLayoutOutlet`: picks the layout, projects groups, adapts kanban moves to `onRecordChange` |
+| `composition/` | `CollectionLayoutOutlet`: picks the layout, projects groups, adapts kanban moves to `onRecordChange`; `CollectionFrame`: the header, body and footer around a toolbar and a layout |
 | `store/` | `CollectionProvider` and `useCollectionPreferences` |
 | `types/` | the collection contracts (definition, grouping, group, preferences, record change) |
-| `shared/components/` | toolbar pieces: search, view switcher, view settings, filter submenu, presets, `ActionBar` |
+| `shared/components/` | toolbar pieces: search, view settings, filter submenu, presets, `Action` |
 | `shared/lib/` | `projectCollection`, the one function that turns a collection plus a grouping into groups; `skeleton-keys`; `interactive-descendants`, the selector `ListRow` and the `DataTable` row use to keep controls clickable above a stretched trigger |
 | `layouts/<layout>/` | `calendar`, `data-grid`, `data-table`, `gallery`, `kanban`, `list`; each with its own `index.ts` and a `README.md` holding its benchmark |
 | `test/` | `test/dom.ts`, the JSDOM setup the tests import, and `test/jsdom.d.ts` |
@@ -17,12 +17,12 @@ Controlled renderers for one collection: the consumer declares a `CollectionDefi
 
 `layouts/data-grid/` has its own `AGENTS.md` with its file map and invariants; read it before touching the grid.
 
-Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the six layouts; each layout → its own folders and `types/`; list and kanban may also import `shared/lib/project-collection.ts`, list and data-table import `shared/lib/interactive-descendants.ts`, gallery imports `shared/lib/skeleton-keys.ts`, and data-grid imports the `ActionBarContext` type from `shared/components/action-bar.tsx`; `shared/` and `store/` → `types/`; layouts never import each other. Outside the folder, `shared/components/collection-filter-submenu.tsx`, the data-grid density and columns submenus, `views/data-table/data-table-columns-submenu.tsx` and `views/data-table/data-table-aggregation-cell.tsx` import `packages/parttens/src/shared/components/menu-selection-item.tsx`, and `layouts/data-grid/components/data-grid-pagination.tsx` imports `packages/parttens/src/shared/components/collection-pagination.tsx`.
+Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the six layouts; each layout → its own folders and `types/`; list and kanban may also import `shared/lib/project-collection.ts`, list and data-table import `shared/lib/interactive-descendants.ts`, gallery imports `shared/lib/skeleton-keys.ts`, `shared/` and `store/` → `types/`; layouts never import each other. Outside the folder, `shared/components/collection-filter-submenu.tsx`, the data-grid density and columns submenus, `views/data-table/data-table-columns-submenu.tsx` and `views/data-table/data-table-aggregation-cell.tsx` import `packages/parttens/src/shared/components/menu-selection-item.tsx`, `layouts/data-grid/components/data-grid-pagination.tsx` imports `packages/parttens/src/pagination/components/collection-pagination.tsx`, and `layouts/data-grid/components/data-grid-selection-actions.tsx` imports `packages/parttens/src/action-bar/components/action-bar.tsx`. Those two imports make the registry ship `pagination/` and `action-bar/` with `collection`; nothing here imports `packages/parttens/src/toolbar/` at runtime.
 
 ## Dependents
 
 - `packages/parttens/src/index.ts` re-exports `collection/index` whole plus `KanbanView as Kanban`.
-- `packages/parttens/src/shared/components/collection-toolbar.test.tsx` and `packages/parttens/src/shared/components/collection-pagination.test.tsx` import `test/dom.ts`. Moving it breaks them.
+- `packages/parttens/src/toolbar/components/collection-toolbar.test.tsx`, `toolbar/components/view-switcher.test.tsx` and `packages/parttens/src/pagination/components/collection-pagination.test.tsx` import `test/dom.ts`. Moving it breaks them.
 - `scripts/bench-views.ts` (run by `release:check` as `bench:views`) imports `shared/lib/project-collection.ts` by path; `scripts/bench/<layout>.bench.ts` import each `layouts/<layout>/index`. Moving a view or `projectCollection` breaks them.
 - The folder name `collection` is hardcoded in `packages/registry/src/manifest.ts` (which also maps the `view` alias to it), `packages/registry/src/cli.ts`, `scripts/test-patterns.ts`, `scripts/test-consumer-ssr.ts` and `scripts/test-consumer-registry.ts`.
 - `scripts/override-exceptions.json` keys two entries by the paths of `layouts/list/components/list-group.tsx` and `list-view.tsx`.
@@ -60,10 +60,14 @@ Gallery, list, calendar and table:
 - `DataTable` wraps the COSS `Table` in `data-slot="data-table"`, the positioned box for two `aria-hidden` fades over the scroll container's edges (issue #127): macOS overlay scrollbars hide while idle and a vertical wheel does not scroll sideways, so the overflow had no cue. `useHorizontalOverflow` reads the container through a ref object, not a state callback ref, so mount stays one commit in the bench.
 - Calendar, Gallery, List and Data Table run the consumer's renderer in a memoized leaf below the stateful component: it re-runs only when its identity or inputs change, so a renderer that reads other state with a stable identity goes stale.
 
+Frame:
+
+- `mode="fill"` bounds the frame (`min-h-0 flex-1`) and scrolls the body; it only holds inside a flex column of bounded height, otherwise it grows like `flow`. `flow` lets the body grow and makes the footer `sticky bottom-0`. Body and footer read the mode from context, not a Tailwind group, so nested frames do not leak.
+- `CollectionFrameOverlay` goes inside `CollectionFrameFooter` (`absolute bottom-full`): inside the scrolling body an absolute child would scroll with the records. It centers on the frame, not the viewport, like `DataGridSelectionActions`.
+
 Toolbar:
 
-- `CollectionSearchField` commits on submit and when emptied, never per keystroke. `ViewSwitcherMenu` is a `Popover` (`role="dialog"`), not a menu. `FilterRadioSubmenu` maps the "all" option to `''`, since a `MenuRadioGroup` cannot represent no choice.
-- `CollectionSelectionActions` is a compatibility alias of `ActionBar` that its test keeps.
+- `CollectionSearchField` commits on submit and when emptied, never per keystroke. `FilterRadioSubmenu` maps the "all" option to `''`, since a `MenuRadioGroup` cannot represent no choice.
 
 ## Styling
 
@@ -80,6 +84,7 @@ Toolbar:
 | `data-calendar-item-resize="start\|end"` | the resize buttons on time-grid items | tests and the drag sensor, which never starts a move from an edge; the edge measures its `[data-calendar-date]` column to turn pixels into minutes |
 | `data-collection-grouping`, `data-interactive`, `data-bordered`, `data-layout` | `ListView`, `ListItem`, `DataTable`, view settings mode tab | consumers |
 | `data-slot="gallery-view"` | the `GalleryView` grid root | consumers and tests; not styled outside the view |
+| `data-slot="collection-frame"`, `data-mode`, `data-slot="collection-frame-header\|body\|footer\|overlay"` | the `CollectionFrame` parts | consumers and tests; not styled |
 | `data-slot="data-table"`, `data-overflow-start`, `data-overflow-end` | the `DataTable` root | the edge fades (`data-table-overflow-start`, `data-table-overflow-end`) through `group-data-*/data-table` |
 | `data-slot="data-table-row-trigger"`, `data-interactive` | the open button and the `tr` of a `DataTable` row, only with `onRowClick` | consumers and tests; the trigger draws its own `focus-visible` ring |
 | `data-slot="data-table-aggregation"`, `data-aggregation` | the `DataTable` footer cell of an aggregated column | consumers and tests; with no aggregation the trigger hides behind `group-hover/footer` |
@@ -99,7 +104,7 @@ Data Grid attributes are listed in `layouts/data-grid/AGENTS.md`.
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/collection
+bun test --isolate packages/parttens/src/collection/layouts/calendar/lib packages/parttens/src/collection/layouts/calendar/components/calendar-event-chip.test.ts packages/parttens/src/collection/layouts/data-grid/lib
 bunx biome check packages/parttens/src/collection
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/collection
@@ -108,11 +113,11 @@ bun scripts/bench/<layout>.bench.ts --compare scripts/bench/results/<layout>.bas
 
 Run the bench of each layout whose rendering changed. `--gate` exits 1 when a render counter rose or a scenario disappeared; timing only warns. Regenerate a baseline with `--json scripts/bench/results/<layout>.base.json` on an idle machine and update the view's README table in the same change. The harness in `scripts/bench/` is copied from the tc96-marketplace `react-component-performance` skill; keep its `bench-harness v1` line.
 
-Stories in `apps/storybook/src/patterns/collection/` run axe with `test: 'error'`. Fixtures in `fixtures/` are per usage: Tasks reads `tasks.ts`, Pipeline `deals.ts`, Contacts `contacts.ts` and Calendar `deal-activities.ts` over `deals.ts`. The `views/` stories read `tasks.ts`, except Calendar Interactions, which reads `events.ts`, and Gallery, which owns its document records. `tasks.ts` also exports the people, time zone and clock every fixture imports, and the record-dialog stories import `contacts.ts`, so editing either reaches beyond one usage.
+Interface tests are `play` functions in `apps/storybook/src/patterns/collection/`: `composition/` (the outlet, prepared groups and the frame), `shared/` (search field, filter submenu and view settings), `layouts/<layout>/` (one story file per behavior group) and `usages/`. The bun tests left in this folder are pure logic under `layouts/*/lib/` and `layouts/calendar/components/calendar-event-chip.test.ts`, plus two cases that cannot run in a browser: the outlet throws on a missing required prop, and `kanban-view.test.tsx` checks the server render. Stories run axe with `test: 'error'`. Fixtures in `fixtures/` are per usage: Tasks reads `tasks.ts`, Pipeline `deals.ts`, Contacts `contacts.ts` and Calendar `deal-activities.ts` over `deals.ts`. The `views/` stories read `tasks.ts`, except Calendar Interactions, which reads `events.ts`, and Gallery, which owns its document records. `tasks.ts` also exports the people, time zone and clock every fixture imports, and the record-dialog stories import `contacts.ts`, so editing either reaches beyond one usage.
 
-The toolbar with the view switcher lives in the Tasks, Pipeline and Contacts usages (`usages/<usage>.stories.tsx`). Each usage story writes its screen in the meta's named `render`, so the Code panel shows the composition; `fixtures/contacts-usage.tsx` and `fixtures/pipeline-usage.tsx` copy the Contacts and Pipeline screens for `apps/storybook/src/templates/contacts.stories.tsx` and `deal-board.stories.tsx`, so a change to one goes to the other. The Calendar usage and `views/calendar/calendar-interactions.stories.tsx` carry `fixtures/calendar-toolbar.tsx`: period, range and filters, no view switcher.
+The toolbar with the view switcher lives in the Tasks, Pipeline and Contacts usages (`usages/<usage>.stories.tsx`). Each usage story writes its screen in the meta's named `render`, so the Code panel shows the composition; `fixtures/contacts-usage.tsx` and `fixtures/pipeline-usage.tsx` copy the Contacts and Pipeline screens for `apps/storybook/src/templates/contacts.stories.tsx` and `deal-board.stories.tsx`, so a change to one goes to the other. Every usage mounts its toolbar, layout and footer in `CollectionFrame` (`fill`) under an `h-dvh` page. The Calendar usage and `views/calendar/calendar-interactions.stories.tsx` carry `fixtures/calendar-toolbar.tsx`: period, range and filters, no view switcher.
 
 ## Pointers
 
 - Public API: `index.ts` and the `collection` entry of `docs/architecture/public-api-exports.json`. `ListItemHeadingLevelContext` and the kanban drag helpers are not exported from the barrel. Exporting from a view's `hooks/`, `lib/` or an internal component needs a reason recorded in the architecture doc.
-- Decisions: `docs/architecture/tc96-parttens.md`, sections "Acessibilidade dos patterns", "Collection layouts: benchmark por layout", "Gallery: grid controlado para registros", "Calendar, Gallery, List e Data Table: o renderizador do consumidor numa folha memoizada", "Calendar: `onSelectSlot` para criar a partir de um slot vazio", "Kanban: os dois layouts continuam renderizados", "Data Grid: linhas memoizadas e estado derivado", "Data Table: `onRowClick` com um gatilho esticado na linha" and "Data Grid: um commit por interação".
+- Decisions: `docs/architecture/tc96-parttens.md`, sections "Acessibilidade dos patterns", "Collection layouts: benchmark por layout", "Gallery: grid controlado para registros", "Calendar, Gallery, List e Data Table: o renderizador do consumidor numa folha memoizada", "Calendar: `onSelectSlot` para criar a partir de um slot vazio", "Kanban: os dois layouts continuam renderizados", "Data Grid: linhas memoizadas e estado derivado", "Data Table: `onRowClick` com um gatilho esticado na linha", "Collection: `CollectionFrame` separa toolbar, coleção e rodapé" and "Data Grid: um commit por interação".
