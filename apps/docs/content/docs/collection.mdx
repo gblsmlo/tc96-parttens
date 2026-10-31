@@ -1,0 +1,250 @@
+---
+title: Collection
+description: Uma coleção de registros exibida em vários layouts, com visões salvas, busca e filtros.
+---
+
+Use quando uma tela mostra uma coleção em mais de um layout: List, Kanban,
+Calendar, Gallery, Spreadsheet ou Table.
+
+- Se a tela mostra um único layout, monte só esse layout (`ListView`,
+  `KanbanView`, `CalendarView`, `GalleryView`, `DataGrid`, `DataTable`) e
+  dispense o provider e o outlet.
+- Se precisa de um registro, e não do conjunto, use `RecordPreview`,
+  `RecordDialog` ou `RecordGroup`. A coleção entrega o registro; esses patterns
+  o exibem ou editam.
+- Se precisa de um valor dentro de uma célula ou card (status, pessoa, data),
+  use os displays de properties, não um layout.
+
+| Termo | Significado | No código |
+| --- | --- | --- |
+| Registro | Um item com propriedades: uma pessoa, uma tarefa, uma campanha | cada card, linha ou célula |
+| Coleção | O conjunto de registros e como identificá-los, rotulá-los e agrupá-los | `CollectionDefinition`, `CollectionProvider` |
+| Layout | O renderizador que mostra os registros | `CollectionLayoutOutlet` e os componentes `*View` |
+| Visão | Uma configuração salva e nomeada: layout, agrupamento e filtros | `ViewSwitcherMenu`, `PresetsMenu` |
+
+## Instalação
+
+```sh
+npx @tc96/parttens add collection properties
+```
+
+`collection` traz os layouts, o outlet, o provider, as peças da toolbar, o view
+switcher, a paginação e as ações em lote. `properties` traz os valores que os
+layouts renderizam nas células e nos cards.
+
+Use `--dry-run` para conferir antes e `--diff` para comparar arquivos já
+instalados. Se o repositório bloqueia o `npx`, use `bunx` ou `pnpm dlx`.
+
+## Uso
+
+```tsx
+import {
+  CollectionLayoutOutlet,
+  CollectionProvider,
+  type CollectionDefinition,
+} from '@acme/patterns'
+```
+
+```tsx
+<CollectionProvider
+  collection={collection}
+  preferences={preferences}
+  onPreferencesChange={setPreferences}
+>
+  <CollectionToolbar>
+    <ViewSwitcherMenu />
+    <CollectionSearchField />
+    <ViewSettingsMenu />
+  </CollectionToolbar>
+  <CollectionLayoutOutlet
+    collection={collection}
+    renderListRecord={renderTaskListRow}
+    renderKanbanRecord={renderTaskKanbanCard}
+    onRecordChange={({ record }) => saveTask(record)}
+  />
+</CollectionProvider>
+```
+
+O pattern é controlado. Ele nunca busca, filtra, pesquisa, ordena nem persiste
+dados. Seu código é dono de:
+
+- os registros, já buscados e filtrados, e da escrita que salva uma edição;
+- termos de busca, filtros e visões salvas (presets);
+- a persistência das preferências `{ layout, groupBy }`, se elas precisam
+  sobreviver a um reload.
+
+O pattern guarda apenas o layout e o agrupamento ativos (quando não
+controlado), a posição de um card enquanto o movimento se resolve, o estado de
+colapso e o estado de tabela do TanStack em `useDataGrid` e `useDataTable`.
+
+## Referência da API
+
+### CollectionDefinition
+
+Descreve a coleção a partir dos registros que você já filtrou. Cada agrupamento
+que o usuário pode escolher é uma dimensão em `groupings`.
+
+```tsx
+const groupings: CollectionDefinition<Task>['groupings'] = [
+  {
+    id: 'status',
+    label: 'Status',
+    options: statusOptions.map((option) => ({ id: option.value, label: option.label })),
+    getGroupId: (task) => task.status,
+    setGroupId: (task, groupId) =>
+      groupId && isStatus(groupId) ? { ...task, status: groupId } : task,
+  },
+]
+
+const collection = useMemo<CollectionDefinition<Task>>(
+  () => ({
+    records: visibleTasks,
+    getKey: (task) => task.id,
+    getLabel: (task) => task.title,
+    groupings,
+  }),
+  [visibleTasks],
+)
+```
+
+- `setGroupId` é o par de escrita de `getGroupId`. Sem ele, um card do Kanban
+  não pode ser arrastado para outra coluna daquela dimensão.
+- `getGroupId` retornando `null` coloca o registro no grupo sem atribuição;
+  `unassignedLabel` dá nome a esse grupo.
+- Kanban exige um agrupamento ou `groups` preparados; `groupBy: null` lança
+  erro. List e DataGrid renderizam sem agrupamento.
+
+### CollectionProvider
+
+Raiz da tela. `CollectionLayoutOutlet` e `useCollectionPreferences` lançam erro
+fora dele.
+
+- Controlado: passe `preferences` e `onPreferencesChange` quando você persiste
+  as preferências.
+- Não controlado: passe `defaultPreferences`.
+- Dentro dele, troque layout ou agrupamento com `setPreferences(next, 'layout')`
+  ou `setPreferences(next, 'grouping')`, vindos de `useCollectionPreferences()`.
+
+### CollectionLayoutOutlet
+
+Renderiza o layout ativo. Cada layout oferecido precisa da sua prop; o outlet
+lança erro quando o layout ativo não a recebe.
+
+| Layout | Prop obrigatória |
+| --- | --- |
+| `list` | `renderListRecord` |
+| `kanban` | `renderKanbanRecord` |
+| `gallery` | `renderGalleryRecord` |
+| `datagrid` | `datagrid`, com o `table` de `useDataGrid` |
+| `datatable` | `datatable`, com o `table` de `useDataTable` |
+| `calendar` | `calendar` |
+
+```tsx
+<CollectionLayoutOutlet
+  collection={collection}
+  renderListRecord={renderTaskListRow}
+  renderKanbanRecord={renderTaskKanbanCard}
+  onRecordChange={({ record }) => saveTask(record)}
+  list={{ emptyGroupLabel: 'No tasks in this group.' }}
+  kanban={{ emptyColumnLabel: 'No tasks in this column.' }}
+  datagrid={{ 'aria-label': 'Tasks', table: dataGridTable }}
+  datatable={{ 'aria-label': 'Tasks', table: dataTable }}
+  calendar={calendarProps}
+/>
+```
+
+- Crie o `table` com `useDataGrid` ou `useDataTable` no mesmo componente, a
+  partir dos mesmos registros filtrados.
+- `renderKanbanRecord` deve ser pura e não emitir `id` no DOM. O Kanban
+  renderiza o painel mobile e o board desktop ao mesmo tempo, então cada card
+  aparece duas vezes.
+
+### onRecordChange
+
+Recebe `{ record, previousRecord, grouping }` quando um card muda de grupo no
+Kanban, com o registro já reconstruído por `setGroupId`.
+
+- Salve e retorne `true`, ou retorne `false` (ou rejeite) para devolver o card.
+- Enquanto a promise está pendente, o card fica na coluna de destino.
+- Para vetar ou redirecionar o movimento com os dois grupos em mãos, passe
+  `kanban.onMoveCard`. Ele tem prioridade sobre `onRecordChange`.
+
+Uma edição dentro de uma linha, card ou célula (select de status, responsável,
+prazo) é o seu renderizador chamando a sua própria função de atualização. O
+pattern não a vê.
+
+### CollectionToolbar
+
+Organiza os controles acima do layout. Tudo dentro dele lê e escreve no seu
+estado.
+
+### ViewSwitcherMenu
+
+Alterna entre visões salvas. A lista, o id ativo e os favoritos ficam no seu
+estado. `ViewSwitcherItems`, `ViewSwitcherItem`, `ViewSwitcherSearch` e
+`ViewSwitcherCreate` compõem o popover.
+
+### CollectionSearchField
+
+Confirma a busca no submit e quando o campo é esvaziado, não a cada tecla.
+Filtre os registros com o valor confirmado.
+
+### ViewSettingsMenu
+
+Recebe `modes` (os layouts oferecidos), `mode` e `onModeChange`. Agrupamento,
+ordenação, densidade, colunas e filtros entram como filhos `ViewSettingsSection`.
+
+No DataGrid, reaproveite `DataGridSortSubmenu`, `DataGridDensitySubmenu` e
+`DataGridColumnsSubmenu` com o mesmo `table`. No DataTable,
+`DataTableColumnsSubmenu` lista as colunas ocultáveis por `meta.label`.
+
+### ActionBar
+
+Mostra ações em lote para as linhas selecionadas. O DataGrid a recebe por
+`datagrid.selectionActions`.
+
+### Estados de carregamento e vazio
+
+Cada layout tem suas props: `loading` em List, Kanban e Calendar, `isLoading`
+em DataGrid e DataTable, e um rótulo de vazio em cada um.
+
+## Exemplos
+
+Os exemplos estão no Storybook, sob `Patterns/Collection`.
+
+### Tasks
+
+Tela completa com os cinco layouts, toolbar, filtros, presets e persistência.
+`Patterns/Collection/Usages/Tasks`.
+
+### Contacts
+
+Table, Spreadsheet e List, com propriedades de múltiplos valores (e-mails,
+telefones, tags) e ações em lote. `Patterns/Collection/Usages/Contacts`.
+
+### Campaigns
+
+Campanhas de Meta Ads com colunas numéricas, rodapé de totais e ações de status
+em lote. `Patterns/Collection/Usages/Campaigns`.
+
+### Pipeline
+
+Board Kanban, cards e arraste. `Patterns/Collection/Usages/Pipeline` e
+`Patterns/Collection/Layouts/Kanban/Cards`.
+
+### Calendar
+
+Mês, grade de horários, navegação, arraste e redimensionamento.
+`Patterns/Collection/Usages/Calendar` e `Patterns/Collection/Layouts/Calendar`.
+
+### Layouts
+
+- List, grupos e colapso: `Patterns/Collection/Layouts/List`.
+- Spreadsheet com células editáveis: `Patterns/Collection/Layouts/Data Grid`.
+- Tabela somente leitura: `Patterns/Collection/Layouts/Data Table`.
+- Kanban carregando e com erro: `Patterns/Collection/Layouts/Kanban/Loading`
+  e `Patterns/Collection/Layouts/Kanban/Surfaces Error`.
+
+### Visões salvas
+
+Busca, favoritos, opções e criação: `Patterns/Collection/Views/View Switcher`.

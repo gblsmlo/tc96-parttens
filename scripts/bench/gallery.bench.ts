@@ -13,7 +13,7 @@ import {
 
 const { createElement, useState } = await import('react')
 const { GalleryView } = await import(
-  '../../packages/parttens/src/collection-views/views/gallery/index'
+  '../../packages/parttens/src/collection/layouts/gallery/index'
 )
 
 interface DocumentRecord {
@@ -26,23 +26,26 @@ const SEED = 96
 
 function buildCollection(size: number) {
   const random = seededRandom(SEED)
-  const items: DocumentRecord[] = Array.from({ length: size }, (_, index) => ({
-    id: `document-${index}`,
-    note: `Note ${Math.floor(random() * 1e6)}`,
-    title: `Document ${index}`,
-  }))
+  const records: DocumentRecord[] = Array.from(
+    { length: size },
+    (_, index) => ({
+      id: `document-${index}`,
+      note: `Note ${Math.floor(random() * 1e6)}`,
+      title: `Document ${index}`,
+    }),
+  )
 
   return {
-    getKey: (item: DocumentRecord) => item.id,
-    getLabel: (item: DocumentRecord) => item.title,
+    getKey: (record: DocumentRecord) => record.id,
+    getLabel: (record: DocumentRecord) => record.title,
     groupings: [],
-    items,
+    records,
   }
 }
 
-const renderItem = countRenders(
-  (item: DocumentRecord) =>
-    createElement('article', null, item.title, item.note),
+const renderRecord = countRenders(
+  (record: DocumentRecord) =>
+    createElement('article', null, record.title, record.note),
   'items',
 )
 
@@ -63,7 +66,7 @@ function Harness({ collection }: { collection: Collection }) {
       },
       'Refresh',
     ),
-    createElement(GalleryView<DocumentRecord>, { collection, renderItem }),
+    createElement(GalleryView<DocumentRecord>, { collection, renderRecord }),
   )
 }
 

@@ -25,7 +25,7 @@ import {
   priorityOptions,
   statusOptions,
   TIME_ZONE,
-} from '../../../collection-views/fixtures/tasks'
+} from '../../../collection/fixtures/tasks'
 
 const typeOptions: readonly SelectPropertyOption[] = [
   { label: 'Protocolo', value: 'filing' },

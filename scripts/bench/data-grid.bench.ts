@@ -8,13 +8,13 @@ import {
 } from './bench-harness'
 
 const { DataGrid, DataGridCell, useDataGrid } = await import(
-  '../../packages/parttens/src/collection-views/views/data-grid'
+  '../../packages/parttens/src/collection/layouts/data-grid'
 )
 
 type GridColumn =
-  import('../../packages/parttens/src/collection-views/views/data-grid').DataGridColumnDef<Row>
+  import('../../packages/parttens/src/collection/layouts/data-grid').DataGridColumnDef<Row>
 type GridTable =
-  import('../../packages/parttens/src/collection-views/views/data-grid').DataGridTable<Row>
+  import('../../packages/parttens/src/collection/layouts/data-grid').DataGridTable<Row>
 
 type Row = Record<string, string | number> & { id: string; region: string }
 

@@ -43,9 +43,9 @@ function item(path: string, content: string): RegistryItem {
   }
 }
 
-test('selects several patterns once and maps legacy view to collection-views', () => {
-  expect(selectItems(['view', 'properties', 'collection-views'])).toEqual([
-    'collection-views',
+test('selects several patterns once and maps legacy view to collection', () => {
+  expect(selectItems(['view', 'properties', 'collection'])).toEqual([
+    'collection',
     'properties',
   ])
 })
@@ -118,7 +118,7 @@ test('maps destinations and imports without corrupting arbitrary string contents
       type: 'registry:block',
       files: [
         {
-          path: 'parttens/src/collection-views/proof.ts',
+          path: 'parttens/src/collection/proof.ts',
           type: 'registry:file',
           content:
             'import { Button } from "@tc96/ui/button"\nconst text = "@tc96/ui/button"\n',
@@ -129,7 +129,7 @@ test('maps destinations and imports without corrupting arbitrary string contents
     config,
   )
   expect(result.files[0]?.target).toBe(
-    '~/packages/patterns/src/collection-views/proof.ts',
+    '~/packages/patterns/src/collection/proof.ts',
   )
   expect(result.files[0]?.content).toContain('from "@consumer/visual/button"')
   expect(result.files[0]?.content).toContain('const text = "@tc96/ui/button"')

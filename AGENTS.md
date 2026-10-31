@@ -4,7 +4,7 @@ Guide for AI coding agents working in this repository. For product context read 
 
 ## What this repo is
 
-`@tc96/parttens` is a set of React patterns (collection views, properties, detail sheet, editable, checklist, widgets, rich text editor) that a CLI copies as source into a consumer's workspace. Patterns carry no business rules, no CSS, no tokens and no theme: only layout classes on top of the consumer's COSS components.
+`@tc96/parttens` is a set of React patterns (collection layouts, properties, detail sheet, editable, checklist, widgets, rich text editor) that a CLI copies as source into a consumer's workspace. Patterns carry no business rules, no CSS, no tokens and no theme: only layout classes on top of the consumer's COSS components.
 
 Stack: Bun workspaces, React 19, TypeScript, Tailwind CSS v4, Base UI, Storybook 10, Biome.
 
@@ -36,34 +36,35 @@ packages/parttens/src/
   records/      dialog/ preview/ group/
   surfaces/     state/ settings/
   chat/         chats-panel/
-  checklist/ collection-views/ editable/ properties/ rich-text-editor/ widgets/ wizard/
-  shared/       not a pattern: building blocks the root barrel exports
+  checklist/ collection/ editable/ properties/ rich-text-editor/ widgets/ wizard/
+  action-bar/ pagination/ toolbar/   not patterns: one folder per component with its own Patterns page
+  shared/       not a pattern: the menu options the root barrel exports (place pending)
 ```
 
 The registry item name is not the folder: `patternSources` in `packages/registry/src/manifest.ts` maps each item (`record-dialog`) to its folder (`records/dialog`), and the folder is also the path the consumer receives under its patterns alias. Stories mirror the folders in `apps/storybook/src/patterns/` and in the sidebar (`Patterns/Records/Dialog`).
 
 ## Pattern structure
 
-`collection-views`, `records/dialog` and `editable` set the internal layout of a pattern. Code is grouped by responsibility, and a layer exists only when it has code to hold:
+`collection`, `records/dialog` and `editable` set the internal layout of a pattern. Code is grouped by responsibility, and a layer exists only when it has code to hold:
 
 ```text
 packages/parttens/src/[<family>/]<pattern>/
   index.ts       public barrel; re-exports the layer barrels. The registry and the public API baseline read this file
   core.ts        React-free surface: the pattern's types and pure functions, for use without rendering
   composition/   the compound the consumer mounts, one folder per compound with its own index.ts and tests
-                 (editable/composition/editable/, collection-views/composition/)
+                 (editable/composition/editable/, collection/composition/)
   components/    building blocks of one compound, never public (records/dialog/components/dialog-shell.tsx)
-  shared/        components and helpers used by more than one view or display (collection-views/shared/components/, shared/lib/)
-  views/         independently usable renderers, each with components/, hooks/, lib/, types.ts and index.ts (collection-views);
+  shared/        components and helpers used by more than one layout or display (collection/shared/components/, shared/lib/)
+  layouts/       independently usable renderers, each with components/, hooks/, lib/, types.ts and index.ts (collection);
                  properties uses display/ for the same role
-  hooks/         React hooks (records/dialog/hooks/use-settled-action.ts, views/<view>/hooks/)
-  lib/           pure functions and class variants (shared/lib/project-collection.ts, views/kanban/lib/drag-and-drop.ts)
-  store/         context, provider and shared state (editable/store/, collection-views/store/)
+  hooks/         React hooks (records/dialog/hooks/use-settled-action.ts, layouts/<layout>/hooks/)
+  lib/           pure functions and class variants (shared/lib/project-collection.ts, layouts/kanban/lib/drag-and-drop.ts)
+  store/         context, provider and shared state (editable/store/, collection/store/)
   types/         contracts shared across the pattern, with types/index.ts as the barrel; a type used by one file stays next to it
   test/dom.ts    the JSDOM setup the pattern's bun test files import; each pattern owns its copy
 ```
 
-Files are kebab-case and named after what they export (`checklist-row.tsx` exports `ChecklistRow`); tests sit next to the file they cover. `vite-env.d.ts` in the older patterns dates from isolated development: nothing imports it and the registry does not ship it, so a new or restructured pattern does not add it. The `styles/global.css` files of `collection-views`, `properties` and `editable` were removed on 2026-10-03 for the same reason (patterns carry no CSS). `checklist` follows this layout with `composition/checklist/`, `components/`, `lib/`, `types/`, `test/` and `core.ts`; a flat pattern such as `rich-text-editor` adopts it when it is next split.
+Files are kebab-case and named after what they export (`checklist-row.tsx` exports `ChecklistRow`); tests sit next to the file they cover. `vite-env.d.ts` in the older patterns dates from isolated development: nothing imports it and the registry does not ship it, so a new or restructured pattern does not add it. The `styles/global.css` files of `collection`, `properties` and `editable` were removed on 2026-10-03 for the same reason (patterns carry no CSS). `checklist` follows this layout with `composition/checklist/`, `components/`, `lib/`, `types/`, `test/` and `core.ts`; a flat pattern such as `rich-text-editor` adopts it when it is next split.
 
 ## Rules that are enforced by scripts
 
@@ -72,7 +73,7 @@ Files are kebab-case and named after what they export (`checklist-row.tsx` expor
 - **Overriding COSS styles needs a registered exception.** Any `className` that overrides a COSS component's border, radius, etc. must be listed with a reason in `scripts/override-exceptions.json`, or `bun run overrides:check` fails. Update the entry whenever the class changes.
 - **Public API baseline:** adding or removing exports changes `docs/architecture/public-api-exports.json`. Regenerate with `bun scripts/verify-public-api.ts --record` and mention it in the summary, since the diff may include unrelated pending exports.
 - Pattern `shared/` code is internal; export through the pattern's `index.ts` only when it is meant to be public.
-- Every pattern carries its own `AGENTS.md` at `packages/parttens/src/[<family>/]<pattern>/AGENTS.md`; a view with its own invariants may add one (`collection-views/views/data-grid/AGENTS.md`). Read it before changing that pattern. `packages/parttens/src/shared/AGENTS.md` covers the shared components the root barrel exports, and a new pattern ships with its own file. The sections, in order: an opening paragraph, `Map`, `Dependents`, `Invariants`, `Styling`, `Verify`, `Pointers`; `properties/AGENTS.md` is the reference.
+- Every pattern carries its own `AGENTS.md` at `packages/parttens/src/[<family>/]<pattern>/AGENTS.md`; a view with its own invariants may add one (`collection/layouts/data-grid/AGENTS.md`). Read it before changing that pattern. `packages/parttens/src/shared/AGENTS.md`, `action-bar/AGENTS.md`, `pagination/AGENTS.md` and `toolbar/AGENTS.md` cover the components the root barrel exports outside a pattern, and a new pattern ships with its own file. The sections, in order: an opening paragraph, `Map`, `Dependents`, `Invariants`, `Styling`, `Verify`, `Pointers`; `properties/AGENTS.md` is the reference.
 - A pattern `AGENTS.md` holds only what `ls`, `grep` or `tsc` do not reveal: folders and import direction, code outside the pattern that imports it by file path, intentional behavior with its reason, the `data-*` contract and override exceptions, and the commands. It does not copy file lists, props, types, defaults, story lists or rules from this file; the public API is the pattern's `index.ts` and its entry in `docs/architecture/public-api-exports.json`. Update it when a folder, an external import by path, an invariant, a `data-*` attribute or a command changes.
 
 ## Commands
@@ -103,6 +104,7 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 - **No comments in pattern or component code** (no JSDoc, no inline notes). The component name, its types and `docs/architecture/tc96-parttens.md` carry the explanation. Exception: exported functions in `packages/helpers` get JSDoc in English, with `@param` when a parameter is not obvious and `@returns` when it helps.
 - Use `cn` from `@tc96/utils` for class merging and import COSS components through `@tc96/ui/<component>`.
 - Components are controlled: the consumer passes prepared data and handles events. No fetching, filtering, sorting or persistence inside a pattern.
+- **Interface tests live in Storybook.** Behavior a user sees (clicks, menus, visibility, callbacks) is tested with a story `play` from `storybook/test`, not with `bun test` and JSDOM. `bun test` keeps code that renders nothing (`core.ts`, `lib/`, pure hooks). Existing component tests in `bun test` move to `play` when that component is next changed.
 - Widgets render through `WidgetShell` (`packages/parttens/src/widgets/shared/widget-shell.tsx`), which is the COSS `Card` with a transparent border. Card radius is the consumer's: the example theme sets it on `[data-slot="card"]` (`apps/example/packages/ui/src/styles.css`), so a pattern never restates radius, border or shadow on a card.
 - Prefer composition and the existing shared widgets (`IconFrame`, metric, stat list, avatar stack, progress ring, metric pill) over new one-off markup.
 - The rich text editor is Plate (Slate) configured in `packages/parttens/src/rich-text-editor/plugins.tsx`; its vocabulary is `RICH_TEXT_ELEMENTS` and `RICH_TEXT_MARKS`, and the document never carries node ids or the `/` menu input.
@@ -110,7 +112,7 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 
 ## Visual work (widgets, stories, theme)
 
-- The sidebar follows the layers, from the base to whole screens: `Get Started`, `UI` (COSS, alias `ui`), `Elements`, `Patterns`, `Application` (installable templates, alias `templates`) and `Templates` (`Templates/Doc` and the Storybook-only screens). The order is fixed in `storySort` (`.storybook/preview.ts`), which Storybook evaluates as plain JavaScript, so it takes no type annotations; a new root goes into its list. A story sits under the layer of what it renders: one that imports only `@tc96/ui` is `UI/...` even when it composes several COSS parts, `Patterns/...` needs a pattern, and building blocks of `packages/parttens/src/shared/` sit at the root of `Patterns` (`Patterns/Toolbar`, `Patterns/Pagination`). Story files mirror the title (`apps/storybook/src/ui/chat/`, `patterns/widgets/stats/`, `application/shell/`).
+- The sidebar follows the layers, from the base to whole screens: `Get Started`, `UI` (COSS, alias `ui`), `Elements`, `Patterns`, `Application` (installable templates, alias `templates`) and `Templates` (`Templates/Doc` and the Storybook-only screens). The order is fixed in `storySort` (`.storybook/preview.ts`), which Storybook evaluates as plain JavaScript, so it takes no type annotations; a new root goes into its list. A story sits under the layer of what it renders: one that imports only `@tc96/ui` is `UI/...` even when it composes several COSS parts, `Patterns/...` needs a pattern, and a component with its own folder outside a pattern sits at the root of `Patterns` (`Patterns/ActionBar`, `Patterns/Pagination`, `Patterns/Toolbar`, with `Patterns/Toolbar/View Switcher` nested under the toolbar it renders in); the decision of 2026-10-31 gives each such page its own folder in `packages/parttens/src/` instead of `shared/`. Story files mirror the title (`apps/storybook/src/ui/chat/`, `patterns/widgets/stats/`, `application/shell/`).
 - Pattern stories live in `apps/storybook/src/patterns/`. The Storybook theme is the example app's `styles.css`, imported by `.storybook/preview.ts`; do not add a separate theme file or CSS rule in Storybook.
 - Do not give story wrappers a background, so the page inherits `bg-background` and card contrast stays visible.
 - When refining a visual pattern, also audit contrast (WCAG 4.5:1 for text, 3:1 for graphics, with the numeric ratios), spacing and composition, check a light and dark screenshot of the story, and record scale decisions in the architecture doc.

@@ -10,7 +10,7 @@ import {
 
 // Server rendering in the example consumer must use its own COSS button.
 const consumer = await createConsumer('consumer-ssr')
-await installPatterns(consumer, ['collection-views', 'properties'])
+await installPatterns(consumer, ['collection', 'properties'])
 const outfile = join(consumer.root, 'dist/ssr.cjs')
 await build({
   entryPoints: [join(consumer.root, 'src/ssr.tsx')],
@@ -28,7 +28,7 @@ for (const expected of ['Arquivar', 'Rendered on server', buttonMarker])
     throw new Error(`Server markup is missing "${expected}"`)
 await saveReport('consumer-ssr', {
   passed: true,
-  patterns: ['collection-views', 'properties'],
+  patterns: ['collection', 'properties'],
   consumerButtonRendered: true,
 })
 console.log('SSR rendered the consumer button.')

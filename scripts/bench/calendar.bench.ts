@@ -23,14 +23,14 @@ import {
 } from './bench-harness'
 
 const { CalendarEventChip, CalendarEventChipTitle, CalendarView } =
-  await import('../../packages/parttens/src/collection-views/views/calendar')
+  await import('../../packages/parttens/src/collection/layouts/calendar')
 
 type Reschedule =
-  import('../../packages/parttens/src/collection-views/views/calendar').CalendarItemReschedule<Item>
+  import('../../packages/parttens/src/collection/layouts/calendar').CalendarRecordReschedule<Item>
 type Schedule =
-  import('../../packages/parttens/src/collection-views/views/calendar').CalendarItemSchedule
+  import('../../packages/parttens/src/collection/layouts/calendar').CalendarRecordSchedule
 type RenderContext =
-  import('../../packages/parttens/src/collection-views/views/calendar').CalendarItemRenderContext
+  import('../../packages/parttens/src/collection/layouts/calendar').CalendarRecordRenderContext
 
 type Mode = 'month' | 'week'
 
@@ -198,19 +198,19 @@ function buildItems(mode: Mode, size: number): Item[] {
   ]
 }
 
-const getKey = (item: Item) => item.id
-const getLabel = (item: Item) => item.title
-const getItemSchedule = (item: Item): Schedule => ({
-  end: item.end === null ? null : new Date(item.end),
-  isAllDay: item.isAllDay,
-  start: new Date(item.start),
+const getKey = (record: Item) => record.id
+const getLabel = (record: Item) => record.title
+const getRecordSchedule = (record: Item): Schedule => ({
+  end: record.end === null ? null : new Date(record.end),
+  isAllDay: record.isAllDay,
+  start: new Date(record.start),
 })
 
-const renderChip = (item: Item) =>
+const renderChip = (record: Item) =>
   createElement(
     CalendarEventChip,
     null,
-    createElement(CalendarEventChipTitle, null, item.title),
+    createElement(CalendarEventChipTitle, null, record.title),
   )
 
 const renderOtherItems = countRenders<[Item, RenderContext], ReactElement>(
@@ -218,33 +218,35 @@ const renderOtherItems = countRenders<[Item, RenderContext], ReactElement>(
   'items',
 )
 
-const renderItem = (item: Item, context: RenderContext): ReactElement =>
-  item.id === PROBE_ID ? renderChip(item) : renderOtherItems(item, context)
+const renderRecord = (record: Item, context: RenderContext): ReactElement =>
+  record.id === PROBE_ID
+    ? renderChip(record)
+    : renderOtherItems(record, context)
 
 interface WrapperProps {
   anchors: readonly [Date, Date]
-  initialItems: Item[]
+  initialRecords: Item[]
   mode: Mode
 }
 
-function Wrapper({ anchors, initialItems, mode }: WrapperProps) {
-  const [items, setItems] = useState(initialItems)
+function Wrapper({ anchors, initialRecords, mode }: WrapperProps) {
+  const [records, setItems] = useState(initialRecords)
   const [anchorIndex, setAnchorIndex] = useState(0)
   const [, setTick] = useState(0)
   const collection = useMemo(
-    () => ({ getKey, getLabel, groupings: [], items }),
-    [items],
+    () => ({ getKey, getLabel, groupings: [], records }),
+    [records],
   )
-  const onItemReschedule = useCallback((change: Reschedule) => {
+  const onRecordReschedule = useCallback((change: Reschedule) => {
     setItems((current) =>
-      current.map((item) =>
-        item.id === change.itemKey
+      current.map((record) =>
+        record.id === change.recordKey
           ? {
-              ...item,
+              ...record,
               end: change.end === null ? null : change.end.getTime(),
               start: change.start.getTime(),
             }
-          : item,
+          : record,
       ),
     )
     return true
@@ -282,11 +284,11 @@ function Wrapper({ anchors, initialItems, mode }: WrapperProps) {
     createElement(CalendarView<Item>, {
       anchor: anchors[anchorIndex] ?? anchors[0],
       collection,
-      getItemSchedule,
+      getRecordSchedule,
       mode,
       now: NOW,
-      onItemReschedule,
-      renderItem,
+      onRecordReschedule,
+      renderRecord,
       timeZone: TIME_ZONE,
     }),
   )
@@ -316,7 +318,7 @@ const calendarCase = (mode: Mode, size: number) => ({
     tools.render(
       createElement(Wrapper, {
         anchors,
-        initialItems: buildItems(mode, size),
+        initialRecords: buildItems(mode, size),
         mode,
       }),
     )

@@ -1,15 +1,15 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { performance } from 'node:perf_hooks'
-import { projectCollection } from '../packages/parttens/src/collection-views/shared/lib/project-collection'
+import { projectCollection } from '../packages/parttens/src/collection/shared/lib/project-collection'
 
-const items = Array.from({ length: 10_000 }, (_, index) => ({
+const records = Array.from({ length: 10_000 }, (_, index) => ({
   id: `item-${index}`,
   status: `status-${index % 20}`,
 }))
 const collection = {
-  items,
-  getKey: (item: (typeof items)[number]) => item.id,
-  getLabel: (item: (typeof items)[number]) => item.id,
+  records,
+  getKey: (record: (typeof records)[number]) => record.id,
+  getLabel: (record: (typeof records)[number]) => record.id,
   groupings: [
     {
       id: 'status',
@@ -18,7 +18,7 @@ const collection = {
         id: `status-${index}`,
         label: `Status ${index}`,
       })),
-      getGroupId: (item: (typeof items)[number]) => item.status,
+      getGroupId: (record: (typeof records)[number]) => record.status,
     },
   ],
 }
@@ -26,12 +26,14 @@ const samples: number[] = []
 for (let run = 0; run < 5; run++) {
   const start = performance.now()
   const groups = projectCollection(collection, 'status')
-  if (groups.reduce((count, group) => count + group.count, 0) !== items.length)
+  if (
+    groups.reduce((count, group) => count + group.count, 0) !== records.length
+  )
     throw new Error('Projection dropped items')
   samples.push(performance.now() - start)
 }
 const report = {
-  itemCount: items.length,
+  itemCount: records.length,
   groupCount: 20,
   runs: samples,
   minMs: Math.min(...samples),

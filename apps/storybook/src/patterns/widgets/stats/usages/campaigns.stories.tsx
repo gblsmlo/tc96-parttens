@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, within } from 'storybook/test'
-import { initialCampaigns } from '../../../collection-views/fixtures/campaigns'
+import { initialCampaigns } from '../../../collection/fixtures/campaigns'
 import { CampaignSummary } from '../fixtures/campaign-summary'
 
 const pausedNames = ['Blog · Guia de presentes', 'Atendimento via WhatsApp']

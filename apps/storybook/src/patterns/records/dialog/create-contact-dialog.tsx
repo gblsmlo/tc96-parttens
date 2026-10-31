@@ -25,7 +25,7 @@ import {
   isContactStage,
   stageOptions,
   tagOptions,
-} from '../../collection-views/fixtures/contacts'
+} from '../../collection/fixtures/contacts'
 import {
   CreatableProperty,
   type CreatablePropertyLabels,

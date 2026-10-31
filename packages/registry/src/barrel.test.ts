@@ -6,10 +6,10 @@ import { aggregateBarrel, barrelHeader, writeBarrel } from './barrel'
 
 const aggregate = `'use client'
 
-export * from './collection-views/index'
+export * from './collection/index'
 export * from './shared/index'
 export * from './properties/index'
-export { KanbanView as Kanban } from './collection-views/index'
+export { KanbanView as Kanban } from './collection/index'
 `
 const roots: string[] = []
 afterEach(async () => {
@@ -18,14 +18,14 @@ afterEach(async () => {
 })
 
 test('exports only the installed modules, keeping directives and aliases', () => {
-  const installed = new Set(['./collection-views/index', './shared/index'])
+  const installed = new Set(['./collection/index', './shared/index'])
   expect(aggregateBarrel(aggregate, (module) => installed.has(module))).toBe(
     `${barrelHeader}
 
 'use client'
-export * from './collection-views/index'
+export * from './collection/index'
 export * from './shared/index'
-export { KanbanView as Kanban } from './collection-views/index'
+export { KanbanView as Kanban } from './collection/index'
 `,
   )
   expect(

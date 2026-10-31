@@ -16,7 +16,7 @@ Import direction: `composition/state-guard/` â†’ `composition/state-surface/` â†
 ## Dependents
 
 - `packages/parttens/src/index.ts` re-exports `surfaces/state/index`.
-- Nothing else imports this pattern yet; adoption in `collection-views` and `record-dialog` is a later unit. A pattern that imports it by file path receives the files without the barrel.
+- Nothing else imports this pattern yet; adoption in `collection` and `record-dialog` is a later unit. A pattern that imports it by file path receives the files without the barrel.
 
 ## Invariants
 

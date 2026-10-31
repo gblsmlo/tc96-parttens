@@ -38,22 +38,19 @@ import {
   stageOptions as contactStageOptions,
   initialContacts,
   tagOptions,
-} from '../../patterns/collection-views/fixtures/contacts'
+} from '../../patterns/collection/fixtures/contacts'
 import {
   type ActivityKind,
   activityKindOptions,
   type DealActivity,
   initialActivities,
-} from '../../patterns/collection-views/fixtures/deal-activities'
+} from '../../patterns/collection/fixtures/deal-activities'
 import {
   type Deal,
   stageOptions as dealStageOptions,
   initialDeals,
-} from '../../patterns/collection-views/fixtures/deals'
-import {
-  peopleById,
-  TIME_ZONE,
-} from '../../patterns/collection-views/fixtures/tasks'
+} from '../../patterns/collection/fixtures/deals'
+import { peopleById, TIME_ZONE } from '../../patterns/collection/fixtures/tasks'
 
 const LOCALE = 'pt-BR'
 

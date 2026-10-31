@@ -2,7 +2,7 @@ import { isAbsolute, normalize } from 'node:path'
 import ts from 'typescript'
 
 export const patternNames = [
-  'collection-views',
+  'collection',
   'properties',
   'editable',
   'checklist',
@@ -23,7 +23,7 @@ export const patternNames = [
 export type PatternName = (typeof patternNames)[number]
 /** Folder under packages/parttens/src, kept as the path in the consumer. */
 export const patternSources: Record<PatternName, string> = {
-  'collection-views': 'collection-views',
+  collection: 'collection',
   properties: 'properties',
   editable: 'editable',
   checklist: 'checklist',
@@ -129,7 +129,7 @@ export function selectItems(names: string[]): ItemName[] {
   return [
     ...new Set(
       names.map((name) => {
-        const resolved = name === 'view' ? 'collection-views' : name
+        const resolved = name === 'view' ? 'collection' : name
         if (
           !patternNames.includes(resolved as PatternName) &&
           !isTemplate(resolved)

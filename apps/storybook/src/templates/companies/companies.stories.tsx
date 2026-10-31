@@ -12,7 +12,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A company gallery page: a `GalleryView` of accounts derived from the contacts and deals fixtures of `Patterns/CollectionViews`, each card with its open pipeline, open deal count and an `AvatarStack` of contacts. It renders inside `Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
+          'A company gallery page: a `GalleryView` of accounts derived from the contacts and deals fixtures of `Patterns/Collection`, each card with its open pipeline, open deal count and an `AvatarStack` of contacts. It renders inside `Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
       },
       story: appShellDocs,
     },

@@ -1,12 +1,12 @@
 [
   {
-    "file": "packages/parttens/src/collection-views/views/list/components/list-group.tsx",
+    "file": "packages/parttens/src/collection/layouts/list/components/list-group.tsx",
     "component": "Separator",
     "className": "bg-border/40",
     "reason": "O separator entre itens da lista é mais discreto que o do COSS: as linhas agrupam itens sem competir com o conteúdo; `bg-border/40` mantém o token do tema com 40% da opacidade."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/list/components/list-view.tsx",
+    "file": "packages/parttens/src/collection/layouts/list/components/list-view.tsx",
     "component": "Separator",
     "className": "bg-border/40",
     "reason": "O separator entre itens da lista é mais discreto que o do COSS: as linhas agrupam itens sem competir com o conteúdo; `bg-border/40` mantém o token do tema com 40% da opacidade."
@@ -30,97 +30,97 @@
     "reason": "O `bg-muted` do `Kbd` do COSS é 4% de preto ou de branco e some sobre o `bg-primary` do botão de enviar; `bg-primary-foreground/16` é a tecla clara sobre o botão escuro (e o inverso no escuro), com o texto acima de 4,5:1 nos dois temas."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/data-table/data-table.tsx",
+    "file": "packages/parttens/src/collection/layouts/data-table/data-table.tsx",
     "component": "TableHeader",
     "className": "not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)]",
     "reason": "O thead da tabela usa a mesma cor do `TableFooter` do COSS (`color-mix` de `var(--card)` com 2% de preto, ou de branco no escuro), para que cabeçalho e rodapé enquadrem as linhas, que ficam na cor do fundo."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/data-table/data-table.tsx",
+    "file": "packages/parttens/src/collection/layouts/data-table/data-table.tsx",
     "component": "TableHeader",
     "className": "dark:not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-white)_2%)]",
     "reason": "O thead da tabela usa a mesma cor do `TableFooter` do COSS (`color-mix` de `var(--card)` com 2% de preto, ou de branco no escuro), para que cabeçalho e rodapé enquadrem as linhas, que ficam na cor do fundo."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "hover:bg-card/60",
     "reason": "O card interativo do Kanban afrouxa o fundo para 60% no hover, o retorno visual de que o card e clicavel; o Card so define o estado de repouso."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-primary",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-offset-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-offset-background",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "border-dashed",
     "reason": "Somente o estilo da borda muda (tracejada), e apenas enquanto o card esta dimmed, para marcar o lugar de origem durante o arraste; largura e cor da borda continuam do Card."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-2",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-primary/40",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-offset-2",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-offset-background",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-primary",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-offset-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection-views/views/kanban/components/kanban-card.tsx",
+    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-offset-background",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
