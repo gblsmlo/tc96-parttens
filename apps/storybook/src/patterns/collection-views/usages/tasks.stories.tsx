@@ -53,7 +53,6 @@ import {
   usePersistedState,
   useSimulatedFetch,
 } from '../fixtures/persisted-mock'
-import { SelectedViewPicker } from '../fixtures/selected-view-picker'
 import {
   createDataGridColumns,
   createDataTableColumns,
@@ -74,6 +73,7 @@ import {
   type Task,
   type TaskPriority,
 } from '../fixtures/tasks'
+import { ViewSwitcherPicker } from '../fixtures/view-switcher-picker'
 
 interface TasksArgs {
   defaultView: CollectionViewMode
@@ -552,7 +552,7 @@ function TasksWorkspace({
             </>
           }
           startSlot={
-            <SelectedViewPicker
+            <ViewSwitcherPicker
               onCreate={createPreset}
               onDelete={presets.length > 1 ? deletePreset : undefined}
               onSelect={(id) => {

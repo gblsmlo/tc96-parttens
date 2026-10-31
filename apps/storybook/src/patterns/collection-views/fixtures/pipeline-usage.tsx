@@ -51,8 +51,8 @@ import {
   KanbanCardCountAction,
   KanbanCardMoreActions,
 } from './kanban-card-actions'
-import { SelectedViewPicker } from './selected-view-picker'
 import { people, peopleById, TIME_ZONE } from './tasks'
+import { ViewSwitcherPicker } from './view-switcher-picker'
 
 const LOCALE = 'pt-BR'
 
@@ -302,7 +302,7 @@ export function PipelineUsage({
             </>
           }
           startSlot={
-            <SelectedViewPicker
+            <ViewSwitcherPicker
               onSelect={(id) => {
                 const next = presets.find((preset) => preset.id === id)
                 if (next) setPresetId(next.id)

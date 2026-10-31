@@ -9,7 +9,7 @@ Controlled renderers for one collection: the consumer declares a `CollectionDefi
 | `composition/` | `CollectionViewOutlet`: picks the view, projects groups, adapts kanban moves to `onItemChange` |
 | `store/` | `CollectionProvider` and `useCollectionPreferences` |
 | `types/` | the collection contracts (definition, grouping, group, preferences, item change) |
-| `shared/components/` | toolbar pieces: search, selected view, view settings, filter submenu, presets, `ActionBar` |
+| `shared/components/` | toolbar pieces: search, view switcher, view settings, filter submenu, presets, `ActionBar` |
 | `shared/lib/` | `projectCollection`, the one function that turns a collection plus a grouping into groups; `skeleton-keys`; `interactive-descendants`, the selector `ListRow` and the `DataTable` row use to keep controls clickable above a stretched trigger |
 | `views/<view>/` | `calendar`, `data-grid`, `data-table`, `gallery`, `kanban`, `list`; each with its own `index.ts` and a `README.md` holding its benchmark |
 | `test/` | `test/dom.ts`, the JSDOM setup the tests import, and `test/jsdom.d.ts` |
@@ -62,7 +62,7 @@ Gallery, list, calendar and table:
 
 Toolbar:
 
-- `CollectionSearchField` commits on submit and when emptied, never per keystroke. `SelectedViewMenu` is a `Popover` (`role="dialog"`), not a menu. `FilterRadioSubmenu` maps the "all" option to `''`, since a `MenuRadioGroup` cannot represent no choice.
+- `CollectionSearchField` commits on submit and when emptied, never per keystroke. `ViewSwitcherMenu` is a `Popover` (`role="dialog"`), not a menu. `FilterRadioSubmenu` maps the "all" option to `''`, since a `MenuRadioGroup` cannot represent no choice.
 - `CollectionSelectionActions` is a compatibility alias of `ActionBar` that its test keeps.
 
 ## Styling

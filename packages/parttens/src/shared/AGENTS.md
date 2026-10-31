@@ -22,7 +22,7 @@ Patterns import the component files by path, not through `index.ts`, so renaming
 - `components/menu-selection-item.tsx` (`MenuCheckboxOption`): `collection-views/views/data-grid/components/data-grid-columns-submenu.tsx`, `properties/composition/property-collection.tsx`.
 - `components/collection-toolbar.tsx`: the tests `collection-views/views/data-grid/components/data-grid-search.test.tsx`, `collection-views/views/data-grid/components/data-grid-selection-summary.test.tsx`, `collection-views/shared/components/collection-filter-submenu.test.tsx` and `collection-views/shared/components/collection-search-field.test.tsx`.
 - `packages/registry/src/build-registry.ts` treats `./shared/index` in the root barrel as an area, not a pattern, and ships the area's barrel with every pattern whose files import it. A new file here must be reached from `index.ts` or from a pattern the registry follows.
-- Stories import from `@tc96/parttens`: `apps/storybook/src/patterns/shared/`, and the collection-views usages through their fixtures in `apps/storybook/src/patterns/collection-views/fixtures/`.
+- Stories import from `@tc96/parttens`: `apps/storybook/src/patterns/toolbar/`, `apps/storybook/src/patterns/view-switcher/` and `apps/storybook/src/patterns/pagination/`, and the collection-views usages through their fixtures in `apps/storybook/src/patterns/collection-views/fixtures/`.
 
 ## Invariants
 
@@ -46,7 +46,7 @@ Menu options:
 
 | Attribute | Where | Styled by |
 | --- | --- | --- |
-| `data-variant="default\|plain\|text"` | the toolbar root | consumers; the component picks its classes from the `variant` prop, and `apps/storybook/src/patterns/shared/toolbar.stories.tsx` asserts the attribute in a play |
+| `data-variant="default\|plain\|text"` | the toolbar root | consumers; the component picks its classes from the `variant` prop, and `apps/storybook/src/patterns/toolbar/toolbar.stories.tsx` asserts the attribute in a play |
 | `data-highlighted`, `data-disabled` | set by Base UI on the menu options | `data-highlighted:` and `data-disabled:` variants in `selectionItemClassName` |
 | `data-side` | set by the Base UI positioner on an ancestor of the options | `in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)]` in `selectionItemClassName` |
 
@@ -60,10 +60,10 @@ Menu options:
 bun test --isolate packages/parttens/src/shared
 bunx biome check packages/parttens/src/shared
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/shared/pagination.stories.tsx src/patterns/shared/toolbar.stories.tsx
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/pagination src/patterns/view-switcher src/patterns/toolbar
 ```
 
-Stories in `apps/storybook/src/patterns/shared/` (`Patterns/Shared/Toolbar`, `Patterns/Shared/Pagination`) run axe with `test: 'error'`. Since 2026-10-17 they render the component directly, with no helper component, so the Code panel shows code the consumer can paste: each meta sets `component` and the args, a slot whose content has no state is JSX in `args` (`centerSlot` in `WithCenterSlot`), and slot content with state lives in the story's named `render` (`render: function Default(args)`). Each play runs in a `!dev` `<Story>Interaction` twin; the selected view and view settings plays (search, options, favorites, create, the menu sections) are twins of the toolbar's `Default`, because they act on the same state. The pagination meta keeps the page in `useState` and reports to a typed `onPageChange` spy, so `page` has no control. The toolbar stories are typed `StoryObj<typeof CollectionToolbar>`, not `StoryObj<typeof meta>`: `CollectionToolbarProps` is a union, and with `typeof meta` the story args collapse to `never`. The layout wrapper (`w-full max-w-6xl p-6`) is a decorator.
+Stories in `apps/storybook/src/patterns/toolbar/` (`Patterns/Toolbar`), `apps/storybook/src/patterns/view-switcher/` (`Patterns/View Switcher`) and `apps/storybook/src/patterns/pagination/` (`Patterns/Pagination`) run axe with `test: 'error'`. Since 2026-10-17 they render the component directly, with no helper component, so the Code panel shows code the consumer can paste: each meta sets `component` and the args, a slot whose content has no state is JSX in `args` (`centerSlot` in `WithCenterSlot`), and slot content with state lives in the story's named `render` (`render: function Default(args)`). Each play runs in a `!dev` `<Story>Interaction` twin; the view settings plays are twins of the toolbar's `Default`, and the view switcher plays (search, options, favorites, create, items, favorites group, long label, without icons, single view, empty search) are twins of `Patterns/View Switcher`, whose `Default` renders the same view switcher composition as the toolbar's `Default` inside a `CollectionToolbar`, because `ViewSwitcherMenu` needs the toolbar context. The pagination meta keeps the page in `useState` and reports to a typed `onPageChange` spy, so `page` has no control. The toolbar stories are typed `StoryObj<typeof CollectionToolbar>`, not `StoryObj<typeof meta>`: `CollectionToolbarProps` is a union, and with `typeof meta` the story args collapse to `never`. The layout wrapper is a decorator: `w-full max-w-6xl p-6` in the toolbar and pagination stories, `p-2` in the view switcher ones.
 
 ## Pointers
 

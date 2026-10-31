@@ -1,9 +1,9 @@
 import {
-  SelectedViewCreate,
-  SelectedViewItem,
-  SelectedViewItems,
-  SelectedViewMenu,
-  SelectedViewSearch,
+  ViewSwitcherCreate,
+  ViewSwitcherItem,
+  ViewSwitcherItems,
+  ViewSwitcherMenu,
+  ViewSwitcherSearch,
 } from '@tc96/parttens'
 import { MenuItem, MenuSeparator } from '@tc96/ui/menu'
 import { Separator } from '@tc96/ui/separator'
@@ -16,12 +16,12 @@ import {
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 
-export interface SelectedViewOption {
+export interface ViewSwitcherOption {
   id: string
   label: string
 }
 
-export interface SelectedViewPickerProps {
+export interface ViewSwitcherPickerProps {
   footer?: ReactNode
   onCreate?: () => void
   onDelete?: (id: string) => void
@@ -30,7 +30,7 @@ export interface SelectedViewPickerProps {
   onSelect: (id: string) => void
   searchable?: boolean
   selectedId: string
-  views: readonly SelectedViewOption[]
+  views: readonly ViewSwitcherOption[]
   withOptions?: boolean
 }
 
@@ -42,7 +42,7 @@ export function ViewIcon() {
   )
 }
 
-export function SelectedViewPicker({
+export function ViewSwitcherPicker({
   footer,
   onCreate,
   onDelete,
@@ -53,7 +53,7 @@ export function SelectedViewPicker({
   selectedId,
   views,
   withOptions = true,
-}: Readonly<SelectedViewPickerProps>) {
+}: Readonly<ViewSwitcherPickerProps>) {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([])
   const [query, setQuery] = useState('')
   const selected = views.find((view) => view.id === selectedId)
@@ -70,11 +70,11 @@ export function SelectedViewPicker({
   )
   const hasManagement = Boolean(onRename || onDuplicate || onDelete)
 
-  const renderView = (view: SelectedViewOption) => {
+  const renderView = (view: ViewSwitcherOption) => {
     const isFavorite = favoriteIds.includes(view.id)
 
     return (
-      <SelectedViewItem
+      <ViewSwitcherItem
         icon={<ViewIcon />}
         key={view.id}
         label={view.label}
@@ -136,15 +136,15 @@ export function SelectedViewPicker({
   }
 
   return (
-    <SelectedViewMenu
+    <ViewSwitcherMenu
       icon={<ViewIcon />}
       label={selected?.label ?? 'Selecionar view'}
     >
       {searchable ? (
-        <SelectedViewSearch onValueChange={setQuery} value={query} />
+        <ViewSwitcherSearch onValueChange={setQuery} value={query} />
       ) : null}
       {favoriteViews.length ? (
-        <SelectedViewItems label="Favoritos">
+        <ViewSwitcherItems label="Favoritos">
           <p
             aria-hidden="true"
             className="px-2 py-1 font-medium text-muted-foreground text-xs"
@@ -152,11 +152,11 @@ export function SelectedViewPicker({
             Favoritos
           </p>
           {favoriteViews.map(renderView)}
-        </SelectedViewItems>
+        </ViewSwitcherItems>
       ) : null}
       {favoriteViews.length && otherViews.length ? <Separator /> : null}
       {otherViews.length ? (
-        <SelectedViewItems>{otherViews.map(renderView)}</SelectedViewItems>
+        <ViewSwitcherItems>{otherViews.map(renderView)}</ViewSwitcherItems>
       ) : null}
       {!visibleViews.length ? (
         <p className="px-2 py-1.5 text-muted-foreground text-sm">
@@ -166,9 +166,9 @@ export function SelectedViewPicker({
       {onCreate ? (
         <>
           <Separator />
-          <SelectedViewCreate onClick={onCreate} />
+          <ViewSwitcherCreate onClick={onCreate} />
         </>
       ) : null}
-    </SelectedViewMenu>
+    </ViewSwitcherMenu>
   )
 }

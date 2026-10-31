@@ -61,7 +61,7 @@ import {
   initialCampaigns as seedCampaigns,
   statusOptions,
 } from '../fixtures/campaigns'
-import { SelectedViewPicker } from '../fixtures/selected-view-picker'
+import { ViewSwitcherPicker } from '../fixtures/view-switcher-picker'
 
 type CampaignViewMode = Extract<
   CollectionViewMode,
@@ -463,7 +463,7 @@ function CampaignsWorkspace({
             </ViewSettingsMenu>
           }
           startSlot={
-            <SelectedViewPicker
+            <ViewSwitcherPicker
               footer="Criado pela equipe · 8 out 2026"
               onCreate={createPreset}
               onDelete={presets.length > 1 ? deletePreset : undefined}

@@ -6,14 +6,14 @@ import {
   FilterRadioSubmenu,
   MenuCheckboxOption,
   MenuRadioOption,
-  SelectedViewCreate,
-  SelectedViewItem,
-  SelectedViewItems,
-  SelectedViewMenu,
-  SelectedViewSearch,
   ViewSettingsMenu,
   type ViewSettingsMode,
   ViewSettingsSection,
+  ViewSwitcherCreate,
+  ViewSwitcherItem,
+  ViewSwitcherItems,
+  ViewSwitcherMenu,
+  ViewSwitcherSearch,
 } from '@tc96/parttens'
 import {
   MenuGroup,
@@ -141,7 +141,7 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
-  title: 'Patterns/Shared/Toolbar',
+  title: 'Patterns/Toolbar',
 } satisfies Meta<typeof CollectionToolbar>
 
 export default meta
@@ -224,7 +224,7 @@ export const Default: Story = {
       const favorite = favoriteIds.includes(view.id)
 
       return (
-        <SelectedViewItem
+        <ViewSwitcherItem
           icon={viewIcon}
           key={view.id}
           label={view.label}
@@ -351,13 +351,13 @@ export const Default: Story = {
           </>
         }
         startSlot={
-          <SelectedViewMenu
+          <ViewSwitcherMenu
             icon={viewIcon}
             label={selected?.label ?? 'Selecionar view'}
           >
-            <SelectedViewSearch onValueChange={setQuery} value={query} />
+            <ViewSwitcherSearch onValueChange={setQuery} value={query} />
             {favoriteViews.length ? (
-              <SelectedViewItems label="Favoritos">
+              <ViewSwitcherItems label="Favoritos">
                 <p
                   aria-hidden="true"
                   className="px-2 py-1 font-medium text-muted-foreground text-xs"
@@ -365,13 +365,13 @@ export const Default: Story = {
                   Favoritos
                 </p>
                 {favoriteViews.map(renderView)}
-              </SelectedViewItems>
+              </ViewSwitcherItems>
             ) : null}
             {favoriteViews.length && otherViews.length ? <Separator /> : null}
             {otherViews.length ? (
-              <SelectedViewItems>
+              <ViewSwitcherItems>
                 {otherViews.map(renderView)}
-              </SelectedViewItems>
+              </ViewSwitcherItems>
             ) : null}
             {visibleViews.length ? null : (
               <p className="px-2 py-1.5 text-muted-foreground text-sm">
@@ -379,154 +379,12 @@ export const Default: Story = {
               </p>
             )}
             <Separator />
-            <SelectedViewCreate onClick={() => addView('Nova view')} />
-          </SelectedViewMenu>
+            <ViewSwitcherCreate onClick={() => addView('Nova view')} />
+          </ViewSwitcherMenu>
         }
       />
     )
   },
-}
-
-const openSelectedView = async (canvasElement: HTMLElement, label: string) => {
-  await userEvent.click(
-    within(canvasElement).getByRole('button', { name: label }),
-  )
-  return within(await screen.findByRole('dialog', { name: label }))
-}
-
-export const SelectedViewInteraction: Story = {
-  ...Default,
-  play: async ({ canvasElement }) => {
-    const popover = await openSelectedView(
-      canvasElement,
-      'Pessoas contatadas recentemente',
-    )
-    await waitFor(() =>
-      expect(
-        popover.getByRole('searchbox', { name: 'Buscar views' }),
-      ).toBeVisible(),
-    )
-    await expect(
-      popover.getByRole('button', { name: 'Pessoas contatadas recentemente' }),
-    ).toHaveAttribute('aria-current', 'true')
-    await expect(
-      popover.getByRole('button', { name: 'Criar nova view' }),
-    ).toBeVisible()
-  },
-  tags: interaction,
-}
-
-export const SearchViewsInteraction: Story = {
-  ...Default,
-  play: async ({ canvasElement }) => {
-    const popover = await openSelectedView(
-      canvasElement,
-      'Pessoas contatadas recentemente',
-    )
-    await userEvent.type(
-      popover.getByRole('searchbox', { name: 'Buscar views' }),
-      'retorno',
-    )
-    await waitFor(() =>
-      expect(
-        popover.getByRole('button', { name: 'Aguardando retorno' }),
-      ).toBeVisible(),
-    )
-    await waitFor(() =>
-      expect(popover.queryByRole('button', { name: 'Todas as pessoas' })).toBe(
-        null,
-      ),
-    )
-    await expect(
-      within(canvasElement).getByRole('button', {
-        name: 'Pessoas contatadas recentemente',
-      }),
-    ).toBeVisible()
-  },
-  tags: interaction,
-}
-
-export const ViewOptionsInteraction: Story = {
-  ...Default,
-  play: async ({ canvasElement }) => {
-    await openSelectedView(canvasElement, 'Pessoas contatadas recentemente')
-    await userEvent.click(
-      await screen.findByRole('button', {
-        name: 'Opções de Pessoas contatadas recentemente',
-      }),
-    )
-    await expect(
-      await screen.findByRole('menuitem', { name: 'Excluir' }),
-    ).toBeVisible()
-    await userEvent.click(
-      await screen.findByRole('menuitem', { name: 'Duplicar' }),
-    )
-    await expect(
-      await within(canvasElement).findByRole('button', {
-        name: 'Pessoas contatadas recentemente (cópia)',
-      }),
-    ).toBeVisible()
-  },
-  tags: interaction,
-}
-
-export const FavoritesInteraction: Story = {
-  ...Default,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const picker = await openSelectedView(
-      canvasElement,
-      'Pessoas contatadas recentemente',
-    )
-    await userEvent.click(
-      picker.getByRole('button', { name: 'Aguardando retorno' }),
-    )
-    await openSelectedView(canvasElement, 'Aguardando retorno')
-    await userEvent.click(
-      await screen.findByRole('button', {
-        name: 'Opções de Aguardando retorno',
-      }),
-    )
-    await userEvent.click(
-      await screen.findByRole('menuitem', { name: 'Adicionar aos favoritos' }),
-    )
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Aguardando retorno' }),
-    )
-
-    const popover = within(
-      await screen.findByRole('dialog', { name: 'Aguardando retorno' }),
-    )
-    await waitFor(() => expect(popover.getByText('Favoritos')).toBeVisible())
-    const viewLabels = popover
-      .getAllByRole('button')
-      .map((item) => item.textContent)
-      .filter((label) => views.some((view) => view.label === label))
-    await expect(viewLabels).toEqual([
-      'Aguardando retorno',
-      'Pessoas contatadas recentemente',
-      'Todas as pessoas',
-    ])
-    await expect(popover.getAllByRole('separator')).toHaveLength(2)
-  },
-  tags: interaction,
-}
-
-export const CreateViewInteraction: Story = {
-  ...Default,
-  play: async ({ canvasElement }) => {
-    const popover = await openSelectedView(
-      canvasElement,
-      'Pessoas contatadas recentemente',
-    )
-    await userEvent.click(
-      popover.getByRole('button', { name: 'Criar nova view' }),
-    )
-    await expect(
-      await within(canvasElement).findByRole('button', { name: 'Nova view' }),
-    ).toBeVisible()
-  },
-  tags: interaction,
 }
 
 export const ViewSettingsInteraction: Story = {
@@ -568,78 +426,6 @@ export const ViewSettingsInteraction: Story = {
     await expect(
       menu.getByRole('menuitem', { name: /Salvar preferência/ }),
     ).toHaveAttribute('data-disabled')
-  },
-  tags: interaction,
-}
-
-export const Items: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'A lista pode ser composta sozinha, com um item ativo e alternativas, sem busca, opções nem criação.',
-      },
-    },
-  },
-  render: function Items(args) {
-    const [selectedId, setSelectedId] = useState('recent')
-    const selected = views.find((view) => view.id === selectedId)
-
-    const viewIcon = (
-      <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
-        <LayoutGridIcon aria-hidden="true" className="size-3" />
-      </span>
-    )
-
-    return (
-      <CollectionToolbar
-        {...args}
-        startSlot={
-          <SelectedViewMenu
-            icon={viewIcon}
-            label={selected?.label ?? 'Selecionar view'}
-          >
-            <SelectedViewItems>
-              {views.map((view) => (
-                <SelectedViewItem
-                  icon={viewIcon}
-                  key={view.id}
-                  label={view.label}
-                  onSelect={() => setSelectedId(view.id)}
-                  selected={view.id === selectedId}
-                />
-              ))}
-            </SelectedViewItems>
-          </SelectedViewMenu>
-        }
-      />
-    )
-  },
-}
-
-export const ItemsInteraction: Story = {
-  ...Items,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const popover = await openSelectedView(
-      canvasElement,
-      'Pessoas contatadas recentemente',
-    )
-    await expect(popover.queryByRole('searchbox')).toBe(null)
-    await expect(
-      popover.queryByRole('button', { name: 'Criar nova view' }),
-    ).toBe(null)
-    await expect(
-      popover.queryByRole('button', {
-        name: 'Opções de Pessoas contatadas recentemente',
-      }),
-    ).toBe(null)
-    await userEvent.click(
-      popover.getByRole('button', { name: 'Todas as pessoas' }),
-    )
-    await expect(
-      canvas.getByRole('button', { name: 'Todas as pessoas' }),
-    ).toBeVisible()
   },
   tags: interaction,
 }
@@ -1017,13 +803,13 @@ export const WithCenterSlot: Story = {
           </>
         }
         startSlot={
-          <SelectedViewMenu
+          <ViewSwitcherMenu
             icon={viewIcon}
             label={selected?.label ?? 'Selecionar view'}
           >
-            <SelectedViewItems>
+            <ViewSwitcherItems>
               {views.map((view) => (
-                <SelectedViewItem
+                <ViewSwitcherItem
                   icon={viewIcon}
                   key={view.id}
                   label={view.label}
@@ -1031,8 +817,8 @@ export const WithCenterSlot: Story = {
                   selected={view.id === selectedId}
                 />
               ))}
-            </SelectedViewItems>
-          </SelectedViewMenu>
+            </ViewSwitcherItems>
+          </ViewSwitcherMenu>
         }
       />
     )

@@ -53,8 +53,8 @@ import {
   KanbanCardCountAction,
   KanbanCardMoreActions,
 } from '../fixtures/kanban-card-actions'
-import { SelectedViewPicker } from '../fixtures/selected-view-picker'
 import { people, peopleById, TIME_ZONE } from '../fixtures/tasks'
+import { ViewSwitcherPicker } from '../fixtures/view-switcher-picker'
 
 const LOCALE = 'pt-BR'
 
@@ -321,7 +321,7 @@ const meta = {
               </>
             }
             startSlot={
-              <SelectedViewPicker
+              <ViewSwitcherPicker
                 onSelect={(id) => {
                   const next = presets.find((preset) => preset.id === id)
                   if (next) setPresetId(next.id)

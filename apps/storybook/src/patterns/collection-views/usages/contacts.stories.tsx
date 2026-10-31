@@ -58,7 +58,7 @@ import {
   stageOptions,
   tagOptions,
 } from '../fixtures/contacts'
-import { SelectedViewPicker } from '../fixtures/selected-view-picker'
+import { ViewSwitcherPicker } from '../fixtures/view-switcher-picker'
 
 type ContactViewMode = Extract<
   CollectionViewMode,
@@ -439,7 +439,7 @@ function ContactsWorkspace({
             </>
           }
           startSlot={
-            <SelectedViewPicker
+            <ViewSwitcherPicker
               footer="Criado pela equipe · 7 out 2026"
               onCreate={createPreset}
               onDelete={presets.length > 1 ? deletePreset : undefined}
@@ -573,7 +573,7 @@ const meta = {
       description: {
         component: [
           'The contacts of a sales team as a record screen over one collection: name, company, role, lifecycle stage, emails, phones, tags and last contact.',
-          'The `ViewSettingsMenu` switches between **Tabela** (DataTable), **Planilha** (DataGrid) and **Lista**, groups by stage, and filters by stage and tag. The selected view picker searches, duplicates, creates and deletes saved views, and Salvar preferência writes the layout and filters into the active one. Each value is a property that writes back to the same collection, rows selected in the Table or the Spreadsheet open an `ActionBar` to delete them, and Novo contato opens the `RecordDialog` of `Patterns/Records/Dialog/Usages/Contacts`.',
+          'The `ViewSettingsMenu` switches between **Tabela** (DataTable), **Planilha** (DataGrid) and **Lista**, groups by stage, and filters by stage and tag. The view switcher picker searches, duplicates, creates and deletes saved views, and Salvar preferência writes the layout and filters into the active one. Each value is a property that writes back to the same collection, rows selected in the Table or the Spreadsheet open an `ActionBar` to delete them, and Novo contato opens the `RecordDialog` of `Patterns/Records/Dialog/Usages/Contacts`.',
         ].join('\n\n'),
       },
     },
@@ -840,7 +840,7 @@ export const ManageSavedViews: Story = {
     docs: {
       description: {
         story:
-          'The selected view picker of the `Patterns/Shared/Toolbar` Default story: search, saved views, the options of the active view and Criar nova view. Duplicar copies the active view, Criar nova view saves the current layout and filters, and Excluir falls back to the first view.',
+          'The view switcher of the `Patterns/Toolbar` Default story: search, saved views, the options of the active view and Criar nova view. Duplicar copies the active view, Criar nova view saves the current layout and filters, and Excluir falls back to the first view.',
       },
     },
   },

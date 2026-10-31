@@ -43,7 +43,7 @@ const meta = {
       />
     )
   },
-  title: 'Patterns/Shared/Pagination',
+  title: 'Patterns/Pagination',
 } satisfies Meta<typeof CollectionPagination>
 
 export default meta

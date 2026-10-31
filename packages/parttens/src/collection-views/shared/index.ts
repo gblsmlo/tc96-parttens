@@ -14,20 +14,6 @@ export { PresetsMenu } from './components/collection-presets-menu'
 export type { CollectionSearchFieldProps } from './components/collection-search-field'
 export { CollectionSearchField } from './components/collection-search-field'
 export type {
-  SelectedViewCreateProps,
-  SelectedViewItemProps,
-  SelectedViewItemsProps,
-  SelectedViewMenuProps,
-  SelectedViewSearchProps,
-} from './components/collection-selected-view'
-export {
-  SelectedViewCreate,
-  SelectedViewItem,
-  SelectedViewItems,
-  SelectedViewMenu,
-  SelectedViewSearch,
-} from './components/collection-selected-view'
-export type {
   CollectionSelectionAction,
   CollectionSelectionActionContext,
   CollectionSelectionActionGroup,
@@ -43,4 +29,18 @@ export {
   ViewSettingsMenu,
   ViewSettingsSection,
 } from './components/collection-view-settings'
+export type {
+  ViewSwitcherCreateProps,
+  ViewSwitcherItemProps,
+  ViewSwitcherItemsProps,
+  ViewSwitcherMenuProps,
+  ViewSwitcherSearchProps,
+} from './components/collection-view-switcher'
+export {
+  ViewSwitcherCreate,
+  ViewSwitcherItem,
+  ViewSwitcherItems,
+  ViewSwitcherMenu,
+  ViewSwitcherSearch,
+} from './components/collection-view-switcher'
 export { projectCollection } from './lib/project-collection'

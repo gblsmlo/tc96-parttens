@@ -56,7 +56,7 @@ import {
   stageOptions,
   tagOptions,
 } from './contacts'
-import { SelectedViewPicker } from './selected-view-picker'
+import { ViewSwitcherPicker } from './view-switcher-picker'
 
 export type ContactViewMode = Extract<
   CollectionViewMode,
@@ -437,7 +437,7 @@ function ContactsWorkspace({
             </>
           }
           startSlot={
-            <SelectedViewPicker
+            <ViewSwitcherPicker
               footer="Criado pela equipe · 7 out 2026"
               onCreate={createPreset}
               onDelete={presets.length > 1 ? deletePreset : undefined}
