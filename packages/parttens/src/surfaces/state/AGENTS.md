@@ -6,10 +6,9 @@ Controlled surfaces for the state of a region: `StateSurface` shows one of five 
 
 | Folder | Holds |
 | --- | --- |
-| `core.ts` | React-free surface: kinds tuple, kind to role map, prop types |
+| `core.ts` | React-free surface: kinds tuple, kind to role map, prop types, with `core.test.ts` |
 | `composition/state-surface/` | `StateSurface` on the COSS `Empty` |
 | `composition/state-guard/` | `StateGuard` and its loading block |
-| `test/dom.ts` | the JSDOM setup the tests import; a copy owned by this pattern |
 
 Import direction: `composition/state-guard/` → `composition/state-surface/` → `core.ts`. Composition imports COSS (`empty`, `spinner`), `IconFrame` from `@tc96/elements/icon-frame` and `lucide-react`; `core.ts` imports only React types.
 
@@ -42,8 +41,10 @@ Import direction: `composition/state-guard/` → `composition/state-surface/` �
 bun test --isolate packages/parttens/src/surfaces/state
 bunx biome check packages/parttens/src/surfaces/state
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/state-surface
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/surfaces/state
 ```
+
+Interface tests are `play` functions in `apps/storybook/src/patterns/surfaces/state/composition/` (guard and surface), and they run axe with `test: 'error'`. The bun test left is `core.test.ts`: the kinds tuple and the `@ts-expect-error` cases that require `surface` outside `data`, which only `bun run typecheck` enforces.
 
 ## Pointers
 

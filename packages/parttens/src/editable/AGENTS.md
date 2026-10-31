@@ -6,11 +6,10 @@ A compound for inline editing of one string, in two compositions under the same 
 
 | Folder | Holds |
 | --- | --- |
-| `composition/editable/` | the ten parts in `editable.tsx`, their barrel and the JSDOM tests |
+| `composition/editable/` | the ten parts in `editable.tsx` and their barrel |
 | `store/` | `EditableContext` and `useEditableContext`; internal, shipped only because `editable.tsx` imports it. `isDirty` and `finishEditing` exist for `EditableField` and stay off the public API |
 | `types/` | re-exports the ten `*Props` types; workspace only, not reached from the barrel |
 | `views/` | empty layer; `README.md` marks it until Editable gains an independently usable view |
-| `test/dom.ts` | the JSDOM setup the tests import, with a `requestAnimationFrame` polyfill |
 | `core.ts` | React-free surface: the ten `*Props` types; workspace only, not reached from the barrel |
 
 Import direction: `composition/` → `store/`; `store/` imports only `react`; `types/` and `core.ts` import only from `composition/editable`. `index.ts` goes straight to `composition/editable/index.ts`, so `composition/index.ts` and `store/index.ts` are workspace only too.
@@ -35,7 +34,7 @@ Editing lifecycle:
 
 - Editing starts from `EditablePreview` on the `triggerMode` event (click, double click or focus) or Enter, and from `EditableTrigger` on click or double click matching `triggerMode`; with `focus` the trigger does nothing. The trigger calls `beginEditing()` with no argument: passing its event would become the initial draft. `beginEditing` keeps the current value to restore, snapshots the draft (the value, or the initial draft `EditableField` passes) before setting editing and calling `onEdit`.
 - Commit happens on Enter, on `EditableSubmit`, and on blur unless `relatedTarget` is inside `[data-slot="editable-trigger"]`, `[data-slot="editable-cancel"]` or `[data-slot="editable-submit"]`. `submitValue` leaves editing and calls `onSubmit(value)`; it never touches the value.
-- Cancel (Escape or `EditableCancel`) writes the value from before the session back through `setValue`, so `onValueChange` receives the restored value (the test asserts `['Draft', 'Alpha']`), then leaves editing and calls `onCancel`. Without an initial draft that value equals the snapshot.
+- Cancel (Escape or `EditableCancel`) writes the value from before the session back through `setValue`, so `onValueChange` receives the restored value (the `CancelsWithEscape` story asserts `Draft` then `Alpha`), then leaves editing and calls `onCancel`. Without an initial draft that value equals the snapshot.
 - `setValue` and `setEditing` write `valueRef` and `editingRef` before the state update, and an effect copies the rendered value and flag back. `isDirty` and `finishEditing` read the refs, because the blur that Escape triggers runs before React applies the restored value.
 
 Display session (`EditableField`):
@@ -50,14 +49,14 @@ Display session (`EditableField`):
 Mounting and focus:
 
 - `EditablePreview` renders when not editing and not read-only; `EditableInput` renders when editing or read-only; `EditableTrigger` hides while editing or read-only unless `forceMount`; the toolbar, submit and cancel render only while editing.
-- When editing starts, `EditableInput` focuses and selects its content inside a `requestAnimationFrame`, which is why `test/dom.ts` polyfills it. With `autosize` the width is set to `scrollWidth + 4px` then and on every change, and the input gets `w-auto min-w-8` instead of `w-full`.
+- When editing starts, `EditableInput` focuses and selects its content inside a `requestAnimationFrame`, so a story waits for the input to take focus before typing. With `autosize` the width is set to `scrollWidth + 4px` then and on every change, and the input gets `w-auto min-w-8` instead of `w-full`.
 - `disabled`, `readOnly`, `required` and `maxLength` passed to `EditableInput` combine with the root's (`||` for the booleans, `??` for `maxLength`).
 
 Accessibility and forms:
 
 - The root id is `id` or `useId()`. `EditableLabel` points `htmlFor` at the input, the input uses `aria-labelledby` the label, and the trigger, cancel and submit set `aria-controls` to the root id. `EditableField` takes the same id and drops `aria-labelledby` when it gets `aria-label`, so it never points at a label that is not mounted.
 - `EditableArea` is `role="group"` with `dir`; `EditablePreview` is `role="button"` with `tabIndex={0}` unless disabled; `EditableToolbar` is `role="toolbar"` with `aria-orientation`. The trigger uses `aria-disabled`, not `disabled`.
-- `name` renders `<input type="hidden">` with the value, `disabled` and `readOnly` as a sibling of the root inside the provider, so native forms read it (test `exposes the value to native forms`).
+- `name` renders `<input type="hidden">` with the value, `disabled` and `readOnly` as a sibling of the root inside the provider, so native forms read it (story `ExposesValueToNativeForms`).
 - Every part passes the same flags it sets as `data-*` to `render` callbacks as `state` (`slot`, `editing`, `disabled`, `invalid`, `required`, `readonly`, `empty`, `orientation`).
 
 ## Styling
@@ -84,12 +83,12 @@ State lives in `data-*` attributes and is styled by their variants, never by a p
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/editable
 bunx biome check packages/parttens/src/editable
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/editable
 ```
 
-There is no story for this compound: `Patterns/Properties/Display/Editable Text` exercises `EditableField` through `EditableText`, and the `Editable` story in `apps/storybook/src/ui/input.stories.tsx` is a COSS `Input` story. `composition/editable/editable.test.tsx` covers the standard parts and the display session; a change to the session also runs `bun test --isolate packages/parttens/src/properties packages/parttens/src/checklist`.
+Interface tests are `play` functions in `apps/storybook/src/patterns/editable/composition/`: `editable.stories.tsx` (`Patterns/Editable/Composition/Editable`) covers the standard parts and `editable-field.stories.tsx` (`Patterns/Editable/Composition/Field`) the display session. They are nested files with no `Doc` page, and they run axe with `test: 'error'`; `DisabledPreventsEditing` turns off `color-contrast` because the disabled preview sets no `aria-disabled`. `Patterns/Properties/Display/Editable Text` exercises `EditableField` through `EditableText`, and the `Editable` story in `apps/storybook/src/ui/input.stories.tsx` is a COSS `Input` story. A change to the session also runs `cd apps/storybook && bunx vitest run --project=storybook src/patterns/properties src/patterns/checklist`. The pattern has no bun test.
 
 ## Pointers
 

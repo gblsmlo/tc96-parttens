@@ -61,7 +61,7 @@ packages/parttens/src/[<family>/]<pattern>/
   lib/           pure functions and class variants (shared/lib/project-collection.ts, layouts/kanban/lib/drag-and-drop.ts)
   store/         context, provider and shared state (editable/store/, collection/store/)
   types/         contracts shared across the pattern, with types/index.ts as the barrel; a type used by one file stays next to it
-  test/dom.ts    the JSDOM setup the pattern's bun test files import; each pattern owns its copy
+  test/dom.ts    the JSDOM setup of a bun test that cannot run in a browser (collection, wizard); each pattern owns its copy
 ```
 
 Files are kebab-case and named after what they export (`checklist-row.tsx` exports `ChecklistRow`); tests sit next to the file they cover. `vite-env.d.ts` in the older patterns dates from isolated development: nothing imports it and the registry does not ship it, so a new or restructured pattern does not add it. The `styles/global.css` files of `collection`, `properties` and `editable` were removed on 2026-10-03 for the same reason (patterns carry no CSS). `checklist` follows this layout with `composition/checklist/`, `components/`, `lib/`, `types/`, `test/` and `core.ts`; a flat pattern such as `rich-text-editor` adopts it when it is next split.
@@ -94,7 +94,7 @@ bun run check                # full gate; run before a release or PR
 bun run sync:themes          # regenerate the tweakcn theme presets from the tweakcn registry
 ```
 
-Run a single pattern's tests from the repo root, for example `bun test packages/parttens/src/widgets`. Running `bun test packages/parttens` as a whole hits failures that exist before your change; use `scripts/test-patterns.ts` (`bun run test:patterns`) for the supported run.
+Run a single pattern's bun tests from the repo root, for example `bun test packages/parttens/src/properties`, and its plays with `cd apps/storybook && bunx vitest run --project=storybook src/patterns/properties`. `bun run test:patterns` (`scripts/test-patterns.ts`) is the full bun run.
 
 Before reporting a change as done, run Biome on the files you touched, `typecheck`, the relevant tests and the three check scripts above.
 
@@ -104,7 +104,7 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 - **No comments in pattern or component code** (no JSDoc, no inline notes). The component name, its types and `docs/architecture/tc96-parttens.md` carry the explanation. Exception: exported functions in `packages/helpers` get JSDoc in English, with `@param` when a parameter is not obvious and `@returns` when it helps.
 - Use `cn` from `@tc96/utils` for class merging and import COSS components through `@tc96/ui/<component>`.
 - Components are controlled: the consumer passes prepared data and handles events. No fetching, filtering, sorting or persistence inside a pattern.
-- **Interface tests live in Storybook.** Behavior a user sees (clicks, menus, visibility, callbacks) is tested with a story `play` from `storybook/test`, not with `bun test` and JSDOM. `bun test` keeps code that renders nothing (`core.ts`, `lib/`, pure hooks). Existing component tests in `bun test` move to `play` when that component is next changed.
+- **Interface tests live in Storybook.** Behavior a user sees (clicks, menus, visibility, callbacks) is tested with a story `play` from `storybook/test`, not with `bun test` and JSDOM. `bun test` keeps code that renders nothing (`core.ts`, `lib/`, pure functions). A component test stays in `bun test` only when it cannot run as a `play`: a server render or a render that must throw.
 - Widgets render through `WidgetShell` (`packages/parttens/src/widgets/shared/widget-shell.tsx`), which is the COSS `Card` with a transparent border. Card radius is the consumer's: the example theme sets it on `[data-slot="card"]` (`apps/example/packages/ui/src/styles.css`), so a pattern never restates radius, border or shadow on a card.
 - Prefer composition and the existing shared widgets (`IconFrame`, metric, stat list, avatar stack, progress ring, metric pill) over new one-off markup.
 - The rich text editor is Plate (Slate) configured in `packages/parttens/src/rich-text-editor/plugins.tsx`; its vocabulary is `RICH_TEXT_ELEMENTS` and `RICH_TEXT_MARKS`, and the document never carries node ids or the `/` menu input.

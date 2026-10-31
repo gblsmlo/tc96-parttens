@@ -11,7 +11,6 @@ Controlled property displays (date, date range, editable text, email, flag, icon
 | `hooks/` | `useEntryListEditor`: the popup session (drafts, row errors, save, diff) of email and phone |
 | `shared/` | the surface, catalog, select and multi-select shells, calendar popover, entry form, add trigger, row `fieldset` |
 | `shared/lib/` | `isEditable`/`emitChange` (handler rule), option lookup and diff, zod entry parser |
-| `test/dom.ts` | the JSDOM setup the tests import |
 | `core.ts` | React-free surface: catalog types, `propertyToneClassName`, date formatters; workspace only, not reached from the barrel |
 
 Import direction: `composition/` → `display/`, `shared/`; `display/<property>/` → `hooks/`, `shared/`, other display folders; `display/editable-text/` → `editable/index.ts` (`Editable`, `EditableField`), the only import into another pattern; `hooks/` → `shared/lib/`; `shared/` → only COSS, Base UI, `@tc96/utils` and zod types, never a display, hook or composition. `composition/property-collection.tsx` also imports `MenuCheckboxOption` from `packages/parttens/src/shared/components/menu-selection-item.tsx`.
@@ -20,7 +19,6 @@ Import direction: `composition/` → `display/`, `shared/`; `display/<property>/
 
 - `checklist` imports by file path, not through the barrel: `display/date/date-property.tsx`, `display/person/person-property.tsx` (`PersonProperty`, `PersonPropertyOption`) and `display/editable-text/editable-text.tsx` (`EditableText`, `EditableTextSize`). Renaming or moving these breaks `checklist`. The path is deliberate: an import through the barrel would make the `checklist` registry item ship every file of `properties`.
 - `record-group` imports `shared/property-catalog.ts` (`PropertyIcon`) by file path, as a type, from its `core.ts`. Renaming or moving it breaks `record-group`.
-- `widgets` tests import `properties/test/dom.ts`. Moving it breaks `widgets`.
 - `packages/parttens/src/index.ts` re-exports `properties/index`.
 
 ## Invariants
@@ -103,6 +101,8 @@ cd apps/storybook && bunx vitest run --project=storybook src/patterns/properties
 ```
 
 Stories in `apps/storybook/src/patterns/properties/` (`Patterns/Properties/...`) run axe with `test: 'error'`. Since 2026-10-17 they render the display directly, with no helper component, so the Code panel shows code the consumer can paste: each meta sets `component` and the args, and an editable story keeps its value in a named `render` with `useState` (`render: function Trigger(args)`). A display that also reports to an `onValueChange` spy destructures it (`render: function Schedule({ onValueChange, ...args })`), and the spy gets a typed implementation (`fn((_value: ScheduleValue) => {})`) so the copied handler type-checks. Layout wrappers such as `p-4` or `min-h-176` are decorators, not markup in the render. `Editable Text` has no `Sizes` story: the `size` control on `Default` covers the scale.
+
+Interface tests are `play` functions: `display/<property>/` holds the behavior files of each display, `composition/` the collection and assigned behavior, and `shared/` and `hooks/` cover the internal shells and `useEntryListEditor` through the public displays that render them (`EmailProperty`, `TagsProperty`, `DateProperty`). `Person/Option Content` and `Phone Input` import their component through the package subpath (`@tc96/parttens/properties/display/...`) because the barrel does not export it. The bun tests left are pure: `core.test.ts`, `shared/lib/` and the value, format and parser tests next to `date`, `date-range`, `phone-input` and `schedule`.
 
 ## Pointers
 

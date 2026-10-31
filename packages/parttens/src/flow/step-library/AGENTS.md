@@ -13,7 +13,6 @@ The panel on the left of the flow editors: step types grouped by `group`, each o
 | `components/` | `step-library-skeleton.tsx`, the loading placeholder |
 | `lib/` | `variants.ts`: the class strings and the item `cva` (`collapsed`) |
 | `types/` | the props of the components |
-| `test/dom.ts` | the JSDOM setup the tests import; this pattern's own copy |
 | `core.ts` | React-free surface: `FlowStepGroup`, `groupStepTypes`, the label types and their pt-BR defaults, with `core.test.ts` |
 
 Import direction: `composition/` → `components/`, `lib/`, `types/`, `core.ts`; `components/` → `lib/`, `core.ts`, `@tc96/ui`, `@tc96/elements/icon-frame`. Imports into the canvas go only to `../../../canvas/core` (or `../canvas/core` from `core.ts`) and only for types, `FLOW_STEP_TRANSFER_TYPE` and `serializeStepTransfer`; nothing else from `flow/canvas` and never `@xyflow/react`.
@@ -51,13 +50,13 @@ Import direction: `composition/` → `components/`, `lib/`, `types/`, `core.ts`;
 ## Verify
 
 ```bash
-bun test packages/parttens/src/flow/step-library
+bun test --isolate packages/parttens/src/flow/step-library/core.test.ts
 bunx biome check packages/parttens/src/flow/step-library apps/storybook/src/patterns/flow/step-library
-cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/patterns/flow/step-library
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/flow/step-library
 bun run build:registry
 ```
 
-The tests are in `composition/step-library/step-library.test.tsx` (groups, click, drag payload, loading, empty, footer) and `composition/flow-run-card/flow-run-card.test.tsx` (status, progress, zero steps). The stories are in `apps/storybook/src/patterns/flow/step-library/` (`Patterns/Flow/Step Library`); `Default`'s `play` clicks an item and asserts `onAdd`. A drag in `play` is not covered: Storybook's events do not carry a `dataTransfer`, so the payload is asserted only in `bun test`.
+Interface tests are `play` functions in `apps/storybook/src/patterns/flow/step-library/`: `panel.stories.tsx` (groups, click, drag payload, loading, empty, footer), `item.stories.tsx` (description, collapsed, disabled) and `run-card.stories.tsx` (status, progress, zero steps). The drag payload story dispatches a `dragstart` with a constructed `DataTransfer`; Chromium keeps `effectAllowed` at `none` on a constructed one, so the story spies the setter. The only bun test left is `core.test.ts`. The root stories are in `step-library.stories.tsx` (`Patterns/Flow/Step Library`); `Default`'s `play` clicks an item and asserts `onAdd`.
 
 ## Pointers
 

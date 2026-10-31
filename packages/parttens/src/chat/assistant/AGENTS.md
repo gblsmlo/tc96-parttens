@@ -6,14 +6,13 @@ A controlled AI assistant card for an editor: `AssistantPanel` (a `section` name
 
 | Folder | Holds |
 | --- | --- |
-| `composition/assistant-panel/` | `AssistantPanel`, its test and barrel |
+| `composition/assistant-panel/` | `AssistantPanel` and its barrel |
 | `composition/assistant-suggestions/` | `AssistantSuggestions`, its barrel |
-| `composition/assistant-composer/` | `AssistantComposer`, its test and barrel |
+| `composition/assistant-composer/` | `AssistantComposer` and its barrel |
 | `components/` | building blocks of the panel, never public: header action with tooltip, empty state, message item |
 | `lib/` | `variants.ts`: the root `cva` (placement and expanded), header, footer and suggestion classes |
 | `store/` | `assistant-context.ts`: the merged `labels` the parts read |
 | `types/` | the three prop interfaces |
-| `test/dom.ts` | the JSDOM setup the tests import; this pattern's own copy, with the form-control globals, `document.fonts`, `ResizeObserver` and `getAnimations` the COSS composer and scroll area need |
 | `core.ts` | React-free surface: message and suggestion types, `AssistantLabels`, the pt-BR defaults, `mergeAssistantLabels`, `assistantDraftText`, `assistantItemCount` |
 
 Import direction: `composition/` → `components/`, `lib/`, `store/`, `types/`, `core.ts`; `components/` → `composition/assistant-suggestions/`, `lib/`, `store/`, `core.ts`. COSS comes from `@tc96/ui/<component>` and `@tc96/ui/chat/<part>`, plus `@tc96/ui/chat/hooks/use-chat-scroll`. No import into another pattern or into `packages/parttens/src/shared`.
@@ -51,14 +50,14 @@ Import direction: `composition/` → `components/`, `lib/`, `store/`, `types/`, 
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/chat/assistant
+bun test --isolate packages/parttens/src/chat/assistant/core.test.ts
 bunx biome check packages/parttens/src/chat
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 bun test packages/registry
-cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/patterns/chat/assistant
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/chat/assistant
 ```
 
-The stories are in `apps/storybook/src/patterns/chat/assistant/`. `assistant-panel.stories.tsx` (`Patterns/Chat/Assistant`) is the root with the `Doc` page and its `usage` and `api`: `Empty` (clicks a suggestion), `Conversation` (types and sends), `Typing`, `Error`, `Expanded` and `Minimized`, all floating inside a positioned decorator. `usages/workflow.stories.tsx` owns the conversation as a consumer would, with the workflow editor's suggestions. The stories run axe with `test: 'error'`.
+The stories are in `apps/storybook/src/patterns/chat/assistant/`. `assistant-panel.stories.tsx` (`Patterns/Chat/Assistant`) is the root with the `Doc` page and its `usage` and `api`: `Empty` (clicks a suggestion), `Conversation` (types and sends), `Typing`, `Error`, `Expanded` and `Minimized`, all floating inside a positioned decorator. `usages/workflow.stories.tsx` owns the conversation as a consumer would, with the workflow editor's suggestions. Interface tests are `play` functions there too: `panel.stories.tsx` (`Patterns/Chat/Assistant/Panel`: placement, empty state, log, typing, retry, header actions, badge, labels) and `composer.stories.tsx` (send, attach, placeholder). The only bun test left is `core.test.ts`. The stories run axe with `test: 'error'`.
 
 ## Pointers
 

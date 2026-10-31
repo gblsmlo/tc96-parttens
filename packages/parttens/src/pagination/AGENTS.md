@@ -6,10 +6,8 @@ Not a pattern: `CollectionPagination`, the controlled page bar for a collection.
 
 | Folder | Holds |
 | --- | --- |
-| `components/` | `collection-pagination.tsx` and its test |
+| `components/` | `collection-pagination.tsx` |
 | `index.ts` | the barrel |
-
-There is no `test/dom.ts`: the test imports `collection/test/dom.ts`, so moving that file breaks it.
 
 Import direction: `components/` → `@tc96/ui/pagination`, `@tc96/ui/button`, `@tc96/utils`, `lucide-react` and React only. It never imports a pattern.
 
@@ -30,13 +28,12 @@ Import direction: `components/` → `@tc96/ui/pagination`, `@tc96/ui/button`, `@
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/pagination
 bunx biome check packages/parttens/src/pagination
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/pagination
 ```
 
-`Patterns/Pagination` (`apps/storybook/src/patterns/pagination/`) runs axe with `test: 'error'`. The meta renders the component directly, keeps the page in `useState` and reports to a typed `onPageChange` spy, so `page` has no control; the layout wrapper is a `w-full max-w-6xl p-6` decorator.
+Interface tests are `play` functions in `apps/storybook/src/patterns/pagination/`: the `Interaction` twins in `pagination.stories.tsx` and `behavior.stories.tsx` (`Patterns/Pagination/Behavior`: naming, range summary, disabled ends, target page and clamping). The folder has no bun test. `Patterns/Pagination` runs axe with `test: 'error'`. Its meta renders the component directly, keeps the page in `useState` and reports to a typed `onPageChange` spy, so `page` has no control; the layout wrapper is a `w-full max-w-6xl p-6` decorator.
 
 ## Pointers
 

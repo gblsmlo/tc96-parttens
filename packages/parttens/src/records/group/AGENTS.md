@@ -6,16 +6,15 @@ A controlled, collapsible group of rows for record surfaces: `RecordGroup` (a ti
 
 | Folder | Holds |
 | --- | --- |
-| `composition/record-group/` | `RecordGroup` on the COSS `Collapsible`, its test and barrel |
-| `composition/record-group-row/` | `RecordGroupRow`, its test and barrel |
-| `composition/record-group-action/` | `RecordGroupAction` on the COSS `Button`, its test and barrel |
-| `composition/record-group-item/` | `RecordGroupItem`, its test and barrel |
-| `composition/record-group-link/` | `RecordGroupLink` on Base UI `useRender`, its test and barrel |
-| `composition/record-group-metrics/` | `RecordGroupMetrics`, the tile grid, its test and barrel |
-| `composition/record-group-metric/` | `RecordGroupMetric` on the COSS `Card` and `Meter`, its test and barrel |
-| `composition/record-group-subgroup/` | `RecordGroupSubgroup` on the COSS `Collapsible`, its test and barrel |
+| `composition/record-group/` | `RecordGroup` on the COSS `Collapsible` and its barrel |
+| `composition/record-group-row/` | `RecordGroupRow` and its barrel |
+| `composition/record-group-action/` | `RecordGroupAction` on the COSS `Button` and its barrel |
+| `composition/record-group-item/` | `RecordGroupItem` and its barrel |
+| `composition/record-group-link/` | `RecordGroupLink` on Base UI `useRender` and its barrel |
+| `composition/record-group-metrics/` | `RecordGroupMetrics`, the tile grid, and its barrel |
+| `composition/record-group-metric/` | `RecordGroupMetric` on the COSS `Card` and `Meter` and its barrel |
+| `composition/record-group-subgroup/` | `RecordGroupSubgroup` on the COSS `Collapsible` and its barrel |
 | `lib/` | `variants.ts`: the group class helper (`cn`), the `cva` variants of the content, of the row, label and value and of the metrics grid; `metric-progress.ts`: the progress clamp |
-| `test/dom.ts` | the JSDOM setup the tests import; this pattern's own copy |
 | `core.ts` | React-free surface: the prop types; workspace only, not reached from the barrel except as types |
 
 Import direction: `composition/` → `lib/`, `core.ts`. `RecordGroupLink` imports `@base-ui/react/use-render` and `merge-props` directly, as `KanbanCard` does, and `core.ts` takes its props type from there. Outgoing: `@tc96/ui/card` for the card and the metric tile, `@tc96/ui/meter` for the metric progress. Outgoing, by file path into `properties`: `shared/property-catalog.ts` (`PropertyIcon`), imported by `core.ts` as a type. The registry ships that file with the `record-group` item.
@@ -38,7 +37,7 @@ Collapse:
 Footer and actions:
 
 - The footer lives inside `CollapsiblePanel`: it hides with the body, and a closed panel is unmounted, so the footer is not focusable and not in the accessibility tree. Use `actions` for controls that must stay visible when the group is closed.
-- Unmounting waits for the 200ms height transition, and Base UI leaves the panel focusable until then (measured in Chromium: the panel is mounted with `data-closed` and a running animation, and a footer button takes focus). The panel therefore gets `inert` as soon as the group is not open; `FooterClosingInteraction` checks focus and `inert` during the transition and the unmount after it. jsdom stubs `getAnimations`, so only the story sees this.
+- Unmounting waits for the 200ms height transition, and Base UI leaves the panel focusable until then (measured in Chromium: the panel is mounted with `data-closed` and a running animation, and a footer button takes focus). The panel therefore gets `inert` as soon as the group is not open; `FooterClosingInteraction` checks focus and `inert` during the transition and the unmount after it.
 - `actions` sits outside the trigger, so it is never part of the title's accessible name and stays visible when closed. `actions` and `footer` render only when passed.
 - `actionsAlign="between"` (the default) spreads `actions` to the end of the header; `start` places them 8px after the title, for a command that belongs to the title, such as a ghost button. Either way the title still wraps and `actions` never shrinks.
 
@@ -57,7 +56,7 @@ Subgroups:
 - `RecordGroupSubgroup` is a `div` with an `h3` that wraps the trigger, not a `region`: a group lists many subitems, and one landmark each would flood the landmark list. The `h3` assumes the parent `RecordGroup` `h2`.
 - It starts closed (`defaultOpen` `false`, the opposite of `RecordGroup`): a subgroup exists to fold detail. `open` and `onOpenChange` pass straight to the `Collapsible`; there is no `empty`.
 - `meta` sits inside the trigger, so a status badge and a date are read with the title.
-- It has no story: the owner removed `Subgroups` from the catalog on 2026-10-15, and no usage story uses it. `record-group-subgroup.test.tsx` is its only coverage, so the chevron and content alignment with the row labels is not checked in a browser or by axe.
+- It has no catalog story: the owner removed `Subgroups` from the catalog on 2026-10-15, and no usage story uses it. Its only coverage is the behavior plays of `Patterns/Records/Group/Composition/Subgroup`, which run axe but do not assert the chevron and content alignment with the row labels.
 
 Metrics:
 
@@ -111,14 +110,15 @@ The pattern sets these attributes and styles none of them through a variant:
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/records/group
 bunx biome check packages/parttens/src/records/group
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 bun test packages/registry
 cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/patterns/records/group
 ```
 
-The stories are in `apps/storybook/src/patterns/records/group/`, one file per theme under `Patterns/Records/Group/`, with a `!dev` `<Story>Interaction` twin each, and run axe with `test: 'error'`. `record-group.stories.tsx` (`Patterns/Records/Group`) is the root with the `Doc` page: a `Default` story with controls for the root props, the `Empty` story for `empty` (without a footer, at the owner's request on 2026-10-17, so the footer below an empty body is checked only by `record-group.test.tsx`), and the `usage` and `api` docs parameters that render its Usage and API Reference sections; update `api` when a part is added, removed or changes its element or slot. `rows.stories.tsx` (`Rows`) covers the label and value layout (`start`, `between`, long labels and values), `header-and-footer.stories.tsx` (`Header and Footer`) the title, `actions` and `footer`, `properties.stories.tsx` (`Properties`) read-only and editable values. `card` has no story of its own since 2026-10-17, at the owner's request: the `variant` control on the root `Default` shows it, and no browser test asserts its surface any more. The theme stories set `component: RecordGroup` and pass the rows as JSX in `args.children`, with no demo component, so the Code panel shows code the consumer can copy; the controls come from `recordGroupArgTypes` in `apps/storybook/src/test-utils/story-arg-types.ts`, because `react-docgen` does not type these props. The row selectors they share are in `fixtures/group-dom.ts`; `fixtures/group-demo.tsx` only feeds the root render. `lists.stories.tsx` (`Patterns/Records/Group/Lists`) covers `RecordGroupItem` with a read-only property (`Default`), an editable property (`EditableProperty`) and an input (`WithInput`), in `plain` and `inset`, and `RecordGroupLink` in `Links`. `usages/blocks.stories.tsx` (`Patterns/Records/Group/Usages`) shows one group per job (Tasks, Triggers, Access, Briefing, Versions, Linked Records, Document, Empty, Billing, Details, Stage, Indicators, Activity, Notes) at 420px wide, the width of a record page footer, each written inside its story's `render`; every story takes the `variant` control from the meta (`recordGroupArgTypes.variant`, options in alphabetical order), `plain` by default and `inset` in Tasks, Activity and Notes, and its play runs only on that default; Notes opens the `NoteDialog` of `records/dialog/note-dialog.tsx`, imported by path; a record page composes the groups its use case needs.
+The stories are in `apps/storybook/src/patterns/records/group/`, one file per theme under `Patterns/Records/Group/`, with a `!dev` `<Story>Interaction` twin each, and run axe with `test: 'error'`. `record-group.stories.tsx` (`Patterns/Records/Group`) is the root with the `Doc` page: a `Default` story with controls for the root props, the `Empty` story for `empty` (without a footer, at the owner's request on 2026-10-17, so the footer below an empty body is checked only by `FooterFollowsBodyOfOpenedEmptyGroup` in `composition/group-collapse.stories.tsx`), and the `usage` and `api` docs parameters that render its Usage and API Reference sections; update `api` when a part is added, removed or changes its element or slot. `rows.stories.tsx` (`Rows`) covers the label and value layout (`start`, `between`, long labels and values), `header-and-footer.stories.tsx` (`Header and Footer`) the title, `actions` and `footer`, `properties.stories.tsx` (`Properties`) read-only and editable values. `card` has no story of its own since 2026-10-17, at the owner's request: the `variant` control on the root `Default` shows it, and only the class checks of `composition/group-layout.stories.tsx` assert its surface. The theme stories set `component: RecordGroup` and pass the rows as JSX in `args.children`, with no demo component, so the Code panel shows code the consumer can copy; the controls come from `recordGroupArgTypes` in `apps/storybook/src/test-utils/story-arg-types.ts`, because `react-docgen` does not type these props. The row selectors they share are in `fixtures/group-dom.ts`; `fixtures/group-demo.tsx` only feeds the root render. `lists.stories.tsx` (`Patterns/Records/Group/Lists`) covers `RecordGroupItem` with a read-only property (`Default`), an editable property (`EditableProperty`) and an input (`WithInput`), in `plain` and `inset`, and `RecordGroupLink` in `Links`. `usages/blocks.stories.tsx` (`Patterns/Records/Group/Usages`) shows one group per job (Tasks, Triggers, Access, Briefing, Versions, Linked Records, Document, Empty, Billing, Details, Stage, Indicators, Activity, Notes) at 420px wide, the width of a record page footer, each written inside its story's `render`; every story takes the `variant` control from the meta (`recordGroupArgTypes.variant`, options in alphabetical order), `plain` by default and `inset` in Tasks, Activity and Notes, and its play runs only on that default; Notes opens the `NoteDialog` of `records/dialog/note-dialog.tsx`, imported by path; a record page composes the groups its use case needs.
+
+Interface tests are `play` functions in `composition/` (`Patterns/Records/Group/Composition/...`): `Group Collapse` and `Group Layout` for `RecordGroup`, and `Row`, `Action`, `Item`, `Link`, `Metric`, `Metrics` and `Subgroup` for the parts; the pattern has no bun tests. Run them with `cd apps/storybook && bunx vitest run --project=storybook src/patterns/records/group/composition`.
 
 ## Pointers
 

@@ -1,6 +1,6 @@
 # Record dialog pattern
 
-Guide for agents working in `packages/parttens/src/records/dialog`. The repo-wide rules in the root `AGENTS.md` still apply: no comments in code, Biome formatting, COSS through `@tc96/ui/<component>`, no business rules inside the pattern. The folder follows the pattern structure described there (`composition/`, `hooks/`, `test/`, `core.ts`).
+Guide for agents working in `packages/parttens/src/records/dialog`. The repo-wide rules in the root `AGENTS.md` still apply: no comments in code, Biome formatting, COSS through `@tc96/ui/<component>`, no business rules inside the pattern. The folder follows the pattern structure described there (`composition/`, `hooks/`, `core.ts`).
 
 ## What it is
 
@@ -15,9 +15,7 @@ A dialog for acting on a record. `RecordDialog` covers create and edit: an inter
 | `composition/index.ts` | re-exports the compound | through the barrel |
 | `components/dialog-shell.tsx` | `DialogShell`: popup with the size scale, actions, header trail, panel, error and footer, on the COSS `Dialog` | no |
 | `composition/record-dialog/record-dialog.tsx` | `RecordDialog` | yes |
-| `composition/record-dialog/record-dialog.test.tsx` | JSDOM tests: settle rule, pending lock, focus return, alert, submit prevention | — |
 | `hooks/use-settled-action.ts` | `useSettledAction`: pending state, re-entry guard and the settle rule | no |
-| `test/dom.ts` | the JSDOM setup the test files import; a copy owned by this pattern | — |
 
 Import direction: `composition/` → `components/` and `hooks/` → `core.ts`.
 
@@ -112,10 +110,9 @@ Override exceptions, registered in `scripts/override-exceptions.json`:
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/records/dialog
 bunx biome check packages/parttens/src/records/dialog
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run src/patterns/records/dialog
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/records/dialog
 ```
 
 Run both Storybook projects (`storybook` and `storybook-dark`): color contrast differs per theme, and the submit hint failed only in `storybook-dark`.
@@ -123,5 +120,6 @@ Run both Storybook projects (`storybook` and `storybook-dark`): color contrast d
 The stories are in `apps/storybook/src/patterns/records/dialog/`, with a `!dev` `<Story>Interaction` twin for each, and all run axe with `test: 'error'`:
 
 - `Patterns/Records/Dialog`: one story per size, which widens the viewport with `page.viewport()` and restores it.
+- `Patterns/Records/Dialog/Composition`, in `composition/`: the interface tests, as `play` functions; the pattern has no bun tests. `Submit` covers the settle rule, the pending lock, focus return, reopen and unmount, Mod+Enter and `keepOpenOnSuccess`; `Shell` covers the form, the alert, the header trail, the slots, the sizes and `stretchBody`.
 - `Patterns/Records/Dialog/Create`, the create presentations in `create/`: `Inline Properties`, `Row Properties` and `Simple Form`, each written inline in its story so the Code panel shows the whole body. `Row Properties` sets `parameters.docs.source.inlineLimit` to 200, so its snippet also carries `event-record.ts` and `project-record.ts` and has no relative import. The `FailedSubmit` story of the first two swaps in an `onCreate` that throws and checks the settle rule above: the dialog stays open, the title and properties keep their values and focus returns to the submit button.
 - `Patterns/Records/Dialog/Usages`, in `usages/`: `Notes` renders `note-dialog.tsx` and sets `parameters.docs.source.inlineLimit` to 250; `records/group/usages/blocks.stories.tsx` imports `note-dialog.tsx` and `note-record.ts` by path for its Notes story. `Contacts` renders `create-contact-dialog.tsx`, and `Calendar` writes the body of `create-event-dialog.tsx` inline and sets `parameters.docs.source.inlineLimit` to 200, so the Code panel shows the whole dialog with `event-record.ts` and `project-record.ts` and no relative import. `collection/usages/contacts.stories.tsx`, `collection/fixtures/contacts-usage.tsx` and `collection/usages/calendar.stories.tsx` import those two files by path for the Contacts and Calendar usages of `Patterns/Collection`, and both files render the title and description through `record-headline.tsx`. The event dialog body exists in `create-event-dialog.tsx`, `Create/Row Properties` and `Usages/Calendar`, so a change to one goes to the other two.

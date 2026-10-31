@@ -96,3 +96,28 @@ export const Shapes: Story = {
     await expect(frames[1]).toHaveAttribute('data-shape', 'rounded')
   },
 }
+
+export const DecorativeMarkup: Story = {
+  render: () => (
+    <div className="flex items-center gap-4" data-testid="frames">
+      <IconFrame color="#627eea" size="xl">
+        <GemIcon />
+      </IconFrame>
+      <IconFrame render={<div />} variant="plain" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const [frame, rendered] = within(canvasElement)
+      .getByTestId('frames')
+      .querySelectorAll('[data-slot="icon-frame"]')
+    await expect(frame?.tagName).toBe('SPAN')
+    await expect(frame).toHaveAttribute('aria-hidden', 'true')
+    await expect(frame).toHaveAttribute('data-size', 'xl')
+    await expect(frame).toHaveAttribute('data-shape', 'circle')
+    await expect(frame).toHaveAttribute('data-variant', 'color')
+    await expect(frame).toHaveStyle({ color: '#627eea' })
+    await expect(rendered?.tagName).toBe('DIV')
+    await expect(rendered).toHaveAttribute('data-variant', 'plain')
+  },
+  tags: ['!dev', '!autodocs'],
+}

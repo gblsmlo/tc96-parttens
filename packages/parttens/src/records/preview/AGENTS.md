@@ -7,10 +7,9 @@ A controlled, modal right-side sheet that previews a record (`RecordPreview`), a
 | Folder | Holds |
 | --- | --- |
 | `core.ts` | React-free surface: the prop types |
-| `composition/record-preview/` | `RecordPreview` on the COSS `Sheet`, its test and barrel |
-| `composition/record-preview-action/` | `RecordPreviewAction` on the COSS `Button` and `Tooltip`, its test and barrel |
-| `composition/record-preview-body/` | `RecordPreviewBody`, its test and barrel |
-| `test/dom.ts` | the JSDOM setup the tests import; a copy owned by this pattern |
+| `composition/record-preview/` | `RecordPreview` on the COSS `Sheet` and its barrel |
+| `composition/record-preview-action/` | `RecordPreviewAction` on the COSS `Button` and `Tooltip` and its barrel |
+| `composition/record-preview-body/` | `RecordPreviewBody` and its barrel |
 
 Import direction: `composition/` → `core.ts`. Composition imports only COSS (`button`, `sheet`, `tooltip`), `@tc96/utils` (`cn`, in `RecordPreviewBody`) and `lucide-react`.
 
@@ -27,7 +26,7 @@ Import direction: `composition/` → `core.ts`. Composition imports only COSS (`
 - The COSS `SheetPopup` renders its own close button by default; the pattern passes `showCloseButton={false}` so there is exactly one.
 - Initial focus goes to the popup (`initialFocus` on its ref, `tabIndex={-1}`). Opened by keyboard, the focus otherwise stayed on the trigger and `Escape` went to the trigger's tooltip, leaving no way to close.
 - The sheet is modal: `Escape` and an outside press call `onOpenChange(false)`. Closing returns focus to the element that was focused on open.
-- When the trigger is unmounted while the preview is open (a card that moves to another column), Base UI returns focus to the detached node and focus falls to `body`. The consumer resolves the target at close time through `finalFocus`; a `null` return keeps the Base UI default. Covered by the `finalFocus` tests in `record-preview.test.tsx`. Decided in D27 of the plan. Below `md` the Kanban renders only the active column, so the moved card may not be in the DOM; the recommended fallback is the moved card's column option, `[data-kanban-column-option="<column id>"]` (always rendered on mobile, survives an empty column), after the visible `[data-record-id]` trigger. There is no Kanban story for this (D33 of the plan); the `finalFocus` fallback test in `record-preview.test.tsx` is the proof.
+- When the trigger is unmounted while the preview is open (a card that moves to another column), Base UI returns focus to the detached node and focus falls to `body`. The consumer resolves the target at close time through `finalFocus`; a `null` return keeps the Base UI default. Covered by the `FinalFocus*` plays of `Patterns/Records/Preview/Composition/Preview`. Decided in D27 of the plan. Below `md` the Kanban renders only the active column, so the moved card may not be in the DOM; the recommended fallback is the moved card's column option, `[data-kanban-column-option="<column id>"]` (always rendered on mobile, survives an empty column), after the visible `[data-record-id]` trigger. There is no Kanban story for this (D33 of the plan); `FinalFocusFallsBackToTheColumnOption` in that story file is the proof.
 - The footer renders only with `footer`, in a COSS `SheetFooter` outside the scrolling panel. The pattern never confirms a destructive action; confirmation belongs to the consumer.
 - `actions` is a slot; `RecordPreviewAction` is the suggested item and does not extend the COSS `Button` props, for the same baseline reason.
 - `side="right"` and `variant="inset"` are COSS props, not overrides, and `className` goes to the popup. There is no size prop; the width is the COSS one.
@@ -47,13 +46,12 @@ Import direction: `composition/` → `core.ts`. Composition imports only COSS (`
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/records/preview
 bunx biome check packages/parttens/src/records/preview
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/record-preview
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/records/preview
 ```
 
-The stories are in `apps/storybook/src/patterns/records/preview/`, with a `!dev` `<Story>Interaction` twin each, and run axe with `test: 'error'`.
+The stories are in `apps/storybook/src/patterns/records/preview/`, with a `!dev` `<Story>Interaction` twin each, and run axe with `test: 'error'`. Interface tests are `play` functions in `composition/` (`Patterns/Records/Preview/Composition/Preview`, `Action` and `Body`); the pattern has no bun tests.
 
 ## Pointers
 

@@ -6,13 +6,12 @@ Controlled frames for a settings screen: `SettingsSection` (a divided card of ro
 
 | Folder | Holds |
 | --- | --- |
-| `composition/settings-section/` | `SettingsSection`, the header parts, the context that hands the title id to `SettingsSectionTitle`, the test and barrel |
-| `composition/settings-row/` | `SettingsRow`, its test and barrel |
+| `composition/settings-section/` | `SettingsSection`, the header parts, the context that hands the title id to `SettingsSectionTitle`, and the barrel |
+| `composition/settings-row/` | `SettingsRow` and its barrel |
 | `composition/settings-collapsed/` | `SettingsCollapsed`, a titled collapsible row with a separate actions slot |
-| `test/dom.ts` | the JSDOM setup the tests import; this pattern's own copy |
 | `core.ts` | React-free surface: the prop types, reached from the barrel only as types |
 
-Import direction: `composition/` → `core.ts`. Outgoing: `@tc96/elements/text`, `@tc96/ui/card`, `@tc96/ui/collapsible`, `@tc96/utils`, `lucide-react` and React. The registry item depends on the COSS card and collapsible. `composition/settings-section/settings-section.test.tsx` imports `SettingsRow` by file path.
+Import direction: `composition/` → `core.ts`. Outgoing: `@tc96/elements/text`, `@tc96/ui/card`, `@tc96/ui/collapsible`, `@tc96/utils`, `lucide-react` and React. The registry item depends on the COSS card and collapsible.
 
 ## Dependents
 
@@ -52,14 +51,13 @@ Import direction: `composition/` → `core.ts`. Outgoing: `@tc96/elements/text`,
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/surfaces/settings
 bunx biome check packages/parttens/src/surfaces/settings
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 bun test packages/registry
 cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/patterns/surfaces/settings
 ```
 
-The stories are in `apps/storybook/src/patterns/surfaces/settings/`, with a `!dev` `<Story>Interaction` twin each, and run axe with `test: 'error'`.
+The stories are in `apps/storybook/src/patterns/surfaces/settings/`, with a `!dev` `<Story>Interaction` twin each, and run axe with `test: 'error'`. Interface tests are `play` functions in `composition/` there (collapsed, row and section); the pattern has no bun test.
 
 ## Pointers
 

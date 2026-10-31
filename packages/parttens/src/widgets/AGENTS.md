@@ -7,13 +7,12 @@ Dashboard cards that show prepared numbers, lists, charts and progress, grouped 
 | Folder | Holds |
 | --- | --- |
 | `shared/` | the frame and every piece more than one domain uses; `shared/index.ts` also re-exports `IconFrame` and `formatAmount`, so a copied pattern gets both from the widgets barrel |
-| `crm/`, `finance/`, `gamification/`, `productivity/` | one domain each, with its own `index.ts` barrel and one `<domain>.test.tsx` |
+| `crm/`, `finance/`, `gamification/`, `productivity/` | one domain each, with its own `index.ts` barrel |
 | `types/` | `TrendDirection`, `WidgetPeriodOption`, `WidgetTone`, shared by `shared/` and the domains |
-| `widgets.test.tsx` | the tests of the shared pieces and the shell |
 
 Import direction: `<domain>/` → `shared/`, `types/`, and files of the same domain only (`ShareBar` from `finance/market-share-widget.tsx`, `ActivityTimeline`, `XpMeter`); `shared/` → `types/`, never a domain; no domain imports another. Recharts is used only by the three chart widgets.
 
-The pattern has no `test/dom.ts`: every test file imports `properties/test/dom.ts`, so moving that file breaks these tests. The folder is not split into `composition/` and `components/`; grouping by domain is the layout.
+The pattern has no bun tests and no `test/dom.ts`; its interface tests are Storybook plays (see Verify). The folder is not split into `composition/` and `components/`; grouping by domain is the layout.
 
 Six files still carry Portuguese JSDoc from before the no-comments rule (`shared/amount.tsx`, `shared/trend-indicator.tsx`, `finance/asset-list.tsx`, `finance/market-share-widget.tsx`, `finance/risk-score-widget.tsx`, `types/index.ts`); remove it when you next touch them.
 
@@ -27,8 +26,8 @@ Six files still carry Portuguese JSDoc from before the no-comments rule (`shared
 
 Frame and regions:
 
-- Every card widget renders `WidgetShell` with `aria-labelledby` pointing at a `useId()` title, so it is a `region` named by its title; tests query `getByRole('region', { name })`. Exceptions: `AssetStatWidget` is named by `name` plus `symbol`, `ContactWidget` by `person.label`, `WorldClockWidget` by `aria-label={label}`. `ProgressHud` (a `section` with a required `aria-label`) and `ProgressFooter` (a plain `div`) do not use the shell.
-- `widgets.test.tsx` asserts the shell is a `section[data-slot="card"]` with `border` and `border-transparent` and neither `border-border/80` nor `border-0`, keeps `shadow-xs/5` and the consumer's `className`.
+- Every card widget renders `WidgetShell` with `aria-labelledby` pointing at a `useId()` title, so it is a `region` named by its title; plays query `getByRole('region', { name })`. Exceptions: `AssetStatWidget` is named by `name` plus `symbol` (Chromium computes `ZcashZEC`, with no space, so its play matches `/^Zcash ?ZEC$/`), `ContactWidget` by `person.label`, `WorldClockWidget` by `aria-label={label}`. `ProgressHud` (a `section` with a required `aria-label`) and `ProgressFooter` (a plain `div`) do not use the shell.
+- `Patterns/Widgets/Shared/Widget Shell` asserts the shell is a `section[data-slot="card"]` with `border` and `border-transparent` and neither `border-border/80` nor `border-0`, keeps `shadow-xs/5` and the consumer's `className`.
 - `tone="inverted"` on `MetricWidget`, `AssetStatWidget` and `TaskProgressWidget` wraps the card in `<div className="dark contents">` and sets `data-tone` on the shell; the dark palette comes from the consumer's theme, not from the pattern.
 
 Numbers:
@@ -46,7 +45,7 @@ Periods and expansion:
 
 Charts, time and markup:
 
-- `BalanceWidget`, `CashFlowWidget` and `TaskProgressWidget` render recharts with `accessibilityLayer={false}` and `isAnimationActive={false}` inside a `div role="img"` named by `chartLabel`, the string title or `Gráfico`. The tests stub `ResizeObserver` for `ResponsiveContainer`.
+- `BalanceWidget`, `CashFlowWidget` and `TaskProgressWidget` render recharts with `accessibilityLayer={false}` and `isAnimationActive={false}` inside a `div role="img"` named by `chartLabel`, the string title or `Gráfico`. The plays run in Chromium, whose `ResizeObserver` feeds `ResponsiveContainer`; no stub is needed.
 - `WorldClockWidget` renders every clock from one instant; without `now` it ticks every second, with `now` it never ticks. `AgendaWidget` keys events by `calendarDateKey` and `calendarProps` cannot override `mode`, `modifiers`, `onSelect` or `selected`.
 - `UpcomingEventWidget` defaults the window to 30 minutes on each side and calls `copyToClipboard(joinHref)` before `onCopy(joinHref)`.
 - `ContactWidget` builds a channel link only for a value it receives and renders it as a COSS `Button` through `render={<a />}`; WhatsApp opens with `target="_blank" rel="noreferrer"`.
@@ -75,13 +74,12 @@ No class is keyed on a `data-*` attribute (no `data-*:` or `group-data-*:` varia
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/widgets
 bunx biome check packages/parttens/src/widgets
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/widgets/
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/widgets
 ```
 
-Stories in `apps/storybook/src/patterns/widgets/` run axe with `test: 'error'`; `crm`, `finance` and `productivity` declare `color-contrast` exceptions on specific stories.
+Interface tests are `play` functions in `apps/storybook/src/patterns/widgets/`: `shared/` (one story file per shared piece: amount, trend indicator, period toggle, shell, expandable list) and `<domain>/behavior.stories.tsx` (`Patterns/Widgets/<Domain>/Behavior`), next to the domain overview stories. There are no bun tests in this folder. Stories run axe with `test: 'error'`; `crm`, `finance` and `productivity` declare `color-contrast` exceptions on specific stories, and `productivity/behavior.stories.tsx` repeats the calendar one for the agenda play.
 
 ## Pointers
 

@@ -6,14 +6,13 @@ The side panel of the details of a flow step: `FlowInspector` (the frame: header
 
 | Folder | Holds |
 | --- | --- |
-| `composition/flow-inspector/` | `FlowInspector`, its test and barrel |
-| `composition/flow-inspector-details/`, `-status/`, `-logs/` | the three renderers, each with its test and barrel |
+| `composition/flow-inspector/` | `FlowInspector` and its barrel |
+| `composition/flow-inspector-details/`, `-status/`, `-logs/` | the three renderers, each with its barrel |
 | `components/` | `inspector-header.tsx` (icon, title, badge, actions, close button), `stat-grid.tsx` (a titled `dl` of label and value), `log-entry.tsx`, `status-icon.tsx` |
 | `hooks/` | `use-inspector-dock.ts`: `useMediaQuery('md')` |
 | `lib/` | `labels.ts` (pt-BR defaults) and `variants.ts` (status to `Badge` variant and icon color) |
 | `store/` | `flow-inspector-context.ts`: the merged `labels` and `onClose` for the parts inside a `FlowInspector` |
 | `types/` | `FlowInspectorLabels` |
-| `test/dom.ts` | the JSDOM setup the tests import; this pattern's own copy |
 | `core.ts` | React-free surface: `FlowInspectorTab`, `FlowLogEntry`, `FlowLogFilter`, `FlowStepStats`, `flowStepAbandonment`, `formatFlowDuration`, with `core.test.ts` |
 
 Import direction: `composition/` → `components/`, `hooks/`, `lib/`, `store/`, `types/`, `core.ts`; `components/` → `lib/`, `store/`, `core.ts`; `store/` → `lib/`, `types/`. The only import from another pattern is `../canvas/core`, as types (`FlowRunStatus`), so the registry item ships that file and never `@xyflow/react`.
@@ -58,13 +57,13 @@ Renderers:
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/flow/inspector
+bun test --isolate packages/parttens/src/flow/inspector/core.test.ts
 bunx biome check packages/parttens/src/flow/inspector
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/patterns/flow/inspector
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/flow/inspector
 ```
 
-Stories are in `apps/storybook/src/patterns/flow/inspector/flow-inspector.stories.tsx` (`Patterns/Flow/Inspector`, with the `Doc` page). The meta fixes the `desktop` viewport as environment so the dock renders; `Sheet` sets `mobile2` through `globals`, not `args`. `Edit` carries an example form (`Field`, `Input`, `Textarea`, `Select`) whose first field takes `autoFocus`: the pattern does not move focus on open in the dock.
+Interface tests are `play` functions in `apps/storybook/src/patterns/flow/inspector/`: `frame.stories.tsx` (`Patterns/Flow/Inspector/Frame`: dock, tabs, footer, labels, and the Sheet below `md` through the `mobile2` viewport global) and `renderers/` (details, status and logs). The only bun test left is `core.test.ts`. Stories are in `apps/storybook/src/patterns/flow/inspector/flow-inspector.stories.tsx` (`Patterns/Flow/Inspector`, with the `Doc` page). The meta fixes the `desktop` viewport as environment so the dock renders; `Sheet` sets `mobile2` through `globals`, not `args`. `Edit` carries an example form (`Field`, `Input`, `Textarea`, `Select`) whose first field takes `autoFocus`: the pattern does not move focus on open in the dock.
 
 ## Pointers
 
