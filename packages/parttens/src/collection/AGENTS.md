@@ -22,7 +22,6 @@ Import direction: `composition/` → `store/`, `shared/lib/`, `types/` and the s
 ## Dependents
 
 - `packages/parttens/src/index.ts` re-exports `collection/index` whole plus `KanbanView as Kanban`.
-- `packages/parttens/src/toolbar/components/collection-toolbar.test.tsx`, `toolbar/components/view-switcher.test.tsx` and `packages/parttens/src/pagination/components/collection-pagination.test.tsx` import `test/dom.ts`. Moving it breaks them.
 - `scripts/bench-views.ts` (run by `release:check` as `bench:views`) imports `shared/lib/project-collection.ts` by path; `scripts/bench/<layout>.bench.ts` import each `layouts/<layout>/index`. Moving a view or `projectCollection` breaks them.
 - The folder name `collection` is hardcoded in `packages/registry/src/manifest.ts` (which also maps the `view` alias to it), `packages/registry/src/cli.ts`, `scripts/test-patterns.ts`, `scripts/test-consumer-ssr.ts` and `scripts/test-consumer-registry.ts`.
 - `scripts/override-exceptions.json` keys two entries by the paths of `layouts/list/components/list-group.tsx` and `list-view.tsx`.

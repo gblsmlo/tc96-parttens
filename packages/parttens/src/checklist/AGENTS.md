@@ -6,11 +6,10 @@ A controlled checklist: the consumer passes `items`, the draft title and callbac
 
 | Folder | Holds |
 | --- | --- |
-| `composition/checklist/` | `Checklist`: the `section`, the header and the `ol`, read-only or sortable; its test and barrel |
+| `composition/checklist/` | `Checklist`: the `section`, the header and the `ol`, read-only or sortable; its barrel |
 | `components/` | the header, list (`ol`, wrapped in `Card` in `card`), sortable row, read-only row, draft row, item card with `ChecklistTitle`, and metadata; never public |
 | `lib/` | due-date functions, dnd-kit sensors and drag handlers, every class string and `cva` variant |
 | `types/` | `ChecklistItem`, `ChecklistProps` and the `ChecklistDensity` and `ChecklistVariant` re-exports |
-| `test/dom.ts` | the JSDOM setup the test imports; this pattern's own copy |
 | `core.ts` | React-free surface: the types, `ChecklistDueStatus` and the due-date functions; workspace only, not reached from the barrel |
 
 Import direction: `composition/` → `components/`, `lib/`, `types/`; `components/` → `lib/`, `types/`; `types/` → `lib/variants.ts`; `lib/` never imports `components/` or `composition/`. Outgoing, by file path into `properties`: `display/date/date-property.tsx` (`DateProperty`), `display/person/person-property.tsx` (`PersonProperty`, `PersonPropertyOption`) and `display/editable-text/editable-text.tsx` (`EditableText`, `EditableTextSize`). `editable-text.tsx` imports `editable/index.ts`, so the registry item also ships the four `editable` files. The imports stay by path on purpose: one import through the `properties` barrel would make the item ship every file of `properties` (decided 2026-10-11, `docs/architecture/tc96-parttens.md`).
@@ -77,13 +76,12 @@ State lives in `data-*` attributes and is styled by their variants, never by a p
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/checklist
 bunx biome check packages/parttens/src/checklist
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/checklist.stories.tsx
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/checklist.stories.tsx src/patterns/checklist
 ```
 
-The stories in `apps/storybook/src/patterns/checklist.stories.tsx` run axe with `test: 'error'`.
+The root stories are in `apps/storybook/src/patterns/checklist.stories.tsx`; interface tests are `play` functions in `apps/storybook/src/patterns/checklist/composition/` (`Patterns/Checklist/Composition/Checklist`). All run axe with `test: 'error'`; the pattern has no bun test.
 
 ## Pointers
 

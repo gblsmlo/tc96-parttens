@@ -197,7 +197,7 @@ Decidido em 2026-10-03: o editor cresce pelo Plate com a UI toda do COSS, sem a 
   layouts/       renderers de coleção em collection
   display/       padrões de apresentação em properties
   composition/   composição de displays e componentes compartilhados
-  test/dom.ts    JSDOM dos testes bun do pattern; cada pattern tem a própria cópia
+  test/dom.ts    JSDOM do teste bun que não roda no navegador (collection, wizard); cada pattern tem a própria cópia
 ```
 
 Uma camada só existe quando tem código; `editable/views/README.md` marca a camada vazia. `vite-env.d.ts` nos patterns mais antigos vem do desenvolvimento isolado: nada o importa e o registry não o distribui, por isso um pattern novo ou reestruturado não o cria. Os `styles/global.css` de `collection`, `properties` e `editable` tinham a mesma origem e foram removidos em 2026-10-03, na auditoria de Tailwind; nenhum pattern carrega CSS. O `AGENTS.md` da raiz descreve o mesmo layout em inglês para os agentes. Decidido em 2026-10-03: cada pattern e a pasta `shared/` têm o próprio `AGENTS.md`, escrito a exemplo do de `checklist` (mapa de arquivos com o que é público, API pública, comportamento que os testes fixam, contrato de `data-*` e comandos de verificação); o arquivo acompanha qualquer mudança de arquivo ou de API do pattern.
@@ -686,7 +686,7 @@ Decidido em 2026-10-23 ([ADR 0006](../../.specs/adr/0006-flow-family-on-react-fl
 
   A borda do cartão do nó (`border`) mede 1,19:1 e 1,17:1: é moldura, a leitura do nó está no texto e no badge, e o nó selecionado e o foco têm os pares acima. Os pontos do fundo são decoração.
 - **Espaçamento e composição:** conferidos em captura do claro e do escuro de `Horizontal`, `Selected` e `Vertical` num viewport de 800 por 600. O título e a descrição do nó truncam em uma linha ao lado do badge; os controles ficam no canto inferior esquerdo e o minimapa, a partir de `md`, no inferior direito; o React Flow não reserva a área dos dois painéis no `fitView`, então num viewport estreito os painéis podem cobrir uma folha do grafo.
-- **Testes:** `bun test` cobre `to-react-flow` nos dois sentidos, o `onDrop` com um `DataTransfer` montado à mão (JSDOM não tem `DragEvent`, então o evento é um `MouseEvent` com `dataTransfer` definido), os atalhos e o `aria-busy`; os `play` de `Horizontal` e `Vertical` cobrem seleção, toolbar, menu de contexto e controles de aresta, em claro e escuro com axe.
+- **Testes:** `bun test` cobre `to-react-flow` nos dois sentidos; os `play` de `Patterns/Flow/Canvas/{States,Drop,Keyboard,Lock}` cobrem o `onDrop` com um `DragEvent` real, os atalhos, o bloqueio e o `aria-busy` (migrados do `bun test` em 2026-10-31, issue #240); os `play` de `Horizontal` e `Vertical` cobrem seleção, toolbar, menu de contexto e controles de aresta, em claro e escuro com axe.
 
 ## Storybook: sidebar por camada
 

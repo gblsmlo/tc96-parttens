@@ -12,7 +12,6 @@ The folder is flat; files by role:
 | `plugins.tsx` | `richTextEditorOptions` (the whole Plate setup), core elements and leaves, input rules, normalizers, `applyBlock`, the vocabulary arrays |
 | `extra-blocks.tsx`, `block-draggable.tsx` | the blocks reachable only from the `/` menu, `insertImage`, and the opt-in drag and block selection plugins |
 | `slash-menu.tsx`, `floating-toolbar.tsx`, `link-button.tsx` | `useSlashMenu` and the listbox shared by `/` and `@`; the toolbar with the block `Select`, mark and block toggles and the link popover |
-| `test/dom.ts` | the JSDOM setup the tests import |
 | `index.ts` | the barrel; internal names (`useSlashMenu`, `richTextEditorOptions`, `blockDragPlugins`, `withoutSlashInput`) stay out of it |
 
 Import direction: `rich-text-editor.tsx` → every other file except `editor-title.tsx`; `plugins.tsx` → `block-draggable.tsx`, `extra-blocks.tsx`; `slash-menu.tsx` → `plugins.tsx`, `extra-blocks.tsx` and `blockIcon` from `floating-toolbar.tsx`; `floating-toolbar.tsx` → `link-button.tsx`, `plugins.tsx`; `editor-title.tsx` imports nothing from the folder. Outside it: `@tc96/helpers/rich-text` (`flattenTitle`, `formatTitleCounter`, `stripRichTextNodeIds`), COSS and `@tc96/utils`.
@@ -28,7 +27,7 @@ Import direction: `rich-text-editor.tsx` → every other file except `editor-tit
 
 Document:
 
-- The emitted document never carries node ids or a trigger input. The editor runs with `nodeId: { initialValueIds: 'always' }` because block selection and drag need ids; `withoutSlashInput` skips any value containing `slash_input` or `mention_input` (`hasTriggerInput`) and passes the rest through `stripRichTextNodeIds`. `plugins.test.tsx` and `slash-menu.test.tsx` cover both.
+- The emitted document never carries node ids or a trigger input. The editor runs with `nodeId: { initialValueIds: 'always' }` because block selection and drag need ids; `withoutSlashInput` skips any value containing `slash_input` or `mention_input` (`hasTriggerInput`) and passes the rest through `stripRichTextNodeIds`. `plugins.test.ts` and `slash-menu.test.ts` cover the document side, and the `Patterns/Rich Text Editor/Slash Menu` plays cover what `onValueChange` receives.
 - `richTextEditorOptions` throws `RangeError` unless `maxListDepth` is an integer of at least 1. Lists deeper than the cap are flattened on normalize; Tab without room and Shift+Tab at depth 1 return `false`, so focus leaves the editor by keyboard.
 - Lists are Plate's classic model (`ul`, `ol`, `li`, `lic`) with `TaskListPlugin` disabled. A blockquote flattens blocks pasted inside it, with a line break between them.
 - There is no free text color: highlight is the boolean `highlight` leaf, because a fixed color stored in the document would not follow the consumer's dark theme.
@@ -82,7 +81,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/rich-text-editor
 ```
 
-Stories in `apps/storybook/src/patterns/rich-text-editor/` run axe with `test: 'error'`. The editor and title stories scope `aria-hidden-focus` to `[aria-hidden="true"]:not([data-base-ui-focus-guard])`, because the Base UI `Popover` focus guards belong to COSS.
+Interface tests are `play` functions in `apps/storybook/src/patterns/rich-text-editor/`: the editor and title stories, `slash-menu.stories.tsx` (what `onValueChange` receives while the menu is open), `plugins.stories.tsx` (pasted HTML) and `editor-title/` (title behavior). The bun tests left in this folder are the pure document and transform checks in `plugins.test.ts` and `slash-menu.test.ts`, which run on `createPlateEditor` without mounting and need no DOM. Stories run axe with `test: 'error'`. The editor and title stories scope `aria-hidden-focus` to `[aria-hidden="true"]:not([data-base-ui-focus-guard])`, because the Base UI `Popover` focus guards belong to COSS.
 
 ## Pointers
 

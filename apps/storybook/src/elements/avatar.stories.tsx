@@ -75,3 +75,33 @@ export const Fallback: Story = {
     ).toHaveAttribute('data-size', args.size)
   },
 }
+
+export const SizeReplacesCossSize: Story = {
+  args: { size: 'xl' },
+  render: (args) => (
+    <Avatar {...args}>
+      <AvatarFallback>AV</AvatarFallback>
+    </Avatar>
+  ),
+  play: async ({ canvasElement }) => {
+    const avatar = canvasElement.querySelector('[data-slot="avatar"]')
+    await expect(avatar).toHaveAttribute('data-size', 'xl')
+    await expect(avatar).toHaveClass('size-12')
+    await expect(avatar).not.toHaveClass('size-8')
+  },
+  tags: ['!dev', '!autodocs'],
+}
+
+export const DefaultSizeWithoutProp: Story = {
+  render: () => (
+    <Avatar>
+      <AvatarFallback>AV</AvatarFallback>
+    </Avatar>
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(
+      canvasElement.querySelector('[data-slot="avatar"]'),
+    ).toHaveAttribute('data-size', 'default')
+  },
+  tags: ['!dev', '!autodocs'],
+}

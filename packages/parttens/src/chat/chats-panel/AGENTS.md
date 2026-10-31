@@ -6,13 +6,12 @@ A controlled list of conversations for an inbox: `ChatsPanel` (a titled `section
 
 | Folder | Holds |
 | --- | --- |
-| `composition/chats-panel/` | `ChatsPanel` on the COSS `Card` and `ScrollArea`, its test and barrel |
+| `composition/chats-panel/` | `ChatsPanel` on the COSS `Card` and `ScrollArea`, its barrel |
 | `composition/chats-panel-list/` | `ChatsPanelList`, its barrel |
-| `composition/chats-panel-item/` | `ChatsPanelItem` on Base UI `useRender` and the COSS `Badge`, its test and barrel |
-| `composition/chats-panel-skeleton/` | `ChatsPanelSkeleton` and `ChatsPanelItemSkeleton` on the COSS `Skeleton`, their test and barrel |
+| `composition/chats-panel-item/` | `ChatsPanelItem` on Base UI `useRender` and the COSS `Badge`, its barrel |
+| `composition/chats-panel-skeleton/` | `ChatsPanelSkeleton` and `ChatsPanelItemSkeleton` on the COSS `Skeleton`, their barrel |
 | `lib/` | `variants.ts`: the root, shell, header and body classes, the row box shared by the item and the skeleton, the preview `cva` and the skeleton width sizes |
 | `store/` | `chats-panel-context.ts`: the title id that names the list |
-| `test/dom.ts` | the JSDOM setup the tests import; this pattern's own copy |
 | `core.ts` | React-free surface: the prop types and `chatsPanelSkeletonWidths`; `channel` is typed from the `IconModule` of `@thesvg/icons` |
 
 Import direction: `composition/` → `lib/`, `store/`, `core.ts`; `ChatsPanelList` reads the context that `ChatsPanel` provides. `ChatsPanelItem` imports `@base-ui/react/use-render` and `merge-props` directly, as `RecordGroupLink` does. `core.ts` imports the `IconModule` type from `@thesvg/icons`, the pattern's only reference to it; nothing imports an icon. No import into another pattern or into `packages/parttens/src/shared`.
@@ -67,14 +66,13 @@ Loading:
 ## Verify
 
 ```bash
-bun test --isolate packages/parttens/src/chat/chats-panel
 bunx biome check packages/parttens/src/chat
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 bun test packages/registry
-cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/patterns/chat/chats-panel
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/chat/chats-panel
 ```
 
-The stories are in `apps/storybook/src/patterns/chat/chats-panel/`. `chats-panel.stories.tsx` (`Patterns/Chat/Chats Panel`) is the root with the `Doc` page and its `usage` and `api` docs parameters: `Plain`, `Card`, `Inset`, `Loading` and `Empty`, each with a `!dev` `<Story>Interaction` twin, passing the rows as JSX in `args.children`; the controls come from `chatsPanelArgTypes` in `apps/storybook/src/test-utils/story-arg-types.ts`. `usages/inbox.stories.tsx` (`Patterns/Chat/Chats Panel/Usages/Inbox`) owns the sort, filters and selection as a consumer would, with the `ViewSettingsMenu` in `actions`, and covers selection, sorting, filtering, no results, empty and loading. Both read `fixtures/chats.tsx` (conversations, the `instagram`, `messenger` and `whatsapp` modules of `@thesvg/icons` and the avatar). Both theme projects run axe with `test: 'error'`.
+The stories are in `apps/storybook/src/patterns/chat/chats-panel/`. `chats-panel.stories.tsx` (`Patterns/Chat/Chats Panel`) is the root with the `Doc` page and its `usage` and `api` docs parameters: `Plain`, `Card`, `Inset`, `Loading` and `Empty`, each with a `!dev` `<Story>Interaction` twin, passing the rows as JSX in `args.children`; the controls come from `chatsPanelArgTypes` in `apps/storybook/src/test-utils/story-arg-types.ts`. `usages/inbox.stories.tsx` (`Patterns/Chat/Chats Panel/Usages/Inbox`) owns the sort, filters and selection as a consumer would, with the `ViewSettingsMenu` in `actions`, and covers selection, sorting, filtering, no results, empty and loading. Both read `fixtures/chats.tsx` (conversations, the `instagram`, `messenger` and `whatsapp` modules of `@thesvg/icons` and the avatar). Interface tests are `play` functions in `shell.stories.tsx` (`Patterns/Chat/Chats Panel/Shell`: root, list name, variants, actions, avatar size), `item.stories.tsx` (name, avatar slot, channel mark, unread, selection, `render`) and `skeleton.stories.tsx` (status, rows, widths, the row box shared with the item); the pattern has no bun test left. Both theme projects run axe with `test: 'error'`.
 
 ## Pointers
 
