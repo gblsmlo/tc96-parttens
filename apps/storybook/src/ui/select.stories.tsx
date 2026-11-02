@@ -141,7 +141,7 @@ const items = [
   <SelectTrigger>
     <SelectValue />
   </SelectTrigger>
-  <SelectPopup alignItemWithTrigger={false}>
+  <SelectPopup>
     <SelectLabel>Frameworks</SelectLabel>
     {items.map((item) => (
       <SelectItem key={item.value} value={item}>
@@ -180,7 +180,7 @@ const docs = {
 | \`sideOffset\` | \`number\` | \`4\` | Distance from the trigger in pixels |
 | \`portalProps\` | \`Select.Portal.Props\` | - | Props forwarded to the internal portal (\`keepMounted\`, \`container\`, etc.); see Base UI Select portal API |
 
-The COSS component itself defaults \`alignItemWithTrigger\` to \`true\`, so pass \`alignItemWithTrigger={false}\` on every \`SelectPopup\`.`,
+COSS defaults \`alignItemWithTrigger\` to \`true\`, which lays the popup over the trigger; this workspace edits \`SelectPopup\` to default it to \`false\`, so the popup opens below the trigger.`,
       name: 'SelectPopup',
     },
     {
@@ -227,7 +227,7 @@ import { SelectButton } from '@acme/ui/select'
   ],
   description: {
     component:
-      'COSS Select, with one edit: the `SelectItem` check sits on the right. A common form component for choosing a predefined value in a dropdown menu. For accessible labelling and validation, prefer wrapping it in the `Field` component. Reference: [coss ui Select](https://coss.com/ui/docs/components/select).',
+      'COSS Select, with two edits: the `SelectItem` check sits on the right, and `SelectPopup` opens below the trigger (`alignItemWithTrigger` defaults to `false`). A common form component for choosing a predefined value in a dropdown menu. For accessible labelling and validation, prefer wrapping it in the `Field` component. Reference: [coss ui Select](https://coss.com/ui/docs/components/select).',
   },
   usage,
 } satisfies UsageDocsParameters & Record<string, unknown>
