@@ -22,7 +22,7 @@ import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   type ThemePreset,
   themePresets,
-} from '../../../../../../example/packages/ui/src/themes/presets.ts'
+} from '../../../../../../../example/packages/ui/src/themes/presets.ts'
 
 type ThemeMode = 'system' | 'light' | 'dark'
 
@@ -221,7 +221,7 @@ const meta = {
   decorators: [withStorybookTheme],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Theme picker',
+  title: 'Patterns/Surfaces/Settings/Usages/Profile/Theme picker',
 } satisfies Meta<typeof ThemeSettings>
 
 export default meta
@@ -238,7 +238,7 @@ const primaryOf = (swatch: HTMLElement) =>
     swatch.querySelector('[data-slot="theme-swatch-primary"]') as HTMLElement,
   ).backgroundColor
 
-export const Default: Story = {}
+export const ThemePicker: Story = { name: 'Theme picker' }
 
 export const Interaction: Story = {
   play: async ({ args, canvasElement }) => {

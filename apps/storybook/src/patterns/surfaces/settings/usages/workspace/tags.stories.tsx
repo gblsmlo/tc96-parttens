@@ -164,16 +164,9 @@ const meta = {
       </div>
     ),
   ],
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A consumer composition of SettingsSection, SettingsRow and StateSurface with two tag levels: tags and subtags. The tag data, swatches, counts and menus live in this story, not in the pattern.',
-      },
-    },
-    layout: 'padded',
-  },
-  title: 'Patterns/Surfaces/Settings/Usages/Tags',
+  parameters: { layout: 'padded' },
+  tags: ['!autodocs'],
+  title: 'Patterns/Surfaces/Settings/Usages/Workspace/Tags',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
@@ -182,7 +175,8 @@ type Story = StoryObj<typeof meta>
 
 const interaction = ['!dev', '!autodocs']
 
-export const Default: Story = {
+export const Tags: Story = {
+  name: 'Tags',
   render: () => (
     <TagsSection actions={<NewTagButton />}>
       {tags.flatMap((tag) => [
@@ -195,8 +189,8 @@ export const Default: Story = {
   ),
 }
 
-export const DefaultInteraction: Story = {
-  ...Default,
+export const Interaction: Story = {
+  ...Tags,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     expect(
@@ -225,7 +219,7 @@ export const DefaultInteraction: Story = {
   tags: interaction,
 }
 
-export const Empty: Story = {
+export const EmptyInteraction: Story = {
   render: () => (
     <TagsSection actions={null}>
       <StateSurface
@@ -236,10 +230,6 @@ export const Empty: Story = {
       />
     </TagsSection>
   ),
-}
-
-export const EmptyInteraction: Story = {
-  ...Empty,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')

@@ -158,7 +158,8 @@ const meta = {
     ),
   ],
   parameters: { layout: 'padded' },
-  title: 'Patterns/Surfaces/Settings/Usages/Preferences',
+  tags: ['!autodocs'],
+  title: 'Patterns/Surfaces/Settings/Usages/Profile/Preferences',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
@@ -175,12 +176,13 @@ const rowsOf = (canvasElement: HTMLElement) =>
 const slotOf = (row: HTMLElement, name: 'end' | 'heading') =>
   row.querySelector(`[data-slot="settings-row-${name}"]`) as HTMLElement
 
-export const Default: Story = {
+export const Preferences: Story = {
+  name: 'Preferences',
   render: () => <PreferencesDemo />,
 }
 
 export const Interaction: Story = {
-  ...Default,
+  ...Preferences,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     expect(canvas.getByRole('region', { name: 'General' })).toBeVisible()
