@@ -258,3 +258,29 @@ export const shellSections: ShellSection[] = [
     title: 'Suporte',
   },
 ]
+
+export const settingsNavigation: ShellNavGroup[] = [
+  {
+    items: [
+      { active: true, href: '/settings/profile', title: 'Perfil' },
+      { href: '/settings/preferences', title: 'Preferências' },
+      { href: '/settings/notifications', title: 'Notificações' },
+      { href: '/settings/security', title: 'Segurança' },
+    ],
+    label: 'Conta',
+  },
+  {
+    items: [
+      { href: '/settings/workspace', title: 'Geral' },
+      { badge: 12, href: '/settings/members', title: 'Membros' },
+      { href: '/settings/billing', title: 'Faturamento' },
+      { href: '/settings/integrations', title: 'Integrações' },
+    ],
+    label: 'Workspace',
+  },
+]
+
+export const settingsBreadcrumbs: ShellBreadcrumbItem[] = [
+  { href: '/settings', label: 'Configurações' },
+  { label: 'Perfil' },
+]

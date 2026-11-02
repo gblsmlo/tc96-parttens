@@ -46,6 +46,7 @@ export const templateNames = [
   'app-shell-2',
   'app-shell-3',
   'app-shell-4',
+  'settings-shell',
   'workflow-editor',
   'agent-builder',
 ] as const
@@ -56,6 +57,7 @@ export const templateSources: Record<TemplateName, string> = {
   'app-shell-2': 'application/shell/app-shell-2',
   'app-shell-3': 'application/shell/app-shell-3',
   'app-shell-4': 'application/shell/app-shell-4',
+  'settings-shell': 'application/shell/settings-shell',
   'workflow-editor': 'application/flow/workflow-editor',
   'agent-builder': 'application/flow/agent-builder',
 }

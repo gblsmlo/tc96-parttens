@@ -60,6 +60,7 @@ export interface ShellNotification {
 
 export interface ShellLabels {
   account: string
+  backToApp: string
   breadcrumb: string
   itemActions: (title: string) => string
   markAllRead: string
@@ -75,6 +76,7 @@ export interface ShellLabels {
   searchOpen: string
   searchPlaceholder: string
   sections: string
+  settingsNavigation: string
   signOut: string
   switchWorkspace: string
   theme: string

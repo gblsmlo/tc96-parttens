@@ -1425,6 +1425,17 @@
     "ShellUser",
     "ShellWorkspace"
   ],
+  "template:settings-shell": [
+    "SettingsShell",
+    "SettingsShellProps",
+    "ShellAction",
+    "ShellBreadcrumbItem",
+    "ShellLabels",
+    "ShellNavGroup",
+    "ShellNavItem",
+    "ShellNavSubItem",
+    "ShellRenderLink"
+  ],
   "template:workflow-editor": [
     "AssistantMessage",
     "AssistantSuggestion",

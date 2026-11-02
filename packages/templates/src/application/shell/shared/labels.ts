@@ -2,6 +2,7 @@ import type { ShellLabels } from './types'
 
 export const defaultShellLabels: ShellLabels = {
   account: 'Conta',
+  backToApp: 'Voltar ao app',
   breadcrumb: 'Trilha de navegação',
   itemActions: (title) => `Ações de ${title}`,
   markAllRead: 'Marcar todas como lidas',
@@ -18,6 +19,7 @@ export const defaultShellLabels: ShellLabels = {
   searchOpen: 'Abrir',
   searchPlaceholder: 'Buscar páginas…',
   sections: 'Seções',
+  settingsNavigation: 'Navegação de configurações',
   signOut: 'Sair',
   switchWorkspace: 'Trocar workspace',
   theme: 'Tema',
