@@ -146,7 +146,14 @@ function NextActionsSection({ children }: { children: ReactNode }) {
   return (
     <SettingsSection
       header={
-        <SettingsSectionHeader>
+        <SettingsSectionHeader
+          actions={
+            <Button size="sm">
+              <PlusIcon aria-hidden="true" />
+              New action
+            </Button>
+          }
+        >
           <SettingsSectionTitle>Next actions</SettingsSectionTitle>
           <SettingsSectionDescription>
             Actions a lead needs before it leaves each open stage.
@@ -166,12 +173,6 @@ function NextActionsDemo({ empty = false }: { empty?: boolean }) {
       <NextActionsSection>
         {empty ? (
           <StateSurface
-            actions={
-              <Button size="sm" variant="outline">
-                <PlusIcon aria-hidden="true" />
-                Add action
-              </Button>
-            }
             description="Add actions to the stages leads move through."
             kind="empty"
             title="No next actions yet"
@@ -179,19 +180,7 @@ function NextActionsDemo({ empty = false }: { empty?: boolean }) {
         ) : (
           <div>
             {stages.map(({ actions, name }) => (
-              <SettingsCollapsed
-                actions={
-                  <Button
-                    aria-label={`Add action to ${name}`}
-                    size="icon-xs"
-                    variant="ghost"
-                  >
-                    <PlusIcon aria-hidden="true" />
-                  </Button>
-                }
-                key={name}
-                title={`Leaving ${name}`}
-              >
+              <SettingsCollapsed key={name} title={`Leaving ${name}`}>
                 {actions.length === 0 ? (
                   <Text
                     foreground="muted"
@@ -260,12 +249,14 @@ export const Interaction: Story = {
     expect(block).toBeVisible()
     expect(block).not.toBeChecked()
 
+    const newAction = canvas.getByRole('button', { name: 'New action' })
+    expect(newAction).toBeEnabled()
+    expect(newAction.closest('[data-slot="card"]')).toBeNull()
+
     for (const { actions, name } of stages) {
       const group = canvas.getByRole('region', { name: `Leaving ${name}` })
       expect(group).toBeVisible()
-      expect(
-        within(group).getByRole('button', { name: `Add action to ${name}` }),
-      ).toBeEnabled()
+      expect(within(group).queryByRole('button', { name: /^Add / })).toBeNull()
       expect(within(group).queryAllByRole('switch')).toHaveLength(
         actions.length,
       )
@@ -330,7 +321,8 @@ export const EmptyInteraction: Story = {
     const canvas = within(canvasElement)
     expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')
     expect(canvas.getByText('No next actions yet')).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'Add action' })).toBeEnabled()
+    expect(canvas.getByRole('button', { name: 'New action' })).toBeEnabled()
+    expect(within(canvas.getByRole('status')).queryByRole('button')).toBeNull()
     expect(
       canvas.getByRole('switch', { name: 'Block stage changes' }),
     ).toBeVisible()

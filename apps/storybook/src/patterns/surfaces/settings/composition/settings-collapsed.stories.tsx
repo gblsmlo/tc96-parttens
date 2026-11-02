@@ -45,7 +45,7 @@ type Story = StoryObj<typeof meta>
 
 export const ActionsStayVisibleWhileCollapsed: Story = {
   args: {
-    actions: <Button variant="ghost">Add item</Button>,
+    actions: <Button variant="ghost">Rename</Button>,
     defaultOpen: false,
   },
   play: async ({ canvasElement }) => {
@@ -53,7 +53,7 @@ export const ActionsStayVisibleWhileCollapsed: Story = {
     const region = canvas.getByRole('region', { name: 'Items' })
     const heading = canvas.getByRole('heading', { level: 2, name: 'Items' })
     const trigger = within(heading).getByRole('button', { name: 'Items' })
-    const action = canvas.getByRole('button', { name: 'Add item' })
+    const action = canvas.getByRole('button', { name: 'Rename' })
 
     await expect(region).toHaveAttribute('data-slot', 'settings-collapsed')
     await expect(trigger).toHaveAttribute('aria-expanded', 'false')

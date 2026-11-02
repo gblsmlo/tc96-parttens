@@ -1,8 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { IconFrame } from '@tc96/elements/icon-frame'
+import { Text } from '@tc96/elements/text'
 import {
-  SettingsCollapsed,
-  SettingsRow,
+  RecordDialog,
+  RecordDialogHeadline,
+  RecordGroup,
+  RecordGroupItem,
+  RecordGroupRow,
+  SelectProperty,
+  type SelectPropertyOption,
   SettingsSection,
   SettingsSectionDescription,
   SettingsSectionHeader,
@@ -11,6 +16,7 @@ import {
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
+  CircleDotIcon,
   CircleXIcon,
   EllipsisIcon,
   FileTextIcon,
@@ -22,7 +28,7 @@ import {
   UserCheckIcon,
 } from 'lucide-react'
 import { useState } from 'react'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 
 type PhaseId = 'Open' | 'Won' | 'Lost'
 type Direction = 'up' | 'down'
@@ -30,6 +36,7 @@ type Direction = 'up' | 'down'
 interface Stage {
   icon: LucideIcon
   leads: number
+  locked?: boolean
   name: string
   phase: PhaseId
   tone: string
@@ -37,53 +44,51 @@ interface Stage {
 
 const phases: PhaseId[] = ['Open', 'Won', 'Lost']
 
+const phaseOptions: SelectPropertyOption[] = phases.map((phase) => ({
+  label: phase,
+  value: phase,
+}))
+
+const phaseLooks: Record<PhaseId, Pick<Stage, 'icon' | 'tone'>> = {
+  Lost: { icon: CircleXIcon, tone: 'text-destructive-foreground' },
+  Open: { icon: CircleDotIcon, tone: 'text-muted-foreground' },
+  Won: { icon: TrophyIcon, tone: 'text-green-700 dark:text-green-500' },
+}
+
 const initialStages: Stage[] = [
   {
     icon: SparklesIcon,
     leads: 4,
     name: 'New',
     phase: 'Open',
-    tone: 'bg-amber-500/10 text-amber-700 dark:text-amber-500',
+    tone: 'text-amber-700 dark:text-amber-500',
   },
   {
     icon: UserCheckIcon,
     leads: 7,
     name: 'Qualification',
     phase: 'Open',
-    tone: 'bg-blue-500/10 text-blue-700 dark:text-blue-500',
+    tone: 'text-blue-700 dark:text-blue-500',
   },
   {
     icon: FileTextIcon,
     leads: 3,
     name: 'Proposal',
     phase: 'Open',
-    tone: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-500',
+    tone: 'text-yellow-700 dark:text-yellow-500',
   },
   {
     icon: HandshakeIcon,
     leads: 2,
     name: 'Negotiation',
     phase: 'Open',
-    tone: 'bg-violet-500/10 text-violet-700 dark:text-violet-500',
+    tone: 'text-violet-700 dark:text-violet-500',
   },
-  {
-    icon: TrophyIcon,
-    leads: 12,
-    name: 'Won',
-    phase: 'Won',
-    tone: 'bg-green-500/10 text-green-700 dark:text-green-500',
-  },
-  {
-    icon: CircleXIcon,
-    leads: 0,
-    name: 'Lost',
-    phase: 'Lost',
-    tone: 'bg-destructive/8 text-destructive-foreground dark:bg-destructive/16',
-  },
+  { ...phaseLooks.Won, leads: 12, locked: true, name: 'Won', phase: 'Won' },
+  { ...phaseLooks.Lost, leads: 0, locked: true, name: 'Lost', phase: 'Lost' },
 ]
 
 const onNewStage = fn()
-const onAddStage = fn()
 const onEditStage = fn()
 const onMoveStage = fn()
 const onDeleteStage = fn()
@@ -92,7 +97,7 @@ function describeStage({ leads, phase }: Stage) {
   const count =
     leads === 0 ? undefined : `${leads} lead${leads === 1 ? '' : 's'}`
   if (phase === 'Open') return count
-  const closes = `Closes the lead as ${phase.toLowerCase()}`
+  const closes = `Closes as ${phase.toLowerCase()}`
   return count ? `${count} · ${closes}` : closes
 }
 
@@ -107,7 +112,7 @@ function StageActions({
   onMove: (direction: Direction) => void
   stage: Stage
 }) {
-  const { name, phase } = stage
+  const { locked, name } = stage
   return (
     <Menu>
       <MenuTrigger
@@ -118,7 +123,7 @@ function StageActions({
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem onClick={() => onEditStage(name)}>Edit</MenuItem>
-        {phase === 'Open' ? (
+        {locked ? null : (
           <>
             <MenuItem disabled={first} onClick={() => onMove('up')}>
               Move up
@@ -130,16 +135,52 @@ function StageActions({
               Delete
             </MenuItem>
           </>
-        ) : null}
+        )}
       </MenuPopup>
     </Menu>
   )
 }
 
+function StageItem({
+  first,
+  last,
+  onMove,
+  stage,
+}: {
+  first: boolean
+  last: boolean
+  onMove: (direction: Direction) => void
+  stage: Stage
+}) {
+  const { icon: Icon, name, tone } = stage
+  const description = describeStage(stage)
+
+  return (
+    <RecordGroupItem leading={<Icon className={tone} />} title={name}>
+      <div className="flex min-w-0 items-center gap-3">
+        {description ? (
+          <Text
+            className="truncate"
+            foreground="muted"
+            render={<span>{description}</span>}
+            size="sm"
+          />
+        ) : null}
+        <StageActions first={first} last={last} onMove={onMove} stage={stage} />
+      </div>
+    </RecordGroupItem>
+  )
+}
+
 function swap(stages: Stage[], name: string, direction: Direction) {
   const index = stages.findIndex((stage) => stage.name === name)
-  const target = direction === 'up' ? index - 1 : index + 1
   const phase = stages[index]?.phase
+  const step = direction === 'up' ? -1 : 1
+  let target = index + step
+  while (target >= 0 && target < stages.length) {
+    if (stages[target]?.phase === phase) break
+    target += step
+  }
   if (index < 0 || stages[target]?.phase !== phase) return stages
   const next = [...stages]
   const moved = next[index] as Stage
@@ -148,8 +189,79 @@ function swap(stages: Stage[], name: string, direction: Direction) {
   return next
 }
 
+function isPhase(value: string): value is PhaseId {
+  return phases.some((phase) => phase === value)
+}
+
+function NewStageDialog({
+  names,
+  onCreate,
+  onOpenChange,
+  open,
+}: {
+  names: string[]
+  onCreate: (name: string, phase: PhaseId) => void
+  onOpenChange: (open: boolean) => void
+  open: boolean
+}) {
+  const [name, setName] = useState('')
+  const [phase, setPhase] = useState<PhaseId>('Open')
+  const trimmed = name.trim()
+  const taken = names.some(
+    (existing) => existing.toLowerCase() === trimmed.toLowerCase(),
+  )
+
+  return (
+    <RecordDialog
+      onOpenChange={(next) => {
+        onOpenChange(next)
+        if (!next) {
+          setName('')
+          setPhase('Open')
+        }
+      }}
+      onSubmit={() => {
+        if (trimmed === '' || taken) return false
+        onCreate(trimmed, phase)
+        setName('')
+        setPhase('Open')
+        return true
+      }}
+      open={open}
+      size="small"
+      submitDisabled={trimmed === '' || taken}
+      submitLabel="Create stage"
+      submitOnModEnter
+      title="New stage"
+      titleAncestor="Pipeline stages"
+    >
+      <div className="grid gap-4">
+        <RecordDialogHeadline
+          onTitleChange={setName}
+          title={name}
+          titleLabel="Stage name"
+          titlePlaceholder="Stage name"
+        />
+        <div>
+          <RecordGroupRow label="Phase">
+            <SelectProperty
+              ariaLabel="Phase"
+              onValueChange={(value) => {
+                if (value && isPhase(value)) setPhase(value)
+              }}
+              options={phaseOptions}
+              value={phase}
+            />
+          </RecordGroupRow>
+        </div>
+      </div>
+    </RecordDialog>
+  )
+}
+
 function PipelineStagesDemo() {
   const [stages, setStages] = useState(initialStages)
+  const [creating, setCreating] = useState(false)
 
   return (
     <main className="mx-auto w-full max-w-2xl">
@@ -157,7 +269,7 @@ function PipelineStagesDemo() {
         header={
           <SettingsSectionHeader
             actions={
-              <Button onClick={() => onNewStage()} size="sm">
+              <Button onClick={() => setCreating(true)} size="sm">
                 <PlusIcon aria-hidden="true" />
                 New stage
               </Button>
@@ -170,59 +282,42 @@ function PipelineStagesDemo() {
           </SettingsSectionHeader>
         }
       >
-        <div>
+        <div className="flex flex-col gap-3 py-4">
           {phases.map((phase) => {
             const group = stages.filter((stage) => stage.phase === phase)
             return (
-              <SettingsCollapsed
-                actions={
-                  phase === 'Open' ? (
-                    <Button
-                      aria-label="Add stage to Open"
-                      onClick={() => onAddStage(phase)}
-                      size="icon-xs"
-                      variant="ghost"
-                    >
-                      <PlusIcon aria-hidden="true" />
-                    </Button>
-                  ) : undefined
-                }
-                key={phase}
-                title={phase}
-              >
-                {group.map((stage, index) => {
-                  const { icon: Icon, name, tone } = stage
-                  return (
-                    <SettingsRow
-                      description={describeStage(stage)}
-                      endSlot={
-                        <StageActions
-                          first={index === 0}
-                          last={index === group.length - 1}
-                          onMove={(direction) => {
-                            onMoveStage(name, direction)
-                            setStages((current) =>
-                              swap(current, name, direction),
-                            )
-                          }}
-                          stage={stage}
-                        />
-                      }
-                      key={name}
-                      startSlot={
-                        <IconFrame className={tone} shape="rounded">
-                          <Icon className="size-4" />
-                        </IconFrame>
-                      }
-                      title={name}
-                    />
-                  )
-                })}
-              </SettingsCollapsed>
+              <RecordGroup key={phase} title={phase}>
+                {group.map((stage, index) => (
+                  <StageItem
+                    first={index === 0}
+                    key={stage.name}
+                    last={index === group.length - 1}
+                    onMove={(direction) => {
+                      onMoveStage(stage.name, direction)
+                      setStages((current) =>
+                        swap(current, stage.name, direction),
+                      )
+                    }}
+                    stage={stage}
+                  />
+                ))}
+              </RecordGroup>
             )
           })}
         </div>
       </SettingsSection>
+      <NewStageDialog
+        names={stages.map((stage) => stage.name)}
+        onCreate={(name, phase) => {
+          onNewStage(name, phase)
+          setStages((current) => [
+            ...current,
+            { ...phaseLooks[phase], leads: 0, name, phase },
+          ])
+        }}
+        onOpenChange={setCreating}
+        open={creating}
+      />
     </main>
   )
 }
@@ -252,6 +347,12 @@ export const PipelineStages: Story = {
   render: () => <PipelineStagesDemo />,
 }
 
+const titlesIn = (region: HTMLElement) =>
+  Array.from(
+    region.querySelectorAll('[data-slot="record-group-item-title"]'),
+    (title) => title.textContent?.trim(),
+  )
+
 export const Interaction: Story = {
   ...PipelineStages,
   play: async ({ canvasElement }) => {
@@ -261,31 +362,38 @@ export const Interaction: Story = {
     expect(
       canvas.getByRole('heading', { name: 'Pipeline stages', level: 2 }),
     ).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'New stage' })).toBeVisible()
-    expect(
-      canvas.getByRole('button', { name: 'Add stage to Open' }),
-    ).toBeVisible()
-    expect(
-      canvas.queryAllByRole('button', { name: /^Add stage to/ }),
-    ).toHaveLength(1)
+    const card = canvasElement.querySelector(
+      '[data-slot="card"]',
+    ) as HTMLElement
+    const newStage = canvas.getByRole('button', { name: 'New stage' })
+    expect(newStage.closest('[data-slot="card"]')).toBeNull()
+    expect(canvas.queryAllByRole('button', { name: /^Add / })).toHaveLength(0)
 
     const open = canvas.getByRole('region', { name: 'Open' })
-    expect(canvas.getByRole('region', { name: 'Won' })).toBeVisible()
-    expect(canvas.getByRole('region', { name: 'Lost' })).toBeVisible()
+    const won = canvas.getByRole('region', { name: 'Won' })
+    const lost = canvas.getByRole('region', { name: 'Lost' })
+    for (const region of [open, won, lost]) {
+      expect(card).toContainElement(region)
+    }
+    expect(titlesIn(open)).toEqual([
+      'New',
+      'Qualification',
+      'Proposal',
+      'Negotiation',
+    ])
     expect(
       canvas.getAllByRole('button', { name: /^Actions for / }),
     ).toHaveLength(initialStages.length)
-    for (const { name } of initialStages) {
-      expect(
-        canvas.getByRole('button', { name: `Actions for ${name}` }),
-      ).toBeVisible()
-    }
-    expect(canvas.getByText('Closes the lead as lost')).toBeVisible()
+    expect(canvas.getByText('Closes as lost')).toBeVisible()
 
-    const firstTitle = () =>
-      open
-        .querySelector('[data-slot="settings-row-title"]')
-        ?.textContent?.trim()
+    const cardBox = card.getBoundingClientRect()
+    const firstBox = open.getBoundingClientRect()
+    const lastBox = lost.getBoundingClientRect()
+    const inset = firstBox.top - cardBox.top
+    expect(inset).toBeGreaterThanOrEqual(8)
+    expect(firstBox.left - cardBox.left).toBeCloseTo(inset, 0)
+    expect(cardBox.right - firstBox.right).toBeCloseTo(inset, 0)
+    expect(cardBox.bottom - lastBox.bottom).toBeCloseTo(inset, 0)
 
     await userEvent.click(
       canvas.getByRole('button', { name: 'Actions for New' }),
@@ -297,39 +405,51 @@ export const Interaction: Story = {
     await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
 
     await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Negotiation' }),
-    )
-    expect(
-      await body.findByRole('menuitem', { name: 'Move down' }),
-    ).toHaveAttribute('aria-disabled', 'true')
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
-
-    expect(firstTitle()).toBe('New')
-    await userEvent.click(
       canvas.getByRole('button', { name: 'Actions for Qualification' }),
     )
     await userEvent.click(
       await body.findByRole('menuitem', { name: 'Move up' }),
     )
     expect(onMoveStage).toHaveBeenCalledWith('Qualification', 'up')
-    await waitFor(() => expect(firstTitle()).toBe('Qualification'))
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Qualification' }),
-    )
-    expect(
-      await body.findByRole('menuitem', { name: 'Move up' }),
-    ).toHaveAttribute('aria-disabled', 'true')
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+    await waitFor(() => expect(titlesIn(open)[0]).toBe('Qualification'))
 
     await userEvent.click(
       canvas.getByRole('button', { name: 'Actions for Won' }),
     )
     expect(await body.findByRole('menuitem', { name: 'Edit' })).toBeVisible()
     expect(body.getAllByRole('menuitem')).toHaveLength(1)
-    expect(body.queryByRole('menuitem', { name: 'Delete' })).toBeNull()
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+
+    await userEvent.click(newStage)
+    const dialog = within(
+      await screen.findByRole('dialog', { name: /New stage/ }),
+    )
+    const create = dialog.getByRole('button', { name: /Create stage/ })
+    expect(create).toBeDisabled()
+    await userEvent.type(
+      dialog.getByRole('textbox', { name: 'Stage name' }),
+      'Disqualified',
+    )
+    await userEvent.click(dialog.getByRole('combobox', { name: /^Phase/ }))
+    await userEvent.click(await screen.findByRole('option', { name: 'Lost' }))
+    await waitFor(() =>
+      expect(
+        dialog.getByRole('combobox', { name: /^Phase/ }),
+      ).toHaveTextContent('Lost'),
+    )
+    await userEvent.click(create)
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    expect(onNewStage).toHaveBeenCalledWith('Disqualified', 'Lost')
+    expect(titlesIn(lost)).toEqual(['Lost', 'Disqualified'])
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Actions for Disqualified' }),
+    )
+    expect(
+      await body.findByRole('menuitem', { name: 'Move up' }),
+    ).not.toHaveAttribute('aria-disabled', 'true')
+    expect(body.getByRole('menuitem', { name: 'Delete' })).toBeVisible()
     await userEvent.keyboard('{Escape}')
   },
   tags: interaction,

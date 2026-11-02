@@ -109,27 +109,19 @@ function RuleItem({ rule }: { rule: Rule }) {
   )
 }
 
-function AddRuleButton() {
-  return (
-    <Button size="sm" variant="outline">
-      <PlusIcon aria-hidden="true" />
-      Add rule
-    </Button>
-  )
-}
-
-function AutomationRules({
-  actions,
-  children,
-}: {
-  actions: ReactNode
-  children: ReactNode
-}) {
+function AutomationRules({ children }: { children: ReactNode }) {
   return (
     <SettingsSection
       className="mx-auto w-full max-w-2xl"
       header={
-        <SettingsSectionHeader actions={actions}>
+        <SettingsSectionHeader
+          actions={
+            <Button size="sm">
+              <PlusIcon aria-hidden="true" />
+              Add rule
+            </Button>
+          }
+        >
           <SettingsSectionTitle>Automation rules</SettingsSectionTitle>
           <SettingsSectionDescription>
             Use automation rules to automatically add or remove SLAs based on
@@ -166,7 +158,7 @@ const interaction = ['!dev', '!autodocs']
 export const Automation: Story = {
   name: 'Automation',
   render: () => (
-    <AutomationRules actions={<AddRuleButton />}>
+    <AutomationRules>
       {rules.map((rule) => (
         <RuleItem key={rule.id} rule={rule} />
       ))}
@@ -212,9 +204,8 @@ export const Interaction: Story = {
 
 export const EmptyInteraction: Story = {
   render: () => (
-    <AutomationRules actions={null}>
+    <AutomationRules>
       <StateSurface
-        actions={<AddRuleButton />}
         description="Add a rule to apply or remove SLAs automatically."
         kind="empty"
         title="No rules yet"
@@ -224,6 +215,7 @@ export const EmptyInteraction: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')
+    expect(within(canvas.getByRole('status')).queryByRole('button')).toBeNull()
     expect(canvas.getByText('No rules yet')).toBeVisible()
     expect(canvas.getByRole('button', { name: 'Add rule' })).toBeEnabled()
     expect(canvas.queryByRole('group', { name: 'Condition' })).toBeNull()

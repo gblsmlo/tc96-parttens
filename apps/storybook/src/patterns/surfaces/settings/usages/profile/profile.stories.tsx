@@ -174,11 +174,7 @@ function ProfileSettings({
         <SettingsRow
           description="Removes your account and your access to every workspace"
           endSlot={
-            <Button
-              onClick={onDeleteAccount}
-              size="sm"
-              variant="destructive-outline"
-            >
+            <Button onClick={onDeleteAccount} size="sm" variant="destructive">
               Delete account
             </Button>
           }

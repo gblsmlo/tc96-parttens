@@ -6,6 +6,8 @@ import {
   SettingsSectionHeader,
   SettingsSectionTitle,
 } from '@tc96/parttens'
+import { Button } from '@tc96/ui/button'
+import { PlusIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 
 const slotIn = (root: Element, name: string) =>
@@ -76,7 +78,12 @@ export const HeaderDescriptionAndActionsOnlyWhenPassed: Story = {
         <SettingsSection
           header={
             <SettingsSectionHeader
-              actions={<button type="button">New label</button>}
+              actions={
+                <Button size="sm">
+                  <PlusIcon aria-hidden="true" />
+                  New label
+                </Button>
+              }
             >
               <SettingsSectionTitle>Labels</SettingsSectionTitle>
               <SettingsSectionDescription>
