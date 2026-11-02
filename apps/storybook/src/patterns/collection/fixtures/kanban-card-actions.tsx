@@ -1,4 +1,5 @@
 import { KanbanCardActionButton } from '@tc96/parttens'
+import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { EllipsisIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
@@ -16,7 +17,16 @@ export function KanbanCardCountAction({
 }>) {
   return (
     <Menu>
-      <MenuTrigger render={<KanbanCardActionButton aria-label={label} />}>
+      <MenuTrigger
+        render={
+          <Button
+            aria-label={label}
+            data-kanban-card-action=""
+            size="xs"
+            variant="secondary"
+          />
+        }
+      >
         {children}
       </MenuTrigger>
       <MenuPopup align="start">

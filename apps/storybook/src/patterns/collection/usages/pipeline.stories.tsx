@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Avatar, AvatarFallback } from '@tc96/elements/avatar'
 import { Text } from '@tc96/elements/text'
 import { formatShortDate } from '@tc96/helpers/date'
 import { formatAmount } from '@tc96/helpers/format'
@@ -8,7 +7,6 @@ import {
   CollectionFrame,
   CollectionFrameBody,
   CollectionFrameHeader,
-  CollectionSearchField,
   CollectionToolbar,
   KanbanCard,
   KanbanCardAction,
@@ -22,6 +20,7 @@ import {
   type KanbanColumnData,
   KanbanView,
   MenuCheckboxOption,
+  PersonProperty,
   projectCollection,
   ViewSettingsMenu,
   ViewSettingsSection,
@@ -56,7 +55,8 @@ import {
   KanbanCardCountAction,
   KanbanCardMoreActions,
 } from '../fixtures/kanban-card-actions'
-import { people, peopleById, TIME_ZONE } from '../fixtures/tasks'
+import { personOptions } from '../fixtures/task-fields'
+import { people, TIME_ZONE } from '../fixtures/tasks'
 import { ViewSwitcherPicker } from '../fixtures/view-switcher-picker'
 
 const LOCALE = 'pt-BR'
@@ -85,9 +85,10 @@ const projectDealColumns = (deals: readonly Deal[]): KanbanColumnData<Deal>[] =>
     title: group.label,
   }))
 
-function DealCard({ deal }: Readonly<{ deal: Deal }>) {
-  const owner = peopleById.get(deal.ownerId)
-
+function DealCard({
+  deal,
+  onOwnerChange,
+}: Readonly<{ deal: Deal; onOwnerChange: (ownerId: string) => void }>) {
   return (
     <KanbanCard density="sm">
       <KanbanCardHeader>
@@ -167,12 +168,17 @@ function DealCard({ deal }: Readonly<{ deal: Deal }>) {
             </KanbanCardCountAction>
           </span>
         </div>
-        <Avatar className="ml-auto" size="sm" title={owner?.name}>
-          <AvatarFallback>
-            <span aria-hidden>{owner?.initials}</span>
-            <span className="sr-only">Responsável: {owner?.name}</span>
-          </AvatarFallback>
-        </Avatar>
+        <span className="ml-auto" data-kanban-card-action="">
+          <PersonProperty
+            ariaLabel="Responsável"
+            avatarSize="sm"
+            display="avatar"
+            onValueChange={onOwnerChange}
+            options={personOptions}
+            value={deal.ownerId}
+            variant="plain"
+          />
+        </span>
       </KanbanCardFooter>
     </KanbanCard>
   )
@@ -218,7 +224,7 @@ const meta = {
       description: {
         component: [
           'A sales pipeline as a `KanbanView` alone: one column per stage, projected from the `stage` grouping with `projectCollection`.',
-          'The toolbar follows the Tasks usage: a saved-view picker, search, a `ViewSettingsMenu` filter by owner and a create action. Each column title carries the stage total, and a drop writes the new stage through `setGroupId`, so totals follow the card.',
+          'The toolbar follows the Tasks usage: a saved-view picker, a `ViewSettingsMenu` filter by owner and a create action. Each column title carries the stage total, and a drop writes the new stage through `setGroupId`, so totals follow the card.',
         ].join('\n\n'),
       },
     },
@@ -227,21 +233,15 @@ const meta = {
   render: function Pipeline({ initialDeals, loading }: Readonly<PipelineArgs>) {
     const [deals, setDeals] = useState<Deal[]>(() => [...initialDeals])
     const [presetId, setPresetId] = useState<PresetScope>('all')
-    const [search, setSearch] = useState('')
     const [ownerFilter, setOwnerFilter] = useState<readonly string[]>([])
 
     const visibleDeals = useMemo(() => {
-      const term = search.toLocaleLowerCase(LOCALE)
       return deals.filter(
         (deal) =>
           matchesScope(deal, presetId) &&
-          (!term ||
-            `${deal.id} ${deal.company} ${deal.contact}`
-              .toLocaleLowerCase(LOCALE)
-              .includes(term)) &&
           (ownerFilter.length === 0 || ownerFilter.includes(deal.ownerId)),
       )
-    }, [deals, ownerFilter, presetId, search])
+    }, [deals, ownerFilter, presetId])
     const columns = useMemo(
       () => projectDealColumns(visibleDeals),
       [visibleDeals],
@@ -260,35 +260,26 @@ const meta = {
       [],
     )
 
-    const activeFilterCount = ownerFilter.length + (search ? 1 : 0)
+    const changeOwner = (dealId: string, ownerId: string) =>
+      setDeals((current) =>
+        current.map((deal) =>
+          deal.id === dealId ? { ...deal, ownerId } : deal,
+        ),
+      )
+
+    const activeFilterCount = ownerFilter.length
     const clearFilters = () => {
       setOwnerFilter([])
-      setSearch('')
     }
 
     return (
       <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-4">
-        <header className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="font-semibold text-2xl">Pipeline de vendas</h1>
-            <p className="text-muted-foreground text-sm">
-              Arraste um negócio para mudar a etapa.
-            </p>
-          </div>
-        </header>
-
         <CollectionFrame>
           <CollectionFrameHeader>
             <CollectionToolbar
               aria-label="Controles do pipeline de vendas"
               endSlot={
                 <>
-                  <CollectionSearchField
-                    label="Buscar negócios"
-                    onCommit={setSearch}
-                    placeholder="Buscar negócios…"
-                    value={search}
-                  />
                   <ViewSettingsMenu
                     activeFilterCount={activeFilterCount}
                     onClearFilters={clearFilters}
@@ -334,7 +325,6 @@ const meta = {
                   views={presets}
                 />
               }
-              variant="plain"
             />
           </CollectionFrameHeader>
 
@@ -348,7 +338,12 @@ const meta = {
               loadingCardCount={2}
               loadingCardLabel="Carregando negócio"
               onMoveCard={moveDeal}
-              renderCard={(deal) => <DealCard deal={deal} />}
+              renderCard={(deal) => (
+                <DealCard
+                  deal={deal}
+                  onOwnerChange={(ownerId) => changeOwner(deal.id, ownerId)}
+                />
+              )}
               renderColumnTitle={(column) => (
                 <>
                   {column.title}{' '}

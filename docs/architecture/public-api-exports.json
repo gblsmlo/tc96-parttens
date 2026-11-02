@@ -354,7 +354,9 @@
     "RecordDialogHeadlineProps",
     "RecordDialogProps",
     "RecordDialogSettlement",
-    "RecordDialogSize"
+    "RecordDialogSize",
+    "RecordDraft",
+    "useRecordDraft"
   ],
   "record-preview": [
     "RecordPreview",
@@ -1136,6 +1138,7 @@
     "RecordDialogProps",
     "RecordDialogSettlement",
     "RecordDialogSize",
+    "RecordDraft",
     "RecordGroup",
     "RecordGroupAction",
     "RecordGroupActionProps",
@@ -1347,6 +1350,7 @@
     "useCollectionPreferences",
     "useDataGrid",
     "useDataTable",
+    "useRecordDraft",
     "whatsappHref",
     "wizardStepStatus",
     "wizardStepStatuses"

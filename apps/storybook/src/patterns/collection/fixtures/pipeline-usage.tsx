@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback } from '@tc96/elements/avatar'
 import { Text } from '@tc96/elements/text'
 import { formatShortDate } from '@tc96/helpers/date'
 import { formatAmount } from '@tc96/helpers/format'
@@ -7,7 +6,6 @@ import {
   CollectionFrame,
   CollectionFrameBody,
   CollectionFrameHeader,
-  CollectionSearchField,
   CollectionToolbar,
   KanbanCard,
   KanbanCardAction,
@@ -21,6 +19,7 @@ import {
   type KanbanColumnData,
   KanbanView,
   MenuCheckboxOption,
+  PersonProperty,
   projectCollection,
   ViewSettingsMenu,
   ViewSettingsSection,
@@ -54,7 +53,8 @@ import {
   KanbanCardCountAction,
   KanbanCardMoreActions,
 } from './kanban-card-actions'
-import { people, peopleById, TIME_ZONE } from './tasks'
+import { personOptions } from './task-fields'
+import { people, TIME_ZONE } from './tasks'
 import { ViewSwitcherPicker } from './view-switcher-picker'
 
 const LOCALE = 'pt-BR'
@@ -83,9 +83,10 @@ const projectDealColumns = (deals: readonly Deal[]): KanbanColumnData<Deal>[] =>
     title: group.label,
   }))
 
-function DealCard({ deal }: Readonly<{ deal: Deal }>) {
-  const owner = peopleById.get(deal.ownerId)
-
+function DealCard({
+  deal,
+  onOwnerChange,
+}: Readonly<{ deal: Deal; onOwnerChange: (ownerId: string) => void }>) {
   return (
     <KanbanCard density="sm">
       <KanbanCardHeader>
@@ -165,12 +166,17 @@ function DealCard({ deal }: Readonly<{ deal: Deal }>) {
             </KanbanCardCountAction>
           </span>
         </div>
-        <Avatar className="ml-auto" size="sm" title={owner?.name}>
-          <AvatarFallback>
-            <span aria-hidden>{owner?.initials}</span>
-            <span className="sr-only">Responsável: {owner?.name}</span>
-          </AvatarFallback>
-        </Avatar>
+        <span className="ml-auto" data-kanban-card-action="">
+          <PersonProperty
+            ariaLabel="Responsável"
+            avatarSize="sm"
+            display="avatar"
+            onValueChange={onOwnerChange}
+            options={personOptions}
+            value={deal.ownerId}
+            variant="plain"
+          />
+        </span>
       </KanbanCardFooter>
     </KanbanCard>
   )
@@ -208,21 +214,15 @@ export function PipelineUsage({
 }: Readonly<PipelineUsageProps>) {
   const [deals, setDeals] = useState<Deal[]>(() => [...initialDeals])
   const [presetId, setPresetId] = useState<PresetScope>('all')
-  const [search, setSearch] = useState('')
   const [ownerFilter, setOwnerFilter] = useState<readonly string[]>([])
 
   const visibleDeals = useMemo(() => {
-    const term = search.toLocaleLowerCase(LOCALE)
     return deals.filter(
       (deal) =>
         matchesScope(deal, presetId) &&
-        (!term ||
-          `${deal.id} ${deal.company} ${deal.contact}`
-            .toLocaleLowerCase(LOCALE)
-            .includes(term)) &&
         (ownerFilter.length === 0 || ownerFilter.includes(deal.ownerId)),
     )
-  }, [deals, ownerFilter, presetId, search])
+  }, [deals, ownerFilter, presetId])
   const columns = useMemo(
     () => projectDealColumns(visibleDeals),
     [visibleDeals],
@@ -241,35 +241,24 @@ export function PipelineUsage({
     [],
   )
 
-  const activeFilterCount = ownerFilter.length + (search ? 1 : 0)
+  const changeOwner = (dealId: string, ownerId: string) =>
+    setDeals((current) =>
+      current.map((deal) => (deal.id === dealId ? { ...deal, ownerId } : deal)),
+    )
+
+  const activeFilterCount = ownerFilter.length
   const clearFilters = () => {
     setOwnerFilter([])
-    setSearch('')
   }
 
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col gap-4">
-      <header className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-semibold text-2xl">Pipeline de vendas</h1>
-          <p className="text-muted-foreground text-sm">
-            Arraste um negócio para mudar a etapa.
-          </p>
-        </div>
-      </header>
-
       <CollectionFrame>
         <CollectionFrameHeader>
           <CollectionToolbar
             aria-label="Controles do pipeline de vendas"
             endSlot={
               <>
-                <CollectionSearchField
-                  label="Buscar negócios"
-                  onCommit={setSearch}
-                  placeholder="Buscar negócios…"
-                  value={search}
-                />
                 <ViewSettingsMenu
                   activeFilterCount={activeFilterCount}
                   onClearFilters={clearFilters}
@@ -315,7 +304,6 @@ export function PipelineUsage({
                 views={presets}
               />
             }
-            variant="plain"
           />
         </CollectionFrameHeader>
 
@@ -329,7 +317,12 @@ export function PipelineUsage({
             loadingCardCount={2}
             loadingCardLabel="Carregando negócio"
             onMoveCard={moveDeal}
-            renderCard={(deal) => <DealCard deal={deal} />}
+            renderCard={(deal) => (
+              <DealCard
+                deal={deal}
+                onOwnerChange={(ownerId) => changeOwner(deal.id, ownerId)}
+              />
+            )}
             renderColumnTitle={(column) => (
               <>
                 {column.title}{' '}

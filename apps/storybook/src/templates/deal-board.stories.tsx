@@ -15,7 +15,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A deal board page: the `Patterns/Collection/Usages/Pipeline` screen with its header, toolbar and `KanbanView` grouped by stage. It renders inside `Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
+          'A deal board page: the `Patterns/Collection/Usages/Pipeline` screen with its toolbar and `KanbanView` grouped by stage. It renders inside `Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
       },
       story: appShellDocs,
     },
@@ -31,9 +31,6 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await expect(
-      canvas.getByRole('heading', { level: 1, name: 'Pipeline de vendas' }),
-    ).toBeVisible()
     await expect(
       canvas.getByRole('region', { name: /^Lead/ }),
     ).toBeInTheDocument()
