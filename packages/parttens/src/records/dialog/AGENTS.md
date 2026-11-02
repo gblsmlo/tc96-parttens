@@ -6,18 +6,22 @@ Guide for agents working in `packages/parttens/src/records/dialog`. The repo-wid
 
 A dialog for acting on a record. `RecordDialog` covers create and edit: an internal shell on the COSS `Dialog` (header with an optional icon and a breadcrumb-style trail `ancestor › title`, optional actions row, optional panel, error slot, footer), a COSS `Form` that holds the consumer's fields, and a footer with an optional cancel and the submit. Fields, validation, mutation and error text belong to the consumer; there is no form library in the pattern. Two optional parts ship with it for the bodies below: `RecordDialogHeadline`, the borderless title and description, and `RecordDialogCreateMore`, the switch meant for `footerStart` with `keepOpenOnSuccess`.
 
+`RecordConfirmDialog` is the second compound of the folder: a confirmation (delete, archive, cancel) on the COSS `AlertDialog`, with a destructive tone by default and optional `children` for a short choice such as where to move items. It lives here, and not in a pattern of its own, because it shares `useSettledAction` and the error line with `RecordDialog`: a separate pattern would import `../dialog/hooks/` by path and the registry would ship loose pieces of this folder. Installing `record-dialog` brings both.
+
 ## Files
 
 | File | Owns | Public |
 | --- | --- | --- |
 | `index.ts` | the barrel: re-exports `composition/index.ts` and the types from `core.ts` | yes |
-| `core.ts` | the React-free surface: `RecordDialogProps`, `RecordDialogSettlement`, `RecordDialogHeadlineProps`, `RecordDialogCreateMoreProps` | types through the barrel |
-| `composition/index.ts` | re-exports the compound | through the barrel |
+| `core.ts` | the React-free surface: `RecordDialogProps`, `RecordDialogSettlement`, `RecordDialogHeadlineProps`, `RecordDialogCreateMoreProps`, `RecordConfirmDialogProps`, `RecordConfirmDialogTone` | types through the barrel |
+| `composition/index.ts` | re-exports the compounds | through the barrel |
 | `components/dialog-shell.tsx` | `DialogShell`: popup with the size scale, actions, header trail, panel, error and footer, on the COSS `Dialog` | no |
+| `components/dialog-error.tsx` | `DialogError`: the `role="alert"` line shared by both compounds | no |
 | `composition/record-dialog/record-dialog.tsx` | `RecordDialog` | yes |
+| `composition/record-confirm-dialog/record-confirm-dialog.tsx` | `RecordConfirmDialog`: COSS `AlertDialog` with the settle rule of `RecordDialog` | yes |
 | `composition/record-dialog/record-dialog-headline.tsx` | `RecordDialogHeadline`: borderless title and optional description on COSS `Field`, `Input` and `Textarea` | yes |
 | `composition/record-dialog/record-dialog-create-more.tsx` | `RecordDialogCreateMore`: COSS `Switch` with its label | yes |
-| `hooks/use-settled-action.ts` | `useSettledAction`: pending state, re-entry guard and the settle rule | no |
+| `hooks/use-settled-action.ts` | `useSettledAction`: pending state, re-entry guard, the settle rule and the focus return after a failure | no |
 | `hooks/use-record-draft.ts` | `useRecordDraft`: the consumer's draft as state plus a `latest` ref written in `update`, so a Mod+Enter submit in the same event as a blur commit reads the committed value | yes |
 
 Import direction: `composition/` → `components/` and `hooks/` → `core.ts`.
@@ -93,7 +97,7 @@ Behavior the tests fix:
 - Settle rule: the handler returning `true` calls `onOpenChange(false)`. `false`, a rejection or a synchronous throw keeps the dialog open and the field values untouched. Errors are swallowed; the consumer reports them through `errorMessage`.
 - Pending belongs to one open session. When `open` becomes false the pattern resets pending and ignores any settlement still in flight, so a late `true` never closes a reopened dialog, and nothing runs after unmount.
 - Pending is tracked by the pattern. While pending, Escape, outside press and the close button do not close, the cancel and submit buttons are disabled, a second submit is ignored, and the submit button shows `Spinner` and `submittingLabel` when given.
-- Focus: when the submit button had focus at submit and the handler settles `false` or rejects, the pattern refocuses it once it is enabled again, because the disabled button drops focus while pending. A synchronous throw never renders the pending state, so the button keeps focus on its own. A submit from a field (Mod+Enter) leaves focus where it was.
+- Focus: when the submit button had focus at submit and the handler settles `false` or rejects, the pattern refocuses it once it is enabled again, because the disabled button drops focus while pending. The hook owns it: `run(action, focusTarget)` focuses `focusTarget` when pending ends without an accept, and `RecordDialog` passes the submit button only when it had focus. A synchronous throw never renders the pending state, so the button keeps focus on its own. A submit from a field (Mod+Enter) leaves focus where it was.
 - The consumer clears `errorMessage` at the start of the handler; the pattern never clears it.
 - `event.currentTarget` is null after the first `await`, so `onSubmit` reads `FormData` (or the form elements) synchronously, before awaiting anything.
 - Base UI `Form` renders `noValidate`: native constraints such as `required` or `type="email"` do not block the submit. Validation is the consumer's job inside `onSubmit`, returning `false` to keep the dialog open. The pattern does not call `checkValidity`.
@@ -114,6 +118,34 @@ Behavior the tests fix:
 - `RecordDialogHeadline` always autofocuses the title, with no prop to turn it off: the Base UI `Dialog` focuses the first tabbable field on open anyway. The title is controlled so the consumer can drive `submitDisabled`; an uncontrolled description is cleared by the `form.reset()` above.
 - `RecordDialogCreateMore` only renders the switch; the consumer passes its state to `keepOpenOnSuccess` and resets its fields after a save.
 
+### `RecordConfirmDialog`
+
+```ts
+type RecordConfirmDialogTone = 'default' | 'destructive'
+
+interface RecordConfirmDialogProps {
+  cancelLabel: string                 // required: a confirmation always has an exit
+  children?: ReactNode                // short body, e.g. a Select for the destination
+  className?: string                  // forwarded to the popup
+  confirmDisabled?: boolean           // e.g. no destination chosen yet
+  confirmLabel: string
+  confirmingLabel?: string            // shown with the spinner while pending
+  description?: ReactNode
+  errorMessage?: ReactNode            // rendered with role="alert" above the footer
+  onConfirm: () => RecordDialogSettlement
+  onOpenChange: (open: boolean) => void
+  open: boolean
+  title: ReactNode
+  tone?: RecordConfirmDialogTone      // default 'destructive'
+}
+```
+
+- The settle rule, pending ownership by open session and the re-entry guard are the ones of `RecordDialog`, from the same hook. `true` calls `onOpenChange(false)`.
+- No form and no Mod+Enter: the value of `children` is the consumer's state, read inside `onConfirm`.
+- `tone` defaults to `destructive`: an unintended neutral Delete is a safety error, a red Archive is only visual. `destructive` uses the `destructive` `Button` variant and focuses Cancel first, the least destructive action as the WAI-ARIA `alertdialog` pattern asks; `default` focuses Confirm.
+- While pending, Escape does not close and Cancel and Confirm are disabled. The COSS `AlertDialog` already ignores outside press. There is no close button.
+- After a failed confirm, focus goes back to Confirm.
+
 ## Styling contract
 
 `data-slot` names on the popup are left to COSS (`dialog-popup`), because COSS selectors depend on them.
@@ -128,8 +160,10 @@ Behavior the tests fix:
 | `data-slot=dialog-title-trail` | the ancestor and title wrapper | only with `titleAncestor` |
 | | `data-slot=dialog-footer-start` | the `footerStart` wrapper | only with `footerStart` |
 | `aria-busy` | the form | the handler has not settled |
+| `data-pending`, `aria-busy` | the `RecordConfirmDialog` popup | the handler has not settled |
+| `data-tone` | the `RecordConfirmDialog` popup | `default` or `destructive` |
 
-`data-slot` names: `record-dialog-form`, `dialog-error`, `record-dialog-submit-hint`, `record-dialog-cancel`, `record-dialog-submit`, `record-dialog-headline`, `record-dialog-create-more`.
+`data-slot` names: `record-dialog-form`, `dialog-error`, `record-dialog-submit-hint`, `record-dialog-cancel`, `record-dialog-submit`, `record-dialog-headline`, `record-dialog-create-more`, `record-confirm-dialog-body` (only with `children`), `record-confirm-dialog-cancel`, `record-confirm-dialog-confirm`. The title keeps the COSS `AlertDialogTitle` typography, so `RecordConfirmDialog` has no override exception.
 
 Override exceptions, registered in `scripts/override-exceptions.json`:
 
@@ -151,5 +185,7 @@ The stories are in `apps/storybook/src/patterns/records/dialog/`, with a `!dev` 
 
 - `Patterns/Records/Dialog`: one story per size, which widens the viewport with `page.viewport()` and restores it.
 - `Patterns/Records/Dialog/Composition`, in `composition/`: the interface tests, as `play` functions; the pattern has no bun tests. `Submit` covers the settle rule, the pending lock, focus return, reopen and unmount, Mod+Enter and `keepOpenOnSuccess`; `Shell` covers the form, the alert, the header trail, the slots, the sizes and `stretchBody`; `Parts` covers the headline labels, autofocus, controlled title, the missing description and `stretch`, and the create-more toggle with `keepOpenOnSuccess`.
+- `Patterns/Records/Dialog/Composition/Confirm`, in `composition/confirm.stories.tsx`: the interface tests of `RecordConfirmDialog` as `play` functions: the settle rule, pending lock, second click, error with focus return, `confirmDisabled`, focus by tone, the body only with `children`, and reopen after a late settlement.
+- `Patterns/Records/Dialog/Confirm`, in `confirm/`: `Delete` (destructive, no body) and `ArchiveWithTarget` (`tone="default"`, a `Select` in `children`, `confirmDisabled` until a choice), each with a `!dev` `<Story>Interaction` twin. The red of the destructive button must pass contrast in `storybook-dark`.
 - `Patterns/Records/Dialog/Create`, the create presentations in `create/`: `Inline Properties`, `Row Properties` and `Simple Form`, each written inline in its story so the Code panel shows the whole body. `Row Properties` sets `parameters.docs.source.inlineLimit` to 200, so its snippet also carries `event-record.ts` and `project-record.ts` and has no relative import. The `FailedSubmit` story of the first two swaps in an `onCreate` that throws and checks the settle rule above: the dialog stays open, the title and properties keep their values and focus returns to the submit button.
 - `Patterns/Records/Dialog/Usages`, in `usages/`: `Notes` renders `note-dialog.tsx` and sets `parameters.docs.source.inlineLimit` to 250; `records/group/usages/blocks.stories.tsx` imports `note-dialog.tsx` and `note-record.ts` by path for its Notes story. `Contacts` renders `create-contact-dialog.tsx`, and `Calendar` writes the body of `create-event-dialog.tsx` inline and sets `parameters.docs.source.inlineLimit` to 200, so the Code panel shows the whole dialog with `event-record.ts` and `project-record.ts` and no relative import. `collection/usages/contacts.stories.tsx`, `collection/fixtures/contacts-usage.tsx` and `collection/usages/calendar.stories.tsx` import those two files by path for the Contacts and Calendar usages of `Patterns/Collection`, and both files render the title and description through `RecordDialogHeadline`. The event dialog body exists in `create-event-dialog.tsx`, `Create/Row Properties` and `Usages/Calendar`, so a change to one goes to the other two.

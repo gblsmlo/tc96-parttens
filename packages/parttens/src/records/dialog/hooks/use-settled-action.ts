@@ -7,6 +7,7 @@ export function useSettledAction(open: boolean, onAccepted: () => void) {
   const mounted = useRef(true)
   const generation = useRef(0)
   const accepted = useRef(onAccepted)
+  const focusOnFailure = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     accepted.current = onAccepted
@@ -26,10 +27,20 @@ export function useSettledAction(open: boolean, onAccepted: () => void) {
     setPending(false)
   }, [open])
 
-  const run = async (action: () => RecordDialogSettlement) => {
+  useEffect(() => {
+    if (pending) return
+    focusOnFailure.current?.focus()
+    focusOnFailure.current = null
+  }, [pending])
+
+  const run = async (
+    action: () => RecordDialogSettlement,
+    focusTarget: HTMLElement | null = null,
+  ) => {
     if (running.current) return
     const started = generation.current
     running.current = true
+    focusOnFailure.current = focusTarget
     setPending(true)
     let settled = false
     try {
@@ -40,7 +51,10 @@ export function useSettledAction(open: boolean, onAccepted: () => void) {
     if (!mounted.current || started !== generation.current) return
     running.current = false
     setPending(false)
-    if (settled) accepted.current()
+    if (settled) {
+      focusOnFailure.current = null
+      accepted.current()
+    }
   }
 
   return { pending, run }

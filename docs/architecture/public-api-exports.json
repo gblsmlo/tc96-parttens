@@ -347,6 +347,9 @@
     "ChecklistVariant"
   ],
   "record-dialog": [
+    "RecordConfirmDialog",
+    "RecordConfirmDialogProps",
+    "RecordConfirmDialogTone",
     "RecordDialog",
     "RecordDialogCreateMore",
     "RecordDialogCreateMoreProps",
@@ -1130,6 +1133,9 @@
     "RICH_TEXT_ELEMENTS",
     "RICH_TEXT_EXTRA_BLOCKS",
     "RICH_TEXT_MARKS",
+    "RecordConfirmDialog",
+    "RecordConfirmDialogProps",
+    "RecordConfirmDialogTone",
     "RecordDialog",
     "RecordDialogCreateMore",
     "RecordDialogCreateMoreProps",

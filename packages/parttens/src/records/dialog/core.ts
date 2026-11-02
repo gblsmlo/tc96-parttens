@@ -46,3 +46,21 @@ export interface RecordDialogCreateMoreProps {
   label: string
   onCheckedChange: (checked: boolean) => void
 }
+
+export type RecordConfirmDialogTone = 'default' | 'destructive'
+
+export interface RecordConfirmDialogProps {
+  cancelLabel: string
+  children?: ReactNode
+  className?: string
+  confirmDisabled?: boolean
+  confirmLabel: string
+  confirmingLabel?: string
+  description?: ReactNode
+  errorMessage?: ReactNode
+  onConfirm: () => RecordDialogSettlement
+  onOpenChange: (open: boolean) => void
+  open: boolean
+  title: ReactNode
+  tone?: RecordConfirmDialogTone
+}
