@@ -45,10 +45,10 @@ Import direction: `composition/` → `core.ts`. Outgoing: `@tc96/elements/text`,
 | `data-slot="settings-collapsed"` | the named collapsible `section` |
 | `data-slot="settings-collapsed-title"`, `settings-collapsed-actions`, `settings-collapsed-items` | the heading, separate actions and panel content |
 
-- The card is the COSS `Card` with no class: radius (the consumer theme's `[data-slot="card"]` rule), border, background and shadow stay the card's, so `scripts/override-exceptions.json` has no entry here. `divide-y px-6` sits on the inner `settings-section-rows` wrapper because `divide-*` on the card is a border override; `px-6` is the horizontal padding of the COSS card sections.
+- The card is the COSS `Card` with no class: radius (the consumer theme's `[data-slot="card"]` rule), border, background and shadow stay the card's, so `scripts/override-exceptions.json` has no entry here. `divide-y px-6` sits on the inner `settings-section-rows` wrapper because `divide-*` on the card is a border override; `px-6` is the horizontal padding of the COSS card sections. When the wrapper holds a `SettingsCollapsed` (`has-[[data-slot=settings-collapsed]]:px-4`), the sides drop to 16px, the same as the space above the first group and below the last, so a grouped card has even spacing on all four sides. Decided by the owner on 2026-11-02.
 - `startSlot` sizes only a direct `svg` child (`[&>svg]:size-4`), so an `IconFrame` keeps its own size.
-- The 24px between the text and the control is `gap-3` on the row plus `ms-3` on the end cell. No class is keyed on a `data-slot`.
-- `SettingsCollapsed` uses the muted rounded header with a chevron next to its title. The usage supplies `first:pt-2 last:pb-2` on the group and wraps groups in one child of `SettingsSection`, leaving 8px inside the card without separators between groups.
+- The 24px between the text and the control is `gap-3` on the row plus `ms-3` on the end cell. The grouped-card padding above is the only class keyed on a `data-slot`.
+- `SettingsCollapsed` uses the muted rounded header with a chevron next to its title. The group carries `my-1 first:mt-4 last:mb-4`, and the usage wraps groups in one child of `SettingsSection`, leaving 16px inside the card without separators between groups.
 
 ## Verify
 

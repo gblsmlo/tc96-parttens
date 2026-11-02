@@ -12,7 +12,10 @@ export function SettingsSection({
   const titleId = `settings-section-title-${useId()}`
   const card = (
     <Card>
-      <div className="divide-y px-6" data-slot="settings-section-rows">
+      <div
+        className="divide-y px-6 has-[[data-slot=settings-collapsed]]:px-4"
+        data-slot="settings-section-rows"
+      >
         {children}
       </div>
     </Card>

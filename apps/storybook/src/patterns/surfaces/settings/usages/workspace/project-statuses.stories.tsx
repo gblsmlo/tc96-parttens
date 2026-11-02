@@ -220,6 +220,12 @@ export const Interaction: Story = {
         lastItem.getBoundingClientRect().bottom,
     ).toBeGreaterThanOrEqual(8)
 
+    const cardBox = card.getBoundingClientRect()
+    const headerBox = firstHeader.getBoundingClientRect()
+    const inset = headerBox.top - cardBox.top
+    expect(headerBox.left - cardBox.left).toBeCloseTo(inset, 0)
+    expect(cardBox.right - headerBox.right).toBeCloseTo(inset, 0)
+
     expect(
       Math.abs(
         title.getBoundingClientRect().left - card.getBoundingClientRect().left,
