@@ -13,6 +13,7 @@ import { cn } from '@tc96/utils'
 import { ChevronRightIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { RecordDialogSize } from '../core'
+import { DialogError } from './dialog-error'
 
 const SIZE_CLASS: Record<RecordDialogSize, string> = {
   small: 'max-w-md',
@@ -65,18 +66,6 @@ function TitleTrail({
       />
       {children}
     </div>
-  )
-}
-
-function ErrorMessage({ children }: Readonly<{ children: ReactNode }>) {
-  return (
-    <p
-      className="px-6 pb-4 text-destructive-foreground text-sm"
-      data-slot="dialog-error"
-      role="alert"
-    >
-      {children}
-    </p>
   )
 }
 
@@ -163,7 +152,7 @@ export function DialogShell({
             <DialogPanel>{children}</DialogPanel>
           )
         ) : null}
-        {errorMessage ? <ErrorMessage>{errorMessage}</ErrorMessage> : null}
+        {errorMessage ? <DialogError>{errorMessage}</DialogError> : null}
         {footerContent ? (
           <DialogFooter className={footerClassName}>
             {footerContent}

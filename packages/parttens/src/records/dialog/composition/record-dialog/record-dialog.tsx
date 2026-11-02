@@ -53,26 +53,17 @@ export function RecordDialog({
   const formId = useId()
   const formRef = useRef<HTMLFormElement>(null)
   const submitRef = useRef<HTMLButtonElement>(null)
-  const restoreFocus = useRef<HTMLElement | null>(null)
   const modifier = useModifierHint(submitOnModEnter)
   const { pending, run } = useSettledAction(open, () => {
-    restoreFocus.current = null
     if (!keepOpenOnSuccess) return onOpenChange(false)
     formRef.current?.reset()
     formRef.current?.querySelector<HTMLElement>(FIRST_FIELD)?.focus()
   })
 
-  useEffect(() => {
-    if (pending) return
-    restoreFocus.current?.focus()
-    restoreFocus.current = null
-  }, [pending])
-
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    restoreFocus.current =
-      document.activeElement === submitRef.current ? submitRef.current : null
-    void run(() => onSubmit(event))
+    const submitHadFocus = document.activeElement === submitRef.current
+    void run(() => onSubmit(event), submitHadFocus ? submitRef.current : null)
   }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLFormElement>) => {

@@ -1,5 +1,7 @@
 export * from './composition/index'
 export type {
+  RecordConfirmDialogProps,
+  RecordConfirmDialogTone,
   RecordDialogCreateMoreProps,
   RecordDialogHeadlineProps,
   RecordDialogProps,
