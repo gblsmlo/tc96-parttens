@@ -2,11 +2,15 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AppShell1 } from '@tc96/templates/application/shell/app-shell-1'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
+import { expectSettingsLevel } from './fixtures/settings-play'
 import {
+  ProfileSettingsPage,
   ShellHeaderActions,
   ShellPagePlaceholder,
+  settingsBreadcrumbs,
   shellBreadcrumbs,
   shellNavigation,
+  shellSettings,
   shellUser,
   shellUserActions,
   shellWorkspaces,
@@ -65,6 +69,11 @@ const docs = {
       description:
         '`(href) => ReactElement`. Every link (navigation, sub items, breadcrumb) renders through it, so the router of the app owns navigation; the default is a plain `a`. The element receives the class names, `aria-current` and the text through the Base UI `render` prop.',
       name: 'renderLink',
+    },
+    {
+      description:
+        '`ShellSettings`: `navigation` plus exactly one of `backHref` (a link through `renderLink`) or `onBack` (a button). When set, the sidebar becomes the settings level: Voltar ao app at the top and the settings menu in a `nav` named by `labels.settingsNavigation`, in place of the workspace switcher, the navigation and the account menu. The header keeps the breadcrumb and `actions`.',
+      name: 'settings',
     },
     {
       description:
@@ -221,6 +230,42 @@ export const PinnedItemActions: Story = {
     await expect(
       within(menu).getByRole('menuitem', { name: 'Remover dos fixados' }),
     ).toBeVisible()
+  },
+  tags: interaction,
+}
+
+export const Settings: Story = {
+  args: {
+    breadcrumbs: settingsBreadcrumbs,
+    children: <ProfileSettingsPage />,
+    settings: shellSettings,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'With `settings`, the sidebar becomes the settings level: Voltar ao app at the top and the settings menu below it.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expectSettingsLevel(canvasElement)
+  },
+}
+
+export const SettingsBackButton: Story = {
+  args: {
+    breadcrumbs: settingsBreadcrumbs,
+    children: <ProfileSettingsPage />,
+    settings: { navigation: shellSettings.navigation, onBack: fn() },
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.queryByRole('link', { name: 'Voltar ao app' }),
+    ).toBeNull()
+    await userEvent.click(canvas.getByRole('button', { name: 'Voltar ao app' }))
+    await expect(args.settings?.onBack).toHaveBeenCalledOnce()
   },
   tags: interaction,
 }

@@ -15,6 +15,7 @@ import { SearchIcon } from 'lucide-react'
 import type { CSSProperties, ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
 import { renderAnchor } from '../shared/render-link'
+import { ShellBackButton } from '../shared/shell-back-button'
 import { ShellHeader } from '../shared/shell-header'
 import { ShellNav } from '../shared/shell-nav'
 import { ShellNotifications } from '../shared/shell-notifications'
@@ -58,6 +59,7 @@ export function AppShell4({
   renderLink = renderAnchor,
   sectionId,
   sections,
+  settings,
   theme,
   user,
   userActions,
@@ -97,7 +99,7 @@ export function AppShell4({
             <SectionRail
               label={labels.sections}
               onSectionChange={onSectionChange}
-              sectionId={active?.id ?? sectionId}
+              sectionId={settings ? '' : (active?.id ?? sectionId)}
               sections={sections}
             />
           </SidebarContent>
@@ -115,7 +117,26 @@ export function AppShell4({
         </Sidebar>
         <Separator orientation="vertical" />
         <Sidebar className="min-w-0 flex-1" collapsible="none">
-          {active ? (
+          {settings ? (
+            <>
+              <SidebarHeader className="h-14 justify-center">
+                <ShellBackButton
+                  labels={labels}
+                  renderLink={renderLink}
+                  settings={settings}
+                />
+              </SidebarHeader>
+              <SidebarContent>
+                <ShellNav
+                  groups={settings.navigation}
+                  label={labels.settingsNavigation}
+                  labels={labels}
+                  renderLink={renderLink}
+                />
+              </SidebarContent>
+            </>
+          ) : null}
+          {!settings && active ? (
             <>
               <SidebarHeader className="h-14 justify-center px-4">
                 <h2 className="truncate font-medium text-base">

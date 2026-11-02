@@ -60,6 +60,7 @@ export interface ShellNotification {
 
 export interface ShellLabels {
   account: string
+  backToApp: string
   breadcrumb: string
   itemActions: (title: string) => string
   markAllRead: string
@@ -75,6 +76,7 @@ export interface ShellLabels {
   searchOpen: string
   searchPlaceholder: string
   sections: string
+  settingsNavigation: string
   signOut: string
   switchWorkspace: string
   theme: string
@@ -85,6 +87,11 @@ export interface ShellLabels {
   unread: string
   workspaces: string
 }
+
+export type ShellSettings = { navigation: ShellNavGroup[] } & (
+  | { backHref: string; onBack?: never }
+  | { backHref?: never; onBack: () => void }
+)
 
 export interface AppShellBaseProps {
   actions?: ReactNode
@@ -100,6 +107,7 @@ export interface AppShellBaseProps {
   open?: boolean
   padded?: boolean
   renderLink?: ShellRenderLink
+  settings?: ShellSettings
   theme?: ShellTheme
   user: ShellUser
   userActions?: ShellAction[]

@@ -12,6 +12,7 @@ import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
 import { renderAnchor } from '../shared/render-link'
+import { ShellBackButton } from '../shared/shell-back-button'
 import { ShellHeader } from '../shared/shell-header'
 import { ShellNav } from '../shared/shell-nav'
 import { ShellNotifications } from '../shared/shell-notifications'
@@ -47,6 +48,7 @@ export function AppShell3({
   padded = true,
   projects,
   renderLink = renderAnchor,
+  settings,
   theme,
   usage,
   user,
@@ -64,21 +66,29 @@ export function AppShell3({
     >
       <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader>
-          <WorkspaceSwitcher
-            labels={labels}
-            onWorkspaceChange={onWorkspaceChange}
-            workspaceId={workspaceId}
-            workspaces={workspaces}
-          />
+          {settings ? (
+            <ShellBackButton
+              labels={labels}
+              renderLink={renderLink}
+              settings={settings}
+            />
+          ) : (
+            <WorkspaceSwitcher
+              labels={labels}
+              onWorkspaceChange={onWorkspaceChange}
+              workspaceId={workspaceId}
+              workspaces={workspaces}
+            />
+          )}
         </SidebarHeader>
         <SidebarContent>
           <ShellNav
-            groups={navigation}
-            label={labels.navigation}
+            groups={settings ? settings.navigation : navigation}
+            label={settings ? labels.settingsNavigation : labels.navigation}
             labels={labels}
             renderLink={renderLink}
           />
-          {projects?.length ? (
+          {!settings && projects?.length ? (
             <ProjectNav
               label={labels.projects}
               projects={projects}
@@ -86,17 +96,19 @@ export function AppShell3({
             />
           ) : null}
         </SidebarContent>
-        <SidebarFooter>
-          {usage ? <UsageCard usage={usage} /> : null}
-          <UserMenu
-            labels={labels}
-            onSignOut={onSignOut}
-            onThemeChange={onThemeChange}
-            theme={theme}
-            user={user}
-            userActions={userActions}
-          />
-        </SidebarFooter>
+        {settings ? null : (
+          <SidebarFooter>
+            {usage ? <UsageCard usage={usage} /> : null}
+            <UserMenu
+              labels={labels}
+              onSignOut={onSignOut}
+              onThemeChange={onThemeChange}
+              theme={theme}
+              user={user}
+              userActions={userActions}
+            />
+          </SidebarFooter>
+        )}
       </Sidebar>
       <SidebarInset className="min-w-0">
         <ShellHeader

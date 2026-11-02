@@ -1372,6 +1372,7 @@
     "ShellNavItem",
     "ShellNavSubItem",
     "ShellRenderLink",
+    "ShellSettings",
     "ShellTheme",
     "ShellUser",
     "ShellWorkspace"
@@ -1387,6 +1388,7 @@
     "ShellNavItem",
     "ShellNavSubItem",
     "ShellRenderLink",
+    "ShellSettings",
     "ShellTheme",
     "ShellUser",
     "ShellWorkspace"
@@ -1404,6 +1406,7 @@
     "ShellNotification",
     "ShellProject",
     "ShellRenderLink",
+    "ShellSettings",
     "ShellTheme",
     "ShellUsage",
     "ShellUser",
@@ -1421,6 +1424,7 @@
     "ShellNotification",
     "ShellRenderLink",
     "ShellSection",
+    "ShellSettings",
     "ShellTheme",
     "ShellUser",
     "ShellWorkspace"

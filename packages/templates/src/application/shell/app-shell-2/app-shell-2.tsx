@@ -16,6 +16,7 @@ import { SearchIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
 import { renderAnchor } from '../shared/render-link'
+import { ShellBackButton } from '../shared/shell-back-button'
 import { ShellHeader } from '../shared/shell-header'
 import { ShellNav } from '../shared/shell-nav'
 import { ShellSearch, ShellSearchShortcut } from '../shared/shell-search'
@@ -42,6 +43,7 @@ export function AppShell2({
   open,
   padded = true,
   renderLink = renderAnchor,
+  settings,
   theme,
   user,
   userActions,
@@ -58,52 +60,64 @@ export function AppShell2({
     >
       <Sidebar collapsible="icon" variant="floating">
         <SidebarHeader>
-          <WorkspaceSwitcher
-            labels={labels}
-            onWorkspaceChange={onWorkspaceChange}
-            workspaceId={workspaceId}
-            workspaces={workspaces}
-          />
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <ShellSearch
-                groups={navigation}
+          {settings ? (
+            <ShellBackButton
+              labels={labels}
+              renderLink={renderLink}
+              settings={settings}
+            />
+          ) : (
+            <>
+              <WorkspaceSwitcher
                 labels={labels}
-                onNavigate={onNavigate}
-                trigger={
-                  <SidebarMenuButton
-                    tooltip={labels.search}
-                    variant="outline"
-                  />
-                }
-              >
-                <SearchIcon />
-                <span>{labels.search}</span>
-                <span className="ms-auto group-data-[collapsible=icon]:hidden">
-                  <ShellSearchShortcut />
-                </span>
-              </ShellSearch>
-            </SidebarMenuItem>
-          </SidebarMenu>
+                onWorkspaceChange={onWorkspaceChange}
+                workspaceId={workspaceId}
+                workspaces={workspaces}
+              />
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <ShellSearch
+                    groups={navigation}
+                    labels={labels}
+                    onNavigate={onNavigate}
+                    trigger={
+                      <SidebarMenuButton
+                        tooltip={labels.search}
+                        variant="outline"
+                      />
+                    }
+                  >
+                    <SearchIcon />
+                    <span>{labels.search}</span>
+                    <span className="ms-auto group-data-[collapsible=icon]:hidden">
+                      <ShellSearchShortcut />
+                    </span>
+                  </ShellSearch>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </>
+          )}
         </SidebarHeader>
         <SidebarContent>
           <ShellNav
-            groups={navigation}
-            label={labels.navigation}
+            groups={settings ? settings.navigation : navigation}
+            label={settings ? labels.settingsNavigation : labels.navigation}
             labels={labels}
             renderLink={renderLink}
           />
         </SidebarContent>
-        <SidebarFooter>
-          <UserMenu
-            labels={labels}
-            onSignOut={onSignOut}
-            onThemeChange={onThemeChange}
-            theme={theme}
-            user={user}
-            userActions={userActions}
-          />
-        </SidebarFooter>
+        {settings ? null : (
+          <SidebarFooter>
+            <UserMenu
+              labels={labels}
+              onSignOut={onSignOut}
+              onThemeChange={onThemeChange}
+              theme={theme}
+              user={user}
+              userActions={userActions}
+            />
+          </SidebarFooter>
+        )}
       </Sidebar>
       <SidebarInset className="min-w-0">
         <ShellHeader

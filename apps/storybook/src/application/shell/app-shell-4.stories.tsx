@@ -3,12 +3,16 @@ import { AppShell4 } from '@tc96/templates/application/shell/app-shell-4'
 import { type ReactElement, useState } from 'react'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
+import { expectSettingsLevel } from './fixtures/settings-play'
 import {
+  ProfileSettingsPage,
   ShellHeaderActions,
   ShellPagePlaceholder,
+  settingsBreadcrumbs,
   shellBreadcrumbs,
   shellNotifications,
   shellSections,
+  shellSettings,
   shellUser,
   shellUserActions,
   shellWorkspaces,
@@ -43,6 +47,11 @@ const docs = {
       description:
         'Root component. Two COSS `Sidebar`s with `collapsible="none"` inside one `Sidebar` with `collapsible="icon"`: an icon rail with the workspace switcher, the sections and the account menu, and the navigation of the active section. Collapsing leaves only the rail; picking a section opens the sidebar again. Takes the props of `AppShell1` except `navigation`.',
       name: 'AppShell4',
+    },
+    {
+      description:
+        '`ShellSettings`: `navigation` plus exactly one of `backHref` (a link through `renderLink`) or `onBack` (a button). When set, the sidebar becomes the settings level: Voltar ao app at the top and the settings menu in a `nav` named by `labels.settingsNavigation`, in the panel, in place of the section title and navigation; the rail stays, with no section active. The header keeps the breadcrumb and `actions`.',
+      name: 'settings',
     },
     {
       description:
@@ -141,4 +150,23 @@ export const SwitchSection: Story = {
     ).toBeNull()
   },
   tags: ['!autodocs'],
+}
+
+export const Settings: Story = {
+  args: {
+    breadcrumbs: settingsBreadcrumbs,
+    children: <ProfileSettingsPage />,
+    settings: shellSettings,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'With `settings`, the sidebar becomes the settings level: Voltar ao app at the top and the settings menu below it.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expectSettingsLevel(canvasElement)
+  },
 }

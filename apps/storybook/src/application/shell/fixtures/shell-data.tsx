@@ -1,7 +1,15 @@
+import {
+  SettingsRow,
+  SettingsSection,
+  SettingsSectionDescription,
+  SettingsSectionHeader,
+  SettingsSectionTitle,
+} from '@tc96/parttens'
 import type {
   ShellAction,
   ShellBreadcrumbItem,
   ShellNavGroup,
+  ShellSettings,
   ShellUser,
   ShellWorkspace,
 } from '@tc96/templates/application/shell/app-shell-1'
@@ -12,11 +20,14 @@ import type {
 } from '@tc96/templates/application/shell/app-shell-3'
 import type { ShellSection } from '@tc96/templates/application/shell/app-shell-4'
 import { Button } from '@tc96/ui/button'
+import { Input } from '@tc96/ui/input'
+import { Switch } from '@tc96/ui/switch'
 import {
   AudioWaveformIcon,
   BellIcon,
   BookOpenIcon,
   BriefcaseIcon,
+  BuildingIcon,
   ChartColumnIcon,
   CreditCardIcon,
   ExternalLinkIcon,
@@ -28,8 +39,11 @@ import {
   MailIcon,
   MegaphoneIcon,
   PinOffIcon,
+  PlugIcon,
   PlusIcon,
   SettingsIcon,
+  ShieldIcon,
+  SlidersHorizontalIcon,
   StarIcon,
   TicketIcon,
   UserIcon,
@@ -258,3 +272,94 @@ export const shellSections: ShellSection[] = [
     title: 'Suporte',
   },
 ]
+
+export const settingsNavigation: ShellNavGroup[] = [
+  {
+    items: [
+      {
+        active: true,
+        href: '/settings/profile',
+        icon: <UserIcon />,
+        title: 'Perfil',
+      },
+      {
+        href: '/settings/preferences',
+        icon: <SlidersHorizontalIcon />,
+        title: 'Preferências',
+      },
+      {
+        href: '/settings/notifications',
+        icon: <BellIcon />,
+        title: 'Notificações',
+      },
+      { href: '/settings/security', icon: <ShieldIcon />, title: 'Segurança' },
+    ],
+    label: 'Conta',
+  },
+  {
+    items: [
+      { href: '/settings/workspace', icon: <BuildingIcon />, title: 'Geral' },
+      {
+        badge: 12,
+        href: '/settings/members',
+        icon: <UsersIcon />,
+        title: 'Membros',
+      },
+      {
+        href: '/settings/billing',
+        icon: <CreditCardIcon />,
+        title: 'Faturamento',
+      },
+      {
+        href: '/settings/integrations',
+        icon: <PlugIcon />,
+        title: 'Integrações',
+      },
+    ],
+    label: 'Workspace',
+  },
+]
+
+export const shellSettings: ShellSettings = {
+  backHref: '/',
+  navigation: settingsNavigation,
+}
+
+export const settingsBreadcrumbs: ShellBreadcrumbItem[] = [
+  { href: '/settings', label: 'Configurações' },
+  { label: 'Perfil' },
+]
+
+export function ProfileSettingsPage(): ReactElement {
+  return (
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+      <h1 className="font-semibold text-lg">Perfil</h1>
+      <SettingsSection
+        header={
+          <SettingsSectionHeader>
+            <SettingsSectionTitle>Informações pessoais</SettingsSectionTitle>
+            <SettingsSectionDescription>
+              Como a equipe vê você no workspace.
+            </SettingsSectionDescription>
+          </SettingsSectionHeader>
+        }
+      >
+        <SettingsRow
+          endSlot={
+            <Input
+              aria-label="Nome"
+              className="w-56"
+              defaultValue="Marina Costa"
+            />
+          }
+          title="Nome"
+        />
+        <SettingsRow
+          description="Exibe seu e-mail no perfil público"
+          endSlot={<Switch aria-label="Mostrar e-mail" defaultChecked />}
+          title="Mostrar e-mail"
+        />
+      </SettingsSection>
+    </div>
+  )
+}

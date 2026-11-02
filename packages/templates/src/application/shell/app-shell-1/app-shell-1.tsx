@@ -13,6 +13,7 @@ import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
 import { renderAnchor } from '../shared/render-link'
+import { ShellBackButton } from '../shared/shell-back-button'
 import { ShellHeader } from '../shared/shell-header'
 import { ShellNav } from '../shared/shell-nav'
 import type { AppShellBaseProps } from '../shared/types'
@@ -35,6 +36,7 @@ export function AppShell1({
   open,
   padded = true,
   renderLink = renderAnchor,
+  settings,
   theme,
   user,
   userActions,
@@ -51,31 +53,41 @@ export function AppShell1({
     >
       <Sidebar collapsible="icon">
         <SidebarHeader>
-          <WorkspaceSwitcher
-            labels={labels}
-            onWorkspaceChange={onWorkspaceChange}
-            workspaceId={workspaceId}
-            workspaces={workspaces}
-          />
+          {settings ? (
+            <ShellBackButton
+              labels={labels}
+              renderLink={renderLink}
+              settings={settings}
+            />
+          ) : (
+            <WorkspaceSwitcher
+              labels={labels}
+              onWorkspaceChange={onWorkspaceChange}
+              workspaceId={workspaceId}
+              workspaces={workspaces}
+            />
+          )}
         </SidebarHeader>
         <SidebarContent>
           <ShellNav
-            groups={navigation}
-            label={labels.navigation}
+            groups={settings ? settings.navigation : navigation}
+            label={settings ? labels.settingsNavigation : labels.navigation}
             labels={labels}
             renderLink={renderLink}
           />
         </SidebarContent>
-        <SidebarFooter>
-          <UserMenu
-            labels={labels}
-            onSignOut={onSignOut}
-            onThemeChange={onThemeChange}
-            theme={theme}
-            user={user}
-            userActions={userActions}
-          />
-        </SidebarFooter>
+        {settings ? null : (
+          <SidebarFooter>
+            <UserMenu
+              labels={labels}
+              onSignOut={onSignOut}
+              onThemeChange={onThemeChange}
+              theme={theme}
+              user={user}
+              userActions={userActions}
+            />
+          </SidebarFooter>
+        )}
         <SidebarRail />
       </Sidebar>
       <SidebarInset className="min-w-0">
