@@ -2,13 +2,17 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AppShell3 } from '@tc96/templates/application/shell/app-shell-3'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
+import { expectSettingsLevel } from './fixtures/settings-play'
 import {
+  ProfileSettingsPage,
   ShellHeaderActions,
   ShellPagePlaceholder,
+  settingsBreadcrumbs,
   shellBreadcrumbs,
   shellNavigation,
   shellNotifications,
   shellProjects,
+  shellSettings,
   shellUsage,
   shellUser,
   shellUserActions,
@@ -45,6 +49,11 @@ const docs = {
       description:
         'Root component. Same props as `AppShell1`, on an inset COSS `Sidebar` (`variant="inset"`, `collapsible="icon"`): the page sits in a raised panel beside the sidebar.',
       name: 'AppShell3',
+    },
+    {
+      description:
+        '`ShellSettings`: `navigation` plus exactly one of `backHref` (a link through `renderLink`) or `onBack` (a button). When set, the sidebar becomes the settings level: Voltar ao app at the top and the settings menu in a `nav` named by `labels.settingsNavigation`, in place of the workspace switcher, the navigation, the projects, the usage card and the account menu. The header keeps the breadcrumb and `actions`.',
+      name: 'settings',
     },
     {
       description:
@@ -149,4 +158,23 @@ export const Notifications: Story = {
     await expect(args.onMarkAllRead).toHaveBeenCalledOnce()
   },
   tags: ['!autodocs'],
+}
+
+export const Settings: Story = {
+  args: {
+    breadcrumbs: settingsBreadcrumbs,
+    children: <ProfileSettingsPage />,
+    settings: shellSettings,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'With `settings`, the sidebar becomes the settings level: Voltar ao app at the top and the settings menu below it.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expectSettingsLevel(canvasElement)
+  },
 }

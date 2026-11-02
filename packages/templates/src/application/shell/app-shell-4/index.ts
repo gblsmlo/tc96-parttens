@@ -7,6 +7,7 @@ export type {
   ShellNavSubItem,
   ShellNotification,
   ShellRenderLink,
+  ShellSettings,
   ShellTheme,
   ShellUser,
   ShellWorkspace,

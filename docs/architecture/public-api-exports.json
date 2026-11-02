@@ -1372,6 +1372,7 @@
     "ShellNavItem",
     "ShellNavSubItem",
     "ShellRenderLink",
+    "ShellSettings",
     "ShellTheme",
     "ShellUser",
     "ShellWorkspace"
@@ -1387,6 +1388,7 @@
     "ShellNavItem",
     "ShellNavSubItem",
     "ShellRenderLink",
+    "ShellSettings",
     "ShellTheme",
     "ShellUser",
     "ShellWorkspace"
@@ -1404,6 +1406,7 @@
     "ShellNotification",
     "ShellProject",
     "ShellRenderLink",
+    "ShellSettings",
     "ShellTheme",
     "ShellUsage",
     "ShellUser",
@@ -1421,20 +1424,10 @@
     "ShellNotification",
     "ShellRenderLink",
     "ShellSection",
+    "ShellSettings",
     "ShellTheme",
     "ShellUser",
     "ShellWorkspace"
-  ],
-  "template:settings-shell": [
-    "SettingsShell",
-    "SettingsShellProps",
-    "ShellAction",
-    "ShellBreadcrumbItem",
-    "ShellLabels",
-    "ShellNavGroup",
-    "ShellNavItem",
-    "ShellNavSubItem",
-    "ShellRenderLink"
   ],
   "template:workflow-editor": [
     "AssistantMessage",

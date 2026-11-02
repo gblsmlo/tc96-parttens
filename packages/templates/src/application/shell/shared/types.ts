@@ -88,6 +88,11 @@ export interface ShellLabels {
   workspaces: string
 }
 
+export type ShellSettings = { navigation: ShellNavGroup[] } & (
+  | { backHref: string; onBack?: never }
+  | { backHref?: never; onBack: () => void }
+)
+
 export interface AppShellBaseProps {
   actions?: ReactNode
   breadcrumbs?: ShellBreadcrumbItem[]
@@ -102,6 +107,7 @@ export interface AppShellBaseProps {
   open?: boolean
   padded?: boolean
   renderLink?: ShellRenderLink
+  settings?: ShellSettings
   theme?: ShellTheme
   user: ShellUser
   userActions?: ShellAction[]
