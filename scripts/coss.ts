@@ -1,45 +1,38 @@
-import { createHash } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import type { CossRegistryItem } from '../packages/registry/src/coss'
 
 export {
   type CossRegistryItem,
-  fetchItem,
   normalizeImports,
 } from '../packages/registry/src/coss'
 
+export async function fetchItem(url: string) {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`)
+  return (await response.json()) as CossRegistryItem
+}
+
 export const registry = 'https://coss.com/ui/r'
-export const lockPath = 'packages/ui/coss.lock.json'
+export const manifestPath = 'packages/ui/ui.manifest.json'
 export const sourceDirectory = 'packages/ui/src'
 
-export interface CossLockItem {
-  url: string
-  /** sha256 of the file contents published by the registry, in path order. */
-  upstream: string
-  /** sha256 of the files written to packages/ui, after import normalization. */
-  file: string
+export interface UiManifestItem {
+  origin: 'coss' | 'own'
+  /** Theme tokens the item declares; the CLI lists the ones a consumer lacks. */
+  cssVars?: CossRegistryItem['cssVars']
+  css?: CossRegistryItem['css']
   /** Paths under packages/ui/src, when the item is not a single `<name>.tsx`. */
   paths?: string[]
 }
 
-export interface CossLock {
-  registry: string
-  items: Record<string, CossLockItem>
+export interface UiManifest {
+  items: Record<string, UiManifestItem>
 }
 
 export interface CossItemFile {
   /** Path under packages/ui/src. */
   path: string
   content: string
-}
-
-export function sha256(content: string) {
-  return `sha256-${createHash('sha256').update(content).digest('hex')}`
-}
-
-/** One hash for an item's files, equal to the file's own hash for one file. */
-export function contentHash(contents: string[]) {
-  return sha256(contents.join('\0'))
 }
 
 /** Mirrors the COSS install layout: `ui/` at the root, other folders kept. */
@@ -55,16 +48,15 @@ export function itemFiles(item: CossRegistryItem): CossItemFile[] {
     .sort((a, b) => a.path.localeCompare(b.path))
 }
 
-export function lockedPaths(name: string, locked: CossLockItem) {
-  return locked.paths ?? [`${name}.tsx`]
+export function manifestPaths(name: string, item: UiManifestItem) {
+  return item.paths ?? [`${name}.tsx`]
 }
 
-export async function readLock(root = '.'): Promise<CossLock> {
+export async function readManifest(root = '.'): Promise<UiManifest> {
   try {
-    return JSON.parse(await readFile(`${root}/${lockPath}`, 'utf8'))
+    return JSON.parse(await readFile(`${root}/${manifestPath}`, 'utf8'))
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT')
-      return { registry, items: {} }
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return { items: {} }
     throw error
   }
 }

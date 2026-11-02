@@ -234,23 +234,23 @@ test('combines COSS dependencies and leaves out the installed ones', () => {
   const combined = combineItems([
     {
       ...item('parttens/src/a.ts', ''),
-      registryDependencies: ['@coss/menu', '@coss/button'],
+      registryDependencies: ['@ui/menu', '@ui/button'],
     },
     {
       ...item('parttens/src/b.ts', ''),
-      registryDependencies: ['@coss/button', '@coss/empty'],
+      registryDependencies: ['@ui/button', '@ui/empty'],
     },
   ])
   expect(combined.registryDependencies).toEqual([
-    '@coss/button',
-    '@coss/empty',
-    '@coss/menu',
+    '@ui/button',
+    '@ui/empty',
+    '@ui/menu',
   ])
   const installed = new Set(['button', 'menu'])
   expect(
     omitInstalled(combined, (component) => installed.has(component))
       .registryDependencies,
-  ).toEqual(['@coss/empty'])
+  ).toEqual(['@ui/empty'])
 })
 
 test('builds the record-preview item with COSS-only dependencies and no test files', () => {
@@ -269,7 +269,7 @@ test('builds the record-preview item with COSS-only dependencies and no test fil
   expect(item.name).toBe('record-preview')
   expect(item.registryDependencies?.length).toBeGreaterThan(0)
   for (const dependency of item.registryDependencies ?? [])
-    expect(dependency.startsWith('@coss/')).toBe(true)
+    expect(dependency.startsWith('@ui/')).toBe(true)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
   expect(() =>
     readFileSync(join(root, 'dist/registry/detail-sheet.json'), 'utf8'),
@@ -292,11 +292,11 @@ test('builds the record-group item shipping the properties catalog it imports by
   expect(item.name).toBe('record-group')
   expect(paths).toContain('parttens/src/properties/shared/property-catalog.ts')
   expect(paths).not.toContain('elements/src/card-surface.tsx')
-  expect(item.registryDependencies).toContain('@coss/card')
+  expect(item.registryDependencies).toContain('@ui/card')
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
   expect(
     item.registryDependencies?.every((dependency) =>
-      dependency.startsWith('@coss/'),
+      dependency.startsWith('@ui/'),
     ),
   ).toBe(true)
 })
@@ -318,7 +318,7 @@ test('builds the state-surface item with COSS-only dependencies and no test file
   expect(item.registryDependencies?.length).toBeGreaterThan(0)
   expect(
     item.registryDependencies?.every((dependency) =>
-      dependency.startsWith('@coss/'),
+      dependency.startsWith('@ui/'),
     ),
   ).toBe(true)
   expect(paths).toContain('elements/src/icon-frame.tsx')
@@ -339,7 +339,7 @@ test('builds the settings item shipping Text and no test files', () => {
   const paths = item.files.map((file) => file.path)
 
   expect(item.name).toBe('settings')
-  expect(item.registryDependencies).toEqual(['@coss/card', '@coss/collapsible'])
+  expect(item.registryDependencies).toEqual(['@ui/card', '@ui/collapsible'])
   expect(paths).toContain('elements/src/text.tsx')
   expect(paths).not.toContain('elements/src/card-surface.tsx')
   expect(paths).toContain('parttens/src/surfaces/settings/index.ts')
@@ -361,10 +361,10 @@ test('builds the chats-panel item from the chat folder with COSS-only dependenci
 
   expect(item.name).toBe('chats-panel')
   expect(item.registryDependencies).toEqual([
-    '@coss/badge',
-    '@coss/card',
-    '@coss/scroll-area',
-    '@coss/skeleton',
+    '@ui/badge',
+    '@ui/card',
+    '@ui/scroll-area',
+    '@ui/skeleton',
   ])
   expect(item.dependencies).toContain('@thesvg/icons@3.4.1')
   expect(paths).toContain('parttens/src/chat/chats-panel/index.ts')
@@ -389,12 +389,12 @@ test('builds the chat-assistant item with the COSS chat and composer dependencie
 
   expect(item.name).toBe('chat-assistant')
   expect(item.registryDependencies).toEqual([
-    '@coss/badge',
-    '@coss/button',
-    '@coss/card',
-    '@coss/chat',
-    '@coss/composer',
-    '@coss/tooltip',
+    '@ui/badge',
+    '@ui/button',
+    '@ui/card',
+    '@ui/chat',
+    '@ui/composer',
+    '@ui/tooltip',
   ])
   expect(paths).toContain('parttens/src/chat/assistant/index.ts')
   expect(paths.every((path) => path.startsWith('parttens/src/chat/'))).toBe(
@@ -417,7 +417,7 @@ test('builds the wizard item from its folder with IconFrame and COSS dependencie
   const paths = item.files.map((file) => file.path)
 
   expect(item.name).toBe('wizard')
-  expect(item.registryDependencies).toEqual(['@coss/button', '@coss/card'])
+  expect(item.registryDependencies).toEqual(['@ui/button', '@ui/card'])
   expect(paths).toContain('parttens/src/wizard/index.ts')
   expect(paths).toContain('elements/src/icon-frame.tsx')
   expect(
@@ -513,8 +513,8 @@ test('builds the app-shell-1 item with the shell shared files and the sidebar fr
   const paths = item.files.map((file) => file.path)
 
   expect(item.name).toBe('app-shell-1')
-  expect(item.registryDependencies).toContain('@coss/sidebar')
-  expect(item.registryDependencies).toContain('@coss/breadcrumb')
+  expect(item.registryDependencies).toContain('@ui/sidebar')
+  expect(item.registryDependencies).toContain('@ui/breadcrumb')
   expect(paths).toContain(
     'templates/src/application/shell/app-shell-1/index.ts',
   )

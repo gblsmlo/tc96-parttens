@@ -93,7 +93,7 @@ The template is controlled: you pass the steps, the connections, the selection, 
 
 ### How it works
 
-- **Your COSS components:** if a COSS component is missing, it is installed through shadcn. If you already have it, yours is reused, customizations included
+- **Your COSS components:** if a `ui` component is missing, the CLI installs it from its own package. If you already have it, yours is reused, customizations included
 - **Your aliases:** imports are rewritten to the aliases in your root `components.json`
 - **Your files:** existing files are kept. shadcn asks before overwriting anything
 
@@ -219,7 +219,7 @@ packages/
 ├── parttens/          # Pattern source
 ├── elements/          # tc96 components COSS does not have, such as Text
 ├── helpers/           # React-free helpers shared by patterns, such as amount formatting
-├── ui/                # Unmodified COSS components, locked to an upstream snapshot
+├── ui/                # COSS-origin components owned by this repo, listed in ui.manifest.json
 ├── utils/             # Shared helpers (cn)
 └── registry/          # Registry build and the CLI, published as @tc96/parttens
 apps/

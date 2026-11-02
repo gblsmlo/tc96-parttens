@@ -2,7 +2,7 @@
   "name": "badge",
   "type": "registry:ui",
   "dependencies": [],
-  "registryDependencies": ["@coss/button"],
+  "registryDependencies": ["@ui/button"],
   "files": [
     {
       "path": "registry/default/ui/badge.tsx",

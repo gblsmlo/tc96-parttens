@@ -68,23 +68,11 @@ Os widgets de finanças, produtividade, CRM e gamificação vêm juntos em `npx 
 
 O editor de texto estilo Notion vem em `npx @tc96/parttens add rich-text-editor`. Ele usa o Plate headless (`platejs` e os plugins `@platejs/basic-nodes`, `@platejs/list-classic`, `@platejs/slash-command` e `@platejs/combobox`), instalados como dependências do pattern.
 
-Os componentes COSS que os patterns usam e que faltam no seu `ui` são baixados
-pelo próprio CLI de `https://coss.com/ui/r/{name}.json`, ou do endereço que você
-configurar em `registries`:
+Os componentes de `ui` que os patterns usam e que faltam no seu projeto vêm
+junto com o próprio CLI, sem acessar a rede. Os componentes que você já tem
+ficam como estão, inclusive os personalizados.
 
-```json
-{
-  "registries": {
-    "@coss": "https://coss.example.com/r/{name}.json"
-  }
-}
-```
-
-O endereço é uma URL ou um caminho relativo à raiz, sempre com `{name}`; a
-forma com `headers` não é suportada. Os componentes que você já tem ficam como
-estão, inclusive os personalizados.
-
-Alguns componentes COSS declaram tokens de tema, como o `--info` do `badge` e o
+Alguns componentes declaram tokens de tema, como o `--info` do `badge` e o
 `--animate-skeleton` do `skeleton`. O CLI não edita o seu CSS: procura cada
 token no arquivo de `tailwind.css` do `components.json` e lista os que não
 encontrar, prontos para copiar.

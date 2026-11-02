@@ -5,11 +5,11 @@ import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { aggregateBarrel, writeBarrel } from './barrel'
 import { checkCompatibility } from './check-compatibility'
-import { findProjectRoot, readCossConfig, readInstallConfig } from './config'
+import { findProjectRoot, readInstallConfig, readStylesheet } from './config'
 import {
   componentFiles,
   cossInstalledPaths,
-  loadItem,
+  loadUiItem,
   missingTheme,
   resolveItems,
 } from './coss'
@@ -32,7 +32,7 @@ import {
   templateNames,
 } from './manifest'
 
-const help = `tc96-parttens add <patterns or templates...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nTemplates: ${templateNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers, patterns and templates replace the last segment of the ui alias (@acme/ui/components gives @acme/ui/patterns, @acme/ui gives @acme/patterns) unless set; the templates path is needed only to install a template.\nInstalls only the COSS components missing from the ui alias, from registries.@coss in components.json or coss.com. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile, into the workspace package that holds the patterns path.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
+const help = `tc96-parttens add <patterns or templates...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nTemplates: ${templateNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. elements, helpers, patterns and templates replace the last segment of the ui alias (@acme/ui/components gives @acme/ui/patterns, @acme/ui gives @acme/patterns) unless set; the templates path is needed only to install a template.\nInstalls only the ui components missing from the ui alias, from this package. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile, into the workspace package that holds the patterns path.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
 async function main() {
   const args = process.argv.slice(2)
   if (!args.length || args.includes('--help') || args.includes('-h')) {
@@ -77,7 +77,7 @@ async function main() {
   const configuration = await readInstallConfig(cwd, {
     templates: selected.some(isTemplate),
   })
-  const coss = await readCossConfig(cwd)
+  const stylesheetPath = await readStylesheet(cwd)
   const items = await Promise.all(
     selected.map(
       async (name) =>
@@ -100,7 +100,7 @@ async function main() {
   )
   const components = await resolveItems(
     patterns.registryDependencies ?? [],
-    (name) => loadItem(coss.registry, name, workspace),
+    (name) => loadUiItem(registryDirectory, name),
     installed,
   )
   const item: RegistryItem = {
@@ -178,21 +178,21 @@ async function main() {
   }
   console.log(
     components.length
-      ? `Missing COSS components, installed from ${coss.registry}: ${components.map((component) => component.name).join(', ')}.`
-      : 'Every COSS component the patterns use is already installed; keeping yours.',
+      ? `Missing ui components, installed from this package: ${components.map((component) => component.name).join(', ')}.`
+      : 'Every ui component the patterns use is already installed; keeping yours.',
   )
   const stylesheet =
-    coss.stylesheet && existsSync(join(workspace, coss.stylesheet))
-      ? await readFile(join(workspace, coss.stylesheet), 'utf8')
+    stylesheetPath && existsSync(join(workspace, stylesheetPath))
+      ? await readFile(join(workspace, stylesheetPath), 'utf8')
       : undefined
   const theme = missingTheme(components, stylesheet)
   if (theme.length)
     console.warn(
       `${
         stylesheet
-          ? `${coss.stylesheet} does not define`
+          ? `${stylesheetPath} does not define`
           : 'components.json names no readable tailwind.css to check for'
-      } theme tokens these COSS components use. tc96 does not edit your CSS; add the ones you need:\n${theme
+      } theme tokens these ui components use. tc96 does not edit your CSS; add the ones you need:\n${theme
         .map(({ item, rules }) => `${item}:\n${rules.join('\n')}`)
         .join('\n')}`,
     )

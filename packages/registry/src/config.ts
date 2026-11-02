@@ -2,7 +2,6 @@ import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import ts from 'typescript'
-import { cossSource } from './coss'
 import {
   type Aliases,
   type InstallConfig,
@@ -113,14 +112,11 @@ export async function readInstallConfig(
   return validateConfig({ aliases, paths })
 }
 
-/** The COSS registry and the stylesheet that components.json names. */
-export async function readCossConfig(root: string) {
+/** The stylesheet that components.json names, relative to root. */
+export async function readStylesheet(root: string) {
   const components = JSON.parse(
     await readFile(join(root, 'components.json'), 'utf8'),
   )
   const css = components?.tailwind?.css
-  return {
-    registry: cossSource(components),
-    stylesheet: typeof css === 'string' && css ? css : undefined,
-  }
+  return typeof css === 'string' && css ? css : undefined
 }

@@ -2,7 +2,7 @@
   "name": "chat-assistant",
   "type": "registry:block",
   "dependencies": [],
-  "registryDependencies": ["@coss/chat"],
+  "registryDependencies": ["@ui/chat"],
   "files": [
     {
       "path": "parttens/src/chat/proof.ts",

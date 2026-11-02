@@ -164,9 +164,6 @@ async function installConsumer() {
     JSON.stringify({
       tailwind: { css: 'src/styles.css' },
       aliases: { ui: '@consumer/ui', utils: '@consumer/utils' },
-      registries: {
-        '@coss': join(installRegistryDirectory, 'coss/{name}.json'),
-      },
     }),
   )
   return root
@@ -193,7 +190,7 @@ function installItem(root: string, name: string, ...flags: string[]) {
   )
 }
 
-test('installs the patterns and the missing COSS components, leaving the CSS and components.json alone', async () => {
+test('installs the patterns and the missing ui components, leaving the CSS and components.json alone', async () => {
   const root = await installConsumer()
   try {
     const components = await readFile(join(root, 'components.json'), 'utf8')
@@ -212,7 +209,9 @@ test('installs the patterns and the missing COSS components, leaving the CSS and
       await readFile(join(root, 'src/patterns/index.ts'), 'utf8'),
     ).toContain("export * from './checklist/proof'")
     expect(result.stdout).toContain('Compatibility: compatible')
-    expect(result.stdout).toContain('coss/{name}.json: badge.')
+    expect(result.stdout).toContain(
+      'Missing ui components, installed from this package: badge.',
+    )
     expect(result.stderr).toContain(':root {\n  --info: blue;\n}')
     expect(result.stderr).toContain('.dark {\n  --info: navy;\n}')
     expect(result.stderr).not.toContain('--destructive-foreground')
@@ -239,7 +238,7 @@ test('preserves an existing file that differs and keeps installed components', a
       'Preserved 1 existing files that differ from the registry:\n  src/patterns/checklist/proof.ts',
     )
     expect(result.stdout).toContain(
-      'Every COSS component the patterns use is already installed',
+      'Every ui component the patterns use is already installed',
     )
     expect(await readFile(proof, 'utf8')).toBe('export const proof = "mine"\n')
   } finally {
@@ -316,14 +315,14 @@ test('installs a template with the COSS hook its components need', async () => {
     const again = installItem(root, 'app-shell-1')
     expect(again.status).toBe(0)
     expect(again.stdout).toContain(
-      'Every COSS component the patterns use is already installed',
+      'Every ui component the patterns use is already installed',
     )
   } finally {
     await rm(root, { recursive: true, force: true })
   }
 })
 
-test('installs a multi-file COSS item under its folder with its npm dependency', async () => {
+test('installs a multi-file ui item under its folder with its npm dependency', async () => {
   const root = await installConsumer()
   try {
     const result = installItem(root, 'chat-assistant', '--dry-run')
@@ -335,21 +334,21 @@ test('installs a multi-file COSS item under its folder with its npm dependency',
       'chat/lib/split-chat-message-preview.ts',
     ])
       expect(result.stdout).toContain(`create: src/ui/${file}`)
-    expect(result.stdout).toContain('Missing COSS components')
+    expect(result.stdout).toContain('Missing ui components')
     expect(result.stdout).toContain('motion@14.0.0')
   } finally {
     await rm(root, { recursive: true, force: true })
   }
 })
 
-test('a folder named after a multi-file COSS item counts as installed', async () => {
+test('a folder named after a multi-file ui item counts as installed', async () => {
   const root = await installConsumer()
   try {
     await mkdir(join(root, 'src/ui/chat'), { recursive: true })
     const result = installItem(root, 'chat-assistant', '--dry-run')
     expect(result.status).toBe(0)
     expect(result.stdout).toContain(
-      'Every COSS component the patterns use is already installed',
+      'Every ui component the patterns use is already installed',
     )
     expect(result.stdout).not.toContain('create: src/ui/chat/')
   } finally {
