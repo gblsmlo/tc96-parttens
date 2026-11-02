@@ -28,7 +28,12 @@ export type UpdateTask = (id: string, change: TaskChange) => void
 export function StatusField({
   onChange,
   task,
-}: Readonly<{ onChange: UpdateTask; task: Task }>) {
+  variant,
+}: Readonly<{
+  onChange: UpdateTask
+  task: Task
+  variant?: 'badge' | 'plain'
+}>) {
   return (
     <SelectProperty
       ariaLabel="Status"
@@ -37,6 +42,7 @@ export function StatusField({
       }}
       options={statusOptions}
       value={task.status}
+      variant={variant}
     />
   )
 }
@@ -50,11 +56,13 @@ export const personOptions: readonly PersonPropertyOption[] = people.map(
 )
 
 export function AssigneeField({
+  avatarSize,
   display = 'full',
   onChange,
   task,
   variant,
 }: Readonly<{
+  avatarSize?: 'xs' | 'sm'
   display?: 'avatar' | 'full'
   onChange: UpdateTask
   task: Task
@@ -63,6 +71,7 @@ export function AssigneeField({
   return (
     <PersonProperty
       ariaLabel="Responsável"
+      avatarSize={avatarSize}
       display={display}
       onValueChange={(value) => onChange(task.id, { assigneeId: value })}
       options={personOptions}
@@ -143,7 +152,12 @@ export function EstimateField({
 export function PriorityField({
   onChange,
   task,
-}: Readonly<{ onChange: UpdateTask; task: Task }>) {
+  variant,
+}: Readonly<{
+  onChange: UpdateTask
+  task: Task
+  variant?: 'badge' | 'plain'
+}>) {
   return (
     <SelectProperty
       ariaLabel="Prioridade"
@@ -152,6 +166,7 @@ export function PriorityField({
       }}
       options={priorityOptions}
       value={task.priority}
+      variant={variant}
     />
   )
 }

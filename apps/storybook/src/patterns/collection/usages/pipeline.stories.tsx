@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Text } from '@tc96/elements/text'
 import { formatShortDate } from '@tc96/helpers/date'
 import { formatAmount } from '@tc96/helpers/format'
 import {
@@ -9,19 +8,13 @@ import {
   CollectionFrameHeader,
   CollectionToolbar,
   KanbanCard,
-  KanbanCardAction,
-  KanbanCardBody,
-  KanbanCardBodyRow,
-  KanbanCardDescription,
-  KanbanCardFooter,
-  KanbanCardHeader,
   type KanbanCardMove,
-  KanbanCardTitle,
   type KanbanColumnData,
   KanbanView,
   MenuCheckboxOption,
   PersonProperty,
   projectCollection,
+  SelectProperty,
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/parttens'
@@ -35,6 +28,7 @@ import {
 import {
   BanknoteIcon,
   CalendarIcon,
+  CircleDotIcon,
   FileTextIcon,
   ListTodoIcon,
   MessageCircleIcon,
@@ -47,14 +41,12 @@ import {
   type Deal,
   type DealStage,
   dealGroupings,
+  isDealStage,
   isOpenStage,
   STAGE_COLOR,
   initialDeals as seedDeals,
+  stageOptions,
 } from '../fixtures/deals'
-import {
-  KanbanCardCountAction,
-  KanbanCardMoreActions,
-} from '../fixtures/kanban-card-actions'
 import { personOptions } from '../fixtures/task-fields'
 import { people, TIME_ZONE } from '../fixtures/tasks'
 import { ViewSwitcherPicker } from '../fixtures/view-switcher-picker'
@@ -88,32 +80,70 @@ const projectDealColumns = (deals: readonly Deal[]): KanbanColumnData<Deal>[] =>
 function DealCard({
   deal,
   onOwnerChange,
-}: Readonly<{ deal: Deal; onOwnerChange: (ownerId: string) => void }>) {
+  onStageChange,
+}: Readonly<{
+  deal: Deal
+  onOwnerChange: (ownerId: string) => void
+  onStageChange: (stage: DealStage) => void
+}>) {
   return (
-    <KanbanCard density="sm">
-      <KanbanCardHeader>
-        <div className="flex min-w-0 items-center gap-2">
-          <KanbanCardTitle className="min-w-0 flex-1 truncate">
-            {deal.company}
-          </KanbanCardTitle>
-        </div>
-        <KanbanCardDescription>{deal.contact}</KanbanCardDescription>
-        <KanbanCardAction>
-          <KanbanCardMoreActions
-            items={['Editar negócio', 'Duplicar negócio']}
-            label="Mais ações do negócio"
-          />
-        </KanbanCardAction>
-      </KanbanCardHeader>
-
-      <KanbanCardBody className="grid gap-2 text-sm">
-        <KanbanCardBodyRow>
-          <Text
-            className="flex min-w-0 items-center gap-2"
-            foreground="muted"
-            size="sm"
-          >
-            <CalendarIcon aria-hidden className="size-3.5" />
+    <KanbanCard
+      assignee={
+        <PersonProperty
+          ariaLabel="Responsável"
+          avatarSize="sm"
+          display="avatar"
+          onValueChange={onOwnerChange}
+          options={personOptions}
+          value={deal.ownerId}
+          variant="plain"
+        />
+      }
+      counts={[
+        {
+          count: 1,
+          icon: <FileTextIcon aria-hidden />,
+          id: 'notes',
+          items: [{ label: 'Criar nota' }, { label: 'Ver notas' }],
+          label: 'Notas: 1',
+        },
+        {
+          count: 1,
+          icon: <ListTodoIcon aria-hidden />,
+          id: 'tasks',
+          items: [{ label: 'Criar tarefa' }, { label: 'Ver tarefas' }],
+          label: 'Tarefas: 1',
+        },
+        {
+          count: 1,
+          icon: <MessageCircleIcon aria-hidden />,
+          id: 'comments',
+          items: [{ label: 'Criar comentário' }, { label: 'Ver comentários' }],
+          label: 'Comentários: 1',
+        },
+      ]}
+      density="sm"
+      description={deal.contact}
+      fields={[
+        {
+          content: (
+            <SelectProperty
+              ariaLabel="Etapa"
+              onValueChange={(value) => {
+                if (value && isDealStage(value)) onStageChange(value)
+              }}
+              options={stageOptions}
+              value={deal.stage}
+              variant="plain"
+            />
+          ),
+          icon: <CircleDotIcon aria-hidden />,
+          id: 'stage',
+          label: 'Etapa',
+          interactive: true,
+        },
+        {
+          content: (
             <time dateTime={deal.closeDate}>
               {formatShortDate(
                 new Date(`${deal.closeDate}T12:00:00Z`),
@@ -121,66 +151,24 @@ function DealCard({
                 TIME_ZONE,
               )}
             </time>
-          </Text>
-        </KanbanCardBodyRow>
-        <KanbanCardBodyRow>
-          <Text
-            className="flex min-w-0 items-center gap-2 tabular-nums"
-            foreground="muted"
-            size="sm"
-          >
-            <BanknoteIcon aria-hidden className="size-3.5" />
-            <span>{formatValue(deal.value)}</span>
-          </Text>
-        </KanbanCardBodyRow>
-      </KanbanCardBody>
-
-      <KanbanCardFooter className="gap-2">
-        <div className="flex min-w-0 flex-1 items-center gap-1">
-          <span data-kanban-card-action="">
-            <KanbanCardCountAction
-              createLabel="Criar nota"
-              label="Notas: 1"
-              viewLabel="Ver notas"
-            >
-              <FileTextIcon aria-hidden className="size-3.5" />
-              <span>1</span>
-            </KanbanCardCountAction>
-          </span>
-          <span data-kanban-card-action="">
-            <KanbanCardCountAction
-              createLabel="Criar tarefa"
-              label="Tarefas: 1"
-              viewLabel="Ver tarefas"
-            >
-              <ListTodoIcon aria-hidden className="size-3.5" />
-              <span>1</span>
-            </KanbanCardCountAction>
-          </span>
-          <span data-kanban-card-action="">
-            <KanbanCardCountAction
-              createLabel="Criar comentário"
-              label="Comentários: 1"
-              viewLabel="Ver comentários"
-            >
-              <MessageCircleIcon aria-hidden className="size-3.5" />
-              <span>1</span>
-            </KanbanCardCountAction>
-          </span>
-        </div>
-        <span className="ml-auto" data-kanban-card-action="">
-          <PersonProperty
-            ariaLabel="Responsável"
-            avatarSize="sm"
-            display="avatar"
-            onValueChange={onOwnerChange}
-            options={personOptions}
-            value={deal.ownerId}
-            variant="plain"
-          />
-        </span>
-      </KanbanCardFooter>
-    </KanbanCard>
+          ),
+          icon: <CalendarIcon aria-hidden />,
+          id: 'close-date',
+          label: 'Prazo',
+        },
+        {
+          content: formatValue(deal.value),
+          icon: <BanknoteIcon aria-hidden />,
+          id: 'value',
+          label: 'Valor',
+        },
+      ]}
+      menu={{
+        items: [{ label: 'Editar negócio' }, { label: 'Duplicar negócio' }],
+        label: 'Mais ações do negócio',
+      }}
+      title={deal.company}
+    />
   )
 }
 
@@ -267,6 +255,11 @@ const meta = {
         ),
       )
 
+    const changeStage = (dealId: string, stage: DealStage) =>
+      setDeals((current) =>
+        current.map((deal) => (deal.id === dealId ? { ...deal, stage } : deal)),
+      )
+
     const activeFilterCount = ownerFilter.length
     const clearFilters = () => {
       setOwnerFilter([])
@@ -342,6 +335,7 @@ const meta = {
                 <DealCard
                   deal={deal}
                   onOwnerChange={(ownerId) => changeOwner(deal.id, ownerId)}
+                  onStageChange={(stage) => changeStage(deal.id, stage)}
                 />
               )}
               renderColumnTitle={(column) => (

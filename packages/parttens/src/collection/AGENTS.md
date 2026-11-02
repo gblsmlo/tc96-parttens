@@ -41,6 +41,7 @@ Kanban:
 - The whole card drags except interactive descendants; `KanbanCardOpenTrigger` drags only past 5px (touch: 250ms delay, 5px tolerance). The grip handle, visible only on focus, is the keyboard and assistive-technology activator.
 - `KanbanView` always renders the mobile panel and the desktop board and lets CSS pick one, so the active column's cards render twice: `renderCard` must be pure and emit no DOM ids. Below `md` sorting is off; a collapsed column has no drop target.
 - The board drag-scrolls only while card drag is enabled, and a click within 500ms of a drag is suppressed.
+- `KanbanCard` owns the card anatomy (the Pipeline card): `title`, `description`, `menu`, `fields`, `counts` and `assignee` render header, body rows, count menus and footer, so usages pass data instead of composing the parts; every field carries `label` and `icon`, and the body is a two-column grid whose label column takes the widest label, 8px before the values; children still render after it. In `compact` the title row grows and the assignee moves next to the menu. The footer sits 12px below the body (`pt-3` on the card-panel variant, which is the one that applies).
 - `KanbanCard` stays an `article` (tested). `KanbanCardSkeleton`, `GalleryItemSkeleton` and `ListItemSkeleton` wrap the card in an `output` with `aria-busy`, because an `article` cannot be `status`. `KanbanBadge` accepts `tone` and ignores it.
 
 Gallery, list, calendar and table:
