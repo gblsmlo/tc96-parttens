@@ -262,6 +262,10 @@ Situação em 2026-10-01: os 27 itens de `packages/ui/src` são o COSS sem alter
 
 Exceção decidida em 2026-10-20, a pedido do dono: `SelectItem` (`select.tsx`) e `ComboboxItem` (`combobox.tsx`) põem o check de seleção numa coluna à direita, com a mesma grade de `MenuRadioOption` (`grid-cols-[minmax(0,1fr)_.75rem]`, `gap-4`, `pe-2.5`, indicador com `-me-0.5`) e o texto antes do indicador no DOM. A edição agora é só uma edição de `packages/ui`, sem hash a recalcular. O consumidor recebe o `@coss/select` e o `@coss/combobox` originais, com o check à esquerda: por isso `propertySelectItemClassName` continua nas properties, agora sem depender da ordem dos filhos (`[&>div]` é o texto, `[&>span]` o indicador), e os demais patterns que usam `SelectItem` ou `ComboboxItem` mostram o check à esquerda no consumidor.
 
+Decidido em 2026-11-02, a pedido do dono: as variantes `error`, `info`, `success` e `warning` do `Alert` (`alert.tsx`) perdem a borda tingida (`border-<status>/32`) e ficam com o `border` padrão (`--border`), como o `Card`. O estado fica no ícone e no fundo tingido. Os botões de `AlertAction` usam o `Button` em `size="sm"`, no lugar do `xs` dos exemplos do COSS.
+
+Decidido em 2026-11-02: o `Toast` (`toast.tsx`, adicionado pelo `sync:coss`) dá ao viewport do `AnchoredToastProvider` o nome `Anchored notifications`. No COSS os dois viewports são `role="region"` com o `aria-label="Notifications"` do Base UI. Com os dois providers montados, como a instalação do COSS pede, a página fica com duas landmarks iguais, e o axe reprova (`landmark-unique`). Os providers não repassam props ao viewport, então a correção fica no arquivo. A pedido do dono, o botão de ação do toast (`actionProps`) usa `buttonVariants({ size: "sm" })` no lugar do `xs` do COSS, igual ao `AlertAction`. O `Doc` de `UI/Toast` mostra cada story num iframe (`docs.story.inline: false`), porque o `toastManager` é um só por módulo: com as stories inline, cada provider da página renderizaria todos os toasts.
+
 Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue importar o COSS do consumidor sem embutir uma cópia própria ou depender de um caminho que não resolve. Por isso o tc96 é distribuído só como fontes. A atualização passa a ser `tc96-parttens add --diff` com incorporação manual. Reabrir esta decisão só se surgir como requisito um consumidor sem COSS. O build da biblioteca foi removido; o `verify-public-api` confere os barrels dos patterns e o agregado `packages/parttens/src/index.ts` contra `public-api-exports.json`, e o `pack:check` confere só o CLI.
 
 Locale do calendar, resolvido no planejamento: o calendar do COSS fala inglês por padrão, como o rótulo dos patterns (`en-US`). Outro idioma entra por `calendarProps.locale`.
@@ -506,6 +510,26 @@ Decidido em 2026-10-23 ([ADR 0006](../../.specs/adr/0006-flow-family-on-react-fl
 | Ícone do `Alert` `warning` com `--warning-foreground`, depois | 4,70:1 | 9,58:1 |
 
   O ícone do `Alert` `warning` do COSS usa `--warning`, que no claro não chega a 3:1; o inspector aplica `[&>svg]:text-warning-foreground` no `Alert`. `overrides:check` só acompanha borda, raio e sombra, e rejeitou uma exceção de cor como sem uso, então a classe não entra em `scripts/override-exceptions.json`. Nenhum valor de token mudou, e o axe das oito stories passa no claro e no escuro.
+
+  Contraste do `Alert` em `UI/Alert`, medido em 2026-11-02 nas cores computadas de cada variante (alfa composto sobre o `background`; texto 4,5:1, ícone 3:1). O ícone de `success` e de `warning` falha em todo lugar onde o `Alert` renderiza, então a correção é global: o `styles.css` do exemplo redefine `--success` como `--success-foreground` e `--warning` como `--warning-foreground` só em `[data-slot="alert"]`, sem mudar o valor dos tokens nem `packages/ui`. O fundo tingido dessas duas variantes passa a sair do mesmo tom. Nota para o consumidor: sem essa regra no tema dele, os dois ícones voltam a reprovar no claro, e por isso o inspector mantém a própria classe.
+
+  | Par (claro / escuro) | Antes | Depois |
+  | --- | --- | --- |
+  | Ícone `success` | 2,29:1 / 6,69:1 | 4,87:1 / 8,53:1 |
+  | Ícone `warning` | 1,99:1 / 7,71:1 | 4,57:1 / 9,48:1 |
+  | Ícone `info`, `error` e `default` | 3,45:1, 4,26:1, 5,48:1 / 4,47:1, 3,62:1, 4,99:1 | sem mudança |
+  | Título (`card-foreground`), cinco variantes | 13,56:1 a 14,52:1 / 14,97:1 a 15,81:1 | 13,56:1 a 14,52:1 / 14,96:1 a 15,81:1 |
+  | Descrição (`muted-foreground`), cinco variantes | 5,12:1 a 5,48:1 / 4,99:1 a 5,27:1 | 5,12:1 a 5,48:1 / 4,98:1 a 5,27:1 |
+
+  Contraste do `Toast` em `UI/Toast`, medido em 2026-11-02 nas cores computadas dos toasts abertos sobre `popover` (texto 4,5:1, ícone 3:1). O ícone de estado usa os mesmos `--success` e `--warning`, e falha no claro do mesmo jeito; a mesma regra do `styles.css` passou a valer também em `[data-slot="toast-icon"]`, o que cobre os toasts empilhados e os ancorados. O ícone de `loading` é o `popover-foreground` com 80% de opacidade, e o texto não muda. A mesma nota para o consumidor vale aqui.
+
+  | Par (claro / escuro) | Antes | Depois |
+  | --- | --- | --- |
+  | Ícone `success` | 2,47:1 / 6,72:1 | 5,36:1 / 8,57:1 |
+  | Ícone `warning` | 2,13:1 / 7,78:1 | 5,03:1 / 9,65:1 |
+  | Ícone `info` e `error` | 3,76:1, 4,77:1 / 4,42:1, 3,48:1 | sem mudança |
+  | Título (`popover-foreground`) | 15,17:1 / 15,23:1 | sem mudança |
+  | Descrição (`muted-foreground`) | 5,73:1 / 5,07:1 | sem mudança |
 
 ## Validação proposta
 
