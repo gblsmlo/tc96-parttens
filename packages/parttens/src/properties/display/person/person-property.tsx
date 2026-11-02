@@ -35,6 +35,7 @@ export interface PersonPropertyProps<TValue extends string = string> {
   options: readonly PersonPropertyOption<TValue>[]
   action?: (value: TValue, context: PersonPropertyActionContext<TValue>) => void
   ariaLabel?: string
+  avatarSize?: AvatarSize
   className?: string
   disabled?: boolean
   display?: 'avatar' | 'full'
@@ -48,6 +49,7 @@ export interface PersonPropertyProps<TValue extends string = string> {
 export function PersonProperty<TValue extends string = string>({
   action,
   ariaLabel,
+  avatarSize = 'xs',
   className,
   disabled = false,
   display = 'full',
@@ -83,7 +85,7 @@ export function PersonProperty<TValue extends string = string>({
       readOnly={!isEditable({ action, onValueChange, readOnly })}
       renderValue={(option) => (
         <PersonPropertyContent
-          avatarSize="xs"
+          avatarSize={avatarSize}
           display={display}
           option={option}
           placeholder={placeholder}
