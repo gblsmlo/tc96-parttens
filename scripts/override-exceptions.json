@@ -184,5 +184,29 @@
     "component": "Card",
     "className": "group-focus-visible/step:ring-ring",
     "reason": "O anel de foco do teclado no `Card` do nó usa o token `ring`, o mesmo dos controles do COSS."
+  },
+  {
+    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
+    "component": "Input",
+    "className": "[&_input]:placeholder:text-muted-foreground/60",
+    "reason": "O título e a descrição do `RecordDialogHeadline` são campos sem borda (`unstyled`): o placeholder é o único sinal do campo vazio e fica em `muted-foreground/60`, abaixo do `/72` do COSS, para recuar diante do conteúdo do dialog; volta ao token do tema no foco. Portado das stories de `Patterns/Records/Dialog`, onde já rodava com axe."
+  },
+  {
+    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
+    "component": "Input",
+    "className": "[&_input]:focus:placeholder:text-muted-foreground",
+    "reason": "No foco, o placeholder do campo sem borda do `RecordDialogHeadline` volta ao `muted-foreground` inteiro, o par que o tema garante para `background`, porque é ali que a pessoa lê a orientação do campo."
+  },
+  {
+    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
+    "component": "Textarea",
+    "className": "[&_textarea]:placeholder:text-muted-foreground/60",
+    "reason": "O título e a descrição do `RecordDialogHeadline` são campos sem borda (`unstyled`): o placeholder é o único sinal do campo vazio e fica em `muted-foreground/60`, abaixo do `/72` do COSS, para recuar diante do conteúdo do dialog; volta ao token do tema no foco. Portado das stories de `Patterns/Records/Dialog`, onde já rodava com axe."
+  },
+  {
+    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
+    "component": "Textarea",
+    "className": "[&_textarea]:focus:placeholder:text-muted-foreground",
+    "reason": "No foco, o placeholder do campo sem borda do `RecordDialogHeadline` volta ao `muted-foreground` inteiro, o par que o tema garante para `background`, porque é ali que a pessoa lê a orientação do campo."
   }
 ]

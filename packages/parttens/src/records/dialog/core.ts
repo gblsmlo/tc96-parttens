@@ -25,3 +25,24 @@ export interface RecordDialogProps {
   title: ReactNode
   titleAncestor?: string
 }
+
+export interface RecordDialogHeadlineProps {
+  description?: string
+  descriptionLabel?: string
+  descriptionName?: string
+  descriptionPlaceholder?: string
+  onDescriptionChange?: (description: string) => void
+  onTitleChange: (title: string) => void
+  stretch?: boolean
+  title: string
+  titleLabel: string
+  titleName?: string
+  titlePlaceholder?: string
+}
+
+export interface RecordDialogCreateMoreProps {
+  checked: boolean
+  disabled?: boolean
+  label: string
+  onCheckedChange: (checked: boolean) => void
+}

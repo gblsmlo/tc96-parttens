@@ -4,11 +4,11 @@ import {
   PersonProperty,
   PropertySurface,
   RecordDialog,
+  RecordDialogCreateMore,
+  RecordDialogHeadline,
   SelectProperty,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { Field, FieldLabel } from '@tc96/ui/field'
-import { Input } from '@tc96/ui/input'
 import {
   Menu,
   MenuCheckboxItem,
@@ -16,10 +16,8 @@ import {
   MenuPopup,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import { Switch } from '@tc96/ui/switch'
-import { Textarea } from '@tc96/ui/textarea'
 import { EllipsisIcon, GitBranchIcon, Maximize2Icon } from 'lucide-react'
-import { useId, useState } from 'react'
+import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   extraProperties,
@@ -53,7 +51,6 @@ const meta = {
   render: function InlineProperties({ onCreate, onOpenSingle }) {
     const [open, setOpen] = useState(true)
     const [createMore, setCreateMore] = useState(false)
-    const createMoreId = useId()
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [title, setTitle] = useState('')
     const [status, setStatus] = useState('planned')
@@ -91,16 +88,11 @@ const meta = {
             </Button>
           }
           footerStart={
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={createMore}
-                id={createMoreId}
-                onCheckedChange={setCreateMore}
-              />
-              <label className="text-sm" htmlFor={createMoreId}>
-                Create more
-              </label>
-            </div>
+            <RecordDialogCreateMore
+              checked={createMore}
+              label="Create more"
+              onCheckedChange={setCreateMore}
+            />
           }
           errorMessage={errorMessage}
           keepOpenOnSuccess={createMore}
@@ -143,27 +135,15 @@ const meta = {
           titleAncestor="Lemind"
         >
           <div className="flex flex-1 flex-col gap-3">
-            <div className="flex flex-1 flex-col gap-1">
-              <Field name="title">
-                <FieldLabel className="sr-only">Project title</FieldLabel>
-                <Input
-                  autoFocus
-                  className="w-full font-semibold text-lg [&_input]:px-0 [&_input]:placeholder:text-muted-foreground/60 [&_input]:focus:placeholder:text-muted-foreground"
-                  onChange={(event) => setTitle(event.target.value)}
-                  placeholder="Project title"
-                  unstyled
-                  value={title}
-                />
-              </Field>
-              <Field className="flex-1" name="description">
-                <FieldLabel className="sr-only">Description</FieldLabel>
-                <Textarea
-                  className="w-full flex-1 [&_textarea]:min-h-24 [&_textarea]:resize-none [&_textarea]:px-0 [&_textarea]:pt-0.5 [&_textarea]:placeholder:text-muted-foreground/60 [&_textarea]:focus:placeholder:text-muted-foreground"
-                  placeholder="Add description..."
-                  unstyled
-                />
-              </Field>
-            </div>
+            <RecordDialogHeadline
+              descriptionLabel="Description"
+              descriptionPlaceholder="Add description..."
+              onTitleChange={setTitle}
+              stretch
+              title={title}
+              titleLabel="Project title"
+              titlePlaceholder="Project title"
+            />
             <div className="mt-auto flex flex-wrap items-center gap-2">
               <SelectProperty
                 ariaLabel="Status"

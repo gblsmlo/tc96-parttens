@@ -1,12 +1,13 @@
 import {
   PersonProperty,
   RecordDialog,
+  RecordDialogCreateMore,
+  RecordDialogHeadline,
   RecordGroupRow,
   SelectProperty,
 } from '@tc96/parttens'
 import { useState } from 'react'
 import { personOptions } from '../../collection/fixtures/task-fields'
-import { CreateMoreSwitch } from './create-more'
 import { delay } from './delay'
 import {
   isLeadNextAction,
@@ -20,7 +21,6 @@ import {
   leadStageOptions,
   type NewLead,
 } from './lead-record'
-import { RecordHeadline } from './record-headline'
 
 export function LeadDialog({
   onCreate,
@@ -49,7 +49,7 @@ export function LeadDialog({
   return (
     <RecordDialog
       footerStart={
-        <CreateMoreSwitch
+        <RecordDialogCreateMore
           checked={createMore}
           label="Criar mais"
           onCheckedChange={setCreateMore}
@@ -87,7 +87,7 @@ export function LeadDialog({
       titleAncestor="Leads"
     >
       <div className="grid gap-4">
-        <RecordHeadline
+        <RecordDialogHeadline
           descriptionLabel="Descrição"
           descriptionPlaceholder="Adicionar descrição..."
           onTitleChange={setTitle}

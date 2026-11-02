@@ -1,6 +1,8 @@
 import {
   PeopleProperty,
   RecordDialog,
+  RecordDialogCreateMore,
+  RecordDialogHeadline,
   RecordGroupRow,
   ScheduleProperty,
   SelectProperty,
@@ -8,7 +10,6 @@ import {
 } from '@tc96/parttens'
 import { MapPinIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { CreateMoreSwitch } from './create-more'
 import { delay } from './delay'
 import {
   availabilityOptions,
@@ -27,7 +28,6 @@ import {
   typeOptions,
 } from './event-record'
 import { people } from './project-record'
-import { RecordHeadline } from './record-headline'
 
 export function CreateEventDialog({
   onCreate,
@@ -68,8 +68,9 @@ export function CreateEventDialog({
     <RecordDialog
       errorMessage={errorMessage}
       footerStart={
-        <CreateMoreSwitch
+        <RecordDialogCreateMore
           checked={createMore}
+          label="Create more"
           onCheckedChange={setCreateMore}
         />
       }
@@ -125,7 +126,7 @@ export function CreateEventDialog({
       titleAncestor="Calendar"
     >
       <div className="grid gap-4">
-        <RecordHeadline
+        <RecordDialogHeadline
           descriptionLabel="Description"
           descriptionPlaceholder="Add notes or a meeting link"
           onTitleChange={setTitle}

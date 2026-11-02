@@ -163,7 +163,7 @@ Install the @tc96/parttens patterns `collection` and `properties` in this projec
 | `properties` | Text, Date, Select, Person and other property displays, plus property groups |
 | `editable` | Inline editing compound |
 | `checklist` | Controlled item creation, completion, renaming, ordering, deletion and progress |
-| `record-dialog` | `RecordDialog` for create and edit; the handler returns `boolean \| Promise<boolean>` and the pattern settles the dialog |
+| `record-dialog` | `RecordDialog` for create and edit; the handler returns `boolean \| Promise<boolean>` and the pattern settles the dialog. `RecordDialogHeadline` (borderless title and description) and `RecordDialogCreateMore` (the switch for `footerStart` + `keepOpenOnSuccess`) are optional parts of the same item |
 | `record-preview` | `RecordPreview`, a right-side sheet that previews a record with header actions, a close button and an optional footer, and `RecordPreviewAction`, its icon action; open state and content belong to the consumer |
 | `record-group` | `RecordGroup`, a collapsible group of label and value rows with optional header actions and footer, `RecordGroupRow`, its row, and `RecordGroupAction`, an icon action for the header; collapse state is optional and rows belong to the consumer |
 | `widgets` | Dashboard widgets in four groups: finance (market share, asset stats, risk score, balance, budget, cash flow, transactions, invoices), productivity (task progress, upcoming event, project card, agenda, world clock), CRM (pipeline, deals, activity feed, contact card) and gamification (level, streak, achievements, quests, progress HUD and footer), plus shared metric, stat list, avatar stack, progress ring, metric pill and the IconFrame element |

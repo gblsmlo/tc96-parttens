@@ -301,6 +301,35 @@ test('builds the record-group item shipping the properties catalog it imports by
   ).toBe(true)
 })
 
+test('builds the record-dialog item shipping the headline and create-more parts', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/record-dialog.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(paths).toContain(
+    'parttens/src/records/dialog/composition/record-dialog/record-dialog-headline.tsx',
+  )
+  expect(paths).toContain(
+    'parttens/src/records/dialog/composition/record-dialog/record-dialog-create-more.tsx',
+  )
+  expect(item.registryDependencies).toEqual(
+    expect.arrayContaining([
+      '@ui/field',
+      '@ui/input',
+      '@ui/switch',
+      '@ui/textarea',
+    ]),
+  )
+})
+
 test('builds the state-surface item with COSS-only dependencies and no test files', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(

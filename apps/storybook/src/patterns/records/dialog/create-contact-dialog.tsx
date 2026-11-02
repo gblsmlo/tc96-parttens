@@ -3,6 +3,8 @@ import {
   PhoneProperty,
   PropertySurface,
   RecordDialog,
+  RecordDialogCreateMore,
+  RecordDialogHeadline,
   SelectProperty,
   TagsProperty,
   TextProperty,
@@ -30,9 +32,7 @@ import {
   CreatableProperty,
   type CreatablePropertyLabels,
 } from './creatable-property'
-import { CreateMoreSwitch } from './create-more'
 import { delay } from './delay'
-import { RecordHeadline } from './record-headline'
 
 export type NewContact = Omit<Contact, 'id' | 'lastContactAt'>
 
@@ -125,7 +125,7 @@ export function CreateContactDialog({
   return (
     <RecordDialog
       footerStart={
-        <CreateMoreSwitch
+        <RecordDialogCreateMore
           checked={createMore}
           label="Criar mais"
           onCheckedChange={setCreateMore}
@@ -167,7 +167,7 @@ export function CreateContactDialog({
       titleAncestor="Contatos"
     >
       <div className="flex flex-col gap-3">
-        <RecordHeadline
+        <RecordDialogHeadline
           descriptionLabel="Descrição"
           descriptionPlaceholder="Adicionar descrição..."
           onTitleChange={setName}

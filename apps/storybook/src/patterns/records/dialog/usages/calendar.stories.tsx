@@ -2,18 +2,16 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   PeopleProperty,
   RecordDialog,
+  RecordDialogCreateMore,
+  RecordDialogHeadline,
   RecordGroupRow,
   ScheduleProperty,
   SelectProperty,
   TextProperty,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { Field, FieldLabel } from '@tc96/ui/field'
-import { Input } from '@tc96/ui/input'
-import { Switch } from '@tc96/ui/switch'
-import { Textarea } from '@tc96/ui/textarea'
 import { MapPinIcon } from 'lucide-react'
-import { useId, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   availabilityOptions,
@@ -75,7 +73,6 @@ const meta = {
     const [availability, setAvailability] = useState('busy')
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [createMore, setCreateMore] = useState(false)
-    const createMoreId = useId()
 
     const reset = () => {
       setTitle('')
@@ -97,16 +94,11 @@ const meta = {
         <RecordDialog
           errorMessage={errorMessage}
           footerStart={
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={createMore}
-                id={createMoreId}
-                onCheckedChange={setCreateMore}
-              />
-              <label className="text-sm" htmlFor={createMoreId}>
-                Create more
-              </label>
-            </div>
+            <RecordDialogCreateMore
+              checked={createMore}
+              label="Create more"
+              onCheckedChange={setCreateMore}
+            />
           }
           keepOpenOnSuccess={createMore}
           onOpenChange={(next) => {
@@ -159,27 +151,14 @@ const meta = {
           titleAncestor="Calendar"
         >
           <div className="grid gap-4">
-            <div className="grid gap-1">
-              <Field name="title">
-                <FieldLabel className="sr-only">Event title</FieldLabel>
-                <Input
-                  autoFocus
-                  className="w-full font-semibold text-lg [&_input]:px-0 [&_input]:placeholder:text-muted-foreground/60 [&_input]:focus:placeholder:text-muted-foreground"
-                  onChange={(event) => setTitle(event.target.value)}
-                  placeholder="Add title"
-                  unstyled
-                  value={title}
-                />
-              </Field>
-              <Field name="description">
-                <FieldLabel className="sr-only">Description</FieldLabel>
-                <Textarea
-                  className="w-full [&_textarea]:min-h-16 [&_textarea]:resize-none [&_textarea]:px-0 [&_textarea]:pt-0.5 [&_textarea]:placeholder:text-muted-foreground/60 [&_textarea]:focus:placeholder:text-muted-foreground"
-                  placeholder="Add notes or a meeting link"
-                  unstyled
-                />
-              </Field>
-            </div>
+            <RecordDialogHeadline
+              descriptionLabel="Description"
+              descriptionPlaceholder="Add notes or a meeting link"
+              onTitleChange={setTitle}
+              title={title}
+              titleLabel="Event title"
+              titlePlaceholder="Add title"
+            />
             <div>
               <RecordGroupRow label="Date">
                 <ScheduleProperty

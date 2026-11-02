@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RecordDialog } from '@tc96/parttens'
+import { RecordDialog, RecordDialogCreateMore } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Field, FieldLabel } from '@tc96/ui/field'
 import { Input } from '@tc96/ui/input'
@@ -10,10 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@tc96/ui/select'
-import { Switch } from '@tc96/ui/switch'
 import { Textarea } from '@tc96/ui/textarea'
 import { Maximize2Icon } from 'lucide-react'
-import { useId, useState } from 'react'
+import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   type ProjectValues,
@@ -54,7 +53,6 @@ const meta = {
   render: function SimpleForm({ onCreate, onOpenSingle }) {
     const [open, setOpen] = useState(true)
     const [createMore, setCreateMore] = useState(false)
-    const createMoreId = useId()
     const [title, setTitle] = useState('')
     const [status, setStatus] = useState('planned')
     const [priority, setPriority] = useState('none')
@@ -86,16 +84,11 @@ const meta = {
             </Button>
           }
           footerStart={
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={createMore}
-                id={createMoreId}
-                onCheckedChange={setCreateMore}
-              />
-              <label className="text-sm" htmlFor={createMoreId}>
-                Create more
-              </label>
-            </div>
+            <RecordDialogCreateMore
+              checked={createMore}
+              label="Create more"
+              onCheckedChange={setCreateMore}
+            />
           }
           keepOpenOnSuccess={createMore}
           onOpenChange={(next) => {
