@@ -36,19 +36,19 @@ export const Default: Story = {
   render: (args) => (
     <SettingsSection
       header={
-        <SettingsSectionHeader>
+        <SettingsSectionHeader
+          actions={
+            <Button size="sm">
+              <PlusIcon aria-hidden="true" />
+              New access rule
+            </Button>
+          }
+        >
           <SettingsSectionTitle>Workspace</SettingsSectionTitle>
         </SettingsSectionHeader>
       }
     >
-      <SettingsCollapsed
-        {...args}
-        actions={
-          <Button aria-label="Add access rule" size="icon-xs" variant="ghost">
-            <PlusIcon aria-hidden="true" />
-          </Button>
-        }
-      >
+      <SettingsCollapsed {...args}>
         <SettingsRow
           description="Anyone with an invitation"
           endSlot={
@@ -67,14 +67,12 @@ export const Interaction: Story = {
     const canvas = within(canvasElement)
     const region = canvas.getByRole('region', { name: 'Access' })
     const trigger = within(region).getByRole('button', { name: 'Access' })
-    const action = within(region).getByRole('button', {
-      name: 'Add access rule',
-    })
+    const action = canvas.getByRole('button', { name: 'New access rule' })
 
+    expect(action.closest('[data-slot="card"]')).toBeNull()
+    expect(within(region).queryByRole('button', { name: /^Add / })).toBeNull()
     expect(trigger).toHaveAttribute('aria-expanded', 'true')
     expect(within(region).getByText('Member access')).toBeVisible()
-    await userEvent.click(action)
-    expect(trigger).toHaveAttribute('aria-expanded', 'true')
     await userEvent.click(trigger)
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
     await waitFor(() =>

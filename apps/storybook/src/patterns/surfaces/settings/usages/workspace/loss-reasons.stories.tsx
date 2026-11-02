@@ -79,15 +79,6 @@ function ReasonRow({
   )
 }
 
-function NewReasonButton() {
-  return (
-    <Button size="sm" variant="outline">
-      <PlusIcon aria-hidden="true" />
-      New reason
-    </Button>
-  )
-}
-
 function LostLeadsSection() {
   return (
     <SettingsSection
@@ -125,17 +116,18 @@ function LostLeadsSection() {
   )
 }
 
-function LossReasonsSection({
-  actions,
-  children,
-}: {
-  actions: ReactNode
-  children: ReactNode
-}) {
+function LossReasonsSection({ children }: { children: ReactNode }) {
   return (
     <SettingsSection
       header={
-        <SettingsSectionHeader actions={actions}>
+        <SettingsSectionHeader
+          actions={
+            <Button size="sm">
+              <PlusIcon aria-hidden="true" />
+              New reason
+            </Button>
+          }
+        >
           <SettingsSectionTitle>Loss reasons</SettingsSectionTitle>
           <SettingsSectionDescription>
             The reasons a seller can choose when a lead is lost.
@@ -152,7 +144,7 @@ function LossReasonsDemo() {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-8">
       <LostLeadsSection />
-      <LossReasonsSection actions={<NewReasonButton />}>
+      <LossReasonsSection>
         {reasons.map((reason) => (
           <ReasonRow key={reason.name} reason={reason} />
         ))}
@@ -172,9 +164,8 @@ function EmptyDemo() {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-8">
       <LostLeadsSection />
-      <LossReasonsSection actions={null}>
+      <LossReasonsSection>
         <StateSurface
-          actions={<NewReasonButton />}
           description="Create a reason so sellers can say why a lead was lost."
           kind="empty"
           title="No loss reasons yet"
@@ -295,6 +286,7 @@ export const EmptyInteraction: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')
+    expect(within(canvas.getByRole('status')).queryByRole('button')).toBeNull()
     expect(canvas.getByText('No loss reasons yet')).toBeVisible()
     expect(canvas.getByRole('button', { name: 'New reason' })).toBeEnabled()
     expect(canvas.queryByRole('button', { name: /^Actions for / })).toBeNull()

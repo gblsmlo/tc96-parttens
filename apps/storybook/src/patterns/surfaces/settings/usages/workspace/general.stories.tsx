@@ -165,11 +165,7 @@ function GeneralSettings({
         <SettingsRow
           description="Deletes every record and removes all members' access"
           endSlot={
-            <Button
-              onClick={onDeleteWorkspace}
-              size="sm"
-              variant="destructive-outline"
-            >
+            <Button onClick={onDeleteWorkspace} size="sm" variant="destructive">
               Delete workspace
             </Button>
           }

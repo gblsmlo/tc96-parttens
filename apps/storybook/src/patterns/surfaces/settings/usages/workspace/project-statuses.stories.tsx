@@ -84,7 +84,14 @@ function StatusesDemo() {
     <main className="mx-auto w-full max-w-2xl">
       <SettingsSection
         header={
-          <SettingsSectionHeader>
+          <SettingsSectionHeader
+            actions={
+              <Button size="sm">
+                <PlusIcon aria-hidden="true" />
+                New status
+              </Button>
+            }
+          >
             <SettingsSectionTitle>Project statuses</SettingsSectionTitle>
             <SettingsSectionDescription>
               Project statuses define the workflow that projects go through from
@@ -95,19 +102,7 @@ function StatusesDemo() {
       >
         <div>
           {groups.map(({ statuses, title }) => (
-            <SettingsCollapsed
-              actions={
-                <Button
-                  aria-label={`Create new ${title.toLowerCase()} status`}
-                  size="icon-xs"
-                  variant="ghost"
-                >
-                  <PlusIcon aria-hidden="true" />
-                </Button>
-              }
-              key={title}
-              title={title}
-            >
+            <SettingsCollapsed key={title} title={title}>
               {statuses.map(({ icon: Icon, label, projects, tone }) => (
                 <SettingsRow
                   description={projects}
@@ -176,9 +171,11 @@ export const Interaction: Story = {
     ).toBeVisible()
     expect(canvas.getByRole('region', { name: 'Backlog' })).toBeVisible()
     expect(canvas.getByRole('region', { name: 'Canceled' })).toBeVisible()
+    const newStatus = canvas.getByRole('button', { name: 'New status' })
+    expect(newStatus.closest('[data-slot="card"]')).toBeNull()
     expect(
-      canvas.getAllByRole('button', { name: /Create new .* status/ }),
-    ).toHaveLength(5)
+      canvas.queryAllByRole('button', { name: /Create new .* status/ }),
+    ).toHaveLength(0)
     expect(canvas.getByText('6 projects')).toBeVisible()
 
     const title = canvas.getByRole('heading', {
@@ -237,10 +234,6 @@ export const Interaction: Story = {
     const backlogTrigger = within(backlog).getByRole('button', {
       name: 'Backlog',
     })
-    const addBacklog = within(backlog).getByRole('button', {
-      name: 'Create new backlog status',
-    })
-    await userEvent.click(addBacklog)
     expect(backlogTrigger).toHaveAttribute('aria-expanded', 'true')
     await userEvent.click(backlogTrigger)
     expect(backlogTrigger).toHaveAttribute('aria-expanded', 'false')

@@ -122,27 +122,19 @@ function TagRow({ tag, parent }: { tag: Tag; parent?: string }) {
   )
 }
 
-function NewTagButton() {
-  return (
-    <Button size="sm" variant="outline">
-      <PlusIcon aria-hidden="true" />
-      New tag
-    </Button>
-  )
-}
-
-function TagsSection({
-  actions,
-  children,
-}: {
-  actions: ReactNode
-  children: ReactNode
-}) {
+function TagsSection({ children }: { children: ReactNode }) {
   return (
     <SettingsSection
       className="mx-auto w-full max-w-2xl"
       header={
-        <SettingsSectionHeader actions={actions}>
+        <SettingsSectionHeader
+          actions={
+            <Button size="sm">
+              <PlusIcon aria-hidden="true" />
+              New tag
+            </Button>
+          }
+        >
           <SettingsSectionTitle>Tags</SettingsSectionTitle>
           <SettingsSectionDescription>
             Organize leads and tasks with tags and subtags.
@@ -178,7 +170,7 @@ const interaction = ['!dev', '!autodocs']
 export const Tags: Story = {
   name: 'Tags',
   render: () => (
-    <TagsSection actions={<NewTagButton />}>
+    <TagsSection>
       {tags.flatMap((tag) => [
         <TagRow key={tag.name} tag={tag} />,
         ...(tag.subtags ?? []).map((subtags) => (
@@ -221,9 +213,8 @@ export const Interaction: Story = {
 
 export const EmptyInteraction: Story = {
   render: () => (
-    <TagsSection actions={null}>
+    <TagsSection>
       <StateSurface
-        actions={<NewTagButton />}
         description="Create a tag to organize leads and tasks."
         kind="empty"
         title="No tags yet"
@@ -233,6 +224,7 @@ export const EmptyInteraction: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')
+    expect(within(canvas.getByRole('status')).queryByRole('button')).toBeNull()
     expect(canvas.getByText('No tags yet')).toBeVisible()
     expect(canvas.getByRole('button', { name: 'New tag' })).toBeEnabled()
     expect(canvas.queryByRole('button', { name: /^Actions for / })).toBeNull()

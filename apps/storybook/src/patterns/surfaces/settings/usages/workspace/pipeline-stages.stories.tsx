@@ -83,7 +83,6 @@ const initialStages: Stage[] = [
 ]
 
 const onNewStage = fn()
-const onAddStage = fn()
 const onEditStage = fn()
 const onMoveStage = fn()
 const onDeleteStage = fn()
@@ -174,22 +173,7 @@ function PipelineStagesDemo() {
           {phases.map((phase) => {
             const group = stages.filter((stage) => stage.phase === phase)
             return (
-              <SettingsCollapsed
-                actions={
-                  phase === 'Open' ? (
-                    <Button
-                      aria-label="Add stage to Open"
-                      onClick={() => onAddStage(phase)}
-                      size="icon-xs"
-                      variant="ghost"
-                    >
-                      <PlusIcon aria-hidden="true" />
-                    </Button>
-                  ) : undefined
-                }
-                key={phase}
-                title={phase}
-              >
+              <SettingsCollapsed key={phase} title={phase}>
                 {group.map((stage, index) => {
                   const { icon: Icon, name, tone } = stage
                   return (
@@ -261,13 +245,12 @@ export const Interaction: Story = {
     expect(
       canvas.getByRole('heading', { name: 'Pipeline stages', level: 2 }),
     ).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'New stage' })).toBeVisible()
-    expect(
-      canvas.getByRole('button', { name: 'Add stage to Open' }),
-    ).toBeVisible()
-    expect(
-      canvas.queryAllByRole('button', { name: /^Add stage to/ }),
-    ).toHaveLength(1)
+    const newStage = canvas.getByRole('button', { name: 'New stage' })
+    expect(newStage).toBeVisible()
+    expect(newStage.closest('[data-slot="card"]')).toBeNull()
+    expect(canvas.queryAllByRole('button', { name: /^Add / })).toHaveLength(0)
+    await userEvent.click(newStage)
+    expect(onNewStage).toHaveBeenCalledOnce()
 
     const open = canvas.getByRole('region', { name: 'Open' })
     expect(canvas.getByRole('region', { name: 'Won' })).toBeVisible()

@@ -162,7 +162,7 @@ function MembersSettings({
         header={
           <SettingsSectionHeader
             actions={
-              <Button onClick={onInvite} size="sm">
+              <Button size="sm" onClick={onInvite}>
                 <PlusIcon aria-hidden="true" />
                 Invite members
               </Button>
