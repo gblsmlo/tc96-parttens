@@ -287,6 +287,12 @@
   --input: var(--switch-track);
 }
 
+[data-slot="alert"],
+[data-slot="toast-icon"] {
+  --success: var(--success-foreground);
+  --warning: var(--warning-foreground);
+}
+
 @layer utilities {
   [data-slot="card"] {
     --card-surface-radius: var(--card-radius, var(--radius-lg));
