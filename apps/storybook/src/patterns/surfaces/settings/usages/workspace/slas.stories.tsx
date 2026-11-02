@@ -39,28 +39,22 @@ const meta = {
       </div>
     ),
   ],
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A consumer composition of SettingsSection and SettingsRow. The switch state lives in this story, not in the pattern.',
-      },
-    },
-    layout: 'padded',
-  },
-  title: 'Patterns/Surfaces/Settings/Usages/SLAs',
+  parameters: { layout: 'padded' },
+  tags: ['!autodocs'],
+  title: 'Patterns/Surfaces/Settings/Usages/Workspace/SLAs',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
+export const Slas: Story = {
+  name: 'SLAs',
   render: () => <SlasDemo />,
 }
 
 export const Interaction: Story = {
-  ...Default,
+  ...Slas,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     expect(

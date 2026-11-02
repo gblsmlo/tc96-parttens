@@ -152,16 +152,9 @@ const meta = {
       </div>
     ),
   ],
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A consumer composition of SettingsSection and StateSurface. The rule model and menus live in this story, not in the pattern.',
-      },
-    },
-    layout: 'padded',
-  },
-  title: 'Patterns/Surfaces/Settings/Usages/Automation',
+  parameters: { layout: 'padded' },
+  tags: ['!autodocs'],
+  title: 'Patterns/Surfaces/Settings/Usages/Workspace/Automation',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
@@ -170,7 +163,8 @@ type Story = StoryObj<typeof meta>
 
 const interaction = ['!dev', '!autodocs']
 
-export const Default: Story = {
+export const Automation: Story = {
+  name: 'Automation',
   render: () => (
     <AutomationRules actions={<AddRuleButton />}>
       {rules.map((rule) => (
@@ -180,8 +174,8 @@ export const Default: Story = {
   ),
 }
 
-export const DefaultInteraction: Story = {
-  ...Default,
+export const Interaction: Story = {
+  ...Automation,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     expect(
@@ -216,7 +210,7 @@ export const DefaultInteraction: Story = {
   tags: interaction,
 }
 
-export const Empty: Story = {
+export const EmptyInteraction: Story = {
   render: () => (
     <AutomationRules actions={null}>
       <StateSurface
@@ -227,10 +221,6 @@ export const Empty: Story = {
       />
     </AutomationRules>
   ),
-}
-
-export const EmptyInteraction: Story = {
-  ...Empty,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')

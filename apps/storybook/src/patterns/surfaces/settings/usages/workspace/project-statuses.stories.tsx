@@ -151,16 +151,9 @@ const meta = {
       </div>
     ),
   ],
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A consumer composition of SettingsSection, SettingsCollapsed and SettingsRow. The page heading, status labels, icons, counts and actions live in this story, not in the pattern.',
-      },
-    },
-    layout: 'padded',
-  },
-  title: 'Patterns/Surfaces/Settings/Usages/Project Statuses',
+  parameters: { layout: 'padded' },
+  tags: ['!autodocs'],
+  title: 'Patterns/Surfaces/Settings/Usages/Workspace/Project Statuses',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
@@ -169,12 +162,13 @@ type Story = StoryObj<typeof meta>
 
 const interaction = ['!dev', '!autodocs']
 
-export const Default: Story = {
+export const ProjectStatuses: Story = {
+  name: 'Project Statuses',
   render: () => <StatusesDemo />,
 }
 
-export const DefaultInteraction: Story = {
-  ...Default,
+export const Interaction: Story = {
+  ...ProjectStatuses,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     expect(

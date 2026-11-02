@@ -69,7 +69,8 @@ const meta = {
     ),
   ],
   parameters: { layout: 'padded' },
-  title: 'Patterns/Surfaces/Settings/Usages/Interface and theme',
+  tags: ['!autodocs'],
+  title: 'Patterns/Surfaces/Settings/Usages/Profile/Interface and theme',
 } satisfies Meta<typeof SettingsRow>
 
 export default meta
@@ -86,7 +87,8 @@ const rowsOf = (canvasElement: HTMLElement) =>
 const slotOf = (row: HTMLElement, name: 'heading' | 'start') =>
   row.querySelector(`[data-slot="settings-row-${name}"]`) as HTMLElement
 
-export const Default: Story = {
+export const InterfaceAndTheme: Story = {
+  name: 'Interface and theme',
   args: {
     description: 'Adjusts the text size across the whole app',
     title: 'Font size',
@@ -133,7 +135,7 @@ export const Default: Story = {
 }
 
 export const Interaction: Story = {
-  ...Default,
+  ...InterfaceAndTheme,
   play: async ({ canvasElement }) => {
     for (const row of rowsOf(canvasElement)) {
       const start = slotOf(row, 'start')
