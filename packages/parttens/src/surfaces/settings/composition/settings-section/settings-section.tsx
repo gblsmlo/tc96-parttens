@@ -13,7 +13,7 @@ export function SettingsSection({
   const card = (
     <Card>
       <div
-        className="divide-y px-6 has-[[data-slot=settings-collapsed]]:px-4"
+        className="divide-y px-6 has-[[data-slot=record-group]]:px-4 has-[[data-slot=settings-collapsed]]:px-4"
         data-slot="settings-section-rows"
       >
         {children}
