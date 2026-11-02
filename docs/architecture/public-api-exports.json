@@ -348,6 +348,10 @@
   ],
   "record-dialog": [
     "RecordDialog",
+    "RecordDialogCreateMore",
+    "RecordDialogCreateMoreProps",
+    "RecordDialogHeadline",
+    "RecordDialogHeadlineProps",
     "RecordDialogProps",
     "RecordDialogSettlement",
     "RecordDialogSize"
@@ -1125,6 +1129,10 @@
     "RICH_TEXT_EXTRA_BLOCKS",
     "RICH_TEXT_MARKS",
     "RecordDialog",
+    "RecordDialogCreateMore",
+    "RecordDialogCreateMoreProps",
+    "RecordDialogHeadline",
+    "RecordDialogHeadlineProps",
     "RecordDialogProps",
     "RecordDialogSettlement",
     "RecordDialogSize",
