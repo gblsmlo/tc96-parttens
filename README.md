@@ -21,7 +21,7 @@ React patterns without business rules, installed as source on top of your COSS c
 ## Overview
 
 - **Source, not a dependency**: the CLI copies the pattern source into your workspace. You own it and change it as you like
-- **Built on COSS**: patterns import `Button`, `Menu`, `Popover` and the rest from your project's own UI alias
+- **Built on COSS**: patterns import `Button`, `Menu`, `Popover` and the rest from your project's own UI alias. The components in `packages/ui` started as [COSS UI](https://coss.com/ui) and are modified here, see [Acknowledgements](#acknowledgements)
 - **Themeable**: tc96 ships no CSS, tokens or theme, only layout classes on top of your components
 - **No business rules**: your app provides prepared data and handles events. Filtering, sorting, persistence and API calls stay with you
 - **Layered**: imports only go down a layer (`patterns` → `elements` → `ui` → `utils`), checked by a boundaries script
@@ -239,6 +239,10 @@ Contributions are welcome! Please:
 2. Fork the repository and create a feature branch
 3. Run `bun run check` before submitting
 4. Submit a Pull Request with a clear description
+
+## Acknowledgements
+
+The components in `packages/ui` were originally imported from [COSS UI](https://coss.com/ui) (`coss.com/ui/r`) and have been modified since, for customization or preference, for example by removing variants and sizes the patterns do not use. COSS UI is the initial reference; the repo now owns these files. `packages/ui/ui.manifest.json` lists each component and its origin. See the COSS UI documentation for the original behavior and license terms.
 
 ## License
 
