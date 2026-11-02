@@ -35,6 +35,7 @@ const options: PersonPropertyOption<ExamplePerson>[] = [
 const meta = {
   argTypes: {
     ...propertyArgTypes,
+    avatarSize: { control: 'inline-radio', options: ['xs', 'sm'] },
     display: { control: 'inline-radio', options: ['avatar', 'full'] },
   },
   component: PersonProperty,
