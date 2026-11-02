@@ -7,6 +7,7 @@ import { Input } from '@tc96/ui/input'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { CalendarDaysIcon } from 'lucide-react'
 import { useState } from 'react'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
@@ -101,6 +102,50 @@ export const Trigger: Story = {
     ),
   ],
   render: function Trigger(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <DateProperty {...args} onValueChange={setValue} value={value} />
+  },
+}
+
+export const PlainTrigger: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Editable plain variant: the text without a badge works as the trigger and opens the same calendar Popover.',
+      },
+    },
+  },
+  args: {
+    ariaLabel: 'Target date',
+    fallback: 'No target',
+    locale: 'en-US',
+    timeZone: 'UTC',
+    value: '2026-06-19T12:00:00.000Z',
+    variant: 'plain',
+  },
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-80 items-start p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Target date: Jun 19',
+    })
+    await expect(trigger).toHaveAttribute('data-variant', 'plain')
+    await expect(getComputedStyle(trigger).backgroundColor).toBe(
+      'rgba(0, 0, 0, 0)',
+    )
+    await userEvent.click(trigger)
+    await expect(await screen.findByRole('grid')).toBeInTheDocument()
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('grid')).toBeNull())
+  },
+  render: function PlainTrigger(args) {
     const [value, setValue] = useState(args.value)
 
     return <DateProperty {...args} onValueChange={setValue} value={value} />

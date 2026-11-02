@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { KanbanView } from '@tc96/parttens'
+import { KanbanCard, KanbanView } from '@tc96/parttens'
 import { expect, fn, userEvent, within } from 'storybook/test'
 
 interface TaskCard {
@@ -7,7 +7,7 @@ interface TaskCard {
 }
 
 const getKey = (card: TaskCard) => card.id
-const renderCard = (card: TaskCard) => <span>{card.id}</span>
+const renderCard = (card: TaskCard) => <KanbanCard title={card.id} />
 
 const onAddCard = fn()
 const onMoveCard = fn(() => true)

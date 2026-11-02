@@ -4,13 +4,14 @@ import { KanbanCardSkeleton } from '@tc96/parttens'
 const meta = {
   component: KanbanCardSkeleton,
   tags: ['!autodocs'],
-  title: 'Patterns/Collection/Layouts/Kanban/Loading/Card',
+  title: 'Patterns/Collection/Layouts/Kanban/Loading/KanbanCard',
 } satisfies Meta<typeof KanbanCardSkeleton>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Skeleton: Story = {
+export const KanbanCard: Story = {
+  name: 'KanbanCard',
   args: { label: 'Carregando card' },
   render: (args) => (
     <div className="w-full p-4">

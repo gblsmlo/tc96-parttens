@@ -1,218 +1,210 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Text } from '@tc96/elements/text'
+import { formatShortDate } from '@tc96/helpers/date'
+import { formatAmount } from '@tc96/helpers/format'
 import {
   KanbanCard,
-  KanbanCardAction,
-  KanbanCardActionButton,
-  KanbanCardBody,
-  KanbanCardBodyRow,
-  KanbanCardDescription,
-  KanbanCardFooter,
-  KanbanCardHeader,
-  KanbanCardOpenTrigger,
-  KanbanCardTitle,
+  type KanbanCardProps,
+  PersonProperty,
+  SelectProperty,
 } from '@tc96/parttens'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
-  Popover,
-  PopoverClose,
-  PopoverPopup,
-  PopoverTrigger,
-} from '@tc96/ui/popover'
-import { EllipsisIcon, ListTodoIcon, MessageCircleIcon } from 'lucide-react'
-import type { ReactNode } from 'react'
+  BanknoteIcon,
+  CalendarIcon,
+  CircleDotIcon,
+  Clock3Icon,
+  FileTextIcon,
+  HourglassIcon,
+  ListTodoIcon,
+  MessageCircleIcon,
+  TimerIcon,
+} from 'lucide-react'
+import { useState } from 'react'
 import {
-  AssigneeField,
-  DueField,
-  PriorityField,
-} from '../../fixtures/task-fields'
-import { useTasks } from '../../fixtures/task-renderers'
-import { initialTasks } from '../../fixtures/tasks'
+  type DealStage,
+  initialDeals,
+  isDealStage,
+  stageOptions,
+} from '../../fixtures/deals'
+import { personOptions } from '../../fixtures/task-fields'
+import { TIME_ZONE } from '../../fixtures/tasks'
+
+const hoursIcons = {
+  clock: <Clock3Icon aria-hidden />,
+  hourglass: <HourglassIcon aria-hidden />,
+  timer: <TimerIcon aria-hidden />,
+}
+
+type CardsArgs = Pick<
+  KanbanCardProps,
+  'dimmed' | 'display' | 'selected' | 'variant'
+> & {
+  hoursIcon: keyof typeof hoursIcons
+  hoursValue: string
+}
 
 const meta = {
-  component: KanbanCard,
+  args: { hoursIcon: 'clock', hoursValue: '12 h' },
+  argTypes: {
+    display: { control: 'inline-radio', options: ['full', 'compact'] },
+    hoursIcon: {
+      control: 'select',
+      description: 'Icon of the hours row in `fields`.',
+      options: Object.keys(hoursIcons),
+    },
+    hoursValue: {
+      control: 'text',
+      description: 'Value of the hours row in `fields`.',
+    },
+    variant: { control: 'inline-radio', options: ['default', 'interactive'] },
+  },
   parameters: {
     docs: {
       description: {
         component:
-          'Kanban card structure and states over the shared task mock. Richer compositions live under Usages.',
+          'Kanban card anatomy and states over a Pipeline deal. The card owns the layout; a consumer passes `title`, `description`, `menu`, `fields`, `counts` and `assignee`.',
       },
     },
   },
+  render: (args) => <ContextCard {...args} />,
   tags: ['!autodocs'],
   title: 'Patterns/Collection/Layouts/Kanban/Cards',
-} satisfies Meta<typeof KanbanCard>
+} satisfies Meta<CardsArgs>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-function CardActions() {
-  return (
-    <Menu>
-      <MenuTrigger
-        render={
-          <KanbanCardActionButton aria-label="Mais ações do card" size="icon" />
-        }
-      >
-        <EllipsisIcon aria-hidden className="size-4" />
-      </MenuTrigger>
-      <MenuPopup align="end">
-        <MenuItem>Editar card</MenuItem>
-        <MenuItem>Duplicar card</MenuItem>
-      </MenuPopup>
-    </Menu>
-  )
-}
+const LOCALE = 'pt-BR'
 
-function FooterAction({
-  children,
-  createLabel,
-  label,
-  viewLabel,
-}: Readonly<{
-  children: ReactNode
-  createLabel: string
-  label: string
-  viewLabel: string
-}>) {
-  return (
-    <Popover>
-      <PopoverTrigger render={<KanbanCardActionButton aria-label={label} />}>
-        {children}
-      </PopoverTrigger>
-      <PopoverPopup align="start" aria-label={label} className="w-44">
-        <div className="flex flex-col gap-1">
-          {[createLabel, viewLabel].map((item) => (
-            <PopoverClose
-              key={item}
-              render={
-                <button
-                  className="rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent"
-                  type="button"
-                />
-              }
-            >
-              {item}
-            </PopoverClose>
-          ))}
-        </div>
-      </PopoverPopup>
-    </Popover>
-  )
-}
+const deal = initialDeals.find(({ id }) => id === 'DEAL-204') ?? initialDeals[0]
 
 function ContextCard({
   dimmed = false,
   display = 'full',
-  interactive = false,
+  hoursIcon,
+  hoursValue,
   selected = false,
-}: Readonly<{
-  dimmed?: boolean
-  display?: 'full' | 'compact'
-  interactive?: boolean
-  selected?: boolean
-}>) {
-  const { tasks, updateTask } = useTasks(initialTasks.slice(0, 1))
-  const task = tasks[0]
+  variant = 'default',
+}: Readonly<CardsArgs>) {
+  const interactive = variant === 'interactive'
+  const [ownerId, setOwnerId] = useState(deal.ownerId)
+  const [stage, setStage] = useState<DealStage>(deal.stage)
 
   return (
     <div className="w-80 p-4">
       <KanbanCard
+        assignee={
+          <PersonProperty
+            ariaLabel="Responsável"
+            avatarSize="sm"
+            display="avatar"
+            onValueChange={setOwnerId}
+            options={personOptions}
+            value={ownerId}
+            variant="plain"
+          />
+        }
+        counts={[
+          {
+            count: 1,
+            icon: <FileTextIcon aria-hidden />,
+            id: 'notes',
+            items: [{ label: 'Criar nota' }, { label: 'Ver notas' }],
+            label: 'Notas: 1',
+          },
+          {
+            count: 1,
+            icon: <ListTodoIcon aria-hidden />,
+            id: 'tasks',
+            items: [{ label: 'Criar tarefa' }, { label: 'Ver tarefas' }],
+            label: 'Tarefas: 1',
+          },
+          {
+            count: 1,
+            icon: <MessageCircleIcon aria-hidden />,
+            id: 'comments',
+            items: [
+              { label: 'Criar comentário' },
+              { label: 'Ver comentários' },
+            ],
+            label: 'Comentários: 1',
+          },
+        ]}
+        description={deal.contact}
         dimmed={dimmed}
         display={display}
-        selected={selected}
-        variant={interactive ? 'interactive' : 'default'}
-      >
-        {interactive && <KanbanCardOpenTrigger aria-label="Abrir card" />}
-        <KanbanCardHeader>
-          <KanbanCardTitle>
-            <span className="flex min-w-0 items-center gap-2">
-              <span className="truncate">{task.title}</span>
-              {display === 'compact' && (
-                <AssigneeField
-                  display="avatar"
-                  onChange={updateTask}
-                  task={task}
-                  variant="plain"
-                />
-              )}
-            </span>
-          </KanbanCardTitle>
-          <KanbanCardDescription>{task.description}</KanbanCardDescription>
-          <KanbanCardAction>
-            <CardActions />
-          </KanbanCardAction>
-        </KanbanCardHeader>
-        <KanbanCardBody className="grid gap-2">
-          <KanbanCardBodyRow align="start" data-kanban-card-action="">
-            <Text foreground="muted" size="sm">
-              Prioridade
-            </Text>
-            <PriorityField onChange={updateTask} task={task} />
-          </KanbanCardBodyRow>
-          <KanbanCardBodyRow align="start" data-kanban-card-action="">
-            <Text foreground="muted" size="sm">
-              Prazo
-            </Text>
-            <DueField onChange={updateTask} task={task} variant="plain" />
-          </KanbanCardBodyRow>
-        </KanbanCardBody>
-        <KanbanCardFooter>
-          <div className="flex min-w-0 flex-1 items-center gap-1">
-            <FooterAction
-              createLabel="Criar tarefa"
-              label="Tarefas: 3"
-              viewLabel="Ver tarefas"
-            >
-              <ListTodoIcon aria-hidden className="size-3.5" />
-              <span>3</span>
-            </FooterAction>
-            <FooterAction
-              createLabel="Criar comentário"
-              label="Comentários: 2"
-              viewLabel="Ver comentários"
-            >
-              <MessageCircleIcon aria-hidden className="size-3.5" />
-              <span>2</span>
-            </FooterAction>
-            <span className="ml-auto">
-              <AssigneeField
-                display="avatar"
-                onChange={updateTask}
-                task={task}
+        fields={[
+          {
+            content: (
+              <SelectProperty
+                ariaLabel="Etapa"
+                onValueChange={(value) => {
+                  if (value && isDealStage(value)) setStage(value)
+                }}
+                options={stageOptions}
+                value={stage}
                 variant="plain"
               />
-            </span>
-          </div>
-        </KanbanCardFooter>
-      </KanbanCard>
+            ),
+            icon: <CircleDotIcon aria-hidden />,
+            id: 'stage',
+            label: 'Etapa',
+            interactive: true,
+          },
+          {
+            content: (
+              <time dateTime={deal.closeDate}>
+                {formatShortDate(
+                  new Date(`${deal.closeDate}T12:00:00Z`),
+                  LOCALE,
+                  TIME_ZONE,
+                )}
+              </time>
+            ),
+            icon: <CalendarIcon aria-hidden />,
+            id: 'close-date',
+            label: 'Prazo',
+          },
+          {
+            content: formatAmount(deal.value, {
+              currency: 'BRL',
+              locale: LOCALE,
+              maximumFractionDigits: 0,
+            }),
+            icon: <BanknoteIcon aria-hidden />,
+            id: 'value',
+            label: 'Valor',
+          },
+          {
+            content: hoursValue,
+            icon: hoursIcons[hoursIcon],
+            id: 'hours',
+            label: 'Horas',
+          },
+        ]}
+        menu={{
+          items: [{ label: 'Editar negócio' }, { label: 'Duplicar negócio' }],
+          label: 'Mais ações do negócio',
+        }}
+        onOpen={interactive ? () => undefined : undefined}
+        openLabel="Abrir negócio"
+        selected={selected}
+        title={deal.company}
+        variant={variant}
+      />
     </div>
   )
 }
 
-const renderCard: Story['render'] = (args) => (
-  <ContextCard
-    dimmed={args.dimmed}
-    display={args.display}
-    interactive={args.variant === 'interactive'}
-    selected={args.selected}
-  />
-)
-
-export const Default: Story = { render: renderCard }
+export const Default: Story = {}
 export const Compact: Story = {
   args: { display: 'compact' },
-  render: renderCard,
 }
 export const Selected: Story = {
   args: { selected: true },
-  render: renderCard,
 }
 export const Moving: Story = {
   args: { dimmed: true },
-  render: renderCard,
 }
 export const Interactive: Story = {
   args: { variant: 'interactive' },
-  render: renderCard,
 }
