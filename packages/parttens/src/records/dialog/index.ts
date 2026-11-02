@@ -4,3 +4,4 @@ export type {
   RecordDialogSettlement,
   RecordDialogSize,
 } from './core'
+export { type RecordDraft, useRecordDraft } from './hooks/use-record-draft'
