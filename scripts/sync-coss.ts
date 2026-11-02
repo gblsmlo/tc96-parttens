@@ -1,61 +1,74 @@
+import { existsSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { resolveItems } from '../packages/registry/src/coss'
 import {
-  type CossLock,
-  contentHash,
   fetchItem,
   itemFiles,
-  lockPath,
+  manifestPath,
   normalizeImports,
-  readLock,
+  readManifest,
   registry,
   sourceDirectory,
+  type UiManifest,
 } from './coss'
 
-// Writes COSS items into packages/ui exactly as published, changing only the
-// registry import aliases, and records them in the lock. With no arguments it
-// refreshes every locked item. Named items bring only their missing
-// dependencies; COSS utils is @tc96/utils.
-const lock = await readLock()
+// Copies new COSS items into packages/ui, changing only the registry import
+// aliases, and records them in the manifest. Items already in the manifest are
+// owned by this repo and are never overwritten; COSS utils is @tc96/utils.
+const manifest = await readManifest()
 const requested = process.argv.slice(2)
-const queue = requested.length ? requested : Object.keys(lock.items)
-if (!queue.length) throw new Error('Usage: bun scripts/sync-coss.ts <items...>')
+if (!requested.length)
+  throw new Error('Usage: bun scripts/sync-coss.ts <items...>')
+const owned = requested.filter((name) => name in manifest.items)
+if (owned.length)
+  throw new Error(
+    `Already in packages/ui, edit them directly: ${owned.join(', ')}`,
+  )
 
 const fetched = await resolveItems(
-  queue,
+  requested,
   (name) => fetchItem(`${registry}/${name}.json`),
-  (name) =>
-    name === 'utils' ||
-    (requested.length > 0 && !requested.includes(name) && name in lock.items),
+  (name) => name === 'utils' || name in manifest.items,
 )
 
-const next: CossLock = { registry, items: { ...lock.items } }
-const dependencies = new Set<string>()
-for (const item of fetched) {
-  const { name } = item
-  const files = itemFiles(item)
-  const written = files.map(({ path, content }) => ({
+const writes = fetched.flatMap((item) =>
+  itemFiles(item).map(({ path, content }) => ({
+    item: item.name,
     path,
     content: normalizeImports(content),
-  }))
-  for (const { path, content } of written) {
-    await mkdir(dirname(`${sourceDirectory}/${path}`), { recursive: true })
-    await writeFile(`${sourceDirectory}/${path}`, content)
-  }
-  const paths = written.map(({ path }) => path)
-  next.items[name] = {
-    url: `${registry}/${name}.json`,
-    upstream: contentHash(files.map(({ content }) => content)),
-    file: contentHash(written.map(({ content }) => content)),
-    ...(paths.length === 1 && paths[0] === `${name}.tsx` ? {} : { paths }),
+  })),
+)
+const existing = writes.filter(({ path }) =>
+  existsSync(`${sourceDirectory}/${path}`),
+)
+if (existing.length)
+  throw new Error(
+    `Would overwrite: ${existing.map(({ path }) => path).join(', ')}`,
+  )
+
+const next: UiManifest = { items: { ...manifest.items } }
+const dependencies = new Set<string>()
+for (const { path, content } of writes) {
+  await mkdir(dirname(`${sourceDirectory}/${path}`), { recursive: true })
+  await writeFile(`${sourceDirectory}/${path}`, content)
+}
+for (const item of fetched) {
+  const paths = writes
+    .filter(({ item: owner }) => owner === item.name)
+    .map(({ path }) => path)
+  next.items[item.name] = {
+    origin: 'coss',
+    ...(item.cssVars ? { cssVars: item.cssVars } : {}),
+    ...(item.css ? { css: item.css } : {}),
+    ...(paths.length === 1 && paths[0] === `${item.name}.tsx` ? {} : { paths }),
   }
   for (const dependency of item.dependencies ?? []) dependencies.add(dependency)
 }
 next.items = Object.fromEntries(
   Object.entries(next.items).sort(([a], [b]) => a.localeCompare(b)),
 )
-await writeFile(lockPath, `${JSON.stringify(next, null, 2)}\n`)
+await writeFile(manifestPath, `${JSON.stringify(next, null, 2)}\n`)
 console.log(
-  `Synced ${fetched.length} COSS items. npm dependencies: ${[...dependencies].sort().join(', ')}`,
+  `Added ${fetched.length} COSS items. npm dependencies: ${[...dependencies].sort().join(', ')}`,
 )

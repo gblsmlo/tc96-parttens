@@ -107,7 +107,7 @@ export interface RegistryItem {
   type: string
   files: RegistryFile[]
   dependencies: string[]
-  /** COSS components, as @coss/<item>; the CLI installs the missing ones. */
+  /** ui components, as @ui/<item>; the CLI installs the missing ones. */
   registryDependencies?: string[]
   $schema?: string
 }
@@ -269,10 +269,10 @@ export function combineItems(items: RegistryItem[]): RegistryItem {
     ].sort(),
   }
 }
-export function cossDependency(item: string) {
-  return `@coss/${item}`
+export function uiDependency(item: string) {
+  return `@ui/${item}`
 }
-// The consumer owns its COSS components, customized or not: the ones it
+// The consumer owns its ui components, customized or not: the ones it
 // already has are left out, so only the missing ones are installed.
 export function omitInstalled(
   item: RegistryItem,
@@ -282,7 +282,7 @@ export function omitInstalled(
     ...item,
     registryDependencies: (item.registryDependencies ?? []).filter(
       (dependency) => {
-        const [, component] = dependency.match(/^@coss\/(.+)$/) ?? []
+        const [, component] = dependency.match(/^@ui\/(.+)$/) ?? []
         return !component || !installed(component)
       },
     ),

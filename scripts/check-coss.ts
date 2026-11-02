@@ -1,25 +1,12 @@
-import { readFile } from 'node:fs/promises'
 import { relative } from 'node:path'
-import {
-  contentHash,
-  fetchItem,
-  itemFiles,
-  lockedPaths,
-  normalizeImports,
-  readLock,
-  sourceDirectory,
-} from './coss'
+import { manifestPaths, readManifest, sourceDirectory } from './coss'
 import { files } from './files'
 
-// packages/ui must be COSS without edits. Offline, every file must match the
-// hash recorded by sync-coss. With --remote, the published items are fetched
-// again and compared after the same import normalization.
-const remote = process.argv.includes('--remote')
-const lock = await readLock()
+const manifest = await readManifest()
 const problems: string[] = []
 const owners = new Map<string, string>()
-for (const [name, locked] of Object.entries(lock.items))
-  for (const path of lockedPaths(name, locked)) owners.set(path, name)
+for (const [name, item] of Object.entries(manifest.items))
+  for (const path of manifestPaths(name, item)) owners.set(path, name)
 
 const present = new Set(
   (await files(sourceDirectory)).map((file) => relative(sourceDirectory, file)),
@@ -27,37 +14,14 @@ const present = new Set(
 for (const path of present) {
   if (owners.has(path)) continue
   if (/^[^/]+\.tsx$/.test(path))
-    problems.push(`${path.replace(/\.tsx$/, '')}: missing from the COSS lock`)
-  else problems.push(`${sourceDirectory}/${path}: not a COSS item`)
+    problems.push(`${path.replace(/\.tsx$/, '')}: missing from the ui manifest`)
+  else problems.push(`${sourceDirectory}/${path}: not in the ui manifest`)
 }
 
-for (const [name, locked] of Object.entries(lock.items)) {
-  const paths = lockedPaths(name, locked)
-  const missing = paths.filter((path) => !present.has(path))
-  if (missing.length) {
-    problems.push(`${name}: locked but missing ${missing.join(', ')}`)
-    continue
-  }
-  const contents = await Promise.all(
-    paths.map((path) => readFile(`${sourceDirectory}/${path}`, 'utf8')),
-  )
-  if (contentHash(contents) !== locked.file)
-    problems.push(`${name}: differs from the locked COSS snapshot`)
-  if (remote) {
-    const published = itemFiles(await fetchItem(locked.url))
-    if (
-      contentHash(published.map(({ content }) => content)) !== locked.upstream
-    )
-      problems.push(`${name}: COSS published a new version (run sync-coss)`)
-    else if (
-      published.some(
-        ({ path, content }, index) =>
-          path !== paths[index] ||
-          normalizeImports(content) !== contents[index],
-      )
-    )
-      problems.push(`${name}: differs from ${locked.url}`)
-  }
+for (const [name, item] of Object.entries(manifest.items)) {
+  const missing = manifestPaths(name, item).filter((path) => !present.has(path))
+  if (missing.length)
+    problems.push(`${name}: in the manifest but missing ${missing.join(', ')}`)
 }
 
 if (problems.length) {
@@ -65,5 +29,5 @@ if (problems.length) {
   process.exit(1)
 }
 console.log(
-  `COSS snapshot verified for ${Object.keys(lock.items).length} items${remote ? ' against the registry' : ''}.`,
+  `ui manifest verified for ${Object.keys(manifest.items).length} items.`,
 )

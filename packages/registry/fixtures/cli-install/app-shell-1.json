@@ -2,7 +2,7 @@
   "name": "app-shell-1",
   "type": "registry:block",
   "dependencies": [],
-  "registryDependencies": ["@coss/sidebar"],
+  "registryDependencies": ["@ui/sidebar"],
   "files": [
     {
       "path": "templates/src/application/shell/app-shell-1/index.ts",

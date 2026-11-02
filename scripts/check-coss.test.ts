@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { contentHash, normalizeImports, sha256 } from './coss'
+import { normalizeImports } from './coss'
 
 const script = join(import.meta.dir, 'check-coss.ts')
 const upstream = `"use client";
@@ -17,32 +17,17 @@ const chatFiles = {
   'chat/chat-bubble.tsx': 'export const bubble = 1\n',
   'chat/hooks/use-chat-scroll.ts': 'export const scroll = 1\n',
 }
-const chat = {
-  url: 'https://coss.com/ui/r/chat.json',
-  upstream: contentHash(Object.values(chatFiles)),
-  file: contentHash(Object.values(chatFiles)),
-  paths: Object.keys(chatFiles),
-}
+const chat = { origin: 'coss', paths: Object.keys(chatFiles) }
 
 async function workspace(
   files: Record<string, string>,
   items: Record<string, unknown> = {},
 ) {
-  root = await mkdtemp(join(tmpdir(), 'tc96-coss-'))
+  root = await mkdtemp(join(tmpdir(), 'tc96-ui-'))
   await mkdir(join(root, 'packages/ui/src'), { recursive: true })
   await writeFile(
-    join(root, 'packages/ui/coss.lock.json'),
-    JSON.stringify({
-      registry: 'https://coss.com/ui/r',
-      items: {
-        button: {
-          url: 'https://coss.com/ui/r/button.json',
-          upstream: sha256(upstream),
-          file: sha256(normalizeImports(upstream)),
-        },
-        ...items,
-      },
-    }),
+    join(root, 'packages/ui/ui.manifest.json'),
+    JSON.stringify({ items: { button: { origin: 'coss' }, ...items } }),
   )
   for (const [name, content] of Object.entries(files)) {
     await mkdir(dirname(join(root, 'packages/ui/src', name)), {
@@ -66,72 +51,64 @@ import { Spinner } from "@tc96/ui/spinner";
   )
 })
 
-test('accepts an item identical to the locked snapshot', async () => {
-  const result = await workspace({ 'button.tsx': normalizeImports(upstream) })
-  expect(result.status).toBe(0)
-})
-
-test('rejects an item edited by hand', async () => {
+test('accepts an item edited by hand', async () => {
   const result = await workspace({
     'button.tsx': normalizeImports(upstream).replace(
       '"use client"',
       "'use client'",
     ),
   })
-  expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain(
-    'button: differs from the locked COSS snapshot',
-  )
+  expect(result.status).toBe(0)
 })
 
-test('rejects files that are not locked COSS items', async () => {
+test('rejects files that are not in the manifest', async () => {
   const result = await workspace({
-    'button.tsx': normalizeImports(upstream),
+    'button.tsx': 'export {}\n',
     'text.tsx': 'export {}\n',
     'index.ts': 'export {}\n',
   })
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('text: missing from the COSS lock')
-  expect(result.stderr).toContain('index.ts: not a COSS item')
+  expect(result.stderr).toContain('text: missing from the ui manifest')
+  expect(result.stderr).toContain('index.ts: not in the ui manifest')
 })
 
-test('rejects a locked item that was deleted', async () => {
+test('rejects a manifest item that was deleted', async () => {
   const result = await workspace({})
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('button: locked but missing')
+  expect(result.stderr).toContain('button: in the manifest but missing')
 })
 
-test('accepts a multi-file item at its locked paths', async () => {
+test('accepts a multi-file item at its listed paths', async () => {
   const result = await workspace(
-    { 'button.tsx': normalizeImports(upstream), ...chatFiles },
+    { 'button.tsx': 'export {}\n', ...chatFiles },
     { chat },
   )
   expect(result.status).toBe(0)
 })
 
-test('rejects a file a multi-file item does not lock', async () => {
+test('rejects a file a multi-file item does not list', async () => {
   const result = await workspace(
     {
-      'button.tsx': normalizeImports(upstream),
+      'button.tsx': 'export {}\n',
       ...chatFiles,
       'chat/extra.tsx': 'export {}\n',
     },
     { chat },
   )
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('chat/extra.tsx: not a COSS item')
+  expect(result.stderr).toContain('chat/extra.tsx: not in the ui manifest')
 })
 
 test('rejects a multi-file item with a file missing', async () => {
   const result = await workspace(
     {
-      'button.tsx': normalizeImports(upstream),
+      'button.tsx': 'export {}\n',
       'chat/chat-bubble.tsx': chatFiles['chat/chat-bubble.tsx'],
     },
     { chat },
   )
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain(
-    'chat: locked but missing chat/hooks/use-chat-scroll.ts',
+    'chat: in the manifest but missing chat/hooks/use-chat-scroll.ts',
   )
 })

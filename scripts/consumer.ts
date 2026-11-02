@@ -4,7 +4,7 @@ import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import ts from 'typescript'
 import { readAliases, resolveAliasPath } from '../packages/registry/src/config'
-import { lockedPaths, readLock, sourceDirectory } from './coss'
+import { manifestPaths, readManifest, sourceDirectory } from './coss'
 import { files } from './files'
 
 export const npmCache = resolve('.test-output/npm-cache')
@@ -51,9 +51,8 @@ export interface Consumer {
   patterns: string
 }
 
-// Copies apps/example and installs COSS into it the way the CLI does: the
-// locked snapshot in packages/ui, with imports rewritten to the consumer's
-// aliases. The consumer then customizes its button with a marker class.
+// Copies apps/example and installs packages/ui into it with imports rewritten to the
+// consumer's aliases. The consumer then customizes its button with a marker class.
 export async function createConsumer(name: string): Promise<Consumer> {
   const root = resolve(`.test-output/${name}`)
   await rm(root, { recursive: true, force: true })
@@ -68,9 +67,9 @@ export async function createConsumer(name: string): Promise<Consumer> {
   const { options } = ts.parseJsonConfigFileContent(config.config, ts.sys, root)
   const ui = resolveAliasPath(root, aliases.ui, options)
   const patterns = resolveAliasPath(root, aliases.patterns, options)
-  const lock = await readLock()
-  for (const [item, locked] of Object.entries(lock.items))
-    for (const path of lockedPaths(item, locked)) {
+  const uiManifest = await readManifest()
+  for (const [item, entry] of Object.entries(uiManifest.items))
+    for (const path of manifestPaths(item, entry)) {
       let content = (await readFile(`${sourceDirectory}/${path}`, 'utf8'))
         .replace(/(["'])@tc96\/ui\//g, `$1${aliases.ui}/`)
         .replace(/(["'])@tc96\/utils\1/g, `$1${aliases.utils}$1`)

@@ -1,13 +1,11 @@
 import { afterEach, expect, test } from 'bun:test'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
   type CossRegistryItem,
   componentFiles,
-  cossRegistry,
-  cossSource,
-  loadItem,
+  loadUiItem,
   missingTheme,
   normalizeImports,
   resolveItems,
@@ -52,29 +50,26 @@ test('rewrites the registry aliases to the given ones', () => {
   )
 })
 
-test('reads the @coss registry from components.json', () => {
-  expect(cossSource({ aliases: {} })).toBe(cossRegistry)
-  expect(
-    cossSource({ registries: { '@coss': 'https://mirror.test/{name}.json' } }),
-  ).toBe('https://mirror.test/{name}.json')
-  expect(() =>
-    cossSource({
-      registries: { '@coss': { url: 'https://x/{name}', headers: {} } },
-    }),
-  ).toThrow('object form')
-  expect(() =>
-    cossSource({ registries: { '@coss': 'https://x/item.json' } }),
-  ).toThrow('{name}')
-  expect(() =>
-    cossSource({ registries: { '@coss': 'https://x/{style}/{name}.json' } }),
-  ).toThrow('no other placeholder')
-})
-
-test('loads an item from a path relative to the consumer root', async () => {
+test('loads a ui item from the registry directory', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tc96-coss-'))
   roots.push(root)
-  await writeFile(join(root, 'badge.json'), JSON.stringify(item('badge')))
-  expect((await loadItem('./{name}.json', 'badge', root)).name).toBe('badge')
+  await mkdir(join(root, 'ui'))
+  await writeFile(join(root, 'ui/badge.json'), JSON.stringify(item('badge')))
+  expect((await loadUiItem(root, 'badge')).name).toBe('badge')
+  await expect(loadUiItem(root, 'missing')).rejects.toThrow(
+    'Unknown ui component: missing',
+  )
+})
+
+test('rewrites the repo aliases to the given ones', () => {
+  expect(
+    normalizeImports(
+      'import { cn } from "@tc96/utils"\nimport { Spinner } from "@tc96/ui/spinner"',
+      aliases,
+    ),
+  ).toBe(
+    'import { cn } from "@acme/ui/lib/utils"\nimport { Spinner } from "@acme/ui/spinner"',
+  )
 })
 
 test('follows registry dependencies and skips installed components', async () => {
@@ -99,14 +94,14 @@ test('follows registry dependencies and skips installed components', async () =>
   expect(loaded.sort()).toEqual(['button', 'menu', 'select'])
 })
 
-test('rejects dependencies outside @coss and renamed items', async () => {
+test('rejects dependencies outside @ui and renamed items', async () => {
   await expect(
     resolveItems(
       ['https://example.test/r/button.json'],
       async () => item('button'),
       () => false,
     ),
-  ).rejects.toThrow('Unsupported COSS registry dependency')
+  ).rejects.toThrow('Unsupported ui registry dependency')
   await expect(
     resolveItems(
       ['@coss/button'],
@@ -125,7 +120,7 @@ test('targets the ui directory with the consumer aliases', () => {
     ),
   ).toEqual([
     {
-      path: 'coss/badge.tsx',
+      path: 'ui/badge.tsx',
       type: 'registry:ui',
       content: 'import { cn } from "@acme/ui/lib/utils"',
       target: '~/packages/ui/src/badge.tsx',
@@ -150,7 +145,7 @@ test('targets the hooks directory for a COSS hook', () => {
     ),
   ).toEqual([
     {
-      path: 'coss/hooks/use-media-query.ts',
+      path: 'ui/hooks/use-media-query.ts',
       type: 'registry:ui',
       content: 'export function useMediaQuery() {}',
       target: '~/packages/ui/src/hooks/use-media-query.ts',
@@ -233,20 +228,20 @@ test('maps every file of a multi-file item and rewrites its imports', () => {
     ),
   ).toEqual([
     {
-      path: 'coss/chat/chat-bubble.tsx',
+      path: 'ui/chat/chat-bubble.tsx',
       type: 'registry:ui',
       content:
         'import { m } from "@acme/ui/chat/chat-message-bubble"\nimport { cn } from "@acme/ui/lib/utils"',
       target: '~/src/ui/chat/chat-bubble.tsx',
     },
     {
-      path: 'coss/chat/hooks/use-chat-scroll.ts',
+      path: 'ui/chat/hooks/use-chat-scroll.ts',
       type: 'registry:ui',
       content: 'import { b } from "@acme/ui/button"',
       target: '~/src/ui/chat/hooks/use-chat-scroll.ts',
     },
     {
-      path: 'coss/chat/lib/split-chat-message-preview.ts',
+      path: 'ui/chat/lib/split-chat-message-preview.ts',
       type: 'registry:ui',
       content: 'import { h } from "@acme/ui/hooks/use-x"',
       target: '~/src/ui/chat/lib/split-chat-message-preview.ts',

@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { relative } from 'node:path'
 import ts from 'typescript'
-import { lockedPaths, readLock } from './coss'
+import { manifestPaths, readManifest } from './coss'
 import { files } from './files'
 
 const allowed: Record<string, string[]> = {
@@ -14,8 +14,8 @@ const allowed: Record<string, string[]> = {
   registry: [],
 }
 const cossModules = new Set(
-  Object.entries((await readLock()).items).flatMap(([name, locked]) =>
-    lockedPaths(name, locked).map((path) => path.replace(/\.tsx?$/, '')),
+  Object.entries((await readManifest()).items).flatMap(([name, item]) =>
+    manifestPaths(name, item).map((path) => path.replace(/\.tsx?$/, '')),
   ),
 )
 const graph = new Map<string, string[]>()
@@ -55,7 +55,7 @@ for (const owner of Object.keys(allowed)) {
       if (dependency === 'ui') {
         const module = specifier.match(/^@tc96\/ui\/(.+)$/)?.[1]
         if (!module || !cossModules.has(module))
-          violations.push(`${file}: ${specifier} is not a locked COSS item`)
+          violations.push(`${file}: ${specifier} is not in the ui manifest`)
       }
       if (
         (owner === 'utils' || owner === 'helpers') &&

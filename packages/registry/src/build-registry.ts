@@ -1,9 +1,8 @@
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { join, relative, resolve } from 'node:path'
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { dirname, join, relative, resolve } from 'node:path'
 import { build } from 'esbuild'
 import ts from 'typescript'
 import {
-  cossDependency,
   defaultConfig,
   type ItemName,
   itemAreas,
@@ -14,6 +13,7 @@ import {
   type RegistryItem,
   templateNames,
   templateSources,
+  uiDependency,
 } from './manifest'
 
 const root = resolve('.')
@@ -30,10 +30,30 @@ for (const pkg of ['elements', 'helpers', 'parttens']) {
   Object.assign(versions, manifest.peerDependencies, manifest.dependencies)
 }
 // ui and utils are the consumer's: their imports are rewritten to its
-// aliases, never followed into the distributed files. Each ui component
-// becomes a COSS registry dependency.
+// aliases, never followed into the distributed files. Each ui module a
+// pattern imports becomes a ui registry dependency on the item that owns it.
 const consumerOwned = /^@tc96\/(ui|utils)(\/|$)/
-const uiComponent = /^@tc96\/ui\/(?:([^/]+)|(chat)\/.+)$/
+const uiMatch = /^@tc96\/ui\/(.+)$/
+interface UiManifestEntry {
+  paths?: string[]
+  cssVars?: unknown
+  css?: unknown
+}
+const uiManifest = JSON.parse(
+  await readFile('packages/ui/ui.manifest.json', 'utf8'),
+) as { items: Record<string, UiManifestEntry> }
+const uiPaths = (name: string) =>
+  uiManifest.items[name]?.paths ?? [`${name}.tsx`]
+const uiOwners = new Map<string, string>()
+for (const name of Object.keys(uiManifest.items))
+  for (const path of uiPaths(name))
+    uiOwners.set(path.replace(/\.tsx?$/, ''), name)
+const uiOwner = (module: string, importer: string) => {
+  const owner = uiOwners.get(module)
+  if (!owner)
+    throw new Error(`${importer}: ${module} is not in the ui manifest`)
+  return owner
+}
 // The aggregate re-exports the pattern barrels and shared areas such as
 // shared/. An area's barrel ships with every pattern that uses the area, so
 // the consumer's generated barrel can export it.
@@ -95,9 +115,8 @@ for (const [name, entry] of entries) {
     })
     for (const imported of ts.preProcessFile(content).importedFiles) {
       const specifier = imported.fileName
-      const match = specifier.match(uiComponent)
-      const component = match?.[1] ?? match?.[2]
-      if (component) components.add(cossDependency(component))
+      const module = specifier.match(uiMatch)?.[1]
+      if (module) components.add(uiDependency(uiOwner(module, file)))
       if (consumerOwned.test(specifier)) continue
       if (specifier.startsWith('.') || specifier.startsWith('@tc96/')) {
         const result = ts.resolveModuleName(
@@ -146,6 +165,65 @@ for (const [name, entry] of entries) {
     `${JSON.stringify(prepareItem(item, defaultConfig), null, 2)}\n`,
   )
 }
+const uiVersions: Record<string, string> = {}
+{
+  const manifest = JSON.parse(
+    await readFile('packages/ui/package.json', 'utf8'),
+  )
+  Object.assign(uiVersions, manifest.peerDependencies, manifest.dependencies)
+}
+await mkdir(join(output, 'ui'), { recursive: true })
+for (const [name, entry] of Object.entries(uiManifest.items)) {
+  const external = new Set<string>()
+  const related = new Set<string>()
+  const files = []
+  for (const path of uiPaths(name)) {
+    const content = await readFile(`packages/ui/src/${path}`, 'utf8')
+    files.push({ path: `registry/default/ui/${path}`, content })
+    for (const { fileName } of ts.preProcessFile(content).importedFiles) {
+      if (fileName === '@tc96/utils') continue
+      const module = fileName.match(uiMatch)?.[1]
+      if (fileName.startsWith('.')) {
+        const resolved = join(dirname(path), fileName).replaceAll('\\', '/')
+        const owner = uiOwners.get(resolved)
+        if (owner && owner !== name) related.add(uiDependency(owner))
+      } else if (module) {
+        const owner = uiOwner(module, path)
+        if (owner !== name) related.add(uiDependency(owner))
+      } else {
+        const pkg = fileName.startsWith('@')
+          ? fileName.split('/').slice(0, 2).join('/')
+          : fileName.split('/')[0]
+        if (
+          pkg &&
+          !['react', 'react-dom'].includes(pkg) &&
+          !pkg.startsWith('node:')
+        )
+          external.add(pkg)
+      }
+    }
+  }
+  await writeFile(
+    join(output, `ui/${name}.json`),
+    `${JSON.stringify(
+      {
+        name,
+        type: 'registry:ui',
+        files,
+        dependencies: [...external].sort().map((pkg) => {
+          const version = uiVersions[pkg]
+          if (!version) throw new Error(`Missing ui dependency version: ${pkg}`)
+          return `${pkg}@${version}`
+        }),
+        registryDependencies: [...related].sort(),
+        ...(entry.cssVars ? { cssVars: entry.cssVars } : {}),
+        ...(entry.css ? { css: entry.css } : {}),
+      },
+      null,
+      2,
+    )}\n`,
+  )
+}
 const unshipped = areas.filter((area) => !shippedAreas.has(area))
 if (unshipped.length)
   throw new Error(
@@ -166,6 +244,9 @@ for (const name of [...entries.map(([name]) => name), 'view', 'aggregate'])
     join(cliOutput, `registry/${name}.json`),
     await readFile(join(output, `${name}.json`)),
   )
+await cp(join(output, 'ui'), join(cliOutput, 'registry/ui'), {
+  recursive: true,
+})
 if (ts.sys.fileExists('packages/registry/src/cli.ts')) {
   await build({
     entryPoints: ['packages/registry/src/cli.ts'],

@@ -2,7 +2,7 @@
   "name": "checklist",
   "type": "registry:block",
   "dependencies": [],
-  "registryDependencies": ["@coss/badge"],
+  "registryDependencies": ["@ui/badge"],
   "files": [
     {
       "path": "parttens/src/checklist/proof.ts",

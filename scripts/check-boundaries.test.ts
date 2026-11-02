@@ -22,7 +22,7 @@ async function workspace(sources: Record<string, string>) {
   await writeFile(join(root, 'tsconfig.json'), '{}')
   await mkdir(join(root, 'packages/ui'), { recursive: true })
   await writeFile(
-    join(root, 'packages/ui/coss.lock.json'),
+    join(root, 'packages/ui/ui.manifest.json'),
     JSON.stringify({ items: { button: {} } }),
   )
   for (const owner of owners)
@@ -111,12 +111,12 @@ test('rejects templates depending on the registry', async () => {
   expect(result.stderr).toContain('templates cannot depend on registry')
 })
 
-test('rejects a ui import that is not a locked COSS item', async () => {
+test('rejects a ui import that is not in the ui manifest', async () => {
   const result = await workspace({
     'packages/parttens/src/a.ts': "import { Text } from '@tc96/ui/text'\n",
   })
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('@tc96/ui/text is not a locked COSS item')
+  expect(result.stderr).toContain('@tc96/ui/text is not in the ui manifest')
 })
 
 test('rejects the removed ui barrel', async () => {
@@ -124,7 +124,7 @@ test('rejects the removed ui barrel', async () => {
     'packages/parttens/src/a.ts': "import { Button } from '@tc96/ui'\n",
   })
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('@tc96/ui is not a locked COSS item')
+  expect(result.stderr).toContain('@tc96/ui is not in the ui manifest')
 })
 
 test('keeps @xyflow/react inside the flow canvas pattern', () => {

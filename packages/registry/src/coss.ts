@@ -1,9 +1,6 @@
 import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { join } from 'node:path'
 import type { RegistryFile } from './manifest'
-
-/** The public COSS registry, used when components.json does not name one. */
-export const cossRegistry = 'https://coss.com/ui/r/{name}.json'
 
 export interface CossRegistryItem {
   name: string
@@ -22,13 +19,7 @@ export interface CossAliases {
   utils: string
 }
 
-export async function fetchItem(url: string): Promise<CossRegistryItem> {
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`)
-  return (await response.json()) as CossRegistryItem
-}
-
-/** The only change allowed on top of COSS: its registry aliases become ours. */
+/** The only change allowed on top of COSS: its registry aliases become ours; the repo's own aliases become the given ones. */
 export function normalizeImports(
   content: string,
   aliases: CossAliases = { ui: '@tc96/ui', utils: '@tc96/utils' },
@@ -42,6 +33,8 @@ export function normalizeImports(
       /(["'])@\/registry\/default\/(?:ui\/)?([^"']+)\1/g,
       `$1${aliases.ui}/$2$1`,
     )
+    .replace(/(["'])@tc96\/utils\1/g, `$1${aliases.utils}$1`)
+    .replace(/(["'])@tc96\/ui\//g, `$1${aliases.ui}/`)
 }
 
 /**
@@ -65,38 +58,21 @@ export function cossPath(item: string, path: string) {
   return relative
 }
 
-// components.json may point @coss at a mirror. Only the string form is read;
-// the object form carries headers, which tc96 does not send.
-export function cossSource(components: unknown) {
-  const source = (components as { registries?: Record<string, unknown> } | null)
-    ?.registries?.['@coss']
-  if (source === undefined) return cossRegistry
-  if (typeof source !== 'string')
-    throw new Error(
-      'components.json registries.@coss must be a URL or path with {name}; the object form with headers is not supported.',
-    )
-  const placeholders: string[] = source.match(/\{[^}]*\}/g) ?? []
-  if (
-    !placeholders.includes('{name}') ||
-    placeholders.some((p) => p !== '{name}')
-  )
-    throw new Error(
-      `components.json registries.@coss must contain {name} and no other placeholder: ${source}`,
-    )
-  return source
-}
-
-/** Reads one item from a URL template, or from a path relative to root. */
-export async function loadItem(source: string, name: string, root: string) {
-  const location = source.replaceAll('{name}', name)
-  if (/^https?:\/\//.test(location)) return fetchItem(location)
-  return JSON.parse(
-    await readFile(resolve(root, location), 'utf8'),
-  ) as CossRegistryItem
+/** Reads one ui item from the registry directory shipped with the CLI. */
+export async function loadUiItem(registryDirectory: string, name: string) {
+  try {
+    return JSON.parse(
+      await readFile(join(registryDirectory, 'ui', `${name}.json`), 'utf8'),
+    ) as CossRegistryItem
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT')
+      throw new Error(`Unknown ui component: ${name}`)
+    throw error
+  }
 }
 
 /**
- * COSS items to install, following registryDependencies and skipping the
+ * ui items to install, following registryDependencies and skipping the
  * components the consumer already has.
  */
 export async function resolveItems(
@@ -108,13 +84,13 @@ export async function resolveItems(
   const items = new Map<string, CossRegistryItem>()
   while (queue.length) {
     const dependency = queue.shift() as string
-    const [, name] = dependency.match(/^(?:@coss\/)?([a-z0-9-]+)$/) ?? []
+    const [, name] = dependency.match(/^(?:@(?:coss|ui)\/)?([a-z0-9-]+)$/) ?? []
     if (!name)
-      throw new Error(`Unsupported COSS registry dependency: ${dependency}`)
+      throw new Error(`Unsupported ui registry dependency: ${dependency}`)
     if (items.has(name) || installed(name)) continue
     const item = await load(name)
     if (item.name !== name)
-      throw new Error(`COSS item ${name} is published as ${item.name}`)
+      throw new Error(`ui item ${name} is published as ${item.name}`)
     items.set(name, item)
     queue.push(...(item.registryDependencies ?? []))
   }
@@ -142,7 +118,7 @@ export function componentFiles(
         `${item.name}: import ${unresolved[2]} in ${path} has no alias`,
       )
     return {
-      path: `coss/${path}`,
+      path: `ui/${path}`,
       type: 'registry:ui',
       content,
       target: `~/${directory}/${path}`,

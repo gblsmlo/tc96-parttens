@@ -2,7 +2,7 @@
   "name": "sidebar",
   "type": "registry:ui",
   "dependencies": [],
-  "registryDependencies": ["@coss/use-media-query", "@coss/utils"],
+  "registryDependencies": ["@ui/use-media-query", "@ui/utils"],
   "files": [
     {
       "path": "registry/default/ui/sidebar.tsx",

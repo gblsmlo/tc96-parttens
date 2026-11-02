@@ -1,0 +1,299 @@
+{
+  "items": {
+    "alert": {
+      "origin": "coss",
+      "cssVars": {
+        "light": {
+          "destructive-foreground": "var(--color-red-700)",
+          "info": "var(--color-blue-500)",
+          "info-foreground": "var(--color-blue-700)",
+          "success": "var(--color-emerald-500)",
+          "success-foreground": "var(--color-emerald-700)",
+          "warning": "var(--color-amber-500)",
+          "warning-foreground": "var(--color-amber-700)"
+        },
+        "dark": {
+          "destructive-foreground": "var(--color-red-400)",
+          "info": "var(--color-blue-500)",
+          "info-foreground": "var(--color-blue-400)",
+          "success": "var(--color-emerald-500)",
+          "success-foreground": "var(--color-emerald-400)",
+          "warning": "var(--color-amber-500)",
+          "warning-foreground": "var(--color-amber-400)"
+        }
+      }
+    },
+    "alert-dialog": {
+      "origin": "coss"
+    },
+    "autocomplete": {
+      "origin": "coss"
+    },
+    "avatar": {
+      "origin": "coss"
+    },
+    "badge": {
+      "origin": "coss",
+      "cssVars": {
+        "light": {
+          "destructive-foreground": "var(--color-red-700)",
+          "info": "var(--color-blue-500)",
+          "info-foreground": "var(--color-blue-700)",
+          "success": "var(--color-emerald-500)",
+          "success-foreground": "var(--color-emerald-700)",
+          "warning": "var(--color-amber-500)",
+          "warning-foreground": "var(--color-amber-700)"
+        },
+        "dark": {
+          "destructive-foreground": "var(--color-red-400)",
+          "info": "var(--color-blue-500)",
+          "info-foreground": "var(--color-blue-400)",
+          "success": "var(--color-emerald-500)",
+          "success-foreground": "var(--color-emerald-400)",
+          "warning": "var(--color-amber-500)",
+          "warning-foreground": "var(--color-amber-400)"
+        }
+      }
+    },
+    "breadcrumb": {
+      "origin": "coss"
+    },
+    "button": {
+      "origin": "coss",
+      "cssVars": {
+        "light": {
+          "destructive-foreground": "var(--color-red-700)"
+        },
+        "dark": {
+          "destructive-foreground": "var(--color-red-400)"
+        }
+      }
+    },
+    "calendar": {
+      "origin": "coss"
+    },
+    "card": {
+      "origin": "coss"
+    },
+    "chat": {
+      "origin": "coss",
+      "paths": [
+        "chat/chat-bubble.tsx",
+        "chat/chat-collapsible-message.tsx",
+        "chat/chat-conversation.tsx",
+        "chat/chat-date-pill.tsx",
+        "chat/chat-delivery-indicator.tsx",
+        "chat/chat-jump-to-latest-button.tsx",
+        "chat/chat-members.tsx",
+        "chat/chat-message-actions.tsx",
+        "chat/chat-message-bubble.tsx",
+        "chat/chat-message-info.tsx",
+        "chat/chat-message-layout.tsx",
+        "chat/chat-message-text.tsx",
+        "chat/chat-message.tsx",
+        "chat/chat-reaction-chip.tsx",
+        "chat/chat-reaction-picker.tsx",
+        "chat/chat-reply-preview.tsx",
+        "chat/chat-reply-reference.tsx",
+        "chat/chat-states.tsx",
+        "chat/chat-typing-indicator.tsx",
+        "chat/chat-unread-divider.tsx",
+        "chat/hooks/use-chat-popup-dismissal.ts",
+        "chat/hooks/use-chat-scroll.ts",
+        "chat/lib/split-chat-message-preview.ts"
+      ]
+    },
+    "checkbox": {
+      "origin": "coss"
+    },
+    "collapsible": {
+      "origin": "coss"
+    },
+    "combobox": {
+      "origin": "coss"
+    },
+    "command": {
+      "origin": "coss"
+    },
+    "composer": {
+      "origin": "coss"
+    },
+    "composer-clipboard": {
+      "origin": "coss",
+      "paths": [
+        "lib/composer-clipboard.ts"
+      ]
+    },
+    "composer-document": {
+      "origin": "coss",
+      "paths": [
+        "lib/composer-document.ts"
+      ]
+    },
+    "composer-editor": {
+      "origin": "coss",
+      "paths": [
+        "lib/composer-editor.ts"
+      ]
+    },
+    "composer-query": {
+      "origin": "coss",
+      "paths": [
+        "lib/composer-query.ts"
+      ]
+    },
+    "context-menu": {
+      "origin": "coss",
+      "cssVars": {
+        "light": {
+          "destructive-foreground": "var(--color-red-700)"
+        },
+        "dark": {
+          "destructive-foreground": "var(--color-red-400)"
+        }
+      }
+    },
+    "dialog": {
+      "origin": "coss"
+    },
+    "empty": {
+      "origin": "coss"
+    },
+    "field": {
+      "origin": "coss",
+      "cssVars": {
+        "light": {
+          "destructive-foreground": "var(--color-red-700)"
+        },
+        "dark": {
+          "destructive-foreground": "var(--color-red-400)"
+        }
+      }
+    },
+    "form": {
+      "origin": "coss"
+    },
+    "group": {
+      "origin": "coss"
+    },
+    "input": {
+      "origin": "coss"
+    },
+    "input-group": {
+      "origin": "coss"
+    },
+    "kbd": {
+      "origin": "coss"
+    },
+    "label": {
+      "origin": "coss"
+    },
+    "menu": {
+      "origin": "coss",
+      "cssVars": {
+        "light": {
+          "destructive-foreground": "var(--color-red-700)"
+        },
+        "dark": {
+          "destructive-foreground": "var(--color-red-400)"
+        }
+      }
+    },
+    "meter": {
+      "origin": "coss"
+    },
+    "number-field": {
+      "origin": "coss"
+    },
+    "pagination": {
+      "origin": "coss"
+    },
+    "popover": {
+      "origin": "coss"
+    },
+    "progress": {
+      "origin": "coss"
+    },
+    "radio-group": {
+      "origin": "coss"
+    },
+    "scroll-area": {
+      "origin": "coss"
+    },
+    "segmented-control": {
+      "origin": "coss"
+    },
+    "select": {
+      "origin": "coss"
+    },
+    "separator": {
+      "origin": "coss"
+    },
+    "sheet": {
+      "origin": "coss"
+    },
+    "sidebar": {
+      "origin": "coss"
+    },
+    "skeleton": {
+      "origin": "coss",
+      "cssVars": {
+        "theme": {
+          "--animate-skeleton": "skeleton 2s -1s infinite linear"
+        }
+      },
+      "css": {
+        "@keyframes skeleton": {
+          "to": {
+            "background-position": "-200% 0"
+          }
+        }
+      }
+    },
+    "spinner": {
+      "origin": "coss"
+    },
+    "switch": {
+      "origin": "coss"
+    },
+    "table": {
+      "origin": "coss"
+    },
+    "tabs": {
+      "origin": "coss"
+    },
+    "textarea": {
+      "origin": "coss"
+    },
+    "toggle": {
+      "origin": "coss"
+    },
+    "toggle-group": {
+      "origin": "coss"
+    },
+    "toolbar": {
+      "origin": "coss"
+    },
+    "tooltip": {
+      "origin": "coss"
+    },
+    "use-composer-editor": {
+      "origin": "coss",
+      "paths": [
+        "hooks/use-composer-editor.ts"
+      ]
+    },
+    "use-copy-to-clipboard": {
+      "origin": "coss",
+      "paths": [
+        "hooks/use-copy-to-clipboard.ts"
+      ]
+    },
+    "use-media-query": {
+      "origin": "coss",
+      "paths": [
+        "hooks/use-media-query.ts"
+      ]
+    }
+  }
+}
