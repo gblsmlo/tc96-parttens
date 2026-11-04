@@ -10,7 +10,7 @@ import {
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import { CornerDownRightIcon, EllipsisIcon, PlusIcon } from 'lucide-react'
+import { CornerDownRightIcon, EllipsisIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { expect, within } from 'storybook/test'
 
@@ -127,14 +127,7 @@ function TagsSection({ children }: { children: ReactNode }) {
     <SettingsSection
       className="mx-auto w-full max-w-2xl"
       header={
-        <SettingsSectionHeader
-          actions={
-            <Button size="sm">
-              <PlusIcon aria-hidden="true" />
-              New tag
-            </Button>
-          }
-        >
+        <SettingsSectionHeader actions={<Button size="sm">New tag</Button>}>
           <SettingsSectionTitle>Tags</SettingsSectionTitle>
           <SettingsSectionDescription>
             Organize leads and tasks with tags and subtags.

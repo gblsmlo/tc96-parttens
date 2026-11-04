@@ -16,7 +16,6 @@ import {
   EllipsisIcon,
   FlameIcon,
   OctagonAlertIcon,
-  PlusIcon,
   SignalHighIcon,
   SignalMediumIcon,
   TimerIcon,
@@ -114,14 +113,7 @@ function AutomationRules({ children }: { children: ReactNode }) {
     <SettingsSection
       className="mx-auto w-full max-w-2xl"
       header={
-        <SettingsSectionHeader
-          actions={
-            <Button size="sm">
-              <PlusIcon aria-hidden="true" />
-              Add rule
-            </Button>
-          }
-        >
+        <SettingsSectionHeader actions={<Button size="sm">Add rule</Button>}>
           <SettingsSectionTitle>Automation rules</SettingsSectionTitle>
           <SettingsSectionDescription>
             Use automation rules to automatically add or remove SLAs based on

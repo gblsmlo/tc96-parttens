@@ -32,7 +32,7 @@ export function SettingsSection({
   return (
     <section
       aria-labelledby={titleId}
-      className={cn('flex flex-col gap-2', className)}
+      className={cn('flex flex-col gap-3', className)}
       data-slot="settings-section"
     >
       <SettingsSectionTitleIdContext.Provider value={titleId}>
