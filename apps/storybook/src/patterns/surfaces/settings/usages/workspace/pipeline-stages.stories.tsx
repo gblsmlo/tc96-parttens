@@ -22,7 +22,6 @@ import {
   FileTextIcon,
   HandshakeIcon,
   type LucideIcon,
-  PlusIcon,
   SparklesIcon,
   TrophyIcon,
   UserCheckIcon,
@@ -270,7 +269,6 @@ function PipelineStagesDemo() {
           <SettingsSectionHeader
             actions={
               <Button onClick={() => setCreating(true)} size="sm">
-                <PlusIcon aria-hidden="true" />
                 New stage
               </Button>
             }

@@ -7,7 +7,6 @@ import {
   SettingsSectionTitle,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { PlusIcon } from 'lucide-react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 
 const meta = {
@@ -37,12 +36,7 @@ export const Default: Story = {
     <SettingsSection
       header={
         <SettingsSectionHeader
-          actions={
-            <Button size="sm">
-              <PlusIcon aria-hidden="true" />
-              New access rule
-            </Button>
-          }
+          actions={<Button size="sm">New access rule</Button>}
         >
           <SettingsSectionTitle>Workspace</SettingsSectionTitle>
         </SettingsSectionHeader>

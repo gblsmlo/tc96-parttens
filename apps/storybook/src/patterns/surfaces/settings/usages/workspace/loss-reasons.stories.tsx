@@ -11,7 +11,7 @@ import {
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Switch } from '@tc96/ui/switch'
-import { EllipsisIcon, PlusIcon } from 'lucide-react'
+import { EllipsisIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 
@@ -120,14 +120,7 @@ function LossReasonsSection({ children }: { children: ReactNode }) {
   return (
     <SettingsSection
       header={
-        <SettingsSectionHeader
-          actions={
-            <Button size="sm">
-              <PlusIcon aria-hidden="true" />
-              New reason
-            </Button>
-          }
-        >
+        <SettingsSectionHeader actions={<Button size="sm">New reason</Button>}>
           <SettingsSectionTitle>Loss reasons</SettingsSectionTitle>
           <SettingsSectionDescription>
             The reasons a seller can choose when a lead is lost.

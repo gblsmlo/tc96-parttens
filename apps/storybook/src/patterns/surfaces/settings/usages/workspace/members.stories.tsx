@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@tc96/ui/select'
-import { EllipsisIcon, PlusIcon } from 'lucide-react'
+import { EllipsisIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 
@@ -163,7 +163,6 @@ function MembersSettings({
           <SettingsSectionHeader
             actions={
               <Button size="sm" onClick={onInvite}>
-                <PlusIcon aria-hidden="true" />
                 Invite members
               </Button>
             }

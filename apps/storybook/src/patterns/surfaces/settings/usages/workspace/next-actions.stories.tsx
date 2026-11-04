@@ -18,7 +18,6 @@ import {
   FileTextIcon,
   MailIcon,
   PhoneIcon,
-  PlusIcon,
   RepeatIcon,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
@@ -146,14 +145,7 @@ function NextActionsSection({ children }: { children: ReactNode }) {
   return (
     <SettingsSection
       header={
-        <SettingsSectionHeader
-          actions={
-            <Button size="sm">
-              <PlusIcon aria-hidden="true" />
-              New action
-            </Button>
-          }
-        >
+        <SettingsSectionHeader actions={<Button size="sm">New action</Button>}>
           <SettingsSectionTitle>Next actions</SettingsSectionTitle>
           <SettingsSectionDescription>
             Actions a lead needs before it leaves each open stage.

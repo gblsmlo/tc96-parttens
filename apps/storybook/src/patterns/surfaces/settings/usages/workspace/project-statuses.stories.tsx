@@ -17,7 +17,6 @@ import {
   CircleIcon,
   CircleXIcon,
   EllipsisIcon,
-  PlusIcon,
 } from 'lucide-react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 
@@ -85,12 +84,7 @@ function StatusesDemo() {
       <SettingsSection
         header={
           <SettingsSectionHeader
-            actions={
-              <Button size="sm">
-                <PlusIcon aria-hidden="true" />
-                New status
-              </Button>
-            }
+            actions={<Button size="sm">New status</Button>}
           >
             <SettingsSectionTitle>Project statuses</SettingsSectionTitle>
             <SettingsSectionDescription>
