@@ -17,6 +17,7 @@ import {
 import { type ReactNode, useState } from 'react'
 
 export interface ViewSwitcherOption {
+  icon?: ReactNode
   id: string
   label: string
 }
@@ -75,7 +76,7 @@ export function ViewSwitcherPicker({
 
     return (
       <ViewSwitcherItem
-        icon={<ViewIcon />}
+        icon={view.icon ?? <ViewIcon />}
         key={view.id}
         label={view.label}
         onSelect={() => onSelect(view.id)}
@@ -137,7 +138,7 @@ export function ViewSwitcherPicker({
 
   return (
     <ViewSwitcherMenu
-      icon={<ViewIcon />}
+      icon={selected?.icon ?? <ViewIcon />}
       label={selected?.label ?? 'Selecionar view'}
     >
       {searchable ? (
