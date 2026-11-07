@@ -1,3 +1,4 @@
+import { Text } from '@tc96/elements/text'
 import {
   CalendarEventChip,
   CalendarEventChipOpenTrigger,
@@ -8,6 +9,13 @@ import {
   type ListItemDensity,
   ListRow,
 } from '@tc96/parttens'
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@tc96/ui/card'
 import {
   CalendarIcon,
   CircleDotIcon,
@@ -171,6 +179,24 @@ export const renderTaskKanbanCard =
       />
     )
   }
+
+export const renderTaskGalleryCard =
+  (updateTask: UpdateTask) => (task: Task) => (
+    <Card className="h-full min-h-44" render={<article />}>
+      <CardHeader>
+        <Text className="font-mono" size="xs">
+          {task.id}
+        </Text>
+        <CardTitle render={<h2>{task.title}</h2>} />
+        <CardDescription render={<p>{task.description}</p>} />
+      </CardHeader>
+      <CardFooter className="mt-auto flex-wrap gap-2">
+        <StatusField onChange={updateTask} task={task} />
+        <PriorityField onChange={updateTask} task={task} />
+        <AssigneeField display="avatar" onChange={updateTask} task={task} />
+      </CardFooter>
+    </Card>
+  )
 
 export const createTaskCalendarProps = (updateTask: UpdateTask) => ({
   anchor: ANCHOR,

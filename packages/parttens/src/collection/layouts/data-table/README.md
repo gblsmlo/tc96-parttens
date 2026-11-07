@@ -20,7 +20,7 @@ A column declares `meta.aggregations` (`count`, `sum`) with `DataTableColumnMeta
 
 ## Horizontal overflow
 
-The root `data-slot="data-table"` carries `data-overflow-start` and `data-overflow-end` while the columns run past that side of the container, and a fade over that edge shows the clipped content.
+The table scrolls inside a Base UI `ScrollArea` (`data-slot="data-table-viewport"`), with a sticky `thead` and `tfoot`; the vertical scrollbar starts below the header and ends above the footer. The root `data-slot="data-table"` carries `data-overflow-start` and `data-overflow-end` while the columns run past that side of the viewport, and a fade over that edge shows the clipped content.
 
 ## Benchmark
 
@@ -64,3 +64,5 @@ Environment: 2026-10-03, bun 1.3.14, JSDOM 26.1.0 (no layout), React 19.1.1 deve
 | 1000x20 paged | parent re-render | 1000 | 0 | 24.9 | 1.4 | -94% | 12.3 | 0.5 |
 
 Reading the table: selecting a row renders that row's cells (10 and 20; every cell before), and a sort toggle or a parent re-render with unchanged props renders none. Pagination still renders one page, because the rows on screen change. Mount renders every cell either way; its moves in this run (-39% at 200x10, under 10% elsewhere) are noise, since a memo cannot make a mount cheaper.
+
+On 2026-11-06 the scroll container became a Base UI `ScrollArea`, and mount went from one commit to two in every case: the root measures its overflow once after mount. Cell renders did not change. `scripts/bench/results/data-table.base.json` was regenerated then (bun 1.4.2, Apple M4); the table above keeps the 2026-10-03 times.

@@ -6,6 +6,10 @@ import type { RowData } from '@tanstack/react-table'
 import { ScrollAreaPrimitive, ScrollBar } from '@tc96/ui/scroll-area'
 import { cn } from '@tc96/utils'
 import { type ReactNode, useMemo, useRef } from 'react'
+import {
+  scrollbarInsetStyle,
+  useScrollbarInsets,
+} from '../../../shared/hooks/use-scrollbar-insets'
 import { useCollapsedGroups } from '../hooks/use-collapsed-groups'
 import { useColumnLayouts } from '../hooks/use-column-layouts'
 import { useDataGridCellEvents } from '../hooks/use-data-grid-cell-events'
@@ -83,6 +87,7 @@ export function DataGrid<TData extends RowData>({
   'aria-label': ariaLabel,
 }: DataGridProps<TData>) {
   const gridRef = useRef<HTMLDivElement>(null)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
   const showsPagination = pagination ?? !table.options.manualPagination
   const footerContent =
     footer ?? (showsPagination ? <DataGridPagination table={table} /> : null)
@@ -177,6 +182,14 @@ export function DataGrid<TData extends RowData>({
     : model.collectionRowCount === 0
       ? 1
       : model.collectionRowCount + model.groupRowCount
+  useScrollbarInsets(
+    scrollAreaRef,
+    '[data-slot="data-grid-header"]',
+    footerContent
+      ? '[data-slot="data-grid-footer"]'
+      : '[data-slot="data-grid-add-row-group"]',
+    Boolean(footerContent || onRowAdd),
+  )
   const ariaRowCount =
     model.headerRowCount +
     bodyRowCount +
@@ -187,17 +200,18 @@ export function DataGrid<TData extends RowData>({
   return (
     <div
       className={cn(
-        'relative min-w-0',
+        'relative flex min-h-0 min-w-0 flex-1 flex-col',
         fillColumnId ? 'w-full' : 'w-fit max-w-full',
         className,
       )}
     >
       <ScrollAreaPrimitive.Root
         className={cn(
-          'relative h-auto rounded-md border bg-background text-sm',
+          'relative min-h-0 flex-1 rounded-md border bg-background text-sm',
           fillColumnId ? 'w-full' : 'w-fit max-w-full',
         )}
         data-slot="data-grid"
+        ref={scrollAreaRef}
       >
         <ScrollAreaPrimitive.Viewport
           aria-busy={isLoading || undefined}
@@ -270,7 +284,7 @@ export function DataGrid<TData extends RowData>({
             ) : null}
           </ScrollAreaPrimitive.Content>
         </ScrollAreaPrimitive.Viewport>
-        <ScrollBar orientation="vertical" />
+        <ScrollBar orientation="vertical" style={scrollbarInsetStyle} />
         <ScrollBar orientation="horizontal" />
         <ScrollAreaPrimitive.Corner data-slot="scroll-area-corner" />
       </ScrollAreaPrimitive.Root>
