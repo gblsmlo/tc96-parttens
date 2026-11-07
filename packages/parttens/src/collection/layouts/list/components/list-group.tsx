@@ -68,7 +68,7 @@ export function ListGroup<TRecord>({
         data-slot="list-group"
       >
         <div
-          className="flex min-h-9 items-center justify-between rounded-lg bg-card/90 px-1"
+          className="sticky top-0 z-10 flex min-h-9 items-center justify-between rounded-lg bg-card/90 px-1"
           data-slot="list-group-header"
         >
           <div className="flex min-w-0 items-center gap-1">

@@ -395,7 +395,7 @@ export const HorizontalScroll: Story = {
       '[data-slot="data-table"]',
     ) as HTMLElement
     const container = root.querySelector(
-      '[data-slot="table-container"]',
+      '[data-slot="data-table-viewport"]',
     ) as HTMLElement
 
     await expect(container.scrollWidth).toBeGreaterThan(container.clientWidth)
