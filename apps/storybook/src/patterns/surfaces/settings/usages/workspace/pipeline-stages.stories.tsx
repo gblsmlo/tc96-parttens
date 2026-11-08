@@ -449,6 +449,7 @@ export const Interaction: Story = {
     ).not.toHaveAttribute('aria-disabled', 'true')
     expect(body.getByRole('menuitem', { name: 'Delete' })).toBeVisible()
     await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
   },
   tags: interaction,
 }

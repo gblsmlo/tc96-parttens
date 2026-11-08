@@ -5,7 +5,7 @@ import {
   type ActionBarProps,
 } from '@tc96/parttens'
 import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
-import { expect, fn, screen, userEvent, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
 
 const usage = `
@@ -164,6 +164,7 @@ export const Default: Story = {
       await screen.findByRole('menuitem', { name: 'Duplicar' }),
     )
     await expect(duplicate).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
   },
 }
 

@@ -100,9 +100,9 @@ const preview: Preview = {
     themePreset: 'default',
   },
   parameters: {
-    // Uma violação do axe reprova o storybook:test. Exceções ficam na story,
-    // com o motivo; hoje só contraste de componentes e exemplos do COSS.
     a11y: {
+      // Base UI focus guards keep tabindex=0 under aria-hidden while a popup is open or closing.
+      context: { exclude: ['[data-base-ui-focus-guard]'] },
       test: 'error',
     },
     docs: {

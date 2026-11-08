@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, fn, screen, userEvent, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   ANCHOR,
   type CalendarTestRecord,
@@ -149,6 +149,10 @@ export const MonthOverflowPopover: Story = {
     await expect(
       within(popover).queryByRole('button', { name: /Mostrar todos os/ }),
     ).toBeNull()
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog', { name: DAY_LABEL })).toBeNull(),
+    )
   },
 }
 

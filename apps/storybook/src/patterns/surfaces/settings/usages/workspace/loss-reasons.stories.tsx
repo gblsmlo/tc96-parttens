@@ -261,6 +261,7 @@ export const Interaction: Story = {
     expect(body.getByRole('menuitem', { name: 'Delete' })).toBeVisible()
     expect(body.queryByRole('menuitem', { name: 'Archive' })).toBeNull()
     await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
 
     await userEvent.click(
       canvas.getByRole('button', { name: 'Actions for Price' }),
@@ -270,6 +271,7 @@ export const Interaction: Story = {
     expect(body.getByRole('menuitem', { name: 'Delete' })).toBeVisible()
     expect(body.queryByRole('menuitem', { name: 'Restore' })).toBeNull()
     await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
   },
   tags: interaction,
 }

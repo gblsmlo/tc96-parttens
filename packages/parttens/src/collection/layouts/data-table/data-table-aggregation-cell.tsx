@@ -19,6 +19,9 @@ const isAggregation = (
 ): value is DataTableAggregation =>
   options.includes(value as DataTableAggregation)
 
+const aggregationLabelClassName =
+  'text-muted-foreground group-hover/aggregation:text-foreground group-data-pressed/aggregation:text-foreground'
+
 export function DataTableAggregationCell({
   align = 'start',
   labels,
@@ -45,7 +48,7 @@ export function DataTableAggregationCell({
           render={
             <Button
               className={cn(
-                '-mx-2 font-normal',
+                'group/aggregation -mx-2 font-normal',
                 value === null &&
                   'opacity-0 focus-visible:opacity-100 data-popup-open:opacity-100 group-focus-within/footer:opacity-100 group-hover/footer:opacity-100 pointer-coarse:opacity-100',
               )}
@@ -55,10 +58,10 @@ export function DataTableAggregationCell({
           }
         >
           {value === null ? (
-            <span className="text-muted-foreground">{labels.trigger}</span>
+            <span className={aggregationLabelClassName}>{labels.trigger}</span>
           ) : (
             <>
-              <span className="text-muted-foreground">{labels[value]}</span>{' '}
+              <span className={aggregationLabelClassName}>{labels[value]}</span>{' '}
               <span className="font-medium tabular-nums">{result}</span>
             </>
           )}
