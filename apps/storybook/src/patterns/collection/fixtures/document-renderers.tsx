@@ -38,10 +38,8 @@ import {
 } from './documents'
 import { people } from './tasks'
 
-const pinnedCardClassName =
-  'group h-full rounded-lg border-border/80 bg-card/40 shadow-none transition-colors before:hidden hover:bg-muted/50'
-const galleryCardClassName =
-  'h-full min-h-52 overflow-hidden rounded-lg border-border/80 bg-card/40 shadow-none before:hidden'
+const pinnedCardClassName = 'group h-full transition-colors hover:bg-muted/50'
+const galleryCardClassName = 'h-full min-h-52 overflow-hidden'
 
 export interface DocumentActions {
   onArchive: (id: string) => void

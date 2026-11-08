@@ -3,7 +3,7 @@ import { cva } from 'class-variance-authority'
 export const wizardClassName = '@container/wizard min-w-0'
 
 export const wizardShellClassName =
-  'gap-1 bg-muted p-1 shadow-none [--wizard-shell-radius:var(--card-surface-radius,var(--radius-2xl))] before:hidden dark:bg-sidebar @2xl/wizard:grid @2xl/wizard:grid-cols-[16rem_minmax(0,1fr)]'
+  'gap-1 bg-muted p-1 shadow-none [--wizard-shell-radius:var(--card-radius)] before:hidden dark:bg-sidebar @2xl/wizard:grid @2xl/wizard:grid-cols-[16rem_minmax(0,1fr)]'
 
 export const wizardNavClassName = 'p-3'
 

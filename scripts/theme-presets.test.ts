@@ -106,6 +106,13 @@ test('writes a preset with shared fonts and COSS tokens', () => {
   expect(css).toContain('  --destructive-foreground: var(--color-red-700);')
   expect(css).toContain('  --destructive-foreground: var(--color-red-400);')
   expect(css).toContain('  --switch-track: --alpha(var(--color-black) / 45%);')
+  expect(css).toContain('  --card-radius: var(--radius);')
+  expect(css).toContain(
+    '  --surface: color-mix(in oklab, var(--card) 40%, transparent);',
+  )
+  expect(css).toContain(
+    '  --surface-border: color-mix(in oklab, var(--border) 80%, transparent);',
+  )
 })
 
 test('rejects a preset missing a color token', () => {

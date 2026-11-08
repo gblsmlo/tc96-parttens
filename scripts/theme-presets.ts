@@ -73,6 +73,9 @@ const cossTokens: Record<'light' | 'dark', Tokens> = {
     code: 'var(--card)',
     'code-foreground': 'var(--foreground)',
     'code-highlight': '--alpha(var(--color-black) / 4%)',
+    surface: 'color-mix(in oklab, var(--card) 40%, transparent)',
+    'surface-foreground': 'var(--card-foreground)',
+    'surface-border': 'color-mix(in oklab, var(--border) 80%, transparent)',
   },
   dark: {
     'destructive-foreground': 'var(--color-red-400)',
@@ -86,6 +89,9 @@ const cossTokens: Record<'light' | 'dark', Tokens> = {
     code: 'var(--card)',
     'code-foreground': 'var(--foreground)',
     'code-highlight': '--alpha(var(--color-white) / 4%)',
+    surface: 'color-mix(in oklab, var(--card) 40%, transparent)',
+    'surface-foreground': 'var(--card-foreground)',
+    'surface-border': 'color-mix(in oklab, var(--border) 80%, transparent)',
   },
 }
 
@@ -212,6 +218,7 @@ export function presetCss(item: TweakcnItem): string {
   const letterSpacing = light['letter-spacing'] ?? '0em'
   const base: [string, string][] = [
     ['--radius', shared.radius ?? '0.625rem'],
+    ['--card-radius', 'var(--radius)'],
     ['--font-sans', fontStack(shared['font-sans'] ?? 'sans-serif')],
     ['--font-serif', fontStack(shared['font-serif'] ?? 'serif')],
     ['--font-mono', fontStack(shared['font-mono'] ?? 'monospace')],

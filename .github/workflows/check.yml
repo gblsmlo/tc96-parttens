@@ -39,6 +39,7 @@ jobs:
       - run: bun run check:coss
       - run: bun run boundaries:check
       - run: bun run overrides:check
+      - run: bun run themes:check
       - run: bun run typecheck
       - run: bun run lint:ci
       - run: bun run storybook:typecheck
