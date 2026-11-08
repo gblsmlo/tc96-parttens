@@ -3,6 +3,7 @@
 - **Status:** Draft (decisão do dono na conversa de 2026-10-17, "use option a"; o texto espera a revisão dele)
 - **Date:** 2026-10-17
 - **Origin:** pedido do dono na conversa de 2026-10-17 ("analise como podemos eliminar a necessidade do card surface"), opção A da análise
+- **Amended by:** decisão de 2026-11-07 (issue #286): D2 e D3 deram lugar ao token `--card-radius`, mapeado como `--radius-card` e lido por `rounded-card` no `Card`; ver "Collection: superfície e raio do card como tokens do tema" em `docs/architecture/tc96-parttens.md`
 - **Supersedes:** `.specs/adr/0002-card-surface-standard.md` (D1, D2, D4 (4) e (5), D6, D8 e D9 no que citam `CardSurface`); a invariante "a classe da superfície só existe em `card-surface.tsx`"
 
 ## Context

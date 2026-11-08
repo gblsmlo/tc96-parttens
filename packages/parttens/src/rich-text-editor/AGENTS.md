@@ -81,7 +81,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/rich-text-editor
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/rich-text-editor/`: the editor and title stories, `slash-menu.stories.tsx` (what `onValueChange` receives while the menu is open), `plugins.stories.tsx` (pasted HTML) and `editor-title/` (title behavior). The bun tests left in this folder are the pure document and transform checks in `plugins.test.ts` and `slash-menu.test.ts`, which run on `createPlateEditor` without mounting and need no DOM. Stories run axe with `test: 'error'`. The editor and title stories scope `aria-hidden-focus` to `[aria-hidden="true"]:not([data-base-ui-focus-guard])`, because the Base UI `Popover` focus guards belong to COSS.
+Interface tests are `play` functions in `apps/storybook/src/patterns/rich-text-editor/`: the editor and title stories, `slash-menu.stories.tsx` (what `onValueChange` receives while the menu is open), `plugins.stories.tsx` (pasted HTML) and `editor-title/` (title behavior). The bun tests left in this folder are the pure document and transform checks in `plugins.test.ts` and `slash-menu.test.ts`, which run on `createPlateEditor` without mounting and need no DOM. Stories run axe with `test: 'error'`. The Base UI focus guards around the toolbar and `/` menu popovers are excluded from axe globally in `.storybook/preview.ts`.
 
 ## Pointers
 

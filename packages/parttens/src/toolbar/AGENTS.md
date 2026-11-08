@@ -23,7 +23,7 @@ Toolbar:
 - `variant` defaults to `plain`, not the COSS frame (`default`). `plain` and `text` strip the frame with `items-center rounded-none border-0 bg-transparent p-0`. `aria-label` defaults to `Controles da coleção`.
 - With `variant="text"`, `title` renders as an `h2` and `description` as a muted `p`; in the other variants `title` is the HTML `title` attribute and `description` is typed `never`.
 - `startSlot`, `centerSlot` and `endSlot` are destructured so they never reach the DOM. Without `centerSlot` the end group carries `ms-auto`; with it, start and end become `flex-1 basis-0` (an `aria-hidden` spacer stands in for a missing side) so the center group sits at the toolbar's midpoint whatever the side widths.
-- `components/collection-toolbar.test.ts` pins the root barrel's toolbar surface: `ViewSettingsMenu`, `ViewSettingsSection`, `PresetsMenu` and `Action` must exist, and `SavedViewsMenu`, `FilterMenu` and `SettingsMenu` must not. Those live in `collection/shared/`, not here. The `Patterns/Toolbar/Behavior` plays check `hover:bg-accent` and `w-56` by class name, because `:hover` does not respond to synthetic events.
+- `components/collection-toolbar.test.ts` pins the root barrel's toolbar surface: `ViewSettingsMenu`, `ViewSettingsSection`, `PresetsMenu` and `Action` must exist, and `SavedViewsMenu`, `FilterMenu` and `SettingsMenu` must not. Those live in `collection/shared/`, not here. The `Patterns/Toolbar/Behavior` plays check the slot layout by geometry (the spacer as wide as the end group, the center slot centered); the ghost buttons' hover and the menu width belong to `ui` and are not asserted.
 
 View switcher:
 

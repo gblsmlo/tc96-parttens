@@ -84,6 +84,7 @@ Toolbar:
 | `data-calendar-date`, `data-today`, `data-outside-month`, `data-calendar-mode` | calendar cells, columns, root | consumers and tests |
 | `data-calendar-item-resize="start\|end"` | the resize buttons on time-grid items | tests and the drag sensor, which never starts a move from an edge; the edge measures its `[data-calendar-date]` column to turn pixels into minutes |
 | `data-collection-grouping`, `data-interactive`, `data-bordered`, `data-layout` | `ListView`, `ListItem`, `DataTable`, view settings mode tab | consumers |
+| `data-slot="list-view"` | the `ListView` root | consumers and tests; not styled outside the view |
 | `data-slot="gallery-view"` | the `GalleryView` grid root | consumers and tests; not styled outside the view |
 | `data-slot="collection-frame"`, `data-mode`, `data-slot="collection-frame-header\|body\|footer\|overlay"` | the `CollectionFrame` parts | consumers and tests; not styled |
 | `data-slot="data-table"`, `data-overflow-start`, `data-overflow-end` | the `DataTable` root; `data-slot="data-table-viewport"` is the scrolling element | the edge fades (`data-table-overflow-start`, `data-table-overflow-end`) through `group-data-*/data-table` |
@@ -95,12 +96,14 @@ Data Grid attributes are listed in `layouts/data-grid/AGENTS.md`.
 - Variants live in `kanbanCardVariants` and `calendarEventChipVariants`; every class is a complete string so the Tailwind scanner sees it. A condition emits one class through a ternary.
 - The positioned wrapper of each time-grid item (`calendar-day-column.tsx`) is the size container `calendar-item`, which the chip's `block` variant queries: the time follows the title, and below two lines of height (2.625rem) both share one wrapping row whose second line falls outside the block, so a short item always shows its title and shows the time only when it fits.
 - `DataTable` draws the DataGrid frame (`rounded-md border bg-background`) unless `bordered={false}`, and its `thead` and the DataGrid header (pinned header cells included) share one `color-mix` of `var(--card)` with 2% black, 2% white in dark, so the two views read as the same surface.
+- The `DataTable` aggregation label is `text-muted-foreground` at rest and `text-foreground` while its ghost trigger (`group/aggregation`) is hovered or pressed, because muted text on `bg-accent` falls under 4.5:1 in dark.
 - Colors only from theme tokens; the kanban column tint is `color-mix` over `var(--card)` and the time-grid hour lines read `var(--border)`.
 - Hover-only affordances pair `group-hover` with `group-focus-within` and `pointer-coarse:opacity-100`, because `hover:` does not fire on touch in v4.
 - The calendar chip and `KanbanCard` draw `has-focus-visible:ring-2` on the `article` because the open trigger removes the native outline.
 - Time-grid hour labels are `text-[0.625rem]` pending a `--text-2xs` token in the consumer's theme.
 - Not findings: `outline-none` next to `focus-visible:` and the `dark:` opacity steps on chip tones follow COSS.
-- `scripts/override-exceptions.json` has two `Separator` entries with `bg-border/40` (`layouts/list/components/list-group.tsx` and `list-view.tsx`) and 14 `Card` entries in `kanban-card.tsx`, each with the reason of its own state (hover fill, the `has-focus-visible` ring, the dashed border while `dimmed`, selection): the check classifies `ring-*` as border and `border-dashed` as border style, with or without a state prefix. The card radius comes from the consumer theme's `[data-slot="card"]` rule, so `KanbanCard` has no radius class; the column and the `ListView` frame keep a fixed radius outside the surface.
+- `scripts/override-exceptions.json` has two `Separator` entries with `bg-border/40` (`layouts/list/components/list-group.tsx` and `list-view.tsx`) and 14 `Card` entries in `kanban-card.tsx`, each with the reason of its own state (hover fill, the `has-focus-visible` ring, the dashed border while `dimmed`, selection): the check classifies `ring-*` as border and `border-dashed` as border style, with or without a state prefix. The card radius is the `Card`'s `rounded-card` token, so `KanbanCard` has no radius class; the kanban column keeps a fixed radius outside the surface.
+- The `ListView` frame reads the consumer theme's `surface`, `surface-foreground` and `surface-border` tokens; a `Card` beside the list stays the COSS card, one level above the frame. A theme without those tokens generates no `bg-surface` and the list renders unframed.
 
 ## Verify
 
