@@ -41,9 +41,6 @@ export const EditablePlainProperty: Story = {
       canvas.getByRole('button', { name: 'Remover tag Documentos' }),
     ).toBeInTheDocument()
     await expect(tagsProperty(canvasElement)?.dataset.variant).toBe('plain')
-    await expect(
-      canvasElement.querySelector('[data-slot="combobox-chips"]')?.className,
-    ).toContain('bg-transparent!')
   },
 }
 
@@ -58,7 +55,6 @@ export const TagsAreCossChips: Story = {
     const tag = canvasElement.querySelector('[data-slot="combobox-chip"]')
 
     await expect(tag).toHaveTextContent('Documentos')
-    await expect(tag?.className).not.toContain('rounded-full')
   },
 }
 

@@ -73,10 +73,16 @@ export const CenterSlotBetweenEqualWidthGroups: Story = {
     await expect(toolbar).not.toHaveAttribute('centerslot')
     const [spacer, center, end] = Array.from(toolbar.children)
     await expect(spacer).toHaveAttribute('aria-hidden', 'true')
-    await expect(spacer?.className).toBe('flex-1 basis-0')
     await expect(center).toHaveTextContent(/^Período$/)
-    await expect(center).toHaveClass('shrink-0')
-    await expect(end).toHaveClass('flex-1', 'basis-0', 'justify-end')
+    const toolbarBox = toolbar.getBoundingClientRect()
+    const centerBox = (center as HTMLElement).getBoundingClientRect()
+    await expect(
+      (spacer as HTMLElement).getBoundingClientRect().width,
+    ).toBeCloseTo((end as HTMLElement).getBoundingClientRect().width, 0)
+    await expect(centerBox.left + centerBox.width / 2).toBeCloseTo(
+      toolbarBox.left + toolbarBox.width / 2,
+      0,
+    )
   },
 }
 
@@ -120,7 +126,6 @@ export const PresetsWithLabelCountAndMenu: Story = {
     const savedViews = canvas.getByRole('button', { name: /Minhas tarefas/ })
     await expect(canvas.getByText('24')).toBeVisible()
     await expect(canvas.getByLabelText('24 tarefas')).toBeInTheDocument()
-    await expect(savedViews).toHaveClass('hover:bg-accent')
 
     await userEvent.click(savedViews)
     const savedView = await screen.findByRole('menuitem', {
@@ -151,10 +156,9 @@ export const NeutralSettingsAndPrimaryActionWithoutIcon: Story = {
     onAction.mockClear()
     const canvas = within(canvasElement)
     const settings = canvas.getByRole('button', { name: 'Exibição' })
-    await expect(settings).toHaveClass('hover:bg-accent')
 
     await userEvent.click(settings)
-    await expect(await screen.findByRole('menu')).toHaveClass('w-56')
+    await expect(await screen.findByRole('menu')).toBeVisible()
     await userEvent.keyboard('{Escape}')
     await expectMenuClosed()
 

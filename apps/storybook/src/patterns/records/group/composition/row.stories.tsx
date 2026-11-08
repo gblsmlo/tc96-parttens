@@ -77,10 +77,11 @@ export const HidesValueIconsOnlyWithLeading: Story = {
       HTMLElement,
     ]
 
-    await expect(part(plain, 'value').className).not.toContain('property-icon')
-    await expect(part(withLeading, 'value').className).toContain(
-      '[&_[data-slot=property-icon]]:hidden',
-    )
+    const iconIn = (row: HTMLElement) =>
+      part(row, 'value').querySelector('[data-slot="property-icon"]')
+
+    await expect(iconIn(plain)).toBeVisible()
+    await expect(iconIn(withLeading)).not.toBeVisible()
   },
 }
 

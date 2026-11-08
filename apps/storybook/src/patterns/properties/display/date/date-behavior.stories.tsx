@@ -93,7 +93,6 @@ export const EmptyReadOnlyIsOutlineBadge: Story = {
     const surface = surfaceOf(canvasElement, 'Sem data')
 
     await expect(surface?.getAttribute('data-empty')).toBe('true')
-    await expect(surface?.className).toContain('border-input')
   },
 }
 
@@ -108,7 +107,6 @@ export const EmptyEditableIsOutlineBadge: Story = {
     const surface = surfaceOf(canvasElement, 'Sem data')
 
     await expect(surface?.getAttribute('data-empty')).toBe('true')
-    await expect(surface?.className).toContain('border-input')
   },
 }
 

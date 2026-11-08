@@ -57,13 +57,7 @@ export const EmptyAddChipNamesItselfWithPlaceholder: Story = {
     await expect(icon?.classList.contains('lucide-user-plus')).toBe(true)
     await expect(trigger.getAttribute('data-slot')).toBe('property-surface')
     await expect(trigger.getAttribute('data-empty')).toBe('true')
-    await expect(icon?.classList.contains('size-3')).toBe(true)
     await expect(icon?.getBoundingClientRect().width).toBe(12)
-    await expect(
-      canvasElement
-        .querySelector('[data-slot="combobox-chips"]')
-        ?.classList.contains('focus-within:ring-0'),
-    ).toBe(true)
   },
 }
 
@@ -103,7 +97,6 @@ export const ValuesNameRemovalAndCollapseAddChip: Story = {
     ).toBeVisible()
     const trigger = canvas.getByRole('button', { name: 'Adicionar tag' })
     await expect(trigger.textContent).toBe('')
-    await expect(trigger.className).toContain('w-6')
     await expect(trigger.getBoundingClientRect().width).toBe(24)
     await expect(trigger.hasAttribute('data-empty')).toBe(false)
   },

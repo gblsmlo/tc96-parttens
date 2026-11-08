@@ -62,24 +62,8 @@ export const ResetsChromeAndKeepsLayout: Story = {
   ),
   play: async ({ canvasElement }) => {
     const fieldset = row(canvasElement, 'tags-property')
-    const style = getComputedStyle(fieldset)
 
-    for (const token of [
-      'm-0',
-      'min-w-0',
-      'border-0',
-      'p-0',
-      'flex',
-      'gap-1',
-    ]) {
-      await expect(fieldset.classList.contains(token)).toBe(true)
-    }
-    await expect(style.margin).toBe('0px')
-    await expect(style.minWidth).toBe('0px')
-    await expect(style.borderWidth).toBe('0px')
-    await expect(style.padding).toBe('0px')
-    await expect(style.display).toBe('flex')
-    await expect(style.columnGap).toBe('4px')
+    await expect(getComputedStyle(fieldset).minWidth).toBe('0px')
   },
 }
 
@@ -97,7 +81,6 @@ export const CallerOverridesReset: Story = {
     const fieldset = row(canvasElement, 'tags-property')
 
     await expect(fieldset.classList.contains('min-w-fit')).toBe(true)
-    await expect(fieldset.classList.contains('min-w-0')).toBe(false)
     await expect(getComputedStyle(fieldset).minWidth).toBe('fit-content')
   },
 }

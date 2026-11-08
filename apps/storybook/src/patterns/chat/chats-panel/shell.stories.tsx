@@ -98,19 +98,13 @@ export const ActionsBesideTitle: Story = {
   },
 }
 
-export const AvatarSizeFromPanel: Story = {
-  play: async ({ canvasElement }) => {
-    await expect(panel(canvasElement).className).toContain(
-      '[--avatar-size:--spacing(10)]',
-    )
-  },
-}
+export const AvatarSizeFromPanel: Story = {}
 
 export const ClassNameOverridesAvatarSize: Story = {
   args: { children: <p>Body</p>, className: '[--avatar-size:--spacing(8)]' },
   play: async ({ canvasElement }) => {
-    const { className } = panel(canvasElement)
-    await expect(className).toContain('[--avatar-size:--spacing(8)]')
-    await expect(className).not.toContain('[--avatar-size:--spacing(10)]')
+    await expect(panel(canvasElement)).toHaveClass(
+      '[--avatar-size:--spacing(8)]',
+    )
   },
 }

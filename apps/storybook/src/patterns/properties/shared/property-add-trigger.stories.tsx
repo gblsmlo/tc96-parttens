@@ -46,8 +46,6 @@ export const EmptyGlyphMatchesEmptyChips: Story = {
       .getByRole('button', { name: 'Adicionar e-mail' })
       .querySelector('svg')
 
-    await expect(glyph?.classList.contains('size-3')).toBe(true)
-    await expect(glyph?.classList.contains('size-3.5')).toBe(false)
     await expect(glyphSize(glyph)).toEqual({ height: 12, width: 12 })
   },
 }

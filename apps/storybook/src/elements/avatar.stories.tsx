@@ -56,8 +56,11 @@ export const Sizes: Story = {
       .getByTestId('sizes')
       .querySelectorAll('[data-slot="avatar"]')
     await expect(avatars).toHaveLength(5)
-    await expect(avatars[0]).toHaveAttribute('data-size', 'xs')
-    await expect(avatars[4]).toHaveAttribute('data-size', 'xl')
+    const sizeClasses = ['size-4', 'size-6', 'size-8', 'size-10', 'size-12']
+    for (const [index, size] of avatarSizes.entries()) {
+      await expect(avatars[index]).toHaveAttribute('data-size', size)
+      await expect(avatars[index]).toHaveClass(sizeClasses[index] as string)
+    }
   },
 }
 

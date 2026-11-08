@@ -76,6 +76,16 @@ export const Ghost: Story = {
   args: {
     variant: 'ghost',
   },
+  play: async ({ canvasElement }) => {
+    const button = within(canvasElement).getByRole('button', {
+      name: 'Continue',
+    })
+    await expect(button).toHaveClass(
+      'border-transparent',
+      'text-foreground',
+      'hover:bg-accent',
+    )
+  },
 }
 
 export const Outline: Story = {

@@ -88,7 +88,7 @@ export const DealsListStageOwnerAndValue: Story = {
       'Negotiation',
       'Won',
     ])
-    await expect(stages[0]).toHaveClass('text-warning-foreground')
+    await expect(stages[0]).toHaveAttribute('data-tone', 'warning')
     await expect(
       canvas.getByRole('list', { name: 'Responsável' }).textContent,
     ).toBe('AMAna Martins')

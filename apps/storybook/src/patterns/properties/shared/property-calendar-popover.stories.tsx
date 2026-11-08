@@ -59,7 +59,6 @@ export const NamesTriggerAfterPropertyAndLabel: Story = {
     const icon = trigger.querySelector('svg')
 
     await expect(trigger.textContent).toBe('Jun 19')
-    await expect(icon?.classList.contains('size-3')).toBe(true)
     await expect(icon?.getBoundingClientRect().width).toBe(12)
     await expect(trigger.querySelector('.truncate')?.textContent).toBe('Jun 19')
     await expect(trigger.hasAttribute('data-empty')).toBe(false)

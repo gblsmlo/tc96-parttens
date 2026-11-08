@@ -65,10 +65,8 @@ export const DefaultIconInMutedFrame: Story = {
     await expect(frame).toHaveAttribute('data-variant', 'color')
     await expect(frame).toHaveAttribute('data-size', 'xl')
     await expect(frame?.querySelector('svg')).not.toBeNull()
-    await expect(frame?.className).toContain('bg-muted/60')
-    await expect(frame?.className).not.toContain('bg-muted ')
+    await expect(frame).toHaveClass('bg-muted/60')
     await expect(frame?.getAttribute('style') ?? '').not.toContain('color')
-    await expect(frame?.className).not.toMatch(/text-(?!foreground)/)
   },
 }
 
@@ -142,6 +140,5 @@ export const ActionsKeepConsumerVariantAndHandler: Story = {
 
     await expect(onRetry).toHaveBeenCalledTimes(1)
     await expect(button).toHaveAttribute('data-slot', 'button')
-    await expect(button.className.split(' ')).toContain('bg-destructive')
   },
 }

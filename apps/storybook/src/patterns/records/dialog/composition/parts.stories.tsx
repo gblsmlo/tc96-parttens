@@ -92,9 +92,9 @@ export const HeadlineLabelsBothFields: Story = {
     await expect(title).toHaveAttribute('name', 'title')
     await expect(description.tagName).toBe('TEXTAREA')
     await expect(description).toHaveAttribute('name', 'description')
-    await expect(
-      dialog.getByText('Card title', { selector: 'label' }),
-    ).toHaveClass('sr-only')
+    await expect((title as HTMLInputElement).labels?.[0]).toHaveTextContent(
+      'Card title',
+    )
   },
 }
 
@@ -138,7 +138,6 @@ export const HeadlineStretch: Story = {
     )
 
     await expect(headline).toHaveAttribute('data-stretch')
-    await expect(headline?.className.includes('flex-1')).toBe(true)
   },
 }
 

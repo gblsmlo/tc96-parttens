@@ -213,13 +213,16 @@ export const LongTitleIsNotTruncated: Story = {
   args: { title: 'A very long record title '.repeat(12) },
   play: async ({ canvasElement }) => {
     await page(canvasElement).findByRole('dialog')
-    const title = slotIn(canvasElement, 'sheet-title')
+    const title = slotIn(canvasElement, 'sheet-title') as HTMLElement
+    const close = page(canvasElement).getByRole('button', {
+      name: 'Close preview',
+    })
 
-    await expect(title?.className.includes('truncate')).toBe(false)
-    await expect(title?.parentElement?.className).toContain('min-w-0')
-    await expect(
-      page(canvasElement).getByRole('button', { name: 'Close preview' }),
-    ).toBeTruthy()
+    await expect(title.scrollWidth).toBeLessThanOrEqual(title.clientWidth)
+    await expect(title.getBoundingClientRect().right).toBeLessThanOrEqual(
+      close.getBoundingClientRect().left,
+    )
+    await expect(close).toBeVisible()
   },
 }
 

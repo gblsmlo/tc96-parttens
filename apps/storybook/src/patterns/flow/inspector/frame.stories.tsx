@@ -52,7 +52,7 @@ export const ClosedAsideIsInert: Story = {
     const aside = canvasElement.querySelector('aside') as HTMLElement
     await expect(aside).toHaveAttribute('data-docked', 'false')
     await expect(aside).toHaveAttribute('inert')
-    await expect(aside.className).toContain('w-0')
+    await expect(aside.getBoundingClientRect().width).toBe(0)
   },
 }
 

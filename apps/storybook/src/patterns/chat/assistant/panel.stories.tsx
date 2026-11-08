@@ -46,7 +46,10 @@ export const FloatingExpandedReachRoot: Story = {
     const root = panel(canvasElement)
     await expect(root).toHaveAttribute('data-placement', 'floating')
     await expect(root).toHaveAttribute('data-expanded', 'true')
-    await expect(root.className).toContain('absolute')
+    const frame = (root.parentElement as HTMLElement).getBoundingClientRect()
+    const box = root.getBoundingClientRect()
+    await expect(frame.right - box.right).toBeCloseTo(16, 0)
+    await expect(frame.bottom - box.bottom).toBeCloseTo(16, 0)
   },
 }
 

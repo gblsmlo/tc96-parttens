@@ -86,7 +86,7 @@ export const TriggerShrinksToPlusWithTags: Story = {
     await expect(
       trigger.querySelector('svg')?.classList.contains('lucide-plus'),
     ).toBe(true)
-    await expect(trigger.className).toContain('w-6')
+    await expect(trigger.getBoundingClientRect().width).toBe(24)
   },
 }
 

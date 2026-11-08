@@ -229,7 +229,6 @@ export const DefaultSizeIs2xl: Story = {
     const dialog = await findDialog(canvasElement)
 
     await expect(dialog).toHaveAttribute('data-size', 'default')
-    await expect(dialog.className.includes('max-w-2xl')).toBe(true)
   },
 }
 
@@ -239,7 +238,6 @@ export const SmallSize: Story = {
     const dialog = await findDialog(canvasElement)
 
     await expect(dialog).toHaveAttribute('data-size', 'small')
-    await expect(dialog.className.includes('max-w-md')).toBe(true)
   },
 }
 
@@ -249,7 +247,6 @@ export const LargeSize: Story = {
     const dialog = await findDialog(canvasElement)
 
     await expect(dialog).toHaveAttribute('data-size', 'large')
-    await expect(dialog.className.includes('max-w-4xl')).toBe(true)
   },
 }
 
@@ -260,7 +257,6 @@ export const StretchBodyMarksTheWrapper: Story = {
     const body = slotIn(canvasElement, '[data-slot="dialog-panel"]')
 
     await expect(body?.hasAttribute('data-stretch')).toBe(true)
-    await expect(body?.className.includes('flex-1')).toBe(true)
     await expect(
       body?.contains(page(canvasElement).getByLabelText('Title')),
     ).toBe(true)

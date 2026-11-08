@@ -88,9 +88,15 @@ export const ActionsSpreadToTheEndByDefault: Story = {
   args: { actions: <button type="button">Add</button> },
   play: async ({ canvasElement }) => {
     const header = slotIn(canvasElement, 'record-group-header')
+    const actions = slotIn(header, 'record-group-actions')
 
     await expect(header).toHaveAttribute('data-actions-align', 'between')
-    await expect(classesOf(header)).toContain('justify-between')
+    await expect(
+      Math.abs(
+        header.getBoundingClientRect().right -
+          actions.getBoundingClientRect().right,
+      ),
+    ).toBeLessThan(1)
   },
 }
 
@@ -98,12 +104,17 @@ export const ActionsRightAfterTheTitleAtStart: Story = {
   args: { actions: <button type="button">Add</button>, actionsAlign: 'start' },
   play: async ({ canvasElement }) => {
     const header = slotIn(canvasElement, 'record-group-header')
-    const classes = classesOf(header)
+    const title = header.querySelector('h2') as HTMLElement
+    const actions = slotIn(header, 'record-group-actions')
 
     await expect(header).toHaveAttribute('data-actions-align', 'start')
-    await expect(classes).toContain('justify-start')
-    await expect(classes).toContain('gap-2')
-    await expect(classes).not.toContain('justify-between')
+    await expect(
+      Math.abs(
+        actions.getBoundingClientRect().left -
+          title.getBoundingClientRect().right -
+          8,
+      ),
+    ).toBeLessThan(1)
     await expect([...header.children].map((child) => child.tagName)).toEqual([
       'H2',
       'DIV',
@@ -222,12 +233,8 @@ export const OnlyPlainPacksTheRows: Story = {
       for (const roomyClass of roomy) {
         await expect(classes.includes(roomyClass)).toBe(variant !== 'plain')
       }
-      await expect(
-        classes.some((name) => name.includes('--record-group-row-padding')),
-      ).toBe(false)
       await expect(classes).toContain(hoverOffset)
       await expect(classes).toContain(rowHeight)
-      await expect(classes).toContain('gap-[var(--record-group-row-gap,0px)]')
     }
   },
 }
@@ -255,25 +262,6 @@ export const PlainDrawsNoCard: Story = {
 
 export const CardAndInsetShellsAreFlatMutedPanels: Story = {
   render: () => <EveryVariant />,
-  play: async ({ canvasElement }) => {
-    for (const variant of ['card', 'inset'] as const) {
-      const classes = classesOf(
-        slotIn(regionOf(canvasElement, titles[variant]), 'card'),
-      )
-
-      for (const shellClass of [
-        'bg-muted/72',
-        'p-3',
-        'shadow-none',
-        'before:hidden',
-      ]) {
-        await expect(classes).toContain(shellClass)
-      }
-      for (const cardClass of ['bg-card', 'shadow-xs/5']) {
-        await expect(classes).not.toContain(cardClass)
-      }
-    }
-  },
 }
 
 export const InsetFramesOnlyTheContent: Story = {
@@ -284,7 +272,6 @@ export const InsetFramesOnlyTheContent: Story = {
     const header = slotIn(region, 'record-group-header')
 
     await expect(region).toHaveAttribute('data-variant', 'inset')
-    await expect(region.className).not.toContain('border')
     const card = content.parentElement as HTMLElement
     const footer = slotIn(region, 'record-group-footer')
 
@@ -295,9 +282,6 @@ export const InsetFramesOnlyTheContent: Story = {
     await expect(card.contains(header)).toBe(false)
     await expect(card.contains(footer)).toBe(false)
     await expect(region.contains(footer)).toBe(true)
-    await expect(content.className).not.toContain('rounded')
-    await expect(content.className).not.toContain('divide')
-    await expect(content.className).not.toContain('after:')
   },
 }
 

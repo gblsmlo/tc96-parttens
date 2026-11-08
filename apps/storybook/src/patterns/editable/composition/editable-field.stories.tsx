@@ -176,7 +176,7 @@ export const ReadOnlyRendersText: Story = {
     const text = canvas.getByText('No title')
     await expect(text.tagName).toBe('SPAN')
     await expect(text).toHaveAttribute('data-slot', 'editable-field')
-    await expect(text.className).toBe('text-sm')
+    await expect(text).toHaveClass('text-sm')
   },
 }
 

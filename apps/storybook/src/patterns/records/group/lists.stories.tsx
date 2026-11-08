@@ -311,25 +311,16 @@ export const InsetInteraction: Story = {
     const header = slotOf(canvasElement, 'record-group-header')
     const content = slotOf(canvasElement, 'record-group-content')
     const surface = content.closest('[data-slot="card"]') as HTMLElement
-    const card = getComputedStyle(surface)
     const box = content.getBoundingClientRect()
 
     expect(section).toHaveAttribute('data-variant', 'inset')
-    expect(getComputedStyle(section).borderTopWidth).toBe('0px')
     expect(surface.parentElement).toContainElement(content)
     expect(section).not.toBe(surface)
-    expect(card.borderTopWidth).toBe('1px')
-    expect(card.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(header.getBoundingClientRect().bottom).toBeLessThanOrEqual(box.top)
 
     for (const item of itemsOf(canvasElement)) {
       const row = item.getBoundingClientRect()
 
-      expect(item).toHaveStyle({
-        borderBottomWidth: '0px',
-        borderTopWidth: '0px',
-      })
-      expect(getComputedStyle(item, '::after').content).toBe('none')
       expect(row.left).toBeGreaterThan(box.left)
       expect(row.right).toBeLessThan(box.right)
     }

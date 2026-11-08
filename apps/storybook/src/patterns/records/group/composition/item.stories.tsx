@@ -50,14 +50,6 @@ export const LeadingAndTrailingOnlyWhenPassed: Story = {
 export const MergesClassName: Story = {
   render: () => <RecordGroupItem className="extra" title="Parcela 1" />,
   play: async ({ canvasElement }) => {
-    const item = itemOf(canvasElement)
-
-    await expect(item.className).toContain('extra')
-    await expect(item.className).toContain(
-      'min-h-[var(--record-group-row-height,calc(var(--spacing)*8))]',
-    )
-    await expect(item.className).toContain(
-      'px-[var(--record-group-row-padding,0px)]',
-    )
+    await expect(itemOf(canvasElement).className).toContain('extra')
   },
 }

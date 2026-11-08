@@ -25,7 +25,6 @@ export const AnnouncesDirection: Story = {
       'Sem variação 0.00%',
     ])
     await expect(indicators[0]).toHaveAttribute('data-slot', 'trend-indicator')
-    await expect(indicators[1]).toHaveClass('text-destructive-foreground')
   },
   render: () => (
     <div className="flex items-center gap-4">

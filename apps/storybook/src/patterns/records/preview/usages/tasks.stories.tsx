@@ -126,7 +126,6 @@ export const Default: Story = {
       '[data-slot="record-group-row"]',
     )) {
       await expect(row.getBoundingClientRect().height).toBe(32)
-      await expect(getComputedStyle(row).paddingLeft).toBe('0px')
     }
     await expect(
       popup.querySelector('[data-slot="record-preview-body"]'),

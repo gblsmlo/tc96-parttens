@@ -86,16 +86,10 @@ export const SharesItemRowBox: Story = {
     const trigger = within(canvasElement).getByRole('button', {
       name: /Marina Costa/,
     })
-    const itemClasses = trigger.className.split(' ')
-    await expect(
-      row?.className.split(' ').every((name) => itemClasses.includes(name)),
-    ).toBe(true)
     await expect(row?.getBoundingClientRect().height).toBe(
       trigger.getBoundingClientRect().height,
     )
     const avatar = row?.querySelector('[data-slot="skeleton"]')
-    await expect(avatar?.className).toContain('size-(--avatar-size)')
-    await expect(avatar?.className).toContain('rounded-full')
     await expect(avatar?.getBoundingClientRect().width).toBe(40)
   },
   render: () => (

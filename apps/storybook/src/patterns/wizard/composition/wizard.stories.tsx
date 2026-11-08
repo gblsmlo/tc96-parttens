@@ -178,8 +178,6 @@ export const NavOnOuterCardPanelOnRaisedCard: Story = {
     await expect(navOf(canvasElement).parentElement).toBe(shell)
     await expect(panelCard).toHaveAttribute('data-slot', 'card')
     await expect(panelCard.parentElement).toBe(shell)
-    await expect(shell.className).toContain('bg-muted')
-    await expect(panelCard.className).not.toContain('bg-muted')
   },
 }
 

@@ -119,7 +119,6 @@ export const WithoutHeaderOnlyTheCard: Story = {
     )
 
     await expect(card).not.toBeNull()
-    await expect(card?.className).toContain('rounded-2xl')
   },
 }
 

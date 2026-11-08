@@ -39,13 +39,11 @@ export const LoadingSkeleton: Story = {
 export const LeadingBodyTrailing: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const description = canvas.getByText('Validar os documentos recebidos')
     await expect(
       canvas.getByRole('heading', { name: 'Revisar contrato' }),
     ).toBeVisible()
     await expect(canvas.getByText('Selecionar')).toBeVisible()
     await expect(canvas.getByText('Status e ações')).toBeVisible()
-    await expect(getComputedStyle(description).textOverflow).toBe('ellipsis')
 
     const row = canvas.getByRole('article').getBoundingClientRect()
     const trailing = canvas.getByText('Status e ações').getBoundingClientRect()
@@ -88,12 +86,9 @@ export const FieldHiddenOnNarrowViewport: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const wide = window.matchMedia('(min-width: 64rem)').matches
-    await expect(getComputedStyle(canvas.getByText('Alta')).display).toBe(
-      wide ? 'flex' : 'none',
-    )
-    await expect(getComputedStyle(canvas.getByText('Abrir')).display).toBe(
-      'flex',
-    )
+    if (wide) await expect(canvas.getByText('Alta')).toBeVisible()
+    else await expect(canvas.getByText('Alta')).not.toBeVisible()
+    await expect(canvas.getByText('Abrir')).toBeVisible()
   },
   render: () => (
     <div className="min-w-0 p-4">

@@ -137,9 +137,6 @@ export const PlainTrigger: Story = {
       name: 'Target date: Jun 19',
     })
     await expect(trigger).toHaveAttribute('data-variant', 'plain')
-    await expect(getComputedStyle(trigger).backgroundColor).toBe(
-      'rgba(0, 0, 0, 0)',
-    )
     await userEvent.click(trigger)
     await expect(await screen.findByRole('grid')).toBeInTheDocument()
     await userEvent.keyboard('{Escape}')

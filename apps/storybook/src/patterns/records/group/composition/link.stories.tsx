@@ -70,15 +70,6 @@ export const RendersThroughConsumerElement: Story = {
     await expect(open).toHaveBeenCalledTimes(1)
     await expect(button).toHaveAttribute('data-slot', 'record-group-link')
     await expect(button.className).toContain('extra')
-    await expect(button.className).toContain(
-      'min-h-[var(--record-group-row-height,calc(var(--spacing)*8))]',
-    )
-    await expect(button.className).toContain(
-      '-mx-[var(--record-group-hover-offset,0px)]',
-    )
-    await expect(button.className).toContain(
-      'px-[calc(var(--record-group-row-padding,0px)+var(--record-group-hover-offset,0px))]',
-    )
-    await expect(button.className).toContain('text-start')
+    await expect(getComputedStyle(button).textAlign).toBe('start')
   },
 }

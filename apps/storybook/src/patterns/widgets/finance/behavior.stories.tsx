@@ -73,8 +73,8 @@ export const RiskScoreExposesMeter: Story = {
       canvas.getByRole('meter', { name: 'AI Risk Analysis' }),
     ).toHaveAttribute('aria-valuenow', '72')
     await expect(
-      canvasElement.querySelector('[data-tone="warning"]'),
-    ).toHaveClass('bg-warning')
+      canvasElement.querySelector('[data-slot="risk-score-meter"] [data-tone]'),
+    ).toHaveAttribute('data-tone', 'warning')
     await expect(canvas.getByText('15% BTC → ETH').tagName).toBe('DD')
   },
   render: () => (
@@ -227,7 +227,9 @@ export const TransactionsSignCredits: Story = {
       '+$2,500.00',
       '-$42.90',
     ])
-    await expect(amounts[0]).toHaveClass('text-success-foreground')
+    await expect(
+      amounts[0]?.closest('[data-slot="transaction-list-item"]'),
+    ).toHaveAttribute('data-kind', 'credit')
     await expect(
       canvasElement.querySelector('[data-kind="debit"]')?.textContent,
     ).toContain('Coffee shop')

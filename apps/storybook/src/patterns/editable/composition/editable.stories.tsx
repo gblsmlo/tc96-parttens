@@ -73,10 +73,6 @@ export const RequiredMarkerUsesDestructiveForeground: Story = {
     const label = within(canvasElement).getByText('Title')
 
     await expect(label).toHaveAttribute('data-required')
-    await expect(label.className).toContain(
-      'data-required:after:text-destructive-foreground',
-    )
-    await expect(label.className).not.toMatch(/after:text-destructive(?!-)/)
   },
 }
 

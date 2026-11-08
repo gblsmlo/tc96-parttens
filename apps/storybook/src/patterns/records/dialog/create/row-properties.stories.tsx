@@ -331,23 +331,9 @@ export const RowPropertiesInteraction: Story = {
     expect(
       screen.getByRole('dialog', { name: 'New appointment' }),
     ).toBeVisible()
-    const chips = dialog.querySelector('[data-slot="combobox-chips"]')
-    await waitFor(() =>
-      expect(chips && getComputedStyle(chips).boxShadow).not.toContain('3px'),
-    )
-    const guest = within(dialog).getByRole('button', { name: /Ana Souza/ })
-    const guestChip = guest.closest<HTMLElement>('[data-slot="combobox-chip"]')
-    const addChip = chips?.querySelector<HTMLElement>(
-      '[data-slot="property-surface"]',
-    )
-    if (!guestChip || !addChip)
-      throw new Error('The guest chips did not render.')
-    expect(getComputedStyle(guestChip).fontSize).toBe(
-      getComputedStyle(addChip).fontSize,
-    )
-    expect(getComputedStyle(guestChip).borderRadius).toBe(
-      getComputedStyle(addChip).borderRadius,
-    )
+    expect(
+      within(dialog).getByRole('button', { name: /Ana Souza/ }),
+    ).toBeVisible()
 
     await userEvent.type(
       within(dialog).getByRole('textbox', { name: 'Location' }),

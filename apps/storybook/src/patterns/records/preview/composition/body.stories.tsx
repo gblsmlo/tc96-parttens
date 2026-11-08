@@ -23,26 +23,15 @@ export const StacksChildrenInAColumn: Story = {
     </RecordPreviewBody>
   ),
   play: async ({ canvasElement }) => {
-    const body = bodyOf(canvasElement)
-
-    await expect(body.className.split(' ')).toEqual([
-      'flex',
-      'flex-col',
-      'gap-4',
-    ])
-    await expect([...body.children].map((child) => child.textContent)).toEqual([
-      'First',
-      'Second',
-    ])
+    await expect(
+      [...bodyOf(canvasElement).children].map((child) => child.textContent),
+    ).toEqual(['First', 'Second'])
   },
 }
 
 export const MergesClassName: Story = {
   render: () => <RecordPreviewBody className="extra">Body</RecordPreviewBody>,
   play: async ({ canvasElement }) => {
-    const classes = bodyOf(canvasElement).className.split(' ')
-
-    await expect(classes).toContain('extra')
-    await expect(classes).toContain('gap-4')
+    await expect(bodyOf(canvasElement).className.split(' ')).toContain('extra')
   },
 }

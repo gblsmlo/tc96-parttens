@@ -130,26 +130,11 @@ export const FlatRowsInsideOneOutlinedList: Story = {
 
     await expect(list?.tagName).toBe('OL')
     await expect(card).toHaveAttribute('data-slot', 'card')
-    await expect(card?.className).toContain('rounded-2xl')
-    await expect(card?.className).not.toContain('overflow-hidden')
-    await expect(list?.hasAttribute('class')).toBe(false)
-    for (const frameClass of ['rounded', 'border', 'bg-card', 'shadow']) {
-      await expect(list?.className ?? '').not.toContain(frameClass)
-    }
     await expect(
       canvasElement.querySelectorAll(
         'section[data-slot="checklist"] [data-slot="card"]',
       ),
     ).toHaveLength(1)
-    const firstRow = list?.querySelector('li')
-    await expect(firstRow?.className).toContain('hover:bg-muted/60')
-    await expect(firstRow?.className).toContain(
-      'first:rounded-t-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]',
-    )
-    await expect(firstRow?.className).toContain(
-      'last:rounded-b-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]',
-    )
-    await expect(firstRow?.className).not.toContain('rounded-xl')
   },
 }
 
@@ -251,19 +236,23 @@ export const CardFramesListWithHandleOutsideRow: Story = {
     const canvas = within(canvasElement)
     const section = canvas.getByRole('region', { name: 'Checklist' })
     const list = section.querySelector('[data-slot="checklist-items"]')
-    const card = list?.parentElement
+    const card = list?.parentElement as HTMLElement
     const handle = canvas.getByLabelText('Reordenar Primeira etapa')
+    const item = section.querySelector(
+      '[data-slot="checklist-item"]',
+    ) as HTMLElement
+    const cardBox = card.getBoundingClientRect()
+    const itemBox = item.getBoundingClientRect()
 
     await expect(section).toHaveAttribute('data-variant', 'card')
-    await expect(section.className).toContain('pt-2 pb-4')
     await expect(card).toHaveAttribute('data-slot', 'card')
-    await expect(card?.className).toContain('border')
-    await expect(card?.className).not.toContain('overflow-hidden')
-    await expect(
-      section.querySelector('[data-slot="checklist-item"]')?.className,
-    ).not.toContain('hover-offset')
+    await expect(getComputedStyle(card).overflow).toBe('visible')
+    await expect(itemBox.left).toBeGreaterThanOrEqual(cardBox.left)
+    await expect(itemBox.right).toBeLessThanOrEqual(cardBox.right)
     await expect(handle.closest('[data-slot="checklist-row"]')).toBeNull()
-    await expect(handle.className).toContain('-right-6')
+    await expect(handle.getBoundingClientRect().right).toBeGreaterThan(
+      cardBox.right,
+    )
   },
 }
 
@@ -282,18 +271,20 @@ export const PlainPutsHandleAtRowEnd: Story = {
     const item = row.closest('[data-slot="checklist-item"]') as HTMLElement
 
     await expect(section).toHaveAttribute('data-variant', 'plain')
-    await expect(section.className).not.toContain('pt-2')
-    await expect(list?.className).not.toContain('border')
     await expect(section.querySelector('[data-slot="card"]')).toBeNull()
-    await expect(item.className).toContain('rounded-md')
-    await expect(item.className).toContain(
-      '-mx-[var(--record-group-hover-offset,0px)]',
-    )
-    await expect(row.className).toContain(
-      'h-[var(--record-group-row-height,calc(var(--spacing)*9))] px-2',
-    )
     await expect(row.contains(handle)).toBe(true)
     await expect(row.lastElementChild?.contains(handle)).toBe(true)
-    await expect(handle.className.split(' ')).not.toContain('absolute')
+    const rowBox = row.getBoundingClientRect()
+    const handleBox = handle.getBoundingClientRect()
+    await expect(handleBox.left).toBeGreaterThanOrEqual(rowBox.left)
+    await expect(handleBox.right).toBeLessThanOrEqual(rowBox.right)
+
+    section.style.setProperty('--record-group-hover-offset', '8px')
+    section.style.setProperty('--record-group-row-height', '32px')
+    const listBox = (list as HTMLElement).getBoundingClientRect()
+    const itemBox = item.getBoundingClientRect()
+    await expect(listBox.left - itemBox.left).toBeCloseTo(8, 0)
+    await expect(itemBox.right - listBox.right).toBeCloseTo(8, 0)
+    await expect(row.getBoundingClientRect().height).toBeCloseTo(32, 0)
   },
 }

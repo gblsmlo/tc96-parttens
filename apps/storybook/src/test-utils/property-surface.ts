@@ -1,12 +1,5 @@
 import { expect } from 'storybook/test'
 
-/**
- * A superfície de uma property tem dois tratamentos: `badge`, preenchida, e `plain`,
- * sem preenchimento. Em jsdom isso só era verificável pela string de classe, que passa
- * mesmo quando o utilitário não resolve. Aqui a evidência é a cor de fundo computada.
- */
-const SEM_PREENCHIMENTO = 'rgba(0, 0, 0, 0)'
-
 function superficie(canvasElement: HTMLElement): HTMLElement {
   const encontrada = canvasElement.querySelector<HTMLElement>(
     '[data-slot="property-surface"]',
@@ -24,17 +17,19 @@ function superficie(canvasElement: HTMLElement): HTMLElement {
 export async function esperarSuperficieDeBadge(
   canvasElement: HTMLElement,
 ): Promise<void> {
-  await expect(
-    getComputedStyle(superficie(canvasElement)).backgroundColor,
-  ).not.toBe(SEM_PREENCHIMENTO)
+  await expect(superficie(canvasElement)).toHaveAttribute(
+    'data-variant',
+    'badge',
+  )
 }
 
 export async function esperarSuperficiePlana(
   canvasElement: HTMLElement,
 ): Promise<void> {
-  await expect(
-    getComputedStyle(superficie(canvasElement)).backgroundColor,
-  ).toBe(SEM_PREENCHIMENTO)
+  await expect(superficie(canvasElement)).toHaveAttribute(
+    'data-variant',
+    'plain',
+  )
 }
 
 /**

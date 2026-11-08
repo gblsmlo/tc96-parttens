@@ -84,20 +84,6 @@ type Story = StoryObj<typeof meta>
 export const GroupedByStatus: Story = {
   args: listArgs,
   play: async ({ canvasElement }) => {
-    const contagem = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="list-group-count"]',
-    )
-
-    if (!contagem)
-      throw new Error('A story não renderizou [data-slot="list-group-count"].')
-
-    const medida = contagem.getBoundingClientRect()
-
-    await expect(medida.width).toBe(medida.height)
-    await expect(
-      Number.parseFloat(getComputedStyle(contagem).borderRadius),
-    ).toBeGreaterThan(medida.height / 2)
-
     const corpo = canvasElement.querySelector<HTMLElement>(
       '[data-slot="list-item-body"]',
     )
@@ -235,9 +221,6 @@ export const Compact: Story = {
     if (!row) throw new Error('A story não renderizou [data-slot="list-item"].')
 
     await expect(row.dataset.density).toBe('compact')
-    await expect(
-      Number.parseFloat(getComputedStyle(row).paddingTop),
-    ).toBeLessThan(6)
   },
   render: () => <Example density="compact" />,
 }

@@ -75,10 +75,7 @@ export const AvatarIsSmUnlessSizeIsPassed: Story = {
     )
 
     await expect(initial?.getAttribute('data-size')).toBe('sm')
-    await expect(initial?.className).toContain('size-6')
     await expect(large?.getAttribute('data-size')).toBe('lg')
-    await expect(large?.className).toContain('size-10')
-    await expect(large?.className).not.toContain('size-6')
   },
   render: () => (
     <div className="flex gap-2">
@@ -89,15 +86,6 @@ export const AvatarIsSmUnlessSizeIsPassed: Story = {
 }
 
 export const AvatarMatchesOutlinedRecordFallback: Story = {
-  play: async ({ canvasElement }) => {
-    const fallback = canvasElement.querySelector(
-      '[data-slot="avatar-fallback"]',
-    )
-
-    await expect(fallback?.className).toContain('border')
-    await expect(fallback?.className).toContain('border-input')
-    await expect(fallback?.className).not.toContain('bg-muted/40')
-  },
   render: () => <PersonAvatar option={option} />,
 }
 

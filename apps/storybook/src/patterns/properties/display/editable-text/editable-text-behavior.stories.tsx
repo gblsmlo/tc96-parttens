@@ -226,14 +226,16 @@ export const SizesMapToScale: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    await expect(fieldIn(canvasElement, 'sm').className).toContain('text-sm')
-    await expect(fieldIn(canvasElement, 'base').className).toContain(
-      'text-base',
+    const [sm, base, lg, xl] = (['sm', 'base', 'lg', 'xl'] as const).map(
+      (size) =>
+        Number.parseFloat(
+          getComputedStyle(fieldIn(canvasElement, size)).fontSize,
+        ),
     )
-    await expect(fieldIn(canvasElement, 'lg').className).toContain('text-2xl')
-    await expect(fieldIn(canvasElement, 'xl').className).toContain(
-      'text-[2rem]',
-    )
+
+    await expect(base).toBeGreaterThan(sm ?? 0)
+    await expect(lg).toBeGreaterThan(base ?? 0)
+    await expect(xl).toBeGreaterThan(lg ?? 0)
   },
 }
 

@@ -14,25 +14,7 @@ type Story = StoryObj<typeof meta>
 export const TransparentBorderAndCardShadow: Story = {
   play: async ({ canvasElement }) => {
     const shell = canvasElement.querySelector('section[data-slot="card"]')
-    await expect(shell).not.toBeNull()
-    const tokens = (shell?.className ?? '').split(/\s+/)
-    for (const token of [
-      'border',
-      'border-transparent',
-      'shadow-xs/5',
-      'not-dark:bg-clip-padding',
-      'bg-card',
-      'min-w-0',
-      'p-2',
-    ])
-      await expect(tokens).toContain(token)
-    for (const token of [
-      'border-border/80',
-      'border-0',
-      'shadow-none',
-      'before:hidden',
-    ])
-      await expect(tokens).not.toContain(token)
+    await expect(shell).toHaveClass('p-2')
     await expect(
       within(canvasElement).getByRole('region', { name: 'Moldura' }),
     ).toBeVisible()

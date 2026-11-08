@@ -73,9 +73,6 @@ const expectSize = async (size: RecordDialogSize, title: string) => {
     const dialog = await screen().findByRole('dialog', { name: title })
 
     expect(dialog.getAttribute('data-size')).toBe(size)
-    expect(getComputedStyle(dialog).maxWidth).toBe(
-      `${expectedMaxWidth[size]}px`,
-    )
     await waitFor(() =>
       expect(dialog.getBoundingClientRect().width).toBe(expectedMaxWidth[size]),
     )

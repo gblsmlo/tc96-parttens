@@ -148,7 +148,7 @@ export const ReadOnlyPropertiesInteraction: Story = {
     ])
     expect(valueIcons.length).toBeGreaterThan(0)
     for (const icon of valueIcons) {
-      expect(getComputedStyle(icon).display).toBe('none')
+      expect(icon).not.toBeVisible()
     }
     for (const row of rows) {
       expect(part(row, 'label').querySelector('svg')).not.toBeNull()

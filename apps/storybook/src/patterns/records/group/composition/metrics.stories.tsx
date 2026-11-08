@@ -7,6 +7,9 @@ const grid = (canvasElement: HTMLElement) =>
     '[data-slot="record-group-metrics"]',
   ) as HTMLElement
 
+const columnCount = (canvasElement: HTMLElement) =>
+  getComputedStyle(grid(canvasElement)).gridTemplateColumns.split(' ').length
+
 const meta = {
   tags: ['!autodocs'],
   title: 'Patterns/Records/Group/Composition/Metrics',
@@ -23,7 +26,7 @@ export const TwoColumnsByDefault: Story = {
   ),
   play: async ({ canvasElement }) => {
     await expect(grid(canvasElement).tagName).toBe('DIV')
-    await expect(grid(canvasElement).className).toContain('grid-cols-2')
+    await expect(columnCount(canvasElement)).toBe(2)
     await expect(grid(canvasElement).textContent).toBe('Leads')
   },
 }
@@ -31,8 +34,7 @@ export const TwoColumnsByDefault: Story = {
 export const OneColumnWithClassName: Story = {
   render: () => <RecordGroupMetrics className="extra" columns={1} />,
   play: async ({ canvasElement }) => {
-    await expect(grid(canvasElement).className).toContain('grid-cols-1')
-    await expect(grid(canvasElement).className).not.toContain('grid-cols-2')
+    await expect(columnCount(canvasElement)).toBe(1)
     await expect(grid(canvasElement).className).toContain('extra')
   },
 }

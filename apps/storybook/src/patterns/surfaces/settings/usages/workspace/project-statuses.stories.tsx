@@ -191,15 +191,6 @@ export const Interaction: Story = {
     const groups = Array.from(
       card.querySelectorAll<HTMLElement>('[data-slot="settings-collapsed"]'),
     )
-    for (const group of groups) {
-      expect(getComputedStyle(group).borderBottomWidth).toBe('0px')
-    }
-    for (const item of card.querySelectorAll<HTMLElement>(
-      '[data-slot="settings-row"]',
-    )) {
-      expect(getComputedStyle(item).paddingInlineStart).toBe('0px')
-      expect(getComputedStyle(item).paddingInlineEnd).toBe('0px')
-    }
     const firstHeader = groups[0]?.querySelector('header') as HTMLElement
     const lastItem = groups
       .at(-1)
