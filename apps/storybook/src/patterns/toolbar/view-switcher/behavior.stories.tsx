@@ -81,6 +81,17 @@ export const NoIconWrapperWithoutIcon: Story = {
   },
 }
 
+export const TriggerIsGhostByDefault: Story = {
+  render: () => menu(<span>Conteúdo</span>),
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Todas as pessoas',
+    })
+    await expect(trigger).toHaveClass('hover:bg-accent')
+    await expect(trigger).not.toHaveClass('bg-secondary')
+  },
+}
+
 export const TruncatesLongLabel: Story = {
   render: () => menu(<span>Conteúdo</span>, 'Um nome muito longo de view'),
   play: async ({ canvasElement }) => {

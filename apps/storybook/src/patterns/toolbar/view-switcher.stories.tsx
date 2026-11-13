@@ -591,6 +591,61 @@ export const WithoutIconsInteraction: Story = {
   tags: interaction,
 }
 
+export const Secondary: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Com `variant="secondary"`, o gatilho usa o estilo preenchido do `Button` da COSS em vez do `ghost` padrão.',
+      },
+    },
+  },
+  render: function Secondary(args) {
+    const [selectedId, setSelectedId] = useState('recent')
+    const selected = views.find((view) => view.id === selectedId)
+
+    return (
+      <CollectionToolbar
+        {...args}
+        startSlot={
+          <ViewSwitcherMenu
+            icon={viewIcon}
+            label={selected?.label ?? 'Selecionar view'}
+            variant="secondary"
+          >
+            <ViewSwitcherItems>
+              {views.map((view) => (
+                <ViewSwitcherItem
+                  icon={viewIcon}
+                  key={view.id}
+                  label={view.label}
+                  onSelect={() => setSelectedId(view.id)}
+                  selected={view.id === selectedId}
+                />
+              ))}
+            </ViewSwitcherItems>
+          </ViewSwitcherMenu>
+        }
+      />
+    )
+  },
+}
+
+export const SecondaryInteraction: Story = {
+  ...Secondary,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Pessoas contatadas recentemente',
+    })
+    await expect(trigger).toHaveClass(
+      'bg-secondary',
+      'text-secondary-foreground',
+    )
+    await expect(trigger).not.toHaveClass('hover:bg-accent')
+  },
+  tags: interaction,
+}
+
 export const SingleView: Story = {
   parameters: {
     docs: {
