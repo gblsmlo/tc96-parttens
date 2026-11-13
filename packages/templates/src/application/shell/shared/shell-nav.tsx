@@ -111,7 +111,12 @@ function ShellNavBranch({
                   isActive={sub.active}
                   render={renderLink(sub.href)}
                 >
-                  <span>{sub.title}</span>
+                  <span className="truncate">{sub.title}</span>
+                  {sub.badge !== undefined ? (
+                    <SidebarMenuBadge className="static ms-auto text-current">
+                      {sub.badge}
+                    </SidebarMenuBadge>
+                  ) : null}
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             ))}
