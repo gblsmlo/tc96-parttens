@@ -69,6 +69,7 @@ Frame:
 Toolbar:
 
 - `CollectionSearchField` commits on submit and when emptied, never per keystroke. `FilterRadioSubmenu` maps the "all" option to `''`, since a `MenuRadioGroup` cannot represent no choice.
+- `FilterRadioSubmenu` with `loading` keeps the "all" option and replaces only `options` with `aria-hidden` skeleton rows, with `aria-busy` on the submenu popup: a `role="menu"` cannot own a `status`, so the rows carry no role of their own.
 
 ## Styling
 

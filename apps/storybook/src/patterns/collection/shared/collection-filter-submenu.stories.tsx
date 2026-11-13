@@ -16,7 +16,9 @@ const OPTIONS = [
 
 const onValueChange = fn()
 
-function Submenu({ value }: Readonly<Pick<FilterRadioSubmenuProps, 'value'>>) {
+type SubmenuArgs = Pick<FilterRadioSubmenuProps, 'loading' | 'value'>
+
+function Submenu({ loading, value }: Readonly<SubmenuArgs>) {
   return (
     <CollectionToolbar
       endSlot={
@@ -25,6 +27,7 @@ function Submenu({ value }: Readonly<Pick<FilterRadioSubmenuProps, 'value'>>) {
             <FilterRadioSubmenu
               icon={CircleDotIcon}
               label="Tipo"
+              loading={loading}
               onValueChange={onValueChange}
               options={OPTIONS}
               value={value}
@@ -45,12 +48,12 @@ const openTypeSubmenu = async (canvasElement: HTMLElement) => {
 
 const meta = {
   parameters: { layout: 'padded' },
-  render: ({ value }: Pick<FilterRadioSubmenuProps, 'value'>) => (
-    <Submenu value={value} />
+  render: ({ loading, value }: SubmenuArgs) => (
+    <Submenu loading={loading} value={value} />
   ),
   tags: ['!autodocs'],
   title: 'Patterns/Collection/Shared/Filter Submenu',
-} satisfies Meta<Pick<FilterRadioSubmenuProps, 'value'>>
+} satisfies Meta<SubmenuArgs>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -91,6 +94,29 @@ export const AllOptionReturnsEmptyString: Story = {
     await userEvent.click(
       await screen.findByRole('menuitemradio', { name: 'Todos' }),
     )
+    await expect(onValueChange).toHaveBeenCalledWith('')
+  },
+}
+
+export const Loading: Story = {
+  args: { loading: true },
+  play: async ({ canvasElement }) => {
+    onValueChange.mockClear()
+    await openTypeSubmenu(canvasElement)
+
+    const allOption = await screen.findByRole('menuitemradio', {
+      name: 'Todos',
+    })
+    const submenu = allOption.closest('[role="menu"]') as HTMLElement
+    await expect(submenu).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      submenu.querySelectorAll('[data-slot="skeleton"]'),
+    ).toHaveLength(3)
+    await expect(within(submenu).getAllByRole('menuitemradio')).toEqual([
+      allOption,
+    ])
+
+    await userEvent.click(allOption)
     await expect(onValueChange).toHaveBeenCalledWith('')
   },
 }

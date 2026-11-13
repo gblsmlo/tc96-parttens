@@ -668,3 +668,58 @@ export const EmptySearchInteraction: Story = {
   },
   tags: interaction,
 }
+
+export const Loading: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Com `loading`, `ViewSwitcherItems` marca a lista com `aria-busy` e mostra linhas de skeleton depois dos itens já disponíveis: a view padrão continua selecionável enquanto as views salvas carregam. `loadingItemCount` define quantas linhas (3 por padrão).',
+      },
+    },
+  },
+  render: function Loading(args) {
+    const [selectedId, setSelectedId] = useState('all')
+
+    return (
+      <CollectionToolbar
+        {...args}
+        startSlot={
+          <ViewSwitcherMenu icon={viewIcon} label="Todas as pessoas">
+            <ViewSwitcherItems loading>
+              <ViewSwitcherItem
+                icon={viewIcon}
+                label="Todas as pessoas"
+                onSelect={() => setSelectedId('all')}
+                selected={selectedId === 'all'}
+              />
+            </ViewSwitcherItems>
+          </ViewSwitcherMenu>
+        }
+      />
+    )
+  },
+}
+
+export const LoadingInteraction: Story = {
+  ...Loading,
+  play: async ({ canvasElement }) => {
+    const popover = await openViewSwitcher(canvasElement, 'Todas as pessoas')
+    const items = popover.getByRole('group', { name: 'Views' })
+    await expect(items).toHaveAttribute('aria-busy', 'true')
+    const skeletonRows = items.querySelectorAll(':scope > [aria-hidden="true"]')
+    await expect(skeletonRows).toHaveLength(3)
+    for (const row of skeletonRows) {
+      await expect(row.querySelector('[data-slot="skeleton"]')).not.toBeNull()
+    }
+    const defaultView = within(items).getByRole('button', {
+      name: 'Todas as pessoas',
+    })
+    await expect(within(items).getAllByRole('button')).toEqual([defaultView])
+    await expect(defaultView).toHaveAttribute('aria-current', 'true')
+
+    await userEvent.click(defaultView)
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBe(null))
+  },
+  tags: interaction,
+}
