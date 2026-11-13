@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { DateProperty } from '@tc96/parttens'
-import { expect, fn, screen, userEvent, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 
 const VALUE = '2026-06-19T12:00:00.000Z'
 
@@ -121,5 +121,83 @@ export const FilledEditableIsNotEmpty: Story = {
         .closest('button')
         ?.getAttribute('data-empty'),
     ).toBe(null)
+  },
+}
+
+const TIMESTAMP = '2026-11-13T17:07:00.000Z'
+const FULL_DATE = '13 de novembro de 2026 às 14:07'
+
+const tooltipArgs = {
+  displayLabel: 'há 53 minutos',
+  locale: 'pt-BR',
+  timeZone: 'America/Sao_Paulo',
+  tooltip: true,
+  value: TIMESTAMP,
+}
+
+const tooltipText = (canvasElement: HTMLElement) =>
+  canvasElement.ownerDocument.querySelector('[data-slot="tooltip-popup"]')
+    ?.textContent
+
+export const TooltipShowsFullDateOnFocus: Story = {
+  args: { ...tooltipArgs, readOnly: true },
+  play: async ({ canvasElement }) => {
+    const surface = surfaceOf(canvasElement, 'há 53 minutos') as HTMLElement
+
+    await userEvent.tab()
+
+    await expect(surface).toHaveFocus()
+    await waitFor(() => expect(tooltipText(canvasElement)).toBe(FULL_DATE))
+    await expect(surface).toHaveAccessibleDescription(FULL_DATE)
+  },
+}
+
+export const TooltipShowsFullDateOnHover: Story = {
+  args: { ...tooltipArgs, readOnly: true },
+  play: async ({ canvasElement }) => {
+    const surface = surfaceOf(canvasElement, 'há 53 minutos') as HTMLElement
+
+    await userEvent.hover(surface)
+    await waitFor(() => expect(tooltipText(canvasElement)).toBe(FULL_DATE))
+
+    await userEvent.unhover(surface)
+    await waitFor(() => expect(tooltipText(canvasElement)).toBeUndefined())
+  },
+}
+
+export const EditableTooltipKeepsCalendar: Story = {
+  args: { ...tooltipArgs, onValueChange: fn() },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Date: há 53 minutos',
+    })
+
+    await expect(trigger).toHaveAccessibleDescription(FULL_DATE)
+    await userEvent.hover(trigger)
+    await waitFor(() => expect(tooltipText(canvasElement)).toBe(FULL_DATE))
+
+    await userEvent.click(trigger)
+    await expect(await screen.findByRole('grid')).toBeInTheDocument()
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('grid')).toBeNull())
+  },
+}
+
+export const WithoutTooltipNoTabStop: Story = {
+  args: { readOnly: true },
+  play: async ({ canvasElement }) => {
+    const surface = surfaceOf(canvasElement, 'Jun 19')
+
+    await expect(surface).not.toHaveAttribute('tabindex')
+    await expect(surface).not.toHaveAttribute('aria-describedby')
+  },
+}
+
+export const TooltipWithoutValueNoTabStop: Story = {
+  args: { readOnly: true, tooltip: true, value: null },
+  play: async ({ canvasElement }) => {
+    await expect(surfaceOf(canvasElement, 'Sem data')).not.toHaveAttribute(
+      'tabindex',
+    )
   },
 }

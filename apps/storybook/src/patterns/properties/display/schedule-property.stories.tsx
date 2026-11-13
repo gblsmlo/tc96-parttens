@@ -97,13 +97,14 @@ async function expectLastControlReachable(popup: ReturnType<typeof within>) {
 const meta = {
   args: {
     ariaLabel: 'Data',
-    calendarProps: { locale: ptBR },
+    calendarLocale: ptBR,
     onValueChange: fn((_value: ScheduleValue) => {}),
     today: storyToday,
     value: scheduledValue,
   },
   argTypes: {
     ...propertyVariantArgType,
+    calendarLocale: { control: false },
     calendarProps: { control: false },
     dateOnly: booleanArgType,
     footerLayout: {
@@ -129,7 +130,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'When something happens: one day, optional start and end times, a recurrence and reminders. The trigger opens one dropdown with presets (today, tomorrow, this weekend, next week, no date) carrying their weekday on the right, a calendar, and a footer that lists **Hora**, **Repetir** and **Lembretes** as rows, each with its current value. A row opens its editor right under itself, one row at a time, or with `footerLayout="drill-in"` takes over the dropdown. Picking a day closes the dropdown unless one of those sections is open, because then the user is not done. All three start closed even with a stored value. Copy defaults to pt-BR and is replaced through `labels`; the calendar language comes from `calendarProps.locale`, as in `DateRangeProperty`.',
+          'When something happens: one day, optional start and end times, a recurrence and reminders. The trigger opens one dropdown with presets (today, tomorrow, this weekend, next week, no date) carrying their weekday on the right, a calendar, and a footer that lists **Hora**, **Repetir** and **Lembretes** as rows, each with its current value. A row opens its editor right under itself, one row at a time, or with `footerLayout="drill-in"` takes over the dropdown. Picking a day closes the dropdown unless one of those sections is open, because then the user is not done. All three start closed even with a stored value. Copy defaults to pt-BR and is replaced through `labels`; the calendar language comes from `calendarLocale`, as in `DateProperty` and `DateRangeProperty`.',
       },
     },
   },
@@ -351,7 +352,7 @@ export const DateOnly: Story = {
 
 export const NoPastDays: Story = {
   args: {
-    calendarProps: { disabled: { before: storyToday }, locale: ptBR },
+    calendarProps: { disabled: { before: storyToday } },
   },
   parameters: {
     ...cossCalendarContrast,
@@ -393,7 +394,7 @@ export const ReadOnly: Story = {
 export const EnglishLabels: Story = {
   args: {
     ariaLabel: 'Date',
-    calendarProps: {},
+    calendarLocale: undefined,
     labels: {
       addReminder: 'Add reminder',
       allDay: 'All day',
@@ -431,7 +432,7 @@ export const EnglishLabels: Story = {
     docs: {
       description: {
         story:
-          'Every string is a label with a pt-BR default. `locale` formats the surface and the preset hints; the calendar follows `calendarProps.locale` and is English without it.',
+          'Every string is a label with a pt-BR default. `locale` formats the surface and the preset hints; the calendar follows `calendarLocale` and is English without it.',
       },
     },
   },
@@ -449,6 +450,35 @@ export const EnglishLabels: Story = {
         { name: /^Next week/ },
       ),
     ).toHaveTextContent('Mon, Oct 12')
+    await expect(screen.getByText('October 2026')).toBeInTheDocument()
+  },
+}
+
+export const CalendarLocale: Story = {
+  args: { locale: 'pt-BR' },
+  parameters: {
+    ...cossCalendarContrast,
+    docs: {
+      description: {
+        story:
+          '`calendarLocale` reaches every calendar of the dropdown: the day grid and the **Até** calendar of **Repetir**. `locale` formats the surface and the preset hints.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const popup = await openPopup(canvasElement, /^Data:/)
+    await expect(popup.getByText('outubro 2026')).toBeInTheDocument()
+    await expect(
+      within(popup.getByRole('grid')).getByText('seg'),
+    ).toBeInTheDocument()
+
+    await userEvent.click(popup.getByRole('button', { name: 'Repetir' }))
+    await userEvent.click(popup.getByRole('button', { name: /^Até:/ }))
+    await expect(await screen.findByText('dezembro 2026')).toBeInTheDocument()
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() =>
+      expect(screen.queryByText('dezembro 2026')).not.toBeInTheDocument(),
+    )
   },
 }
 

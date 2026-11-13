@@ -1,6 +1,6 @@
 'use client'
 
-import type { DateRange } from '@daypicker/react'
+import type { DateRange, DayPickerLocale } from '@daypicker/react'
 import { Calendar } from '@tc96/ui/calendar'
 import { CalendarRangeIcon } from 'lucide-react'
 import { useState } from 'react'
@@ -19,6 +19,7 @@ export interface DateRangePropertyProps {
   value: DateRange | undefined
   allowClear?: boolean
   ariaLabel?: string
+  calendarLocale?: DayPickerLocale
   calendarProps?: PropertyCalendarProps
   className?: string
   clearLabel?: string
@@ -38,6 +39,7 @@ export interface DateRangePropertyProps {
 export function DateRangeProperty({
   allowClear = true,
   ariaLabel,
+  calendarLocale,
   calendarProps,
   className,
   clearLabel = 'Limpar período',
@@ -101,6 +103,7 @@ export function DateRangeProperty({
     >
       <Calendar
         defaultMonth={value?.from}
+        locale={calendarLocale}
         mode="range"
         numberOfMonths={numberOfMonths}
         selected={value}

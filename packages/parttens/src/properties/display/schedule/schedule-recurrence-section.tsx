@@ -1,5 +1,6 @@
 'use client'
 
+import type { DayPickerLocale } from '@daypicker/react'
 import type { PropertyCalendarProps } from '../../shared/property-calendar-popover'
 import { DateProperty } from '../date/date-property'
 import { SelectProperty } from '../select/select-property'
@@ -7,6 +8,7 @@ import type { SchedulePropertyLabels } from './schedule-labels'
 import type { ScheduleRecurrenceOption, ScheduleValue } from './schedule-value'
 
 export function ScheduleRecurrenceSection({
+  calendarLocale,
   calendarProps,
   labels,
   locale,
@@ -14,6 +16,7 @@ export function ScheduleRecurrenceSection({
   options,
   value,
 }: Readonly<{
+  calendarLocale?: DayPickerLocale
   calendarProps?: PropertyCalendarProps
   labels: SchedulePropertyLabels
   locale: string
@@ -45,6 +48,7 @@ export function ScheduleRecurrenceSection({
           {labels.until}
           <DateProperty
             ariaLabel={labels.until}
+            calendarLocale={calendarLocale}
             calendarProps={calendarProps}
             fallback={labels.untilFallback}
             locale={locale}

@@ -274,6 +274,8 @@ Sem biblioteca npm, decidido em 2026-10-01. Um pacote compilado não consegue im
 
 Locale do calendar, resolvido no planejamento: o calendar do COSS fala inglês por padrão, como o rótulo dos patterns (`en-US`). Outro idioma entra por `calendarProps.locale`.
 
+Decidido em 2026-11-13 (issue #295), a pedido do dono: `DateProperty`, `DateRangeProperty` e `ScheduleProperty` ganharam a prop opcional `calendarLocale` (`DayPickerLocale` de `@daypicker/react`), repassada a todo `Calendar` que renderizam, inclusive o calendário de **Até** em **Repetir** do `ScheduleProperty`. O `locale` em string continua como está e só formata o texto por `Intl`; o calendário recebe o objeto porque o DayPicker não aceita uma tag BCP 47. Não há mapa de tag para `Locale` no registry nem mudança incompatível: o consumidor importa o locale de `@daypicker/react/locale`, pacote de que já depende, e passa `calendarLocale={ptBR}` com `locale="pt-BR"`. `calendarProps` é espalhado depois, então um `calendarProps.locale` já em uso continua valendo e prevalece.
+
 Faixa de datas do calendar, decidida em 2026-10-01: o intervalo selecionado usa o desenho do calendar do COSS sem alterações, com o miolo reto em `bg-accent` e as pontas arredondadas por fora. O degradê com pontas `rounded-full` do fork antigo não volta.
 
 ### Regra de sobrescrita

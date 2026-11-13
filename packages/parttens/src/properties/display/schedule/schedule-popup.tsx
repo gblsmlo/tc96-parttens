@@ -1,5 +1,6 @@
 'use client'
 
+import type { DayPickerLocale } from '@daypicker/react'
 import { Calendar } from '@tc96/ui/calendar'
 import { Separator } from '@tc96/ui/separator'
 import { cn } from '@tc96/utils'
@@ -71,6 +72,7 @@ export interface SchedulePopupProps {
   timeControl: ScheduleTimeControl
   today: Date
   value: ScheduleValue
+  calendarLocale?: DayPickerLocale
   calendarProps?: PropertyCalendarProps
   footerLayout?: ScheduleFooterLayout
   recurrenceEnabled?: boolean
@@ -78,6 +80,7 @@ export interface SchedulePopupProps {
 }
 
 export function SchedulePopup({
+  calendarLocale,
   calendarProps,
   dateOnly,
   footerLayout = 'rows',
@@ -141,6 +144,7 @@ export function SchedulePopup({
 
   const footerProps: ScheduleFooterProps = {
     active,
+    calendarLocale,
     calendarProps,
     enabled,
     labels,
@@ -169,6 +173,7 @@ export function SchedulePopup({
           </div>
           <Separator className="my-2" />
           <Calendar
+            locale={calendarLocale}
             {...calendarProps}
             className={cn(
               'w-full px-1 [--cell-size:--spacing(10)] sm:[--cell-size:--spacing(10)]',

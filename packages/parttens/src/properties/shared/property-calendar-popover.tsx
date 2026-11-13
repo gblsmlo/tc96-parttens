@@ -7,6 +7,7 @@ import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactNode } from 'react'
 import type { PropertyIcon } from './property-catalog'
 import { PropertySurface, type PropertyVariant } from './property-surface'
+import { PropertyTooltip } from './property-tooltip'
 
 export type PropertyPopoverDropdownPlacement = Pick<
   ComponentProps<typeof PopoverPopup>,
@@ -31,6 +32,7 @@ export interface PropertyCalendarPopoverProps {
   disabled?: boolean
   dropdownPlacement?: PropertyPopoverDropdownPlacement
   muted?: boolean
+  tooltip?: ReactNode
   variant?: PropertyVariant
 }
 
@@ -47,25 +49,34 @@ export function PropertyCalendarPopover({
   muted = false,
   onOpenChange,
   open,
+  tooltip,
   variant,
 }: Readonly<PropertyCalendarPopoverProps>) {
+  const trigger = (
+    <PopoverTrigger
+      aria-label={`${ariaLabel}: ${label}`}
+      disabled={disabled}
+      render={
+        <PropertySurface
+          className={cn('max-w-full', className)}
+          muted={muted}
+          render={<button type="button" />}
+          variant={variant}
+        />
+      }
+    >
+      <Icon aria-hidden className="size-3" data-slot="property-icon" />
+      <span className="truncate">{label}</span>
+    </PopoverTrigger>
+  )
+
   return (
     <Popover onOpenChange={onOpenChange} open={open}>
-      <PopoverTrigger
-        aria-label={`${ariaLabel}: ${label}`}
-        disabled={disabled}
-        render={
-          <PropertySurface
-            className={cn('max-w-full', className)}
-            muted={muted}
-            render={<button type="button" />}
-            variant={variant}
-          />
-        }
-      >
-        <Icon aria-hidden className="size-3" data-slot="property-icon" />
-        <span className="truncate">{label}</span>
-      </PopoverTrigger>
+      {tooltip ? (
+        <PropertyTooltip content={tooltip} trigger={trigger} />
+      ) : (
+        trigger
+      )}
       <PopoverPopup
         align={align}
         aria-label={ariaLabel}

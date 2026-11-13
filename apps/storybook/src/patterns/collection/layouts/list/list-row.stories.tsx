@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ListRow } from '@tc96/parttens'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { DateProperty, ListRow } from '@tc96/parttens'
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 
 const onOpen = fn()
 
@@ -138,6 +138,112 @@ export const OpenDisabledBlocksTrigger: Story = {
   render: () => (
     <div className="min-w-0 p-4">
       <ListRow onClick={onOpen} openDisabled title="Carteira" />
+    </div>
+  ),
+}
+
+const receivedAt = (
+  <DateProperty
+    displayLabel="há 53 minutos"
+    locale="pt-BR"
+    readOnly
+    timeZone="America/Sao_Paulo"
+    tooltip
+    value="2026-11-13T17:07:00.000Z"
+    variant="plain"
+  />
+)
+
+const tooltipText = (canvasElement: HTMLElement) =>
+  canvasElement.ownerDocument.querySelector('[data-slot="tooltip-popup"]')
+    ?.textContent
+
+const receivedAtSurface = (canvasElement: HTMLElement) =>
+  within(canvasElement)
+    .getByText('há 53 minutos')
+    .closest<HTMLElement>('[data-slot="property-surface"]') as HTMLElement
+
+export const PropertyTooltipOnHoverClickOpensRow: Story = {
+  play: async ({ canvasElement }) => {
+    onOpen.mockClear()
+    const date = receivedAtSurface(canvasElement)
+    const { height, left, top, width } = date.getBoundingClientRect()
+
+    await expect(
+      date.contains(
+        canvasElement.ownerDocument.elementFromPoint(
+          left + width / 2,
+          top + height / 2,
+        ),
+      ),
+    ).toBe(true)
+
+    await userEvent.hover(date)
+    await waitFor(() =>
+      expect(tooltipText(canvasElement)).toBe(
+        '13 de novembro de 2026 às 14:07',
+      ),
+    )
+
+    await userEvent.click(date)
+    await expect(onOpen).toHaveBeenCalledTimes(1)
+  },
+  render: () => (
+    <div className="min-w-0 p-4">
+      <ListRow
+        description="contato@lemind.app"
+        onClick={onOpen}
+        properties={receivedAt}
+        title="Nova mensagem"
+      />
+    </div>
+  ),
+}
+
+export const PropertyTooltipByKeyboard: Story = {
+  play: async ({ canvasElement }) => {
+    onOpen.mockClear()
+    const canvas = within(canvasElement)
+
+    await userEvent.tab()
+    await expect(
+      canvas.getByRole('button', { name: 'Nova mensagem' }),
+    ).toHaveFocus()
+
+    await userEvent.tab()
+    await expect(receivedAtSurface(canvasElement)).toHaveFocus()
+    await waitFor(() =>
+      expect(tooltipText(canvasElement)).toBe(
+        '13 de novembro de 2026 às 14:07',
+      ),
+    )
+    await expect(receivedAtSurface(canvasElement)).toHaveAccessibleDescription(
+      '13 de novembro de 2026 às 14:07',
+    )
+    await expect(onOpen).not.toHaveBeenCalled()
+  },
+  render: () => (
+    <div className="min-w-0 p-4">
+      <ListRow onClick={onOpen} properties={receivedAt} title="Nova mensagem" />
+    </div>
+  ),
+}
+
+export const PropertyControlKeepsItsClick: Story = {
+  play: async ({ canvasElement }) => {
+    onOpen.mockClear()
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Arquivar' }),
+    )
+    await expect(onOpen).not.toHaveBeenCalled()
+  },
+  render: () => (
+    <div className="min-w-0 p-4">
+      <ListRow
+        onClick={onOpen}
+        properties={<button type="button">Arquivar</button>}
+        title="Nova mensagem"
+      />
     </div>
   ),
 }
