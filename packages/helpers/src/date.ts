@@ -7,6 +7,7 @@ const MILLISECONDS_IN_DAY = 86_400_000
 const DATE_FORMAT_OPTIONS = {
   long: { dateStyle: 'long' },
   medium: { dateStyle: 'medium' },
+  numeric: { day: '2-digit', month: '2-digit', year: 'numeric' },
   short: { day: 'numeric', month: 'short' },
   weekdayAndDay: { day: 'numeric', weekday: 'long' },
 } satisfies Record<string, Intl.DateTimeFormatOptions>
@@ -79,6 +80,24 @@ export function formatShortDate(
   timeZone?: string,
 ): string {
   return getDateFormatter('short', locale, timeZone).format(date)
+}
+
+/**
+ * Formats a date as two-digit day and month with the full year, so a column
+ * of dates aligns.
+ *
+ * @param date - A valid date.
+ * @param locale - A BCP 47 locale tag such as `pt-BR`.
+ * @param timeZone - An IANA time zone; when omitted the date is read in the
+ * runtime's local zone.
+ * @returns The formatted date, such as `11/09/2026` or `09/11/2026`.
+ */
+export function formatNumericDate(
+  date: Date,
+  locale: string,
+  timeZone?: string,
+): string {
+  return getDateFormatter('numeric', locale, timeZone).format(date)
 }
 
 /**

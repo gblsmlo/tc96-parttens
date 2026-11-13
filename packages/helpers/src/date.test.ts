@@ -6,6 +6,7 @@ import {
   dayOffsetInTimeZone,
   formatLongDate,
   formatMediumDate,
+  formatNumericDate,
   formatRelativeDay,
   formatShortDate,
   formatWeekdayAndDay,
@@ -82,6 +83,23 @@ describe('formatShortDate', () => {
     expect(formatShortDate(lateNight, 'en-US', 'UTC')).toBe('Jun 19')
     expect(formatShortDate(lateNight, 'en-US', 'America/Sao_Paulo')).toBe(
       'Jun 18',
+    )
+  })
+})
+
+describe('formatNumericDate', () => {
+  const date = new Date('2026-11-09T12:00:00.000Z')
+
+  test('shows two-digit day and month with the full year in the locale', () => {
+    expect(formatNumericDate(date, 'pt-BR', 'UTC')).toBe('09/11/2026')
+    expect(formatNumericDate(date, 'en-US', 'UTC')).toBe('11/09/2026')
+  })
+
+  test('projects into the time zone when one is given', () => {
+    const lateNight = new Date('2026-11-09T02:00:00.000Z')
+    expect(formatNumericDate(lateNight, 'pt-BR', 'UTC')).toBe('09/11/2026')
+    expect(formatNumericDate(lateNight, 'pt-BR', 'America/Sao_Paulo')).toBe(
+      '08/11/2026',
     )
   })
 })
@@ -203,11 +221,13 @@ describe('formatter reuse', () => {
       formatShortDate(date, 'en-GB')
       formatShortDate(date, 'fr-FR', 'Asia/Tokyo')
       formatMediumDate(date, 'en-GB', 'Asia/Tokyo')
+      formatNumericDate(date, 'en-GB', 'Asia/Tokyo')
+      formatNumericDate(date, 'en-GB', 'Asia/Tokyo')
       formatLongDate(date, 'en-GB', 'Asia/Tokyo')
       formatWeekdayAndDay(date, 'en-GB', 'Asia/Tokyo')
       formatWeekdayAndDay(date, 'en-GB', 'Asia/Tokyo')
     })
-    expect(built).toBe(7)
+    expect(built).toBe(8)
   })
 
   test('builds one relative day formatter per locale', () => {
