@@ -145,6 +145,31 @@ export const shellNavigation: ShellNavGroup[] = [
   },
 ]
 
+export const shellNavigationWithSubItemBadges: ShellNavGroup[] = [
+  {
+    items: [
+      { href: '/', icon: <LayoutDashboardIcon />, title: 'Painel' },
+      {
+        badge: 12,
+        href: '/inbox',
+        icon: <InboxIcon />,
+        title: 'Caixa de entrada',
+      },
+      {
+        icon: <KanbanIcon />,
+        items: [
+          { active: true, badge: 3, href: '/pipeline', title: 'Negócios' },
+          { badge: 8, href: '/forecast', title: 'Previsão' },
+          { href: '/quota-plan', title: 'Cotas' },
+        ],
+        title: 'Pipeline',
+      },
+      { href: '/reports', icon: <ChartColumnIcon />, title: 'Relatórios' },
+    ],
+    label: 'Plataforma',
+  },
+]
+
 export const shellUser: ShellUser = {
   email: 'marina@risine.com.br',
   name: 'Marina Costa',

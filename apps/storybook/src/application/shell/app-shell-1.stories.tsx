@@ -10,6 +10,7 @@ import {
   settingsBreadcrumbs,
   shellBreadcrumbs,
   shellNavigation,
+  shellNavigationWithSubItemBadges,
   shellSettings,
   shellUser,
   shellUserActions,
@@ -47,7 +48,7 @@ const docs = {
     },
     {
       description:
-        '`ShellNavGroup[]`. Each group renders a `SidebarGroup` with its label, inside one `nav` named by `labels.navigation`. An item with `items` opens a `Collapsible` sub-list and starts open when it or a child is `active`; a leaf links to `href`, shows `badge` and, when it has `actions`, a menu named by `labels.itemActions(title)` instead of the badge. `active` sets `aria-current="page"`.',
+        '`ShellNavGroup[]`. Each group renders a `SidebarGroup` with its label, inside one `nav` named by `labels.navigation`. An item with `items` opens a `Collapsible` sub-list and starts open when it or a child is `active`; a leaf links to `href`, shows `badge` and, when it has `actions`, a menu named by `labels.itemActions(title)` instead of the badge. A sub item shows its `badge` at the end of its row. `active` sets `aria-current="page"`.',
       name: 'navigation',
     },
     {
@@ -184,6 +185,33 @@ export const Mobile: Story = {
       expect(
         within(sheet).getByRole('navigation', { name: 'Navegação principal' }),
       ).toBeVisible(),
+    )
+  },
+}
+
+export const SubItemBadge: Story = {
+  args: { navigation: shellNavigationWithSubItemBadges },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A sub item takes `badge` too, at the end of its row; the active one keeps the badge on the accent background.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const navigation = within(canvasElement).getByRole('navigation', {
+      name: 'Navegação principal',
+    })
+    const active = within(navigation).getByRole('link', { name: 'Negócios 3' })
+    await expect(active).toHaveAttribute('aria-current', 'page')
+    await expect(within(active).getByText('3')).toBeVisible()
+    const forecast = within(navigation).getByRole('link', {
+      name: 'Previsão 8',
+    })
+    await expect(within(forecast).getByText('8')).toHaveAttribute(
+      'data-slot',
+      'sidebar-menu-badge',
     )
   },
 }

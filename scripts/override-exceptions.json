@@ -208,5 +208,11 @@
     "component": "Textarea",
     "className": "[&_textarea]:focus:placeholder:text-muted-foreground",
     "reason": "No foco, o placeholder do campo sem borda do `RecordDialogHeadline` volta ao `muted-foreground` inteiro, o par que o tema garante para `background`, porque é ali que a pessoa lê a orientação do campo."
+  },
+  {
+    "file": "packages/templates/src/application/shell/shared/shell-nav.tsx",
+    "component": "SidebarMenuBadge",
+    "className": "text-current",
+    "reason": "O badge do subitem fica dentro do `SidebarMenuSubButton`, onde o `peer-*/menu-button` do COSS não alcança, e mantinha o `sidebar-foreground` sobre o `sidebar-accent` do subitem ativo ou com hover: 4,22:1 no claro. `text-current` herda a cor do botão, o mesmo par do badge de primeiro nível: 13,33:1 (claro) e 16,04:1 (escuro) no ativo."
   }
 ]

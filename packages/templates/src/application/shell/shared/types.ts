@@ -11,6 +11,7 @@ export interface ShellAction {
 
 export interface ShellNavSubItem {
   active?: boolean
+  badge?: ReactNode
   href: string
   title: string
 }
