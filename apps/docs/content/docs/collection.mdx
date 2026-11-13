@@ -205,8 +205,12 @@ Mostra ações em lote para as linhas selecionadas. O DataGrid a recebe por
 
 ### Estados de carregamento e vazio
 
-Cada layout tem suas props: `loading` em List, Kanban e Calendar, `isLoading`
-em DataGrid e DataTable, e um rótulo de vazio em cada um.
+Cada layout tem suas props: `loading` em List, Kanban, Gallery e Calendar,
+`isLoading` em DataGrid e DataTable, e um rótulo de vazio em cada um.
+
+Passe `loading` uma vez ao `CollectionLayoutOutlet`: o layout ativo o recebe
+como padrão da sua própria prop. Um valor no bloco de props do layout
+(`datatable.isLoading`, `list.loading`) tem prioridade.
 
 ## Exemplos
 

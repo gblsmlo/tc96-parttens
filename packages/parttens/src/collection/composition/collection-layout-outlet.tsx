@@ -80,6 +80,7 @@ export interface CollectionLayoutOutletProps<TRecord extends RowData> {
   gallery?: CollectionGalleryViewProps<TRecord>
   kanban?: CollectionKanbanViewProps<TRecord>
   list?: CollectionListViewProps<TRecord>
+  loading?: boolean
   onRecordChange?: (
     change: CollectionRecordChange<TRecord>,
   ) => boolean | Promise<boolean>
@@ -97,6 +98,7 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
   gallery,
   kanban,
   list,
+  loading,
   onRecordChange,
   renderGalleryRecord,
   renderKanbanRecord,
@@ -170,7 +172,7 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
       )
     }
 
-    return <DataGrid {...datagrid} />
+    return <DataGrid {...datagrid} isLoading={datagrid.isLoading ?? loading} />
   }
 
   if (preferences.layout === 'datatable') {
@@ -180,7 +182,9 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
       )
     }
 
-    return <DataTable {...datatable} />
+    return (
+      <DataTable {...datatable} isLoading={datatable.isLoading ?? loading} />
+    )
   }
 
   if (preferences.layout === 'calendar') {
@@ -190,7 +194,13 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
       )
     }
 
-    return <CalendarView collection={collection} {...calendar} />
+    return (
+      <CalendarView
+        collection={collection}
+        {...calendar}
+        loading={calendar.loading ?? loading}
+      />
+    )
   }
 
   if (preferences.layout === 'gallery') {
@@ -205,6 +215,7 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
         collection={collection}
         renderRecord={renderGalleryRecord}
         {...gallery}
+        loading={gallery?.loading ?? loading}
       />
     )
   }
@@ -223,6 +234,7 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
         renderRecord={renderListRecord}
         {...list}
         groups={groups ?? list?.groups}
+        loading={list?.loading ?? loading}
       />
     )
   }
@@ -240,6 +252,7 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
       getKey={collection.getKey}
       renderCard={renderKanbanRecord}
       {...kanbanProps}
+      loading={kanbanProps.loading ?? loading}
       {...(onCollectionMoveCard || canWriteGroup ? { onMoveCard } : {})}
     />
   )

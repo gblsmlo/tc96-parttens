@@ -143,7 +143,7 @@ To veto or reroute a Kanban move with both groups in hand, pass `kanban.onMoveCa
 
 ## 8. Cover loading, empty and error
 
-Each layout has its own props: `loading` on List, Kanban and Calendar, `isLoading` on DataGrid and DataTable, and an empty label on each. Decide them per layout before calling the screen done.
+Each layout has its own props: `loading` on List, Kanban, Gallery and Calendar, `isLoading` on DataGrid and DataTable, and an empty label on each. Pass `loading` to `CollectionLayoutOutlet` once and the active layout takes it as the default for its own prop; a value set in that layout's props block (`datatable.isLoading`, `list.loading`) wins. Decide the empty label per layout before calling the screen done.
 
 ## Where to read next
 
