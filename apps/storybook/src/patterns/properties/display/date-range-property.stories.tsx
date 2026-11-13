@@ -16,6 +16,7 @@ const meta = {
   argTypes: {
     ...propertyArgTypes,
     allowClear: booleanArgType,
+    calendarLocale: { control: false },
   },
   component: DateRangeProperty,
   parameters: {
@@ -135,13 +136,17 @@ export const CalendarLocale: Story = {
     docs: {
       description: {
         story:
-          'The calendar speaks English by default. For another language, the consumer passes the DayPicker locale in `calendarProps`; the surface label follows the `locale` prop.',
+          'The calendar speaks English by default. For another language, the consumer passes the DayPicker locale in `calendarLocale`; the surface label follows the `locale` prop.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     await userEvent.click(within(canvasElement).getByRole('button'))
     await expect(await screen.findByText('junho 2026')).toBeInTheDocument()
+    const [grid] = await screen.findAllByRole('grid')
+    await expect(
+      within(grid as HTMLElement).getByText('seg'),
+    ).toBeInTheDocument()
   },
   args: {
     ariaLabel: 'Period',
@@ -150,7 +155,7 @@ export const CalendarLocale: Story = {
       from: new Date('2026-06-19T12:00:00.000Z'),
       to: new Date('2026-06-26T12:00:00.000Z'),
     },
-    calendarProps: { locale: ptBR },
+    calendarLocale: ptBR,
     locale: 'pt-BR',
   },
   decorators: [

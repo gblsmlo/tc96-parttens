@@ -1,3 +1,4 @@
+import { ptBR } from '@daypicker/react/locale'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { DateProperty } from '@tc96/parttens'
 import { Badge as UiBadge } from '@tc96/ui/badge'
@@ -21,6 +22,7 @@ const meta = {
   argTypes: {
     ...propertyArgTypes,
     allowClear: booleanArgType,
+    calendarLocale: { control: false },
     isOverdue: booleanArgType,
     tooltip: booleanArgType,
   },
@@ -174,6 +176,49 @@ export const PlainTrigger: Story = {
     await waitFor(() => expect(screen.queryByRole('grid')).toBeNull())
   },
   render: function PlainTrigger(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <DateProperty {...args} onValueChange={setValue} value={value} />
+  },
+}
+
+// COSS calendar weekday and outside-month text is 3.14:1 in light and 3.29:1 in dark (below 4.5:1); COSS stays unmodified, so only the contrast check is off.
+const cossCalendarContrast = {
+  a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
+}
+
+export const CalendarLocale: Story = {
+  parameters: {
+    ...cossCalendarContrast,
+    docs: {
+      description: {
+        story:
+          'The calendar speaks English by default. For another language, the consumer passes the DayPicker locale in `calendarLocale`; the surface label follows the `locale` prop.',
+      },
+    },
+  },
+  args: {
+    ariaLabel: 'Prazo',
+    calendarLocale: ptBR,
+    fallback: 'Sem prazo',
+    locale: 'pt-BR',
+    timeZone: 'UTC',
+    value: '2026-06-19T12:00:00.000Z',
+  },
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-80 items-start p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole('button'))
+    const grid = await screen.findByRole('grid')
+    await expect(await screen.findByText('junho 2026')).toBeInTheDocument()
+    await expect(within(grid).getByText('seg')).toBeInTheDocument()
+  },
+  render: function CalendarLocale(args) {
     const [value, setValue] = useState(args.value)
 
     return <DateProperty {...args} onValueChange={setValue} value={value} />

@@ -32,6 +32,7 @@ Handlers and surface:
 
 Dates:
 
+- `locale` (a BCP 47 string) only formats text through `Intl`; the calendar grid takes the DayPicker object through `calendarLocale`, because DayPicker does not accept a tag. `DateProperty`, `DateRangeProperty` and `ScheduleProperty` pass it to every `Calendar` they render, the `ScheduleProperty` until picker included, and spread `calendarProps` after it, so `calendarProps.locale` wins.
 - `serializeDatePropertyValue` returns noon UTC of the picked day (`new Date(2026, 5, 19)` gives `2026-06-19T12:00:00.000Z`). Picking the current value closes without emitting.
 - `DateProperty` with `tooltip` and a valid `value` shows `formatDateTime` (`@tc96/helpers/date`, with `locale` and `timeZone`) in a COSS `Tooltip` through `shared/property-tooltip.tsx`. The read-only surface becomes a `tabIndex={0}` span so the tooltip opens on keyboard focus, and it sets `data-slot="property-surface"` explicitly, because the COSS `TooltipTrigger` slot would replace it. Base UI wires no ARIA to a tooltip, so the same text goes in a `hidden` span the trigger names in `aria-describedby`. The editable trigger keeps its button and Popover, with the tooltip on the same element.
 - `DateRangeProperty` formats without a time zone and stays open after the first click, because the calendar returns `from` and `to` on the same day; only the clear button closes it.

@@ -6,6 +6,7 @@ import type { ScheduleEditorProps, ScheduleSection } from './schedule-section'
 import { ScheduleTimeSection } from './schedule-time-section'
 
 export function ScheduleSectionEditor({
+  calendarLocale,
   calendarProps,
   labels,
   locale,
@@ -30,6 +31,7 @@ export function ScheduleSectionEditor({
   if (section === 'repeat') {
     return (
       <ScheduleRecurrenceSection
+        calendarLocale={calendarLocale}
         calendarProps={calendarProps}
         labels={labels}
         locale={locale}

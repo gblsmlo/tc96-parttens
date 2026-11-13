@@ -1,5 +1,6 @@
 'use client'
 
+import type { DayPickerLocale } from '@daypicker/react'
 import { formatDateTime } from '@tc96/helpers/date'
 import { Calendar } from '@tc96/ui/calendar'
 import { cn } from '@tc96/utils'
@@ -35,6 +36,7 @@ export interface DatePropertyProps {
   action?: (value: string | null, context: DatePropertyActionContext) => void
   allowClear?: boolean
   ariaLabel?: string
+  calendarLocale?: DayPickerLocale
   calendarProps?: PropertyCalendarProps
   className?: string
   clearLabel?: string
@@ -65,6 +67,7 @@ export function DateProperty({
   action,
   allowClear = true,
   ariaLabel,
+  calendarLocale,
   calendarProps,
   className,
   clearLabel = 'Limpar data',
@@ -136,6 +139,7 @@ export function DateProperty({
     >
       <Calendar
         defaultMonth={selectedDate ?? undefined}
+        locale={calendarLocale}
         mode="single"
         selected={selectedDate ?? undefined}
         onSelect={(date) => {

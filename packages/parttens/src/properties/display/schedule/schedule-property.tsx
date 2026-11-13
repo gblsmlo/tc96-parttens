@@ -1,5 +1,6 @@
 'use client'
 
+import type { DayPickerLocale } from '@daypicker/react'
 import { Popover, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
 import { CalendarIcon, RepeatIcon } from 'lucide-react'
@@ -34,6 +35,7 @@ import {
 export interface SchedulePropertyProps {
   ariaLabel: string
   value: ScheduleValue
+  calendarLocale?: DayPickerLocale
   calendarProps?: PropertyCalendarProps
   className?: string
   dateOnly?: boolean
@@ -69,6 +71,7 @@ function ScheduleSurfaceContent({
 
 export function ScheduleProperty({
   ariaLabel,
+  calendarLocale,
   calendarProps,
   className,
   dateOnly = false,
@@ -135,6 +138,7 @@ export function ScheduleProperty({
       </PopoverTrigger>
       <SchedulePopupFrame ariaLabel={ariaLabel} placement={dropdownPlacement}>
         <SchedulePopup
+          calendarLocale={calendarLocale}
           calendarProps={calendarProps}
           dateOnly={dateOnly}
           footerLayout={footerLayout}

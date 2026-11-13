@@ -1,3 +1,4 @@
+import type { DayPickerLocale } from '@daypicker/react'
 import type { LucideIcon } from 'lucide-react'
 import { BellIcon, ClockIcon, RepeatIcon } from 'lucide-react'
 import type { PropertyCalendarProps } from '../../shared/property-calendar-popover'
@@ -44,6 +45,7 @@ export interface ScheduleEditorProps {
   reminderOptions: readonly ScheduleReminderOption[]
   timeControl: ScheduleTimeControl
   value: ScheduleValue
+  calendarLocale?: DayPickerLocale
   calendarProps?: PropertyCalendarProps
 }
 
