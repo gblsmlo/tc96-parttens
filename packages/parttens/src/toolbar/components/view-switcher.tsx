@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@tc96/ui/button'
+import { Button, type ButtonProps } from '@tc96/ui/button'
 import { Menu, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   Popover,
@@ -27,6 +27,7 @@ export interface ViewSwitcherMenuProps {
   className?: string
   icon?: ReactNode
   label: string
+  variant?: ButtonProps['variant']
 }
 
 /** Gatilho com a view ativa e popup alinhado ao início da toolbar. */
@@ -35,6 +36,7 @@ export function ViewSwitcherMenu({
   className,
   icon,
   label,
+  variant = 'ghost',
 }: Readonly<ViewSwitcherMenuProps>): ReactElement {
   const [open, setOpen] = useState(false)
 
@@ -44,7 +46,7 @@ export function ViewSwitcherMenu({
         render={
           <ToolbarButton
             render={
-              <Button className={className} type="button" variant="ghost" />
+              <Button className={className} type="button" variant={variant} />
             }
           />
         }

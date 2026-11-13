@@ -44,6 +44,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
+import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
 import { collectionToolbarArgTypes } from '../../test-utils/story-arg-types'
 
 interface SavedView {
@@ -124,6 +125,16 @@ const agendaModes: readonly ViewSettingsMode<
   { icon: CalendarDaysIcon, label: 'Agenda', value: 'calendar' },
 ]
 
+const docs = {
+  api: [
+    {
+      description:
+        'The view switcher trigger and its popover; it must render inside a `CollectionToolbar`. `label` names the trigger and the popover, `icon` is optional, and `variant` takes a COSS `Button` variant for the trigger (`ghost` by default, `secondary` for a filled control).',
+      name: 'ViewSwitcherMenu',
+    },
+  ],
+} satisfies UsageDocsParameters
+
 const meta = {
   args: {
     'aria-label': 'Controles da coleção',
@@ -139,6 +150,7 @@ const meta = {
     ),
   ],
   parameters: {
+    docs,
     layout: 'fullscreen',
   },
   title: 'Patterns/Toolbar',
