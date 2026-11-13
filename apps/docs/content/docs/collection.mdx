@@ -208,6 +208,13 @@ Mostra ações em lote para as linhas selecionadas. O DataGrid a recebe por
 Cada layout tem suas props: `loading` em List, Kanban e Calendar, `isLoading`
 em DataGrid e DataTable, e um rótulo de vazio em cada um.
 
+A toolbar tem leituras próprias: as opções dos filtros e as visões salvas.
+Enquanto carregam, passe `loading` ao `FilterRadioSubmenu` (linhas de skeleton
+no lugar das opções, `loadingOptionCount`, 3 por padrão; "todos" continua
+selecionável) e ao `ViewSwitcherItems` (linhas de skeleton depois das visões já
+passadas como filhos, `loadingItemCount`, 3 por padrão, então a visão padrão
+continua selecionável). Os dois marcam a lista com `aria-busy`.
+
 ## Exemplos
 
 Os exemplos estão no Storybook, sob `Patterns/Collection`.

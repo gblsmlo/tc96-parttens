@@ -145,6 +145,8 @@ To veto or reroute a Kanban move with both groups in hand, pass `kanban.onMoveCa
 
 Each layout has its own props: `loading` on List, Kanban and Calendar, `isLoading` on DataGrid and DataTable, and an empty label on each. Decide them per layout before calling the screen done.
 
+The toolbar has reads of its own: filter options and saved views. While they load, pass `loading` to `FilterRadioSubmenu` (skeleton rows in place of the options, `loadingOptionCount`, 3 by default; "all" stays selectable) and to `ViewSwitcherItems` (skeleton rows after the views already passed as children, `loadingItemCount`, 3 by default, so the default view stays selectable). Both mark the list with `aria-busy`. Do not pass empty options instead: an empty submenu reads as "no options", not "still loading".
+
 ## Where to read next
 
 | You need | `docs-show` id |

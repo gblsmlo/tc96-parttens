@@ -6,9 +6,11 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
+import { Skeleton } from '@tc96/ui/skeleton'
 import type { LucideIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import { MenuRadioOption } from '../../../shared/components/menu-selection-item'
+import { skeletonKeys } from '../lib/skeleton-keys'
 
 /**
  * `MenuRadioGroup` não representa ausência de escolha: `value=''` deixa o grupo
@@ -21,6 +23,8 @@ export interface FilterRadioSubmenuProps {
   clearLabel?: string
   icon: LucideIcon
   label: string
+  loading?: boolean
+  loadingOptionCount?: number
   /** Recebe `''` quando a opção "todos" é escolhida. */
   onValueChange: (value: string) => void
   options: readonly (readonly [string, string])[]
@@ -36,6 +40,8 @@ export function FilterRadioSubmenu({
   clearLabel = 'Todos',
   icon: Icon,
   label,
+  loading = false,
+  loadingOptionCount = 3,
   onValueChange,
   options,
   value,
@@ -46,7 +52,7 @@ export function FilterRadioSubmenu({
         <Icon aria-hidden="true" />
         {label}
       </MenuSubTrigger>
-      <MenuSubPopup>
+      <MenuSubPopup aria-busy={loading || undefined}>
         <MenuRadioGroup
           onValueChange={(next) =>
             onValueChange(next === CLEAR_VALUE ? '' : next)
@@ -54,11 +60,21 @@ export function FilterRadioSubmenu({
           value={value || CLEAR_VALUE}
         >
           <MenuRadioOption value={CLEAR_VALUE}>{clearLabel}</MenuRadioOption>
-          {options.map(([optionValue, optionLabel]) => (
-            <MenuRadioOption key={optionValue} value={optionValue}>
-              {optionLabel}
-            </MenuRadioOption>
-          ))}
+          {loading
+            ? skeletonKeys('loading', loadingOptionCount).map((key) => (
+                <div
+                  aria-hidden="true"
+                  className="flex min-h-8 items-center ps-2 pe-2.5 sm:min-h-7"
+                  key={key}
+                >
+                  <Skeleton className="h-3.5 w-full" />
+                </div>
+              ))
+            : options.map(([optionValue, optionLabel]) => (
+                <MenuRadioOption key={optionValue} value={optionValue}>
+                  {optionLabel}
+                </MenuRadioOption>
+              ))}
         </MenuRadioGroup>
       </MenuSubPopup>
     </MenuSub>

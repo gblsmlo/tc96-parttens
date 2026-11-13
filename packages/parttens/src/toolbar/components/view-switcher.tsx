@@ -8,6 +8,7 @@ import {
   PopoverPopup,
   PopoverTrigger,
 } from '@tc96/ui/popover'
+import { Skeleton } from '@tc96/ui/skeleton'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
 import { ChevronDownIcon, EllipsisIcon, PlusIcon } from 'lucide-react'
@@ -89,21 +90,41 @@ export function ViewSwitcherSearch({
 }
 
 export interface ViewSwitcherItemsProps {
-  children: ReactNode
+  children?: ReactNode
   label?: string
+  loading?: boolean
+  loadingItemCount?: number
 }
 
 export function ViewSwitcherItems({
   children,
   label = 'Views',
+  loading = false,
+  loadingItemCount = 3,
 }: Readonly<ViewSwitcherItemsProps>): ReactElement {
   return (
     <fieldset
+      aria-busy={loading || undefined}
       aria-label={label}
       className="m-0 flex min-w-0 flex-col gap-0.5 border-0 p-0"
       data-slot="view-switcher-items"
     >
       {children}
+      {loading
+        ? Array.from(
+            { length: loadingItemCount },
+            (_, position) => `loading-${position + 1}`,
+          ).map((key) => (
+            <div
+              aria-hidden="true"
+              className="flex h-8 items-center gap-1.5 px-2.5 sm:h-7"
+              key={key}
+            >
+              <Skeleton className="size-4 shrink-0 rounded-sm" />
+              <Skeleton className="h-3.5 flex-1" />
+            </div>
+          ))
+        : null}
     </fieldset>
   )
 }

@@ -28,6 +28,7 @@ Toolbar:
 View switcher:
 
 - `ViewSwitcherMenu` is a `Popover` (`role="dialog"`), not a menu, and its trigger is a `ToolbarButton`, so it must render inside a `CollectionToolbar`. A `ViewSwitcherItem` label is a `PopoverClose`; pressing an item in its `options` menu closes the popover through a context `ViewSwitcherMenu` provides, because that menu is a separate Base UI tree.
+- `ViewSwitcherItems` with `loading` renders its children first and then `aria-hidden` skeleton rows, with `aria-busy` on the `fieldset`, so a view already known (the default one) stays selectable while the saved views load.
 
 ## Styling
 
