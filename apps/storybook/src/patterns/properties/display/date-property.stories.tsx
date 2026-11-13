@@ -22,6 +22,7 @@ const meta = {
     ...propertyArgTypes,
     allowClear: booleanArgType,
     isOverdue: booleanArgType,
+    tooltip: booleanArgType,
   },
   component: DateProperty,
   parameters: {
@@ -76,6 +77,33 @@ export const Overdue: Story = {
     timeZone: 'UTC',
     value: '2026-06-12T12:00:00.000Z',
   },
+}
+
+export const FullDateTooltip: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'With `tooltip`, hovering or focusing the date shows its full date and time, formatted with `locale` and `timeZone`, and the same text describes the surface for assistive technology. Pair it with `displayLabel` for a relative time. A read-only date becomes a tab stop; an editable one keeps its button. Without a `value` there is no tooltip.',
+      },
+    },
+  },
+  args: {
+    displayLabel: 'há 53 minutos',
+    locale: 'pt-BR',
+    readOnly: true,
+    timeZone: 'America/Sao_Paulo',
+    tooltip: true,
+    value: '2026-11-13T17:07:00.000Z',
+    variant: 'plain',
+  },
+  decorators: [
+    (Story) => (
+      <div className="p-12">
+        <Story />
+      </div>
+    ),
+  ],
 }
 
 export const Trigger: Story = {

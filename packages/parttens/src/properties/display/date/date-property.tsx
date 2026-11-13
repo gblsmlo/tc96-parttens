@@ -1,5 +1,6 @@
 'use client'
 
+import { formatDateTime } from '@tc96/helpers/date'
 import { Calendar } from '@tc96/ui/calendar'
 import { cn } from '@tc96/utils'
 import { CalendarDaysIcon } from 'lucide-react'
@@ -10,7 +11,11 @@ import {
   type PropertyCalendarProps,
   type PropertyPopoverDropdownPlacement,
 } from '../../shared/property-calendar-popover'
-import type { PropertyVariant } from '../../shared/property-surface'
+import {
+  PropertySurface,
+  type PropertyVariant,
+} from '../../shared/property-surface'
+import { PropertyTooltip } from '../../shared/property-tooltip'
 import { IconLabelProperty } from '../icon-label/icon-label-property'
 import {
   formatDateProperty,
@@ -42,8 +47,18 @@ export interface DatePropertyProps {
   readOnly?: boolean
   serializeDate?: (date: Date) => string
   timeZone?: string
+  tooltip?: boolean
   variant?: PropertyVariant
   onValueChange?: (value: string | null) => void
+}
+
+function formatFullDate(
+  value: string | null,
+  locale: string,
+  timeZone: string,
+): string | null {
+  const date = parseDatePropertyValue(value)
+  return date ? formatDateTime(date, locale, timeZone) : null
 }
 
 export function DateProperty({
@@ -63,6 +78,7 @@ export function DateProperty({
   readOnly = false,
   serializeDate = serializeDatePropertyValue,
   timeZone = 'UTC',
+  tooltip = false,
   value,
   variant = 'badge',
 }: Readonly<DatePropertyProps>) {
@@ -89,6 +105,7 @@ export function DateProperty({
         isOverdue={isOverdue}
         locale={locale}
         timeZone={timeZone}
+        tooltip={tooltip}
         value={value}
         variant={variant}
       />
@@ -114,6 +131,7 @@ export function DateProperty({
       label={label}
       onOpenChange={setOpen}
       open={open}
+      tooltip={tooltip ? formatFullDate(value, locale, timeZone) : null}
       variant={variant}
     >
       <Calendar
@@ -137,6 +155,7 @@ export function DatePropertyBadge({
   isOverdue = false,
   locale = 'en-US',
   timeZone = 'UTC',
+  tooltip = false,
   value,
   variant = 'badge',
 }: Readonly<
@@ -148,12 +167,37 @@ export function DatePropertyBadge({
     | 'isOverdue'
     | 'locale'
     | 'timeZone'
+    | 'tooltip'
     | 'value'
     | 'variant'
   >
 >) {
   const label =
     displayLabel ?? formatDateProperty(value, fallback, locale, timeZone)
+  const fullDate = tooltip ? formatFullDate(value, locale, timeZone) : null
+
+  if (fullDate) {
+    return (
+      <PropertyTooltip
+        content={fullDate}
+        trigger={
+          <PropertySurface
+            className={cn('max-w-full', isOverdue && 'font-medium', className)}
+            data-slot="property-surface"
+            tabIndex={0}
+            variant={variant}
+          >
+            <CalendarDaysIcon
+              aria-hidden
+              className="size-3"
+              data-slot="property-icon"
+            />
+            <span className="truncate">{label}</span>
+          </PropertySurface>
+        }
+      />
+    )
+  }
 
   return (
     <IconLabelProperty

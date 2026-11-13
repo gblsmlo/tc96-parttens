@@ -5,6 +5,7 @@ const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 const MILLISECONDS_IN_DAY = 86_400_000
 
 const DATE_FORMAT_OPTIONS = {
+  dateTime: { dateStyle: 'long', timeStyle: 'short' },
   long: { dateStyle: 'long' },
   medium: { dateStyle: 'medium' },
   short: { day: 'numeric', month: 'short' },
@@ -115,6 +116,25 @@ export function formatLongDate(
   timeZone?: string,
 ): string {
   return getDateFormatter('long', locale, timeZone).format(date)
+}
+
+/**
+ * Formats a date with day, full month name, year and time of day, as a
+ * tooltip over a short or relative date shows it.
+ *
+ * @param date - A valid date.
+ * @param locale - A BCP 47 locale tag such as `pt-BR`.
+ * @param timeZone - An IANA time zone; when omitted the date is read in the
+ * runtime's local zone.
+ * @returns The formatted date and time, such as `October 20, 2026 at 2:30 PM`
+ * or `20 de outubro de 2026 às 14:30`.
+ */
+export function formatDateTime(
+  date: Date,
+  locale: string,
+  timeZone?: string,
+): string {
+  return getDateFormatter('dateTime', locale, timeZone).format(date)
 }
 
 /**

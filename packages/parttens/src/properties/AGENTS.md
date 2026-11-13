@@ -9,7 +9,7 @@ Controlled property displays (date, date range, editable text, email, flag, icon
 | `composition/` | `PropertyCollection` and `assigned/` (`AssignedProperty`) |
 | `display/<property>/` | one folder per display, each with its own `index.ts`; `display/index.ts` re-exports all but `phone-input/` |
 | `hooks/` | `useEntryListEditor`: the popup session (drafts, row errors, save, diff) of email and phone |
-| `shared/` | the surface, catalog, select and multi-select shells, calendar popover, entry form, add trigger, row `fieldset` |
+| `shared/` | the surface, catalog, select and multi-select shells, calendar popover, tooltip, entry form, add trigger, row `fieldset` |
 | `shared/lib/` | `isEditable`/`emitChange` (handler rule), option lookup and diff, zod entry parser |
 | `core.ts` | React-free surface: catalog types, `propertyToneClassName`, date formatters; workspace only, not reached from the barrel |
 
@@ -33,6 +33,7 @@ Handlers and surface:
 Dates:
 
 - `serializeDatePropertyValue` returns noon UTC of the picked day (`new Date(2026, 5, 19)` gives `2026-06-19T12:00:00.000Z`). Picking the current value closes without emitting.
+- `DateProperty` with `tooltip` and a valid `value` shows `formatDateTime` (`@tc96/helpers/date`, with `locale` and `timeZone`) in a COSS `Tooltip` through `shared/property-tooltip.tsx`. The read-only surface becomes a `tabIndex={0}` span so the tooltip opens on keyboard focus, and it sets `data-slot="property-surface"` explicitly, because the COSS `TooltipTrigger` slot would replace it. Base UI wires no ARIA to a tooltip, so the same text goes in a `hidden` span the trigger names in `aria-describedby`. The editable trigger keeps its button and Popover, with the tooltip on the same element.
 - `DateRangeProperty` formats without a time zone and stays open after the first click, because the calendar returns `from` and `to` on the same day; only the clear button closes it.
 - `ScheduleProperty` holds one local day (`from`), `HH:mm` times, a recurrence and reminders; `until` is the string `DateProperty` serializes. A preset or a calendar day closes the popup unless the Hora, Repetir or Lembretes section is open, because then the user is not done; all three start closed even with a stored value. The footer lists the three sections as rows with their current value and opens one at a time, so the value reads without opening anything; its editor drops the heading the row already says (`schedule-recurrence-section.tsx` shows `labels.frequency`, not `labels.repeat`). `footerLayout="drill-in"` keeps the rows but a row replaces the whole popup with its editor and a Voltar button; `autoFocus` puts focus on Voltar and Voltar returns it to the row, through the ref callback `restoreFocus` in `schedule-popup.tsx`, because the row is not mounted when Voltar is pressed. A row without an anchor is disabled and keeps showing its placeholder summary. Picking the current day closes without emitting.
 - Clearing the day (the no-date preset) also clears `frequency`, `until` and `reminders`. Repetir and Lembretes are disabled without a day unless the consumer passes `recurrenceEnabled` or `remindersEnabled`, for an anchor the pattern does not see (a deadline). Turning all-day on clears both times.

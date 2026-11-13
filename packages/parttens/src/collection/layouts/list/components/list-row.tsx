@@ -5,12 +5,16 @@ import {
   Children,
   Fragment,
   isValidElement,
+  type MouseEvent,
   type MouseEventHandler,
   type ReactElement,
   type ReactNode,
 } from 'react'
 
-import { interactiveDescendants } from '../../../shared/lib/interactive-descendants'
+import {
+  interactiveControls,
+  interactiveDescendants,
+} from '../../../shared/lib/interactive-descendants'
 import {
   ListItem,
   ListItemAction,
@@ -65,6 +69,28 @@ function ListRowDescription({
       ))}
     </ListItemDescription>
   )
+}
+
+function openFromFocusableProperty(event: MouseEvent<HTMLDivElement>) {
+  const field = event.currentTarget
+  const target = event.target
+
+  if (
+    event.defaultPrevented ||
+    !(target instanceof Element) ||
+    !field.contains(target)
+  ) {
+    return
+  }
+
+  const control = target.closest(interactiveControls)
+
+  if (control && field.contains(control)) return
+
+  field
+    .closest('[data-slot="list-item"]')
+    ?.querySelector<HTMLButtonElement>('[data-slot="list-item-title-trigger"]')
+    ?.click()
 }
 
 export function ListRow({
@@ -126,6 +152,7 @@ export function ListRow({
                 'relative z-10 pointer-events-none',
                 interactiveDescendants,
               )}
+              onClick={onClick ? openFromFocusableProperty : undefined}
             >
               {properties}
             </ListItemField>

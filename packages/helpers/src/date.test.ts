@@ -4,6 +4,7 @@ import {
   addMonths,
   addYears,
   dayOffsetInTimeZone,
+  formatDateTime,
   formatLongDate,
   formatMediumDate,
   formatRelativeDay,
@@ -108,6 +109,25 @@ describe('formatLongDate', () => {
   test('shows day, full month and year in the locale', () => {
     expect(formatLongDate(date, 'en-US', 'UTC')).toBe('October 20, 2026')
     expect(formatLongDate(date, 'pt-BR', 'UTC')).toBe('20 de outubro de 2026')
+  })
+})
+
+describe('formatDateTime', () => {
+  const date = new Date('2026-10-20T14:30:00.000Z')
+
+  test('shows the long date and the time of day in the locale', () => {
+    expect(formatDateTime(date, 'en-US', 'UTC')).toBe(
+      'October 20, 2026 at 2:30 PM',
+    )
+    expect(formatDateTime(date, 'pt-BR', 'UTC')).toBe(
+      '20 de outubro de 2026 às 14:30',
+    )
+  })
+
+  test('projects into the time zone when one is given', () => {
+    expect(formatDateTime(date, 'pt-BR', 'America/Sao_Paulo')).toBe(
+      '20 de outubro de 2026 às 11:30',
+    )
   })
 })
 
