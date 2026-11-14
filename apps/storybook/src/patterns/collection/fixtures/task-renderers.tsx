@@ -7,6 +7,12 @@ import {
   CalendarEventChipTitle,
   type CalendarRecordRenderContext,
   KanbanCard,
+  KanbanCardBody,
+  KanbanCardControl,
+  KanbanCardDescription,
+  KanbanCardFooter,
+  KanbanCardHeader,
+  KanbanCardTitle,
   ListRow,
   ListRowBody,
   type ListRowDensity,
@@ -35,6 +41,7 @@ import {
 } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { DescriptionSegments } from './description-segments'
+import { CardCountMenu, CardField, CardMenu } from './kanban-card-parts'
 import {
   AssigneeField,
   DueField,
@@ -112,91 +119,85 @@ export const renderTaskListRow =
 export const renderTaskKanbanCard =
   (updateTask: UpdateTask) => (task: Task) => {
     return (
-      <KanbanCard
-        assignee={
-          <AssigneeField
-            avatarSize="sm"
-            display="avatar"
-            onChange={updateTask}
-            task={task}
-            variant="plain"
+      <KanbanCard density="sm" key={task.id} variant="interactive">
+        <KanbanCardHeader>
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <KanbanCardTitle className="min-w-0 flex-1 truncate">
+              {task.title}
+            </KanbanCardTitle>
+          </div>
+          <KanbanCardDescription className="line-clamp-2">
+            {task.description}
+          </KanbanCardDescription>
+          <CardMenu
+            items={[{ label: 'Editar tarefa' }, { label: 'Duplicar tarefa' }]}
+            label="Mais ações da tarefa"
           />
-        }
-        counts={[
-          {
-            count: 1,
-            icon: <FileTextIcon aria-hidden />,
-            id: 'notes',
-            items: [{ label: 'Criar nota' }, { label: 'Ver notas' }],
-            label: 'Notas: 1',
-          },
-          {
-            count: 1,
-            icon: <ListTodoIcon aria-hidden />,
-            id: 'subtasks',
-            items: [{ label: 'Criar subtarefa' }, { label: 'Ver subtarefas' }],
-            label: 'Subtarefas: 1',
-          },
-          {
-            count: 1,
-            icon: <MessageCircleIcon aria-hidden />,
-            id: 'comments',
-            items: [
-              { label: 'Criar comentário' },
-              { label: 'Ver comentários' },
-            ],
-            label: 'Comentários: 1',
-          },
-        ]}
-        density="sm"
-        description={task.description}
-        fields={[
-          {
-            content: (
-              <StatusField onChange={updateTask} task={task} variant="plain" />
-            ),
-            icon: <CircleDotIcon aria-hidden />,
-            id: 'status',
-            label: 'Status',
-            interactive: true,
-          },
-          {
-            content: (
-              <DueField onChange={updateTask} task={task} variant="plain" />
-            ),
-            icon: <CalendarIcon aria-hidden />,
-            id: 'due',
-            label: 'Prazo',
-            interactive: true,
-          },
-          {
-            content: `${task.estimate} h`,
-            icon: <Clock3Icon aria-hidden />,
-            id: 'estimate',
-            label: 'Estimativa',
-          },
-          {
-            content: (
-              <PriorityField
-                onChange={updateTask}
-                task={task}
-                variant="plain"
-              />
-            ),
-            icon: <SignalIcon aria-hidden />,
-            id: 'priority',
-            label: 'Prioridade',
-            interactive: true,
-          },
-        ]}
-        key={task.id}
-        menu={{
-          items: [{ label: 'Editar tarefa' }, { label: 'Duplicar tarefa' }],
-          label: 'Mais ações da tarefa',
-        }}
-        title={task.title}
-        variant="interactive"
-      />
+        </KanbanCardHeader>
+        <KanbanCardBody>
+          <CardField
+            icon={<CircleDotIcon aria-hidden />}
+            interactive
+            label="Status"
+          >
+            <StatusField onChange={updateTask} task={task} variant="plain" />
+          </CardField>
+          <CardField
+            icon={<CalendarIcon aria-hidden />}
+            interactive
+            label="Prazo"
+          >
+            <DueField onChange={updateTask} task={task} variant="plain" />
+          </CardField>
+          <CardField icon={<Clock3Icon aria-hidden />} label="Estimativa">
+            {`${task.estimate} h`}
+          </CardField>
+          <CardField
+            icon={<SignalIcon aria-hidden />}
+            interactive
+            label="Prioridade"
+          >
+            <PriorityField onChange={updateTask} task={task} variant="plain" />
+          </CardField>
+        </KanbanCardBody>
+        <KanbanCardFooter>
+          <KanbanCardControl className="min-w-0 flex-1">
+            <CardCountMenu
+              count={1}
+              icon={<FileTextIcon aria-hidden />}
+              items={[{ label: 'Criar nota' }, { label: 'Ver notas' }]}
+              label="Notas: 1"
+            />
+            <CardCountMenu
+              count={1}
+              icon={<ListTodoIcon aria-hidden />}
+              items={[
+                { label: 'Criar subtarefa' },
+                { label: 'Ver subtarefas' },
+              ]}
+              label="Subtarefas: 1"
+            />
+            <CardCountMenu
+              count={1}
+              icon={<MessageCircleIcon aria-hidden />}
+              items={[
+                { label: 'Criar comentário' },
+                { label: 'Ver comentários' },
+              ]}
+              label="Comentários: 1"
+            />
+          </KanbanCardControl>
+          <KanbanCardControl className="ml-auto">
+            <AssigneeField
+              avatarSize="sm"
+              display="avatar"
+              onChange={updateTask}
+              task={task}
+              variant="plain"
+            />
+          </KanbanCardControl>
+        </KanbanCardFooter>
+      </KanbanCard>
     )
   }
 

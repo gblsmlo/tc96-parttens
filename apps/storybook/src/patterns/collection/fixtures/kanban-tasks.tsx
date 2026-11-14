@@ -1,9 +1,5 @@
 import { type KanbanColumnData, projectCollection } from '@tc96/parttens'
-import {
-  createCollection,
-  type Task,
-  type TaskStatus,
-} from '../../fixtures/tasks'
+import { createCollection, type Task, type TaskStatus } from './tasks'
 
 const STATUS_COLOR: Record<TaskStatus, string> = {
   backlog: '#6b7280',
