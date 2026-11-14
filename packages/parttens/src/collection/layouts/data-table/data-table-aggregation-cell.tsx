@@ -1,15 +1,14 @@
 'use client'
 
-import { Button } from '@tc96/ui/button'
-import { Menu, MenuPopup, MenuRadioGroup, MenuTrigger } from '@tc96/ui/menu'
+import { Menu, MenuPopup, MenuRadioGroup } from '@tc96/ui/menu'
 import { cn } from '@tc96/utils'
-import { ChevronDownIcon } from 'lucide-react'
 import type { ReactElement, ReactNode } from 'react'
 import { MenuRadioOption } from '../../../shared/components/menu-selection-item'
 import type {
   DataTableAggregation,
   DataTableAggregationLabels,
 } from './data-table-aggregation'
+import { DataTableAggregationTrigger } from './data-table-aggregation-trigger'
 
 const NONE = '__none__'
 
@@ -41,29 +40,11 @@ export function DataTableAggregationCell({
       data-slot="data-table-aggregation"
     >
       <Menu>
-        <MenuTrigger
-          render={
-            <Button
-              className={cn(
-                '-mx-2 font-normal',
-                value === null &&
-                  'opacity-0 focus-visible:opacity-100 data-popup-open:opacity-100 group-focus-within/footer:opacity-100 group-hover/footer:opacity-100 pointer-coarse:opacity-100',
-              )}
-              size="xs"
-              variant="ghost"
-            />
-          }
-        >
-          {value === null ? (
-            <span className="text-muted-foreground">{labels.trigger}</span>
-          ) : (
-            <>
-              <span className="text-muted-foreground">{labels[value]}</span>{' '}
-              <span className="font-medium tabular-nums">{result}</span>
-            </>
-          )}
-          <ChevronDownIcon aria-hidden="true" />
-        </MenuTrigger>
+        <DataTableAggregationTrigger
+          labels={labels}
+          result={result}
+          value={value}
+        />
         <MenuPopup align={align}>
           <MenuRadioGroup
             onValueChange={(next) =>

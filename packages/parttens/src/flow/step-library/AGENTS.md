@@ -61,5 +61,5 @@ Interface tests are `play` functions in `apps/storybook/src/patterns/flow/step-l
 ## Pointers
 
 - Public API: `index.ts` and the `flow-step-library` entry of `docs/architecture/public-api-exports.json`.
-- Decisions and contrast audit: `docs/architecture/tc96-parttens.md`, section "Patterns: Flow Step Library".
+- Decisions: `docs/architecture/tc96-parttens.md`, section "Patterns: Flow Step Library"; contrast audit: `docs/accessibility.md`.
 - The family decisions: `.specs/adr/0006-flow-family-on-react-flow.md` (D2, D7, D10) and `.specs/flow-editors/user-experience.md` §2 and §4.

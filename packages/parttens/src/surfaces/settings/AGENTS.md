@@ -66,4 +66,4 @@ The stories are in `apps/storybook/src/patterns/surfaces/settings/`, with a `!de
 ## Pointers
 
 - Public API: `index.ts` and the `settings` entry of `docs/architecture/public-api-exports.json`. Props are in `core.ts`.
-- Decisions and measured contrast: `docs/architecture/tc96-parttens.md`, the `settings/` paragraphs. Source: Lemind `packages/patterns/src/settings/`.
+- Decisions: `docs/architecture/tc96-parttens.md`, the `settings/` paragraphs; measured contrast: `docs/accessibility.md`. Source: Lemind `packages/patterns/src/settings/`.

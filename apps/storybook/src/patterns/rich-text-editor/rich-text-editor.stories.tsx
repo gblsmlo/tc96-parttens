@@ -24,22 +24,6 @@ import {
   typedText,
 } from '../../test-utils/rich-text-typing'
 
-// O Popover do Base UI cerca o popup com guardas de foco (`tabindex=0` sob
-// `aria-hidden`), que o axe reprova em `aria-hidden-focus`; sao do COSS, nao
-// do pattern, e so existem enquanto a barra ou o menu `/` estao abertos.
-const baseUiFocusGuards = {
-  a11y: {
-    config: {
-      rules: [
-        {
-          id: 'aria-hidden-focus',
-          selector: '[aria-hidden="true"]:not([data-base-ui-focus-guard])',
-        },
-      ],
-    },
-  },
-}
-
 const meta = {
   args: {
     'aria-label': 'Nota',
@@ -63,7 +47,6 @@ const meta = {
     ),
   ],
   parameters: {
-    ...baseUiFocusGuards,
     layout: 'padded',
   },
   title: 'Patterns/Rich Text Editor',
@@ -277,7 +260,6 @@ export const FloatingToolbarOnSelection: Story = {
 }
 
 export const FloatingToolbarBlockTypeSelect: Story = {
-  parameters: baseUiFocusGuards,
   play: async ({ args, canvasElement }) => {
     const editor = await startTyping(canvasElement, 'Uma frase para marcar')
     const text = editor.querySelector('[data-slate-string]') as HTMLElement
@@ -313,7 +295,6 @@ export const FloatingToolbarBlockTypeSelect: Story = {
 }
 
 export const FloatingToolbarLink: Story = {
-  parameters: baseUiFocusGuards,
   play: async ({ args, canvasElement }) => {
     const editor = await startTyping(canvasElement, 'Uma frase para marcar')
     const text = editor.querySelector('[data-slate-string]') as HTMLElement

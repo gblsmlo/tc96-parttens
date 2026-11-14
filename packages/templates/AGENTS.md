@@ -56,7 +56,7 @@ Import direction: a template folder → its group's `shared/` and its own files;
 
 ## Styling
 
-- The flow templates add no override on a COSS part; the page frame is a plain `div` with `border` and `rounded-xl` on tokens. Their contrast ratios are in `docs/architecture/tc96-parttens.md` (Templates: editores de fluxo).
+- The flow templates add no override on a COSS part; the page frame is a plain `div` with `border` and `rounded-xl` on tokens. Their contrast ratios are in `docs/accessibility.md` (Editores de fluxo).
 - No border, radius, color or shadow class on a COSS part except where listed in `scripts/override-exceptions.json`; layout, size and typography classes are allowed (`SidebarHeader className="h-14 justify-center px-4"`, `Separator className="me-2 h-4"`, `Badge className="absolute -end-1 -top-1"`).
 - `AvatarFallback className="text-foreground"` in `shared/user-menu.tsx`: the fallback sits on `bg-border` and inherited the muted `sidebar-foreground` (3.83:1 light). `overrides:check` does not see `AvatarFallback` re-exported by `@tc96/elements/avatar`, so the reason and ratios are in `docs/architecture/tc96-parttens.md` (Templates: App Shells).
 - The workspace logo is an `IconFrame` with `bg-sidebar-primary text-sidebar-primary-foreground`, the sidebar's own pair; `bg-muted` vanished on `bg-sidebar` in dark.
@@ -76,6 +76,6 @@ bun run test:consumer:registry
 ## Pointers
 
 - [ADR 0005](../../.specs/adr/0005-installable-templates.md) and the plan `.specs/app-shell-templates/tasks/0001-app-shell-templates.md`.
-- `docs/architecture/tc96-parttens.md`, section Templates: App Shells, for contrast ratios and the decisions behind the shells.
+- `docs/architecture/tc96-parttens.md`, section Templates: App Shells, for the decisions behind the shells; `docs/accessibility.md` for their contrast ratios.
 - `apps/storybook/src/templates/doc.mdx` (`Templates/Doc`) for the consumer commands and the `base.css` line of the flow editors.
 - [ADR 0006](../../.specs/adr/0006-flow-family-on-react-flow.md) and the plan `.specs/flow-editors/tasks/0001-flow-editors.md` for the flow templates.

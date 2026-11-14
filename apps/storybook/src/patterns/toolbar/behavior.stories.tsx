@@ -23,9 +23,6 @@ export default meta
 
 const expectMenuClosed = async () => {
   await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
-  await waitFor(() =>
-    expect(document.querySelector('[data-base-ui-focus-guard]')).toBeNull(),
-  )
 }
 
 type Story = StoryObj<typeof CollectionToolbar>

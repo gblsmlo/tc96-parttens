@@ -7,19 +7,6 @@ import {
   typedText,
 } from '../../test-utils/rich-text-typing'
 
-const baseUiFocusGuards = {
-  a11y: {
-    config: {
-      rules: [
-        {
-          id: 'aria-hidden-focus',
-          selector: '[aria-hidden="true"]:not([data-base-ui-focus-guard])',
-        },
-      ],
-    },
-  },
-}
-
 const paragraph = (text: string) => ({ children: [{ text }], type: 'p' })
 
 const meta = {
@@ -36,7 +23,7 @@ const meta = {
       </div>
     ),
   ],
-  parameters: { ...baseUiFocusGuards, layout: 'padded' },
+  parameters: { layout: 'padded' },
   tags: ['!autodocs'],
   title: 'Patterns/Rich Text Editor/Slash Menu',
 } satisfies Meta<typeof RichTextEditor>

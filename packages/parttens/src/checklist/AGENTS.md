@@ -86,4 +86,4 @@ The root stories are in `apps/storybook/src/patterns/checklist.stories.tsx`; int
 ## Pointers
 
 - Public API: `index.ts` and the `checklist` entry of `docs/architecture/public-api-exports.json`. Props and defaults are in `types/index.ts` and `composition/checklist/checklist.tsx`. The registry ships every file the barrel reaches; exporting anything from `lib/` or `components/` needs a reason recorded in the architecture doc.
-- Decisions: `docs/architecture/tc96-parttens.md`, sections "Estrutura interna dos patterns" (the layered split, the due-date tokens and their contrast ratios, `data-*` over conditional classes, `cn` only on the root), "Organização e fronteiras" (`Text` for titles and items) and "Estrutura do consumidor" (due-date functions from `@tc96/helpers/date`).
+- Decisions: `docs/architecture/tc96-parttens.md`, sections "Estrutura interna dos patterns" (the layered split, the due-date tokens, `data-*` over conditional classes, `cn` only on the root), "Organização e fronteiras" (`Text` for titles and items) and "Estrutura do consumidor" (due-date functions from `@tc96/helpers/date`); contrast ratios: `docs/accessibility.md`.

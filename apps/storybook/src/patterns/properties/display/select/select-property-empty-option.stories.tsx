@@ -44,9 +44,7 @@ const surface = (canvasElement: HTMLElement) =>
 const closed = (trigger: HTMLElement) =>
   waitFor(() => {
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
-    expect(
-      document.querySelector('[data-base-ui-focus-guard]'),
-    ).not.toBeInTheDocument()
+    expect(screen.queryByRole('listbox')).toBeNull()
   })
 
 async function choose(trigger: HTMLElement, name: string) {
