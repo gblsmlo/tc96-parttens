@@ -90,7 +90,7 @@ export function TagsProperty<TValue extends string = string>({
             muted={selectedOptions.length === 0}
             variant={variant}
           >
-            <TagIcon aria-hidden="true" />
+            <TagIcon aria-hidden="true" className="size-3 shrink-0" />
             <span className="tabular-nums">{countText}</span>
           </PropertySurface>
         ) : selectedOptions.length > 0 ? (
@@ -150,7 +150,7 @@ export function TagsProperty<TValue extends string = string>({
                   }
                   variant={variant}
                 >
-                  <TagIcon aria-hidden="true" />
+                  <TagIcon aria-hidden="true" className="size-3 shrink-0" />
                   <span className="tabular-nums">{countText}</span>
                 </PropertySurface>
               )
