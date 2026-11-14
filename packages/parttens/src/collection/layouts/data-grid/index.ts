@@ -20,6 +20,7 @@ export type { DataGridSearchProps } from './components/data-grid-search'
 export { DataGridSearch } from './components/data-grid-search'
 export type { DataGridSelectionSummaryProps } from './components/data-grid-selection-summary'
 export { DataGridSelectionSummary } from './components/data-grid-selection-summary'
+export type { DataGridRowSkeletonAnatomy } from './components/data-grid-skeleton-rows'
 export type { DataGridSortSubmenuProps } from './components/data-grid-sort-submenu'
 export { DataGridSortSubmenu } from './components/data-grid-sort-submenu'
 export type {

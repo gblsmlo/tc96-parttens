@@ -12,7 +12,10 @@ import type { DataGridDensity } from '../types'
 import { DataGridEmptyRow } from './data-grid-empty-row'
 import { DataGridGroupRow } from './data-grid-group-row'
 import { DataGridRow } from './data-grid-row'
-import { DataGridSkeletonRows } from './data-grid-skeleton-rows'
+import {
+  type DataGridRowSkeletonAnatomy,
+  DataGridSkeletonRows,
+} from './data-grid-skeleton-rows'
 
 export interface DataGridBodyProps<TData extends RowData> {
   columnIds: readonly string[]
@@ -26,6 +29,7 @@ export interface DataGridBodyProps<TData extends RowData> {
   hasInteracted: boolean
   headerRowCount: number
   isLoading: boolean
+  loadingRowAnatomy?: DataGridRowSkeletonAnatomy
   loadingRowCount: number
   minWidth: number
   onToggleGroup: (group: string, collapsed: boolean) => void
@@ -48,6 +52,7 @@ export function DataGridBody<TData extends RowData>({
   hasInteracted,
   headerRowCount,
   isLoading,
+  loadingRowAnatomy,
   loadingRowCount,
   minWidth,
   onToggleGroup,
@@ -84,6 +89,7 @@ export function DataGridBody<TData extends RowData>({
     if (isLoading) {
       return (
         <DataGridSkeletonRows
+          {...(loadingRowAnatomy ? { anatomy: loadingRowAnatomy } : {})}
           columnIds={columnIds}
           columnLayouts={columnLayouts}
           density={density}

@@ -8,7 +8,12 @@ import type { ColumnLayouts } from '../lib/column-layout'
 import { CELL_DENSITY, ROW_DENSITY } from '../lib/constants'
 import type { DataGridDensity } from '../types'
 
+export interface DataGridRowSkeletonAnatomy {
+  cell?: 'control' | 'text'
+}
+
 export interface DataGridSkeletonRowsProps {
+  anatomy?: DataGridRowSkeletonAnatomy
   columnIds: readonly string[]
   columnLayouts: ColumnLayouts
   density: DataGridDensity
@@ -17,6 +22,7 @@ export interface DataGridSkeletonRowsProps {
 }
 
 export function DataGridSkeletonRows({
+  anatomy = {},
   columnIds,
   columnLayouts,
   density,
@@ -30,6 +36,7 @@ export function DataGridSkeletonRows({
         'flex w-full border-b last:border-b-0',
         ROW_DENSITY[density],
       )}
+      data-cell={anatomy.cell ?? 'text'}
       key={rowId}
       role="row"
       tabIndex={-1}
@@ -50,7 +57,12 @@ export function DataGridSkeletonRows({
             style={layout?.style}
             tabIndex={-1}
           >
-            <Skeleton className="h-4 w-full" />
+            <Skeleton
+              className={cn(
+                'w-full',
+                anatomy.cell === 'control' ? 'h-6' : 'my-0.5 h-4',
+              )}
+            />
           </div>
         )
       })}
