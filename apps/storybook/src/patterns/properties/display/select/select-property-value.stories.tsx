@@ -73,11 +73,7 @@ export const ReportsChoiceWithReplacedValue: Story = {
     })
     await userEvent.click(trigger)
     await userEvent.click(await screen.findByRole('option', { name: 'Outro' }))
-    await waitFor(() =>
-      expect(
-        document.querySelector('[data-base-ui-focus-guard]'),
-      ).not.toBeInTheDocument(),
-    )
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
 
     await expect(args.action).toHaveBeenCalledTimes(1)
     await expect(args.action).toHaveBeenCalledWith(

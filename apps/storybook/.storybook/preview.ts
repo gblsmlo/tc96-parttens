@@ -100,9 +100,9 @@ const preview: Preview = {
     themePreset: 'default',
   },
   parameters: {
-    // Uma violação do axe reprova o storybook:test. Exceções ficam na story,
-    // com o motivo; hoje só contraste de componentes e exemplos do COSS.
     a11y: {
+      // Base UI focus guards are aria-hidden sentinels with tabindex=0 by design.
+      context: { exclude: ['[data-base-ui-focus-guard]'] },
       test: 'error',
     },
     docs: {

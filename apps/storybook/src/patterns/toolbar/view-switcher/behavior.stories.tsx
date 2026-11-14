@@ -46,9 +46,6 @@ const open = async (canvasElement: HTMLElement, name = 'Todas as pessoas') => {
 
 const expectClosed = async () => {
   await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-  await waitFor(() =>
-    expect(document.querySelector('[data-base-ui-focus-guard]')).toBeNull(),
-  )
 }
 
 export const OpensLabelledDialogNotMenu: Story = {
