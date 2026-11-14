@@ -7,7 +7,15 @@ import {
   CollectionFrameHeader,
   CollectionToolbar,
   KanbanCard,
+  KanbanCardBody,
+  KanbanCardControl,
+  KanbanCardDescription,
+  KanbanCardFooter,
+  KanbanCardHeader,
   type KanbanCardMove,
+  KanbanCardOpenTrigger,
+  type KanbanCardProps,
+  KanbanCardTitle,
   type KanbanColumnData,
   KanbanView,
   MenuCheckboxOption,
@@ -45,6 +53,7 @@ import {
   initialDeals as seedDeals,
   stageOptions,
 } from './deals'
+import { CardCountMenu, CardField, CardMenu } from './kanban-card-parts'
 import { personOptions } from './task-fields'
 import { people, TIME_ZONE } from './tasks'
 import { ViewSwitcherPicker } from './view-switcher-picker'
@@ -75,98 +84,116 @@ const projectDealColumns = (deals: readonly Deal[]): KanbanColumnData<Deal>[] =>
     title: group.label,
   }))
 
-function DealCard({
+export function DealCard({
   deal,
+  density = 'sm',
+  onOpen,
   onOwnerChange,
   onStageChange,
-}: Readonly<{
-  deal: Deal
-  onOwnerChange: (ownerId: string) => void
-  onStageChange: (stage: DealStage) => void
-}>) {
+  ...cardProps
+}: Readonly<
+  Omit<KanbanCardProps, 'children'> & {
+    deal: Deal
+    onOpen?: () => void
+    onOwnerChange: (ownerId: string) => void
+    onStageChange: (stage: DealStage) => void
+  }
+>) {
+  const owner = (
+    <KanbanCardControl className="ml-auto">
+      <PersonProperty
+        ariaLabel="Responsável"
+        avatarSize="sm"
+        display="avatar"
+        onValueChange={onOwnerChange}
+        options={personOptions}
+        value={deal.ownerId}
+        variant="plain"
+      />
+    </KanbanCardControl>
+  )
+
   return (
     <KanbanCard
-      assignee={
-        <PersonProperty
-          ariaLabel="Responsável"
-          avatarSize="sm"
-          display="avatar"
-          onValueChange={onOwnerChange}
-          options={personOptions}
-          value={deal.ownerId}
-          variant="plain"
+      density={density}
+      {...(onOpen ? { variant: 'interactive' as const } : {})}
+      {...cardProps}
+    >
+      {onOpen ? (
+        <KanbanCardOpenTrigger
+          aria-label={`Abrir negócio ${deal.company}`}
+          onClick={onOpen}
         />
-      }
-      counts={[
-        {
-          count: 1,
-          icon: <FileTextIcon aria-hidden />,
-          id: 'notes',
-          items: [{ label: 'Criar nota' }, { label: 'Ver notas' }],
-          label: 'Notas: 1',
-        },
-        {
-          count: 1,
-          icon: <ListTodoIcon aria-hidden />,
-          id: 'tasks',
-          items: [{ label: 'Criar tarefa' }, { label: 'Ver tarefas' }],
-          label: 'Tarefas: 1',
-        },
-        {
-          count: 1,
-          icon: <MessageCircleIcon aria-hidden />,
-          id: 'comments',
-          items: [{ label: 'Criar comentário' }, { label: 'Ver comentários' }],
-          label: 'Comentários: 1',
-        },
-      ]}
-      density="sm"
-      description={deal.contact}
-      fields={[
-        {
-          content: (
-            <SelectProperty
-              ariaLabel="Etapa"
-              onValueChange={(value) => {
-                if (value && isDealStage(value)) onStageChange(value)
-              }}
-              options={stageOptions}
-              value={deal.stage}
-              variant="plain"
-            />
-          ),
-          icon: <CircleDotIcon aria-hidden />,
-          id: 'stage',
-          label: 'Etapa',
-          interactive: true,
-        },
-        {
-          content: (
-            <time dateTime={deal.closeDate}>
-              {formatShortDate(
-                new Date(`${deal.closeDate}T12:00:00Z`),
-                LOCALE,
-                TIME_ZONE,
-              )}
-            </time>
-          ),
-          icon: <CalendarIcon aria-hidden />,
-          id: 'close-date',
-          label: 'Prazo',
-        },
-        {
-          content: formatValue(deal.value),
-          icon: <BanknoteIcon aria-hidden />,
-          id: 'value',
-          label: 'Valor',
-        },
-      ]}
-      menu={{
-        items: [{ label: 'Editar negócio' }, { label: 'Duplicar negócio' }],
-        label: 'Mais ações do negócio',
-      }}
-      title={deal.company}
-    />
+      ) : null}
+      <KanbanCardHeader>
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <KanbanCardTitle className="min-w-0 flex-1 truncate">
+            {deal.company}
+          </KanbanCardTitle>
+          {cardProps.display === 'compact' ? owner : null}
+        </div>
+        <KanbanCardDescription>{deal.contact}</KanbanCardDescription>
+        <CardMenu
+          items={[{ label: 'Editar negócio' }, { label: 'Duplicar negócio' }]}
+          label="Mais ações do negócio"
+        />
+      </KanbanCardHeader>
+      <KanbanCardBody>
+        <CardField
+          icon={<CircleDotIcon aria-hidden />}
+          interactive
+          label="Etapa"
+        >
+          <SelectProperty
+            ariaLabel="Etapa"
+            onValueChange={(value) => {
+              if (value && isDealStage(value)) onStageChange(value)
+            }}
+            options={stageOptions}
+            value={deal.stage}
+            variant="plain"
+          />
+        </CardField>
+        <CardField icon={<CalendarIcon aria-hidden />} label="Prazo">
+          <time dateTime={deal.closeDate}>
+            {formatShortDate(
+              new Date(`${deal.closeDate}T12:00:00Z`),
+              LOCALE,
+              TIME_ZONE,
+            )}
+          </time>
+        </CardField>
+        <CardField icon={<BanknoteIcon aria-hidden />} label="Valor">
+          {formatValue(deal.value)}
+        </CardField>
+      </KanbanCardBody>
+      <KanbanCardFooter>
+        <KanbanCardControl className="min-w-0 flex-1">
+          <CardCountMenu
+            count={1}
+            icon={<FileTextIcon aria-hidden />}
+            items={[{ label: 'Criar nota' }, { label: 'Ver notas' }]}
+            label="Notas: 1"
+          />
+          <CardCountMenu
+            count={1}
+            icon={<ListTodoIcon aria-hidden />}
+            items={[{ label: 'Criar tarefa' }, { label: 'Ver tarefas' }]}
+            label="Tarefas: 1"
+          />
+          <CardCountMenu
+            count={1}
+            icon={<MessageCircleIcon aria-hidden />}
+            items={[
+              { label: 'Criar comentário' },
+              { label: 'Ver comentários' },
+            ]}
+            label="Comentários: 1"
+          />
+        </KanbanCardControl>
+        {owner}
+      </KanbanCardFooter>
+    </KanbanCard>
   )
 }
 

@@ -4,16 +4,14 @@ export type {
   KanbanCardActionButtonProps,
   KanbanCardActionProps,
   KanbanCardBodyProps,
-  KanbanCardBodyRowProps,
-  KanbanCardContentProps,
-  KanbanCardCount,
+  KanbanCardControlProps,
   KanbanCardDescriptionProps,
   KanbanCardDisplay,
-  KanbanCardField,
+  KanbanCardFieldLabelProps,
+  KanbanCardFieldProps,
+  KanbanCardFieldValueProps,
   KanbanCardFooterProps,
   KanbanCardHeaderProps,
-  KanbanCardMenu,
-  KanbanCardMenuItem,
   KanbanCardOpenTriggerProps,
   KanbanCardProps,
   KanbanCardTitleProps,
@@ -23,16 +21,21 @@ export {
   KanbanCardAction,
   KanbanCardActionButton,
   KanbanCardBody,
-  KanbanCardBodyRow,
-  KanbanCardContent,
+  KanbanCardControl,
   KanbanCardDescription,
+  KanbanCardField,
+  KanbanCardFieldLabel,
+  KanbanCardFieldValue,
   KanbanCardFooter,
   KanbanCardHeader,
   KanbanCardOpenTrigger,
   KanbanCardTitle,
   kanbanCardVariants,
 } from './components/kanban-card'
-export type { KanbanCardSkeletonProps } from './components/kanban-card-skeleton'
+export type {
+  KanbanCardSkeletonAnatomy,
+  KanbanCardSkeletonProps,
+} from './components/kanban-card-skeleton'
 export { KanbanCardSkeleton } from './components/kanban-card-skeleton'
 export type { KanbanColumnProps } from './components/kanban-column'
 export { KanbanColumn } from './components/kanban-column'

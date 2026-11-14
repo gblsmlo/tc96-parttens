@@ -17,6 +17,7 @@ import {
   FileTextIcon,
 } from 'lucide-react'
 import { useState } from 'react'
+import { sleep } from '../../../test-utils/sleep'
 import {
   type Contact,
   type ContactDocumentType,
@@ -32,7 +33,6 @@ import {
   CreatableProperty,
   type CreatablePropertyLabels,
 } from './creatable-property'
-import { delay } from './delay'
 
 export type NewContact = Omit<Contact, 'id' | 'lastContactAt'>
 
@@ -142,7 +142,7 @@ export function CreateContactDialog({
         ).trim()
         const trimmedName = name.trim()
         if (trimmedName === '') return false
-        await delay(150)
+        await sleep(150)
         onCreate({
           company: company ?? '',
           description,

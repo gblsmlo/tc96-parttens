@@ -43,6 +43,7 @@ import {
 import { type ReactNode, useState } from 'react'
 
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { sleep } from '../../../../test-utils/sleep'
 import { recordGroupArgTypes } from '../../../../test-utils/story-arg-types'
 import { usageParameters } from '../../../../test-utils/usage-kit'
 import { NoteDialog } from '../../dialog/note-dialog'
@@ -59,9 +60,6 @@ import {
 } from '../../dialog/note-record'
 
 const today = '09/10/2026'
-
-const delay = (milliseconds: number) =>
-  new Promise<void>((resolve) => setTimeout(resolve, milliseconds))
 
 const yesNoOptions: readonly SelectPropertyOption[] = [
   { label: 'Sim', value: 'yes' },
@@ -373,7 +371,7 @@ export const Tasks: Story = {
 export const Triggers: StoryObj<
   UsageArgs & { onRun: (id: string) => Promise<void> }
 > = {
-  args: { onRun: fn(() => delay(400)) },
+  args: { onRun: fn(() => sleep(400)) },
   parameters: describe(
     'Runs commands on the record: each row is a trigger (icon and command) rendered as a `button`, with the `meta` slot on the right left empty for now. The row is busy while its command runs and keeps focus.',
   ),
