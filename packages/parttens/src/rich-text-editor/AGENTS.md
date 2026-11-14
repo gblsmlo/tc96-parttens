@@ -68,7 +68,7 @@ Copy: default labels are pt-BR props; the date block formats with `Intl.DateTime
 - No `cva`: every class is a literal string. Dragging is `isDragging && 'opacity-50'` through `cn`, not a `data-*` attribute.
 - Colors only from theme tokens with opacity modifiers; highlight is `bg-warning/30 text-foreground dark:bg-warning/25`, not a palette yellow.
 - The drag handle wrapper is `opacity-0` and shows with `group-hover/block:opacity-100`, `focus-within:opacity-100` and `pointer-coarse:opacity-100`, because `hover:` does not fire on touch.
-- `renderPlaceholder` overrides Slate's inline `opacity: 0.333` with `opacity: 1`, so the placeholder renders at `text-muted-foreground`: composited, it measured 1.60:1 (light) and 1.69:1 (dark) on the dialog popup, and 5.73:1 and 5.07:1 after. The ratios are in `docs/accessibility.md`, under Decisões; the `Placeholder` story leaves the editor empty so axe checks the pair.
+- `renderPlaceholder` overrides Slate's inline `opacity: 0.333` with `opacity: 1`, so the placeholder renders at `text-muted-foreground`: composited, it measured 1.60:1 (light) and 1.69:1 (dark) on the dialog popup, and 5.73:1 and 5.07:1 after. The ratios are in `docs/accessibility.md`, under Registros de contraste (`RichTextEditor`); the `Placeholder` story leaves the editor empty so axe checks the pair.
 - The caret is the focus indicator: the editable and the title field carry `outline-none`, and the title's `h1` draws no focus background, removed by the owner on 2026-10-09.
 - `scripts/override-exceptions.json` has no entry for this pattern.
 
@@ -86,4 +86,4 @@ Interface tests are `play` functions in `apps/storybook/src/patterns/rich-text-e
 ## Pointers
 
 - Public API: `index.ts` and the `rich-text-editor` entry of `docs/architecture/public-api-exports.json`. Props and defaults are in `rich-text-editor.tsx` and `editor-title.tsx`. The registry ships every file the barrel reaches, so a new file must be imported from one of them; exporting an internal name needs a reason recorded in the architecture doc.
-- Decisions: `docs/architecture/tc96-parttens.md`, sections "Estrutura interna dos patterns" (the Plate port, toolbar, `/` menu, node ids, drag, what was left out), "Registro de decisões" (Plate over Tiptap, Lexical or an own `contenteditable`; COSS UI instead of Plate's component layer); accessibility: `docs/accessibility.md`, section "Decisões" (handle visibility, highlight token, caret as focus indicator).
+- Decisions: `docs/architecture/tc96-parttens.md`, sections "Estrutura interna dos patterns" (the Plate port, toolbar, `/` menu, node ids, drag, what was left out), "Registro de decisões" (Plate over Tiptap, Lexical or an own `contenteditable`; COSS UI instead of Plate's component layer); accessibility: `docs/accessibility.md`, section "Boas práticas" (handle visibility, highlight token, caret as focus indicator).

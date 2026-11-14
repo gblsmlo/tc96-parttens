@@ -109,4 +109,4 @@ Interface tests are `play` functions: `display/<property>/` holds the behavior f
 ## Pointers
 
 - Public API: `index.ts` and the `properties` entry of `docs/architecture/public-api-exports.json`. Props and defaults are in each display's source. The registry ships every file the barrel reaches; exporting from `shared/property-select-shell.tsx` or `display/phone-input/` needs a reason recorded in the architecture doc.
-- Accessibility decisions: `docs/accessibility.md`, sections "Decisões" (10px avatar fallback as `text-[0.625rem]`, the `EditableText` caret as focus indicator) and "Exceções" (the calendar `color-contrast` exception in the `DateRangeProperty` stories).
+- Accessibility: `docs/accessibility.md`, sections "Boas práticas" (10px avatar fallback as `text-[0.625rem]`, the `EditableText` caret as focus indicator) and "Exceções" (the calendar `color-contrast` exception in the `DateRangeProperty` stories).
