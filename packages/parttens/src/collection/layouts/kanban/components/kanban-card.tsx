@@ -3,7 +3,6 @@
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
 import { Text } from '@tc96/elements/text'
-import { Button } from '@tc96/ui/button'
 import {
   Card,
   CardAction,
@@ -13,16 +12,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@tc96/ui/card'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { cn } from '@tc96/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { EllipsisIcon } from 'lucide-react'
 import {
   type ComponentProps,
   type ComponentPropsWithoutRef,
   createContext,
   type ReactElement,
-  type ReactNode,
   useContext,
 } from 'react'
 
@@ -94,50 +90,19 @@ const kanbanCardDescriptionVariants = cva('text-xs leading-5', {
   },
 })
 
-const kanbanCardContentVariants = cva('px-3 pt-0 pb-3')
-
-const kanbanCardFooterVariants = cva(
-  'min-h-9 px-3 py-2 text-xs in-[[data-slot=card]:has(>[data-slot=card-panel])]:pt-3',
+const kanbanCardBodyVariants = cva(
+  'grid grid-cols-[auto_minmax(0,1fr)] gap-2 px-3 pt-0 pb-3 text-sm',
 )
 
-export interface KanbanCardMenuItem {
-  label: string
-  onSelect?: () => void
-}
+const kanbanCardFooterVariants = cva(
+  'min-h-9 gap-2 px-3 py-2 text-xs in-[[data-slot=card]:has(>[data-slot=card-panel])]:pt-3',
+)
 
-export interface KanbanCardMenu {
-  items: readonly KanbanCardMenuItem[]
-  label: string
-}
-
-export interface KanbanCardField {
-  content: ReactNode
-  icon: ReactNode
-  id: string
-  interactive?: boolean
-  label: string
-}
-
-export interface KanbanCardCount extends KanbanCardMenu {
-  count: number
-  icon: ReactNode
-  id: string
-}
-
-export interface KanbanCardProps
-  extends Omit<useRender.ComponentProps<'article'>, 'title'> {
-  assignee?: ReactNode
-  counts?: readonly KanbanCardCount[]
+export interface KanbanCardProps extends useRender.ComponentProps<'article'> {
   density?: VariantProps<typeof kanbanCardSurfaceVariants>['density']
-  description?: ReactNode
   dimmed?: boolean
   display?: KanbanCardDisplay
-  fields?: readonly KanbanCardField[]
-  menu?: KanbanCardMenu
-  onOpen?: () => void
-  openLabel?: string
   selected?: boolean
-  title?: ReactNode
   variant?: VariantProps<typeof kanbanCardVariants>['variant']
 }
 
@@ -146,11 +111,13 @@ export interface KanbanCardActionButtonProps
   extends useRender.ComponentProps<'button'> {
   size?: 'default' | 'icon'
 }
-export type KanbanCardContentProps = ComponentProps<typeof CardContent>
-export type KanbanCardBodyProps = KanbanCardContentProps
-export interface KanbanCardBodyRowProps
+export type KanbanCardBodyProps = ComponentProps<typeof CardContent>
+export type KanbanCardControlProps = ComponentPropsWithoutRef<'span'>
+export type KanbanCardFieldProps = ComponentPropsWithoutRef<'div'>
+export type KanbanCardFieldLabelProps = ComponentProps<typeof Text>
+export interface KanbanCardFieldValueProps
   extends ComponentPropsWithoutRef<'div'> {
-  align?: 'start' | 'between'
+  interactive?: boolean
 }
 export type KanbanCardDescriptionProps = ComponentProps<typeof CardDescription>
 export type KanbanCardFooterProps = ComponentProps<typeof CardFooter>
@@ -161,62 +128,36 @@ export type KanbanCardTitleProps = ComponentProps<typeof CardTitle>
 const KanbanCardDisplayContext = createContext<KanbanCardDisplay>('full')
 
 export function KanbanCard({
-  assignee,
   children,
   className,
-  counts,
   density = 'sm',
-  description,
   dimmed = false,
   display = 'full',
-  fields,
-  menu,
-  onOpen,
-  openLabel,
   ref,
   render,
   selected = false,
-  title,
   variant = 'default',
   ...props
 }: KanbanCardProps): ReactElement {
-  const card = (
-    <Card
-      className={cn(
-        kanbanCardSurfaceVariants({ density }),
-        kanbanCardVariants({ dimmed, selected, variant }),
-        className,
-      )}
-      data-density={density}
-      data-display={display}
-      data-pattern="kanban-card"
-      data-state={selected ? 'selected' : undefined}
-      data-variant={variant}
-      render={render ?? <article />}
-      ref={ref as ComponentProps<typeof Card>['ref']}
-      {...props}
-    >
-      {onOpen && (
-        <KanbanCardOpenTrigger aria-label={openLabel} onClick={onOpen} />
-      )}
-      {title !== undefined && (
-        <KanbanCardAnatomy
-          assignee={assignee}
-          counts={counts}
-          description={description}
-          display={display}
-          fields={fields}
-          menu={menu}
-          title={title}
-        />
-      )}
-      {children}
-    </Card>
-  )
-
   return (
     <KanbanCardDisplayContext.Provider value={display}>
-      {card}
+      <Card
+        className={cn(
+          kanbanCardSurfaceVariants({ density }),
+          kanbanCardVariants({ dimmed, selected, variant }),
+          className,
+        )}
+        data-density={density}
+        data-display={display}
+        data-pattern="kanban-card"
+        data-state={selected ? 'selected' : undefined}
+        data-variant={variant}
+        render={render ?? <article />}
+        ref={ref as ComponentProps<typeof Card>['ref']}
+        {...props}
+      >
+        {children}
+      </Card>
     </KanbanCardDisplayContext.Provider>
   )
 }
@@ -320,36 +261,76 @@ export function KanbanCardOpenTrigger({
   )
 }
 
-export function KanbanCardContent({
+export function KanbanCardBody({
   className,
   ...props
-}: KanbanCardContentProps): ReactElement {
+}: KanbanCardBodyProps): ReactElement {
   const display = useContext(KanbanCardDisplayContext)
 
   return (
     <CardContent
-      className={cn(kanbanCardContentVariants(), className)}
+      className={cn(kanbanCardBodyVariants(), className)}
       {...props}
       hidden={display === 'compact' || props.hidden}
     />
   )
 }
 
-export const KanbanCardBody = KanbanCardContent
-
-export function KanbanCardBodyRow({
-  align = 'start',
+export function KanbanCardField({
   className,
   ...props
-}: KanbanCardBodyRowProps): ReactElement {
+}: KanbanCardFieldProps): ReactElement {
   return (
     <div
+      className={cn('col-span-2 grid min-w-0 grid-cols-subgrid', className)}
+      data-slot="kanban-card-field"
+      {...props}
+    />
+  )
+}
+
+export function KanbanCardFieldLabel({
+  className,
+  ...props
+}: KanbanCardFieldLabelProps): ReactElement {
+  return (
+    <Text
       className={cn(
-        'flex min-w-0 items-center gap-2',
-        align === 'between' ? 'justify-between' : 'justify-start',
+        'flex min-w-0 items-center gap-2 [&>svg]:size-3.5 [&>svg]:shrink-0',
         className,
       )}
-      data-slot="kanban-card-body-row"
+      data-slot="kanban-card-field-label"
+      foreground="muted"
+      size="sm"
+      {...props}
+    />
+  )
+}
+
+export function KanbanCardFieldValue({
+  className,
+  interactive = false,
+  ...props
+}: KanbanCardFieldValueProps): ReactElement {
+  return (
+    <div
+      className={cn('flex min-w-0 flex-1 items-center tabular-nums', className)}
+      data-kanban-card-action={interactive ? '' : undefined}
+      data-slot="kanban-card-field-value"
+      {...props}
+    />
+  )
+}
+
+export function KanbanCardControl({
+  className,
+  ...props
+}: KanbanCardControlProps): ReactElement {
+  return (
+    <span
+      className={cn('flex shrink-0 items-center gap-1', className)}
+      data-kanban-card-action=""
+      data-slot="kanban-card-control"
       {...props}
     />
   )
@@ -367,137 +348,5 @@ export function KanbanCardFooter({
       {...props}
       hidden={display === 'compact' || props.hidden}
     />
-  )
-}
-
-function KanbanCardMenuButton({ items, label }: KanbanCardMenu): ReactElement {
-  return (
-    <Menu>
-      <MenuTrigger
-        render={<KanbanCardActionButton aria-label={label} size="icon" />}
-      >
-        <EllipsisIcon aria-hidden className="size-4" />
-      </MenuTrigger>
-      <MenuPopup align="end">
-        {items.map((item) => (
-          <MenuItem key={item.label} onClick={item.onSelect}>
-            {item.label}
-          </MenuItem>
-        ))}
-      </MenuPopup>
-    </Menu>
-  )
-}
-
-function KanbanCardCountButton({
-  count,
-  icon,
-  items,
-  label,
-}: KanbanCardCount): ReactElement {
-  return (
-    <Menu>
-      <MenuTrigger
-        render={
-          <Button
-            aria-label={label}
-            data-kanban-card-action=""
-            size="xs"
-            variant="secondary"
-          />
-        }
-      >
-        {icon}
-        <span>{count}</span>
-      </MenuTrigger>
-      <MenuPopup align="start">
-        {items.map((item) => (
-          <MenuItem key={item.label} onClick={item.onSelect}>
-            {item.label}
-          </MenuItem>
-        ))}
-      </MenuPopup>
-    </Menu>
-  )
-}
-
-function KanbanCardAnatomy({
-  assignee,
-  counts = [],
-  description,
-  display,
-  fields = [],
-  menu,
-  title,
-}: Readonly<
-  Pick<
-    KanbanCardProps,
-    'assignee' | 'counts' | 'description' | 'fields' | 'menu' | 'title'
-  > & { display: KanbanCardDisplay }
->): ReactElement {
-  return (
-    <>
-      <KanbanCardHeader>
-        <div className="flex min-w-0 flex-1 items-center gap-2">
-          <KanbanCardTitle className="min-w-0 flex-1 truncate">
-            {title}
-          </KanbanCardTitle>
-          {display === 'compact' && assignee && (
-            <span className="flex shrink-0" data-kanban-card-action="">
-              {assignee}
-            </span>
-          )}
-        </div>
-        {description && (
-          <KanbanCardDescription>{description}</KanbanCardDescription>
-        )}
-        {menu && (
-          <KanbanCardAction>
-            <KanbanCardMenuButton {...menu} />
-          </KanbanCardAction>
-        )}
-      </KanbanCardHeader>
-
-      {fields.length > 0 && (
-        <KanbanCardBody className="grid grid-cols-[auto_minmax(0,1fr)] gap-2 text-sm">
-          {fields.map((field) => (
-            <KanbanCardBodyRow
-              className="col-span-2 grid grid-cols-subgrid"
-              key={field.id}
-            >
-              <Text
-                className="flex min-w-0 items-center gap-2 [&>svg]:size-3.5 [&>svg]:shrink-0"
-                foreground="muted"
-                size="sm"
-              >
-                {field.icon}
-                <span className="truncate">{field.label}</span>
-              </Text>
-              <div
-                className="flex min-w-0 flex-1 items-center tabular-nums"
-                data-kanban-card-action={field.interactive ? '' : undefined}
-              >
-                {field.content}
-              </div>
-            </KanbanCardBodyRow>
-          ))}
-        </KanbanCardBody>
-      )}
-
-      {(counts.length > 0 || assignee) && (
-        <KanbanCardFooter className="gap-2">
-          <div className="flex min-w-0 flex-1 items-center gap-1">
-            {counts.map((count) => (
-              <KanbanCardCountButton key={count.id} {...count} />
-            ))}
-          </div>
-          {assignee && (
-            <span className="ml-auto flex shrink-0" data-kanban-card-action="">
-              {assignee}
-            </span>
-          )}
-        </KanbanCardFooter>
-      )}
-    </>
   )
 }

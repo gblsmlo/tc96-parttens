@@ -13,6 +13,7 @@ import type {
   KanbanColumnData,
   KanbanColumnOption,
 } from '../types'
+import type { KanbanCardSkeletonAnatomy } from './kanban-card-skeleton'
 import { KanbanColumn } from './kanban-column'
 import { KanbanColumnSelector } from './kanban-column-selector'
 
@@ -26,6 +27,7 @@ export interface KanbanViewProps<TCard = unknown> {
   ) => KanbanColumnActions | undefined
   emptyColumnLabel?: string
   loading?: boolean
+  loadingCardAnatomy?: KanbanCardSkeletonAnatomy
   loadingCardCount?: number
   loadingCardLabel?: string
   mobileColumnHint?: string
@@ -42,6 +44,7 @@ export function KanbanView<TCard>({
   getColumnActions,
   emptyColumnLabel,
   loading = false,
+  loadingCardAnatomy,
   loadingCardCount = 1,
   loadingCardLabel,
   mobileColumnHint,
@@ -90,6 +93,7 @@ export function KanbanView<TCard>({
     getCardDragId,
     getKey,
     loading,
+    ...(loadingCardAnatomy ? { loadingCardAnatomy } : {}),
     loadingCardCount,
     loadingCardLabel,
     renderColumnTitle,

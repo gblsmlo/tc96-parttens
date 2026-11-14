@@ -10,7 +10,10 @@ import { memo, useId } from 'react'
 import { createColumnDropId } from '../lib/drag-and-drop'
 import type { KanbanColumnActions, KanbanColumnData } from '../types'
 import { KanbanBadge } from './kanban-badge'
-import { KanbanCardSkeleton } from './kanban-card-skeleton'
+import {
+  KanbanCardSkeleton,
+  type KanbanCardSkeletonAnatomy,
+} from './kanban-card-skeleton'
 import { SortableKanbanCard } from './sortable-kanban-card'
 
 export interface KanbanColumnProps<TCard = unknown> {
@@ -22,6 +25,7 @@ export interface KanbanColumnProps<TCard = unknown> {
   getCardDragId?: (card: TCard) => string
   getCardLabel?: (card: TCard) => string
   loading?: boolean
+  loadingCardAnatomy?: KanbanCardSkeletonAnatomy
   loadingCardCount?: number
   loadingCardLabel?: string
   renderColumnTitle?: (column: KanbanColumnData<TCard>) => ReactNode
@@ -142,6 +146,7 @@ interface KanbanColumnCardsProps<TCard> {
   getCardLabel: (card: TCard) => string
   getKey: (card: TCard) => string | number
   loading: boolean
+  loadingCardAnatomy?: KanbanCardSkeletonAnatomy
   loadingCardCount: number
   loadingCardLabel?: string
   renderCard: (card: TCard) => ReactNode
@@ -155,6 +160,7 @@ function KanbanColumnCards<TCard>({
   getCardLabel,
   getKey,
   loading,
+  loadingCardAnatomy,
   loadingCardCount,
   loadingCardLabel,
   renderCard,
@@ -171,6 +177,7 @@ function KanbanColumnCards<TCard>({
     return loadingCards.map((card) => (
       <KanbanCardSkeleton
         key={card.id}
+        {...loadingCardAnatomy}
         {...(loadingCardLabel ? { label: loadingCardLabel } : {})}
       />
     ))
@@ -256,6 +263,7 @@ export function KanbanColumn<TCard>({
   getCardDragId,
   getCardLabel = (card) => String(getKey(card)),
   loading = false,
+  loadingCardAnatomy,
   loadingCardCount = 1,
   loadingCardLabel,
   renderColumnTitle,
@@ -312,6 +320,7 @@ export function KanbanColumn<TCard>({
               getCardLabel={getCardLabel}
               getKey={getKey}
               loading={loading}
+              {...(loadingCardAnatomy ? { loadingCardAnatomy } : {})}
               loadingCardCount={loadingCardCount}
               renderCard={renderCard}
               sortableCards={sortableCards}
