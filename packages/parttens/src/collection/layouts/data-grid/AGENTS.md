@@ -50,6 +50,7 @@ Groups and pagination:
 - `useDataGrid` always registers pagination with `manualPagination: !enablePagination`, so without the flag the table yields every row. `DataGrid` shows `DataGridPagination` whenever the table paginates; `footer` replaces it, `pagination={false}` drops it.
 - `DataGridSearch` and `DataGridFilterMenu` return to page one on every change; the search filters per keystroke, unlike `CollectionSearchField`.
 - Virtualization applies only without `getRowGroup`, not loading and with rows, because only then is `entries[i]` the `i`-th virtual row.
+- Loading rows keep the height of loaded rows when `loadingRowAnatomy.cell` matches the cells: `control` (24px, the property surfaces) or `text` (20px); the density sets the row minimum either way. Pass the page size as `loadingRowCount` when the grid paginates. The skeleton rows carry `data-cell`.
 
 Cells:
 

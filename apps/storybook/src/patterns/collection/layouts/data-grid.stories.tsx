@@ -7,17 +7,13 @@ import {
   useDataGrid,
 } from '@tc96/parttens'
 import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
-import { type ReactElement, useMemo, useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
-import { booleanArgType } from '../../../test-utils/story-arg-types'
+import { type ReactElement, useEffect, useMemo, useState } from 'react'
+import { expect, userEvent, waitFor, within } from 'storybook/test'
+import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
+import { sleep } from '../../../test-utils/sleep'
 import { createDataGridColumns } from '../fixtures/task-fields'
 import { useTasks } from '../fixtures/task-renderers'
-import {
-  initialTasks,
-  people,
-  statusOptions,
-  type Task,
-} from '../fixtures/tasks'
+import { initialTasks, people, type Task } from '../fixtures/tasks'
 
 const assigneeOrder = people.map((person) => person.id)
 const sortByAssignee = (tasks: readonly Task[]) =>
@@ -92,6 +88,8 @@ function DataGridExample({
         {...(collapsedGroupIds ? { collapsedGroupIds } : {})}
         {...(onCollapsedGroupIdsChange ? { onCollapsedGroupIdsChange } : {})}
         isLoading={isLoading}
+        loadingRowAnatomy={{ cell: 'control' }}
+        loadingRowCount={paginated ? 5 : rows.length}
         maxHeight={maxHeight}
         selectionActions={
           selectable
@@ -159,259 +157,263 @@ function DataGridExample({
   )
 }
 
-const meta = {
-  argTypes: {
-    density: {
-      control: 'select',
-      options: ['short', 'medium', 'tall', 'extra-tall'],
+interface GridArgs {
+  density: DataGridDensity
+  empty: boolean
+  grouped: boolean
+  isLoading: boolean
+  paginated: boolean
+  selectable: boolean
+}
+
+const GridDoc = DataGrid as unknown as (props: GridArgs) => ReactElement
+
+const hidden = { table: { disable: true } } as const
+const LOAD_DELAY = 2000
+const PAGE_SIZE = 5
+
+const usage = `
+import { DataGrid, useDataGrid } from '@acme/patterns'
+
+const { table } = useDataGrid({
+  columns,
+  data,
+  enablePagination: true,
+  enableRowSelection: true,
+  getRowId: (task) => task.id,
+  pageSize: 5,
+})
+
+<DataGrid
+  aria-label="Tarefas"
+  density="medium"
+  getRowGroup={(task) => task.assigneeName}
+  isLoading={isLoading}
+  loadingRowAnatomy={{ cell: 'control' }}
+  loadingRowCount={5}
+  selectionActions={({ selectedCount, clearSelection }) => <ActionBar … />}
+  table={table}
+/>
+`
+
+const docs = {
+  api: [
+    {
+      description:
+        'Spreadsheet over the WAI-ARIA grid pattern and a TanStack table from `useDataGrid`. Cells are focusable with the arrow keys, Home and End; Shift extends the cell selection. `getRowGroup` opens a collapsible group row per run of equal values; `selectionActions` renders over the footer while rows are selected; the pagination footer comes with a paginated table. Rows are virtualized without groups. `density` sets the row height, and loading rows keep it.',
+      name: 'DataGrid',
     },
-    grouped: booleanArgType,
-    fullHeight: booleanArgType,
-    isLoading: booleanArgType,
-    paginated: booleanArgType,
-    selectable: booleanArgType,
-  },
-  component: DataGridExample,
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'DataGrid building block. Documents the column header, density, grouping, selection, pagination, loading and empty states over the launch tasks shared by every view. The table comes from `useDataGrid`; the consumer owns the columns.',
-      },
+    {
+      description:
+        'Builds the table: `enablePagination` with `pageSize`, `enableRowSelection`, `getRowId` and `onCellValueChange` for editable cells.',
+      name: 'useDataGrid',
     },
-    layout: 'centered',
+  ],
+  description: {
+    component:
+      '`DataGrid` renders a collection as an editable spreadsheet. `Anatomy` shows the header, the rows and the footer, driven by the controls. `Usage` is the Tasks grid with selection, groups and pagination. `Behavior` is the usage under test: it loads after a simulated delay keeping the row height, moves the cell focus with the keyboard, selects rows with their action bar and pages forward and back.',
   },
-  title: 'Patterns/Collection/Layouts/Data Grid',
-} satisfies Meta<typeof DataGridExample>
+  usage,
+} satisfies UsageDocsParameters & Record<string, unknown>
 
-export default meta
+const slotClassName =
+  'flex h-6 min-w-16 items-center justify-center rounded-sm border border-dashed px-2 text-muted-foreground text-xs'
 
-type Story = StoryObj<typeof meta>
+interface AnatomyRecord {
+  group: string
+  id: string
+}
 
-export const Default: Story = {}
+const anatomyRecords: AnatomyRecord[] = [
+  { group: 'Group', id: 'a' },
+  { group: 'Group', id: 'b' },
+  { group: 'Another group', id: 'c' },
+]
 
-export const Paginated: Story = { args: { paginated: true } }
-
-export const Grouped: Story = {
-  args: { grouped: true },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const toggle = canvas.getByRole('button', { name: 'Collapse Ana Souza' })
-
-    await userEvent.click(toggle)
-    await expect(canvas.queryByText('Implementar onboarding')).toBeNull()
-    await expect(toggle.getAttribute('aria-expanded')).toBe('false')
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Expand Ana Souza' }),
-    )
-    await expect(canvas.getByText('Implementar onboarding')).toBeTruthy()
+const anatomyColumns: DataGridColumnDef<AnatomyRecord>[] = [
+  {
+    accessorKey: 'id',
+    cell: () => <span className={slotClassName}>cell</span>,
+    header: () => <span className={slotClassName}>header</span>,
   },
-}
-
-function ControlledGroupsExample(): ReactElement {
-  const [collapsedGroupIds, setCollapsedGroupIds] = useState<readonly string[]>(
-    ['Bruno Lima'],
-  )
-
-  return (
-    <DataGridExample
-      collapsedGroupIds={collapsedGroupIds}
-      grouped
-      onCollapsedGroupIdsChange={setCollapsedGroupIds}
-    />
-  )
-}
-
-export const GroupedControlled: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Whoever composes the grid keeps the collapsed groups, for example to remember them between visits. Bruno Lima starts collapsed.',
-      },
-    },
+  {
+    accessorKey: 'group',
+    cell: () => <span className={slotClassName}>cell</span>,
+    header: () => <span className={slotClassName}>header</span>,
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
+]
 
-    await expect(canvas.queryByText('Revisar API de pagamentos')).toBeNull()
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Expand Bruno Lima' }),
-    )
-    await expect(canvas.getByText('Revisar API de pagamentos')).toBeTruthy()
-  },
-  render: () => <ControlledGroupsExample />,
-}
-
-export const Selectable: Story = {
-  args: { fullHeight: true, selectable: true },
-}
-
-const assigneeOptions = people.map((person) => ({
-  label: person.name,
-  value: person.id,
-}))
-
-function EditableExample(): ReactElement {
-  const { tasks, updateTask } = useTasks()
-
-  const editableColumns = useMemo<DataGridColumnDef<Task>[]>(
-    () => [
-      {
-        accessorKey: 'title',
-        enableHiding: false,
-        header: 'Tarefa',
-        meta: { label: 'Tarefa', type: 'title' },
-        minSize: 240,
-      },
-      {
-        accessorKey: 'status',
-        header: 'Status',
-        meta: {
-          editable: true,
-          label: 'Status',
-          options: statusOptions.map(({ label, value }) => ({ label, value })),
-          type: 'status',
-          variant: 'select',
-        },
-        minSize: 170,
-      },
-      {
-        accessorKey: 'assigneeId',
-        header: 'Responsável',
-        meta: {
-          badgeVariant: 'outline',
-          editable: true,
-          label: 'Responsável',
-          options: assigneeOptions,
-          type: 'person',
-          variant: 'select',
-        },
-        minSize: 190,
-      },
-    ],
-    [],
-  )
-
-  const { table } = useDataGrid<Task>({
-    columns: editableColumns,
-    data: tasks,
-    getRowId: (task) => task.id,
-    onCellValueChange: ({ columnId, rowId, value }) =>
-      updateTask(rowId, { [columnId]: value }),
-  })
-
-  return (
-    <div className="p-4">
-      <DataGrid aria-label="Tarefas do lançamento" table={table} />
-    </div>
-  )
-}
-
-export const EditableValues: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Status and Assignee are closed values, so the cell becomes a property with a trigger: the Badge opens the Select and the grid emits `onCellValueChange`. The consumer writes to the collection.',
-      },
-    },
-  },
-  render: () => <EditableExample />,
-}
-
-function FillExample({
-  fillColumn,
-}: Readonly<{ fillColumn?: string | false }>): ReactElement {
-  const { tasks, updateTask } = useTasks(initialTasks.slice(0, 3))
-  const columns = useMemo(
-    () =>
-      createDataGridColumns(updateTask).filter(
-        (column) => column.id !== 'select',
-      ),
-    [updateTask],
-  )
-  const { table } = useDataGrid<Task>({
-    columns,
-    data: tasks,
-    getRowId: (task) => task.id,
+function AnatomyGrid({
+  density,
+  empty,
+  grouped,
+  isLoading,
+  paginated,
+}: Readonly<GridArgs>): ReactElement {
+  const { table } = useDataGrid<AnatomyRecord>({
+    columns: anatomyColumns,
+    data: empty ? [] : anatomyRecords,
+    enablePagination: paginated,
+    getRowId: (record) => record.id,
+    pageSize: 2,
   })
 
   return (
     <DataGrid
-      aria-label="Tarefas do lançamento"
-      fillColumn={fillColumn}
+      aria-label="Anatomy"
+      density={density}
+      emptyMessage="emptyMessage"
+      getRowGroup={grouped ? (record) => record.group : undefined}
+      isLoading={isLoading}
       table={table}
     />
   )
 }
 
-export const FillColumn: Story = {
-  play: async ({ canvasElement }) => {
-    for (const grid of canvasElement.querySelectorAll(
-      '[data-slot="data-grid"]',
-    )) {
-      const viewport = grid.querySelector('[data-slot="scroll-area-viewport"]')
-      const body = grid.querySelector('[data-slot="data-grid-body"]')
-      const header = grid.querySelector('[data-slot="data-grid-header"]')
-      if (!(viewport && body && header)) throw new Error('grid não montou')
+function LoadingTasksGrid() {
+  const [isLoading, setIsLoading] = useState(true)
 
-      await expect(viewport.scrollWidth).toBe(body.scrollWidth)
-      await expect(header.scrollWidth).toBe(body.scrollWidth)
+  useEffect(() => {
+    let active = true
+    sleep(LOAD_DELAY).then(() => {
+      if (active) setIsLoading(false)
+    })
+    return () => {
+      active = false
     }
+  }, [])
+
+  return <DataGridExample isLoading={isLoading} paginated selectable />
+}
+
+const meta = {
+  args: {
+    density: 'medium',
+    empty: false,
+    grouped: false,
+    isLoading: false,
+    paginated: true,
+    selectable: true,
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'By default the last column grows to close the frame. `fillColumn` moves that role to another column. With `false` none grows and the frame shrinks to the sum of the columns; stretching it would leave a borderless strip on the right that reads as a ghost column. When the columns exceed the container, the grid scrolls.',
-      },
+  argTypes: {
+    density: {
+      control: 'inline-radio',
+      options: ['short', 'medium', 'tall', 'extra-tall'],
     },
+    empty: { control: 'boolean' },
+    grouped: { control: 'boolean' },
+    isLoading: { control: 'boolean' },
+    paginated: { control: 'boolean' },
+    selectable: { control: 'boolean' },
   },
-  render: () => (
-    <div className="flex flex-col gap-6 p-4">
-      {(
-        [
-          ['Padrão: a última coluna cresce', undefined],
-          ["fillColumn='title': a primeira cresce", 'title'],
-          ['fillColumn={false}: nenhuma cresce, a moldura encolhe', false],
-        ] as const
-      ).map(([label, fillColumn]) => (
-        <div className="flex flex-col gap-1" key={label}>
-          <p className="font-medium text-muted-foreground text-sm">{label}</p>
-          <FillExample fillColumn={fillColumn} />
-        </div>
-      ))}
+  component: GridDoc,
+  decorators: [
+    (Story) => (
+      <div className="w-[calc(100vw-2rem)] max-w-[1280px]">
+        <Story />
+      </div>
+    ),
+  ],
+  parameters: { docs },
+  title: 'Patterns/Collection/Layouts/Data Grid',
+} satisfies Meta<GridArgs>
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Anatomy: Story = {
+  argTypes: { selectable: hidden },
+  play: async ({ args, canvasElement }) => {
+    if (args.isLoading || args.empty) return
+    await expect(
+      within(canvasElement).getAllByRole('columnheader').length,
+    ).toBeGreaterThan(0)
+  },
+  render: (args) => (
+    <div className="p-4">
+      <AnatomyGrid {...args} />
     </div>
   ),
 }
 
-export const Densities: Story = {
-  render: () => (
-    <div className="flex flex-col gap-6 p-4">
-      {(['short', 'medium', 'tall', 'extra-tall'] as const).map((density) => (
-        <div className="flex flex-col gap-1" key={density}>
-          <p className="font-medium text-muted-foreground text-sm">{density}</p>
-          <DataGridExample data={initialTasks.slice(0, 3)} density={density} />
-        </div>
-      ))}
-    </div>
+export const Usage: Story = {
+  render: ({ empty, ...args }) => (
+    <DataGridExample {...args} {...(empty ? { data: [] } : {})} />
   ),
 }
 
-export const Scrollable: Story = {
-  args: { maxHeight: 160 },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'With `maxHeight` the grid stops growing and scrolls inside, with the header stuck.',
-      },
-    },
+export const Behavior: Story = {
+  argTypes: {
+    density: hidden,
+    empty: hidden,
+    grouped: hidden,
+    isLoading: hidden,
+    paginated: hidden,
+    selectable: hidden,
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const grid = canvas.getByRole('grid', { name: 'Tarefas do lançamento' })
+    const bodyRows = () =>
+      [...grid.querySelectorAll<HTMLElement>('[role="row"]')].filter((row) =>
+        row.querySelector('[role="gridcell"]'),
+      )
+
+    await expect(grid).toHaveAttribute('aria-busy', 'true')
+    const skeletonRowHeight = bodyRows()[0]?.getBoundingClientRect().height
+
+    const [first] = initialTasks
+    if (!first) throw new Error('The fixture has no task.')
+    await canvas.findByText(first.title, undefined, {
+      timeout: LOAD_DELAY * 2,
+    })
+    await expect(grid).not.toHaveAttribute('aria-busy')
+    await expect(bodyRows()[0]?.getBoundingClientRect().height).toBe(
+      skeletonRowHeight,
+    )
+    const gridHeight = grid.getBoundingClientRect().height
+
+    const titleCell = canvas
+      .getByText(first.title)
+      .closest<HTMLElement>('[role="gridcell"]')
+    if (!titleCell) throw new Error('The title is not inside a grid cell.')
+    await userEvent.click(titleCell)
+    await waitFor(() =>
+      expect(titleCell.contains(document.activeElement)).toBe(true),
+    )
+    await userEvent.keyboard('{ArrowRight}')
+    await waitFor(() =>
+      expect(titleCell.contains(document.activeElement)).toBe(false),
+    )
+    await userEvent.keyboard('{ArrowLeft}')
+    await waitFor(() =>
+      expect(titleCell.contains(document.activeElement)).toBe(true),
+    )
+
+    const [checkbox] = canvas.getAllByRole('checkbox', {
+      name: 'Selecionar registro',
+    })
+    if (!checkbox) throw new Error('The grid has no row checkbox.')
+    await userEvent.click(checkbox)
+    await expect(
+      await canvas.findByRole('button', { name: 'Enviar' }),
+    ).toBeVisible()
+    await userEvent.click(checkbox)
+    await waitFor(() =>
+      expect(canvas.queryByRole('button', { name: 'Enviar' })).toBeNull(),
+    )
+
+    const pageOf = (page: number) =>
+      initialTasks.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    const goTo = async (name: string, page: number) => {
+      await sleep(LOAD_DELAY)
+      await userEvent.click(canvas.getByRole('button', { name }))
+      await canvas.findByText(pageOf(page)[0]?.title ?? '')
+      await expect(grid.getBoundingClientRect().height).toBe(gridHeight)
+    }
+    await goTo('Próxima página', 2)
+    await goTo('Página anterior', 1)
+  },
+  render: () => <LoadingTasksGrid />,
 }
-
-export const Loading: Story = { args: { isLoading: true } }
-
-export const Empty: Story = { args: { data: [] } }

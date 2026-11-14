@@ -36,6 +36,7 @@ import {
   DataGridSelectionActions,
   type DataGridSelectionActionsProp,
 } from './data-grid-selection-actions'
+import type { DataGridRowSkeletonAnatomy } from './data-grid-skeleton-rows'
 
 export interface DataGridProps<TData extends RowData> {
   table: DataGridTable<TData>
@@ -44,6 +45,7 @@ export interface DataGridProps<TData extends RowData> {
   footer?: ReactNode
   density?: DataGridDensity
   isLoading?: boolean
+  loadingRowAnatomy?: DataGridRowSkeletonAnatomy
   loadingRowCount?: number
   emptyMessage?: string
   maxHeight?: number | string
@@ -70,6 +72,7 @@ export function DataGrid<TData extends RowData>({
   footer,
   density: densityProp,
   isLoading = false,
+  loadingRowAnatomy,
   loadingRowCount = 5,
   emptyMessage = 'Nenhum registro para exibir.',
   maxHeight,
@@ -256,6 +259,7 @@ export function DataGrid<TData extends RowData>({
                 hasInteracted={cellSelection.hasInteracted}
                 headerRowCount={model.headerRowCount}
                 isLoading={isLoading}
+                {...(loadingRowAnatomy ? { loadingRowAnatomy } : {})}
                 loadingRowCount={loadingRowCount}
                 minWidth={totalSize}
                 onToggleGroup={onToggleGroup}
