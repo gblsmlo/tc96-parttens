@@ -33,10 +33,16 @@ import { DataTableRow } from './data-table-row'
 import type { DataTableFeatures, DataTableTable } from './use-data-table'
 import { useHorizontalOverflow } from './use-horizontal-overflow'
 
+export interface DataTableRowSkeletonAnatomy {
+  cell?: 'control' | 'text'
+  lines?: 1 | 2
+}
+
 export interface DataTableProps<TData extends RowData>
   extends Omit<ComponentProps<'table'>, 'children'> {
   table: DataTableTable<TData>
   isLoading?: boolean
+  loadingRowAnatomy?: DataTableRowSkeletonAnatomy
   loadingRowCount?: number
   emptyMessage?: string
   /** Moldura do DataGrid, para as duas views lerem como a mesma superfície. */
@@ -59,6 +65,7 @@ const columnMetaOf = <TData,>(column: {
 export function DataTable<TData extends RowData>({
   table,
   isLoading = false,
+  loadingRowAnatomy = {},
   loadingRowCount = 5,
   emptyMessage = 'Nenhum registro para exibir.',
   bordered = true,
@@ -87,6 +94,10 @@ export function DataTable<TData extends RowData>({
   const rows = table.getRowModel().rows
   const visibleColumns = table.getVisibleLeafColumns()
   const columnCount = visibleColumns.length
+  const linesColumnIndex = Math.max(
+    visibleColumns.findIndex((column) => column.accessorFn),
+    0,
+  )
   const resizable = Boolean(table.options.enableColumnResizing)
   const fillColumnId = visibleColumns.at(-1)?.id
   const meta = table.options.meta
@@ -192,12 +203,33 @@ export function DataTable<TData extends RowData>({
               <TableBody>
                 {isLoading ? (
                   skeletonKeys('loading', loadingRowCount).map((rowKey) => (
-                    <TableRow key={rowKey}>
-                      {skeletonKeys(rowKey, columnCount).map((cellKey) => (
-                        <TableCell key={cellKey}>
-                          <Skeleton className="h-4 min-w-4 w-full" />
-                        </TableCell>
-                      ))}
+                    <TableRow
+                      data-cell={loadingRowAnatomy.cell ?? 'text'}
+                      data-lines={loadingRowAnatomy.lines ?? 1}
+                      key={rowKey}
+                    >
+                      {skeletonKeys(rowKey, columnCount).map(
+                        (cellKey, index) => (
+                          <TableCell key={cellKey}>
+                            {index === linesColumnIndex &&
+                            loadingRowAnatomy.lines === 2 ? (
+                              <div className="flex min-w-4 flex-col">
+                                <Skeleton className="my-0.5 h-4 w-full" />
+                                <Skeleton className="h-3 w-1/2" />
+                              </div>
+                            ) : (
+                              <Skeleton
+                                className={cn(
+                                  'min-w-4 w-full',
+                                  loadingRowAnatomy.cell === 'control'
+                                    ? 'h-6'
+                                    : 'my-0.5 h-4',
+                                )}
+                              />
+                            )}
+                          </TableCell>
+                        ),
+                      )}
                     </TableRow>
                   ))
                 ) : rows.length ? (

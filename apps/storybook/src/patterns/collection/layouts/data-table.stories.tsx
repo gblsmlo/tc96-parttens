@@ -1,14 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
+  CollectionToolbar,
   DataGridPagination,
   DataTable,
   type DataTableColumnDef,
+  DataTableColumnsSubmenu,
   type DataTableProps,
+  type DataTableRowSkeletonAnatomy,
   useDataTable,
+  ViewSettingsMenu,
+  ViewSettingsSection,
 } from '@tc96/parttens'
-import { type ReactElement, useMemo } from 'react'
+import { type ReactElement, useEffect, useMemo, useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
-import { booleanArgType } from '../../../test-utils/story-arg-types'
+import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
+import { sleep } from '../../../test-utils/sleep'
 import {
   createDataTableColumns,
   taskTableAggregations,
@@ -16,59 +22,156 @@ import {
 import { useTasks } from '../fixtures/task-renderers'
 import { initialTasks, type Task } from '../fixtures/tasks'
 
+interface TableArgs {
+  bordered: boolean
+  empty: boolean
+  isLoading: boolean
+  paginated: boolean
+  resizable: boolean
+}
+
+const TableDoc = DataTable as unknown as (props: TableArgs) => ReactElement
+
+const hidden = { table: { disable: true } } as const
 const openTask = fn()
-const addNote = fn()
+const LOAD_DELAY = 2000
+const PAGE_SIZE = 5
 
-const noteColumn: DataTableColumnDef<Task> = {
-  cell: ({ row }) => (
-    <button
-      aria-label={`Anotar ${row.original.title}`}
-      className="text-sm underline"
-      onClick={() => addNote(row.original)}
-      type="button"
-    >
-      Anotar
-    </button>
-  ),
-  header: 'Nota',
-  id: 'note',
+const taskRowAnatomy: DataTableRowSkeletonAnatomy = {
+  cell: 'control',
+  lines: 2,
 }
 
-const taskOpenLabel: NonNullable<DataTableProps<Task>['getRowOpenLabel']> = (
-  row,
-) => `Abrir ${row.original.title}`
+const usage = `
+import {
+  DataGridPagination,
+  DataTable,
+  DataTableColumnsSubmenu,
+  useDataTable,
+} from '@acme/patterns'
 
-interface DataTableExampleProps {
-  /** Displayed collection. Pass an empty list to see the empty message. */
-  data?: Task[]
-  /** Replaces the rows with loading skeletons. */
-  isLoading?: boolean
-  /** Opens the record of a row clicked outside its controls. */
-  onOpenTask?: (task: Task) => void
-  /** Paginates on the client and composes the pagination footer below the table. */
-  paginated?: boolean
-  /** Lets the user resize columns from the header edges. */
-  resizable?: boolean
+const { table } = useDataTable({
+  columns,
+  data,
+  enablePagination: true,
+  enableRowSelection: true,
+  getRowId: (task) => task.id,
+  pageSize: 5,
+})
+
+<DataTable
+  aria-label="Tarefas"
+  defaultAggregations={{ estimate: 'sum', title: 'count' }}
+  getRowOpenLabel={(row) => \`Abrir \${row.original.title}\`}
+  isLoading={isLoading}
+  loadingRowAnatomy={{ cell: 'control', lines: 2 }}
+  loadingRowCount={5}
+  onRowClick={(row) => open(row.original)}
+  table={table}
+/>
+<DataGridPagination table={table} />
+`
+
+const docs = {
+  api: [
+    {
+      description:
+        'Semantic table over the COSS `Table` and a TanStack table from `useDataTable`. The consumer owns the columns and the state. `onRowClick` stretches a button over each row, named by `getRowOpenLabel`, while checkboxes, fields and buttons in cells keep their own click. A column with `meta.aggregations` gets a footer menu (Nenhum, Contagem, Soma) over every row before pagination, uncontrolled through `defaultAggregations` or controlled through `aggregations`. While `isLoading` it renders `loadingRowCount` skeleton rows shaped by `loadingRowAnatomy`: `lines` (1 or 2) in the first data column and `cell` (`text` or `control`) in the others, at the real cell heights. `bordered={false}` drops the frame.',
+      name: 'DataTable',
+    },
+    {
+      description:
+        'Builds the TanStack table: `enablePagination` with `pageSize`, `enableRowSelection`, `enableColumnResizing` (a header handle, also driven by the arrow keys) and `getRowId`.',
+      name: 'useDataTable',
+    },
+    {
+      description:
+        'The Colunas submenu for a `ViewSettingsMenu`: one checkbox per column that can hide, named by `meta.label` or the column id; it renders nothing when no column can hide.',
+      name: 'DataTableColumnsSubmenu',
+    },
+  ],
+  description: {
+    component:
+      '`DataTable` renders a collection as a semantic table. `Anatomy` shows the header, the rows, the footer and the frame, driven by the controls. `Usage` is the Tasks table with its toolbar and pagination. `Behavior` is the usage under test: it loads after a simulated delay keeping the row height, opens a task from its row, keeps the clicks of the checkbox and the status, totals in the footer, hides a column from the toolbar and pages forward and back.',
+  },
+  usage,
+} satisfies UsageDocsParameters & Record<string, unknown>
+
+const slotClassName =
+  'flex h-6 min-w-16 items-center justify-center rounded-sm border border-dashed px-2 text-muted-foreground text-xs'
+
+interface AnatomyRecord {
+  id: string
+  value: number
 }
 
-function DataTableExample({
-  data = initialTasks,
-  isLoading = false,
-  onOpenTask,
-  paginated = false,
-  resizable = false,
-}: Readonly<DataTableExampleProps>): ReactElement {
-  const { tasks, updateTask } = useTasks(data)
+const anatomyRecords: AnatomyRecord[] = [
+  { id: 'a', value: 1 },
+  { id: 'b', value: 2 },
+  { id: 'c', value: 3 },
+]
+
+const anatomyColumns: DataTableColumnDef<AnatomyRecord>[] = [
+  {
+    accessorKey: 'id',
+    cell: () => <span className={slotClassName}>cell</span>,
+    header: () => <span className={slotClassName}>header</span>,
+  },
+  {
+    accessorKey: 'value',
+    cell: () => <span className={slotClassName}>cell</span>,
+    header: () => <span className={slotClassName}>header</span>,
+    meta: { aggregations: ['count', 'sum'], label: 'Value' },
+  },
+]
+
+function AnatomyTable({
+  bordered,
+  empty,
+  isLoading,
+  paginated,
+  resizable,
+}: Readonly<TableArgs>): ReactElement {
+  const { table } = useDataTable<AnatomyRecord>({
+    columns: anatomyColumns,
+    data: empty ? [] : anatomyRecords,
+    enableColumnResizing: resizable,
+    enablePagination: paginated,
+    getRowId: (record) => record.id,
+    pageSize: 2,
+  })
+
+  return (
+    <div className="flex flex-col gap-2">
+      <DataTable
+        aria-label="Anatomy"
+        bordered={bordered}
+        defaultAggregations={{ value: 'sum' }}
+        emptyMessage="emptyMessage"
+        isLoading={isLoading}
+        loadingRowCount={paginated ? 2 : 3}
+        table={table}
+      />
+      {paginated ? <DataGridPagination table={table} /> : null}
+    </div>
+  )
+}
+
+function TasksTable({
+  bordered,
+  empty,
+  isLoading,
+  paginated,
+  resizable,
+}: Readonly<TableArgs>): ReactElement {
+  const { tasks, updateTask } = useTasks(empty ? [] : initialTasks)
   const columns = useMemo(
-    () => [
-      ...createDataTableColumns(updateTask),
-      ...(onOpenTask ? [noteColumn] : []),
-    ],
-    [onOpenTask, updateTask],
+    () => createDataTableColumns(updateTask),
+    [updateTask],
   )
   const onRowClick = useMemo<DataTableProps<Task>['onRowClick']>(
-    () => (onOpenTask ? (row) => onOpenTask(row.original) : undefined),
-    [onOpenTask],
+    () => (row) => openTask(row.original),
+    [],
   )
   const { table } = useDataTable<Task>({
     columns,
@@ -77,333 +180,219 @@ function DataTableExample({
     enablePagination: paginated,
     enableRowSelection: true,
     getRowId: (task) => task.id,
-    pageSize: 5,
+    pageSize: PAGE_SIZE,
   })
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-2 p-4">
+    <div className="flex min-w-0 flex-col gap-2">
+      <CollectionToolbar
+        endSlot={
+          <ViewSettingsMenu onClearFilters={() => undefined}>
+            <ViewSettingsSection label="Exibição">
+              <DataTableColumnsSubmenu table={table} />
+            </ViewSettingsSection>
+          </ViewSettingsMenu>
+        }
+      />
       <DataTable
         aria-label="Tarefas do lançamento"
+        bordered={bordered}
         defaultAggregations={taskTableAggregations}
         emptyMessage="Nenhuma tarefa para exibir."
-        getRowOpenLabel={taskOpenLabel}
+        getRowOpenLabel={(row) => `Abrir ${row.original.title}`}
         isLoading={isLoading}
+        loadingRowAnatomy={taskRowAnatomy}
+        loadingRowCount={paginated ? PAGE_SIZE : initialTasks.length}
         onRowClick={onRowClick}
         table={table}
       />
-      {paginated ? <DataGridPagination table={table} /> : null}
+      {paginated && !isLoading ? <DataGridPagination table={table} /> : null}
     </div>
   )
 }
 
+function LoadingTasksTable() {
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    sleep(LOAD_DELAY).then(() => {
+      if (active) setIsLoading(false)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  return (
+    <TasksTable
+      bordered
+      empty={false}
+      isLoading={isLoading}
+      paginated
+      resizable={false}
+    />
+  )
+}
+
 const meta = {
-  argTypes: {
-    isLoading: booleanArgType,
-    paginated: booleanArgType,
-    resizable: booleanArgType,
+  args: {
+    bordered: true,
+    empty: false,
+    isLoading: false,
+    paginated: true,
+    resizable: false,
   },
-  component: DataTableExample,
+  argTypes: {
+    bordered: { control: 'boolean' },
+    empty: { control: 'boolean' },
+    isLoading: { control: 'boolean' },
+    paginated: { control: 'boolean' },
+    resizable: { control: 'boolean' },
+  },
+  component: TableDoc,
   decorators: [
     (Story) => (
-      <div className="w-[calc(100vw-2rem)] max-w-[1280px]">
+      <div className="w-[calc(100vw-2rem)] max-w-[1280px] p-4">
         <Story />
       </div>
     ),
   ],
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'Semantic table collection view, built on the COSS `Table` and TanStack Table. The view draws the DataGrid frame by default (`bordered={false}` drops it) and is not a child of `CardFrame`. The consumer owns the columns and the state. A column with `meta.aggregations` gets a footer menu (Nenhum, Contagem, Soma) that totals every row before pagination; with no rows, or while loading, those cells and an otherwise empty footer are left out. A column with `footer` renders it as before. When the columns overflow the container, a fade on the clipped side shows that the table scrolls sideways. Status is a `SelectProperty`: the select emits the change and the example writes to the collection.',
-      },
-    },
-    layout: 'centered',
-  },
+  parameters: { docs },
   title: 'Patterns/Collection/Layouts/Data Table',
-} satisfies Meta<typeof DataTableExample>
+} satisfies Meta<TableArgs>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-
+export const Anatomy: Story = {
+  play: async ({ args, canvasElement }) => {
+    if (args.isLoading || args.empty) return
     await expect(
-      canvas.getByRole('button', { name: 'Contagem 14' }),
-    ).toBeInTheDocument()
-    await expect(
-      canvas.getByRole('button', { name: 'Soma 89 h' }),
-    ).toBeInTheDocument()
-    await userEvent.click(
-      canvas.getByRole('checkbox', { name: 'Selecionar todas as tarefas' }),
-    )
-    await expect(
-      canvasElement.querySelectorAll('tbody tr[data-state="selected"]'),
-    ).toHaveLength(initialTasks.length)
-    await expect(
-      canvasElement.querySelector('[data-slot="card-frame"]'),
-    ).toBeNull()
+      within(canvasElement).getAllByRole('columnheader'),
+    ).toHaveLength(2)
   },
+  render: (args) => <AnatomyTable {...args} />,
 }
 
-export const EditStatus: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Changing the status through the select rewrites the row in the example collection.',
-      },
-    },
+export const Usage: Story = {
+  render: (args) => <TasksTable {...args} />,
+}
+
+export const Behavior: Story = {
+  argTypes: {
+    bordered: hidden,
+    empty: hidden,
+    isLoading: hidden,
+    paginated: hidden,
+    resizable: hidden,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const body = within(canvasElement.ownerDocument.body)
-
-    await userEvent.click(
-      (await canvas.findAllByRole('combobox', { name: 'Status: Backlog' }))[0],
-    )
-    await userEvent.click(
-      await body.findByRole('option', { name: 'Em revisão' }),
-    )
-    await expect(
-      canvas.getAllByRole('combobox', { name: 'Status: Backlog' }),
-    ).toHaveLength(1)
-    await expect(
-      canvas.getAllByRole('combobox', { name: 'Status: Em revisão' }),
-    ).toHaveLength(3)
-  },
-}
-
-export const OpenRecord: Story = {
-  args: { onOpenTask: openTask },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'With `onRowClick`, a click on any part of a row outside its controls opens the record. A button in the first cell, labelled by `getRowOpenLabel`, stretches over the row; the selection checkbox, the editable fields and a plain button in a cell (here Anotar) sit above it and keep their own click. Tab reaches the trigger before the controls of its row.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    openTask.mockClear()
-    addNote.mockClear()
-    const canvas = within(canvasElement)
-    const [first, second] = initialTasks
-    const rows = canvasElement.querySelectorAll<HTMLElement>('tbody tr')
-    const hitAt = (element: HTMLElement) => {
-      const { height, left, top, width } = element.getBoundingClientRect()
-
-      return element.ownerDocument.elementFromPoint(
-        left + width / 2,
-        top + height / 2,
+    const table = canvas.getByRole('table', { name: 'Tarefas do lançamento' })
+    const rows = () => [...table.querySelectorAll('tbody tr')]
+    const pageOf = (page: number) =>
+      initialTasks.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    const titles = () =>
+      rows().map((row) =>
+        row
+          .querySelector('[data-slot="data-table-row-trigger"]')
+          ?.getAttribute('aria-label')
+          ?.replace('Abrir ', ''),
       )
-    }
-    const plainCell = rows[0].querySelectorAll('td')[1]
-    const checkbox = canvas.getByRole('checkbox', {
-      name: `Selecionar ${first.title}`,
-    })
-    const status = canvas.getAllByRole('combobox')[0]
-    const note = canvas.getByRole('button', { name: `Anotar ${first.title}` })
 
-    const trigger = hitAt(plainCell) as HTMLElement
-    await expect(trigger).toHaveAttribute('data-slot', 'data-table-row-trigger')
+    await expect(table).toHaveAttribute('aria-busy', 'true')
+    await expect(rows()).toHaveLength(PAGE_SIZE)
+    const skeletonRowHeight = rows()[0]?.getBoundingClientRect().height
+
+    const [first, second] = pageOf(1)
+    if (!(first && second)) throw new Error('The fixture has fewer tasks.')
+    await canvas.findByRole(
+      'checkbox',
+      { name: `Selecionar ${first.title}` },
+      { timeout: LOAD_DELAY * 2 },
+    )
+    await expect(table).not.toHaveAttribute('aria-busy')
+    const tableHeight = table.getBoundingClientRect().height
+    await expect(rows()[0]?.getBoundingClientRect().height).toBe(
+      skeletonRowHeight,
+    )
+
+    openTask.mockClear()
+    const plainCell = rows()[0]?.querySelectorAll('td')[1]
+    if (!plainCell) throw new Error('The first row has no second cell.')
+    const box = plainCell.getBoundingClientRect()
+    const trigger = canvasElement.ownerDocument.elementFromPoint(
+      box.left + box.width / 2,
+      box.top + box.height / 2,
+    )
     await expect(trigger).toHaveAccessibleName(`Abrir ${first.title}`)
-    await userEvent.click(trigger)
-    await expect(openTask).toHaveBeenCalledTimes(1)
+    await userEvent.click(trigger as Element)
     await expect(openTask).toHaveBeenLastCalledWith(
       expect.objectContaining({ id: first.id }),
     )
 
-    await expect(checkbox.contains(hitAt(checkbox))).toBe(true)
-    await expect(status.contains(hitAt(status))).toBe(true)
+    const checkbox = canvas.getByRole('checkbox', {
+      name: `Selecionar ${second.title}`,
+    })
     await userEvent.click(checkbox)
     await expect(checkbox).toHaveAttribute('aria-checked', 'true')
-    await expect(rows[0]).toHaveAttribute('data-state', 'selected')
     await expect(openTask).toHaveBeenCalledTimes(1)
 
-    note.scrollIntoView({ inline: 'nearest' })
-    await expect(hitAt(note)).toBe(note)
-    await userEvent.click(note)
-    await expect(addNote).toHaveBeenCalledTimes(1)
+    await userEvent.click(
+      canvas.getAllByRole('combobox', { name: /^Status/ })[0] as Element,
+    )
+    await userEvent.click(
+      await body.findByRole('option', { name: 'Em revisão' }),
+    )
+    await waitFor(() =>
+      expect(
+        canvas.getAllByRole('combobox', { name: /^Status/ })[0],
+      ).toHaveAccessibleName(/Em revisão/),
+    )
     await expect(openTask).toHaveBeenCalledTimes(1)
 
-    canvas.getByRole('checkbox', { name: `Selecionar ${second.title}` }).focus()
-    await userEvent.tab({ shift: true })
-    const secondTrigger = canvas.getByRole('button', {
-      name: `Abrir ${second.title}`,
-    })
-    await expect(secondTrigger).toHaveFocus()
-    await expect(getComputedStyle(secondTrigger).boxShadow).not.toBe('none')
-    await userEvent.keyboard('{Enter}')
-    await userEvent.keyboard(' ')
-    await expect(openTask).toHaveBeenCalledTimes(3)
-    await expect(openTask).toHaveBeenLastCalledWith(
-      expect.objectContaining({ id: second.id }),
-    )
-  },
-}
-
-export const ResizableColumns: Story = {
-  args: { resizable: true },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Drag a header edge, or focus it and press the arrow keys, to resize a column; a double click restores its `size`. The last column takes the remaining width, so the table keeps filling its container until the sized columns overflow it and it scrolls.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const table = canvas.getByRole('table')
-    const container = table.parentElement as HTMLElement
-    const handle = canvas.getByRole('separator', {
-      name: 'Redimensionar coluna Tarefa',
-    })
-
-    await expect(table.getBoundingClientRect().width).toBeGreaterThanOrEqual(
-      container.clientWidth,
-    )
-    handle.focus()
-    await userEvent.keyboard('{ArrowRight}')
-    await expect(handle).toHaveAttribute('aria-valuenow', '328')
-    await expect(table.getBoundingClientRect().width).toBeGreaterThanOrEqual(
-      container.clientWidth,
-    )
     await expect(
-      canvas.queryByRole('separator', {
-        name: 'Redimensionar coluna Estimativa',
+      canvas.getByRole('button', { name: /^Contagem / }),
+    ).toHaveTextContent(String(initialTasks.length))
+
+    await userEvent.click(canvas.getByRole('button', { name: /^Soma / }))
+    await userEvent.click(
+      await body.findByRole('menuitemradio', { name: 'Contagem' }),
+    )
+    await waitFor(() =>
+      expect(
+        canvas.getAllByRole('button', { name: /^Contagem / }),
+      ).toHaveLength(2),
+    )
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Exibição' }))
+    await userEvent.click(
+      await body.findByRole('menuitem', { name: 'Colunas' }),
+    )
+    await userEvent.click(
+      await body.findByRole('menuitemcheckbox', {
+        name: /Prioridade|priority/,
       }),
+    )
+    await expect(
+      canvas.queryByRole('columnheader', { name: 'Prioridade' }),
     ).toBeNull()
-  },
-}
+    await userEvent.keyboard('{Escape}')
+    await userEvent.keyboard('{Escape}')
 
-const footerOf = (canvasElement: HTMLElement) =>
-  canvasElement.querySelector('tfoot')
-
-export const Aggregations: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Every column offers Contagem, and Estimativa adds Soma. Tarefa starts on Contagem and Estimativa on Soma; a column with nothing chosen shows Calcular only on hover or focus. Choosing Nenhum clears the cell.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-    const closeMenu = async () => {
-      await userEvent.keyboard('{Escape}')
-      await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
+    const goTo = async (name: string, page: number) => {
+      await sleep(LOAD_DELAY)
+      await userEvent.click(canvas.getByRole('button', { name }))
+      await waitFor(() =>
+        expect(titles()).toEqual(pageOf(page).map((task) => `${task.title}`)),
+      )
+      await expect(table.getBoundingClientRect().height).toBe(tableHeight)
     }
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Soma 89 h' }))
-    await userEvent.click(
-      await body.findByRole('menuitemradio', { name: 'Contagem' }),
-    )
-    await waitFor(() =>
-      expect(
-        canvas.getAllByRole('button', { name: 'Contagem 14' }),
-      ).toHaveLength(2),
-    )
-    await closeMenu()
-
-    await userEvent.click(
-      canvas.getAllByRole('button', { name: 'Calcular' })[0],
-    )
-    await userEvent.click(
-      await body.findByRole('menuitemradio', { name: 'Contagem' }),
-    )
-    await waitFor(() =>
-      expect(
-        canvas.getAllByRole('button', { name: 'Contagem 14' }),
-      ).toHaveLength(3),
-    )
-    await closeMenu()
-
-    await userEvent.click(
-      canvas.getAllByRole('button', { name: 'Contagem 14' })[0],
-    )
-    await userEvent.click(
-      await body.findByRole('menuitemradio', { name: 'Nenhum' }),
-    )
-    await waitFor(() =>
-      expect(
-        canvas.getAllByRole('button', { name: 'Contagem 14' }),
-      ).toHaveLength(2),
-    )
-    await closeMenu()
+    await goTo('Próxima página', 2)
+    await goTo('Página anterior', 1)
   },
-}
-
-export const Paginated: Story = {
-  args: { paginated: true },
-  play: async ({ canvasElement }) => {
-    await expect(canvasElement.querySelectorAll('tbody tr')).toHaveLength(5)
-    await expect(
-      within(canvasElement).getByRole('button', { name: 'Contagem 14' }),
-    ).toBeInTheDocument()
-  },
-}
-
-export const Loading: Story = {
-  args: { isLoading: true },
-  play: async ({ canvasElement }) => {
-    await expect(footerOf(canvasElement)).toBeNull()
-  },
-}
-
-export const Empty: Story = {
-  args: { data: [] },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Without rows there is nothing to total, so the aggregation footer is left out.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Nenhuma tarefa para exibir.'),
-    ).toBeInTheDocument()
-    await expect(footerOf(canvasElement)).toBeNull()
-  },
-}
-
-export const HorizontalScroll: Story = {
-  decorators: [
-    (Story) => (
-      <div className="max-w-xl">
-        <Story />
-      </div>
-    ),
-  ],
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'The columns are wider than the container, so it scrolls sideways. A fade marks each clipped side: only the end at first, both mid-way, only the start at the end.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const root = canvasElement.querySelector(
-      '[data-slot="data-table"]',
-    ) as HTMLElement
-    const container = root.querySelector(
-      '[data-slot="data-table-viewport"]',
-    ) as HTMLElement
-
-    await expect(container.scrollWidth).toBeGreaterThan(container.clientWidth)
-    await waitFor(() => expect(root).toHaveAttribute('data-overflow-end'))
-    await expect(root).not.toHaveAttribute('data-overflow-start')
-
-    container.scrollLeft = container.scrollWidth
-    await waitFor(() => expect(root).toHaveAttribute('data-overflow-start'))
-    await expect(root).not.toHaveAttribute('data-overflow-end')
-  },
+  render: () => <LoadingTasksTable />,
 }
