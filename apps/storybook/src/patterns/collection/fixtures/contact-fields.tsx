@@ -5,6 +5,11 @@ import {
   DateProperty,
   EmailProperty,
   ListRow,
+  ListRowBody,
+  ListRowDescription,
+  ListRowField,
+  ListRowTitle,
+  ListRowTrailing,
   PhoneProperty,
   SelectProperty,
   TagsProperty,
@@ -17,6 +22,7 @@ import {
   stageOptions,
   tagOptions,
 } from './contacts'
+import { DescriptionSegments } from './description-segments'
 import { TIME_ZONE } from './tasks'
 
 export type ContactChange = Partial<Omit<Contact, 'id'>>
@@ -93,18 +99,21 @@ export function LastContactField({ contact }: Readonly<{ contact: Contact }>) {
 
 export const renderContactListRow =
   (updateContact: UpdateContact) => (contact: Contact) => (
-    <ListRow
-      description={[contact.role, contact.company]}
-      key={contact.id}
-      properties={
-        <div className="flex items-center gap-2">
+    <ListRow interactive={false} key={contact.id}>
+      <ListRowBody>
+        <ListRowTitle>{contact.name}</ListRowTitle>
+        <ListRowDescription>
+          <DescriptionSegments segments={[contact.role, contact.company]} />
+        </ListRowDescription>
+      </ListRowBody>
+      <ListRowTrailing>
+        <ListRowField always className="gap-2">
           <StageField contact={contact} onChange={updateContact} />
           <EmailsField contact={contact} onChange={updateContact} />
           <TagsField contact={contact} onChange={updateContact} />
-        </div>
-      }
-      title={contact.name}
-    />
+        </ListRowField>
+      </ListRowTrailing>
+    </ListRow>
   )
 
 export const createContactGridColumns = (

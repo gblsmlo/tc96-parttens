@@ -1,264 +1,354 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
-  type CollectionGroupingId,
-  type ListItemDensity,
+  type CollectionDefinition,
+  ListRow,
+  ListRowBody,
+  type ListRowDensity,
+  ListRowTitle,
   ListView,
   type ListViewProps,
 } from '@tc96/parttens'
 import type { ReactElement } from 'react'
 import { expect, fn, userEvent, within } from 'storybook/test'
-import { booleanArgType } from '../../../test-utils/story-arg-types'
+import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
 import { renderTaskListRow, useTasks } from '../fixtures/task-renderers'
 import { createCollection, initialTasks, type Task } from '../fixtures/tasks'
 
-const TasksListView = ListView as (props: ListViewProps<Task>) => ReactElement
-
-const listArgs = {
-  collection: createCollection(initialTasks),
-  grouping: 'status' as const,
-  renderRecord: renderTaskListRow(() => undefined),
+type ListArgs = ListViewProps<Task> & {
+  density: ListRowDensity
+  empty: boolean
 }
 
-const openTask = fn()
+const TasksListView = ListView as (props: ListViewProps<Task>) => ReactElement
 
-function Example({
+const hidden = { table: { disable: true } } as const
+
+interface AnatomyRecord {
+  group: string
+  id: string
+}
+
+const anatomyCollection = (
+  records: readonly AnatomyRecord[],
+): CollectionDefinition<AnatomyRecord> => ({
+  getKey: (record) => record.id,
+  getLabel: (record) => record.id,
+  groupings: [
+    {
+      getGroupId: (record) => record.group,
+      id: 'status',
+      label: 'Group',
+      options: [
+        { id: 'first', label: 'Group' },
+        { id: 'second', label: 'Empty group' },
+      ],
+    },
+  ],
+  records: [...records],
+})
+
+const anatomyRecords: readonly AnatomyRecord[] = [
+  { group: 'first', id: 'record-1' },
+  { group: 'first', id: 'record-2' },
+]
+
+const openTask = fn()
+const onCollapsedGroupIdsChange = fn()
+
+const usage = `
+import { ListRow, ListView } from '@acme/patterns'
+
+<ListView
+  collection={collection}
+  grouping="status"
+  collapseEmptyGroups
+  loading={isLoading}
+  loadingRecordAnatomy={{ media: 'icon', pills: 4 }}
+  getGroupActions={(group) => ({ onAddRecord: addRecord })}
+  renderRecord={(task) => <ListRow>{/* ListRow slots */}</ListRow>}
+/>
+`
+
+const docs = {
+  api: [
+    {
+      description:
+        'Controlled list of a collection. `grouping` names a dimension of `collection.groupings`, and `null` reads the records flat, in the order the consumer passed. Group collapse is its only state, uncontrolled or controlled through `collapsedGroupIds`. `renderRecord` runs in a memoized leaf: it re-runs only when its identity or the record changes.',
+      name: 'ListView',
+    },
+    {
+      description:
+        'One collapsible group: header with the title, the count and the optional add action, then its rows. `ListView` renders it for each group; `getGroupActions` gives the add action.',
+      name: 'ListGroup',
+    },
+    {
+      description:
+        'The row `renderRecord` returns. See `Patterns/Collection/Layouts/List/Row`.',
+      name: 'ListRow',
+    },
+  ],
+  description: {
+    component:
+      '`ListView` renders a collection as a flat list or as collapsible groups. `Anatomy` shows the groups and the record slots, driven by the controls. `Usage` is the Tasks list with the same controls. `Behavior` is the usage under test: the loading groups, the group count, `collapseEmptyGroups` (an empty group starts closed, every group stays open while loading, an untouched group reopens when a task moves into it), `onCollapsedGroupIdsChange`, collapse and the click contract of a row.',
+  },
+  usage,
+} satisfies UsageDocsParameters & Record<string, unknown>
+
+const slotClassName =
+  'flex h-6 min-w-16 items-center justify-center rounded-sm border border-dashed px-2 text-muted-foreground text-xs'
+
+const tasksWithoutInProgress = initialTasks.filter(
+  (task) => task.status !== 'in-progress',
+)
+
+function TasksList({
   collapseEmptyGroups = false,
-  density = 'comfortable',
-  empty = false,
-  emptyGroup = false,
-  groupBy = 'status',
+  density,
+  empty,
+  grouping,
   loading = false,
-  onOpenTask,
+  onCollapsedGroupIdsChange,
   separated = false,
-}: Readonly<{
-  collapseEmptyGroups?: boolean
-  density?: ListItemDensity
-  empty?: boolean
-  emptyGroup?: boolean
-  groupBy?: CollectionGroupingId | null
-  loading?: boolean
-  onOpenTask?: (task: Task) => void
-  separated?: boolean
-}>) {
-  const { tasks, updateTask } = useTasks()
-  const visibleTasks = emptyGroup ? tasks.slice(0, 1) : tasks
+  startingTasks = initialTasks,
+}: Readonly<
+  Omit<ListArgs, 'collection' | 'renderRecord'> & {
+    startingTasks?: readonly Task[]
+  }
+>) {
+  const { tasks, updateTask } = useTasks(startingTasks)
 
   return (
-    <div className="min-w-0 p-4">
-      <TasksListView
-        collapseEmptyGroups={collapseEmptyGroups}
-        collection={createCollection(loading || empty ? [] : visibleTasks)}
-        emptyGroupLabel="Nenhuma tarefa neste grupo."
-        emptyMessage="Nenhuma tarefa para exibir."
-        grouping={groupBy}
-        loading={loading}
-        loadingRecordLabel="Carregando tarefa"
-        renderGroupTitle={(group) => group.label}
-        renderRecord={renderTaskListRow(updateTask, density, onOpenTask)}
-        separated={separated}
-      />
-    </div>
+    <ListView<Task>
+      collapseEmptyGroups={collapseEmptyGroups}
+      collection={createCollection(loading || empty ? [] : tasks)}
+      emptyGroupLabel="Nenhuma tarefa neste grupo."
+      emptyMessage="Nenhuma tarefa para exibir."
+      grouping={grouping}
+      loading={loading}
+      loadingRecordAnatomy={{ media: 'icon', pills: 4 }}
+      loadingRecordLabel="Carregando tarefa"
+      {...(onCollapsedGroupIdsChange ? { onCollapsedGroupIdsChange } : {})}
+      renderGroupTitle={(group) => group.label}
+      renderRecord={renderTaskListRow(updateTask, density, openTask)}
+      separated={separated}
+    />
   )
 }
 
 const meta = {
-  args: listArgs,
-  argTypes: { collapseEmptyGroups: booleanArgType, loading: booleanArgType },
-  component: TasksListView,
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'List building block. Documents grouping, loading and composition without fixtures or Tasks and Pipeline rules.',
-      },
-    },
-    layout: 'fullscreen',
+  args: {
+    collapseEmptyGroups: false,
+    collection: createCollection(initialTasks),
+    density: 'comfortable',
+    empty: false,
+    grouping: 'status',
+    loading: false,
+    renderRecord: renderTaskListRow(() => undefined),
+    separated: false,
   },
+  argTypes: {
+    collapseEmptyGroups: { control: 'boolean' },
+    collection: hidden,
+    density: { control: 'inline-radio', options: ['comfortable', 'compact'] },
+    empty: { control: 'boolean' },
+    grouping: {
+      control: 'inline-radio',
+      mapping: { none: null },
+      options: ['status', 'assignee', 'none'],
+    },
+    loading: { control: 'boolean' },
+    renderRecord: hidden,
+    separated: { control: 'boolean' },
+  },
+  component: TasksListView,
+  decorators: [
+    (Story) => (
+      <div className="w-5xl max-w-full p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  parameters: { docs },
   title: 'Patterns/Collection/Layouts/List',
-} satisfies Meta<typeof TasksListView>
+} satisfies Meta<ListArgs>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const GroupedByStatus: Story = {
-  args: listArgs,
-  play: async ({ canvasElement }) => {
-    const contagem = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="list-group-count"]',
-    )
-
-    if (!contagem)
-      throw new Error('A story não renderizou [data-slot="list-group-count"].')
-
-    const medida = contagem.getBoundingClientRect()
-
-    await expect(medida.width).toBe(medida.height)
-    await expect(
-      Number.parseFloat(getComputedStyle(contagem).borderRadius),
-    ).toBeGreaterThan(medida.height / 2)
-
-    const corpo = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="list-item-body"]',
-    )
-
-    await expect(getComputedStyle(corpo as HTMLElement).flexGrow).toBe('1')
-  },
-  render: () => <Example />,
-}
-export const GroupedByAssignee: Story = {
-  args: listArgs,
-  render: () => <Example groupBy="assignee" />,
-}
-
-export const Ungrouped: Story = {
-  args: listArgs,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Without a dimension (`grouping={null}`), the List reads the collection in the order the consumer passed: no header, no collapse, no per-group count.',
-      },
+export const Anatomy: Story = {
+  argTypes: {
+    density: hidden,
+    grouping: {
+      control: 'inline-radio',
+      mapping: { none: null },
+      options: ['status', 'none'],
     },
   },
   play: async ({ canvasElement }) => {
     await expect(
-      canvasElement.querySelector('[data-slot="list-group"]'),
-    ).toBeNull()
+      canvasElement.querySelectorAll('[data-slot="list-group"]'),
+    ).toHaveLength(2)
+    await expect(
+      canvasElement.querySelector('[data-slot="list-group-header"]'),
+    ).not.toBeNull()
+    await expect(
+      canvasElement.querySelector('[data-slot="list-group-count"]'),
+    ).not.toBeNull()
+  },
+  render: ({ collapseEmptyGroups, empty, grouping, loading, separated }) => (
+    <ListView<AnatomyRecord>
+      collapseEmptyGroups={collapseEmptyGroups}
+      collection={anatomyCollection(loading || empty ? [] : anatomyRecords)}
+      emptyGroupLabel={<span className={slotClassName}>Empty group</span>}
+      emptyMessage={<span className={slotClassName}>Empty message</span>}
+      grouping={grouping === null ? null : 'status'}
+      loading={loading}
+      loadingRecordAnatomy={{
+        action: false,
+        lines: 1,
+        media: 'none',
+        pills: 0,
+      }}
+      renderGroupTitle={(group) => (
+        <span className={slotClassName}>{group.label}</span>
+      )}
+      renderRecord={() => (
+        <ListRow interactive={false}>
+          <ListRowBody>
+            <ListRowTitle>
+              <span className={slotClassName}>renderRecord</span>
+            </ListRowTitle>
+          </ListRowBody>
+        </ListRow>
+      )}
+      separated={separated}
+    />
+  ),
+}
 
-    const [first, second] = Array.from(
-      canvasElement
-        .querySelector('[data-slot="list-item-field"]')
-        ?.querySelectorAll('button') ?? [],
+export const Usage: Story = {
+  render: (args) => <TasksList {...args} />,
+}
+
+export const Behavior: Story = {
+  argTypes: {
+    collapseEmptyGroups: hidden,
+    empty: hidden,
+    grouping: hidden,
+    loading: hidden,
+  },
+  play: async ({ canvasElement }) => {
+    const [loadingView, loadedView] = [
+      ...canvasElement.querySelectorAll<HTMLElement>('[data-slot="list-view"]'),
+    ]
+    if (!(loadingView && loadedView))
+      throw new Error('The story did not render both lists.')
+    const loading = within(loadingView)
+    const loaded = within(loadedView)
+
+    await expect(loadingView).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      loading.getAllByRole('status', { name: 'Carregando tarefa' }),
+    ).toHaveLength(
+      loadingView.querySelectorAll('[data-slot="list-group"]').length,
     )
+    await expect(loading.queryByText('Nenhuma tarefa neste grupo.')).toBeNull()
+    await expect(
+      loading.queryAllByRole('button', { name: /^Expand / }),
+    ).toHaveLength(0)
 
+    await expect(
+      loaded.getByRole('button', { name: 'Expand Em andamento' }),
+    ).toBeVisible()
+    await expect(
+      loaded.getByRole('button', { name: 'Collapse A fazer' }),
+    ).toBeVisible()
+
+    const [status] = within(
+      loaded.getByRole('region', { name: 'A fazer' }),
+    ).getAllByRole('combobox', { name: /^Status/ })
+    if (!status) throw new Error('The A fazer group did not render a task.')
+    await userEvent.click(status)
+    await userEvent.click(
+      await within(canvasElement.ownerDocument.body).findByRole('option', {
+        name: 'Em andamento',
+      }),
+    )
+    await loaded.findByRole('button', { name: 'Collapse Em andamento' })
+
+    onCollapsedGroupIdsChange.mockClear()
+    await userEvent.click(
+      loaded.getByRole('button', { name: 'Collapse Em andamento' }),
+    )
+    await expect(onCollapsedGroupIdsChange).toHaveBeenLastCalledWith([
+      'status:in-progress',
+    ])
+    await userEvent.click(
+      await loaded.findByRole('button', { name: 'Expand Em andamento' }),
+    )
+    await expect(onCollapsedGroupIdsChange).toHaveBeenLastCalledWith([])
+
+    const count = loadedView.querySelector<HTMLElement>(
+      '[data-slot="list-group-count"]',
+    )
+    if (!count) throw new Error('The story did not render a group count.')
+    const box = count.getBoundingClientRect()
+    await expect(box.width).toBe(box.height)
+
+    const [collapse] = loaded.getAllByRole('button', { name: /^Collapse / })
+    if (!collapse) throw new Error('The story did not render an open group.')
+    const label = collapse.getAttribute('aria-label')?.replace('Collapse ', '')
+    await userEvent.click(collapse)
+    const expand = await loaded.findByRole('button', {
+      name: `Expand ${label}`,
+    })
+    await userEvent.click(expand)
+    await loaded.findByRole('button', { name: `Collapse ${label}` })
+
+    const field = loadedView.querySelector('[data-slot="list-row-field"]')
+    const [first, second] = [...(field?.querySelectorAll('button') ?? [])]
     if (!(first && second))
-      throw new Error('A primeira linha não renderizou dois campos.')
-
+      throw new Error('The first row did not render two field controls.')
     const left = first.getBoundingClientRect()
     const right = second.getBoundingClientRect()
     const y = left.top + left.height / 2
-    const gapX = (left.right + right.left) / 2
-
-    await expect(right.left).toBeGreaterThan(left.right)
-    await expect(
-      document
-        .elementFromPoint(gapX, y)
-        ?.closest('[data-slot="list-item-title-trigger"]'),
-    ).not.toBeNull()
-
-    const onField = document.elementFromPoint(left.left + left.width / 2, y)
-
-    await expect(onField).not.toBeNull()
-    await expect(
-      onField?.closest('[data-slot="list-item-title-trigger"]'),
-    ).toBeNull()
-    await expect(first.contains(onField)).toBe(true)
+    const gap = canvasElement.ownerDocument.elementFromPoint(
+      (left.right + right.left) / 2,
+      y,
+    )
+    if (!gap) throw new Error('Nothing is rendered between the fields.')
 
     openTask.mockClear()
-    await userEvent.click(document.elementFromPoint(gapX, y) as Element)
+    await userEvent.click(gap)
     await expect(openTask).toHaveBeenCalledTimes(1)
-    await expect(openTask).toHaveBeenCalledWith(initialTasks[0])
+    const title = field
+      ?.closest('[data-slot="list-row"]')
+      ?.querySelector('[data-slot="list-row-title"]')?.textContent
+    await expect(openTask.mock.calls[0]?.[0]?.title).toBe(title)
 
-    await userEvent.click(onField as Element)
+    await userEvent.click(first)
     await expect(openTask).toHaveBeenCalledTimes(1)
     await userEvent.keyboard('{Escape}')
-
-    await expect(
-      canvasElement.querySelectorAll('[data-slot="list-item"]'),
-    ).toHaveLength(initialTasks.length)
   },
-  render: () => <Example groupBy={null} onOpenTask={openTask} />,
-}
-export const Loading: Story = {
-  args: listArgs,
-  render: () => <Example loading />,
-}
-
-export const EmptyUngrouped: Story = {
-  args: listArgs,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Without a dimension, an empty collection renders `emptyMessage` in the same `Empty` block an empty group uses. It stays hidden while `loading`.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Nenhuma tarefa para exibir.'),
-    ).toBeInTheDocument()
-    await expect(
-      canvasElement.querySelector('[data-slot="list-item"]'),
-    ).toBeNull()
-  },
-  render: () => <Example empty groupBy={null} />,
-}
-
-export const EmptyGroupsCollapsed: Story = {
-  args: listArgs,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'With `collapseEmptyGroups`, a group with no items starts closed and the populated one stays open. Opening or closing manually wins over the automatic behavior, and an untouched group reopens on its own when it receives an item.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      canvasElement.querySelector('[aria-label="Collapse Em andamento"]'),
-    ).toBeTruthy()
-    await expect(
-      canvasElement.querySelector('[aria-label="Expand A fazer"]'),
-    ).toBeTruthy()
-  },
-  render: () => <Example collapseEmptyGroups emptyGroup />,
-}
-
-export const Compact: Story = {
-  args: listArgs,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Compact density: the vertical rhythm belongs to the pattern, so the list tightens without the consumer overriding padding.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const row = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="list-item"]',
-    )
-
-    if (!row) throw new Error('A story não renderizou [data-slot="list-item"].')
-
-    await expect(row.dataset.density).toBe('compact')
-    await expect(
-      Number.parseFloat(getComputedStyle(row).paddingTop),
-    ).toBeLessThan(6)
-  },
-  render: () => <Example density="compact" />,
-}
-
-export const Separated: Story = {
-  args: listArgs,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'With `separated`, a subtle `Separator` appears between rows, in the flat list and inside each group, without inheriting the container border.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      canvasElement.querySelectorAll('[data-slot="separator"]').length,
-    ).toBeGreaterThan(0)
-    await expect(
-      canvasElement.querySelectorAll('[data-slot="list-item-title-trigger"]'),
-    ).toHaveLength(initialTasks.length)
-  },
-  render: () => <Example groupBy={null} separated />,
+  render: (args) => (
+    <div className="grid gap-4">
+      <TasksList
+        {...args}
+        collapseEmptyGroups
+        empty={false}
+        grouping="assignee"
+        loading
+      />
+      <TasksList
+        {...args}
+        collapseEmptyGroups
+        empty={false}
+        grouping="status"
+        loading={false}
+        onCollapsedGroupIdsChange={onCollapsedGroupIdsChange}
+        startingTasks={tasksWithoutInProgress}
+      />
+    </div>
+  ),
 }

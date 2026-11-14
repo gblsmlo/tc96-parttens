@@ -8,7 +8,7 @@ Each item is rendered through a memoized wrapper keyed on `{ item, renderRecord 
 
 ## ListRow
 
-`ListRow` is a ready-made row for `renderRecord`, with a left side (`icon`, `title`, `description`) and a right side (`value`, `properties`, `actions`). `description` accepts a node or an array of nodes, joined by a `·`. `ListItem` alone is an `article` with no click contract; `ListRow` adds it through `onClick`, which makes the title the keyboard-reachable trigger of the whole row while `properties` and `actions` remain independently clickable.
+`ListRow` is the structural row for `renderRecord`: an `article` with slots and no content props. `ListRowLeading`, `ListRowBody` (`ListRowTitle`, `ListRowDescription`) and `ListRowTrailing` (`ListRowField`, `ListRowAction`) are the top level; `ListRowHeader`, `ListRowContent` and `ListRowFooter` cover single-line layouts. A `ListRowTitleTrigger` inside the title opens the whole row and is its keyboard path; fields and actions stay independently clickable. `ListRowSkeleton` is the loading row, shaped by `media`, `lines`, `pills` and `action`, and `ListView` passes them through `loadingRecordAnatomy`. Stories: `Patterns/Collection/Layouts/List/Row` is the entry the Storybook MCP gives consumers: `Anatomy` toggles the slots through the controls, `Usage` fills them with content and renders the loading row from the same controls, and `Behavior` is that usage under test.
 
 ## Benchmark
 

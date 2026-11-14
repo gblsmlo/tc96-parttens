@@ -13,7 +13,7 @@ import {
 
 const { createElement, useState } = await import('react')
 const { flushSync } = await import('react-dom')
-const { ListItem, ListItemBody, ListItemDescription, ListItemTitle, ListView } =
+const { ListRow, ListRowBody, ListRowDescription, ListRowTitle, ListView } =
   await import('../../packages/parttens/src/collection/layouts/list/index')
 
 interface Task {
@@ -55,13 +55,13 @@ function buildCollection(size: number) {
 
 const renderRecord = countRenders((record: Task) => {
   return createElement(
-    ListItem,
+    ListRow,
     null,
     createElement(
-      ListItemBody,
+      ListRowBody,
       null,
-      createElement(ListItemTitle, null, record.title),
-      createElement(ListItemDescription, null, record.note),
+      createElement(ListRowTitle, null, record.title),
+      createElement(ListRowDescription, null, record.note),
     ),
   )
 }, 'items')

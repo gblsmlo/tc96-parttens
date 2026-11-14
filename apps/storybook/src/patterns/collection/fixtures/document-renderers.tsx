@@ -3,6 +3,13 @@ import { Text } from '@tc96/elements/text'
 import {
   DateProperty,
   ListRow,
+  ListRowAction,
+  ListRowBody,
+  ListRowDescription,
+  ListRowField,
+  ListRowLeading,
+  ListRowTitle,
+  ListRowTrailing,
   PersonProperty,
   type PersonPropertyOption,
 } from '@tc96/parttens'
@@ -208,20 +215,25 @@ export const renderDocumentCard =
 
 export const renderDocumentListRow =
   (actions: DocumentActions) => (document: DocumentRecord) => (
-    <ListRow
-      actions={
-        <DocumentMenu actions={actions} document={document} revealOnHover />
-      }
-      className="group"
-      description={[ownerName(document)]}
-      icon={<KindIcon document={document} />}
-      iconFrame={{ color: kindOptionOf(document.kind).color }}
-      key={document.id}
-      properties={
-        <span className="text-muted-foreground text-sm">
-          {formatCreatedAt(document.createdAt)}
-        </span>
-      }
-      title={document.title}
-    />
+    <ListRow className="group" interactive={false} key={document.id}>
+      <ListRowLeading>
+        <IconFrame color={kindOptionOf(document.kind).color} shape="rounded">
+          <KindIcon document={document} />
+        </IconFrame>
+      </ListRowLeading>
+      <ListRowBody>
+        <ListRowTitle>{document.title}</ListRowTitle>
+        <ListRowDescription>{ownerName(document)}</ListRowDescription>
+      </ListRowBody>
+      <ListRowTrailing>
+        <ListRowField always>
+          <span className="text-muted-foreground text-sm">
+            {formatCreatedAt(document.createdAt)}
+          </span>
+        </ListRowField>
+        <ListRowAction>
+          <DocumentMenu actions={actions} document={document} revealOnHover />
+        </ListRowAction>
+      </ListRowTrailing>
+    </ListRow>
   )
