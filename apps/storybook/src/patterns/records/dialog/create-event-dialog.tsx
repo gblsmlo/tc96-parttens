@@ -10,7 +10,7 @@ import {
 } from '@tc96/parttens'
 import { MapPinIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { delay } from './delay'
+import { sleep } from '../../../test-utils/sleep'
 import {
   availabilityOptions,
   calendarOptions,
@@ -105,7 +105,7 @@ export function CreateEventDialog({
           setErrorMessage(parsed.error.issues[0]?.message ?? null)
           return false
         }
-        await delay(150)
+        await sleep(150)
         try {
           await onCreate(parsed.data)
         } catch (error) {

@@ -1,3 +1,4 @@
+import { IconFrame } from '@tc96/elements/icon-frame'
 import { Text } from '@tc96/elements/text'
 import {
   CalendarEventChip,
@@ -12,8 +13,15 @@ import {
   KanbanCardFooter,
   KanbanCardHeader,
   KanbanCardTitle,
-  type ListItemDensity,
   ListRow,
+  ListRowBody,
+  type ListRowDensity,
+  ListRowDescription,
+  ListRowField,
+  ListRowLeading,
+  ListRowTitle,
+  ListRowTitleTrigger,
+  ListRowTrailing,
 } from '@tc96/parttens'
 import {
   Card,
@@ -32,6 +40,7 @@ import {
   SignalIcon,
 } from 'lucide-react'
 import { useCallback, useState } from 'react'
+import { DescriptionSegments } from './description-segments'
 import { CardCountMenu, CardField, CardMenu } from './kanban-card-parts'
 import {
   AssigneeField,
@@ -68,7 +77,7 @@ export function useTasks(initial: readonly Task[] = initialTasks) {
 export const renderTaskListRow =
   (
     updateTask: UpdateTask,
-    density: ListItemDensity = 'comfortable',
+    density: ListRowDensity = 'comfortable',
     onOpen: (task: Task) => void = () => undefined,
   ) =>
   (task: Task) => {
@@ -77,22 +86,33 @@ export const renderTaskListRow =
     )?.icon
 
     return (
-      <ListRow
-        density={density}
-        description={[task.id, task.description]}
-        icon={StatusIcon ? <StatusIcon /> : undefined}
-        key={task.id}
-        onClick={() => onOpen(task)}
-        properties={
-          <div className="flex items-center gap-2">
+      <ListRow density={density} key={task.id}>
+        {StatusIcon ? (
+          <ListRowLeading>
+            <IconFrame shape="rounded">
+              <StatusIcon />
+            </IconFrame>
+          </ListRowLeading>
+        ) : null}
+        <ListRowBody>
+          <ListRowTitle>
+            <ListRowTitleTrigger onClick={() => onOpen(task)}>
+              {task.title}
+            </ListRowTitleTrigger>
+          </ListRowTitle>
+          <ListRowDescription>
+            <DescriptionSegments segments={[task.id, task.description]} />
+          </ListRowDescription>
+        </ListRowBody>
+        <ListRowTrailing>
+          <ListRowField always className="gap-2">
             <StatusField onChange={updateTask} task={task} />
             <PriorityField onChange={updateTask} task={task} />
             <DueField onChange={updateTask} task={task} />
             <AssigneeField display="avatar" onChange={updateTask} task={task} />
-          </div>
-        }
-        title={task.title}
-      />
+          </ListRowField>
+        </ListRowTrailing>
+      </ListRow>
     )
   }
 

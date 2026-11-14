@@ -12,8 +12,11 @@ import type {
   CollectionGroupingId,
 } from '../../../types/collection'
 import { ListGroup, type ListGroupActions } from './list-group'
-import { ListItemHeadingLevelContext } from './list-item'
-import { ListItemSkeleton } from './list-item-skeleton'
+import { ListRowHeadingLevelContext } from './list-row'
+import {
+  ListRowSkeleton,
+  type ListRowSkeletonAnatomy,
+} from './list-row-skeleton'
 import { ListViewItem } from './list-view-item'
 
 export interface ListViewProps<TRecord> {
@@ -37,6 +40,7 @@ export interface ListViewProps<TRecord> {
   /** `null` lê a coleção como uma lista plana, sem cabeçalho nem colapso. */
   grouping: CollectionGroupingId | null
   loading?: boolean
+  loadingRecordAnatomy?: ListRowSkeletonAnatomy
   /** Esqueletos por grupo — ou da lista inteira, quando não há agrupamento. */
   loadingRecordCount?: number
   loadingRecordLabel?: string
@@ -57,6 +61,7 @@ export function ListView<TRecord>({
   getGroupActions,
   grouping,
   loading = false,
+  loadingRecordAnatomy,
   loadingRecordCount = 1,
   loadingRecordLabel,
   onCollapsedGroupIdsChange,
@@ -116,12 +121,13 @@ export function ListView<TRecord>({
       data-slot="list-view"
     >
       {grouping === null && preparedGroups === undefined ? (
-        <ListItemHeadingLevelContext.Provider value={2}>
+        <ListRowHeadingLevelContext.Provider value={2}>
           <div className="flex flex-col" data-slot="list-view-items">
             {loading ? (
               skeletonKeys('loading', loadingRecordCount).map((skeletonKey) => (
-                <ListItemSkeleton
+                <ListRowSkeleton
                   key={skeletonKey}
+                  {...loadingRecordAnatomy}
                   {...(loadingRecordLabel ? { label: loadingRecordLabel } : {})}
                 />
               ))
@@ -140,7 +146,7 @@ export function ListView<TRecord>({
               </Empty>
             )}
           </div>
-        </ListItemHeadingLevelContext.Provider>
+        </ListRowHeadingLevelContext.Provider>
       ) : (
         groups.map((group) => {
           const actions = getGroupActions?.(group)
@@ -158,6 +164,7 @@ export function ListView<TRecord>({
               group={group}
               key={group.id}
               loading={loading}
+              {...(loadingRecordAnatomy ? { loadingRecordAnatomy } : {})}
               loadingRecordCount={loadingRecordCount}
               onCollapsedChange={(collapsed) =>
                 setGroupCollapsed(group.id, collapsed)

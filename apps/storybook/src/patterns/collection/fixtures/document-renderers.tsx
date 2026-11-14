@@ -3,6 +3,13 @@ import { Text } from '@tc96/elements/text'
 import {
   DateProperty,
   ListRow,
+  ListRowAction,
+  ListRowBody,
+  ListRowDescription,
+  ListRowField,
+  ListRowLeading,
+  ListRowTitle,
+  ListRowTrailing,
   PersonProperty,
   type PersonPropertyOption,
 } from '@tc96/parttens'
@@ -180,8 +187,11 @@ export const renderDocumentCard =
           </Text>
           <DocumentMenu actions={actions} document={document} size="icon-xs" />
         </div>
-        <CardTitle render={<h2>{document.title}</h2>} />
-        <CardDescription render={<p>{document.excerpt}</p>} />
+        <CardTitle className="truncate" render={<h2>{document.title}</h2>} />
+        <CardDescription
+          className="line-clamp-3"
+          render={<p>{document.excerpt}</p>}
+        />
       </CardHeader>
       <Separator className="mt-auto" />
       <CardFooter className="min-w-0 justify-between gap-3 px-4 py-3">
@@ -208,20 +218,25 @@ export const renderDocumentCard =
 
 export const renderDocumentListRow =
   (actions: DocumentActions) => (document: DocumentRecord) => (
-    <ListRow
-      actions={
-        <DocumentMenu actions={actions} document={document} revealOnHover />
-      }
-      className="group"
-      description={[ownerName(document)]}
-      icon={<KindIcon document={document} />}
-      iconFrame={{ color: kindOptionOf(document.kind).color }}
-      key={document.id}
-      properties={
-        <span className="text-muted-foreground text-sm">
-          {formatCreatedAt(document.createdAt)}
-        </span>
-      }
-      title={document.title}
-    />
+    <ListRow className="group" interactive={false} key={document.id}>
+      <ListRowLeading>
+        <IconFrame color={kindOptionOf(document.kind).color} shape="rounded">
+          <KindIcon document={document} />
+        </IconFrame>
+      </ListRowLeading>
+      <ListRowBody>
+        <ListRowTitle>{document.title}</ListRowTitle>
+        <ListRowDescription>{ownerName(document)}</ListRowDescription>
+      </ListRowBody>
+      <ListRowTrailing>
+        <ListRowField always>
+          <span className="text-muted-foreground text-sm">
+            {formatCreatedAt(document.createdAt)}
+          </span>
+        </ListRowField>
+        <ListRowAction>
+          <DocumentMenu actions={actions} document={document} revealOnHover />
+        </ListRowAction>
+      </ListRowTrailing>
+    </ListRow>
   )

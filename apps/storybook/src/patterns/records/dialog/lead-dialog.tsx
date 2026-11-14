@@ -7,8 +7,8 @@ import {
   SelectProperty,
 } from '@tc96/parttens'
 import { useState } from 'react'
+import { sleep } from '../../../test-utils/sleep'
 import { personOptions } from '../../collection/fixtures/task-fields'
-import { delay } from './delay'
 import {
   isLeadNextAction,
   isLeadSource,
@@ -66,7 +66,7 @@ export function LeadDialog({
         ).trim()
         const trimmedTitle = title.trim()
         if (trimmedTitle === '') return false
-        await delay(150)
+        await sleep(150)
         onCreate({
           description,
           nextAction,
