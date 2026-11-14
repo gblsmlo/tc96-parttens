@@ -9,6 +9,11 @@ import {
   DateRangeProperty,
   FlagProperty,
   ListRow,
+  ListRowBody,
+  ListRowDescription,
+  ListRowField,
+  ListRowTitle,
+  ListRowTrailing,
   ProgressRing,
   SelectProperty,
   TagsProperty,
@@ -29,6 +34,7 @@ import {
   resultLabels,
   statusOptions,
 } from './campaigns'
+import { DescriptionSegments } from './description-segments'
 
 const LOCALE = 'pt-BR'
 
@@ -228,24 +234,29 @@ export const campaignTableAggregations: DataTableAggregations = {
 
 export const renderCampaignListRow =
   (updateCampaign: UpdateCampaign) => (campaign: Campaign) => (
-    <ListRow
-      description={[
-        objectiveOptions.find(({ value }) => value === campaign.objective)
-          ?.label,
-        formatBudget(campaign),
-        `${formatCurrency(campaign.spend)} usados`,
-      ]}
-      key={campaign.id}
-      properties={
-        <div className="flex items-center gap-3">
+    <ListRow interactive={false} key={campaign.id}>
+      <ListRowBody>
+        <ListRowTitle>{campaign.name}</ListRowTitle>
+        <ListRowDescription>
+          <DescriptionSegments
+            segments={[
+              objectiveOptions.find(({ value }) => value === campaign.objective)
+                ?.label,
+              formatBudget(campaign),
+              `${formatCurrency(campaign.spend)} usados`,
+            ]}
+          />
+        </ListRowDescription>
+      </ListRowBody>
+      <ListRowTrailing>
+        <ListRowField always className="gap-3">
           {campaign.status === 'active' ? (
             <LearningField campaign={campaign} />
           ) : null}
           <StatusField campaign={campaign} onChange={updateCampaign} />
-        </div>
-      }
-      title={campaign.name}
-    />
+        </ListRowField>
+      </ListRowTrailing>
+    </ListRow>
   )
 
 export const createCampaignGridColumns = (
