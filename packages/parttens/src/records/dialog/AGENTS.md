@@ -169,7 +169,7 @@ Override exceptions, registered in `scripts/override-exceptions.json`:
 
 - `DialogTitle` in `components/dialog-shell.tsx`: `text-foreground`, so the title matches the muted ancestor in size and keeps the theme's text token.
 - The title `Input` and description `Textarea` in `record-dialog-headline.tsx`: `placeholder:text-muted-foreground/60`, back to `muted-foreground` on focus. The fields are `unstyled`, so the placeholder is the only sign of an empty field and recedes behind the content until focus.
-- The submit hint `Kbd` (`record-dialog-submit-hint`) in `record-dialog.tsx`: `bg-primary-foreground/16 text-primary-foreground`. The hint sits on the `bg-primary` submit button, and the COSS `Kbd` pair `bg-muted text-muted-foreground` is meant for `background` and `muted`: on `primary` it measured 2.69:1 in light and 3.00:1 in dark, and axe failed the dialog stories that end with the submit enabled. `primary-foreground` is the pair the theme promises for `primary`, the same as the button label. The ratios are in `docs/architecture/tc96-parttens.md`, under Acessibilidade dos patterns.
+- The submit hint `Kbd` (`record-dialog-submit-hint`) in `record-dialog.tsx`: `bg-primary-foreground/16 text-primary-foreground`. The hint sits on the `bg-primary` submit button, and the COSS `Kbd` pair `bg-muted text-muted-foreground` is meant for `background` and `muted`: on `primary` it measured 2.69:1 in light and 3.00:1 in dark, and axe failed the dialog stories that end with the submit enabled. `primary-foreground` is the pair the theme promises for `primary`, the same as the button label. The ratios are in `docs/accessibility.md`, under Decisões.
 
 ## Verify
 

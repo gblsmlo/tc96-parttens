@@ -49,4 +49,4 @@ Interface tests are `play` functions in `apps/storybook/src/patterns/surfaces/st
 ## Pointers
 
 - Public API: `index.ts` and the `state-surface` entry of `docs/architecture/public-api-exports.json`.
-- Decisions and measured contrast: `docs/architecture/tc96-parttens.md`; plan: `docs/plans/2026-10-04-state-surface.md`.
+- Decisions: `docs/architecture/tc96-parttens.md`; measured contrast: `docs/accessibility.md`; plan: `docs/plans/2026-10-04-state-surface.md`.

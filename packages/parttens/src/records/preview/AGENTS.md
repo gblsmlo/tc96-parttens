@@ -41,7 +41,7 @@ Import direction: `composition/` → `core.ts`. Composition imports only COSS (`
 
 - `data-slot` names on the popup, panel, footer and title are left to COSS (`sheet-popup`, `sheet-panel`, `sheet-footer`, `sheet-title`).
 - No class overrides a COSS border or radius; `scripts/override-exceptions.json` has no entry for this pattern. Changing that requires a new entry.
-- Colors come from theme tokens. Measured contrast is in `docs/architecture/tc96-parttens.md`.
+- Colors come from theme tokens. Measured contrast is in `docs/accessibility.md`.
 
 ## Verify
 
@@ -56,4 +56,4 @@ The stories are in `apps/storybook/src/patterns/records/preview/`, with a `!dev`
 ## Pointers
 
 - Public API: `index.ts` and the `record-preview` entry of `docs/architecture/public-api-exports.json`. Props are in `core.ts`.
-- Decisions, contrast and the break note: `docs/architecture/tc96-parttens.md`; plan: `docs/plans/2026-10-04-record-preview.md`.
+- Decisions and the break note: `docs/architecture/tc96-parttens.md`; contrast: `docs/accessibility.md`; plan: `docs/plans/2026-10-04-record-preview.md`.
