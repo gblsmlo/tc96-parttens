@@ -187,8 +187,11 @@ export const renderDocumentCard =
           </Text>
           <DocumentMenu actions={actions} document={document} size="icon-xs" />
         </div>
-        <CardTitle render={<h2>{document.title}</h2>} />
-        <CardDescription render={<p>{document.excerpt}</p>} />
+        <CardTitle className="truncate" render={<h2>{document.title}</h2>} />
+        <CardDescription
+          className="line-clamp-3"
+          render={<p>{document.excerpt}</p>}
+        />
       </CardHeader>
       <Separator className="mt-auto" />
       <CardFooter className="min-w-0 justify-between gap-3 px-4 py-3">
