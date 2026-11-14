@@ -10,7 +10,10 @@ import { Separator } from '@tc96/ui/separator'
 import { ChevronDownIcon, ChevronRightIcon, PlusIcon } from 'lucide-react'
 import { Fragment, type ReactNode, useId } from 'react'
 import type { CollectionGroup } from '../../../types/collection'
-import { ListItemSkeleton } from './list-item-skeleton'
+import {
+  ListRowSkeleton,
+  type ListRowSkeletonAnatomy,
+} from './list-row-skeleton'
 import { ListViewItem } from './list-view-item'
 
 export interface ListGroupActions {
@@ -29,6 +32,7 @@ export interface ListGroupProps<TRecord> {
   renderGroupTitle?: (group: CollectionGroup<TRecord>) => ReactNode
   getKey: (record: TRecord) => string | number
   loading?: boolean
+  loadingRecordAnatomy?: ListRowSkeletonAnatomy
   loadingRecordCount?: number
   loadingRecordLabel?: string
 }
@@ -41,6 +45,7 @@ export function ListGroup<TRecord>({
   getKey,
   group,
   loading = false,
+  loadingRecordAnatomy,
   loadingRecordCount = 1,
   loadingRecordLabel,
   onCollapsedChange,
@@ -118,8 +123,9 @@ export function ListGroup<TRecord>({
           <div className="flex flex-col" data-slot="list-group-items">
             {loading ? (
               loadingItems.map((record) => (
-                <ListItemSkeleton
+                <ListRowSkeleton
                   key={record.id}
+                  {...loadingRecordAnatomy}
                   {...(loadingRecordLabel ? { label: loadingRecordLabel } : {})}
                 />
               ))
