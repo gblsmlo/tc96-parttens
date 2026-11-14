@@ -122,6 +122,21 @@ export const CountEmpty: Story = {
   args: { display: 'count', value: [], variant: 'badge' },
 }
 
+export const CountPlain: Story = {
+  play: async ({ canvas }) => {
+    const trigger = await canvas.findByRole('button', {
+      name: 'Tags: 1 Tag',
+    })
+    const icon = trigger.querySelector('svg')
+
+    await expect(trigger.dataset.variant).toBe('plain')
+    await expect(getComputedStyle(trigger).fontSize).toBe('14px')
+    await expect(icon?.getBoundingClientRect().width).toBe(12)
+    await expect(icon?.getBoundingClientRect().height).toBe(12)
+  },
+  args: { display: 'count', variant: 'plain' },
+}
+
 export const CountCustomLabel: Story = {
   play: async ({ canvas }) => {
     const trigger = await canvas.findByRole('button', {
