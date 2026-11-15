@@ -17,7 +17,6 @@ import {
   type PropertyVariant,
 } from '../../shared/property-surface'
 import { PropertyTooltip } from '../../shared/property-tooltip'
-import { IconLabelProperty } from '../icon-label/icon-label-property'
 import {
   formatDateProperty,
   parseDatePropertyValue,
@@ -134,6 +133,7 @@ export function DateProperty({
       label={label}
       onOpenChange={setOpen}
       open={open}
+      overdue={isOverdue}
       tooltip={tooltip ? formatFullDate(value, locale, timeZone) : null}
       variant={variant}
     >
@@ -180,36 +180,25 @@ export function DatePropertyBadge({
     displayLabel ?? formatDateProperty(value, fallback, locale, timeZone)
   const fullDate = tooltip ? formatFullDate(value, locale, timeZone) : null
 
-  if (fullDate) {
-    return (
-      <PropertyTooltip
-        content={fullDate}
-        trigger={
-          <PropertySurface
-            className={cn('max-w-full', isOverdue && 'font-medium', className)}
-            data-slot="property-surface"
-            tabIndex={0}
-            variant={variant}
-          >
-            <CalendarDaysIcon
-              aria-hidden
-              className="size-3"
-              data-slot="property-icon"
-            />
-            <span className="truncate">{label}</span>
-          </PropertySurface>
-        }
-      />
-    )
-  }
-
-  return (
-    <IconLabelProperty
-      className={cn(isOverdue && 'font-medium', className)}
+  const surface = (
+    <PropertySurface
+      className={cn('max-w-full', isOverdue && 'font-medium', className)}
+      data-overdue={isOverdue || undefined}
+      data-slot="property-surface"
       muted={!value}
-      icon={CalendarDaysIcon}
-      label={label}
+      tabIndex={fullDate ? 0 : undefined}
       variant={variant}
-    />
+    >
+      <CalendarDaysIcon
+        aria-hidden
+        className="size-3"
+        data-slot="property-icon"
+      />
+      <span className="truncate">{label}</span>
+    </PropertySurface>
   )
+
+  if (!fullDate) return surface
+
+  return <PropertyTooltip content={fullDate} trigger={surface} />
 }

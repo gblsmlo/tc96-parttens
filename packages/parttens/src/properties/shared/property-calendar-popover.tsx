@@ -32,6 +32,7 @@ export interface PropertyCalendarPopoverProps {
   disabled?: boolean
   dropdownPlacement?: PropertyPopoverDropdownPlacement
   muted?: boolean
+  overdue?: boolean
   tooltip?: ReactNode
   variant?: PropertyVariant
 }
@@ -49,6 +50,7 @@ export function PropertyCalendarPopover({
   muted = false,
   onOpenChange,
   open,
+  overdue = false,
   tooltip,
   variant,
 }: Readonly<PropertyCalendarPopoverProps>) {
@@ -59,6 +61,7 @@ export function PropertyCalendarPopover({
       render={
         <PropertySurface
           className={cn('max-w-full', className)}
+          data-overdue={overdue || undefined}
           muted={muted}
           render={<button type="button" />}
           variant={variant}
