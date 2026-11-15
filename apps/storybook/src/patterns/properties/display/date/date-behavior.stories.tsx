@@ -201,3 +201,90 @@ export const TooltipWithoutValueNoTabStop: Story = {
     )
   },
 }
+
+const OVERDUE_TEXT = '14 nov · venceu'
+
+const overdueArgs = {
+  ariaLabel: 'Vencimento',
+  displayLabel: OVERDUE_TEXT,
+  isOverdue: true,
+  locale: 'pt-BR',
+  value: '2026-11-14T12:00:00.000Z',
+}
+
+export const OverdueDisplayLabelOnTrigger: Story = {
+  args: { ...overdueArgs, onValueChange: fn() },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: `Vencimento: ${OVERDUE_TEXT}`,
+    })
+
+    await expect(trigger).toHaveTextContent(OVERDUE_TEXT)
+    await expect(trigger).toHaveAttribute('data-overdue')
+    await expect(trigger.className).toContain('font-medium')
+  },
+}
+
+export const OverdueDisplayLabelOnReadOnlyValue: Story = {
+  args: { ...overdueArgs, readOnly: true },
+  play: async ({ canvasElement }) => {
+    const surface = surfaceOf(canvasElement, OVERDUE_TEXT)
+
+    await expect(within(canvasElement).queryByRole('button')).toBeNull()
+    await expect(surface).toHaveAttribute('data-overdue')
+    await expect(surface?.className).toContain('font-medium')
+  },
+}
+
+export const OverdueDisplayLabelOnTooltipValue: Story = {
+  args: { ...overdueArgs, readOnly: true, tooltip: true },
+  play: async ({ canvasElement }) => {
+    const surface = surfaceOf(canvasElement, OVERDUE_TEXT)
+
+    await expect(surface).toHaveAttribute('tabindex', '0')
+    await expect(surface).toHaveAttribute('data-overdue')
+    await expect(surface?.className).toContain('font-medium')
+  },
+}
+
+export const OverdueAddsNoWord: Story = {
+  args: { isOverdue: true, onValueChange: fn() },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Date: Jun 19',
+    })
+
+    await expect(trigger).toHaveTextContent(/^Jun 19$/)
+    await expect(trigger).toHaveAttribute('data-overdue')
+  },
+}
+
+export const OverdueReadOnlyAddsNoWord: Story = {
+  args: { isOverdue: true, readOnly: true },
+  play: async ({ canvasElement }) => {
+    const surface = surfaceOf(canvasElement, 'Jun 19')
+
+    await expect(surface).toHaveTextContent(/^Jun 19$/)
+    await expect(surface).toHaveAttribute('data-overdue')
+  },
+}
+
+export const NotOverdueHasNoAttribute: Story = {
+  args: { onValueChange: fn() },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Date: Jun 19',
+    })
+
+    await expect(trigger).not.toHaveAttribute('data-overdue')
+  },
+}
+
+export const NotOverdueReadOnlyHasNoAttribute: Story = {
+  args: { readOnly: true, tooltip: true },
+  play: async ({ canvasElement }) => {
+    const surface = surfaceOf(canvasElement, 'Jun 19')
+
+    await expect(surface).not.toHaveAttribute('data-overdue')
+  },
+}

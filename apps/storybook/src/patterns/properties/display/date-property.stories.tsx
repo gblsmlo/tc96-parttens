@@ -73,11 +73,65 @@ export const Empty: Story = {
 }
 
 export const Overdue: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'With `isOverdue`, the date takes a heavier weight and the surface carries `data-overdue`, so a consumer can style or test the state without reading a class.',
+      },
+    },
+  },
   args: {
     isOverdue: true,
     locale: 'en-US',
     timeZone: 'UTC',
     value: '2026-06-12T12:00:00.000Z',
+  },
+  play: async ({ canvasElement }) => {
+    const surface = within(canvasElement)
+      .getByText('Jun 12')
+      .closest('[data-slot="property-surface"]')
+
+    await expect(surface).toHaveAttribute('data-overdue')
+  },
+}
+
+export const OverdueDisplayLabel: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The pattern adds no overdue word, because wording and order depend on the language. The consumer composes the text and passes it through `displayLabel`, which reaches the screen and the accessible name of the trigger.',
+      },
+    },
+  },
+  args: {
+    ariaLabel: 'Vencimento',
+    displayLabel: '14 nov · venceu',
+    isOverdue: true,
+    locale: 'pt-BR',
+    timeZone: 'UTC',
+    value: '2026-11-14T12:00:00.000Z',
+  },
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-80 items-start p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Vencimento: 14 nov · venceu',
+    })
+
+    await expect(trigger).toHaveTextContent('14 nov · venceu')
+    await expect(trigger).toHaveAttribute('data-overdue')
+  },
+  render: function OverdueDisplayLabel(args) {
+    const [value, setValue] = useState(args.value)
+
+    return <DateProperty {...args} onValueChange={setValue} value={value} />
   },
 }
 
