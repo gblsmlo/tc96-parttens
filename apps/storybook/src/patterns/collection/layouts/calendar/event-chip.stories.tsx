@@ -63,7 +63,7 @@ const docs = {
   ],
   description: {
     component:
-      '`CalendarEventChip` is the item `renderRecord` returns. `Anatomy` shows the slots, driven by the controls. `Usage` is a meeting chip with the same controls, and `loading` renders `CalendarItemSkeleton`. `Behavior` is the usage under test.',
+      '`CalendarEventChip` is the item `renderRecord` returns. `Anatomy` shows the slots, driven by the controls. `Usage` is a meeting chip with the same controls, and `loading` renders `CalendarItemSkeleton`. `Behavior` is the usage under test, as a chip and as a block, whose time click must reach the open trigger.',
   },
   usage,
 } satisfies UsageDocsParameters & Record<string, unknown>
@@ -76,14 +76,15 @@ function Meeting({
   display = 'chip',
   loading,
   time,
+  title = 'Kickoff do trimestre',
   tone,
   trigger,
-}: Readonly<ChipArgs>) {
+}: Readonly<ChipArgs & { title?: string }>) {
   if (loading)
     return (
       <CalendarItemSkeleton
         display={display ?? 'chip'}
-        label="Carregando reunião"
+        label={`Carregando ${title}`}
       />
     )
 
@@ -94,10 +95,10 @@ function Meeting({
       {...(tone ? { tone } : {})}
     >
       {time ? <CalendarEventChipTime>09:00</CalendarEventChipTime> : null}
-      <CalendarEventChipTitle>Kickoff do trimestre</CalendarEventChipTitle>
+      <CalendarEventChipTitle>{title}</CalendarEventChipTitle>
       {trigger ? (
         <CalendarEventChipOpenTrigger
-          aria-label="Abrir Kickoff do trimestre"
+          aria-label={`Abrir ${title}`}
           onClick={onOpen}
         />
       ) : null}
@@ -105,7 +106,10 @@ function Meeting({
   )
 }
 
-function LoadingMeeting() {
+function LoadingMeeting({
+  display,
+  title,
+}: Readonly<Pick<ChipArgs, 'display'> & { title: string }>) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -121,9 +125,10 @@ function LoadingMeeting() {
   return (
     <Meeting
       completed={false}
-      display="chip"
+      display={display}
       loading={loading}
       time
+      title={title}
       tone="primary"
       trigger
     />
@@ -210,7 +215,9 @@ export const Behavior: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const skeleton = canvas.getByRole('status', { name: 'Carregando reunião' })
+    const skeleton = canvas.getByRole('status', {
+      name: 'Carregando Kickoff do trimestre',
+    })
     const skeletonHeight = skeleton.getBoundingClientRect().height
 
     const open = await canvas.findByRole(
@@ -218,7 +225,8 @@ export const Behavior: Story = {
       { name: 'Abrir Kickoff do trimestre' },
       { timeout: LOAD_DELAY * 2 },
     )
-    const chip = canvas.getByRole('article')
+    const chip = open.closest('article')
+    if (!chip) throw new Error('The open trigger is outside the chip.')
     await expect(chip.getBoundingClientRect().height).toBe(skeletonHeight)
 
     onOpen.mockClear()
@@ -242,6 +250,27 @@ export const Behavior: Story = {
     )
     await userEvent.keyboard('{Enter}')
     await expect(onOpen).toHaveBeenCalledTimes(2)
+
+    const openBlock = canvas.getByRole('button', {
+      name: 'Abrir Revisão do pipeline',
+    })
+    const block = openBlock.closest('article')
+    if (!block) throw new Error('The open trigger is outside the block.')
+    await expect(block).toHaveAttribute('data-display', 'block')
+    const time = within(block).getByText('09:00').getBoundingClientRect()
+    const timeHit = canvasElement.ownerDocument.elementFromPoint(
+      time.left + time.width / 2,
+      time.top + time.height / 2,
+    )
+    if (!timeHit) throw new Error('Nothing is rendered over the block time.')
+    await expect(timeHit).toBe(openBlock)
+    await userEvent.click(timeHit)
+    await expect(onOpen).toHaveBeenCalledTimes(3)
   },
-  render: () => <LoadingMeeting />,
+  render: () => (
+    <div className="flex w-full gap-2">
+      <LoadingMeeting display="chip" title="Kickoff do trimestre" />
+      <LoadingMeeting display="block" title="Revisão do pipeline" />
+    </div>
+  ),
 }

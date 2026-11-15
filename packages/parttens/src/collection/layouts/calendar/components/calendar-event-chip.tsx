@@ -130,7 +130,7 @@ export function CalendarEventChipOpenTrigger({
   return (
     <button
       className={cn(
-        'absolute inset-0 cursor-pointer rounded-[inherit] outline-none',
+        'absolute inset-0 z-[1] cursor-pointer rounded-[inherit] outline-none',
         className,
       )}
       data-slot="calendar-event-chip-open-trigger"
