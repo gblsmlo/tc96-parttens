@@ -82,7 +82,6 @@ Medir e registrar contraste:
   - Os dias da semana e os dias fora do mês do calendar (3,14:1), nas stories `Trigger` e `CalendarLocale` do `DateRangeProperty`, nas stories `Default`, `Reminders`, `TimeInput`, `DateOnly`, `NoPastDays`, `EnglishLabels`, `ShortWindow`, `BelowTrigger` e `DrillIn` do `ScheduleProperty` e nas stories `Overview` e `AgendaCalendar` dos widgets de produtividade.
   - O exemplo de força de senha do COSS (3,65:1).
   - O variant `warning` do `Badge` em `text-xs` (4,36:1), nas stories `Overview` e `Deals` dos widgets de CRM.
-  - O `MenuShortcut` (`text-muted-foreground/72`, 3,14:1 no claro sobre `popover`), nas stories `UI/Menu/Behavior/InsetAndShortcuts`, `UI/Menu/Usages/Playback` e `UI/Menu/API Reference/MenuShortcut`. A regra `color-contrast` ignora só `[data-slot="menu-shortcut"]`; o escuro passa.
 - **Na story, widgets com tom invertido:** a regra de contraste de `Overview` e `AssetStatInverted` de finanças, `Overview` e `TaskProgressInverted` de produtividade e `Overview` de CRM ignora só o widget invertido: o `muted-foreground` escuro fica em 4,2:1 sobre o card invertido.
 - Uma exceção nova entra aqui, com o motivo, antes de entrar na story.
 
@@ -252,6 +251,10 @@ Preenchimentos gráficos são do tema do consumidor e ficam abaixo de 3:1 em alg
 As cores de papel são `--warning-foreground` para sequência e medalhas e `--success-foreground` para missão concluída, ambas em `IconFrame` `color` com o fundo a 6%: medido no tema do Storybook, o ícone fica em 4,6:1 (chama) e 5,0:1 (check) no claro e 8,8:1 e 7,8:1 no escuro; nas pílulas `warning/15` e `success/15` o ícone fica em 4,5:1 e 4,8:1 no claro e 7,5:1 e 6,8:1 no escuro.
 
 O anel e o `Meter` usam `primary` (15:1 sobre o card); a trilha do anel e as bordas tracejadas são decorativas (1,1:1 e 1,3:1) e o valor segue em texto ou `sr-only`.
+
+### `Menu`
+
+As decisões e as medidas do menu ficam em `packages/ui/src/menu/ACCESSIBILITY.md`.
 
 ### `Toast`
 

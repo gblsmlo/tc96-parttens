@@ -1,7 +1,6 @@
 import {
   EditorTitle,
   type EditorTitleHandle,
-  MenuCheckboxOption,
   PersonProperty,
   PropertySurface,
   RecordDialog,
@@ -12,6 +11,7 @@ import {
 import { Button } from '@tc96/ui/button'
 import {
   Menu,
+  MenuCheckboxItem,
   MenuPopup,
   MenuSub,
   MenuSubPopup,
@@ -76,7 +76,7 @@ function LinksProperty({
               </MenuSubTrigger>
               <MenuSubPopup>
                 {options.map((option) => (
-                  <MenuCheckboxOption
+                  <MenuCheckboxItem
                     checked={value.includes(option.value)}
                     key={option.value}
                     onCheckedChange={(checked) =>
@@ -88,7 +88,7 @@ function LinksProperty({
                     }
                   >
                     {option.label}
-                  </MenuCheckboxOption>
+                  </MenuCheckboxItem>
                 ))}
               </MenuSubPopup>
             </MenuSub>

@@ -5,12 +5,11 @@ import {
   ChatsPanelList,
   ChatsPanelSkeleton,
   CollectionToolbar,
-  MenuRadioOption,
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/parttens'
 import { ChatEmptyState } from '@tc96/ui/chat/chat-states'
-import { MenuRadioGroup } from '@tc96/ui/menu'
+import { MenuRadioGroup, MenuRadioItem } from '@tc96/ui/menu'
 import { InboxIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
@@ -88,8 +87,8 @@ const meta = {
           <ViewSettingsMenu onClearFilters={() => {}}>
             <ViewSettingsSection label="Ordenar por">
               <MenuRadioGroup defaultValue="recent">
-                <MenuRadioOption value="recent">Mais recentes</MenuRadioOption>
-                <MenuRadioOption value="name">Nome</MenuRadioOption>
+                <MenuRadioItem value="recent">Mais recentes</MenuRadioItem>
+                <MenuRadioItem value="name">Nome</MenuRadioItem>
               </MenuRadioGroup>
             </ViewSettingsSection>
           </ViewSettingsMenu>

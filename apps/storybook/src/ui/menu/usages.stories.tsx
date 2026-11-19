@@ -27,7 +27,6 @@ import {
 } from '@tc96/ui/menu'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
-import { shortcutContrastException } from './menu-api.ts'
 
 const meta = {
   parameters: { layout: 'centered' },
@@ -40,24 +39,21 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Playback: Story = {
-  parameters: {
-    a11y: shortcutContrastException,
-  },
   render: () => (
     <Menu>
       <MenuTrigger render={<Button variant="outline" />}>Open menu</MenuTrigger>
       <MenuPopup align="start">
         <MenuGroup>
           <MenuGroupLabel>Playback</MenuGroupLabel>
-          <MenuItem>
+          <MenuItem aria-keyshortcuts="Meta+P">
             Play
             <MenuShortcut>⌘P</MenuShortcut>
           </MenuItem>
-          <MenuItem disabled>
+          <MenuItem aria-keyshortcuts="Shift+Meta+P" disabled>
             Pause
             <MenuShortcut>⇧⌘P</MenuShortcut>
           </MenuItem>
-          <MenuItem>
+          <MenuItem aria-keyshortcuts="Meta+N">
             Next
             <MenuShortcut>⌘N</MenuShortcut>
           </MenuItem>

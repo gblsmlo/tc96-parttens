@@ -7,13 +7,12 @@ import {
   type ChatsPanelVariant,
   CollectionToolbar,
   FilterRadioSubmenu,
-  MenuRadioOption,
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { ChatEmptyState } from '@tc96/ui/chat/chat-states'
-import { MenuRadioGroup, MenuSeparator } from '@tc96/ui/menu'
+import { MenuRadioGroup, MenuRadioItem, MenuSeparator } from '@tc96/ui/menu'
 import {
   InboxIcon,
   MailOpenIcon,
@@ -155,9 +154,9 @@ const meta = {
                     value={sort}
                   >
                     {sortOptions.map(([value, label]) => (
-                      <MenuRadioOption key={value} value={value}>
+                      <MenuRadioItem key={value} value={value}>
                         {label}
-                      </MenuRadioOption>
+                      </MenuRadioItem>
                     ))}
                   </MenuRadioGroup>
                 </ViewSettingsSection>

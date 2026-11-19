@@ -4,8 +4,6 @@ import {
   CollectionSearchField,
   CollectionToolbar,
   FilterRadioSubmenu,
-  MenuCheckboxOption,
-  MenuRadioOption,
   ViewSettingsMenu,
   type ViewSettingsMode,
   ViewSettingsSection,
@@ -16,10 +14,12 @@ import {
   ViewSwitcherSearch,
 } from '@tc96/parttens'
 import {
+  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuItem,
   MenuRadioGroup,
+  MenuRadioItem,
   MenuSeparator,
   MenuSub,
   MenuSubPopup,
@@ -308,12 +308,10 @@ export const Default: Story = {
                   </MenuSubTrigger>
                   <MenuSubPopup>
                     <MenuRadioGroup onValueChange={setDensity} value={density}>
-                      <MenuRadioOption value="comfortable">
+                      <MenuRadioItem value="comfortable">
                         Confortável
-                      </MenuRadioOption>
-                      <MenuRadioOption value="compact">
-                        Compacta
-                      </MenuRadioOption>
+                      </MenuRadioItem>
+                      <MenuRadioItem value="compact">Compacta</MenuRadioItem>
                     </MenuRadioGroup>
                   </MenuSubPopup>
                 </MenuSub>
@@ -324,10 +322,8 @@ export const Default: Story = {
                   </MenuSubTrigger>
                   <MenuSubPopup>
                     <MenuRadioGroup onValueChange={setSort} value={sort}>
-                      <MenuRadioOption value="due">Prazo</MenuRadioOption>
-                      <MenuRadioOption value="updated">
-                        Atualização
-                      </MenuRadioOption>
+                      <MenuRadioItem value="due">Prazo</MenuRadioItem>
+                      <MenuRadioItem value="updated">Atualização</MenuRadioItem>
                     </MenuRadioGroup>
                   </MenuSubPopup>
                 </MenuSub>
@@ -344,14 +340,14 @@ export const Default: Story = {
                       <MenuGroup>
                         <MenuGroupLabel>{label}</MenuGroupLabel>
                         {options.map((option) => (
-                          <MenuCheckboxOption
+                          <MenuCheckboxItem
                             checked={filters[id].includes(option)}
                             closeOnClick={false}
                             key={option}
                             onCheckedChange={() => toggleFilter(id, option)}
                           >
                             {option}
-                          </MenuCheckboxOption>
+                          </MenuCheckboxItem>
                         ))}
                       </MenuGroup>
                     </MenuSubPopup>
@@ -477,10 +473,10 @@ export const ViewSettingsThreeModes: Story = {
                 </MenuSubTrigger>
                 <MenuSubPopup>
                   <MenuRadioGroup onValueChange={setDensity} value={density}>
-                    <MenuRadioOption value="comfortable">
+                    <MenuRadioItem value="comfortable">
                       Confortável
-                    </MenuRadioOption>
-                    <MenuRadioOption value="compact">Compacta</MenuRadioOption>
+                    </MenuRadioItem>
+                    <MenuRadioItem value="compact">Compacta</MenuRadioItem>
                   </MenuRadioGroup>
                 </MenuSubPopup>
               </MenuSub>
@@ -553,10 +549,10 @@ export const ViewSettingsFourModes: Story = {
                 </MenuSubTrigger>
                 <MenuSubPopup>
                   <MenuRadioGroup onValueChange={setDensity} value={density}>
-                    <MenuRadioOption value="comfortable">
+                    <MenuRadioItem value="comfortable">
                       Confortável
-                    </MenuRadioOption>
-                    <MenuRadioOption value="compact">Compacta</MenuRadioOption>
+                    </MenuRadioItem>
+                    <MenuRadioItem value="compact">Compacta</MenuRadioItem>
                   </MenuRadioGroup>
                 </MenuSubPopup>
               </MenuSub>
@@ -713,12 +709,10 @@ export const WithText: Story = {
                   </MenuSubTrigger>
                   <MenuSubPopup>
                     <MenuRadioGroup onValueChange={setDensity} value={density}>
-                      <MenuRadioOption value="comfortable">
+                      <MenuRadioItem value="comfortable">
                         Confortável
-                      </MenuRadioOption>
-                      <MenuRadioOption value="compact">
-                        Compacta
-                      </MenuRadioOption>
+                      </MenuRadioItem>
+                      <MenuRadioItem value="compact">Compacta</MenuRadioItem>
                     </MenuRadioGroup>
                   </MenuSubPopup>
                 </MenuSub>
@@ -800,12 +794,10 @@ export const WithCenterSlot: Story = {
                   </MenuSubTrigger>
                   <MenuSubPopup>
                     <MenuRadioGroup onValueChange={setDensity} value={density}>
-                      <MenuRadioOption value="comfortable">
+                      <MenuRadioItem value="comfortable">
                         Confortável
-                      </MenuRadioOption>
-                      <MenuRadioOption value="compact">
-                        Compacta
-                      </MenuRadioOption>
+                      </MenuRadioItem>
+                      <MenuRadioItem value="compact">Compacta</MenuRadioItem>
                     </MenuRadioGroup>
                   </MenuSubPopup>
                 </MenuSub>

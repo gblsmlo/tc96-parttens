@@ -17,6 +17,7 @@ packages/
   helpers/     React-free functions (amount formatting, dates, rich text)
   templates/   installable templates (application shells), above parttens; see packages/templates/AGENTS.md
   ui/          COSS-origin components owned by this repo, listed in ui.manifest.json
+               a component may be a folder with index.ts, AGENTS.md, TOKENS.md and ACCESSIBILITY.md (menu/); read its AGENTS.md before changing it
   utils/       shared helpers (cn)
   registry/    registry build and the CLI published as @tc96/parttens
 apps/
@@ -38,7 +39,6 @@ packages/parttens/src/
   chat/         chats-panel/
   checklist/ collection/ editable/ properties/ rich-text-editor/ widgets/ wizard/
   action-bar/ pagination/ toolbar/   not patterns: one folder per component with its own Patterns page
-  shared/       not a pattern: the menu options the root barrel exports (place pending)
 ```
 
 The registry item name is not the folder: `patternSources` in `packages/registry/src/manifest.ts` maps each item (`record-dialog`) to its folder (`records/dialog`), and the folder is also the path the consumer receives under its patterns alias. Stories mirror the folders in `apps/storybook/src/patterns/` and in the sidebar (`Patterns/Records/Dialog`).
@@ -69,11 +69,11 @@ Files are kebab-case and named after what they export (`checklist-row.tsx` expor
 ## Rules that are enforced by scripts
 
 - **Layering:** imports only go down: `templates` → `parttens` → `elements` → `ui` → `utils` (`helpers` is React-free). Checked by `bun run boundaries:check`.
-- **`packages/ui` is repo-owned source** (ADR 0008, 2026-11-01). Its files start as COSS copies and may be edited, for example to drop unused variants and sizes. `bun run check:coss` only checks that every file is listed in `packages/ui/ui.manifest.json` and every listed item exists. `bun run sync:coss <item>` adds new COSS items, records them in the manifest and refuses to overwrite a file. Themes and tokens belong to the consumer, not to `packages/ui`.
+- **`packages/ui` is repo-owned source** (ADR 0008, 2026-11-01). Its files start as COSS copies and may be edited, for example to drop unused variants and sizes. `bun run check:coss` only checks that every file is listed in `packages/ui/ui.manifest.json` and every listed item exists. `bun run sync:coss <item>` adds new COSS items, records them in the manifest and refuses to overwrite a file. Themes and tokens belong to the consumer, not to `packages/ui`. A COSS component, menu items included, is changed in `packages/ui`; a pattern never recreates or wraps one to change how it looks (decided 2026-11-19).
 - **Overriding COSS styles needs a registered exception.** Any `className` that overrides a COSS component's border, radius, etc. must be listed with a reason in `scripts/override-exceptions.json`, or `bun run overrides:check` fails. Update the entry whenever the class changes.
 - **Public API baseline:** adding or removing exports changes `docs/architecture/public-api-exports.json`. Regenerate with `bun scripts/verify-public-api.ts --record` and mention it in the summary, since the diff may include unrelated pending exports.
 - Pattern `shared/` code is internal; export through the pattern's `index.ts` only when it is meant to be public.
-- Every pattern carries its own `AGENTS.md` at `packages/parttens/src/[<family>/]<pattern>/AGENTS.md`; a view with its own invariants may add one (`collection/layouts/data-grid/AGENTS.md`). Read it before changing that pattern. `packages/parttens/src/shared/AGENTS.md`, `action-bar/AGENTS.md`, `pagination/AGENTS.md` and `toolbar/AGENTS.md` cover the components the root barrel exports outside a pattern, and a new pattern ships with its own file. The sections, in order: an opening paragraph, `Map`, `Dependents`, `Invariants`, `Styling`, `Verify`, `Pointers`; `properties/AGENTS.md` is the reference.
+- Every pattern carries its own `AGENTS.md` at `packages/parttens/src/[<family>/]<pattern>/AGENTS.md`; a view with its own invariants may add one (`collection/layouts/data-grid/AGENTS.md`). Read it before changing that pattern. `action-bar/AGENTS.md`, `pagination/AGENTS.md` and `toolbar/AGENTS.md` cover the components the root barrel exports outside a pattern, and a new pattern ships with its own file. The sections, in order: an opening paragraph, `Map`, `Dependents`, `Invariants`, `Styling`, `Verify`, `Pointers`; `properties/AGENTS.md` is the reference.
 - A pattern `AGENTS.md` holds only what `ls`, `grep` or `tsc` do not reveal: folders and import direction, code outside the pattern that imports it by file path, intentional behavior with its reason, the `data-*` contract and override exceptions, and the commands. It does not copy file lists, props, types, defaults, story lists or rules from this file; the public API is the pattern's `index.ts` and its entry in `docs/architecture/public-api-exports.json`. Update it when a folder, an external import by path, an invariant, a `data-*` attribute or a command changes.
 
 ## Commands

@@ -197,7 +197,14 @@
         "dark": {
           "destructive-foreground": "var(--color-red-400)"
         }
-      }
+      },
+      "paths": [
+        "menu/ACCESSIBILITY.md",
+        "menu/AGENTS.md",
+        "menu/TOKENS.md",
+        "menu/index.ts",
+        "menu/menu.tsx"
+      ]
     },
     "meter": {
       "origin": "coss"

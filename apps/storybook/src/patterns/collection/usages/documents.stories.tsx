@@ -11,13 +11,13 @@ import {
   CollectionProvider,
   CollectionToolbar,
   GalleryView,
-  MenuCheckboxOption,
   useCollectionPreferences,
   ViewSettingsMenu,
   type ViewSettingsMode,
   ViewSettingsSection,
 } from '@tc96/parttens'
 import {
+  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuSub,
@@ -246,7 +246,7 @@ function DocumentsWorkspace({
                         <MenuGroup>
                           <MenuGroupLabel>Tipo</MenuGroupLabel>
                           {kindOptions.map((option) => (
-                            <MenuCheckboxOption
+                            <MenuCheckboxItem
                               checked={kindFilter.includes(option.value)}
                               closeOnClick={false}
                               key={option.value}
@@ -257,7 +257,7 @@ function DocumentsWorkspace({
                               }
                             >
                               {option.label}
-                            </MenuCheckboxOption>
+                            </MenuCheckboxItem>
                           ))}
                         </MenuGroup>
                       </MenuSubPopup>

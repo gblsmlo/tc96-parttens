@@ -88,7 +88,7 @@ const docs = {
   api: menuParts.map((part) => menuApi[part]),
   description: {
     component:
-      'COSS Menu, unmodified. A list of actions in a dropdown, enhanced with keyboard navigation. `UI/Menu/Behavior` shows each item kind and how it reacts, `UI/Menu/API Reference` has one page per part with its controls, and `UI/Menu/Usages` composes the parts into whole menus. Reference: [coss ui Menu](https://coss.com/ui/docs/components/menu).',
+      'COSS Menu, with workspace edits: the check of `MenuCheckboxItem` and `MenuRadioItem` sits on the right, `inset` aligns with the label after an icon, items are 44px tall with a coarse pointer, and `MenuShortcut` is `aria-hidden`, and the popup is at least 160px wide with 8px padding. A list of actions in a dropdown, enhanced with keyboard navigation. `UI/Menu/Behavior` shows each item kind and how it reacts, `UI/Menu/API Reference` has one page per part with its controls, and `UI/Menu/Usages` composes the parts into whole menus. Reference: [coss ui Menu](https://coss.com/ui/docs/components/menu).',
   },
   usage,
 } satisfies UsageDocsParameters & Record<string, unknown>
@@ -258,9 +258,9 @@ export const DefaultInteraction: Story = {
     await expect(within(menu).getAllByRole('menuitem')).toHaveLength(3)
 
     await userEvent.keyboard('{ArrowDown}')
-    await expect(
-      within(menu).getByRole('menuitem', { name: 'Profile' }),
-    ).toHaveFocus()
+    const profile = within(menu).getByRole('menuitem', { name: 'Profile' })
+    await expect(profile).toHaveFocus()
+    await expect(getComputedStyle(profile).outlineStyle).toBe('solid')
 
     await userEvent.click(
       within(menu).getByRole('menuitem', { name: 'Settings' }),

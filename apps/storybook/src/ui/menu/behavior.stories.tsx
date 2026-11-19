@@ -19,7 +19,6 @@ import {
 } from '@tc96/ui/menu'
 import { CopyIcon, PencilIcon, TrashIcon } from 'lucide-react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
-import { shortcutContrastException } from './menu-api.ts'
 
 interface BehaviorArgs {
   onSelect: (value: unknown) => void
@@ -29,6 +28,25 @@ function openMenu(canvasElement: HTMLElement) {
   return userEvent.click(
     within(canvasElement).getByRole('button', { name: 'Open menu' }),
   )
+}
+
+async function expectIndicatorAfterLabel(item: HTMLElement) {
+  const label = item.querySelector<HTMLElement>(':scope > span:first-child')
+  const indicator = item.querySelector<HTMLElement>(':scope > span:last-child')
+  if (!label || !indicator || label === indicator)
+    throw new Error('The item did not render its label and indicator.')
+  await expect(indicator.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+    label.getBoundingClientRect().right,
+  )
+}
+
+function textStart(item: HTMLElement) {
+  const walker = document.createTreeWalker(item, NodeFilter.SHOW_TEXT)
+  const text = walker.nextNode()
+  if (!text) throw new Error('The item has no text.')
+  const range = document.createRange()
+  range.selectNodeContents(text)
+  return range.getBoundingClientRect().left
 }
 
 const trigger = (
@@ -87,9 +105,11 @@ export const CheckboxItems: Story = {
     const notifications = within(menu).getByRole('menuitemcheckbox', {
       name: 'Notifications',
     })
-    await expect(
-      within(menu).getByRole('menuitemcheckbox', { name: 'Auto save' }),
-    ).toHaveAttribute('aria-checked', 'true')
+    const autoSave = within(menu).getByRole('menuitemcheckbox', {
+      name: 'Auto save',
+    })
+    await expect(autoSave).toHaveAttribute('aria-checked', 'true')
+    await expectIndicatorAfterLabel(autoSave)
 
     await userEvent.click(notifications)
     await expect(notifications).toHaveAttribute('aria-checked', 'true')
@@ -144,9 +164,9 @@ export const RadioGroup: Story = {
   play: async ({ args, canvasElement }) => {
     await openMenu(canvasElement)
     const menu = await screen.findByRole('menu')
-    await expect(
-      within(menu).getByRole('menuitemradio', { name: 'System' }),
-    ).toHaveAttribute('aria-checked', 'true')
+    const system = within(menu).getByRole('menuitemradio', { name: 'System' })
+    await expect(system).toHaveAttribute('aria-checked', 'true')
+    await expectIndicatorAfterLabel(system)
 
     const dark = within(menu).getByRole('menuitemradio', { name: 'Dark' })
     await userEvent.click(dark)
@@ -188,17 +208,16 @@ export const GroupLabels: Story = {
 }
 
 export const InsetAndShortcuts: Story = {
-  parameters: { a11y: shortcutContrastException },
   render: () => (
     <Menu>
       {trigger}
       <MenuPopup>
-        <MenuItem>
+        <MenuItem aria-keyshortcuts="Meta+E">
           <PencilIcon />
           Edit
           <MenuShortcut>⌘E</MenuShortcut>
         </MenuItem>
-        <MenuItem>
+        <MenuItem aria-keyshortcuts="Meta+D">
           <CopyIcon />
           Duplicate
           <MenuShortcut>⌘D</MenuShortcut>
@@ -210,12 +229,12 @@ export const InsetAndShortcuts: Story = {
   play: async ({ canvasElement }) => {
     await openMenu(canvasElement)
     const menu = await screen.findByRole('menu')
-    await expect(
-      within(menu).getByRole('menuitem', { name: 'Move to…' }),
-    ).toHaveAttribute('data-inset', 'true')
-    await expect(
-      within(menu).getByRole('menuitem', { name: /Edit/ }),
-    ).toHaveTextContent('⌘E')
+    const moveTo = within(menu).getByRole('menuitem', { name: 'Move to…' })
+    const edit = within(menu).getByRole('menuitem', { name: 'Edit' })
+    await expect(moveTo).toHaveAttribute('data-inset', 'true')
+    await expect(textStart(moveTo)).toBeCloseTo(textStart(edit), 0)
+    await expect(edit).toHaveAttribute('aria-keyshortcuts', 'Meta+E')
+    await expect(edit).toHaveTextContent('⌘E')
   },
 }
 
@@ -227,6 +246,9 @@ export const DisabledItem: Story = {
         <MenuItem onClick={() => onSelect('play')}>Play</MenuItem>
         <MenuItem disabled onClick={() => onSelect('pause')}>
           Pause
+          <span className="ms-auto text-muted-foreground text-xs">
+            Nothing is playing
+          </span>
         </MenuItem>
       </MenuPopup>
     </Menu>
@@ -234,7 +256,9 @@ export const DisabledItem: Story = {
   play: async ({ args, canvasElement }) => {
     await openMenu(canvasElement)
     const menu = await screen.findByRole('menu')
-    const pause = within(menu).getByRole('menuitem', { name: 'Pause' })
+    const pause = within(menu).getByRole('menuitem', {
+      name: 'Pause Nothing is playing',
+    })
     await expect(pause).toHaveAttribute('aria-disabled', 'true')
     await userEvent.click(pause, { pointerEventsCheck: 0 })
     await expect(args.onSelect).not.toHaveBeenCalled()

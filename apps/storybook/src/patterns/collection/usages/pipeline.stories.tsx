@@ -17,7 +17,6 @@ import {
   KanbanCardTitle,
   type KanbanColumnData,
   KanbanView,
-  MenuCheckboxOption,
   PersonProperty,
   projectCollection,
   SelectProperty,
@@ -25,6 +24,7 @@ import {
   ViewSettingsSection,
 } from '@tc96/parttens'
 import {
+  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuSub,
@@ -295,7 +295,7 @@ const meta = {
                           <MenuGroup>
                             <MenuGroupLabel>Responsável</MenuGroupLabel>
                             {people.map((person) => (
-                              <MenuCheckboxOption
+                              <MenuCheckboxItem
                                 checked={ownerFilter.includes(person.id)}
                                 closeOnClick={false}
                                 key={person.id}
@@ -306,7 +306,7 @@ const meta = {
                                 }
                               >
                                 {person.name}
-                              </MenuCheckboxOption>
+                              </MenuCheckboxItem>
                             ))}
                           </MenuGroup>
                         </MenuSubPopup>

@@ -15,7 +15,9 @@ const allowed: Record<string, string[]> = {
 }
 const cossModules = new Set(
   Object.entries((await readManifest()).items).flatMap(([name, item]) =>
-    manifestPaths(name, item).map((path) => path.replace(/\.tsx?$/, '')),
+    manifestPaths(name, item).map((path) =>
+      path.replace(/\.tsx?$/, '').replace(/\/index$/, ''),
+    ),
   ),
 )
 const graph = new Map<string, string[]>()

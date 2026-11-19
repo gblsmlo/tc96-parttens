@@ -17,8 +17,6 @@ import {
   DataGridPagination,
   DataGridSortSubmenu,
   DataTableColumnsSubmenu,
-  MenuCheckboxOption,
-  MenuRadioOption,
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
@@ -27,9 +25,11 @@ import {
   ViewSettingsSection,
 } from '@tc96/parttens'
 import {
+  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuRadioGroup,
+  MenuRadioItem,
   MenuSeparator,
   MenuSub,
   MenuSubPopup,
@@ -387,16 +387,16 @@ function CampaignsWorkspace({
                           }
                           value={preferences.groupBy ?? ''}
                         >
-                          <MenuRadioOption value="">
+                          <MenuRadioItem value="">
                             Sem agrupamento
-                          </MenuRadioOption>
+                          </MenuRadioItem>
                           {campaignGroupings.map((dimension) => (
-                            <MenuRadioOption
+                            <MenuRadioItem
                               key={dimension.id}
                               value={dimension.id}
                             >
                               {dimension.label}
-                            </MenuRadioOption>
+                            </MenuRadioItem>
                           ))}
                         </MenuRadioGroup>
                       </MenuSubPopup>
@@ -424,7 +424,7 @@ function CampaignsWorkspace({
                       <MenuGroup>
                         <MenuGroupLabel>Status</MenuGroupLabel>
                         {statusOptions.map((option) => (
-                          <MenuCheckboxOption
+                          <MenuCheckboxItem
                             checked={statusFilter.includes(option.value)}
                             closeOnClick={false}
                             key={option.value}
@@ -435,7 +435,7 @@ function CampaignsWorkspace({
                             }
                           >
                             {option.label}
-                          </MenuCheckboxOption>
+                          </MenuCheckboxItem>
                         ))}
                       </MenuGroup>
                     </MenuSubPopup>
@@ -449,7 +449,7 @@ function CampaignsWorkspace({
                       <MenuGroup>
                         <MenuGroupLabel>Objetivo</MenuGroupLabel>
                         {objectiveOptions.map((option) => (
-                          <MenuCheckboxOption
+                          <MenuCheckboxItem
                             checked={objectiveFilter.includes(option.value)}
                             closeOnClick={false}
                             key={option.value}
@@ -460,7 +460,7 @@ function CampaignsWorkspace({
                             }
                           >
                             {option.label}
-                          </MenuCheckboxOption>
+                          </MenuCheckboxItem>
                         ))}
                       </MenuGroup>
                     </MenuSubPopup>

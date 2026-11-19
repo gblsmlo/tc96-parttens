@@ -46,8 +46,11 @@ const uiPaths = (name: string) =>
   uiManifest.items[name]?.paths ?? [`${name}.tsx`]
 const uiOwners = new Map<string, string>()
 for (const name of Object.keys(uiManifest.items))
-  for (const path of uiPaths(name))
-    uiOwners.set(path.replace(/\.tsx?$/, ''), name)
+  for (const path of uiPaths(name)) {
+    const module = path.replace(/\.tsx?$/, '')
+    uiOwners.set(module, name)
+    if (module.endsWith('/index')) uiOwners.set(module.slice(0, -6), name)
+  }
 const uiOwner = (module: string, importer: string) => {
   const owner = uiOwners.get(module)
   if (!owner)

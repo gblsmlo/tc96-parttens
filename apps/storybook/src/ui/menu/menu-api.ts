@@ -16,7 +16,7 @@ export const menuApi = {
 | --- | --- | --- | --- |
 | \`variant\` | \`"default"\` or \`"switch"\` | \`"default"\` | Display style; \`switch\` shows a toggle switch indicator |
 
-The \`switch\` variant only changes the indicator: the item is still a \`menuitemcheckbox\`.`,
+The \`switch\` variant only changes the indicator: the item is still a \`menuitemcheckbox\`. COSS puts the check before the label; this workspace edits \`MenuCheckboxItem\` so it sits in a trailing column, as in \`SelectItem\` and the switch, and the label starts where the other items' labels do.`,
     name: 'MenuCheckboxItem',
   },
   MenuGroup: {
@@ -40,7 +40,9 @@ ${insetRow}`,
 ${insetRow}
 | \`variant\` | \`"default"\` or \`"destructive"\` | \`"default"\` | Controls the item styling |
 
-When items with and without icons are mixed, set \`inset\` on the items without an icon to keep the labels aligned.`,
+When items with and without icons are mixed, set \`inset\` on the items without an icon to keep the labels aligned; this workspace sets the inset padding to the label start after an icon (COSS leaves it 4px further). A disabled item ignores the pointer, so a tooltip never opens on it: say why it is disabled inside the item.
+
+With a coarse pointer every item, link, checkbox, radio and submenu trigger is at least 44px tall (\`pointer-coarse:min-h-11\`), an edit of this workspace.`,
     name: 'MenuItem',
   },
   MenuLinkItem: {
@@ -64,7 +66,9 @@ Use \`href\` only for plain anchor links. With a router link, keep it in \`rende
 | \`align\` | \`"start"\`, \`"center"\` or \`"end"\` | \`"center"\` | Alignment relative to the trigger |
 | \`sideOffset\` | \`number\` | \`4\` | Distance from the trigger in pixels |
 | \`alignOffset\` | \`number\` | - | Offset along the alignment axis |
-| \`portalProps\` | \`Menu.Portal.Props\` | - | Props forwarded to the internal portal (\`keepMounted\`, \`container\`, etc.); see Base UI Menu portal API |`,
+| \`portalProps\` | \`Menu.Portal.Props\` | - | Props forwarded to the internal portal (\`keepMounted\`, \`container\`, etc.); see Base UI Menu portal API |
+
+This workspace edits the popup: it is at least 160px wide (\`min-w-40\`, also when a \`w-*\` class is passed) and pads its items by 8px (\`p-2\`); COSS uses \`min-w-32\` only without a \`w-*\` class, and \`p-1\`.`,
     name: 'MenuPopup',
   },
   MenuRadioGroup: {
@@ -74,7 +78,7 @@ Use \`href\` only for plain anchor links. With a router link, keep it in \`rende
   },
   MenuRadioItem: {
     description:
-      'Radio menu item. Styled wrapper for `Menu.RadioItem` from Base UI. Also exported as `DropdownMenuRadioItem`.',
+      'Radio menu item. Styled wrapper for `Menu.RadioItem` from Base UI. Also exported as `DropdownMenuRadioItem`. COSS puts the check before the label; this workspace edits `MenuRadioItem` so it sits in a trailing column, as in `SelectItem`.',
     name: 'MenuRadioItem',
   },
   MenuSeparator: {
@@ -84,7 +88,7 @@ Use \`href\` only for plain anchor links. With a router link, keep it in \`rende
   },
   MenuShortcut: {
     description:
-      'Displays keyboard shortcut text. Custom component, not a Base UI wrapper. Also exported as `DropdownMenuShortcut`.',
+      'Displays keyboard shortcut text. Custom component, not a Base UI wrapper. Also exported as `DropdownMenuShortcut`. This workspace renders it with `aria-hidden`, so the shortcut stays out of the item name; announce it with `aria-keyshortcuts` on the item (`<MenuItem aria-keyshortcuts="Meta+K">`).',
     name: 'MenuShortcut',
   },
   MenuSub: {
@@ -136,14 +140,3 @@ export const menuParts: readonly MenuPart[] = [
   'MenuSubTrigger',
   'MenuSubPopup',
 ]
-
-export const shortcutContrastException = {
-  config: {
-    rules: [
-      {
-        id: 'color-contrast',
-        selector: '*:not([data-slot="menu-shortcut"])',
-      },
-    ],
-  },
-}
