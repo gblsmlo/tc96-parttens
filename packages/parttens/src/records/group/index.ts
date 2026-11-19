@@ -2,6 +2,10 @@ export * from './composition/index'
 export type {
   RecordGroupActionProps,
   RecordGroupActionsAlign,
+  RecordGroupDividerProps,
+  RecordGroupFilterOption,
+  RecordGroupFilterProps,
+  RecordGroupFilterSection,
   RecordGroupItemProps,
   RecordGroupLinkProps,
   RecordGroupMetricProps,
@@ -12,4 +16,5 @@ export type {
   RecordGroupRowProps,
   RecordGroupSubgroupProps,
   RecordGroupVariant,
+  RecordStatusBadgeProps,
 } from './core'

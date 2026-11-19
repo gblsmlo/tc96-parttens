@@ -207,7 +207,7 @@ export const OnlyPlainDropsTheTriggerPadding: Story = {
 export const OnlyPlainPacksTheRows: Story = {
   render: () => <EveryVariant />,
   play: async ({ canvasElement }) => {
-    const roomy = ['px-1', '[--record-group-row-gap:calc(var(--spacing)*0.5)]']
+    const roomy = ['px-1']
     const hoverOffset = '[--record-group-hover-offset:calc(var(--spacing)*2)]'
     const rowHeight = '[--record-group-row-height:calc(var(--spacing)*8)]'
 
@@ -228,6 +228,9 @@ export const OnlyPlainPacksTheRows: Story = {
       await expect(classes).toContain(hoverOffset)
       await expect(classes).toContain(rowHeight)
       await expect(classes).toContain('gap-[var(--record-group-row-gap,0px)]')
+      await expect(classes).toContain(
+        '[--record-group-row-gap:calc(var(--spacing)*1)]',
+      )
     }
   },
 }

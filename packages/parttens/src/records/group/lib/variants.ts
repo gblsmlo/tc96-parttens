@@ -44,7 +44,7 @@ export const recordGroupLinkOffsetClassName =
   '-mx-[var(--record-group-hover-offset,0px)] px-[calc(var(--record-group-row-padding,0px)+var(--record-group-hover-offset,0px))]'
 
 const recordGroupRoomyRows =
-  'px-1 [--record-group-row-gap:calc(var(--spacing)*0.5)] [--record-group-row-height:calc(var(--spacing)*8)]'
+  'px-1 [--record-group-row-height:calc(var(--spacing)*8)]'
 
 const recordGroupHoverOffset =
   '[--record-group-hover-offset:calc(var(--spacing)*2)]'
@@ -56,11 +56,14 @@ const recordGroupPlainRows = cn(
   recordGroupHoverOffset,
 )
 
+export const recordGroupSubgroupPanelClassName =
+  '-mx-[var(--record-group-hover-offset,0px)] px-[var(--record-group-hover-offset,0px)]'
+
 export const recordGroupPanelClassName = (variant: RecordGroupVariant) =>
   cn(variant !== 'inset' && '-mx-2 px-2')
 
 export const recordGroupContentVariants = cva(
-  `flex flex-col ${recordGroupRowGapClassName} has-[[data-slot=record-group-metrics]]:p-0`,
+  `flex flex-col [--record-group-row-gap:calc(var(--spacing)*1)] ${recordGroupRowGapClassName} has-[[data-slot=record-group-metrics]]:p-0`,
   {
     defaultVariants: { empty: false, variant: 'plain' },
     variants: {

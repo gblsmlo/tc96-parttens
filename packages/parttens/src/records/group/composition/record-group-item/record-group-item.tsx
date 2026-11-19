@@ -2,6 +2,7 @@ import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import type { RecordGroupItemProps } from '../../core'
 import {
+  recordGroupLinkOffsetClassName,
   recordGroupRowHeightClassName,
   recordGroupRowPaddingClassName,
 } from '../../lib/variants'
@@ -9,6 +10,7 @@ import {
 export function RecordGroupItem({
   children,
   className,
+  interactive = false,
   leading,
   title,
 }: Readonly<RecordGroupItemProps>): ReactElement {
@@ -17,13 +19,19 @@ export function RecordGroupItem({
       className={cn(
         'flex min-w-0 items-center gap-2 text-sm',
         recordGroupRowHeightClassName,
-        recordGroupRowPaddingClassName,
+        interactive
+          ? cn(
+              'rounded-md transition-colors hover:bg-accent',
+              recordGroupLinkOffsetClassName,
+            )
+          : recordGroupRowPaddingClassName,
         className,
       )}
+      data-interactive={interactive ? 'true' : undefined}
       data-slot="record-group-item"
     >
       {leading ? (
-        <span className="flex shrink-0 items-center text-muted-foreground [&_svg]:size-4">
+        <span className="flex shrink-0 items-center text-muted-foreground [&>svg]:size-4">
           {leading}
         </span>
       ) : null}
@@ -35,7 +43,7 @@ export function RecordGroupItem({
       </span>
       {children ? (
         <div
-          className="flex min-w-0 max-w-1/2 shrink-0 items-center justify-end"
+          className="flex min-w-0 max-w-1/2 shrink-0 items-center justify-end gap-1"
           data-slot="record-group-item-trailing"
         >
           {children}

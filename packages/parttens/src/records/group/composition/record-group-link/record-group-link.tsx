@@ -22,7 +22,7 @@ export function RecordGroupLink({
     children: (
       <>
         {leading ? (
-          <span className="flex shrink-0 items-center text-muted-foreground [&_svg]:size-4">
+          <span className="flex shrink-0 items-center text-muted-foreground [&>svg]:size-4">
             {leading}
           </span>
         ) : null}

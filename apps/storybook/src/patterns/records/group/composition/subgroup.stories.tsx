@@ -104,3 +104,30 @@ export const MetaIsPartOfTheTriggerName: Story = {
     ).toBe(triggerOf(canvasElement))
   },
 }
+
+export const CountFollowsTheTitle: Story = {
+  render: () => (
+    <div className="w-96">
+      <RecordGroupSubgroup count={4} meta="Rascunho" title="Versão 2" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const trigger = triggerOf(canvasElement)
+    const count = canvasElement.querySelector(
+      '[data-slot="record-group-subgroup-count"]',
+    ) as HTMLElement
+    const meta = canvasElement.querySelector(
+      '[data-slot="record-group-subgroup-meta"]',
+    ) as HTMLElement
+    const title = count.previousElementSibling as HTMLElement
+
+    await expect(title).toHaveTextContent('Versão 2')
+    await expect(
+      count.getBoundingClientRect().left - title.getBoundingClientRect().right,
+    ).toBeCloseTo(4, 0)
+    await expect(meta.getBoundingClientRect().left).toBeGreaterThan(
+      count.getBoundingClientRect().right,
+    )
+    await expect(trigger).toHaveAccessibleName('Versão 2 4 Rascunho')
+  },
+}
