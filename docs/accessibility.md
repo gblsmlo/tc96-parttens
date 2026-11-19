@@ -82,6 +82,7 @@ Medir e registrar contraste:
   - Os dias da semana e os dias fora do mês do calendar (3,14:1), nas stories `Trigger` e `CalendarLocale` do `DateRangeProperty`, nas stories `Default`, `Reminders`, `TimeInput`, `DateOnly`, `NoPastDays`, `EnglishLabels`, `ShortWindow`, `BelowTrigger` e `DrillIn` do `ScheduleProperty` e nas stories `Overview` e `AgendaCalendar` dos widgets de produtividade.
   - O exemplo de força de senha do COSS (3,65:1).
   - O variant `warning` do `Badge` em `text-xs` (4,36:1), nas stories `Overview` e `Deals` dos widgets de CRM.
+  - O `MenuShortcut` (`text-muted-foreground/72`, 3,14:1 no claro sobre `popover`), nas stories `UI/Menu/Behavior/InsetAndShortcuts`, `UI/Menu/Usages/Playback` e `UI/Menu/API Reference/MenuShortcut`. A regra `color-contrast` ignora só `[data-slot="menu-shortcut"]`; o escuro passa.
 - **Na story, widgets com tom invertido:** a regra de contraste de `Overview` e `AssetStatInverted` de finanças, `Overview` e `TaskProgressInverted` de produtividade e `Overview` de CRM ignora só o widget invertido: o `muted-foreground` escuro fica em 4,2:1 sobre o card invertido.
 - Uma exceção nova entra aqui, com o motivo, antes de entrar na story.
 
