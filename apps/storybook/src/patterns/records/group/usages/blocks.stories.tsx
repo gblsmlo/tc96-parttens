@@ -15,6 +15,7 @@ import {
   RecordGroupRow,
   type RecordGroupVariant,
   RecordPreview,
+  RecordStatusBadge,
   SelectProperty,
   type SelectPropertyOption,
   TextProperty,
@@ -146,8 +147,16 @@ const initialVersions: readonly BriefVersion[] = [
 ]
 
 const statusBadges = {
-  draft: <Badge variant="warning">Rascunho</Badge>,
-  published: <Badge variant="success">Publicada</Badge>,
+  draft: (
+    <RecordStatusBadge color="var(--warning-foreground)">
+      Rascunho
+    </RecordStatusBadge>
+  ),
+  published: (
+    <RecordStatusBadge color="var(--success-foreground)">
+      Publicada
+    </RecordStatusBadge>
+  ),
 } satisfies Record<BriefVersion['status'], ReactNode>
 
 const sameValues = (a: BriefValues, b: BriefValues) =>

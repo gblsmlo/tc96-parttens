@@ -13,11 +13,13 @@ import {
   recordGroupRowGapClassName,
   recordGroupRowHeightClassName,
   recordGroupRowPaddingClassName,
+  recordGroupSubgroupPanelClassName,
 } from '../../lib/variants'
 
 export function RecordGroupSubgroup({
   children,
   className,
+  count,
   defaultOpen = false,
   meta,
   onOpenChange,
@@ -45,6 +47,14 @@ export function RecordGroupSubgroup({
             className="size-4 shrink-0 -rotate-90 transition-transform group-data-panel-open/trigger:rotate-0"
           />
           <span className="min-w-0 break-words">{title}</span>
+          {count !== undefined ? (
+            <span
+              className="shrink-0 text-muted-foreground tabular-nums"
+              data-slot="record-group-subgroup-count"
+            >
+              {count}
+            </span>
+          ) : null}
           {meta ? (
             <span
               className="ms-auto flex shrink-0 items-center gap-2 ps-2 text-muted-foreground"
@@ -55,7 +65,7 @@ export function RecordGroupSubgroup({
           ) : null}
         </CollapsibleTrigger>
       </h3>
-      <CollapsiblePanel>
+      <CollapsiblePanel className={recordGroupSubgroupPanelClassName}>
         <div
           className={cn('flex flex-col ps-5', recordGroupRowGapClassName)}
           data-slot="record-group-subgroup-content"

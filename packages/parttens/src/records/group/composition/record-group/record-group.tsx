@@ -88,7 +88,7 @@ export function RecordGroup({
           content
         )}
         {footer ? (
-          <div className="px-3 py-2" data-slot="record-group-footer">
+          <div className="py-2" data-slot="record-group-footer">
             {footer}
           </div>
         ) : null}

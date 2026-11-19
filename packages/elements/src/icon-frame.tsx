@@ -20,6 +20,8 @@ export const iconFrameVariants = cva(
         rounded: 'rounded-lg',
       },
       size: {
+        xs: 'size-6 [&_svg:not([class*=size-])]:size-4',
+        sm: 'size-8 [&_svg:not([class*=size-])]:size-4',
         default: 'size-9 [&_svg:not([class*=size-])]:size-4.5',
         lg: 'size-11 [&_svg:not([class*=size-])]:size-5',
         xl: 'size-14 [&_svg:not([class*=size-])]:size-6',
@@ -34,7 +36,7 @@ export const iconFrameVariants = cva(
 
 export const iconFrameShapes = ['circle', 'rounded'] as const
 export type IconFrameShape = (typeof iconFrameShapes)[number]
-export const iconFrameSizes = ['default', 'lg', 'xl'] as const
+export const iconFrameSizes = ['xs', 'sm', 'default', 'lg', 'xl'] as const
 export type IconFrameSize = (typeof iconFrameSizes)[number]
 export const iconFrameVariantNames = ['color', 'plain'] as const
 export type IconFrameVariant = (typeof iconFrameVariantNames)[number]

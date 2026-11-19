@@ -57,9 +57,13 @@ export const Sizes: Story = {
     const circles = within(canvasElement)
       .getByTestId('sizes')
       .querySelectorAll('[data-slot="icon-frame"]')
-    await expect(circles).toHaveLength(3)
-    await expect(circles[0]).toHaveAttribute('data-size', 'default')
-    await expect(circles[2]).toHaveAttribute('data-size', 'xl')
+    await expect(circles).toHaveLength(5)
+    await expect(circles[0]).toHaveAttribute('data-size', 'xs')
+    await expect(circles[0]?.getBoundingClientRect().width).toBe(24)
+    await expect(
+      circles[0]?.querySelector('svg')?.getBoundingClientRect().width,
+    ).toBe(16)
+    await expect(circles[4]).toHaveAttribute('data-size', 'xl')
   },
 }
 
