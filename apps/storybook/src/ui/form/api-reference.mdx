@@ -1,0 +1,71 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Form
+
+A native form that validates its fields together and holds their errors in one place: signing in, creating a project, inviting a member, subscribing to a newsletter. It holds `Field`s and a submit `Button`, checks every field on submit, and shows errors returned by a server next to the field they belong to.
+
+The other pages of `UI/Form`: [Playground](?path=/story/ui-form-playground--playground) to try the texts, the validation mode and a returned error, [Stories](?path=/story/ui-form-stories--default) for the form with and without `errors`, [Behavior](?path=/story/ui-form-behavior--no-layout-of-its-own) for the tests, [Usages](?path=/story/ui-form-usages--sign-in) for real forms and [Layouts](?path=/story/ui-form-layouts--several-fields) for how the fields, the button and a dialog combine.
+
+## Import
+
+```tsx
+import { Form } from '@acme/ui/form'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Form className="flex flex-col gap-4">
+  <Field name="…" />
+  <Field name="…" />
+  <Button type="submit" />
+</Form>
+```
+
+The dashed outline in the canvas marks the box of the form; the form itself draws nothing.
+
+## Form
+
+The form element. Renders a `form` with `noValidate`, so the browser shows no validation bubbles and the form checks its `Field`s itself. It never fetches, parses or stores values: submitting hands them to `onFormSubmit` or `onSubmit`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `validationMode` | `"onSubmit"`, `"onBlur"` or `"onChange"` | `"onSubmit"` | Sets when each field validates; a `Field` with its own `validationMode` overrides it. |
+| `errors` | `Record<string, string \| string[]>` | - | Sets errors from outside the form, such as a server response, keyed by the `name` of each `Field`. |
+| `onFormSubmit` | `(values: FormPrimitive.Values, details: FormPrimitive.SubmitEventDetails) => void` | - | Called on a valid submit with the value of each named `Field`; prevents the native submit. |
+| `onSubmit` | `(event: FormEvent<HTMLFormElement>) => void` | - | Called with the native event on a valid submit; the page navigates unless it calls `preventDefault()`. |
+| `actionsRef` | `RefObject<FormPrimitive.Actions \| null>` | - | Receives `validate(fieldName?)`, which validates every field, or the one with that `name`. |
+| `render` | `ReactElement` or `(props: HTMLProps, state: FormPrimitive.State) => ReactElement` | - | Replaces the `form` element. |
+| `className` | `string` or `(state: FormPrimitive.State) => string` | - | Adds classes; the form has none of its own. |
+
+Also takes every prop of a `form`.
+
+`FormPrimitive.Values` maps the `name` of each field to its value; a field without a `name`, on the `Field` or on its control, is left out. `FormPrimitive.SubmitEventDetails` holds the native `event` and a `reason` of `"none"`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"form"` | Selects the part in the theme and from other parts |
+
+On submit, the form validates every `Field`. When one is invalid it cancels the submit, calls neither `onSubmit` nor `onFormSubmit`, and moves focus to the first invalid control in document order, selecting the text of an input. In `"onSubmit"` mode the fields validate again on every change once the form has been submitted.
+
+An entry of `errors` marks its field invalid and shows in that field's `FieldError` until the field's value changes. A `FieldError` with children shows its children instead, so leave it empty where a message comes from `errors`. When `errors` changes after a submit, focus moves to the first field with an error.
+
+The form has no layout: `className` sets the spacing, such as `flex flex-col gap-4`. Inside a dialog or a sheet, keep the header outside the form and wrap the panel and the footer in a form with `className="contents"`, so the form adds no box between the popup and its parts.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `FormPrimitive` | `component` | The Base UI `Form`, without `data-slot`, and the namespace of its types: `FormPrimitive.Props`, `FormPrimitive.Actions`, `FormPrimitive.Values`, `FormPrimitive.SubmitEventDetails`. |
+
+## Accessibility and theme
+
+- Put every control in a `Field` with a `FieldLabel`; the `Field` links its `FieldDescription` and `FieldError` to the control and sets `aria-invalid` on it while it is invalid.
+- A label hidden for layout, as in an inline form, keeps `FieldLabel` with `className="sr-only"`.
+- The form is a `form` landmark only with an accessible name: pass `aria-label` or `aria-labelledby` when the page has more than one form.
+- The error text uses `text-destructive-foreground`, measured in `docs/accessibility.md`.
