@@ -390,3 +390,48 @@ export const EmptyBodyIsAPlainContainer: Story = {
     await expect(content.querySelector('p')?.textContent).toBe('Body')
   },
 }
+
+export const ChevronAfterTheTitleAtEnd: Story = {
+  render: () => (
+    <div className="flex w-96 flex-col gap-4">
+      <RecordGroup title="Start">
+        <p>Body</p>
+      </RecordGroup>
+      <RecordGroup chevron="end" title="End">
+        <p>Body</p>
+      </RecordGroup>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const parts = (name: string) => {
+      const trigger = canvas.getByRole('button', { name })
+      return {
+        icon: trigger.querySelector('svg') as SVGElement,
+        title: within(trigger).getByText(name),
+        trigger,
+      }
+    }
+
+    const start = parts('Start')
+    await expect(start.icon.getBoundingClientRect().right).toBeLessThanOrEqual(
+      start.title.getBoundingClientRect().left,
+    )
+
+    const end = parts('End')
+    await expect(end.icon.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+      end.title.getBoundingClientRect().right,
+    )
+    await expect(end.title.getBoundingClientRect().left).toBeCloseTo(
+      start.title.getBoundingClientRect().left -
+        start.icon.getBoundingClientRect().width -
+        4,
+      0,
+    )
+
+    await userEvent.click(end.trigger)
+    await waitFor(() =>
+      expect(end.trigger).toHaveAttribute('aria-expanded', 'false'),
+    )
+  },
+}

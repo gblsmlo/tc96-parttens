@@ -18,9 +18,17 @@ import {
   recordGroupTriggerVariants,
 } from '../../lib/variants'
 
+const chevronIcon = (
+  <ChevronDownIcon
+    aria-hidden="true"
+    className="size-4 shrink-0 -rotate-90 transition-transform group-data-panel-open/trigger:rotate-0"
+  />
+)
+
 export function RecordGroup({
   actions,
   actionsAlign = 'between',
+  chevron = 'start',
   children,
   className,
   defaultOpen = true,
@@ -62,11 +70,9 @@ export function RecordGroup({
           <CollapsibleTrigger
             className={recordGroupTriggerVariants({ variant })}
           >
-            <ChevronDownIcon
-              aria-hidden="true"
-              className="size-4 shrink-0 -rotate-90 transition-transform group-data-panel-open/trigger:rotate-0"
-            />
+            {chevron === 'start' ? chevronIcon : null}
             <span className="min-w-0 break-words text-start">{title}</span>
+            {chevron === 'end' ? chevronIcon : null}
           </CollapsibleTrigger>
         </h2>
         {actions ? (
