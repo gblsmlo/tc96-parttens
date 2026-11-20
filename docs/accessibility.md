@@ -252,6 +252,10 @@ As cores de papel são `--warning-foreground` para sequência e medalhas e `--su
 
 O anel e o `Meter` usam `primary` (15:1 sobre o card); a trilha do anel e as bordas tracejadas são decorativas (1,1:1 e 1,3:1) e o valor segue em texto ou `sr-only`.
 
+### `Badge`
+
+As decisões e as medidas do badge ficam em `packages/ui/src/badge/ACCESSIBILITY.md`.
+
 ### `Menu`
 
 As decisões e as medidas do menu ficam em `packages/ui/src/menu/ACCESSIBILITY.md`.

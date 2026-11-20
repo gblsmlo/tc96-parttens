@@ -90,7 +90,7 @@ export function TrendIndicator({
       className={cn('tabular-nums', className)}
       data-direction={direction}
       data-slot="trend-indicator"
-      size="lg"
+      size="large"
       variant={badgeVariants[direction]}
     >
       {content}

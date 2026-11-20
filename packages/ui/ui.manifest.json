@@ -53,7 +53,14 @@
           "warning": "var(--color-amber-500)",
           "warning-foreground": "var(--color-amber-400)"
         }
-      }
+      },
+      "paths": [
+        "badge/ACCESSIBILITY.md",
+        "badge/AGENTS.md",
+        "badge/TOKENS.md",
+        "badge/badge.tsx",
+        "badge/index.ts"
+      ]
     },
     "breadcrumb": {
       "origin": "coss"

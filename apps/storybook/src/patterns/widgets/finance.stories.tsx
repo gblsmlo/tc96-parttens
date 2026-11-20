@@ -381,11 +381,7 @@ const transactions: Transaction[] = [
     id: 'salary',
     meta: 'Salary · May 30',
     name: 'Northwind Labs',
-    status: (
-      <Badge size="sm" variant="success">
-        Cleared
-      </Badge>
-    ),
+    status: <Badge variant="success">Cleared</Badge>,
   },
   {
     amount: -1800,
@@ -419,11 +415,7 @@ const transactions: Transaction[] = [
     id: 'coffee',
     meta: 'Dining out · Jun 2',
     name: 'Corner Coffee',
-    status: (
-      <Badge size="sm" variant="secondary">
-        Pending
-      </Badge>
-    ),
+    status: <Badge variant="secondary">Pending</Badge>,
   },
   {
     amount: -42.9,
@@ -490,11 +482,7 @@ const transactions: Transaction[] = [
     id: 'utilities',
     meta: 'Housing · Jun 8',
     name: 'Utilities',
-    status: (
-      <Badge size="sm" variant="secondary">
-        Pending
-      </Badge>
-    ),
+    status: <Badge variant="secondary">Pending</Badge>,
   },
 ]
 

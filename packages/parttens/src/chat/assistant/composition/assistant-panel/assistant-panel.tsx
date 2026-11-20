@@ -82,11 +82,7 @@ export function AssistantPanel({
             <h2 className="font-semibold text-base" id={titleId}>
               {labels.title}
             </h2>
-            {badge ? (
-              <Badge size="sm" variant="outline">
-                {labels.beta}
-              </Badge>
-            ) : null}
+            {badge ? <Badge variant="outline">{labels.beta}</Badge> : null}
             <div
               className={assistantActionsClassName}
               data-slot="assistant-actions"
