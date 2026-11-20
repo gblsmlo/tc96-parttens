@@ -1,0 +1,97 @@
+import { Meta, Source } from '@storybook/addon-docs/blocks'
+import template from './api-reference.template.txt?raw'
+
+<Meta title="Get Started/Component Docs" />
+
+# Component Docs
+
+Every component is documented as six pages under its own node in the sidebar. Each page answers one question, so a reader goes straight to the one they need and a test never hides inside a demo. [UI/Alert](?path=/docs/ui-alert-api-reference--api-reference) is the reference.
+
+| Page | Question it answers | File | Kind |
+| --- | --- | --- | --- |
+| `API Reference` | What can I import, pass and style? | `api-reference.mdx` with `api-reference.stories.tsx` | MDX, hand-written |
+| `Playground` | What happens if I change this? | `playground.stories.tsx` | one story with controls over text, props and optional parts |
+| `Stories` | What does each prop value look like? | `stories.stories.tsx` | stories that differ only by `args`, no `play` |
+| `Behavior` | What does it guarantee? | `behavior.stories.tsx` | stories, each with a `play` |
+| `Usages` | How does it read with real content? | `usages.stories.tsx` | stories with real text and data |
+| `Layouts` | How do its parts combine? Optional | `layouts.stories.tsx` | stories that differ only by structure, no `play` |
+
+The files sit in one folder that mirrors the title (`apps/storybook/src/ui/alert/`). Compositions that both `Layouts` and `Behavior` render live in a `<component>-layouts.tsx` next to them, so a test checks exactly what the catalog shows.
+
+## How each page is built
+
+**API Reference.** An MDX file attached with `<Meta of={ApiReferenceStories} name="API Reference" />` to `api-reference.stories.tsx`, whose meta is titled `<Layer>/<Component>/API Reference` and tagged `['!autodocs', '!dev']`. It holds `Anatomy`, every part as a dashed placeholder (`apps/storybook/src/test-utils/anatomy-slot.tsx`). The tags keep it out of the sidebar and off any generated page, while the MDX still renders it with `<Canvas>` and the Vitest project still tests it. The page does not embed the `Playground`: it links to it, so trying the component and reading its contract stay on separate pages. Naming the page like its node makes the sidebar show one `API Reference` entry.
+
+**Playground.** One story, named `Playground` in a file titled `<Layer>/<Component>/Playground`, so the sidebar shows a single entry. Its args are not the component's props but what a reader wants to change: the texts, the props that change the look, and a boolean per optional part (for the alert: `title`, `description`, `variant`, `icon`, `action`). An empty text removes its part. Those args come from no type the docgen reads, so each gets an `argTypes` entry with a `control` and a one-line `description`, the one place `argTypes` describes. The args, their defaults and argTypes live in `<component>-controls.ts`, and the `render` in a `Composed<Component>` of `<component>-layouts.tsx`, because `Stories` uses both. No `play`: it only has to render in every combination.
+
+**Stories.** One story per value of each prop that changes the look, named after the state (`Default`, `Error`, `Info`). The meta takes the `Playground`'s args, argTypes and `render`, with the base composition as defaults (for the alert: icon, title and description), and every story only sets the prop that names it. That prop is fixed: `parameters.controls.exclude` takes it off the panel, since switching `Error` to `success` would leave a story whose name lies. Texts and optional parts stay as controls (for the alert: `title`, `description`, `icon`, `action`), so each state can be read with other content. A story for a combination of values exists only when the combination looks different from its parts. No gallery of every value side by side, and no `play`.
+
+**Behavior.** One story per guarantee, named after it (`AnnouncedOnInsert`, `DecorativeIcon`, `Actions`), each with a `play` from `storybook/test`. Callbacks are `fn()` args, so the Interactions panel shows the calls.
+
+**Usages.** Real messages and data in their context, never "Lorem" or "Heads up!". A light `play` that checks the content is there is enough.
+
+**Layouts.** Optional, for components whose parts combine in more than one way. Each story changes the structure of the base composition and is named after what it adds or removes (`TitleOnly`, `WithoutIcon`, `WithAction`, `Paragraphs`); the base itself is never repeated here. Props stay at their defaults and are not controls: a structure in another variant is a `Usages` case.
+
+Every story file of the component sets `tags: ['!autodocs']`: the MDX page replaces the generated `Doc`.
+
+## Stories or Layouts?
+
+The two pages split on what changes between their stories, after Storybook's rule that a story is a named state set by its `args`.
+
+| The new story… | Goes to |
+| --- | --- |
+| is the meta's `render` with other `args` (a variant, a size, `disabled`) | `Stories` |
+| needs another `render`: a part added, removed, repeated or moved | `Layouts` |
+| shows the parts themselves, not a state | `API Reference` (`Anatomy`) |
+| lets the reader change texts, props and parts at once | `Playground`, as another control, never another story |
+| carries real text or data, whatever its structure and props | `Usages` |
+| checks something with a `play` | `Behavior`, rendering a `Layouts` composition when one fits |
+
+A story that changes both props and structure is a `Usages` case, or two stories: one in each page.
+
+## Trade-offs
+
+- **MDX against autodocs.** Autodocs writes the page from the CSF and never drifts, but it shows only the root's props as TypeScript sees them; it knows nothing of the other parts, the `data-*` attributes or how the parts are meant to be used. The MDX page says all of it, at the cost of being written and kept by hand: neither `tsc` nor the Vitest project checks it, so a renamed prop or a story id in a link goes stale silently. Storybook advises against keeping both for one component, hence `!autodocs` on every story file.
+- **Attached against unattached MDX.** An unattached page (`<Meta title>`) sits anywhere, but Storybook documents its blocks with an attached `Meta`. Attaching to a hidden `api-reference.stories.tsx` keeps the documented path and still places the page at `API Reference`.
+- **Hand-written tables against `<ArgTypes>`.** `<ArgTypes>` reads descriptions from JSDoc, and components in this repo carry no comments, so its table would show types without meaning. The props table stays hand-written, and the `Playground` is where a reader tries the values.
+- **Separate Behavior against tests in every story.** A `play` in a presentation story makes the page re-run assertions whenever it is opened and mixes what the component looks like with what it guarantees. Keeping the plays in `Behavior` costs a second render of the same composition, which the shared `<component>-layouts.tsx` keeps to one source.
+- **Playground args against component props.** The `Playground` controls texts and parts, which the component's props cannot, so it shows what a reader wants to try rather than the API. The cost is a hand-written `argTypes` and a `render` with conditions, shared with `Stories`; the props table of the API Reference stays the contract, and the API Reference links to the `Playground` instead of embedding it.
+- **Fixed state against free controls.** `Stories` drops the control of the prop that names each story, so a story always shows the state its name promises; changing that prop is what the `Playground` is for. Turning an optional part off in `Stories` reaches a structure that `Layouts` also names: the controls explore one state, while `Layouts` keeps the named structures, linked and tested.
+- **Named states against galleries.** One story per value keeps controls and links per state, but a reviewer no longer sees every variant side by side; the `Playground` switches between them. A component with several props gets one story per value of each, not per combination.
+- **Migration.** The other components still use the generated `Doc` with `parameters.docs.api`; both shapes live side by side until each component moves.
+
+## API Reference template
+
+Copy it into `api-reference.mdx`, replace every `<placeholder>` and delete the blocks a part does not need. The file is `apps/storybook/src/get-started/api-reference.template.txt`.
+
+<Source code={template.trim()} language="mdx" />
+
+## Writing rules
+
+**The opening sentence**
+
+- Say what the part is, then what it renders: the element and, when it has one, the role (``A `div` with `role="alert"` ``). Name the base when the part is an alias (``Alias for `Menu.Root` from Base UI``).
+- Present tense, third person, no "This component…" and no repetition of the name. One idea per sentence.
+- Behavior a consumer cannot see in the types goes here: what the part does on its own, what it never does (fetch, sort, persist), and when it renders nothing.
+
+**The props table**
+
+- List the props this workspace adds or changes, and the ones a consumer has to set. Inherited props go in one line after the table (``Also takes every prop of a `div`.``), with no table of their own.
+- Four columns, always in this order: `Prop`, `Type`, `Default`, `Description`. A prop with no default shows `-`; a required prop shows `required`.
+- Order: required props first, then by importance (variant and size before flags, flags before callbacks).
+- Types as the consumer writes them: string unions as quoted literals joined by "or" (`"default"` or `"large"`), callbacks as a full signature (`(value: string) => void`), never `any` or `Function`.
+- Each description starts with a verb in the third person (`Controls…`, `Sets…`, `Called when…`), says the effect and fits in one line. A boolean reads `When true, …`.
+- A part with no props of its own has no table, only the "Also takes" line.
+
+**Attributes and differences**
+
+- The attributes table lists every `data-*` a consumer can style or query: `data-slot`, variants and states. Leave it out only when the part sets none.
+- The page describes the component as it is, never against its source: no mention of COSS, of what it ships or of what this workspace changed. A fact a consumer needs ("Every variant has the same 1px border") gets its own sentence after the tables; the comparison with COSS, its reason and its date belong to the component's `AGENTS.md` and `TOKENS.md`.
+- Accessibility decisions and measures stay in the component's `ACCESSIBILITY.md`; the page says only what the consumer has to pass (``label the icon with `aria-label` ``).
+- Examples belong to `Usages` and `Layouts`, never to the API Reference.
+
+**Form**
+
+- English, Markdown with GitHub tables. Code, props, values and elements in backticks; string values quoted (`"default"`).
+- Separate every MDX block with a blank line, and write code as fenced blocks: a `code={…}` attribute loses its indentation.
+- Links to other pages use `?path=/story/<id>` or `?path=/docs/<id>`; check them after a rename, since nothing else does.

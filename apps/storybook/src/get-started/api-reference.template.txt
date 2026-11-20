@@ -1,0 +1,51 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# <Component>
+
+<What the component is and when to reach for it, in one or two sentences: the situations it serves, with concrete examples.>
+
+The other pages of `<Layer>/<Component>`: [Playground](?path=/story/<layer>-<component>-playground--playground) to try <what the controls change>, [Stories](?path=/story/<layer>-<component>-stories--default) for each prop value, [Behavior](?path=/story/<layer>-<component>-behavior--<first-test>) for the tests, [Usages](?path=/story/<layer>-<component>-usages--<first-usage>) for real content<, and [Layouts](?path=/story/<layer>-<component>-layouts--<first-layout>) for how the parts combine>.
+
+## Import
+
+```tsx
+import { <Component>, <Part> } from '@acme/ui/<component>'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<<Component>>
+  <<Part> />
+</<Component>>
+```
+
+## <Part>
+
+<What the part is, in one sentence.> Renders a `<element>`<, with `role="<role>"`>. <Where it sits or what it composes, only when the name does not say it.>
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `<requiredProp>` | `<Type>` | required | <Verb in the third person: what the prop controls.> |
+| `<variant>` | `"<a>"` or `"<b>"` | `"<a>"` | Controls <what changes>. |
+| `<flag>` | `boolean` | `false` | When true, <effect>. |
+| `<onEvent>` | `(<value>: <Type>) => void` | - | Called when <event>, with <what it receives>. |
+
+Also takes every prop of <a `<element>` | Base UI `<Part>`>.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"<slot>"` | Selects the part in the theme and from other parts |
+| `data-<state>` | present when <state> | <What it lets the consumer style.> |
+
+<A fact about the look or use that the tables do not show, stated on its own: "Every variant has the same 1px border.">
+
+## Accessibility and theme
+
+- <What the consumer has to pass: labels, roles, theme rules.>
+- Decisions and measured contrast: `packages/ui/src/<component>/ACCESSIBILITY.md`. Classes of every part: `packages/ui/src/<component>/TOKENS.md`.

@@ -1,0 +1,89 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Alert
+
+A callout in the flow of the page for something the user should know or act on now: a failed payment, a trial about to end, a new version to reload. It holds an optional status icon, a title, a description and optional actions.
+
+The other pages of `UI/Alert`: [Playground](?path=/story/ui-alert-playground--playground) to try text, variant, icon and actions, [Stories](?path=/story/ui-alert-stories--default) for each variant, [Behavior](?path=/story/ui-alert-behavior--announced-on-insert) for the tests, [Usages](?path=/story/ui-alert-usages--new-version) for real messages and [Layouts](?path=/story/ui-alert-layouts--title-only) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Alert,
+  AlertAction,
+  AlertDescription,
+  AlertTitle,
+} from '@acme/ui/alert'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Alert>
+  <Icon />
+  <AlertTitle />
+  <AlertDescription />
+  <AlertAction />
+</Alert>
+```
+
+## Alert
+
+The callout that holds the icon, the text and the actions. Renders a `div` with `role="alert"`, so a screen reader announces it when it is inserted. It is a grid: an `svg` as a direct child takes a 16px first column, and an `AlertAction` adds a column at the end.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"`, `"error"`, `"info"`, `"success"` or `"warning"` | `"default"` | Controls the background tint and the icon color. |
+| `role` | `string` | `"alert"` | Sets the live role; pass `"status"` for a message that is on screen from the first render. |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert"` | Selects the part in the theme and from other parts |
+
+Every variant has the same 1px `border`; the status shows only in the icon and the background tint.
+
+## AlertTitle
+
+The title of the alert. Renders a `div` in `font-medium`. After an icon it moves to the text column.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-title"` | Selects the part in the theme and from other parts |
+
+## AlertDescription
+
+The body text of the alert. Renders a `div` in `text-muted-foreground` that stacks its children 10px apart, so it holds several paragraphs. After an icon it moves to the text column.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-description"` | Selects the part in the theme and from other parts |
+
+## AlertAction
+
+The container of the alert's buttons. Renders a `div`. From `sm` up it sits in the last column, centered across the title and the description; below `sm` it drops under the text.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-action"` | Selects the part in the theme and from other parts |
+
+Its buttons use the `Button` at `size="sm"`.
+
+## Accessibility and theme
+
+- Label a status icon with `role="img"` and `aria-label`; hide it with `aria-hidden="true"` when the title already says it.
+- The `success` and `warning` icons need the theme rule `[data-slot="alert"] { --success: var(--success-foreground); --warning: var(--warning-foreground) }`, or they fail 3:1 in light.
+- Decisions and measured contrast: `packages/ui/src/alert/ACCESSIBILITY.md`. Classes of every part: `packages/ui/src/alert/TOKENS.md`.

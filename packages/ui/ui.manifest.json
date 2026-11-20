@@ -21,7 +21,14 @@
           "warning": "var(--color-amber-500)",
           "warning-foreground": "var(--color-amber-400)"
         }
-      }
+      },
+      "paths": [
+        "alert/ACCESSIBILITY.md",
+        "alert/AGENTS.md",
+        "alert/TOKENS.md",
+        "alert/alert.tsx",
+        "alert/index.ts"
+      ]
     },
     "alert-dialog": {
       "origin": "coss"

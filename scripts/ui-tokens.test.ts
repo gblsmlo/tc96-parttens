@@ -6,6 +6,7 @@ import { compareTokens, sourceClassStrings } from './ui-tokens'
 const ui = join(import.meta.dir, '..', 'packages', 'ui', 'src')
 
 const components = [
+  { name: 'alert', source: 'alert/alert.tsx', tokens: 'alert/TOKENS.md' },
   { name: 'menu', source: 'menu/menu.tsx', tokens: 'menu/TOKENS.md' },
   { name: 'badge', source: 'badge/badge.tsx', tokens: 'badge/TOKENS.md' },
 ]

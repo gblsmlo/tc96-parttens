@@ -149,7 +149,14 @@ const preview: Preview = {
         }
         if (b.title.startsWith(`${a.title}/`)) return -1
         if (a.title.startsWith(`${b.title}/`)) return 1
-        const sections = ['Behavior', 'API Reference', 'Usages']
+        const sections = [
+          'API Reference',
+          'Playground',
+          'Stories',
+          'Behavior',
+          'Usages',
+          'Layouts',
+        ]
         const partsA = a.title.split('/')
         const partsB = b.title.split('/')
         let depth = 0
