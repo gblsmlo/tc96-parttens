@@ -252,6 +252,10 @@ As cores de papel são `--warning-foreground` para sequência e medalhas e `--su
 
 O anel e o `Meter` usam `primary` (15:1 sobre o card); a trilha do anel e as bordas tracejadas são decorativas (1,1:1 e 1,3:1) e o valor segue em texto ou `sr-only`.
 
+### `Menu`
+
+As decisões e as medidas do menu ficam em `packages/ui/src/menu/ACCESSIBILITY.md`.
+
 ### `Toast`
 
 O viewport do `AnchoredToastProvider` se chama `Anchored notifications`, porque no COSS os dois viewports são `role="region"` com o `aria-label="Notifications"` do Base UI. Com os dois providers montados, como a instalação do COSS pede, a página fica com duas landmarks iguais, e o axe reprova (`landmark-unique`). Os providers não repassam props ao viewport, então a correção fica no arquivo.

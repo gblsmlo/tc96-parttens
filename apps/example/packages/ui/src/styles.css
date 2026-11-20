@@ -287,6 +287,15 @@
   --input: var(--switch-track);
 }
 
+[role^="menuitem"][data-slot^="menu-"]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+[data-slot="menu-shortcut"] {
+  color: var(--muted-foreground);
+}
+
 [data-slot="alert"],
 [data-slot="toast-icon"] {
   --success: var(--success-foreground);

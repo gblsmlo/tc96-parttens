@@ -2,6 +2,7 @@
 
 import {
   MenuRadioGroup,
+  MenuRadioItem,
   MenuSub,
   MenuSubPopup,
   MenuSubTrigger,
@@ -9,7 +10,6 @@ import {
 import { Skeleton } from '@tc96/ui/skeleton'
 import type { LucideIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
-import { MenuRadioOption } from '../../../shared/components/menu-selection-item'
 import { skeletonKeys } from '../lib/skeleton-keys'
 
 /**
@@ -59,7 +59,7 @@ export function FilterRadioSubmenu({
           }
           value={value || CLEAR_VALUE}
         >
-          <MenuRadioOption value={CLEAR_VALUE}>{clearLabel}</MenuRadioOption>
+          <MenuRadioItem value={CLEAR_VALUE}>{clearLabel}</MenuRadioItem>
           {loading
             ? skeletonKeys('loading', loadingOptionCount).map((key) => (
                 <div
@@ -71,9 +71,9 @@ export function FilterRadioSubmenu({
                 </div>
               ))
             : options.map(([optionValue, optionLabel]) => (
-                <MenuRadioOption key={optionValue} value={optionValue}>
+                <MenuRadioItem key={optionValue} value={optionValue}>
                   {optionLabel}
-                </MenuRadioOption>
+                </MenuRadioItem>
               ))}
         </MenuRadioGroup>
       </MenuSubPopup>

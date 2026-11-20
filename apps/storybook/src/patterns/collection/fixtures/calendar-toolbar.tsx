@@ -6,12 +6,12 @@ import {
   CollectionToolbar,
   calendarRange,
   fromZonedDateTime,
-  MenuCheckboxOption,
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
+  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuSub,
@@ -114,14 +114,14 @@ export function FilterCheckboxSubmenu<TValue extends string>({
         <MenuGroup>
           <MenuGroupLabel>{label}</MenuGroupLabel>
           {options.map((option) => (
-            <MenuCheckboxOption
+            <MenuCheckboxItem
               checked={selected.includes(option.value)}
               closeOnClick={false}
               key={option.value}
               onCheckedChange={() => onToggle(option.value)}
             >
               {option.label}
-            </MenuCheckboxOption>
+            </MenuCheckboxItem>
           ))}
         </MenuGroup>
       </MenuSubPopup>

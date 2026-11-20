@@ -15,8 +15,6 @@ import {
   DataGridColumnsSubmenu,
   DataGridDensitySubmenu,
   DataGridPagination,
-  MenuCheckboxOption,
-  MenuRadioOption,
   useDataGrid,
   useDataTable,
   ViewSettingsMenu,
@@ -29,9 +27,11 @@ import {
   ViewSwitcherSearch,
 } from '@tc96/parttens'
 import {
+  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuRadioGroup,
+  MenuRadioItem,
   MenuSeparator,
   MenuSub,
   MenuSubPopup,
@@ -191,14 +191,14 @@ function CheckboxFilterSubmenu<TValue extends string>({
         <MenuGroup>
           <MenuGroupLabel>{label}</MenuGroupLabel>
           {options.map((option) => (
-            <MenuCheckboxOption
+            <MenuCheckboxItem
               checked={selected.includes(option.value)}
               closeOnClick={false}
               key={option.value}
               onCheckedChange={() => onToggle(option.value)}
             >
               {option.label}
-            </MenuCheckboxOption>
+            </MenuCheckboxItem>
           ))}
         </MenuGroup>
       </MenuSubPopup>
@@ -406,17 +406,17 @@ function CollectionWorkspace({
                               value={preferences.groupBy ?? ''}
                             >
                               {layout === 'kanban' ? null : (
-                                <MenuRadioOption value="">
+                                <MenuRadioItem value="">
                                   Sem agrupamento
-                                </MenuRadioOption>
+                                </MenuRadioItem>
                               )}
                               {groupings.map((dimension) => (
-                                <MenuRadioOption
+                                <MenuRadioItem
                                   key={dimension.id}
                                   value={dimension.id}
                                 >
                                   {dimension.label}
-                                </MenuRadioOption>
+                                </MenuRadioItem>
                               ))}
                             </MenuRadioGroup>
                           </MenuSubPopup>
@@ -436,12 +436,12 @@ function CollectionWorkspace({
                               value={calendarMode}
                             >
                               {calendarModes.map((mode) => (
-                                <MenuRadioOption
+                                <MenuRadioItem
                                   key={mode.value}
                                   value={mode.value}
                                 >
                                   {mode.label}
-                                </MenuRadioOption>
+                                </MenuRadioItem>
                               ))}
                             </MenuRadioGroup>
                           </MenuSubPopup>
@@ -468,16 +468,16 @@ function CollectionWorkspace({
                                 }
                                 value={query.sort?.field ?? ''}
                               >
-                                <MenuRadioOption value="">
+                                <MenuRadioItem value="">
                                   Sem ordenação
-                                </MenuRadioOption>
+                                </MenuRadioItem>
                                 {taskSortFields.map((field) => (
-                                  <MenuRadioOption
+                                  <MenuRadioItem
                                     key={field.value}
                                     value={field.value}
                                   >
                                     {field.label}
-                                  </MenuRadioOption>
+                                  </MenuRadioItem>
                                 ))}
                               </MenuRadioGroup>
                             </MenuGroup>
@@ -496,18 +496,18 @@ function CollectionWorkspace({
                                 }}
                                 value={query.sort?.desc ? 'desc' : 'asc'}
                               >
-                                <MenuRadioOption
+                                <MenuRadioItem
                                   disabled={!query.sort}
                                   value="asc"
                                 >
                                   Crescente
-                                </MenuRadioOption>
-                                <MenuRadioOption
+                                </MenuRadioItem>
+                                <MenuRadioItem
                                   disabled={!query.sort}
                                   value="desc"
                                 >
                                   Decrescente
-                                </MenuRadioOption>
+                                </MenuRadioItem>
                               </MenuRadioGroup>
                             </MenuGroup>
                           </MenuSubPopup>
@@ -574,16 +574,16 @@ function CollectionWorkspace({
                               }
                               value={query.due ?? ''}
                             >
-                              <MenuRadioOption value="">
+                              <MenuRadioItem value="">
                                 Qualquer prazo
-                              </MenuRadioOption>
+                              </MenuRadioItem>
                               {taskDueFilters.map((filter) => (
-                                <MenuRadioOption
+                                <MenuRadioItem
                                   key={filter.value}
                                   value={filter.value}
                                 >
                                   {filter.label}
-                                </MenuRadioOption>
+                                </MenuRadioItem>
                               ))}
                             </MenuRadioGroup>
                           </MenuGroup>

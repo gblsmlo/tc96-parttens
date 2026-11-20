@@ -3,6 +3,7 @@
 import type { RowData } from '@tanstack/react-table'
 import {
   MenuRadioGroup,
+  MenuRadioItem,
   MenuSub,
   MenuSubPopup,
   MenuSubTrigger,
@@ -14,7 +15,6 @@ import {
   MinusIcon,
 } from 'lucide-react'
 import type React from 'react'
-import { MenuRadioOption } from '../../../../shared/components/menu-selection-item'
 import type { DataGridTable } from '../lib/data-grid-features'
 import type { DataGridDensity } from '../types'
 
@@ -61,10 +61,10 @@ export function DataGridDensitySubmenu<TData extends RowData>({
           value={density}
         >
           {DENSITIES.map((option) => (
-            <MenuRadioOption key={option.value} value={option.value}>
+            <MenuRadioItem key={option.value} value={option.value}>
               <option.icon />
               {option.label}
-            </MenuRadioOption>
+            </MenuRadioItem>
           ))}
         </MenuRadioGroup>
       </MenuSubPopup>

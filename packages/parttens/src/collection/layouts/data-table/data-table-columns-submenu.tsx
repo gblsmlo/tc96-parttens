@@ -1,10 +1,14 @@
 'use client'
 
 import type { RowData } from '@tanstack/react-table'
-import { MenuSub, MenuSubPopup, MenuSubTrigger } from '@tc96/ui/menu'
+import {
+  MenuCheckboxItem,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+} from '@tc96/ui/menu'
 import { Columns3Icon } from 'lucide-react'
 import type React from 'react'
-import { MenuCheckboxOption } from '../../../shared/components/menu-selection-item'
 import type { DataTableColumnMeta } from './data-table-aggregation'
 import type { DataTableTable } from './use-data-table'
 
@@ -33,7 +37,7 @@ export function DataTableColumnsSubmenu<TData extends RowData>({
           const meta = (column.columnDef.meta ??
             {}) as DataTableColumnMeta<TData>
           return (
-            <MenuCheckboxOption
+            <MenuCheckboxItem
               checked={column.getIsVisible()}
               closeOnClick={false}
               key={column.id}
@@ -42,7 +46,7 @@ export function DataTableColumnsSubmenu<TData extends RowData>({
               }
             >
               {meta.label ?? column.id}
-            </MenuCheckboxOption>
+            </MenuCheckboxItem>
           )
         })}
       </MenuSubPopup>

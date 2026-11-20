@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./menu": "./src/menu/index.ts",
     "./*": "./src/*.tsx",
     "./chat/hooks/*": "./src/chat/hooks/*.ts",
     "./chat/lib/*": "./src/chat/lib/*.ts",

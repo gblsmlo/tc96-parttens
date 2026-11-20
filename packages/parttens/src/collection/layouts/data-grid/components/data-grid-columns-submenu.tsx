@@ -1,10 +1,14 @@
 'use client'
 
 import type { RowData } from '@tanstack/react-table'
-import { MenuSub, MenuSubPopup, MenuSubTrigger } from '@tc96/ui/menu'
+import {
+  MenuCheckboxItem,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+} from '@tc96/ui/menu'
 import { Columns3Icon } from 'lucide-react'
 import type React from 'react'
-import { MenuCheckboxOption } from '../../../../shared/components/menu-selection-item'
 import type { DataGridTable } from '../lib/data-grid-features'
 import type { DataGridColumnMeta } from '../types'
 
@@ -32,7 +36,7 @@ export function DataGridColumnsSubmenu<TData extends RowData>({
         {columns.map((column) => {
           const meta = (column.columnDef.meta ?? {}) as DataGridColumnMeta
           return (
-            <MenuCheckboxOption
+            <MenuCheckboxItem
               checked={column.getIsVisible()}
               closeOnClick={false}
               key={column.id}
@@ -41,7 +45,7 @@ export function DataGridColumnsSubmenu<TData extends RowData>({
               }
             >
               {meta.label ?? column.id}
-            </MenuCheckboxOption>
+            </MenuCheckboxItem>
           )
         })}
       </MenuSubPopup>

@@ -18,8 +18,6 @@ import {
   DataGridDensitySubmenu,
   DataGridPagination,
   DataGridSortSubmenu,
-  MenuCheckboxOption,
-  MenuRadioOption,
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
@@ -29,9 +27,11 @@ import {
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
+  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuRadioGroup,
+  MenuRadioItem,
   MenuSeparator,
   MenuSub,
   MenuSubPopup,
@@ -424,17 +424,17 @@ function TasksWorkspace({
                             value={preferences.groupBy ?? ''}
                           >
                             {layout === 'kanban' ? null : (
-                              <MenuRadioOption value="">
+                              <MenuRadioItem value="">
                                 Sem agrupamento
-                              </MenuRadioOption>
+                              </MenuRadioItem>
                             )}
                             {groupings.map((dimension) => (
-                              <MenuRadioOption
+                              <MenuRadioItem
                                 key={dimension.id}
                                 value={dimension.id}
                               >
                                 {dimension.label}
-                              </MenuRadioOption>
+                              </MenuRadioItem>
                             ))}
                           </MenuRadioGroup>
                         </MenuSubPopup>
@@ -454,12 +454,12 @@ function TasksWorkspace({
                             value={calendarMode}
                           >
                             {calendarModes.map((mode) => (
-                              <MenuRadioOption
+                              <MenuRadioItem
                                 key={mode.value}
                                 value={mode.value}
                               >
                                 {mode.label}
-                              </MenuRadioOption>
+                              </MenuRadioItem>
                             ))}
                           </MenuRadioGroup>
                         </MenuSubPopup>
@@ -483,7 +483,7 @@ function TasksWorkspace({
                             .getAllLeafColumns()
                             .filter((column) => column.id !== 'select')
                             .map((column) => (
-                              <MenuCheckboxOption
+                              <MenuCheckboxItem
                                 checked={column.getIsVisible()}
                                 closeOnClick={false}
                                 key={column.id}
@@ -494,7 +494,7 @@ function TasksWorkspace({
                                 {typeof column.columnDef.header === 'string'
                                   ? column.columnDef.header
                                   : 'Estimativa'}
-                              </MenuCheckboxOption>
+                              </MenuCheckboxItem>
                             ))}
                         </MenuSubPopup>
                       </MenuSub>
@@ -511,7 +511,7 @@ function TasksWorkspace({
                         <MenuGroup>
                           <MenuGroupLabel>Responsável</MenuGroupLabel>
                           {people.map((person) => (
-                            <MenuCheckboxOption
+                            <MenuCheckboxItem
                               checked={assigneeFilter.includes(person.id)}
                               closeOnClick={false}
                               key={person.id}
@@ -522,7 +522,7 @@ function TasksWorkspace({
                               }
                             >
                               {person.name}
-                            </MenuCheckboxOption>
+                            </MenuCheckboxItem>
                           ))}
                         </MenuGroup>
                       </MenuSubPopup>
@@ -536,7 +536,7 @@ function TasksWorkspace({
                         <MenuGroup>
                           <MenuGroupLabel>Prioridade</MenuGroupLabel>
                           {priorityOptions.map((option) => (
-                            <MenuCheckboxOption
+                            <MenuCheckboxItem
                               checked={priorityFilter.includes(option.value)}
                               closeOnClick={false}
                               key={option.value}
@@ -547,7 +547,7 @@ function TasksWorkspace({
                               }
                             >
                               {option.label}
-                            </MenuCheckboxOption>
+                            </MenuCheckboxItem>
                           ))}
                         </MenuGroup>
                       </MenuSubPopup>

@@ -147,6 +147,21 @@ const preview: Preview = {
         }
         if (b.title.startsWith(`${a.title}/`)) return -1
         if (a.title.startsWith(`${b.title}/`)) return 1
+        const sections = ['Behavior', 'API Reference', 'Usages']
+        const partsA = a.title.split('/')
+        const partsB = b.title.split('/')
+        let depth = 0
+        while (partsA[depth] !== undefined && partsA[depth] === partsB[depth])
+          depth += 1
+        if (depth >= 2) {
+          const segmentA = partsA[depth] ?? ''
+          const segmentB = partsB[depth] ?? ''
+          if (segmentA === partsA[1]) return -1
+          if (segmentB === partsB[1]) return 1
+          const sectionA = sections.indexOf(segmentA)
+          const sectionB = sections.indexOf(segmentB)
+          if (sectionA !== -1 && sectionB !== -1) return sectionA - sectionB
+        }
         return 0
       },
     },

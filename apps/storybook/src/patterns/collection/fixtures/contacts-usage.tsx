@@ -16,8 +16,6 @@ import {
   DataGridDensitySubmenu,
   DataGridPagination,
   DataGridSortSubmenu,
-  MenuCheckboxOption,
-  MenuRadioOption,
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
@@ -26,9 +24,11 @@ import {
   ViewSettingsSection,
 } from '@tc96/parttens'
 import {
+  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuRadioGroup,
+  MenuRadioItem,
   MenuSeparator,
   MenuSub,
   MenuSubPopup,
@@ -337,16 +337,16 @@ function ContactsWorkspace({
                             }
                             value={preferences.groupBy ?? ''}
                           >
-                            <MenuRadioOption value="">
+                            <MenuRadioItem value="">
                               Sem agrupamento
-                            </MenuRadioOption>
+                            </MenuRadioItem>
                             {contactGroupings.map((dimension) => (
-                              <MenuRadioOption
+                              <MenuRadioItem
                                 key={dimension.id}
                                 value={dimension.id}
                               >
                                 {dimension.label}
-                              </MenuRadioOption>
+                              </MenuRadioItem>
                             ))}
                           </MenuRadioGroup>
                         </MenuSubPopup>
@@ -370,7 +370,7 @@ function ContactsWorkspace({
                             .getAllLeafColumns()
                             .filter((column) => column.id !== 'select')
                             .map((column) => (
-                              <MenuCheckboxOption
+                              <MenuCheckboxItem
                                 checked={column.getIsVisible()}
                                 closeOnClick={false}
                                 key={column.id}
@@ -379,7 +379,7 @@ function ContactsWorkspace({
                                 }
                               >
                                 {String(column.columnDef.header)}
-                              </MenuCheckboxOption>
+                              </MenuCheckboxItem>
                             ))}
                         </MenuSubPopup>
                       </MenuSub>
@@ -396,7 +396,7 @@ function ContactsWorkspace({
                         <MenuGroup>
                           <MenuGroupLabel>Etapa</MenuGroupLabel>
                           {stageOptions.map((option) => (
-                            <MenuCheckboxOption
+                            <MenuCheckboxItem
                               checked={stageFilter.includes(option.value)}
                               closeOnClick={false}
                               key={option.value}
@@ -407,7 +407,7 @@ function ContactsWorkspace({
                               }
                             >
                               {option.label}
-                            </MenuCheckboxOption>
+                            </MenuCheckboxItem>
                           ))}
                         </MenuGroup>
                       </MenuSubPopup>
@@ -421,7 +421,7 @@ function ContactsWorkspace({
                         <MenuGroup>
                           <MenuGroupLabel>Tags</MenuGroupLabel>
                           {tagOptions.map((option) => (
-                            <MenuCheckboxOption
+                            <MenuCheckboxItem
                               checked={tagFilter.includes(option.value)}
                               closeOnClick={false}
                               key={option.value}
@@ -432,7 +432,7 @@ function ContactsWorkspace({
                               }
                             >
                               {option.label}
-                            </MenuCheckboxOption>
+                            </MenuCheckboxItem>
                           ))}
                         </MenuGroup>
                       </MenuSubPopup>

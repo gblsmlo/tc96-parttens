@@ -266,7 +266,7 @@ Decidido em 2026-10-01. O tc96 reutiliza patterns em projetos que já usam COSS,
 
 Situação em 2026-10-01: os 27 itens de `packages/ui/src` são o COSS sem alterações. Antes, 8 deles divergiam (button, input, input-group, group, calendar, combobox, sheet e textarea) e havia cópias em `compat/`. O COSS fixa `@base-ui/react` 1.8.0 e usa `@daypicker/react` no calendar, e o workspace acompanha essas versões.
 
-Exceção decidida em 2026-10-20, a pedido do dono: `SelectItem` (`select.tsx`) e `ComboboxItem` (`combobox.tsx`) põem o check de seleção numa coluna à direita, com a mesma grade de `MenuRadioOption` (`grid-cols-[minmax(0,1fr)_.75rem]`, `gap-4`, `pe-2.5`, indicador com `-me-0.5`) e o texto antes do indicador no DOM. A edição agora é só uma edição de `packages/ui`, sem hash a recalcular. O consumidor recebe o `@coss/select` e o `@coss/combobox` originais, com o check à esquerda: por isso `propertySelectItemClassName` continua nas properties, agora sem depender da ordem dos filhos (`[&>div]` é o texto, `[&>span]` o indicador), e os demais patterns que usam `SelectItem` ou `ComboboxItem` mostram o check à esquerda no consumidor.
+Exceção decidida em 2026-10-20, a pedido do dono: `SelectItem` (`select.tsx`) e `ComboboxItem` (`combobox.tsx`) põem o check de seleção numa coluna à direita, com a mesma grade de `MenuRadioItem` (`grid-cols-[minmax(0,1fr)_.75rem]`, `gap-4`, `pe-2.5`, indicador com `-me-0.5`) e o texto antes do indicador no DOM. A edição agora é só uma edição de `packages/ui`, sem hash a recalcular. O consumidor recebe o `@coss/select` e o `@coss/combobox` originais, com o check à esquerda: por isso `propertySelectItemClassName` continua nas properties, agora sem depender da ordem dos filhos (`[&>div]` é o texto, `[&>span]` o indicador), e os demais patterns que usam `SelectItem` ou `ComboboxItem` mostram o check à esquerda no consumidor.
 
 Decidido em 2026-11-02, a pedido do dono: as variantes `error`, `info`, `success` e `warning` do `Alert` (`alert.tsx`) perdem a borda tingida (`border-<status>/32`) e ficam com o `border` padrão (`--border`), como o `Card`. O estado fica no ícone e no fundo tingido. Os botões de `AlertAction` usam o `Button` em `size="sm"`, no lugar do `xs` dos exemplos do COSS.
 
@@ -576,6 +576,16 @@ Decisão de 2026-10-31, do dono (issue #237). Componente com página própria na
 - `shared/` fica só com `MenuRadioOption` e `MenuCheckboxOption`; o lugar final deles fica para o fim desta reorganização, por decisão do dono.
 - Cada pasta é uma área do registry (o barrel raiz a reexporta e ela não está em `patternNames`), e uma área só vai com os itens cujos arquivos a importam. Com isso o item `properties`, que importa `shared/` só pelo `MenuCheckboxOption`, deixou de levar a paginação e a toolbar; `collection` leva `action-bar/` e `pagination/` porque o Data Grid importa os dois por caminho.
 - Nenhum arquivo de runtime de um pattern importa `toolbar/`, então o registry não a levava: o `@tc96/parttens@0.20.0` no npm saiu sem `CollectionToolbar` e sem `ViewSwitcher*`, embora o código na tag os tenha, e `bun run test:consumer:registry` falhava. Decisão do dono: `toolbar/` continua na raiz de `packages/parttens/src/`, como `pagination/`, e o item `collection` a leva pelo `itemAreas` de `packages/registry/src/manifest.ts`, que o `build-registry.ts` semeia na caminhada de arquivos do item. O `build-registry.ts` também falha quando uma área que o agregado exporta não vai em nenhum item, e o `test:consumer:registry` passa a cobrir a toolbar pelo barrel.
+
+## Itens de menu do COSS ficam em `packages/ui`
+
+Decisão de 2026-11-19, do dono. Todo componente de menu instalado do COSS mora em `packages/ui` e é editado lá; nenhum pattern recria ou embrulha um deles para mudar a aparência.
+
+- `MenuCheckboxItem` e `MenuRadioItem` (`packages/ui/src/menu.tsx`) põem o check numa coluna à direita, com a grade do `SelectItem`, e o texto aceita ícone (`flex items-center gap-2`).
+- O `MenuPopup` (e o `MenuSubPopup`, que o usa) tem no mínimo 160px de largura (`min-w-40`, mesmo com uma classe `w-*`) e 8px de padding em volta dos itens (`p-2`); o COSS usa `min-w-32` só sem `w-*`, e `p-1`.
+- O menu virou a pasta `packages/ui/src/menu/`: `menu.tsx`, o barrel `index.ts` (que `@tc96/ui/menu` resolve pelo `exports` de `packages/ui/package.json`), `AGENTS.md`, `TOKENS.md` e `ACCESSIBILITY.md`, que concentra as decisões de acessibilidade do menu. O registry entrega os cinco arquivos ao consumidor.
+- `MenuCheckboxOption` e `MenuRadioOption` saíram de `packages/parttens/src/shared/`, que deixou de existir. Eles nasceram em 2026-10-02, quando `packages/ui` era somente leitura, só para pôr o check à direita; o [ADR 0008](../../.specs/adr/0008-ui-owned-source.md) tirou essa razão.
+- Efeito no consumidor: `@tc96/parttens` deixa de exportar `MenuCheckboxOption`, `MenuRadioOption` e seus tipos; quem os usa troca por `MenuCheckboxItem` e `MenuRadioItem` de `@tc96/ui/menu`. O `data-slot` passa de `menu-checkbox-option` e `menu-radio-option` para `menu-checkbox-item` e `menu-radio-item`.
 
 ## Templates: App Shells
 

@@ -1,9 +1,8 @@
 'use client'
 
-import { Menu, MenuPopup, MenuRadioGroup } from '@tc96/ui/menu'
+import { Menu, MenuPopup, MenuRadioGroup, MenuRadioItem } from '@tc96/ui/menu'
 import { cn } from '@tc96/utils'
 import type { ReactElement, ReactNode } from 'react'
-import { MenuRadioOption } from '../../../shared/components/menu-selection-item'
 import type {
   DataTableAggregation,
   DataTableAggregationLabels,
@@ -52,11 +51,11 @@ export function DataTableAggregationCell({
             }
             value={value ?? NONE}
           >
-            <MenuRadioOption value={NONE}>{labels.none}</MenuRadioOption>
+            <MenuRadioItem value={NONE}>{labels.none}</MenuRadioItem>
             {options.map((option) => (
-              <MenuRadioOption key={option} value={option}>
+              <MenuRadioItem key={option} value={option}>
                 {labels[option]}
-              </MenuRadioOption>
+              </MenuRadioItem>
             ))}
           </MenuRadioGroup>
         </MenuPopup>
