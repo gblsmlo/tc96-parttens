@@ -1,0 +1,83 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Checkbox
+
+A control the user ticks or unticks to turn one option on or off: accepting the terms, choosing which emails to get, selecting rows to act on. Each checkbox stands on its own, so several of them in a list allow any combination; when only one choice of a set is allowed, reach for a radio group.
+
+The other pages of `UI/Checkbox`: [Playground](?path=/story/ui-checkbox-playground--playground) to try the label, the description and every state, [Stories](?path=/story/ui-checkbox-stories--default) for each state, [Behavior](?path=/story/ui-checkbox-behavior--toggles-on-click) for the tests, [Usages](?path=/story/ui-checkbox-usages--accept-terms) for checkboxes in real forms and lists, and [Layouts](?path=/story/ui-checkbox-layouts--with-description) for the ways to label it.
+
+## Import
+
+```tsx
+import { Checkbox } from '@acme/ui/checkbox'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Label>
+  <Checkbox />
+  label
+</Label>
+```
+
+`Checkbox` is one part. The box and the indicator inside it are built in, and a hidden `input type="checkbox"` sits next to the box for forms. The label is a `Label`, a `FieldLabel` or an `aria-label`, never a prop of the checkbox.
+
+## Checkbox
+
+The box the user ticks. Renders a `span` with `role="checkbox"` and `aria-checked`, focusable with Tab and toggled by a click or Space; Enter does not toggle it but submits the form it belongs to. Inside, an indicator `span` shows a tick when checked and a dash when indeterminate, and is not rendered when unchecked.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `checked` | `boolean` | - | Controls whether the box is ticked; pair it with `onCheckedChange`. |
+| `defaultChecked` | `boolean` | `false` | Sets whether the box starts ticked, when `checked` is not passed. |
+| `indeterminate` | `boolean` | `false` | When true, shows the mixed state: a dash and `aria-checked="mixed"`, whatever `checked` is. |
+| `disabled` | `boolean` | `false` | When true, ignores clicks and keys, leaves the tab order and drops to 64% opacity. |
+| `readOnly` | `boolean` | `false` | When true, keeps the value and its focus, and sets `aria-readonly`. |
+| `required` | `boolean` | `false` | When true, a form does not submit until the box is ticked. |
+| `name` | `string` | - | Sets the name the hidden input submits with the form. |
+| `value` | `string` | - | Sets the value submitted when the box is ticked; without it the form receives `"on"`. |
+| `uncheckedValue` | `string` | - | Sets a value submitted when the box is not ticked; without it, nothing is submitted. |
+| `id` | `string` | - | Sets the `id` of the hidden input, which a `label` with a matching `htmlFor` names and toggles. |
+| `aria-invalid` | `boolean` | - | When true, shows the error border and ring; a `Field` sets it when validation fails. |
+| `className` | `string` | - | Adds classes after the box classes, so a conflicting class wins. |
+| `onCheckedChange` | `(checked: boolean, eventDetails: CheckboxPrimitive.Root.ChangeEventDetails) => void` | - | Called when the user ticks or unticks the box, with the new value. |
+
+Also takes every prop of the Base UI `Checkbox.Root` (`form`, `inputRef`, `parent`, `nativeButton`, `render`) and of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"checkbox"` | Selects the box in the theme and from other parts |
+| `data-checked` | present when ticked and not indeterminate | Styles or selects a ticked box, also from its label (`has-data-checked:`) |
+| `data-unchecked` | present when not ticked and not indeterminate | Styles an empty box |
+| `data-indeterminate` | present when `indeterminate` | Styles the mixed state |
+| `data-disabled` | present when `disabled` | Styles the disabled box |
+| `data-readonly` | present when `readOnly` | Styles the read-only box |
+| `data-required` | present when `required` | Styles the required box |
+| `data-parent` | present when `parent` | Styles the parent box of a checkbox group |
+| `data-valid`, `data-invalid` | present inside a `Field` after validation | Styles the result of validation |
+| `data-touched`, `data-dirty`, `data-filled`, `data-focused` | present inside a `Field` | Styles the interaction state of the field |
+
+The indicator has `data-slot="checkbox-indicator"`, the same state attributes, and `data-starting-style` and `data-ending-style` while it animates in and out.
+
+The box is 18px below `sm` and 16px from `sm` up, with a 1px `--input` border and a 4px radius. Ticked, the indicator covers the border with `--primary` and draws the tick in `--primary-foreground`; indeterminate, the box keeps its border and the dash is drawn in `--foreground`. Focused with the keyboard, it shows a 2px `--ring` ring with a 1px offset. With `aria-invalid`, the border and the focus ring turn `--destructive`; a ticked box covers the border, so an invalid ticked box looks like a ticked one.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `CheckboxPrimitive` | `namespace` | The Base UI checkbox, with `Root` and `Indicator`, for its types (`CheckboxPrimitive.Root.Props`) or a checkbox with other markup. |
+
+## Accessibility and theme
+
+- Name every checkbox: wrap it in a `Label` with the text, point a `Label`'s `htmlFor` at its `id`, wrap it in a `FieldLabel` inside a `Field`, or, when no text is visible (a table row), pass `aria-label`.
+- Link a description with `aria-describedby`, or use `FieldDescription` inside a `Field`.
+- The box is a 16px target. Wrapping it in its label makes the text clickable too, which is the larger target to give it.
+- Pass `aria-invalid` for an error found outside a `Field`, and say what is wrong in text; the red border alone does not say it.
+- `indeterminate` only changes what is shown. Clearing it after the user acts is up to the consumer, as in a "select all" box that follows its rows.
+- The box reads `--input`, `--background`, `--primary`, `--primary-foreground`, `--foreground`, `--ring` and `--destructive` from the theme.
