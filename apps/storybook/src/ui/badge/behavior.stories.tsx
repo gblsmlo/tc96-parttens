@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Badge } from '@tc96/ui/badge'
-import { CheckIcon } from 'lucide-react'
 import { expect, fn, userEvent, within } from 'storybook/test'
-import { badgeSizeNames, badgeVariantNames } from './badge-api.ts'
+import { badgeControlArgs } from './badge-controls.ts'
+import { ComposedBadge } from './badge-layouts.tsx'
+import { badgeSizeNames, badgeVariantNames } from './badge-variants.ts'
 
 interface BehaviorArgs {
   onClick: () => void
@@ -20,7 +21,16 @@ export default meta
 
 type Story = StoryObj<BehaviorArgs>
 
-export const Variants: Story = {
+export const SpanByDefault: Story = {
+  render: () => <ComposedBadge {...badgeControlArgs} />,
+  play: async ({ canvasElement }) => {
+    const badge = within(canvasElement).getByText('Badge')
+    await expect(badge.tagName).toBe('SPAN')
+    await expect(badge).toHaveAttribute('data-slot', 'badge')
+  },
+}
+
+export const EveryVariant: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-2">
       {badgeVariantNames.map((variant) => (
@@ -36,7 +46,7 @@ export const Variants: Story = {
   },
 }
 
-export const Sizes: Story = {
+export const FixedHeights: Story = {
   render: () => (
     <div className="flex items-center gap-2">
       {badgeSizeNames.map((size) => (
@@ -55,15 +65,10 @@ export const Sizes: Story = {
   },
 }
 
-export const WithIcon: Story = {
-  render: () => (
-    <Badge variant="outline">
-      <CheckIcon aria-hidden="true" />
-      Verified
-    </Badge>
-  ),
+export const DecorativeIcon: Story = {
+  render: () => <ComposedBadge {...badgeControlArgs} icon />,
   play: async ({ canvasElement }) => {
-    const badge = within(canvasElement).getByText('Verified')
+    const badge = within(canvasElement).getByText('Badge')
     const icon = badge.querySelector('svg')
     await expect(icon).toHaveAttribute('aria-hidden', 'true')
     await expect(icon?.getBoundingClientRect().right).toBeLessThanOrEqual(
@@ -72,7 +77,7 @@ export const WithIcon: Story = {
   },
 }
 
-export const Count: Story = {
+export const RoundCount: Story = {
   render: () => (
     <Badge aria-label="7 unread messages" className="rounded-full">
       7
@@ -85,7 +90,7 @@ export const Count: Story = {
   },
 }
 
-export const AsLink: Story = {
+export const FocusableLink: Story = {
   render: () => (
     <Badge
       render={(props) => <a {...props} href="#pricing" />}
@@ -104,7 +109,7 @@ export const AsLink: Story = {
   },
 }
 
-export const AsButton: Story = {
+export const ClickableButton: Story = {
   render: ({ onClick }) => (
     <Badge
       render={<button onClick={onClick} type="button" />}

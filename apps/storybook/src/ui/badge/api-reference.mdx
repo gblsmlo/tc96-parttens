@@ -1,0 +1,70 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Badge
+
+A short label that sits next to the thing it describes: the status of a record, the stage of a deal, a count of unread items, the plan of a workspace. It holds a few words or a number, an optional icon before the text, and renders as a link or a button when it has to be clicked, such as a filter chip.
+
+The other pages of `UI/Badge`: [Playground](?path=/story/ui-badge-playground--playground) to try text, variant, size, icon and element, [Stories](?path=/story/ui-badge-stories--default) for each variant, size and element, [Behavior](?path=/story/ui-badge-behavior--span-by-default) for the tests, [Usages](?path=/story/ui-badge-usages--status-list) for badges in context and [Layouts](?path=/story/ui-badge-layouts--with-icon) for how the icon and the text combine.
+
+## Import
+
+```tsx
+import { Badge, type BadgeProps, badgeVariants } from '@acme/ui/badge'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Badge>
+  <Icon aria-hidden="true" />
+  children
+</Badge>
+```
+
+## Badge
+
+The label itself. Renders a `span` with no role, so its text is read inline with what it sits next to, or the element passed in `render`. Icon and text stay on one line and never wrap.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"primary"`, `"secondary"`, `"outline"`, `"destructive"`, `"error"`, `"info"`, `"success"` or `"warning"` | `"primary"` | Controls the background, the text color and the border color. |
+| `size` | `"default"` or `"large"` | `"default"` | Sets the height, the text and the icon: 20px with 12px text and icon, or 24px with 14px text and icon. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `span` with another element, such as an `a` or a `button`, which receives the badge props. |
+| `className` | `string` | - | Adds classes after the variant and size classes, so a conflicting class wins. |
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"badge"` | Selects the part in the theme and from other parts |
+
+Every variant has the same 1px `border`, so badges of different variants line up at the same height. The two heights hold at every width: no class of a size changes at a breakpoint.
+
+`primary`, `secondary` and `destructive` are filled, `outline` has an `--input` border on the page `background`, and `error`, `info`, `success` and `warning` tint the background and color the text with the status.
+
+Rendered as an `a` or a `button`, the badge gets a pointer cursor, a 2px focus ring on `:focus-visible` and, with a coarse pointer, a 44px hit area that does not change its look; `primary`, `secondary`, `outline` and `destructive` also change color on hover. A `span` badge gets none of these. A disabled `button` badge drops to 64% opacity and takes no pointer events.
+
+An `svg` child is 12px at 80% opacity, 14px at `size="large"`; a `size-*` or `opacity-*` class on the icon wins. A count is round with `className="rounded-full"`: the minimum width equals the height, so one digit makes a circle.
+
+## badgeVariants
+
+The class function behind `Badge`. Returns the class string of a variant and a size, to give the badge look to an element that cannot be passed to `render`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | the `variant` union of `Badge` | `"primary"` | Selects the variant classes. |
+| `size` | `"default"` or `"large"` | `"default"` | Selects the size classes. |
+| `className` | `string` | - | Appends classes, merged so a conflicting class wins. |
+
+## Accessibility and theme
+
+- An icon before the text is decorative: pass `aria-hidden="true"`.
+- A count or a single symbol says nothing alone. Put the meaning in the name of what owns it (`aria-label="Notifications, 3 unread"` on the button) and hide the badge with `aria-hidden`, or give the badge its own `aria-label`.
+- A badge is not a live region: a count that changes while the user reads needs its own announcement.
+- The tinted variants read `--info`, `--success`, `--warning`, `--destructive` and their `-foreground` pairs from the theme, and are measured on the page `background`; on another surface, measure again.
+- Decisions and measured contrast: `packages/ui/src/badge/ACCESSIBILITY.md`. Classes of the base, each size and each variant: `packages/ui/src/badge/TOKENS.md`.

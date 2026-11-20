@@ -2,7 +2,7 @@
 
 A badge is a short label that sits next to the thing it describes: the status of a record, the stage of a deal, a count of unread items, the plan of a workspace. It reads as part of the surrounding text, holds a few words or a number, and can carry a small icon before the text. It is a `span` by default and becomes a link or a button when it has to be clicked, for example a filter chip or a "New" label that opens the changelog.
 
-The component comes from COSS, built on the Base UI `useRender` hook, and is owned by this repo (ADR 0008): every change to how it looks starts in `TOKENS.md`, the blueprint, and is then copied into `badge.tsx`; a pattern never recreates or wraps the badge to restyle it (decision of 2026-11-19). The Storybook page `UI/Badge` shows it: `Doc`, `Default` and `Anatomy` for the part, `Behavior` for each variant, size and element under test, `API Reference/Badge` for the controls, `Usages` for badges in context.
+The component comes from COSS, built on the Base UI `useRender` hook, and is owned by this repo (ADR 0008): every change to how it looks starts in `TOKENS.md`, the blueprint, and is then copied into `badge.tsx`; a pattern never recreates or wraps the badge to restyle it (decision of 2026-11-19). The Storybook node `UI/Badge` documents it in six pages: `API Reference` (MDX: import, anatomy, the contract of `Badge` and `badgeVariants`), `Playground` (text, variant, size, icon and element as controls), `Stories` (one story per variant, per non-default size and per element on the text-only base, with those props fixed and the text and icon as controls), `Behavior` (one `play` per guarantee), `Usages` (badges in context) and `Layouts` (the base with an icon); `Get Started/Component Docs` sets that structure.
 
 ## Map
 
@@ -57,5 +57,5 @@ An edit of a class a pattern or template relies on runs the whole Storybook suit
 
 - `ACCESSIBILITY.md` (this folder): the badge's accessibility decisions and measures.
 - `TOKENS.md` (this folder): the blueprint of the base, sizes and variants.
-- Stories: `apps/storybook/src/ui/badge/`; API text in `badge-api.ts` there.
+- Stories: `apps/storybook/src/ui/badge/`; the API text is `api-reference.mdx` there, and the value lists, Playground controls and shared compositions are `badge-variants.ts`, `badge-controls.ts` and `badge-layouts.tsx`.
 - Decision and history: `docs/architecture/tc96-parttens.md` (`Badge em pasta própria em packages/ui`), `.specs/adr/0008-ui-owned-source.md`.
