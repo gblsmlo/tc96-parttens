@@ -50,7 +50,7 @@ export function ChatsPanelItem({
         >
           {avatar}
           {unread ? (
-            <Badge className={chatsPanelUnreadBadgeClassName} size="sm">
+            <Badge className={chatsPanelUnreadBadgeClassName}>
               {unreadCount}
             </Badge>
           ) : null}

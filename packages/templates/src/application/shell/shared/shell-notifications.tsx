@@ -44,7 +44,7 @@ export function ShellNotifications({
       >
         <BellIcon />
         {unread ? (
-          <Badge aria-hidden className="absolute -end-1 -top-1" size="sm">
+          <Badge aria-hidden className="absolute -end-1 -top-1">
             {unread}
           </Badge>
         ) : null}

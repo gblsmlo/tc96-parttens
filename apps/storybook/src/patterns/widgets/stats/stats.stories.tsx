@@ -273,7 +273,7 @@ function StatusCard({
   return (
     <MetricWidget
       changeLabel={
-        <Badge size="lg" variant={state.variant}>
+        <Badge size="large" variant={state.variant}>
           <Icon aria-hidden="true" />
           {state.label}
         </Badge>

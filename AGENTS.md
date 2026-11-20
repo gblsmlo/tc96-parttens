@@ -17,7 +17,7 @@ packages/
   helpers/     React-free functions (amount formatting, dates, rich text)
   templates/   installable templates (application shells), above parttens; see packages/templates/AGENTS.md
   ui/          COSS-origin components owned by this repo, listed in ui.manifest.json
-               a component may be a folder with index.ts, AGENTS.md, TOKENS.md and ACCESSIBILITY.md (menu/); read its AGENTS.md before changing it
+               a component may be a folder with index.ts, AGENTS.md, TOKENS.md and ACCESSIBILITY.md (menu/, badge/); read its AGENTS.md before changing it
   utils/       shared helpers (cn)
   registry/    registry build and the CLI published as @tc96/parttens
 apps/

@@ -59,7 +59,7 @@ export interface DataGridColumnMeta {
   options?: DataGridSelectOption[]
   editable?: boolean
   badgeVariant?:
-    | 'default'
+    | 'primary'
     | 'secondary'
     | 'outline'
     | 'destructive'
