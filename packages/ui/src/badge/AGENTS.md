@@ -29,7 +29,7 @@ The component comes from COSS, built on the Base UI `useRender` hook, and is own
 
 ## Invariants
 
-- `TOKENS.md` and `badge.tsx` carry the same classes: the rows of a table, joined, hold exactly the classes of that `cva` string. An edit that touches one and not the other is incomplete.
+- `TOKENS.md` and `badge.tsx` carry the same classes: the rows of a table, joined, hold exactly the classes of that `cva` string. An edit that touches one and not the other is incomplete, and `scripts/ui-tokens.test.ts` fails on it.
 - Every variant keeps a 1px border (`border-transparent` in the base), so badges of different variants line up at the same height.
 - The hover color, the pointer cursor and the 44px coarse hit area apply only when the badge renders as a `button` or an `a` (`[button&,a&]`); a `span` badge never looks clickable.
 - The filled variant on `--primary` is named `primary`, not the COSS `default`, and is the default variant (decision of 2026-11-20); `DataGridColumnMeta.badgeVariant` uses the same names.
@@ -47,6 +47,7 @@ The component comes from COSS, built on the Base UI `useRender` hook, and is own
 ```bash
 bun run typecheck && bun run storybook:typecheck
 bun run check:coss && bun run boundaries:check && bun run overrides:check
+bun test scripts/ui-tokens.test.ts   # TOKENS.md against the class strings
 cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/ui/badge
 ```
 
