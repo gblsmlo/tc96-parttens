@@ -1,0 +1,66 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Button
+
+A control that triggers an action where it sits: submitting a form, saving changes, deleting a project, opening a menu. It holds a label, an optional icon on either side, or an icon alone, and shows a spinner while the action runs.
+
+The other pages of `UI/Button`: [Playground](?path=/story/ui-button-playground--playground) to try label, variant, size, icon, loading and disabled, [Stories](?path=/story/ui-button-stories--default) for each variant, size and state, [Behavior](?path=/story/ui-button-behavior--calls-on-click) for the tests, [Usages](?path=/story/ui-button-usages--form-footer) for real actions and [Layouts](?path=/story/ui-button-layouts--leading-icon) for how the label, the icons and the element combine.
+
+## Import
+
+```tsx
+import { Button, type ButtonProps, buttonVariants } from '@acme/ui/button'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Button>
+  <Icon />
+  Label
+</Button>
+```
+
+## Button
+
+The button itself. Renders a `button` with `type="button"`, so it never submits a form unless it is given `type="submit"`. With `render` it renders that element instead, with the same classes and no `type`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"`, `"secondary"`, `"outline"`, `"destructive"`, `"destructive-outline"`, `"ghost"` or `"link"` | `"default"` | Controls the background, the border and the text color. |
+| `size` | `"xs"`, `"sm"`, `"default"`, `"lg"`, `"xl"`, `"icon-xs"`, `"icon-sm"`, `"icon"`, `"icon-lg"` or `"icon-xl"` | `"default"` | Sets the height and the padding; the `icon` sizes make a square for an icon alone. |
+| `loading` | `boolean` | `false` | When true, disables the button, hides the label and shows a spinner over it. |
+| `disabled` | `boolean` | `false` | When true, disables the button and dims it to 64% opacity. |
+| `type` | `"button"`, `"submit"` or `"reset"` | `"button"` | Sets the type of the `button`; with `render` there is no default. |
+| `render` | `ReactElement` or `(props: HTMLAttributes<HTMLElement>) => ReactElement` | - | Replaces the `button` element, for example with an `a` or a router link. |
+| `className` | `string` | - | Adds classes, which win over the classes of the variant and the size. |
+
+Also takes every prop of a `button`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"button"` | Selects the part in the theme and from other parts |
+| `data-loading` | present when `loading` is true | Styles the loading state; the label turns transparent |
+| `data-pressed` | present while a Base UI trigger that renders the button is pressed | Gives the pressed background of the variant |
+
+While `loading` is true the button also sets `aria-disabled="true"`, and the spinner is an `svg` with `role="status"`, `aria-label="Loading"` and `data-slot="button-loading-indicator"`, centered over the hidden label.
+
+Each size is 4px taller below the `sm` breakpoint. From `sm` up, `xs` is 24px high, `sm` 28px, `default` 32px, `lg` 36px and `xl` 40px, and each `icon` size is the square of the text size it is named after (`icon-sm` is 28px by 28px). On a coarse pointer the hit area grows to at least 44px by 44px without changing the look.
+
+From `sm` up, an `svg` child without a `size-*` class is 16px, 14px in `xs` and `icon-xs` and 18px in `xl` and `icon-xl`; below `sm` each is 2px larger. Without an `opacity-*` class it is drawn at 80% opacity.
+
+## buttonVariants
+
+The classes of `Button` as a function. Takes `{ variant, size, className }`, with the same values and defaults as the props, and returns a `string`, for an element that takes the look of a button without rendering through `Button`.
+
+## Accessibility and theme
+
+- Give a button in an `icon` size an `aria-label`, and mark its icon `aria-hidden="true"`.
+- While `loading`, the label stays the accessible name; the spinner adds "Loading" through `role="status"`.
+- A destructive action on a surface, such as a `ghost` remove button, takes `text-destructive-foreground`, never `text-destructive`.
+- The theme's `--destructive` has to keep the white label of `destructive` at 4.5:1. Measured ratios: `docs/accessibility.md` (`Button destructive`).
