@@ -31,7 +31,7 @@ The parts come from COSS on top of Base UI `Menu` and are owned by this repo (AD
 
 - The check of `MenuCheckboxItem` and `MenuRadioItem` sits in a trailing column after the label, as in `SelectItem` and the `switch` variant; the label span is `flex items-center gap-2`, so an icon may precede the text.
 - `inset` padding equals the label start after an icon (`ps-7.5`, `sm:ps-7`), on items, link items, submenu triggers and group labels.
-- `TOKENS.md` and `menu.tsx` carry the same classes: the rows of an element's table, joined, hold exactly the classes of its string. An edit that touches one and not the other is incomplete.
+- `TOKENS.md` and `menu.tsx` carry the same classes: the rows of an element's table, joined, hold exactly the classes of its string. An edit that touches one and not the other is incomplete, and `scripts/ui-tokens.test.ts` fails on it.
 - Items are 44px tall with a coarse pointer (`pointer-coarse:min-h-11`).
 - `MenuShortcut` renders `aria-hidden`; an item with a shortcut sets `aria-keyshortcuts` (`Meta+K`).
 - A disabled item ignores the pointer, so it says why it is disabled inside the item, not in a tooltip.
@@ -50,6 +50,7 @@ The parts come from COSS on top of Base UI `Menu` and are owned by this repo (AD
 ```bash
 bun run typecheck && bun run storybook:typecheck
 bun run check:coss && bun run boundaries:check && bun run overrides:check
+bun test scripts/ui-tokens.test.ts   # TOKENS.md against the class strings
 cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/ui/menu
 ```
 
