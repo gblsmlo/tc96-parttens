@@ -1,0 +1,177 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# AlertDialog
+
+A modal dialog that interrupts the user and waits for an answer before anything else on the page can be used: deleting an account, discarding a draft, leaving a form with unsaved changes. Reach for it when the action is destructive or cannot be undone; a message that needs no answer is an `Alert` or a toast, and a form or a task belongs in a `Dialog`.
+
+The other pages of `UI/AlertDialog`: [Playground](?path=/story/ui-alertdialog-playground--playground) to try the texts, the footer variant, the cancel button and the mobile placement, [Stories](?path=/story/ui-alertdialog-stories--default) for each prop value, [Behavior](?path=/story/ui-alertdialog-behavior--opens-from-trigger) for the tests, [Usages](?path=/story/ui-alertdialog-usages--delete-account) for real confirmations and [Layouts](?path=/story/ui-alertdialog-layouts--without-description) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@acme/ui/alert-dialog'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<AlertDialog>
+  <AlertDialogTrigger />
+  <AlertDialogPopup>
+    <AlertDialogHeader>
+      <AlertDialogTitle />
+      <AlertDialogDescription />
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogClose />
+      <AlertDialogClose />
+    </AlertDialogFooter>
+  </AlertDialogPopup>
+</AlertDialog>
+```
+
+## AlertDialog
+
+Groups the parts and holds the open state. Alias for `AlertDialog.Root` from Base UI; renders no element. It is always modal: while open, focus stays in the popup, the page behind it does not scroll and is hidden from assistive technology. A press outside the popup never closes it; `Escape` and an `AlertDialogClose` do.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the dialog asks to open or close, with the `reason` in `eventDetails`. |
+| `handle` | `AlertDialogPrimitive.Handle` | - | Links the dialog to a trigger outside it, created with `AlertDialogCreateHandle`. |
+
+Also takes every prop of Base UI `AlertDialog.Root`, such as `actionsRef` and `onOpenChangeComplete`.
+
+`ChangeEventDetails` is `AlertDialogPrimitive.Root.ChangeEventDetails`. The `reason` of a close is `"escape-key"`, `"close-press"` or, when `handle` or `actionsRef` closes it, `"imperative-action"`; a controlled parent can refuse it by not updating `open`, as a pending action does.
+
+## AlertDialogTrigger
+
+The button that opens the dialog. Renders a `button`; pass `render={<Button />}` to use the `Button`. It can sit outside `AlertDialog` when both share a `handle`, and focus returns to it when the dialog closes.
+
+Also takes every prop of Base UI `AlertDialog.Trigger`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-dialog-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while its dialog is open | Styles the trigger of the open dialog |
+| `data-disabled` | present when disabled | Styles a disabled trigger |
+
+## AlertDialogPopup
+
+The dialog itself. Renders a `div` with `role="alertdialog"` in a portal on `body`, above an `AlertDialogBackdrop` and inside an `AlertDialogViewport`, so one part brings the whole layer. It is labelled by `AlertDialogTitle` and described by `AlertDialogDescription`. On open, focus moves to its first focusable element.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `bottomStickOnMobile` | `boolean` | `true` | When true, below `sm` the popup spans the full width and sits on the bottom edge. |
+| `portalProps` | `AlertDialogPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `AlertDialog.Popup`, such as `initialFocus` and `finalFocus`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-dialog-popup"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-nested` | present when it opens inside another dialog | Styles a dialog opened over another |
+| `data-nested-dialog-open` | present while a dialog is open over it | Styles the dialog left behind |
+
+The popup is at most 512px wide (`max-w-lg`), with a 2xl radius and a 1px `border`. Its opacity is `1 - var(--nested-dialogs)`, so a dialog opened over it hides it, and from `sm` up it also shrinks by 10% per nested dialog.
+
+## AlertDialogHeader
+
+The block of the title and the description. Renders a `div` that stacks them 8px apart with 24px of padding (16px at the bottom below `sm`); the text is centered below `sm` and starts at the left from `sm` up.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-dialog-header"` | Selects the part in the theme and from other parts |
+
+## AlertDialogTitle
+
+The question the dialog asks. Renders an `h2` in the heading font at `text-xl`, and its text is the accessible name of the popup.
+
+Also takes every prop of Base UI `AlertDialog.Title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-dialog-title"` | Selects the part in the theme and from other parts |
+
+## AlertDialogDescription
+
+The consequence of the action. Renders a `p` in `text-sm text-muted-foreground`, and its text is the accessible description of the popup.
+
+Also takes every prop of Base UI `AlertDialog.Description`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-dialog-description"` | Selects the part in the theme and from other parts |
+
+## AlertDialogFooter
+
+The row of answers. Renders a `div`; below `sm` its children stack full width in reverse order, so the last one sits on top, and from `sm` up they line up at the end.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"bare"` | `"default"` | Controls the surface: `"default"` adds a top border and a muted background, `"bare"` drops both. |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-dialog-footer"` | Selects the part in the theme and from other parts |
+
+The variant sets no attribute; select it by its classes or wrap it.
+
+## AlertDialogClose
+
+A button that closes the dialog. Renders a `button`; pass `render={<Button />}` to use the `Button`, and `onClick` to run the action before it closes. A button that has to keep the dialog open while it works, or after it fails, is a plain `Button` with a controlled `open`.
+
+Also takes every prop of Base UI `AlertDialog.Close`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-dialog-close"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when disabled | Styles a disabled close |
+
+## AlertDialogPortal, AlertDialogBackdrop and AlertDialogViewport
+
+The layers `AlertDialogPopup` already renders, exported to build another popup on them. `AlertDialogPortal` is the Base UI `AlertDialog.Portal` and renders a `div` on `body`. `AlertDialogBackdrop` renders a fixed `div` that dims and blurs the page; it is not rendered for a dialog nested in another. `AlertDialogViewport` renders a fixed grid that places the popup a little above the vertical center, with 16px of padding.
+
+Each also takes every prop of its Base UI part.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-dialog-backdrop"` or `"alert-dialog-viewport"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed`, `data-starting-style`, `data-ending-style` | present in that state | Style the layer with the popup |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `AlertDialogCreateHandle` | `function` | Creates the `handle` that links a detached `AlertDialogTrigger` to its `AlertDialog`. `AlertDialogCreateHandle<Payload>() => AlertDialogPrimitive.Handle<Payload>` |
+| `AlertDialogContent` | `component` | The same component as `AlertDialogPopup`. |
+| `AlertDialogOverlay` | `component` | The same component as `AlertDialogBackdrop`. |
+| `AlertDialogPrimitive` | `namespace` | The Base UI `AlertDialog` namespace, for its types such as `AlertDialogPrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Always render an `AlertDialogTitle`: it names the dialog. Write it as the question and the description as the consequence.
+- Put the safe answer first in the footer: focus lands on it when the dialog opens, which keeps `Enter` from confirming a destructive action.
+- Label an icon-only `AlertDialogTrigger` with `aria-label`.
+- The popup uses the `popover` and `popover-foreground` tokens and the footer `muted`; the theme needs no rule of its own.
