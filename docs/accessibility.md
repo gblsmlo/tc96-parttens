@@ -284,6 +284,8 @@ Contraste no plano de trás: título 13,30:1 (claro) e 18,11:1 (escuro), descri�
 
 Iniciais: As iniciais medem 12,19:1 no claro e 13,69:1 no escuro sobre o fallback.
 
+`AvatarGroupCount`: o `+N` em `text-muted-foreground` sobre o `bg-border` do fallback, com 12px, mede 4,58:1 no claro e 4,54:1 no escuro (medido em 2026-11-20 em `UI/Avatar/Layouts/Group With Count`, tema `Default`, sobre a página). Passa de 4,5:1 por pouco: sobre outra superfície, medir de novo. O axe das stories de `UI/Avatar` passa nos dois temas.
+
 ### Gallery
 
 Story de documentos: Medido sobre `bg-card`, `foreground` fica em 15,20:1 no claro e 15,27:1 no escuro, e `muted-foreground` em 5,69:1 e 5,10:1; o ícone significativo herda `foreground` e tem 15,20:1 e 15,27:1.
