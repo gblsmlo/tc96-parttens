@@ -40,6 +40,7 @@ const withoutControl = { control: false } as const
 export const recordGroupArgTypes = {
   actions: withoutControl,
   actionsAlign: { control: 'inline-radio', options: ['between', 'start'] },
+  chevron: { control: 'inline-radio', options: ['end', 'start'] },
   children: withoutControl,
   defaultOpen: boolean,
   empty: boolean,
