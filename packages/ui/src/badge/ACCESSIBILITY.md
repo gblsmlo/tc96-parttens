@@ -1,6 +1,6 @@
 # Badge accessibility
 
-Local accessibility and usability decisions for the badge. The repo-wide rules (WCAG thresholds, contrast fixed without changing token values, axe in every story) are in `docs/accessibility.md`; this file holds what applies only to the badge. Measured on 2026-11-20 in `UI/Badge/Behavior/Variants`, `Default` theme preset, text over the badge background composed on the page `background`.
+Local accessibility and usability decisions for the badge. The repo-wide rules (WCAG thresholds, contrast fixed without changing token values, axe in every story) are in `docs/accessibility.md`; this file holds what applies only to the badge. Measured on 2026-11-20 in `UI/Badge/Behavior/Variants` (now `UI/Badge/Behavior/Every Variant`), `Default` theme preset, text over the badge background composed on the page `background`.
 
 ## Roles and names
 
