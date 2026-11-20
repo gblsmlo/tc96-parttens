@@ -77,6 +77,33 @@ Alguns componentes declaram tokens de tema, como o `--info` do `badge` e o
 token no arquivo de `tailwind.css` do `components.json` e lista os que não
 encontrar, prontos para copiar.
 
+### Regras de tema do menu
+
+O `menu` e o `context-menu` dependem de duas regras no CSS do seu tema, que o
+CLI não grava. Copie-as para o arquivo de `tailwind.css` do `components.json`:
+
+```css
+[role^="menuitem"][data-slot^="menu-"]:focus-visible,
+[role^="menuitem"][data-slot^="context-menu-"]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+[data-slot="menu-shortcut"],
+[data-slot="context-menu-shortcut"] {
+  color: var(--muted-foreground);
+}
+```
+
+- Sem a primeira, o foco de teclado num item aparece só pelo realce do COSS
+  (`bg-accent`), que mede 1,09:1 contra o `--popover` no claro. O contorno mede
+  4,73:1 no claro e 3,52:1 no escuro.
+- Sem a segunda, o atalho (`MenuShortcut`, `ContextMenuShortcut`) fica com o
+  `/72` do COSS e mede 3,14:1 no claro. Com o token cheio, 5,73:1 no claro e
+  5,10:1 no escuro.
+
+As medidas são do tema de exemplo; com outro tema, meça de novo.
+
 O CLI grava os arquivos, reescreve os imports para os seus aliases e instala as
 dependências npm que faltam com o gerenciador do seu lockfile (bun, pnpm, yarn
 ou npm). Depois, gera o `index.ts` no diretório de `patterns`, que exporta todos

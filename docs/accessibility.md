@@ -260,6 +260,10 @@ As decisões e as medidas do badge ficam em `packages/ui/src/badge/ACCESSIBILITY
 
 As decisões e as medidas do menu ficam em `packages/ui/src/menu/ACCESSIBILITY.md`.
 
+### `ContextMenu`
+
+`packages/ui/src/context-menu.tsx` repete as decisões do `Menu` (check à direita, atalho `aria-hidden`, itens de 44px com ponteiro grosso, popup de 160px no mínimo com 8px de respiro), e as duas regras do tema (`apps/example/packages/ui/src/styles.css`) também alcançam os slots `context-menu-*`. Os pares são os mesmos do menu, sobre o mesmo `--popover`: contorno de foco 4,73:1 (claro) e 3,52:1 (escuro), atalho 5,73:1 e 5,10:1. A story `UI/ContextMenu` confere o check depois do rótulo, o nome do item sem o atalho e o contorno no foco por teclado; o axe passa nos dois temas. A nota para o consumidor copiar as regras está em `apps/docs/content/docs/installation.mdx` (`Regras de tema do menu`).
+
 ### `Toast`
 
 O viewport do `AnchoredToastProvider` se chama `Anchored notifications`, porque no COSS os dois viewports são `role="region"` com o `aria-label="Notifications"` do Base UI. Com os dois providers montados, como a instalação do COSS pede, a página fica com duas landmarks iguais, e o axe reprova (`landmark-unique`). Os providers não repassam props ao viewport, então a correção fica no arquivo.
