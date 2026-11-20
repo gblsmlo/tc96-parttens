@@ -184,6 +184,9 @@
         }
       }
     },
+    "fieldset": {
+      "origin": "coss"
+    },
     "form": {
       "origin": "coss"
     },

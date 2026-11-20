@@ -1,0 +1,78 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Fieldset
+
+A group of related form controls under one heading: the billing details of a checkout, the fields of a shipping address, the options of a radio group. Reach for it when several controls answer one question, so a screen reader announces the heading with each of them and one `disabled` turns them all off.
+
+The other pages of `UI/Fieldset`: [Playground](?path=/story/ui-fieldset-playground--playground) to try the legend and the disabled state, [Stories](?path=/story/ui-fieldset-stories--default) for each state, [Behavior](?path=/story/ui-fieldset-behavior--named-by-legend) for the tests, [Usages](?path=/story/ui-fieldset-usages--shipping-address) for real forms and [Layouts](?path=/story/ui-fieldset-layouts--nested) for what a fieldset can hold.
+
+## Import
+
+```tsx
+import { Fieldset, FieldsetLegend } from '@acme/ui/fieldset'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Fieldset className="flex flex-col gap-3">
+  <FieldsetLegend />
+  <Field />
+  <Field />
+</Fieldset>
+```
+
+## Fieldset
+
+The group that holds the legend and the controls. Renders a `fieldset`, which has the `group` role and takes its accessible name from the `FieldsetLegend` inside it through `aria-labelledby`. It sets no classes: the layout and the gap between the legend and the controls come from `className`, and under Tailwind's preflight the `fieldset` has no border, margin or padding.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `disabled` | `boolean` | `false` | When true, disables every control inside, nested fieldsets and `Field`s included. |
+| `render` | `ReactElement` or `(props, state) => ReactElement` | - | Replaces the `fieldset` element; `state` holds `disabled`. |
+| `className` | `string` or `(state) => string` | - | Adds classes; the function form receives the state with `disabled`. |
+
+Also takes every prop of a `fieldset`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"fieldset"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when disabled | Styles the disabled group; set by its own `disabled` or by a disabled parent `Fieldset` |
+
+A `Fieldset` inside a disabled `Fieldset` is disabled too, whatever its own `disabled` says. A `Field` inside a disabled `Fieldset` is disabled: its `FieldLabel` takes `data-disabled` and dims to 64% opacity, and so does an `Input`, through its disabled `input`. A `RadioGroup` inside it with no label of its own takes the legend as its accessible name.
+
+## FieldsetLegend
+
+The heading of the group and its accessible name. Renders a `div`, not a `legend`, in `font-semibold` and `text-foreground`, with an `id` that the `Fieldset` points to in `aria-labelledby`. Throws when it is rendered outside a `Fieldset`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | generated | Sets the `id` the fieldset is labelled by. |
+| `render` | `ReactElement` or `(props, state) => ReactElement` | - | Replaces the `div`, for example with a heading element. |
+| `className` | `string` | - | Adds classes, which win over `font-semibold` and `text-foreground`; a function is ignored. |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"fieldset-legend"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when the fieldset is disabled | Styles the legend of a disabled group |
+
+The legend keeps its color when the fieldset is disabled; only the controls inside dim.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `FieldsetPrimitive` | `namespace` | The Base UI `Fieldset`, with `Root` and `Legend` without classes or `data-slot`. |
+
+## Accessibility and theme
+
+- Give every `Fieldset` a `FieldsetLegend`; a group without one has no name, so pass `aria-label` instead.
+- Keep the legend short: a screen reader reads it with each control of the group.
+- Label each control inside with its own `FieldLabel` or `Label`; the legend names the group, not the controls.
