@@ -22,7 +22,7 @@ Local accessibility and usability decisions for the menu parts. The repo-wide ru
 | destructive item (`--destructive-foreground`) on `--popover` | 6.42:1 | | |
 | destructive item on the highlight (`--accent`) | 5.89:1 | | |
 
-The dark shortcut ratio comes from the `muted-foreground` on `popover` record in `docs/accessibility.md` (`record-preview`); the light values were measured here. Disabled items (`opacity-64`) are exempt from contrast (WCAG 1.4.3).
+The two theme rules live in the consumer's stylesheet, not here: the consumer copies them from `Regras de tema do menu` in `apps/docs/content/docs/installation.mdx`, which also covers `context-menu.tsx`. The dark shortcut ratio comes from the `muted-foreground` on `popover` record in `docs/accessibility.md` (`record-preview`); the light values were measured here. Disabled items (`opacity-64`) are exempt from contrast (WCAG 1.4.3).
 
 ## Pointer and touch
 
