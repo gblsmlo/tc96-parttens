@@ -167,13 +167,12 @@ import { RecordGroup, RecordGroupFilter, RecordGroupLink } from '@acme/patterns'
   {visible.map((entry) => (
     <RecordGroupLink
       key={entry.id}
-      leading={<span aria-hidden className={entry.unread ? 'size-1.5 rounded-full bg-primary' : 'size-1.5'} />}
       meta={\`\${kindLabel[entry.kind]} · \${entry.date}\`}
       onClick={() => openReader(entry)}
       render={<button type="button" />}
     >
       {entry.unread ? <span className="sr-only">Unread: </span> : null}
-      <span className={entry.unread ? 'font-medium' : undefined}>{entry.title}</span>
+      <span className={entry.unread ? 'font-medium text-primary' : 'text-muted-foreground'}>{entry.title}</span>
     </RecordGroupLink>
   ))}
 </RecordGroup>
@@ -183,7 +182,7 @@ const docs = {
   api: [
     {
       description:
-        'Each entry is a `RecordGroupLink` rendered as a `button` through `render`, since the row opens a reader dialog instead of navigating. `leading` holds the unread dot (decorative, `aria-hidden`), with a same-size empty box on read rows so every title starts on one column; a visually hidden "Não lida" or "Não lido" opens the name, and the title is `font-medium` while unread. `meta` is the kind and the date.',
+        'Each entry is a `RecordGroupLink` rendered as a `button` through `render`, since the row opens a reader dialog instead of navigating. There is no `leading`, so every title starts at the group edge, aligned with the other groups of the page; an unread row has no dot; a visually hidden "Não lida" or "Não lido" opens the name, and the title is `font-medium` `text-primary` while unread and `text-muted-foreground` once read. `meta` is the kind and the date.',
       name: 'RecordGroupLink',
     },
     {
@@ -306,12 +305,6 @@ function FeedRow({
   return (
     <RecordGroupLink
       data-unread={unread || undefined}
-      leading={
-        <span
-          aria-hidden="true"
-          className={unread ? 'size-1.5 rounded-full bg-primary' : 'size-1.5'}
-        />
-      }
       meta={metaOf(entry)}
       onClick={(event) => onOpen(event.currentTarget)}
       render={<button type="button" />}
@@ -319,7 +312,14 @@ function FeedRow({
       {unread ? (
         <span className="sr-only">{`${unreadLabel[entry.kind]}: `}</span>
       ) : null}
-      <span className={unread ? 'font-medium' : undefined}>{entry.title}</span>
+      <span
+        className={
+          unread ? 'font-medium text-primary' : 'text-muted-foreground'
+        }
+        data-slot="feed-title"
+      >
+        {entry.title}
+      </span>
     </RecordGroupLink>
   )
 }
@@ -536,6 +536,30 @@ export const Behavior: Story = {
       await expect(feedRows[index]).toHaveAccessibleName(
         nameOf(entry, entry.unread),
       )
+    }
+    for (const row of feedRows) {
+      const name = row.querySelector(
+        '[data-slot="record-group-link-name"]',
+      ) as HTMLElement
+      await expect(
+        name.getBoundingClientRect().left - row.getBoundingClientRect().left,
+      ).toBeCloseTo(Number.parseFloat(getComputedStyle(row).paddingLeft), 0)
+    }
+
+    for (const [index, entry] of feed.entries()) {
+      const row = feedRows[index] as HTMLElement
+      const title = row.querySelector('[data-slot="feed-title"]') as HTMLElement
+      const meta = row.querySelector(
+        '[data-slot="record-group-link-meta"]',
+      ) as HTMLElement
+      if (entry.unread)
+        await expect(getComputedStyle(title).color).not.toBe(
+          getComputedStyle(meta).color,
+        )
+      else
+        await expect(getComputedStyle(title).color).toBe(
+          getComputedStyle(meta).color,
+        )
     }
     const longName = rowsIn(feedRegion)[4]?.querySelector(
       '[data-slot="record-group-link-name"]',
