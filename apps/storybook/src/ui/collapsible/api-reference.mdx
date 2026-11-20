@@ -1,0 +1,113 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Collapsible
+
+A panel that a button shows and hides in place, pushing the content below it: recovery keys behind "Show recovery keys", the answer under a question, the items of an order, advanced options under a form. Reach for it for one section the reader opens on demand; content that has to cover the page is a `Popover` or a `Dialog`.
+
+The other pages of `UI/Collapsible`: [Playground](?path=/story/ui-collapsible-playground--playground) to try the texts, the chevron, the initial state and `disabled`, [Stories](?path=/story/ui-collapsible-stories--default) for each initial state, [Behavior](?path=/story/ui-collapsible-behavior--toggles-on-press) for the tests, [Usages](?path=/story/ui-collapsible-usages--recovery-keys) for real content and [Layouts](?path=/story/ui-collapsible-layouts--without-chevron) for how the trigger and the panel combine.
+
+## Import
+
+```tsx
+import {
+  Collapsible,
+  CollapsiblePanel,
+  CollapsibleTrigger,
+} from '@acme/ui/collapsible'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Collapsible>
+  <CollapsibleTrigger />
+  <CollapsiblePanel />
+</Collapsible>
+```
+
+## Collapsible
+
+Groups the trigger and the panel and holds the open state. Wraps `Collapsible.Root` from Base UI and renders a `div` with no classes, so it takes the layout of its parent. It is uncontrolled by default; pass `open` and `onOpenChange` to keep the state in the parent.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `disabled` | `boolean` | `false` | When true, the trigger ignores presses and keys, and the panel keeps its state. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the panel asks to open or close, with the `reason` in `eventDetails`. |
+
+Also takes every prop of Base UI `Collapsible.Root`, such as `render`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collapsible"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-disabled` | present when disabled | Styles a disabled collapsible |
+| `data-starting-style`, `data-ending-style` | present while the panel animates in or out | Style the enter and exit transitions from the root |
+
+`ChangeEventDetails` is `CollapsiblePrimitive.Root.ChangeEventDetails`. A press on the trigger sends `reason: "trigger-press"`. A controlled parent can refuse a change by not updating `open`: the panel and `aria-expanded` stay as they are.
+
+## CollapsibleTrigger
+
+The button that opens and closes the panel. Wraps `Collapsible.Trigger` from Base UI and renders a `button` with no classes; pass `className` to style it, or `render={<Button />}` to use the `Button`. It toggles on click, `Enter` and `Space`, sets `aria-expanded`, and while the panel is open sets `aria-controls` to the panel's `id`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `disabled` | `boolean` | the `disabled` of `Collapsible` | When true, ignores presses and keys while it stays focusable, with `aria-disabled="true"`. |
+| `nativeButton` | `boolean` | `true` | Tells the trigger whether `render` produces a native `button`; set it to `false` for any other element. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `button` with another element, which receives the trigger props. |
+
+Also takes every prop of Base UI `Collapsible.Trigger`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collapsible-trigger"` | Selects the part in the theme and from other parts |
+| `data-panel-open` | present while its panel is open | Styles the trigger of an open panel, such as turning a chevron |
+| `data-disabled` | present when the `Collapsible` is disabled | Styles the trigger of a disabled collapsible |
+| `data-starting-style`, `data-ending-style` | present while the panel animates in or out | Style the trigger during the transition |
+
+A disabled trigger keeps no `disabled` attribute, so `disabled:` classes do not match it. `data-disabled` comes from the `Collapsible`: disabling the root sets it on every part, while the trigger's own `disabled` sets only `aria-disabled="true"`, so style that case through `aria-disabled:`.
+
+## CollapsiblePanel
+
+The content that shows and hides. Wraps `Collapsible.Panel` from Base UI and renders a `div` with `overflow: hidden` whose height moves between 0 and the height of its content in 200ms. While closed it is not in the DOM, unless `keepMounted` or `hiddenUntilFound` keeps it there with a `hidden` attribute.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `keepMounted` | `boolean` | `false` | When true, keeps the panel in the DOM with `hidden` while closed; ignored with `hiddenUntilFound`. |
+| `hiddenUntilFound` | `boolean` | `false` | When true, hides the panel with `hidden="until-found"`, so the browser's find in page reaches its text and opens it. |
+
+Also takes every prop of Base UI `Collapsible.Panel`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collapsible-panel"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-disabled` | present when the `Collapsible` is disabled | Styles the panel of a disabled collapsible |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--collapsible-panel-height` | set by the panel | Height the panel animates to: the measured height in px while it moves, `auto` once open, so content that grows later is not clipped. |
+| `--collapsible-panel-width` | set by the panel | Measured width of the panel; no class of the panel reads it. |
+
+The panel sets its height and nothing else: no padding, border or background. Put the spacing of the content on a child, as the stories do with `pt-2`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `CollapsibleContent` | `component` | The same component as `CollapsiblePanel`, under a second name. |
+| `CollapsiblePrimitive` | `namespace` | The Base UI `Collapsible` parts and types, such as `CollapsiblePrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- The trigger is named by its text. An icon-only trigger needs `aria-label`, and a chevron next to text gets `aria-hidden="true"`.
+- The trigger has no focus style of its own: give it one in `className`, or render it as a `Button`, which has a focus ring.
+- Opening the panel does not move focus or announce its content; focus stays on the trigger, and the panel follows it in the reading order.
+- The height transition has no reduced motion rule and runs for every user.
