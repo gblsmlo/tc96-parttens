@@ -120,6 +120,9 @@
     "checkbox": {
       "origin": "coss"
     },
+    "checkbox-group": {
+      "origin": "coss"
+    },
     "collapsible": {
       "origin": "coss"
     },
