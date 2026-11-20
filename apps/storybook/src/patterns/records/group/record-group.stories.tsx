@@ -91,7 +91,7 @@ const docs = {
   api: [
     {
       description:
-        'Root component. A titled `section` on the COSS `Collapsible`, named by its `h2` title, which wraps instead of truncating. Controlled through `open` and `onOpenChange`, uncontrolled through `defaultOpen`. `variant` is `card`, `inset` or `plain` (the default). `actions` sits outside the trigger and stays visible when the group is closed; `actionsAlign` spreads it to the end (`between`) or places it after the title (`start`). `footer` sits inside the panel and hides with the body. `empty` starts the group closed, opens it when it flips to `false`, and drops the vertical padding of the content.',
+        'Root component. A titled `section` on the COSS `Collapsible`, named by its `h2` title, which wraps instead of truncating. Controlled through `open` and `onOpenChange`, uncontrolled through `defaultOpen`. `variant` is `card`, `inset` or `plain` (the default). `actions` sits outside the trigger and stays visible when the group is closed; `actionsAlign` spreads it to the end (`between`) or places it after the title (`start`). `chevron` puts the chevron before the title (`start`, the default) or right after it (`end`). `footer` sits inside the panel and hides with the body. `empty` starts the group closed, opens it when it flips to `false`, and drops the vertical padding of the content.',
       name: 'RecordGroup',
     },
     {
@@ -136,7 +136,7 @@ const docs = {
     },
     {
       description:
-        'Collapsible subitem inside a group, with an `h3` title. Starts closed (`defaultOpen` is `false`) and reads `meta` with the title. It has no catalog page; its plays are in `Patterns/Records/Group/Composition/Subgroup`.',
+        'Collapsible subitem inside a group, with an `h3` title. Starts closed (`defaultOpen` is `false`) and reads `meta` with the title. `chevron="end"` puts the chevron at the end of the trigger; `collapsible={false}` renders a fixed title with the content always visible. It has no catalog page; its plays are in `Patterns/Records/Group/Composition/Subgroup`.',
       name: 'RecordGroupSubgroup',
     },
   ],
@@ -183,6 +183,7 @@ function GroupBehavior() {
 const meta = {
   args: {
     actionsAlign: 'between',
+    chevron: 'start',
     defaultOpen: true,
     empty: false,
     title: 'Details',
@@ -278,6 +279,7 @@ export const Anatomy: Story = {
 export const Behavior: Story = {
   argTypes: {
     actionsAlign: hidden,
+    chevron: hidden,
     defaultOpen: hidden,
     empty: hidden,
     title: hidden,
