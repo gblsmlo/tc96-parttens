@@ -11,6 +11,7 @@ export type RecordGroupActionsAlign = 'between' | 'start'
 export interface RecordGroupProps {
   actions?: ReactNode
   actionsAlign?: RecordGroupActionsAlign
+  chevron?: 'start' | 'end'
   children?: ReactNode
   className?: string
   defaultOpen?: boolean
@@ -86,8 +87,10 @@ export interface RecordStatusBadgeProps {
 }
 
 export interface RecordGroupSubgroupProps {
+  chevron?: 'start' | 'end'
   children?: ReactNode
   className?: string
+  collapsible?: boolean
   count?: ReactNode
   defaultOpen?: boolean
   meta?: ReactNode

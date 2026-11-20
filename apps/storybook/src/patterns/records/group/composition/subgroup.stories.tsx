@@ -131,3 +131,70 @@ export const CountFollowsTheTitle: Story = {
     await expect(trigger).toHaveAccessibleName('Versão 2 4 Rascunho')
   },
 }
+
+export const NotCollapsibleShowsItsContent: Story = {
+  render: () => (
+    <div className="w-96">
+      <RecordGroupSubgroup collapsible={false} count={2} title="Versão 2">
+        <p>Body</p>
+      </RecordGroupSubgroup>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const heading = canvas.getByRole('heading', { level: 3 })
+    const content = canvasElement.querySelector(
+      '[data-slot="record-group-subgroup-content"]',
+    ) as HTMLElement
+
+    await expect(heading).toHaveTextContent('Versão 2')
+    await expect(canvas.queryByRole('button')).toBeNull()
+    await expect(heading.querySelector('svg')).toBeNull()
+    await expect(canvas.getByText('Body')).toBeVisible()
+    await expect(content.getBoundingClientRect().left).toBeCloseTo(
+      heading.getBoundingClientRect().left,
+      0,
+    )
+  },
+}
+
+export const ChevronAtTheEnd: Story = {
+  render: () => (
+    <div className="w-96">
+      <RecordGroupSubgroup chevron="end" count={4} title="Versão 2">
+        <p>Body</p>
+      </RecordGroupSubgroup>
+      <RecordGroupSubgroup chevron="end" meta="Rascunho" title="Versão 3">
+        <p>Body 3</p>
+      </RecordGroupSubgroup>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    for (const name of [/Versão 2/, /Versão 3/]) {
+      const trigger = canvas.getByRole('button', { name })
+      const icon = trigger.querySelector('svg') as SVGElement
+      await expect(trigger.firstElementChild?.tagName).toBe('SPAN')
+      await expect(icon.getBoundingClientRect().right).toBeCloseTo(
+        trigger.getBoundingClientRect().right,
+        0,
+      )
+    }
+
+    const meta = canvasElement.querySelector(
+      '[data-slot="record-group-subgroup-meta"]',
+    ) as HTMLElement
+    const icon = canvas
+      .getByRole('button', { name: /Versão 3/ })
+      .querySelector('svg') as SVGElement
+    await expect(icon.getBoundingClientRect().left).toBeGreaterThan(
+      meta.getBoundingClientRect().right,
+    )
+
+    const trigger = canvas.getByRole('button', { name: /Versão 2/ })
+    await userEvent.click(trigger)
+    await waitFor(() => expect(canvas.queryByText('Body')).not.toBeNull())
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+  },
+}
