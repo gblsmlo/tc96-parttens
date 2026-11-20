@@ -1,0 +1,343 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Combobox
+
+An input that filters a list of known options as the user types and selects one or several of them: an owner among the workspace members, a time zone, the labels of an issue. Reach for it when the list is long enough that typing finds an option faster than scrolling; a short list with nothing to type is a `Select`, and free text with suggestions is an `Autocomplete`.
+
+The other pages of `UI/Combobox`: [Playground](?path=/story/ui-combobox-playground--playground) to try the texts, the size, the state and the optional parts, [Stories](?path=/story/ui-combobox-stories--default) for each prop value, [Behavior](?path=/story/ui-combobox-behavior--filters-as-you-type) for the tests, [Usages](?path=/story/ui-combobox-usages--assign-owner) for real pickers and [Layouts](?path=/story/ui-combobox-layouts--with-start-addon) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Combobox,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxPopup,
+} from '@acme/ui/combobox'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Combobox>
+  <ComboboxInput startAddon={<Icon />} />
+  <ComboboxPopup>
+    <ComboboxList>
+      <ComboboxGroup>
+        <ComboboxGroupLabel />
+        <ComboboxItem />
+        <ComboboxItem />
+      </ComboboxGroup>
+      <ComboboxSeparator />
+      <ComboboxItem />
+    </ComboboxList>
+  </ComboboxPopup>
+</Combobox>
+```
+
+A `ComboboxEmpty` before `ComboboxList` shows its text only while nothing matches, and the clear button of `ComboboxInput` only while there is a value, so neither shows here.
+
+With `multiple`, `ComboboxChips` takes the place of `ComboboxInput`: one `ComboboxChip` per selected value, then a `ComboboxChipsInput`.
+
+<Canvas of={ApiReferenceStories.ChipsAnatomy} />
+
+```tsx
+<Combobox multiple>
+  <ComboboxChips startAddon={<Icon />}>
+    <ComboboxChip />
+    <ComboboxChipsInput />
+  </ComboboxChips>
+  <ComboboxPopup>
+    <ComboboxList>
+      <ComboboxItem />
+    </ComboboxList>
+  </ComboboxPopup>
+</Combobox>
+```
+
+## Combobox
+
+Groups the parts and holds the value, the open state and the typed query. Alias for `Combobox.Root` from Base UI, inside a context that tells the popup whether it anchors to `ComboboxChips`; it renders no visible element, only a hidden input that carries the value. With `items`, it filters them by the query (case-insensitive "contains" on the label) and hands the result to `ComboboxList`; it never fetches or sorts them. With `name`, that hidden input is named, so the value goes with a form.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly Item[]`, groups of `{ items }` or a `createComboboxItems` collection | - | Sets the options to filter and render; `ComboboxEmpty` needs it. |
+| `multiple` | `boolean` | `false` | When true, the value is an array and each selection adds to it. |
+| `value` | `Value`, `Value[]` or `null` | - | Controls the selected value; pair it with `onValueChange`. |
+| `defaultValue` | `Value`, `Value[]` or `null` | - | Sets the selected value of the first render when `value` is not passed. |
+| `onValueChange` | `(value: Value, eventDetails: ChangeEventDetails) => void` | - | Called when the user selects, removes or clears a value, with the `reason` in `eventDetails`. |
+| `open` | `boolean` | - | Controls the open state of the popup; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the popup asks to open or close, with the `reason` in `eventDetails`. |
+| `autoHighlight` | `boolean` | `false` | When true, highlights the first match while the user types, so `Enter` selects it. |
+| `disabled` | `boolean` | `false` | When true, the input, the trigger and the chips ignore the user. |
+| `readOnly` | `boolean` | `false` | When true, the value shows but cannot change. |
+| `required` | `boolean` | `false` | When true, a form does not submit without a value. |
+| `name` | `string` | - | Sets the name of the hidden input that carries the value in a form. |
+| `filter` | `(item: Item, query: string, itemToString?: (item: Item) => string) => boolean` or `null` | - | Replaces the built-in filter; `null` turns filtering off. |
+| `limit` | `number` | `-1` | Sets the most options the list shows; `-1` shows all. |
+| `itemToStringLabel` | `(value: Value) => string` | - | Sets the text the input shows for an object value that is not `{ label, value }`. |
+
+Also takes every prop of Base UI `Combobox.Root`, such as `inputValue`, `onInputValueChange`, `isItemEqualToValue` and `modal`.
+
+An object value shaped `{ label, value }` needs no converter: the input shows `label` and the form gets `value`. Values are compared with `Object.is`, so pass the same objects to `items` and `value`, or a `createComboboxItems` collection and its primitive values. The `reason` of a change is one of `"item-press"`, `"input-change"`, `"input-clear"`, `"clear-press"`, `"chip-remove-press"`, `"trigger-press"`, `"input-press"`, `"escape-key"`, `"outside-press"`, `"list-navigation"`, `"focus-out"`, `"close-press"`, `"cancel-open"` or `"none"`.
+
+## ComboboxInput
+
+The text box the user types in, with the trigger and the clear button at its end. Renders a `div` with `role="group"` that holds the start addon, an `Input` whose native `input` has `role="combobox"`, and, when asked, a `ComboboxTrigger` and a `ComboboxClear`. A press on the input opens the popup, and `ArrowDown` and `ArrowUp` move the highlight through the options.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"`, `"lg"` or `number` | `"default"` | Controls the height and the padding; a number sets the native `size` attribute instead. |
+| `startAddon` | `ReactNode` | - | Sets a decorative icon at the start of the input, hidden from assistive technology. |
+| `showTrigger` | `boolean` | `true` | When true, renders a `ComboboxTrigger` with a chevron that opens the popup. |
+| `showClear` | `boolean` | `false` | When true, renders a `ComboboxClear` that shows while there is a value and hides the trigger meanwhile. |
+| `triggerProps` | `ComboboxPrimitive.Trigger.Props` | - | Sets the props of the trigger it renders, such as its `aria-label`. |
+| `clearProps` | `ComboboxPrimitive.Clear.Props` | - | Sets the props of the clear button it renders, such as its `aria-label`. |
+
+Also takes every prop of Base UI `Combobox.Input`, such as `placeholder`, `aria-label` and `ref`. `className` goes to the bordered `Input` box (`data-slot="input-control"`), and every other prop to the native `input`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-input-group"` | The group that holds the input and its buttons |
+| `data-slot` | `"combobox-input"` | The native `input` |
+| `data-slot` | `"combobox-start-addon"` | The box of `startAddon` |
+| `data-slot` | `"combobox-icon"` | The chevron inside the built-in trigger |
+| `data-size` | `"sm"`, `"default"`, `"lg"` or the number passed | Set on the `input-control` box |
+| `data-popup-open` | present while the popup is open | Styles the input and its group while the list shows |
+| `data-popup-side` | `"top"`, `"bottom"` and the other sides | Styles the input by the side the popup opened on |
+| `data-list-empty` | present when no option matches | Styles the input while the list is empty |
+| `data-disabled`, `data-readonly`, `data-required` | present in that state | Style the input in that state |
+| `data-placeholder` | present on the group while there is no value | Styles the empty group |
+| `data-valid`, `data-invalid`, `data-touched`, `data-dirty`, `data-filled`, `data-focused` | present in that state inside a `Field` | Style the field states |
+
+From `sm` up the box is 28px high at `"sm"`, 32px at `"default"` and 36px at `"lg"`; below `sm` each is 4px taller. The built-in buttons are 28px squares from `sm` up (32px below) and grow their hit area to 44px on a coarse pointer. With `aria-invalid` on the input, the box takes a `destructive` border, and a `destructive` ring on focus; `ComboboxChips` does the same for its `ComboboxChipsInput`.
+
+## ComboboxTrigger
+
+A button that opens and closes the popup. Renders a `button` with `aria-haspopup="listbox"`; `ComboboxInput` renders one, named `"Show options"`. On its own it carries no style, so it can be the field itself with `render={<Button />}` and a `ComboboxValue` inside: then the `ComboboxInput` moves into the popup, the trigger takes `role="combobox"` and `aria-haspopup="dialog"`, and it needs an `aria-label`.
+
+Also takes every prop of Base UI `Combobox.Trigger`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while the popup is open | Styles the trigger of the open popup |
+| `data-placeholder` | present while there is no value | Styles the trigger with no value |
+| `data-disabled`, `data-readonly` | present in that state | Style the trigger in that state |
+
+## ComboboxClear
+
+A button that clears the value. Renders a `button` while there is a value and nothing otherwise; `ComboboxInput` renders one, named `"Clear selection"`, when `showClear` is true. On its own it carries no style.
+
+Also takes every prop of Base UI `Combobox.Clear`, such as `keepMounted`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-clear"` | Selects the part in the theme and from other parts |
+| `data-visible` | present while there is a value | Styles the visible button |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+
+## ComboboxValue
+
+The selected value as content. Alias for `Combobox.Value` from Base UI; renders no element, only its children or the value's label. A function child receives the value, which is how `ComboboxChips` lists one `ComboboxChip` per value.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` or `(value: Value) => ReactNode` | - | Sets what renders for the value; without it, the label of the value renders. |
+| `placeholder` | `ReactNode` | - | Sets what renders while there is no value. |
+
+## ComboboxPopup
+
+The floating surface of the list. Renders a `div` in a portal on `body`, positioned under the input, inside a `span` that draws the surface: a 1px `border`, a large radius, the `popover` background and a shadow. The popup is at least as wide as the input and at most 368px high (`23rem`), or the room left on screen. In `multiple` mode it anchors to `ComboboxChips`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `"top"`, `"bottom"`, `"left"`, `"right"`, `"inline-start"` or `"inline-end"` | `"bottom"` | Sets the side of the anchor the popup opens on. |
+| `align` | `"start"`, `"center"` or `"end"` | `"start"` | Sets how the popup aligns with the anchor. |
+| `sideOffset` | `number` | `4` | Sets the gap in pixels between the anchor and the popup. |
+| `alignOffset` | `number` | `0` | Moves the popup along the anchor, in pixels. |
+| `anchor` | `Element`, a ref, or a function that returns one | - | Sets the element the popup is positioned against. |
+| `portalProps` | `ComboboxPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `Combobox.Popup`, such as `initialFocus` and `finalFocus`. `className` goes to the surface `span`, and every other prop to the popup `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-popup"` | Selects the popup |
+| `data-slot` | `"combobox-positioner"` | Selects the positioned layer around it, at `z-50` |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-side`, `data-align` | the side and alignment it opened with | Style the popup by its placement |
+| `data-empty` | present when no option matches | Styles the popup with an empty list |
+
+With a `ComboboxInput` inside it, the popup has `role="dialog"` and needs an `aria-label`.
+
+## ComboboxEmpty
+
+The message for a query that matches nothing. Renders a `div` with `role="status"` and `aria-live="polite"` that stays mounted and shows its children only while the filtered list is empty, so a screen reader announces it. It needs `items` on `Combobox`: without them it cannot tell, and shows its children all the time.
+
+Also takes every prop of Base UI `Combobox.Empty`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-empty"` | Selects the part in the theme and from other parts |
+
+## ComboboxList
+
+The list of options. Renders a `div` with `role="listbox"` (`aria-multiselectable` in `multiple` mode) inside a `ScrollArea` that fades its edges. A function child is called for each filtered item of `items`; plain children render as they are.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` or `(item: Item, index: number) => ReactNode` | - | Sets the options; a function receives each filtered item, or each group when `items` holds groups. |
+
+Also takes every prop of Base UI `Combobox.List`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-list"` | Selects the part in the theme and from other parts |
+| `data-empty` | present when no option matches | Styles the empty list |
+
+An empty list has no padding, so `ComboboxEmpty` is the only thing the popup shows.
+
+## ComboboxGroup, ComboboxGroupLabel and ComboboxCollection
+
+The parts of a grouped list. `ComboboxGroup` renders a `div` with `role="group"`, labelled by its `ComboboxGroupLabel`, and takes the group's `items`; a group after another gets a 6px top margin. `ComboboxGroupLabel` renders a `div` in `text-xs` and `text-muted-foreground`. `ComboboxCollection` renders no element: its function child is called for each filtered item of the group around it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly Item[]` | - | Sets the items of a `ComboboxGroup`, which its `ComboboxCollection` renders. |
+
+Also takes every prop of the Base UI part: `Combobox.Group`, `Combobox.GroupLabel` or `Combobox.Collection`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-group"` or `"combobox-group-label"` | Selects the part in the theme and from other parts |
+
+A group whose items all fail the filter is not rendered.
+
+## ComboboxItem
+
+One option. Renders a `div` with `role="option"` as a two-column grid: the content, then a check that shows only on the selected option, in a 12px column at the end. Pressing it, or `Enter` on the highlighted one, selects its `value`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `Value` | `null` | Sets the value the option selects; pass the item itself, or its primitive value with a `createComboboxItems` collection. |
+| `disabled` | `boolean` | `false` | When true, the option cannot be highlighted or selected. |
+
+Also takes every prop of Base UI `Combobox.Item`, such as `onClick` and `index`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-item"` | Selects the part in the theme and from other parts |
+| `data-highlighted` | present on the option the keyboard or the pointer is on | Styles the active option, with the `accent` background |
+| `data-selected` | present on a selected option | Styles the selected option |
+| `data-disabled` | present when disabled | Styles a disabled option, at 64% opacity |
+
+## ComboboxSeparator
+
+A line between options or groups. Renders a `div` with `role="separator"`, 1px high in the `border` color; the last child of the list is hidden, so a separator after every group leaves none at the end.
+
+Also takes every prop of Base UI `Combobox.Separator`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-separator"` | Selects the part in the theme and from other parts |
+
+## ComboboxStatus
+
+A message about the list, such as loading or a count of results. Renders a `div` with `role="status"` and `aria-live="polite"`, so a screen reader announces each change; with no children it takes no space.
+
+Also takes every prop of Base UI `Combobox.Status`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-status"` | Selects the part in the theme and from other parts |
+
+## ComboboxRow
+
+A row of options in a grid list. Renders a `div` with `role="row"`, and only acts when `Combobox` has `grid`, where the arrow keys also move across a row.
+
+Also takes every prop of Base UI `Combobox.Row`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-row"` | Selects the part in the theme and from other parts |
+
+## ComboboxChips
+
+The field of a `multiple` combobox. Renders a `div` with the border and the focus ring of an input, which wraps its chips and its `ComboboxChipsInput` onto as many lines as they need. The popup anchors to it. `ArrowLeft` at the start of the input highlights the last chip, and `Backspace` in an empty input removes the last value.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `startAddon` | `ReactNode` | - | Sets a decorative icon before the chips, hidden from assistive technology. |
+
+Also takes every prop of Base UI `Combobox.Chips`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-chips"` | Selects the part in the theme and from other parts |
+| `data-slot` | `"combobox-start-addon"` | The box of `startAddon` |
+
+Its height follows the `size` of its `ComboboxChipsInput`, the same as `ComboboxInput`.
+
+## ComboboxChip
+
+One selected value in `ComboboxChips`. Renders a `div` with the `accent` background in `font-medium` and `text-xs` (`text-sm` below `sm`), followed by a `ComboboxChipRemove`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `removeProps` | `ComboboxPrimitive.ChipRemove.Props` | - | Sets the props of its remove button, such as an `aria-label` that names the value. |
+
+Also takes every prop of Base UI `Combobox.Chip`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-chip"` | Selects the part in the theme and from other parts |
+| `data-slot` | `"combobox-chip-remove"` | Selects its remove button |
+
+## ComboboxChipRemove
+
+The button that removes a chip's value. Renders a `button` named `"Remove"` with an `x` icon; `ComboboxChip` already renders one, so it is exported for a chip built by hand.
+
+Also takes every prop of Base UI `Combobox.ChipRemove`.
+
+## ComboboxChipsInput
+
+The text box inside `ComboboxChips`. Renders an `input` with `role="combobox"` and no border, trigger or clear button of its own; it grows to fill the rest of the line.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"`, `"lg"` or `number` | `"default"` | Controls the height of the chips field; a number sets the native `size` attribute instead. |
+
+Also takes every prop of Base UI `Combobox.Input`, such as `placeholder` and `aria-label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"combobox-chips-input"` | Selects the part in the theme and from other parts |
+| `data-size` | `"sm"`, `"default"` or `"lg"` | Lets `ComboboxChips` follow the size; a number sets none |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `createComboboxItems` | `function` | Builds an `items` collection whose values are primitives taken from each object, so `value` and the form carry an id. `createComboboxItems(data, { getValue, getLabel })`; create it once at module scope. |
+| `useComboboxFilter` | `function` | Returns the `contains`, `startsWith` and `endsWith` matchers, for a `filter` of your own or for filtering outside the combobox. `useComboboxFilter(options?) => Filter` |
+| `ComboboxContext` | `context` | The context `Combobox` provides, with `chipsRef` and `multiple`, read by `ComboboxPopup` and `ComboboxChips`. |
+| `ComboboxPrimitive` | `namespace` | The Base UI `Combobox` namespace, for the parts not wrapped here (`ComboboxPrimitive.Label`, `ComboboxPrimitive.ItemIndicator`) and the types such as `ComboboxPrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Name the combobox: put it in a `Field` with a `FieldLabel`, or pass `aria-label` to `ComboboxInput` or `ComboboxChipsInput`. A `FieldDescription` becomes its description.
+- The built-in buttons are named in English (`"Show options"`, `"Clear selection"`, `"Remove"`); rename them through `triggerProps`, `clearProps` and `removeProps`. Give every chip's remove button the value in its name (`Remove Bug`), or a screen reader hears the same name for each chip.
+- With the input inside the popup, give `ComboboxTrigger` and `ComboboxPopup` an `aria-label`.
+- Keep a `ComboboxEmpty` in the popup: it is the only feedback for a query that matches nothing.
+- The parts use the `input`, `ring`, `popover`, `accent`, `muted-foreground` and `border` tokens; the theme needs no rule of its own.
