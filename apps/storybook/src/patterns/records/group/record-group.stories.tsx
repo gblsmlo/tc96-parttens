@@ -17,11 +17,11 @@ import {
 } from 'lucide-react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
+import { Slot } from '../../../test-utils/anatomy-slot'
 import {
   booleanArgType,
   recordGroupArgTypes,
 } from '../../../test-utils/story-arg-types'
-import { Slot } from './fixtures/slot'
 
 type GroupArgs = RecordGroupProps & {
   withActions: boolean

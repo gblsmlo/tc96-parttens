@@ -7,11 +7,11 @@ import {
 import { FileTextIcon, ReceiptTextIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../../.storybook/docs-page.tsx'
+import { IconSlot, Slot } from '../../../../test-utils/anatomy-slot'
 import {
   booleanArgType,
   recordGroupArgTypes,
 } from '../../../../test-utils/story-arg-types'
-import { IconSlot, Slot } from '../fixtures/slot'
 
 interface LinksArgs {
   leading: boolean

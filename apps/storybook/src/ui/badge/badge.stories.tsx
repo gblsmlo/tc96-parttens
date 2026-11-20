@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Badge } from '@tc96/ui/badge'
 import { expect, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
-import { IconSlot, Slot } from '../../patterns/records/group/fixtures/slot'
+import { IconSlot, Slot } from '../../test-utils/anatomy-slot'
 import { badgeApi, badgeSizeNames, badgeVariantNames } from './badge-api.ts'
 
 const usage = `

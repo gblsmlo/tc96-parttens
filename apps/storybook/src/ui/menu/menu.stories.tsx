@@ -19,7 +19,7 @@ import {
 } from '@tc96/ui/menu'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../.storybook/docs-page.tsx'
-import { IconSlot, Slot } from '../../patterns/records/group/fixtures/slot'
+import { IconSlot, Slot } from '../../test-utils/anatomy-slot'
 import { menuApi, menuParts } from './menu-api.ts'
 
 type Side = 'top' | 'bottom' | 'left' | 'right'

@@ -2,6 +2,7 @@ import type { Preview } from '@storybook/react-vite'
 import '../../example/packages/ui/src/styles.css'
 import '@xyflow/react/dist/base.css'
 import { themePresets } from '../../example/packages/ui/src/themes/presets.ts'
+import { ThemedDocsContainer } from './docs-container.tsx'
 import { DocsPage } from './docs-page.tsx'
 
 type ThemeMode = 'system' | 'light' | 'dark'
@@ -107,6 +108,7 @@ const preview: Preview = {
     },
     docs: {
       codePanel: true,
+      container: ThemedDocsContainer,
       page: DocsPage,
     },
     controls: {

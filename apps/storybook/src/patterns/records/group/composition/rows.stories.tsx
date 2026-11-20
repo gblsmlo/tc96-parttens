@@ -26,12 +26,12 @@ import {
 import { type ComponentType, useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../../.storybook/docs-page.tsx'
+import { IconSlot, Slot } from '../../../../test-utils/anatomy-slot'
 import {
   booleanArgType,
   recordGroupArgTypes,
 } from '../../../../test-utils/story-arg-types'
 import { part, rowsOf } from '../fixtures/group-dom'
-import { IconSlot, Slot } from '../fixtures/slot'
 
 interface RowsArgs {
   align: RecordGroupRowAlign
