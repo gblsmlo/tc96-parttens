@@ -252,6 +252,10 @@ As cores de papel são `--warning-foreground` para sequência e medalhas e `--su
 
 O anel e o `Meter` usam `primary` (15:1 sobre o card); a trilha do anel e as bordas tracejadas são decorativas (1,1:1 e 1,3:1) e o valor segue em texto ou `sr-only`.
 
+### `Alert`
+
+As decisões e as medidas do alert ficam em `packages/ui/src/alert/ACCESSIBILITY.md`.
+
 ### `Badge`
 
 As decisões e as medidas do badge ficam em `packages/ui/src/badge/ACCESSIBILITY.md`.
@@ -313,15 +317,7 @@ Contraste (medido em 2026-10-23, tema `Default`, cores do Tailwind 4.3.3 em sRGB
 
 O ícone do `Alert` `warning` do COSS usa `--warning`, que no claro não chega a 3:1; o inspector aplica `[&>svg]:text-warning-foreground` no `Alert`. `overrides:check` só acompanha borda, raio e sombra, e rejeitou uma exceção de cor como sem uso, então a classe não entra em `scripts/override-exceptions.json`. Nenhum valor de token mudou, e o axe das oito stories passa no claro e no escuro.
 
-Contraste do `Alert` em `UI/Alert`, medido em 2026-11-02 nas cores computadas de cada variante (alfa composto sobre o `background`; texto 4,5:1, ícone 3:1). O ícone de `success` e de `warning` falha em todo lugar onde o `Alert` renderiza, então a correção é global: o `styles.css` do exemplo redefine `--success` como `--success-foreground` e `--warning` como `--warning-foreground` só em `[data-slot="alert"]`, sem mudar o valor dos tokens nem `packages/ui`. O fundo tingido dessas duas variantes passa a sair do mesmo tom. Nota para o consumidor: sem essa regra no tema dele, os dois ícones voltam a reprovar no claro, e por isso o inspector mantém a própria classe.
-
-| Par (claro / escuro) | Antes | Depois |
-| --- | --- | --- |
-| Ícone `success` | 2,29:1 / 6,69:1 | 4,87:1 / 8,53:1 |
-| Ícone `warning` | 1,99:1 / 7,71:1 | 4,57:1 / 9,48:1 |
-| Ícone `info`, `error` e `default` | 3,45:1, 4,26:1, 5,48:1 / 4,47:1, 3,62:1, 4,99:1 | sem mudança |
-| Título (`card-foreground`), cinco variantes | 13,56:1 a 14,52:1 / 14,97:1 a 15,81:1 | 13,56:1 a 14,52:1 / 14,96:1 a 15,81:1 |
-| Descrição (`muted-foreground`), cinco variantes | 5,12:1 a 5,48:1 / 4,99:1 a 5,27:1 | 5,12:1 a 5,48:1 / 4,98:1 a 5,27:1 |
+As decisões e as medidas do `Alert` em `UI/Alert`, com a regra do `styles.css` do exemplo que redefine `--success` como `--success-foreground` e `--warning` como `--warning-foreground` em `[data-slot="alert"]`, ficam em `packages/ui/src/alert/ACCESSIBILITY.md`. Nota para o consumidor: sem essa regra no tema dele, os ícones de `success` e `warning` voltam a reprovar no claro, e por isso o inspector mantém a própria classe.
 
 Contraste do `Toast` em `UI/Toast`, medido em 2026-11-02 nas cores computadas dos toasts abertos sobre `popover` (texto 4,5:1, ícone 3:1). O ícone de estado usa os mesmos `--success` e `--warning`, e falha no claro do mesmo jeito; a mesma regra do `styles.css` passou a valer também em `[data-slot="toast-icon"]`, o que cobre os toasts empilhados e os ancorados. O ícone de `loading` é o `popover-foreground` com 80% de opacidade, e o texto não muda. A mesma nota para o consumidor vale aqui.
 

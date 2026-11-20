@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./alert": "./src/alert/index.ts",
     "./badge": "./src/badge/index.ts",
     "./menu": "./src/menu/index.ts",
     "./*": "./src/*.tsx",
