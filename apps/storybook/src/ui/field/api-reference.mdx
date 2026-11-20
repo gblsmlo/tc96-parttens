@@ -1,0 +1,147 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Field
+
+A form control with its label, its help text and its error message, wired together: a name or email in a sign-up form, a bio in a profile, a setting that only an owner can change. Reach for it around every form control, so the label names the control, the help text and the error describe it, and the field validates and submits under one `name`.
+
+The other pages of `UI/Field`: [Playground](?path=/story/ui-field-playground--playground) to try the texts, the required marker, disabled and invalid, [Stories](?path=/story/ui-field-stories--default) for each state, [Behavior](?path=/story/ui-field-behavior--labels-and-describes-control) for the tests, [Usages](?path=/story/ui-field-usages--create-account) for real forms and [Layouts](?path=/story/ui-field-layouts--without-description) for how the parts and the controls combine.
+
+## Import
+
+```tsx
+import {
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldError,
+  FieldItem,
+  FieldLabel,
+  FieldValidity,
+} from '@acme/ui/field'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Field>
+  <FieldLabel />
+  <Input />
+  <FieldDescription />
+  <FieldError />
+</Field>
+```
+
+The control is any input built on Base UI, such as `Input`, `Textarea`, `Checkbox`, `Switch`, `RadioGroup`, `Select` or `NumberField`: it joins the field on its own. Any other control joins through `FieldControl`.
+
+## Field
+
+Groups the label, the control and the messages, and holds the state of the field. Renders a `div` that stacks its children 8px apart, aligned to the start. It gives its control an id for the label, the ids of the messages for `aria-describedby`, its `name` and `disabled`, and `aria-invalid` while the field is invalid. It validates with the control's native constraints (`required`, `type="email"`, `maxLength`) and with `validate`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `string` | - | Sets the key of the control's value in the submitted form, over the control's own `name`. |
+| `disabled` | `boolean` | `false` | When true, disables the control and dims the label to 64% opacity. |
+| `invalid` | `boolean` | - | When true, marks the field invalid whatever its validity, for errors from a server or a form library. |
+| `validate` | `(value: unknown, formValues: Form.Values) => ValidateResult` | - | Called to validate the value; a message, or several, makes the field invalid. |
+| `validationMode` | `"onSubmit"`, `"onBlur"` or `"onChange"` | `"onSubmit"` | Sets when the field validates, over the `validationMode` of `Form`. |
+| `validationDebounceTime` | `number` | `0` | Sets the wait in milliseconds between `validate` calls in `"onChange"` mode. |
+
+Also takes every prop of Base UI `Field.Root`, such as `dirty`, `touched` and `actionsRef`, and of a `div`.
+
+`ValidateResult` is a message (`string`), several (`string[]`) or `null`; `undefined`, an empty string or an empty array also mean a valid value, and `validate` may return a `Promise` of any of those; an async `validate` does not hold back a submit in `"onSubmit"` mode. In `"onSubmit"` mode the field validates again on every change once the form was submitted.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"field"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when disabled | Styles a disabled field |
+| `data-valid` | present when the field passed validation | Styles a valid field |
+| `data-invalid` | present when the field is invalid | Styles an invalid field |
+| `data-dirty` | present when the value changed from the initial one | Styles an edited field |
+| `data-touched` | present after the control lost focus once | Styles a visited field |
+| `data-filled` | present when the control has a value | Styles a filled field |
+| `data-focused` | present while the control has focus | Styles the field around a focused control |
+
+`FieldLabel`, `FieldDescription`, `FieldError` and `FieldItem` carry the same state attributes, so each part can be styled from the state of the field.
+
+## FieldLabel
+
+The label of the control. Renders a `label` linked to the control, so a click on it focuses or toggles the control and its text becomes the control's accessible name. It is an inline flex row with an 8px gap, so a required marker or a checkbox sits beside the text, and it dims to 64% opacity while the field is disabled.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `nativeLabel` | `boolean` | `true` | When false, lets `render` replace the `label` with an element that is not one, such as a `div` beside a `Select` trigger. |
+
+Also takes every prop of Base UI `Field.Label` and of a `label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"field-label"` | Selects the part in the theme and from other parts |
+| `data-disabled`, `data-valid`, `data-invalid`, `data-dirty`, `data-touched`, `data-filled`, `data-focused` | as on `Field` | Mirror the state of the field |
+
+A control placed inside the label, such as a `Checkbox`, `Switch` or `Radio`, takes the label's text as its name.
+
+## FieldDescription
+
+The help text of the control. Renders a `p` in `text-muted-foreground` at `text-xs`, whose id joins the control's `aria-describedby`.
+
+Also takes every prop of Base UI `Field.Description` and of a `p`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"field-description"` | Selects the part in the theme and from other parts |
+| `data-disabled`, `data-valid`, `data-invalid`, `data-dirty`, `data-touched`, `data-filled`, `data-focused` | as on `Field` | Mirror the state of the field |
+
+## FieldError
+
+The error message of the control. Renders a `div` in `text-destructive-foreground` at `text-xs`, only while the field fails validation or `Form` holds an error for its `name`, and, unless `match` is `true`, never while the field is disabled. While it shows, its id joins the control's `aria-describedby`. Its children replace the message; without children it shows the validation message (the browser's, the one `validate` returned or the one `Form` holds), and several messages as a list.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `match` | `boolean` or `keyof ValidityState` | - | Sets when the message shows: `true` always, a key such as `"valueMissing"` only for that failed constraint. |
+
+Also takes every prop of Base UI `Field.Error` and of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"field-error"` | Selects the part in the theme and from other parts |
+| `data-disabled`, `data-valid`, `data-invalid`, `data-dirty`, `data-touched`, `data-filled`, `data-focused` | as on `Field` | Mirror the state of the field |
+| `data-starting-style` | present while the message animates in | Styles the start of an enter transition |
+| `data-ending-style` | present while the message animates out | Styles the end of an exit transition |
+
+The `invalid` prop of `Field` marks the control but does not show the message: an error that comes from outside the field takes `match` as well, as in [Usages](?path=/story/ui-field-usages--username-taken).
+
+## FieldItem
+
+One option of a checkbox group or a radio group, with its own label and description. Renders a `div` with `display: flex`, inside a `Field` that holds the group.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `disabled` | `boolean` | `false` | When true, disables the control inside it; the `disabled` of `Field` wins over it. |
+
+Also takes every prop of Base UI `Field.Item` and of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"field-item"` | Selects the part in the theme and from other parts |
+| `data-disabled`, `data-valid`, `data-invalid`, `data-dirty`, `data-touched`, `data-filled`, `data-focused` | as on `Field` | Mirror the state of the field |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `FieldControl` | `component` | Alias for `Field.Control` from Base UI: an unstyled `input` that joins the field, or any element through `render`, for a control that is not built on Base UI. |
+| `FieldValidity` | `component` | Alias for `Field.Validity` from Base UI: renders nothing of its own and calls its `children` with the validity state. `(state: FieldValidity.State) => ReactNode` |
+| `FieldPrimitive` | `namespace` | The `Field` of Base UI, for its parts and types (`FieldPrimitive.Root.Props`). |
+
+`FieldValidity.State` holds `validity` (the `ValidityState` flags and `valid`, which is `null` until the field validates), `error`, `errors`, `value` and `initialValue`.
+
+## Accessibility and theme
+
+- Give every control a `FieldLabel`, or an `aria-label` when the label cannot be shown.
+- Put `required` on the control, and mark the label with an `aria-hidden` asterisk so the name stays the label's text.
+- Destructive text on a surface, such as the asterisk, uses `text-destructive-foreground`, never `text-destructive`. Measured ratios: `docs/accessibility.md`.
