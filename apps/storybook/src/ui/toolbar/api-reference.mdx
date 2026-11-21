@@ -1,0 +1,185 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Toolbar
+
+A bordered row of controls that act on the same thing: the formatting buttons of an editor, the filters and search of an inbox, the actions of a document header, the tools of a drawing canvas. It groups buttons, toggles, links, inputs and popup triggers, and gives them one tab stop with arrow keys between them. Reach for it when several controls belong together; a single choice among options is a `ToggleGroup`, and a list of actions that opens from one button is a `Menu`.
+
+The other pages of `UI/Toolbar`: [Playground](?path=/story/ui-toolbar-playground--playground) to try the orientation, the disabled states and the optional parts, [Stories](?path=/story/ui-toolbar-stories--default) for each orientation, [Behavior](?path=/story/ui-toolbar-behavior--toolbar-role) for the tests, [Usages](?path=/story/ui-toolbar-usages--spreadsheet-formatting) for real toolbars, and [Layouts](?path=/story/ui-toolbar-layouts--without-separators) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Toolbar,
+  ToolbarButton,
+  ToolbarGroup,
+  ToolbarInput,
+  ToolbarLink,
+  ToolbarSeparator,
+} from '@acme/ui/toolbar'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Toolbar aria-label="Anatomy">
+  <ToolbarLink href="#anatomy" />
+  <ToolbarSeparator />
+  <ToolbarGroup aria-label="ToolbarGroup">
+    <ToolbarButton />
+    <ToolbarButton />
+  </ToolbarGroup>
+  <ToolbarSeparator />
+  <ToolbarInput aria-label="ToolbarInput" />
+</Toolbar>
+```
+
+Only `Toolbar`, `ToolbarGroup` and `ToolbarSeparator` carry classes. `ToolbarButton`, `ToolbarLink` and `ToolbarInput` render bare elements: their look comes from the component passed to `render` (`Button`, `Toggle`, `ToggleGroupItem`, `SelectTrigger`, `MenuTrigger`, `Input`) or from `className`.
+
+`className` takes a string on every part: a function of the state, which Base UI parts accept, is dropped.
+
+## Toolbar
+
+The container of the controls. Alias for `Toolbar.Root` from Base UI. Renders a `div` with `role="toolbar"` and `aria-orientation`. Its items form one tab stop: `Tab` enters on the last focused item, or the first one, and the next `Tab` leaves the toolbar. The arrow keys of the orientation move focus between items across groups and separators, and wrap at the ends by default; the other arrow keys, `Home` and `End` do not move focus.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `orientation` | `"horizontal"` or `"vertical"` | `"horizontal"` | Sets the arrow keys, `aria-orientation`, `data-orientation` and the default orientation of the separators. |
+| `loopFocus` | `boolean` | `true` | When true, an arrow key on the last item moves focus to the first, and back. |
+| `disabled` | `boolean` | `false` | When true, disables every button and input; links stay active. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `div` with another element, which keeps the classes, the role and `data-slot`. |
+| `className` | `string` | - | Adds classes after the toolbar classes, so a conflicting class wins. |
+| `style` | `React.CSSProperties` or `(state) => React.CSSProperties` | - | Sets inline styles; a function receives the state, `{ disabled, orientation }`. |
+
+Also takes every prop of a `div`, `ref` included.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toolbar"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` or `"vertical"` | Follows `orientation` |
+| `data-disabled` | present when `disabled` | Lets the theme style a disabled toolbar |
+
+The toolbar is a flex row with an 8px gap, 4px of padding, a 1px `border`, `rounded-xl` corners and the `bg-card` background. The classes do not follow `orientation`: a vertical toolbar stays a row until it gets `flex-col`, and so do its groups.
+
+As a `flex` element it fills the width of a block container; `w-fit` or a flex parent shrinks it to its items.
+
+## ToolbarLink
+
+A link inside the toolbar. Alias for `Toolbar.Link` from Base UI. Renders an `a` with no classes, which takes part in the arrow-key order. A disabled toolbar or group leaves it active.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | - | Sets the destination of the link. |
+| `className` | `string` | - | Sets the classes of the link; `buttonVariants({ variant: "ghost" })` gives it the look of a ghost `Button`. |
+
+Also takes every prop of an `a`, `ref` and `render` included.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toolbar-link"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` or `"vertical"` | The orientation of the toolbar |
+
+## ToolbarSeparator
+
+A line between groups of items. Alias for `Toolbar.Separator` from Base UI. Renders a `div` with `role="separator"` and `aria-orientation`, which takes no focus. Its orientation is the opposite of the toolbar's: vertical lines in a horizontal toolbar, horizontal lines in a vertical one.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `orientation` | `"horizontal"` or `"vertical"` | the opposite of the toolbar | Sets the direction of the line, its `aria-orientation` and its `data-orientation`. |
+| `className` | `string` | - | Adds classes after the separator classes, so a conflicting class wins. |
+
+Also takes every prop of a `div`, `ref` and `render` included.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toolbar-separator"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` or `"vertical"` | Follows the orientation; the size classes of each direction hang on it |
+
+The line is 1px thick in the `--border` color and does not shrink. A vertical line stretches to the height of the row less 6px at each end, so it is 12px shorter than the items (20px beside 32px items); a class whose name begins with `h-` (`h-4`) sets its height instead. A horizontal line is as wide as the toolbar, with 2px above and below.
+
+## ToolbarGroup
+
+A set of related items inside the toolbar. Alias for `Toolbar.Group` from Base UI. Renders a `div` with `role="group"`, a flex row with a 4px gap that centers its items. It does not change the focus order: the arrow keys go through groups as if they were not there.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `disabled` | `boolean` | `false` | When true, disables the buttons and inputs in the group; the rest of the toolbar stays enabled. |
+| `className` | `string` | - | Adds classes after the group classes, so a conflicting class wins. |
+
+Also takes every prop of a `div`, `ref` and `render` included.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toolbar-group"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` or `"vertical"` | The orientation of the toolbar |
+| `data-disabled` | present when the group or the toolbar is disabled | Lets the theme style a disabled group |
+
+Name a group with `aria-label` when its items do not say what they have in common.
+
+## ToolbarButton
+
+A button inside the toolbar, used as it is or as the trigger of another component. Alias for `Toolbar.Button` from Base UI. Renders a `button` with no classes. Pass the look and the extra behavior through `render`: `<ToolbarButton render={<Toggle />} />` is a toggle that takes part in the toolbar focus.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Renders another component, such as a `Button`, a `Toggle` or a `MenuTrigger`, with the toolbar props merged in. |
+| `disabled` | `boolean` | `false` | When true, ignores clicks and sets `aria-disabled` while the button stays focusable, or the native `disabled` with `focusableWhenDisabled={false}`; the toolbar or group `disabled` also sets it. |
+| `focusableWhenDisabled` | `boolean` | `true` | When true, a disabled button stays in the arrow-key order; false sets the native `disabled` and skips it. |
+| `nativeButton` | `boolean` | `true` | Tells the button whether `render` returns a native `button`; set it to false for another element. |
+| `className` | `string` | - | Sets the classes of the button, merged with those of the rendered component. |
+
+Also takes every prop of a `button`, `ref` included.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toolbar-button"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` or `"vertical"` | The orientation of the toolbar |
+| `data-disabled` | present when disabled | Lets the theme style a disabled button |
+| `data-focusable` | present when `focusableWhenDisabled` is true | Tells a disabled button that stays focusable from one that does not |
+
+`data-slot="toolbar-button"` replaces the `data-slot` of the rendered component (`"button"`, `"toggle"`), so a theme rule on those slots does not reach it. The other attributes of the rendered component, such as `aria-pressed` and `data-pressed` of a `Toggle`, stay.
+
+A disabled button that stays focusable has no native `disabled`, so the `disabled:` classes of `Button` and `Toggle` do not apply and it looks enabled. With `focusableWhenDisabled={false}` it gets the native `disabled` and their disabled look.
+
+## ToolbarInput
+
+A text field inside the toolbar. Alias for `Toolbar.Input` from Base UI. Renders an `input` with no classes, which takes part in the arrow-key order. Focusing it selects its text. While it holds a caret, the arrow keys move the caret; focus moves on only when the caret is at the start (backward key) or the end (forward key) with no selection, and `Shift` with an arrow always selects text.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Renders another component, such as an `Input`, with the toolbar props merged in. |
+| `disabled` | `boolean` | `false` | When true, sets `aria-disabled` and ignores clicks, and typing while it stays focusable; the toolbar or group `disabled` also sets it. |
+| `focusableWhenDisabled` | `boolean` | `true` | When true, a disabled input stays in the arrow-key order. |
+| `defaultValue` | `string`, `number` or `readonly string[]` | - | Sets the initial value of an uncontrolled input. |
+| `className` | `string` | - | Sets the classes of the input, merged with those of the rendered component. |
+
+Also takes every prop of an `input`, `ref` included.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toolbar-input"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` or `"vertical"` | The orientation of the toolbar |
+| `data-disabled` | present when disabled | Lets the theme style a disabled input |
+| `data-focusable` | present when `focusableWhenDisabled` is true | Tells a disabled input that stays focusable from one that does not |
+
+With `render={<Input />}`, the classes go to the `span` that wraps the field (`data-slot="input-control"`), and the inner `input` takes `data-slot="toolbar-input"`, the focus and the keys. A disabled input looks enabled: it never gets the native `disabled`, even with `focusableWhenDisabled={false}`, so the `has-disabled:` classes of `Input` do not apply.
+
+Name the input with `aria-label` or a visible label: a placeholder alone does not name it.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ToolbarPrimitive` | `namespace` | The Base UI `Toolbar`, with `Root`, `Group`, `Button`, `Link`, `Input` and `Separator` and no classes, for a part styled from scratch. Its props types are `ToolbarPrimitive.Root.Props` and so on. |
+
+## Accessibility and theme
+
+- Name the toolbar with `aria-label` or `aria-labelledby`, and every icon-only button with `aria-label`; hide the icon with `aria-hidden="true"`.
+- Put a popup trigger (`MenuTrigger`, `SelectTrigger`, `PopoverTrigger`) in the `render` of a `ToolbarButton`, so it keeps the toolbar focus and its own keys.
+- A disabled button that stays focusable, and every disabled input, look like enabled ones. Style `[data-slot="toolbar-button"][data-disabled]` in the theme, or pass `focusableWhenDisabled={false}` to a button that can leave the arrow-key order. For a rendered `Input` only the theme helps: style its wrapper, `[data-slot="input-control"]:has([data-slot="toolbar-input"][data-disabled])`.
+- The toolbar reads `--border`, `--card` and `--card-foreground` from the theme; the items read the tokens of the components they render.
