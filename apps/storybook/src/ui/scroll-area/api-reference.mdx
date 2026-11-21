@@ -1,0 +1,121 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# ScrollArea
+
+A region that scrolls on its own inside a fixed size, with thin scrollbars drawn over the content that show while the pointer is over it or the user scrolls: the files of a panel, the release notes in a card, a row of products that scrolls sideways. Wheel, touch and keyboard scrolling stay native. Reach for it when one part of the page scrolls by itself; the page keeps the browser's scrollbar.
+
+The other pages of `UI/ScrollArea`: [Playground](?path=/story/ui-scrollarea-playground--playground) to try the amount of content, the fade, the gutter and the content width, [Stories](?path=/story/ui-scrollarea-stories--default) for each prop value, [Behavior](?path=/story/ui-scrollarea-behavior--class-name-on-root) for the tests, [Usages](?path=/story/ui-scrollarea-usages--release-notes) for real content and [Layouts](?path=/story/ui-scrollarea-layouts--horizontal) for the directions it scrolls in and how it nests.
+
+## Import
+
+```tsx
+import { ScrollArea } from '@acme/ui/scroll-area'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ScrollArea className="h-48 w-64 rounded-lg border">
+  {children}
+</ScrollArea>
+```
+
+`ScrollArea` renders every part itself; the children go into the content wrapper:
+
+```tsx
+<div>                                       {/* root: className, size */}
+  <div data-slot="scroll-area-viewport">    {/* scrolls */}
+    <div data-slot="scroll-area-content">   {/* children */}</div>
+  </div>
+  <ScrollBar orientation="vertical" />
+  <ScrollBar orientation="horizontal" />
+  <div data-slot="scroll-area-corner" />
+</div>
+```
+
+## ScrollArea
+
+The scrolling region. Wraps `ScrollArea.Root` from Base UI and renders a `div` with `role="presentation"` that holds the viewport, the content wrapper, a vertical and a horizontal `ScrollBar` and the corner between them. The viewport scrolls on both axes and hides the browser's own scrollbars.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `scrollFade` | `boolean` | `false` | When true, fades each edge that has content beyond it, by as much as has scrolled past that edge, up to 24px. |
+| `scrollbarGutter` | `boolean` | `false` | When true, pads the viewport by 10px at the end while it overflows vertically, and at the bottom while it overflows horizontally, so the scrollbar does not cover the content. |
+| `fill` | `boolean` | `false` | When true, makes the content wrapper as tall and as wide as the viewport, so a `flex` column inside can pin its last child to the bottom with `mt-auto`. |
+| `clampContentMinWidth` | `boolean` | `true` | When true, sets the `min-width` of the content wrapper to 0, so it keeps the viewport width and `truncate` text truncates; when false, the wrapper grows to fit its widest line and scrolls sideways. |
+| `overscrollContain` | `boolean` | `false` | When true, sets `overscroll-behavior: contain` on each axis that overflows, so a scroll that reaches an edge does not move the page or an outer scroll area. |
+
+Also takes every prop of Base UI `ScrollArea.Root`, such as `overflowEdgeThreshold` and `render`. `className` and `style` go to the root, not to the viewport.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-has-overflow-x`, `data-has-overflow-y` | present while the content is wider or taller than the viewport | Style the area only when it scrolls on that axis |
+| `data-overflow-x-start`, `data-overflow-x-end`, `data-overflow-y-start`, `data-overflow-y-end` | present while there is content beyond that edge | Style the edges that have more to show, such as a shadow |
+| `data-scrolling` | present while the user scrolls | Styles the area during a scroll |
+
+The root sets these attributes, and the viewport and the content wrapper set them too; they carry the `data-slot` values below. The root has no `data-slot`: reach it with `className`, or as the parent of `[data-slot="scroll-area-viewport"]`.
+
+| Part | `data-slot` | Element |
+| --- | --- | --- |
+| viewport | `"scroll-area-viewport"` | a `div` with `role="presentation"`, the element that scrolls |
+| content wrapper | `"scroll-area-content"` | a `div` with `role="presentation"` around the children |
+| corner | `"scroll-area-corner"` | a `div` with `aria-hidden="true"`, only while both axes overflow |
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--scroll-area-overflow-x-start`, `--scroll-area-overflow-x-end`, `--scroll-area-overflow-y-start`, `--scroll-area-overflow-y-end` | set by the viewport | Distance in px from the scroll position to that edge; `scrollFade` reads them. Set on the viewport. |
+
+Outside WebKit, Base UI registers the four `--scroll-area-overflow-*` variables with `inherits: false`, so they do not reach the viewport's descendants: a child that reads one must set it to `inherit` first (`[--scroll-area-overflow-y-start:inherit]`). In Safari they inherit as usual.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--scroll-area-corner-width`, `--scroll-area-corner-height` | set by the root | Size of the corner, 0 unless both axes overflow. Set on the root. |
+| `--fade-size` | `1.5rem` (24px) | Largest fade of `scrollFade`. Set on the viewport only when `scrollFade` is true. |
+
+The root is `size-full min-h-0`: with no height in `className`, it fills a parent of fixed height and scrolls inside it. When neither the root nor its parent has a fixed height (the parent grows with its content), the root grows with the content too and does not scroll vertically. Set the height on the root (`h-72`, `max-h-80`), or on the parent, or use `flex-1` in a `flex` column.
+
+The viewport joins the tab order only while it overflows (`tabIndex` 0, otherwise -1). Once it is focused, the arrow keys, `Page Up`, `Page Down`, `Home` and `End` scroll it natively. On `:focus-visible` it shows a 2px `ring` with a 1px `background` offset, and it keeps the root's radius.
+
+## ScrollBar
+
+One scrollbar: a track with a thumb that shows how much of the content is in view. Wraps `ScrollArea.Scrollbar` and `ScrollArea.Thumb` from Base UI and renders a `div` with `aria-hidden="true"`, 6px thick and 4px from the edges, with a fully rounded thumb in `foreground` at 20%. Dragging the thumb or pressing the track scrolls the viewport, and the press does not move focus.
+
+`ScrollArea` already renders one per axis; use `ScrollBar` only inside a scroll area built from `ScrollAreaPrimitive` parts. Each renders only while its axis overflows. It is transparent until the pointer is over the area or the user scrolls, and fades in over 100ms. It starts to fade out 300ms after the pointer leaves, or 300ms after scrolling stops, which is 500ms after the last scroll event. A scroll made by script does not show it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `orientation` | `"vertical"` or `"horizontal"` | `"vertical"` | Sets the axis it controls and which edge it sits on. |
+| `keepMounted` | `boolean` | `false` | When true, keeps it in the DOM while its axis does not overflow. |
+
+Also takes every prop of Base UI `ScrollArea.Scrollbar`. `className` goes to the track; the thumb takes no props.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"scroll-area-scrollbar"` on the track, `"scroll-area-thumb"` on the thumb | Selects the part in the theme and from other parts |
+| `data-orientation` | `"vertical"` or `"horizontal"` | Styles each axis; set on the track and the thumb |
+| `data-hovering` | present while the pointer is over the area | Shows the track on hover |
+| `data-scrolling` | present while the user scrolls on that track's axis | Shows the track during a scroll; set on the track and the thumb, so a vertical scroll marks only the vertical track and thumb |
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--scroll-area-thumb-height` | set by the vertical track | Height of the thumb in px. |
+| `--scroll-area-thumb-width` | set by the horizontal track | Width of the thumb in px. |
+
+The track also sets the `data-has-overflow-*` and `data-overflow-*` attributes of the root.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ScrollAreaPrimitive` | `namespace` | The Base UI `ScrollArea` parts and types (`Root`, `Viewport`, `Content`, `Scrollbar`, `Thumb`, `Corner`), to build a scroll area with another structure. |
+
+## Accessibility and theme
+
+- The root and the viewport have `role="presentation"`, so a screen reader announces no region. Name what scrolls: give the content its own name (a list with `aria-label`), or pass `role="region"` and `aria-label` to `ScrollArea`.
+- The scrollbars and the corner are hidden from assistive technology; keyboard, touch and screen reader users scroll the viewport itself.
+- The fade and the scrollbars need no theme rule: the thumb takes `foreground` and the focus ring `ring` and `background` from the theme.
