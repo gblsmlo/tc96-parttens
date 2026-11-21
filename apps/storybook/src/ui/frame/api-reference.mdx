@@ -1,0 +1,115 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Frame
+
+A framed container that groups related information on a tinted surface: the members of a workspace, a billing history table, the plan and the card of a billing page. It holds a header with a title and a description, one or more panels with the content and a footer, and the header and footer sit on the frame around the panels.
+
+The other pages of `UI/Frame`: [Playground](?path=/story/ui-frame-playground--playground) to try the texts, the parts and a second panel, [Stories](?path=/story/ui-frame-stories--default) for the base frame, [Behavior](?path=/story/ui-frame-behavior--part-elements) for the tests, [Usages](?path=/story/ui-frame-usages--team-members) for real content and [Layouts](?path=/story/ui-frame-layouts--separated-panels) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Frame,
+  FrameDescription,
+  FrameFooter,
+  FrameHeader,
+  FramePanel,
+  FrameTitle,
+} from '@acme/ui/frame'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Frame>
+  <FrameHeader>
+    <FrameTitle />
+    <FrameDescription />
+  </FrameHeader>
+  <FramePanel />
+  <FrameFooter />
+</Frame>
+```
+
+Every part is optional inside `Frame`, and none of them reads context, so they render anywhere. The parts have no props of their own: each takes the props of its element, and `className` adds classes after the part's own, so a conflicting class wins (`p-0` on a `FramePanel` removes its padding and keeps its border and radius).
+
+## Frame
+
+The tinted surface that holds the other parts. Renders a `div` with no role, laid out as a flex column, with `rounded-2xl`, the `muted` background at 72% opacity and 4px of padding (`p-1`).
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"frame"` | Selects the part in the theme and from other parts |
+
+A `FramePanel` that is a direct child of `Frame` and comes right after another `FramePanel` gets a 4px top margin (`mt-1`). The rule matches `data-slot="frame-panel"` siblings only: a panel after the header, a panel wrapped in another element and a footer after a panel get no margin.
+
+A `Table` with `variant="card"` can take the place of a panel: the table's card variant is styled to sit on the frame surface.
+
+## FrameHeader
+
+The top of the frame, outside the panels. Renders a `header`, laid out as a flex column with 20px of horizontal and 16px of vertical padding (`px-5 py-4`) and no gap between the title and the description.
+
+Also takes every prop of a `header`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"frame-panel-header"` | Selects the part in the theme and from other parts |
+
+## FrameTitle
+
+The title of the frame. Renders a `div` in `font-semibold` and `text-sm`, which is not a heading. To make it one, put a heading element inside it (`<FrameTitle><h2>Invoices</h2></FrameTitle>`); under Tailwind's preflight the heading inherits the title's size and weight.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"frame-panel-title"` | Selects the part in the theme and from other parts |
+
+## FrameDescription
+
+The line under the title. Renders a `div` in `text-muted-foreground` and `text-sm`.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"frame-panel-description"` | Selects the part in the theme and from other parts |
+
+## FramePanel
+
+A surface for the content. Renders a `div` with `rounded-xl`, a 1px `border`, the `background` color, 20px of padding (`p-5`) and a light shadow (`shadow-xs/5`).
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"frame-panel"` | Selects the part in the theme and from other parts |
+
+A `::before` that covers the panel, with no pointer events and a radius of `--radius-xl` minus 1px, casts a 1px shadow line: along the bottom border in black at 4% in light, along the top border in white at 6% in dark.
+
+A list or a table that runs edge to edge takes `className="p-0"` on the panel and pads its own rows.
+
+## FrameFooter
+
+The bottom of the frame, outside the panels. Renders a `footer` with 20px of horizontal and 16px of vertical padding (`px-5 py-4`) and no layout of its own: add `flex` and a justify class to place a note beside a button.
+
+Also takes every prop of a `footer`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"frame-panel-footer"` | Selects the part in the theme and from other parts |
+
+## Accessibility and theme
+
+- `Frame` has no role and no name. A frame that is a section of the page goes inside a `section` with `aria-labelledby` pointing at the heading in its `FrameTitle`, which makes it a named region.
+- `FrameHeader` and `FrameFooter` are `header` and `footer` elements. Outside an `article`, `aside`, `main`, `nav` or `section` they map to the page's `banner` and `contentinfo` landmarks, so place a frame inside `main` or a `section`.
+- The header and the footer sit on the `muted` surface at 72% opacity, and the panels on `background`. Muted text in the header and footer (`FrameDescription`, a footer note) needs `muted-foreground` to reach 4.5:1 over that surface in the theme.
+- The radii come from the theme's `--radius-2xl` and `--radius-xl`. The panel border has no color class: its color comes from the theme's base border rule (`border-border` in the example theme).
