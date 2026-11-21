@@ -280,6 +280,9 @@
         }
       }
     },
+    "slider": {
+      "origin": "coss"
+    },
     "spinner": {
       "origin": "coss"
     },
