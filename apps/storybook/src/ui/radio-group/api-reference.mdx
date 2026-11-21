@@ -1,0 +1,135 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RadioGroup
+
+A set of options of which the user picks exactly one: the plan of a subscription, the format of an export, how to receive a sign-in code. Reach for it when the options are few enough to show at once and reading them side by side helps the choice; a long list fits a `Select`, any number of picks a `CheckboxGroup`, and switching between views a `SegmentedControl`.
+
+The other pages of `UI/RadioGroup`: [Playground](?path=/story/ui-radiogroup-playground--playground) to try the caption, the selection, the descriptions and the disabled and invalid states, [Stories](?path=/story/ui-radiogroup-stories--default) for each state, [Behavior](?path=/story/ui-radiogroup-behavior--radios-named-by-wrapping-label) for the tests, [Usages](?path=/story/ui-radiogroup-usages--subscription-plan) for real choices, and [Layouts](?path=/story/ui-radiogroup-layouts--with-description) for descriptions, cards and a group inside a `Field`.
+
+## Import
+
+```tsx
+import { Label } from '@acme/ui/label'
+import { Radio, RadioGroup } from '@acme/ui/radio-group'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<div id="caption">caption</div>
+<RadioGroup aria-labelledby="caption" defaultValue="first">
+  <Label>
+    <Radio value="first" />
+    Label
+  </Label>
+  <Label>
+    <Radio value="second" />
+    Label
+  </Label>
+</RadioGroup>
+```
+
+## RadioGroup
+
+The container that holds the one selected value of the radios inside it. Renders a `div` with `role="radiogroup"`, a flex column with a 12px gap. It keeps the value itself when uncontrolled and never fetches or stores it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `any` | - | Controls the selected value; pair it with `onValueChange`. |
+| `defaultValue` | `any` | - | Sets the value selected on mount, when `value` is not passed; without it, no radio is selected. |
+| `onValueChange` | `(value: any, eventDetails: ChangeEventDetails) => void` | - | Called when the user selects another radio, with its `value`. |
+| `name` | `string` | - | Sets the name the selected value submits with the form; inside a `Field`, the field's `name` wins. |
+| `disabled` | `boolean` | `false` | When true, ignores clicks and keys on every radio and drops them to 64% opacity. |
+| `readOnly` | `boolean` | `false` | When true, keeps the selected value and the focus, and sets `aria-readonly`. |
+| `required` | `boolean` | `false` | When true, a form does not submit until a radio is selected, and sets `aria-required`. |
+| `form` | `string` | - | Sets the `id` of the form the value submits with, when the group sits outside it. |
+| `inputRef` | `React.Ref<HTMLInputElement>` | - | Receives the hidden input of the selected radio, or of the first enabled one. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `div` with another element, which receives the group props. |
+| `className` | `string` | - | Adds classes after the layout classes, so a conflicting class wins. |
+
+Also takes every prop of a `div`.
+
+The group is not generic: `value`, `defaultValue` and the value `onValueChange` receives are untyped, and nothing ties them to the `value` of the radios, so `onValueChange` narrows the value before it uses it. A `string` value is submitted as it is; any other value is submitted as JSON. `ChangeEventDetails` is `RadioGroupPrimitive.ChangeEventDetails`: it holds the native `event` and a `cancel()` that keeps the previous value.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"radio-group"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when `disabled`, or inside a disabled `Field` | Styles the disabled group |
+| `data-readonly` | present when `readOnly` | Styles the read-only group |
+| `data-required` | present when `required` | Styles the required group |
+| `data-filled` | present inside a `Field` when a radio is selected | Styles a group that has a value |
+| `data-dirty` | present inside a `Field` when the value differs from the initial one | Styles a changed group |
+| `data-touched` | present inside a `Field` after the user selects a radio or leaves the group | Styles a visited group |
+| `data-focused` | present inside a `Field` while a radio has focus | Styles the focused group |
+| `data-valid`, `data-invalid` | present inside a `Field` after validation | Styles the validation result |
+
+The group is one stop in the tab order. Tab lands on the selected radio, or on the first one when none is selected. The arrow keys move to the next or previous radio and select it, wrap around at the ends and skip disabled radios; Home and End do nothing. Space selects the focused radio and Enter does not. A click on the selected radio keeps it selected: once a value is chosen, the user cannot clear it.
+
+A disabled group keeps its tab stop on the selected radio, with `aria-disabled`, and neither clicks nor the arrow keys change its value. A read-only group moves the focus with the arrow keys but keeps its value.
+
+Inside a `Field`, the group takes its accessible name from a `FieldLabel` or, when the field renders a `Fieldset`, from the `FieldsetLegend`, and its description from a `FieldDescription`, with no `aria-labelledby` of its own.
+
+## Label
+
+The label of one option. Renders a `label` that holds the `Radio` and its text side by side with an 8px gap, so clicking the text selects the radio.
+
+Also takes every prop of a `label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"label"` | Selects the part in the theme and from other parts |
+
+An option with a description puts the `Label` beside the `Radio`, with `htmlFor` set to the radio's `id`, as in [With description](?path=/story/ui-radiogroup-layouts--with-description). Inside a `Field`, a `FieldItem` with a `FieldLabel` takes its place. The full table of `Label` is on its [API Reference](?path=/docs/ui-label-api-reference--api-reference).
+
+## Radio
+
+One option of the group. Renders a `span` with `role="radio"` and `aria-checked`, followed by a hidden `input type="radio"` for forms. Inside, an indicator `span` draws the dot when the radio is selected and is not rendered otherwise.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `any` | required | Identifies the radio in the group's value and sets what it submits. |
+| `disabled` | `boolean` | `false` | When true, disables this radio alone: clicks do nothing and the arrow keys skip it. |
+| `readOnly` | `boolean` | `false` | When true, keeps this radio from being selected by the user. |
+| `required` | `boolean` | `false` | When true, sets `required` on the hidden input and `data-required` on the radio; the group's `required` sets it on every radio. |
+| `id` | `string` | - | Sets the `id` of the hidden input, which a `label` with a matching `htmlFor` names and selects. |
+| `aria-invalid` | `boolean` | - | When true, shows the error border and ring; a `Field` sets it when validation fails. |
+| `className` | `string` | - | Adds classes after the radio classes, so a conflicting class wins. |
+
+Also takes every prop of the Base UI `Radio.Root` (`inputRef`, `nativeButton`, `render`) and of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"radio"` | Selects the radio in the theme and from other parts |
+| `data-checked` | present when selected | Styles or selects a selected radio, also from its label (`has-data-checked:`) |
+| `data-unchecked` | present when not selected | Styles an empty radio |
+| `data-disabled` | present when the radio, the group, its `FieldItem` or the `Field` is disabled | Styles the disabled radio |
+| `data-readonly` | present when the radio or the group is read-only | Styles the read-only radio |
+| `data-required` | present when the radio or the group is required | Styles the required radio |
+| `data-valid`, `data-invalid` | present inside a `Field` after validation | Styles the validation result |
+| `data-touched`, `data-dirty`, `data-filled`, `data-focused` | present inside a `Field` | Styles the interaction state of the field |
+
+The indicator has `data-slot="radio-indicator"` and the same state attributes.
+
+The radio is a circle of 18px below `sm` and 16px from `sm` up, with a 1px `--input` border on `--background`, or on `--input` at 32% in dark mode. Selected, the indicator covers the border with `--primary` and draws a `--primary-foreground` dot of 8px below `sm` and 6px from `sm` up. Focused with the keyboard, it shows a 2px `--ring` ring with a 1px offset. With `aria-invalid`, the border and the focus ring turn `--destructive`; a selected radio covers its border, so an invalid selected radio looks like a selected one. Disabled, it drops to 64% opacity.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RadioGroupItem` | `component` | The same component as `Radio`. |
+| `RadioGroupPrimitive` | `component` | The Base UI `RadioGroup`, without the layout classes; also the namespace of its types (`RadioGroupPrimitive.Props`, `RadioGroupPrimitive.ChangeEventDetails`). |
+| `RadioPrimitive` | `namespace` | The Base UI radio, with `Root` and `Indicator`, for its types (`RadioPrimitive.Root.Props`) or a radio with other markup. |
+
+## Accessibility and theme
+
+- Name every group: point `aria-labelledby` at a visible caption, pass `aria-label`, or place it in a `Field` that renders a `Fieldset` with a `FieldsetLegend`.
+- Name every radio: wrap it in a `Label` with the text, point a `Label`'s `htmlFor` at its `id`, or wrap it in a `FieldLabel` inside a `FieldItem`.
+- Link a description to a radio with `aria-describedby`, or to the whole group with a `FieldDescription` inside a `Field`.
+- The radio is an 18px target below `sm` and 16px from `sm` up. Wrapping it in its label makes the text clickable too, and a card-sized `Label` makes the whole card the target.
+- Pass `aria-invalid` on each radio for an error found outside a `Field`, and say what is wrong in text; the red border alone does not say it.
+- The radios read `--input`, `--background`, `--primary`, `--primary-foreground`, `--ring` and `--destructive` from the theme; the group adds no color.
