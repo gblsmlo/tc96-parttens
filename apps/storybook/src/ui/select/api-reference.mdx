@@ -216,7 +216,7 @@ Also takes every prop of a `button`.
 | --- | --- | --- |
 | `data-slot` | `"select-button"` | Selects the part in the theme; as the `render` of another trigger, that trigger's `data-slot` replaces it |
 
-While an ancestor or the button itself has `data-placeholder`, as a `ComboboxTrigger` does with no value, the text takes `muted-foreground` at 72% opacity.
+While an ancestor or the button itself has `data-placeholder`, as a `ComboboxTrigger` does with no value, the text takes `muted-foreground` at 96% opacity.
 
 ## Exports
 
@@ -232,5 +232,5 @@ While an ancestor or the button itself has `data-placeholder`, as a `ComboboxTri
 
 - Name the select: put it in a `Field` with a `FieldLabel`, add a `SelectLabel`, or pass `aria-label` to `SelectTrigger`. A `FieldDescription` becomes its description.
 - Give an icon in the trigger or in an option `aria-hidden="true"`; the option's text is its name.
-- The placeholder text of `SelectButton` measures 3.06:1 on `background` in the light theme and 3.26:1 in the dark, below the 4.5:1 of text; the text of `SelectValue`'s placeholder uses `muted-foreground` at full strength.
+- The placeholder text of `SelectButton` reaches 4.5:1 on `background` in the example theme, in light and in dark; the text of `SelectValue`'s placeholder uses `muted-foreground` at full strength.
 - The parts use the `input`, `ring`, `popover`, `accent`, `muted-foreground`, `destructive` and `border` tokens; the theme needs no rule of its own.

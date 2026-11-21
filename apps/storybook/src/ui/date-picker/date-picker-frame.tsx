@@ -5,17 +5,3 @@ export const DatePickerCanvas: Decorator = (Story) => (
     <Story />
   </div>
 )
-
-export const calendarContrast = {
-  a11y: {
-    config: {
-      rules: [
-        {
-          id: 'color-contrast',
-          selector:
-            '*:not([data-slot="calendar"] th):not([data-slot="calendar"] [data-outside] *)',
-        },
-      ],
-    },
-  },
-}

@@ -9,10 +9,8 @@ import { ToggleGroupPrimitive } from '@tc96/ui/toggle-group'
 import { KanbanIcon, ListIcon, TableIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
-import { inactiveItemContrast } from './segmented-control-contrast.ts'
 
 const meta = {
-  parameters: inactiveItemContrast,
   tags: ['!autodocs'],
   title: 'UI/SegmentedControl/Usages',
 } satisfies Meta

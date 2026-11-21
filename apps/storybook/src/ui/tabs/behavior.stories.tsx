@@ -3,7 +3,7 @@ import type { TabsPrimitive } from '@tc96/ui/tabs'
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@tc96/ui/tabs'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { tabsControlArgs } from './tabs-controls.ts'
-import { inactiveTabContrast, TabsCanvas } from './tabs-frame.tsx'
+import { TabsCanvas } from './tabs-frame.tsx'
 import { ComposedTabs } from './tabs-layouts.tsx'
 import { tabPanelCopy } from './tabs-variants.ts'
 
@@ -20,7 +20,7 @@ const meta = {
   args: { onValueChange: fn() },
   argTypes: { onValueChange: { control: false } },
   decorators: [TabsCanvas],
-  parameters: { ...inactiveTabContrast, layout: 'centered' },
+  parameters: { layout: 'centered' },
   tags: ['!autodocs'],
   title: 'UI/Tabs/Behavior',
 } satisfies Meta<BehaviorArgs>

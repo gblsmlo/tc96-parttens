@@ -4,14 +4,14 @@ import {
   tabsControlArgs,
   tabsControlArgTypes,
 } from './tabs-controls.ts'
-import { inactiveTabContrast, TabsCanvas } from './tabs-frame.tsx'
+import { TabsCanvas } from './tabs-frame.tsx'
 import { ComposedTabs } from './tabs-layouts.tsx'
 
 const meta = {
   args: tabsControlArgs,
   argTypes: tabsControlArgTypes,
   decorators: [TabsCanvas],
-  parameters: { ...inactiveTabContrast, layout: 'centered' },
+  parameters: { layout: 'centered' },
   render: (args) => <ComposedTabs {...args} />,
   tags: ['!autodocs'],
   title: 'UI/Tabs/Playground',

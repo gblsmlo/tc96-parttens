@@ -14,11 +14,6 @@ import {
 const march = new Date(2026, 2, 2)
 const april = new Date(2026, 3, 15)
 
-// COSS calendar weekday and outside-month text is 3.14:1 in light and 3.29:1 in dark (below 4.5:1); COSS stays unmodified, so only the contrast check is off.
-const cossCalendarContrast = {
-  a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
-}
-
 const meta = {
   args: { locale: 'en-US', value: { from: march, to: april } },
   component: DateRangeProperty,
@@ -163,7 +158,6 @@ export const CompletesRangeFromOpenEnd: Story = {
     onValueChange: fn(),
     value: { from: march, to: undefined },
   },
-  parameters: cossCalendarContrast,
   play: async ({ args, canvasElement }) => {
     await userEvent.click(
       within(canvasElement).getByRole('button', {
@@ -185,7 +179,6 @@ export const StaysOpenAfterFirstClick: Story = {
     onValueChange: fn(),
     value: undefined,
   },
-  parameters: cossCalendarContrast,
   play: async ({ args, canvasElement }) => {
     await userEvent.click(
       within(canvasElement).getByRole('button', {
@@ -216,7 +209,6 @@ export const ClearsBothEnds: Story = {
 
 export const CentersPopupByDefault: Story = {
   args: { ariaLabel: 'Período', onValueChange: fn() },
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     await userEvent.click(
       within(canvasElement).getByRole('button', {
@@ -233,7 +225,6 @@ export const DropdownPlacementAligns: Story = {
     dropdownPlacement: { align: 'start' },
     onValueChange: fn(),
   },
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     await userEvent.click(
       within(canvasElement).getByRole('button', {

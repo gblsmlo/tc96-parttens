@@ -74,7 +74,7 @@ Also takes every prop of Base UI `Tabs.List`.
 | `data-size` | `"sm"`, `"default"` or `"lg"` | Styles each size |
 | `data-orientation`, `data-activation-direction` | as on `Tabs` | Style the orientation and the activation direction |
 
-The variant sets no attribute. The `default` list is a `bg-muted` track with 2px of padding and inactive text in `muted-foreground` at 72%. The `underline` list has no background, 4px of padding above and below (on the sides when vertical), inactive text in `muted-foreground` and an `accent` background on a hovered tab.
+The variant sets no attribute. The `default` list is a `bg-muted` track with 2px of padding and inactive text in `muted-foreground` at 96%. The `underline` list has no background, 4px of padding above and below (on the sides when vertical), inactive text in `muted-foreground` and an `accent` background on a hovered tab.
 
 | Size | Tab height | Tab height from `sm` | Inline padding |
 | --- | --- | --- | --- |
@@ -152,5 +152,5 @@ The panel sets no padding, border or background. It is in the tab order while ac
 - Name the list with `aria-label` or `aria-labelledby` when the tabs do not say on their own what they switch. Each panel takes its name from its tab.
 - An icon-only tab needs `aria-label`; an icon next to text gets `aria-hidden="true"`.
 - The tab draws a 2px `ring` on `:focus-visible`; the panel draws no focus style of its own.
-- In the example theme, the inactive text of the `default` variant is below 4.5:1 on the muted track, in light and in dark; the `underline` variant passes. The measures and the exception the stories carry are in `docs/accessibility.md`.
+- In the example theme, the inactive text reaches 4.5:1 in both variants, in light and in dark. A hovered tab turns `foreground`. The measures are in `docs/accessibility.md`.
 - The tabs read `--muted`, `--muted-foreground`, `--foreground`, `--background`, `--input` in dark, `--primary` and `--accent` in `underline`, and `--ring`. Under `prefers-reduced-motion` the indicator still follows the active tab, without the transition.

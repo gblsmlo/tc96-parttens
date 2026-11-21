@@ -4,7 +4,7 @@ import {
   datePickerControlArgs,
   datePickerControlArgTypes,
 } from './date-picker-controls.ts'
-import { calendarContrast, DatePickerCanvas } from './date-picker-frame.tsx'
+import { DatePickerCanvas } from './date-picker-frame.tsx'
 import { ComposedDatePicker } from './date-picker-layouts.tsx'
 
 const meta = {
@@ -12,7 +12,6 @@ const meta = {
   argTypes: datePickerControlArgTypes,
   decorators: [DatePickerCanvas],
   parameters: {
-    ...calendarContrast,
     controls: {
       exclude: ['captionLayout', 'defaultOpen', 'mode', 'selected'],
     },

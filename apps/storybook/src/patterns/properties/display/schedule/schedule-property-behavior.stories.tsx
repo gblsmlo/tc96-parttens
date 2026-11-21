@@ -10,10 +10,6 @@ import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 const today = new Date(2026, 9, 7)
 const october26 = new Date(2026, 9, 26)
 
-const cossCalendarContrast = {
-  a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
-}
-
 const popup = () =>
   document.querySelector<HTMLElement>('[data-slot="schedule-popup"]')
 
@@ -99,7 +95,6 @@ export const EmptyFallsBackToAbsenceTone: Story = {
 }
 
 export const PresetEmitsDayAndCloses: Story = {
-  parameters: cossCalendarContrast,
   play: async ({ args, canvasElement }) => {
     await openPopup(canvasElement)
 
@@ -119,7 +114,6 @@ export const PresetEmitsDayAndCloses: Story = {
 
 export const StaysOpenWhileTimeSectionIsOpen: Story = {
   args: { value: { ...emptyScheduleValue, from: october26 } },
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     const body = await openPopup(canvasElement)
 
@@ -148,7 +142,6 @@ export const AllDayClearsTimes: Story = {
       startTime: '14:00',
     },
   },
-  parameters: cossCalendarContrast,
   play: async ({ args, canvasElement }) => {
     const body = await openPopup(canvasElement)
     await userEvent.click(body.getByRole('button', { name: 'Hora' }))
@@ -173,7 +166,6 @@ export const ClearingDayClearsRecurrenceAndReminders: Story = {
       until: '2026-12-18T12:00:00.000Z',
     },
   },
-  parameters: cossCalendarContrast,
   play: async ({ args, canvasElement }) => {
     await openPopup(canvasElement)
 
@@ -193,7 +185,6 @@ export const ClearingDayClearsRecurrenceAndReminders: Story = {
 
 export const PickingCurrentDayClosesWithoutEmitting: Story = {
   args: { value: { ...emptyScheduleValue, from: today } },
-  parameters: cossCalendarContrast,
   play: async ({ args, canvasElement }) => {
     await openPopup(canvasElement)
 
@@ -212,7 +203,6 @@ export const RemindersInOptionOrderKeepPopupOpen: Story = {
       reminders: ['1440', '30'],
     },
   },
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     const body = await openPopup(canvasElement)
 
@@ -235,7 +225,6 @@ export const RemindersInOptionOrderKeepPopupOpen: Story = {
 }
 
 export const RemindersDisabledWithoutAnchor: Story = {
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     const body = await openPopup(canvasElement)
 
@@ -245,7 +234,6 @@ export const RemindersDisabledWithoutAnchor: Story = {
 
 export const RemindersEnabledByConsumer: Story = {
   args: { remindersEnabled: true },
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     const body = await openPopup(canvasElement)
 
@@ -254,7 +242,6 @@ export const RemindersEnabledByConsumer: Story = {
 }
 
 export const RecurrenceDisabledWithoutAnchor: Story = {
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     const body = await openPopup(canvasElement)
 
@@ -264,7 +251,6 @@ export const RecurrenceDisabledWithoutAnchor: Story = {
 
 export const RecurrenceEnabledByConsumer: Story = {
   args: { recurrenceEnabled: true },
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     const body = await openPopup(canvasElement)
 
@@ -274,7 +260,6 @@ export const RecurrenceEnabledByConsumer: Story = {
 
 export const DateOnlyDropsFooter: Story = {
   args: { dateOnly: true },
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     const body = await openPopup(canvasElement)
 
@@ -286,7 +271,6 @@ export const DateOnlyDropsFooter: Story = {
 
 export const PopupWithoutCossViewport: Story = {
   args: { value: { ...emptyScheduleValue, from: october26 } },
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     await openPopup(canvasElement)
 
@@ -307,7 +291,6 @@ export const CollisionAvoidanceOpensBelowTrigger: Story = {
     dropdownPlacement: { collisionAvoidance: { side: 'none' } },
     value: { ...emptyScheduleValue, from: october26 },
   },
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     await openPopup(canvasElement)
 
@@ -319,7 +302,6 @@ export const CollisionAvoidanceOpensBelowTrigger: Story = {
 
 export const LabelsReplaceCopy: Story = {
   args: { labels: { noDate: 'No date', today: 'Today' } },
-  parameters: cossCalendarContrast,
   play: async ({ canvasElement }) => {
     await openPopup(canvasElement)
 

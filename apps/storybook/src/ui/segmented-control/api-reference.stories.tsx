@@ -5,11 +5,9 @@ import {
   SegmentedControlItem,
 } from '@tc96/ui/segmented-control'
 import { expect, within } from 'storybook/test'
-import { inactiveItemContrast } from './segmented-control-contrast.ts'
 
 const meta = {
   component: SegmentedControl,
-  parameters: inactiveItemContrast,
   tags: ['!autodocs', '!dev'],
   title: 'UI/SegmentedControl/API Reference',
 } satisfies Meta<typeof SegmentedControl>

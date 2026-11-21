@@ -4,14 +4,12 @@ import {
   calendarControlArgs,
   calendarControlArgTypes,
 } from './calendar-controls.ts'
-import { calendarA11y } from './calendar-frame.tsx'
 import { ComposedCalendar } from './calendar-layouts.tsx'
 
 const meta = {
   args: calendarControlArgs,
   argTypes: calendarControlArgTypes,
   parameters: {
-    a11y: calendarA11y,
     controls: { exclude: ['captionLayout', 'mode', 'showOutsideDays'] },
   },
   render: (args) => <ComposedCalendar {...args} />,

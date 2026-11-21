@@ -1,10 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { inactiveItemContrast } from './segmented-control-contrast.ts'
 import { segmentedControlControlArgs } from './segmented-control-controls.ts'
 import { ComposedSegmentedControl } from './segmented-control-layouts.tsx'
 
 const meta = {
-  parameters: inactiveItemContrast,
   tags: ['!autodocs'],
   title: 'UI/SegmentedControl/Layouts',
 } satisfies Meta
