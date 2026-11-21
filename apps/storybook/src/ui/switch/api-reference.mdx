@@ -1,0 +1,85 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Switch
+
+A control that turns one setting on or off, such as push notifications, two-factor authentication or an integration. Reach for it when the choice reads as a setting that is on or off, whether it applies as it flips or with the rest of a settings form; for agreeing to something, such as accepting terms, a checkbox reads better.
+
+The other pages of `UI/Switch`: [Playground](?path=/story/ui-switch-playground--playground) to try the label, the description, the size and every state, [Stories](?path=/story/ui-switch-stories--default) for each state, [Behavior](?path=/story/ui-switch-behavior--toggles-on-click) for the tests, [Usages](?path=/story/ui-switch-usages--push-notification-settings) for switches in real settings, and [Layouts](?path=/story/ui-switch-layouts--with-description) for the ways to label it.
+
+## Import
+
+```tsx
+import { Switch } from '@acme/ui/switch'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Label>
+  <Switch />
+  label
+</Label>
+```
+
+`Switch` is one part. The track and the thumb inside it are built in, and a hidden `input type="checkbox"` sits next to the track for forms. The label is a `Label`, a `FieldLabel`, an `aria-label` or an `aria-labelledby`, never a prop of the switch.
+
+## Switch
+
+The track the user turns on or off. Renders a `span` with `role="switch"` and `aria-checked`, focusable with Tab and toggled by a click, Space or Enter. Inside, a thumb `span` slides to the end of the track when the switch is on. It holds its own state unless `checked` is passed, and never saves the value: acting on the change is up to the consumer.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `checked` | `boolean` | - | Controls whether the switch is on; pair it with `onCheckedChange`. |
+| `defaultChecked` | `boolean` | `false` | Sets whether the switch starts on, when `checked` is not passed. |
+| `disabled` | `boolean` | `false` | When true, ignores clicks and keys, leaves the tab order and drops to 64% opacity. |
+| `readOnly` | `boolean` | `false` | When true, keeps the value and its focus, and sets `aria-readonly`; it looks the same. |
+| `required` | `boolean` | `false` | When true, sets `aria-required`, and a form does not submit until the switch is on. |
+| `name` | `string` | - | Sets the name the hidden input submits with the form. |
+| `value` | `string` | - | Sets the value submitted when the switch is on; without it the form receives `"on"`. |
+| `uncheckedValue` | `string` | - | Sets a value submitted when the switch is off; without it, nothing is submitted. |
+| `id` | `string` | - | Sets the `id` of the hidden input, which a `label` with a matching `htmlFor` names and toggles; with `nativeButton`, the `id` goes on the root. |
+| `className` | `string` | - | Adds classes after the track classes, so a conflicting class wins; the thumb takes none. |
+| `onCheckedChange` | `(checked: boolean, eventDetails: SwitchPrimitive.Root.ChangeEventDetails) => void` | - | Called when the user turns the switch on or off, with the new value. |
+
+Also takes every prop of the Base UI `Switch.Root` (`form`, `inputRef`, `nativeButton`, `render`) and of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"switch"` | Selects the track in the theme and from other parts |
+| `data-checked` | present when on | Styles or selects a switch that is on, also from its label (`has-data-checked:`) |
+| `data-unchecked` | present when off | Styles a switch that is off |
+| `data-disabled` | present when `disabled` | Styles the disabled switch |
+| `data-readonly` | present when `readOnly` | Styles the read-only switch |
+| `data-required` | present when `required` | Styles the required switch |
+| `data-valid`, `data-invalid` | present inside a `Field` after validation | Styles the result of validation |
+| `data-touched`, `data-dirty`, `data-filled`, `data-focused` | present inside a `Field` | Styles the interaction state of the field |
+
+The thumb has `data-slot="switch-thumb"` and the same state attributes.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--thumb-size` | `--spacing(5)`, 20px; `--spacing(4)`, 16px from `sm` | Sets the thumb's width and height; the track is the thumb plus 2px high and twice the thumb minus 2px wide. |
+
+The size comes only from `--thumb-size`, set on the switch through `className`. The default changes at `sm`, so a size set without the `sm:` variant applies only below `sm`: write both, as in `[--thumb-size:--spacing(4)] sm:[--thumb-size:--spacing(3)]`.
+
+The track is fully round, with a 1px padding around the thumb. Off, it fills with `--input`; on, with `--primary`. The thumb is `--background` with a light shadow and slides by the thumb size minus 4px; in a right-to-left direction it slides the other way. While the switch, its `Label` or its `FieldLabel` is pressed, the thumb stretches 10% wider, except when disabled. Focused with the keyboard, the track shows a 2px `--ring` ring with a 1px `--background` offset. Disabled, it drops to 64% opacity with a not-allowed cursor. Nothing changes with `aria-invalid` or `data-invalid`: the error has to be said in text.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SwitchPrimitive` | `namespace` | The Base UI switch, with `Root` and `Thumb`, for its types (`SwitchPrimitive.Root.Props`) or a switch with other markup. |
+
+## Accessibility and theme
+
+- Name every switch: wrap it in a `Label` with the text, point a `Label`'s `htmlFor` at its `id`, wrap it in a `FieldLabel` inside a `Field`, or, when the name is text that is not a label (a list row), pass `aria-labelledby` or `aria-label`.
+- Link a description with `aria-describedby`, or use `FieldDescription` inside a `Field`.
+- Name the setting, not the action: "Push notifications", not "Turn on push notifications". Screen readers announce the state as on or off.
+- When the switch applies its setting as it flips, apply it then; when it belongs to a form that saves on submit, keep the submit button in view, so the reader knows the change is not saved yet.
+- A required switch shows nothing red: put the reason in a `FieldError` inside a `Field`.
+- The track reads `--input`, `--primary`, `--background`, `--ring` and the thumb `--background` from the theme. Off, the track needs 3:1 against its surface, which a faint `--input` meant for input borders does not reach; a theme can redefine `--input` on `[data-slot="switch"]` alone, as the example theme does with `--switch-track`. The measured ratios are in `docs/accessibility.md`.
