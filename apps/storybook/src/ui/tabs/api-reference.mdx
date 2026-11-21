@@ -1,0 +1,156 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Tabs
+
+A row of tabs that switches between related panels in the same place on the page: the sections of an account screen, the views of a project, the same install command for several package managers. Reach for it when the panels are peers and the reader looks at one at a time; moving between pages is a set of links, and picking one value for a form or a filter is a `RadioGroup` or a `ToggleGroup`.
+
+The other pages of `UI/Tabs`: [Playground](?path=/story/ui-tabs-playground--playground) to try the labels, the variant, the size, the orientation, the icons and a disabled tab, [Stories](?path=/story/ui-tabs-stories--default) for each variant, size, orientation and the disabled tab, [Behavior](?path=/story/ui-tabs-behavior--selects-on-press) for the tests, [Usages](?path=/story/ui-tabs-usages--account-settings) for real content and [Layouts](?path=/story/ui-tabs-layouts--with-icons) for icons, icon-only tabs and a full-width list.
+
+## Import
+
+```tsx
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@acme/ui/tabs'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Tabs defaultValue="first">
+  <TabsList>
+    <TabsTab value="first" />
+    <TabsTab value="second" />
+  </TabsList>
+  <TabsPanel value="first" />
+  <TabsPanel value="second" />
+</Tabs>
+```
+
+## Tabs
+
+Groups the list and the panels and holds the active value. Wraps `Tabs.Root` from Base UI and renders a `div` that stacks the list above the panels with an 8px gap; with `orientation="vertical"` it places the list beside them. It keeps the value itself when uncontrolled and never fetches or stores it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `any` | - | Sets the value of the active tab and makes the tabs controlled; `null` leaves no tab active. |
+| `defaultValue` | `any` | `0` | Sets the tab active on mount when `value` is not passed; `null` leaves no tab active. |
+| `onValueChange` | `(value: any, eventDetails: ChangeEventDetails) => void` | - | Called when the active tab changes, with the value of the new tab. |
+| `orientation` | `"horizontal"` or `"vertical"` | `"horizontal"` | Sets the layout of the list and the arrow keys that move between tabs. |
+
+Also takes every prop of Base UI `Tabs.Root`, such as `render`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"tabs"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` or `"vertical"` | Styles each orientation; every part sets it |
+| `data-activation-direction` | `"left"`, `"right"`, `"up"`, `"down"` or `"none"` | Tells where the newly active tab sits from the previous one, to animate the panels; every part sets it |
+
+`ChangeEventDetails` is `TabsPrimitive.Root.ChangeEventDetails`. Its `reason` is `"none"` for a press or a key. The other reasons come only from uncontrolled tabs, which pick a value on their own: `"initial"` for the first value when `defaultValue` is not passed, `"disabled"` when the active tab becomes disabled, and `"missing"` when the active tab is removed or an explicit `defaultValue` matches no tab. Only a `"none"` change can be canceled with `eventDetails.cancel()`. The value is typed `any`, so narrow it in the callback before storing it.
+
+When `defaultValue` is not passed, the tabs start on the tab whose value is `0`, or on the first enabled tab when no tab has that value, and in both cases call `onValueChange` once on mount with `reason: "initial"`. An explicit `defaultValue` triggers no such call, and is kept even when it points at a disabled tab. A server render does not know which tabs are disabled, so pass the value of an enabled tab when the first one is disabled. Controlled tabs never change on their own: they keep the `value` the parent passes, even a disabled or missing one.
+
+A controlled parent can refuse a change by not updating `value`: the tab and its panel stay as they are.
+
+## TabsList
+
+The row of tabs. Wraps `Tabs.List` from Base UI and renders a `div` with `role="tablist"` that is as wide as its tabs and stacks them in a column when vertical. It moves focus between its tabs with the arrow keys, `Home` and `End`, and renders the indicator of the active tab after its children.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"underline"` | `"default"` | Controls the look: tabs on a muted track with a raised surface under the active one, or bare tabs with a 2px bar under the active one. |
+| `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | Sets the height and padding of every tab inside it. |
+| `activateOnFocus` | `boolean` | `false` | When true, an arrow key activates the tab it focuses; otherwise `Enter` or `Space` does. |
+| `loopFocus` | `boolean` | `true` | When true, the arrow keys move from the last tab to the first and back. |
+
+Also takes every prop of Base UI `Tabs.List`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"tabs-list"` | Selects the part in the theme and from other parts |
+| `data-size` | `"sm"`, `"default"` or `"lg"` | Styles each size |
+| `data-orientation`, `data-activation-direction` | as on `Tabs` | Style the orientation and the activation direction |
+
+The variant sets no attribute. The `default` list is a `bg-muted` track with 2px of padding and inactive text in `muted-foreground` at 72%. The `underline` list has no background, 4px of padding above and below (on the sides when vertical), inactive text in `muted-foreground` and an `accent` background on a hovered tab.
+
+| Size | Tab height | Tab height from `sm` | Inline padding |
+| --- | --- | --- | --- |
+| `"sm"` | 30px | 26px | 7px |
+| `"default"` | 34px | 30px | 9px |
+| `"lg"` | 38px | 34px | 11px |
+
+The indicator is a `span` with `data-slot="tab-indicator"` and `role="presentation"`, placed over the active tab through the variables below and moved in 200ms; under `prefers-reduced-motion` it jumps to the new tab without the transition. It stays hidden until the layout settles and is not rendered while no tab is active. In `default` it is the raised surface behind the active tab (`bg-background` with `shadow-sm/5`, `bg-input` in dark). In `underline` it is a 2px `primary` bar 1px below the bottom edge of the list, or 1px left of its left edge when vertical, so it covers a `border-b` or `border-s` on a wrapper.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--active-tab-left`, `--active-tab-top` | set by the indicator | Position of the active tab inside the list, in px. |
+| `--active-tab-right`, `--active-tab-bottom` | set by the indicator | Distance from the active tab to the right and bottom edges of the list, in px. |
+| `--active-tab-width`, `--active-tab-height` | set by the indicator | Size of the active tab, in px. |
+
+## TabsTab
+
+One tab. Wraps `Tabs.Tab` from Base UI and renders a `button` with `role="tab"` that grows to share the width of the list. It activates on click, or on `Enter` or `Space` once an arrow key has moved focus to it; it sets `aria-selected`, and `aria-controls` to the `id` of its panel while that panel is in the DOM.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `any` | required | Identifies the tab; the panel with the same `value` shows while it is active. |
+| `size` | `"sm"`, `"default"` or `"lg"` | the `size` of `TabsList` | Overrides the size of this tab alone. |
+| `disabled` | `boolean` | `false` | When true, ignores presses and keys while it stays focusable, with `aria-disabled="true"`. |
+| `nativeButton` | `boolean` | `true` | Tells the tab whether `render` produces a native `button`; set it to `false` for any other element. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `button` with another element, which receives the tab props. |
+
+Also takes every prop of Base UI `Tabs.Tab`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"tabs-tab"` | Selects the part in the theme and from other parts |
+| `data-active` | present on the active tab | Styles the active tab, whose text turns `foreground` |
+| `data-disabled` | present when disabled | Styles a disabled tab, which drops to 64% opacity and takes no pointer events |
+| `data-size` | `"sm"`, `"default"` or `"lg"` | Styles the resolved size: its own `size`, or the list's |
+| `data-orientation`, `data-activation-direction` | as on `Tabs` | Style the orientation and the activation direction |
+
+A disabled tab keeps no `disabled` attribute, so `disabled:` classes do not match it; style it through `data-disabled`. The arrow keys still move focus onto it.
+
+An `svg` child is 18px (16px from `sm`) and at 80% opacity, unless its own class sets a `size-` or an `opacity-`; it sits 4px from the text and reaches 2px into the padding of the tab. When vertical, a tab fills the width of the list and aligns its content to the start.
+
+## TabsPanel
+
+The content of one tab. Wraps `Tabs.Panel` from Base UI and renders a `div` with `role="tabpanel"`, named by its tab, that takes the remaining space (`flex-1`). It is in the DOM only while its tab is active, unless `keepMounted` keeps it there with a `hidden` attribute.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `any` | required | Identifies the panel; it shows while the tab with the same `value` is active. |
+| `keepMounted` | `boolean` | `false` | When true, keeps the panel in the DOM with `hidden` while its tab is inactive. |
+
+Also takes every prop of Base UI `Tabs.Panel`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"tabs-content"` | Selects the part in the theme and from other parts |
+| `data-hidden` | present while its tab is inactive | Styles a kept-mounted panel that is hidden |
+| `data-index` | the position of the panel, from `0` | Selects a panel by position |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-orientation`, `data-activation-direction` | as on `Tabs` | Style the orientation and the activation direction |
+
+The panel sets no padding, border or background. It is in the tab order while active (`tabIndex` 0) but removes the focus outline, so give it a `focus-visible:` style in `className`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `TabsTrigger` | `component` | The same component as `TabsTab`, under a second name. |
+| `TabsContent` | `component` | The same component as `TabsPanel`, under a second name. |
+| `TabsPrimitive` | `namespace` | The Base UI `Tabs` parts and types, such as `TabsPrimitive.Root.ChangeEventDetails`. |
+| `TabsSize` | `type` | The sizes of `TabsList` and `TabsTab`: `"default"`, `"lg"` or `"sm"`. |
+| `TabsVariant` | `type` | The variants of `TabsList`: `"default"` or `"underline"`. |
+
+## Accessibility and theme
+
+- Name the list with `aria-label` or `aria-labelledby` when the tabs do not say on their own what they switch. Each panel takes its name from its tab.
+- An icon-only tab needs `aria-label`; an icon next to text gets `aria-hidden="true"`.
+- The tab draws a 2px `ring` on `:focus-visible`; the panel draws no focus style of its own.
+- In the example theme, the inactive text of the `default` variant is below 4.5:1 on the muted track, in light and in dark; the `underline` variant passes. The measures and the exception the stories carry are in `docs/accessibility.md`.
+- The tabs read `--muted`, `--muted-foreground`, `--foreground`, `--background`, `--input` in dark, `--primary` and `--accent` in `underline`, and `--ring`. Under `prefers-reduced-motion` the indicator still follows the active tab, without the transition.
