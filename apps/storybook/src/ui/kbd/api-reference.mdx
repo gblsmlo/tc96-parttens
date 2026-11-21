@@ -1,0 +1,62 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Kbd
+
+A keyboard key or shortcut shown in the interface: the `⌘ K` hint of a search field, the `⌘ ↵` hint on a submit button, the rows of a shortcuts list, a key named inside a sentence. `Kbd` is one key, and `KbdGroup` sets the keys of a combination side by side.
+
+The other pages of `UI/Kbd`: [Playground](?path=/story/ui-kbd-playground--playground) to try the keys and an icon key, [Stories](?path=/story/ui-kbd-stories--default) for the default key, [Behavior](?path=/story/ui-kbd-behavior--key-element) for the tests, [Usages](?path=/story/ui-kbd-usages--in-text) for keys in context and [Layouts](?path=/story/ui-kbd-layouts--group) for how keys and icons combine.
+
+## Import
+
+```tsx
+import { Kbd, KbdGroup } from '@acme/ui/kbd'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<KbdGroup>
+  <Kbd>children</Kbd>
+  <Kbd>
+    <Icon />
+  </Kbd>
+</KbdGroup>
+```
+
+## KbdGroup
+
+The combination of keys. Renders a `kbd`, the element HTML uses for one input made of nested keys, and lays its `Kbd` children out in a row, 4px apart. It has no look of its own.
+
+Also takes every prop of a `kbd`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"kbd-group"` | Selects the part in the theme and from other parts |
+
+## Kbd
+
+One key. Renders a `kbd` with the key text, or an icon, centered on a `muted` background in 12px medium text. It ignores the pointer, so a click on a hint inside a button lands on the button, and it is left out of a text selection.
+
+Also takes every prop of a `kbd`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"kbd"` | Selects the part in the theme and from other parts |
+
+Every key is 20px high and at least 20px wide, so a single character is square and a word such as `Backspace` grows only in width. Icon and text sit 4px apart.
+
+An `svg` child is 12px; a `size-*` class on the icon wins.
+
+`className` is merged after the key's classes, so a conflicting `bg-*` or `text-*` class wins. That is how a key takes the colors of a filled surface.
+
+## Accessibility and theme
+
+- The `muted` background and the `muted-foreground` text are a pair for the page `background` and `popover`. On a filled surface, such as a `primary` button, pass that surface's pair (`className="bg-primary-foreground/16 text-primary-foreground"`); on any other surface, measure the contrast again.
+- When a control already performs the shortcut, hide the hint with `aria-hidden="true"` and put the shortcut in the control's `aria-keyshortcuts` (`"Meta+Enter Control+Enter"`), so the control's name stays its label.
+- A key drawn only by an icon needs a name: `role="img"` and `aria-label` on the icon (`"Enter"`), unless the whole hint is hidden.
+- Measured contrast of the hint on a `primary` button: the `RecordDialog` section of `docs/accessibility.md`.
