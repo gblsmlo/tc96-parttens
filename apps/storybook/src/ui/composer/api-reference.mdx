@@ -1,0 +1,282 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Composer
+
+A message input that grows with the draft and keeps its action row in view, for chat and assistant interfaces: replying in a thread, prompting an assistant, posting an update that mentions a teammate. `Enter` sends and `Shift+Enter` adds a line; `@` mentions and `/` actions open suggestions when the composer has triggers. For a form field that is not a message, use a `Textarea`.
+
+The other pages of `UI/Composer`: [Playground](?path=/story/ui-composer-playground--playground) to try the layout, the input element, the submission flags and the suggestions, [Stories](?path=/story/ui-composer-stories--default) for each prop value, [Behavior](?path=/story/ui-composer-behavior--submit-waits-for-text) for the tests, [Usages](?path=/story/ui-composer-usages--reply-in-thread) for real messages and [Layouts](?path=/story/ui-composer-layouts--with-leading-action) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Composer,
+  ComposerActionGroup,
+  ComposerActions,
+  ComposerInput,
+  ComposerItem,
+  ComposerList,
+  ComposerPopup,
+  ComposerStatus,
+  ComposerSubmit,
+  ComposerToken,
+  getComposerText,
+  useComposerContext,
+} from '@acme/ui/composer'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+The suggestion parts open in a popup above the frame while a trigger has a query:
+
+<Canvas of={ApiReferenceStories.SuggestionsAnatomy} />
+
+```tsx
+<Composer>
+  <ComposerInput />
+  <ComposerPopup>
+    <ComposerStatus />
+    <ComposerList>{(item) => <ComposerItem value={item} />}</ComposerList>
+  </ComposerPopup>
+  <ComposerActions>
+    <ComposerActionGroup />
+    <ComposerActionGroup align="end">
+      <ComposerSubmit />
+    </ComposerActionGroup>
+  </ComposerActions>
+</Composer>
+```
+
+`ComposerInput` draws a `ComposerToken` for each mention or action in the draft.
+
+## Composer
+
+The frame and the owner of the draft. Renders a `form`; pass `render={<div />}` to place it inside another form. The draft is a `ComposerValue`, a list of text parts and tokens, and the composer never sends or clears it: `onSubmit` receives it, and the consumer clears it through `value` or `reset`. A press on empty space in the frame focuses the input.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(value: ComposerValue) => void` | - | Called when `Enter`, `ComposerSubmit` or the form submits a draft that can be sent, with the draft. |
+| `value` | `ComposerValue` | - | Controls the draft; pair it with `onValueChange`. |
+| `defaultValue` | `ComposerValue` | `[]` | Sets the first draft when `value` is not passed, and the draft `reset` returns to. |
+| `onValueChange` | `(value: ComposerValue, details: ComposerChangeDetails) => void` | - | Called on every change of the draft, with its `reason` in `details`. |
+| `layout` | `"stacked"` or `"adaptive"` | `"stacked"` | Controls where the actions sit: under the input, or beside a one-line draft and under it once it wraps. |
+| `submitOnEnter` | `"always"`, `"desktop"` or `"never"` | `"always"` | Sets when `Enter` submits: always, only with a fine pointer, or never, so it adds a line. |
+| `disabled` | `boolean` | `false` | When true, the input and the submit are disabled and the frame is dimmed. |
+| `readOnly` | `boolean` | `false` | When true, the draft can be selected and copied but not edited or submitted. |
+| `submitDisabled` | `boolean` | `false` | When true, the draft stays editable but cannot be submitted. |
+| `allowEmpty` | `boolean` | `false` | When true, an empty or blank draft can be submitted. |
+| `triggers` | `readonly ComposerTrigger[]` | `[]` | Sets the characters that open suggestions and the items each one lists. |
+| `onAction` | `(item: ComposerItemValue, query: ComposerQuery) => void` | - | Called when an item with `type: "action"` is picked; its query text is removed and no token is inserted. |
+| `onQueryChange` | `(query: ComposerQuery or null) => void` | - | Called when the text after a trigger changes, with `null` when no query is active. |
+| `submitOnEmptySuggestions` | `boolean` | `false` | When true, `Enter` follows `submitOnEnter` while the open suggestions have no item to pick. |
+| `name` | `string` | - | Adds a hidden `input` with the draft as plain text to the form data. |
+| `getSuggestionsAnnouncement` | `(count: number) => string` | - | Sets the text announced when suggestions open; return `""` to announce nothing. |
+
+Also takes every prop of a `form` and a Base UI `render`.
+
+Without `onAction`, an action item is inserted as a token like a mention. The default announcement is `"3 suggestions available. Use the up and down arrow keys to navigate."`. A `reset` event of the surrounding form resets the draft to `defaultValue`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"composer"` | Selects the part in the theme and from other parts |
+| `data-layout` | `"stacked"` or `"adaptive"` | Styles each layout |
+| `data-multiline` | present in the adaptive layout once the draft takes more than one line | Moves the actions under the input |
+| `data-disabled` | present when `disabled` | Styles a disabled composer |
+| `data-readonly` | present when `readOnly` | Styles a read-only composer |
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--composer-radius` | `var(--radius-xl)` | Sets the corner radius of the frame. |
+| `--composer-padding` | `--spacing(2)`, 8px | Sets the space above the input and below the actions. |
+| `--composer-min-rows` | unset: 1 line below `md`, 2 from `md`, 1 in the adaptive layout | Sets how many lines the input shows when empty; above 1 the adaptive layout always stacks. |
+| `--composer-max-rows` | `4`, `8` from `md` | Sets how many lines the input grows to before it scrolls. |
+| `--composer-max-height` | unset | Sets a height that replaces the row limit. |
+
+Set a variable with a class on `Composer`, such as `[--composer-max-rows:6] md:[--composer-max-rows:6]`; the input never grows past `50dvh`. The frame shows the error border when it or the input has `aria-invalid`.
+
+## ComposerInput
+
+The editable area. Renders a `div` with `contenteditable`, `role="textbox"` and `aria-multiline`, in a scroll area that grows with the draft up to the row limit. `render={<textarea />}` swaps it for a native `textarea` that keeps the draft as plain text and the browser's undo history; triggers, tokens and `insertTrigger` need the `div`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | required | Names the input, which has no visible label; `aria-labelledby` works too. |
+| `placeholder` | `string` | - | Sets the text shown while the draft is empty. |
+| `renderToken` | `(token: ComposerTokenPart) => ReactNode` | - | Draws each token of the draft; without it each one is a default `ComposerToken`. |
+
+Also takes every prop of a `div` and a Base UI `render`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"composer-input"` | Selects the part in the theme and from other parts |
+| `data-empty` | present while the `div` draft is empty | Shows the placeholder |
+| `data-placeholder` | the `placeholder` | Holds the text the placeholder shows |
+
+The scroll area around it has `data-slot="composer-scroll-area"`.
+
+## ComposerToken
+
+A mention or action in the draft. Renders a `span` that cannot be edited, inside the input. Pass it from `renderToken` to change how tokens look.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `token` | `ComposerTokenPart` | required | Sets the token it draws: its `type`, `label`, `trigger` and `kind`. |
+| `variant` | `"default"` or `"chip"` | `"default"` | Controls the look: the trigger and label in the primary color, or a filled chip without the trigger. |
+| `icon` | `ReactNode` | - | Sets an icon before the label; only the `"chip"` variant shows it. |
+| `children` | `ReactNode` | - | Replaces the label. |
+
+Also takes every prop of a `span` except `contentEditable`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"composer-token"` | Selects the part in the theme and from other parts |
+| `data-variant` | `"default"` or `"chip"` | Styles each variant |
+| `data-type` | `"mention"` or `"action"` | Styles mentions and actions apart |
+| `data-kind` | the `kind` of the token | Styles a kind of mention, such as a person or a team |
+
+The icon and the label sit in spans with `data-slot="composer-token-icon"` and `data-slot="composer-token-label"`.
+
+## ComposerPopup
+
+The suggestions layer. Renders a `div` in a portal, as wide as the frame and above it, open while a trigger has matching items, `showEmpty` or a `"loading"` or `"error"` status. Focus stays in the input: the arrows move the highlight, `Enter` picks it, `Escape` closes the popup and `Tab` or `Shift+Enter` close it and act as usual.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `Side` | `"top"` | Sets the side of the frame the popup opens on. |
+| `align` | `Align` | `"start"` | Sets the alignment of the popup on that side. |
+| `sideOffset` | `number` | `4` | Sets the gap between the frame and the popup, in pixels. |
+| `alignOffset` | `number` | - | Moves the popup along its side, in pixels. |
+| `anchor` | `Element`, a ref or a function | the frame | Sets the element the popup is placed against. |
+| `positionerClassName` | `string` | - | Adds classes to the positioner around the popup. |
+| `portalProps` | `ComponentProps<typeof Popover.Portal>` | - | Sets the props of the portal, such as `container`. |
+
+Also takes every prop of Base UI `Popover.Popup`. `Side` and `Align` are the types of Base UI `Popover.Positioner`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"composer-popup"` | Selects the part in the theme and from other parts |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+
+The positioner has `data-slot="composer-positioner"`.
+
+## ComposerStatus
+
+A message in the popup, such as "Searching people…" or "No results". Renders a `div` with `role="status"` that collapses when it is empty. Show it from the `status` of `useComposerContext`.
+
+Also takes every prop of a `div` and a Base UI `render`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"composer-status"` | Selects the part in the theme and from other parts |
+
+## ComposerList
+
+The items of the active trigger. Renders a `div` with `role="listbox"` and the name "Suggestions", in a scroll area at most 16rem tall.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` or `(item: ComposerItemValue, index: number) => ReactNode` | - | Renders each filtered item of the active trigger when it is a function. |
+
+Also takes every prop of a `div` and a Base UI `render`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"composer-list"` | Selects the part in the theme and from other parts |
+
+## ComposerItem
+
+One suggestion. Renders a `button` with `role="option"`; a click picks it, and `Enter` picks the highlighted item.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `ComposerItemValue` | - | Sets the item it picks; without it the item does nothing. |
+| `disabled` | `boolean` | `false` | When true, the item cannot be highlighted or picked, as with `value.disabled`. |
+
+Also takes every prop of a `button` and a Base UI `render`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"composer-item"` | Selects the part in the theme and from other parts |
+| `data-highlighted` | present on the item `Enter` would pick | Styles the highlight |
+| `data-disabled` | present when disabled | Styles a disabled item |
+
+## ComposerActions
+
+The row of controls under the input. Renders a `div` that places a start and an end `ComposerActionGroup`; in the adaptive layout with a one-line draft its groups sit beside the input.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"composer-actions"` | Selects the part in the theme and from other parts |
+
+## ComposerActionGroup
+
+A group of controls at one end of the row. Renders a `div` whose children sit 4px apart and wrap.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `align` | `"start"` or `"end"` | `"start"` | Sets the end of the row the group sits at. |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"composer-action-group"` | Selects the part in the theme and from other parts |
+| `data-align` | `"start"` or `"end"` | Styles each end |
+
+## ComposerSubmit
+
+The button that submits the draft. Renders a `button` with `type="button"`; pass `render={<Button size="icon" />}` to use the `Button`. It is disabled while the draft cannot be submitted: empty, `disabled`, `readOnly` or `submitDisabled`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `disabled` | `boolean` | while the draft cannot be submitted | Disables this button only; `Enter` still follows the composer. |
+
+Also takes every prop of Base UI `Button` except `type`, such as `nativeButton` and `focusableWhenDisabled`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"composer-submit"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when disabled | Styles a disabled submit |
+
+## Triggers
+
+A `ComposerTrigger` in `triggers` opens suggestions when its character is typed at the start of a word.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `character` | `string` | required | Sets the text that opens the suggestions, such as `"@"` or `"/"`. |
+| `items` | `readonly ComposerItemValue[]` | required | Sets the items to list. |
+| `filter` | `(item: ComposerItemValue, query: string) => boolean` or `null` | label contains the query | Filters the items; `null` lists them as given, for results filtered elsewhere. |
+| `status` | `"ready"`, `"loading"` or `"error"` | `"ready"` | Sets the state of the results; any other than `"ready"` lists no items and keeps the popup open. |
+| `showEmpty` | `boolean` | `false` | When true, keeps the popup open with no matching item. |
+| `itemsFor` | `string` | - | Lists the items only while the query text equals it, so late results stay hidden. |
+| `queryKey` | `string` | - | Lists the items only while the `key` of the query equals it. |
+| `maxQueryLength` | `number` | - | Closes the suggestions once the query is longer. |
+
+A `ComposerItemValue` has an `id` and a `label`, and may set `type` (`"mention"`, the default, or `"action"`), `kind`, `data` and `text`, which the token keeps, and `disabled`, `description` and `icon`, which `ComposerItem` leaves to its children.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `getComposerText` | `function` | Turns a draft into text, a token as its `text` or its trigger and label. `getComposerText(value: ComposerValue) => string` |
+| `useComposerContext` | `hook` | Gives a control inside `Composer` its `value`, `isEmpty`, `canSubmit`, `disabled`, `readOnly`, `status`, `submit()`, `insertTrigger(character)` and `reset()`, which returns to `defaultValue`. |
+| `useComposerFilter` | `hook` | Returns the `contains`, `startsWith` and `endsWith` matchers of Base UI `Autocomplete.useFilter`, for a `filter`. |
+| `ComposerValue`, `ComposerPart`, `ComposerTokenPart` | `type` | The draft, one of its parts, and a part that is a token. |
+| `ComposerTrigger`, `ComposerItemValue`, `ComposerQuery` | `type` | A trigger, one of its items, and the active query (`character`, `text` and an opaque `key`). |
+| `ComposerChangeDetails` | `type` | The `reason` of a change: `"input"`, `"selection"`, `"history"` or `"reset"`. |
+| `ComposerProps`, `ComposerPopupProps`, `ComposerTokenVariant` | `type` | The props of `Composer` and `ComposerPopup`, and the `variant` of `ComposerToken`. |
+
+## Accessibility and theme
+
+- Name `ComposerInput` with `aria-label` or `aria-labelledby`, label an icon-only `ComposerSubmit` with `aria-label` and hide its icon with `aria-hidden="true"`.
+- The `div` input has no native `required`: check the draft in `onSubmit`, or use the `textarea`.
+- While suggestions are open, the input points to the listbox with `aria-controls` and to the highlighted item with `aria-activedescendant`, and a hidden status region announces how many items are available.
+- The frame uses the `input`, `background` and `ring` tokens, the popup `popover`, the default token `primary`, the highlight and the chip `accent`; the theme needs no rule of its own.
