@@ -1,0 +1,140 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Tooltip
+
+A short hint that appears next to a control while the pointer rests on it or the keyboard focuses it: the name of an icon button, the shortcut of a toolbar action, the full name behind an avatar. Reach for it when the control already works without it and the hint only repeats or adds a glance; content a user has to read, select or act on belongs in a `Popover`, and anything a screen reader user needs belongs in the control's own label.
+
+The other pages of `UI/Tooltip`: [Playground](?path=/story/ui-tooltip-playground--playground) to try the texts, the icon trigger, the shortcut and the placement, [Stories](?path=/story/ui-tooltip-stories--default) for the base composition, [Behavior](?path=/story/ui-tooltip-behavior--opens-on-hover) for the tests, [Usages](?path=/story/ui-tooltip-usages--formatting-toolbar) for real controls and [Layouts](?path=/story/ui-tooltip-layouts--icon-only) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Tooltip,
+  TooltipPopup,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@acme/ui/tooltip'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Tooltip>
+  <TooltipTrigger />
+  <TooltipPopup />
+</Tooltip>
+```
+
+## Tooltip
+
+Groups the parts and holds the open state. Alias for `Tooltip.Root` from Base UI; renders no element. It opens when a mouse pointer rests on the trigger for the trigger's `delay`, or at once when the trigger takes keyboard focus (`:focus-visible`), and closes when the pointer leaves both the trigger and the popup, when focus leaves the trigger, on `Escape`, on a press outside and on a press on the trigger. It is never modal: focus stays on the trigger, and the page keeps scrolling.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the tooltip asks to open or close, with the `reason` in `eventDetails`. |
+| `disabled` | `boolean` | `false` | When true, the tooltip never opens and closes if it is open; the trigger stays enabled. |
+| `disableHoverablePopup` | `boolean` | `false` | When true, the popup closes as soon as the pointer leaves the trigger, even onto the popup. |
+| `trackCursorAxis` | `"none"`, `"x"`, `"y"` or `"both"` | `"none"` | Sets the axis along which the popup follows the cursor over the trigger. |
+| `handle` | `TooltipPrimitive.Handle<Payload>` | - | Links the tooltip to triggers outside it, created with `TooltipCreateHandle()`. |
+| `children` | `ReactNode` or `({ payload }) => ReactNode` | - | Sets the parts; a function receives the `payload` of the trigger that opened the tooltip. |
+| `defaultTriggerId` | `string` or `null` | - | Sets the `id` of the trigger an initially open tooltip anchors to, when several triggers share it. |
+
+Also takes every prop of Base UI `Tooltip.Root`, such as `triggerId`, `actionsRef` and `onOpenChangeComplete`.
+
+`ChangeEventDetails` is `TooltipPrimitive.Root.ChangeEventDetails`. The `reason` is `"trigger-hover"` when the pointer rests on or leaves the trigger and the popup, `"trigger-focus"` when the trigger takes or loses keyboard focus, `"trigger-press"` on a press on the trigger, `"escape-key"`, `"outside-press"`, `"disabled"` when `disabled` closes it, `"none"` when another tooltip inside the same `TooltipProvider` opens and closes this one, or `"imperative-action"` when `actionsRef` closes it or the handle opens or closes it.
+
+## TooltipTrigger
+
+The control the hint describes. Renders a `button` with no style of its own, so pass the control through `render` (`render={<Button variant="outline" />}`) and keep its name on it: an icon-only trigger needs an `aria-label`. Hover opens the tooltip only for a mouse pointer, after `delay`; keyboard focus opens it at once. A press on the trigger closes the tooltip and still runs the control's `onClick`, and the tooltip does not reopen until the pointer leaves and comes back. Several triggers in one `Tooltip`, or outside it with a shared `handle`, open the same popup, anchored to the one that opened it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `delay` | `number` | `600` | Sets how long, in milliseconds, the pointer rests on the trigger before the tooltip opens. |
+| `closeDelay` | `number` | `0` | Sets how long, in milliseconds, the tooltip waits after the pointer leaves before it closes. |
+| `closeOnClick` | `boolean` | `true` | When true, a press on the trigger closes the tooltip. |
+| `disabled` | `boolean` | the `disabled` of `Tooltip` | When true, this trigger never opens the tooltip; the element itself stays enabled. |
+| `payload` | `Payload` | - | Sets the value the tooltip's function child receives when this trigger opens it. |
+| `handle` | `TooltipPrimitive.Handle<Payload>` | - | Links a trigger outside `Tooltip` to the tooltip of the same `handle`. |
+
+Also takes every prop of Base UI `Tooltip.Trigger`, and so every prop of a `button`. Inside a `TooltipProvider`, `delay` and `closeDelay` default to the provider's.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"tooltip-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while the tooltip it opened is open | Styles the trigger of the open tooltip |
+| `data-trigger-disabled` | present when `disabled` is set on the trigger or on `Tooltip` | Styles a trigger whose tooltip never opens |
+
+The trigger gets no `aria-describedby` and the popup has no `role`, so a screen reader announces only the trigger's own name. Rendered as a `Button`, the trigger carries `data-slot="tooltip-trigger"` in place of the `Button`'s `"button"`. To explain a disabled control, keep `disabled` off the trigger element and use `aria-disabled` instead: a `disabled` `button` takes no focus, and a disabled `Button` takes no pointer events either.
+
+## TooltipPopup
+
+The hint itself. Renders a `div` in a portal on `body`, inside a positioner at `z-50` that places it above the trigger and flips or shifts it to stay on screen, and wraps its children in a viewport. The popup has a medium radius, a 1px `border`, the `popover` background, `text-xs`, balanced line breaks, a small shadow, and 8px of inline and 4px of block padding on the viewport; it is as wide as its content, up to the room on screen, so set a `max-w-*` for long hints. It scales from 98% and fades in and out.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `"top"`, `"bottom"`, `"left"`, `"right"`, `"inline-start"` or `"inline-end"` | `"top"` | Sets the side of the trigger the popup opens on. |
+| `align` | `"start"`, `"center"` or `"end"` | `"center"` | Sets how the popup aligns with the trigger along that side. |
+| `sideOffset` | `number` or `OffsetFunction` | `4` | Sets the gap in pixels between the trigger and the popup, or a function that returns it. |
+| `anchor` | `Element`, a ref, a virtual element, or a function that returns one | - | Sets the element the popup is positioned against, in place of the trigger. |
+| `portalProps` | `TooltipPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `Tooltip.Popup`. `className` goes to the popup, after its own classes, so `max-w-64` caps its width. The positioner takes only the four placement props above; `alignOffset` and the collision options keep Base UI's defaults. `OffsetFunction` receives `{ side, align, anchor, positioner }`, the last two as `{ width, height }`, and returns the gap in pixels.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"tooltip-popup"` | Selects the popup |
+| `data-slot` | `"tooltip-positioner"` | Selects the positioned layer around it |
+| `data-slot` | `"tooltip-viewport"` | Selects the content wrapper inside the popup |
+| `data-open`, `data-closed` | present in that state, on the popup and the positioner | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present on the popup while it animates in or out | Style the enter and exit transitions |
+| `data-side` | `"top"`, or the side it flipped to, on the popup and the positioner | Styles the popup by the side it opened on |
+| `data-align` | `"start"`, `"center"` or `"end"`, on the popup and the positioner | Styles the popup by its alignment |
+| `data-instant` | `"delay"`, `"focus"` or `"dismiss"` on the popup, the positioner and the viewport; `"tracking-cursor"` on the positioner while `trackCursorAxis` is set | Marks an open or close that skips the transition |
+| `data-anchor-hidden` | present on the positioner while the trigger is clipped out of view | Hides or styles the popup whose trigger is off screen |
+| `data-current`, `data-previous` | on the viewport's entering and leaving content when a shared popup changes trigger | Style the cross-fade between two hints |
+| `data-transitioning` | present on the viewport while it changes from one hint to the next | Styles the viewport during that change |
+| `data-activation-direction` | `"left"`, `"right"` or empty, then `"up"`, `"down"` or empty, on the viewport (`"right down"`) | Styles the change by the direction the pointer came from |
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--viewport-inline-padding` | `--spacing(2)`, 8px | Sets the inline padding of the viewport, set on `[data-slot="tooltip-viewport"]` |
+
+The popup skips its transition (`data-instant`) when it opens on focus (`"focus"`), when it closes on `Escape` or a press on the trigger (`"dismiss"`), and when it opens at once inside a `TooltipProvider` (`"delay"`). A shared popup animates its size and position from one trigger to the next, and the leaving hint is cut to one line while it fades out. While the pointer moves from the trigger onto the popup, and while it rests there, the popup stays open.
+
+## TooltipProvider
+
+Shares one delay among the tooltips inside it. Alias for `Tooltip.Provider` from Base UI; renders no element. Once a tooltip inside it has opened, another one inside it opens at once if the pointer reaches its trigger within `timeout` of the first closing, so moving along a toolbar shows each hint without waiting again.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `delay` | `number` | - | Sets the open delay, in milliseconds, of every trigger inside that sets none. |
+| `closeDelay` | `number` | - | Sets the close delay, in milliseconds, of every trigger inside that sets none. |
+| `timeout` | `number` | `400` | Sets how long, in milliseconds, after a tooltip closes the next one still opens at once. |
+
+Also takes `children`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `TooltipCreateHandle` | `function` | Creates the handle that links detached triggers to one `Tooltip`. `TooltipCreateHandle<Payload>() => TooltipPrimitive.Handle<Payload>` |
+| `TooltipContent` | `component` | The same component as `TooltipPopup`. |
+| `TooltipPrimitive` | `namespace` | The Base UI `Tooltip` namespace, for the parts not wrapped here (`TooltipPrimitive.Arrow`) and the types such as `TooltipPrimitive.Root.ChangeEventDetails`. |
+
+The handle also opens and closes the tooltip from code: `handle.open(triggerId)`, `handle.close()` and `handle.isOpen`.
+
+## Accessibility and theme
+
+- Name every trigger on the trigger itself: an icon-only trigger needs an `aria-label`, usually the same words as the hint. The popup is not announced, so it never carries the only name of a control.
+- Keep the hint short and plain text: the popup closes as the pointer leaves and takes no focus, so a keyboard user cannot reach a link or button inside it.
+- A touch screen shows no tooltip, since hover opens it only for a mouse; put what a touch user needs on the page.
+- Hide decorative marks inside the popup, such as an icon, with `aria-hidden="true"`.
+- The popup uses the `popover`, `popover-foreground` and `border` tokens; the theme needs no rule of its own.
