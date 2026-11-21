@@ -1,0 +1,132 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# ToggleGroup
+
+A row of toggle buttons that share one pressed state: the alignment of a paragraph, the marks of a text toolbar, the view of a project (list, board or calendar), the period of a chart. Reach for it when each option takes effect as soon as it is pressed; pick one option or none by default, or several with `multiple`.
+
+The other pages of `UI/ToggleGroup`: [Playground](?path=/story/ui-togglegroup-playground--playground) to try variant, size, orientation, icons, text, separators and the disabled states, [Stories](?path=/story/ui-togglegroup-stories--default) for each variant, size and state, [Behavior](?path=/story/ui-togglegroup-behavior--named-group-of-toggle-buttons) for the tests, [Usages](?path=/story/ui-togglegroup-usages--text-formatting) for a formatting toolbar, a view switcher and a chart period, and [Layouts](?path=/story/ui-togglegroup-layouts--with-text) for icons, text and separators in the items and a vertical group.
+
+## Import
+
+```tsx
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+  ToggleGroupSeparator,
+} from '@acme/ui/toggle-group'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ToggleGroup aria-label="ToggleGroup">
+  <ToggleGroupItem value="first" />
+  <ToggleGroupSeparator />
+  <ToggleGroupItem value="second" />
+</ToggleGroup>
+```
+
+## ToggleGroup
+
+The container that holds the pressed state of every item inside it. Renders a `div` with `role="group"`, a flex row as wide as its items. It keeps the value itself when uncontrolled and never fetches or stores it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"outline"` | `"default"` | Controls the look of every item; `"outline"` also joins the items into one bordered bar. |
+| `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | Sets the height and the padding of every item. |
+| `orientation` | `"horizontal"` or `"vertical"` | `"horizontal"` | Sets the arrow keys that move focus; with `"outline"` it also stacks the items. |
+| `value` | `readonly string[]` | - | Sets the values of the pressed items and makes the group controlled. |
+| `defaultValue` | `readonly string[]` | `[]` | Sets the values pressed on mount, for an uncontrolled group. |
+| `onValueChange` | `(groupValue: string[], eventDetails: ChangeEventDetails) => void` | - | Called when an item is pressed or released, with the new list of values. |
+| `multiple` | `boolean` | `false` | When true, lets several items be pressed at once. |
+| `disabled` | `boolean` | `false` | When true, disables every item in the group. |
+| `loopFocus` | `boolean` | `true` | When true, the arrow keys move focus from the last item back to the first, and the other way. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `div` with another element, which receives the group props. |
+| `className` | `string` | - | Adds classes after the layout classes, so a conflicting class wins. |
+
+Also takes every prop of a `div`.
+
+`ChangeEventDetails` is `ToggleGroupPrimitive.ChangeEventDetails`: it holds the native `event` and a `cancel()` that keeps the value as it was.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toggle-group"` | Selects the part in the theme and from other parts |
+| `data-variant` | `"default"` or `"outline"` | Styles the group by its variant |
+| `data-size` | `"sm"`, `"default"` or `"lg"` | Styles the group by its size |
+| `data-orientation` | `"horizontal"` or `"vertical"` | Styles the group by its orientation |
+| `data-multiple` | present when `multiple` is true | Styles a group that takes several pressed items |
+| `data-disabled` | present when `disabled` is true | Styles the disabled group |
+
+Without `multiple`, pressing an item releases the one that was pressed, and pressing the pressed item releases it too, so the value can be empty. To keep one item pressed, control `value` and ignore an empty list in `onValueChange`, as the view switcher in [Project views](?path=/story/ui-togglegroup-usages--project-views) does. With `multiple`, the value lists the pressed items in the order they were pressed.
+
+With `"default"` the items sit 2px apart. With `"outline"` they touch: every item but the first loses its start border and its start corners, and every item but the last loses its end border and its end corners, so only a `ToggleGroupSeparator` draws a line between two items. `orientation="vertical"` stacks the items only with `"outline"`; with `"default"` they stay in a row unless `className` adds `flex-col`.
+
+The group is one tab stop, and `Tab` leaves it on the next press. The first time, `Tab` focuses the first enabled item, whatever is pressed; after that it returns to the item that had focus last. `ArrowLeft` and `ArrowRight` move focus in a horizontal group, `ArrowUp` and `ArrowDown` in a vertical one, and `Home` and `End` jump to the ends; none of them presses an item. `Space` and `Enter` press the focused item.
+
+The group submits nothing with a form: no item has a `name`, and no hidden input holds the value. Keep the value in state and send it with the rest of the form.
+
+## ToggleGroupItem
+
+One toggle button of the group. Renders a `button` with `type="button"` and `aria-pressed`, and reads its pressed state from the group's value.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | - | Identifies the item in the group's value; without it the item gets a generated id the consumer cannot match. |
+| `disabled` | `boolean` | `false` | When true, disables this item alone; the arrow keys skip it. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `button` with another element, which receives the item props. |
+| `className` | `string` | - | Adds classes, which win over the classes of the variant and the size. |
+
+Also takes every prop of the Base UI `Toggle`. Inside the group, `pressed` and `defaultPressed` have no effect, since the group's value decides, and `type` and `form` are ignored.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toggle"` | Selects the part in the theme and from other parts |
+| `data-pressed` | present when the item is pressed | Gives the pressed background |
+| `data-disabled` | present when the item or the group is disabled | Styles the disabled item |
+| `data-variant` | `"default"` or `"outline"` | The group's variant |
+| `data-size` | `"sm"`, `"default"` or `"lg"` | The group's size |
+
+The item's own `variant` and `size` have no effect: the group's values always win, so set them on `ToggleGroup`.
+
+From `sm` up, `sm` is 28px high, `default` 32px and `lg` 36px, and each is at least as wide as it is high; below `sm` each is 4px taller. With `"default"`, a pressed item takes `--input` at 64% as its background and a hovered one `--accent`. With `"outline"` the same holds in light; in dark the item rests on `--input` at 32%, takes `--input` at 64% when hovered and `--input` when pressed. A disabled item drops to 64% opacity. An `svg` child without a `size-*` class is 16px from `sm` up and 18px below, drawn at 80% opacity without an `opacity-*` class.
+
+On a coarse pointer the hit area of each item grows to at least 44px high in a horizontal group, and 44px wide in a vertical one, without changing the look.
+
+To give an item a tooltip, pass it as the `render` of a `TooltipTrigger`; the arrow keys and the group value still reach it. Rendered that way, as in [Text formatting](?path=/story/ui-togglegroup-usages--text-formatting), the item takes `data-slot="tooltip-trigger"`, so the group's rules that select `[data-slot=toggle]` skip it.
+
+## ToggleGroupSeparator
+
+A line between two items. Renders the `Separator`, a `div` with `role="separator"`, that the arrow keys skip. See [UI/Separator](?path=/docs/ui-separator-api-reference--api-reference) for its own props.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `orientation` | `"vertical"` or `"horizontal"` | `"vertical"` | Sets the direction of the line; pass `"horizontal"` in a vertical group. |
+| `className` | `string` | - | Adds classes after the line classes, so a conflicting class wins. |
+
+Also takes every prop of the `Separator`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"separator"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"vertical"` or `"horizontal"` | Styles the line by its direction |
+
+The line takes `--input`, with an overlay of `--input` at 32% in dark. In dark, `ToggleGroup` repaints that overlay through rules on its direct children: `--input` at 64% on a separator next to a hovered item and `--input` on a separator next to a pressed item, which match the dark backgrounds of an `"outline"` item. A separator outside a `ToggleGroup`, or next to an item whose `data-slot` is not `"toggle"`, keeps its overlay.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ToggleGroupContext` | `context` | The React context that passes `variant` and `size` from the group to its items; defaults to `{ size: "default", variant: "default" }`. |
+| `ToggleGroupPrimitive` | `component` | Alias for `ToggleGroup` from Base UI, without the layout classes or the context; also the namespace of its types (`ToggleGroupPrimitive.Props`, `ToggleGroupPrimitive.ChangeEventDetails`). |
+
+## Accessibility and theme
+
+- Name every group with `aria-label` or `aria-labelledby`.
+- Name every item: by its text, or with `aria-label` when it holds an icon alone. Mark the icon `aria-hidden="true"`.
+- Pair an icon-only item with a `Tooltip` that shows its name, so sighted users can read it too.
+- The items read `--foreground`, `--accent`, `--accent-foreground`, `--input`, `--background` and `--ring` from the theme; the group adds no color.
