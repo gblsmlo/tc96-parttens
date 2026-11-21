@@ -1,0 +1,218 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Sheet
+
+A panel that slides in from an edge of the screen, over the page, for a task or a set of details that belongs next to what the user was doing: editing a profile, reading an order, the navigation of a small screen, cookie preferences. Reach for it when the content needs more room than a popover and the user goes back to the page afterwards; a short task in the middle of the page is a `Dialog`, and a question that only confirms a destructive action is an `AlertDialog`.
+
+The other pages of `UI/Sheet`: [Playground](?path=/story/ui-sheet-playground--playground) to try the texts, the parts, the side, the inset variant, the footer variant and the close button, [Stories](?path=/story/ui-sheet-stories--default) for each prop value, [Behavior](?path=/story/ui-sheet-behavior--opens-from-trigger) for the tests, [Usages](?path=/story/ui-sheet-usages--edit-profile) for real tasks and [Layouts](?path=/story/ui-sheet-layouts--without-description) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Sheet,
+  SheetClose,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetPanel,
+  SheetPopup,
+  SheetTitle,
+  SheetTrigger,
+} from '@acme/ui/sheet'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Sheet>
+  <SheetTrigger />
+  <SheetPopup>
+    <SheetHeader>
+      <SheetTitle />
+      <SheetDescription />
+    </SheetHeader>
+    <SheetPanel />
+    <SheetFooter>
+      <SheetClose />
+    </SheetFooter>
+  </SheetPopup>
+</Sheet>
+```
+
+## Sheet
+
+Groups the parts and holds the open state. Alias for `Dialog.Root` from Base UI; renders no element. It is modal by default: while open, focus stays in the popup, the page behind it does not scroll and is hidden from assistive technology. A press outside the popup, `Escape` and a `SheetClose` close it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the sheet asks to open or close, with the `reason` in `eventDetails`. |
+| `modal` | `boolean` or `"trap-focus"` | `true` | Sets how much of the page it blocks: `true` traps focus, locks scroll and blocks outside pointers, `"trap-focus"` only traps focus, `false` blocks nothing. |
+| `disablePointerDismissal` | `boolean` | `false` | When true, a press outside the popup does not close it, nor focus moving out of a non-modal sheet. |
+| `handle` | `SheetPrimitive.Handle` | - | Links the sheet to a trigger outside it, created with `SheetPrimitive.createHandle()`. |
+
+Also takes every prop of Base UI `Dialog.Root`, such as `actionsRef` and `onOpenChangeComplete`.
+
+`ChangeEventDetails` is `SheetPrimitive.Root.ChangeEventDetails`. The `reason` of a close is `"outside-press"`, `"escape-key"`, `"close-press"`, `"focus-out"` for a non-modal sheet, or `"imperative-action"` when `handle` or `actionsRef` closes it; a controlled parent can refuse it by not updating `open`, as a form with unsaved changes does.
+
+## SheetTrigger
+
+The button that opens the sheet. Renders a `button`; pass `render={<Button />}` to use the `Button`. It can sit outside `Sheet` when both share a `handle`, and focus returns to it when the sheet closes.
+
+Also takes every prop of Base UI `Dialog.Trigger`, such as `payload`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"sheet-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while its sheet is open | Styles the trigger of the open sheet |
+| `data-disabled` | present when disabled | Styles a disabled trigger |
+
+## SheetPopup
+
+The sheet itself. Renders a `div` with `role="dialog"` in a portal on `body`, above a `SheetBackdrop` and inside a `SheetViewport`, so one part brings the whole layer. It is labelled by `SheetTitle` and described by `SheetDescription`. On open, focus moves to its first focusable element, or to the popup itself when a touch opened it, so the virtual keyboard stays closed. Its last child is a close button at the top end: a ghost icon `Button` with a `SheetClose` behind it and `aria-label="Close"`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `"right"`, `"left"`, `"top"` or `"bottom"` | `"right"` | Sets the edge of the screen the sheet sits on and slides in from. |
+| `variant` | `"default"` or `"inset"` | `"default"` | Controls the frame: `"inset"` lifts the sheet 16px off the edges with rounded corners from `sm` up. |
+| `showCloseButton` | `boolean` | `true` | When true, renders the close button at the top end. |
+| `closeProps` | `SheetPrimitive.Close.Props` | - | Sets the props of the close button, such as `aria-label` in another language. |
+| `portalProps` | `SheetPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `Dialog.Popup`, such as `initialFocus` and `finalFocus`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"sheet-popup"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-nested` | present when it opens inside another sheet or dialog | Styles a sheet opened over another |
+| `data-nested-dialog-open` | present while a sheet or dialog is open over it | Styles the sheet left behind |
+
+`side` and `variant` set no attribute; select them by their classes or wrap the popup.
+
+Each side places the sheet on its edge and draws a 1px border only on the edge that faces the page:
+
+| `side` | Size | Border |
+| --- | --- | --- |
+| `"right"`, `"left"` | the full height; the width of the screen minus 48px, at most 448px (`max-w-md`) | `border-s` on the right, `border-e` on the left |
+| `"top"`, `"bottom"` | the full width; as tall as its content, at most the screen minus 48px, or minus 32px with `"inset"` from `sm` up | `border-b` on top, `border-t` on the bottom |
+
+The sheet slides 32px in from its edge while it fades in, and back out when it closes. With `"default"` it has no radius. With `"inset"`, from `sm` up the viewport gets 16px of padding and the sheet a 2xl radius and a 1px `border` on every edge, with the bottom corners of a `SheetFooter` rounded to match. On a `"top"` or `"bottom"` sheet that padding replaces the 48px gap on the far edge, so the gap is 16px there too and a tall sheet reaches the screen minus 32px. Below `sm` it looks like `"default"`.
+
+The popup is a column that never outgrows the screen. A `SheetPanel` takes the height left between the header and the footer, so on a `"right"` or `"left"` sheet the footer sits on the bottom edge, and a panel with more content than fits scrolls while the header and the footer stay in place.
+
+## SheetHeader
+
+The block of the title and the description. Renders a `div` that stacks them 8px apart with 24px of padding; the bottom padding drops to 12px when the popup has a `SheetPanel`, and to 16px below `sm`.
+
+Also takes every prop of a `div`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"sheet-header"` | Selects the part in the theme and from other parts |
+
+## SheetTitle
+
+The name of the task. Renders an `h2` in the heading font at `text-xl`, and its text is the accessible name of the popup.
+
+Also takes every prop of Base UI `Dialog.Title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"sheet-title"` | Selects the part in the theme and from other parts |
+
+## SheetDescription
+
+What the sheet holds or what it changes. Renders a `p` in `text-sm text-muted-foreground`, and its text is the accessible description of the popup.
+
+Also takes every prop of Base UI `Dialog.Description`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"sheet-description"` | Selects the part in the theme and from other parts |
+
+## SheetPanel
+
+The body of the sheet: a form, a list, a record. Renders a `div` with 24px of padding inside a `ScrollArea` that scrolls when the content does not fit; the top padding drops to 4px when the popup has a `SheetHeader`, and the bottom one to 4px when its `SheetFooter` is `"bare"`. Scrolling stops at its edges instead of moving the page.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `scrollFade` | `boolean` | `true` | When true, fades the top and bottom 24px while the content scrolls past them. |
+
+Also takes every prop of a `div`, and `render` to change the element. `className` goes to the `div`, not to the scroll area.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"sheet-panel"` | Selects the part in the theme and from other parts |
+
+The scroll area around it is the `ScrollArea` component, and its viewport carries `data-slot="scroll-area-viewport"`.
+
+## SheetFooter
+
+The row of actions. Renders a `div`; below `sm` its children stack full width in reverse order, so the last one sits on top, and from `sm` up they line up at the end.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"bare"` | `"default"` | Controls the surface: `"default"` adds a top border and a muted background, `"bare"` drops both. |
+
+Also takes every prop of a `div`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"sheet-footer"` | Selects the part in the theme and from other parts |
+
+The variant sets no attribute; select it by its classes or wrap it.
+
+## SheetClose
+
+A button that closes the sheet. Renders a `button`; pass `render={<Button />}` to use the `Button`, and `onClick` to run something before it closes. A button that has to keep the sheet open while it works, such as a submit that may fail, is a plain `Button` with a controlled `open`.
+
+Also takes every prop of Base UI `Dialog.Close`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"sheet-close"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when disabled | Styles a disabled close |
+
+The close button of `SheetPopup` sets no `data-slot` of its own: it renders the `Button`, so it carries the `Button`'s `data-slot="button"`, the same as every other `Button`. Select it by its `aria-label` (`"Close"`) or pass a `className` through `closeProps`.
+
+## SheetPortal, SheetBackdrop and SheetViewport
+
+The layers `SheetPopup` already renders, exported to build another popup on them. `SheetPortal` is the Base UI `Dialog.Portal` and renders a `div` on `body`. `SheetBackdrop` renders a fixed `div` that dims and blurs the page; it is not rendered for a sheet nested in another unless it gets `forceRender`. `SheetViewport` renders a fixed layer over the whole screen that places the popup on its side: a row for `"left"` and `"right"`, a grid for `"top"` and `"bottom"`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `"right"`, `"left"`, `"top"` or `"bottom"` | - | Sets the edge the popup is placed on; without it the viewport is a plain grid. Only `SheetViewport` takes it. |
+| `variant` | `"default"` or `"inset"` | `"default"` | When `"inset"`, sets 16px of padding on every edge from `sm` up, replacing the 48px gap of `"top"` and `"bottom"`. Only `SheetViewport` takes it. |
+
+Each also takes every prop of its Base UI part.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"sheet-backdrop"` or `"sheet-viewport"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed`, `data-starting-style`, `data-ending-style` | present in that state | Style the layer with the popup |
+| `data-nested`, `data-nested-dialog-open` | present on `SheetViewport`, as on the popup | Style the layer of a nested sheet |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SheetContent` | `component` | The same component as `SheetPopup`. |
+| `SheetOverlay` | `component` | The same component as `SheetBackdrop`. |
+| `SheetPrimitive` | `namespace` | The Base UI `Dialog` namespace, for `SheetPrimitive.createHandle()` and types such as `SheetPrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Always render a `SheetTitle`: it names the sheet.
+- Keep a way to close inside the popup: with `showCloseButton={false}`, put a `SheetClose` in the footer, since touch screen readers have no `Escape`.
+- The close button is labelled `"Close"`; pass another `aria-label` through `closeProps` when the page is in another language.
+- Label an icon-only `SheetTrigger` with `aria-label`.
+- The popup uses the `popover` and `popover-foreground` tokens and the default footer `muted`; the theme needs no rule of its own.
