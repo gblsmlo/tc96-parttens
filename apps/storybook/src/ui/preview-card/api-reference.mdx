@@ -1,0 +1,111 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# PreviewCard
+
+A card that floats under a link while the pointer rests on it, so a sighted user sees where the link leads without following it: the profile behind a mention, the summary of a repository, the status of a referenced issue. Reach for it when the link already says enough and the card only adds a glance; content a user has to act on or that a screen reader user also needs belongs in a `Popover`, a `Dialog` or the page itself.
+
+The other pages of `UI/PreviewCard`: [Playground](?path=/story/ui-previewcard-playground--playground) to try the texts, the avatar, the trigger element and the placement, [Stories](?path=/story/ui-previewcard-stories--default) for the base composition, [Behavior](?path=/story/ui-previewcard-behavior--opens-on-hover) for the tests, [Usages](?path=/story/ui-previewcard-usages--member-mention) for real links and [Layouts](?path=/story/ui-previewcard-layouts--with-avatar) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  PreviewCard,
+  PreviewCardPopup,
+  PreviewCardTrigger,
+} from '@acme/ui/preview-card'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<PreviewCard>
+  <PreviewCardTrigger href="…" />
+  <PreviewCardPopup />
+</PreviewCard>
+```
+
+## PreviewCard
+
+Groups the parts and holds the open state. Alias for `PreviewCard.Root` from Base UI; renders no element. It opens when a mouse pointer rests on the trigger or the trigger takes keyboard focus, and closes when the pointer leaves both the trigger and the popup, when focus leaves the trigger for anything but the popup or another trigger, on `Escape` and on a press outside the popup. It is never modal: focus stays where it was, and the page keeps scrolling.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the card asks to open or close, with the `reason` in `eventDetails`. |
+| `handle` | `PreviewCardPrimitive.Handle<Payload>` | - | Links the card to triggers outside it, created with `PreviewCardPrimitive.createHandle()`. |
+| `children` | `ReactNode` or `({ payload }) => ReactNode` | - | Sets the parts; a function receives the `payload` of the trigger that opened the card. |
+| `defaultTriggerId` | `string` or `null` | `null` | Sets the `id` of the trigger an initially open card anchors to, when several triggers share it. |
+
+Also takes every prop of Base UI `PreviewCard.Root`, such as `triggerId`, `actionsRef` and `onOpenChangeComplete`.
+
+`ChangeEventDetails` is `PreviewCardPrimitive.Root.ChangeEventDetails`. The `reason` is `"trigger-hover"` when the pointer rests on or leaves the trigger and the card, `"trigger-focus"` when the trigger takes or loses keyboard focus, `"escape-key"`, `"outside-press"`, or `"imperative-action"` when `actionsRef` closes it.
+
+## PreviewCardTrigger
+
+The link the card describes. Renders an `a` with no style of its own, so pass the `href` it leads to and the classes of a link; `render={<Button />}` makes it a `Button`. Hover opens the card only for a mouse pointer, after `delay`; keyboard focus opens it after the same `delay`, and a mouse press follows the link as usual. Several triggers in one `PreviewCard`, or outside it with a shared `handle`, open the same card, anchored to the one that opened it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | - | Sets where the link leads; without it the `a` is neither a link nor focusable. |
+| `delay` | `number` | `600` | Sets how long, in milliseconds, the pointer or focus rests on the trigger before the card opens. |
+| `closeDelay` | `number` | `300` | Sets how long, in milliseconds, the card waits after the pointer leaves before it closes. |
+| `payload` | `Payload` | - | Sets the value the card's function child receives when this trigger opens it. |
+| `handle` | `PreviewCardPrimitive.Handle<Payload>` | - | Links a trigger outside `PreviewCard` to the card of the same `handle`. |
+
+Also takes every prop of Base UI `PreviewCard.Trigger`, and so every prop of an `a`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"preview-card-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while the card it opened is open | Styles the trigger of the open card |
+
+The trigger gets no `aria-expanded`, `aria-haspopup` or `aria-describedby`: to assistive technology it stays a plain link. Rendered as a `Button`, it carries `data-slot="preview-card-trigger"` in place of the `Button`'s `"button"`.
+
+## PreviewCardPopup
+
+The card itself. Renders a `div` in a portal on `body`, inside a positioner at `z-50` that places it under the trigger and flips or shifts it to stay on screen. The card is 256px wide (`w-64`), with 16px of padding, a large radius, a 1px `border`, the `popover` background, `text-sm` and a shadow; it lays its children out in a row (`flex`), so wrap a stack in one element. It scales from 98% and fades in and out.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `align` | `"start"`, `"center"` or `"end"` | `"center"` | Sets how the card aligns with the trigger. |
+| `sideOffset` | `number` | `4` | Sets the gap in pixels between the trigger and the card. |
+| `anchor` | `Element`, a ref, or a function that returns one | - | Sets the element the card is positioned against, in place of the trigger. |
+| `portalProps` | `PreviewCardPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `PreviewCard.Popup`. `className` goes to the card, after its own classes, so `w-80` widens it.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"preview-card-content"` | Selects the card |
+| `data-slot` | `"preview-card-positioner"` | Selects the positioned layer around it |
+| `data-open`, `data-closed` | present in that state, on the card and the positioner | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present on the card while it animates in or out | Style the enter and exit transitions |
+| `data-side` | `"bottom"`, or the side it flipped to, on the card and the positioner | Styles the card by the side it opened on |
+| `data-align` | `"start"`, `"center"` or `"end"`, on the card and the positioner | Styles the card by its alignment |
+| `data-anchor-hidden` | present on the positioner while the trigger is clipped out of view | Hides or styles the card whose trigger is off screen |
+
+The card opens under the trigger: its side is not a prop, and it moves only when the room under the trigger runs out. It has no `role`, and the trigger does not point at it, so a screen reader does not announce it. While the pointer moves from the trigger onto the card, and while it rests on the card, the card stays open.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `HoverCard` | `component` | The same component as `PreviewCard`. |
+| `HoverCardTrigger` | `component` | The same component as `PreviewCardTrigger`. |
+| `HoverCardContent` | `component` | The same component as `PreviewCardPopup`. |
+| `PreviewCardPrimitive` | `namespace` | The Base UI `PreviewCard` namespace, for `createHandle`, the parts not wrapped here (`PreviewCardPrimitive.Arrow`) and the types such as `PreviewCardPrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Keep everything a user needs in the link text and on the page it leads to: the card shows only to sighted users, and only to a mouse or the keyboard.
+- Put no buttons or form fields in the card: it closes as the pointer leaves and takes no focus, so a keyboard user cannot reach them.
+- Pass an `href`: without one, the trigger is an `a` that is neither a link nor reachable with `Tab`.
+- Hide decorative marks inside the card, such as a color dot, with `aria-hidden="true"`.
+- The card uses the `popover`, `popover-foreground` and `border` tokens; the theme needs no rule of its own.
