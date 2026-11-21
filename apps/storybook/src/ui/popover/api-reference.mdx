@@ -1,0 +1,173 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Popover
+
+A small popup anchored to the button that opens it, for short content that belongs to that button: a feedback form, the latest notifications, a hint next to a field. Reach for it when the content is brief and the user moves on once they are done; a task that needs the whole page's attention is a `Dialog`, a list of actions is a `Menu`, and a label shown on hover with nothing to interact with is a `Tooltip`.
+
+The other pages of `UI/Popover`: [Playground](?path=/story/ui-popover-playground--playground) to try the texts, the close button, the tooltip style and the placement, [Stories](?path=/story/ui-popover-stories--default) for each prop value, [Behavior](?path=/story/ui-popover-behavior--opens-from-trigger) for the tests, [Usages](?path=/story/ui-popover-usages--send-feedback) for real content and [Layouts](?path=/story/ui-popover-layouts--with-close-button) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Popover,
+  PopoverClose,
+  PopoverDescription,
+  PopoverPopup,
+  PopoverTitle,
+  PopoverTrigger,
+} from '@acme/ui/popover'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Popover>
+  <PopoverTrigger render={<Button variant="outline" />} />
+  <PopoverPopup>
+    <div className="flex flex-col gap-2">
+      <PopoverTitle />
+      <PopoverDescription />
+      <PopoverClose render={<Button size="sm" variant="ghost" />} />
+    </div>
+  </PopoverPopup>
+</Popover>
+```
+
+`PopoverPopup` lays out nothing: its children keep their own flow, so the title, the description and any form or list inside are arranged by a wrapper of the content, as the `div` above does.
+
+## Popover
+
+Groups the parts and holds the open state. Alias for `Popover.Root` from Base UI; renders no element. It is not modal by default: the page behind stays usable, a press outside the popup, `Escape`, moving focus out of it and a second press on the trigger close it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the popover asks to open or close, with the `reason` in `eventDetails`. |
+| `modal` | `boolean` or `"trap-focus"` | `false` | Sets how much of the page it blocks: `true` traps focus, locks scroll and blocks outside pointers, `"trap-focus"` only traps focus, `false` blocks nothing; both traps need a `PopoverClose` in the popup. |
+| `handle` | `PopoverPrimitive.Handle<Payload>` | - | Links the popover to triggers outside it, created with `PopoverCreateHandle`. |
+| `children` | `ReactNode` or `({ payload }) => ReactNode` | - | Sets the content; a function receives the `payload` of the trigger that opened it. |
+
+Also takes every prop of Base UI `Popover.Root`, such as `actionsRef`, `onOpenChangeComplete` and `defaultTriggerId`.
+
+`ChangeEventDetails` is `PopoverPrimitive.Root.ChangeEventDetails`. Its `reason` is `"trigger-press"`, `"trigger-hover"`, `"trigger-focus"`, `"outside-press"`, `"escape-key"`, `"close-press"`, `"focus-out"`, `"imperative-action"` or `"none"`; a controlled parent can refuse a close by not updating `open`.
+
+With `modal={true}` or `modal="trap-focus"`, focus stays inside the popup only when it renders a `PopoverClose`; without one, the page scroll and the outside pointer are still blocked by `true`, but focus is not trapped.
+
+## PopoverTrigger
+
+The button that opens and closes the popover. Renders a `button` with `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls` pointing at the popup; pass `render={<Button />}` to use the `Button`. Focus returns to it when the popover closes. It can sit outside `Popover` when both share a `handle`, and several triggers can share one popup that way.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `openOnHover` | `boolean` | `false` | When true, the popover also opens when the pointer rests on the trigger, and closes when it leaves both. |
+| `delay` | `number` | `300` | Sets the wait in milliseconds before a hover opens it; acts only with `openOnHover`. |
+| `closeDelay` | `number` | `0` | Sets the wait in milliseconds before leaving the trigger closes it; acts only with `openOnHover`. |
+| `handle` | `PopoverPrimitive.Handle<Payload>` | - | Links a trigger outside `Popover` to it. |
+| `payload` | `Payload` | - | Sets the value the `children` function of `Popover` receives when this trigger opens it. |
+
+Also takes every prop of Base UI `Popover.Trigger`, such as `disabled` and `nativeButton`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"popover-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while its popover is open | Styles the trigger of the open popover |
+| `data-pressed` | present with `data-popup-open` when a press on this trigger opened the popover | Styles the trigger of a popover opened by a press, not by hover or focus |
+| `data-disabled` | present when disabled | Styles a disabled trigger |
+
+## PopoverPopup
+
+The popup itself. Renders a `div` with `role="dialog"` inside a positioner `div`, in a portal on `body`, so one part brings the whole layer; its children go in a viewport `div` inside it. It is labelled by `PopoverTitle` and described by `PopoverDescription`. When it opens, focus moves to its first tabbable element, or to the popup itself when there is none; an open by touch focuses the popup itself, so no on-screen keyboard opens, and an open by hover leaves focus where it is.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `Side` | `"bottom"` | Sets the side of the trigger it opens on; it flips to the other side when there is no room. |
+| `align` | `"start"`, `"center"` or `"end"` | `"center"` | Sets how it lines up with the trigger along that side. |
+| `sideOffset` | `number` or `OffsetFunction` | `4` | Sets the gap in pixels between the trigger and the popup. |
+| `alignOffset` | `number` or `OffsetFunction` | `0` | Sets the shift in pixels along the alignment axis. |
+| `tooltipStyle` | `boolean` | `false` | When true, draws a compact popup sized to its text, for a short hint. |
+| `anchor` | `Element`, `RefObject<Element>`, `VirtualElement` or a function returning one | the trigger | Sets the element it is positioned against, when that is not the trigger. |
+| `portalProps` | `PopoverPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `Popover.Popup`, such as `initialFocus` and `finalFocus`. `className` and `style` go to the popup, not to the positioner or the viewport.
+
+`Side` is `"top"`, `"bottom"`, `"left"`, `"right"`, `"inline-start"` or `"inline-end"`; the last two follow the writing direction. `OffsetFunction` receives `{ side, align, anchor, positioner }`, the last two as `{ width, height }`, and returns the offset in pixels.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"popover-popup"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-side` | the side it actually opened on | Styles the popup by its placement, after any flip |
+| `data-align` | `"start"`, `"center"` or `"end"` | Styles the popup by its alignment |
+| `data-instant` | `"click"`, `"dismiss"`, `"focus"` or `"trigger-change"` | Names the change whose transition is skipped, so the theme can turn it off |
+
+The positioner carries `data-slot="popover-positioner"` with the same `data-open`, `data-closed`, `data-side` and `data-align`, plus `data-anchor-hidden` when the anchor scrolls out of view; it sits at `z-50`.
+
+The viewport is the `div` between the popup and its children. It takes no props, but its attributes let the theme style the content change of a popup shared by several triggers:
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"popover-viewport"` | Selects the viewport in the theme |
+| `data-transitioning` | present while a shared popup changes content | Styles the viewport during the change |
+| `data-activation-direction` | `"left"` or `"right"` and `"up"` or `"down"`, space-separated, either may be empty | Tells which way the popup moved to the new trigger, for a directional animation |
+| `data-current` | on the `div` that wraps the shown content | Styles the incoming content |
+| `data-previous` | on the `div` that wraps the outgoing content, during a change | Styles the outgoing content |
+
+The component already fades the two wrappers and sizes them to the popup width during a change.
+
+The popup has a `lg` radius, a 1px `border`, the `popover` background and a soft shadow, and it grows from 98% scale and fades in on open. Its viewport has 16px of padding and scrolls when the content is taller than the room left on screen. It has no width of its own: it fits its content up to the room on screen, so set one with `className` (`w-80`). With `tooltipStyle`, it sizes to its text with balanced lines, `text-xs`, an `md` radius, a smaller shadow and 4px by 8px of padding, and it does not scroll. When it holds a `Calendar`, the radius grows to `xl` and the padding drops to 8px.
+
+## PopoverTitle
+
+The name of the popup. Renders an `h2` in `text-lg font-semibold`, and its text is the accessible name of the popup.
+
+Also takes every prop of Base UI `Popover.Title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"popover-title"` | Selects the part in the theme and from other parts |
+
+## PopoverDescription
+
+What the popup is about. Renders a `p` in `text-sm text-muted-foreground`, and its text is the accessible description of the popup.
+
+Also takes every prop of Base UI `Popover.Description`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"popover-description"` | Selects the part in the theme and from other parts |
+
+## PopoverClose
+
+A button that closes the popover. Renders an unstyled `button`; pass `render={<Button />}` to use the `Button`, and `aria-label` when it shows only an icon.
+
+Also takes every prop of Base UI `Popover.Close`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"popover-close"` | Selects the part in the theme and from other parts |
+
+It sets no state attribute: a disabled close is a `button` with the native `disabled` attribute, so select it with `:disabled`; with `nativeButton={false}` it gets `aria-disabled="true"` instead.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `PopoverCreateHandle` | `function` | Creates the `handle` that links detached `PopoverTrigger`s to their `Popover`. `PopoverCreateHandle<Payload>() => PopoverPrimitive.Handle<Payload>` |
+| `PopoverContent` | `component` | The same component as `PopoverPopup`. |
+| `PopoverPrimitive` | `namespace` | The Base UI `Popover` namespace, for its types such as `PopoverPrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Render a `PopoverTitle`, or give `PopoverPopup` an `aria-label`: the popup is a `dialog` and needs a name.
+- Label an icon-only `PopoverTrigger` and an icon-only `PopoverClose` with `aria-label`.
+- A trigger with `openOnHover` still toggles the popover on press and from the keyboard; never leave the content reachable by hover alone.
+- With `modal={true}` or `"trap-focus"`, render a `PopoverClose` inside the popup: focus is trapped only when there is one, and touch screen readers have no `Escape`.
+- The popup uses the `popover` and `popover-foreground` tokens; the theme needs no rule of its own.
