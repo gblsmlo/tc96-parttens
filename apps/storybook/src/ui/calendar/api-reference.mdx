@@ -1,0 +1,70 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Calendar
+
+A month grid for picking dates: one day, several days or a range. Reach for it inline when the dates are the task, such as booking an appointment, and inside a `Popover` behind a button when the date is one field of a form.
+
+The other pages of `UI/Calendar`: [Playground](?path=/story/ui-calendar-playground--playground) to try the mode, the caption, the outside days and round day buttons, [Stories](?path=/story/ui-calendar-stories--default) for each mode and caption layout, [Behavior](?path=/story/ui-calendar-behavior--day-button-class-names) for the tests, [Usages](?path=/story/ui-calendar-usages--book-appointment) for real pickers and [Layouts](?path=/story/ui-calendar-layouts--with-presets) for how the calendar combines with presets and a popover.
+
+## Import
+
+```tsx
+import { Calendar } from '@acme/ui/calendar'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Calendar />
+```
+
+## Calendar
+
+The date picker. Renders [DayPicker](https://daypicker.dev/) from `@daypicker/react`: a `div` that holds the month caption, the previous and next buttons, and one `table` with `role="grid"` per month, whose days are buttons. Without `selected` it keeps the selection itself; pass `selected` and `onSelect` to own it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `mode` | `"single"`, `"multiple"` or `"range"` | `"single"` | Sets what a click selects: one day, a set of days, or the start and end of a range. |
+| `selected` | `Date`, `Date[]` or `DateRange` | - | Sets the selected days, in the shape the `mode` takes. |
+| `onSelect` | `(selected, triggerDate, modifiers, event) => void` | - | Called when the selection changes, with a `Date`, `Date[]` or `DateRange` by `mode`. |
+| `captionLayout` | `"label"`, `"dropdown"`, `"dropdown-months"` or `"dropdown-years"` | `"label"` | Sets the caption: the month name, or dropdowns for the month, the year or both. |
+| `showOutsideDays` | `boolean` | `true` | When true, fills the first and last weeks with days of the adjacent months. |
+| `startMonth` | `Date` | - | Sets the first month navigation reaches; without it, the year dropdown starts 100 years back. |
+| `endMonth` | `Date` | - | Sets the last month navigation reaches; without it, the year dropdown ends this year. |
+| `classNames` | `Partial<ClassNames>` | - | Adds classes to the inner parts, merged after the calendar's own so a conflicting class wins. |
+| `components` | `Partial<CustomComponents>` | - | Replaces inner parts, such as `Dropdown` or `DayButton`; the chevrons stay unless replaced. |
+
+Also takes every prop of [DayPicker](https://daypicker.dev/), such as `disabled`, `month`, `onMonthChange`, `defaultMonth` and `numberOfMonths`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"calendar"` | Selects the calendar in the theme and from other parts |
+| `data-mode` | `"single"`, `"multiple"` or `"range"` | Sets the selection mode on the root |
+| `data-multiple-months` | present when `numberOfMonths` is above 1 | Styles a calendar that shows several months |
+| `data-week-numbers` | present when `showWeekNumber` is true | Styles a calendar with a week number column |
+| `data-selected` | present on a selected day cell | Styles the selected days |
+| `data-disabled` | present on a disabled day cell | Styles the days `disabled` matches |
+| `data-outside` | present on a day cell of an adjacent month | Styles the outside days |
+| `data-today` | present on today's cell | Styles today |
+| `data-focused` | present on the focused day cell | Styles the day that has the keyboard focus |
+| `data-hidden` | present on a hidden day cell | Styles the days `hidden` matches and the outside days `showOutsideDays={false}` hides; the cell stays and is `invisible` |
+| `data-day` | the day's ISO date, such as `"2026-11-20"` | Selects one day from a test or a style |
+
+`classNames` merges only into the parts the calendar styles: `months`, `month`, `month_caption`, `caption_label`, `nav`, `button_previous`, `button_next`, `dropdowns`, `dropdown_root`, `dropdown`, `weekday`, `week_number`, `day`, `day_button`, `today`, `outside`, `hidden`, `range_start`, `range_middle` and `range_end`. A key outside that list is ignored.
+
+Each day cell is `--cell-size` square: 40px below `sm` and 36px from `sm` up. Change it through `className`, for example `[--cell-size:--spacing(11)]`.
+
+Day buttons are `rounded-lg`; `classNames={{ day_button: 'rounded-full' }}` makes them round, which the Playground switches with `roundedDays`. Today has a 3px dot under its number, disabled days are struck through, and in a range the day buttons between the ends take `bg-accent` and lose their radius. The cells of a range carry the classes `range-start`, `range-middle` and `range-end`.
+
+The month dropdown shows short month names (`Jan`). Passing `formatters` replaces that formatter as well.
+
+## Accessibility and theme
+
+- The grid is named by its month and every day button by its full date, so the calendar needs no label of its own. A calendar inside a `Popover` gets its name from the trigger: label the trigger with a `FieldLabel` or visible text.
+- A custom `Dropdown` passes on the `aria-label` it receives, as the combobox in [Start date field](?path=/story/ui-calendar-usages--start-date-field) does.
+- The weekday names and the outside days are below 4.5:1 in the default theme, so the stories of `UI/Calendar` turn off the axe `color-contrast` rule; the measure and the exception are in `docs/accessibility.md` (`Exceções`).

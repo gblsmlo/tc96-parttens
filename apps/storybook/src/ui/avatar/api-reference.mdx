@@ -1,0 +1,144 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Avatar
+
+A person's photo, or their initials when there is no photo, in a small circle: the author of a comment, the assignee of a task, the signed-in account in a header. Several avatars overlap in a group with a `+N` count, such as the people on a project or the ones editing a document now.
+
+The other pages of `UI/Avatar`: [Playground](?path=/story/ui-avatar-playground--playground) to try the initials, the image, the size, the element and the group, [Stories](?path=/story/ui-avatar-stories--default) for a broken image and each size, [Behavior](?path=/story/ui-avatar-behavior--default-size) for the tests, [Usages](?path=/story/ui-avatar-usages--comment-author) for avatars in context and [Layouts](?path=/story/ui-avatar-layouts--without-image) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+} from '@acme/ui/avatar'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<AvatarGroup>
+  <Avatar>
+    <AvatarImage />
+    <AvatarFallback />
+  </Avatar>
+  <AvatarGroupCount />
+</AvatarGroup>
+```
+
+## Avatar
+
+The circle that holds the image and the fallback. Renders a `span` from Base UI `Avatar.Root`, or the element passed in `render`, such as a `button` for an avatar that opens an account menu. It has no background of its own: what fills it is the image or the fallback.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `span` with another element, which receives the avatar props. |
+| `className` | `string` | - | Adds classes after the avatar classes, so a conflicting class wins. |
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"avatar"` | Selects the part in the theme and from other parts |
+
+| CSS variable | Default | Description |
+| --- | --- | --- |
+| `--avatar-size` | `--spacing(8)`, 32px | Sets the width and the height; the text is 37.5% of it. Read from the avatar or from any ancestor. |
+
+The size comes only from `--avatar-size`: `className="[--avatar-size:--spacing(12)]"` on the avatar, or on an ancestor to size every avatar inside it. A `size-*` class resizes the box but leaves the text and the group geometry at the size of the variable. The avatar is round; a `rounded-*` class changes its shape, and the image and the fallback follow it.
+
+## AvatarImage
+
+The photo. Renders an `img` from Base UI `Avatar.Image` only after the image has loaded: while it loads, after it fails and without `src`, it renders nothing and the fallback shows. It covers the whole avatar with `object-cover`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `src` | `string` | - | Sets the image to load; without it, the image never renders. |
+| `alt` | `string` | - | Names the image: the person's name, or `""` when the name is next to the avatar. |
+| `keepMounted` | `boolean` | `false` | When true, keeps the `img` in the page and loads it in place, for `loading="lazy"` and image components such as `next/image`; it stays invisible and `aria-hidden` until it loads. |
+| `onLoadingStatusChange` | `(status: ImageLoadingStatus) => void` | - | Called when the loading status changes, with the new status. |
+
+Also takes every prop of an `img`. Values of `status`: `"idle"`, `"loading"`, `"loaded"`, `"error"`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"avatar-image"` | Selects the part in the theme and from other parts |
+| `data-loading` | present while the image loads, with `keepMounted` | Hides the image until it is ready |
+| `data-error` | present when the image failed, with `keepMounted` | Hides the broken image |
+| `data-starting-style` | present while the image animates in | Lets the theme fade the image in |
+| `data-ending-style` | present while the image animates out | Lets the theme fade the image out |
+
+## AvatarFallback
+
+What the avatar shows without a loaded image, usually the initials. Renders a `span` from Base UI `Avatar.Fallback` while there is no `AvatarImage`, while the image loads and after it fails, and removes it once the image loads. It fills the avatar with the `border` color and centers its content in the text color it inherits.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `delay` | `number` | `0` | Sets how many milliseconds to wait before showing the fallback, so a fast image never flashes the initials. |
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"avatar-fallback"` | Selects the part in the theme and from other parts |
+
+The initials take the avatar's text size, 37.5% of `--avatar-size`; a `text-*` class on the fallback wins.
+
+## AvatarGroup
+
+A row of overlapping avatars. Renders a `div`. Each avatar after the first moves 30% of `--avatar-size` into the previous one, and at each overlap the avatar underneath is cut by a mask that leaves a transparent gap around the other, so the group reads the same on any background.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `topmost` | `"first"` or `"last"` | `"first"` | Sets which end of the row stays a whole circle; every other avatar is cut where its neighbor covers it. |
+| `style` | `React.CSSProperties` | - | Merges inline styles after the group's own `--avatar-group-cut-image`, so a conflicting value wins. |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"avatar-group"` | Selects the part in the theme and from other parts |
+| `data-topmost` | `"first"` or `"last"` | Mirrors `topmost` |
+
+| CSS variable | Default | Description |
+| --- | --- | --- |
+| `--avatar-size` | `--spacing(8)`, 32px | Sets the size of every avatar in the group and every measure below. |
+| `--avatar-overlap` | 30% of `--avatar-size` | Sets how far each avatar covers its neighbor. |
+| `--avatar-gap` | `--avatar-size` / 16 | Sets the width of the transparent gap around the covering avatar. |
+| `--avatar-nudge` | 30% of overlap plus gap | Moves the initials of a cut avatar away from the cut; `0px` centers them. |
+
+Every avatar in a group has the same size: set `--avatar-size` on the group, not on each avatar. Anything that sticks out of a cut avatar, such as a status dot, is cut with it; put it on the whole one (the first, or the last with `topmost="last"`). A browser without `mask-composite` shows the avatars overlapping with no gap.
+
+## AvatarGroupCount
+
+The `+N` at the end of a group, for the people not shown. Renders an `Avatar` holding an `AvatarFallback` with the children, in `text-muted-foreground`.
+
+Also takes every prop of `Avatar`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"avatar-group-count"` | Selects the part in the theme and from other parts; its fallback keeps `"avatar-fallback"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `AvatarGroupProps` | `type` | The props of `AvatarGroup`: the `div` props plus `topmost`. |
+| `AvatarPrimitive` | `namespace` | The Base UI `Avatar` the parts are built on, for its types (`AvatarPrimitive.Image.Props`) or a part this file does not wrap. |
+
+## Accessibility and theme
+
+- Pass `alt` on `AvatarImage`: the person's name when the avatar stands alone, `""` when the name is written next to it. Hide that avatar with `aria-hidden="true"` too, so the initials of the fallback are not read before the name.
+- An avatar rendered as a `button` needs `aria-label`: the image's `alt` is gone whenever the fallback shows.
+- A group says nothing about who is in it. Give it `role="group"` and an `aria-label` that names the people and the count, and hide the avatars and the count with `aria-hidden="true"`.
+- The fallback is `bg-border` with the text color of its surroundings, measured with `foreground`; on a surface where `border` is close to the background, the circle fades and only the initials remain.
+- Measured contrast: `docs/accessibility.md`, section `Avatar`.

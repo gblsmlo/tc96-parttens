@@ -1,0 +1,116 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# CheckboxGroup
+
+A set of checkboxes that share one value, a list of the checked items: the notifications a user wants by email, the columns a table shows, the permissions of a role. Reach for it when the user may pick any number of options, none included, and add a parent checkbox when they often want all or none at once.
+
+The other pages of `UI/CheckboxGroup`: [Playground](?path=/story/ui-checkboxgroup-playground--playground) to try the caption, the checked items, the parent checkbox and the disabled states, [Stories](?path=/story/ui-checkboxgroup-stories--default) for each state, [Behavior](?path=/story/ui-checkboxgroup-behavior--named-group) for the tests, [Usages](?path=/story/ui-checkboxgroup-usages--notification-preferences) for real settings and [Layouts](?path=/story/ui-checkboxgroup-layouts--with-parent) for a parent checkbox and a group inside a `Field`.
+
+## Import
+
+```tsx
+import { Checkbox } from '@acme/ui/checkbox'
+import { CheckboxGroup } from '@acme/ui/checkbox-group'
+import { Label } from '@acme/ui/label'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<div id="caption">caption</div>
+<CheckboxGroup aria-labelledby="caption" defaultValue={['first']}>
+  <Label>
+    <Checkbox value="first" />
+    Label
+  </Label>
+  <Label>
+    <Checkbox value="second" />
+    Label
+  </Label>
+</CheckboxGroup>
+```
+
+## CheckboxGroup
+
+The container that holds the value of every checkbox inside it. Renders a `div` with `role="group"`, a flex column that aligns its items to the start with a 12px gap. It keeps the value itself when uncontrolled and never fetches or stores it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string[]` | - | Sets the values of the checked items and makes the group controlled. |
+| `defaultValue` | `string[]` | `[]` | Sets the values checked on mount, for an uncontrolled group. |
+| `onValueChange` | `(value: string[], eventDetails: CheckboxGroupPrimitive.ChangeEventDetails) => void` | - | Called when an item is checked or cleared, with the new list of values. |
+| `allValues` | `string[]` | - | Lists the value of every item, so a parent checkbox can check or clear them all. |
+| `disabled` | `boolean` | `false` | When true, disables every checkbox in the group. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `div` with another element, which receives the group props. |
+| `className` | `string` | - | Adds classes after the layout classes, so a conflicting class wins. |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-disabled` | present when `disabled`, or inside a disabled `Field` | Styles the group as disabled |
+| `data-filled` | present inside a `Field` when an item is checked | Styles a group that has a value |
+| `data-dirty` | present inside a `Field` when the value differs from the initial one | Styles a changed group |
+| `data-touched` | present inside a `Field` after the group loses focus | Styles a visited group |
+| `data-focused` | present inside a `Field` while a checkbox has focus | Styles the focused group |
+| `data-valid`, `data-invalid` | present inside a `Field` after validation | Styles the validation result |
+
+The group sets no `data-slot`; select it by `role="group"` or by a class.
+
+The value lists the `value` of each checked `Checkbox`, in the order they were checked; a parent checkbox writes them in the order of `allValues`. Inside a `Field` with a `name`, every checked item submits its value under that name, so `formData.getAll(name)` returns the list.
+
+A disabled group drops its checkboxes to 64% opacity; a `Label` keeps its color.
+
+A group can sit inside another group. Each keeps its own value, so tying a nested parent checkbox to an item of the outer group goes through `value` and `onValueChange` on both, as in [Editor permissions](?path=/story/ui-checkboxgroup-usages--editor-permissions).
+
+## Label
+
+The label of one item. Renders a `label` that holds the `Checkbox` and its text side by side with an 8px gap, so clicking the text toggles the box.
+
+Also takes every prop of a `label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"label"` | Selects the part in the theme and from other parts |
+
+Inside a `Field`, a `FieldItem` with a `FieldLabel` takes its place.
+
+## Checkbox
+
+One item of the group. Renders a `span` with `role="checkbox"` and a hidden `input`, and reads its checked state from the group's value.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | - | Identifies the item in the group's value; falls back to `name`. |
+| `parent` | `boolean` | `false` | When true, checks or clears every value in the group's `allValues` and shows the mixed state. |
+| `disabled` | `boolean` | `false` | When true, disables this item alone. |
+
+Also takes every prop of the Base UI `Checkbox.Root`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"checkbox"` | Selects the part in the theme and from other parts |
+| `data-checked` | present when checked | Styles the checked box |
+| `data-unchecked` | present when not checked | Styles the empty box |
+| `data-indeterminate` | present on a parent checkbox while only some items are checked | Styles the mixed state |
+| `data-parent` | present on a parent checkbox | Selects the parent checkbox |
+| `data-disabled` | present when the item or the group is disabled | Styles the disabled box |
+
+A parent checkbox needs `allValues` on its group. From a partial selection it checks every item, then clears them, then restores the selection the user made. It leaves disabled items as they are, and it submits nothing with the form.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `CheckboxGroupPrimitive` | `component` | Alias for `CheckboxGroup` from Base UI, without the layout classes; also the namespace of its types (`CheckboxGroupPrimitive.Props`, `CheckboxGroupPrimitive.ChangeEventDetails`). |
+
+## Accessibility and theme
+
+- Name every group: point `aria-labelledby` at a visible caption or at the label of the parent checkbox. Inside a `Field`, the `FieldLabel` names the group and the `FieldDescription` describes it, with no `aria-labelledby`.
+- Indent the items under a parent checkbox, as `className="ms-4"` on each `Label`, so the hierarchy reads without the mixed state.
+- The group adds no color. The checkboxes read `--primary` and `--primary-foreground` when checked and `--input` for the border.
