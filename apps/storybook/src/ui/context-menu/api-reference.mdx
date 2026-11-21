@@ -1,0 +1,336 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# ContextMenu
+
+A list of actions that opens at the pointer on a right-click, or on a long press with touch, over an area of the page: a file in a list, a message in a chat, the empty space of a board or a canvas. It holds the same items as a `Menu` (actions, links, checkbox and radio choices, groups, shortcuts and submenus) for the thing under the pointer. Reach for it as a shortcut to actions that are also reachable another way; when a visible button should open the list, use a `Menu`.
+
+The other pages of `UI/ContextMenu`: [Playground](?path=/story/ui-contextmenu-playground--playground) to try the texts, the placement and the optional parts, [Stories](?path=/story/ui-contextmenu-stories--default) for each item state, [Behavior](?path=/story/ui-contextmenu-behavior--opens-on-right-click) for the tests, [Usages](?path=/story/ui-contextmenu-usages--file-in-list) for real menus and [Layouts](?path=/story/ui-contextmenu-layouts--with-group-label) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuGroup,
+  ContextMenuGroupLabel,
+  ContextMenuItem,
+  ContextMenuLinkItem,
+  ContextMenuPopup,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubPopup,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from '@acme/ui/context-menu'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ContextMenu>
+  <ContextMenuTrigger />
+  <ContextMenuPopup align="start">
+    <ContextMenuGroup>
+      <ContextMenuGroupLabel />
+      <ContextMenuItem>
+        <Icon />
+        <ContextMenuShortcut />
+      </ContextMenuItem>
+      <ContextMenuItem inset />
+      <ContextMenuLinkItem href="#">
+        <Icon />
+      </ContextMenuLinkItem>
+    </ContextMenuGroup>
+    <ContextMenuSeparator />
+    <ContextMenuGroup>
+      <ContextMenuGroupLabel />
+      <ContextMenuCheckboxItem defaultChecked />
+      <ContextMenuCheckboxItem defaultChecked variant="switch" />
+    </ContextMenuGroup>
+    <ContextMenuSeparator />
+    <ContextMenuGroup>
+      <ContextMenuGroupLabel />
+      <ContextMenuRadioGroup defaultValue="checked">
+        <ContextMenuRadioItem value="checked" />
+        <ContextMenuRadioItem value="unchecked" />
+      </ContextMenuRadioGroup>
+    </ContextMenuGroup>
+    <ContextMenuSeparator />
+    <ContextMenuSub>
+      <ContextMenuSubTrigger>
+        <Icon />
+      </ContextMenuSubTrigger>
+      <ContextMenuSubPopup>
+        <ContextMenuItem />
+      </ContextMenuSubPopup>
+    </ContextMenuSub>
+  </ContextMenuPopup>
+</ContextMenu>
+```
+
+The anatomy story opens the menu at the center of the trigger area when it mounts; on a page, the menu opens only from the user.
+
+## ContextMenu
+
+Groups the parts and holds the open state. Alias for `ContextMenu.Root` from Base UI; renders no element. It is always modal: while open, the page does not scroll and ignores the pointer outside the popup, and there is no `modal` prop. It opens with no item highlighted; `ArrowDown` highlights the first item, the arrow keys move through the items, typing a letter jumps to the next item that starts with it, and `Escape` or a press outside closes the menu.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the menu asks to open or close, with the `reason` in `eventDetails`. |
+| `disabled` | `boolean` | `false` | When true, a right-click or a long press does not open the menu, and the browser shows its own menu. |
+| `loopFocus` | `boolean` | `true` | When true, the arrow keys wrap from the last item to the first and back. |
+| `orientation` | `"vertical"` or `"horizontal"` | `"vertical"` | Sets which arrow keys move through the items. |
+| `highlightItemOnHover` | `boolean` | `true` | When true, the pointer highlights the item it moves over. |
+
+Also takes every prop of Base UI `ContextMenu.Root`, such as `actionsRef` and `onOpenChangeComplete`.
+
+`ChangeEventDetails` is `ContextMenuPrimitive.Root.ChangeEventDetails`. The popup is placed against the point of the last right-click or long press; opened through `open` or `defaultOpen` before any of them, it is placed against the top-left corner of the viewport, so pass `anchor` to `ContextMenuPopup` to place it elsewhere.
+
+## ContextMenuTrigger
+
+The area that opens the menu. Renders a `div`. A right-click inside it opens the menu at the pointer and keeps the browser's own menu from showing; with touch, a press held for 500ms opens it at the finger, unless the finger moves more than 10px or a second finger touches first. On its own it carries no style and is not focusable: `className` goes to the `div`, and its children are the content the menu acts on.
+
+Also takes every prop of Base UI `ContextMenu.Trigger`, such as `render`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while the menu is open | Styles the area of the open menu |
+| `data-pressed` | present while the menu is open | Styles the area of the open menu |
+
+The area sets `-webkit-touch-callout: none`, so a long press does not open the system callout on iOS.
+
+## ContextMenuPopup
+
+The floating surface of the items. Renders a `div` with `role="menu"` in a portal on `body`, inside a positioner at `z-50`. The surface has a 1px `border`, a large radius, the `popover` background and a shadow; the items sit in an inner box padded by 8px that scrolls when the menu is taller than the room left on screen.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `Side` | `"bottom"` | Sets the side of the pointer the popup opens on; it flips or shifts when there is no room. |
+| `align` | `"start"`, `"center"` or `"end"` | `"center"` | Sets how the popup aligns with the pointer. |
+| `sideOffset` | `number` | `4` | Sets the gap in pixels between the pointer and the popup. |
+| `alignOffset` | `number` | - | Moves the popup along the side, in pixels. |
+| `anchor` | `Element`, a ref, or a function that returns one | - | Sets the element the popup is positioned against, instead of the pointer. |
+| `portalProps` | `ContextMenuPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Values of `side`: `"top"`, `"bottom"`, `"left"`, `"right"`, `"inline-start"`, `"inline-end"`.
+
+Also takes every prop of Base UI `ContextMenu.Popup`, such as `finalFocus`. `className` goes to the popup `div`, and its children to the inner box.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-popup"` | Selects the popup |
+| `data-slot` | `"context-menu-positioner"` | Selects the positioned layer around it |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-side`, `data-align` | the side and alignment it opened with | Style the popup by its placement |
+
+With the defaults, the popup opens 4px below the pointer, centered on it. It is at least 160px wide (`min-w-40`), also when a `w-*` class sets another width.
+
+## ContextMenuGroup and ContextMenuGroupLabel
+
+The parts of a labelled section. `ContextMenuGroup` renders a `div` with `role="group"`, named by the `ContextMenuGroupLabel` inside it. `ContextMenuGroupLabel` renders a `div` in `font-medium`, `text-xs` and `text-muted-foreground`; it is hidden from assistive technology, since the group already carries its text as a name.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `inset` | `boolean` | - | Starts the text of the `ContextMenuGroupLabel` where an item's label starts after an icon. Any value sets `data-inset`, `false` included, so leave the prop out instead of passing `false`. |
+
+Also takes every prop of the Base UI part: `ContextMenu.Group` or `ContextMenu.GroupLabel`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-group"` or `"context-menu-label"` | Selects the part in the theme and from other parts |
+| `data-inset` | the value of `inset` (`"true"` or `"false"`) when it is passed | Styles the inset label; any value indents it |
+
+## ContextMenuItem
+
+One action. Renders a `div` with `role="menuitem"`: a row with an optional icon, the label and, at the end, an optional `ContextMenuShortcut`. A press, or `Enter` on the highlighted item, calls `onClick` and closes the menu.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"destructive"` | `"default"` | Controls the text color; `"destructive"` marks an action that deletes or cannot be undone. |
+| `inset` | `boolean` | - | Starts the label where the labels after an icon start, for an item without an icon. Any value sets `data-inset`, `false` included, so leave the prop out instead of passing `false`. |
+| `disabled` | `boolean` | `false` | When true, a press or `Enter` does nothing and the pointer passes through; the arrow keys still highlight the item. |
+| `closeOnClick` | `boolean` | `true` | When true, a press closes the menu. |
+| `onClick` | `(event: MouseEvent) => void` | - | Called when the item is pressed, or `Enter` is pressed on it. |
+| `label` | `string` | - | Sets the text that typing matches, when the item's text is not plain. |
+
+Also takes every prop of Base UI `ContextMenu.Item`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-item"` | Selects the part in the theme and from other parts |
+| `data-variant` | `"default"` or `"destructive"` | Styles the variant |
+| `data-inset` | the value of `inset` (`"true"` or `"false"`) when it is passed | Styles the inset item; any value indents it |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item, with the `accent` background |
+| `data-disabled` | present when disabled | Styles a disabled item, at 64% opacity |
+
+An item is 28px high from `sm` up with a fine pointer, 32px below `sm` and 44px with a coarse pointer. An `svg` child is 16px (18px below `sm`) at 80% opacity. A disabled item ignores the pointer, so a tooltip never opens on it: say why it is disabled inside the item.
+
+## ContextMenuShortcut
+
+The keyboard shortcut of an item, shown at its end. Renders a `kbd` with `aria-hidden`, in `text-xs` with wide letter spacing and the `muted-foreground` color at 72%, which a theme rule sets back to full (see Accessibility and theme); `ms-auto` pushes it to the end of the row. It only shows the keys: it does not listen to them.
+
+Also takes every prop of a `kbd`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-shortcut"` | Selects the part in the theme and from other parts |
+
+Since the shortcut is hidden from assistive technology, the item's name is its label alone; set `aria-keyshortcuts` on the item to announce the keys (`<ContextMenuItem aria-keyshortcuts="Meta+C">`).
+
+## ContextMenuLinkItem
+
+An item that navigates. Renders an `a` with `role="menuitem"`, styled like `ContextMenuItem`. With `href` it is a plain anchor; for a router link, pass the link through `render` (`<ContextMenuLinkItem render={<Link href="/docs" />}>`).
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | - | Sets the address of the anchor. |
+| `variant` | `"default"` or `"destructive"` | `"default"` | Controls the text color. |
+| `inset` | `boolean` | - | Starts the label where the labels after an icon start. Any value sets `data-inset`, `false` included, so leave the prop out instead of passing `false`. |
+| `closeOnClick` | `boolean` | `true` | When true, a press closes the menu. |
+
+Also takes every prop of Base UI `ContextMenu.LinkItem` and of an `a`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-link-item"` | Selects the part in the theme and from other parts |
+| `data-variant` | `"default"` or `"destructive"` | Styles the variant |
+| `data-inset` | the value of `inset` (`"true"` or `"false"`) when it is passed | Styles the inset item; any value indents it |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item |
+
+## ContextMenuSeparator
+
+A line between items or groups. Renders a `div` with `role="separator"`, 1px high in the `border` color, with 8px of side margin and 4px above and below.
+
+Also takes every prop of Base UI `ContextMenu.Separator`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-separator"` | Selects the part in the theme and from other parts |
+
+## ContextMenuCheckboxItem
+
+An item that turns a setting on or off. Renders a `div` with `role="menuitemcheckbox"` and `aria-checked`, as a two-column grid: the label, then the indicator at the end. A press toggles it and leaves the menu open.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"switch"` | `"default"` | Controls the indicator: a check in a 12px column that shows only when checked, or a switch that always shows. |
+| `checked` | `boolean` | - | Controls the checked state; pair it with `onCheckedChange`. |
+| `defaultChecked` | `boolean` | `false` | Sets the checked state of the first render when `checked` is not passed. |
+| `onCheckedChange` | `(checked: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the item is toggled, with the new state. |
+| `disabled` | `boolean` | `false` | When true, the item cannot be toggled and the pointer passes through; the arrow keys still highlight it. |
+| `closeOnClick` | `boolean` | `false` | When true, a press also closes the menu. |
+
+Also takes every prop of Base UI `ContextMenu.CheckboxItem`, such as `label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-checkbox-item"` | Selects the part in the theme and from other parts |
+| `data-checked`, `data-unchecked` | present in that state | Style the checked and unchecked item |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item |
+| `data-disabled` | present when disabled | Styles a disabled item |
+
+With `"default"`, the label is a row with an 8px gap, so an icon may precede the text. The `"switch"` variant only changes the indicator: the item is still a `menuitemcheckbox`. In both, every label of a mixed menu starts at the same edge.
+
+## ContextMenuRadioGroup and ContextMenuRadioItem
+
+A set of items of which one is selected. `ContextMenuRadioGroup` renders a `div` with `role="group"` and holds the value. `ContextMenuRadioItem` renders a `div` with `role="menuitemradio"` and `aria-checked`, with the label and then a check in a 12px column that shows only on the selected item. A press selects the item and leaves the menu open.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `Value` | required | Sets the value a `ContextMenuRadioItem` selects; on `ContextMenuRadioGroup`, controls the selected value. |
+| `defaultValue` | `Value` | - | Sets the selected value of the first render of `ContextMenuRadioGroup` when `value` is not passed. |
+| `onValueChange` | `(value: Value, eventDetails: ChangeEventDetails) => void` | - | Called on `ContextMenuRadioGroup` when another item is selected. |
+| `disabled` | `boolean` | `false` | When true, the item, or every item of the group, cannot be selected and the pointer passes through; the arrow keys still highlight it. |
+| `closeOnClick` | `boolean` | `false` | When true, a press on a `ContextMenuRadioItem` also closes the menu. |
+
+Also takes every prop of the Base UI part: `ContextMenu.RadioGroup` or `ContextMenu.RadioItem`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-radio-group"` or `"context-menu-radio-item"` | Selects the part in the theme and from other parts |
+| `data-checked`, `data-unchecked` | present in that state, on `ContextMenuRadioItem` | Style the selected and unselected item |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item |
+| `data-disabled` | present when disabled | Styles a disabled item |
+
+Wrap the group in a `ContextMenuGroup` with a `ContextMenuGroupLabel`, so the choice has a name.
+
+## ContextMenuSub
+
+Groups the parts of a submenu and holds its open state. Alias for `ContextMenu.SubmenuRoot` from Base UI; renders no element.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state of the submenu; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the submenu asks to open or close. |
+| `disabled` | `boolean` | `false` | When true, the submenu does not open. |
+| `closeParentOnEsc` | `boolean` | `false` | When true, `Escape` closes the whole menu instead of the submenu only. |
+
+Also takes every prop of Base UI `ContextMenu.SubmenuRoot`.
+
+## ContextMenuSubTrigger
+
+The item that opens a submenu. Renders a `div` with `role="menuitem"` and `aria-haspopup="menu"`, styled like `ContextMenuItem`, with a chevron at its end. Hovering it, pressing it or `ArrowRight` on it opens the submenu; `ArrowLeft` in the submenu closes it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `inset` | `boolean` | - | Starts the label where the labels after an icon start. Any value sets `data-inset`, `false` included, so leave the prop out instead of passing `false`. |
+| `openOnHover` | `boolean` | `true` | When true, the submenu opens while the pointer rests on the item. |
+| `delay` | `number` | `100` | Sets the wait in milliseconds before a hover opens the submenu. |
+| `closeDelay` | `number` | `0` | Sets the wait in milliseconds before a submenu opened by hover closes. |
+| `disabled` | `boolean` | `false` | When true, the submenu does not open and the pointer passes through; the arrow keys still highlight the item. |
+
+Also takes every prop of Base UI `ContextMenu.SubmenuTrigger`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-sub-trigger"` | Selects the part in the theme and from other parts |
+| `data-inset` | the value of `inset` (`"true"` or `"false"`) when it is passed | Styles the inset item; any value indents it |
+| `data-popup-open` | present while its submenu is open | Keeps the `accent` background while the submenu shows |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item |
+| `data-disabled` | present when disabled | Styles a disabled item |
+
+## ContextMenuSubPopup
+
+The floating surface of a submenu. Renders a `ContextMenuPopup` on the `"inline-end"` side of its `ContextMenuSubTrigger`, the right in a left-to-right page, with the same look and attributes except its `data-slot`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `align` | `"start"`, `"center"` or `"end"` | `"start"` | Sets how the submenu aligns with its trigger. |
+| `sideOffset` | `number` | `0` | Sets the gap in pixels between the trigger and the submenu. |
+| `alignOffset` | `number` | `-5` | Moves the submenu along its trigger, in pixels; `-5` lines its first item up with the trigger when `align` is not `"center"`. |
+
+Also takes every prop of Base UI `ContextMenu.Popup`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"context-menu-sub-content"` | Selects the submenu popup, in place of `"context-menu-popup"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ContextMenuPortal` | `component` | Alias for `ContextMenu.Portal` from Base UI, which `ContextMenuPopup` already renders. |
+| `ContextMenuPrimitive` | `namespace` | The Base UI `ContextMenu` namespace, for the parts not wrapped here (`ContextMenuPrimitive.Arrow`, `ContextMenuPrimitive.Backdrop`) and the types such as `ContextMenuPrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Make every action of the menu reachable another way too (a `Menu` button, a toolbar, a keyboard shortcut): the area is not focusable, and the menu opens from the keyboard only when the browser fires `contextmenu` (`Shift+F10` or the Menu key) on a focused element inside the area.
+- Set `aria-keyshortcuts` on every item with a `ContextMenuShortcut`, since the shortcut itself is hidden from assistive technology.
+- Name every group of checkbox or radio items with a `ContextMenuGroupLabel` inside a `ContextMenuGroup`.
+- Say why an item is disabled inside the item, not in a tooltip.
+- The theme needs two rules: a 2px `--ring` outline on `[role^="menuitem"][data-slot^="context-menu-"]:focus-visible`, which shows keyboard focus (the `accent` highlight alone is too faint), and `color: var(--muted-foreground)` on `[data-slot="context-menu-shortcut"]`, so the shortcut text reaches 4.5:1. The measured ratios are in `docs/accessibility.md` (`ContextMenu`).
+- The parts use the `popover`, `border`, `foreground`, `accent`, `accent-foreground`, `destructive-foreground`, `muted-foreground`, `primary`, `input`, `background` and `ring` tokens.
