@@ -1,0 +1,55 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Skeleton
+
+A placeholder that holds the place and the shape of content while it loads: the avatar and name of a person, the rows of a table, the figure of a metric card. Give it the size and the corners of what it stands for, so the screen keeps its layout when the content arrives.
+
+The other pages of `UI/Skeleton`: [Playground](?path=/story/ui-skeleton-playground--playground) to try the shapes, [Stories](?path=/story/ui-skeleton-stories--default) for the default line, [Behavior](?path=/story/ui-skeleton-behavior--nothing-to-announce) for the tests, [Usages](?path=/story/ui-skeleton-usages--people-to-follow) for loading states in context and [Layouts](?path=/story/ui-skeleton-layouts--text-lines) for how several skeletons draw a block of content.
+
+## Import
+
+```tsx
+import { Skeleton } from '@acme/ui/skeleton'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Skeleton className="h-4 w-48" />
+```
+
+## Skeleton
+
+The placeholder shape. Renders an empty `div`, with no role and no text. It has no size of its own: it is 0px high until a class gives it a height. In block flow or a stretched flex column it is as wide as its container; in a flex row it is 0px wide until a class gives it a width.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `className` | `string` | - | Sets the size and the corners of the shape (`h-4 w-48` for a line, `size-10 rounded-full` for an avatar). |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"skeleton"` | Selects the part in the theme and from other parts |
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--skeleton-highlight` | `--alpha(var(--color-white)/64%)`, white at 64%; under `.dark`, white at 4% | Sets the color of the band that sweeps across the shape. Set on the skeleton itself, so a value on an ancestor does not reach it. |
+
+The shape is filled with `muted` and crossed by a highlight band at 120° that sweeps from left to right every 2s, linearly and without end (`animate-skeleton`).
+
+The band is fixed to the viewport (`background-attachment: fixed`) and not to each shape, so its position does not depend on the size or place of a skeleton: skeletons whose animations run in step show one band crossing all of them.
+
+The corners are `rounded-sm` (`--radius-sm`). `className` is merged after the skeleton's classes: a class for every corner (`rounded-full`, `rounded-lg`) replaces `rounded-sm`, and a class for some corners (`rounded-t-lg`) changes only the corners it names.
+
+## Accessibility and theme
+
+- A skeleton says nothing to assistive technology, so the region that is loading needs text that says so, visible or visually hidden in a status (`<output className="sr-only">Loading invoices…</output>`). Set `aria-busy="true"` on the container whose content is pending, and when the content arrives, set `aria-busy="false"` or replace the region, and remove the loading text.
+- Hide a list item or a table row made only of skeletons with `aria-hidden="true"`, or it is announced as an empty item.
+- The sweep keeps running under `prefers-reduced-motion: reduce`. Add `motion-reduce:animate-none` to keep a still shape there.
+- `animate-skeleton` needs two theme rules: the token `--animate-skeleton: skeleton 2s -1s infinite linear` and, inside the same block, `@keyframes skeleton { to { background-position: -200% 0 } }`, both in `@theme inline`, as the example theme declares them. Without them the shape stays still.
