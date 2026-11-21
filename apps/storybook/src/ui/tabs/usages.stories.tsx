@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@tc96/ui/tabs'
 import { expect, within } from 'storybook/test'
-import { inactiveTabContrast, TabsCanvas } from './tabs-frame.tsx'
+import { TabsCanvas } from './tabs-frame.tsx'
 
 const installCommands = [
   { command: 'npm install @acme/charts', label: 'npm', value: 'npm' },
@@ -57,7 +57,7 @@ const workspaceSections = [
 
 const meta = {
   decorators: [TabsCanvas],
-  parameters: { ...inactiveTabContrast, layout: 'centered' },
+  parameters: { layout: 'centered' },
   tags: ['!autodocs'],
   title: 'UI/Tabs/Usages',
 } satisfies Meta

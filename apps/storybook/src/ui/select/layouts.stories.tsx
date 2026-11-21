@@ -46,17 +46,5 @@ export const InField: Story = {
 
 export const SelectButtonAsTrigger: Story = {
   name: 'SelectButton as trigger',
-  parameters: {
-    a11y: {
-      config: {
-        rules: [
-          {
-            id: 'color-contrast',
-            selector: '*:not(button[data-placeholder] > span.flex-1)',
-          },
-        ],
-      },
-    },
-  },
   render: () => <SelectButtonCombobox />,
 }

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { inactiveItemContrast } from './segmented-control-contrast.ts'
 import {
   type SegmentedControlControls,
   segmentedControlControlArgs,
@@ -11,7 +10,6 @@ const meta = {
   args: segmentedControlControlArgs,
   argTypes: segmentedControlControlArgTypes,
   parameters: {
-    ...inactiveItemContrast,
     controls: { exclude: ['disabledItem', 'element', 'size', 'value'] },
   },
   render: (args) => <ComposedSegmentedControl {...args} />,

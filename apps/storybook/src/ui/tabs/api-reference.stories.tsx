@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@tc96/ui/tabs'
 import { Slot } from '../../test-utils/anatomy-slot'
-import { inactiveTabContrast, TabsCanvas } from './tabs-frame.tsx'
+import { TabsCanvas } from './tabs-frame.tsx'
 
 const meta = {
   component: Tabs,
   decorators: [TabsCanvas],
-  parameters: { ...inactiveTabContrast, layout: 'centered' },
+  parameters: { layout: 'centered' },
   tags: ['!autodocs', '!dev'],
   title: 'UI/Tabs/API Reference',
 } satisfies Meta<typeof Tabs>

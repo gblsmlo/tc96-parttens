@@ -18,10 +18,6 @@ const scheduled: ScheduleValue = {
   until: '2026-12-18T12:00:00.000Z',
 }
 
-const cossCalendarContrast = {
-  a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
-}
-
 const popup = () =>
   document.querySelector<HTMLElement>('[data-slot="schedule-popup"]')
 
@@ -56,7 +52,6 @@ const meta = {
       </div>
     ),
   ],
-  parameters: cossCalendarContrast,
   render: function Schedule({ onValueChange, ...args }) {
     const [value, setValue] = useState(args.value)
 

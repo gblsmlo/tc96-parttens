@@ -4,7 +4,7 @@ import {
   tabsControlArgs,
   tabsControlArgTypes,
 } from './tabs-controls.ts'
-import { inactiveTabContrast, TabsCanvas } from './tabs-frame.tsx'
+import { TabsCanvas } from './tabs-frame.tsx'
 import { ComposedTabs } from './tabs-layouts.tsx'
 
 const meta = {
@@ -12,7 +12,6 @@ const meta = {
   argTypes: tabsControlArgTypes,
   decorators: [TabsCanvas],
   parameters: {
-    ...inactiveTabContrast,
     controls: { exclude: ['disabledTab', 'orientation', 'size', 'variant'] },
     layout: 'centered',
   },

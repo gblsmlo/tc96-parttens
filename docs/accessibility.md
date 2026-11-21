@@ -79,13 +79,9 @@ Medir e registrar contraste:
 
 - **Global: guardas de foco do Base UI.** `a11y.context.exclude` em `apps/storybook/.storybook/preview.ts` tira `[data-base-ui-focus-guard]` do axe em todas as stories. O `FloatingFocusManager` do Base UI cerca todo popup aberto ou fechando com dois `span` visualmente ocultos, `tabindex=0` sob `aria-hidden`, que seguram o Tab e devolvem o foco ao lugar certo; o axe os reprova em `aria-hidden-focus` sem saber que eles nunca ficam com o foco. Nenhuma story contorna isso por conta própria.
 - **Na story, contraste vindo do COSS sem alterações:**
-  - Os dias da semana e os dias fora do mês do calendar (3,14:1), nas stories `Trigger` e `CalendarLocale` do `DateRangeProperty`, nas stories `Default`, `Reminders`, `TimeInput`, `DateOnly`, `NoPastDays`, `EnglishLabels`, `ShortWindow`, `BelowTrigger` e `DrillIn` do `ScheduleProperty`, nas stories `Overview` e `AgendaCalendar` dos widgets de produtividade, em todas as páginas de `UI/Calendar`, cujo meta desliga a regra em cada arquivo, e nas páginas `Playground`, `Stories`, `Behavior` e `Layouts` de `UI/DatePicker`, que abrem o calendar no popover (o axe mediu 3,14:1 no claro em 2026-11-20). Nessas páginas do `UI/DatePicker` a regra `color-contrast` só ignora os dias da semana (`th`) e os dias fora do mês (`[data-outside]`) dentro de `[data-slot="calendar"]`; o resto do calendar, o gatilho, os presets e o input continuam verificados.
   - O exemplo de força de senha do COSS (3,65:1), na story `StrengthFollowsRequirements` de `UI/Input/Behavior`, que termina com os quatro requisitos cumpridos: no tema claro a regra `color-contrast` só ignora o texto dos requisitos cumpridos (`[data-requirement="met"]`, em `text-emerald-600`); o resto da story e o tema escuro inteiro continuam verificados.
-  - O placeholder do `SelectButton` (`in-data-placeholder:text-muted-foreground/72`; 3,06:1 no claro e 3,26:1 no escuro, medido pelo axe em 2026-11-20), na story `SelectButtonAsTrigger` de `UI/Select/Layouts`. A regra `color-contrast` só ignora o `span.flex-1` filho de um `button[data-placeholder]`, nos dois temas; o resto da story continua verificado, e as stories de `SelectButton` com valor selecionado (`SelectButtonTriggersCombobox` em Behavior, `AssignReviewer` em Usages) não têm exceção.
   - O variant `warning` do `Badge` em `text-xs` (4,36:1), nas stories `Overview` e `Deals` dos widgets de CRM.
   - O texto do `Kbd` dentro de um `InputGroupAddon` no escuro (4,47:1, `#938d89` sobre `#2b2826`; o axe mediu em 2026-11-20), na story `CommandShortcut` de `UI/InputGroup/Usages`. A regra `color-contrast` só ignora o `kbd` dentro de `[data-slot="input-group-addon"]` com `data-theme="dark"`; no claro ele passa e continua verificado, como o resto da story nos dois temas.
-  - O texto dos itens inativos do `SegmentedControl` (`text-muted-foreground/72` sobre a trilha `bg-muted`): 2,91:1 no claro (`#918c88` sobre `#f0f0ef`) e 3,19:1 no escuro (`#756f6b` sobre `#252220`), em 14 px; o axe mediu em 2026-11-20. Em todas as páginas de `UI/SegmentedControl`, cujo meta aplica `inactiveItemContrast` (`apps/storybook/src/ui/segmented-control/segmented-control-contrast.ts`), a regra `color-contrast` só ignora o próprio item com `data-slot="segmented-control-item"` sem `data-checked`, `aria-current="page"` nem `data-pressed`; o item ativo, sobre o indicador, e o resto de cada story continuam verificados nos dois temas. O `TabsList` do `Tabs` tem o mesmo par (`text-muted-foreground/72` sobre `bg-muted`), com a exceção do item seguinte. A correção, uma regra por `data-slot` no tema do exemplo ou uma mudança em `packages/ui`, fica para decisão do dono.
-  - O texto das abas inativas do `TabsList` no variant `default` (`text-muted-foreground/72` sobre `bg-muted`): 2,91:1 no claro (`#918c88` sobre `#f0f0ef`) e 3,19:1 no escuro (`#756f6b` sobre `#252220`; o axe mediu em 2026-11-20), em todas as páginas de `UI/Tabs`, cujo meta aplica a exceção em cada arquivo (`inactiveTabContrast` em `apps/storybook/src/ui/tabs/tabs-frame.tsx`). A regra `color-contrast` só ignora o `[data-slot="tabs-tab"]` sem `data-active` filho direto de um `[data-slot="tabs-list"]` com `bg-muted`; a aba ativa, as abas do variant `underline` (que passam), os painéis e o resto das stories continuam verificados nos dois temas. A correção global seria uma regra por `data-slot` no `styles.css` do exemplo, ainda não decidida.
 - **Na story, widgets com tom invertido:** a regra de contraste de `Overview` e `AssetStatInverted` de finanças, `Overview` e `TaskProgressInverted` de produtividade e `Overview` de CRM ignora só o widget invertido: o `muted-foreground` escuro fica em 4,2:1 sobre o card invertido.
 - Uma exceção nova entra aqui, com o motivo, antes de entrar na story.
 
@@ -390,6 +386,22 @@ Auditoria de contraste (2026-10-23, medida no Storybook com o tema `Default`; te
 | placeholder do compositor depois (`placeholder:text-muted-foreground`) | 5,48 | 4,71 |
 
 O placeholder é o único par que falhava: o texto de orientação do compositor precisa de 4,5:1, e o ajuste entrou onde o elemento encontra a superfície, como exceção registrada, sem tocar `packages/ui`. O axe passa nos dois temas (`bunx vitest run --project=storybook --project=storybook-dark src/patterns/chat/assistant`). A posição flutuante sobre um canvas real só se prova no viewport (T5).
+
+### Texto em `muted-foreground/72` (SegmentedControl, Tabs, Calendar, SelectButton)
+
+Contraste do texto inativo (2026-11-21, calculado a partir dos tokens do tema `Default` e conferido pelo axe nas stories; texto de 14 px precisa de 4,5:1; nenhum valor de token foi mudado):
+
+| Par | Claro | Escuro |
+| --- | --- | --- |
+| texto inativo antes (`muted-foreground/72` sobre `bg-muted`) | 2,91 | 3,19 |
+| texto inativo depois (`muted-foreground/96` sobre `bg-muted`) | 4,59 | 4,57 |
+| texto inativo com `muted-foreground/95` (limite) | 4,50 | 4,51 |
+| dias da semana, números de semana e dias fora do mês do calendar antes (`/72` sobre `card`/`popover`; sobre `background`) | 3,14; 3,06 | 3,31; 3,41 |
+| os mesmos depois (`/96`) | 5,19; 4,98 | 4,81; 5,04 |
+| placeholder do `SelectButton` antes (`/72` sobre `background`; sobre `input/32` no escuro) | 3,06 | 3,28 |
+| placeholder do `SelectButton` depois (`/96`) | 4,98 | 4,75 |
+
+O ajuste entrou nos próprios componentes de `packages/ui`: a opacidade da cor passou de 72% para 96% no texto inativo do `SegmentedControl` e do `TabsList`, nos dias da semana, números de semana e dias fora do mês do `Calendar` e no placeholder do `SelectButton`. 96% tem folga sobre o limite de 95% no pior fundo (4,75:1). No `SegmentedControl` e no `Tabs` o hover passou a `text-foreground` para continuar visível. O dia desabilitado do calendar continua em 72%, porque controle desabilitado é isento. As exceções do axe dessas páginas, do `DatePicker`, das propriedades de data e agenda e dos widgets de produtividade saíram.
 
 ### Editores de fluxo
 

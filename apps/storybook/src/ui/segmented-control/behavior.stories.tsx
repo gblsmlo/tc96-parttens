@@ -13,7 +13,6 @@ import {
   waitFor,
   within,
 } from 'storybook/test'
-import { inactiveItemContrast } from './segmented-control-contrast.ts'
 import { segmentedControlControlArgs } from './segmented-control-controls.ts'
 import { ComposedSegmentedControl } from './segmented-control-layouts.tsx'
 import { segmentedControlSizeNames } from './segmented-control-variants.ts'
@@ -29,7 +28,6 @@ const meta = {
     onSubmit: { control: false },
     onValueChange: { control: false },
   },
-  parameters: inactiveItemContrast,
   tags: ['!autodocs'],
   title: 'UI/SegmentedControl/Behavior',
 } satisfies Meta<BehaviorArgs>

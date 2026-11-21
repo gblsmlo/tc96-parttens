@@ -1,10 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, within } from 'storybook/test'
-import { calendarA11y, PickerCanvas } from './calendar-frame.tsx'
+import { PickerCanvas } from './calendar-frame.tsx'
 import { AppointmentPicker, FieldDatePicker } from './calendar-layouts.tsx'
 
 const meta = {
-  parameters: { a11y: calendarA11y },
   tags: ['!autodocs'],
   title: 'UI/Calendar/Usages',
 } satisfies Meta

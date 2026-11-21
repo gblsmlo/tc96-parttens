@@ -95,7 +95,7 @@ Also takes every prop of a `button`.
 | `data-pressed` | set by `TogglePrimitive` when pressed | Marks the item active |
 | `data-disabled` | set by a Base UI primitive when disabled | Dims the item to 64% opacity and ignores the pointer, as `disabled` does on a `button` |
 
-An active item takes `text-foreground`; the others are `text-muted-foreground` at 72%, and full `text-muted-foreground` on hover. A keyboard focus draws a 2px `outline` in `--ring`. Outside a `SegmentedControl` an item takes the `"default"` size.
+An active item takes `text-foreground`; the others are `text-muted-foreground` at 96%, and `text-foreground` on hover. A keyboard focus draws a 2px `outline` in `--ring`. Outside a `SegmentedControl` an item takes the `"default"` size.
 
 Below the `sm` breakpoint each item is 4px taller and its text is 16px instead of 14px. From `sm` up, `sm` is 26px high, `default` 30px and `lg` 34px, with 8px, 10px and 12px on each side.
 
@@ -132,4 +132,4 @@ While the indicator shows, the active item drops its own background. Before the 
 - Give an item that holds only an icon an `aria-label`, and mark the icon `aria-hidden="true"`.
 - The keyboard comes from the element passed to `render`: arrow keys move and check within a radio group, arrow keys move the focus within a toggle group, and Tab moves between links.
 - The track reads `--muted`, the pill `--background` (`--input` in dark mode), the text `--foreground` and `--muted-foreground`, and the focus outline `--ring`.
-- The theme has to keep the inactive text, `--muted-foreground` at 72% on `--muted`, at 4.5:1; the example theme does not yet. Measured ratios and the story exception: `docs/accessibility.md` (`Exceções`).
+- The inactive text, `--muted-foreground` at 96% on `--muted`, reaches 4.5:1 in the example theme, in light and in dark; a theme that lightens `--muted-foreground` has to keep it there. Measured ratios: `docs/accessibility.md`.

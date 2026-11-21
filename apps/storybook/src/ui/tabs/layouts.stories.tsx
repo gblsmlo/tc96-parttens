@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { tabsControlArgs } from './tabs-controls.ts'
-import { inactiveTabContrast, TabsCanvas } from './tabs-frame.tsx'
+import { TabsCanvas } from './tabs-frame.tsx'
 import { ComposedTabs } from './tabs-layouts.tsx'
 
 const meta = {
   decorators: [TabsCanvas],
-  parameters: { ...inactiveTabContrast, layout: 'centered' },
+  parameters: { layout: 'centered' },
   tags: ['!autodocs'],
   title: 'UI/Tabs/Layouts',
 } satisfies Meta

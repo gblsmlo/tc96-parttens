@@ -25,11 +25,6 @@ const scheduledValue: ScheduleValue = {
   until: '2026-12-18T12:00:00.000Z',
 }
 
-// COSS calendar weekday and outside-month text is 3.14:1 in light and 3.29:1 in dark (below 4.5:1); COSS stays unmodified, so only the contrast check is off.
-const cossCalendarContrast = {
-  a11y: { config: { rules: [{ enabled: false, id: 'color-contrast' }] } },
-}
-
 async function openPopup(canvasElement: HTMLElement, trigger: RegExp) {
   await userEvent.click(
     within(canvasElement).getByRole('button', { name: trigger }),
@@ -157,7 +152,6 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   parameters: {
-    ...cossCalendarContrast,
     docs: {
       description: {
         story:
@@ -223,7 +217,6 @@ export const Default: Story = {
 
 export const Reminders: Story = {
   parameters: {
-    ...cossCalendarContrast,
     docs: {
       description: {
         story:
@@ -301,7 +294,6 @@ export const Unscheduled: Story = {
 export const TimeInput: Story = {
   args: { timeControl: 'input' },
   parameters: {
-    ...cossCalendarContrast,
     docs: {
       description: {
         story:
@@ -333,7 +325,6 @@ export const DateOnly: Story = {
     value: { ...emptyScheduleValue, from: new Date(2026, 9, 28) },
   },
   parameters: {
-    ...cossCalendarContrast,
     docs: {
       description: {
         story:
@@ -355,7 +346,6 @@ export const NoPastDays: Story = {
     calendarProps: { disabled: { before: storyToday } },
   },
   parameters: {
-    ...cossCalendarContrast,
     docs: {
       description: {
         story:
@@ -428,7 +418,6 @@ export const EnglishLabels: Story = {
     ],
   },
   parameters: {
-    ...cossCalendarContrast,
     docs: {
       description: {
         story:
@@ -457,7 +446,6 @@ export const EnglishLabels: Story = {
 export const CalendarLocale: Story = {
   args: { locale: 'pt-BR' },
   parameters: {
-    ...cossCalendarContrast,
     docs: {
       description: {
         story:
@@ -485,7 +473,6 @@ export const CalendarLocale: Story = {
 export const ShortWindow: Story = {
   globals: shortWindow.globals,
   parameters: {
-    ...cossCalendarContrast,
     ...shortWindow.parameters,
     docs: {
       description: {
@@ -508,7 +495,6 @@ export const BelowTrigger: Story = {
   args: { dropdownPlacement: { collisionAvoidance: { side: 'none' } } },
   globals: shortWindow.globals,
   parameters: {
-    ...cossCalendarContrast,
     ...shortWindow.parameters,
     docs: {
       description: {
@@ -537,7 +523,6 @@ export const BelowTrigger: Story = {
 export const DrillIn: Story = {
   args: { footerLayout: 'drill-in' },
   parameters: {
-    ...cossCalendarContrast,
     docs: {
       description: {
         story:

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { addDays } from '@tc96/helpers/date'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { calendarControlArgs } from './calendar-controls.ts'
-import { calendarA11y, PickerCanvas } from './calendar-frame.tsx'
+import { PickerCanvas } from './calendar-frame.tsx'
 import {
   AppointmentPicker,
   ComposedCalendar,
@@ -12,7 +12,6 @@ import {
 } from './calendar-layouts.tsx'
 
 const meta = {
-  parameters: { a11y: calendarA11y },
   tags: ['!autodocs'],
   title: 'UI/Calendar/Behavior',
 } satisfies Meta

@@ -10,7 +10,7 @@ import {
   within,
 } from 'storybook/test'
 import { datePickerControlArgs } from './date-picker-controls.ts'
-import { calendarContrast, DatePickerCanvas } from './date-picker-frame.tsx'
+import { DatePickerCanvas } from './date-picker-frame.tsx'
 import {
   ComposedDatePicker,
   type DatePickerOpenChange,
@@ -58,7 +58,7 @@ const meta = {
     onSelect: { control: false },
   },
   decorators: [DatePickerCanvas],
-  parameters: { ...calendarContrast, layout: 'centered' },
+  parameters: { layout: 'centered' },
   tags: ['!autodocs'],
   title: 'UI/DatePicker/Behavior',
 } satisfies Meta<BehaviorArgs>

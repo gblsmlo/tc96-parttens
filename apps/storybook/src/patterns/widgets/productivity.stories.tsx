@@ -211,20 +211,6 @@ function Clocks() {
   )
 }
 
-// Calendario do COSS: 3,14:1 no tema claro e 3,29:1 no escuro (abaixo de 4,5:1); o COSS segue sem alteracao.
-const calendarContrast = {
-  a11y: {
-    config: {
-      rules: [
-        {
-          id: 'color-contrast',
-          selector: '*:not([data-slot="calendar"] *)',
-        },
-      ],
-    },
-  },
-}
-
 const meta = {
   title: 'Patterns/Widgets/Productivity',
   parameters: { layout: 'fullscreen' },
@@ -234,7 +220,6 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Overview: Story = {
-  parameters: calendarContrast,
   render: () => (
     <div className="grid min-h-screen place-items-center p-6 sm:p-10">
       <div className="grid w-full max-w-5xl gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -290,7 +275,6 @@ export const TaskProgressCard: Story = {
 }
 
 export const TaskProgressInverted: Story = {
-  parameters: calendarContrast,
   decorators: [single('max-w-md')],
   render: () => <TaskProgress tone="inverted" />,
 }
@@ -325,7 +309,6 @@ export const ProjectCard: Story = {
 }
 
 export const AgendaCalendar: Story = {
-  parameters: calendarContrast,
   decorators: [single('max-w-sm')],
   render: () => <Agenda />,
   play: async ({ canvasElement }) => {

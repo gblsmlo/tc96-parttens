@@ -4,14 +4,14 @@ import {
   datePickerControlArgs,
   datePickerControlArgTypes,
 } from './date-picker-controls.ts'
-import { calendarContrast, DatePickerCanvas } from './date-picker-frame.tsx'
+import { DatePickerCanvas } from './date-picker-frame.tsx'
 import { ComposedDatePicker } from './date-picker-layouts.tsx'
 
 const meta = {
   args: datePickerControlArgs,
   argTypes: datePickerControlArgTypes,
   decorators: [DatePickerCanvas],
-  parameters: { ...calendarContrast, layout: 'centered' },
+  parameters: { layout: 'centered' },
   render: (args) => <ComposedDatePicker {...args} />,
   tags: ['!autodocs'],
   title: 'UI/DatePicker/Playground',

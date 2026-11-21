@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { datePickerControlArgs } from './date-picker-controls.ts'
-import { calendarContrast, DatePickerCanvas } from './date-picker-frame.tsx'
+import { DatePickerCanvas } from './date-picker-frame.tsx'
 import { ComposedDatePicker, InputDatePicker } from './date-picker-layouts.tsx'
 
 const meta = {
   decorators: [DatePickerCanvas],
-  parameters: { ...calendarContrast, layout: 'centered' },
+  parameters: { layout: 'centered' },
   tags: ['!autodocs'],
   title: 'UI/DatePicker/Layouts',
 } satisfies Meta

@@ -67,4 +67,4 @@ The month dropdown shows short month names (`Jan`). Passing `formatters` replace
 
 - The grid is named by its month and every day button by its full date, so the calendar needs no label of its own. A calendar inside a `Popover` gets its name from the trigger: label the trigger with a `FieldLabel` or visible text.
 - A custom `Dropdown` passes on the `aria-label` it receives, as the combobox in [Start date field](?path=/story/ui-calendar-usages--start-date-field) does.
-- The weekday names and the outside days are below 4.5:1 in the default theme, so the stories of `UI/Calendar` turn off the axe `color-contrast` rule; the measure and the exception are in `docs/accessibility.md` (`Exceções`).
+- The weekday names, the week numbers and the outside days use `muted-foreground` at 96%, which reaches 4.5:1 on `background`, `card` and `popover` in the example theme, in light and in dark. A disabled day stays at 72%, since a disabled control is exempt. The measured ratios are in `docs/accessibility.md`.

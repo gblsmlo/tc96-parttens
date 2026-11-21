@@ -13,19 +13,6 @@ const onCopy = fn()
 const onSubtaskToggle = fn()
 const onSelect = fn()
 
-const calendarContrast = {
-  a11y: {
-    config: {
-      rules: [
-        {
-          id: 'color-contrast',
-          selector: '*:not([data-slot="calendar"] *)',
-        },
-      ],
-    },
-  },
-}
-
 const meta = {
   decorators: [
     (Story) => (
@@ -174,7 +161,6 @@ export const ProjectCardDerivesProgressFromSubtasks: Story = {
 }
 
 export const AgendaListsEventsOfSelectedDay: Story = {
-  parameters: calendarContrast,
   play: async ({ canvasElement }) => {
     onSelect.mockClear()
     const canvas = within(canvasElement)
