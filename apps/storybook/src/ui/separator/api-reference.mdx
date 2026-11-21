@@ -1,0 +1,66 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Separator
+
+A thin line that divides content into groups: between the stacked sections of a card or a popover, between the lines of an order and its total, between the links or buttons of a row. Reach for it when spacing alone does not make the groups clear.
+
+The other pages of `UI/Separator`: [Playground](?path=/story/ui-separator-playground--playground) to try the orientation and the content around the line, [Stories](?path=/story/ui-separator-stories--default) for each orientation, [Behavior](?path=/story/ui-separator-behavior--separator-role) for the tests, [Usages](?path=/story/ui-separator-usages--order-total) for separators in real content, and [Layouts](?path=/story/ui-separator-layouts--section-above-row-items) for both orientations in one structure.
+
+## Import
+
+```tsx
+import { Separator } from '@acme/ui/separator'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Content />
+<Separator />
+<Content />
+```
+
+`Separator` is one part. The content on each side belongs to the consumer; the separator draws the line between them and adds no space of its own.
+
+## Separator
+
+The line between two groups of content. Renders a `div` with `role="separator"` and `aria-orientation`, which takes no focus. It is 1px thick in the `--border` color and does not shrink in a flex container.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `orientation` | `"horizontal"` or `"vertical"` | `"horizontal"` | Sets the direction of the line, its `aria-orientation` and its `data-orientation`. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `div` with another element, which keeps the classes, the role and `data-slot`. |
+| `className` | `string` | - | Adds classes after the separator classes, so a conflicting class wins. |
+| `style` | `React.CSSProperties` or `(state) => React.CSSProperties` | - | Sets inline styles; a function receives the state, `{ orientation }`. |
+
+Also takes every prop of a `div`, `ref` included.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"separator"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` or `"vertical"` | Follows `orientation`; the size classes of each direction hang on it. |
+
+A horizontal separator is 1px high and as wide as its container.
+
+A vertical separator is 1px wide and takes `align-self: stretch`, so in a flex row or a grid row it is as tall as the row. In a block container it has no height and does not show. A class whose name begins with `h-` (`h-4`) turns the stretch off: the line keeps that height, and the row's `align-items` places it, so `items-center` centers a short line beside taller content.
+
+The space around the line comes from the container (`gap-4`) or from a margin class on the separator (`my-4`, `me-2`). A `bg-*` class replaces the `--border` color (`bg-input`).
+
+`className` takes a string only: a function of the state, which other Base UI parts accept, is dropped.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SeparatorPrimitive` | `component` | The Base UI `Separator`, with the role, the orientation and no classes, for a line styled from scratch. Its props type is `SeparatorPrimitive.Props`. |
+
+## Accessibility and theme
+
+- The separator is in the accessibility tree as a `separator` with its orientation, and it takes no focus. It does not name the groups on each side: give a group a heading or a label when its content does not say what it is.
+- When the line only decorates and the content on both sides is one group, hide it with `aria-hidden="true"`.
+- The line reads `--border` from the theme. It carries no meaning of its own, so the grouping it draws must also show in the content and the spacing.

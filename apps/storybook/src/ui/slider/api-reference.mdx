@@ -1,0 +1,132 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Slider
+
+An input for picking a number, or a range of numbers, by dragging a thumb along a track: the volume of a player, the opacity of a layer, a price range in a filter. Reach for it when the position within the range matters more than the exact figure, and pair it with a number field when the user also needs to type an exact value.
+
+The other pages of `UI/Slider`: [Playground](?path=/story/ui-slider-playground--playground) to try the label, the value, a range, the orientation, the thumb alignment and the disabled state, [Stories](?path=/story/ui-slider-stories--default) for each state, [Behavior](?path=/story/ui-slider-behavior--named-by-field-label) for the tests, [Usages](?path=/story/ui-slider-usages--volume) for real settings and [Layouts](?path=/story/ui-slider-layouts--range) for a second thumb and for the label, the value, icons, a scale and a number field around the track.
+
+## Import
+
+```tsx
+import { Slider, SliderValue } from '@acme/ui/slider'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Slider defaultValue={50} getAriaLabel={() => 'Value'}>
+  <div className="mb-2 flex items-center justify-between gap-1">
+    {children}
+    <SliderValue />
+  </div>
+</Slider>
+```
+
+`Slider` renders the control, the track, the indicator and one thumb per value itself, after its `children`:
+
+```tsx
+<div role="group">
+  {children}
+  <div data-slot="slider-control">
+    <div data-slot="slider-track">
+      <div data-slot="slider-indicator" />
+      <div data-slot="slider-thumb">
+        <input type="range" />
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+## Slider
+
+The root of the slider, holding its value and drawing the track. Renders a `div` with `role="group"`, full width when horizontal, with the `children` above the control. It renders one thumb for each value in `value` or `defaultValue`, and one thumb at `min` when neither is set. It keeps the value itself when uncontrolled and never stores it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `defaultValue` | `number` or `readonly number[]` | - | Sets the value on mount for an uncontrolled slider; an array renders one thumb per item. |
+| `value` | `number` or `readonly number[]` | - | Sets the value and makes the slider controlled. |
+| `onValueChange` | `(value, eventDetails: ChangeEventDetails) => void` | - | Called on every change while the user drags, presses the track or uses a key, with the new value. |
+| `onValueCommitted` | `(value, eventDetails: CommitEventDetails) => void` | - | Called when a change ends: the thumb is released, the track press ends or a key moves the value. |
+| `min` | `number` | `0` | Sets the lowest value. |
+| `max` | `number` | `100` | Sets the highest value. |
+| `step` | `number` | `1` | Sets the increment the value snaps to, counted from `min`. |
+| `largeStep` | `number` | `10` | Sets the increment of Page Up, Page Down and Shift with an arrow key. |
+| `minStepsBetweenValues` | `number` | `0` | Sets how many steps apart the thumbs of a range must stay. |
+| `orientation` | `"horizontal"` or `"vertical"` | `"horizontal"` | Controls the direction of the track. |
+| `disabled` | `boolean` | `false` | When true, ignores pointer and keyboard input and dims the control. |
+| `thumbAlignment` | `"edge"`, `"center"` or `"edge-client-only"` | `"edge"` | Controls where a thumb at `min` or `max` sits: inside the control, or centered on its edge. |
+| `thumbCollisionBehavior` | `"push"`, `"swap"` or `"none"` | `"push"` | Controls what a dragged thumb does when it meets another one. |
+| `getAriaLabel` | `(index: number) => string` | - | Returns the accessible name of the thumb at `index`. |
+| `format` | `Intl.NumberFormatOptions` | - | Formats the value in `SliderValue` and in the `aria-valuetext` of each thumb. |
+| `locale` | `Intl.LocalesArgument` | the runtime locale | Sets the locale `format` uses. |
+| `name` | `string` | - | Submits the value of each thumb under this name with a form; the `name` of an enclosing `Field` wins. |
+| `className` | `string` | - | Adds classes to the root after its own, so a conflicting class wins. |
+
+Also takes every prop of the Base UI `Slider.Root`.
+
+In both callbacks, `value` is a `number` for a single thumb and a `readonly number[]` for a range. `eventDetails` is a `SliderPrimitive.Root.ChangeEventDetails` or `SliderPrimitive.Root.CommitEventDetails`: its `reason` says what moved the value (`"drag"`, `"track-press"`, `"keyboard"`, `"input-change"` or `"none"`) and its `event` holds the DOM event.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-orientation` | `"horizontal"` or `"vertical"` | Styles each direction |
+| `data-disabled` | present when `disabled`, or inside a disabled `Field` | Styles the disabled slider |
+| `data-dragging` | present while a thumb is dragged | Styles the slider during a drag |
+| `data-dirty` | present inside a `Field` when the value differs from the initial one | Styles a changed slider |
+| `data-touched` | present inside a `Field` after the value changes or a thumb loses focus | Styles a visited slider |
+| `data-focused` | present inside a `Field` while a thumb has focus | Styles the focused slider |
+| `data-valid`, `data-invalid` | present inside a `Field` after validation | Styles the validation result |
+
+The root sets no `data-slot`; select it by `role="group"` or by a class. The control, the track, the indicator and the thumbs repeat every state attribute of the root in the table above, the `Field` ones included, and each sets its own `data-slot`:
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"slider-control"` | Selects the area that takes pointer input, 176px long at least |
+| `data-slot` | `"slider-track"` | Selects the 4px rail, drawn in `--input` |
+| `data-slot` | `"slider-indicator"` | Selects the filled part of the rail, drawn in `--primary` |
+| `data-slot` | `"slider-thumb"` | Selects each thumb |
+| `data-index` | `0`, `1`, … | Tells the thumbs of a range apart |
+
+A thumb is a 20px circle, 16px from `sm` up, that grows to 120% while dragged. Each holds a visually hidden `input type="range"`, which takes the focus, the name and the value; style focus on the thumb with `:has(:focus-visible)`. A disabled slider drops its control to 64% opacity.
+
+Keys move the focused thumb: an arrow key by `step`, Page Up, Page Down or Shift with an arrow by `largeStep`, Home and End to the ends. In a range, a thumb stops at its neighbor, `minStepsBetweenValues` steps before it.
+
+Inside a `Field`, a `FieldLabel` names the group and every thumb that `getAriaLabel` does not name, the thumbs of a range included; a `FieldDescription` describes the thumbs. Set `disabled` on the `Field` instead of the `Slider` to dim its label as well.
+
+## SliderValue
+
+The current value as text. Renders an `output` whose `for` lists the inputs of the thumbs, in `text-sm` and aligned to the end. Without `children` it shows the formatted values joined by an en dash (`25 – 75`). Place it among the `children` of `Slider`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `(formattedValues, values) => React.ReactNode` | - | Renders the text from the values instead of the default one. |
+| `aria-live` | `"off"`, `"polite"` or `"assertive"` | `"off"` | Sets how a screen reader announces a new value. |
+
+`formattedValues` is a `readonly string[]` with `format` applied, and `values` the `readonly number[]` behind it.
+
+Also takes every prop of an `output`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"slider-value"` | Selects the part in the theme and from other parts |
+
+It repeats the state attributes of `Slider`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SliderPrimitive` | `namespace` | The Base UI `Slider` parts (`Root`, `Label`, `Value`, `Control`, `Track`, `Indicator`, `Thumb`) without classes, and their types (`SliderPrimitive.Root.Props`, `SliderPrimitive.Root.ChangeEventDetails`). |
+
+## Accessibility and theme
+
+- Name every thumb: a `FieldLabel` inside a `Field`, `aria-labelledby` on `Slider`, or `getAriaLabel`. An `aria-label` on `Slider` names the group only, not the thumbs.
+- Give each thumb of a range its own name with `getAriaLabel` (`"Minimum price"`, `"Maximum price"`). A range of two thumbs adds `" start range"` or `" end range"` to each value it reads, with or without `format` (`"25 start range"`, `"25% start range"`).
+- Pass `format` when the number needs a unit, so the thumb reads `"15 GB"` rather than `"15"`.
+- The slider reads `--primary` for the indicator, `--input` for the rail and the thumb border, `--ring` for the focus ring and `--background` for the thumb border in dark. The thumb is white in both themes.
