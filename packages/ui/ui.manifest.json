@@ -173,6 +173,9 @@
     "dialog": {
       "origin": "coss"
     },
+    "drawer": {
+      "origin": "coss"
+    },
     "empty": {
       "origin": "coss"
     },
