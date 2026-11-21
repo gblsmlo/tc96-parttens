@@ -1,0 +1,169 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Pagination
+
+Navigation between the pages of a long list split into pages: search results, the rows of a table, the posts of a blog archive. It holds links to the previous and next pages, a link per page number with the current one marked, and an ellipsis where pages are skipped.
+
+The other pages of `UI/Pagination`: [Playground](?path=/story/ui-pagination-playground--playground) to try the active page, the size, the optional parts and the element, [Stories](?path=/story/ui-pagination-stories--default) for each size, [Behavior](?path=/story/ui-pagination-behavior--navigation-landmark) for the tests, [Usages](?path=/story/ui-pagination-usages--search-results) for real lists and [Layouts](?path=/story/ui-pagination-layouts--without-ellipsis) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  type PaginationLinkProps,
+  PaginationNext,
+  PaginationPrevious,
+} from '@acme/ui/pagination'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Pagination>
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationPrevious href="#" />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationLink href="#" size="default" />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationEllipsis />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationNext href="#" />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>
+```
+
+## Pagination
+
+The landmark that holds the pagination. Renders a `nav` named `"pagination"` through `aria-label`, full width, with its content centered. It holds no state and computes no pages: the consumer decides which pages to show, marks the current one with `isActive` and gives each link its `href` or `onClick`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | `"pagination"` | Sets the accessible name of the landmark. |
+
+Also takes every prop of a `nav`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"pagination"` | Selects the part in the theme and from other parts |
+
+The `nav` has `mx-auto` and `justify-center`; pass `className` to align it to one side.
+
+## PaginationContent
+
+The list of items. Renders a `ul` in a row, items centered on the cross axis and 4px apart.
+
+Also takes every prop of a `ul`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"pagination-content"` | Selects the part in the theme and from other parts |
+
+## PaginationItem
+
+One item of the list. Renders an `li` with no classes; it holds a link, the ellipsis or any other content, such as a "Page 2 of 6" text.
+
+Also takes every prop of an `li`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"pagination-item"` | Selects the part in the theme and from other parts |
+
+## PaginationPrevious
+
+A `PaginationLink` to the previous page, at `size="default"`. Renders a left chevron and the text "Previous", and is named "Go to previous page" through `aria-label`. Below `sm` the text hides and the link turns into a square that holds the chevron.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | - | Sets the page the link goes to. |
+| `aria-label` | `string` | `"Go to previous page"` | Sets the accessible name, which screen readers announce instead of the text. |
+| `size` | `string` union | `"default"` | Sets the height and the padding, with the sizes of `PaginationLink`. |
+
+Also takes every prop of `PaginationLink`. Its children are fixed: the chevron and the text replace any `children` it is given.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"pagination-link"` | Selects the part in the theme and from other parts |
+
+## PaginationLink
+
+A link to one page. Renders an `a` with the look of a `ghost` button, or of an `outline` button when it is the current page. Its children are the page number.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | - | Sets the page the link goes to; without it the `a` is not a link and takes no focus. |
+| `isActive` | `boolean` | - | When true, outlines the link and sets `aria-current="page"`. |
+| `size` | `string` union | `"icon"` | Sets the height and the padding, with the sizes of `Button`. |
+| `render` | `ReactElement` or `(props: HTMLAttributes<HTMLElement>, state: {}) => ReactElement` | - | Replaces the `a` element, for example with a router link or a `Button`; the `state` is empty. |
+| `className` | `string` | - | Adds classes after the button classes; with `render`, it is joined with the element's own `className` instead. |
+
+Values of `size`: `"default"`, `"icon"`, `"icon-lg"`, `"icon-sm"`, `"icon-xl"`, `"icon-xs"`, `"lg"`, `"sm"`, `"xl"`, `"xs"`.
+
+Also takes every prop of an `a`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"pagination-link"` | Selects the part in the theme and from other parts |
+| `data-active` | `"true"` when `isActive` is true, `"false"` when it is false, absent when it is not passed | Marks the current page |
+
+A `data-active:` class matches `data-active="false"` too. Style the current page with `data-[active=true]:` or `aria-[current=page]:`, or pass `isActive={isCurrent || undefined}`.
+
+With `render`, none of the button classes reach the element. Its own props are merged with the link's: it keeps its own `className`, joined with the `className` of `PaginationLink`, its handlers run with the link's, and it takes `aria-current`, `data-active` and `data-slot` from the link unless it sets them itself. The element brings its own look. A `Button` passed as `render` takes its `variant` and `size` from its own props, so give the current page `variant="outline"` and the others `variant="ghost"`. The `size` of `PaginationLink` has no effect with `render`.
+
+From `sm` up, the `icon` size is 32px by 32px; below `sm` it is 36px by 36px. The other sizes follow `Button`: each `icon` size is the square of the text size it is named after.
+
+No part has a disabled state, since an `a` cannot be disabled. To show that Previous or Next is unavailable, leave it out, or render it as a `Button` with `disabled` through `render`.
+
+## PaginationEllipsis
+
+The mark of skipped pages. Renders a `span` with `aria-hidden`, at least 28px wide, that holds a horizontal dots icon (20px below `sm`, 16px from `sm` up) and the text "More pages" in `sr-only`. The `aria-hidden` keeps that text from screen readers too, so skipped pages are not announced. It is not focusable and takes no `href`.
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"pagination-ellipsis"` | Selects the part in the theme and from other parts |
+
+## PaginationNext
+
+A `PaginationLink` to the next page, at `size="default"`. Renders the text "Next" and a right chevron, and is named "Go to next page" through `aria-label`. Below `sm` the text hides and the link turns into a square that holds the chevron.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | - | Sets the page the link goes to. |
+| `aria-label` | `string` | `"Go to next page"` | Sets the accessible name, which screen readers announce instead of the text. |
+| `size` | `string` union | `"default"` | Sets the height and the padding, with the sizes of `PaginationLink`. |
+
+Also takes every prop of `PaginationLink`. Its children are fixed: the text and the chevron replace any `children` it is given.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"pagination-link"` | Selects the part in the theme and from other parts |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `PaginationLinkProps` | `type` | The props of `PaginationLink`: `isActive`, `size`, `render` and every prop of an `a`. |
+
+## Accessibility and theme
+
+- Give each `Pagination` an `aria-label` that names what it pages ("Search results pages") when a page has more than one, or when `"pagination"` says too little.
+- Mark the current page with `isActive`: it sets `aria-current="page"`, which is how a screen reader tells it apart.
+- Give every link an `href`, or render it as a `Button` with `onClick` through `render`; an `a` without `href` cannot be reached with the keyboard.
+- The ellipsis is hidden from screen readers; when the number of pages matters, say it in text next to the pagination ("Page 2 of 6").
+- The links take the `ghost` and `outline` colors of `Button`, so the theme rules of `Button` apply.
