@@ -1,0 +1,71 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Textarea
+
+A multi-line text field, for text that runs past one line: a message to support, a profile bio, a comment, release notes. Put it in a `Field` to label and validate it, or beside a `Label` for a plain form; for a chat message box with send actions, reach for `Composer`, and for buttons or text inside the field's border, for `InputGroup` with `InputGroupTextarea`.
+
+The other pages of `UI/Textarea`: [Playground](?path=/story/ui-textarea-playground--playground) to try the text, size and states, [Stories](?path=/story/ui-textarea-stories--default) for each size and state, [Behavior](?path=/story/ui-textarea-behavior--enter-adds-line-in-form) for the tests, [Usages](?path=/story/ui-textarea-usages--support-request) for real forms and fields, and [Layouts](?path=/story/ui-textarea-layouts--with-label) for the ways to label it and pair it with a button.
+
+## Import
+
+```tsx
+import { Textarea } from '@acme/ui/textarea'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Textarea aria-label="Textarea" placeholder="Textarea" />
+```
+
+`Textarea` is one part that renders two elements: a `span` wrapper that draws the border, background and focus ring, and the `textarea` inside it. The label is a `Label`, a `FieldLabel` or an `aria-label`, never a prop of the textarea.
+
+## Textarea
+
+The multi-line text field. Renders a `span` with a `textarea` inside, which is the Base UI `Field.Control`, so it joins a `Field` on its own: a `FieldLabel` names it and the field validates it. `Enter` adds a line: inside a form it neither submits nor commits the field's validation. It never trims, formats or stores what the user types.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"`, `"lg"` or `number` | `"default"` | Controls the minimum height and padding; a number sets only `data-size` and keeps the `"default"` look. |
+| `value` | `string`, `number` or `readonly string[]` | - | Controls the value; pair it with `onChange`. |
+| `defaultValue` | `string`, `number` or `readonly string[]` | - | Sets the starting value, when `value` is not passed. |
+| `placeholder` | `string` | - | Sets the hint shown while the textarea is empty; it does not name the textarea. |
+| `disabled` | `boolean` | `false` | When true, ignores typing, leaves the tab order and drops the wrapper to 64% opacity; a `Field` with `disabled` disables it too. |
+| `aria-invalid` | `boolean` | - | When true, turns the border and focus ring `--destructive`; a `Field` sets it when validation fails. |
+| `unstyled` | `boolean` | `false` | When true, drops every class of the wrapper: border, background, shadow, focus ring and text size. |
+| `className` | `string` | - | Adds classes to the wrapper `span`, not to the textarea; with `unstyled`, they are its only classes. |
+| `style` | `CSSProperties` | - | Sets inline styles on the textarea, not on the wrapper. |
+| `onChange` | `(event: ChangeEvent<HTMLTextAreaElement>) => void` | - | Called when the user changes the value, with the change event. |
+
+Also takes every prop of a `textarea` (`id`, `name`, `required`, `maxLength`, `rows`).
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"textarea-control"` on the wrapper, `"textarea"` on the textarea | Selects the wrapper and the textarea in the theme and from other parts |
+| `data-size` | `"sm"`, `"default"`, `"lg"` or the number, on the wrapper | Styles each size |
+| `data-disabled` | present on the textarea when `disabled` | Styles the disabled textarea |
+| `data-valid`, `data-invalid` | present on the textarea inside a `Field` after validation | Styles the result of validation |
+| `data-touched`, `data-dirty`, `data-filled`, `data-focused` | present on the textarea inside a `Field` | Styles the interaction state of the field |
+
+The textarea sets `field-sizing: content`. Where the browser supports it (Chromium-based browsers), the textarea sizes to its content: each new line makes it taller, removing lines shrinks it back to its minimum, and `rows` does not change its height. Elsewhere `rows` sets the height (never below the minimum) and the textarea scrolls instead of growing. For a taller empty textarea in every browser, set `min-height` through `style`, or through a class on the wrapper that targets the `textarea`.
+
+Below `sm` the minimum height is 82px at `"default"`, 78px at `"sm"` and 86px at `"lg"`, with 16px text; from `sm` up each minimum is 12px shorter and the text is 14px. The padding is 11px on the sides and 5px above and below at `"default"`, 9px and 3px at `"sm"`, and 11px and 7px at `"lg"`. The wrapper has a 1px `--input` border, a `--radius-lg` radius and a `--background` fill (`--input` at 32% in dark); focused with the keyboard, the border turns `--ring` and a 3px ring appears. With `aria-invalid`, the border and the ring turn `--destructive`. The textarea sets no `resize`, so the browser's resize handle stays.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `TextareaProps` | `type` | The props of `Textarea`, for a component that wraps or forwards them. |
+| `FieldPrimitive` | `namespace` | The Base UI `Field`, the same one `@acme/ui/field` exports, for its types or a control with other markup. |
+
+## Accessibility and theme
+
+- Name every textarea: point a `Label`'s `htmlFor` at its `id`, put it in a `Field` with a `FieldLabel`, or, when no text is visible (a reply box under a comment), pass `aria-label`. A placeholder is not a name.
+- Link help text and limits with `aria-describedby`, or use `FieldDescription` inside a `Field`; a character count the user reads belongs there.
+- Say what is wrong in text, with a `FieldError` or a description: the red border alone does not say it.
+- The wrapper reads `--input`, `--background`, `--foreground`, `--muted-foreground`, `--ring` and `--destructive` from the theme.
