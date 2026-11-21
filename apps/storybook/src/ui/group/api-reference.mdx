@@ -1,0 +1,114 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Group
+
+Joins related controls into one bar, so they read as a single unit: the actions of a file, a pager, an amount with its currency, a field with its submit button, the zoom of a canvas. Reach for it for controls that act; for options that stay pressed, use `ToggleGroup`.
+
+The other pages of `UI/Group`: [Playground](?path=/story/ui-group-playground--playground) to try the label, the orientation and a leading text, [Stories](?path=/story/ui-group-stories--default) for each orientation, [Behavior](?path=/story/ui-group-behavior--named-group) for the tests, [Usages](?path=/story/ui-group-usages--file-actions) for file actions, a price, a pager and zoom controls, and [Layouts](?path=/story/ui-group-layouts--with-text) for text, inputs and nested groups.
+
+## Import
+
+```tsx
+import { Group, GroupSeparator, GroupText } from '@acme/ui/group'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Group aria-label="Group">
+  <GroupText />
+  <GroupSeparator />
+  <Button variant="outline" />
+  <GroupSeparator />
+  <Button variant="outline" />
+</Group>
+```
+
+## Group
+
+The bar that joins its children. Renders a `div` with `role="group"`, a flex row as wide as its children. It adds no state and no keys: each control inside keeps its own tab stop and its own behavior.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `React.ReactNode` | required | Sets the controls, texts, separators and nested groups of the bar. |
+| `orientation` | `"horizontal"`, `"vertical"` or `null` | `"horizontal"` | Sets the direction of the bar; `"vertical"` stacks the children, and `null` drops the direction classes, so the children are not joined. |
+| `className` | `string` | - | Adds classes after the layout classes, so a conflicting class wins. |
+
+Also takes every prop of a `div`. A `role` passed to it replaces `"group"`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"group"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` or `"vertical"`, present only when `orientation` is passed and not `null` | Styles the group by its direction |
+
+The joining rules act on the direct children that carry a `data-slot`, such as `Button`, `Input`, `GroupText`, `GroupSeparator`, `Group` and `MenuTrigger`. In a horizontal group, such a child loses its end border and its end corners when any later sibling carries a `data-slot`, and its start border and its start corners when any earlier sibling does; in a vertical group the same holds for the bottom and the top. A direct child without a `data-slot`, such as a plain `span`, keeps its own border and corners and does not count as a sibling for the others.
+
+No two borders meet, so only a `GroupSeparator` draws a line between two controls. Put one between every pair of children, outline buttons included.
+
+A child that is focused with the keyboard (`:focus-visible`), or that holds such an element, takes `z-index: 1`, so its focus ring draws over its neighbours.
+
+A group with a `Group` among its direct children puts 8px between its children, so nested groups read as separate bars.
+
+On a coarse pointer, the hit area of a child no longer grows to 44px wide in a horizontal group, nor to 44px high in a vertical one, so neighbouring hit areas do not overlap.
+
+In a vertical group, the 1px shadow line of an outline control shows once: on the last child in light and on the first child in dark.
+
+## GroupText
+
+A box of text in the bar: a prefix, a suffix or a unit beside an input (`https://`, `.com`, `USD`). Renders a `div` that looks like a filled control: the `--input` border, a `--muted` background (`--input` at 64% in dark) and `text-muted-foreground`. It never wraps its text. Inside a `Group` it is as tall as the row, because the group's flex row stretches its children.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `div` with another element, which receives the text props; pass a `label` or the `Label` with `htmlFor` to tie it to the input beside it. |
+| `className` | `string` | - | Adds classes after the text classes, so a conflicting class wins. |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"group-text"` | Selects the part in the theme and from other parts |
+
+Rendered as a `label` for an input, a click on the text focuses the input. An `svg` anywhere inside it without a `size-*` class is 16px from `sm` up and 18px below.
+
+## GroupSeparator
+
+The line between two children of the bar. Renders the `Separator`, a `div` with `role="separator"` that takes no focus. See [UI/Separator](?path=/docs/ui-separator-api-reference--api-reference) for its own props.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `orientation` | `"vertical"` or `"horizontal"` | `"vertical"` | Sets the direction of the line; pass `"horizontal"` in a vertical group. |
+| `className` | `string` | - | Adds classes after the line classes, so a conflicting class wins. |
+
+Also takes every prop of the `Separator`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"separator"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"vertical"` or `"horizontal"` | Styles the line by its direction |
+
+The line takes `--input`, with an overlay of `--input` at 32% in dark, and ignores the pointer. It stretches to the height of the row and sits above its neighbours (`z-index: 2`).
+
+Next to an `Input`, an `InputGroup` or a `NumberField` that holds focus, or a `SelectTrigger` focused with the keyboard, the line takes `--ring`, so it continues the control's focus border, and shifts 1px sideways toward that control (except right after a `NumberField`).
+
+In dark, `Group` repaints the overlay of a separator next to a hovered `button`, or next to a child with `data-pressed`, to `--input` at 64%, which matches the dark background of a hovered or pressed outline button.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `groupVariants` | `function` | Returns the layout classes of `Group`. `groupVariants({ orientation, className }) => string` |
+| `ButtonGroup` | `component` | Alias for `Group`. |
+| `ButtonGroupText` | `component` | Alias for `GroupText`. |
+| `ButtonGroupSeparator` | `component` | Alias for `GroupSeparator`. |
+
+## Accessibility and theme
+
+- Name every group with `aria-label` or `aria-labelledby`; in nested groups, name each one (`Pagination`, `Page numbers`, `Navigation`).
+- Name every control: an icon-only button with `aria-label` and its icon `aria-hidden="true"`, an input with a `label` (a `GroupText` rendered as `label` works) or `aria-label`.
+- `Tab` moves through the controls one by one, and the group adds no arrow keys. For options that stay pressed, use `ToggleGroup`; for a bar that the arrow keys move through as one tab stop, use `Toolbar`.
+- `Group` reads only `--input`, for the dark repaint of its separators; the separator reads `--input` and `--ring`, and `GroupText` reads `--input`, `--muted` and `--muted-foreground`.
