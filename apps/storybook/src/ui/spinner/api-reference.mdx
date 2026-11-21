@@ -1,0 +1,51 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Spinner
+
+A loading indicator for work that has started and has no known end: a form being saved, a search running behind an input, a panel waiting for its data. It is one turning circle, drawn beside a label, at the end of an input or in the place of the content that is loading. Inside a button, use the `loading` prop of [Button](?path=/docs/ui-button-api-reference--api-reference), which draws this spinner over the label.
+
+The other pages of `UI/Spinner`: [Playground](?path=/story/ui-spinner-playground--playground) to try the size, [Stories](?path=/story/ui-spinner-stories--default) for the default spinner, [Behavior](?path=/story/ui-spinner-behavior--announced-as-status) for the tests, [Usages](?path=/story/ui-spinner-usages--submitting-form) for spinners in context and [Layouts](?path=/story/ui-spinner-layouts--beside-label) for where it sits.
+
+## Import
+
+```tsx
+import { Spinner } from '@acme/ui/spinner'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Spinner />
+```
+
+## Spinner
+
+The indicator. Renders the Lucide `Loader2Icon`, an `svg` with `role="status"` and `aria-label="Loading"`, turning once per second at a constant speed. It has no children and no state: it spins while it is mounted, and the consumer unmounts it when the work ends.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | `"Loading"` | Names the status for a screen reader; it is not drawn. |
+| `role` | `string` | `"status"` | Sets the role of the `svg`. |
+| `className` | `string` | - | Adds classes after `animate-spin`; a conflicting `animate-*` class wins. |
+
+Also takes every prop of a Lucide icon (`size`, `color`, `strokeWidth`, `absoluteStrokeWidth`) and of an `svg`.
+
+It sets no `data-*` attribute. Pass a `data-slot` to select it from a parent or the theme, as `Button` does with `data-slot="button-loading-indicator"`.
+
+On its own it is 24px, from the `width` and `height` attributes. A parent that sizes every `svg` child with no `size-*` class, such as `Button` and the `InputGroupAddon` of an input, sizes it like its other icons. A `size-*` class in `className` wins over both; the `size` prop only changes the attributes, so a parent rule still overrides it.
+
+It draws its stroke in `currentColor`, so it takes the text color of where it sits; a `text-*` class changes it. Inside a `Button`, and inside an `InputGroupAddon` that holds no button, it also takes `opacity-80`, unless an `opacity-*` class is set.
+
+The rotation does not stop under `prefers-reduced-motion`; a `motion-reduce:animate-none` class in `className` stops it there.
+
+## Accessibility and theme
+
+- Name it after the work when the spinner is the only sign of it (`aria-label="Loading invoices"`).
+- In a button, `loading` keeps the label as the start of the button's name while it hides the label from view, and the spinner keeps its `role="status"` and "Loading": it is the only visible sign of the work.
+- Outside a button, when visible text beside it already says it ("Generating a reply…"), hide it with `aria-hidden="true"`, so the text says it once and the spinner adds no status of its own.
+- `role="status"` makes it a polite live region, and a live region inserted together with its name is not always announced. When the end or the start of the work has to be announced, keep a status element mounted and change its text.
