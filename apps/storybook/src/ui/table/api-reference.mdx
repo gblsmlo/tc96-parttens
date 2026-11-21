@@ -1,0 +1,171 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Table
+
+Rows and columns of data the reader scans and compares: a list of invoices, the members of a workspace, the deployments of an app. It holds a caption, a header, a body and a footer, in a container that scrolls sideways when the columns do not fit. It only lays out what it receives: sorting, filtering, paging and selection belong to the consumer.
+
+The other pages of `UI/Table`: [Playground](?path=/story/ui-table-playground--playground) to try the caption, the variant, the footer, the selection column and the container element, [Stories](?path=/story/ui-table-stories--default) for each variant and the selected row, [Behavior](?path=/story/ui-table-behavior--native-table-semantics) for the tests, [Usages](?path=/story/ui-table-usages--invoices) for real data and [Layouts](?path=/story/ui-table-layouts--with-footer) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@acme/ui/table'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Table>
+  <TableCaption />
+  <TableHeader>
+    <TableRow>
+      <TableHead />
+      <TableHead />
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell />
+      <TableCell />
+    </TableRow>
+  </TableBody>
+  <TableFooter>
+    <TableRow>
+      <TableCell />
+      <TableCell />
+    </TableRow>
+  </TableFooter>
+</Table>
+```
+
+## Table
+
+The root of the table. Renders a `div` container with `overflow-x: auto` and, inside it, a full-width `table` in `text-sm`. Columns wider than the container scroll inside it, never across the page.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"card"` | `"default"` | Controls the look of the body: ruled rows, or rows on a rounded card surface. |
+| `render` | `ReactElement` or `(props, state) => ReactElement` | - | Replaces the container `div`, and is the only way to pass props to it. |
+| `className` | `string` | - | Adds classes to the `table`, not to the container. |
+
+Also takes every prop of a `table`, which it passes to the `table` element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"table-container"` | Set on the container; selects it in the theme and from other parts |
+| `data-variant` | `"default"` or `"card"` | Set on the container; the `table`, `TableCaption`, `TableBody`, `TableFooter`, `TableRow` and `TableCell` read it to switch their look (`TableHeader` and `TableHead` do not) |
+| `data-slot` | `"table"` | Set on the `table` element |
+
+The `table` places its caption below the rows (`caption-side: bottom`). With `variant="card"` it separates its borders with no spacing (`border-separate border-spacing-0`), so the body cells can draw rounded corners.
+
+To make the container a keyboard-scrollable region, pass the attributes through `render`: `render={<section aria-label="Invoices" tabIndex={0} />}`; a named `section` is a `region` landmark.
+
+## TableCaption
+
+The title or summary of the table. Renders a `caption` in `text-sm text-muted-foreground`, 16px under the rows; with `variant="card"` it also keeps 16px under itself. It names the table for assistive technology. Place it as the first child of `Table`: the `table` element expects its `caption` first and still shows it below.
+
+Also takes every prop of a `caption`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"table-caption"` | Selects the part in the theme and from other parts |
+
+## TableHeader
+
+The group of header rows. Renders a `thead` and draws a bottom border under each of its rows.
+
+Also takes every prop of a `thead`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"table-header"` | Selects the part in the theme and from other parts |
+
+## TableBody
+
+The group of data rows. Renders a `tbody`; its last row has no bottom border.
+
+Also takes every prop of a `tbody`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"table-body"` | Selects the part in the theme and from other parts |
+
+With `variant="card"`, the body is a rounded surface with a light shadow: its cells take the `card` background and the borders, the four corner cells round to `rounded-xl`, and a row's cells tint on hover and when the row has `data-state="selected"`.
+
+## TableFooter
+
+The group of summary rows, such as a total. Renders a `tfoot` in `font-medium` with a top border. Its cells take 14px of vertical padding instead of 10px.
+
+Also takes every prop of a `tfoot`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"table-footer"` | Selects the part in the theme and from other parts |
+
+With `variant="default"` the footer has a light tint of the `card` color; with `variant="card"` it has no border and no background.
+
+## TableRow
+
+A row of heads or cells. Renders a `tr` with a bottom border.
+
+Also takes every prop of a `tr`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"table-row"` | Selects the part in the theme and from other parts |
+| `data-state` | `"selected"`, set by the consumer | Tints the row as selected |
+
+With `variant="default"` the row tints on hover, and more with `data-state="selected"`. With `variant="card"` the `TableBody` draws the same tints on the row's cells. The row never sets `data-state` itself: the consumer passes it from its own selection, and shows the selection in another way too, such as a checked `Checkbox`.
+
+## TableHead
+
+A header cell. Renders a `th`, 40px tall, with 10px of inline padding, left-aligned text in `font-medium text-muted-foreground`, and no wrapping. In a `TableHeader` it heads a column; in a body row, pass `scope="row"` to make it head that row.
+
+Also takes every prop of a `th`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"table-head"` | Selects the part in the theme and from other parts |
+
+A head that holds an element with `role="checkbox"` shrinks to its content (`w-px`). If it is the first cell of the row it drops its end padding, and if it is the last cell it drops its start padding.
+
+## TableCell
+
+A data cell. Renders a `td` with 10px of padding, middle-aligned and with no wrapping, so long content widens the column and scrolls the container instead of breaking lines.
+
+Also takes every prop of a `td`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"table-cell"` | Selects the part in the theme and from other parts |
+
+Inside a `TableFooter` the cell has 14px of vertical padding. With `variant="card"`, the first and last cells of a row take 1px less inline padding, which the side borders of the card fill. A cell that holds an element with `role="checkbox"` shrinks like a `TableHead` does.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `TableProps` | `type` | The props of `Table`: every prop of a `table`, plus `variant` and `render`. |
+| `TableVariant` | `type` | The values of `variant`: `"default"` or `"card"`. |
+
+## Accessibility and theme
+
+- Name every table, with a `TableCaption` or with `aria-label` on `Table`.
+- Pass `scope="row"` to a `TableHead` that heads a row.
+- Label each selection checkbox (`aria-label="Select Ana Souza"`), and never show selection by the `data-state` tint alone.
+- When the columns may not fit, make the container a named, focusable `section` through `render` (`aria-label`, `tabIndex={0}`), so a keyboard user can scroll it.
+- The tints of hover, selection and the default footer mix the `background` or `card` color with 2% or 4% of black in light and of white in dark; a theme only sets those colors.
