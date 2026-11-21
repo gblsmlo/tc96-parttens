@@ -170,7 +170,7 @@ One action. Renders a `div` with `role="menuitem"`: a row with an optional icon,
 | --- | --- | --- | --- |
 | `variant` | `"default"` or `"destructive"` | `"default"` | Controls the text color; `"destructive"` marks an action that deletes or cannot be undone. |
 | `inset` | `boolean` | - | Starts the label where the labels after an icon start, for an item without an icon. Any value sets `data-inset`, `false` included, so leave the prop out instead of passing `false`. |
-| `disabled` | `boolean` | `false` | When true, the item cannot be highlighted or pressed. |
+| `disabled` | `boolean` | `false` | When true, a press or `Enter` does nothing and the pointer passes through; the arrow keys still highlight the item. |
 | `closeOnClick` | `boolean` | `true` | When true, a press closes the menu. |
 | `onClick` | `(event: MouseEvent) => void` | - | Called when the item is pressed, or `Enter` is pressed on it. |
 | `label` | `string` | - | Sets the text that typing matches, when the item's text is not plain. |
@@ -239,7 +239,7 @@ An item that turns a setting on or off. Renders a `div` with `role="menuitemchec
 | `checked` | `boolean` | - | Controls the checked state; pair it with `onCheckedChange`. |
 | `defaultChecked` | `boolean` | `false` | Sets the checked state of the first render when `checked` is not passed. |
 | `onCheckedChange` | `(checked: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the item is toggled, with the new state. |
-| `disabled` | `boolean` | `false` | When true, the item cannot be highlighted or toggled. |
+| `disabled` | `boolean` | `false` | When true, the item cannot be toggled and the pointer passes through; the arrow keys still highlight it. |
 | `closeOnClick` | `boolean` | `false` | When true, a press also closes the menu. |
 
 Also takes every prop of Base UI `Menu.CheckboxItem`, such as `label`.
@@ -262,7 +262,7 @@ A set of items of which one is selected. `MenuRadioGroup` renders a `div` with `
 | `value` | `Value` | required | Sets the value a `MenuRadioItem` selects; on `MenuRadioGroup`, controls the selected value. |
 | `defaultValue` | `Value` | - | Sets the selected value of the first render of `MenuRadioGroup` when `value` is not passed. |
 | `onValueChange` | `(value: Value, eventDetails: ChangeEventDetails) => void` | - | Called on `MenuRadioGroup` when another item is selected. |
-| `disabled` | `boolean` | `false` | When true, the group or the item ignores the user. |
+| `disabled` | `boolean` | `false` | When true, the item, or every item of the group, cannot be selected and the pointer passes through; the arrow keys still highlight it. |
 | `closeOnClick` | `boolean` | `false` | When true, a press on a `MenuRadioItem` also closes the menu. |
 
 Also takes every prop of the Base UI part: `Menu.RadioGroup` or `Menu.RadioItem`.
@@ -300,7 +300,7 @@ The item that opens a submenu. Renders a `div` with `role="menuitem"` and `aria-
 | `openOnHover` | `boolean` | `true` | When true, the submenu opens while the pointer rests on the item. |
 | `delay` | `number` | `100` | Sets the wait in milliseconds before a hover opens the submenu. |
 | `closeDelay` | `number` | `0` | Sets the wait in milliseconds before a submenu opened by hover closes. |
-| `disabled` | `boolean` | `false` | When true, the item cannot be highlighted or open the submenu. |
+| `disabled` | `boolean` | `false` | When true, the submenu does not open and the pointer passes through; the arrow keys still highlight the item. |
 
 Also takes every prop of Base UI `Menu.SubmenuTrigger`.
 
