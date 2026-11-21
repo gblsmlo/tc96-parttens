@@ -1,0 +1,427 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Drawer
+
+A panel that slides in from an edge of the screen and is swiped back to close it, built for touch: a form or a list of actions on a phone, the navigation of a small screen, a cart, a set of options that opens another one. Reach for it when the user should be able to drag the panel away, stop it at a snap point or stack a second panel on top; a panel opened from a desktop toolbar with no gestures is a `Sheet`, and a short task in the middle of the page is a `Dialog`.
+
+The other pages of `UI/Drawer`: [Playground](?path=/story/ui-drawer-playground--playground) to try the texts, the parts, the position, the variant, the footer variant, the bar and the close button, [Stories](?path=/story/ui-drawer-stories--default) for each prop value, [Behavior](?path=/story/ui-drawer-behavior--opens-from-trigger) for the tests, [Usages](?path=/story/ui-drawer-usages--edit-profile) for real tasks and [Layouts](?path=/story/ui-drawer-layouts--without-bar) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Drawer,
+  DrawerClose,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerMenu,
+  DrawerMenuCheckboxItem,
+  DrawerMenuGroup,
+  DrawerMenuGroupLabel,
+  DrawerMenuItem,
+  DrawerMenuRadioGroup,
+  DrawerMenuRadioItem,
+  DrawerMenuSeparator,
+  DrawerMenuTrigger,
+  DrawerPanel,
+  DrawerPopup,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@acme/ui/drawer'
+```
+
+## Anatomy
+
+A drawer has two structures: a task, with a header, a panel and a footer, and a menu of actions inside its panel.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Drawer>
+  <DrawerTrigger />
+  <DrawerPopup showBar>
+    <DrawerHeader>
+      <DrawerTitle />
+      <DrawerDescription />
+    </DrawerHeader>
+    <DrawerPanel />
+    <DrawerFooter>
+      <DrawerClose />
+    </DrawerFooter>
+  </DrawerPopup>
+</Drawer>
+```
+
+<Canvas of={ApiReferenceStories.MenuAnatomy} />
+
+```tsx
+<Drawer>
+  <DrawerTrigger />
+  <DrawerPopup aria-label="…" showBar>
+    <DrawerPanel>
+      <DrawerMenu>
+        <DrawerMenuGroup>
+          <DrawerMenuGroupLabel />
+          <DrawerMenuItem />
+        </DrawerMenuGroup>
+        <DrawerMenuSeparator />
+        <DrawerMenuCheckboxItem />
+        <DrawerMenuSeparator />
+        <DrawerMenuRadioGroup>
+          <DrawerMenuRadioItem value="…" />
+        </DrawerMenuRadioGroup>
+        <DrawerMenuSeparator />
+        <Drawer>
+          <DrawerMenuTrigger />
+          <DrawerPopup aria-label="…" showBar>
+            <DrawerPanel>
+              <DrawerMenu>
+                <DrawerMenuItem />
+              </DrawerMenu>
+            </DrawerPanel>
+          </DrawerPopup>
+        </Drawer>
+      </DrawerMenu>
+    </DrawerPanel>
+  </DrawerPopup>
+</Drawer>
+```
+
+## Drawer
+
+Groups the parts and holds the open state. Wraps `Drawer.Root` from Base UI; renders no element. It is modal by default: while open, focus stays in the popup, the page behind it does not scroll and is hidden from assistive technology. A press outside the popup, `Escape`, a `DrawerClose` and a swipe toward its edge close it. A `Drawer` rendered inside another drawer's popup opens over it as a nested drawer.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `position` | `"bottom"`, `"right"`, `"left"` or `"top"` | `"bottom"` | Sets the edge the drawer sits on, and the default of `swipeDirection`; `DrawerPopup`, `DrawerSwipeArea` and `DrawerBar` read it. |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the drawer asks to open or close, with the `reason` in `eventDetails`. |
+| `swipeDirection` | `"down"`, `"up"`, `"left"` or `"right"` | from `position` | Sets the direction a swipe closes the drawer in: `"down"` for `"bottom"`, `"up"` for `"top"`, and the same word for `"left"` and `"right"`. |
+| `snapPoints` | `(number or string)[]` | - | Sets the heights a `"bottom"` drawer stops at: a number from 0 to 1 is a fraction of the screen height, a larger number is pixels, a string is `px` or `rem`. |
+| `defaultSnapPoint` | `number`, `string` or `null` | the first snap point | Sets the snap point of the first render when `snapPoint` is not passed. |
+| `snapPoint` | `number`, `string` or `null` | - | Controls the active snap point; pair it with `onSnapPointChange`. |
+| `onSnapPointChange` | `(snapPoint: number or string or null, eventDetails: SnapPointChangeEventDetails) => void` | - | Called when a swipe moves the drawer to another snap point. |
+| `snapToSequentialPoints` | `boolean` | `false` | When true, a fast swipe moves one snap point at a time instead of skipping by velocity. |
+| `modal` | `boolean` or `"trap-focus"` | `true` | Sets how much of the page it blocks: `true` traps focus, locks scroll and blocks outside pointers, `"trap-focus"` only traps focus, `false` blocks nothing. |
+| `disablePointerDismissal` | `boolean` | `false` | When true, a press outside the popup does not close it, nor focus moving out of a non-modal drawer. |
+| `handle` | `DrawerPrimitive.Handle` | - | Links the drawer to a trigger outside it, created with `DrawerCreateHandle()`. |
+
+Also takes every prop of Base UI `Drawer.Root`, such as `actionsRef` and `onOpenChangeComplete`.
+
+`ChangeEventDetails` is `DrawerPrimitive.Root.ChangeEventDetails` and `SnapPointChangeEventDetails` is `DrawerPrimitive.Root.SnapPointChangeEventDetails`. The `reason` of a close is `"swipe"`, `"outside-press"`, `"escape-key"`, `"close-press"`, `"focus-out"` for a non-modal drawer, `"close-watcher"` when the browser asks to close it (the Android back gesture), `"imperative-action"` when `handle` or `actionsRef` closes it, or `"none"` when no other reason applies; a controlled parent can refuse it by not updating `open`.
+
+With the mouse, a drag that starts on the bar, the header or an empty part of the popup swipes it; a drag that starts on the panel or the footer selects text instead (see `allowSelection`). A touch swipes from anywhere in the popup; on a panel that scrolls, only once the panel is back at its start.
+
+## DrawerTrigger
+
+The button that opens the drawer. Renders a `button`; pass `render={<Button />}` to use the `Button`. It can sit outside `Drawer` when both share a `handle`, and focus returns to it when the drawer closes.
+
+Also takes every prop of Base UI `Drawer.Trigger`, such as `payload`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while its drawer is open | Styles the trigger of the open drawer |
+| `data-disabled` | present when disabled | Styles a disabled trigger |
+
+## DrawerPopup
+
+The drawer itself. Renders a `div` with `role="dialog"` in a portal on `body`, above a `DrawerBackdrop` and inside a `DrawerViewport`, so one part brings the whole layer. It is labelled by `DrawerTitle` and described by `DrawerDescription`; a popup with no title takes an `aria-label`. On open, focus moves to the popup itself, not to its first control, so a touch does not open the virtual keyboard; the next `Tab` reaches the first control. A `"bottom"` popup keeps a focused field above the software keyboard.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"`, `"straight"` or `"inset"` | `"default"` | Controls the frame: `"straight"` drops the radius, `"inset"` lifts the drawer 16px off the edges with rounded corners from `sm` up. |
+| `showBar` | `boolean` | `false` | When true, renders a `DrawerBar` on the edge that faces the page. |
+| `showCloseButton` | `boolean` | `false` | When true, renders a close button at the top end. |
+| `position` | `"bottom"`, `"right"`, `"left"` or `"top"` | the `position` of `Drawer` | Overrides the edge for this popup only; leave it to `Drawer`, which also sets the swipe direction. |
+| `portalProps` | `DrawerPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `Drawer.Popup`, such as `initialFocus` and `finalFocus`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-popup"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-swipe-direction` | `"down"`, `"up"`, `"left"` or `"right"` | Selects the drawer by the direction it is swiped in |
+| `data-swiping` | present while it is dragged | Styles the drawer during a swipe |
+| `data-swipe-dismiss` | present when a swipe closed it | Styles the exit after a swipe |
+| `data-expanded` | present at the full-height snap point | Styles a drawer opened all the way |
+| `data-nested-drawer-open` | present while a drawer is open over it | Styles the drawer left behind |
+| `data-nested-drawer-swiping` | present while the drawer over it is dragged | Styles the drawer behind during that swipe |
+
+`variant` and `position` set no attribute; select the position by `data-swipe-direction` when the swipe direction is not overridden.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--drawer-height` | `auto` | Sets the height of a `"bottom"` or `"top"` drawer; set it on the popup for a fixed height, such as a chat that fills the screen. The drawer sets it itself only while a drawer is open over it or while it closes. |
+| `--nested-drawers` | `0` | The number of drawers open over this one, set by the drawer. |
+
+Each position places the drawer on its edge and draws a 1px border only on the edge that faces the page:
+
+| `position` | Size | Border |
+| --- | --- | --- |
+| `"bottom"`, `"top"` | the full width; as tall as its content, at most the screen minus 8px (`"bottom"`) or minus 48px (`"top"`) | `border-t` on the bottom, `border-b` on top |
+| `"right"`, `"left"` | the full height; the width of the screen minus 48px, at most 448px (`max-w-md`) | `border-s` on the right, `border-e` on the left |
+
+With `"default"` and `"inset"`, the two corners that face the page get a 2xl radius; `"straight"` has none. With `"inset"`, from `sm` up the viewport gets 16px of padding on both sides and on the drawer's own edge, plus the far edge for `"left"` and `"right"`: a `"bottom"` or `"top"` drawer is padded on three edges, a `"left"` or `"right"` one on all four. The drawer gets a 2xl radius and a 1px `border` on every edge, with the outer corners of a `DrawerFooter` rounded to match. Below `sm`, `"inset"` looks like `"default"`. The drawer slides in from its edge, and follows the pointer or the finger during a swipe.
+
+A drawer open over another makes the one behind it step back: it shrinks by 5% per drawer on top, peeks out behind its edge and darkens a little, and a `"bottom"` or `"top"` one takes the height of the frontmost. A `"straight"` drawer does not shrink when another opens over it.
+
+The popup is a column that never outgrows the screen. A `DrawerPanel` takes the height left between the header and the footer, so a panel with more content than fits scrolls while the header and the footer stay in place. With `snapPoints`, a `"bottom"` drawer opens at the first snap point, showing that much of its height, and a swipe up moves it to the next.
+
+The close button sits at the top end: a ghost icon `Button` with a `DrawerClose` behind it and `aria-label="Close"`. It carries the `Button`'s `data-slot="button"`, not a slot of its own; select it by its `aria-label`.
+
+## DrawerBar
+
+The drag bar `showBar` renders. A `div` with `aria-hidden="true"` that draws a 48px by 4px pill in the `input` color, along the edge that faces the page: the top edge of a `"bottom"` drawer, the bottom edge of a `"top"` one, and the inner edge of a `"left"` or `"right"` one, where it stands upright. The popup gets 8px more padding on that edge. It is a visual hint only: a mouse drag works anywhere outside the panel and the footer.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `position` | `"bottom"`, `"right"`, `"left"` or `"top"` | the `position` of `Drawer` | Sets the edge it sits on. |
+
+Also takes every prop of a `div`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-bar"` | Selects the part in the theme and from other parts |
+
+## DrawerHeader
+
+The block of the title and the description. Renders a `div` that stacks them 8px apart with 24px of padding; the bottom padding drops to 12px when the popup has a `DrawerPanel`, and to 16px below `sm`. With the mouse it is a drag surface, so its text cannot be selected by default.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `allowSelection` | `boolean` | `false` | When true, wraps the header in a `DrawerContent`, so a mouse drag on it selects text instead of swiping. |
+
+Also takes every prop of a `div`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-header"` | Selects the part in the theme and from other parts |
+| `data-drawer-content` | present with `allowSelection` | Marks the area where a mouse drag selects text |
+
+## DrawerTitle
+
+The name of the task. Renders an `h2` in the heading font at `text-xl`, and its text is the accessible name of the popup.
+
+Also takes every prop of Base UI `Drawer.Title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-title"` | Selects the part in the theme and from other parts |
+
+## DrawerDescription
+
+What the drawer holds or what it changes. Renders a `p` in `text-sm text-muted-foreground`, and its text is the accessible description of the popup.
+
+Also takes every prop of Base UI `Drawer.Description`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-description"` | Selects the part in the theme and from other parts |
+
+## DrawerPanel
+
+The body of the drawer: a form, a list, a menu. Renders a `div` with 24px of padding inside a `ScrollArea` that scrolls when the content does not fit; the top padding drops to 4px when the popup has a `DrawerHeader`, and the bottom one to 4px when its `DrawerFooter` is `"bare"`. Scrolling stops at its edges instead of moving the page. Keep a field or a row of actions that must stay on screen after the panel, outside its scroll area.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `scrollable` | `boolean` | `true` | When true, renders the `ScrollArea`; when false, renders only the `div`, which does not scroll. |
+| `scrollFade` | `boolean` | `true` | When true, fades the top and bottom 24px while the content scrolls past them. |
+| `allowSelection` | `boolean` | `true` | When true, wraps the panel in a `DrawerContent`, so a mouse drag on it selects text instead of swiping. |
+
+Also takes every prop of a `div`, and `render` to change the element. `className` goes to the `div`, not to the scroll area.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-panel"` | Selects the part in the theme and from other parts |
+| `data-drawer-content` | present with `allowSelection` | Marks the area where a mouse drag selects text |
+
+The scroll area around it is the `ScrollArea` component, and its viewport carries `data-slot="scroll-area-viewport"`.
+
+## DrawerFooter
+
+The row of actions. Renders a `div`; below `sm` its children stack full width in reverse order, so the last one sits on top, and from `sm` up they line up at the end. Its bottom padding grows by the safe area of the device.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"bare"` | `"default"` | Controls the surface: `"default"` adds a top border and a muted background, `"bare"` drops both. |
+| `allowSelection` | `boolean` | `true` | When true, wraps the footer in a `DrawerContent`, so a mouse drag on it selects text instead of swiping. |
+
+Also takes every prop of a `div`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-footer"` | Selects the part in the theme and from other parts |
+| `data-drawer-content` | present with `allowSelection` | Marks the area where a mouse drag selects text |
+
+The variant sets no attribute; select it by its classes or wrap it.
+
+## DrawerClose
+
+A button that closes the drawer. Renders a `button`; pass `render={<Button />}` or `render={<DrawerMenuItem />}` to take their look, and `onClick` to run something before it closes. A button that has to keep the drawer open while it works, such as a submit that may fail, is a plain `Button` with a controlled `open`.
+
+Also takes every prop of Base UI `Drawer.Close`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-close"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when disabled | Styles a disabled close |
+
+## DrawerMenu
+
+The list of actions of a menu drawer. Renders a `nav`, a column that reaches 8px past the panel padding so the items line up with the header. It holds items, groups and separators; it has no menu role, so its items are buttons, checkboxes and radios that `Tab` moves through.
+
+Also takes every prop of a `nav`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-menu"` | Selects the part in the theme and from other parts |
+
+## DrawerMenuGroup and DrawerMenuGroupLabel
+
+`DrawerMenuGroup` renders a `div` column around related items. `DrawerMenuGroupLabel` renders a `div` in `text-xs font-medium text-muted-foreground` that titles them; it is not tied to the group, so nothing names the group for assistive technology.
+
+Each takes every prop of a `div`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-menu-group"` or `"drawer-menu-group-label"` | Selects the part in the theme and from other parts |
+
+## DrawerMenuItem
+
+An action of the menu. Renders a `button` with `type="button"`, at least 36px tall below `sm` and 32px from `sm` up; an `svg` child takes 18px, or 16px from `sm` up. It does not close the drawer: render it through `DrawerClose` (`<DrawerClose render={<DrawerMenuItem />}>`) when the action should.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"destructive"` | `"default"` | Controls the text color: `"destructive"` uses `destructive-foreground`. |
+| `disabled` | `boolean` | - | When true, disables the button, dims it to 64% and ignores pointer events. |
+
+Also takes every prop of a `button`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-menu-item"` | Selects the part in the theme and from other parts |
+| `data-variant` | `"default"` or `"destructive"` | Styles the variant |
+
+## DrawerMenuSeparator
+
+A 1px line in the `border` color between groups. Renders a `div` with no role, so it is not announced.
+
+Also takes every prop of a `div`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-menu-separator"` | Selects the part in the theme and from other parts |
+
+## DrawerMenuCheckboxItem
+
+An item that turns a setting on or off without closing the drawer. Wraps `Checkbox.Root` from Base UI: a `span` with `role="checkbox"` and a hidden `input` beside it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"switch"` | `"default"` | Controls the indicator: `"default"` draws a check before the text, `"switch"` draws a switch after it. |
+| `checked` | `boolean` | - | Controls the checked state; pair it with `onCheckedChange`. |
+| `defaultChecked` | `boolean` | `false` | Sets the checked state of the first render when `checked` is not passed. |
+| `onCheckedChange` | `(checked: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the item is toggled. |
+| `disabled` | `boolean` | `false` | When true, disables the item and dims it to 64%. |
+
+Also takes every prop of Base UI `Checkbox.Root`, and `render` as an element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-menu-checkbox-item"` | Selects the part in the theme and from other parts |
+| `data-checked`, `data-unchecked` | present in that state | Style the checked and unchecked states |
+| `data-disabled` | present when disabled | Styles a disabled item |
+
+## DrawerMenuRadioGroup and DrawerMenuRadioItem
+
+A set of items where one is chosen, without closing the drawer. `DrawerMenuRadioGroup` wraps `RadioGroup` from Base UI, a `div` with `role="radiogroup"`; `DrawerMenuRadioItem` wraps `Radio.Root`, a `span` with `role="radio"` that draws a check before the text of the chosen item.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | required | Sets the value of the item. Only `DrawerMenuRadioItem` takes it. |
+| `value` | `string` | - | Controls the chosen value of the group; pair it with `onValueChange`. Only `DrawerMenuRadioGroup` takes it. |
+| `defaultValue` | `string` | - | Sets the chosen value of the first render. Only `DrawerMenuRadioGroup` takes it. |
+| `onValueChange` | `(value: string, eventDetails: ChangeEventDetails) => void` | - | Called when another item is chosen. Only `DrawerMenuRadioGroup` takes it. |
+| `disabled` | `boolean` | `false` | When true, disables the group or the item. |
+
+The group also takes every prop of Base UI `RadioGroup`, and the item every prop of Base UI `Radio.Root` and `render` as an element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-menu-radio-group"` or `"drawer-menu-radio-item"` | Selects the part in the theme and from other parts |
+| `data-checked`, `data-unchecked` | present on the item in that state | Style the chosen item |
+| `data-disabled` | present when disabled | Styles a disabled group or item |
+
+## DrawerMenuTrigger
+
+An item that opens a nested drawer. A `DrawerTrigger` with the look of a `DrawerMenuItem` and a chevron at the end; place it inside the nested `Drawer`, next to that drawer's `DrawerPopup`. A swipe or `Escape` closes the nested drawer and returns to the menu, so the nested one needs no back button.
+
+Also takes every prop of `DrawerTrigger`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-menu-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while its drawer is open | Styles the trigger of the open drawer |
+| `data-disabled` | present when disabled | Styles a disabled trigger |
+
+## DrawerSwipeArea
+
+An invisible strip on the edge of the screen that opens the drawer with a swipe away from that edge. Renders a fixed `div`, 32px deep, along the edge of the `position` of `Drawer`; place it inside `Drawer`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `position` | `"bottom"`, `"right"`, `"left"` or `"top"` | the `position` of `Drawer` | Sets the edge it sits on. |
+| `swipeDirection` | `"down"`, `"up"`, `"left"` or `"right"` | the opposite of the `swipeDirection` of `Drawer` | Sets the direction a swipe opens the drawer in. |
+| `disabled` | `boolean` | `false` | When true, the strip does not open the drawer. |
+
+Also takes every prop of Base UI `Drawer.SwipeArea`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-swipe-area"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state of the drawer | Style the strip with the drawer |
+| `data-swiping` | present while it is swiped | Styles the strip during a swipe |
+| `data-swipe-direction` | `"down"`, `"up"`, `"left"` or `"right"` | Selects the strip by the direction that opens the drawer |
+| `data-disabled` | present when disabled | Styles a disabled strip |
+
+## DrawerPortal, DrawerBackdrop and DrawerViewport
+
+The layers `DrawerPopup` already renders, exported to build another popup on them. `DrawerPortal` is the Base UI `Drawer.Portal` and renders a `div` on `body`. `DrawerBackdrop` renders a fixed `div` that dims and blurs the page, and fades out as the drawer is swiped away. `DrawerViewport` renders a fixed layer over the whole screen that places the popup on its edge and handles the swipe: a grid for `"bottom"` and `"top"`, a row for `"left"` and `"right"`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `position` | `"bottom"`, `"right"`, `"left"` or `"top"` | - | Sets the edge the popup is placed on. Only `DrawerViewport` takes it. |
+| `variant` | `"default"`, `"straight"` or `"inset"` | `"default"` | When `"inset"`, sets 16px of padding from `sm` up on both sides and the popup's edge, and on all four edges for `"left"` and `"right"`. Only `DrawerViewport` takes it. |
+
+Each also takes every prop of its Base UI part.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"drawer-backdrop"` or `"drawer-viewport"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed`, `data-starting-style`, `data-ending-style` | present in that state | Style the layer with the popup |
+| `data-nested` | present on `DrawerViewport` when it opens inside another drawer | Styles the layer of a nested drawer |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `DrawerCreateHandle` | `function` | Creates the `handle` that links a `Drawer` to a `DrawerTrigger` outside it. `DrawerCreateHandle() => DrawerPrimitive.Handle` |
+| `DrawerContent` | `component` | The Base UI `Drawer.Content`: a `div` with `data-drawer-content` that marks an area where a mouse drag selects text instead of swiping. |
+| `DrawerPrimitive` | `namespace` | The Base UI `Drawer` namespace, for types such as `DrawerPrimitive.Root.ChangeEventDetails` and parts such as `DrawerPrimitive.Indent`. |
+
+## Accessibility and theme
+
+- Always name the popup: render a `DrawerTitle`, or pass `aria-label` to a `DrawerPopup` with no title, such as a menu.
+- Keep a way to close inside the popup: the close button is off by default, and a swipe or a press outside is not available to everyone, so put a `DrawerClose` in the footer or set `showCloseButton`.
+- The close button is labelled `"Close"` and takes no props; on a page in another language, render your own `DrawerClose` instead of `showCloseButton`.
+- Label an icon-only `DrawerTrigger` with `aria-label`, and mark decorative icons in items with `aria-hidden`.
+- `DrawerMenuGroupLabel` does not name its group and `DrawerMenuSeparator` is not announced; give a group `role="group"` and `aria-labelledby` when its name matters.
+- The popup uses the `popover` and `popover-foreground` tokens, the default footer `muted`, the bar `input`, hovered items `accent` and destructive items `destructive-foreground`; the theme needs no rule of its own.
