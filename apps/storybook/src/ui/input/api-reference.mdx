@@ -1,0 +1,74 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Input
+
+A single-line text field: a name, an email, a password, a search query, a file to upload. Put it in a `Field` to label and validate it, beside a `Label` for a plain form, or in a `Group` next to a button; for icons, buttons or text inside the field, reach for `InputGroup`.
+
+The other pages of `UI/Input`: [Playground](?path=/story/ui-input-playground--playground) to try the text, size, type and states, [Stories](?path=/story/ui-input-stories--default) for each size and state, [Behavior](?path=/story/ui-input-behavior--typing-updates-value) for the tests, [Usages](?path=/story/ui-input-usages--email-sign-up) for real forms and fields, and [Layouts](?path=/story/ui-input-layouts--with-label) for the ways to label and pair it.
+
+## Import
+
+```tsx
+import { Input } from '@acme/ui/input'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Input aria-label="Input" placeholder="Input" />
+```
+
+`Input` is one part that renders two elements: a `span` wrapper that draws the border, background and focus ring, and the `input` inside it. The label is a `Label`, a `FieldLabel` or an `aria-label`, never a prop of the input.
+
+## Input
+
+The text field. Renders a `span` with an `input` inside, which is the Base UI `Input`, so it joins a `Field` on its own: a `FieldLabel` names it and the field validates it. It never formats, trims or stores what the user types.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"`, `"lg"` or `number` | `"default"` | Controls the height and padding; a number sets the native `size` attribute and keeps the default height. |
+| `type` | `string` | - | Sets the native input type; `"search"` hides the browser's search decorations and `"file"` styles the file button. |
+| `value` | `string` | - | Controls the value; pair it with `onValueChange` or `onChange`. |
+| `defaultValue` | `string` | - | Sets the starting value, when `value` is not passed. |
+| `placeholder` | `string` | - | Sets the hint shown while the input is empty; it does not name the input. |
+| `disabled` | `boolean` | `false` | When true, ignores typing, leaves the tab order and drops the wrapper to 64% opacity. |
+| `aria-invalid` | `boolean` | - | When true, turns the border and focus ring `--destructive`; a `Field` sets it when validation fails. |
+| `unstyled` | `boolean` | `false` | When true, drops every class of the wrapper: border, background, shadow and focus ring. |
+| `nativeInput` | `boolean` | `false` | When true, renders a plain `input` instead of the Base UI `Input`, so a `Field` does not validate it or set its `data-invalid` and `aria-invalid`. |
+| `className` | `string` | - | Adds classes to the wrapper `span`, not to the input; with `unstyled`, they are its only classes. |
+| `style` | `CSSProperties` | - | Sets inline styles on the input; a function `style` is ignored with `nativeInput`. |
+| `onValueChange` | `(value: string, eventDetails: InputPrimitive.ChangeEventDetails) => void` | - | Called when the user changes the value, with the new value; not called with `nativeInput`. |
+
+Also takes every prop of the Base UI `Input` (`render`, `id`, `name`, `required`, `maxLength`) and of an `input`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"input-control"` on the wrapper, `"input"` on the input | Selects the wrapper and the input in the theme and from other parts |
+| `data-size` | `"sm"`, `"default"`, `"lg"` or the number, on the wrapper | Styles each size |
+| `data-disabled` | present on the input when `disabled` | Styles the disabled input |
+| `data-valid`, `data-invalid` | present on the input inside a `Field` after validation | Styles the result of validation |
+| `data-touched`, `data-dirty`, `data-filled`, `data-focused` | present on the input inside a `Field` | Styles the interaction state of the field |
+
+With `nativeInput`, the input sets only `data-slot`.
+
+Below `sm` the input is 34px tall at `"default"`, 30px at `"sm"` and 38px at `"lg"`, with 16px text; from `sm` up each size is 4px shorter and the text is 14px. The wrapper has a 1px `--input` border, a `--radius-lg` radius and a `--background` fill (`--input` at 32% in dark); focused with the keyboard, the border turns `--ring` and a 3px ring appears. With `aria-invalid`, the border and the ring turn `--destructive`. An autofilled input gets a light `--foreground` tint.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `InputProps` | `type` | The props of `Input`, for a component that wraps or forwards them. |
+| `InputPrimitive` | `component` | The Base UI `Input`, for its types (`InputPrimitive.ChangeEventDetails`) or an input with other markup. |
+
+## Accessibility and theme
+
+- Name every input: point a `Label`'s `htmlFor` at its `id`, put it in a `Field` with a `FieldLabel`, or, when no text is visible (a search box with an icon), pass `aria-label`. A placeholder is not a name.
+- Link help text with `aria-describedby`, or use `FieldDescription` inside a `Field`.
+- Say what is wrong in text, with a `FieldError` or a description: the red border alone does not say it.
+- The wrapper reads `--input`, `--background`, `--foreground`, `--muted-foreground`, `--ring` and `--destructive` from the theme.
+- Measured contrast and the story exceptions: `docs/accessibility.md`.
