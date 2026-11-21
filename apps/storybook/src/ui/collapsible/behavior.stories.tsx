@@ -17,7 +17,7 @@ const meta = {
   args: { onOpenChange: fn() },
   argTypes: { onOpenChange: { control: false } },
   decorators: [CollapsibleCanvas],
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   tags: ['!autodocs'],
   title: 'UI/Collapsible/Behavior',
 } satisfies Meta<BehaviorArgs>

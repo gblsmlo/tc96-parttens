@@ -10,7 +10,7 @@ import {
 
 const meta = {
   decorators: [CollapsibleCanvas],
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   tags: ['!autodocs'],
   title: 'UI/Collapsible/Layouts',
 } satisfies Meta

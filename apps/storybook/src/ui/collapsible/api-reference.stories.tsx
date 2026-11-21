@@ -10,7 +10,7 @@ import { CollapsibleCanvas } from './collapsible-frame.tsx'
 const meta = {
   component: Collapsible,
   decorators: [CollapsibleCanvas],
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   tags: ['!autodocs', '!dev'],
   title: 'UI/Collapsible/API Reference',
 } satisfies Meta<typeof Collapsible>
