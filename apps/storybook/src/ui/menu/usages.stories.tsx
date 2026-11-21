@@ -1,20 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import {
-  Dialog,
-  DialogClose,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogPopup,
-  DialogTitle,
-} from '@tc96/ui/dialog'
-import {
   Menu,
   MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuItem,
+  MenuLinkItem,
   MenuPopup,
   MenuRadioGroup,
   MenuRadioItem,
@@ -25,8 +17,20 @@ import {
   MenuSubTrigger,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
+import {
+  CopyIcon,
+  CreditCardIcon,
+  EllipsisIcon,
+  FolderInputIcon,
+  LifeBuoyIcon,
+  LogOutIcon,
+  PencilIcon,
+  SettingsIcon,
+  TrashIcon,
+  UserIcon,
+} from 'lucide-react'
+import { expect, screen } from 'storybook/test'
+import { DialogFromMenu } from './menu-layouts.tsx'
 
 const meta = {
   parameters: { layout: 'centered' },
@@ -40,8 +44,8 @@ type Story = StoryObj<typeof meta>
 
 export const Playback: Story = {
   render: () => (
-    <Menu>
-      <MenuTrigger render={<Button variant="outline" />}>Open menu</MenuTrigger>
+    <Menu defaultOpen modal={false}>
+      <MenuTrigger render={<Button variant="outline" />}>Playback</MenuTrigger>
       <MenuPopup align="start">
         <MenuGroup>
           <MenuGroupLabel>Playback</MenuGroupLabel>
@@ -49,9 +53,11 @@ export const Playback: Story = {
             Play
             <MenuShortcut>⌘P</MenuShortcut>
           </MenuItem>
-          <MenuItem aria-keyshortcuts="Shift+Meta+P" disabled>
+          <MenuItem disabled>
             Pause
-            <MenuShortcut>⇧⌘P</MenuShortcut>
+            <span className="ms-auto text-muted-foreground text-xs">
+              Nothing playing
+            </span>
           </MenuItem>
           <MenuItem aria-keyshortcuts="Meta+N">
             Next
@@ -87,62 +93,150 @@ export const Playback: Story = {
       </MenuPopup>
     </Menu>
   ),
-  play: async ({ canvasElement }) => {
-    await userEvent.click(
-      within(canvasElement).getByRole('button', { name: 'Open menu' }),
-    )
+  play: async () => {
     const menu = await screen.findByRole('menu')
     await expect(
-      within(menu).getByRole('menuitemradio', { name: 'Artist' }),
+      await screen.findByRole('menuitemradio', { name: 'Artist' }),
     ).toHaveAttribute('aria-checked', 'true')
     await expect(
-      within(menu).getByRole('menuitem', { name: /Pause/ }),
+      screen.getByRole('menuitem', { name: 'Pause Nothing playing' }),
     ).toHaveAttribute('aria-disabled', 'true')
+    await expect(menu).toBeVisible()
+  },
+}
+
+export const AccountMenu: Story = {
+  render: () => (
+    <Menu defaultOpen modal={false}>
+      <MenuTrigger render={<Button variant="ghost" />}>Ana Lima</MenuTrigger>
+      <MenuPopup align="end" className="w-56">
+        <MenuGroup>
+          <MenuGroupLabel>ana.lima@acme.com</MenuGroupLabel>
+          <MenuItem>
+            <UserIcon />
+            Profile
+          </MenuItem>
+          <MenuItem>
+            <CreditCardIcon />
+            Billing
+          </MenuItem>
+          <MenuItem aria-keyshortcuts="Meta+,">
+            <SettingsIcon />
+            Settings
+            <MenuShortcut>⌘,</MenuShortcut>
+          </MenuItem>
+        </MenuGroup>
+        <MenuSeparator />
+        <MenuLinkItem href="#help-center">
+          <LifeBuoyIcon />
+          Help center
+        </MenuLinkItem>
+        <MenuSeparator />
+        <MenuItem>
+          <LogOutIcon />
+          Log out
+        </MenuItem>
+      </MenuPopup>
+    </Menu>
+  ),
+  play: async () => {
+    const account = await screen.findByRole('group', {
+      name: 'ana.lima@acme.com',
+    })
+    await expect(account).toBeVisible()
+    await expect(
+      screen.getByRole('menuitem', { name: 'Help center' }),
+    ).toHaveAttribute('href', '#help-center')
+  },
+}
+
+export const RowActions: Story = {
+  render: () => (
+    <Menu defaultOpen modal={false}>
+      <MenuTrigger
+        aria-label="More actions for Q3 roadmap"
+        render={<Button size="icon" variant="ghost" />}
+      >
+        <EllipsisIcon />
+      </MenuTrigger>
+      <MenuPopup align="end">
+        <MenuItem>
+          <PencilIcon />
+          Rename
+        </MenuItem>
+        <MenuItem>
+          <CopyIcon />
+          Duplicate
+        </MenuItem>
+        <MenuSub>
+          <MenuSubTrigger>
+            <FolderInputIcon />
+            Move to
+          </MenuSubTrigger>
+          <MenuSubPopup>
+            <MenuItem>Backlog</MenuItem>
+            <MenuItem>In progress</MenuItem>
+            <MenuItem>Done</MenuItem>
+          </MenuSubPopup>
+        </MenuSub>
+        <MenuSeparator />
+        <MenuItem variant="destructive">
+          <TrashIcon />
+          Delete document
+        </MenuItem>
+      </MenuPopup>
+    </Menu>
+  ),
+  play: async () => {
+    await expect(
+      await screen.findByRole('menuitem', { name: 'Delete document' }),
+    ).toHaveAttribute('data-variant', 'destructive')
+    await expect(
+      screen.getByRole('menuitem', { name: 'Move to' }),
+    ).toHaveAttribute('aria-haspopup', 'menu')
+  },
+}
+
+export const ViewSettings: Story = {
+  render: () => (
+    <Menu defaultOpen modal={false}>
+      <MenuTrigger render={<Button variant="outline" />}>View</MenuTrigger>
+      <MenuPopup align="start" className="w-56">
+        <MenuGroup>
+          <MenuGroupLabel>Group by</MenuGroupLabel>
+          <MenuRadioGroup defaultValue="status">
+            <MenuRadioItem value="status">Status</MenuRadioItem>
+            <MenuRadioItem value="owner">Owner</MenuRadioItem>
+            <MenuRadioItem value="none">No grouping</MenuRadioItem>
+          </MenuRadioGroup>
+        </MenuGroup>
+        <MenuSeparator />
+        <MenuGroup>
+          <MenuGroupLabel>Columns</MenuGroupLabel>
+          <MenuCheckboxItem defaultChecked>Title</MenuCheckboxItem>
+          <MenuCheckboxItem defaultChecked>Owner</MenuCheckboxItem>
+          <MenuCheckboxItem>Due date</MenuCheckboxItem>
+        </MenuGroup>
+        <MenuSeparator />
+        <MenuCheckboxItem variant="switch">Show empty groups</MenuCheckboxItem>
+      </MenuPopup>
+    </Menu>
+  ),
+  play: async () => {
+    await expect(
+      await screen.findByRole('menuitemradio', { name: 'Status' }),
+    ).toHaveAttribute('aria-checked', 'true')
+    await expect(
+      screen.getByRole('menuitemcheckbox', { name: 'Due date' }),
+    ).toHaveAttribute('aria-checked', 'false')
   },
 }
 
 export const OpenADialog: Story = {
-  render: function OpenADialog() {
-    const [open, setOpen] = useState(false)
-
-    return (
-      <>
-        <Menu>
-          <MenuTrigger render={<Button variant="outline" />}>
-            Open menu
-          </MenuTrigger>
-          <MenuPopup>
-            <MenuItem onClick={() => setOpen(true)}>Settings…</MenuItem>
-          </MenuPopup>
-        </Menu>
-        <Dialog onOpenChange={setOpen} open={open}>
-          <DialogPopup>
-            <DialogHeader>
-              <DialogTitle>Settings</DialogTitle>
-              <DialogDescription>
-                Opened from a menu item, rendered outside the menu.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <DialogClose render={<Button variant="outline" />}>
-                Done
-              </DialogClose>
-            </DialogFooter>
-          </DialogPopup>
-        </Dialog>
-      </>
-    )
-  },
-  play: async ({ canvasElement }) => {
-    await userEvent.click(
-      within(canvasElement).getByRole('button', { name: 'Open menu' }),
-    )
-    await userEvent.click(
+  render: () => <DialogFromMenu />,
+  play: async () => {
+    await expect(
       await screen.findByRole('menuitem', { name: 'Settings…' }),
-    )
-    const dialog = await screen.findByRole('dialog', { name: 'Settings' })
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
-    await userEvent.click(within(dialog).getByRole('button', { name: 'Done' }))
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    ).toBeVisible()
   },
 }

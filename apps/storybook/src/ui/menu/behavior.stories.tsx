@@ -1,33 +1,30 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Button } from '@tc96/ui/button'
-import {
-  Menu,
-  MenuCheckboxItem,
-  MenuGroup,
-  MenuGroupLabel,
-  MenuItem,
-  MenuLinkItem,
-  MenuPopup,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuSeparator,
-  MenuShortcut,
-  MenuSub,
-  MenuSubPopup,
-  MenuSubTrigger,
-  MenuTrigger,
-} from '@tc96/ui/menu'
-import { CopyIcon, PencilIcon, TrashIcon } from 'lucide-react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { menuControlArgs } from './menu-controls.ts'
+import { ComposedMenu, DialogFromMenu } from './menu-layouts.tsx'
 
 interface BehaviorArgs {
-  onSelect: (value: unknown) => void
+  onAction: (action: string) => void
+  onCheckedChange: (checked: boolean, details: unknown) => void
+  onOpenChange: (open: boolean, details: unknown) => void
+  onValueChange: (value: unknown, details: unknown) => void
 }
 
-function openMenu(canvasElement: HTMLElement) {
-  return userEvent.click(
-    within(canvasElement).getByRole('button', { name: 'Open menu' }),
-  )
+const closed = { ...menuControlArgs, defaultOpen: false }
+
+const getTrigger = (canvasElement: HTMLElement) =>
+  within(canvasElement).getByRole('button', { name: menuControlArgs.trigger })
+
+const openMenu = async (canvasElement: HTMLElement) => {
+  await userEvent.click(getTrigger(canvasElement))
+  return screen.findByRole('menu')
+}
+
+const closeMenus = async () => {
+  const open = screen.queryAllByRole('menu').length
+  for (let index = 0; index < open; index++)
+    await userEvent.keyboard('{Escape}')
+  await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
 }
 
 async function expectIndicatorAfterLabel(item: HTMLElement) {
@@ -49,13 +46,19 @@ function textStart(item: HTMLElement) {
   return range.getBoundingClientRect().left
 }
 
-const trigger = (
-  <MenuTrigger render={<Button variant="outline" />}>Open menu</MenuTrigger>
-)
-
 const meta = {
-  args: { onSelect: fn() },
-  argTypes: { onSelect: { control: false } },
+  args: {
+    onAction: fn(),
+    onCheckedChange: fn(),
+    onOpenChange: fn(),
+    onValueChange: fn(),
+  },
+  argTypes: {
+    onAction: { control: false },
+    onCheckedChange: { control: false },
+    onOpenChange: { control: false },
+    onValueChange: { control: false },
+  },
   parameters: { layout: 'centered' },
   tags: ['!autodocs'],
   title: 'UI/Menu/Behavior',
@@ -65,307 +68,282 @@ export default meta
 
 type Story = StoryObj<BehaviorArgs>
 
-export const OpenOnHover: Story = {
-  render: () => (
-    <Menu>
-      <MenuTrigger openOnHover render={<Button variant="outline" />}>
-        Open menu
-      </MenuTrigger>
-      <MenuPopup>
-        <MenuItem>Profile</MenuItem>
-        <MenuItem>Settings</MenuItem>
-      </MenuPopup>
-    </Menu>
+export const OpensFromTrigger: Story = {
+  render: ({ onOpenChange }) => (
+    <ComposedMenu {...closed} onOpenChange={onOpenChange} />
   ),
-  play: async ({ canvasElement }) => {
-    await userEvent.hover(
-      within(canvasElement).getByRole('button', { name: 'Open menu' }),
+  play: async ({ args, canvasElement }) => {
+    const trigger = getTrigger(canvasElement)
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    const menu = await openMenu(canvasElement)
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await expect(args.onOpenChange).toHaveBeenCalledWith(
+      true,
+      expect.anything(),
     )
+    await expect(within(menu).getAllByRole('menuitem')).toHaveLength(4)
+    await closeMenus()
+  },
+}
+
+export const OpenOnHover: Story = {
+  render: () => <ComposedMenu {...closed} openOnHover />,
+  play: async ({ canvasElement }) => {
+    await userEvent.hover(getTrigger(canvasElement))
     await expect(await screen.findByRole('menu')).toBeVisible()
+    await closeMenus()
   },
 }
 
-export const CheckboxItems: Story = {
-  render: ({ onSelect }) => (
-    <Menu>
-      {trigger}
-      <MenuPopup>
-        <MenuCheckboxItem defaultChecked onCheckedChange={onSelect}>
-          Auto save
-        </MenuCheckboxItem>
-        <MenuCheckboxItem onCheckedChange={onSelect}>
-          Notifications
-        </MenuCheckboxItem>
-      </MenuPopup>
-    </Menu>
-  ),
-  play: async ({ args, canvasElement }) => {
-    await openMenu(canvasElement)
-    const menu = await screen.findByRole('menu')
-    const notifications = within(menu).getByRole('menuitemcheckbox', {
-      name: 'Notifications',
-    })
-    const autoSave = within(menu).getByRole('menuitemcheckbox', {
-      name: 'Auto save',
-    })
-    await expect(autoSave).toHaveAttribute('aria-checked', 'true')
-    await expectIndicatorAfterLabel(autoSave)
-
-    await userEvent.click(notifications)
-    await expect(notifications).toHaveAttribute('aria-checked', 'true')
-    await expect(args.onSelect).toHaveBeenCalledWith(true, expect.anything())
-    await expect(screen.getByRole('menu')).toBeVisible()
-  },
-}
-
-export const SwitchItems: Story = {
-  render: ({ onSelect }) => (
-    <Menu>
-      {trigger}
-      <MenuPopup>
-        <MenuCheckboxItem
-          defaultChecked
-          onCheckedChange={onSelect}
-          variant="switch"
-        >
-          Auto save
-        </MenuCheckboxItem>
-        <MenuCheckboxItem onCheckedChange={onSelect} variant="switch">
-          Notifications
-        </MenuCheckboxItem>
-      </MenuPopup>
-    </Menu>
-  ),
-  play: async ({ args, canvasElement }) => {
-    await openMenu(canvasElement)
-    const menu = await screen.findByRole('menu')
-    const autoSave = within(menu).getByRole('menuitemcheckbox', {
-      name: 'Auto save',
-    })
-    await userEvent.click(autoSave)
-    await expect(autoSave).toHaveAttribute('aria-checked', 'false')
-    await expect(args.onSelect).toHaveBeenCalledWith(false, expect.anything())
-  },
-}
-
-export const RadioGroup: Story = {
-  render: ({ onSelect }) => (
-    <Menu>
-      {trigger}
-      <MenuPopup>
-        <MenuRadioGroup defaultValue="system" onValueChange={onSelect}>
-          <MenuRadioItem value="light">Light</MenuRadioItem>
-          <MenuRadioItem value="dark">Dark</MenuRadioItem>
-          <MenuRadioItem value="system">System</MenuRadioItem>
-        </MenuRadioGroup>
-      </MenuPopup>
-    </Menu>
-  ),
-  play: async ({ args, canvasElement }) => {
-    await openMenu(canvasElement)
-    const menu = await screen.findByRole('menu')
-    const system = within(menu).getByRole('menuitemradio', { name: 'System' })
-    await expect(system).toHaveAttribute('aria-checked', 'true')
-    await expectIndicatorAfterLabel(system)
-
-    const dark = within(menu).getByRole('menuitemradio', { name: 'Dark' })
-    await userEvent.click(dark)
-    await expect(dark).toHaveAttribute('aria-checked', 'true')
-    await expect(args.onSelect).toHaveBeenCalledWith('dark', expect.anything())
-  },
-}
-
-export const GroupLabels: Story = {
-  render: () => (
-    <Menu>
-      {trigger}
-      <MenuPopup>
-        <MenuGroup>
-          <MenuGroupLabel>Account</MenuGroupLabel>
-          <MenuItem>Profile</MenuItem>
-          <MenuItem>Billing</MenuItem>
-        </MenuGroup>
-        <MenuSeparator />
-        <MenuGroup>
-          <MenuGroupLabel>Support</MenuGroupLabel>
-          <MenuItem>Docs</MenuItem>
-          <MenuItem>Contact</MenuItem>
-        </MenuGroup>
-      </MenuPopup>
-    </Menu>
-  ),
+export const FocusOutlineOnKeyboard: Story = {
+  render: () => <ComposedMenu {...closed} />,
   play: async ({ canvasElement }) => {
-    await openMenu(canvasElement)
-    const menu = await screen.findByRole('menu')
-    await expect(
-      within(menu).getByRole('group', { name: 'Account' }),
-    ).toBeVisible()
-    await expect(
-      within(menu).getByRole('group', { name: 'Support' }),
-    ).toBeVisible()
-    await expect(within(menu).getByRole('separator')).toBeVisible()
-  },
-}
-
-export const InsetAndShortcuts: Story = {
-  render: () => (
-    <Menu>
-      {trigger}
-      <MenuPopup>
-        <MenuItem aria-keyshortcuts="Meta+E">
-          <PencilIcon />
-          Edit
-          <MenuShortcut>⌘E</MenuShortcut>
-        </MenuItem>
-        <MenuItem aria-keyshortcuts="Meta+D">
-          <CopyIcon />
-          Duplicate
-          <MenuShortcut>⌘D</MenuShortcut>
-        </MenuItem>
-        <MenuItem inset>Move to…</MenuItem>
-      </MenuPopup>
-    </Menu>
-  ),
-  play: async ({ canvasElement }) => {
-    await openMenu(canvasElement)
-    const menu = await screen.findByRole('menu')
-    const moveTo = within(menu).getByRole('menuitem', { name: 'Move to…' })
+    const menu = await openMenu(canvasElement)
+    await userEvent.keyboard('{ArrowDown}')
     const edit = within(menu).getByRole('menuitem', { name: 'Edit' })
-    await expect(moveTo).toHaveAttribute('data-inset', 'true')
-    await expect(textStart(moveTo)).toBeCloseTo(textStart(edit), 0)
-    await expect(edit).toHaveAttribute('aria-keyshortcuts', 'Meta+E')
-    await expect(edit).toHaveTextContent('⌘E')
+    await expect(edit).toHaveFocus()
+    await expect(getComputedStyle(edit).outlineStyle).toBe('solid')
+    await closeMenus()
   },
 }
 
-export const DisabledItem: Story = {
-  render: ({ onSelect }) => (
-    <Menu>
-      {trigger}
-      <MenuPopup>
-        <MenuItem onClick={() => onSelect('play')}>Play</MenuItem>
-        <MenuItem disabled onClick={() => onSelect('pause')}>
-          Pause
-          <span className="ms-auto text-muted-foreground text-xs">
-            Nothing is playing
-          </span>
-        </MenuItem>
-      </MenuPopup>
-    </Menu>
-  ),
+export const ClosesOnSelect: Story = {
+  render: ({ onAction }) => <ComposedMenu {...closed} onAction={onAction} />,
   play: async ({ args, canvasElement }) => {
-    await openMenu(canvasElement)
-    const menu = await screen.findByRole('menu')
-    const pause = within(menu).getByRole('menuitem', {
-      name: 'Pause Nothing is playing',
-    })
-    await expect(pause).toHaveAttribute('aria-disabled', 'true')
-    await userEvent.click(pause, { pointerEventsCheck: 0 })
-    await expect(args.onSelect).not.toHaveBeenCalled()
-  },
-}
-
-export const DestructiveItem: Story = {
-  render: ({ onSelect }) => (
-    <Menu>
-      {trigger}
-      <MenuPopup>
-        <MenuItem onClick={() => onSelect('rename')}>Rename</MenuItem>
-        <MenuSeparator />
-        <MenuItem onClick={() => onSelect('delete')} variant="destructive">
-          <TrashIcon />
-          Delete
-        </MenuItem>
-      </MenuPopup>
-    </Menu>
-  ),
-  play: async ({ args, canvasElement }) => {
-    await openMenu(canvasElement)
-    const menu = await screen.findByRole('menu')
-    const remove = within(menu).getByRole('menuitem', { name: 'Delete' })
-    await expect(remove).toHaveAttribute('data-variant', 'destructive')
-    await userEvent.click(remove)
-    await expect(args.onSelect).toHaveBeenCalledWith('delete')
+    const menu = await openMenu(canvasElement)
+    await userEvent.click(
+      within(menu).getByRole('menuitem', { name: 'Duplicate' }),
+    )
+    await expect(args.onAction).toHaveBeenCalledWith('duplicate')
     await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
+    await expect(getTrigger(canvasElement)).toHaveFocus()
   },
 }
 
 export const KeepOpenOnClick: Story = {
-  render: ({ onSelect }) => (
-    <Menu>
-      {trigger}
-      <MenuPopup>
-        <MenuItem closeOnClick={false} onClick={() => onSelect('zoom-in')}>
-          Zoom in
-        </MenuItem>
-        <MenuItem closeOnClick={false} onClick={() => onSelect('zoom-out')}>
-          Zoom out
-        </MenuItem>
-      </MenuPopup>
-    </Menu>
+  render: ({ onAction }) => (
+    <ComposedMenu {...closed} closeOnClick={false} onAction={onAction} />
   ),
   play: async ({ args, canvasElement }) => {
-    await openMenu(canvasElement)
-    const menu = await screen.findByRole('menu')
-    await userEvent.click(
-      within(menu).getByRole('menuitem', { name: 'Zoom in' }),
-    )
-    await userEvent.click(
-      within(menu).getByRole('menuitem', { name: 'Zoom in' }),
-    )
-    await expect(args.onSelect).toHaveBeenCalledTimes(2)
+    const menu = await openMenu(canvasElement)
+    await userEvent.click(within(menu).getByRole('menuitem', { name: 'Edit' }))
+    await userEvent.click(within(menu).getByRole('menuitem', { name: 'Edit' }))
+    await expect(args.onAction).toHaveBeenCalledTimes(2)
     await expect(screen.getByRole('menu')).toBeVisible()
+    await closeMenus()
   },
 }
 
-export const LinkItems: Story = {
-  render: () => (
-    <Menu>
-      {trigger}
-      <MenuPopup>
-        <MenuLinkItem href="#docs">Docs</MenuLinkItem>
-        <MenuLinkItem href="#particles">Particles</MenuLinkItem>
-      </MenuPopup>
-    </Menu>
-  ),
-  play: async ({ canvasElement }) => {
-    await openMenu(canvasElement)
-    const menu = await screen.findByRole('menu')
-    const docs = within(menu).getByRole('menuitem', { name: 'Docs' })
-    await expect(docs.tagName).toBe('A')
-    await expect(docs).toHaveAttribute('href', '#docs')
-  },
-}
-
-export const NestedMenu: Story = {
-  render: ({ onSelect }) => (
-    <Menu>
-      {trigger}
-      <MenuPopup>
-        <MenuItem>Profile</MenuItem>
-        <MenuSub>
-          <MenuSubTrigger>More</MenuSubTrigger>
-          <MenuSubPopup>
-            <MenuItem onClick={() => onSelect('archive')}>Archive</MenuItem>
-            <MenuItem>Export</MenuItem>
-          </MenuSubPopup>
-        </MenuSub>
-        <MenuItem>Settings</MenuItem>
-      </MenuPopup>
-    </Menu>
+export const CheckboxToggles: Story = {
+  render: ({ onCheckedChange }) => (
+    <ComposedMenu {...closed} checkboxItems onCheckedChange={onCheckedChange} />
   ),
   play: async ({ args, canvasElement }) => {
-    await openMenu(canvasElement)
-    const menu = await screen.findByRole('menu')
-    const more = within(menu).getByRole('menuitem', { name: 'More' })
-    await expect(more).toHaveAttribute('aria-haspopup', 'menu')
+    const menu = await openMenu(canvasElement)
+    const toolbar = within(menu).getByRole('menuitemcheckbox', {
+      name: 'Toolbar',
+    })
+    const sidebar = within(menu).getByRole('menuitemcheckbox', {
+      name: 'Sidebar',
+    })
+    await expect(toolbar).toHaveAttribute('aria-checked', 'true')
+    await expect(sidebar).toHaveAttribute('aria-checked', 'false')
+    await userEvent.click(sidebar)
+    await expect(sidebar).toHaveAttribute('aria-checked', 'true')
+    await expect(args.onCheckedChange).toHaveBeenCalledWith(
+      true,
+      expect.anything(),
+    )
+    await expect(screen.getByRole('menu')).toBeVisible()
+    await closeMenus()
+  },
+}
 
-    await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}')
-    await waitFor(() => expect(screen.getAllByRole('menu')).toHaveLength(2))
-    await expect(more).toHaveAttribute('data-popup-open')
+export const SwitchToggles: Story = {
+  render: ({ onCheckedChange }) => (
+    <ComposedMenu
+      {...closed}
+      checkboxItems
+      checkboxVariant="switch"
+      onCheckedChange={onCheckedChange}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    const toolbar = within(menu).getByRole('menuitemcheckbox', {
+      name: 'Toolbar',
+    })
+    await userEvent.click(toolbar)
+    await expect(toolbar).toHaveAttribute('aria-checked', 'false')
+    await expect(args.onCheckedChange).toHaveBeenCalledWith(
+      false,
+      expect.anything(),
+    )
+    await closeMenus()
+  },
+}
 
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Archive' }))
-    await expect(args.onSelect).toHaveBeenCalledWith('archive')
+export const RadioSelects: Story = {
+  render: ({ onValueChange }) => (
+    <ComposedMenu {...closed} onValueChange={onValueChange} radioGroup />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    const comfortable = within(menu).getByRole('menuitemradio', {
+      name: 'Comfortable',
+    })
+    await expect(comfortable).toHaveAttribute('aria-checked', 'true')
+    const compact = within(menu).getByRole('menuitemradio', {
+      name: 'Compact',
+    })
+    await userEvent.click(compact)
+    await expect(compact).toHaveAttribute('aria-checked', 'true')
+    await expect(comfortable).toHaveAttribute('aria-checked', 'false')
+    await expect(args.onValueChange).toHaveBeenCalledWith(
+      'compact',
+      expect.anything(),
+    )
+    await closeMenus()
+  },
+}
+
+export const CheckAfterLabel: Story = {
+  render: () => <ComposedMenu {...closed} checkboxItems radioGroup />,
+  play: async ({ canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    await expectIndicatorAfterLabel(
+      within(menu).getByRole('menuitemcheckbox', { name: 'Toolbar' }),
+    )
+    await expectIndicatorAfterLabel(
+      within(menu).getByRole('menuitemradio', { name: 'Comfortable' }),
+    )
+    await closeMenus()
+  },
+}
+
+export const GroupsNamedByLabel: Story = {
+  render: () => <ComposedMenu {...closed} checkboxItems label="Actions" />,
+  play: async ({ canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    await expect(
+      within(menu).getByRole('group', { name: 'Actions' }),
+    ).toBeVisible()
+    await expect(
+      within(menu).getByRole('group', { name: 'Panels' }),
+    ).toBeVisible()
+    await closeMenus()
+  },
+}
+
+export const InsetAlignsLabels: Story = {
+  render: () => <ComposedMenu {...closed} inset />,
+  play: async ({ canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    const archive = within(menu).getByRole('menuitem', { name: 'Archive' })
+    const edit = within(menu).getByRole('menuitem', { name: 'Edit' })
+    await expect(archive).toHaveAttribute('data-inset', 'true')
+    await expect(textStart(archive)).toBeCloseTo(textStart(edit), 0)
+    await closeMenus()
+  },
+}
+
+export const ShortcutOutOfName: Story = {
+  render: () => <ComposedMenu {...closed} shortcuts />,
+  play: async ({ canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    const edit = within(menu).getByRole('menuitem', { name: 'Edit' })
+    await expect(edit).toHaveTextContent('⌘E')
+    await closeMenus()
+  },
+}
+
+export const DisabledItemIgnoresClick: Story = {
+  render: ({ onAction }) => (
+    <ComposedMenu {...closed} disabledItem onAction={onAction} />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    const archive = within(menu).getByRole('menuitem', {
+      name: 'Archive Already archived',
+    })
+    await expect(archive).toHaveAttribute('aria-disabled', 'true')
+    await userEvent.click(archive, { pointerEventsCheck: 0 })
+    await expect(args.onAction).not.toHaveBeenCalled()
+    await closeMenus()
+  },
+}
+
+export const DestructiveItemRuns: Story = {
+  render: ({ onAction }) => (
+    <ComposedMenu {...closed} destructiveItem onAction={onAction} />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    const remove = within(menu).getByRole('menuitem', { name: 'Delete' })
+    await expect(remove).toHaveAttribute('data-variant', 'destructive')
+    await userEvent.click(remove)
+    await expect(args.onAction).toHaveBeenCalledWith('delete')
     await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
+  },
+}
+
+export const LinkItemIsAnchor: Story = {
+  render: () => <ComposedMenu {...closed} linkItem />,
+  play: async ({ canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    const link = within(menu).getByRole('menuitem', { name: 'Documentation' })
+    await expect(link.tagName).toBe('A')
+    await expect(link).toHaveAttribute('href', '#documentation')
+    await closeMenus()
+  },
+}
+
+const openSubmenu = async (canvasElement: HTMLElement) => {
+  const menu = await openMenu(canvasElement)
+  const share = within(menu).getByRole('menuitem', { name: 'Share' })
+  await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{ArrowDown}')
+  await expect(share).toHaveFocus()
+  await userEvent.keyboard('{ArrowRight}')
+  await waitFor(() => expect(screen.getAllByRole('menu')).toHaveLength(2))
+  return share
+}
+
+export const SubmenuOpensWithKeyboard: Story = {
+  render: () => <ComposedMenu {...closed} submenu />,
+  play: async ({ canvasElement }) => {
+    const share = await openSubmenu(canvasElement)
+    await expect(share).toHaveAttribute('aria-haspopup', 'menu')
+    await expect(share).toHaveAttribute('data-popup-open')
+    await closeMenus()
+  },
+}
+
+export const SubmenuItemClosesAll: Story = {
+  render: ({ onAction }) => (
+    <ComposedMenu {...closed} onAction={onAction} submenu />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await openSubmenu(canvasElement)
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Copy link' }))
+    await expect(args.onAction).toHaveBeenCalledWith('copy-link')
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
+  },
+}
+
+export const OpensADialog: Story = {
+  render: () => <DialogFromMenu defaultOpen={false} />,
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Project' }),
+    )
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Settings…' }),
+    )
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Project settings',
+    })
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Done' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
   },
 }
