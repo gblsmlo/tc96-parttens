@@ -1,0 +1,135 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SegmentedControl
+
+A row of related choices on a muted track, with a pill that slides to the active one: a billing period, a chart range, the sections of a project, an exclusive status filter. It draws only the look; the element passed to `render` gives the semantics, the keyboard and the state, so pick a radio group for a form value, links for navigation and a toggle group for a filter that can be cleared. Panels that switch with each choice are `Tabs`, which share the sizes and the pill.
+
+The other pages of `UI/SegmentedControl`: [Playground](?path=/story/ui-segmentedcontrol-playground--playground) to try the texts, the size, the element, the active item, the icons and a disabled item, [Stories](?path=/story/ui-segmentedcontrol-stories--default) for each size and state, [Behavior](?path=/story/ui-segmentedcontrol-behavior--checks-clicked-item) for the tests, [Usages](?path=/story/ui-segmentedcontrol-usages--billing-period) for real choices and [Layouts](?path=/story/ui-segmentedcontrol-layouts--with-icons) for icons and the other elements.
+
+## Import
+
+```tsx
+import { SegmentedControl, SegmentedControlItem } from '@acme/ui/segmented-control'
+import { RadioGroupPrimitive, RadioPrimitive } from '@acme/ui/radio-group'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SegmentedControl
+  aria-label="SegmentedControl"
+  render={<RadioGroupPrimitive defaultValue="first" />}
+>
+  <SegmentedControlItem render={<RadioPrimitive.Root value="first" />}>
+    SegmentedControlItem
+  </SegmentedControlItem>
+  <SegmentedControlItem render={<RadioPrimitive.Root value="second" />}>
+    SegmentedControlItem
+  </SegmentedControlItem>
+</SegmentedControl>
+```
+
+`SegmentedControl` adds the indicator itself, as its last child. With a radio group the rendered tree is:
+
+```html
+<div role="radiogroup" data-slot="segmented-control" data-size="default">
+  <span role="radio" data-slot="segmented-control-item" data-checked>…</span>
+  <input type="radio" aria-hidden="true" />
+  <span role="radio" data-slot="segmented-control-item" data-unchecked>…</span>
+  <input type="radio" aria-hidden="true" />
+  <span aria-hidden="true" data-slot="segmented-control-indicator"></span>
+</div>
+```
+
+## SegmentedControl
+
+The track that holds the items and the indicator. Renders a `div`, a flex row as wide as its items with a 2px padding and a 2px gap, on `bg-muted` with `rounded-lg`. It keeps no state of its own and passes its `size` to every item inside.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | Sets the height, the padding and the icon size of every item inside. |
+| `render` | `ReactElement` or `(props: HTMLAttributes<HTMLElement>, state: {}) => ReactElement` | - | Replaces the `div` with the element that gives the semantics: `RadioGroupPrimitive`, `ToggleGroupPrimitive` or a `nav`. |
+| `className` | `string` | - | Adds classes, which win over the layout classes. |
+
+Also takes every prop of a `div`. A `render` function of either part receives an empty `state`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"segmented-control"` | Selects the part in the theme and from other parts |
+| `data-size` | `"sm"`, `"default"` or `"lg"` | Styles each size |
+
+The props of `SegmentedControl` merge into the element passed to `render`, so `aria-label` works on either. Put the props of that element's behavior (`value`, `defaultValue`, `onValueChange`, `name`, `disabled`) on the element itself.
+
+| Intent | `render` of `SegmentedControl` | `render` of each item | The item is active when it has |
+| --- | --- | --- | --- |
+| Choose one value, in a form or not | `<RadioGroupPrimitive defaultValue="…" />` from `radio-group` | `<RadioPrimitive.Root value="…" />` | `data-checked` |
+| Go to another page or route | `<nav />` | an `a`, with `aria-current="page"` on the current one | `aria-current="page"` |
+| Apply a filter or mode that can be cleared | `<ToggleGroupPrimitive defaultValue={['…']} />` from `toggle-group` | `<TogglePrimitive value="…" />` from `toggle` | `data-pressed` |
+
+Use the primitives, not the styled parts: `RadioGroup` lays its items out as a vertical column with a 12px gap, `Radio` draws a radio circle, and `ToggleGroup` and `Toggle` add a toggle look of their own.
+
+## SegmentedControlItem
+
+One choice of the track. Renders a `button` with `type="button"`, so it never submits a form. With `render` it renders that element instead, with the same classes and no `type`; a plain `button` has no active state unless it carries one of the three attributes below.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"` or `"lg"` | the `size` of its `SegmentedControl` | Overrides the size this item takes from its track. |
+| `render` | `ReactElement` or `(props: HTMLAttributes<HTMLElement>, state: {}) => ReactElement` | - | Replaces the `button` with the element that holds the state: `RadioPrimitive.Root`, `TogglePrimitive` or an `a`. |
+| `type` | `"button"`, `"submit"` or `"reset"` | `"button"` | Sets the type of the `button`; with `render` there is no default. |
+| `className` | `string` | - | Adds classes, which win over the classes of the size. |
+
+Also takes every prop of a `button`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"segmented-control-item"` | Selects the part in the theme and from other parts |
+| `data-size` | `"sm"`, `"default"` or `"lg"` | Styles each size; the item's own `size`, or the track's |
+| `data-checked` | set by `RadioPrimitive.Root` when checked | Marks the item active |
+| `aria-current` | `"page"`, set by the consumer on the current link | Marks the item active |
+| `data-pressed` | set by `TogglePrimitive` when pressed | Marks the item active |
+| `data-disabled` | set by a Base UI primitive when disabled | Dims the item to 64% opacity and ignores the pointer, as `disabled` does on a `button` |
+
+An active item takes `text-foreground`; the others are `text-muted-foreground` at 72%, and full `text-muted-foreground` on hover. A keyboard focus draws a 2px `outline` in `--ring`. Outside a `SegmentedControl` an item takes the `"default"` size.
+
+Below the `sm` breakpoint each item is 4px taller and its text is 16px instead of 14px. From `sm` up, `sm` is 26px high, `default` 30px and `lg` 34px, with 8px, 10px and 12px on each side.
+
+An `svg` child without a `size-*` class is 16px from `sm` up and 18px below, drawn at 80% opacity when it has no `opacity-*` class, with a 6px gap to the text.
+
+## Indicator
+
+The pill under the active item. `SegmentedControl` renders it as a `span` with `aria-hidden="true"` after its children; it is not exported and takes no props.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"segmented-control-indicator"` | Selects the part in the theme |
+| `hidden` | present while no item is active | Hides the pill |
+
+It measures the first direct child of the track with `data-checked`, `aria-current="page"` or `data-pressed`, and follows it when those attributes change, when an item is added or removed and when the track or an item resizes. An item wrapped in another element never moves it.
+
+It slides in 200ms with an ease-in-out curve, and jumps without a transition when the user prefers reduced motion. Its surface is `bg-background` with `rounded-md` and `shadow-sm/5`, `bg-input` in dark mode.
+
+While the indicator shows, the active item drops its own background. Before the first layout effect, as in a server render, the indicator is hidden and the active item draws the same pill itself.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SegmentedControlSize` | `type` | The sizes: `"default"`, `"lg"` or `"sm"`. |
+| `segmentedControlItemSizeClassNames` | `constant` | The height and padding classes of each size, as `Record<SegmentedControlSize, string>`; `Tabs` uses them for its tabs. |
+| `segmentedControlItemLayoutClassName` | `constant` | The gap and the `svg` classes of an item, as a `string`. |
+| `segmentedControlIndicatorSurfaceClassName` | `constant` | The surface classes of the indicator, as a `string`: radius, background and shadow. |
+
+## Accessibility and theme
+
+- Name every track with `aria-label` (or `aria-labelledby`), on `SegmentedControl` or on the element passed to `render`: a radio group, a group or a `nav` needs a name.
+- Set `aria-current="page"` on the current link; without it no item is active and the pill stays hidden.
+- Give an item that holds only an icon an `aria-label`, and mark the icon `aria-hidden="true"`.
+- The keyboard comes from the element passed to `render`: arrow keys move and check within a radio group, arrow keys move the focus within a toggle group, and Tab moves between links.
+- The track reads `--muted`, the pill `--background` (`--input` in dark mode), the text `--foreground` and `--muted-foreground`, and the focus outline `--ring`.
+- The theme has to keep the inactive text, `--muted-foreground` at 72% on `--muted`, at 4.5:1; the example theme does not yet. Measured ratios and the story exception: `docs/accessibility.md` (`Exceções`).
