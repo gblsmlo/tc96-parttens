@@ -1,0 +1,193 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Toast
+
+A short notification that reports what just happened and goes away on its own, without interrupting the user: an event created, settings saved, files uploaded, a request that failed. Reach for it when the message can disappear; a message that has to stay in the page is an `Alert`, and one that needs an answer is an `AlertDialog`.
+
+The other pages of `UI/Toast`: [Playground](?path=/story/ui-toast-playground--playground) to try the texts, the type, the action and the position, [Stories](?path=/story/ui-toast-stories--default) for each type and position, [Behavior](?path=/story/ui-toast-behavior--shows-on-add) for the tests, [Usages](?path=/story/ui-toast-usages--event-created) for real messages and [Layouts](?path=/story/ui-toast-layouts--title-only) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  AnchoredToastProvider,
+  anchoredToastManager,
+  ToastProvider,
+  toastManager,
+} from '@acme/ui/toast'
+```
+
+## Anatomy
+
+The consumer mounts the providers once and calls a manager from an event handler; the providers render every toast.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ToastProvider>
+  <AnchoredToastProvider>{children}</AnchoredToastProvider>
+</ToastProvider>
+
+toastManager.add({ title, description, type, actionProps })
+```
+
+Each stacked toast renders these parts, in a portal on `body`:
+
+```text
+toast-viewport              region "Notifications"
+  toast root                dialog (alertdialog when priority is high), named by the title
+    toast-icon              when type is set
+    toast-title
+    toast-description
+    toast-action            when actionProps is set
+```
+
+An anchored toast sits next to the element it names:
+
+<Canvas of={ApiReferenceStories.AnchoredAnatomy} />
+
+```tsx
+anchoredToastManager.add({
+  title,
+  description,
+  positionerProps: { anchor },
+})
+```
+
+```text
+toast-viewport-anchored     region "Anchored notifications"
+  toast-positioner
+    toast-popup             dialog (alertdialog when priority is high), named by the title
+      toast-icon            when type is set, without tooltipStyle
+      toast-title
+      toast-description     without tooltipStyle
+      toast-action          when actionProps is set, without tooltipStyle
+```
+
+## ToastProvider
+
+Mounts the stacked toasts of `toastManager`. Wraps Base UI `Toast.Provider` and renders, after its children, a portal on `body` with a viewport fixed to one corner or edge of the page. Mount it once, at the root of the app, around `AnchoredToastProvider`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `position` | `ToastPosition` | `"bottom-right"` | Sets the corner or edge the stack sits in, and the swipe directions that dismiss a toast. |
+| `timeout` | `number` | `5000` | Sets the milliseconds before a toast closes when the toast sets no `timeout`; `0` keeps toasts open. |
+| `limit` | `number` | `3` | Sets how many toasts show at once; older ones get `data-limited`, become inert and are hidden. |
+| `portalProps` | `ToastPrimitive.Portal.Props` | - | Passes props to the portal, such as `container`. |
+
+Also takes `children` and every other prop of Base UI `Toast.Provider`. A `toastManager` passed here replaces `toastManager` for this provider.
+
+Values of `position`: `"top-left"`, `"top-center"`, `"top-right"`, `"bottom-left"`, `"bottom-center"`, `"bottom-right"`. A toast swipes away up at the top and down at the bottom, and also to the left or right on a side position; a centered toast swipes only up or down.
+
+The stack is collapsed: the newest toast is in front and the older ones peek behind it. Hovering or focusing the viewport expands it and pauses every timer. The viewport is 360px wide at most, 16px from the edges of the page, and 32px from `sm` up.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toast-portal"` | Selects the portal element on `body` that holds the viewport |
+| `data-slot` | `"toast-viewport"` | Selects the viewport of the stacked toasts |
+| `data-position` | the `position` | Set on the viewport and on each toast root |
+| `data-expanded` | present while the stack is expanded | Set on the viewport, each toast root and its content |
+
+## AnchoredToastProvider
+
+Mounts the toasts of `anchoredToastManager`, each positioned next to its own element. Wraps Base UI `Toast.Provider` and renders, after its children, a portal on `body` with a viewport named `Anchored notifications`. A toast added without `positionerProps.anchor` is not rendered.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `timeout` | `number` | `5000` | Sets the milliseconds before a toast closes when the toast sets no `timeout`; `0` keeps toasts open. |
+| `limit` | `number` | `3` | Sets how many toasts are active at once; older ones get `data-limited` and become inert, but stay visible. |
+| `portalProps` | `ToastPrimitive.Portal.Props` | - | Passes props to the portal, such as `container`. |
+
+Also takes `children` and every other prop of Base UI `Toast.Provider`. A `toastManager` passed here replaces `anchoredToastManager` for this provider.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toast-portal-anchored"` | Selects the portal element on `body` that holds the anchored viewport |
+| `data-slot` | `"toast-viewport-anchored"` | Selects the viewport of the anchored toasts |
+| `data-slot` | `"toast-positioner"` | Selects the element that places a toast next to its anchor |
+| `data-slot` | `"toast-popup"` | Selects the root of an anchored toast |
+
+An anchored toast has no stack: each one is a popup of its own, at most 256px wide, with a fade and a small scale on enter and exit.
+
+## toastManager
+
+The manager `ToastProvider` listens to. It is created once per module, so any code can call it, from an event handler or after a request, without a hook or a context; its calls do nothing while no `ToastProvider` is mounted.
+
+| Method | Type | Default | Description |
+| --- | --- | --- | --- |
+| `add` | `(options: ToastOptions) => string` | - | Shows a toast and returns its id. |
+| `close` | `(id?: string) => void` | - | Closes the toast with that id, or every toast when called without one. |
+| `update` | `(id: string, options: Partial<ToastOptions> \| ((prev: ToastObject) => Partial<ToastOptions>)) => void` | - | Changes a toast on screen, with new options or a function of the current toast that returns them. |
+| `promise` | `(promise: Promise<Value>, options: PromiseOptions) => Promise<Value>` | - | Shows a `"loading"` toast and turns it into a `"success"` or `"error"` toast when the promise settles. |
+
+`ToastOptions` holds the fields below. `PromiseOptions` is `{ loading, success, error }`: each is a `ToastOptions` without `type`, and `success` and `error` can also be functions of the result or the error that return one. A string in their place becomes the description and leaves the toast without a title, so pass objects with a `title`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | - | Sets the title, which names the toast. |
+| `description` | `ReactNode` | - | Sets the text under the title, which describes the toast. |
+| `type` | `"success"`, `"error"`, `"info"`, `"warning"` or `"loading"` | - | Adds the icon of the type; `"loading"` spins and never closes on its own. |
+| `timeout` | `number` | the provider's | Sets the milliseconds before the toast closes; `0` keeps it open. |
+| `actionProps` | `ComponentPropsWithoutRef<'button'>` | - | Adds a `Button` at `size="sm"` after the text, with these props; `children` is its label. |
+| `id` | `string` | generated | Updates the toast with this id when one is on screen, instead of adding another. |
+| `priority` | `"low"` or `"high"` | `"low"` | Sets how screen readers announce it: `"high"` announces it right away, through a hidden `alert`. |
+| `onClose` | `() => void` | - | Called when the toast starts to close. |
+| `onRemove` | `() => void` | - | Called when the toast leaves the page, after its exit animation. |
+| `data.rootProps` | `ToastPrimitive.Root.Props` | - | Passes props to the toast root, except `children`, `className`, `swipeDirection` and `toast`. |
+
+An action does not close the toast: its `onClick` calls `toastManager.close(id)` when it should. `add` with the `id` of a toast on screen updates that toast and restarts its timer; `update` keeps the timer unless it changes `timeout` or ends a `"loading"` toast. Both replay a short animation on the toast: a shake for `"error"`, a pulse for every other type, and none with reduced motion.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toast-icon"` | Selects the box of the type icon |
+| `data-slot` | `"toast-title"` | Selects the title, a `h2` in `font-medium` |
+| `data-slot` | `"toast-description"` | Selects the description, a `p` in `text-muted-foreground` |
+| `data-slot` | `"toast-action"` | Selects the action button |
+| `data-type` | the `type` | Set on the toast root and its title and description; tints the icon |
+| `data-limited` | present beyond `limit` | Set on a toast root past the limit, which is inert; a stacked one is also transparent |
+| `data-behind` | present on toasts behind the front one | Set on the content, which is transparent while the stack is collapsed |
+| `data-swiping` | present while swiped | Set on the toast root |
+| `data-swipe-direction` | `"up"`, `"down"`, `"left"` or `"right"` | Set on a toast root dismissed by a swipe |
+| `data-starting-style` | present while entering | Set on the toast root during its enter transition |
+| `data-ending-style` | present while leaving | Set on the toast root during its exit transition |
+
+The root of a stacked toast sets no `data-slot`: select it as a child of `[data-slot="toast-viewport"]`.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--toast-inset` | `--spacing(4)`, 16px; `--spacing(8)`, 32px from `sm` | Distance from the viewport to the edges of the page, set on the viewport |
+| `--toast-gap` | `--spacing(3)`, 12px | Space between expanded toasts, set on each toast root |
+| `--toast-peek` | `--spacing(3)`, 12px | How far each older toast shows behind the front one, set on each toast root |
+
+## anchoredToastManager
+
+The manager `AnchoredToastProvider` listens to, with the methods and fields of `toastManager`, plus the two below.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `positionerProps` | `{ anchor: Element \| null, sideOffset?: number }` | required | Sets the element the toast sits next to and the gap from it; `sideOffset` defaults to `4`. |
+| `data.tooltipStyle` | `boolean` | `false` | When true, renders only the title, in a compact box with `text-xs` and `rounded-md`. |
+
+`positionerProps` also takes the other props of Base UI `Toast.Positioner`, such as `side` (`"top"` by default) and `align`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ToastPosition` | `type` | The values of `position`. |
+| `ToastProviderProps` | `type` | The props of `ToastProvider`. |
+| `AnchoredToastProviderProps` | `type` | The props of `AnchoredToastProvider`. |
+| `ToastPrimitive` | `namespace` | The Base UI `Toast` namespace, for its types such as `ToastPrimitive.Root.Props`. |
+
+## Accessibility and theme
+
+- A toast is a `dialog` named by its title and described by its description, inside a polite live region. Screen readers announce it without moving focus; while toasts are on screen, `F6` moves focus to their viewport. Give every toast a `title`.
+- A toast with `priority: "high"` is an `alertdialog` with `aria-hidden="true"` until focus enters the viewport: a hidden `alert` copy of its title and description announces it instead.
+- The type icon is hidden from assistive technology: say the outcome in the title ("Payment failed"), not only through `type`.
+- A toast closes on its own and focus never moves to it: keep anything the user must do reachable in the page as well, and give an action toast a longer `timeout`, or `0`.
+- The `success` and `warning` icons need the theme rule `[data-slot="toast-icon"] { --success: var(--success-foreground); --warning: var(--warning-foreground) }`, or they fail 3:1 in light.
+- The update animation reads `--animate-toast-success-odd`, `--animate-toast-success-even`, `--animate-toast-error-odd` and `--animate-toast-error-even` and their keyframes from the theme; without them an update does not animate.
+- Decisions and measured contrast: `docs/accessibility.md`.
