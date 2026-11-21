@@ -1,0 +1,57 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Label
+
+The visible name of a form control: the "Email" above an input, the text beside a checkbox or a switch, the caption over a group of radios. Reach for it when a control sits outside a `Field`; inside a `Field`, a `FieldLabel` links itself to the control and follows the state of the field.
+
+The other pages of `UI/Label`: [Playground](?path=/story/ui-label-playground--playground) to try the text, the required marker and the element, [Stories](?path=/story/ui-label-stories--default) for the base look, [Behavior](?path=/story/ui-label-behavior--names-control-by-html-for) for the tests, [Usages](?path=/story/ui-label-usages--sign-in) for labels in real forms and settings, and [Layouts](?path=/story/ui-label-layouts--with-required-marker) for the ways to place it next to a control.
+
+## Import
+
+```tsx
+import { Label } from '@acme/ui/label'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Label htmlFor="email">Label</Label>
+<Input id="email" />
+```
+
+`Label` is one part. The control it names is a separate component, linked by `htmlFor` and `id` or placed inside the label.
+
+## Label
+
+The name of one control. Renders a `label`, or the element passed in `render`. It is an inline flex row with an 8px gap, so a checkbox, a switch, an icon or a required marker sits beside the text. It links to nothing on its own: point `htmlFor` at the control's `id`, or wrap the control, and its text becomes the control's accessible name and a click on it focuses or toggles the control.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `htmlFor` | `string` | - | Sets the `id` of the control the label names, focuses and toggles. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `label` with another element, which keeps the classes and `data-slot`. |
+| `className` | `string` | - | Adds classes after the label classes, so a conflicting class wins. |
+
+Also takes every prop of a `label`, `ref` included.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"label"` | Selects the part in the theme and from other parts |
+
+The text is `font-medium` in `--foreground`: 16px with an 18px line height below `sm`, and 14px with a 16px line height from `sm` up. The label has no states of its own, so a disabled control does not dim it; inside a `Field`, `FieldLabel` does.
+
+Rendered as a `span` or a `div`, the label names nothing and a click on it does nothing: give it an `id` and point the control's or the group's `aria-labelledby` at it. That is the way to caption a radio group or a checkbox group, which a `label` element cannot name.
+
+A `Switch` inside a `Label` stretches its thumb while the label is pressed, through `data-slot="label"`.
+
+## Accessibility and theme
+
+- Name every control: link a `Label` with `htmlFor` and the control's `id`, or wrap the control in it. Inside a `Field`, use `FieldLabel`; when no text can be shown, pass `aria-label` to the control.
+- Caption a group with a `Label` rendered as a `span` and `aria-labelledby` on the group, and wrap each option in its own `Label`.
+- Mark a required control with an `aria-hidden` asterisk in `text-destructive-foreground` inside the label, and put `required` on the control, so the name stays the label's text.
+- Wrapping a checkbox, a switch or a radio in its label makes the text part of the click target, a larger target than the control alone.
+- The label reads `--foreground` from the theme.
