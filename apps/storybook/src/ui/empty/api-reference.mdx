@@ -1,0 +1,124 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Empty
+
+The state shown where content would be and there is none yet: a list with no items, a search with no results, a team with no members, an inbox with nothing new. It holds an optional media, a title, a description and optional actions that lead out of the state.
+
+The other pages of `UI/Empty`: [Playground](?path=/story/ui-empty-playground--playground) to try the texts, the media and its variant, and the actions, [Stories](?path=/story/ui-empty-stories--default) for each media variant, [Behavior](?path=/story/ui-empty-behavior--part-elements) for the tests, [Usages](?path=/story/ui-empty-usages--no-meetings) for real empty states and [Layouts](?path=/story/ui-empty-layouts--without-media) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@acme/ui/empty'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Empty>
+  <EmptyHeader>
+    <EmptyMedia variant="icon">
+      <Icon />
+    </EmptyMedia>
+    <EmptyTitle />
+    <EmptyDescription />
+  </EmptyHeader>
+  <EmptyContent />
+</Empty>
+```
+
+## Empty
+
+The container of the empty state. Renders a `div` that stacks its children in a column 24px apart, centered on both axes, with centered, balanced text. It pads 24px on the sides and 48px above and below, 80px from `md` up. It sets no role.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"empty"` | Selects the part in the theme and from other parts |
+
+It has `flex-1` and `min-w-0`, so inside a flex row it grows to the row's width, and in a flex column to the free height.
+
+## EmptyHeader
+
+The group of media, title and description. Renders a `div` that stacks them in a centered column at most 384px wide.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"empty-header"` | Selects the part in the theme and from other parts |
+
+## EmptyMedia
+
+The visual above the title: an icon, an image or an avatar. Renders a `div` with a 24px bottom margin around a box that holds the children.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"icon"` | `"default"` | Controls whether the box is transparent or a framed icon tile. |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"empty-media"` | Selects the part in the theme and from other parts |
+| `data-variant` | `"default"` or `"icon"` | Selects the variant in the theme |
+
+With `"default"` the box is transparent and its children keep their own size. With `"icon"` the box is a 36px tile with a 1px `border`, the `card` background and a light shadow, and two empty copies of it sit behind, tilted 10° to each side and hidden from assistive technology with `aria-hidden="true"`. An `svg` in the tile is 18px unless it has a `size-*` class.
+
+Both attributes sit on the outer `div`; the tile and the copies behind it have no `data-slot`.
+
+`className` is applied to the outer `div`, the tile and both copies behind it, so `className="size-12"` grows them together. Every other prop except `children` is set on both the outer `div` and the tile: an `id` or an event handler appears twice, and a `data-slot` or `data-variant` passed in replaces the outer one. Put ids and handlers on the child instead.
+
+## EmptyTitle
+
+The title of the empty state. Renders a `div` in the `font-heading` family, bold, at 20px.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"empty-title"` | Selects the part in the theme and from other parts |
+
+## EmptyDescription
+
+The text that explains the state or what to do next. Renders a `div` in `text-muted-foreground` at 14px. When it comes right after an `EmptyTitle`, it sits 4px below it.
+
+Also takes every prop of a `p`, set on the `div` it renders.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"empty-description"` | Selects the part in the theme and from other parts |
+
+An `a` that is a direct child is underlined with a 4px offset and turns `primary` on hover; a link nested deeper keeps the inherited look.
+
+## EmptyContent
+
+The area for what leads out of the state: buttons, a field, a link. Renders a `div` that stacks its children in a centered column 16px apart, as wide as the container up to 384px, at 14px.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"empty-content"` | Selects the part in the theme and from other parts |
+
+Children stack; wrap buttons that go side by side in a row (`<div className="flex gap-2">`).
+
+## Accessibility and theme
+
+- `Empty` sets no role. Pass `role="status"` when the empty state replaces content after something the user did, such as a search or a filter, so a screen reader announces it.
+- `EmptyTitle` is not a heading. Pass `role="heading"` and `aria-level` when the title belongs in the page's heading outline.
+- Hide a decorative media icon with `aria-hidden="true"`; the copies behind the `"icon"` tile are already hidden. An image that carries meaning needs `alt`.
+- The description is `text-muted-foreground` at 14px. The `state-surface` section of `docs/accessibility.md` measures that same token pair, `muted-foreground` on the page `background`, in the example theme; on another surface, measure it again.
