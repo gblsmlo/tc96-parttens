@@ -1,0 +1,118 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Meter
+
+A bar that shows a measurement inside a known range: storage used, seats taken in a plan, the strength of a password, a bandwidth reading. It holds an optional label and value text above a track filled up to the value. For a task that advances until it is done, such as an upload or an export, reach for a progress bar instead.
+
+The other pages of `UI/Meter`: [Playground](?path=/story/ui-meter-playground--playground) to try the label, the value and the range, [Stories](?path=/story/ui-meter-stories--default) for each state, [Behavior](?path=/story/ui-meter-behavior--named-by-label) for the tests, [Usages](?path=/story/ui-meter-usages--storage-usage) for real measurements and [Layouts](?path=/story/ui-meter-layouts--bar-only) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Meter,
+  MeterIndicator,
+  MeterLabel,
+  MeterTrack,
+  MeterValue,
+} from '@acme/ui/meter'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Meter value={60}>
+  <div className="flex items-center gap-2">
+    <MeterLabel />
+    <MeterValue className="ms-auto" />
+  </div>
+  <MeterTrack>
+    <MeterIndicator />
+  </MeterTrack>
+</Meter>
+```
+
+`<Meter value={60} />` with no children renders a `MeterTrack` with a `MeterIndicator` on its own. Once children are passed, they replace that track, so include `MeterTrack` and `MeterIndicator` yourself or no bar shows. The row around the label and the value is plain markup, not a part.
+
+## Meter
+
+The bar and its parts, stacked in a column 8px apart and as wide as its container. Renders a `div` with `role="meter"`, `aria-valuemin`, `aria-valuemax`, `aria-valuenow` and `aria-valuetext`, so a screen reader reads the value. It clamps `value` between `min` and `max`, and fills the indicator with the share of the range the clamped value takes. It never measures anything on its own: the consumer passes each new `value`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `number` | required | Sets the current value; a `NaN` counts as `min`. |
+| `min` | `number` | `0` | Sets the value of an empty bar. |
+| `max` | `number` | `100` | Sets the value of a full bar. |
+| `format` | `Intl.NumberFormatOptions` | - | Formats the value text from the clamped value; without it, the text is the share of the range as a percentage (`"40%"` for `700` between `500` and `1000`). |
+| `locale` | `Intl.LocalesArgument` | the runtime locale | Sets the locale `Intl.NumberFormat` uses for the value text. |
+| `getAriaValueText` | `(formattedValue: string, value: number) => string` | - | Returns the `aria-valuetext` from the formatted value and the value as passed, before clamping; without it, the formatted value. |
+| `children` | `ReactNode` | a `MeterTrack` with a `MeterIndicator` | Replaces the built-in track with the parts the consumer composes. |
+| `className` | `string` | - | Adds classes after the root classes, so a conflicting class wins. |
+
+Also takes every prop of the Base UI `Meter.Root` (`render`) and of a `div`, `aria-label`, `aria-labelledby` and `aria-valuetext` included.
+
+The root sets no `data-*` attribute of its own: select it by `[role="meter"]`, or pass a `data-slot` that names its job (`data-slot="storage-meter"`), which it keeps. No part carries a state attribute, because a meter has no running, complete or unknown state.
+
+## MeterLabel
+
+The visible name of the meter. Renders a `span` in `font-medium` `text-sm` `--foreground`, with `role="presentation"`. Its `id`, the one passed or a generated one, becomes the `aria-labelledby` of `Meter`.
+
+Also takes every prop of the Base UI `Meter.Label` and of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"meter-label"` | Selects the part in the theme and from other parts |
+
+## MeterValue
+
+The value as text. Renders a `span` in `text-sm` `--foreground` with tabular numbers and `aria-hidden="true"`: a screen reader hears the value from the `aria-valuetext` of `Meter`, not from this text.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `(formattedValue: string, value: number) => ReactNode` | - | Renders the text from the formatted value and the value as passed, before clamping. |
+
+Also takes every prop of the Base UI `Meter.Value` and of a `span`, except `children` as a node.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"meter-value"` | Selects the part in the theme and from other parts |
+
+When `children` shows something other than the formatted value (`"7.2 / 10 GB"`), pass `getAriaValueText` to `Meter` with the same words, or the screen reader hears another text.
+
+## MeterTrack
+
+The rail the indicator fills. Renders a `div`, 8px tall and as wide as its container, with an `--input` background, square corners and `overflow: hidden`.
+
+Also takes every prop of the Base UI `Meter.Track` and of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"meter-track"` | Selects the part in the theme and from other parts |
+
+## MeterIndicator
+
+The filled share of the track. Renders a `div` in `--primary`, with an inline `width` equal to the share of the range (`"60%"`) and an inline `height: inherit`, so it takes the height the track sets. A change of `value` animates the width over 500ms.
+
+Also takes every prop of the Base UI `Meter.Indicator` and of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"meter-indicator"` | Selects the part in the theme and from other parts |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `MeterPrimitive` | `namespace` | The Base UI meter, with `Root`, `Label`, `Value`, `Track` and `Indicator`, for its types (`MeterPrimitive.Root.Props`) or a meter with other markup. |
+
+## Accessibility and theme
+
+- Name every meter: with a `MeterLabel`, or with `aria-label` or `aria-labelledby` on `Meter` when no label is visible.
+- Keep the value text and `aria-valuetext` saying the same thing: a custom `MeterValue` text needs a matching `getAriaValueText`.
+- Use a meter for a measurement and a progress bar for a task: `role="meter"` tells assistive technology that the value is a measurement, not work that will finish.
+- The bar reads `--input` and `--primary` from the theme. The indicator and the track use the same token pair as the progress bar, whose contrast `docs/accessibility.md` records: the indicator passes 3:1 against the track in both themes, and the track against the card does not, so the bar is read by its indicator.
