@@ -1,0 +1,202 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Dialog
+
+A popup that opens on top of the whole page for a task the user finishes before going back to it: editing a profile, reading and accepting terms, sharing a project. Reach for it when the task needs focus but not the page around it; a question that only asks to confirm a destructive action is an `AlertDialog`, and a message that needs no answer is an `Alert` or a toast.
+
+The other pages of `UI/Dialog`: [Playground](?path=/story/ui-dialog-playground--playground) to try the texts, the parts, the footer variant, the close button and the mobile placement, [Stories](?path=/story/ui-dialog-stories--default) for each prop value, [Behavior](?path=/story/ui-dialog-behavior--opens-from-trigger) for the tests, [Usages](?path=/story/ui-dialog-usages--edit-profile) for real tasks and [Layouts](?path=/story/ui-dialog-layouts--without-description) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Dialog,
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+  DialogTrigger,
+} from '@acme/ui/dialog'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Dialog>
+  <DialogTrigger />
+  <DialogPopup>
+    <DialogHeader>
+      <DialogTitle />
+      <DialogDescription />
+    </DialogHeader>
+    <DialogPanel />
+    <DialogFooter>
+      <DialogClose />
+    </DialogFooter>
+  </DialogPopup>
+</Dialog>
+```
+
+## Dialog
+
+Groups the parts and holds the open state. Alias for `Dialog.Root` from Base UI; renders no element. It is modal by default: while open, focus stays in the popup, the page behind it does not scroll and is hidden from assistive technology. A press outside the popup, `Escape` and a `DialogClose` close it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the dialog asks to open or close, with the `reason` in `eventDetails`. |
+| `modal` | `boolean` or `"trap-focus"` | `true` | Sets how much of the page it blocks: `true` traps focus, locks scroll and blocks outside pointers, `"trap-focus"` only traps focus, `false` blocks nothing. |
+| `disablePointerDismissal` | `boolean` | `false` | When true, a press outside the popup does not close it. |
+| `handle` | `DialogPrimitive.Handle` | - | Links the dialog to a trigger outside it, created with `DialogCreateHandle`. |
+
+Also takes every prop of Base UI `Dialog.Root`, such as `actionsRef` and `onOpenChangeComplete`.
+
+`ChangeEventDetails` is `DialogPrimitive.Root.ChangeEventDetails`. The `reason` of a close is `"outside-press"`, `"escape-key"`, `"close-press"`, `"focus-out"` for a non-modal dialog, or `"imperative-action"` when `handle` or `actionsRef` closes it; a controlled parent can refuse it by not updating `open`, as a form with unsaved changes does.
+
+## DialogTrigger
+
+The button that opens the dialog. Renders a `button`; pass `render={<Button />}` to use the `Button`. It can sit outside `Dialog` when both share a `handle`, and focus returns to it when the dialog closes.
+
+Also takes every prop of Base UI `Dialog.Trigger`, such as `payload`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"dialog-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while its dialog is open | Styles the trigger of the open dialog |
+| `data-disabled` | present when disabled | Styles a disabled trigger |
+
+## DialogPopup
+
+The dialog itself. Renders a `div` with `role="dialog"` in a portal on `body`, above a `DialogBackdrop` and inside a `DialogViewport`, so one part brings the whole layer. It is labelled by `DialogTitle` and described by `DialogDescription`. On open, focus moves to its first focusable element. Its last child is a close button at the top end: a ghost icon `Button` with a `DialogClose` behind it and `aria-label="Close"`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `showCloseButton` | `boolean` | `true` | When true, renders the close button at the top end. |
+| `bottomStickOnMobile` | `boolean` | `true` | When true, below `sm` the popup spans the full width and sits on the bottom edge. |
+| `closeProps` | `DialogPrimitive.Close.Props` | - | Sets the props of the close button, such as `aria-label` in another language. |
+| `portalProps` | `DialogPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `Dialog.Popup`, such as `initialFocus` and `finalFocus`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"dialog-popup"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-nested` | present when it opens inside another dialog | Styles a dialog opened over another |
+| `data-nested-dialog-open` | present while a dialog is open over it | Styles the dialog left behind |
+
+The popup is at most 512px wide (`max-w-lg`), with a 2xl radius and a 1px `border`, and never taller than the viewport: its children stack in a column, and a `DialogPanel` with more content than fits scrolls while the header and the footer stay in place. Its opacity is `1 - var(--nested-dialogs)`, so a dialog opened over it hides it, and from `sm` up it also shrinks by 10% per nested dialog.
+
+## DialogHeader
+
+The block of the title and the description. Renders a `div` that stacks them 8px apart with 24px of padding; the bottom padding drops to 12px when the popup has a `DialogPanel`, and to 16px below `sm`.
+
+Also takes every prop of a `div`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"dialog-header"` | Selects the part in the theme and from other parts |
+
+## DialogTitle
+
+The name of the task. Renders an `h2` in the heading font at `text-xl`, and its text is the accessible name of the popup.
+
+Also takes every prop of Base UI `Dialog.Title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"dialog-title"` | Selects the part in the theme and from other parts |
+
+## DialogDescription
+
+What the task is for or what it changes. Renders a `p` in `text-sm text-muted-foreground`, and its text is the accessible description of the popup.
+
+Also takes every prop of Base UI `Dialog.Description`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"dialog-description"` | Selects the part in the theme and from other parts |
+
+## DialogPanel
+
+The body of the dialog: a form, a list, a long text. Renders a `div` with 24px of padding inside a `ScrollArea` that scrolls when the content does not fit; the top padding drops to 4px when the popup has a `DialogHeader`, and the bottom one to 4px when its `DialogFooter` is `"bare"`. Scrolling stops at its edges instead of moving the page.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `scrollFade` | `boolean` | `true` | When true, fades the top and bottom 24px while the content scrolls past them. |
+
+Also takes every prop of a `div`, and `render` to change the element. `className` goes to the `div`, not to the scroll area.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"dialog-panel"` | Selects the part in the theme and from other parts |
+
+The scroll area around it is the `ScrollArea` component, and its viewport carries `data-slot="scroll-area-viewport"`.
+
+## DialogFooter
+
+The row of actions. Renders a `div`; below `sm` its children stack full width in reverse order, so the last one sits on top, and from `sm` up they line up at the end.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"bare"` | `"default"` | Controls the surface: `"default"` adds a top border and a muted background, `"bare"` drops both. |
+
+Also takes every prop of a `div`, and `render` to change the element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"dialog-footer"` | Selects the part in the theme and from other parts |
+
+The variant sets no attribute; select it by its classes or wrap it.
+
+## DialogClose
+
+A button that closes the dialog. Renders a `button`; pass `render={<Button />}` to use the `Button`, and `onClick` to run something before it closes. A button that has to keep the dialog open while it works, such as a submit that may fail, is a plain `Button` with a controlled `open`.
+
+Also takes every prop of Base UI `Dialog.Close`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"dialog-close"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when disabled | Styles a disabled close |
+
+The close button of `DialogPopup` sets no `data-slot` of its own: it renders the `Button`, so it carries the `Button`'s `data-slot="button"`, the same as every other `Button`. Select it by its `aria-label` (`"Close"`) or pass a `className` through `closeProps`.
+
+## DialogPortal, DialogBackdrop and DialogViewport
+
+The layers `DialogPopup` already renders, exported to build another popup on them. `DialogPortal` is the Base UI `Dialog.Portal` and renders a `div` on `body`. `DialogBackdrop` renders a fixed `div` that dims and blurs the page; it is not rendered for a dialog nested in another unless it gets `forceRender`. `DialogViewport` renders a fixed grid that places the popup a little above the vertical center, with 16px of padding.
+
+Each also takes every prop of its Base UI part.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"dialog-backdrop"` or `"dialog-viewport"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed`, `data-starting-style`, `data-ending-style` | present in that state | Style the layer with the popup |
+| `data-nested`, `data-nested-dialog-open` | present on `DialogViewport`, as on the popup | Style the layer of a nested dialog |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `DialogCreateHandle` | `function` | Creates the `handle` that links a detached `DialogTrigger` to its `Dialog`. `DialogCreateHandle<Payload>() => DialogPrimitive.Handle<Payload>` |
+| `DialogContent` | `component` | The same component as `DialogPopup`. |
+| `DialogOverlay` | `component` | The same component as `DialogBackdrop`. |
+| `DialogPrimitive` | `namespace` | The Base UI `Dialog` namespace, for its types such as `DialogPrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Always render a `DialogTitle`: it names the dialog.
+- Keep a way to close inside the popup: with `showCloseButton={false}`, put a `DialogClose` in the footer, since touch screen readers have no `Escape`.
+- The close button is labelled `"Close"`; pass another `aria-label` through `closeProps` when the page is in another language.
+- Label an icon-only `DialogTrigger` with `aria-label`.
+- The popup uses the `popover` and `popover-foreground` tokens and the default footer `muted`; the theme needs no rule of its own.
