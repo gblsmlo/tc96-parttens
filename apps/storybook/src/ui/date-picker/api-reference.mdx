@@ -1,0 +1,132 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# DatePicker
+
+A button that shows a date and opens a calendar under it to change the date: a due date, the nights of a stay, the period of a report. Reach for it when a field takes one date or a range and a calendar always on the page would take too much room; a calendar that stays visible is a `Calendar` alone.
+
+It is a composition, not a component of its own: a `Popover` whose `PopoverTrigger` renders as a `Button` and whose `PopoverPopup` holds a `Calendar`. There is no `date-picker` module to import.
+
+The other pages of `UI/DatePicker`: [Playground](?path=/story/ui-datepicker-playground--playground) to try the mode, the caption, the presets and the icon, [Stories](?path=/story/ui-datepicker-stories--default) for each value, [Behavior](?path=/story/ui-datepicker-behavior--opens-from-trigger) for the tests, [Usages](?path=/story/ui-datepicker-usages--due-date) for real fields and [Layouts](?path=/story/ui-datepicker-layouts--without-icon) for the structures around the calendar.
+
+## Installation
+
+There is no `date-picker` item to install. The date picker needs the three ui components it is built from: `calendar`, `popover` and `button`. Install those items, and compose them as on this page.
+
+## Import
+
+```tsx
+import type { DateRange } from '@daypicker/react'
+import { Button } from '@acme/ui/button'
+import { Calendar } from '@acme/ui/calendar'
+import { Popover, PopoverPopup, PopoverTrigger } from '@acme/ui/popover'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+const [date, setDate] = useState<Date | undefined>()
+
+<Popover>
+  <PopoverTrigger
+    render={<Button className="w-full justify-start" variant="outline" />}
+  >
+    <CalendarIcon aria-hidden="true" />
+    {date ? formatLongDate(date, locale) : 'Pick a date'}
+  </PopoverTrigger>
+  <PopoverPopup aria-label="Choose a date">
+    <Calendar mode="single" onSelect={setDate} selected={date} />
+  </PopoverPopup>
+</Popover>
+```
+
+The value lives with the consumer: a `Date` or a `DateRange` in state, passed to `Calendar` as `selected` and written into the trigger as text. None of the parts formats, parses, validates or stores a date; the stories format with `formatLongDate` and `formatMediumDate` from `@tc96/helpers/date`.
+
+## Popover
+
+Groups the trigger and the popup and holds the open state. Alias for `Popover.Root` from Base UI; renders no element. It is not modal: the page stays usable while the popup is open, and a press outside the popup closes it. `Escape` closes it too and puts focus back on the trigger.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the trigger, a press outside, `Escape` or `actionsRef.current.close()` asks to open or close. |
+| `actionsRef` | `RefObject` of `{ close, unmount }` | - | Gives `close()`, which closes the popup through `onOpenChange` with the reason `"imperative-action"`. |
+| `modal` | `boolean` or `"trap-focus"` | `false` | `true` locks the page scroll and blocks presses outside the popup, except on the trigger; on touch the page still scrolls unless the popup spans almost the whole viewport width. It traps focus only when a `PopoverClose` is inside the popup, which the date picker does not render. `"trap-focus"` traps focus under the same condition, without locking scroll or blocking outside presses. |
+
+Also takes every prop of Base UI `Popover.Root`. Source: `packages/ui/src/popover.tsx`.
+
+`ChangeEventDetails` is `PopoverPrimitive.Root.ChangeEventDetails`, with the `reason` of the change, such as `"trigger-press"`, `"escape-key"` or `"outside-press"`. Picking a date does not close the popup: to close on select, call `actionsRef.current.close()` in the `onSelect` of `Calendar`, so `onOpenChange` hears the close like one made by the user. Setting a controlled `open` to `false` closes the popup without calling `onOpenChange`. In range mode, close only when the end differs from the start, since the first pick of a range sets both to the same day.
+
+## PopoverTrigger
+
+The button that shows the value and toggles the popup. Renders a `button` with `aria-haspopup="dialog"` and `aria-expanded`; with `render={<Button variant="outline" />}` it takes the look of an outline [Button](?path=/docs/ui-button-api-reference--api-reference). Its children are an optional icon and the formatted value, or a placeholder while nothing is picked.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `render` | `ReactElement` or `(props: HTMLProps, state: State) => ReactElement` | - | Replaces the element; the date picker passes an outline `Button`, or an `icon-xs` ghost `Button` beside an input. |
+| `id` | `string` | - | Sets the id that a `FieldLabel` points to with `htmlFor`. |
+
+Also takes every prop of Base UI `Popover.Trigger`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"popover-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while the popup is open | Styles the trigger of an open popup |
+| `data-pressed` | present while pressed | Styles the trigger during a press |
+
+## PopoverPopup
+
+The floating panel that holds the calendar. Renders a `div` with `role="dialog"` in a portal, positioned against the trigger by a `div` with `data-slot="popover-positioner"`, with its content in a `div` with `data-slot="popover-viewport"`. When it holds an element with `data-slot="calendar"`, its radius grows from `rounded-lg` to `rounded-xl` and its inner padding drops from 16px to 8px.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | - | Names the dialog; without it or a `PopoverTitle`, the dialog has no name. |
+| `side` | `"top"`, `"bottom"`, `"left"`, `"right"`, `"inline-start"` or `"inline-end"` | `"bottom"` | Sets the side of the trigger the popup opens on; it flips when there is no room. |
+| `align` | `"start"`, `"center"` or `"end"` | `"center"` | Aligns the popup with the trigger along that side. |
+| `sideOffset` | `number` | `4` | Sets the gap between the trigger and the popup, in pixels. |
+| `alignOffset` | `number` | `0` | Shifts the popup along the side, in pixels. |
+| `anchor` | `Element`, `VirtualElement`, `RefObject` or a function that returns one | - | Positions the popup against another element than the trigger. |
+| `portalProps` | `PopoverPrimitive.Portal.Props` | - | Passes props to the portal, such as `container`. |
+
+Also takes every prop of Base UI `Popover.Popup`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"popover-popup"` | Selects the part in the theme and from other parts |
+| `data-open` | present while open | Styles the open popup |
+| `data-closed` | present while closed | Styles the closing popup |
+| `data-side` | the side, such as `"bottom"` | Tells the side the popup ended up on after flipping |
+| `data-align` | `"start"`, `"center"` or `"end"` | Tells the alignment the popup ended up with |
+| `data-starting-style` | present on the first frame | Styles the open transition |
+| `data-ending-style` | present while closing | Styles the close transition |
+| `data-instant` | `"click"`, `"dismiss"`, `"focus"` or `"trigger-change"` | Present when the change should skip its transition: opened or closed from the keyboard, closed by `Escape`, closed by focus leaving, or moved to another trigger |
+
+Beside an input, the popup opens from the small trigger button, so `align="start"`, `alignOffset={-4}` and `sideOffset={8}` line it up with the edge of the input.
+
+## Calendar
+
+The month grid that picks the value. Renders a `div` with `data-slot="calendar"`, which the popup detects to change its radius and padding, holding a `table` with `role="grid"` named by the month and the year, such as "March 2026". The date picker relies on these props; the rest of the API, the `data-*` attributes and the range classes are on the [Calendar](?path=/docs/ui-calendar-api-reference--api-reference) page.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `mode` | `"single"`, `"multiple"` or `"range"` | `"single"` | Sets what a pick produces; a date picker uses `"single"` or `"range"`. |
+| `selected` | `Date` or `DateRange` | - | Sets the picked value; `DateRange` is `{ from?: Date, to?: Date }`. |
+| `onSelect` | `(selected: Selected, triggerDate: Date, modifiers: Modifiers, event) => void` | - | Called when a day is picked, with the new value first. |
+| `defaultMonth` | `Date` | today | Sets the month shown first; pass the picked date, or the popup opens on this month. |
+| `month` | `Date` | - | Controls the month shown; pair it with `onMonthChange` when presets move the month. |
+| `captionLayout` | `"label"`, `"dropdown"`, `"dropdown-months"` or `"dropdown-years"` | `"label"` | Controls the caption: the month name, or `select` elements for the month, the year or both. |
+| `disabled` | `Matcher` or `Matcher[]` | - | Disables the matching days, such as `{ after: today }` for a date of birth. |
+
+`Selected` follows `mode`: in single mode `onSelect` receives a `Date`, and `undefined` when the picked day is pressed again. In range mode it receives a `DateRange`: the first pick sets `from` and `to` to the same day, the next one moves `to`, or `from` when it comes before.
+
+## Accessibility and theme
+
+- Name the popup with `aria-label` (`"Choose a date"`): it is a dialog, and nothing else names it.
+- Hide the trigger icon with `aria-hidden="true"`; a trigger with only an icon, beside an input, takes an `aria-label` such as `"Open calendar"`.
+- To label the field, point a `FieldLabel` at the trigger with `htmlFor` and `id`: the label becomes the trigger's name, and the value stays its text.
+- The weekday names and the days outside the month stay under 4.5:1 in the example theme. The measured ratios and the story exception are in `docs/accessibility.md`.
