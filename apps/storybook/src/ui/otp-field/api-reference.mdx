@@ -1,0 +1,139 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# OTPField
+
+A row of one-character inputs for a short code the user copies from somewhere else: a sign-in code sent by email or SMS, the six digits of an authenticator app, a backup code. Typing moves to the next slot, a paste fills every slot at once, and the browser can autofill a code it received. For free text or a code of unknown length, reach for `Input`.
+
+The other pages of `UI/OTPField`: [Playground](?path=/story/ui-otpfield-playground--playground) to try the label, the description, the size, the separator, a starting value, the mask and the states, [Stories](?path=/story/ui-otpfield-stories--default) for each size and state, [Behavior](?path=/story/ui-otpfield-behavior--label-names-group-and-slots) for the tests, [Usages](?path=/story/ui-otpfield-usages--email-verification) for real sign-in and verification forms, and [Layouts](?path=/story/ui-otpfield-layouts--with-separator) for the separator, the description, a hidden label and another length.
+
+## Import
+
+```tsx
+import {
+  OTPField,
+  OTPFieldInput,
+  OTPFieldSeparator,
+} from '@acme/ui/otp-field'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Field>
+  <FieldLabel />
+  <OTPField length={4}>
+    <OTPFieldInput />
+    <OTPFieldInput aria-label="Character 2 of 4" />
+    <OTPFieldSeparator />
+    <OTPFieldInput aria-label="Character 3 of 4" />
+    <OTPFieldInput aria-label="Character 4 of 4" />
+  </OTPField>
+</Field>
+```
+
+`OTPField` holds the value; each `OTPFieldInput` shows one character of it, in DOM order. The label and the description come from the enclosing `Field`, which is not part of the component.
+
+## OTPField
+
+The root that holds the code and lays out the slots. Renders a `div` with `role="group"`, a row with an 8px gap, labelled by the `FieldLabel` and described by the `FieldDescription` and `FieldError` of its `Field`. After the group it renders a visually hidden `input` with the whole value, which a form submits under `name` and the browser can autofill; it is hidden from assistive technology and out of the tab order. It keeps the value itself when uncontrolled and never checks the code against anything.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `length` | `number` | required | Sets the number of characters; it must match the number of `OTPFieldInput` children. |
+| `size` | `"default"` or `"lg"` | `"default"` | Controls the size of every slot and its text. |
+| `validationType` | `"numeric"`, `"alpha"`, `"alphanumeric"` or `"none"` | `"numeric"` | Controls which characters a slot accepts: digits, ASCII letters, both, or any. |
+| `value` | `string` | - | Sets the code and makes the field controlled. |
+| `defaultValue` | `string` | `""` | Sets the code on mount for an uncontrolled field. |
+| `mask` | `boolean` | `false` | When true, renders every slot as `type="password"`, so each character shows as a dot. |
+| `disabled` | `boolean` | `false` | When true, disables every slot and drops the row to 64% opacity. |
+| `readOnly` | `boolean` | `false` | When true, keeps the code from changing while the slots stay focusable. |
+| `required` | `boolean` | `false` | When true, marks every slot and the hidden input `required`, so a form refuses an empty code. |
+| `autoSubmit` | `boolean` | `false` | When true, submits the owning form as soon as the last slot is filled. |
+| `name` | `string` | - | Submits the code under this name with a form; the `name` of an enclosing `Field` wins. |
+| `form` | `string` | - | Sets the `id` of the form the hidden input belongs to, when the field sits outside it. |
+| `id` | `string` | generated | Sets the `id` of the first slot; the others take `{id}-2`, `{id}-3` and so on. |
+| `autoComplete` | `string` | `"one-time-code"` | Sets the autofill hint of the first slot and of the hidden input. |
+| `inputMode` | `"numeric"`, `"text"` or another `inputMode` | from `validationType` | Sets the virtual keyboard of every slot and of the hidden input; without it, `"numeric"` for `"numeric"`, `"text"` for the letter types, and no `inputmode` for `"none"`. |
+| `normalizeValue` | `(value: string) => string` | - | Transforms the code after `validationType` filters it, such as to upper case; the result is filtered again and cut to `length`. |
+| `onValueChange` | `(value: string, eventDetails: ChangeEventDetails) => void` | - | Called when the code changes, with the new code. |
+| `onValueComplete` | `(value: string, eventDetails: CompleteEventDetails) => void` | - | Called when the last slot is filled, after `onValueChange`, and when a complete code is pasted over a complete one. |
+| `onValueInvalid` | `(value: string, eventDetails: InvalidEventDetails) => void` | - | Called when typed or pasted text holds characters that `validationType` or `normalizeValue` rejects, or more than `length`, with the text as entered. |
+| `className` | `string` | - | Adds classes to the group after its own, so a conflicting class wins. |
+
+Also takes every prop of the Base UI `OTPField.Root` and of a `div`.
+
+`ChangeEventDetails`, `CompleteEventDetails` and `InvalidEventDetails` are types of `OTPFieldPrimitive.Root`. Their `reason` says what moved the code: `"input-change"` for typing and autofill, `"input-paste"` for a paste, and, for a change only, `"input-clear"` when a character is erased and `"keyboard"` for Backspace and Delete. Their `event` holds the DOM event.
+
+Whitespace is dropped silently, so a pasted `"482 913"` fills six slots and calls no `onValueInvalid`. `normalizeValue` runs on every value the field normalizes, `defaultValue` and `value` included, and more than once per edit, so it must return the same result when run on its own output.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"otp-field"` | Selects the part in the theme and from `OTPFieldInput` |
+| `data-size` | `"default"` or `"lg"` | Styles each size; `OTPFieldInput` reads it from its root |
+| `data-filled` | present when the code has at least one character | Styles a started field |
+| `data-complete` | present when every slot is filled | Styles a complete code |
+| `data-focused` | present while a slot has focus | Styles the focused field |
+| `data-disabled` | present when `disabled`, or inside a disabled `Field` | Styles the disabled field |
+| `data-readonly` | present when `readOnly` | Styles the read-only field |
+| `data-required` | present when `required` | Styles the required field |
+| `data-valid`, `data-invalid` | present inside a `Field` after validation; `data-invalid` also at once when the `Field` has `invalid` | Styles the validation result |
+| `data-touched`, `data-dirty` | present inside a `Field` after a slot loses focus or the code changes | Styles a visited or changed field |
+
+The slots keep the code contiguous: focusing a slot past the first empty one moves the focus to that empty slot. Only one slot is in the tab order, the focused one or, when the focus is outside, the first empty slot (the last one when the code is complete), so Tab enters and leaves the field in one step.
+
+Keys in a slot: a character fills it and moves to the next slot; Backspace erases the character, or the previous one when the slot is empty, and moves back; Delete erases the character and shifts the rest left; Ctrl or Cmd with Backspace clears the code. Left and Right move one slot; Ctrl or Cmd with Left, Home and Up move to the first slot; Ctrl or Cmd with Right, End and Down move to the first empty slot, or the last one when the code is complete. A paste fills the slots from the focused one on and moves to the slot after the pasted text.
+
+Inside a `Field`, the `name` of the `Field` wins over the one of `OTPField`, and either `disabled` disables the field. The `invalid` of the `Field` sets `aria-invalid` on every slot, except while the field is disabled, when no slot gets `aria-invalid`.
+
+## OTPFieldInput
+
+One slot of the code. Renders an `input`, `type="text"` or `type="password"` with `mask`, that shows the character at its position. The position comes from the order of the slots in the DOM, so there is no `index` prop and a separator between slots does not count.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | - | Names the slot; ignored on the first slot, which takes the name of the field label. |
+| `placeholder` | `string` | - | Sets a hint shown while the slot is empty, such as `"•"`. |
+| `className` | `string` | - | Adds classes to the slot after its own, so a conflicting class wins. |
+
+Also takes every prop of the Base UI `OTPField.Input` and of an `input`; `aria-invalid` on one slot marks only that slot.
+
+The first slot takes the whole code from autofill and paste (`maxLength` is the `length` there, and absent on the others) and gets the `autoComplete` of the root; the others get `autoComplete="off"`. Every slot gets `spellCheck={false}`, `autoCorrect="off"`, the `pattern` of the `validationType`, and an `enterKeyHint` of `"next"`, or `"done"` on the last one.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"otp-field-input"` | Selects the slot in the theme and from other parts |
+| `data-filled` | present when this slot holds a character | Styles a filled slot |
+| `data-complete`, `data-focused`, `data-disabled`, `data-readonly`, `data-required` | present when the root has them | Styles the slot by the state of the whole field |
+| `data-valid`, `data-invalid`, `data-touched`, `data-dirty` | present inside a `Field`, as on the root | Styles the slot by the validation of the field |
+
+A slot is a 36px square with 16px text below `sm`, and 32px with 14px text from `sm` up; at `size="lg"` it is 40px with 18px text, and 36px with 16px text from `sm` up. It has a 1px `--input` border, a `--radius-lg` radius and a `--background` fill (`--input` at 32% in dark), with the character centered. Focused with the keyboard, the border turns `--ring`, a 3px ring appears and the slot rises above its neighbors. With `aria-invalid`, the border and the focus ring turn `--destructive`.
+
+## OTPFieldSeparator
+
+A divider between groups of slots. Renders a `div` with `role="separator"` and `aria-orientation="horizontal"`, drawn as a 12px by 2px rounded bar in `--input`. It holds no character and is skipped by typing, paste and the arrow keys.
+
+Also takes every prop of `Separator`; `className` adds classes to the bar after its own, and an `orientation` passed to it replaces the default `"horizontal"` in `aria-orientation` and `data-orientation`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"separator"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` by default, or the `orientation` passed | Styles the direction of the bar |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `OTPFieldPrimitive` | `namespace` | The Base UI `OTPField` parts (`Root`, `Input`, `Separator`) without classes, and their types (`OTPFieldPrimitive.Root.Props`, `OTPFieldPrimitive.Root.ChangeEventDetails`). |
+
+## Accessibility and theme
+
+- Name the field: put it in a `Field` with a `FieldLabel`, or point a `label`'s `htmlFor` at the `id` of `OTPField`. The label names the group and the first slot; an `aria-label` on the first slot is ignored. Hide a label with `sr-only` when the screen already says what the code is.
+- Name every slot after the first with `aria-label`, such as `"Character 2 of 6"`.
+- Say what is wrong in text, with a `FieldError` or a description: the red border alone does not say it. Announce characters a field drops (`onValueInvalid`) in a live region when the user needs to know.
+- Keep `autoComplete="one-time-code"` so the browser and the phone can offer a code they received.
+- The slots read `--input`, `--background`, `--foreground`, `--ring` and `--destructive` from the theme; the separator reads `--input`.
