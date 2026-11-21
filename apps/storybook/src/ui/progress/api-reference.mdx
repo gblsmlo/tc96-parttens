@@ -1,0 +1,127 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Progress
+
+A bar that shows how far a task that takes a while has come: an export, a file upload, a sync, the steps of an onboarding. It holds an optional label and value text above a track that fills as the task advances. For a measurement inside a known range that is not a task, such as disk usage or password strength, reach for a meter.
+
+The other pages of `UI/Progress`: [Playground](?path=/story/ui-progress-playground--playground) to try the label, the value, the range and every state, [Stories](?path=/story/ui-progress-stories--default) for each state, [Behavior](?path=/story/ui-progress-behavior--named-by-label) for the tests, [Usages](?path=/story/ui-progress-usages--exporting-contacts) for real tasks and [Layouts](?path=/story/ui-progress-layouts--bar-only) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Progress,
+  ProgressIndicator,
+  ProgressLabel,
+  ProgressTrack,
+  ProgressValue,
+} from '@acme/ui/progress'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Progress value={60}>
+  <div className="flex items-center gap-2">
+    <ProgressLabel />
+    <ProgressValue className="ms-auto" />
+  </div>
+  <ProgressTrack>
+    <ProgressIndicator />
+  </ProgressTrack>
+</Progress>
+```
+
+`<Progress value={60} />` with no children renders a `ProgressTrack` with a `ProgressIndicator` on its own. Once children are passed, they replace that track, so include `ProgressTrack` and `ProgressIndicator` yourself or no bar shows. The row around the label and the value is plain markup, not a part.
+
+## Progress
+
+The bar and its parts, stacked in a column 8px apart. Renders a `div` with `role="progressbar"`, `aria-valuemin`, `aria-valuemax`, `aria-valuenow` and `aria-valuetext`, so a screen reader reads the value. It clamps `value` between `min` and `max`, and is complete when the clamped value reaches `max`. It never advances on its own: the consumer passes each new `value`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `number` or `null` | required | Sets the current value; `null` or a non-finite number (`NaN`, `Infinity`) makes the progress indeterminate. |
+| `min` | `number` | `0` | Sets the value of an empty bar. |
+| `max` | `number` | `100` | Sets the value of a full bar. |
+| `format` | `Intl.NumberFormatOptions` | - | Formats the value text from the clamped value; without it, the text is the share of the range as a percentage (`"40%"`). |
+| `locale` | `Intl.LocalesArgument` | the runtime locale | Sets the locale `Intl.NumberFormat` uses for the value text. |
+| `getAriaValueText` | `(formattedValue: string, value: number \| null) => string` | - | Returns the `aria-valuetext`; without it, the formatted value, or `"indeterminate progress"` when `value` is `null`. |
+| `children` | `ReactNode` | a `ProgressTrack` with a `ProgressIndicator` | Replaces the built-in track with the parts the consumer composes. |
+| `className` | `string` | - | Adds classes after the root classes, so a conflicting class wins. |
+
+Also takes every prop of the Base UI `Progress.Root` (`render`) and of a `div`, `aria-label` and `aria-labelledby` included.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"progress"` | Selects the part in the theme and from other parts |
+| `data-progressing` | present while the clamped value is below `max` | Styles a running task, `value={0}` included |
+| `data-complete` | present when the clamped value equals `max` | Styles a finished task |
+| `data-indeterminate` | present when `value` is `null` | Styles a task whose progress is unknown |
+
+Every part below carries the same three status attributes, so each one can be styled by status.
+
+## ProgressLabel
+
+The visible name of the bar. Renders a `span` in `font-medium` `text-sm`, with `role="presentation"`. Its `id`, the one passed or a generated one, becomes the `aria-labelledby` of `Progress`.
+
+Also takes every prop of the Base UI `Progress.Label` and of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"progress-label"` | Selects the part in the theme and from other parts |
+
+## ProgressValue
+
+The value as text. Renders a `span` in `text-sm` with tabular numbers and `aria-hidden="true"`: a screen reader hears the value from the `aria-valuetext` of `Progress`, not from this text. It is empty while the progress is indeterminate.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `(formattedValue: string \| null, value: number \| null) => ReactNode` | - | Renders the text from the formatted and the raw value; `formattedValue` is `"indeterminate"` while `value` is `null`. |
+
+Also takes every prop of the Base UI `Progress.Value` and of a `span`, except `children` as a node.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"progress-value"` | Selects the part in the theme and from other parts |
+
+When `children` shows something other than the formatted value (`"502 / 512 MB"`), pass `getAriaValueText` to `Progress` with the same words, or the screen reader hears another text.
+
+## ProgressTrack
+
+The rail the indicator fills. Renders a `div`, 6px tall and as wide as `Progress`, with a full radius, an `--input` background and `overflow: hidden`.
+
+Also takes every prop of the Base UI `Progress.Track` and of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"progress-track"` | Selects the part in the theme and from other parts |
+
+## ProgressIndicator
+
+The filled share of the track. Renders a `div` in `--primary`, with an inline `width` equal to the share of the range (`"40%"`) and the height of the track. A change of `value` animates the width over 500ms.
+
+Also takes every prop of the Base UI `Progress.Indicator` and of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"progress-indicator"` | Selects the part in the theme and from other parts |
+
+While `value` is `null` the indicator gets no inline size and has no height, so the track shows empty. A moving bar for that state is a theme rule on `[data-slot="progress-indicator"][data-indeterminate]`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ProgressPrimitive` | `namespace` | The Base UI progress, with `Root`, `Label`, `Value`, `Track` and `Indicator`, for its types (`ProgressPrimitive.Root.Props`) or a bar with other markup. |
+
+## Accessibility and theme
+
+- Name every bar: with a `ProgressLabel`, or with `aria-label` or `aria-labelledby` on `Progress` when no label is visible.
+- Keep the value text and `aria-valuetext` saying the same thing: a custom `ProgressValue` text needs a matching `getAriaValueText`.
+- Say in text what an indeterminate task is doing, next to the bar: the empty track alone does not show that something is happening.
+- The bar reads `--input` and `--primary` from the theme. The indicator passes 3:1 against the track in both themes; the track against the card does not, so the bar is read by its indicator. Measured contrast: `docs/accessibility.md`.
