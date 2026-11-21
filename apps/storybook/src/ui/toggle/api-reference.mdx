@@ -1,0 +1,78 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Toggle
+
+A button that stays on or off after it is pressed, for a setting that applies where it sits: bold text in an editor, a filter that shows only unread messages, a star that marks a favorite. It holds a label, an icon with a label, or an icon alone. For a set of toggles where only one can be on, or that the arrow keys move through, reach for a toggle group.
+
+The other pages of `UI/Toggle`: [Playground](?path=/story/ui-toggle-playground--playground) to try the label, the icon, variant, size, pressed and disabled, [Stories](?path=/story/ui-toggle-stories--default) for each variant, size and state, [Behavior](?path=/story/ui-toggle-behavior--toggles-on-click) for the tests, [Usages](?path=/story/ui-toggle-usages--text-formatting) for toggles with real content, and [Layouts](?path=/story/ui-toggle-layouts--icon-only) for how the icon and the label combine.
+
+## Import
+
+```tsx
+import { Toggle, TogglePrimitive, toggleVariants } from '@acme/ui/toggle'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Toggle variant="outline">
+  <Icon />
+  children
+</Toggle>
+```
+
+`Toggle` is one part. Its children are the label, an icon, or both; an icon alone needs an `aria-label` on the toggle.
+
+## Toggle
+
+The two-state button. Renders a `button` with `type="button"` and `aria-pressed`, so a screen reader announces it as a toggle button and it never submits a form. A click, Space or Enter flips the state; it is uncontrolled unless `pressed` is passed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"outline"` | `"default"` | Controls the border and the background: `outline` adds a border, a fill and a small shadow. |
+| `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | Sets the height, the minimum width and the padding. |
+| `pressed` | `boolean` | - | Controls whether the toggle is on; pair it with `onPressedChange`. |
+| `defaultPressed` | `boolean` | `false` | Sets whether the toggle starts on, when `pressed` is not passed. |
+| `disabled` | `boolean` | `false` | When true, disables the `button`: it ignores clicks, leaves the tab order and drops to 64% opacity. |
+| `value` | `string` | - | Identifies the toggle inside a toggle group, which then owns its pressed state. |
+| `className` | `string` | - | Adds classes, which win over the classes of the variant and the size. |
+| `onPressedChange` | `(pressed: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the user presses the toggle, with the new value, before the state changes. |
+
+`ChangeEventDetails` is `TogglePrimitive.ChangeEventDetails`: it holds the native `event` and a `cancel()` that keeps the toggle in its current state.
+
+Also takes every prop of the Base UI `Toggle` (`render`, `nativeButton`) and of a `button`, except `type` and `form`, which it ignores: the type is always `"button"`.
+
+Keep the `button` element. `render` can replace it, but a link cannot carry `aria-pressed`, and a `span` with `nativeButton={false}` looks the same while giving up the native disabled state and form behavior, so there is no other element to switch to.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toggle"` | Selects the part in the theme and from other parts |
+| `data-pressed` | present when on | Gives the pressed background; children can follow it with `in-data-pressed:` |
+| `data-disabled` | present when `disabled` | Styles the disabled toggle |
+
+Inside a toggle group, the group's `value` decides which toggles are on, and `pressed` and `defaultPressed` on the toggle have no effect; a disabled group disables every toggle in it.
+
+Each size is 4px taller below the `sm` breakpoint. From `sm` up, `sm` is 28px high, `default` 32px and `lg` 36px, and the minimum width equals the height, so a toggle with an icon alone is square. On a coarse pointer the hit area grows to at least 44px by 44px without changing the look.
+
+Hovered, the toggle takes `--accent`; on, it takes `--input` at 64% with `--accent-foreground` text, and `outline` takes the full `--input` in dark. The `outline` variant has a 1px `--input` border on `--background` (`--input` at 32% in dark), and loses its shadow while pressed, on or disabled. Focused with the keyboard, it shows a 2px `--ring` ring with a 1px offset.
+
+From `sm` up, an `svg` child without a `size-*` class is 16px, and 18px below `sm`. Without an `opacity-*` class it is drawn at 80% opacity.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `toggleVariants` | `function` | The classes of `Toggle`, for an element that takes its look without rendering through it. `toggleVariants({ variant, size, className }) => string` |
+| `TogglePrimitive` | `component` | The Base UI `Toggle`, for its types (`TogglePrimitive.Props`, `TogglePrimitive.ChangeEventDetails`) or a toggle with other markup. |
+
+## Accessibility and theme
+
+- Give a toggle with an icon alone an `aria-label`, and mark its icon `aria-hidden="true"`.
+- Keep the label the same in both states ("Bold", not "Bold" and "Not bold"): `aria-pressed` already announces whether it is on.
+- The pressed state changes the background and the text color only; when on and off have to read apart at a glance, change the icon too (a filled star).
+- The toggle reads `--foreground`, `--accent`, `--accent-foreground`, `--input`, `--background` and `--ring` from the theme.
