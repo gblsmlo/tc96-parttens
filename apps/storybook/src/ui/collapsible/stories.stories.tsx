@@ -13,7 +13,7 @@ const meta = {
   decorators: [CollapsibleCanvas],
   parameters: {
     controls: { exclude: ['defaultOpen'] },
-    layout: 'padded',
+    layout: 'centered',
   },
   render: (args) => <ComposedCollapsible {...args} />,
   tags: ['!autodocs'],

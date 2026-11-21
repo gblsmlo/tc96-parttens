@@ -11,7 +11,7 @@ const meta = {
   args: collapsibleControlArgs,
   argTypes: collapsibleControlArgTypes,
   decorators: [CollapsibleCanvas],
-  parameters: { layout: 'padded' },
+  parameters: { layout: 'centered' },
   render: (args) => <ComposedCollapsible {...args} />,
   tags: ['!autodocs'],
   title: 'UI/Collapsible/Playground',
