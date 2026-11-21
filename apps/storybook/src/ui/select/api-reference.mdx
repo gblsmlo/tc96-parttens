@@ -1,0 +1,236 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Select
+
+A button that opens a list of predefined options and shows the one chosen: the priority of an issue, the region of a deploy, the sort order of a list. Reach for it when the options are few and known, so scrolling finds one faster than typing; a list long enough to search is a `Combobox`, and free text is an `Input`.
+
+The other pages of `UI/Select`: [Playground](?path=/story/ui-select-playground--playground) to try the texts, the size, the state, the placement and the optional parts, [Stories](?path=/story/ui-select-stories--default) for each prop value, [Behavior](?path=/story/ui-select-behavior--opens-from-trigger) for the tests, [Usages](?path=/story/ui-select-usages--issue-priority) for real pickers and [Layouts](?path=/story/ui-select-layouts--without-label) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Select,
+  SelectItem,
+  SelectLabel,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@acme/ui/select'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Select>
+  <SelectLabel />
+  <SelectTrigger>
+    <Icon />
+    <SelectValue />
+  </SelectTrigger>
+  <SelectPopup>
+    <SelectGroup>
+      <SelectGroupLabel />
+      <SelectItem />
+      <SelectItem />
+    </SelectGroup>
+    <SelectSeparator />
+    <SelectItem />
+  </SelectPopup>
+</Select>
+```
+
+The check at the end of an item shows only on the selected one, here the first.
+
+`SelectButton` is a separate button with the look of `SelectTrigger`, for the trigger of another component.
+
+<Canvas of={ApiReferenceStories.ButtonAnatomy} />
+
+```tsx
+<SelectButton>{children}</SelectButton>
+```
+
+## Select
+
+Groups the parts and holds the value and the open state. Alias for `Select.Root` from Base UI; it renders no visible element, only a hidden input that carries the value. It never fetches, filters or sorts the options: it shows the `SelectItem`s it is given.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `{ label, value }[]`, `Record<string, ReactNode>` or groups of them | - | Sets the labels `SelectValue` shows for each value. |
+| `multiple` | `boolean` | `false` | When true, the value is an array and each selection adds to it or removes from it. |
+| `value` | `Value`, `Value[]` or `null` | - | Controls the selected value; pair it with `onValueChange`. |
+| `defaultValue` | `Value`, `Value[]` or `null` | - | Sets the selected value of the first render when `value` is not passed. |
+| `onValueChange` | `(value: Value, eventDetails: ChangeEventDetails) => void` | - | Called when the user selects an option, with the `reason` in `eventDetails`. |
+| `open` | `boolean` | - | Controls the open state of the popup; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the popup asks to open or close, with the `reason` in `eventDetails`. |
+| `modal` | `boolean` | `true` | When true, an open popup locks the page scroll and blocks pointer input outside it. |
+| `disabled` | `boolean` | `false` | When true, the trigger ignores the user and the popup cannot open. |
+| `readOnly` | `boolean` | `false` | When true, the value shows but cannot change. |
+| `required` | `boolean` | `false` | When true, a form does not submit without a value. |
+| `name` | `string` | - | Sets the name of the hidden input that carries the value in a form. |
+| `itemToStringLabel` | `(value: Value) => string` | - | Sets the text the trigger shows for an object value that is not `{ label, value }`. |
+| `itemToStringValue` | `(value: Value) => string` | - | Sets the string a form submits for an object value that is not `{ label, value }`. |
+
+Also takes every prop of Base UI `Select.Root`, such as `isItemEqualToValue`, `highlightItemOnHover` and `actionsRef`.
+
+The `reason` of a change is one of `"trigger-press"`, `"item-press"`, `"list-navigation"`, `"escape-key"`, `"outside-press"`, `"focus-out"`, `"window-resize"`, `"cancel-open"` or `"none"`. Values are compared with `Object.is`, so pass the same objects to `SelectItem` and `value`, or a primitive value with `items`. In `multiple` mode the popup stays open after each selection.
+
+## SelectLabel
+
+The visible name of the select. Renders a `div` that names `SelectTrigger` through `aria-labelledby`; a press on it focuses the trigger without opening the popup. Outside a `Field` it has an 8px bottom margin; inside one the margin goes away.
+
+Also takes every prop of Base UI `Select.Label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"select-label"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present while the `Field` around it is disabled | Styles the label of a disabled field |
+| `data-valid`, `data-invalid`, `data-touched`, `data-dirty`, `data-filled`, `data-focused` | present in that state inside a `Field` | Style the field states |
+
+## SelectTrigger
+
+The button that opens the popup and shows the value. Renders a `button` with `role="combobox"`, its children, and a chevron icon at the end. A press, `Enter`, `Space` or `ArrowDown` opens the popup, and focus returns to it when the popup closes.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | Controls the height and the padding. |
+| `disabled` | `boolean` | - | When true, the trigger ignores the user; `disabled` on `Select` does the same. |
+
+Also takes every prop of Base UI `Select.Trigger`, such as `aria-label` and `aria-invalid`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"select-trigger"` | Selects the part in the theme and from other parts |
+| `data-slot` | `"select-icon"` | The box of the chevron, which also takes `data-popup-open` while the popup is open |
+| `data-popup-open` | present while the popup is open | Styles the trigger of the open popup |
+| `data-popup-side` | `"top"`, `"bottom"` and the other sides | Styles the trigger by the side the popup opened on |
+| `data-placeholder` | present while there is no value | Styles the trigger with no value |
+| `data-pressed` | present while it is pressed | Styles the pressed trigger |
+| `data-disabled`, `data-readonly`, `data-required` | present in that state | Style the trigger in that state |
+| `data-valid`, `data-invalid`, `data-touched`, `data-dirty`, `data-filled`, `data-focused` | present in that state inside a `Field` | Style the field states |
+
+The trigger fills the width of its container, at least 144px. From `sm` up it is 28px high at `"sm"`, 32px at `"default"` and 36px at `"lg"`; below `sm` each is 4px taller, and its hit area grows to 44px on a coarse pointer. An `svg` child without a `size-*` class is 16px from `sm` up (18px below) at 80% opacity, so an icon before `SelectValue` needs no class. With `aria-invalid`, it takes a `destructive` border and a `destructive` ring on focus; disabled, it drops to 64% opacity.
+
+## SelectValue
+
+The value inside the trigger. Renders a `span` that fills the room before the chevron and truncates long text. With `items` on `Select`, or an object value shaped `{ label, value }`, it shows the label; otherwise it shows the value itself.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `placeholder` | `ReactNode` | - | Sets what shows while there is no value, in `muted-foreground`. |
+| `children` | `ReactNode` or `(value: Value) => ReactNode` | - | Sets what renders for the value; a function receives the value, an array in `multiple` mode, and replaces `placeholder`. |
+
+Also takes every prop of Base UI `Select.Value`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"select-value"` | Selects the part in the theme and from other parts |
+| `data-placeholder` | present while there is no value | Styles the placeholder |
+
+## SelectPopup
+
+The floating list of options. Renders a `div` in a portal on `body`, positioned against the trigger, that holds a surface with a 1px `border`, a large radius, the `popover` background and a shadow; inside it, a `div` with `role="listbox"` (`aria-multiselectable` in `multiple` mode) holds the children. The surface is at least as wide as the trigger, and the list is at most as high as the room left on screen, scrolling past it. Also exported as `SelectContent`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `"top"`, `"bottom"`, `"left"`, `"right"`, `"inline-start"` or `"inline-end"` | `"bottom"` | Sets the side of the trigger the popup opens on. |
+| `align` | `"start"`, `"center"` or `"end"` | `"start"` | Sets how the popup aligns with the trigger. |
+| `sideOffset` | `number` | `4` | Sets the gap in pixels between the trigger and the popup. |
+| `alignOffset` | `number` | `0` | Moves the popup along the trigger, in pixels. |
+| `alignItemWithTrigger` | `boolean` | `false` | When true, the popup covers the trigger with the selected option over the value, and `side` and `align` stop acting. |
+| `anchor` | `Element`, a ref, or a function that returns one | - | Sets the element the popup is positioned against. |
+| `portalProps` | `SelectPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `Select.Popup`, such as `finalFocus`. `className` goes to the `listbox`, and every other prop to the popup `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"select-popup"` | Selects the popup |
+| `data-slot` | `"select-positioner"` | Selects the positioned layer around it, at `z-50` |
+| `data-slot` | `"select-list"` | Selects the `listbox` |
+| `data-slot` | `"select-scroll-up-arrow"`, `"select-scroll-down-arrow"` | Select the arrows at the edges, shown while the list can scroll that way |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-side`, `data-align` | the side and alignment it opened with; `data-side` is `"none"` while aligned with the trigger | Style the popup by its placement |
+
+While the popup is aligned with the trigger, each option is at least 20px wider than the trigger.
+
+## SelectGroup and SelectGroupLabel
+
+The parts of a grouped list. `SelectGroup` renders a `div` with `role="group"`, labelled by its `SelectGroupLabel`. `SelectGroupLabel` renders a `div` in `font-medium`, `text-xs` and `text-muted-foreground`.
+
+Also takes every prop of the Base UI part: `Select.Group` or `Select.GroupLabel`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"select-group"` or `"select-group-label"` | Selects the part in the theme and from other parts |
+
+## SelectItem
+
+One option. Renders a `div` with `role="option"` as a two-column grid: the children, then a check that shows only on the selected option, in a 12px column at the end. Pressing it, or `Enter` on the highlighted one, selects its `value`; typing letters highlights the option whose text starts with them.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `Value` | `null` | Sets the value the option selects. |
+| `disabled` | `boolean` | `false` | When true, the option cannot be highlighted or selected. |
+| `label` | `string` | - | Sets the text typeahead matches; without it, the text content of the option. |
+
+Also takes every prop of Base UI `Select.Item`, such as `onClick`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"select-item"` | Selects the part in the theme and from other parts |
+| `data-highlighted` | present on the option the keyboard or the pointer is on | Styles the active option, with the `accent` background |
+| `data-selected` | present on a selected option | Styles the selected option |
+| `data-disabled` | present when disabled | Styles a disabled option, at 64% opacity |
+
+## SelectSeparator
+
+A line between options or groups. Renders a `div` with `role="presentation"`, so assistive technology skips it, 1px high in the `border` color, with an 8px inset on each side.
+
+Also takes every prop of Base UI `Select.Separator`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"select-separator"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` | Set from its `orientation` prop, `"horizontal"` by default |
+
+## SelectButton
+
+A button with the look of `SelectTrigger` and no select behind it. Renders a `button` of `type="button"` that wraps its children in a truncating `span` and adds the chevron at the end. Pass it as the `render` of another component's trigger (`<ComboboxTrigger render={<SelectButton />} />`) to give a searchable picker the look of a select.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | Controls the height and the padding, as on `SelectTrigger`. |
+| `render` | `ReactElement` or `(props, state) => ReactElement` | - | Replaces the `button` element; the `type` is then left to it. |
+
+Also takes every prop of a `button`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"select-button"` | Selects the part in the theme; as the `render` of another trigger, that trigger's `data-slot` replaces it |
+
+While an ancestor or the button itself has `data-placeholder`, as a `ComboboxTrigger` does with no value, the text takes `muted-foreground` at 72% opacity.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SelectContent` | `component` | The same component as `SelectPopup`. |
+| `selectTriggerVariants` | `function` | Returns the classes of the trigger for a size, shared by `SelectTrigger` and `SelectButton`. `selectTriggerVariants({ size, className }) => string` |
+| `selectTriggerIconClassName` | `string` | The classes of the chevron in the trigger. |
+| `SelectButtonProps` | `type` | The props of `SelectButton`. |
+| `SelectPrimitive` | `namespace` | The Base UI `Select` namespace, for the parts not wrapped here (`SelectPrimitive.Arrow`, `SelectPrimitive.Backdrop`) and the types such as `SelectPrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Name the select: put it in a `Field` with a `FieldLabel`, add a `SelectLabel`, or pass `aria-label` to `SelectTrigger`. A `FieldDescription` becomes its description.
+- Give an icon in the trigger or in an option `aria-hidden="true"`; the option's text is its name.
+- The placeholder text of `SelectButton` measures 3.06:1 on `background` in the light theme and 3.26:1 in the dark, below the 4.5:1 of text; the text of `SelectValue`'s placeholder uses `muted-foreground` at full strength.
+- The parts use the `input`, `ring`, `popover`, `accent`, `muted-foreground`, `destructive` and `border` tokens; the theme needs no rule of its own.
