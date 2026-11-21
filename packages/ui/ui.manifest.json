@@ -1,5 +1,8 @@
 {
   "items": {
+    "accordion": {
+      "origin": "coss"
+    },
     "alert": {
       "origin": "coss",
       "cssVars": {
