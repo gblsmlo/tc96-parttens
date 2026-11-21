@@ -1,0 +1,188 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# NumberField
+
+An input for an exact number, typed or changed with buttons, arrow keys or by dragging a label: a quantity in a cart, a price, a discount, the width of a layer. Reach for it when the user needs a precise figure within limits, with formatting such as a currency or a unit; for a position within a range, reach for `Slider`.
+
+The other pages of `UI/NumberField`: [Playground](?path=/story/ui-numberfield-playground--playground) to try the label, the value, the size, the format, the parts and the states, [Stories](?path=/story/ui-numberfield-stories--default) for each size and state, [Behavior](?path=/story/ui-numberfield-behavior--input-announced-as-number-field) for the tests, [Usages](?path=/story/ui-numberfield-usages--cart-quantity) for real quantities, prices and forms, and [Layouts](?path=/story/ui-numberfield-layouts--with-scrub-area) for the scrub area, the field without buttons and the ways to label it.
+
+## Import
+
+```tsx
+import {
+  NumberField,
+  NumberFieldDecrement,
+  NumberFieldGroup,
+  NumberFieldIncrement,
+  NumberFieldInput,
+  NumberFieldScrubArea,
+} from '@acme/ui/number-field'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<NumberField defaultValue={0}>
+  <NumberFieldScrubArea label="NumberFieldScrubArea" />
+  <NumberFieldGroup>
+    <NumberFieldDecrement />
+    <NumberFieldInput />
+    <NumberFieldIncrement />
+  </NumberFieldGroup>
+</NumberField>
+```
+
+`NumberFieldScrubArea`, `NumberFieldDecrement` and `NumberFieldIncrement` are optional; `NumberFieldInput` inside a `NumberFieldGroup` is the field. The input is named by the scrub area, a `Label` pointed at the `id` of `NumberField`, a `FieldLabel` or an `aria-label`.
+
+## NumberField
+
+The root of the field, holding the value and the limits. Renders a `div` laid out as a full-width column, and right after it a visually hidden `input type="number"`, out of the tab order and hidden from assistive technology, that carries the `name`, `value`, `min`, `max`, `step` and `required` for a form. It keeps the value itself when uncontrolled and never stores it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | Controls the height and padding of the input and the steppers. |
+| `defaultValue` | `number` | - | Sets the value on mount for an uncontrolled field. |
+| `value` | `number` or `null` | - | Sets the value and makes the field controlled; `null` leaves it empty. |
+| `min` | `number` | - | Sets the lowest value; the steppers, the keys and blur clamp to it, and Home jumps to it. |
+| `max` | `number` | - | Sets the highest value; the steppers, the keys and blur clamp to it, and End jumps to it. |
+| `step` | `number` or `"any"` | `1` | Sets the amount of the steppers, the arrow keys and each scrub movement; `"any"` turns off step validation in a form and steps by 1. |
+| `largeStep` | `number` | `10` | Sets the amount of Shift with an arrow key. |
+| `smallStep` | `number` | `0.1` | Sets the amount of Alt with an arrow key. |
+| `format` | `Intl.NumberFormatOptions` | - | Formats the text of the input (a currency, a percent, a unit, the decimals); the value stays a number. |
+| `locale` | `Intl.LocalesArgument` | the runtime locale | Sets the locale that formats and parses the text. |
+| `disabled` | `boolean` | `false` | When true, ignores input, leaves the tab order and drops the group to 64% opacity. |
+| `readOnly` | `boolean` | `false` | When true, keeps the value: the input stays focusable, and the steppers and keys do nothing. |
+| `required` | `boolean` | `false` | When true, a form does not submit while the field is empty. |
+| `name` | `string` | - | Submits the value under this name with a form; the `name` of an enclosing `Field` wins. |
+| `id` | `string` | a generated id | Sets the `id` of the input, not of the root, so a `Label` can point at it. |
+| `snapOnStep` | `boolean` | `false` | When true, rounds the value to a multiple of the step when it steps. |
+| `allowOutOfRange` | `boolean` | `false` | When true, keeps a typed value outside `min` and `max`, so native range validation can flag it; steps still clamp. |
+| `allowWheelScrub` | `boolean` | `false` | When true, the mouse wheel steps the value while the input is focused and under the pointer. |
+| `className` | `string` | - | Adds classes to the root `div` after its own, so a conflicting class wins. |
+| `onValueChange` | `(value, eventDetails: ChangeEventDetails) => void` | - | Called on every change, with the new value: a typed number that parses, a stepper, a key, the wheel or a scrub. |
+| `onValueCommitted` | `(value, eventDetails: CommitEventDetails) => void` | - | Called when a change ends: on blur after typing, on release of a stepper or a scrub, and with each key or wheel step. |
+
+Also takes every prop of the Base UI `NumberField.Root` (`inputRef`, `form`, `render`).
+
+In both callbacks, `value` is a `number`, or `null` when the input is empty, and the `event` of `eventDetails` holds the DOM event. Its `reason` says what changed the value:
+
+- In `onValueChange`, `eventDetails` is a `NumberFieldPrimitive.Root.ChangeEventDetails`, with `reason` `"input-change"`, `"input-clear"`, `"input-blur"`, `"input-paste"`, `"keyboard"`, `"increment-press"`, `"decrement-press"`, `"wheel"`, `"scrub"` or `"none"`.
+- In `onValueCommitted`, `eventDetails` is a `NumberFieldPrimitive.Root.CommitEventDetails`, with `reason` `"input-blur"`, `"input-clear"`, `"keyboard"`, `"increment-press"`, `"decrement-press"`, `"wheel"`, `"scrub"` or `"none"`; a typed or pasted number commits on blur, as `"input-blur"`, and an emptied input as `"input-clear"`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"number-field"` | Selects the part in the theme and from other parts |
+| `data-size` | `"sm"`, `"default"` or `"lg"` | Styles each size; the other parts read it from the root |
+| `data-disabled` | present when `disabled`, or inside a disabled `Field` | Styles the disabled field |
+| `data-readonly` | present when `readOnly` | Styles the read-only field |
+| `data-required` | present when `required` | Styles the required field |
+| `data-scrubbing` | present while the user drags the scrub area | Styles the field during a scrub |
+| `data-dirty` | present inside a `Field` when the value differs from the initial one | Styles a changed field |
+| `data-touched` | present inside a `Field` after the input loses focus | Styles a visited field |
+| `data-filled` | present inside a `Field` when the input has a value | Styles a filled field |
+| `data-focused` | present inside a `Field` while the input has focus | Styles the focused field |
+| `data-valid`, `data-invalid` | present inside a `Field` after validation | Styles the validation result |
+
+Every other part repeats the state attributes of this table, from `data-disabled` down, and sets its own `data-slot`; the steppers set `data-disabled` on their own as well, at a bound.
+
+The text the user types updates the value as soon as it parses; on blur the input clamps the value to `min` and `max` and shows it formatted (`1234.5` becomes `$1,234.50` with a USD currency format in `"en-US"`). Without `format`, the text still uses the grouping of the locale (`1,280`).
+
+Keys act on the focused input: Arrow Up and Arrow Down step by `step`, Shift with an arrow by `largeStep`, Alt with an arrow by `smallStep`, and Home and End jump to `min` and `max` when they are set.
+
+## NumberFieldScrubArea
+
+A visible label that changes the value when the user drags across it. Renders a `span` with `role="presentation"` holding a `Label` whose `htmlFor` is the `id` of the input, so its text names the input. While the user drags with a mouse, it locks the pointer and shows a two-headed arrow cursor portaled to `body`, except in WebKit browsers and on touch. It throws when rendered outside a `NumberField`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Sets the text of the label, which names the input. |
+| `direction` | `"horizontal"` or `"vertical"` | `"horizontal"` | Controls the direction of the drag. |
+| `pixelSensitivity` | `number` | `2` | Sets how many pixels the pointer moves for each step. |
+| `teleportDistance` | `number` | - | Sets how far the cursor moves from the center of the area before it loops back. |
+| `className` | `string` | - | Adds classes to the `span`. |
+
+Also takes every prop of the Base UI `NumberField.ScrubArea`; its `children` are always the label and the cursor.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"number-field-scrub-area"` on the `span`, `"label"` on the label | Selects the area and its label in the theme and from other parts |
+
+The area and the label show the `ew-resize` cursor.
+
+## NumberFieldGroup
+
+The box around the input and the steppers. Renders a `div` with `role="group"`, full width, that draws the border, the background and the focus ring of the field.
+
+Also takes every prop of the Base UI `NumberField.Group`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"number-field-group"` | Selects the part in the theme and from other parts |
+
+The group has a 1px `--input` border, a `--radius-lg` radius and a `--background` fill (`--input` at 32% in dark), with 16px text below `sm` and 14px from `sm` up. While the input has focus, the border turns `--ring` and a 3px `--ring` ring appears. When the input has `aria-invalid`, the border and the ring turn `--destructive`. With `data-disabled`, the group drops to 64% opacity and ignores the pointer. An `svg` inside it without a `size-*` class is 18px below `sm` and 16px from `sm` up.
+
+## NumberFieldDecrement
+
+The button that lowers the value by `step`. Renders a `button` named `"Decrease"` with a minus icon, out of the tab order and with `aria-controls` pointing at the input, since the arrow keys do the same from the input. Holding it repeats the step. It is disabled with the field, when the field is `readOnly`, and when the value is at `min`.
+
+Also takes every prop of the Base UI `NumberField.Decrement`; its `children` are always the minus icon. Pass `aria-label` to name it in another language.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"number-field-decrement"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when the field is disabled or the value is at `min` | Styles the unavailable button |
+
+The button sits at the start of the group, takes the start corners of its radius and turns `--accent` on hover. On a coarse pointer its hit area grows to 44px.
+
+## NumberFieldInput
+
+The text the user types the number into. Renders an `input type="text"` with `inputmode="numeric"` and `aria-roledescription="Number field"`, centered and in tabular figures. It accepts only digits, the separators and signs of the locale and the symbols of `format`; any other character is ignored.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | - | Names the input when no scrub area, `Label` or `FieldLabel` names it. |
+| `aria-invalid` | `boolean` | - | When true, turns the border and focus ring of the group `--destructive`; a `Field` sets it when validation fails. |
+| `aria-roledescription` | `string` | `"Number field"` | Sets how a screen reader announces the role of the input. |
+| `className` | `string` | - | Adds classes to the input after its own, so a conflicting class wins. |
+
+Also takes every prop of the Base UI `NumberField.Input` and of an `input`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"number-field-input"` | Selects the part in the theme and from other parts |
+
+Below `sm` the input is 34px tall at `"default"`, 30px at `"sm"` and 38px at `"lg"`; from `sm` up each size is 4px shorter. On iOS, `inputmode` is `"decimal"` when `min` is 0 or more and `"text"` otherwise, so the keyboard offers a minus sign.
+
+## NumberFieldIncrement
+
+The button that raises the value by `step`. Renders a `button` named `"Increase"` with a plus icon, out of the tab order and with `aria-controls` pointing at the input. Holding it repeats the step. It is disabled with the field, when the field is `readOnly`, and when the value is at `max`.
+
+Also takes every prop of the Base UI `NumberField.Increment`; its `children` are always the plus icon. Pass `aria-label` to name it in another language.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"number-field-increment"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when the field is disabled or the value is at `max` | Styles the unavailable button |
+
+The button sits at the end of the group, takes the end corners of its radius and turns `--accent` on hover. On a coarse pointer its hit area grows to 44px.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `NumberFieldContext` | `context` | Holds `{ fieldId }`, the `id` of the input, for a part that labels it; `null` outside a `NumberField`. |
+| `CursorGrowIcon` | `component` | The two-headed arrow `svg` the scrub area shows while dragging, hidden from assistive technology. |
+| `NumberFieldPrimitive` | `namespace` | The Base UI `NumberField` parts (`Root`, `Group`, `Input`, `Increment`, `Decrement`, `ScrubArea`, `ScrubAreaCursor`) without classes, and their types (`NumberFieldPrimitive.Root.Props`, `NumberFieldPrimitive.Root.ChangeEventDetails`). |
+
+## Accessibility and theme
+
+- Name every input: a `NumberFieldScrubArea`, a `FieldLabel` inside a `Field`, a `Label` whose `htmlFor` matches the `id` of `NumberField`, or an `aria-label` or `aria-labelledby` on `NumberFieldInput`. A placeholder is not a name.
+- The steppers are named `"Decrease"` and `"Increase"`; pass `aria-label` to name them in the language of the page.
+- Pass `format` when the number has a unit, so the input reads `"$24.90"` or `"15%"` rather than a bare figure.
+- Say what is wrong in text, with a `FieldError` or a description: the red border alone does not say it.
+- The field reads `--input`, `--background`, `--foreground`, `--ring`, `--destructive` and `--accent` from the theme.
