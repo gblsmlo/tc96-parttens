@@ -1,0 +1,364 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Menu
+
+A list of actions or options that opens from a button and floats above the page: the account menu of the app shell, the "more" button of a table row, the view settings of a list. It holds plain actions, links, checkbox and radio choices, grouped and separated, with optional icons and keyboard shortcuts, and it opens nested submenus. Reach for it when the choices act on something; picking one value for a form field is a `Select`, and a panel with inputs in it is a `Popover`.
+
+The other pages of `UI/Menu`: [Playground](?path=/story/ui-menu-playground--playground) to try the texts, the placement and the optional parts, [Stories](?path=/story/ui-menu-stories--default) for each item state, [Behavior](?path=/story/ui-menu-behavior--opens-from-trigger) for the tests, [Usages](?path=/story/ui-menu-usages--playback) for real menus and [Layouts](?path=/story/ui-menu-layouts--with-group-label) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Menu,
+  MenuCheckboxItem,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuItem,
+  MenuLinkItem,
+  MenuPopup,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuShortcut,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+  MenuTrigger,
+} from '@acme/ui/menu'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Menu>
+  <MenuTrigger />
+  <MenuPopup>
+    <MenuGroup>
+      <MenuGroupLabel />
+      <MenuItem>
+        <Icon />
+        <MenuShortcut />
+      </MenuItem>
+      <MenuItem inset />
+      <MenuLinkItem href="#">
+        <Icon />
+      </MenuLinkItem>
+    </MenuGroup>
+    <MenuSeparator />
+    <MenuGroup>
+      <MenuGroupLabel />
+      <MenuCheckboxItem defaultChecked />
+      <MenuCheckboxItem defaultChecked variant="switch" />
+    </MenuGroup>
+    <MenuSeparator />
+    <MenuGroup>
+      <MenuGroupLabel />
+      <MenuRadioGroup defaultValue="checked">
+        <MenuRadioItem value="checked" />
+        <MenuRadioItem value="unchecked" />
+      </MenuRadioGroup>
+    </MenuGroup>
+    <MenuSeparator />
+    <MenuSub>
+      <MenuSubTrigger>
+        <Icon />
+      </MenuSubTrigger>
+      <MenuSubPopup>
+        <MenuItem />
+      </MenuSubPopup>
+    </MenuSub>
+  </MenuPopup>
+</Menu>
+```
+
+## Menu
+
+Groups the parts and holds the open state. Alias for `Menu.Root` from Base UI; renders no element. It is modal by default: while open, the page does not scroll and ignores the pointer outside the popup. The arrow keys move through the items, typing a letter jumps to the next item that starts with it, and `Escape` or a press outside closes the menu and returns focus to the trigger.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the menu asks to open or close, with the `reason` in `eventDetails`. |
+| `modal` | `boolean` | `true` | When true, locks the page scroll and blocks the pointer outside the popup while open. |
+| `disabled` | `boolean` | `false` | When true, the trigger does not open the menu. |
+| `loopFocus` | `boolean` | `true` | When true, the arrow keys wrap from the last item to the first and back. |
+| `orientation` | `"vertical"` or `"horizontal"` | `"vertical"` | Sets which arrow keys move through the items. |
+| `highlightItemOnHover` | `boolean` | `true` | When true, the pointer highlights the item it moves over. |
+| `handle` | `MenuPrimitive.Handle` | - | Links the menu to a trigger outside it, created with `MenuCreateHandle`. |
+
+Also takes every prop of Base UI `Menu.Root`, such as `actionsRef` and `onOpenChangeComplete`.
+
+`ChangeEventDetails` is `MenuPrimitive.Root.ChangeEventDetails`. A menu opened by hover is never modal, and a submenu ignores `modal`.
+
+## MenuTrigger
+
+The button that opens and closes the menu. Renders a `button` with `aria-haspopup="menu"` and `aria-expanded`; pass `render={<Button />}` to use the `Button`. On its own it carries no style. Its text names the popup.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `openOnHover` | `boolean` | `false` | When true, the menu also opens while the pointer rests on the trigger. |
+| `delay` | `number` | `100` | Sets the wait in milliseconds before a hover opens the menu. |
+| `closeDelay` | `number` | `0` | Sets the wait in milliseconds before a menu opened by hover closes. |
+| `disabled` | `boolean` | `false` | When true, the trigger ignores the user. |
+| `handle` | `MenuPrimitive.Handle` | - | Links a trigger outside `Menu` to the menu that shares the handle. |
+| `payload` | `unknown` | - | Sets the value a function child of `Menu` receives when this trigger opens it. |
+
+Also takes every prop of Base UI `Menu.Trigger`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while the menu is open | Styles the trigger of the open menu |
+| `data-pressed` | present while it is pressed | Styles the pressed trigger |
+| `data-disabled` | present when disabled | Styles the disabled trigger |
+
+## MenuPopup
+
+The floating surface of the items. Renders a `div` with `role="menu"` in a portal on `body`, inside a positioner at `z-50`. The surface has a 1px `border`, a large radius, the `popover` background and a shadow; the items sit in an inner box padded by 8px that scrolls when the menu is taller than the room left on screen.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `Side` | `"bottom"` | Sets the side of the trigger the popup opens on; it flips when there is no room. |
+| `align` | `"start"`, `"center"` or `"end"` | `"center"` | Sets how the popup aligns with the trigger. |
+| `sideOffset` | `number` | `4` | Sets the gap in pixels between the trigger and the popup. |
+| `alignOffset` | `number` | - | Moves the popup along the trigger, in pixels. |
+| `anchor` | `Element`, a ref, or a function that returns one | - | Sets the element the popup is positioned against, instead of the trigger. |
+| `portalProps` | `MenuPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Values of `side`: `"top"`, `"bottom"`, `"left"`, `"right"`, `"inline-start"`, `"inline-end"`.
+
+Also takes every prop of Base UI `Menu.Popup`, such as `finalFocus`. `className` goes to the popup `div`, and its children to the inner box.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-popup"` | Selects the popup |
+| `data-slot` | `"menu-positioner"` | Selects the positioned layer around it |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-side`, `data-align` | the side and alignment it opened with | Style the popup by its placement |
+| `data-instant` | present when the transition is skipped | Turns the animation off for that change |
+
+The popup is at least 160px wide (`min-w-40`), also when a `w-*` class sets another width.
+
+## MenuGroup and MenuGroupLabel
+
+The parts of a labelled section. `MenuGroup` renders a `div` with `role="group"`, named by the `MenuGroupLabel` inside it. `MenuGroupLabel` renders a `div` in `font-medium`, `text-xs` and `text-muted-foreground`; it is hidden from assistive technology, since the group already carries its text as a name.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `inset` | `boolean` | - | Starts the text of the `MenuGroupLabel` where an item's label starts after an icon. Any value sets `data-inset`, `false` included, so leave the prop out instead of passing `false`. |
+
+Also takes every prop of the Base UI part: `Menu.Group` or `Menu.GroupLabel`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-group"` or `"menu-label"` | Selects the part in the theme and from other parts |
+| `data-inset` | the value of `inset` (`"true"` or `"false"`) when it is passed | Styles the inset label; any value indents it |
+
+## MenuItem
+
+One action. Renders a `div` with `role="menuitem"`: a row with an optional icon, the label and, at the end, an optional `MenuShortcut`. A press, or `Enter` on the highlighted item, calls `onClick` and closes the menu.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"destructive"` | `"default"` | Controls the text color; `"destructive"` marks an action that deletes or cannot be undone. |
+| `inset` | `boolean` | - | Starts the label where the labels after an icon start, for an item without an icon. Any value sets `data-inset`, `false` included, so leave the prop out instead of passing `false`. |
+| `disabled` | `boolean` | `false` | When true, the item cannot be highlighted or pressed. |
+| `closeOnClick` | `boolean` | `true` | When true, a press closes the menu. |
+| `onClick` | `(event: MouseEvent) => void` | - | Called when the item is pressed, or `Enter` is pressed on it. |
+| `label` | `string` | - | Sets the text that typing matches, when the item's text is not plain. |
+
+Also takes every prop of Base UI `Menu.Item`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-item"` | Selects the part in the theme and from other parts |
+| `data-variant` | `"default"` or `"destructive"` | Styles the variant |
+| `data-inset` | the value of `inset` (`"true"` or `"false"`) when it is passed | Styles the inset item; any value indents it |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item, with the `accent` background |
+| `data-disabled` | present when disabled | Styles a disabled item, at 64% opacity |
+
+An item is 28px high from `sm` up with a fine pointer, 32px below `sm` and 44px with a coarse pointer. An `svg` child is 16px (18px below `sm`) at 80% opacity. A disabled item ignores the pointer, so a tooltip never opens on it: say why it is disabled inside the item.
+
+## MenuShortcut
+
+The keyboard shortcut of an item, shown at its end. Renders a `kbd` with `aria-hidden`, in `text-xs` with wide letter spacing and the `muted-foreground` color at 72%, which a theme rule sets back to full (see Accessibility and theme); `ms-auto` pushes it to the end of the row. It only shows the keys: it does not listen to them.
+
+Also takes every prop of a `kbd`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-shortcut"` | Selects the part in the theme and from other parts |
+
+Since the shortcut is hidden from assistive technology, the item's name is its label alone; set `aria-keyshortcuts` on the item to announce the keys (`<MenuItem aria-keyshortcuts="Meta+K">`).
+
+## MenuLinkItem
+
+An item that navigates. Renders an `a` with `role="menuitem"`, styled like `MenuItem`. With `href` it is a plain anchor; for a router link, pass the link through `render` (`<MenuLinkItem render={<Link href="/docs" />}>`).
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | - | Sets the address of the anchor. |
+| `variant` | `"default"` or `"destructive"` | `"default"` | Controls the text color. |
+| `inset` | `boolean` | - | Starts the label where the labels after an icon start. Any value sets `data-inset`, `false` included, so leave the prop out instead of passing `false`. |
+| `closeOnClick` | `boolean` | `true` | When true, a press closes the menu. |
+
+Also takes every prop of Base UI `Menu.LinkItem` and of an `a`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-link-item"` | Selects the part in the theme and from other parts |
+| `data-variant` | `"default"` or `"destructive"` | Styles the variant |
+| `data-inset` | the value of `inset` (`"true"` or `"false"`) when it is passed | Styles the inset item; any value indents it |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item |
+
+## MenuSeparator
+
+A line between items or groups. Renders a `div` with `role="separator"`, 1px high in the `border` color, with 8px of side margin and 4px above and below.
+
+Also takes every prop of Base UI `Menu.Separator`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-separator"` | Selects the part in the theme and from other parts |
+
+## MenuCheckboxItem
+
+An item that turns a setting on or off. Renders a `div` with `role="menuitemcheckbox"` and `aria-checked`, as a two-column grid: the label, then the indicator at the end. A press toggles it and leaves the menu open.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"` or `"switch"` | `"default"` | Controls the indicator: a check in a 12px column that shows only when checked, or a switch that always shows. |
+| `checked` | `boolean` | - | Controls the checked state; pair it with `onCheckedChange`. |
+| `defaultChecked` | `boolean` | `false` | Sets the checked state of the first render when `checked` is not passed. |
+| `onCheckedChange` | `(checked: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the item is toggled, with the new state. |
+| `disabled` | `boolean` | `false` | When true, the item cannot be highlighted or toggled. |
+| `closeOnClick` | `boolean` | `false` | When true, a press also closes the menu. |
+
+Also takes every prop of Base UI `Menu.CheckboxItem`, such as `label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-checkbox-item"` | Selects the part in the theme and from other parts |
+| `data-checked`, `data-unchecked` | present in that state | Style the checked and unchecked item |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item |
+| `data-disabled` | present when disabled | Styles a disabled item |
+
+With `"default"`, the label is a row with an 8px gap, so an icon may precede the text. The `"switch"` variant only changes the indicator: the item is still a `menuitemcheckbox`. In both, every label of a mixed menu starts at the same edge.
+
+## MenuRadioGroup and MenuRadioItem
+
+A set of items of which one is selected. `MenuRadioGroup` renders a `div` with `role="group"` and holds the value. `MenuRadioItem` renders a `div` with `role="menuitemradio"` and `aria-checked`, with the label and then a check in a 12px column that shows only on the selected item. A press selects the item and leaves the menu open.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `Value` | required | Sets the value a `MenuRadioItem` selects; on `MenuRadioGroup`, controls the selected value. |
+| `defaultValue` | `Value` | - | Sets the selected value of the first render of `MenuRadioGroup` when `value` is not passed. |
+| `onValueChange` | `(value: Value, eventDetails: ChangeEventDetails) => void` | - | Called on `MenuRadioGroup` when another item is selected. |
+| `disabled` | `boolean` | `false` | When true, the group or the item ignores the user. |
+| `closeOnClick` | `boolean` | `false` | When true, a press on a `MenuRadioItem` also closes the menu. |
+
+Also takes every prop of the Base UI part: `Menu.RadioGroup` or `Menu.RadioItem`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-radio-group"` or `"menu-radio-item"` | Selects the part in the theme and from other parts |
+| `data-checked`, `data-unchecked` | present in that state, on `MenuRadioItem` | Style the selected and unselected item |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item |
+| `data-disabled` | present when disabled | Styles a disabled item |
+
+Wrap the group in a `MenuGroup` with a `MenuGroupLabel`, so the choice has a name.
+
+## MenuSub
+
+Groups the parts of a submenu and holds its open state. Alias for `Menu.SubmenuRoot` from Base UI; renders no element.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state of the submenu; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the submenu asks to open or close. |
+| `disabled` | `boolean` | `false` | When true, the submenu does not open. |
+| `closeParentOnEsc` | `boolean` | `false` | When true, `Escape` closes the whole menu instead of the submenu only. |
+
+Also takes every prop of Base UI `Menu.SubmenuRoot`.
+
+## MenuSubTrigger
+
+The item that opens a submenu. Renders a `div` with `role="menuitem"` and `aria-haspopup="menu"`, styled like `MenuItem`, with a chevron at its end. Hovering it, pressing it or `ArrowRight` on it opens the submenu; `ArrowLeft` in the submenu closes it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `inset` | `boolean` | - | Starts the label where the labels after an icon start. Any value sets `data-inset`, `false` included, so leave the prop out instead of passing `false`. |
+| `openOnHover` | `boolean` | `true` | When true, the submenu opens while the pointer rests on the item. |
+| `delay` | `number` | `100` | Sets the wait in milliseconds before a hover opens the submenu. |
+| `closeDelay` | `number` | `0` | Sets the wait in milliseconds before a submenu opened by hover closes. |
+| `disabled` | `boolean` | `false` | When true, the item cannot be highlighted or open the submenu. |
+
+Also takes every prop of Base UI `Menu.SubmenuTrigger`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-sub-trigger"` | Selects the part in the theme and from other parts |
+| `data-inset` | the value of `inset` (`"true"` or `"false"`) when it is passed | Styles the inset item; any value indents it |
+| `data-popup-open` | present while its submenu is open | Keeps the `accent` background while the submenu shows |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item |
+| `data-disabled` | present when disabled | Styles a disabled item |
+
+## MenuSubPopup
+
+The floating surface of a submenu. Renders a `MenuPopup` on the `"inline-end"` side of its `MenuSubTrigger`, the right in a left-to-right page, with the same look and attributes.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `align` | `"start"`, `"center"` or `"end"` | `"start"` | Sets how the submenu aligns with its trigger. |
+| `sideOffset` | `number` | `0` | Sets the gap in pixels between the trigger and the submenu. |
+| `alignOffset` | `number` | `-5` | Moves the submenu along its trigger, in pixels; `-5` lines its first item up with the trigger when `align` is not `"center"`. |
+
+Also takes every prop of Base UI `Menu.Popup`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"menu-sub-content"` | Selects the submenu popup |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `MenuCreateHandle` | `function` | Creates the `handle` that links a detached `MenuTrigger` to its `Menu`. `MenuCreateHandle<Payload>() => MenuPrimitive.Handle<Payload>` |
+| `MenuPortal` | `component` | Alias for `Menu.Portal` from Base UI, which `MenuPopup` already renders. |
+| `MenuPrimitive` | `namespace` | The Base UI `Menu` namespace, for the parts not wrapped here (`MenuPrimitive.Arrow`, `MenuPrimitive.Backdrop`) and the types such as `MenuPrimitive.Root.ChangeEventDetails`. |
+| `DropdownMenu` | `component` | The same component as `Menu`. |
+| `DropdownMenuCreateHandle` | `function` | The same function as `MenuCreateHandle`. |
+| `DropdownMenuPortal` | `component` | The same component as `MenuPortal`. |
+| `DropdownMenuTrigger` | `component` | The same component as `MenuTrigger`. |
+| `DropdownMenuContent` | `component` | The same component as `MenuPopup`. |
+| `DropdownMenuGroup` | `component` | The same component as `MenuGroup`. |
+| `DropdownMenuLabel` | `component` | The same component as `MenuGroupLabel`. |
+| `DropdownMenuItem` | `component` | The same component as `MenuItem`. |
+| `DropdownMenuCheckboxItem` | `component` | The same component as `MenuCheckboxItem`. |
+| `DropdownMenuRadioGroup` | `component` | The same component as `MenuRadioGroup`. |
+| `DropdownMenuRadioItem` | `component` | The same component as `MenuRadioItem`. |
+| `DropdownMenuSeparator` | `component` | The same component as `MenuSeparator`. |
+| `DropdownMenuShortcut` | `component` | The same component as `MenuShortcut`. |
+| `DropdownMenuSub` | `component` | The same component as `MenuSub`. |
+| `DropdownMenuSubTrigger` | `component` | The same component as `MenuSubTrigger`. |
+| `DropdownMenuSubContent` | `component` | The same component as `MenuSubPopup`. |
+
+`MenuLinkItem` has no `DropdownMenu` alias.
+
+## Accessibility and theme
+
+- Give the trigger a visible text or an `aria-label`: it names the menu. An icon-only trigger (a "more" button) needs the `aria-label`, and it reads best with the object in it (`More actions for Q3 roadmap`).
+- Set `aria-keyshortcuts` on every item with a `MenuShortcut`, since the shortcut itself is hidden from assistive technology.
+- Name every group of checkbox or radio items with a `MenuGroupLabel` inside a `MenuGroup`.
+- Say why an item is disabled inside the item, not in a tooltip.
+- The theme needs two rules: a 2px `--ring` outline on `[role^="menuitem"][data-slot^="menu-"]:focus-visible`, which shows keyboard focus (the `accent` highlight alone is too faint), and `color: var(--muted-foreground)` on `[data-slot="menu-shortcut"]`, so the shortcut text reaches 4.5:1. The measures are in the component's `ACCESSIBILITY.md` and the class blueprint in its `TOKENS.md`.
+- The parts use the `popover`, `border`, `foreground`, `accent`, `accent-foreground`, `destructive-foreground`, `muted-foreground`, `primary`, `input`, `background` and `ring` tokens.

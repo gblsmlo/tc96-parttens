@@ -36,4 +36,4 @@ The two theme rules live in the consumer's stylesheet, not here: the consumer co
 
 ## Verified by
 
-The plays in `apps/storybook/src/ui/menu/` check the trailing check, the inset alignment, the focus outline, the shortcut name and the disabled reason; axe runs on every story in the `storybook` and `storybook-dark` projects.
+The `UI/Menu/Behavior` plays (`apps/storybook/src/ui/menu/behavior.stories.tsx`) check the trailing check (`CheckAfterLabel`), the inset alignment (`InsetAlignsLabels`), the focus outline (`FocusOutlineOnKeyboard`), the shortcut name (`ShortcutOutOfName`) and the disabled reason (`DisabledItemIgnoresClick`); axe runs on every story in the `storybook` and `storybook-dark` projects.
