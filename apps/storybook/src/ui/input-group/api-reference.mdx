@@ -1,0 +1,130 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# InputGroup
+
+A text field with icons, text, buttons, badges or keyboard hints attached inside its border: a search box with its icon, a URL with its `https://` prefix, an amount with its currency, a password with a hint, a link with a copy button, a message box with its send button. Reach for it when what sits beside the text belongs to the same field.
+
+The other pages of `UI/InputGroup`: [Playground](?path=/story/ui-inputgroup-playground--playground) to try the size, the addons and their place, disabled and invalid, [Stories](?path=/story/ui-inputgroup-stories--default) for each size, alignment and state, [Behavior](?path=/story/ui-inputgroup-behavior--types-into-input) for the tests, [Usages](?path=/story/ui-inputgroup-usages--profile-url) for real fields and [Layouts](?path=/story/ui-inputgroup-layouts--text-addon) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+  InputGroupTextarea,
+} from '@acme/ui/input-group'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<InputGroup>
+  <InputGroupInput />
+  <InputGroupAddon>
+    <InputGroupText />
+  </InputGroupAddon>
+  <InputGroupAddon align="inline-end" />
+</InputGroup>
+```
+
+With a textarea, the addons take a row of their own below or above it:
+
+<Canvas of={ApiReferenceStories.TextareaAnatomy} />
+
+```tsx
+<InputGroup>
+  <InputGroupTextarea />
+  <InputGroupAddon align="block-end">
+    <InputGroupText />
+  </InputGroupAddon>
+</InputGroup>
+```
+
+Every addon comes after the control in the markup, whatever its `align`: the addon's place on screen comes from `align`, and the focus order from the markup, so Tab reaches the control before the buttons of its addons.
+
+## InputGroup
+
+The field that holds one control and its addons. Renders a `div` with `role="group"`, an inline flex row with the border, background and shadow of a text field. It follows the control inside it: it shows the 3px focus ring while the input or textarea has `:focus-visible`, tints its border with the destructive color while the control has `aria-invalid`, dims to 64% opacity while the control is disabled, and tints its background while the browser autofills it. A `block-start` or `block-end` addon turns the row into a column, and a block addon or a textarea lets the height follow the content.
+
+Also takes every prop of a `div`; name the group with `aria-label` or `aria-labelledby` when it holds more than one control.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"input-group"` | Selects the part in the theme and from other parts |
+
+The group reads the state from the control through `:has()`, so it has no state attributes of its own.
+
+## InputGroupInput
+
+The single-line control of the group. Renders the `Input` without its own border, background and ring, so the group draws them; the `span` that wraps the `input` takes no box inside the group.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"`, `"lg"` or `number` | `"default"` | Sets the height: 26px, 30px or 34px from the `sm` breakpoint up and 4px taller below it, and `"sm"` narrows the side padding; a number sets the native `size` attribute instead. |
+| `nativeInput` | `boolean` | `false` | When true, renders a plain `input` instead of the Base UI `Input`, so it does not join a `Field`. |
+
+Also takes every prop of Base UI `Input` and of an `input`, such as `type`, `placeholder`, `disabled`, `defaultValue` and `ref`. `className` goes on the wrapping `span`, which the group shows with `display: contents`, so a class for the `input` needs a child selector (`*:[input]:ps-0`); `style` reaches the `input`. The part passes `unstyled` to the `Input`, and `unstyled={false}` brings back the input's own border, background and ring.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"input-control"` on the wrapping `span`, `"input"` on the `input` | Selects the part in the theme and from other parts |
+| `data-size` | `"sm"`, `"default"`, `"lg"` or the number, on the wrapping `span` | Mirrors `size` |
+
+Inside a `Field`, the `input` takes the label, the description and the state attributes of the field (`data-focused`, `data-filled`, `data-invalid` and the rest), as any `Input` does. `data-disabled` is set outside a `Field` too.
+
+## InputGroupAddon
+
+The container of what sits beside or around the control: an icon, an `InputGroupText`, a `Button`, a `Badge`, a `Kbd`, a `Label` or a `Spinner`. Renders a `div`. A mouse down on its non-interactive area moves the focus to the group's input or textarea; on a button, link, form control, `role="button"`, `role="combobox"`, `role="listbox"` or select trigger it leaves the click to that element.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `align` | `"inline-start"`, `"inline-end"`, `"block-start"` or `"block-end"` | `"inline-start"` | Sets where the addon sits: before or after the control on its line, or on a full-width row above or below it. |
+
+Also takes every prop of a `div`. An `onMouseDown` passed to it replaces the handler that moves the focus.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"input-group-addon"` | Selects the part in the theme and from other parts |
+| `data-align` | `"inline-start"`, `"inline-end"`, `"block-start"` or `"block-end"` | Mirrors `align`; the group reads it to lay out the row |
+
+Next to an `InputGroupInput` or `InputGroupTextarea`, an icon without a `size-*` class is 18px, 16px from the `sm` breakpoint up. An icon without an `opacity-*` class shows at 80% opacity unless the addon holds a button. An inline addon whose direct child is a `button`, or whose last child is a `Badge` or `Kbd`, sits closer to the border on its outer side, and the input beside an inline addon keeps 8px of padding on that side (6px at `size="sm"`). Use the `Button` at `size="xs"` or `size="icon-xs"` in an inline addon.
+
+## InputGroupText
+
+A piece of text inside an addon, such as a prefix, a suffix, a unit or a counter. Renders a `span` in `text-muted-foreground`, a flex row with an 8px gap that truncates its text and sizes an icon like the addon does.
+
+Also takes every prop of a `span`.
+
+The part sets no `data-*` attribute.
+
+## InputGroupTextarea
+
+The multi-line control of the group. Renders the `Textarea` without its own border, background and ring, so the group draws them. Inside the group it has no resize handle, 11px of vertical padding and a minimum height of 82px (94px below the `sm` breakpoint), and it grows with its content.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"`, `"lg"` or `number` | `"default"` | Sets the side padding: `"sm"` narrows it; the group sets the height for every value, and a number only sets `data-size`. |
+
+Also takes every prop of a `textarea`, such as `placeholder`, `disabled`, `rows` and `ref`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"textarea-control"` on the wrapping `span`, `"textarea"` on the `textarea` | Selects the part in the theme and from other parts |
+| `data-size` | `"sm"`, `"default"`, `"lg"` or the number, on the wrapping `span` | Mirrors `size` |
+
+Inside a `Field`, the `textarea` joins it as the input does. Pair it with `block-start` or `block-end` addons; an inline addon squeezes the text into a narrow column.
+
+## Accessibility and theme
+
+- Name the control: an `aria-label`, a `Label` in a `block-start` addon linked with `htmlFor`, or the `FieldLabel` of a `Field` that holds the group.
+- Hide a decorative icon with `aria-hidden="true"` and give an icon-only button an `aria-label`.
+- Put every addon after the control in the markup, so the focus order starts at the control.
+- A `Kbd` in an addon falls just short of 4.5:1 in the dark theme of the example. Measured ratios and story exceptions: `docs/accessibility.md`.
