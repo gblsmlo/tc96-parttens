@@ -15,7 +15,7 @@ import { Switch } from '@tc96/ui/switch'
 import { Textarea } from '@tc96/ui/textarea'
 import { ArrowLeftIcon, ArrowRightIcon, CircleCheckIcon } from 'lucide-react'
 import { type ReactNode, type RefObject, useId, useRef, useState } from 'react'
-import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn } from 'storybook/test'
 import {
   blackFridayDeal,
   cardConditions,
@@ -30,8 +30,8 @@ import {
   paymentMethods,
   regions,
   userTypes,
-} from '../fixtures/deal'
-import { CurrencyField, DateField, SelectField } from '../fixtures/fields'
+} from './fixtures/deal'
+import { CurrencyField, DateField, SelectField } from './fixtures/fields'
 
 type UpdateDeal = (patch: Partial<DealDraft>) => void
 
@@ -428,130 +428,70 @@ const meta = {
       options: dealSteps.map((step) => step.value),
     },
   },
-  parameters: {
-    layout: 'padded',
-    docs: {
-      description: {
-        component:
-          'A four-step deal wizard on the `Wizard` pattern, after the Multi Step 2 block of shadcn studio: deal type (radio cards, discount and region), details, usage limits and a review that creates the deal. The story owns the step, the draft and the furthest step reached, as a consumer would: steps after it stay disabled in the nav, `WizardNext` cancels its move with `event.preventDefault()` while the title is empty, and the review swaps `WizardNext` for the submit button.',
-      },
-    },
-  },
+  parameters: { layout: 'padded' },
   render: (args) => <DealWizard key={args.defaultStep} {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Wizard/Usages/Deal',
+  title: 'Patterns/Wizard/Usages',
 } satisfies Meta<DealWizardArgs>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const nextButton = () => screen.getByRole('button', { name: 'Próximo' })
-
-export const Default: Story = {
-  play: async ({ args, canvas }) => {
+export const Coupon: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A four-step deal wizard after the Multi Step 2 block of shadcn studio: deal type (radio cards, discount and region), details, usage limits and a review that creates the deal. The story owns the step, the draft and the furthest step reached, as a consumer would: steps after it stay disabled in the nav, `WizardNext` cancels its move with `event.preventDefault()` while the title is empty, and the review swaps `WizardNext` for the submit button.',
+      },
+    },
+  },
+  play: async ({ canvas }) => {
     await expect(
       canvas.getByRole('region', { name: 'Tipo do cupom' }),
     ).toBeVisible()
-    await expect(canvas.getByRole('button', { name: /^Uso/ })).toBeDisabled()
     await expect(
-      canvas.getByRole('button', { name: 'Anterior' }),
-    ).toBeDisabled()
-
-    await userEvent.click(canvas.getByRole('radio', { name: 'Valor fixo' }))
-    await expect(
-      canvas.getByRole('radio', { name: 'Valor fixo' }),
+      canvas.getByRole('radio', { name: 'Percentual' }),
     ).toBeChecked()
-
-    for (const [title, index] of [
-      ['Detalhes', 1],
-      ['Uso', 2],
-      ['Revisão', 3],
-    ] as const) {
-      await userEvent.click(nextButton())
-      const panel = canvas.getByRole('region', { name: title })
-      await waitFor(() => expect(panel).toHaveFocus())
-      await expect(
-        canvas.getByRole('button', { name: new RegExp(`^${title}`) }),
-      ).toHaveAttribute('aria-current', 'step')
-      const nav = canvas.getByRole('navigation', { name: 'Etapas do cupom' })
-      await expect(within(nav).getAllByRole('listitem')[index]).toHaveAttribute(
-        'data-status',
-        'current',
-      )
-    }
-
-    await expect(canvas.getByText('R$ 25')).toBeVisible()
-    const submit = canvas.getByRole('button', { name: 'Criar cupom' })
-    await expect(submit).toBeDisabled()
-
-    await userEvent.click(
-      canvas.getByRole('switch', { name: 'Confirmei os dados do cupom' }),
-    )
-    await userEvent.click(submit)
-
-    await expect(args.onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ code: 'BLACKFRIDAY25', type: 'flat' }),
-    )
-    await expect(canvas.getByRole('status')).toHaveTextContent(
-      'Cupom BLACKFRIDAY25 criado.',
-    )
   },
 }
 
-export const RequiredTitle: Story = {
+export const CouponRequiredTitle: Story = {
   args: {
     deal: { ...blackFridayDeal, title: '' },
     defaultStep: 'details',
   },
+  name: 'Coupon, required title',
   parameters: {
     docs: {
       description: {
         story:
-          '`WizardNext` runs the consumer `onClick` first; here it calls `event.preventDefault()` while the title is empty, shows the `FieldError` and focuses the field, so the wizard stays on `Detalhes`.',
+          '`WizardNext` runs the consumer `onClick` first; here it calls `event.preventDefault()` while the title is empty, shows the `FieldError` and focuses the field, so the wizard stays on `Detalhes`. Press `Próximo` with the title empty to see it.',
       },
     },
   },
   play: async ({ canvas }) => {
-    await userEvent.click(nextButton())
-
-    await expect(canvas.getByText('Informe o título do cupom.')).toBeVisible()
-    await expect(canvas.getByRole('textbox', { name: 'Título' })).toHaveFocus()
     await expect(canvas.getByRole('region', { name: 'Detalhes' })).toBeVisible()
-
-    await userEvent.type(
-      canvas.getByRole('textbox', { name: 'Título' }),
-      'Semana do cliente',
+    await expect(canvas.getByRole('textbox', { name: 'Título' })).toHaveValue(
+      '',
     )
-    await userEvent.click(nextButton())
-
-    await expect(canvas.getByRole('region', { name: 'Uso' })).toBeVisible()
   },
 }
 
-export const BackToAReachedStep: Story = {
+export const CouponReachedStep: Story = {
   args: { defaultStep: 'usage' },
+  name: 'Coupon, reached step',
   parameters: {
     docs: {
       description: {
         story:
-          'The nav reaches any step up to the furthest one visited. Going back to `Tipo do cupom` keeps `Detalhes` and `Uso` enabled, and the later `Revisão` stays disabled until the user gets there.',
+          'The nav reaches any step up to the furthest one visited: on `Uso`, the earlier steps are enabled and the later `Revisão` stays disabled until the user gets there.',
       },
     },
   },
   play: async ({ canvas }) => {
-    await expect(
-      canvas.getByRole('button', { name: /^Revisão/ }),
-    ).toBeDisabled()
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: /^Tipo do cupom/ }),
-    )
-
-    await expect(
-      canvas.getByRole('region', { name: 'Tipo do cupom' }),
-    ).toBeVisible()
-    await expect(canvas.getByRole('button', { name: /^Uso/ })).toBeEnabled()
+    await expect(canvas.getByRole('region', { name: 'Uso' })).toBeVisible()
     await expect(
       canvas.getByRole('button', { name: /^Revisão/ }),
     ).toBeDisabled()

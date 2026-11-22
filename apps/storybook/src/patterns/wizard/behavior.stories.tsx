@@ -1,18 +1,34 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Wizard, type WizardStep } from '@tc96/parttens'
-import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { behaviorSteps } from './wizard-data.tsx'
+import {
+  BehaviorFooter,
+  JumpingWizard,
+  StatefulWizard,
+} from './wizard-layouts.tsx'
 
-const steps: WizardStep[] = [
-  {
-    description: 'Escolha o tipo',
-    icon: <svg aria-hidden="true" data-testid="type-icon" />,
-    title: 'Tipo',
-    value: 'type',
+const meta = {
+  args: {
+    children: <p>Conteúdo</p>,
+    defaultValue: 'details',
+    label: 'Etapas do cupom',
+    onValueChange: fn(),
+    steps: behaviorSteps,
   },
-  { description: 'Informe os dados', title: 'Detalhes', value: 'details' },
-  { disabled: true, title: 'Revisão', value: 'review' },
-]
+  argTypes: {
+    children: { control: false },
+    onValueChange: { control: false },
+    steps: { control: false },
+  },
+  component: StatefulWizard,
+  parameters: { layout: 'padded' },
+  tags: ['!autodocs'],
+  title: 'Patterns/Wizard/Behavior',
+} satisfies Meta<typeof StatefulWizard>
+
+export default meta
+
+type Story = StoryObj<typeof meta>
 
 const navOf = (canvasElement: HTMLElement) =>
   within(canvasElement).getByRole('navigation', { name: 'Etapas do cupom' })
@@ -24,44 +40,12 @@ const indicatorOf = (canvasElement: HTMLElement, index: number) =>
   stepItemsOf(canvasElement)[index]?.querySelector(
     '[data-slot="wizard-step-indicator"]',
   )
-
-function JumpingWizard() {
-  const [value, setValue] = useState('review')
-
-  return (
-    <Wizard
-      label="Etapas do cupom"
-      onValueChange={setValue}
-      steps={steps}
-      value={value}
-    >
-      {value === 'review' ? (
-        <button onClick={() => setValue('type')} type="button">
-          Editar tipo
-        </button>
-      ) : (
-        <p>Conteúdo</p>
-      )}
-    </Wizard>
-  )
-}
-
-const meta = {
-  args: {
-    children: <p>Conteúdo</p>,
-    label: 'Etapas do cupom',
-    onValueChange: fn(),
-    steps,
-    value: 'details',
-  },
-  component: Wizard,
-  parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
-  title: 'Patterns/Wizard/Composition/Wizard',
-} satisfies Meta<typeof Wizard>
-
-export default meta
-type Story = StoryObj<typeof meta>
+const previousButtonOf = (canvasElement: HTMLElement) =>
+  within(canvasElement).getByRole('button', { name: 'Anterior' })
+const nextButtonOf = (canvasElement: HTMLElement) =>
+  within(canvasElement).getByRole('button', { name: 'Próximo' })
+const panelOf = (canvasElement: HTMLElement) =>
+  canvasElement.querySelector('[data-slot="wizard-panel"]')
 
 export const StepsInOrderedListInsideNamedNav: Story = {
   play: async ({ canvasElement }) => {
@@ -107,7 +91,7 @@ export const IndicatorShowsIconOrNumber: Story = {
 }
 
 export const IndicatorShowsCheckWhenComplete: Story = {
-  args: { children: undefined, value: 'review' },
+  args: { defaultValue: 'review' },
   play: async ({ canvasElement }) => {
     await expect(
       indicatorOf(canvasElement, 1)?.querySelector('svg'),
@@ -118,11 +102,14 @@ export const IndicatorShowsCheckWhenComplete: Story = {
 
 export const SelectsAnotherStepAndSkipsCurrent: Story = {
   play: async ({ args, canvasElement }) => {
-    await userEvent.click(stepButtonOf(canvasElement, /^Tipo/))
     await userEvent.click(stepButtonOf(canvasElement, /^Detalhes/))
 
-    await expect(args.onValueChange).toHaveBeenCalledTimes(1)
-    await expect(args.onValueChange).toHaveBeenCalledWith('type')
+    await expect(args.onValueChange).not.toHaveBeenCalled()
+
+    await userEvent.click(stepButtonOf(canvasElement, /^Tipo/))
+
+    await expect(args.onValueChange).toHaveBeenCalledOnce()
+    await expect(args.onValueChange).toHaveBeenLastCalledWith('type')
   },
 }
 
@@ -150,7 +137,7 @@ export const PanelNamedByCurrentStep: Story = {
 }
 
 export const PanelUnnamedWhenValueIsNotAStep: Story = {
-  args: { value: 'missing' },
+  args: { defaultValue: 'missing' },
   play: async ({ canvasElement }) => {
     await expect(within(canvasElement).queryByRole('region')).toBeNull()
     await expect(
@@ -214,5 +201,99 @@ export const KeepsFocusOnNavStepAfterClick: Story = {
       within(canvasElement).getByRole('region', { name: 'Tipo' }),
     ).toBeVisible()
     await expect(canvasElement.ownerDocument.activeElement).toBe(typeStep)
+  },
+}
+
+export const ActionsInFooter: Story = {
+  args: { children: <BehaviorFooter /> },
+  play: async ({ canvasElement }) => {
+    const footer = canvasElement.querySelector('[data-slot="wizard-footer"]')
+
+    await expect(footer?.contains(previousButtonOf(canvasElement))).toBe(true)
+    await expect(footer?.contains(nextButtonOf(canvasElement))).toBe(true)
+    await expect(previousButtonOf(canvasElement)).toHaveAttribute(
+      'data-slot',
+      'wizard-previous',
+    )
+    await expect(nextButtonOf(canvasElement)).toHaveAttribute(
+      'data-slot',
+      'wizard-next',
+    )
+  },
+}
+
+export const PreviousDisabledOnFirstStep: Story = {
+  args: { children: <BehaviorFooter />, defaultValue: 'type' },
+  play: async ({ canvasElement }) => {
+    await expect(previousButtonOf(canvasElement)).toBeDisabled()
+    await expect(nextButtonOf(canvasElement)).toBeEnabled()
+  },
+}
+
+export const NextDisabledOnLastStep: Story = {
+  args: { children: <BehaviorFooter />, defaultValue: 'review' },
+  play: async ({ canvasElement }) => {
+    await expect(previousButtonOf(canvasElement)).toBeEnabled()
+    await expect(nextButtonOf(canvasElement)).toBeDisabled()
+  },
+}
+
+export const MovesToAdjacentStepsIncludingDisabled: Story = {
+  args: { children: <BehaviorFooter />, defaultValue: 'type' },
+  play: async ({ args, canvasElement }) => {
+    await userEvent.click(nextButtonOf(canvasElement))
+    await userEvent.click(nextButtonOf(canvasElement))
+    await userEvent.click(previousButtonOf(canvasElement))
+
+    await expect(args.onValueChange).toHaveBeenNthCalledWith(1, 'details')
+    await expect(args.onValueChange).toHaveBeenNthCalledWith(2, 'review')
+    await expect(args.onValueChange).toHaveBeenNthCalledWith(3, 'details')
+    await expect(args.onValueChange).toHaveBeenCalledTimes(3)
+  },
+}
+
+export const FocusesPanelAfterMove: Story = {
+  args: { children: <BehaviorFooter />, defaultValue: 'type' },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(nextButtonOf(canvasElement))
+
+    await waitFor(() =>
+      expect(canvasElement.ownerDocument.activeElement).toBe(
+        panelOf(canvasElement),
+      ),
+    )
+    await expect(
+      panelOf(canvasElement)?.getAttribute('aria-labelledby'),
+    ).toBeTruthy()
+  },
+}
+
+export const StaysWhenConsumerPreventsClick: Story = {
+  args: {
+    children: (
+      <BehaviorFooter
+        nextProps={{ onClick: (event) => event.preventDefault() }}
+      />
+    ),
+    defaultValue: 'type',
+  },
+  play: async ({ args, canvasElement }) => {
+    await userEvent.click(nextButtonOf(canvasElement))
+
+    await expect(args.onValueChange).not.toHaveBeenCalled()
+    await expect(stepButtonOf(canvasElement, /^Tipo/)).toHaveAttribute(
+      'aria-current',
+      'step',
+    )
+  },
+}
+
+export const KeepsConsumerDisabledOnNext: Story = {
+  args: {
+    children: <BehaviorFooter nextProps={{ disabled: true }} />,
+    defaultValue: 'type',
+  },
+  play: async ({ canvasElement }) => {
+    await expect(nextButtonOf(canvasElement)).toBeDisabled()
   },
 }
