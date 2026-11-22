@@ -2,10 +2,10 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import ts from 'typescript'
 import {
+  blockNames,
+  blockSources,
   patternNames,
   patternSources,
-  templateNames,
-  templateSources,
 } from '../packages/registry/src/manifest'
 
 // The public API is what a consumer imports from the patterns alias: each
@@ -20,9 +20,9 @@ const modules: Record<string, string> = {
   ),
   parttens: 'packages/parttens/src/index.ts',
   ...Object.fromEntries(
-    templateNames.map((name) => [
+    blockNames.map((name) => [
       `block:${name}`,
-      `packages/blocks/src/${templateSources[name]}/index.ts`,
+      `packages/blocks/src/${blockSources[name]}/index.ts`,
     ]),
   ),
 }

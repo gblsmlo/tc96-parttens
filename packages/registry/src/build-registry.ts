@@ -3,6 +3,8 @@ import { dirname, join, relative, resolve } from 'node:path'
 import { build } from 'esbuild'
 import ts from 'typescript'
 import {
+  blockNames,
+  blockSources,
   defaultConfig,
   type ItemName,
   itemAreas,
@@ -11,8 +13,6 @@ import {
   patternSources,
   prepareItem,
   type RegistryItem,
-  templateNames,
-  templateSources,
   uiDependency,
 } from './manifest'
 
@@ -69,16 +69,16 @@ const areas = ts
     (area): area is string =>
       !!area && !patternNames.includes(area as PatternName),
   )
-// A template's item carries the pattern and helpers files it imports,
+// A block's item carries the pattern and helpers files it imports,
 // walked the same way as a pattern's.
 const entries: [ItemName, string][] = [
   ...patternNames.map((name): [ItemName, string] => [
     name,
     `packages/parttens/src/${patternSources[name]}/index.ts`,
   ]),
-  ...templateNames.map((name): [ItemName, string] => [
+  ...blockNames.map((name): [ItemName, string] => [
     name,
-    `packages/blocks/src/${templateSources[name]}/index.ts`,
+    `packages/blocks/src/${blockSources[name]}/index.ts`,
   ]),
 ]
 for (const area of Object.values(itemAreas).flat())
@@ -299,5 +299,5 @@ await writeFile(
   `${readme.slice(0, publicEnd).trimEnd()}\n`,
 )
 console.log(
-  `Generated ${entries.length} pattern and template registry items, the legacy view entry, the aggregate and the Node CLI artifact.`,
+  `Generated ${entries.length} pattern and block registry items, the legacy view entry, the aggregate and the Node CLI artifact.`,
 )

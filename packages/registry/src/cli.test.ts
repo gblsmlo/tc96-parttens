@@ -4,9 +4,9 @@ import { existsSync } from 'node:fs'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { patternNames, templateNames } from './manifest'
+import { blockNames, patternNames } from './manifest'
 
-test('help lists every pattern and template', () => {
+test('help lists every pattern and block', () => {
   const result = spawnSync(
     process.execPath,
     [join(import.meta.dir, 'cli.ts'), '--help'],
@@ -14,7 +14,7 @@ test('help lists every pattern and template', () => {
   )
   expect(result.status).toBe(0)
   expect(result.stdout).toContain(`Patterns: ${patternNames.join(' ')}\n`)
-  expect(result.stdout).toContain(`Templates: ${templateNames.join(' ')}\n`)
+  expect(result.stdout).toContain(`Blocks: ${blockNames.join(' ')}\n`)
 })
 
 const pendingRegistryDirectory = join(
@@ -269,29 +269,25 @@ test('a dry run lists the plan and the diff without writing', async () => {
   }
 })
 
-test('a template needs the templates path, which patterns alone do not', async () => {
+test('a block needs the blocks path, which patterns alone do not', async () => {
   const root = await installConsumer()
   try {
     const result = installItem(root, 'app-shell-1')
     expect(result.status).not.toBe(0)
-    expect(result.stderr).toContain(
-      '"@consumer/templates/*": ["./src/templates/*"]',
-    )
+    expect(result.stderr).toContain('"@consumer/blocks/*": ["./src/blocks/*"]')
     expect(install(root).status).toBe(0)
   } finally {
     await rm(root, { recursive: true, force: true })
   }
 })
 
-test('installs a template with the COSS hook its components need', async () => {
+test('installs a block with the COSS hook its components need', async () => {
   const root = await installConsumer()
   try {
     const tsconfig = JSON.parse(
       await readFile(join(root, 'tsconfig.json'), 'utf8'),
     )
-    tsconfig.compilerOptions.paths['@consumer/templates/*'] = [
-      './src/templates/*',
-    ]
+    tsconfig.compilerOptions.paths['@consumer/blocks/*'] = ['./src/blocks/*']
     await writeFile(join(root, 'tsconfig.json'), JSON.stringify(tsconfig))
     const result = installItem(root, 'app-shell-1')
     expect(result.stderr).not.toContain('Error')
@@ -304,7 +300,7 @@ test('installs a template with the COSS hook its components need', async () => {
     )
     expect(
       await readFile(
-        join(root, 'src/templates/application/shell/app-shell-1/index.ts'),
+        join(root, 'src/blocks/application/shell/app-shell-1/index.ts'),
         'utf8',
       ),
     ).toBe(
@@ -350,6 +346,150 @@ test('a folder named after a multi-file ui item counts as installed', async () =
       'Every ui component the patterns use is already installed',
     )
     expect(result.stdout).not.toContain('create: src/ui/chat/')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+async function addPath(root: string, alias: string, directory: string) {
+  const tsconfig = JSON.parse(
+    await readFile(join(root, 'tsconfig.json'), 'utf8'),
+  )
+  tsconfig.compilerOptions.paths[`${alias}/*`] = [`./${directory}/*`]
+  await writeFile(join(root, 'tsconfig.json'), JSON.stringify(tsconfig))
+}
+
+test('installs a block under aliases.templates with a deprecation warning', async () => {
+  const root = await installConsumer()
+  try {
+    await writeFile(
+      join(root, 'components.json'),
+      JSON.stringify({
+        tailwind: { css: 'src/styles.css' },
+        aliases: {
+          ui: '@consumer/ui',
+          utils: '@consumer/utils',
+          templates: '@consumer/shells',
+        },
+      }),
+    )
+    await addPath(root, '@consumer/shells', 'src/shells')
+    const result = installItem(root, 'app-shell-1')
+    expect(result.status).toBe(0)
+    expect(result.stderr).toContain(
+      'components.json aliases.templates is deprecated; rename it to aliases.blocks.',
+    )
+    expect(
+      existsSync(
+        join(root, 'src/shells/application/shell/app-shell-1/index.ts'),
+      ),
+    ).toBe(true)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('writes a block to the templates path of a tsconfig that was not renamed', async () => {
+  const root = await installConsumer()
+  try {
+    await addPath(root, '@consumer/templates', 'src/templates')
+    const result = installItem(root, 'app-shell-1')
+    expect(result.status).toBe(0)
+    expect(result.stderr).toContain(
+      'tsconfig.json paths has "@consumer/templates/*" but no "@consumer/blocks/*"',
+    )
+    expect(
+      await readFile(
+        join(root, 'src/templates/application/shell/app-shell-1/index.ts'),
+        'utf8',
+      ),
+    ).toBe(
+      'import { sidebar } from "@consumer/ui/sidebar"\nexport const AppShell1 = sidebar\n',
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+const breakingRegistryDirectory = join(
+  import.meta.dir,
+  '..',
+  'fixtures',
+  'cli-breaking',
+)
+
+async function blocksConsumer() {
+  const root = await installConsumer()
+  await addPath(root, '@consumer/blocks', 'src/blocks')
+  await mkdir(join(root, 'src/patterns/checklist'), { recursive: true })
+  await writeFile(
+    join(root, 'src/patterns/checklist/proof.ts'),
+    'export const proof = 1\n',
+  )
+  await mkdir(join(root, 'src/blocks'), { recursive: true })
+  await writeFile(
+    join(root, 'src/blocks/uses-proof.ts'),
+    "import { proof } from '@consumer/patterns/checklist/proof'\nexport const value = proof\n",
+  )
+  return root
+}
+
+test('updating a pattern stops when an installed block uses what it removes', async () => {
+  const root = await blocksConsumer()
+  try {
+    const result = spawnSync(
+      process.execPath,
+      [
+        join(import.meta.dir, 'cli.ts'),
+        'add',
+        'checklist',
+        '--cwd',
+        root,
+        '--registry-dir',
+        breakingRegistryDirectory,
+        '--dry-run',
+      ],
+      { encoding: 'utf8' },
+    )
+    expect(result.status).toBe(1)
+    expect(result.stdout).toContain(
+      'Checking 1 installed block files against the updated patterns.',
+    )
+    expect(result.stdout).toContain('Compatibility: incompatible')
+    expect(result.stdout).toContain('uses-proof.ts')
+    expect(result.stderr).toContain('--force')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('a type error an installed block already had does not stop an update', async () => {
+  const root = await blocksConsumer()
+  try {
+    await writeFile(
+      join(root, 'src/blocks/broken.ts'),
+      'export const broken: string = 1\n',
+    )
+    const result = install(root)
+    expect(result.status).toBe(0)
+    expect(result.stdout).toContain(
+      'Checking 2 installed block files against the updated patterns.',
+    )
+    expect(result.stdout).toContain('Compatibility: compatible')
+    expect(result.stdout).toContain(
+      'Installed TypeScript compatibility: compatible.',
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('updating a pattern with no blocks directory checks only the pattern', async () => {
+  const root = await installConsumer()
+  try {
+    const result = install(root)
+    expect(result.status).toBe(0)
+    expect(result.stdout).not.toContain('installed block files')
   } finally {
     await rm(root, { recursive: true, force: true })
   }

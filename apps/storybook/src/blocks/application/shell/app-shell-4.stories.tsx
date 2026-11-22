@@ -20,7 +20,7 @@ import {
 
 const usage = `
 // npx @tc96/parttens add app-shell-4
-import { AppShell4 } from '@acme/templates/application/shell/app-shell-4'
+import { AppShell4 } from '@acme/blocks/application/shell/app-shell-4'
 
 <AppShell4
   actions={<Button size="sm">Criar</Button>}

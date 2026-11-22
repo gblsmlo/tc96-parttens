@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { dirname, resolve } from 'node:path'
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { dirname, join, resolve } from 'node:path'
 import type { RegistryFile } from './manifest'
 
 export interface PlannedFile {
@@ -99,4 +99,18 @@ export function diffLines(before: string, after: string, context = 2) {
     } else skipped = true
   })
   return output.join('\n')
+}
+
+/** The .ts and .tsx files under a directory, node_modules left out; empty when it does not exist. */
+export async function sourceFiles(directory: string): Promise<string[]> {
+  if (!existsSync(directory)) return []
+  const found: string[] = []
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = join(directory, entry.name)
+    if (entry.isDirectory()) {
+      if (entry.name !== 'node_modules')
+        found.push(...(await sourceFiles(path)))
+    } else if (/\.tsx?$/.test(entry.name)) found.push(path)
+  }
+  return found
 }

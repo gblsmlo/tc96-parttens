@@ -4,10 +4,10 @@ import { join } from 'node:path'
 import ts from 'typescript'
 import { readAliases, resolveAliasPath } from '../packages/registry/src/config'
 import {
+  blockNames,
+  blockSources,
   patternNames,
   patternSources,
-  templateNames,
-  templateSources,
 } from '../packages/registry/src/manifest'
 import {
   type Consumer,
@@ -90,39 +90,37 @@ const shellComponents = [
   'sidebar.tsx',
 ].map((path) => join(consumer.ui, path))
 for (const path of shellComponents) await rm(join(consumer.root, path))
-const templatesRun = await installPatterns(consumer, [...templateNames])
+const blocksRun = await installPatterns(consumer, [...blockNames])
 if (
-  JSON.stringify([...templatesRun.addedUi].sort()) !==
+  JSON.stringify([...blocksRun.addedUi].sort()) !==
   JSON.stringify([...shellComponents].sort())
 )
   throw new Error(
-    `Expected the templates to add ${shellComponents.join(', ')}, added: ${templatesRun.addedUi.join(', ') || 'nothing'}`,
+    `Expected the blocks to add ${shellComponents.join(', ')}, added: ${blocksRun.addedUi.join(', ') || 'nothing'}`,
   )
 const config = ts.readConfigFile(
   join(consumer.root, 'tsconfig.json'),
   ts.sys.readFile,
 )
-const templatesPath = resolveAliasPath(
+const blocksPath = resolveAliasPath(
   consumer.root,
   readAliases(
     JSON.parse(await readFile(join(consumer.root, 'components.json'), 'utf8')),
-  ).templates,
+  ).blocks,
   ts.parseJsonConfigFileContent(config.config, ts.sys, consumer.root).options,
 )
-for (const name of templateNames)
+for (const name of blockNames)
   if (
-    !existsSync(
-      join(consumer.root, templatesPath, templateSources[name], 'index.ts'),
-    )
+    !existsSync(join(consumer.root, blocksPath, blockSources[name], 'index.ts'))
   )
     throw new Error(`The CLI did not install ${name}`)
-for (const file of await files(join(consumer.root, templatesPath)))
+for (const file of await files(join(consumer.root, blocksPath)))
   if ((await readFile(file, 'utf8')).includes('@tc96/'))
     throw new Error(`${file} still imports @tc96/*`)
 expectExports(
   barrelExports(consumer),
   all.filter((name) => !laterOnly.has(name)),
-  'the templates, which leave the patterns barrel alone',
+  'the blocks, which leave the patterns barrel alone',
 )
 const laterRun = await installPatterns(consumer, later)
 if (laterRun.addedUi.length)
@@ -131,12 +129,12 @@ expectExports(barrelExports(consumer), all, 'every pattern')
 await saveReport('consumer-registry', {
   passed: true,
   patterns: patternNames,
-  templates: templateNames,
+  blocks: blockNames,
   installedFiles: laterRun.files,
   installedCossComponents: firstRun.addedUi,
-  templateCossComponents: templatesRun.addedUi,
+  blockCossComponents: blocksRun.addedUi,
   patternsPath: consumer.patterns,
-  templatesPath,
+  blocksPath,
   barrelExports: all.length,
   uiUntouched: consumer.ui,
 })

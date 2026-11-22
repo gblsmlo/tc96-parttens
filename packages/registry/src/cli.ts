@@ -4,8 +4,13 @@ import { dirname, join, relative, resolve } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { fileURLToPath } from 'node:url'
 import { aggregateBarrel, writeBarrel } from './barrel'
-import { checkCompatibility } from './check-compatibility'
-import { findProjectRoot, readInstallConfig, readStylesheet } from './config'
+import { checkCompatibility, diagnoseDependents } from './check-compatibility'
+import {
+  findBlocksPath,
+  findProjectRoot,
+  readInstallConfig,
+  readStylesheet,
+} from './config'
 import {
   componentFiles,
   cossInstalledPaths,
@@ -20,19 +25,25 @@ import {
   installDependencies,
   missingDependencies,
 } from './dependencies'
-import { diffLines, planFiles, targetPath, writeFiles } from './files'
 import {
+  diffLines,
+  planFiles,
+  sourceFiles,
+  targetPath,
+  writeFiles,
+} from './files'
+import {
+  blockNames,
   combineItems,
-  isTemplate,
+  isBlock,
   omitInstalled,
   patternNames,
   prepareItem,
   type RegistryItem,
   selectItems,
-  templateNames,
 } from './manifest'
 
-const help = `tc96-parttens add <patterns or templates...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nTemplates: ${templateNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. helpers, patterns and templates replace the last segment of the ui alias (@acme/ui/components gives @acme/ui/patterns, @acme/ui gives @acme/patterns) unless set; the templates path is needed only to install a template.\nInstalls only the ui components missing from the ui alias, from this package. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile, into the workspace package that holds the patterns path.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
+const help = `tc96-parttens add <patterns or blocks...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nBlocks: ${blockNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. helpers, patterns and blocks replace the last segment of the ui alias (@acme/ui/components gives @acme/ui/patterns, @acme/ui gives @acme/patterns) unless set; the blocks path is needed only to install a block.\nInstalls only the ui components missing from the ui alias, from this package. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile, into the workspace package that holds the patterns path.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
 async function main() {
   const args = process.argv.slice(2)
   if (!args.length || args.includes('--help') || args.includes('-h')) {
@@ -75,8 +86,9 @@ async function main() {
   cwd = findProjectRoot(cwd)
   const selected = selectItems(names)
   const configuration = await readInstallConfig(cwd, {
-    templates: selected.some(isTemplate),
+    blocks: selected.some(isBlock),
   })
+  for (const warning of configuration.warnings) console.warn(warning)
   const stylesheetPath = await readStylesheet(cwd)
   const items = await Promise.all(
     selected.map(
@@ -133,7 +145,7 @@ async function main() {
   // The barrel exports what is installed after this run: earlier patterns on
   // disk plus the files about to be written.
   const barrelPath = join(workspace, configuration.paths.patterns, 'index.ts')
-  // A template that uses no pattern leaves the patterns barrel alone.
+  // A block that uses no pattern leaves the patterns barrel alone.
   const withPatterns = item.files.some(({ path }) =>
     path.startsWith('parttens/'),
   )
@@ -152,7 +164,23 @@ async function main() {
   const preview = ['--dry-run', '--diff', '--view'].some((flag) =>
     flags.has(flag),
   )
-  const before = await checkCompatibility(workspace, item)
+  // Installed blocks use the patterns, so an update is checked against them
+  // too; what they already report on their own is not the update's fault.
+  const blocksPath = withPatterns ? await findBlocksPath(workspace) : undefined
+  const dependents = blocksPath
+    ? (await sourceFiles(join(workspace, blocksPath))).filter(
+        (file) => !targets.has(file),
+      )
+    : []
+  const known = diagnoseDependents(workspace, dependents)
+  if (dependents.length)
+    console.log(
+      `Checking ${dependents.length} installed block files against the updated patterns.`,
+    )
+  const before = await checkCompatibility(workspace, item, false, {
+    dependents,
+    known,
+  })
   console.log(
     `Compatibility: ${before.status}. ${before.existingFiles.length} existing files; no automatic overwrite.`,
   )
@@ -250,7 +278,10 @@ async function main() {
       `Preserved ${result.preserved.length} existing files that differ from the registry:\n${result.preserved.map((path) => `  ${show(path)}`).join('\n')}`,
     )
   if (dependencies.length) installDependencies(workspace, dependencies, target)
-  const after = await checkCompatibility(workspace, item, true)
+  const after = await checkCompatibility(workspace, item, true, {
+    dependents,
+    known,
+  })
   console.log(`Installed TypeScript compatibility: ${after.status}.`)
   if (after.status !== 'compatible') {
     for (const diagnostic of after.diagnostics.slice(0, 20))

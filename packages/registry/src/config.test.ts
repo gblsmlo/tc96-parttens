@@ -2,7 +2,13 @@ import { afterEach, expect, test } from 'bun:test'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { findProjectRoot, readAliases, readInstallConfig } from './config'
+import {
+  findAliasPath,
+  findBlocksPath,
+  findProjectRoot,
+  readAliases,
+  readInstallConfig,
+} from './config'
 
 const roots: string[] = []
 afterEach(async () => {
@@ -50,34 +56,136 @@ test('reads non-default aliases and resolves their paths from tsconfig', async (
       utils: '@acme/ui/lib/utils',
       helpers: '@acme/toolkit',
       patterns: '@acme/organisms',
-      templates: '@acme/templates',
+      blocks: '@acme/blocks',
     },
     paths: {
       ui: 'packages/ui/src',
       helpers: 'libs/toolkit/src',
       patterns: 'libs/organisms',
     },
+    warnings: [elementsWarning('@acme/ui', '@acme/atoms')],
   })
 })
 
-test('resolves the templates path only when a template is installed', async () => {
+const elementsWarning = (ui: string, where: string) =>
+  `tc96 no longer installs elements: Text and IconFrame come from your ui alias (${ui}/text, ${ui}/icon-frame). Files in ${where} from earlier installs are no longer imported by tc96 patterns; remove them once your code stops importing them.`
+
+test('resolves the blocks path only when a block is installed', async () => {
   const paths = {
     '@acme/ui/*': ['./packages/ui/src/*'],
     '@acme/helpers/*': ['./packages/helpers/src/*'],
     '@acme/patterns/*': ['./packages/patterns/src/*'],
   }
   const root = await consumer({ ui: '@acme/ui', utils: '@acme/utils' }, paths)
-  expect((await readInstallConfig(root)).paths.templates).toBeUndefined()
-  await expect(readInstallConfig(root, { templates: true })).rejects.toThrow(
-    '"@acme/templates/*": ["./packages/templates/src/*"]',
+  expect((await readInstallConfig(root)).paths.blocks).toBeUndefined()
+  await expect(readInstallConfig(root, { blocks: true })).rejects.toThrow(
+    '"@acme/blocks/*": ["./packages/blocks/src/*"]',
   )
   const app = await consumer(
-    { ui: '@acme/ui', utils: '@acme/utils', templates: '@/templates' },
-    { ...paths, '@/templates/*': ['./apps/web/src/templates/*'] },
+    { ui: '@acme/ui', utils: '@acme/utils', blocks: '@/blocks' },
+    { ...paths, '@/blocks/*': ['./apps/web/src/blocks/*'] },
   )
+  const config = await readInstallConfig(app, { blocks: true })
+  expect(config.paths.blocks).toBe('apps/web/src/blocks')
+  expect(config.aliases.blocks).toBe('@/blocks')
+  expect(config.warnings).toEqual([])
+})
+
+const basePaths = {
+  '@acme/ui/*': ['./packages/ui/src/*'],
+  '@acme/helpers/*': ['./packages/helpers/src/*'],
+  '@acme/patterns/*': ['./packages/patterns/src/*'],
+}
+
+test('uses aliases.templates as the blocks alias and warns about it', async () => {
+  const root = await consumer(
+    { ui: '@acme/ui', utils: '@acme/utils', templates: '@/templates' },
+    { ...basePaths, '@/templates/*': ['./apps/web/src/templates/*'] },
+  )
+  const config = await readInstallConfig(root, { blocks: true })
+  expect(config.aliases.blocks).toBe('@/templates')
+  expect(config.paths.blocks).toBe('apps/web/src/templates')
+  expect(config.warnings).toEqual([
+    'components.json aliases.templates is deprecated; rename it to aliases.blocks.',
+  ])
   expect(
-    (await readInstallConfig(app, { templates: true })).paths.templates,
-  ).toBe('apps/web/src/templates')
+    readAliases({
+      aliases: {
+        ui: '@acme/ui',
+        utils: '@acme/utils',
+        templates: '@/templates',
+        blocks: '@/blocks',
+      },
+    }).blocks,
+  ).toBe('@/blocks')
+})
+
+test('writes blocks to the templates path while the tsconfig has no blocks entry', async () => {
+  const root = await consumer(
+    { ui: '@acme/ui', utils: '@acme/utils' },
+    { ...basePaths, '@acme/templates/*': ['./packages/templates/src/*'] },
+  )
+  const config = await readInstallConfig(root, { blocks: true })
+  expect(config.aliases.blocks).toBe('@acme/templates')
+  expect(config.paths.blocks).toBe('packages/templates/src')
+  expect(config.warnings).toEqual([
+    'tsconfig.json paths has "@acme/templates/*" but no "@acme/blocks/*"; blocks are written to the templates path for now. Rename the entry to "@acme/blocks/*".',
+  ])
+  expect((await readInstallConfig(root)).warnings).toEqual([])
+  expect(await findBlocksPath(root)).toBe('packages/templates/src')
+})
+
+test('prefers the blocks entry over a leftover templates entry', async () => {
+  const root = await consumer(
+    { ui: '@acme/ui', utils: '@acme/utils' },
+    {
+      ...basePaths,
+      '@acme/blocks/*': ['./packages/blocks/src/*'],
+      '@acme/templates/*': ['./packages/templates/src/*'],
+    },
+  )
+  const config = await readInstallConfig(root, { blocks: true })
+  expect(config.aliases.blocks).toBe('@acme/blocks')
+  expect(config.paths.blocks).toBe('packages/blocks/src')
+  expect(config.warnings).toEqual([])
+})
+
+test('warns that elements are no longer installed when components.json names the alias', async () => {
+  const root = await consumer(
+    { ui: '@acme/ui', utils: '@acme/utils', elements: '@acme/atoms' },
+    { ...basePaths, '@acme/atoms/*': ['./packages/atoms/src/*'] },
+  )
+  expect((await readInstallConfig(root)).warnings).toEqual([
+    elementsWarning('@acme/ui', 'packages/atoms/src'),
+  ])
+})
+
+test('warns about an existing elements directory at the derived path', async () => {
+  const paths = {
+    ...basePaths,
+    '@acme/elements/*': ['./packages/elements/src/*'],
+  }
+  const root = await consumer({ ui: '@acme/ui', utils: '@acme/utils' }, paths)
+  expect((await readInstallConfig(root)).warnings).toEqual([])
+  await mkdir(join(root, 'packages/elements/src'), { recursive: true })
+  expect((await readInstallConfig(root)).warnings).toEqual([
+    elementsWarning('@acme/ui', 'packages/elements/src'),
+  ])
+})
+
+test('finds the blocks directory without requiring one', async () => {
+  const root = await consumer(
+    { ui: '@acme/ui', utils: '@acme/utils' },
+    basePaths,
+  )
+  expect(await findBlocksPath(root)).toBeUndefined()
+  expect(await findBlocksPath(join(root, 'missing'))).toBeUndefined()
+  const withBlocks = await consumer(
+    { ui: '@acme/ui', utils: '@acme/utils' },
+    { ...basePaths, '@acme/blocks/*': ['./packages/blocks/src/*'] },
+  )
+  expect(await findBlocksPath(withBlocks)).toBe('packages/blocks/src')
+  expect(findAliasPath(withBlocks, '@acme/none', {})).toBeUndefined()
 })
 
 test('derives the tc96 aliases from the ui alias when absent', () => {
@@ -88,7 +196,7 @@ test('derives the tc96 aliases from the ui alias when absent', () => {
     utils: '@acme/ui/lib/utils',
     helpers: '@acme/helpers',
     patterns: '@acme/patterns',
-    templates: '@acme/templates',
+    blocks: '@acme/blocks',
   })
   expect(
     readAliases({

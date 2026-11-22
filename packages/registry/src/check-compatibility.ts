@@ -30,52 +30,40 @@ export function pendingDependencies(root: string, item: RegistryItem) {
   return pending
 }
 
-export async function checkCompatibility(
+const unavailable = new Set([2307, 2688, 2882, 6053, 7016])
+const duplicatedTypes = (diagnostic: ts.Diagnostic) =>
+  ts
+    .flattenDiagnosticMessageText(diagnostic.messageText, ' ')
+    .includes('Two different types with this name exist')
+const describe = (diagnostic: ts.Diagnostic) => {
+  const position =
+    diagnostic.file && diagnostic.start !== undefined
+      ? diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start)
+      : null
+  return `${diagnostic.file?.fileName ?? 'TypeScript'}${position ? `:${position.line + 1}` : ''} TS${diagnostic.code}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, ' ')}`
+}
+
+function readCompilerOptions(
   root: string,
-  item: RegistryItem,
-  installed = false,
-): Promise<CompatibilityReport> {
+): { options: ts.CompilerOptions } | { failure: string } {
   const config = ts.findConfigFile(root, ts.sys.fileExists)
-  if (!config)
-    return {
-      status: 'inconclusive',
-      diagnostics: ['No tsconfig.json was found.'],
-      pending: [],
-      deferred: [],
-      existingFiles: [],
-    }
+  if (!config) return { failure: 'No tsconfig.json was found.' }
   const read = ts.readConfigFile(config, ts.sys.readFile)
-  if (read.error)
-    return {
-      status: 'inconclusive',
-      diagnostics: ['Cannot read the consumer tsconfig.json.'],
-      pending: [],
-      deferred: [],
-      existingFiles: [],
-    }
-  const parsed = ts.parseJsonConfigFileContent(read.config, ts.sys, root)
-  const pending = installed ? [] : pendingDependencies(root, item)
-  const options: ts.CompilerOptions = {
-    ...parsed.options,
-    noEmit: true,
-    skipLibCheck: true,
-    // Before installing, anything unavailable becomes any; the implicit any
-    // that follows is not a consumer incompatibility.
-    ...(installed ? {} : { noImplicitAny: false }),
+  if (read.error) return { failure: 'Cannot read the consumer tsconfig.json.' }
+  return {
+    options: ts.parseJsonConfigFileContent(read.config, ts.sys, root).options,
   }
-  const virtual = new Map<string, string>()
-  const existingFiles: string[] = []
-  for (const file of item.files) {
-    if (!file.target?.startsWith('~/'))
-      throw new Error(`Invalid target: ${file.target}`)
-    const path = resolve(root, file.target.slice(2))
-    if (ts.sys.fileExists(path)) existingFiles.push(path)
-    if (/\.tsx?$/.test(path)) {
-      const existingUI =
-        !/^(parttens|blocks)\//.test(file.path) && ts.sys.fileExists(path)
-      if (!installed && !existingUI) virtual.set(path, file.content)
-    }
-  }
+}
+
+// virtual holds files that are not on disk yet; imports of the pending
+// packages resolve to nothing until they are installed.
+function createConsumerProgram(
+  root: string,
+  options: ts.CompilerOptions,
+  roots: string[],
+  virtual: Map<string, string>,
+  pending: { name: string }[],
+) {
   const host = ts.createCompilerHost(options)
   const originalRead = host.readFile.bind(host)
   const originalExists = host.fileExists.bind(host)
@@ -125,30 +113,97 @@ export async function checkCompatibility(
       ? undefined
       : ts.createSourceFile(file, content, languageVersion, true)
   }
-  const roots = item.files
+  return ts.createProgram(roots, options, host)
+}
+
+/**
+ * The diagnostics the consumer's own files already have, described like the
+ * ones checkCompatibility reports. Dependents are the files that use the
+ * items, such as installed blocks; what they report before the update is not
+ * the update's fault, so checkCompatibility skips it through `known`.
+ */
+export function diagnoseDependents(
+  root: string,
+  dependents: string[],
+): Set<string> {
+  const loaded = readCompilerOptions(root)
+  if ('failure' in loaded || !dependents.length) return new Set()
+  const options: ts.CompilerOptions = {
+    ...loaded.options,
+    noEmit: true,
+    skipLibCheck: true,
+  }
+  const program = createConsumerProgram(
+    root,
+    options,
+    dependents.map((file) => resolve(file)),
+    new Map(),
+    [],
+  )
+  return new Set(ts.getPreEmitDiagnostics(program).map(describe))
+}
+
+export async function checkCompatibility(
+  root: string,
+  item: RegistryItem,
+  installed = false,
+  {
+    dependents = [],
+    known = new Set<string>(),
+  }: { dependents?: string[]; known?: Set<string> } = {},
+): Promise<CompatibilityReport> {
+  const loaded = readCompilerOptions(root)
+  if ('failure' in loaded)
+    return {
+      status: 'inconclusive',
+      diagnostics: [loaded.failure],
+      pending: [],
+      deferred: [],
+      existingFiles: [],
+    }
+  const pending = installed ? [] : pendingDependencies(root, item)
+  const options: ts.CompilerOptions = {
+    ...loaded.options,
+    noEmit: true,
+    skipLibCheck: true,
+    // Before installing, anything unavailable becomes any; the implicit any
+    // that follows is not a consumer incompatibility.
+    ...(installed ? {} : { noImplicitAny: false }),
+  }
+  const virtual = new Map<string, string>()
+  const existingFiles: string[] = []
+  for (const file of item.files) {
+    if (!file.target?.startsWith('~/'))
+      throw new Error(`Invalid target: ${file.target}`)
+    const path = resolve(root, file.target.slice(2))
+    if (ts.sys.fileExists(path)) existingFiles.push(path)
+    if (/\.tsx?$/.test(path)) {
+      const existingUI =
+        !/^(parttens|blocks)\//.test(file.path) && ts.sys.fileExists(path)
+      if (!installed && !existingUI) virtual.set(path, file.content)
+    }
+  }
+  const targets = item.files
     .map((file) => file.target)
     .filter((target): target is string =>
       Boolean(target && /\.tsx?$/.test(target)),
     )
     .map((target) => resolve(root, target.slice(2)))
-  const program = ts.createProgram(roots, options, host)
-  const diagnostics = ts.getPreEmitDiagnostics(program)
-  const unavailable = new Set([2307, 2688, 2882, 6053, 7016])
-  const duplicatedTypes = (diagnostic: ts.Diagnostic) =>
-    ts
-      .flattenDiagnosticMessageText(diagnostic.messageText, ' ')
-      .includes('Two different types with this name exist')
+  // A dependent that the item overwrites is already one of its roots.
+  const roots = [
+    ...targets,
+    ...dependents
+      .map((file) => resolve(file))
+      .filter((file) => /\.tsx?$/.test(file) && !targets.includes(file)),
+  ]
+  const program = createConsumerProgram(root, options, roots, virtual, pending)
+  const diagnostics = ts
+    .getPreEmitDiagnostics(program)
+    .filter((diagnostic) => !known.has(describe(diagnostic)))
   const incompatible = diagnostics.some(
     (diagnostic) =>
       !unavailable.has(diagnostic.code) && !duplicatedTypes(diagnostic),
   )
-  const describe = (diagnostic: ts.Diagnostic) => {
-    const position =
-      diagnostic.file && diagnostic.start !== undefined
-        ? diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start)
-        : null
-    return `${diagnostic.file?.fileName ?? 'TypeScript'}${position ? `:${position.line + 1}` : ''} TS${diagnostic.code}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, ' ')}`
-  }
   const pendingLines = pending.map(
     ({ name, declared, installed: found }) =>
       `${declared ? `${name}@${declared}` : name} is not installed yet${found ? ` (found ${found})` : ''}; its types are checked after installation.`,

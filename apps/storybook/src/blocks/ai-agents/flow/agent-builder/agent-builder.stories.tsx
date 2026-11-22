@@ -27,7 +27,7 @@ import {
 const usage = `
 // npx @tc96/parttens add agent-builder
 // import '@xyflow/react/dist/base.css' in your global CSS
-import { AgentBuilder } from '@acme/templates/ai-agents/flow/agent-builder'
+import { AgentBuilder } from '@acme/blocks/ai-agents/flow/agent-builder'
 
 <AppShell1
   actions={<div ref={setActionsContainer} />}
