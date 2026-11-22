@@ -1,0 +1,32 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { FlagCanvas } from './flag-canvas.tsx'
+import {
+  type FlagControls,
+  flagControlArgs,
+  flagControlArgTypes,
+} from './flag-controls.ts'
+import { ComposedFlag } from './flag-layouts.tsx'
+
+const meta = {
+  args: flagControlArgs,
+  argTypes: flagControlArgTypes,
+  decorators: [FlagCanvas],
+  parameters: { controls: { exclude: ['active', 'variant'] } },
+  render: (args) => <ComposedFlag {...args} />,
+  tags: ['!autodocs'],
+  title: 'Patterns/Properties/Display/Flag/Stories',
+} satisfies Meta<FlagControls>
+
+export default meta
+
+type Story = StoryObj<FlagControls>
+
+export const Default: Story = {}
+
+export const Inactive: Story = {
+  args: { active: false },
+}
+
+export const Plain: Story = {
+  args: { variant: 'plain' },
+}

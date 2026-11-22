@@ -236,6 +236,10 @@ Prazo dos itens: o prazo de cada item usa os tokens de texto do tema, `text-dest
 
 As stories em `Patterns/Properties/Display/Schedule` desligam só `color-contrast` quando o calendário fica aberto, pela exceção do calendário do COSS em [Exceções](#exceções).
 
+### `PropertySurface` `plain` interativa
+
+O gatilho `plain` (um `button` ou `a`) pinta a caixa `secondary` no hover, no foco por teclado e com o popup aberto, com o texto em `secondary-foreground` (issue #424). Medido em 2026-11-21 em `Patterns/Properties/Layouts/Plain Column`, tema `Default`, com o `secondary` (4% de preto no claro, 4% de branco no escuro) composto sobre o `background`: 13,30:1 no claro e 14,49:1 no escuro. O axe passa nos dois temas sem exceção, inclusive com o foco no gatilho (`Patterns/Properties/Behavior/Surface Plain Keyboard Focus Shows Secondary`). A caixa em si mede 1,09:1 (claro) e 1,11:1 (escuro) contra o fundo, como o `Badge` `secondary`; o indicador de foco continua sendo o anel `ring` de 2px.
+
 ### `widgets`
 
 Nota de token para o consumidor: sem borda, o widget se separa da página em 1,04:1 no claro e 1,05:1 no escuro (a borda antiga `border-border/80` media 1,15:1 e 1,14:1); a borda do card não é objeto gráfico nem identifica componente (WCAG 1.4.11 não se aplica, como a borda decorativa de 1,17:1 a 1,19:1 acima), então não há limiar, e uma separação mais forte é escolha do consumidor, por `--card` ou por sombra.

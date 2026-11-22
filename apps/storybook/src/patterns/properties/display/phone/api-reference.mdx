@@ -1,0 +1,114 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Phone
+
+A property for a short list of phone numbers: the mobile and work number of a contact, the main line of a company. The numbers show as a row of chips with an add trigger at the end, or as one trigger that summarizes them; new numbers are typed in a popup with one phone field per entry, with a country picker and the national format as you type. The consumer keeps the list, in E.164, and receives the next one.
+
+The other pages of `Patterns/Properties/Display/Phone`: [Playground](?path=/story/patterns-properties-display-phone-playground--playground) to try the numbers, the texts, the country, the states and the add trigger, [Stories](?path=/story/patterns-properties-display-phone-stories--default) for each state and display, [Behavior](?path=/story/patterns-properties-display-phone-behavior--empty-trigger-names-itself) for the tests, [Usages](?path=/story/patterns-properties-display-phone-usages--contact-phones) for real content, and [Layouts](?path=/story/patterns-properties-display-phone-layouts--without-add-trigger) for the row without the add trigger.
+
+Used in: the contact of [Templates/Contact Detail](?path=/story/templates-contact-detail--default), the dialog of [Patterns/Records/Dialog/Usages/Contacts](?path=/story/patterns-records-dialog-usages-contacts--create-contact) and the phone column of [Patterns/Collection/Usages/Contacts](?path=/story/patterns-collection-usages-contacts--default).
+
+## Import
+
+```tsx
+import { PhoneProperty } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<PhoneProperty onValueChange={setValue} value={['+5511987654321']} />
+```
+
+The row holds one chip per number, each with its remove button, and the add trigger last. The add trigger opens the entry popup, whose parts (`PropertyAddTrigger`, `PropertyEntryForm`, `PropertyRow` and the `useEntryListEditor` session) belong to the whole pattern: see the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference). Each field of the popup is a [`PhoneInput`](?path=/docs/patterns-properties-display-phone-input-api-reference--api-reference).
+
+With `display="trigger"` the row gives way to one trigger:
+
+<Canvas of={ApiReferenceStories.TriggerAnatomy} />
+
+```tsx
+<PhoneProperty display="trigger" onValueChange={setValue} value={value} />
+```
+
+## PhoneProperty
+
+Renders a `fieldset` named by `ariaLabel`, or, with `display="trigger"`, a single `button`. It never calls, verifies or stores a number: it checks that each typed number is valid for its country, rejects a repeated number, and hands the next list to `action` or `onValueChange`. It is read-only when `readOnly` is set or when neither `action` nor `onValueChange` is passed; with both, only `action` is called.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `readonly string[]` | required | Sets the numbers, in order, in E.164 (`+5511987654321`). |
+| `onValueChange` | `(value: readonly string[]) => void` | - | Called with the next list after a save or a removal. |
+| `action` | `(value: readonly string[], context: PhonePropertyActionContext) => void` | - | Called instead of `onValueChange`, with what changed. |
+| `display` | `"chips"` or `"trigger"` | `"chips"` | Controls the display: a row of chips with an add trigger, or one trigger that names the property and summarizes the list. |
+| `variant` | `"badge"` or `"plain"` | `"plain"` | Controls the surface of the read-only chips and of the `trigger` display. |
+| `entryLabels` | `readonly string[]` | `["Principal", "Secundário"]` | Names the fields of the popup, one per number, and so sets how many numbers the popup holds. |
+| `defaultCountry` | `PhoneCountryCode` | `"BR"` | Sets the country of a number typed in the national format, in every field of the popup. |
+| `placeholder` | `string` | `"Sem telefone"` | Sets the text of the add trigger and of the read-only row while there is no number. |
+| `addLabel` | `string` | `"Adicionar telefone"` | Names the add trigger and the popup. |
+| `ariaLabel` | `string` | `"Telefones"` | Names the row, and prefixes the name of the `trigger` display. |
+| `inputPlaceholder` | `string` | - | Sets the placeholder of the fields. |
+| `errorMessage` | `string \| null` | `null` | Sets a rejection of the consumer, shown with `role="alert"` in the popup. |
+| `addDisabled` | `boolean` | `false` | When true, removes the add trigger from the chips row; the remove buttons stay. |
+| `disabled` | `boolean` | `false` | When true, disables the add trigger, the remove buttons and the `trigger` display. |
+| `readOnly` | `boolean` | `false` | When true, shows the numbers with no add trigger and no remove buttons. |
+| `className` | `string` | - | Adds classes to the row, or to the trigger with `display="trigger"`. |
+
+Takes no other prop.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"phone-property"` | Selects the row |
+| `data-variant` | `"badge"` or `"plain"` | Follows `variant` on the row |
+| `data-slot` | `"property-surface"` | Selects each chip |
+| `data-slot` | `"popover-trigger"` | Selects the add trigger and the `trigger` display: the slot of the popover trigger replaces `"property-surface"` on them |
+| `data-variant` | `"badge"` or `"plain"` | Follows the surface on each chip and trigger |
+| `data-empty` | `"true"` while there is no number | Styles the empty add trigger, the empty `trigger` display and the read-only absence |
+| `data-slot` | `"property-icon"` | Selects the phone icon of each chip and of the `trigger` display |
+
+Every number shows in the international format, with its country code (`+55 11 98765 4321`), in the chips, the summary of the `trigger` display and the names of the remove buttons; a value the format cannot read shows as it is (`ramal 204`). The emitted value stays E.164.
+
+### The chips row
+
+Each number is a badge with a phone icon and a 24px remove button named `"Remover telefone <number>"`; a click removes the number at once. The chips of an editable row are badges whatever `variant` says: `variant` reaches only `data-variant` there. The add trigger comes last: with no number it shows the phone icon and `placeholder`, with numbers it shrinks to a 24px `+`, and both are named by `addLabel` and announce a dialog (`aria-haspopup="dialog"`, `aria-expanded`). `addDisabled` removes it and keeps the remove buttons, for a record that holds a fixed number of phones.
+
+### The entry popup
+
+The popup is a 320px popover named by `addLabel`, with one `PhoneInput` per number, or a single empty one when there is none, each named by its entry label; the labels show above the fields when there is more than one field or more than one entry label. A remove button named `"Remover <entry label> telefone"` follows each field while there is more than one. `Adicionar outro` adds a field while there are fewer fields than `entryLabels` and every field holds a valid number. `Salvar`, or Enter in a field, saves: empty fields are dropped, and a field that is not a valid number for its country shows `"Informe um telefone válido."`, or a repeated one `"Este telefone já está na lista."`, under it with `role="alert"`, marks the field `aria-invalid` and keeps the popup open. A valid save calls the handler once with the whole list, in E.164, and closes the popup. The fields copy `value` when the popup opens, so a new `value` while it is open does not overwrite what is being typed.
+
+### The trigger display
+
+With `display="trigger"` there is no row and no chip: one button with the phone icon and a summary, the first number plus `"+N"` for the others, or `placeholder` while there is none. It is named `"<ariaLabel>: <summary>"`, or `ariaLabel` alone while empty, and opens the same popup to add, change or remove numbers. Its surface is a badge unless `variant` is `"plain"`; the plain trigger draws a `secondary` box on hover, on keyboard focus and while the popup is open (see [`PropertySurface`](?path=/docs/patterns-properties-api-reference--api-reference)).
+
+### Read-only
+
+A read-only `PhoneProperty` renders the row with one `IconLabelProperty` per number, on the `variant` surface, or a muted surface with `placeholder` while there is no number. It has no button.
+
+## PhonePropertyActionContext
+
+What `action` receives with the next list.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `added` | `string \| null` | - | The first number the next list has and the previous one did not. |
+| `removed` | `string \| null` | - | The first number the previous list had and the next one does not. |
+| `previousValue` | `readonly string[]` | - | The list before the change. |
+
+A save that adds and removes several numbers at once reports only the first of each.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `PhonePropertyProps` | `type` | The props of `PhoneProperty`. |
+| `PhonePropertyActionContext` | `type` | The context `action` receives. |
+
+## Accessibility and theme
+
+- The texts are Brazilian Portuguese: pass `placeholder`, `addLabel`, `ariaLabel` and `entryLabels` to change them. The format and repeat messages, `Adicionar outro`, `Salvar`, the remove names and the country picker cannot be changed.
+- `errorMessage` is for what only the consumer knows (the number belongs to another contact); the format is checked by the popup itself.
+- The error messages read `destructive-foreground`; the chips and trigger read the badge tokens of the property surface.

@@ -51,7 +51,7 @@ export function PersonOptionContent({
       <PersonAvatar option={option} size={size} />
       <span className="min-w-0 truncate">{option.label}</span>
       {option.supportingLabel ? (
-        <span className="hidden text-muted-foreground text-xs sm:inline">
+        <span className="hidden text-muted-foreground text-xs in-data-[slot=combobox-chip]:text-foreground/72 sm:inline">
           {option.supportingLabel}
         </span>
       ) : null}

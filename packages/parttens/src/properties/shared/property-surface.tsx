@@ -36,7 +36,11 @@ export function PropertySurface({
       {
         className: cn(
           muted && 'text-muted-foreground',
-          'inline-flex min-w-0 max-w-full items-center gap-1 whitespace-nowrap text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-64 [button&,a&]:cursor-pointer [button&,a&]:hover:text-foreground',
+          'inline-flex min-w-0 max-w-full items-center gap-1 whitespace-nowrap text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-64 [button&,a&]:cursor-pointer',
+          '[button&,a&]:-ms-1.5 [button&,a&]:-my-0.5 [button&,a&]:h-6 [button&,a&]:rounded-sm [button&,a&]:px-1.5',
+          '[button&,a&]:hover:bg-secondary [button&,a&]:hover:text-secondary-foreground',
+          '[button&,a&]:focus-visible:bg-secondary [button&,a&]:focus-visible:text-secondary-foreground',
+          '[button&,a&]:data-popup-open:bg-secondary [button&,a&]:data-popup-open:text-secondary-foreground',
           className,
         ),
         ...state,
