@@ -1,0 +1,257 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Widgets
+
+Dashboard cards that show numbers, lists, charts and progress already computed by the consumer: the revenue of a store, the pipeline of a sales team, the balance of an account, the streak of a learner, the next meeting of a day. Every card mounts on one frame, `WidgetShell`, and is built from the same small parts, so a number, a trend, a period switch and a collapsing list look and behave the same in every family.
+
+The other pages of `Patterns/Widgets`: [Playground](?path=/story/patterns-widgets-playground--playground) to try the shared parts together in one card, [Stories](?path=/story/patterns-widgets-stories--default) for the trend states, the dimmed cents and the expanded list, [Behavior](?path=/story/patterns-widgets-behavior--formats-currency-by-default) for the tests of every shared part, [Usages](?path=/story/patterns-widgets-usages--store-revenue) for a revenue card and a list of orders, and [Layouts](?path=/story/patterns-widgets-layouts--amount-only) for the card with fewer or more parts.
+
+Each family has its own node, with one section per widget in its API Reference: [CRM](?path=/docs/patterns-widgets-crm-api-reference--api-reference), [Finance](?path=/docs/patterns-widgets-finance-api-reference--api-reference), [Gamification](?path=/docs/patterns-widgets-gamification-api-reference--api-reference), [Productivity](?path=/docs/patterns-widgets-productivity-api-reference--api-reference) and [Stats](?path=/docs/patterns-widgets-stats-api-reference--api-reference), the last one for `MetricWidget` and the cards composed from it. This page documents the parts they share: the frame, the amount, the trend, the period switch, the collapsing list, and the smaller blocks of a card.
+
+Used in: [Templates/Contact Detail](?path=/story/templates-contact-detail--default) mounts a `DealsWidget` and an `ActivityFeedWidget`, [Templates/Companies](?path=/story/templates-companies--default) puts an `AvatarStack` in each card, and [Application/Shell/AppShell3](?path=/story/application-shell-appshell3--default) draws a `ProgressRing` per project.
+
+## Import
+
+```tsx
+import {
+  Amount,
+  ExpandableList,
+  TrendIndicator,
+  WidgetPeriodToggle,
+  WidgetShell,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<WidgetShell aria-labelledby={titleId}>
+  <CardPanel>
+    <Amount value={48250.75} />
+    <TrendIndicator value={0.124} />
+    <WidgetPeriodToggle options={periods} value={period} onValueChange={setPeriod} />
+    <ExpandableList items={orders}>{(shown) => <OrderList orders={shown} />}</ExpandableList>
+  </CardPanel>
+</WidgetShell>
+```
+
+The card header and the `CardPanel` come from the Card component; a widget of the pattern renders them itself. The parts below stand on their own and take prepared data: none of them fetches, filters, sorts or stores a value. The only state in this page is the open state of an `ExpandableList` that is not controlled.
+
+Numbers go through `formatAmount`, so a percentage is a ratio (`0.0934` reads 9.34%) and, with no `format`, an amount is a currency in US dollars. The default texts of the parts (`Período`, `Ver todas (+N)`, `Alta de`) are Portuguese strings exposed as props.
+
+## WidgetShell
+
+The frame every card widget mounts on. Renders a `section`, the Card component with a transparent 1px border and a minimum width of zero, so it is a `region` landmark once it has a name.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | `<section />` | Replaces the `section` with another element, keeping the frame's props. |
+| `className` | `string` | - | Adds classes after `min-w-0 border-transparent`; a class that conflicts with them wins. |
+
+Also takes every prop of a `div`. Name it with `aria-labelledby` pointing at the card title, or with `aria-label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card"` | Selects the frame in the theme, where the corner radius of every card is set |
+| `data-widget` | the widget name | Set by each widget of the pattern on its frame (`"pipeline"`, `"metric"`); a card the consumer composes sets its own |
+
+The border is transparent, not removed, so the fill keeps its 1px inset. The frame keeps the Card shadow and the `bg-card` fill, and a widget never restates the radius, the border or the shadow.
+
+## Amount
+
+A number formatted as currency, decimal or percent. Renders a `span` with tabular figures that holds the integer part and, when the format has a decimal separator, the fraction in a nested `span`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `number` | required | Sets the number to format. A percentage is a ratio. |
+| `format` | `AmountFormatOptions` | `{ style: "currency" }` | Sets the style and the digits; see `AmountFormatOptions` below. |
+| `dimFraction` | `boolean` | `false` | When true, dims the decimal separator, the digits and any suffix after them (`.75`, `.34%`). |
+
+Also takes every prop of a `span`, except `children`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"amount"` | Selects the amount |
+
+The dimmed part gets `text-muted-foreground`; with `dimFraction` off, the fraction is a plain `span`. A value with no fraction after formatting (`$1,200` with `maximumFractionDigits: 0`) renders only the integer.
+
+### AmountFormatOptions
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `style` | `"currency"`, `"decimal"` or `"percent"` | `"currency"` | Sets the kind of number. |
+| `currency` | `string` | `"USD"` | Sets the ISO code of a `currency` amount. |
+| `locale` | `string` | `"en-US"` | Sets the locale of the separators and the symbol. |
+| `maximumFractionDigits` | `number` | - | Caps the fraction digits; a `percent` without it shows two. |
+| `minimumFractionDigits` | `number` | - | Pads the fraction to at least this many digits. |
+| `minimumIntegerDigits` | `number` | - | Pads the integer part with zeros. |
+| `notation` | `"standard"` or `"compact"` | - | Sets compact notation (`1.2K`). |
+| `signDisplay` | `"auto"`, `"always"`, `"exceptZero"` or `"never"` | - | Sets when the sign shows. |
+
+## TrendIndicator
+
+The direction and size of a change. Renders a `Badge` (`error`, `secondary` or `success`) or, with `variant="plain"`, a colored `span`. An icon (arrow up, arrow down, minus) comes first, then an `sr-only` label that names the direction, then the absolute value.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `number` | required | Sets the change as a ratio; a positive value reads as up, a negative as down, `0` as flat. |
+| `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the look. `"badge"` fills it; `"plain"` is colored text, for charts. |
+| `format` | `AmountFormatOptions` | `{ style: "percent" }` | Sets how the absolute value reads. |
+| `labels` | `TrendIndicatorLabels` | `{ down: "Queda de", flat: "Sem variação", up: "Alta de" }` | Sets the text read before the value, one per direction. |
+| `className` | `string` | - | Adds classes to the badge or the `span`. |
+
+`TrendIndicatorLabels` is `{ down: string, flat: string, up: string }`. The icon is decorative; the label is the only way a screen reader hears the direction.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"trend-indicator"` | Selects the indicator |
+| `data-direction` | `"up"`, `"down"` or `"flat"` | Names the direction the sign gives |
+
+With `variant="plain"` the text is `text-success-foreground`, `text-destructive-foreground` or `text-muted-foreground` by direction, at `text-sm`.
+
+## WidgetPeriodToggle
+
+A group of buttons that picks one period. Renders a `ToggleGroup` with one item per option, in the default size and variant, and calls back with the period the user selects. It is controlled: it keeps no selection of its own.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `options` | `readonly WidgetPeriodOption[]` | required | Lists the periods in order, each `{ label: string, value: string }`. |
+| `value` | `string` | - | Sets the selected period; without it no item is pressed. |
+| `onValueChange` | `(period: string) => void` | - | Called when the user selects a period, with its `value`. |
+| `aria-label` | `string` | `"Período"` | Names the group. |
+| `className` | `string` | - | Adds classes to the group. |
+
+The component is generic on the period type: pass `options` as a typed list and `onValueChange` receives that union. Selecting the period that is already active emits nothing, so the group never reports an empty selection.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"widget-period-toggle"` | Selects the group |
+| `aria-pressed` | `"true"` or `"false"` | Set on each item by the toggle; `data-pressed` is present on the active one |
+
+A widget with `periods` puts this group in its header and is controlled through `period` and `onPeriodChange`.
+
+## ExpandableList
+
+A list that folds after a number of items. Renders a `div` with the visible items from the `children` function and, when items are hidden, a button that expands them into a scroll area. It is the single collapse mechanism of the pattern: widgets with a list take its props through `expand`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly TItem[]` | required | Lists every item, collapsed or not. |
+| `children` | `(items: readonly TItem[]) => ReactNode` | required | Renders the items it is given: the visible ones when collapsed, all when expanded. |
+| `visibleCount` | `number` | `5` | Sets how many items show before the rest folds; `Infinity` never folds. |
+| `maxHeight` | `number` | `420` | Sets the height in pixels of the scroll area once expanded. |
+| `expandLabel` | `(hidden: number) => ReactNode` | `` `Ver todas (+${hidden})` `` | Renders the label of the expand button, given the hidden count. |
+| `collapseLabel` | `ReactNode` | `"Ver menos"` | Sets the label of the collapse button; an empty value removes the button. |
+| `defaultExpanded` | `boolean` | `false` | When true, starts expanded when uncontrolled. |
+| `expanded` | `boolean` | - | Sets the expanded state and makes it controlled. |
+| `onExpandedChange` | `(expanded: boolean) => void` | - | Called when a button is clicked, with the next state. |
+| `className` | `string` | - | Adds classes to the root `div`. |
+
+With `expanded` passed, a click only calls `onExpandedChange`: the list changes when the consumer passes the new value. `WidgetExpandProps` is the same set without `items`, `children` and `className`, and is the type of the `expand` prop of the widgets. The defaults are exported as `defaultVisibleCount` and `defaultExpandMaxHeight`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"expandable-list"` | Selects the root |
+| `data-expanded` | `"false"` or `"true"` | Set only when items exceed `visibleCount`; absent on a list that never folds |
+| `data-slot` | `"expandable-list-scroll"` | Selects the scroll area, present only while expanded |
+
+Collapsed, the last visible items sit under a fade to `card` with an outline `sm` button at the bottom. Expanded, the items scroll in a viewport with a vertical scrollbar and a ghost `sm` button below. A list with no more items than `visibleCount` renders no button.
+
+## StatList
+
+Pairs of label and value. Renders a `dl` that wraps its stats, each a `div` with a `dt` and a `dd`, separated by a thin line that starts from the second stat.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `stats` | `readonly WidgetStat[]` | required | Lists the pairs, each `{ id: string, label: ReactNode, value: ReactNode }`. |
+
+Also takes every prop of a `dl`, except `children`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"stat-list"` | Selects the list |
+
+## ProgressRing
+
+A ring that fills with a ratio. Renders a `div` with `aria-hidden="true"` that holds an SVG with a track and, unless `empty`, an arc in `primary`. The value is never in the ring: say it in text beside it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `ratio` | `number` | required | Sets the filled share, clamped to 0 through 1. |
+| `empty` | `boolean` | `false` | When true, draws a dashed track and no arc: there is no value yet, which is not zero. |
+| `strokeWidth` | `number` | `10` | Sets the stroke width on a 100 by 100 viewBox. |
+| `children` | `ReactNode` | - | Centers content in the ring. |
+| `className` | `string` | - | Sets the size; the ring is `size-10` by default (`size-14`, `size-28`). |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"progress-ring"` | Selects the ring |
+| `data-empty` | `"true"` when `empty` | Styles a ring with no value |
+
+`clampRatio(current, target)` returns the ratio limited to 0 through 1, and 0 when `target` is not positive.
+
+## AvatarStack
+
+Overlapping avatars with a count for the rest. Renders a `ul` named by `aria-label`, one `li` per person up to `max`, each with the avatar and an `sr-only` name, and a last `li` with a `+N` chip when people are left.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `people` | `readonly AvatarStackPerson[]` | required | Lists the people, each `{ id: string, label: string, fallback?: string, imageUrl?: string }`. |
+| `max` | `number` | `3` | Sets how many avatars show before the `+N` chip. |
+| `size` | `"default"` or `"sm"` | `"default"` | Sets the avatar size, 32px or 24px. |
+| `aria-label` | `string` | `"Pessoas"` | Names the list. |
+
+Also takes every prop of a `ul`, except `children`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"avatar-stack"` | Selects the list |
+| `data-slot` | `"avatar-stack-overflow"` | Selects the `+N` chip |
+
+The fallback text is `fallback`, or the initials of `label` when there is none. The image has an empty `alt`, since the name is already in the text. Each avatar sits in a bordered `card` wrapper so the fallback stays visible on the card, and the chip takes its size from the same avatar size. The chip's `+N` is hidden from assistive technology and the names of the hidden people are read instead.
+
+## MetricPill
+
+A small pill for one metric. Renders a `span`, or an `li` with `as="li"`, with an optional icon before the text.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `tone` | `"muted"`, `"primary"`, `"success"` or `"warning"` | `"muted"` | Controls the fill and the icon color. |
+| `as` | `"span"` or `"li"` | `"span"` | Sets the element. |
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"metric-pill"` | Selects the pill |
+| `data-tone` | `"muted"`, `"primary"`, `"success"` or `"warning"` | Names the tone |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `formatAmount` | `function` | Formats a number with the same options as `Amount`. `formatAmount(value, options?) => string` |
+| `clampRatio` | `function` | Limits `current / target` to 0 through 1. `clampRatio(current, target) => number` |
+| `IconFrame` | `component` | The decorative icon frame of `@tc96/elements`, re-exported so a copied pattern gets it from the widgets barrel. See [Elements/IconFrame](?path=/docs/elements-iconframe--doc). |
+| `defaultVisibleCount` | `constant` | The default `visibleCount` of `ExpandableList`, `5`. |
+| `defaultExpandMaxHeight` | `constant` | The default `maxHeight` of `ExpandableList`, `420`. |
+| `AmountFormatOptions` | `type` | The options of `formatAmount`, `Amount`, `TrendIndicator` and the widgets' `format` props. |
+| `WidgetExpandProps` | `type` | The `expand` prop of the widgets with a list. |
+| `WidgetPeriodOption` | `type` | `{ label: string, value: TPeriod }`, one item of `WidgetPeriodToggle`. |
+| `WidgetTone` | `type` | `"destructive"`, `"info"`, `"success"` or `"warning"`, the semantic colors of the consumer's theme. |
+| `TrendDirection` | `type` | `"down"`, `"flat"` or `"up"`. |
+
+## Accessibility and theme
+
+- Name every `WidgetShell`: a card is a `region` only with `aria-labelledby` or `aria-label`. The widgets of the pattern name themselves from their title.
+- A `ProgressRing` is hidden from assistive technology; put the value in text, as `sr-only` text or beside the ring.
+- A `TrendIndicator` announces its direction through `labels`; pass translated labels with the locale.
+- The theme sets the card radius on `[data-slot="card"]`, the `--chart-1` to `--chart-5` colors that the charts and bars read, and the `success`, `destructive`, `info` and `warning` foreground tokens that tint the trends and tones.
+- Contrast ratios and the avatar wrapper decision are in `docs/accessibility.md`, section `widgets`.

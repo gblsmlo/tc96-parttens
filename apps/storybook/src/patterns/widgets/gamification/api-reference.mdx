@@ -1,0 +1,208 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Gamification
+
+Cards for learning progress and engagement: the level and the XP of a learner, a streak of study days, the achievements unlocked and the quests still open, a one-line bar that follows the learner around, and a footer for the bottom of a deck card. The consumer passes the level, the XP, the days and the lists already computed; the widgets draw them and never know a scoring rule.
+
+The other pages of `Patterns/Widgets/Gamification`: [Playground](?path=/story/patterns-widgets-gamification-playground--playground) to pick a widget and try its title, action and first-day data, [Stories](?path=/story/patterns-widgets-gamification-stories--default) for each widget and the first day, [Behavior](?path=/story/patterns-widgets-gamification-behavior--level-reports-xp-on-a-named-meter) for the tests, [Usages](?path=/story/patterns-widgets-gamification-usages--overview) for a learning dashboard and the footers of two deck cards, and [Layouts](?path=/story/patterns-widgets-gamification-layouts--level-with-action) for the cards with a header action and the bar without pills.
+
+The parts these widgets are built from (`WidgetShell`, `ExpandableList`, `ProgressRing`, `MetricPill`) are documented on [Patterns/Widgets](?path=/docs/patterns-widgets-api-reference--api-reference); the other families have their own nodes: [CRM](?path=/docs/patterns-widgets-crm-api-reference--api-reference), [Finance](?path=/docs/patterns-widgets-finance-api-reference--api-reference) and [Productivity](?path=/docs/patterns-widgets-productivity-api-reference--api-reference).
+
+## Import
+
+```tsx
+import {
+  AchievementsWidget,
+  LevelWidget,
+  ProgressFooter,
+  ProgressHud,
+  QuestsWidget,
+  StreakWidget,
+  orderQuests,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<QuestsWidget
+  title="Missões"
+  action={action}
+  quests={[{ id: 'level', label: 'Chegar ao nível 5', icon, detail, done: false }]}
+/>
+```
+
+The widgets are independent; `QuestsWidget` is shown because it has the most parts a consumer fills: an `action`, and an `icon` and a `detail` per quest. Every card widget renders a `WidgetShell` named by its title, so it is a `region` landmark. The default texts (`Nível`, `Faltam X XP`, `conquistada`, `Concluída`, `dias seguidos`) are Portuguese strings exposed as props, so pass your own for another language.
+
+Numbers go through `formatAmount` with `{ maximumFractionDigits: 0, style: "decimal" }`, so `1050` reads `1,050`.
+
+## Props every card takes
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the title of the card; names the region. |
+| `action` | `ReactNode` | - | Renders at the end of the header, usually a `Button`. |
+| `className` | `string` | - | Adds classes to the frame. |
+
+Also takes every prop of a `div`, except `children` and `title`, and passes them to the frame. `data-widget` on the frame names the widget (`"level"`, `"streak"`, `"achievements"`, `"quests"`). `ProgressHud` and `ProgressFooter` do not mount on a `WidgetShell`; they have no `title`.
+
+## LevelWidget
+
+The level of a learner and the progress to the next. Renders a `WidgetShell` with a `ProgressRing` that holds the level, the level text with the total XP, a Base UI `Meter` of the XP in the level and the XP left.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `level` | `number` | required | Sets the level; the next level is `level + 1`. |
+| `xp` | `XpProgress` | required | Sets the XP as `{ current: number, target: number, total: number }`: the XP earned in the level, the XP the level takes, and the XP earned in all. |
+| `format` | `AmountFormatOptions` | `{ maximumFractionDigits: 0, style: "decimal" }` | Sets how the XP numbers read. |
+| `ringLabel` | `ReactNode` | `"Nível"` | Renders above the level number in the ring. |
+| `levelLabel` | `(level: number) => ReactNode` | `` `Nível ${level}` `` | Renders the level text beside the ring. |
+| `totalLabel` | `(total: string) => ReactNode` | `` `${total} XP no total` `` | Renders the total XP, formatted. |
+| `remainingLabel` | `(remaining: string, nextLevel: number) => ReactNode` | `Faltam {remaining} XP para o nível {nextLevel}.` | Renders the XP left, formatted. |
+| `meterLabel` | `(nextLevel: number) => string` | `` `Progresso para o nível ${nextLevel}` `` | Names the meter. |
+
+Also takes the props every card takes.
+
+The ring and the meter fill with `current` over `target`, clamped between 0 and `target` (and at least 1): a learner past the target reads a full meter and `Faltam 0 XP`. The ring is `aria-hidden`; the meter and the texts carry the value.
+
+## StreakWidget
+
+Days studied in a row and the last seven days. Renders a `WidgetShell` with a flame, the number of days, and an `ol` of seven columns, one per day.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `days` | `number` | required | Sets the streak, shown at `text-4xl`. |
+| `week` | `readonly StreakDay[]` | required | Lists the days, each `{ id: string, label: string, active: boolean, today?: boolean }`. |
+| `color` | `string` | `"var(--warning-foreground)"` | Sets the color of the flame and of each active day. |
+| `daysLabel` | `(days: number) => ReactNode` | `dia seguido` for 1, else `dias seguidos` | Renders the text under the number. |
+| `weekLabel` | `ReactNode` | `"Últimos 7 dias"` | Renders above the week. |
+| `listLabel` | `string` | `"Dias de estudo"` | Names the list of days. |
+| `activeLabel` | `string` | `"estudou"` | Says, for a screen reader, that the day was studied. |
+| `inactiveLabel` | `string` | `"sem estudo"` | Says, for a screen reader, that the day was not. |
+| `todayLabel` | `string` | `"hoje"` | Marks the current day for a screen reader. |
+
+Also takes the props every card takes.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"streak-week"` | Selects the list of days |
+| `data-active` | `"true"` | Present on a day that was studied |
+| `data-today` | `"true"` | Present on the current day, which also gets a ring |
+
+An active day is a colored flame; an inactive one is a muted flame in a dashed circle. Each day reads, in `sr-only` text, `label[, hoje]: estudou` or `sem estudo`.
+
+## AchievementsWidget
+
+A grid of medals, unlocked or locked. Renders a `WidgetShell` with the count in the header and an `ExpandableList` of the medals.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `achievements` | `readonly Achievement[]` | required | Lists the medals, each `{ id: string, label: string, detail: string, icon: ReactNode, unlocked: boolean, progress?: { current: number, target: number } }`. |
+| `countLabel` | `(unlocked: number, total: number) => ReactNode` | `` `${unlocked} de ${total}` `` | Renders the count in the header; an `action` replaces it. |
+| `color` | `string` | `"var(--warning-foreground)"` | Sets the color of an unlocked medal. |
+| `unlockedLabel` | `string` | `"conquistada"` | Says, for a screen reader, that the medal is unlocked. |
+| `lockedLabel` | `string` | `"bloqueada"` | Says, for a screen reader, that the medal is locked. |
+| `expand` | `WidgetExpandProps` | `{ visibleCount: 6 }` | Sets the fold of the list; see `ExpandableList` on [Patterns/Widgets](?path=/docs/patterns-widgets-api-reference--api-reference). A `visibleCount` of yours wins over the six. |
+
+Also takes the props every card takes.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"achievement-list"` | Selects the grid |
+| `data-slot` | `"achievement"` | Selects each medal |
+| `data-unlocked` | `"true"` | Present on an unlocked medal |
+
+The grid has two columns, three from the `sm` breakpoint. An unlocked medal shows its `icon` in the `color`; a locked one shows a lock in a dashed frame instead of the icon, and its `progress` as `current/target` under the detail.
+
+## QuestsWidget
+
+Quests, open ones first. Renders a `WidgetShell` with the `description` in the header and an `ExpandableList` of the quests.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `quests` | `readonly Quest[]` | required | Lists the quests, each `{ id: string, label: string, done: boolean, icon: ReactNode, detail?: ReactNode, progress?: { current: number, target: number } }`. |
+| `description` | `ReactNode` | - | Renders in the header, in muted text; an `action` replaces it. |
+| `doneLabel` | `ReactNode` | `"Concluída"` | Renders in the `Badge` of a finished quest. |
+| `doneColor` | `string` | `"var(--success-foreground)"` | Sets the color of the check of a finished quest. |
+| `expand` | `WidgetExpandProps` | - | Sets the fold of the list (five visible by default). |
+
+Also takes the props every card takes.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"quest-list"` | Selects the list |
+| `data-slot` | `"quest"` | Selects each quest |
+| `data-done` | `"true"` | Present on a finished quest |
+| `data-slot` | `"quest-meter"` | Selects the meter of an open quest that has `progress` |
+
+Open quests come before finished ones, each group in the order it was passed (`orderQuests`). An open quest with `progress` shows `current/target` and a meter named by its label; one without shows its `detail`. A finished quest shows a check, a struck-through label and the `doneLabel` badge.
+
+## ProgressHud
+
+A one-line bar with the level, the XP and the pills of the streak and the achievements, for the top of a screen. Renders a `section` with a border and a full radius, outside any card.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | required | Names the bar; it is a `region` landmark. |
+| `level` | `number` | required | Sets the level shown in the ring. |
+| `xp` | `XpProgress` | required | Sets the XP, as in `LevelWidget`. |
+| `streakDays` | `number` | - | Adds the streak pill; `0` still shows it. |
+| `achievements` | `{ total: number, unlocked: number }` | - | Adds the achievements pill (`1/3`). |
+| `format` | `AmountFormatOptions` | `{ maximumFractionDigits: 0, style: "decimal" }` | Sets how the XP numbers read. |
+| `levelLabel` | `(level: number) => ReactNode` | `` `Nível ${level}` `` | Renders the level text. |
+| `meterLabel` | `(nextLevel: number) => string` | `` `Progresso para o nível ${nextLevel}` `` | Names the meter. |
+| `streakLabel` | `(days: number) => string` | `dia seguido` for 1, else `dias seguidos` | Says what the streak pill counts, for a screen reader. |
+| `achievementsLabel` | `string` | `"conquistas"` | Says what the achievements pill counts, for a screen reader. |
+
+Also takes every prop of a `section`, except `children`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-widget` | `"progress-hud"` | Selects the bar |
+| `data-slot` | `"hud-streak"` | Selects the streak pill |
+| `data-slot` | `"hud-achievements"` | Selects the achievements pill |
+
+The bar is as tall as its ring plus a little padding, so it stays on one line. Its minimum width is the ring, the XP and the pills; put it in a container that is wide enough.
+
+## ProgressFooter
+
+The foot of a card: free metrics in pills and one score in a ring. Renders a `div` with a `ul` of `MetricPill` items and the score.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `metrics` | `readonly ProgressFooterMetric[]` | required | Lists the pills, each `{ id: string, icon: ReactNode, value: ReactNode, tone?: "muted", "primary", "success" or "warning" }`. |
+| `score` | `ProgressFooterScore` | required | Sets the score as `{ display: ReactNode, max: number, srLabel: string, value: number or null }`. |
+
+Also takes every prop of a `div`, except `children`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-widget` | `"progress-footer"` | Selects the footer |
+| `data-slot` | `"progress-footer-score"` | Selects the score, with its ring |
+
+The ring fills with `value` over `max`. With `value` as `null` there is no score yet, which is not zero: the ring is empty and dashed, the `display` shows in muted text, and the `srLabel` is left out so a screen reader does not read a value that does not exist.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `orderQuests` | `function` | Puts the open quests before the finished ones, keeping the order of each group. `orderQuests(quests) => Quest[]` |
+| `XpProgress` | `type` | `{ current: number, target: number, total: number }`. |
+| `StreakDay` | `type` | One day of `StreakWidget`. |
+| `Achievement` | `type` | One medal of `AchievementsWidget`. |
+| `Quest` | `type` | One quest of `QuestsWidget`. |
+| `ProgressFooterMetric`, `ProgressFooterScore` | `type` | The pill and the score of `ProgressFooter`. |
+| `LevelWidgetProps`, `StreakWidgetProps`, `AchievementsWidgetProps`, `QuestsWidgetProps`, `ProgressHudProps`, `ProgressFooterProps` | `type` | The props of each widget. |
+
+## Accessibility and theme
+
+- Name every card with a short title, and `ProgressHud` with `aria-label`. The ring is hidden from assistive technology: the value is in the meter and in text.
+- The meter of `LevelWidget` and of `ProgressHud` has the same default name; when both are on a screen, pass a different `meterLabel` or `title` so the two are told apart.
+- Pass labels in the language of the interface (`daysLabel`, `unlockedLabel`, `doneLabel`, `srLabel`): they are the only way a screen reader hears the state of a day, a medal or a score.
+- The theme sets the card radius on `[data-slot="card"]`, the `primary` color of the ring and the meters, and the `--warning-foreground` and `--success-foreground` tokens that color the streak, the medals and the finished quests.
+- Contrast ratios are in `docs/accessibility.md`, section `widgets`.

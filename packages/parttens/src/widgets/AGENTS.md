@@ -27,7 +27,7 @@ Six files still carry Portuguese JSDoc from before the no-comments rule (`shared
 Frame and regions:
 
 - Every card widget renders `WidgetShell` with `aria-labelledby` pointing at a `useId()` title, so it is a `region` named by its title; plays query `getByRole('region', { name })`. Exceptions: `AssetStatWidget` is named by `name` plus `symbol` (Chromium computes `ZcashZEC`, with no space, so its play matches `/^Zcash ?ZEC$/`), `ContactWidget` by `person.label`, `WorldClockWidget` by `aria-label={label}`. `ProgressHud` (a `section` with a required `aria-label`) and `ProgressFooter` (a plain `div`) do not use the shell.
-- `Patterns/Widgets/Shared/Widget Shell` asserts the shell is a `section[data-slot="card"]` with `border` and `border-transparent` and neither `border-border/80` nor `border-0`, keeps `shadow-xs/5` and the consumer's `className`.
+- `Patterns/Widgets/Behavior` (`Keeps Transparent Border And Card Shadow`, `Mounts A Region Named By The Consumer`) asserts the shell is a `section[data-slot="card"]` with `border` and `border-transparent` and neither `border-border/80` nor `border-0`, keeps `shadow-xs/5` and the consumer's `className`.
 - `tone="inverted"` on `MetricWidget`, `AssetStatWidget` and `TaskProgressWidget` wraps the card in `<div className="dark contents">` and sets `data-tone` on the shell; the dark palette comes from the consumer's theme, not from the pattern.
 
 Numbers:
@@ -79,7 +79,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/widgets
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/widgets/`: `shared/` (one story file per shared piece: amount, trend indicator, period toggle, shell, expandable list) and `<domain>/behavior.stories.tsx` (`Patterns/Widgets/<Domain>/Behavior`), next to the domain overview stories. There are no bun tests in this folder. Stories run axe with `test: 'error'`; `crm`, `finance` and `productivity` declare `color-contrast` exceptions on specific stories, and `productivity/behavior.stories.tsx` repeats the calendar one for the agenda play.
+Interface tests are `play` functions in `apps/storybook/src/patterns/widgets/`: `behavior.stories.tsx` at the root (`Patterns/Widgets/Behavior`: amount, trend indicator, period toggle, shell, expandable list, stat list, progress ring, avatar stack) and `<domain>/behavior.stories.tsx` (`Patterns/Widgets/<Domain>/Behavior`), next to the other five pages of each node; `stats/` documents `MetricWidget`, which lives in `shared/`. There are no bun tests in this folder. Stories run axe with `test: 'error'`; `crm`, `finance` and `productivity` declare `color-contrast` exceptions on specific stories, and `productivity/behavior.stories.tsx` repeats the calendar one for the agenda play.
 
 ## Pointers
 
