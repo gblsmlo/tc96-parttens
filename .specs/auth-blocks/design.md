@@ -324,6 +324,8 @@ Padrões pt-BR (proposed): `title` "Verifique seu código"; `description` "Envia
 
 `length` tem padrão 6. O block não envia sozinho: há sempre o botão "Verificar", e `onSubmit` só roda por ele ou por Enter. `onComplete(code)` é opcional e só notifica que o código ficou completo; não envia. `resendIn` é o número de segundos que o consumidor controla: o block só o mostra, desabilita o botão de reenvio enquanto ele for maior que zero e não roda timer.
 
+**Código vazio ou incompleto (decidido pelo implementador, opção A, 2026-11-22).** O `OtpField` deixa as restrições nativas no input de validação que o `OTPField` renderiza escondido (`required` e o `pattern` de `length` dígitos). Um código vazio ou incompleto é barrado por elas no envio: o `Form` não chama `onFormSubmit`, foca o primeiro dígito e o `FieldError` mostra a mensagem do navegador (o `validationMessage`, já localizado; não há rótulo para ela em `labels`, como no `login-1`). Os dígitos só recebem `aria-invalid` por `fieldErrors`: o Base UI deriva o estado inválido dos dígitos dos erros do `Form` (`errors`) e da prop `invalid` do `Field`, não da validade nativa, e um `validate` do `Field` não chega a rodar enquanto uma restrição nativa falha. A guarda `code.length < length` em `onFormSubmit` continua, além das restrições. Marcar os dígitos como inválidos nesses casos exigiria que o dono aceitasse tirar as restrições nativas do `OtpField` (sem `required` e com `validationType="none"` e `normalizeValue`) e trocá-las por estado ou erro do próprio block; isso fica ligado ao ponto em aberto da §5.2 sobre as mensagens nativas serem as do navegador (decisão do dono pendente), que vale igual para o `login-1`.
+
 ## 5. Invariantes e erros
 
 ### 5.1 Decididos pelo dono
