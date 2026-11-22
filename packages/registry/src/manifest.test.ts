@@ -559,6 +559,95 @@ test('builds the app-shell-1 item with the shell shared files and the sidebar fr
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
+test('builds the login-1 item with the auth shared files and the form parts from COSS', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/login-1.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('login-1')
+  expect(item.registryDependencies).toEqual(
+    expect.arrayContaining([
+      '@ui/alert',
+      '@ui/button',
+      '@ui/card',
+      '@ui/checkbox',
+      '@ui/field',
+      '@ui/form',
+      '@ui/input',
+      '@ui/input-group',
+      '@ui/render-anchor',
+      '@ui/separator',
+    ]),
+  )
+  expect(paths).toContain('blocks/src/application/auth/login-1/index.ts')
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(
+    paths.every(
+      (path) =>
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
+    ),
+  ).toBe(true)
+  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(
+    paths.some((path) => path.startsWith('blocks/src/application/shell/')),
+  ).toBe(false)
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
+test('builds the otp-1 item with the auth shared files and the otp field from COSS', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/otp-1.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('otp-1')
+  expect(item.registryDependencies).toEqual(
+    expect.arrayContaining([
+      '@ui/alert',
+      '@ui/button',
+      '@ui/card',
+      '@ui/field',
+      '@ui/form',
+      '@ui/otp-field',
+    ]),
+  )
+  expect(paths).toContain('blocks/src/application/auth/otp-1/index.ts')
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(
+    paths.every(
+      (path) =>
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
+    ),
+  ).toBe(true)
+  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(
+    paths.some((path) => path.startsWith('blocks/src/application/shell/')),
+  ).toBe(false)
+  expect(
+    paths.some((path) =>
+      path.startsWith('blocks/src/application/auth/login-1/'),
+    ),
+  ).toBe(false)
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
 test('builds the flow blocks from ai-agents/flow, the flow patterns, the assistant and helpers only', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(
