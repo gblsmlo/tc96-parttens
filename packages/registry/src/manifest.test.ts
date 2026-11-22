@@ -5,6 +5,8 @@ import { join, resolve } from 'node:path'
 import ts from 'typescript'
 import {
   assertDistributable,
+  blockNames,
+  blockSources,
   combineItems,
   defaultConfig,
   type InstallConfig,
@@ -12,8 +14,6 @@ import {
   prepareItem,
   type RegistryItem,
   selectItems,
-  templateNames,
-  templateSources,
   validateConfig,
 } from './manifest'
 
@@ -23,13 +23,13 @@ const config: InstallConfig = {
     utils: '@consumer/helpers/cn',
     helpers: '@consumer/toolkit',
     patterns: '@consumer/patterns',
-    templates: '@consumer/templates',
+    blocks: '@consumer/blocks',
   },
   paths: {
     ui: 'packages/visual/src',
     helpers: 'packages/toolkit/src',
     patterns: 'packages/patterns/src',
-    templates: 'apps/web/src/templates',
+    blocks: 'apps/web/src/blocks',
   },
 }
 function item(path: string, content: string): RegistryItem {
@@ -65,13 +65,13 @@ test('accepts the wizard pattern', () => {
 test('accepts the widgets pattern', () => {
   expect(selectItems(['widgets'])).toEqual(['widgets'])
 })
-test('accepts templates next to patterns', () => {
+test('accepts blocks next to patterns', () => {
   expect(selectItems(['app-shell-1', 'widgets', 'app-shell-1'])).toEqual([
     'app-shell-1',
     'widgets',
   ])
 })
-test('maps template files and imports to the templates destination', () => {
+test('maps block files and imports to the blocks destination', () => {
   const result = prepareItem(
     item(
       'blocks/src/application/shell/app-shell-1/app-shell-1.tsx',
@@ -81,9 +81,9 @@ test('maps template files and imports to the templates destination', () => {
   )
   expect(result.files[0]).toMatchObject({
     target:
-      '~/apps/web/src/templates/application/shell/app-shell-1/app-shell-1.tsx',
+      '~/apps/web/src/blocks/application/shell/app-shell-1/app-shell-1.tsx',
     content:
-      'import { Sidebar } from "@consumer/visual/sidebar"\nimport { ProgressRing } from "@consumer/patterns/widgets/shared/progress-ring"\nimport { NavMain } from "@consumer/templates/application/shell/shared/nav-main"\n',
+      'import { Sidebar } from "@consumer/visual/sidebar"\nimport { ProgressRing } from "@consumer/patterns/widgets/shared/progress-ring"\nimport { NavMain } from "@consumer/blocks/application/shell/shared/nav-main"\n',
   })
   const built = prepareItem(
     item(
@@ -98,13 +98,13 @@ test('maps template files and imports to the templates destination', () => {
   expect(() =>
     prepareItem(item('blocks/src/application/shell/app-shell-1/index.ts', ''), {
       ...config,
-      paths: { ...config.paths, templates: undefined },
+      paths: { ...config.paths, blocks: undefined },
     }),
   ).toThrow('Invalid registry path')
 })
 test('rejects unknown or excluded patterns', () => {
   expect(() => selectItems(['filter-builder'])).toThrow(
-    'Unknown pattern or template',
+    'Unknown pattern or block',
   )
   expect(() => selectItems(['detail-sheet'])).toThrow('Unknown pattern')
   expect(() => selectItems([])).toThrow('Choose')
@@ -461,7 +461,7 @@ test('builds the wizard item from its folder with IconFrame and COSS as ui depen
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
-test('lists every template folder in templateSources', () => {
+test('lists every block folder in blockSources', () => {
   const root = resolve(import.meta.dir, '../../..')
   const folders = [
     ...new Bun.Glob('*/*/*/index.ts').scanSync(
@@ -470,8 +470,8 @@ test('lists every template folder in templateSources', () => {
   ]
     .map((path) => path.replace(/\/index\.ts$/, ''))
     .sort()
-  expect(folders).toEqual(Object.values(templateSources).sort())
-  expect(Object.keys(templateSources).sort()).toEqual([...templateNames].sort())
+  expect(folders).toEqual(Object.values(blockSources).sort())
+  expect(Object.keys(blockSources).sort()).toEqual([...blockNames].sort())
 })
 
 test('builds flow-canvas with the d3-hierarchy version of parttens and no React Flow in the other flow items', () => {
@@ -508,7 +508,7 @@ test('builds flow-canvas with @xyflow/react@12.12.0 now that the pattern imports
   expect(canvas.dependencies).toContain('@xyflow/react@12.12.0')
 })
 
-test('resolves the core entry of a pattern from a template import', () => {
+test('resolves the core entry of a pattern from a block import', () => {
   const root = resolve(import.meta.dir, '../../..')
   const configuration = ts.readConfigFile(
     join(root, 'tsconfig.json'),

@@ -41,7 +41,7 @@ export const patternSources: Record<PatternName, string> = {
   'flow-inspector': 'flow/inspector',
   'chat-assistant': 'chat/assistant',
 }
-export const templateNames = [
+export const blockNames = [
   'app-shell-1',
   'app-shell-2',
   'app-shell-3',
@@ -49,9 +49,9 @@ export const templateNames = [
   'workflow-editor',
   'agent-builder',
 ] as const
-export type TemplateName = (typeof templateNames)[number]
+export type BlockName = (typeof blockNames)[number]
 /** Folder under packages/blocks/src, kept as the path in the consumer. */
-export const templateSources: Record<TemplateName, string> = {
+export const blockSources: Record<BlockName, string> = {
   'app-shell-1': 'application/shell/app-shell-1',
   'app-shell-2': 'application/shell/app-shell-2',
   'app-shell-3': 'application/shell/app-shell-3',
@@ -59,13 +59,13 @@ export const templateSources: Record<TemplateName, string> = {
   'workflow-editor': 'ai-agents/flow/workflow-editor',
   'agent-builder': 'ai-agents/flow/agent-builder',
 }
-export type ItemName = PatternName | TemplateName
+export type ItemName = PatternName | BlockName
 /** Areas under packages/parttens/src that ship with an item no file of it imports. */
 export const itemAreas: Partial<Record<ItemName, string[]>> = {
   collection: ['toolbar'],
 }
-export function isTemplate(name: string): name is TemplateName {
-  return templateNames.includes(name as TemplateName)
+export function isBlock(name: string): name is BlockName {
+  return blockNames.includes(name as BlockName)
 }
 /** The consumer's components.json aliases the patterns import from. */
 export interface Aliases {
@@ -73,14 +73,14 @@ export interface Aliases {
   utils: string
   helpers: string
   patterns: string
-  templates: string
+  blocks: string
 }
 export const aliasNames = [
   'ui',
   'utils',
   'helpers',
   'patterns',
-  'templates',
+  'blocks',
 ] as const
 /**
  * Directories the aliases resolve to. Only helpers and patterns are written;
@@ -90,8 +90,8 @@ export const pathNames = ['ui', 'helpers', 'patterns'] as const
 export type PathName = (typeof pathNames)[number]
 export interface InstallConfig {
   aliases: Aliases
-  /** templates is resolved only when a template is installed. */
-  paths: Record<PathName, string> & { templates?: string }
+  /** blocks is resolved only when a block is installed. */
+  paths: Record<PathName, string> & { blocks?: string }
 }
 export interface RegistryFile {
   path: string
@@ -114,26 +114,26 @@ export const defaultConfig: InstallConfig = {
     utils: '@tc96/utils',
     helpers: '@tc96/helpers',
     patterns: '@tc96/patterns',
-    templates: '@tc96/blocks',
+    blocks: '@tc96/blocks',
   },
   paths: {
     ui: 'packages/ui/src',
     helpers: 'packages/helpers/src',
     patterns: 'packages/patterns/src',
-    templates: 'packages/blocks/src',
+    blocks: 'packages/blocks/src',
   },
 }
 export function selectItems(names: string[]): ItemName[] {
-  if (!names.length) throw new Error('Choose at least one pattern or template.')
+  if (!names.length) throw new Error('Choose at least one pattern or block.')
   return [
     ...new Set(
       names.map((name) => {
         const resolved = name === 'view' ? 'collection' : name
         if (
           !patternNames.includes(resolved as PatternName) &&
-          !isTemplate(resolved)
+          !isBlock(resolved)
         )
-          throw new Error(`Unknown pattern or template: ${name}`)
+          throw new Error(`Unknown pattern or block: ${name}`)
         return resolved as ItemName
       }),
     ),
@@ -145,9 +145,9 @@ export function validateConfig(value: InstallConfig): InstallConfig {
     if (typeof alias !== 'string' || !/^[@#a-zA-Z]/.test(alias))
       throw new Error(`Invalid ${name} alias.`)
   }
-  for (const name of [...pathNames, 'templates'] as const) {
+  for (const name of [...pathNames, 'blocks'] as const) {
     const destination = value.paths?.[name]
-    if (name === 'templates' && destination === undefined) continue
+    if (name === 'blocks' && destination === undefined) continue
     if (typeof destination !== 'string')
       throw new Error(`Invalid ${name} path.`)
     const path = normalize(destination).replaceAll('\\', '/')
@@ -186,12 +186,12 @@ export function prepareItem(
   const destinations: Record<string, string | undefined> = {
     parttens: config.paths.patterns,
     helpers: config.paths.helpers,
-    blocks: config.paths.templates,
+    blocks: config.paths.blocks,
   }
   const aliases: Record<string, string> = {
     ...config.aliases,
     parttens: config.aliases.patterns,
-    blocks: config.aliases.templates,
+    blocks: config.aliases.blocks,
   }
   return {
     ...item,

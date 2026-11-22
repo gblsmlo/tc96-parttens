@@ -1,0 +1,12 @@
+{
+  "name": "checklist",
+  "type": "registry:block",
+  "dependencies": [],
+  "files": [
+    {
+      "path": "parttens/src/checklist/proof.ts",
+      "type": "registry:file",
+      "content": "export const renamed = 1\n"
+    }
+  ]
+}

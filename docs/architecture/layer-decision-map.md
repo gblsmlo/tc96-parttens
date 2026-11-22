@@ -157,7 +157,7 @@ O `boundaries:check` impede que `parttens` importe `blocks` e que um block impor
 1. **"Pode consumir" não é "deve consumir".** Um block pode usar só `ui`; os blocks de auth vão usar `form`, `field`, `otp-field` e `card`, sem nenhum pattern.
 2. **Import por arquivo, não pelo barrel** (ADR 0005 D3). Pelo barrel, o item levaria todos os patterns.
 3. **Lacuna: os blocks entram no interior dos patterns.** Os editores de fluxo importam `flow/canvas/composition/flow-canvas/flow-canvas`, `flow/canvas/core` e outros caminhos internos (`packages/blocks/AGENTS.md`, Dependents). Renomear um arquivo interno de um pattern quebra o block. Proposta: um block só importa o `index.ts` do pattern, o `core.ts` ou `composition/<nome>/index.ts`, e o `boundaries:check` passa a recusar os demais caminhos.
-4. **Lacuna: atualizar um pattern não checa os blocks instalados.** A checagem de compatibilidade do CLI compila só os arquivos do item que está instalando (`packages/registry/src/check-compatibility.ts`, `roots = item.files`). Quando o consumidor atualiza `flow-canvas`, o `agent-builder` que ele já tem não é compilado. Proposta: ao instalar ou atualizar um pattern, incluir na checagem os blocks instalados que o importam.
+4. **A atualização de um pattern checa os blocks instalados.** Ao instalar ou atualizar um pattern, a checagem de compatibilidade do CLI compila também os arquivos `.ts` e `.tsx` da pasta de blocks do consumidor (`packages/registry/src/check-compatibility.ts`, `dependents`) e relata só os erros que a atualização causa: o que o block já tinha de errado antes não aparece. Quando o consumidor atualiza `flow-canvas`, o `agent-builder` que ele já tem é compilado junto.
 5. **Block não importa block,** nem dentro da mesma categoria. Peças do grupo ficam em `<grupo>/shared/`; peças entre grupos descem para pattern.
 6. **Um pattern não sabe que blocks existem:** nenhum slot, default ou label pensado para um block específico. Se um pattern precisa de algo que só um block tem, isso desce para o pattern ou para `ui`.
 7. **O block segue o contrato dos patterns:** é controlado e não faz fetch, não guarda sessão, não lê cookie, não aplica tema. No auth, isso quer dizer `onSubmit(values)`, `pending`, `error` e `renderLink`, sem provider de autenticação dentro do block.
@@ -166,13 +166,11 @@ O `boundaries:check` impede que `parttens` importe `blocks` e que um block impor
 
 | # | Decisão | Recomendação | Alternativa |
 | --- | --- | --- | --- |
-| 1 | Consumidores que já instalaram `templates` e `elements` (refactor do CLI) | o CLI lê `aliases.templates` como `blocks` e aceita `elements` por uma minor, com aviso | corte direto, com nota de release |
-| 2 | Raiz `Templates` do Storybook | manter, só com telas de demonstração, até elas virarem blocks de Solutions | renomear para `Screens` |
-| 3 | Página de Marketing feita de seções | a página copia as seções que usa (block não importa block) | permitir que um block de página importe blocks de seção da mesma categoria |
-| 4 | Lacuna 3: blocks importando o interior dos patterns | o `boundaries:check` aceita só `index.ts`, `core.ts` e `composition/<nome>/index.ts` | ficar como está |
-| 5 | Lacuna 4: checagem do CLI com blocks instalados (refactor do CLI) | incluir os blocks instalados que importam o pattern atualizado | ficar como está |
+| 1 | Raiz `Templates` do Storybook | manter, só com telas de demonstração, até elas virarem blocks de Solutions | renomear para `Screens` |
+| 2 | Página de Marketing feita de seções | a página copia as seções que usa (block não importa block) | permitir que um block de página importe blocks de seção da mesma categoria |
+| 3 | Lacuna 3: blocks importando o interior dos patterns | o `boundaries:check` aceita só `index.ts`, `core.ts` e `composition/<nome>/index.ts` | ficar como está |
 
-Já decidido no ADR 0009: os editores de fluxo são blocks de `ai-agents/flow/`. Já feito na remoção de `elements`: os patterns dimensionam o Avatar do COSS por `--avatar-size`.
+Já decidido no ADR 0009: os editores de fluxo são blocks de `ai-agents/flow/`. Já feito na remoção de `elements`: os patterns dimensionam o Avatar do COSS por `--avatar-size`. Já feito no refactor do CLI: o alias é `blocks`, e quem ainda usa `aliases.templates`, o caminho `templates` do tsconfig ou `elements` recebe um aviso e continua funcionando.
 
 ## Fontes
 

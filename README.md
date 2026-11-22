@@ -66,13 +66,13 @@ A block is a numbered variation of a page, a page frame or a page section that y
 npx @tc96/parttens add app-shell-1
 ```
 
-The CLI writes a block where the `templates` alias resolves (`@acme/ui` gives `@acme/templates`, or set `aliases.templates` in `components.json`), and you import it from its folder:
+The CLI writes a block where the `blocks` alias resolves (`@acme/ui` gives `@acme/blocks`, or set `aliases.blocks` in `components.json`), and you import it from its folder:
 
 ```tsx
-import { AppShell1 } from '@acme/templates/application/shell/app-shell-1'
+import { AppShell1 } from '@acme/blocks/application/shell/app-shell-1'
 ```
 
-The `tsconfig` `paths` entry for `templates` is needed only when you install a block. The Blocks page in Storybook lists every block and its options.
+The `tsconfig` `paths` entry for `blocks` is needed only when you install a block; a consumer that still uses `aliases.templates` or the `templates` entry keeps working with a warning. The Blocks page in Storybook lists every block and its options.
 
 #### AI & Agents: flow editors
 
@@ -108,7 +108,7 @@ The block is controlled: you pass the steps, the connections, the selection, the
 tc96 expects a layered design system, in the spirit of atomic design, inside one `ui` workspace package and configured by one `components.json` at the monorepo root:
 
 ```text
-components.json        aliases: ui, utils (helpers, patterns and templates replace the last segment of ui)
+components.json        aliases: ui, utils (helpers, patterns and blocks replace the last segment of ui)
 packages/
   ui/
     package.json       exports ./components/*, ./helpers/*, ./patterns/*, ./lib/*

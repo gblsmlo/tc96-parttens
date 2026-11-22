@@ -21,7 +21,7 @@ Import direction: a block folder → its group's `shared/` and its own files; in
 
 ## Dependents
 
-- `packages/registry/src/manifest.ts` lists every block in `templateNames` and maps it to its folder in `templateSources`; `manifest.test.ts` fails when a folder with an `index.ts` is missing from the map.
+- `packages/registry/src/manifest.ts` lists every block in `blockNames` and maps it to its folder in `blockSources`; `manifest.test.ts` fails when a folder with an `index.ts` is missing from the map.
 - `scripts/verify-public-api.ts` records each block `index.ts` as `block:<name>` in `docs/architecture/public-api-exports.json`.
 - `apps/storybook/src/blocks/application/shell/` (stories titled `Blocks/Application/Shell/AppShell{n}`) imports each block through `@tc96/blocks/<path>` and the fixtures import the shared types through the `app-shell-1`, `app-shell-3` and `app-shell-4` barrels.
 - Each `AppShell{n}` story file has a `Settings` story that reads `shellSettings`, `settingsBreadcrumbs` and `ProfileSettingsPage` from `fixtures/shell-data.tsx` and runs `expectSettingsLevel` from `fixtures/settings-play.ts`.
@@ -32,7 +32,7 @@ Import direction: a block folder → its group's `shared/` and its own files; in
 
 ## Invariants
 
-- Every block folder is reachable as `@tc96/blocks/<category>/<group>/<block>` through the package `exports` (`./*` to `./src/*/index.ts`) and installs to the same path under the consumer's `templates` alias.
+- Every block folder is reachable as `@tc96/blocks/<category>/<group>/<block>` through the package `exports` (`./*` to `./src/*/index.ts`) and installs to the same path under the consumer's `blocks` alias.
 - `shared/` files are not re-exported by a block `index.ts`; only types are. Renaming a `shared/` file changes the files every installed shell carries.
 - Every visible or accessible text is a `ShellLabels` key with a pt-BR default in `shared/labels.ts`; `labels` is partial and merged over the defaults.
 - Links render through `renderLink(href)` as the Base UI `render` element of `SidebarMenuButton`, `SidebarMenuSubButton` and `BreadcrumbLink`; the default `renderAnchor` carries a `biome-ignore` because the text arrives through the render prop.

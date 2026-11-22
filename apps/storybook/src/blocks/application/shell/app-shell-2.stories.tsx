@@ -18,7 +18,7 @@ import {
 
 const usage = `
 // npx @tc96/parttens add app-shell-2
-import { AppShell2 } from '@acme/templates/application/shell/app-shell-2'
+import { AppShell2 } from '@acme/blocks/application/shell/app-shell-2'
 import { Link, useNavigate } from '@tanstack/react-router'
 
 const navigate = useNavigate()

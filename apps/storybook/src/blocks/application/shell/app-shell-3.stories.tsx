@@ -21,7 +21,7 @@ import {
 
 const usage = `
 // npx @tc96/parttens add app-shell-3
-import { AppShell3 } from '@acme/templates/application/shell/app-shell-3'
+import { AppShell3 } from '@acme/blocks/application/shell/app-shell-3'
 
 <AppShell3
   navigation={navigation}

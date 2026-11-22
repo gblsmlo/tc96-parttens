@@ -26,7 +26,7 @@ import {
 const usage = `
 // npx @tc96/parttens add workflow-editor
 // import '@xyflow/react/dist/base.css' in your global CSS
-import { WorkflowEditor } from '@acme/templates/ai-agents/flow/workflow-editor'
+import { WorkflowEditor } from '@acme/blocks/ai-agents/flow/workflow-editor'
 
 <WorkflowEditor
   assistant={{ messages, onSend: ask, suggestions }}

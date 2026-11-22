@@ -15,7 +15,7 @@
       "@acme/helpers/*": ["./packages/helpers/src/*"],
       "@acme/patterns": ["./packages/organisms/src"],
       "@acme/patterns/*": ["./packages/organisms/src/*"],
-      "@acme/templates/*": ["./packages/templates/src/*"]
+      "@acme/blocks/*": ["./packages/blocks/src/*"]
     }
   },
   "include": ["src", "packages"]

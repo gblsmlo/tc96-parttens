@@ -4,7 +4,7 @@
 - **Date:** 2026-11-22
 - **Origin:** pedido do dono em 2026-11-22: montar variações de páginas de auth (login etc.) para um projeto novo, que ele vê como blocks e não como patterns; "precisamos decidir para que não existam mais essas dúvidas"
 - **Supersedes:** none
-- **Amends:** [ADR 0004](0004-templates-only-in-storybook.md), no aspecto D3 (a palavra "bloco", usada ali para uma peça compartilhada, passa a ler-se "peça"; a raiz `Templates/` continua só com as telas do Storybook); [ADR 0005](0005-installable-templates.md), nos aspectos D1, D2, D4 e D8, que passam a valer para blocks (D5 e D6, nomes no registry e alias `templates`, ficam até o refactor do CLI); [ADR 0006](0006-flow-family-on-react-flow.md), que leva as duas telas de fluxo para a categoria AI & Agents
+- **Amends:** [ADR 0004](0004-templates-only-in-storybook.md), no aspecto D3 (a palavra "bloco", usada ali para uma peça compartilhada, passa a ler-se "peça"; a raiz `Templates/` continua só com as telas do Storybook); [ADR 0005](0005-installable-templates.md), nos aspectos D1, D2, D4 e D8, que passam a valer para blocks (D5 e D6, nomes no registry e alias `templates`, mudaram no refactor do CLI, D9); [ADR 0006](0006-flow-family-on-react-flow.md), que leva as duas telas de fluxo para a categoria AI & Agents
 
 ## Context
 
@@ -38,7 +38,7 @@ Vamos acrescentar a camada `blocks` acima de `patterns`, no pacote `@tc96/blocks
 | D6. Storybook | A raiz `Application` vira `Blocks`; `Templates/Doc` vira `Blocks/Doc`; a raiz `Templates` fica só com as telas do Storybook (ADR 0004) |
 | D7. API pública | Cada block entra em `docs/architecture/public-api-exports.json` como `block:<nome>` (antes `template:<nome>`) |
 | D8. Vocabulário | "template" deixa de nomear algo instalável. "bloco" não é usado nos docs para uma peça de pattern. "pattern" no tc96 é componente composto reutilizável, não a orientação de design do GOV.UK |
-| D9. Fora do escopo | O refactor do CLI e do registry é a próxima tarefa: alias `templates` → `blocks`, `templateNames` e `isTemplate`, texto de ajuda, leitura de aliases antigos por consumidores que já instalaram desde a v0.20.0. Nesta decisão, o registry só troca os caminhos de origem. A remoção de `elements` (IconFrame e Text em `ui`; o Avatar é o do COSS, dimensionado nos patterns por `--avatar-size`) foi feita em paralelo e integrada junto com esta mudança |
+| D9. CLI e registry | O refactor do CLI e do registry está feito: o alias é `blocks` (`aliases.blocks` no `components.json`, derivado do `ui` como `helpers` e `patterns`, e `paths` `@acme/blocks/*` no tsconfig), `templateNames` e `isTemplate` viraram `blockNames` e `isBlock`, e o texto de ajuda fala em blocks. Quem já instalou desde a v0.20.0 continua funcionando, com aviso: `aliases.templates` vale como `aliases.blocks`, o caminho derivado `<ui>/templates` do tsconfig recebe os blocks até ser renomeado, e `aliases.elements` ou uma pasta `elements` de instalações antigas gera um aviso de que o tc96 não instala mais `elements`. Quando um pattern é instalado ou atualizado, a checagem de compatibilidade também compila os blocks já instalados e relata só os erros que a atualização causa. A remoção de `elements` (IconFrame e Text em `ui`; o Avatar é o do COSS, dimensionado nos patterns por `--avatar-size`) foi feita em paralelo e integrada junto com esta mudança |
 
 O mapa de decisão, com a matriz e a árvore para escolher a camada e a categoria, é o guia operacional: [`docs/architecture/layer-decision-map.md`](../../docs/architecture/layer-decision-map.md).
 
@@ -58,7 +58,7 @@ O mapa de decisão, com a matriz e a árvore para escolher a camada e a categori
 - **Costs:**
   - renomear mexe em imports, títulos e ids das stories, `paths` do tsconfig, arquivos `AGENTS.md` e caminhos de origem do registry;
   - consumidores que instalaram `workflow-editor` ou `agent-builder` recebem os arquivos em `ai-agents/flow/` na próxima instalação;
-  - registry e CLI ainda dizem "template" até o refactor do CLI (D9), então `templates` e `blocks` convivem;
+  - quem instalou `templates` ou `elements` recebe avisos do CLI até renomear o alias e o `paths` (D9);
   - promover uma peça de block para pattern exige mover o código e trocar os imports dos blocks que a usam (proposed).
 - **Verifiable invariants:**
 
@@ -74,12 +74,10 @@ O mapa de decisão, com a matriz e a árvore para escolher a camada e a categori
 
 - A página de Marketing feita de seções não foi decidida: a página copia as seções que usa, ou um block de página importa blocks de seção da mesma categoria? [GAP: a página de Marketing copia as seções que usa, ou um block de página pode importar blocks de seção da mesma categoria — decides: o dono]
 - Blocks que importam o interior dos patterns (`flow/canvas/composition/...`) em vez do `index.ts`. Proposta: o block só importa o `index.ts`, o `core.ts` ou `composition/<nome>/index.ts` do pattern, e `boundaries:check` recusa os demais caminhos. [GAP: o block pode importar só `index.ts`, `core.ts` ou `composition/<nome>/index.ts` do pattern, com `boundaries:check` recusando o resto? — decides: o dono]
-- A checagem de compatibilidade do CLI compila só os arquivos do item que está sendo instalado (`packages/registry/src/check-compatibility.ts`, `roots = item.files`). Atualizar um pattern não compila os blocks já instalados que o importam. [GAP: a checagem de compatibilidade do CLI inclui os blocks instalados que importam um pattern atualizado? — decides: o dono, no refactor do CLI]
 - Os tipos de teste marcados `(proposed)` na tabela de invariantes ainda não foram confirmados. [GAP: confirmar o tipo de teste de cada invariante marcada `(proposed)` — decides: o dono]
 
 ## Open questions
 
 - [GAP: a página de Marketing copia as seções que usa, ou um block de página pode importar blocks de seção da mesma categoria? — decides: o dono]
 - [GAP: o block importa só `index.ts`, `core.ts` ou `composition/<nome>/index.ts` do pattern, e `boundaries:check` recusa o resto? — decides: o dono]
-- [GAP: a checagem de compatibilidade do CLI inclui os blocks instalados que importam um pattern atualizado? — decides: o dono, no refactor do CLI]
 - [GAP: confirmar o tipo de teste de cada invariante marcada `(proposed)` — decides: o dono]

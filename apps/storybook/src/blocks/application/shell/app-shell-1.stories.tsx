@@ -19,7 +19,7 @@ import {
 
 const usage = `
 // npx @tc96/parttens add app-shell-1
-import { AppShell1 } from '@acme/templates/application/shell/app-shell-1'
+import { AppShell1 } from '@acme/blocks/application/shell/app-shell-1'
 import { Link } from '@tanstack/react-router'
 
 <AppShell1
