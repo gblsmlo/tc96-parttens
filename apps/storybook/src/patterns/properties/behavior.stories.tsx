@@ -416,7 +416,10 @@ export const SurfacePlainOpenPopupKeepsSecondary: Story = {
     await screen.findByRole('listbox')
 
     await waitFor(() => expect(interactive).toHaveAttribute('data-popup-open'))
-    await expect(interactive.matches(':hover, :focus-visible')).toBe(false)
+    await userEvent.unhover(interactive)
+    await waitFor(() =>
+      expect(interactive.matches(':hover, :focus-visible')).toBe(false),
+    )
     await waitFor(() => expect(backgroundOf(interactive)).toBe(secondary))
 
     await userEvent.keyboard('{Escape}')
