@@ -337,7 +337,7 @@ Contraste do `Toast` em `UI/Toast`, medido em 2026-11-02 nas cores computadas do
 
 ### Flow Canvas
 
-Contraste (medido em 2026-10-23, `Horizontal` e `Vertical`, tema `Default`; texto 4,5:1, gráfico 3:1):
+Contraste (medido em 2026-10-23, nos grafos de `Patterns/Flow/Canvas/Usages`, `Lead Routing Workflow` e `Collections Agent Run`, tema `Default`; texto 4,5:1, gráfico 3:1):
 
 | Par | Claro | Escuro |
 | --- | --- | --- |
@@ -360,7 +360,7 @@ A borda do cartão do nó (`border`) mede 1,19:1 e 1,17:1: é moldura, a leitura
 
 ### Flow Step Library
 
-Contraste medido no Storybook (`Patterns/Flow/Step Library`, `Default` com o cartão `Failed`), pelo texto do elemento contra o fundo efetivo do ancestral:
+Contraste medido no Storybook (`Patterns/Flow/Step Library/Stories`, `Default` com o cartão `Failed`), pelo texto do elemento contra o fundo efetivo do ancestral:
 
 | Elemento | Claro | Escuro | Limite |
 | --- | --- | --- | --- |
@@ -391,7 +391,7 @@ Auditoria de contraste (2026-10-23, medida no Storybook com o tema `Default`; te
 
 O placeholder é o único par que falhava: o texto de orientação do compositor precisa de 4,5:1, e o ajuste entrou onde o elemento encontra a superfície, como exceção registrada, sem tocar `packages/ui`. O axe passa nos dois temas (`bunx vitest run --project=storybook --project=storybook-dark src/patterns/chat/assistant`). A posição flutuante sobre um canvas real só se prova no viewport (T5).
 
-### Texto em `muted-foreground/72` (SegmentedControl, Tabs, Calendar, SelectButton)
+### Texto em `muted-foreground/72` (SegmentedControl, Tabs, Calendar, SelectButton, CommandShortcut)
 
 Contraste do texto inativo (2026-11-21, calculado a partir dos tokens do tema `Default` e conferido pelo axe nas stories; texto de 14 px precisa de 4,5:1; nenhum valor de token foi mudado):
 
@@ -404,8 +404,12 @@ Contraste do texto inativo (2026-11-21, calculado a partir dos tokens do tema `D
 | os mesmos depois (`/96`) | 5,19; 4,98 | 4,81; 5,04 |
 | placeholder do `SelectButton` antes (`/72` sobre `background`; sobre `input/32` no escuro) | 3,06 | 3,28 |
 | placeholder do `SelectButton` depois (`/96`) | 4,98 | 4,75 |
+| `CommandShortcut` antes (`/72` sobre `popover`, 12 px; o axe mediu `#96908d` sobre `#ffffff` e `#736e6a` sobre `#201e1c`) | 3,14 | 3,29 |
+| `CommandShortcut` depois (`/96`) | 5,19 | 4,81 |
+| `CommandShortcut` na linha destacada com `/96` (sobre `accent`; o axe mediu `#8f8985` sobre `#292725` no escuro) | 4,78 | 4,31 |
+| `CommandShortcut` na linha destacada depois (`in-data-highlighted:text-muted-foreground`, 100%) | 5,20 | 4,57 |
 
-O ajuste entrou nos próprios componentes de `packages/ui`: a opacidade da cor passou de 72% para 96% no texto inativo do `SegmentedControl` e do `TabsList`, nos dias da semana, números de semana e dias fora do mês do `Calendar` e no placeholder do `SelectButton`. 96% tem folga sobre o limite de 95% no pior fundo (4,75:1). No `SegmentedControl` e no `Tabs` o hover passou a `text-foreground` para continuar visível. O dia desabilitado do calendar continua em 72%, porque controle desabilitado é isento. As exceções do axe dessas páginas, do `DatePicker`, das propriedades de data e agenda e dos widgets de produtividade saíram.
+O ajuste entrou nos próprios componentes de `packages/ui`: a opacidade da cor passou de 72% para 96% no texto inativo do `SegmentedControl` e do `TabsList`, nos dias da semana, números de semana e dias fora do mês do `Calendar`, no placeholder do `SelectButton` e no `CommandShortcut` (2026-11-21). Na linha destacada do `Command` o fundo `accent` escurece o par no tema escuro, e o `CommandShortcut` passa a `muted-foreground` cheio (`in-data-highlighted:text-muted-foreground`). 96% tem folga sobre o limite de 95% no pior fundo (4,75:1). No `SegmentedControl` e no `Tabs` o hover passou a `text-foreground` para continuar visível. O dia desabilitado do calendar continua em 72%, porque controle desabilitado é isento. As exceções do axe dessas páginas, do `DatePicker`, das propriedades de data e agenda e dos widgets de produtividade saíram.
 
 ### Editores de fluxo
 

@@ -26,7 +26,7 @@ import {
 } from '@tc96/ui/menu'
 import { FileTextIcon, LayoutGridIcon, Rows3Icon } from 'lucide-react'
 import { type ReactElement, type ReactNode, useMemo, useState } from 'react'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 import {
   type DocumentActions,
   renderDocumentCard,
@@ -342,14 +342,6 @@ const meta = {
     },
   },
   parameters: {
-    docs: {
-      description: {
-        component: [
-          'Notes and documents of a product team as one `CollectionFrame`: the toolbar, then **Fixados**, a `GalleryView` of the pinned items, then the rest ordered by creation date, newest first in the active layout.',
-          'The toolbar follows `Patterns/Toolbar`: the view switcher (Todos, Notas, Documentos, Bookmarks) on the left, and **Exibição** and the **Nova nota** action on the right. Each item carries a three-dots menu: Abrir opens it, Fixar or Desafixar moves it between the two blocks, and Arquivar (destructive, after a divider) removes it; the pinned flag is the consumer record, so the pattern only renders what it receives. The `ViewSettingsMenu` switches the rest between **Lista** (`ListView` with `ListRow`) and **Galeria** (`GalleryView` with the card of `Patterns/Collection/Layouts/Gallery`), and filters by type; the type filter applies to the rest, not to Fixados.',
-        ].join('\n\n'),
-      },
-    },
     layout: 'fullscreen',
   },
   render: function Documents({
@@ -383,277 +375,28 @@ const meta = {
       </CollectionProvider>
     )
   },
-  title: 'Patterns/Collection/Usages/Documents',
+  tags: ['!autodocs'],
+  title: 'Patterns/Collection/Usages',
 } satisfies Meta<DocumentsArgs>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {}
-
-export const Gallery: Story = {
-  args: { defaultLayout: 'gallery' },
-}
-
-export const Loading: Story = {
-  args: { loading: true },
-}
-
-export const Empty: Story = {
-  args: { initialDocuments: [] },
-}
-
-const pinnedSection = (canvasElement: HTMLElement) =>
-  within(within(canvasElement).getByRole('region', { name: 'Fixados' }))
-
-const collectionBody = (canvasElement: HTMLElement) =>
-  within(
-    within(canvasElement).getByRole('region', {
-      name: 'Recentes',
-    }),
-  )
-
-const openMenu = async (
-  canvasElement: HTMLElement,
-  scope: ReturnType<typeof within>,
-  title: string,
-  item: string,
-) => {
-  await userEvent.click(
-    scope.getByRole('button', { name: `Ações de ${title}` }),
-  )
-  await userEvent.click(
-    await within(canvasElement.ownerDocument.body).findByRole('menuitem', {
-      name: item,
-    }),
-  )
-}
-
-export const PinAndUnpin: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Fixar in the three-dots menu of a recent item moves it to Fixados, and Desafixar there brings it back to the collection.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const title = 'Ideias para o editor'
-
-    await openMenu(canvasElement, collectionBody(canvasElement), title, 'Fixar')
-    await waitFor(() =>
-      expect(
-        pinnedSection(canvasElement).getByRole('article', { name: title }),
-      ).toBeVisible(),
-    )
-    await expect(collectionBody(canvasElement).queryByText(title)).toBeNull()
-
-    await openMenu(
-      canvasElement,
-      pinnedSection(canvasElement),
-      title,
-      'Desafixar',
-    )
-    await waitFor(() =>
-      expect(collectionBody(canvasElement).getByText(title)).toBeVisible(),
-    )
-    await expect(pinnedSection(canvasElement).queryByText(title)).toBeNull()
-  },
-}
-
-export const Archive: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Arquivar in the three-dots menu removes the item from the collection and from Fixados.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const recent = 'Pendências da semana'
-    const pinned = 'Reunião semanal de produto'
-
-    await openMenu(
-      canvasElement,
-      collectionBody(canvasElement),
-      recent,
-      'Arquivar',
-    )
-    await waitFor(() =>
-      expect(collectionBody(canvasElement).queryByText(recent)).toBeNull(),
-    )
-
-    await openMenu(
-      canvasElement,
-      pinnedSection(canvasElement),
-      pinned,
-      'Arquivar',
-    )
-    await waitFor(() =>
-      expect(pinnedSection(canvasElement).queryByText(pinned)).toBeNull(),
-    )
-  },
-}
-
-export const SwitchToGallery: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'The Galeria tab of the `ViewSettingsMenu` mounts the `GalleryView` over the same collection, with the same three-dots menu on each card.',
-      },
-    },
-  },
+export const Documents: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
 
-    await userEvent.click(canvas.getByRole('button', { name: /Exibição/ }))
-    await userEvent.click(
-      await body.findByRole('menuitemradio', { name: 'Galeria' }),
-    )
-    await userEvent.keyboard('[Escape]')
-
-    await waitFor(() =>
-      expect(
-        collectionBody(canvasElement).getByRole('article', {
-          name: 'Matriz de processos',
-        }),
-      ).toBeVisible(),
-    )
     await expect(
-      collectionBody(canvasElement).getByRole('button', {
-        name: 'Ações de Matriz de processos',
-      }),
-    ).toBeVisible()
-  },
-}
-
-export const FilterNotes: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Filtering by Nota keeps only notes in the collection; the pinned block keeps its documents.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-
-    await userEvent.click(canvas.getByRole('button', { name: /Exibição/ }))
-    await userEvent.click(await body.findByRole('menuitem', { name: 'Tipo' }))
-    await userEvent.click(
-      await body.findByRole('menuitemcheckbox', { name: 'Nota' }),
-    )
-    await userEvent.keyboard('[Escape][Escape]')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
-
-    await waitFor(() =>
-      expect(
-        collectionBody(canvasElement).queryByText('Matriz de processos'),
-      ).toBeNull(),
-    )
-    await expect(
-      collectionBody(canvasElement).getByText('Ideias para o editor'),
+      within(canvas.getByRole('region', { name: 'Fixados' })).getByRole(
+        'article',
+        { name: 'Plano técnico de publicações' },
+      ),
     ).toBeVisible()
     await expect(
-      pinnedSection(canvasElement).getByRole('article', {
-        name: 'Plano técnico de publicações',
-      }),
+      within(canvas.getByRole('region', { name: 'Recentes' })).getByText(
+        'Ideias para o editor',
+      ),
     ).toBeVisible()
-  },
-}
-
-export const SwitchView: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Picking Notas in the view switcher keeps only notes in the collection; Nova nota adds an untitled note at the top.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-
-    await userEvent.click(canvas.getByRole('button', { name: /Todos/ }))
-    await userEvent.click(await body.findByRole('button', { name: 'Notas' }))
-    await waitFor(() =>
-      expect(
-        collectionBody(canvasElement).queryByText('Matriz de processos'),
-      ).toBeNull(),
-    )
-    await expect(
-      collectionBody(canvasElement).getByText('Ideias para o editor'),
-    ).toBeVisible()
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Nova nota' }))
-    await expect(
-      await collectionBody(canvasElement).findByText('Nota sem título'),
-    ).toBeVisible()
-  },
-}
-
-export const ItemMenu: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'The three-dots menu of an item lists Abrir and Fixar, a divider, then Arquivar as a destructive item.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    const body = within(canvasElement.ownerDocument.body)
-
-    await userEvent.click(
-      collectionBody(canvasElement).getByRole('button', {
-        name: 'Ações de Núcleo modular',
-      }),
-    )
-    const menu = within(await body.findByRole('menu'))
-
-    await expect(
-      menu.getAllByRole('menuitem').map((item) => item.textContent),
-    ).toEqual(['Abrir', 'Fixar', 'Arquivar'])
-    await expect(menu.getByRole('separator')).toBeInTheDocument()
-    await expect(
-      menu.getByRole('menuitem', { name: 'Arquivar' }),
-    ).toHaveAttribute('data-variant', 'destructive')
-  },
-}
-
-export const OpenPinned: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Clicking a pinned card opens it; the three-dots menu stays clickable above the card.',
-      },
-    },
-  },
-  play: async ({ canvasElement }) => {
-    onOpen.mockClear()
-
-    await userEvent.click(
-      pinnedSection(canvasElement).getByRole('button', {
-        name: 'Abrir Plano técnico de publicações',
-      }),
-    )
-    await expect(onOpen).toHaveBeenCalledWith('publishing-architecture')
-
-    onOpen.mockClear()
-    await userEvent.click(
-      pinnedSection(canvasElement).getByRole('button', {
-        name: 'Ações de Plano técnico de publicações',
-      }),
-    )
-    await expect(onOpen).not.toHaveBeenCalled()
   },
 }

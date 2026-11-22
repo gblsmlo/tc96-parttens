@@ -78,10 +78,10 @@ State lives in `data-*` attributes and is styled by their variants, never by a p
 ```bash
 bunx biome check packages/parttens/src/checklist
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/checklist.stories.tsx src/patterns/checklist
+cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/patterns/checklist
 ```
 
-The root stories are in `apps/storybook/src/patterns/checklist.stories.tsx`; interface tests are `play` functions in `apps/storybook/src/patterns/checklist/composition/` (`Patterns/Checklist/Composition/Checklist`). All run axe with `test: 'error'`; the pattern has no bun test.
+The stories are the six component pages in `apps/storybook/src/patterns/checklist/` (`Patterns/Checklist/API Reference`, `Playground`, `Stories`, `Behavior`, `Usages`, `Layouts`); interface tests are the `play` functions of `behavior.stories.tsx` (`Patterns/Checklist/Behavior`). All run axe with `test: 'error'`; the pattern has no bun test.
 
 ## Pointers
 

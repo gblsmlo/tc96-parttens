@@ -57,6 +57,8 @@
     "CollectionLayoutOutletProps",
     "CollectionListViewProps",
     "CollectionOption",
+    "CollectionPagination",
+    "CollectionPaginationProps",
     "CollectionPreferences",
     "CollectionPreferencesChangeDetails",
     "CollectionPreferencesChangeReason",

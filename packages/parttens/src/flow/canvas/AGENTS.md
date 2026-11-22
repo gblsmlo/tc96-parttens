@@ -64,12 +64,12 @@ cd apps/storybook && bunx vitest run --project=storybook src/patterns/flow/canva
 bun run build:registry
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/flow/canvas/`: `states.stories.tsx` (loading, empty, node names), `drop.stories.tsx` (a `DragEvent` with a real `DataTransfer` on the pane), `keyboard.stories.tsx` (Backspace, V and H, keys from the portaled shortcuts popover) and `lock.stories.tsx` (disabled controls, mode forced to `select`), over `fixtures/two-steps.ts`. The bun tests left in this folder are pure logic: `core.test.ts` and `lib/to-react-flow.test.ts`.
+Interface tests are the `play` functions of `apps/storybook/src/patterns/flow/canvas/behavior.stories.tsx` (`Patterns/Flow/Canvas/Behavior`): states (loading, empty, node names), selection, toolbar and menus, edge controls, drop (a `DragEvent` with a real `DataTransfer` on the pane), keyboard (Backspace, V and H, keys from the portaled shortcuts popover) and lock (disabled controls, mode forced to `select`), mostly over `fixtures/two-steps.ts`. The bun tests left in this folder are pure logic: `core.test.ts` and `lib/to-react-flow.test.ts`.
 
 Never run the bare `bun test packages/parttens`; use `bun run test:patterns`.
 
 ## Pointers
 
 - `.specs/adr/0006-flow-family-on-react-flow.md`, `.specs/flow-editors/user-experience.md` (§2 Canvas, §4) and `.specs/flow-editors/tasks/0001-flow-editors.md` (T1, "Registro da execução").
-- Stories: `apps/storybook/src/patterns/flow/canvas/` (`Patterns/Flow/Canvas`, fixtures `lead-routing.ts` and `collections-agent.ts`).
+- Stories: `apps/storybook/src/patterns/flow/canvas/` (`Patterns/Flow/Canvas`, on the six pages API Reference, Playground, Stories, Behavior, Usages and Layouts; fixtures `lead-routing.ts` and `collections-agent.ts`).
 - `docs/architecture/tc96-parttens.md`, "Patterns: Flow Canvas".

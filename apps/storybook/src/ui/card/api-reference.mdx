@@ -1,0 +1,233 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Card
+
+A bordered surface that groups related content under one title: a form to create a project, the plan and usage of a workspace, the summary a dashboard widget shows. A card holds a header with a title, a description and an action, a panel with the content and a footer; `CardFrame` stacks one or more cards, or a table, under a header and a footer of its own.
+
+The other pages of `UI/Card`: [Playground](?path=/story/ui-card-playground--playground) to try the texts, the parts, the element and the frame, [Stories](?path=/story/ui-card-stories--default) for the base card, [Behavior](?path=/story/ui-card-behavior--part-elements) for the tests, [Usages](?path=/story/ui-card-usages--create-project) for real content and [Layouts](?path=/story/ui-card-layouts--with-action) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Card,
+  CardAction,
+  CardDescription,
+  CardFooter,
+  CardFrame,
+  CardFrameAction,
+  CardFrameDescription,
+  CardFrameFooter,
+  CardFrameHeader,
+  CardFrameTitle,
+  CardHeader,
+  CardPanel,
+  CardTitle,
+} from '@acme/ui/card'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle />
+    <CardDescription />
+    <CardAction />
+  </CardHeader>
+  <CardPanel />
+  <CardFooter />
+</Card>
+```
+
+<Canvas of={ApiReferenceStories.FrameAnatomy} />
+
+```tsx
+<CardFrame>
+  <CardFrameHeader>
+    <CardFrameTitle />
+    <CardFrameDescription />
+    <CardFrameAction />
+  </CardFrameHeader>
+  <Card />
+  <CardFrameFooter />
+</CardFrame>
+```
+
+Every part is optional, and none of them reads context: the spacing between the parts comes from CSS selectors on `data-slot`, so the parts have to be direct children of the part named in each section below. Every part takes the same prop, and `className` adds classes after the part's own, so a conflicting class wins (`p-0` on a `CardPanel` removes its padding).
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `render` | `React.ReactElement` or `(props) => React.ReactElement` | - | Replaces the `div` with another element, such as a `section`, an `h2` or a `form`, which receives the part's props and classes. |
+
+## Card
+
+The surface of one card. Renders a `div` with no role, laid out as a flex column, with a 1px `border`, the `card` background, the `card-foreground` text color and a light shadow (`shadow-xs/5`).
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card"` | Selects the part in the theme and from other parts |
+
+The part's own radius is `rounded-2xl`. A theme rule on `[data-slot="card"]` replaces it: the example theme sets `var(--card-radius, var(--radius-lg))`, so a card takes `--radius-lg`, and `--card-radius` on the card or an ancestor sets another radius.
+
+A `::before` that covers the card, with no pointer events and the card's radius minus 1px, casts a 1px shadow line: along the bottom border in black at 4% in light, along the top border in white at 6% in dark. In light the background stops at the border (`bg-clip-padding`).
+
+## CardHeader
+
+The top of the card. Renders a `div` laid out as a grid of two rows, the title above the description, with 6px between them (`gap-1.5`) and 24px of padding (`p-6`).
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-header"` | Selects the part in the theme and from other parts |
+
+A header that holds a `CardAction` gets a second column (`grid-cols-[1fr_auto]`) for it. In a `Card` that has a `CardPanel` as a direct child, the header's bottom padding drops to 16px (`pb-4`).
+
+## CardTitle
+
+The title of the card. Renders a `div` in `font-heading`, `font-semibold`, `text-lg` and `leading-none`, which is not a heading. To make it one, pass `render={(props) => <h2 {...props} />}`: the heading keeps the title's classes and `data-slot`.
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-title"` | Selects the part in the theme and from other parts |
+
+## CardDescription
+
+The line under the title. Renders a `div` in `text-muted-foreground` and `text-sm`.
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-description"` | Selects the part in the theme and from other parts |
+
+## CardAction
+
+The place for a button that acts on the whole card, such as an edit or a menu trigger. Renders an `inline-flex` `div` in the second column of `CardHeader`, across both rows (`row-span-2`), aligned to the top (`self-start`) and to the end (`justify-self-end`) of its cell.
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-action"` | Selects the part in the theme and from other parts |
+
+The column exists only when `CardAction` is a child of `CardHeader`; elsewhere it sits in the flow like any `div`.
+
+## CardPanel
+
+The content of the card. Renders a `div` that grows to fill the card (`flex-1`), with 24px of padding (`p-6`).
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-panel"` | Selects the part in the theme and from other parts |
+
+Next to a header or a footer the panel drops its own padding on that side and leaves the spacing to them: its top padding is 0 when the `Card` has a `CardHeader` direct child without the `border-b` class, and its bottom padding is 0 when the `Card` has a `CardFooter` direct child without the `border-t` class. A header with `border-b` or a footer with `border-t` keeps the panel's 24px on that side.
+
+A list or a table that runs edge to edge takes `className="p-0"` on the panel and pads its own rows.
+
+## CardFooter
+
+The bottom of the card. Renders a `div` laid out as a flex row with its items centered vertically (`items-center`), with 24px of padding (`p-6`) and no gap: add a `gap-*` class for an icon beside a note, or `justify-end` for buttons.
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-footer"` | Selects the part in the theme and from other parts |
+
+In a `Card` that has a `CardPanel` as a direct child, the footer's top padding drops to 16px (`pt-4`).
+
+## CardFrame
+
+A frame that stacks cards, or a table, under a header and a footer of its own. Renders a `div` with no role, laid out as a flex column, with `rounded-2xl`, a 1px `border`, the `card` background tinted by a `::before` with the `muted` color at 72% opacity, and the same light shadow and 1px shadow line as `Card`.
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-frame"` | Selects the part in the theme and from other parts |
+
+A `Card` that is a direct child of `CardFrame` sits on the frame: it loses its shadow and its `::before`, clips its background to the padding box (`bg-clip-padding`) in both light and dark, takes a -1px margin so its border lies on the frame's border and on the next card's, and rounds to `rounded-xl` on the sides that face another part (the top when it is not the frame's first child, the bottom when it is not the last). A clip path hides its side borders. On a side that faces the frame's edge (the top of the frame's first child, the bottom of its last) no `rounded-xl` applies: the card keeps its own radius (`--radius-lg` under the example theme's rule), and the clip path rounds that side to the frame's inner corner. The frame's radius does not follow the theme rule on `[data-slot="card"]`: it stays at `--radius-2xl`, and the sides of the cards inside that face another part at `--radius-xl`.
+
+A `Table` with `variant="card"` can take the place of a card: its container gets the same -1px margin and 2px of extra width, and the frame hides what overflows its corners. See [Table in a card frame](?path=/story/ui-table-layouts--in-card-frame).
+
+## CardFrameHeader
+
+The top of the frame, outside the cards. Renders a `div` laid out as a grid of two rows, the title above the description, with 24px of horizontal and 16px of vertical padding (`px-6 py-4`).
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-frame-header"` | Selects the part in the theme and from other parts |
+
+A header that holds a `CardFrameAction` gets a second column (`grid-cols-[1fr_auto]`) with 16px between the columns (`gap-x-4`).
+
+## CardFrameTitle
+
+The title of the frame. Renders a `div` in `font-semibold` and `text-sm`, centered vertically in its row, which is not a heading. To make it one, pass `render={(props) => <h2 {...props} />}`.
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-frame-title"` | Selects the part in the theme and from other parts |
+
+## CardFrameDescription
+
+The line under the frame's title. Renders a `div` in `text-muted-foreground` and `text-sm`, centered vertically in its row.
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-frame-description"` | Selects the part in the theme and from other parts |
+
+## CardFrameAction
+
+The place for a button that acts on the whole frame, such as adding a card or a row. Renders an `inline-flex` `div` in the second column of `CardFrameHeader`, aligned to the end of its cell and centered vertically (`self-center`).
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-frame-action"` | Selects the part in the theme and from other parts |
+
+As the third child of the header (`nth-3`), after the title and the description, it spans both rows, so it is centered against the two lines together; in any other position it takes one row.
+
+## CardFrameFooter
+
+The bottom of the frame, outside the cards. Renders a `div` with 24px of horizontal and 16px of vertical padding (`px-6 py-4`) and no layout of its own: add `flex` and a justify class to place a note beside a button.
+
+Takes `render` and every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card-frame-footer"` | Selects the part in the theme and from other parts |
+
+Unlike `CardFrameHeader`, the footer is not positioned, so the frame's `muted` tint paints over its content as well as behind it.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `CardContent` | `component` | Another name for `CardPanel`: renders the same `div` with `data-slot="card-panel"`. |
+
+## Accessibility and theme
+
+- `Card` and `CardFrame` have no role and no name, and their titles are not headings. A card that is a section of the page renders a `section` or an `article` through `render`, with `aria-labelledby` pointing at its `CardTitle`, which makes it a named region; render the title as a heading at the level the page needs.
+- A button in `CardAction` or `CardFrameAction` needs its own name: an icon-only button takes `aria-label`.
+- Colors come from the theme's `card`, `card-foreground`, `muted` and `muted-foreground` tokens. Muted text (`CardDescription`, a footer note) needs `muted-foreground` to reach 4.5:1 over `card`, and over the `card` tinted by `muted` at 72% in a frame's header and footer.
+- The borders have no color class: their color comes from the theme's base border rule (`border-border` in the example theme). The card radius comes from the theme rule on `[data-slot="card"]` described under `Card`; widgets render through a card, so that rule sets their radius too.

@@ -1,0 +1,148 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Accordion
+
+A stack of sections whose headings open and close their content in place: the questions of a FAQ, the details of a product page, the groups of a filter sidebar, the sections of a long settings form. Reach for it when the reader scans the headings and opens only the sections they need; one section on its own is a `Collapsible`, and sections where exactly one is always shown are `Tabs`.
+
+The other pages of `UI/Accordion`: [Playground](?path=/story/ui-accordion-playground--playground) to try the trigger texts, the icons, the open item and `disabled`, [Stories](?path=/story/ui-accordion-stories--default) for each initial state, [Behavior](?path=/story/ui-accordion-behavior--toggles-on-press) for the tests, [Usages](?path=/story/ui-accordion-usages--billing-faq) for real content and [Layouts](?path=/story/ui-accordion-layouts--with-icons) for how the items combine.
+
+## Import
+
+```tsx
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from '@acme/ui/accordion'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Accordion defaultValue={['item']}>
+  <AccordionItem value="item">
+    <AccordionTrigger />
+    <AccordionPanel />
+  </AccordionItem>
+</Accordion>
+```
+
+## Accordion
+
+Groups the items and holds which of them are open. Wraps `Accordion.Root` from Base UI and renders a `div` with no classes, so it takes the layout of its parent. It opens one item at a time by default: opening an item closes the one that was open. It is uncontrolled by default; pass `value` and `onValueChange` to keep the open items in the parent.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `any[]` | - | Controls the `value` of every open item; pair it with `onValueChange`. |
+| `defaultValue` | `any[]` | `[]` | Sets the open items of the first render when `value` is not passed. |
+| `multiple` | `boolean` | `false` | When true, opening an item leaves the other open items open. |
+| `disabled` | `boolean` | `false` | When true, every trigger ignores presses and keys, and the items keep their state. |
+| `keepMounted` | `boolean` | `false` | When true, keeps every closed panel in the DOM with `hidden`; ignored with `hiddenUntilFound`. |
+| `hiddenUntilFound` | `boolean` | `false` | When true, hides closed panels with `hidden="until-found"`, so the browser's find in page reaches their text and opens them. |
+| `onValueChange` | `(value: any[], eventDetails: ChangeEventDetails) => void` | - | Called when an item asks to open or close, with the next list of open values. |
+
+Also takes every prop of Base UI `Accordion.Root`, such as `render`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"accordion"` | Selects the part in the theme and from other parts |
+| `data-disabled` | present when disabled | Styles a disabled accordion |
+| `data-orientation` | `"vertical"` or `"horizontal"` | Mirrors the deprecated `orientation` prop, `"vertical"` by default; the items stack and no key moves focus between them whatever its value |
+
+The values are typed `any`: narrow them in `onValueChange` to the type of the item values you pass. `ChangeEventDetails` is `AccordionPrimitive.Root.ChangeEventDetails`; a press on a trigger sends `reason: "trigger-press"`. A controlled parent can refuse a change by not updating `value`: the panels and `aria-expanded` stay as they are.
+
+## AccordionItem
+
+One section: a trigger and its panel. Wraps `Accordion.Item` from Base UI and renders a `div` with a bottom `border`, except on an item that is the last child of its parent.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `any` | a generated id | Identifies the item in `value`, `defaultValue` and `onValueChange`; set it whenever the parent reads or sets the open items. |
+| `disabled` | `boolean` | `false` | When true, the trigger of this item ignores presses and keys; the other items keep working. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when this item asks to open or close, before `onValueChange` of `Accordion`. |
+
+Also takes every prop of Base UI `Accordion.Item`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"accordion-item"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state | Style an open or a closed item |
+| `data-disabled` | present when the item or the `Accordion` is disabled | Styles a disabled item |
+| `data-index` | `"0"`, `"1"`, … | Position of the item among the items of the `Accordion` |
+| `data-hidden` | present while closed and not transitioning | Styles a closed item once its panel has finished closing, whether the panel left the DOM or stays with `keepMounted` or `hiddenUntilFound` |
+| `data-orientation` | `"vertical"` or `"horizontal"` | Mirrors the `orientation` of `Accordion` |
+
+An item is disabled when its own `disabled` or the `disabled` of `Accordion` is true, so `disabled={false}` on an item does not re-enable it inside a disabled `Accordion`.
+
+## AccordionTrigger
+
+The button that opens and closes the panel of its item. Wraps `Accordion.Trigger` from Base UI inside an `h3`, and renders a `button` that lays out its children at the start and a chevron at the end. It toggles on click, `Enter` and `Space`, sets `aria-expanded`, and while the panel is open sets `aria-controls` to the panel's `id`. Each trigger is its own tab stop; arrow keys do not move focus between triggers.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `React.ReactNode` | - | Sets the heading text, which names the button and the panel. |
+| `className` | `string` | - | Adds classes to the `button`, not to the `h3`. |
+
+Also takes every prop of Base UI `Accordion.Trigger`, such as `render` and `nativeButton`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"accordion-trigger"` | Selects the part in the theme and from other parts |
+| `data-panel-open` | present while its panel is open | Styles the trigger of an open panel; the chevron turns through it |
+| `data-disabled` | present when the item or the `Accordion` is disabled | Styles the trigger of a disabled item |
+| `data-orientation` | `"vertical"` or `"horizontal"` | Mirrors the `orientation` of `Accordion` |
+
+The chevron is an `svg` with `data-slot="accordion-indicator"` and `aria-hidden="true"`, always rendered after the children; it turns 180 degrees in 200ms while the panel is open. The children and the chevron sit at the two ends of the row (`justify-between`), so wrap an icon and its text in one element to keep them together. The chevron lines up with the first line of a title that wraps.
+
+The `h3` carries no `data-slot` and no prop of `AccordionTrigger` reaches it: its level is always 3, and it takes `data-open`, `data-closed`, `data-disabled` and `data-index` like the item.
+
+A disabled trigger keeps no `disabled` attribute and stays focusable with `aria-disabled="true"`, so its `disabled:` classes never match and it looks like an enabled trigger. Style that case through `data-disabled` or `aria-disabled`.
+
+## AccordionPanel
+
+The content of an item. Wraps `Accordion.Panel` from Base UI and renders a `div` with `role="region"`, named by its trigger, whose height moves between 0 and the height of its content in 200ms. Its text is `text-sm` in `muted-foreground`. While closed it is not in the DOM, unless `keepMounted` or `hiddenUntilFound` keeps it there with a `hidden` attribute.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `className` | `string` | - | Adds classes to the inner `div` that holds the children, which has `pb-4`; the panel keeps its own classes. |
+| `keepMounted` | `boolean` | the `keepMounted` of `Accordion` | When true, keeps this panel in the DOM with `hidden` while closed. |
+| `hiddenUntilFound` | `boolean` | the `hiddenUntilFound` of `Accordion` | When true, hides this panel with `hidden="until-found"` while closed. |
+
+Also takes every prop of Base UI `Accordion.Panel`; `style`, `id` and the other props go to the panel itself, not to the inner `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"accordion-panel"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state; a closed panel is in the DOM only with `keepMounted` or `hiddenUntilFound` | Style an open or a closed panel |
+| `data-disabled` | present when the item or the `Accordion` is disabled | Styles the panel of a disabled item |
+| `data-index` | `"0"`, `"1"`, … | Position of its item among the items |
+| `data-orientation` | `"vertical"` or `"horizontal"` | Mirrors the `orientation` of `Accordion` |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--accordion-panel-height` | set by the panel | Height the panel animates to: the measured height in px while it moves, `auto` once open, so content that grows later is not clipped. |
+| `--accordion-panel-width` | set by the panel | Measured width of the panel; no class of the panel reads it. |
+
+The spacing between the trigger and the content comes from the trigger's `py-4`; the inner `div` adds only the bottom `pb-4`. Pass layout classes for the content (`flex flex-col gap-3`) through `className`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `AccordionContent` | `component` | The same component as `AccordionPanel`, under a second name. |
+| `AccordionPrimitive` | `namespace` | The Base UI `Accordion` parts and types, such as `AccordionPrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Each trigger is named by its text and sits in an `h3`; place the accordion where a level-3 heading fits the outline of the page.
+- An icon in a trigger is decorative: give it `aria-hidden="true"` so it does not join the name.
+- Opening a panel does not move focus or announce its content; focus stays on the trigger, and the panel follows it in the reading order as a region named by the trigger.
+- A disabled item has no look of its own; give it one through `data-disabled` in the theme or in `className`.
+- The height and chevron transitions have no reduced motion rule and run for every user.

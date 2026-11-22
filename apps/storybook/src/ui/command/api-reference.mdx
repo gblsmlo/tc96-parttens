@@ -1,0 +1,294 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Command
+
+A search field over a list of commands, where the user types to narrow the list and runs one with `Enter` or a click: a command palette opened with ⌘K, a "go to page" search in an app shell, a "move to project" picker. Reach for it when the list holds actions or destinations to run, not a value to keep; picking a value for a form field is a `Combobox`, and a short list of actions behind a button is a `Menu`.
+
+The other pages of `UI/Command`: [Playground](?path=/story/ui-command-playground--playground) to try the texts, the starting query, the parts and the inline placement, [Stories](?path=/story/ui-command-stories--default) for each state, [Behavior](?path=/story/ui-command-behavior--opens-from-trigger) for the tests, [Usages](?path=/story/ui-command-usages--workspace-commands) for real palettes and [Layouts](?path=/story/ui-command-layouts--flat-list) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Command,
+  CommandCollection,
+  CommandDialog,
+  CommandDialogPopup,
+  CommandDialogTrigger,
+  CommandEmpty,
+  CommandFooter,
+  CommandGroup,
+  CommandGroupLabel,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandPanel,
+  CommandSeparator,
+  CommandShortcut,
+} from '@acme/ui/command'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<CommandDialog defaultOpen>
+  <CommandDialogTrigger />
+  <CommandDialogPopup aria-label="…">
+    <Command>
+      <CommandInput aria-label="…" placeholder="…" />
+      <CommandPanel>
+        <CommandList>
+          <CommandGroup>
+            <CommandGroupLabel />
+            <CommandItem value="…">
+              <CommandShortcut />
+            </CommandItem>
+            <CommandItem value="…" />
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandItem value="…" />
+        </CommandList>
+      </CommandPanel>
+      <CommandFooter />
+    </Command>
+  </CommandDialogPopup>
+</CommandDialog>
+```
+
+A `CommandEmpty` before `CommandList` shows its text only while nothing matches, so it does not show here. Without the dialog parts, `Command` renders inline on the page: its search field and list sit where it is placed, already open.
+
+## CommandDialog
+
+Groups the dialog parts and holds the open state. Alias for `Dialog.Root` from Base UI; renders no element. It is modal: while open, focus stays in the popup, the page behind it does not scroll and is hidden from assistive technology. A press outside the popup and `Escape` close it; running an item does not.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Controls the open state; pair it with `onOpenChange`, and set it to `false` after running an item to close the palette. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the dialog asks to open or close, with the `reason` in `eventDetails`. |
+| `modal` | `boolean` or `"trap-focus"` | `true` | Sets how much of the page it blocks: `true` traps focus, locks scroll and blocks outside pointers, `"trap-focus"` only traps focus, `false` blocks nothing. |
+| `disablePointerDismissal` | `boolean` | `false` | When true, a press outside the popup does not close it. |
+| `handle` | `CommandDialogPrimitive.Handle` | - | Links the dialog to a trigger outside it, created with `CommandCreateHandle`. |
+
+Also takes every prop of Base UI `Dialog.Root`, such as `actionsRef` and `onOpenChangeComplete`.
+
+`ChangeEventDetails` is `CommandDialogPrimitive.Root.ChangeEventDetails`. Its `reason` is one of `"trigger-press"`, `"outside-press"`, `"escape-key"`, `"close-press"`, `"focus-out"`, `"imperative-action"` or `"none"`. With the parts on this page, `CommandDialogTrigger` opens it with `"trigger-press"`, `Escape` closes it with `"escape-key"` and a press outside the popup with `"outside-press"`; a `CommandDialogPrimitive.Close` you add closes it with `"close-press"`, and a close through `actionsRef` or a `handle` reports `"imperative-action"`. A keyboard shortcut that opens the palette is a `keydown` listener of your own that sets `open`, as the [Usages](?path=/story/ui-command-usages--workspace-commands) do with ⌘K.
+
+## CommandDialogTrigger
+
+The button that opens the palette. Renders a `button`; pass `render={<Button />}` to use the `Button`. It can sit outside `CommandDialog` when both share a `handle`, and focus returns to it when the palette closes.
+
+Also takes every prop of Base UI `Dialog.Trigger`, such as `payload`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"command-dialog-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while its palette is open | Styles the trigger of the open palette |
+| `data-disabled` | present when disabled | Styles a disabled trigger |
+
+## CommandDialogPopup
+
+The palette surface. Renders a `div` with `role="dialog"` in a portal on `body`, above a `CommandDialogBackdrop` and inside a `CommandDialogViewport`, so one part brings the whole layer. It has no title and no close button: name it with `aria-label`, and `Escape` or a press outside closes it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | required | Names the dialog for assistive technology. |
+| `portalProps` | `CommandDialogPrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `Dialog.Popup`, such as `initialFocus` and `finalFocus`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"command-dialog-popup"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-nested` | present when it opens inside another dialog | Styles a palette opened over another dialog |
+| `data-nested-dialog-open` | present while a dialog is open over it | Styles the palette left behind |
+
+The popup is at most 576px wide (`max-w-xl`) and 420px high (`max-h-105`), with a 2xl radius, a 1px `border`, the `popover` background under a `muted` tint at 72% and a shadow. Its children stack in a column, and the list scrolls when they do not fit. From `sm` up it sits 10% of the viewport height below the top edge, and below `sm` 4% (at least 16px); it is not centered vertically, so it does not move while the list shrinks. Each dialog opened over it moves it up 20px, shrinks it by 10% and lowers its opacity by 10%.
+
+## Command
+
+Groups the search field and the list, and holds the query. A wrapper around `Autocomplete.Root` from Base UI that renders no element of its own and changes three things: it sets `inline` and `open`, so the list renders in place and stays open with no popup of its own; it defaults `autoHighlight` to `"always"` instead of `false`; and it defaults `keepHighlight` to `true` instead of `false`. Every prop you pass, these four included, overrides the wrapper's value. With `items`, it filters them by the query (case-insensitive "contains" on the label) and hands the result to `CommandList`; it never fetches or sorts them. The first match is always highlighted, so `Enter` runs it, and the arrow keys move the highlight, wrapping from the last item to the first and back.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly Item[]` or groups of `{ items }` | - | Sets the items to filter and render; `CommandEmpty` needs it. |
+| `value` | `string` | - | Controls the query, the text of the search field; pair it with `onValueChange`. |
+| `defaultValue` | `string` | - | Sets the query of the first render when `value` is not passed. |
+| `onValueChange` | `(value: string, eventDetails: ChangeEventDetails) => void` | - | Called when the query changes, with the `reason` in `eventDetails`. |
+| `autoHighlight` | `boolean` or `"always"` | `"always"` | Controls the automatic highlight: `"always"` keeps the first match highlighted, `true` highlights it only after the user types, `false` never does. |
+| `keepHighlight` | `boolean` | `true` | When true, the highlight stays on its item when the pointer leaves the list. |
+| `highlightItemOnHover` | `boolean` | `true` | When true, the pointer highlights the item under it. |
+| `loopFocus` | `boolean` | `true` | When true, the arrow keys wrap from the last item to the first and back. |
+| `onItemHighlighted` | `(value: Item, eventDetails: HighlightEventDetails) => void` | - | Called when the highlight moves, with the item, or `undefined` when nothing is highlighted, and the `reason`. |
+| `mode` | `"list"`, `"both"`, `"inline"` or `"none"` | `"list"` | Controls filtering and completion: `"list"` filters and leaves the query as typed, `"both"` also completes it with the highlighted item, `"inline"` only completes, `"none"` does neither. |
+| `filter` | `(item: Item, query: string, itemToString?: (item: Item) => string) => boolean` or `null` | - | Replaces the built-in filter; `null` turns filtering off. |
+| `filteredItems` | `readonly Item[]` or groups of `{ items }` | - | Sets the items already filtered by your own code, in the same shape as `items`. |
+| `limit` | `number` | `-1` | Sets the most items the list shows; `-1` shows all. |
+| `itemToStringValue` | `(item: Item) => string` | - | Sets the text of an object item that is not `{ label, value }`, which the filter matches. |
+
+Also takes every prop of Base UI `Autocomplete.Root`, such as `disabled` and `actionsRef`.
+
+`ChangeEventDetails` and `HighlightEventDetails` are `AutocompletePrimitive.Root.ChangeEventDetails` and `AutocompletePrimitive.Root.HighlightEventDetails` from `@acme/ui/autocomplete`; the `reason` of a highlight is `"keyboard"`, `"pointer"` or `"none"`. An item shaped `{ label, value }` needs no converter: the filter matches `label`. Running an item leaves the query as it is.
+
+## CommandInput
+
+The search field. Renders a `div` with 10px of side padding that holds an `AutocompleteInput` at the `"lg"` size, with a search icon at its start and no border, background or focus ring of its own: the native `input` has `role="combobox"` and points to the highlighted item with `aria-activedescendant`. It takes focus when it mounts, in a dialog and inline alike.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | - | Names the search field; pass it unless a visible label names the field. |
+| `placeholder` | `string` | - | Sets the text shown while the query is empty. |
+
+Also takes every prop of `AutocompleteInput`, such as `size`, `startAddon`, `showClear` and `clearProps`, which replace the defaults above. `className` goes to the `Input` box (`data-slot="input-control"`), every other prop to the native `input`, and the wrapping `div` takes none.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-input-group"` | The group that holds the icon and the input |
+| `data-slot` | `"autocomplete-start-addon"` | The box of the search icon, hidden from assistive technology |
+| `data-slot` | `"input-control"` | The `Input` box around the native `input` |
+| `data-slot` | `"autocomplete-input"` | The native `input` |
+| `data-popup-open`, `data-pressed` | always present, since the list of `Command` is always open | Style the field of an open list |
+| `data-list-empty` | present when nothing matches | Styles the field while the list is empty |
+| `data-disabled` | present when `disabled` is set on `Command` or `CommandInput` | Styles a disabled field |
+| `data-readonly` | present when `readOnly` is set on `Command` | Styles a read-only field |
+| `data-focused`, `data-filled`, `data-dirty`, `data-touched`, `data-valid`, `data-invalid` | present in that state, only inside a Base UI `Field.Root` | Style the field state of a form field |
+
+The state attributes above are set on the native `input`, not on the `Input` box around it.
+
+## CommandPanel
+
+The inset card that holds the results between the search field and the footer. Renders a `div` with the `popover` background, a 1px `border` on the top and the sides, an xl radius on the top corners and a small shadow. With no `CommandFooter` right after it, it also rounds its bottom corners to 2xl and covers the bottom border of the popup. It is optional: without it, the list sits straight on the popup surface.
+
+Also takes every prop of a `div`.
+
+It sets no `data-slot`; select it by a `className` of your own.
+
+## CommandEmpty
+
+The message for a query that matches nothing. Renders a `div` with `role="status"` and `aria-live="polite"` that stays mounted and shows its children only while the filtered list is empty, so a screen reader announces it; then it is centered in `text-muted-foreground` with 24px of vertical padding. It needs `items` on `Command`: without them it cannot tell, and shows its children all the time.
+
+Also takes every prop of Base UI `Autocomplete.Empty`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"command-empty"` | Selects the part in the theme and from other parts |
+
+## CommandList
+
+The list of items. Renders a `div` with `role="listbox"` and 8px of padding inside a `ScrollArea` that fades its edges and keeps scrolling from reaching the page. A function child is called for each filtered item of `items`, or for each group when `items` holds groups; plain children render as they are.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` or `(item: Item, index: number) => ReactNode` | - | Sets the items; a function receives each filtered item or group. |
+
+Also takes every prop of Base UI `Autocomplete.List`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"command-list"` | Selects the part in the theme and from other parts |
+| `data-empty` | present when nothing matches | Styles the empty list |
+
+An empty list has no padding, so `CommandEmpty` is the only thing the results show.
+
+## CommandGroup, CommandGroupLabel and CommandCollection
+
+The parts of a grouped list. `CommandGroup` renders a `div` with `role="group"`, labelled by its `CommandGroupLabel`, and takes the group's `items`; a group that directly follows another group (`[role=group]+&`) gets a 6px top margin, so a `CommandSeparator` between two groups removes it. `CommandGroupLabel` renders a `div` in `font-medium`, `text-xs` and `text-muted-foreground`. `CommandCollection` renders no element: its function child is called for each filtered item of the group around it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly Item[]` | - | Sets the items of a `CommandGroup`, which its `CommandCollection` renders. |
+
+Also takes every prop of the Base UI part: `Autocomplete.Group`, `Autocomplete.GroupLabel` or `Autocomplete.Collection`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"command-group"` or `"command-group-label"` | Selects the part in the theme and from other parts |
+
+A group whose items all fail the filter is not rendered, label included.
+
+## CommandItem
+
+One command. Renders a `div` with `role="option"` as a row: its content, then a `CommandShortcut` pushed to the end. Pressing it, or `Enter` while it is highlighted, calls its `onClick`; that is where the command runs.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `Item` | - | Sets the item it stands for; pass the item itself. |
+| `onClick` | `(event: MouseEvent) => void` | - | Called when the item is pressed or `Enter` is pressed on it; runs the command. |
+| `disabled` | `boolean` | `false` | When true, the item can still be highlighted with the keyboard, but neither a press nor `Enter` runs it. |
+
+Also takes every prop of Base UI `Autocomplete.Item`, such as `index`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"command-item"` | Selects the part in the theme and from other parts |
+| `data-highlighted` | present on the item the keyboard or the pointer is on | Styles the active item, with the `accent` background |
+| `data-disabled` | present when disabled | Styles a disabled item, at 64% opacity and with no pointer events |
+
+A one-line row is 32px high from `sm` up and 36px below: 6px of vertical padding around a `text-sm` line (20px) from `sm` up and a `text-base` line (24px) below. Its minimum height is 28px from `sm` up and 32px below, so content taller than one line makes it grow.
+
+## CommandShortcut
+
+The key combination of a command, shown at the end of its item. Renders a `kbd` in `text-xs`, `font-medium` and wide tracking, in `text-muted-foreground` at 96%, and at full strength inside a highlighted item. It only shows the keys: binding them is up to you. Its text is part of the item's accessible name, read after the label (`"Profile ⌘P"`).
+
+Also takes every prop of a `kbd`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"command-shortcut"` | Selects the part in the theme and from other parts |
+
+## CommandSeparator
+
+A line between groups or items. Renders a `div` 1px high in the `border` color with 8px of margin around it, and `role="presentation"` inside the list; the last child of the list is hidden, so a separator after every group leaves none at the end.
+
+Also takes every prop of Base UI `Autocomplete.Separator`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"command-separator"` | Selects the part in the theme and from other parts |
+
+## CommandFooter
+
+The row of hints under the results, such as the keys that navigate, run and close. Renders a `div` that spreads its children to both ends, with a top border, 20px of side padding and 12px of vertical padding, in `text-xs` and `text-muted-foreground`; its bottom corners follow the popup's radius. Put `Kbd` elements in it for the keys.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"command-footer"` | Selects the part in the theme and from other parts |
+
+## CommandDialogPortal, CommandDialogBackdrop and CommandDialogViewport
+
+The layers `CommandDialogPopup` already renders, exported to build another popup on them. `CommandDialogPortal` is the Base UI `Dialog.Portal` and renders a `div` on `body`. `CommandDialogBackdrop` renders a fixed `div` that dims the page with black at 32% and blurs it. `CommandDialogViewport` renders a fixed column that centers the popup horizontally, with 16px of side padding.
+
+Each also takes every prop of its Base UI part.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"command-dialog-backdrop"` or `"command-dialog-viewport"` | Selects the part in the theme and from other parts |
+| `data-open`, `data-closed`, `data-starting-style`, `data-ending-style` | present in that state, on both parts | Style the layer with the popup |
+| `data-nested` | present on the viewport when its dialog opens inside another dialog | Styles the layer of a nested palette |
+| `data-nested-dialog-open` | present on the viewport while a dialog is open over its own | Styles the layer left behind |
+
+The backdrop sets neither nested attribute: it renders only for the outermost dialog, unless it gets `forceRender`, which `CommandDialogPopup` does not pass, so a palette opened inside another dialog has no backdrop of its own.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `CommandCreateHandle` | `function` | Creates the `handle` that links a detached `CommandDialogTrigger` to its `CommandDialog`. `CommandCreateHandle<Payload>() => CommandDialogPrimitive.Handle<Payload>` |
+| `CommandDialogPrimitive` | `namespace` | The Base UI `Dialog` namespace, for its types such as `CommandDialogPrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Name the palette: pass `aria-label` to `CommandDialogPopup`, which has no title, and to `CommandInput`.
+- Keep a `CommandEmpty` in the results: it is the only feedback for a query that matches nothing, and a screen reader announces it.
+- Close the palette after running a command that leaves it (navigation, an action), through a controlled `open`; the palette never closes on its own when an item runs.
+- The text of `CommandShortcut` is `muted-foreground` at 96%, and at full strength inside a highlighted item, so it reaches 4.5:1 on the `popover` surface and on the `accent` of a highlighted row in the example theme, in light and in dark. The measured ratios live in `docs/accessibility.md`.
+- The parts use the `popover`, `muted`, `muted-foreground`, `accent`, `border` and `input` tokens.

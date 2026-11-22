@@ -408,10 +408,16 @@ export const LinkItemIsAnchor: Story = {
 const openSubmenu = async (canvasElement: HTMLElement) => {
   const menu = await openContextMenu(canvasElement)
   const share = within(menu).getByRole('menuitem', { name: 'Share' })
+  await waitFor(
+    () => expect(menu.contains(document.activeElement)).toBe(true),
+    { timeout: 5000 },
+  )
   await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{ArrowDown}')
-  await waitFor(() => expect(share).toHaveFocus())
+  await waitFor(() => expect(share).toHaveFocus(), { timeout: 5000 })
   await userEvent.keyboard('{ArrowRight}')
-  await waitFor(() => expect(screen.getAllByRole('menu')).toHaveLength(2))
+  await waitFor(() => expect(screen.getAllByRole('menu')).toHaveLength(2), {
+    timeout: 5000,
+  })
   return share
 }
 

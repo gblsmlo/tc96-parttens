@@ -20,7 +20,7 @@ Import direction: `components/` → `hooks/`, `lib/`, `types.ts`; `hooks/` → `
 - `collection/core.ts` imports `lib/data-grid-features.ts` and `types.ts` by path.
 - `collection/index.ts` re-exports `index.ts` whole.
 - `scripts/bench/data-grid.bench.ts` imports this folder's `index.ts` and queries the slots `data-grid-row`, `data-grid-cell` and `data-grid-group-row`.
-- `apps/storybook/src/patterns/collection/layouts/data-grid.stories.tsx` queries the slots `data-grid`, `data-grid-body` and `data-grid-header`; `apps/storybook/src/patterns/collection/usages/tasks.stories.tsx` and `usages/contacts.stories.tsx` query `data-grid`.
+- The `Patterns/Collection/Layouts/Data Grid` pages in `apps/storybook/src/patterns/collection/layouts/data-grid/` query slots: the hidden `Anatomy` of `api-reference.stories.tsx` checks `data-grid`, `data-grid-header`, `data-grid-header-row`, `data-grid-header-cell`, `data-grid-body`, `data-grid-group-row`, `data-grid-row`, `data-grid-cell`, `data-grid-footer` and `data-grid-pagination`, and `usages.stories.tsx` queries `data-grid-group-row`. Outside it, the root `Patterns/Collection` Behavior (`apps/storybook/src/patterns/collection/behavior.stories.tsx`) queries `data-grid`, and the hidden `Anatomy` of `layouts/data-table/api-reference.stories.tsx` checks `data-grid-pagination`.
 
 ## Invariants
 
@@ -90,7 +90,7 @@ ARIA and layout:
 bun test --isolate packages/parttens/src/collection/layouts/data-grid
 bunx biome check packages/parttens/src/collection/layouts/data-grid
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/collection/layouts/data-grid.stories.tsx src/patterns/collection/usages/tasks.stories.tsx src/patterns/collection/usages/contacts.stories.tsx
+cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/patterns/collection/layouts/data-grid/ src/patterns/collection/usages/tasks.stories.tsx src/patterns/collection/usages/contacts.stories.tsx
 bun scripts/bench/data-grid.bench.ts --compare scripts/bench/results/data-grid.base.json --gate
 ```
 

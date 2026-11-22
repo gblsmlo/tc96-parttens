@@ -1,0 +1,149 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Flow Step Library
+
+The panel on the left of a flow editor that lists the step types a user can add: send an e-mail, read a record, wait, branch on a condition, call a tool. Each type is a button that adds the step on click and can be dragged onto the canvas, grouped by its `group`, with the last run of the flow in the footer. It is controlled: the consumer passes the groups, the icons and the labels, and handles `onAdd`; the pattern never fetches, sorts, persists or runs anything.
+
+The other pages of `Patterns/Flow/Step Library`: [Playground](?path=/story/patterns-flow-step-library-playground--playground) to try the texts, the states and the run card, [Stories](?path=/story/patterns-flow-step-library-stories--default) for each state, [Behavior](?path=/story/patterns-flow-step-library-behavior--groups-of-draggable-buttons) for the tests, [Usages](?path=/story/patterns-flow-step-library-usages--workflow-steps) for a workflow and an agent, and [Layouts](?path=/story/patterns-flow-step-library-layouts--without-run-card) for how the parts combine.
+
+Used in: the flow editors put it to the left of the [Canvas](?path=/docs/patterns-flow-canvas-api-reference--api-reference), which accepts the dragged steps, and pass their `locked` as `disabled`. See [Application/Flow/WorkflowEditor](?path=/story/application-flow-workfloweditor--default) and [Application/Flow/AgentBuilder](?path=/story/application-flow-agentbuilder--default).
+
+## Import
+
+```tsx
+import {
+  FlowRunCard,
+  FlowStepLibrary,
+  groupStepTypes,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<FlowStepLibrary groups={groupStepTypes(stepTypes)} labels onAdd>
+  labels.title, labels.hint
+  <FlowStepLibraryGroup group>
+    <FlowStepLibraryItem type />
+  </FlowStepLibraryGroup>
+  {children}: <FlowRunCard run />
+</FlowStepLibrary>
+```
+
+`FlowStepLibrary` renders the groups and items from `groups`; `FlowStepLibraryGroup` and `FlowStepLibraryItem` are exported for a list of your own.
+
+## FlowStepLibrary
+
+The panel. Renders a `section` named by its `h2` (`labels.title`, `"Passos"`) and described by the hint under it, with the groups in a scroll area and, after them, a footer with `children`. It is 20rem wide with a border on its end side, and 4.25rem when `collapsed`. Its only state is the ids that link the title and the hint.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `groups` | `readonly FlowStepGroup[]` | required | Sets the groups, in order, each with its step types in order. |
+| `onAdd` | `(type: FlowStepType) => void` | required | Called when an item is pressed, with its step type. |
+| `icons` | `Record<string, ReactNode>` | - | Maps a step type `id` to its icon; a type without one shows the icon of its kind. |
+| `collapsed` | `boolean` | `false` | When true, shows only the icons: the title, the hint, the group labels and the item texts are hidden, and the names stay on the region, the groups and the buttons. |
+| `disabled` | `boolean` | `false` | When true, disables every item: no click and no drag. |
+| `loading` | `boolean` | `false` | When true, shows a skeleton in place of the groups and sets `aria-busy`. |
+| `labels` | `Partial<FlowStepLibraryLabels>` | - | Replaces any of `title`, `hint` and `empty`. |
+| `children` | `ReactNode` | - | Sets the footer, under the list; without it the footer is not rendered. |
+| `className` | `string` | - | Adds classes to the `section`. |
+
+Takes no other prop. With no groups and not `loading` it shows `labels.empty` (`"Nenhum passo disponível"`). A collapsed panel drops the hint from its description, and still renders the footer.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-step-library"` | Selects the `section` |
+| `data-collapsed` | `"true"`, absent when expanded | Styles the collapsed panel |
+| `data-slot` | `"flow-step-library-groups"` | Selects the box of the groups |
+| `data-slot` | `"flow-step-library-skeleton"` | Selects the skeleton |
+| `data-slot` | `"flow-step-library-footer"` | Selects the footer |
+
+## FlowStepLibraryGroup
+
+A group of step types. Renders a `fieldset` named by its `legend`, the group label, with one item per type in order; the legend is visually hidden when `collapsed`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `group` | `FlowStepGroup` | required | Sets the `label` and the `types` of the group. |
+| `onAdd` | `(type: FlowStepType) => void` | required | Called when one of its items is pressed. |
+| `icons` | `Record<string, ReactNode>` | - | Maps a step type `id` to its icon. |
+| `collapsed` | `boolean` | `false` | When true, hides the legend and the item texts. |
+| `disabled` | `boolean` | `false` | When true, disables its items. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-step-library-group"` | Selects the `fieldset` |
+
+## FlowStepLibraryItem
+
+A step type to add. Renders a `button` named by `type.label` and described by `type.description`, with the icon in a frame, the label and the description. A click (or `Enter` and `Space`) calls `onAdd(type)`. On drag start it writes the type under `FLOW_STEP_TRANSFER_TYPE` (with `serializeStepTransfer`), the label as `text/plain` and `effectAllowed = "copy"`, which is what `FlowCanvas` reads on drop.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `type` | `FlowStepType` | required | Sets the step type: its `label`, `description` and `kind`, and the payload of click and drag. |
+| `onAdd` | `(type: FlowStepType) => void` | required | Called on click with `type`. |
+| `icon` | `ReactNode` | - | Sets the icon; without it, the icon of the kind: a bolt for `trigger`, a branch for `condition`, a box for `action` and for a type without `kind`. |
+| `collapsed` | `boolean` | `false` | When true, shows only the icon and drops the description from the button. |
+| `disabled` | `boolean` | `false` | When true, disables the button and makes it not draggable. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-step-library-item"` | Selects the `button` |
+| `data-kind` | `"trigger"`, `"action"` or `"condition"` | The kind of the type, `"action"` without one |
+
+A disabled item is drawn at 64% opacity and takes no pointer events.
+
+## FlowRunCard
+
+The last run of the flow, for the footer. Renders the theme's card as a `region` named by its `h3` (`labels.title`, `"Última execução"`), with the icon, the note of the run or the count of completed steps, the status badge and a progress bar named `"Última execução: 40%"`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `run` | `FlowRunSummary` | required | Sets the run: `status`, `completed`, `total`, an optional `note`, and an `id` the card does not show. |
+| `icon` | `ReactNode` | a history icon | Sets the icon. |
+| `labels` | `Partial<FlowRunCardLabels>` | - | Replaces any of `title`, `summary` and `statuses`; `statuses` merges key by key. |
+| `className` | `string` | - | Adds classes to the card. |
+
+The progress is `completed / total` rounded to a percent, and 0 when `total` is 0. The description is the `note` when there is one, else `labels.summary` (`"{completed} de {total} passos concluídos"`) with the two numbers. Only `failed` is coloured (`destructive` badge); the other states are `outline`. `flowRunSummary` builds a `run` from the steps of a canvas.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-run-card"` | Selects the card; it replaces the card's own `data-slot="card"`, so theme rules on `[data-slot="card"]` do not reach it |
+| `data-status` | a `FlowRunStatus` | The status of the run |
+
+## Labels
+
+The defaults are in Portuguese.
+
+| Field | Default | Where |
+| --- | --- | --- |
+| `title` | `"Passos"` | `FlowStepLibrary`: the `h2` that names the panel |
+| `hint` | `"Arraste um passo para o canvas ou clique para adicionar"` | `FlowStepLibrary`: the line under the title |
+| `empty` | `"Nenhum passo disponível"` | `FlowStepLibrary`: the empty state |
+| `title` | `"Última execução"` | `FlowRunCard`: the `h3` and the progress name |
+| `summary` | `"{completed} de {total} passos concluídos"` | `FlowRunCard`: the description without a note |
+| `statuses` | `"Pronta"`, `"Executando"`, `"Concluída"`, `"Falhou"`, `"Ignorada"`, `"Não executada"` | `FlowRunCard`: the badge, for `idle`, `running`, `success`, `failed`, `skipped` and `not-run` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `groupStepTypes` | `function` | Groups step types by `group`, in order of first appearance, keeping their order. `groupStepTypes(types) => FlowStepGroup[]` |
+| `defaultFlowStepLibraryLabels` | `constant` | The default `FlowStepLibraryLabels`. |
+| `defaultFlowRunCardLabels` | `constant` | The default `FlowRunCardLabels`. |
+| `FlowStepGroup` | `type` | A group: `{ label: string; types: FlowStepType[] }`. |
+| `FlowStepLibraryLabels`, `FlowRunCardLabels` | `type` | The labels of the panel and of the card. |
+| `FlowStepLibraryProps`, `FlowStepLibraryGroupProps`, `FlowStepLibraryItemProps`, `FlowRunCardProps` | `type` | The props of each part. |
+
+`FlowStepType`, `FlowRunSummary`, `FLOW_STEP_TRANSFER_TYPE` and `flowRunSummary` come with [Canvas](?path=/docs/patterns-flow-canvas-api-reference--api-reference).
+
+## Accessibility and theme
+
+- The panel is a region named by its title, and each group by its label; translate them through `labels` and `group.label`.
+- Dragging is pointer only, and a click adds the same step, so a keyboard user adds every type with `Enter` or `Space`.
+- Measured contrast: `docs/accessibility.md`, section "Flow Step Library".

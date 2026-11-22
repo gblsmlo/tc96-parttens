@@ -1,0 +1,309 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Data Grid
+
+A collection as a spreadsheet: the tasks of a sprint, the contacts of a pipeline, the campaigns of an account, edited cell by cell. The user moves between cells with the keyboard, selects cells and rows, sorts, moves, pins, hides and resizes columns, and groups runs of rows. Reach for it when the user works inside the cells; for a table where each row opens its record, use the [Data Table](?path=/docs/patterns-collection-layouts-data-table-api-reference--api-reference).
+
+The other pages of `Patterns/Collection/Layouts/Data Grid`: [Playground](?path=/story/patterns-collection-layouts-data-grid-playground--playground) to try the density, the loading and empty states, the fill column, the selected row and the optional parts, [Stories](?path=/story/patterns-collection-layouts-data-grid-stories--default) for each density and state, [Behavior](?path=/story/patterns-collection-layouts-data-grid-behavior--loading-keeps-the-row-height) for the tests, [Usages](?path=/story/patterns-collection-layouts-data-grid-usages--release-tasks) for the tasks of a release and [Layouts](?path=/story/patterns-collection-layouts-data-grid-layouts--with-toolbar) for the toolbar, group rows, the add row and the grid without pagination or selection column.
+
+Used in: [Patterns/Collection/Usages, Tasks](?path=/story/patterns-collection-usages--tasks), [Patterns/Collection/Usages, Contacts](?path=/story/patterns-collection-usages--contacts) and [Patterns/Collection/Usages, Campaigns](?path=/story/patterns-collection-usages--campaigns), as the Planilha layout of `CollectionLayoutOutlet`.
+
+## Import
+
+```tsx
+import {
+  createSelectColumn,
+  DataGrid,
+  type DataGridColumnDef,
+  DataGridColumnsSubmenu,
+  DataGridDensitySubmenu,
+  DataGridFilterMenu,
+  DataGridPagination,
+  DataGridSearch,
+  DataGridSelectionSummary,
+  DataGridSortSubmenu,
+  useDataGrid,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+const { table } = useDataGrid({ columns, data, enablePagination: true, getRowId })
+
+<DataGrid aria-label="Tarefas" getRowGroup={(row) => row.group} table={table} />
+```
+
+`DataGrid` renders every part itself from the table: the consumer declares the columns, and each cell renders through the column's `cell` or, by default, `DataGridCell`. The tree it renders:
+
+```tsx
+<div>
+  <ScrollArea data-slot="data-grid">
+    <div role="grid">
+      <div data-slot="data-grid-header" role="rowgroup">
+        <div data-slot="data-grid-header-row" role="row">
+          <div data-slot="data-grid-header-cell" role="columnheader">
+            {/* column menu trigger, resize handle */}
+          </div>
+        </div>
+      </div>
+      <div data-slot="data-grid-body" role="rowgroup">
+        <div data-slot="data-grid-group-row" role="row" />
+        <div data-slot="data-grid-row" role="row">
+          <div data-slot="data-grid-cell" role="gridcell">{cell}</div>
+        </div>
+      </div>
+      <div data-slot="data-grid-add-row-group" role="rowgroup" />{/* only with onRowAdd */}
+      <div data-slot="data-grid-footer" role="row">{/* pagination or footer */}</div>
+    </div>
+  </ScrollArea>
+  <div data-slot="data-grid-selection-actions" />{/* only while rows are selected */}
+</div>
+```
+
+## DataGrid
+
+The spreadsheet of one collection. Renders a `div` with `role="grid"`, the WAI-ARIA grid pattern on `div`s so the rows can be virtualized, inside a bordered scroll area. It is controlled: it never fetches, persists or writes a cell; an editable cell reports the change through `onCellValueChange` of `useDataGrid`. It keeps the focused cell, the cell selection, the uncontrolled group collapse and the drag-scroll gesture.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `table` | `DataGridTable<TData>` | required | Supplies the rows, columns and state, from `useDataGrid`. |
+| `aria-label` | `string` | - | Names the grid. |
+| `density` | `"short"`, `"medium"`, `"tall"` or `"extra-tall"` | the table's density | Controls the row height and the cell padding; when set, wins over `DataGridDensitySubmenu`. |
+| `isLoading` | `boolean` | `false` | When true, replaces the rows with skeleton rows and marks the grid busy. |
+| `loadingRowCount` | `number` | `5` | Sets how many skeleton rows show; pass the page size when the grid paginates. |
+| `loadingRowAnatomy` | `DataGridRowSkeletonAnatomy` | - | Shapes the skeleton rows to match the loaded ones. |
+| `emptyMessage` | `string` | `"Nenhum registro para exibir."` | Sets the text of the one row shown when there are no rows. |
+| `fillColumn` | `string` or `false` | the last unpinned column | Sets the column that takes the spare width; `false` keeps every width and fits the grid to its columns. |
+| `maxHeight` | `number` or `string` | - | Caps the height of the scrolling area; without it the grid is as tall as its rows. |
+| `getRowGroup` | `(row: TData) => string \| null` | - | Opens a group row before each run of rows with the same value. |
+| `defaultCollapsedGroupIds` | `readonly string[]` | `[]` | Sets the groups that start collapsed, uncontrolled. |
+| `collapsedGroupIds` | `readonly string[]` | - | Sets the collapsed groups, controlled. |
+| `onCollapsedGroupIdsChange` | `(groupIds: readonly string[]) => void` | - | Called when a group collapses or expands, with every collapsed group. |
+| `getRowSelected` | `(row: TData) => boolean` | - | Marks more rows as selected, besides the table's row selection. |
+| `selectionActions` | `ReactNode` or `(context) => ReactNode` | - | Renders over the bottom of the grid while rows are selected; the function gets `selectedRows`, `selectedCount` and `clearSelection`. |
+| `pagination` | `boolean` | `true` when the table paginates | When false, drops the pagination footer. |
+| `footer` | `ReactNode` | - | Replaces the pagination in the footer row. |
+| `onRowAdd` | `() => void \| Promise<void>` | - | Called when the add row is pressed; adds a row below the body that sticks to the bottom. |
+| `addRowLabel` | `string` | `"Adicionar linha"` | Sets the text of the add row. |
+| `virtualize` | `boolean` | `false` | When true, renders only the rows in view; ignored with `getRowGroup`, while loading or without rows. |
+| `overscan` | `number` | `8` | Sets how many rows render past the view when virtualized. |
+| `className` | `string` | - | Adds classes to the outer `div`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"data-grid"` | Selects the bordered scroll area |
+| `data-slot` | `"data-grid-body"` | Selects the body |
+| `data-virtualized` | `"true"` when rows are virtualized | Marks a virtualized body |
+| `data-slot` | `"data-grid-footer"` | Selects the footer row |
+| `data-slot` | `"data-grid-add-row-group"` | Selects the add row |
+| `data-slot` | `"data-grid-selection-actions"` | Selects the box of `selectionActions` |
+
+The `role="grid"` element is the scroll viewport inside `[data-slot="data-grid"]`, with `data-slot="scroll-area-viewport"`; reach it with `[data-slot="data-grid"] [role="grid"]`. It carries the name and the grid state:
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-density` | the density | Marks the grid by density |
+| `data-drag-scroll` | `"dragging"` while dragged sideways | Marks the grid during a drag-scroll |
+| `aria-busy` | `"true"` while `isLoading` | Marks the grid busy |
+
+The grid declares `aria-rowcount` and `aria-colcount`, and is `aria-multiselectable`, since Shift extends the cell selection. The add row and the footer count as rows. Without a fill column the grid shrinks to its columns and still scrolls when they overflow. The header and the footer stick to the edges, and the vertical scrollbar runs between them. The header fill is `card` mixed with 2% black, 2% white in dark.
+
+### Focus and keyboard
+
+Of the cells, only one is in the tab order; the controls inside cells keep their own tab stops. Click a cell, or Tab to it, then move with the arrow keys; Home goes to the first column after `select` and `actions`, End to the last column, and Ctrl or Cmd with Home or End to the first or last row. Shift with a move extends the cell selection. Navigation walks the visible rows: collapsed rows leave it.
+
+The focus and the selection survive hiding a column and filtering, so undoing either restores them; pass a stable `getRowId` so a row keeps them. A cell with a select reacts to the first click by selecting the cell, and to the next by opening the select.
+
+With the mouse or a pen, dragging past 8px sideways scrolls the columns when they overflow, unless it starts on a control or a header; a click within 500ms of a drag is ignored.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"data-grid-cell"` | Selects a body cell |
+| `data-focused` | `"true"` on the focused cell after an interaction | Draws the focus ring |
+| `data-selected` | `"true"` on a selected cell | Draws the selection fill |
+| `data-column-id` | the column id | Marks a header, body or skeleton cell by column |
+| `data-pinned` | `"start"` or `"end"` | Marks a pinned cell |
+
+### Rows and groups
+
+A row carries `aria-selected` only when rows can be selected (`enableRowSelection` or `getRowSelected`), and `data-state="selected"` when it is, with a `primary` fill.
+
+With `getRowGroup`, every run of consecutive rows with the same value opens a group row, with a collapse button named `Collapse <group>` or `Expand <group>`, the group name and a count of its rows on the page. A `null` value does not close a run. Collapsing hides the rows on the page only: pagination still counts them and the select-all checkbox still selects them. A page that starts in the middle of a group repeats the group row at the top.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"data-grid-row"` | Selects a body row |
+| `data-state` | `"selected"` when the row is selected | Styles a selected row |
+| `data-slot` | `"data-grid-group-row"` | Selects a group row |
+| `data-collapsed` | `"true"` when the group is collapsed | Styles a collapsed group |
+| `data-slot` | `"data-grid-group-label"`, `"data-grid-group-count"` | Selects the group name and its count |
+
+With no rows, the body shows one row with `emptyMessage`.
+
+### Loading rows
+
+While `isLoading`, the body shows `loadingRowCount` skeleton rows, one bar per cell, at the row height of the density. `loadingRowAnatomy` matches the bars to the loaded cells, so the grid keeps its height when the data arrives:
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `cell` | `"text"` or `"control"` | `"text"` | Sets the bar of each cell: 20px for text, 24px for a control such as a select. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-cell` | `"text"` or `"control"` | Marks a skeleton row by its cell |
+
+### Columns
+
+Every header opens a menu, named `Opções da coluna <label>`, when the column can sort, hide or pin: ascending and descending order, clear the order, move left or right, pin to the start or end, and hide. The header shows the column type icon from `meta.type` and the sort direction, and sets `aria-sort` on a sortable column.
+
+A resizable column has a resize handle on its end edge: a `separator` named `Redimensionar coluna <label>`, with its size in `aria-valuenow` and its bounds in `aria-valuemin` and `aria-valuemax`. Drag it, or focus it and press ArrowLeft or ArrowRight to change the width by 8px, within the bounds; a double click resets it. `useDataGrid` sets a minimum of 80px on every column. The last column's handle grows inward, so it adds no scroll.
+
+A pinned column sticks to its edge while the others scroll.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"data-grid-header"`, `"data-grid-header-row"`, `"data-grid-header-cell"` | Selects the header, its rows and its cells |
+| `data-slot` | `"data-grid-column-type-icon"` | Selects the type icon of a header |
+| `data-column-type` | the type | Marks the icon by type |
+
+## useDataGrid
+
+Creates the table `DataGrid` reads, with sorting, filtering, search, pagination, row selection, column visibility, order, pinning, sizing and resizing, and keeps that state locally.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `data` | `TData[]` | required | Sets the rows, in order. |
+| `columns` | `DataGridColumnDef<TData>[]` | required | Declares the columns; a column with no `cell` renders through `DataGridCell`. |
+| `getRowId` | `(row: TData, index: number) => string` | - | Identifies a row; pass a stable key so focus and selection follow the record. |
+| `density` | `"short"`, `"medium"`, `"tall"` or `"extra-tall"` | `"short"` | Sets the starting density, which `DataGridDensitySubmenu` changes. |
+| `onCellValueChange` | `(change: DataGridCellValueChange) => void` | - | Called when an editable cell picks a value, with `{ rowId, columnId, value }`; turns editable select cells on. |
+| `enableSorting` | `boolean` | `true` | When true, columns can be sorted. |
+| `enableColumnFilters` | `boolean` | `true` | When true, columns can be filtered. |
+| `enableColumnResizing` | `boolean` | `true` | When true, columns can be resized. |
+| `enableRowSelection` | `boolean` | `false` | When true, rows can be selected. |
+| `enablePagination` | `boolean` | `false` | When true, the table yields one page of `pageSize` rows; otherwise every row. |
+| `pageSize` | `number` | `10` | Sets the rows per page. |
+| `tableOptions` | `Partial<TableOptions<DataGridFeatures, TData>>` | - | Passes any other table option, spread last so it wins; its `meta` is merged under the grid's own keys, and its `initialState` seeds the state. |
+
+Returns `{ table }`. The search filters every column as text (`includesString`).
+
+## DataGridColumnMeta
+
+The `meta` of a column, read by the header, the menus and `DataGridCell`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | - | Names the column in the menus, the filter and the resize handle; without it the column id. |
+| `type` | `DataGridColumnType` | - | Sets the icon of the header. |
+| `variant` | `DataGridCellVariant` | `"text"` | Sets how `DataGridCell` renders the value. |
+| `align` | `"start"`, `"center"` or `"end"` | `"start"` | Aligns the header and the default cell. |
+| `options` | `DataGridSelectOption[]` | - | Lists `{ label, value }` for `select` and `badge` cells. |
+| `editable` | `boolean` | - | When true, a `select` cell becomes a select, if `onCellValueChange` is set. |
+| `placeholder` | `string` | - | Sets the text of an empty `select` or `badge` cell. |
+| `badgeVariant` | `string union` | `"secondary"` | Sets the `Badge` variant of `select` and `badge` cells. |
+
+Values of `variant`: `"text"`, `"number"`, `"select"`, `"checkbox"`, `"date"`, `"badge"`, `"custom"`. Values of `badgeVariant`: `"primary"`, `"secondary"`, `"outline"`, `"destructive"`, `"success"`, `"warning"`, `"info"`, `"error"`. `DATA_GRID_COLUMN_TYPES` lists the values of `type`.
+
+## DataGridCell
+
+The default cell renderer, chosen by `meta.variant`:
+
+- `text` and `custom` show the value as text, truncated; `number` with tabular figures.
+- `date` shows the date only, in the browser's locale; a `"YYYY-MM-DD"` string reads as that local day.
+- `checkbox` shows a check or a dash, read as `Marcado` or `Desmarcado`.
+- `badge` shows the option label in a `Badge`, or `placeholder` when empty.
+- `select` shows the option label; when `editable` with `onCellValueChange` and `options`, it is a select in a `Badge` named `<label>: <value>` (`Sem valor` when empty), and picking an option calls `onCellValueChange`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-grid-select-trigger` | present | Marks the trigger of an editable select |
+
+A custom `cell` must derive from the row, the column, the cell and `table.options.meta` only: a cell renders again only when those change, so one that reads sorting, filters or pagination shows stale content. A new control inside a cell that should not start a drag-scroll needs a role or element the grid treats as a control (`button`, `input`, `[role="checkbox"]` and the like).
+
+## createSelectColumn
+
+`createSelectColumn(options?) => DataGridColumnDef<TData>` returns a first column, `select`, 44px wide, that never sorts, hides, pins or resizes. Its header holds a checkbox named `Selecionar todos os registros` for the page; each cell shows the row number, `row.index + 1`, and swaps it for a checkbox named `Selecionar registro` on hover, focus, a coarse pointer or when checked. The number is the position in `data`, so sorting does not renumber.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `showRowNumbers` | `boolean` | `true` | When false, shows only the checkbox. |
+| `size` | `number` | `44` | Sets the width. |
+
+Pair it with `enableRowSelection`. The row number carries `data-slot="data-grid-row-marker"`.
+
+## DataGridSearch
+
+A search field that filters every row as the user types and returns to the first page. Renders an `Input` with `type="search"`, named by `aria-label` or, without it, by `placeholder`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `table` | `DataGridTable<TData>` | required | Supplies the search state. |
+| `placeholder` | `string` | `"Buscar…"` | Sets the placeholder, and the name when there is no `aria-label`. |
+
+Also takes every prop of an `Input` except `value`, `onChange` and `type`. Carries `data-slot="data-grid-search"`.
+
+## DataGridFilterMenu
+
+A popover with one text field per column that can filter, each named `Filtrar <label>`, and a `Limpar filtros` button while a filter is set. Every change returns to the first page. Renders a ghost button with a filter icon; renders nothing when no column can filter.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `table` | `DataGridTable<TData>` | required | Supplies the columns. |
+| `label` | `string` | `"Filtrar"` | Sets the text and the name of the button, and the name of the popover. |
+| `className` | `string` | - | Adds classes to the button. |
+
+The popover content carries `data-slot="data-grid-filter-menu"`.
+
+## DataGridSelectionSummary
+
+The count of selected rows, `1 selecionado` or `N selecionados`. Renders a `span` with `aria-live="polite"`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `table` | `DataGridTable<TData>` | required | Supplies the selection. |
+
+Also takes every prop of a `span` except `children`. Carries `data-slot="data-grid-selection-summary"`.
+
+## DataGridSortSubmenu, DataGridDensitySubmenu and DataGridColumnsSubmenu
+
+Submenus for a `ViewSettingsMenu` or any `Menu`, each with a `table` and a `label`:
+
+| Part | `label` default | Holds |
+| --- | --- | --- |
+| `DataGridSortSubmenu` | `"Ordenar por"` | `<label>: crescente` and `<label>: decrescente` per sortable column, and `Limpar ordenação` while sorted; nothing renders when no column sorts |
+| `DataGridDensitySubmenu` | `"Altura das linhas"` | a radio group: `Compacta`, `Média`, `Alta`, `Extra alta`; its icon follows the density |
+| `DataGridColumnsSubmenu` | `"Colunas"` | a checkbox per column that can hide, which stays open on click; nothing renders when no column hides |
+
+## DataGridPagination
+
+The pagination of a table that paginates, for `DataGrid`, which renders it in its footer on its own, and for `DataTable`, below which the consumer places it. Renders a row with the range, `1–5 de 14`, and the buttons `Primeira página`, `Página anterior`, `Próxima página` and `Última página`, in a navigation named `Paginação da tabela`. It is the [`CollectionPagination`](?path=/docs/patterns-collection-api-reference--api-reference) of the collection, fed from the table.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `table` | `PaginatedTable` | required | Supplies the page, the page count and the row count; any table from `useDataGrid` or `useDataTable`. |
+
+Also takes every prop of a `div` except `children`. Carries `data-slot="data-grid-pagination"`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `dataGridFeatures` | `constant` | The TanStack features and row models `useDataGrid` registers. |
+| `DATA_GRID_COLUMN_TYPES` | `constant` | The values of `meta.type`. |
+| `DATA_GRID_COLUMN_TYPE_ICONS`, `DataGridColumnTypeIcon` | `constant`, `component` | The icon of each column type, and the component that renders it hidden from assistive technology. |
+| `DataGridProps`, `DataGridRowSkeletonAnatomy`, `DataGridPaginationProps`, `PaginatedTable` and the `Props` of each toolbar part | `type` | The props of the parts. |
+| `DataGridColumnDef`, `DataGridColumn`, `DataGridHeader`, `DataGridTable`, `DataGridTableMeta`, `DataGridFeatures`, `UseDataGridOptions`, `UseDataGridReturn` | `type` | The column, table and hook types. |
+| `DataGridColumnMeta`, `DataGridCellVariant`, `DataGridColumnType`, `DataGridAlign`, `DataGridDensity`, `DataGridSelectOption`, `DataGridCellValueChange` | `type` | The column meta and its unions. |
+
+## Accessibility and theme
+
+- Name the grid with `aria-label`.
+- Pass a `label` in every column's `meta`: it names the column menu, the filter field, the resize handle and the editable select.
+- The copy is Portuguese (`Nenhum registro para exibir.`, `Adicionar linha`, `Opções da coluna`, `Redimensionar coluna`, `Selecionar registro`, the menus and the pagination), except the group button, `Collapse <group>` and `Expand <group>`.
+- The colors come from the theme tokens `background`, `card`, `border`, `muted`, `muted-foreground`, `accent`, `primary` and `ring`. Measured contrast: `docs/accessibility.md`.

@@ -1,0 +1,276 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Autocomplete
+
+A text input that suggests options while the user types, and lets the text stay whatever the user wrote: a search box with recent searches, the city of an address, an email address among the teammates. Reach for it when free text is a valid answer and the suggestions only save typing; when the value must be one of the options, use a `Combobox`, and for a short list with nothing to type, a `Select`.
+
+The other pages of `UI/Autocomplete`: [Playground](?path=/story/ui-autocomplete-playground--playground) to try the texts, the size, the state and the optional parts, [Stories](?path=/story/ui-autocomplete-stories--default) for each prop value, [Behavior](?path=/story/ui-autocomplete-behavior--filters-as-you-type) for the tests, [Usages](?path=/story/ui-autocomplete-usages--shipping-city) for real inputs and [Layouts](?path=/story/ui-autocomplete-layouts--with-start-addon) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Autocomplete,
+  AutocompleteEmpty,
+  AutocompleteInput,
+  AutocompleteItem,
+  AutocompleteList,
+  AutocompletePopup,
+} from '@acme/ui/autocomplete'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Autocomplete>
+  <AutocompleteInput startAddon={<Icon />} showTrigger />
+  <AutocompletePopup>
+    <AutocompleteList>
+      <AutocompleteGroup>
+        <AutocompleteGroupLabel />
+        <AutocompleteItem />
+        <AutocompleteItem />
+      </AutocompleteGroup>
+      <AutocompleteSeparator />
+      <AutocompleteItem />
+    </AutocompleteList>
+    <AutocompleteStatus />
+  </AutocompletePopup>
+</Autocomplete>
+```
+
+An `AutocompleteEmpty` before `AutocompleteList` shows its text only while nothing matches, and the clear button of `AutocompleteInput` only while the input has text, so neither shows here.
+
+## Autocomplete
+
+Groups the parts and holds the text of the input and the open state. Alias for `Autocomplete.Root` from Base UI; it renders no element of its own, only an unnamed hidden input. Its value is that text, a `string`, never an item: choosing an option writes the option's label into the input, and the user may also leave any text that matches nothing. With `items`, it filters them by the text (case-insensitive "contains" on the label) and hands the result to `AutocompleteList`; it never fetches or sorts them. With `name`, the visible `input` of `AutocompleteInput` takes the name, so its text goes with a form.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly Item[]` or groups of `{ items }` | - | Sets the options to filter and render; `AutocompleteEmpty` needs it. |
+| `value` | `string` | - | Controls the text of the input; pair it with `onValueChange`. |
+| `defaultValue` | `string` | - | Sets the text of the first render when `value` is not passed. |
+| `onValueChange` | `(value: string, eventDetails: ChangeEventDetails) => void` | - | Called when the user types, picks an option or clears the input, with the `reason` in `eventDetails`. |
+| `mode` | `"list"`, `"both"`, `"inline"` or `"none"` | `"list"` | Controls whether the list filters by the text and whether the highlighted option fills the input while the arrow keys move. |
+| `open` | `boolean` | - | Controls the open state of the popup; pair it with `onOpenChange`. |
+| `defaultOpen` | `boolean` | `false` | Sets the open state of the first render when `open` is not passed. |
+| `onOpenChange` | `(open: boolean, eventDetails: ChangeEventDetails) => void` | - | Called when the popup asks to open or close, with the `reason` in `eventDetails`. |
+| `autoHighlight` | `boolean` or `"always"` | `false` | When true, highlights the first match once the user types, so `Enter` picks it; `"always"` keeps the first option highlighted even before typing. |
+| `openOnInputClick` | `boolean` | `false` | When true, a press on the input opens the popup; otherwise only typing, the arrow keys or the trigger open it. |
+| `disabled` | `boolean` | `false` | When true, the input and the trigger ignore the user. |
+| `readOnly` | `boolean` | `false` | When true, the text shows but cannot change. |
+| `required` | `boolean` | `false` | When true, a form does not submit while the input is empty. |
+| `name` | `string` | - | Sets the `name` of the visible `input`, so a form submits its text. |
+| `limit` | `number` | `-1` | Sets the most options the list shows; `-1` shows all. |
+| `filter` | `(item: Item, query: string, itemToString?: (item: Item) => string) => boolean` or `null` | - | Replaces the built-in filter; `null` turns filtering off, for options the consumer already filtered. |
+| `itemToStringValue` | `(item: Item) => string` | - | Sets the text an object option writes into the input when it is not shaped `{ label, value }`. |
+| `submitOnItemClick` | `boolean` | `false` | When true, picking an option with the pointer or `Enter` submits the form around it. |
+
+Also takes every prop of Base UI `Autocomplete.Root`, such as `filteredItems`, `inline`, `keepHighlight`, `highlightItemOnHover`, `onItemHighlighted` and `modal`.
+
+The `reason` of a change is one of `"input-change"`, `"input-clear"`, `"item-press"`, `"clear-press"`, `"trigger-press"`, `"input-press"`, `"escape-key"`, `"outside-press"`, `"list-navigation"`, `"focus-out"`, `"close-press"`, `"cancel-open"` or `"none"`. The value of `mode` is also the `aria-autocomplete` of the input: `"list"` filters and leaves the text alone, `"both"` filters and fills the input with the highlighted option, `"inline"` fills without filtering, and `"none"` does neither.
+
+A form receives the text of the input, the label of a picked option and not its `value`; map it back to an id in the submit handler when the server needs one.
+
+## AutocompleteInput
+
+The text box the user types in, with an optional trigger and clear button at its end. Renders a `div` with `role="group"` that holds the start addon, an `Input` whose native `input` has `role="combobox"`, and, when asked, an `AutocompleteTrigger` and an `AutocompleteClear`. Typing opens the popup; `ArrowDown` and `ArrowUp` open it too and move the highlight through the options.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"sm"`, `"default"`, `"lg"` or `number` | `"default"` | Controls the height and the padding; a number sets the native `size` attribute instead. |
+| `startAddon` | `ReactNode` | - | Sets a decorative icon at the start of the input, hidden from assistive technology. |
+| `showTrigger` | `boolean` | `false` | When true, renders an `AutocompleteTrigger` with a chevron that opens the popup. |
+| `showClear` | `boolean` | `false` | When true, renders an `AutocompleteClear` that shows while the input has text and hides the trigger meanwhile. |
+| `triggerProps` | `AutocompletePrimitive.Trigger.Props` | - | Sets the props of the trigger it renders, such as its `aria-label`. |
+| `clearProps` | `AutocompletePrimitive.Clear.Props` | - | Sets the props of the clear button it renders, such as its `aria-label`. |
+
+Also takes every prop of Base UI `Autocomplete.Input`, such as `placeholder`, `type`, `aria-label` and `ref`. `className` goes to the bordered `Input` box (`data-slot="input-control"`), and every other prop to the native `input`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-input-group"` | The group that holds the input and its buttons |
+| `data-slot` | `"autocomplete-input"` | The native `input` |
+| `data-slot` | `"autocomplete-start-addon"` | The box of `startAddon` |
+| `data-slot` | `"autocomplete-icon"` | The chevron inside the built-in trigger |
+| `data-size` | `"sm"`, `"default"`, `"lg"` or the number passed | Set on the `input-control` box |
+| `data-popup-open` | present while the popup is open | Styles the input and its group while the list shows |
+| `data-popup-side` | `"top"`, `"bottom"` and the other sides | Styles the input by the side the popup opened on |
+| `data-list-empty` | present when no option matches | Styles the input while the list is empty |
+| `data-pressed` | present while the popup is open, with `data-popup-open` | Styles the input as pressed while the list shows |
+| `data-disabled`, `data-readonly`, `data-required` | present in that state | Style the input in that state |
+| `data-valid`, `data-invalid`, `data-touched`, `data-dirty`, `data-filled`, `data-focused` | present in that state inside a `Field` | Style the field states |
+
+From `sm` up the box is 28px high at `"sm"`, 32px at `"default"` and 36px at `"lg"`; below `sm` each is 4px taller. The built-in buttons are 28px squares from `sm` up (32px below), sit at the end of the box, and grow their hit area to 44px on a coarse pointer; neither is in the tab order. With `aria-invalid` on the input, the box takes a `destructive` border, and a `destructive` ring on focus. The group drops to 64% opacity while the input is disabled.
+
+## AutocompleteTrigger
+
+A button that opens the popup with the options that match the current text. Renders a `button` with `aria-haspopup="listbox"` and `tabindex="-1"`; `AutocompleteInput` renders one with a chevron when `showTrigger` is true. Inside a `Field` it takes the `FieldLabel` as its name through `aria-labelledby`; outside one it has no name, so pass an `aria-label`. On its own it carries no style.
+
+Also takes every prop of Base UI `Autocomplete.Trigger`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-trigger"` | Selects the part in the theme and from other parts |
+| `data-popup-open` | present while the popup is open | Styles the trigger of the open popup |
+| `data-popup-side` | `"top"`, `"bottom"` and the other sides | Styles the trigger by the side the popup opened on |
+| `data-list-empty` | present when no option matches | Styles the trigger while the list is empty |
+| `data-pressed` | present while the popup is open, with `data-popup-open` | Styles the trigger as pressed while the list shows |
+| `data-disabled`, `data-readonly`, `data-required` | present in that state | Style the trigger in that state |
+| `data-valid`, `data-invalid`, `data-touched`, `data-dirty`, `data-filled`, `data-focused` | present in that state inside a `Field` | Style the field states |
+
+## AutocompleteClear
+
+A button that empties the input. Renders a `button` with an `x` icon while the input has text and nothing otherwise, placed at the end of the input as a 28px square from `sm` up (32px below); `AutocompleteInput` renders one when `showClear` is true. It never gets a name of its own, not even inside a `Field`.
+
+Also takes every prop of Base UI `Autocomplete.Clear`, such as `keepMounted`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-clear"` | Selects the part in the theme and from other parts |
+| `data-visible` | present while the input has text | Styles the visible button |
+| `data-popup-open` | present while the popup is open | Styles the button while the list shows |
+| `data-disabled` | present when disabled | Styles the disabled button |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+
+## AutocompleteValue
+
+The text of the input as content, for a heading such as "Results for …". Alias for `Autocomplete.Value` from Base UI; renders no element, only its children or the text.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` or `(value: string) => ReactNode` | - | Sets what renders for the text; without it, the text itself renders. |
+
+## AutocompletePopup
+
+The floating surface of the list. Renders a `div` in a portal on `body`, positioned under the input, inside a `span` that draws the surface: a 1px `border`, a large radius, the `popover` background and a shadow. The popup is at least as wide as the input and at most 368px high (`23rem`), or the room left on screen.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `"top"`, `"bottom"`, `"left"`, `"right"`, `"inline-start"` or `"inline-end"` | `"bottom"` | Sets the side of the input the popup opens on. |
+| `align` | `"start"`, `"center"` or `"end"` | `"start"` | Sets how the popup aligns with the input. |
+| `sideOffset` | `number` | `4` | Sets the gap in pixels between the input and the popup. |
+| `alignOffset` | `number` | `0` | Moves the popup along the input, in pixels. |
+| `anchor` | `Element`, a ref, or a function that returns one | - | Sets the element the popup is positioned against. |
+| `portalProps` | `AutocompletePrimitive.Portal.Props` | - | Sets the props of the portal it renders, such as `container` or `keepMounted`. |
+
+Also takes every prop of Base UI `Autocomplete.Popup`, such as `initialFocus` and `finalFocus`. `className` goes to the surface `span`, and every other prop to the popup `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-popup"` | Selects the popup |
+| `data-slot` | `"autocomplete-positioner"` | Selects the positioned layer around it, at `z-50` |
+| `data-open`, `data-closed` | present in that state | Style the open and closed states |
+| `data-starting-style`, `data-ending-style` | present while it animates in or out | Style the enter and exit transitions |
+| `data-side`, `data-align` | the side and alignment it opened with | Style the popup by its placement |
+| `data-empty` | present when no option matches | Styles the popup with an empty list |
+
+## AutocompleteEmpty
+
+The message for a text that matches nothing. Renders a `div` with `role="status"` and `aria-live="polite"` that stays mounted and shows its children only while the filtered list is empty, so a screen reader announces it. It needs `items` or `filteredItems` on `Autocomplete`: without either it cannot tell, and shows its children all the time.
+
+Also takes every prop of Base UI `Autocomplete.Empty`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-empty"` | Selects the part in the theme and from other parts |
+
+## AutocompleteList
+
+The list of options. Renders a `div` with `role="listbox"` inside a `ScrollArea` that fades its edges. A function child is called for each filtered item of `items`; plain children render as they are.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` or `(item: Item, index: number) => ReactNode` | - | Sets the options; a function receives each filtered item, or each group when `items` holds groups. |
+
+Also takes every prop of Base UI `Autocomplete.List`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-list"` | Selects the part in the theme and from other parts |
+
+An empty list has no padding, so `AutocompleteEmpty` is the only thing the popup shows.
+
+## AutocompleteGroup, AutocompleteGroupLabel and AutocompleteCollection
+
+The parts of a grouped list. `AutocompleteGroup` renders a `div` with `role="group"`, labelled by its `AutocompleteGroupLabel`, and takes the group's `items`; a group after another gets a 6px top margin. `AutocompleteGroupLabel` renders a `div` in `text-xs` and `text-muted-foreground`. `AutocompleteCollection` renders no element: its function child is called for each filtered item of the group around it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly Item[]` | - | Sets the items of an `AutocompleteGroup`, which its `AutocompleteCollection` renders. |
+
+Also takes every prop of the Base UI part: `Autocomplete.Group`, `Autocomplete.GroupLabel` or `Autocomplete.Collection`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-group"` or `"autocomplete-group-label"` | Selects the part in the theme and from other parts |
+
+A group whose items all fail the filter is not rendered.
+
+## AutocompleteItem
+
+One option. Renders a `div` with `role="option"`, at least 28px high from `sm` up (32px below). Pressing it, or `Enter` on the highlighted one, writes its text into the input and closes the popup. It shows no check: an autocomplete keeps no selection, only the text.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `Item` | `null` | Sets the option the item stands for; pass the item itself, so `itemToStringValue` and the `{ label, value }` shape can turn it into text. |
+| `disabled` | `boolean` | `false` | When true, the pointer and `Enter` cannot pick the option. |
+
+Also takes every prop of Base UI `Autocomplete.Item`, such as `onClick` and `index`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-item"` | Selects the part in the theme and from other parts |
+| `data-highlighted` | present on the option the keyboard or the pointer is on | Styles the active option, with the `accent` background |
+| `data-disabled` | present when disabled | Styles a disabled option, at 64% opacity |
+
+## AutocompleteSeparator
+
+A line between options or groups. Renders a `div` with `role="presentation"`, so assistive technology skips it, 1px high in the `border` color; the last child of the list is hidden, so a separator after every group leaves none at the end.
+
+Also takes every prop of Base UI `Autocomplete.Separator`, such as `orientation`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-separator"` | Selects the part in the theme and from other parts |
+| `data-orientation` | `"horizontal"` or `"vertical"` | Follows its `orientation` prop, `"horizontal"` by default |
+
+## AutocompleteStatus
+
+A message about the list, such as loading, an error or the count of hidden results under a `limit`. Renders a `div` with `role="status"` and `aria-live="polite"` in `text-xs` and `text-muted-foreground`, so a screen reader announces each change; with no children it takes no space. The consumer computes its text: it counts nothing on its own.
+
+Also takes every prop of Base UI `Autocomplete.Status`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-status"` | Selects the part in the theme and from other parts |
+
+## AutocompleteRow
+
+A row of options in a grid list. Renders a `div` with `role="row"`, and only acts when `Autocomplete` has `grid`, where the arrow keys also move across a row.
+
+Also takes every prop of Base UI `Autocomplete.Row`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"autocomplete-row"` | Selects the part in the theme and from other parts |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `useAutocompleteFilter` | `function` | Returns the `contains`, `startsWith` and `endsWith` matchers, for a `filter` of your own or for counting matches outside the list (the text of an `AutocompleteStatus`). `useAutocompleteFilter(options?) => { contains, startsWith, endsWith }` |
+| `AutocompletePrimitive` | `namespace` | The Base UI `Autocomplete` namespace, for the parts not wrapped here (`AutocompletePrimitive.Arrow`, `AutocompletePrimitive.Backdrop`, `AutocompletePrimitive.useFilteredItems`) and the types such as `AutocompletePrimitive.Root.ChangeEventDetails`. |
+
+## Accessibility and theme
+
+- Name the autocomplete: put it in a `Field` with a `FieldLabel`, or pass `aria-label` to `AutocompleteInput`. A `FieldDescription` becomes its description. A placeholder is not a name.
+- The built-in clear button never has a name, and the trigger has one only inside a `Field`, from the `FieldLabel`: pass an `aria-label` through `clearProps` (`{ 'aria-label': 'Clear city' }`) whenever `showClear` is on, and through `triggerProps` whenever `showTrigger` is on outside a `Field`.
+- Keep an `AutocompleteEmpty` in the popup, and say in it whether the typed text is still accepted: it is the only feedback for a text that matches nothing.
+- Put a count or a loading message in `AutocompleteStatus`, not in an item, so the arrow keys do not stop on it.
+- The parts use the `input`, `ring`, `popover`, `accent`, `muted-foreground`, `border` and `destructive` tokens; the theme needs no rule of its own.
