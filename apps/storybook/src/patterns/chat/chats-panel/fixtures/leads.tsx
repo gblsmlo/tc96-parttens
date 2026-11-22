@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import type { IconModule } from '@thesvg/icons'
 import googleAds from '@thesvg/icons/google-ads'
 import meta from '@thesvg/icons/meta'
-import { type Channel, channels } from '../../chats-panel/fixtures/chats'
+import { type Channel, channels } from './chats'
 
 export type LeadStatus = 'disqualified' | 'new' | 'qualified' | 'qualifying'
 export type AdPlatform = 'google-ads' | 'meta-ads'

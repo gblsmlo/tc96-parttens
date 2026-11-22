@@ -1,0 +1,154 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Chats Panel
+
+The list of conversations of an inbox: the column a support or sales agent picks a conversation from, with who wrote, through which channel, when, the last message and how many are unread. It is controlled: the consumer passes the conversations already sorted and filtered, the avatars, the brand marks, the selection and every label, and mounts the menu that sorts and filters them; the panel never sorts, filters, selects, fetches or keeps state.
+
+The other pages of `Patterns/Chat/Chats Panel`: [Playground](?path=/story/patterns-chat-chats-panel-playground--playground) to try the variant, the content and each part of a row, [Stories](?path=/story/patterns-chat-chats-panel-stories--default) for each variant and state, [Behavior](?path=/story/patterns-chat-chats-panel-behavior--section-named-by-title) for the tests, [Usages](?path=/story/patterns-chat-chats-panel-usages--inbox) for an inbox and a lead qualification page and [Layouts](?path=/story/patterns-chat-chats-panel-layouts--without-actions) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  ChatsPanel,
+  ChatsPanelItem,
+  ChatsPanelItemSkeleton,
+  ChatsPanelList,
+  ChatsPanelSkeleton,
+} from '@acme/patterns'
+import messenger from '@thesvg/icons/messenger'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+While the conversations load, a skeleton takes the place of the list:
+
+<Canvas of={ApiReferenceStories.SkeletonAnatomy} />
+
+```tsx
+<ChatsPanel title actions>
+  <ChatsPanelList>
+    <ChatsPanelItem avatar name time preview channel unreadCount />
+  </ChatsPanelList>
+</ChatsPanel>
+
+<ChatsPanel title>
+  <ChatsPanelSkeleton label />
+</ChatsPanel>
+```
+
+## ChatsPanel
+
+The frame of the list. Renders a `section` named by its `h2` (`title`), with `actions` at the end of the header and a scroll area that holds `children`. The panel takes its height from the consumer through `className`; the scroll area takes what the header leaves.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the `h2` that names the panel and the `ChatsPanelList` inside it. |
+| `variant` | `"plain"`, `"card"` or `"inset"` | `"plain"` | Controls the frame: none, one muted card around the header and the list, or the header outside and only the list in the card. |
+| `actions` | `ReactNode` | - | Sets the controls at the end of the header, such as a `ViewSettingsMenu`; nothing renders without it. |
+| `children` | `ReactNode` | - | Sets the content of the scroll area: a `ChatsPanelList`, a `ChatsPanelSkeleton` or an empty state. |
+| `className` | `string` | - | Adds classes to the `section`, such as its height. |
+
+Takes no other prop.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"chats-panel"` | Selects the `section` |
+| `data-variant` | `"plain"`, `"card"` or `"inset"` | Styles each variant |
+
+Inside it, `data-slot` also marks the header (`"chats-panel-header"`), the actions wrapper (`"chats-panel-actions"`) and the scroll area (`"chats-panel-body"`). The `card` and `inset` frames are a `Card` with `data-slot="card"`: in `card` it is the only child of the `section`, in `inset` it wraps the scroll area only.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--avatar-size` | `--spacing(10)`, 40px | Sets the size of the `Avatar` of each row and of the skeleton's avatar; override it through `className`. |
+
+The header has 16px before the title and 8px after the actions, so the title lines up with the avatars. A `ViewSettingsMenu` in `actions` needs a `CollectionToolbar` around it.
+
+## ChatsPanelList
+
+The list of conversations. Renders a `ul` with no bullets and 2px between rows. Inside a `ChatsPanel` it is named by the panel's title; outside one, name it with `aria-label`. An `aria-labelledby` the consumer passes wins over the title.
+
+Also takes every prop of a `ul`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"chats-panel-list"` | Selects the `ul` |
+
+## ChatsPanelItem
+
+One conversation. Renders an `li` holding a `button` with `type="button"`, or the element `render` returns (a router link), so the list stays valid whatever the element. The avatar slot (the avatar, the unread count and the channel mark) is hidden from assistive technology; the channel and `unreadLabel` are read after the name instead, so the row reads `Marina Costa Messenger, 2 não lidas 00:29 Consegue…`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `avatar` | `ReactNode` | required | Sets the avatar, such as an `Avatar`. |
+| `name` | `ReactNode` | required | Sets the name on the first line, and the start of the accessible name. |
+| `time` | `ReactNode` | - | Sets the time at the end of the first line, such as a `time` element. |
+| `preview` | `ReactNode` | - | Sets the last message on the second line, cut to one line. |
+| `unreadCount` | `number` | `0` | Sets the count shown on the avatar; above zero it inks the preview in `foreground`. |
+| `unreadLabel` | `string` | - | Sets the spoken unread text, such as `"2 não lidas"`; dropped while `unreadCount` is 0. |
+| `channel` | `{ svg: string; title: string }` | - | Sets the brand mark on the avatar: a module of `@thesvg/icons`. |
+| `channelLabel` | `string` | the `title` of `channel` | Sets the spoken channel name. |
+| `selected` | `boolean` | `false` | When true, sets `aria-current="true"` and the `accent` background. |
+| `render` | `ReactElement` or `(props, state) => ReactElement` | - | Replaces the `button`; without `type`, for a link. |
+
+Also takes every prop of a `button` except `children` and `name`; `onClick`, `className` and an `aria-current` (`"page"` on a router link, which wins over `selected`) go on the interactive element.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"chats-panel-item"` | Selects the `li` |
+| `data-unread` | `"true"` while `unreadCount` is above 0 | Styles an unread row |
+| `data-slot` | `"chats-panel-item-trigger"` | Selects the `button` or the rendered element |
+| `data-slot` | `"chats-panel-item-avatar"`, `"chats-panel-item-channel"` | Selects the avatar slot and the channel mark |
+| `data-slot` | `"chats-panel-item-name"`, `"chats-panel-item-time"`, `"chats-panel-item-preview"` | Selects each text |
+
+The count is shown as given, with no cap. The channel mark is an `img` with `alt=""` and the `svg` as a `data:image/svg+xml` URI, which keeps the gradient ids of two marks from colliding; a Content Security Policy without `data:` in `img-src` blocks it. A selected or hovered row shows the time and a read preview in `accent-foreground` at 72%. Only `svg` and `title` of the module are read.
+
+## ChatsPanelSkeleton
+
+The loading state of the list. Renders an `output` with `aria-busy="true"`, named by `label`, holding `count` rows of `ChatsPanelItemSkeleton` hidden from assistive technology. The rows cycle four pairs of widths, so the bars differ from row to row.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Names the status, such as `"Carregando conversas"`. |
+| `count` | `number` | `6` | Sets how many rows render; a negative count renders none. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"chats-panel-skeleton"` | Selects the `output` |
+
+## ChatsPanelItemSkeleton
+
+One loading row. Renders a `div` hidden from assistive technology, with the box of a `ChatsPanelItem` (an `--avatar-size` circle and two 20px lines), so swapping the skeleton for the list does not move the rows.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `nameWidth` | `ChatsPanelSkeletonWidth` | `"md"` | Sets the width of the name bar. |
+| `previewWidth` | `ChatsPanelSkeletonWidth` | `"xl"` | Sets the width of the preview bar. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"chats-panel-item-skeleton"` | Selects the row |
+| `data-width` | `"xs"`, `"sm"`, `"md"`, `"lg"` or `"xl"` | Set on the name and preview bars |
+
+The widths are `xs` 32px, `sm` 64px, `md` 96px, `lg` 128px and `xl` 176px; the time bar is always `xs`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `chatsPanelSkeletonWidths` | `constant` | The widths of a skeleton bar, `["xs", "sm", "md", "lg", "xl"]`. |
+| `ChatsPanelSkeletonWidth`, `ChatsPanelVariant` | `type` | One of those widths, and the `variant` values. |
+| `ChatsPanelProps`, `ChatsPanelListProps`, `ChatsPanelItemProps`, `ChatsPanelSkeletonProps`, `ChatsPanelItemSkeletonProps` | `type` | The props of each part. |
+
+## Accessibility and theme
+
+- Write `unreadLabel` already pluralized; the panel has no default copy.
+- Pass `channelLabel` when the brand name is not what the user should hear.
+- Give `ChatsPanelList` an `aria-label` when it is used outside a `ChatsPanel`.
+- The `card` and `inset` frames use `muted` at 72%, the selected and hovered rows `accent`; the unread badge and the channel mark have a 2px `background` outline that reads as a cut-out on the page.
+- Measured contrast: `docs/accessibility.md`, section `chats-panel`.

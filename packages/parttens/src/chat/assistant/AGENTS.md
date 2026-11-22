@@ -57,7 +57,7 @@ bun test packages/registry
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/chat/assistant
 ```
 
-The stories are in `apps/storybook/src/patterns/chat/assistant/`. `assistant-panel.stories.tsx` (`Patterns/Chat/Assistant`) is the root with the `Doc` page and its `usage` and `api`: `Empty` (clicks a suggestion), `Conversation` (types and sends), `Typing`, `Error`, `Expanded` and `Minimized`, all floating inside a positioned decorator. `usages/workflow.stories.tsx` owns the conversation as a consumer would, with the workflow editor's suggestions. Interface tests are `play` functions there too: `panel.stories.tsx` (`Patterns/Chat/Assistant/Panel`: placement, empty state, log, typing, retry, header actions, badge, labels) and `composer.stories.tsx` (send, attach, placeholder). The only bun test left is `core.test.ts`. The stories run axe with `test: 'error'`.
+The stories are in `apps/storybook/src/patterns/chat/assistant/`, on the six component pages under `Patterns/Chat/Assistant` (`API Reference`, `Playground`, `Stories`, `Behavior`, `Usages`, `Layouts`). Interface tests are the `play` functions of `Patterns/Chat/Assistant/Behavior` (placement, empty state, log, typing, retry, header actions, badge, labels and the composer). The only bun test left is `core.test.ts`. The stories run axe with `test: 'error'`.
 
 ## Pointers
 
