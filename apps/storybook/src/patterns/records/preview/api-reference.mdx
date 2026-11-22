@@ -1,0 +1,160 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Record Preview
+
+A modal sheet on the right that previews one record without leaving the screen: a task opened from a board card, a contact opened from a table row, a version opened from a list. Reach for it when the user wants the details of a record at a glance and still has the collection behind it. The consumer owns the open state, the content, the trigger, the URL, the record lookup and the loading and error states; the preview never fetches, confirms or keeps a record.
+
+The other pages of `Patterns/Records/Preview`: [Playground](?path=/story/patterns-records-preview-playground--playground) to try the texts, the header action, the footer and the content, [Stories](?path=/story/patterns-records-preview-stories--default) for the base composition, [Behavior](?path=/story/patterns-records-preview-behavior--named-by-title-with-one-close-button) for the tests, [Usages](?path=/story/patterns-records-preview-usages--tasks) for a task preview with real content, and [Layouts](?path=/story/patterns-records-preview-layouts--title-only) for how the header, the body column and the footer combine.
+
+Used in: [Patterns/Records/Group/Usages, Briefing](?path=/story/patterns-records-group-usages--briefing) opens a form in a `RecordPreview` from a row, with the save state in the description and the commands in the footer, and [Patterns/Records/Group/Usages, Versions](?path=/story/patterns-records-group-usages--versions) opens each version read-only. [Usages, Tasks](?path=/story/patterns-records-preview-usages--tasks) puts `RecordGroup` sections of `properties` values, `IconLabelProperty` included, inside the body.
+
+## Import
+
+```tsx
+import {
+  RecordPreview,
+  RecordPreviewAction,
+  RecordPreviewBody,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+`RecordPreview` with `RecordPreviewAction` in `actions` and `RecordPreviewBody` as its content:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RecordPreview
+  actions={<RecordPreviewAction label="Open as page">{icon}</RecordPreviewAction>}
+  closeLabel="Close preview"
+  description={description}
+  footer={footer}
+  onOpenChange={onOpenChange}
+  open={open}
+  title={title}
+>
+  <RecordPreviewBody>{children}</RecordPreviewBody>
+</RecordPreview>
+```
+
+The tree `RecordPreview` renders, in a portal on `body`:
+
+```tsx
+<div data-slot="sheet-backdrop" />
+<div data-slot="sheet-viewport">
+  <div data-slot="sheet-popup" role="dialog" tabindex="-1">
+    <div data-slot="sheet-header">
+      <h2 data-slot="sheet-title">{title}</h2>
+      <p data-slot="sheet-description">{description}</p>
+      <div data-slot="record-preview-header-actions">{actions}</div>
+      <button data-slot="sheet-close" aria-label={closeLabel} />
+    </div>
+    <div data-slot="scroll-area-viewport">
+      <div data-slot="sheet-panel">{children}</div>
+    </div>
+    <div data-slot="sheet-footer">{footer}</div>
+  </div>
+</div>
+```
+
+Plain `div` wrappers with no `data-slot` group the title and the description, and the actions and the close button, inside the header.
+
+## RecordPreview
+
+A modal sheet that holds the preview of one record. Renders a `div` with `role="dialog"` in a portal on `body`, named by `title`, over a backdrop, with a header, a scrolling panel for `children` and an optional footer. It is controlled: it opens and closes only through `open`, and asks to close through `onOpenChange(false)` on `Escape`, a press outside and the close button. It has no content of its own and keeps no state besides a reference to its popup.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | required | Controls whether the preview is open. |
+| `onOpenChange` | `(open: boolean) => void` | required | Called with `false` when the preview asks to close, on `Escape`, a press outside and the close button. |
+| `title` | `ReactNode` | required | Sets the title, which names the dialog. |
+| `closeLabel` | `string` | required | Sets the accessible name of the close button; there is no default. |
+| `description` | `ReactNode` | - | Sets the text under the title, which describes the dialog. |
+| `actions` | `ReactNode` | - | Renders consumer shortcuts in the header, before the close button, such as `RecordPreviewAction`. |
+| `children` | `ReactNode` | - | Sets the content of the scrolling panel, such as `RecordPreviewBody`. |
+| `footer` | `ReactNode` | - | Renders a footer below the panel, outside the scroll; without it no footer renders. |
+| `finalFocus` | `() => HTMLElement \| null` | - | Called when the preview closes to pick the element that receives focus; `null` keeps the default. |
+| `className` | `string` | - | Adds classes to the popup. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"sheet-popup"` | Selects the popup, which takes `className` |
+| `data-open`, `data-closed` | present while open, or while closed and animating out | Style the popup by state |
+| `data-starting-style`, `data-ending-style` | present while the popup animates in, or out | Style the 200ms fade and the 32px slide |
+| `data-slot` | `"sheet-backdrop"` | Selects the layer that dims the page |
+| `data-slot` | `"sheet-viewport"` | Selects the fixed layer around the popup; a press on it, outside the popup, asks to close |
+| `data-slot` | `"sheet-header"` | Selects the header |
+| `data-slot` | `"sheet-title"` | Selects the title |
+| `data-slot` | `"sheet-description"` | Selects the description; it renders only with `description` |
+| `data-slot` | `"record-preview-header-actions"` | Selects the wrapper of `actions`; it renders only with `actions` |
+| `data-slot` | `"sheet-close"` | Selects the close button |
+| `data-slot` | `"sheet-panel"` | Selects the panel that holds `children` |
+| `data-slot` | `"sheet-footer"` | Selects the footer; it renders only with `footer` |
+
+### Header
+
+The title is an `h2` in `text-base leading-snug`. It wraps beside the actions and the close button, which stay at the top end, and is never truncated. `description` sits under it in `muted-foreground`, and `actions` renders before the close button in a row with a 2px gap. The close button is always rendered: a ghost icon button named by `closeLabel`, which has no default, and the only close button the popup has.
+
+### Panel and footer
+
+The panel scrolls inside a scroll area, with 16px of padding and a fade at the edges while the content overflows; the header and the footer stay in place. The footer renders only with `footer`, below the panel and outside the scroll, with a top border, a `muted` background at 72% opacity and 16px of inline padding. From `sm` up its buttons sit in a row at the end; below `sm` they stack, the first at the bottom. The preview never confirms a destructive action: the footer buttons and any confirmation are the consumer's.
+
+### Placement
+
+The sheet opens from the right edge. Its popup is 448px wide at most and `calc(100% - 48px)` below that. From `sm` up it floats 16px from the viewport edges with rounded corners and a border. There is no size prop; `className` goes to the popup.
+
+### Focus
+
+The sheet is modal: the backdrop dims the page and focus stays inside until it closes. Focus goes to the popup itself (`tabindex="-1"`), not to the first control, so a preview opened from the keyboard still answers to `Escape`. Closing returns focus to the element that was focused on open.
+
+When that element is gone by then, as with a card that moved to another column, `finalFocus` is read at close time and returns the element to focus instead. Returning `null` keeps the default. A Kanban below `md` renders only the active column, so the moved card may not be in the DOM: fall back to the column option of the collection, `[data-kanban-column-option="<column id>"]`, after the visible `[data-record-id]` card.
+
+## RecordPreviewAction
+
+An icon button for the header of a preview, with a tooltip. Renders a ghost icon `button` named by `label`, and a tooltip with the same text that opens on hover and on keyboard focus. Pass it in `actions`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Sets the accessible name of the button and the text of its tooltip. |
+| `children` | `ReactNode` | required | Sets the icon inside the button; mark it `aria-hidden`. |
+| `onClick` | `() => void` | - | Called when the button is clicked; it receives no event. |
+| `disabled` | `boolean` | `false` | When true, disables the button, so a click does nothing. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"tooltip-popup"` | Selects the tooltip popup, which holds `label` |
+
+The action takes no `className` and no other prop of a `button`.
+
+## RecordPreviewBody
+
+The column that stacks the groups of a preview. Renders a `div` with `data-slot="record-preview-body"` as a flex column with a 16px gap. Without it, `children` flow as plain blocks with no gap.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | - | Sets the groups or blocks to stack. |
+| `className` | `string` | - | Adds classes after the base classes. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-preview-body"` | Selects the column |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RecordPreviewProps` | `type` | The props of `RecordPreview`. |
+| `RecordPreviewActionProps` | `type` | The props of `RecordPreviewAction`. |
+| `RecordPreviewBodyProps` | `type` | The props of `RecordPreviewBody`. |
+
+## Accessibility and theme
+
+- Every label is the consumer's: pass `title`, `closeLabel` and the `label` of each `RecordPreviewAction`. None has a default.
+- Mark the icon inside `RecordPreviewAction` with `aria-hidden`, since the button is named by `label`.
+- Name any other icon button passed in `actions` with `aria-label`.
+- The content is the consumer's, so its controls, headings and loading and error states are too.
+- The preview uses the `popover`, `popover-foreground`, `muted`, `muted-foreground`, `foreground` and `ring` tokens. Measured contrast: `docs/accessibility.md`, section `record-preview`.

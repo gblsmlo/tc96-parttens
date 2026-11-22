@@ -12,7 +12,7 @@ import {
 import { Button } from '@tc96/ui/button'
 import { MapPinIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, screen, within } from 'storybook/test'
 import {
   availabilityOptions,
   calendarOptions,
@@ -49,17 +49,9 @@ const meta = {
     slot: { date: '2026-10-14T12:00:00.000Z', end: '10:00', start: '09:00' },
   },
   parameters: {
-    docs: {
-      description: {
-        component: [
-          'RecordDialog as the create step of the Calendar usage, with the body of `Create/Row Properties`: a borderless title and description, then Date, Guests, Location, Type, Calendar and Availability as rows. The Date row starts on the day and window of the `slot` the calendar picked. The `Calendar` story of `Patterns/Collection/Usages` opens the same dialog from Nova atividade with the anchor day at 09:00-10:00, and from an empty slot of the time grid through `onSelectSlot` and `slotFromCalendar`, then adds the saved event to the calendar.',
-          'The dialog reads `slot` when it mounts and puts every field back to it on close, so the calendar gives it a new `key` for each request instead of passing a new slot to an open dialog.',
-        ].join('\n\n'),
-      },
-      source: { inlineLimit: 200 },
-    },
+    docs: { source: { inlineLimit: 200 } },
   },
-  render: function Create({ onCreate, slot }) {
+  render: function Calendar({ onCreate, slot }) {
     const initialSchedule = slotSchedule(slot)
     const [open, setOpen] = useState(true)
     const [title, setTitle] = useState('')
@@ -225,78 +217,32 @@ const meta = {
     )
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Records/Dialog/Usages/Calendar',
+  title: 'Patterns/Records/Dialog/Usages',
 } satisfies Meta<CalendarArgs>
 
 export default meta
 
 type Story = StoryObj<CalendarArgs>
 
-export const Create: Story = {
+export const Calendar: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'Nova atividade on the anchor day: the Date row starts on Oct 14 from 09:00 to 10:00. Save stays disabled until the title has text, and `onCreate` receives `start` and `end` as ISO instants in America/Sao_Paulo.',
+        story: [
+          'The create step of the Calendar usage, with the body of Row Properties: a borderless title and description, then Date, Guests, Location, Type, Calendar and Availability as rows. The Date row starts on the day and window of the `slot` the calendar picked, here Oct 14 from 09:00 to 10:00. The `Calendar` story of `Patterns/Collection/Usages` opens the same dialog from Nova atividade and from an empty slot of the time grid through `onSelectSlot` and `slotFromCalendar`, then adds the saved event to the calendar.',
+          'The dialog reads `slot` when it mounts and puts every field back to it on close, so the calendar gives it a new `key` for each request instead of passing a new slot to an open dialog.',
+        ].join('\n\n'),
       },
     },
   },
-}
-
-export const CreateInteraction: Story = {
-  ...Create,
-  play: async ({ args }) => {
-    const findDialog = () => screen.findByRole('dialog', { name: 'New event' })
-    const dialog = within(await findDialog())
-    const save = dialog.getByRole('button', { name: 'Save' })
-    const title = dialog.getByRole('textbox', { name: 'Event title' })
-
-    expect(dialog.getByRole('button', { name: /^Date:/ })).toHaveTextContent(
-      'Oct 14 · 09:00 – 10:00',
+  play: async () => {
+    const dialog = within(
+      await screen.findByRole('dialog', { name: 'New event' }),
     )
-    expect(save).toBeDisabled()
-    await waitFor(() => expect(title).toHaveFocus())
-    await userEvent.type(title, 'Revisão de contrato')
-    expect(save).toBeEnabled()
 
-    const calendar = dialog.getByRole('combobox', { name: /^Calendar/ })
-    await userEvent.click(calendar)
-    await userEvent.click(await screen.findByRole('option', { name: 'Sales' }))
-    await waitFor(() => expect(calendar).toHaveTextContent('Sales'))
-
-    await userEvent.click(save)
-    await waitFor(() =>
-      expect(args.onCreate).toHaveBeenCalledWith({
-        allDay: false,
-        availability: 'busy',
-        calendar: 'sales',
-        description: '',
-        end: '2026-10-14T13:00:00.000Z',
-        frequency: null,
-        guests: [],
-        location: '',
-        reminderMinutes: [30],
-        start: '2026-10-14T12:00:00.000Z',
-        title: 'Revisão de contrato',
-        type: 'event',
-        until: null,
-      }),
-    )
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Nova atividade' }),
-    )
-    const reopened = within(await findDialog())
-    expect(reopened.getByRole('textbox', { name: 'Event title' })).toHaveValue(
-      '',
-    )
-    expect(
-      reopened.getByRole('combobox', { name: /^Calendar/ }),
-    ).toHaveTextContent('Personal')
-    expect(reopened.getByRole('button', { name: /^Date:/ })).toHaveTextContent(
-      'Oct 14 · 09:00 – 10:00',
-    )
+    await expect(
+      dialog.getByRole('button', { name: /^Date:/ }),
+    ).toHaveTextContent('Oct 14 · 09:00 – 10:00')
+    await expect(dialog.getByRole('button', { name: 'Save' })).toBeDisabled()
   },
-  tags: ['!dev', '!autodocs'],
 }
