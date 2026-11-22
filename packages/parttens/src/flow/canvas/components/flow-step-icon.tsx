@@ -1,4 +1,4 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import type { FlowStep, FlowStepKind } from '../core'

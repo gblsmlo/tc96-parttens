@@ -1,5 +1,5 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
 import { CardPanel } from '@tc96/ui/card'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { LockKeyholeIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'

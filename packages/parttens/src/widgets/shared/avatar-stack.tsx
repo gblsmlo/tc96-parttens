@@ -1,11 +1,5 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  type AvatarSize,
-  avatarVariants,
-} from '@tc96/elements/avatar'
 import { resolveInitials } from '@tc96/helpers/initials'
+import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement } from 'react'
 
@@ -16,12 +10,24 @@ export interface AvatarStackPerson {
   label: string
 }
 
+export type AvatarStackSize = 'default' | 'sm'
+
+const avatarClassNames: Record<AvatarStackSize, string | undefined> = {
+  default: undefined,
+  sm: '[--avatar-size:--spacing(6)] text-[0.625rem]',
+}
+
+const overflowClassNames: Record<AvatarStackSize, string> = {
+  default: 'size-8 text-xs',
+  sm: 'size-6 text-[0.625rem]',
+}
+
 export interface AvatarStackProps
   extends Omit<ComponentProps<'ul'>, 'children'> {
   'aria-label'?: string
   max?: number
   people: readonly AvatarStackPerson[]
-  size?: Extract<AvatarSize, 'default' | 'sm'>
+  size?: AvatarStackSize
 }
 
 export function AvatarStack({
@@ -47,7 +53,7 @@ export function AvatarStack({
           className="flex rounded-full border border-input bg-card"
           key={person.id}
         >
-          <Avatar size={size}>
+          <Avatar className={avatarClassNames[size]} data-size={size}>
             {person.imageUrl ? (
               <AvatarImage alt="" src={person.imageUrl} />
             ) : null}
@@ -61,7 +67,7 @@ export function AvatarStack({
           <span
             className={cn(
               'inline-flex shrink-0 items-center justify-center rounded-full bg-muted font-medium text-muted-foreground tabular-nums',
-              avatarVariants({ size }),
+              overflowClassNames[size],
             )}
             data-slot="avatar-stack-overflow"
           >

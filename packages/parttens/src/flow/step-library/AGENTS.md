@@ -15,7 +15,7 @@ The panel on the left of the flow editors: step types grouped by `group`, each o
 | `types/` | the props of the components |
 | `core.ts` | React-free surface: `FlowStepGroup`, `groupStepTypes`, the label types and their pt-BR defaults, with `core.test.ts` |
 
-Import direction: `composition/` → `components/`, `lib/`, `types/`, `core.ts`; `components/` → `lib/`, `core.ts`, `@tc96/ui`, `@tc96/elements/icon-frame`. Imports into the canvas go only to `../../../canvas/core` (or `../canvas/core` from `core.ts`) and only for types, `FLOW_STEP_TRANSFER_TYPE` and `serializeStepTransfer`; nothing else from `flow/canvas` and never `@xyflow/react`.
+Import direction: `composition/` → `components/`, `lib/`, `types/`, `core.ts`; `components/` → `lib/`, `core.ts`, `@tc96/ui`, `@tc96/ui/icon-frame`. Imports into the canvas go only to `../../../canvas/core` (or `../canvas/core` from `core.ts`) and only for types, `FLOW_STEP_TRANSFER_TYPE` and `serializeStepTransfer`; nothing else from `flow/canvas` and never `@xyflow/react`.
 
 ## Dependents
 

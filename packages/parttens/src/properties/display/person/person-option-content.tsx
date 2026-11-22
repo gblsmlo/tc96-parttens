@@ -1,13 +1,19 @@
 'use client'
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  type AvatarSize,
-} from '@tc96/elements/avatar'
 import { resolveInitials } from '@tc96/helpers/initials'
+import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { UserIcon } from 'lucide-react'
+
+export type PersonAvatarSize = 'xs' | 'sm' | 'default' | 'lg' | 'xl'
+
+const personAvatarSizeClassNames: Record<PersonAvatarSize, string | undefined> =
+  {
+    xs: '[--avatar-size:--spacing(4)] text-[0.625rem]',
+    sm: '[--avatar-size:--spacing(6)] text-[0.625rem]',
+    default: undefined,
+    lg: '[--avatar-size:--spacing(10)]',
+    xl: '[--avatar-size:--spacing(12)]',
+  }
 
 export interface PersonPropertyOption<TValue extends string = string> {
   value: TValue
@@ -22,7 +28,7 @@ export function PersonAvatar({
   size = 'sm',
 }: Readonly<{
   option: PersonPropertyOption | null
-  size?: AvatarSize
+  size?: PersonAvatarSize
 }>) {
   const resolved = option ? resolveInitials(option) : null
   const fallback =
@@ -30,7 +36,7 @@ export function PersonAvatar({
       ? (Array.from(resolved)[0] ?? '')
       : resolved
   return (
-    <Avatar size={size}>
+    <Avatar className={personAvatarSizeClassNames[size]} data-size={size}>
       {option?.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
       <AvatarFallback className="border border-input">
         {fallback ?? <UserIcon aria-hidden className="size-3" />}
@@ -44,7 +50,7 @@ export function PersonOptionContent({
   size,
 }: Readonly<{
   option: PersonPropertyOption
-  size?: AvatarSize
+  size?: PersonAvatarSize
 }>) {
   return (
     <span className="flex min-w-0 items-center gap-1.5">

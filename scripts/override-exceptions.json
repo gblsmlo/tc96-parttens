@@ -210,9 +210,39 @@
     "reason": "No foco, o placeholder do campo sem borda do `RecordDialogHeadline` volta ao `muted-foreground` inteiro, o par que o tema garante para `background`, porque é ali que a pessoa lê a orientação do campo."
   },
   {
-    "file": "packages/templates/src/application/shell/shared/shell-nav.tsx",
+    "file": "packages/blocks/src/application/shell/shared/shell-nav.tsx",
     "component": "SidebarMenuBadge",
     "className": "text-current",
     "reason": "O badge do subitem fica dentro do `SidebarMenuSubButton`, onde o `peer-*/menu-button` do COSS não alcança, e mantinha o `sidebar-foreground` sobre o `sidebar-accent` do subitem ativo ou com hover: 4,22:1 no claro. `text-current` herda a cor do botão, o mesmo par do badge de primeiro nível: 13,33:1 (claro) e 16,04:1 (escuro) no ativo."
+  },
+  {
+    "file": "packages/parttens/src/flow/canvas/components/flow-step-node.tsx",
+    "component": "AvatarFallback",
+    "className": "text-foreground",
+    "reason": "As iniciais do `AvatarFallback` ficam sobre o `bg-border` do COSS e herdavam o `muted-foreground` do ancestral: 4,25:1 no escuro. `text-foreground` é o token do tema e passa nos dois modos. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
+  },
+  {
+    "file": "packages/parttens/src/flow/inspector/composition/flow-inspector-details/flow-inspector-details.tsx",
+    "component": "AvatarFallback",
+    "className": "text-foreground",
+    "reason": "As iniciais do `AvatarFallback` ficam sobre o `bg-border` do COSS e herdavam o `muted-foreground` do ancestral: 4,25:1 no escuro. `text-foreground` é o token do tema e passa nos dois modos. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
+  },
+  {
+    "file": "packages/parttens/src/properties/display/person/person-option-content.tsx",
+    "component": "AvatarFallback",
+    "className": "border",
+    "reason": "O `PersonAvatar` sem foto contorna o fallback `bg-border` do COSS com `border-input`, como os registros só de avatar, para o círculo não sumir sobre `card` e `popover`; o fundo do fallback fica o do COSS. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
+  },
+  {
+    "file": "packages/parttens/src/properties/display/person/person-option-content.tsx",
+    "component": "AvatarFallback",
+    "className": "border-input",
+    "reason": "O `PersonAvatar` sem foto contorna o fallback `bg-border` do COSS com `border-input`, como os registros só de avatar, para o círculo não sumir sobre `card` e `popover`; o fundo do fallback fica o do COSS. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
+  },
+  {
+    "file": "packages/blocks/src/application/shell/shared/user-menu.tsx",
+    "component": "AvatarFallback",
+    "className": "text-foreground",
+    "reason": "O fallback do avatar do usuário fica sobre `bg-border` e herdava o `sidebar-foreground` esmaecido da sidebar: 3,83:1 no claro. `text-foreground` é o token do tema. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
   }
 ]

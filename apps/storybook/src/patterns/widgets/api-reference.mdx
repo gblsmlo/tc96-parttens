@@ -11,7 +11,7 @@ The other pages of `Patterns/Widgets`: [Playground](?path=/story/patterns-widget
 
 Each family has its own node, with one section per widget in its API Reference: [CRM](?path=/docs/patterns-widgets-crm-api-reference--api-reference), [Finance](?path=/docs/patterns-widgets-finance-api-reference--api-reference), [Gamification](?path=/docs/patterns-widgets-gamification-api-reference--api-reference), [Productivity](?path=/docs/patterns-widgets-productivity-api-reference--api-reference) and [Stats](?path=/docs/patterns-widgets-stats-api-reference--api-reference), the last one for `MetricWidget` and the cards composed from it. This page documents the parts they share: the frame, the amount, the trend, the period switch, the collapsing list, and the smaller blocks of a card.
 
-Used in: [Templates/Contact Detail](?path=/story/templates-contact-detail--default) mounts a `DealsWidget` and an `ActivityFeedWidget`, [Templates/Companies](?path=/story/templates-companies--default) puts an `AvatarStack` in each card, and [Application/Shell/AppShell3](?path=/story/application-shell-appshell3--default) draws a `ProgressRing` per project.
+Used in: [Templates/Contact Detail](?path=/story/templates-contact-detail--default) mounts a `DealsWidget` and an `ActivityFeedWidget`, [Templates/Companies](?path=/story/templates-companies--default) puts an `AvatarStack` in each card, and [Blocks/Application/Shell/AppShell3](?path=/story/blocks-application-shell-appshell3--default) draws a `ProgressRing` per project.
 
 ## Import
 
@@ -239,7 +239,7 @@ Also takes every prop of a `span`.
 | --- | --- | --- |
 | `formatAmount` | `function` | Formats a number with the same options as `Amount`. `formatAmount(value, options?) => string` |
 | `clampRatio` | `function` | Limits `current / target` to 0 through 1. `clampRatio(current, target) => number` |
-| `IconFrame` | `component` | The decorative icon frame of `@tc96/elements`, re-exported so a copied pattern gets it from the widgets barrel. See [Elements/IconFrame](?path=/docs/elements-iconframe--doc). |
+| `IconFrame` | `component` | The decorative icon frame of `@tc96/ui/icon-frame`, re-exported so a copied pattern gets it from the widgets barrel. See [UI/IconFrame](?path=/docs/ui-iconframe-api-reference--api-reference). |
 | `defaultVisibleCount` | `constant` | The default `visibleCount` of `ExpandableList`, `5`. |
 | `defaultExpandMaxHeight` | `constant` | The default `maxHeight` of `ExpandableList`, `420`. |
 | `AmountFormatOptions` | `type` | The options of `formatAmount`, `Amount`, `TrendIndicator` and the widgets' `format` props. |

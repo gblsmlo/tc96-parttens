@@ -1,6 +1,5 @@
 'use client'
 
-import type { AvatarSize } from '@tc96/elements/avatar'
 import { SelectItem } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
 import { UserPlusIcon } from 'lucide-react'
@@ -17,6 +16,7 @@ import {
 } from '../../shared/property-surface'
 import {
   PersonAvatar,
+  type PersonAvatarSize,
   PersonOptionContent,
   type PersonPropertyOption,
 } from './person-option-content'
@@ -35,7 +35,7 @@ export interface PersonPropertyProps<TValue extends string = string> {
   options: readonly PersonPropertyOption<TValue>[]
   action?: (value: TValue, context: PersonPropertyActionContext<TValue>) => void
   ariaLabel?: string
-  avatarSize?: AvatarSize
+  avatarSize?: PersonAvatarSize
   className?: string
   disabled?: boolean
   display?: 'avatar' | 'full'
@@ -146,7 +146,7 @@ function PersonPropertyContent<TValue extends string = string>({
   option,
   placeholder,
 }: Readonly<{
-  avatarSize?: AvatarSize
+  avatarSize?: PersonAvatarSize
   display?: 'avatar' | 'full'
   option: PersonPropertyOption<TValue> | null
   placeholder: string

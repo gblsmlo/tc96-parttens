@@ -5,7 +5,9 @@
   "exports": {
     "./alert": "./src/alert/index.ts",
     "./badge": "./src/badge/index.ts",
+    "./icon-frame": "./src/icon-frame/index.ts",
     "./menu": "./src/menu/index.ts",
+    "./text": "./src/text/index.ts",
     "./*": "./src/*.tsx",
     "./chat/hooks/*": "./src/chat/hooks/*.ts",
     "./chat/lib/*": "./src/chat/lib/*.ts",

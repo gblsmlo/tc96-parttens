@@ -1,4 +1,3 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
 import {
   RecordGroup,
   RecordGroupAction,
@@ -12,6 +11,7 @@ import {
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Checkbox } from '@tc96/ui/checkbox'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import {
   Menu,
   MenuItem,

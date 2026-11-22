@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Text } from '@tc96/elements/text'
 import {
   SettingsCollapsed,
   SettingsRow,
@@ -11,6 +10,7 @@ import {
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+import { Text } from '@tc96/ui/text'
 import { EllipsisIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { expect, within } from 'storybook/test'

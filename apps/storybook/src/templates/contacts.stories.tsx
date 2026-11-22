@@ -12,7 +12,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A record index page: the `Contacts` screen of `Patterns/Collection/Usages` with saved views, search, view settings and the Table, Spreadsheet and List views over one collection. It renders inside `Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
+          'A record index page: the `Contacts` screen of `Patterns/Collection/Usages` with saved views, search, view settings and the Table, Spreadsheet and List views over one collection. It renders inside `Blocks/Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
       },
       story: appShellDocs,
     },

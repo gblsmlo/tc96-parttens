@@ -11,8 +11,6 @@
     "paths": {
       "@acme/ui": ["./packages/ui/src"],
       "@acme/ui/*": ["./packages/ui/src/*"],
-      "@acme/elements": ["./packages/elements/src"],
-      "@acme/elements/*": ["./packages/elements/src/*"],
       "@acme/helpers": ["./packages/helpers/src"],
       "@acme/helpers/*": ["./packages/helpers/src/*"],
       "@acme/patterns": ["./packages/organisms/src"],

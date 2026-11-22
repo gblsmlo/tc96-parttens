@@ -1,5 +1,3 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
-import { Text } from '@tc96/elements/text'
 import {
   type CollectionDefinition,
   DateProperty,
@@ -18,6 +16,8 @@ import {
   ListView,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
+import { IconFrame } from '@tc96/ui/icon-frame'
+import { Text } from '@tc96/ui/text'
 import { EllipsisIcon, FileTextIcon } from 'lucide-react'
 import { renderTaskListRow, useTasks } from '../../fixtures/task-renderers'
 import { createCollection, initialTasks, type Task } from '../../fixtures/tasks'

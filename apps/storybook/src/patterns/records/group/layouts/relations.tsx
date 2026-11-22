@@ -1,4 +1,3 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
 import {
   RecordGroup,
   RecordGroupFilter,
@@ -9,6 +8,7 @@ import {
   RecordStatusBadge,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import {
   Menu,
   MenuItem,

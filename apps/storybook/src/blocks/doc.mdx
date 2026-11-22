@@ -1,0 +1,124 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Blocks/Doc" />
+
+# Blocks
+
+A block is the composition of a page, a page frame or a page section, such as an application shell or a sign-in page. It comes in numbered variations (`app-shell-1` to `app-shell-4`), is built from your COSS components and the patterns, and is yours to edit once installed. Blocks consume patterns; a pattern never imports a block, and a block never imports another block.
+
+Blocks live in categories, by what the screen is for: **Application** (frame and access: shell, auth, settings), **Data**, **Charts**, **Solutions**, **AI & Agents**, **eCommerce** and **Marketing**. Each block sits at `Blocks/<Category>/<Group>/<Name>` in the sidebar and at `<category>/<group>/<block>/` in the source.
+
+Screens that only live in Storybook, with example data and no install, are under `Templates` (`Templates/Contacts`, `Templates/Workspace Settings`). Each one renders inside [AppShell1](?path=/docs/blocks-application-shell-appshell1--doc). Copy the page from the Code panel of the story, which shows only the page, and render it in the `children` of your shell (the `<Outlet />` of the layout route).
+
+## Install
+
+Install a block by name:
+
+```bash
+npx @tc96/parttens add app-shell-1
+```
+
+Install several at once, or a block next to patterns:
+
+```bash
+npx @tc96/parttens add app-shell-1 app-shell-3
+npx @tc96/parttens add app-shell-4 collection
+```
+
+Preview what would change before writing anything, print the new files, or compare installed files with the current version:
+
+```bash
+npx @tc96/parttens add app-shell-1 --dry-run
+npx @tc96/parttens add app-shell-1 --view
+npx @tc96/parttens add app-shell-1 --diff
+```
+
+If the repo blocks `npx`, use `bunx @tc96/parttens add ...` or `pnpm dlx @tc96/parttens add ...`. Run `npx @tc96/parttens --help` for the list of patterns and blocks; the CLI still lists blocks under `Templates`.
+
+## Configure the alias
+
+The CLI writes blocks where the `templates` alias resolves; the alias keeps that name in this version of the CLI. It is optional in `components.json`: without it the CLI derives it from `ui`, so `@acme/ui` gives `@acme/templates`. Your `tsconfig.json` needs a `paths` entry for it, and only when you install a block; installing patterns alone does not ask for it.
+
+```json
+"@acme/templates/*": ["./packages/templates/src/*"]
+```
+
+To keep blocks inside the app instead of a package, set the alias and point it there:
+
+```json
+// components.json
+"aliases": { "ui": "@acme/ui", "utils": "@acme/ui/lib/utils", "templates": "@/templates" }
+
+// apps/web/tsconfig.json
+"@/templates/*": ["./src/templates/*"]
+```
+
+## What the CLI installs
+
+For `add app-shell-1`, the CLI:
+
+- writes `application/shell/app-shell-1/` and the group's `application/shell/shared/` under the alias path;
+- installs only the COSS components you do not have yet (`sidebar`, `breadcrumb`, `menu`, …) and the COSS hooks they need (`hooks/use-media-query.ts`) in your `ui` directory;
+- writes the `helpers` files the block uses, and the pattern files it imports: `app-shell-3` brings `widgets/shared/progress-ring.tsx`;
+- type-checks the block against your own components before writing, and preserves any file of yours that differs unless you approve.
+
+It never edits your CSS.
+
+## Use
+
+Import the block from its folder and mount it in the layout route of your app:
+
+```tsx
+import { AppShell1 } from '@acme/templates/application/shell/app-shell-1'
+import { Link, Outlet } from '@tanstack/react-router'
+
+export function AppLayout() {
+  return (
+    <AppShell1
+      breadcrumbs={breadcrumbs}
+      defaultOpen={sidebarCookie !== 'false'}
+      navigation={navigation}
+      onWorkspaceChange={switchWorkspace}
+      renderLink={(href) => <Link to={href} />}
+      user={user}
+      workspaceId={workspaceId}
+      workspaces={workspaces}
+    >
+      <Outlet />
+    </AppShell1>
+  )
+}
+```
+
+- **Links:** every link renders through `renderLink`, so your router owns navigation. `AppShell2` and `AppShell4` also take `onNavigate` for the ⌘K search, which navigates from code.
+- **Sidebar state:** COSS writes the `sidebar_state` cookie on every toggle. Read it on the server or in the loader and pass `defaultOpen`, or control the sidebar with `open` and `onOpenChange`.
+- **Theme:** the account menu shows Light, Dark and System only when you pass `theme` and `onThemeChange`. The block never applies a theme.
+- **Texts:** every text the block owns is in `labels`, with pt-BR defaults.
+- **Tokens:** the COSS sidebar reads `--sidebar`, `--sidebar-foreground`, `--sidebar-accent`, `--sidebar-accent-foreground`, `--sidebar-border`, `--sidebar-primary`, `--sidebar-primary-foreground` and `--sidebar-ring`. Define them in your theme next to the other COSS tokens.
+- **Links in your theme:** a rule such as `a { color: inherit }` outside `@layer base` beats every Tailwind utility, so the active item of the sidebar loses its color. Keep it in `@layer base`.
+
+## Catalog
+
+### Application / Shell
+
+- **[AppShell1](?path=/docs/blocks-application-shell-appshell1--doc)**, `npx @tc96/parttens add app-shell-1`: sidebar that collapses to an icon rail, with workspace switcher, grouped navigation with nested items, counters and pinned items with their own menu, account menu and a breadcrumb header.
+- **[AppShell2](?path=/docs/blocks-application-shell-appshell2--doc)**, `npx @tc96/parttens add app-shell-2`: floating sidebar with a ⌘K page search under the workspace switcher.
+- **[AppShell3](?path=/docs/blocks-application-shell-appshell3--doc)**, `npx @tc96/parttens add app-shell-3`: inset sidebar with projects and progress rings, a usage panel, and a notifications popover in the header.
+- **[AppShell4](?path=/docs/blocks-application-shell-appshell4--doc)**, `npx @tc96/parttens add app-shell-4`: icon rail of sections beside the navigation of the active section, with ⌘K search, notifications and a Create action in the header.
+
+### AI & Agents / Flow
+
+Two editor pages on React Flow, in `Blocks/AI & Agents/Flow`, installed under `ai-agents/flow/`. They bring `@xyflow/react` and `d3-hierarchy`, the four flow pattern items they import and the COSS `tabs`, `context-menu`, `progress` and `alert`.
+
+| Block | Install | What it is |
+| --- | --- | --- |
+| **[WorkflowEditor](?path=/docs/blocks-ai-agents-flow-workfloweditor--doc)** | `npx @tc96/parttens add workflow-editor` | step library, horizontal canvas with undo, redo, lock and minimap, inspector with a Responsável form, assistant |
+| **[AgentBuilder](?path=/docs/blocks-ai-agents-flow-agentbuilder--doc)** | `npx @tc96/parttens add agent-builder` | step library, vertical canvas with edge controls and Organizar árvore, inspector with a Caminho form, assistant |
+
+React Flow ships its own stylesheet, which you import once in your global CSS next to your theme; without it the canvas does not place nodes or edges. The blocks read no `--xy-*` variable from your theme: the colors come from tokens by class.
+
+```css
+@import '@xyflow/react/dist/base.css';
+```
+
+Both blocks are controlled. You pass `steps`, `connections`, `stepTypes`, `icons`, `selectedStepId`, `run`, `logs` and `assistant`, and receive `onStepAdd`, `onStepChange`, `onStepDelete`, `onStepsChange`, `onConnect`, `onSelectedStepChange` and `onRun`. History, execution, persistence and every id are yours; the block keeps only the open inspector, its mode and tab, the assistant and the grid snapping.

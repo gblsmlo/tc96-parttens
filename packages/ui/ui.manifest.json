@@ -140,27 +140,19 @@
     },
     "composer-clipboard": {
       "origin": "coss",
-      "paths": [
-        "lib/composer-clipboard.ts"
-      ]
+      "paths": ["lib/composer-clipboard.ts"]
     },
     "composer-document": {
       "origin": "coss",
-      "paths": [
-        "lib/composer-document.ts"
-      ]
+      "paths": ["lib/composer-document.ts"]
     },
     "composer-editor": {
       "origin": "coss",
-      "paths": [
-        "lib/composer-editor.ts"
-      ]
+      "paths": ["lib/composer-editor.ts"]
     },
     "composer-query": {
       "origin": "coss",
-      "paths": [
-        "lib/composer-query.ts"
-      ]
+      "paths": ["lib/composer-query.ts"]
     },
     "context-menu": {
       "origin": "coss",
@@ -204,6 +196,16 @@
     },
     "group": {
       "origin": "coss"
+    },
+    "icon-frame": {
+      "origin": "own",
+      "paths": [
+        "icon-frame/ACCESSIBILITY.md",
+        "icon-frame/AGENTS.md",
+        "icon-frame/TOKENS.md",
+        "icon-frame/icon-frame.tsx",
+        "icon-frame/index.ts"
+      ]
     },
     "input": {
       "origin": "coss"
@@ -322,6 +324,16 @@
     "tabs": {
       "origin": "coss"
     },
+    "text": {
+      "origin": "own",
+      "paths": [
+        "text/ACCESSIBILITY.md",
+        "text/AGENTS.md",
+        "text/TOKENS.md",
+        "text/index.ts",
+        "text/text.tsx"
+      ]
+    },
     "textarea": {
       "origin": "coss"
     },
@@ -414,21 +426,15 @@
     },
     "use-composer-editor": {
       "origin": "coss",
-      "paths": [
-        "hooks/use-composer-editor.ts"
-      ]
+      "paths": ["hooks/use-composer-editor.ts"]
     },
     "use-copy-to-clipboard": {
       "origin": "coss",
-      "paths": [
-        "hooks/use-copy-to-clipboard.ts"
-      ]
+      "paths": ["hooks/use-copy-to-clipboard.ts"]
     },
     "use-media-query": {
       "origin": "coss",
-      "paths": [
-        "hooks/use-media-query.ts"
-      ]
+      "paths": ["hooks/use-media-query.ts"]
     }
   }
 }

@@ -1,5 +1,3 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
-import { Text } from '@tc96/elements/text'
 import {
   DateProperty,
   ListRow,
@@ -22,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@tc96/ui/card'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import {
   Menu,
   MenuItem,
@@ -30,6 +29,7 @@ import {
   MenuTrigger,
 } from '@tc96/ui/menu'
 import { Separator } from '@tc96/ui/separator'
+import { Text } from '@tc96/ui/text'
 import {
   ArchiveIcon,
   EllipsisIcon,

@@ -1,12 +1,12 @@
-import { Avatar, AvatarFallback } from '@tc96/elements/avatar'
-import { IconFrame } from '@tc96/elements/icon-frame'
 import {
   RecordGroup,
   RecordGroupFilter,
   RecordGroupItem,
   type RecordGroupVariant,
 } from '@tc96/parttens'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { ArrowRightIcon, BotIcon } from 'lucide-react'
 import { useState } from 'react'
 
@@ -183,7 +183,11 @@ export function ActorMark({ actor }: Readonly<{ actor: Person | null }>) {
       </IconFrame>
     )
   return (
-    <Avatar aria-hidden data-actor="person" size="sm">
+    <Avatar
+      aria-hidden
+      className="[--avatar-size:--spacing(6)] text-[0.625rem]"
+      data-actor="person"
+    >
       <AvatarFallback>{actor.initials}</AvatarFallback>
     </Avatar>
   )

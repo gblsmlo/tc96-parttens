@@ -1,5 +1,5 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
 import { CardPanel } from '@tc96/ui/card'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
 import { FlameIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'

@@ -1,5 +1,3 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
-import { Text } from '@tc96/elements/text'
 import {
   CalendarEventChip,
   CalendarEventChipOpenTrigger,
@@ -30,6 +28,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@tc96/ui/card'
+import { IconFrame } from '@tc96/ui/icon-frame'
+import { Text } from '@tc96/ui/text'
 import {
   CalendarIcon,
   CircleDotIcon,

@@ -1,9 +1,9 @@
-import { Text } from '@tc96/elements/text'
 import { formatAmount } from '@tc96/helpers/format'
 import { AvatarStack, GalleryView, IconFrame } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Card } from '@tc96/ui/card'
 import { Separator } from '@tc96/ui/separator'
+import { Text } from '@tc96/ui/text'
 import { BuildingIcon, PlusIcon } from 'lucide-react'
 import {
   type Contact,

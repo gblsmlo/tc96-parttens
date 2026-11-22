@@ -13,7 +13,7 @@ The parts come from COSS and are owned by this repo (ADR 0008): every change to 
 
 ## Architecture
 
-- Layer: `packages/ui`, the bottom of `templates` → `parttens` → `elements` → `ui` → `utils`. `alert.tsx` imports only `class-variance-authority` and `cn` from `@tc96/utils`.
+- Layer: `packages/ui`, the bottom of `templates` → `parttens` → `ui` → `utils`. `alert.tsx` imports only `class-variance-authority` and `cn` from `@tc96/utils`.
 - Resolution: `packages/ui/package.json` exports `./alert` as `./src/alert/index.ts`, ahead of the `./*` → `./src/*.tsx` pattern; `tsconfig.base.json` maps `@tc96/ui/*` to `packages/ui/src/*`, which reaches `alert/index.ts` as a folder index.
 - Manifest: the `alert` item of `packages/ui/ui.manifest.json` lists the five files of this folder and the status color tokens (`cssVars`). `check:coss` fails on a file here that the manifest does not list.
 - Scripts: `scripts/check-boundaries.ts` and `packages/registry/src/build-registry.ts` read a manifest path ending in `/index` as the folder module, so `@tc96/ui/alert` resolves to the `alert` item.

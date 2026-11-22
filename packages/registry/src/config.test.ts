@@ -39,8 +39,6 @@ test('reads non-default aliases and resolves their paths from tsconfig', async (
     },
     {
       '@acme/ui/*': ['./packages/ui/src/*'],
-      '@acme/atoms': ['./packages/atoms/src/index.ts'],
-      '@acme/atoms/*': ['./packages/atoms/src/*'],
       '@acme/toolkit/*': ['./libs/toolkit/src/*'],
       '@acme/organisms/*': ['./libs/organisms/*'],
     },
@@ -50,14 +48,12 @@ test('reads non-default aliases and resolves their paths from tsconfig', async (
     aliases: {
       ui: '@acme/ui',
       utils: '@acme/ui/lib/utils',
-      elements: '@acme/atoms',
       helpers: '@acme/toolkit',
       patterns: '@acme/organisms',
       templates: '@acme/templates',
     },
     paths: {
       ui: 'packages/ui/src',
-      elements: 'packages/atoms/src',
       helpers: 'libs/toolkit/src',
       patterns: 'libs/organisms',
     },
@@ -67,7 +63,6 @@ test('reads non-default aliases and resolves their paths from tsconfig', async (
 test('resolves the templates path only when a template is installed', async () => {
   const paths = {
     '@acme/ui/*': ['./packages/ui/src/*'],
-    '@acme/elements/*': ['./packages/elements/src/*'],
     '@acme/helpers/*': ['./packages/helpers/src/*'],
     '@acme/patterns/*': ['./packages/patterns/src/*'],
   }
@@ -91,7 +86,6 @@ test('derives the tc96 aliases from the ui alias when absent', () => {
   ).toEqual({
     ui: '@acme/ui',
     utils: '@acme/ui/lib/utils',
-    elements: '@acme/elements',
     helpers: '@acme/helpers',
     patterns: '@acme/patterns',
     templates: '@acme/templates',
@@ -100,7 +94,16 @@ test('derives the tc96 aliases from the ui alias when absent', () => {
     readAliases({
       aliases: { ui: '@acme/ui', utils: '@acme/utils', patterns: '@acme/p' },
     }),
-  ).toMatchObject({ elements: '@acme/elements', patterns: '@acme/p' })
+  ).toMatchObject({ helpers: '@acme/helpers', patterns: '@acme/p' })
+  expect(
+    readAliases({
+      aliases: {
+        ui: '@acme/ui',
+        utils: '@acme/utils',
+        elements: '@acme/atoms',
+      },
+    }),
+  ).not.toHaveProperty('elements')
 })
 
 test('requires the ui and utils aliases', () => {
@@ -118,7 +121,7 @@ test('suggests the missing tsconfig path from the ui path', async () => {
     { '@acme/ui/*': ['./packages/ui/src/*'] },
   )
   await expect(readInstallConfig(root)).rejects.toThrow(
-    '"@acme/elements/*": ["./packages/elements/src/*"]',
+    '"@acme/helpers/*": ["./packages/helpers/src/*"]',
   )
 })
 
@@ -128,7 +131,7 @@ test('suggests a nested tsconfig path when the ui alias names its folder', async
     { '@acme/ui/components/*': ['./packages/ui/src/components/*'] },
   )
   await expect(readInstallConfig(root)).rejects.toThrow(
-    '"@acme/ui/elements/*": ["./packages/ui/src/elements/*"]',
+    '"@acme/ui/helpers/*": ["./packages/ui/src/helpers/*"]',
   )
 })
 
@@ -137,14 +140,12 @@ test('resolves every layer inside one ui package', async () => {
     { ui: '@acme/ui/components', utils: '@acme/ui/lib/utils' },
     {
       '@acme/ui/components/*': ['./packages/ui/src/components/*'],
-      '@acme/ui/elements/*': ['./packages/ui/src/elements/*'],
       '@acme/ui/helpers/*': ['./packages/ui/src/helpers/*'],
       '@acme/ui/patterns/*': ['./packages/ui/src/patterns/*'],
     },
   )
   expect((await readInstallConfig(root)).paths).toEqual({
     ui: 'packages/ui/src/components',
-    elements: 'packages/ui/src/elements',
     helpers: 'packages/ui/src/helpers',
     patterns: 'packages/ui/src/patterns',
   })
@@ -163,11 +164,10 @@ test('requires a tsconfig path for the ui alias and each written alias', async (
     {
       ui: '@acme/ui',
       utils: '@acme/utils',
-      elements: '@acme/elements',
       helpers: '@acme/helpers',
       patterns: '@acme/patterns',
     },
-    { '@acme/elements/*': ['./packages/elements/src/*'] },
+    { '@acme/patterns/*': ['./packages/patterns/src/*'] },
   )
   await expect(readInstallConfig(root)).rejects.toThrow(
     'tsconfig.json paths has no "@acme/ui/*" entry',
@@ -178,7 +178,7 @@ test('requires a tsconfig path for the ui alias and each written alias', async (
       compilerOptions: {
         paths: {
           '@acme/ui/*': ['./packages/ui/src/*'],
-          '@acme/elements/*': ['./packages/elements/src/*'],
+          '@acme/patterns/*': ['./packages/patterns/src/*'],
         },
       },
     }),
@@ -193,13 +193,11 @@ test('rejects an alias that resolves outside the workspace', async () => {
     {
       ui: '@acme/ui',
       utils: '@acme/utils',
-      elements: '@acme/elements',
       helpers: '@acme/helpers',
       patterns: '@acme/patterns',
     },
     {
       '@acme/ui/*': ['./packages/ui/src/*'],
-      '@acme/elements/*': ['./packages/elements/src/*'],
       '@acme/helpers/*': ['./packages/helpers/src/*'],
       '@acme/patterns/*': ['../shared/patterns/*'],
     },

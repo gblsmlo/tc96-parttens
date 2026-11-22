@@ -9,6 +9,12 @@ const components = [
   { name: 'alert', source: 'alert/alert.tsx', tokens: 'alert/TOKENS.md' },
   { name: 'menu', source: 'menu/menu.tsx', tokens: 'menu/TOKENS.md' },
   { name: 'badge', source: 'badge/badge.tsx', tokens: 'badge/TOKENS.md' },
+  {
+    name: 'icon-frame',
+    source: 'icon-frame/icon-frame.tsx',
+    tokens: 'icon-frame/TOKENS.md',
+  },
+  { name: 'text', source: 'text/text.tsx', tokens: 'text/TOKENS.md' },
 ]
 
 describe.each(components)('$name TOKENS.md', ({ source, tokens }) => {

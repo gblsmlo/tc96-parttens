@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Text } from '@tc96/elements/text'
 import {
   SettingsCollapsed,
   SettingsRow,
@@ -12,6 +11,7 @@ import {
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Switch } from '@tc96/ui/switch'
+import { Text } from '@tc96/ui/text'
 import {
   CalendarIcon,
   EllipsisIcon,

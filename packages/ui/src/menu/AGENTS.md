@@ -13,7 +13,7 @@ The parts come from COSS on top of Base UI `Menu` and are owned by this repo (AD
 
 ## Architecture
 
-- Layer: `packages/ui`, the bottom of `templates` → `parttens` → `elements` → `ui` → `utils`. `menu.tsx` imports only Base UI, `lucide-react` and `cn` from `@tc96/utils`.
+- Layer: `packages/ui`, the bottom of `templates` → `parttens` → `ui` → `utils`. `menu.tsx` imports only Base UI, `lucide-react` and `cn` from `@tc96/utils`.
 - Resolution: `packages/ui/package.json` exports `./menu` as `./src/menu/index.ts`, ahead of the `./*` → `./src/*.tsx` pattern that serves the single-file components; `tsconfig.base.json` maps `@tc96/ui/*` to `packages/ui/src/*`, which reaches `menu/index.ts` as a folder index.
 - Manifest: the `menu` item of `packages/ui/ui.manifest.json` lists the five files of this folder. `check:coss` fails on a file here that the manifest does not list.
 - Scripts: `scripts/check-boundaries.ts` and `packages/registry/src/build-registry.ts` read a manifest path ending in `/index` as the folder module, so `@tc96/ui/menu` still resolves to the `menu` item.
@@ -24,7 +24,7 @@ The parts come from COSS on top of Base UI `Menu` and are owned by this repo (AD
 
 - `packages/ui/src/chat/chat-message-actions.tsx`.
 - `packages/parttens`: `collection` (data-grid and data-table submenus, filter submenu), `properties/composition/property-collection.tsx`, `action-bar`, `toolbar`, `flow/canvas`.
-- `packages/templates`: the shell user menu and workspace switcher, the workflow editor and agent builder.
+- `packages/blocks`: the shell user menu and workspace switcher, the workflow editor and agent builder.
 - `context-menu.tsx` is a separate COSS item with its own copies of the item classes; an edit here does not reach it.
 
 ## Invariants

@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@tc96/elements/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { Badge, type BadgeProps } from '@tc96/ui/badge'
 import { Card } from '@tc96/ui/card'
 import { cn } from '@tc96/utils'
@@ -114,7 +114,7 @@ function FlowStepNodeView({
               ) : (
                 <>
                   {step.owner ? (
-                    <Avatar size="xs">
+                    <Avatar className="[--avatar-size:--spacing(4)] text-[0.625rem]">
                       {step.owner.avatarUrl ? (
                         <AvatarImage alt="" src={step.owner.avatarUrl} />
                       ) : null}

@@ -20,8 +20,7 @@ do shadcn:
 
 ```text
 packages/ui/src/
-  components/   COSS
-  elements/     componentes que o COSS não tem
+  components/   COSS e os componentes do tc96 que o COSS não tem (Text, IconFrame)
   helpers/      funções sem React
   patterns/     patterns do tc96
   lib/utils.ts  cn
@@ -37,21 +36,21 @@ packages/ui/src/
 }
 ```
 
-`elements`, `helpers` e `patterns` são derivados do `ui` trocando o último
-segmento (`@acme/ui/elements`, `@acme/ui/helpers`, `@acme/ui/patterns`).
+`helpers` e `patterns` são derivados do `ui` trocando o último segmento
+(`@acme/ui/helpers`, `@acme/ui/patterns`).
 Declare-os em `aliases` só para pôr uma camada em outro lugar, como um pacote
 `@acme/patterns` separado.
 
 Cada alias também precisa de entrada exata e de wildcard em `paths` no
 `tsconfig` da raiz (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`),
 e o `exports` do `package.json` do `ui` precisa cobrir cada camada. O CLI grava
-`elements`, `helpers` e `patterns` no diretório que o wildcard de cada alias
+`helpers` e `patterns` no diretório que o wildcard de cada alias
 resolve, reescreve os imports para `ui` e `utils`, que continuam sendo seus, e
 instala as dependências npm no pacote do workspace que contém o diretório de
 `patterns`.
 
-Se você usa o shadcn, o `shadcn init --force` regrava o `components.json` sem `elements`, `helpers`
-e `patterns`, e troca o alias `ui`. Se rodar esse comando, acrescente as três
+Se você usa o shadcn, o `shadcn init --force` regrava o `components.json` sem `helpers`
+e `patterns`, e troca o alias `ui`. Se rodar esse comando, acrescente as duas
 chaves de novo e revise o `ui`; o CLI avisa quando elas faltam.
 
 ## Instalar

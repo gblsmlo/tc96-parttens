@@ -24,7 +24,7 @@ React patterns without business rules, installed as source on top of your COSS c
 - **Built on COSS**: patterns import `Button`, `Menu`, `Popover` and the rest from your project's own UI alias
 - **Themeable**: tc96 ships no CSS, tokens or theme, only layout classes on top of your components
 - **No business rules**: your app provides prepared data and handles events. Filtering, sorting, persistence and API calls stay with you
-- **Layered**: imports only go down a layer (`patterns` → `elements` → `ui` → `utils`), checked by a boundaries script
+- **Layered**: imports only go down a layer (`blocks` → `patterns` → `ui` → `utils`), checked by a boundaries script
 - **Tested**: Storybook stories, bun tests, consumer install checks and a view benchmark
 
 ## Get Started
@@ -58,23 +58,23 @@ Before copying anything, the CLI type-checks the patterns against your own `ui` 
 import { CollectionLayoutOutlet, TextProperty } from '@acme/patterns'
 ```
 
-### Templates
+### Blocks
 
-Whole layouts install the same way. The first ones are application shells, `app-shell-1` to `app-shell-4`:
+A block is a numbered variation of a page, a page frame or a page section that you install and then edit, such as an application shell. Blocks consume patterns; a pattern never imports a block. They live in categories: Application, Data, Charts, Solutions, AI & Agents, eCommerce and Marketing. The first ones are application shells, `app-shell-1` to `app-shell-4`:
 
 ```bash
 npx @tc96/parttens add app-shell-1
 ```
 
-A template is written where the `templates` alias resolves (`@acme/ui` gives `@acme/templates`, or set `aliases.templates` in `components.json`), and is imported from its folder:
+The CLI writes a block where the `templates` alias resolves (`@acme/ui` gives `@acme/templates`, or set `aliases.templates` in `components.json`), and you import it from its folder:
 
 ```tsx
 import { AppShell1 } from '@acme/templates/application/shell/app-shell-1'
 ```
 
-The `tsconfig` `paths` entry for `templates` is needed only when you install a template. The Templates page in Storybook lists every template and its options.
+The `tsconfig` `paths` entry for `templates` is needed only when you install a block. The Blocks page in Storybook lists every block and its options.
 
-#### Templates: flow editors
+#### AI & Agents: flow editors
 
 `workflow-editor` and `agent-builder` are two editor pages with the same anatomy: a page header (name, shortcuts, ask the AI, add step, run, actions menu), a step library on the left, a canvas on React Flow in the middle, an inspector with Build, Status and Logs on the right and an AI assistant card over the canvas. `workflow-editor` lays the steps out horizontally, with undo, redo, lock and a minimap; `agent-builder` lays them out as a vertical tree, with edge controls and an "Organizar árvore" button.
 
@@ -89,7 +89,7 @@ Both bring `@xyflow/react` and `d3-hierarchy`, the `tabs`, `context-menu`, `prog
 @import '@xyflow/react/dist/base.css';
 ```
 
-The template is controlled: you pass the steps, the connections, the selection, the run state and the logs, and receive `onStepAdd`, `onStepChange`, `onStepsChange`, `onConnect`, `onRun` and the other callbacks. It never fetches, saves, keeps a history or calls a model; every text is in `labels`, in pt-BR by default.
+The block is controlled: you pass the steps, the connections, the selection, the run state and the logs, and receive `onStepAdd`, `onStepChange`, `onStepsChange`, `onConnect`, `onRun` and the other callbacks. It never fetches, saves, keeps a history or calls a model; every text is in `labels`, in pt-BR by default.
 
 ### How it works
 
@@ -108,18 +108,17 @@ The template is controlled: you pass the steps, the connections, the selection, 
 tc96 expects a layered design system, in the spirit of atomic design, inside one `ui` workspace package and configured by one `components.json` at the monorepo root:
 
 ```text
-components.json        aliases: ui, utils (elements, helpers, patterns and templates replace the last segment of ui)
+components.json        aliases: ui, utils (helpers, patterns and templates replace the last segment of ui)
 packages/
   ui/
-    package.json       exports ./components/*, ./elements/*, ./helpers/*, ./patterns/*, ./lib/*
+    package.json       exports ./components/*, ./helpers/*, ./patterns/*, ./lib/*
     src/
-      components/      atoms: COSS components
-      elements/        components COSS does not have, such as Text and IconFrame
+      components/      atoms: COSS components and the tc96 components COSS does not have, such as Text and IconFrame
       helpers/         React-free functions, such as amount formatting and rich text helpers
       patterns/        organisms: tc96 patterns
       lib/utils.ts     cn
 apps/
-  web/                 templates and pages
+  web/                 routes and pages
 ```
 
 ```json
@@ -134,7 +133,7 @@ apps/
 }
 ```
 
-This is the shadcn monorepo layout. `elements`, `helpers` and `patterns` are derived as `@acme/ui/elements`, `@acme/ui/helpers` and `@acme/ui/patterns`; set them in `aliases` only to place a layer elsewhere, such as a separate `@acme/patterns` package. Imports only go down a layer: `patterns` can import `elements`, `ui` and `utils`, and `elements` can import `ui` and `utils`. Each alias also needs exact and wildcard entries in the root `tsconfig` `paths` (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`). The CLI adds the patterns' npm dependencies to the workspace package that holds the `patterns` path, `packages/ui/package.json` here.
+This is the shadcn monorepo layout. `helpers` and `patterns` are derived as `@acme/ui/helpers` and `@acme/ui/patterns`; set them in `aliases` only to place a layer elsewhere, such as a separate `@acme/patterns` package. Imports only go down a layer: `patterns` can import `ui` and `utils`. `Text` and `IconFrame` are ui components: the CLI installs them with the COSS ones when a pattern needs them. Each alias also needs exact and wildcard entries in the root `tsconfig` `paths` (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`). The CLI adds the patterns' npm dependencies to the workspace package that holds the `patterns` path, `packages/ui/package.json` here.
 
 ### Install with an AI agent
 
@@ -143,8 +142,8 @@ Paste this into your coding agent, replacing the pattern names:
 ````text
 Install the @tc96/parttens patterns `collection` and `properties` in this project.
 
-1. Find the root `components.json`. It must define `aliases.ui` and `aliases.utils`. `aliases.elements`, `aliases.helpers` and `aliases.patterns` are optional and replace the last segment of `ui` (`@acme/ui/components` gives `@acme/ui/elements`, `@acme/ui` gives `@acme/elements`). If the file is missing, stop and ask me; do not run `shadcn init --force`, which rewrites it.
-2. For `ui`, `elements`, `helpers` and `patterns`, check that the root `tsconfig.json` `paths` has an exact entry and a wildcard entry (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`) and that the `ui` package's `package.json` `exports` covers each layer. If something is missing, show me the change and wait for my approval before editing.
+1. Find the root `components.json`. It must define `aliases.ui` and `aliases.utils`. `aliases.helpers` and `aliases.patterns` are optional and replace the last segment of `ui` (`@acme/ui/components` gives `@acme/ui/helpers`, `@acme/ui` gives `@acme/helpers`). If the file is missing, stop and ask me; do not run `shadcn init --force`, which rewrites it.
+2. For `ui`, `helpers` and `patterns`, check that the root `tsconfig.json` `paths` has an exact entry and a wildcard entry (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`) and that the `ui` package's `package.json` `exports` covers each layer. If something is missing, show me the change and wait for my approval before editing.
 3. Preview first, from any directory inside the repo (the CLI searches upward for `components.json`; use `--cwd` to override):
    npx @tc96/parttens add collection properties --dry-run
    Read the output. If it lists files that already exist or a destination I did not expect, such as a legacy folder with the same name, stop and ask me. If it stops with "do not type-check against your components", report the diagnostics and wait; do not add `--force`.
@@ -217,9 +216,8 @@ bun run release:check
 ```text
 packages/
 ├── parttens/          # Pattern source
-├── elements/          # tc96 components COSS does not have, such as Text
 ├── helpers/           # React-free helpers shared by patterns, such as amount formatting
-├── ui/                # COSS-origin components owned by this repo, listed in ui.manifest.json
+├── ui/                # COSS-origin and own components (Text, IconFrame) owned by this repo, listed in ui.manifest.json
 ├── utils/             # Shared helpers (cn)
 └── registry/          # Registry build and the CLI, published as @tc96/parttens
 apps/

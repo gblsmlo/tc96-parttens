@@ -1,4 +1,4 @@
-import { Text } from '@tc96/elements/text'
+import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import type { SettingsRowProps } from '../../core'

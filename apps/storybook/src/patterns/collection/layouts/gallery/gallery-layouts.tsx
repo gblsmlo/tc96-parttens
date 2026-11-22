@@ -1,4 +1,3 @@
-import { Text } from '@tc96/elements/text'
 import { CollectionPagination, GalleryView } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
@@ -9,6 +8,7 @@ import {
   CardTitle,
 } from '@tc96/ui/card'
 import { Separator } from '@tc96/ui/separator'
+import { Text } from '@tc96/ui/text'
 import { EllipsisIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { sleep } from '../../../../test-utils/sleep'

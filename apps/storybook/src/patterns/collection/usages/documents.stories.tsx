@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { iconFrameStyle } from '@tc96/elements/icon-frame'
 import {
   Action,
   CollectionFrame,
@@ -16,6 +15,7 @@ import {
   type ViewSettingsMode,
   ViewSettingsSection,
 } from '@tc96/parttens'
+import { iconFrameStyle } from '@tc96/ui/icon-frame'
 import {
   MenuCheckboxItem,
   MenuGroup,

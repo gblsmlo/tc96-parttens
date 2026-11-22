@@ -1,6 +1,6 @@
 'use client'
 
-import { IconFrame } from '@tc96/elements/icon-frame'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { CheckIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { WizardStep, WizardStepStatus } from '../core'

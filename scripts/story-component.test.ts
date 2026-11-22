@@ -206,7 +206,7 @@ export function Demo() {
     demoStory
       .replace(
         "import { Demo } from './demo'",
-        "import { Text } from '@tc96/elements/text'\nimport { Demo } from './demo'",
+        "import { Text } from '@tc96/ui/text'\nimport { Demo } from './demo'",
       )
       .replace('<Demo />', '<><Text /><Demo /></>'),
   )

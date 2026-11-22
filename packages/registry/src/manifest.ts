@@ -50,14 +50,14 @@ export const templateNames = [
   'agent-builder',
 ] as const
 export type TemplateName = (typeof templateNames)[number]
-/** Folder under packages/templates/src, kept as the path in the consumer. */
+/** Folder under packages/blocks/src, kept as the path in the consumer. */
 export const templateSources: Record<TemplateName, string> = {
   'app-shell-1': 'application/shell/app-shell-1',
   'app-shell-2': 'application/shell/app-shell-2',
   'app-shell-3': 'application/shell/app-shell-3',
   'app-shell-4': 'application/shell/app-shell-4',
-  'workflow-editor': 'application/flow/workflow-editor',
-  'agent-builder': 'application/flow/agent-builder',
+  'workflow-editor': 'ai-agents/flow/workflow-editor',
+  'agent-builder': 'ai-agents/flow/agent-builder',
 }
 export type ItemName = PatternName | TemplateName
 /** Areas under packages/parttens/src that ship with an item no file of it imports. */
@@ -71,7 +71,6 @@ export function isTemplate(name: string): name is TemplateName {
 export interface Aliases {
   ui: string
   utils: string
-  elements: string
   helpers: string
   patterns: string
   templates: string
@@ -79,17 +78,15 @@ export interface Aliases {
 export const aliasNames = [
   'ui',
   'utils',
-  'elements',
   'helpers',
   'patterns',
   'templates',
 ] as const
 /**
- * Directories the aliases resolve to. Only elements, helpers and patterns are
- * written;
+ * Directories the aliases resolve to. Only helpers and patterns are written;
  * ui is read to find the COSS components the consumer already has.
  */
-export const pathNames = ['ui', 'elements', 'helpers', 'patterns'] as const
+export const pathNames = ['ui', 'helpers', 'patterns'] as const
 export type PathName = (typeof pathNames)[number]
 export interface InstallConfig {
   aliases: Aliases
@@ -115,17 +112,15 @@ export const defaultConfig: InstallConfig = {
   aliases: {
     ui: '@tc96/ui',
     utils: '@tc96/utils',
-    elements: '@tc96/elements',
     helpers: '@tc96/helpers',
     patterns: '@tc96/patterns',
-    templates: '@tc96/templates',
+    templates: '@tc96/blocks',
   },
   paths: {
     ui: 'packages/ui/src',
-    elements: 'packages/elements/src',
     helpers: 'packages/helpers/src',
     patterns: 'packages/patterns/src',
-    templates: 'packages/templates/src',
+    templates: 'packages/blocks/src',
   },
 }
 export function selectItems(names: string[]): ItemName[] {
@@ -190,13 +185,13 @@ export function prepareItem(
   assertDistributable(item)
   const destinations: Record<string, string | undefined> = {
     parttens: config.paths.patterns,
-    elements: config.paths.elements,
     helpers: config.paths.helpers,
-    templates: config.paths.templates,
+    blocks: config.paths.templates,
   }
   const aliases: Record<string, string> = {
     ...config.aliases,
     parttens: config.aliases.patterns,
+    blocks: config.aliases.templates,
   }
   return {
     ...item,
@@ -220,7 +215,7 @@ export function prepareItem(
           ts.isStringLiteral(node.moduleSpecifier)
         ) {
           const match = node.moduleSpecifier.text.match(
-            /^@tc96\/(ui|utils|elements|helpers|parttens|patterns|templates)(\/.*)?$/,
+            /^@tc96\/(ui|utils|helpers|parttens|patterns|blocks)(\/.*)?$/,
           )
           if (match) {
             const alias = aliases[match[1] ?? '']
