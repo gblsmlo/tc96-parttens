@@ -333,7 +333,7 @@ Contraste do `Toast` em `UI/Toast`, medido em 2026-11-02 nas cores computadas do
 
 ### Flow Canvas
 
-Contraste (medido em 2026-10-23, `Horizontal` e `Vertical`, tema `Default`; texto 4,5:1, gráfico 3:1):
+Contraste (medido em 2026-10-23, nos grafos de `Patterns/Flow/Canvas/Usages`, `Lead Routing Workflow` e `Collections Agent Run`, tema `Default`; texto 4,5:1, gráfico 3:1):
 
 | Par | Claro | Escuro |
 | --- | --- | --- |
@@ -356,7 +356,7 @@ A borda do cartão do nó (`border`) mede 1,19:1 e 1,17:1: é moldura, a leitura
 
 ### Flow Step Library
 
-Contraste medido no Storybook (`Patterns/Flow/Step Library`, `Default` com o cartão `Failed`), pelo texto do elemento contra o fundo efetivo do ancestral:
+Contraste medido no Storybook (`Patterns/Flow/Step Library/Stories`, `Default` com o cartão `Failed`), pelo texto do elemento contra o fundo efetivo do ancestral:
 
 | Elemento | Claro | Escuro | Limite |
 | --- | --- | --- | --- |

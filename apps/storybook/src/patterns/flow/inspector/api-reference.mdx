@@ -1,0 +1,190 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Flow Inspector
+
+The side panel of a flow editor that shows one step: its details and the form that edits it, the state of its last run and test runs, and its logs. It docks to the right of the canvas on a wide screen and opens as a sheet on a narrow one. It is controlled: the consumer owns `open`, the tab, the log filter, the form and every action, and passes the content of each tab; the pattern never fetches, filters or persists.
+
+The other pages of `Patterns/Flow/Inspector`: [Playground](?path=/story/patterns-flow-inspector-playground--playground) to try the texts, the tab, the states and each part, [Stories](?path=/story/patterns-flow-inspector-stories--default) for each tab and state, [Behavior](?path=/story/patterns-flow-inspector-behavior--docks-named-aside) for the tests, [Usages](?path=/story/patterns-flow-inspector-usages--view-step) for viewing, editing and creating a step, and [Layouts](?path=/story/patterns-flow-inspector-layouts--without-header-actions) for how the parts combine.
+
+Used in: the flow editors open it next to the [Canvas](?path=/docs/patterns-flow-canvas-api-reference--api-reference) for the selected step, with their own step form in Build. See [Application/Flow/WorkflowEditor](?path=/story/application-flow-workfloweditor--default) and [Application/Flow/AgentBuilder](?path=/story/application-flow-agentbuilder--default).
+
+## Import
+
+```tsx
+import {
+  FlowInspector,
+  FlowInspectorDetails,
+  FlowInspectorLogs,
+  FlowInspectorStatus,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+The three renderers fill the tabs, and also work on their own:
+
+<Canvas of={ApiReferenceStories.DetailsAnatomy} />
+
+<Canvas of={ApiReferenceStories.StatusAnatomy} />
+
+<Canvas of={ApiReferenceStories.LogsAnatomy} />
+
+```tsx
+<FlowInspector icon title badge headerActions tab open unconnected>
+  build:  <FlowInspectorDetails items /> or the consumer's form
+  status: <FlowInspectorStatus status durationMs runId stats />
+  logs:   <FlowInspectorLogs entries filter onFilterChange />
+  {children}: the footer
+</FlowInspector>
+```
+
+## FlowInspector
+
+The frame of the panel: a header, the tabs Build, Status and Logs, a scrolling area with the active tab and a footer. In a viewport 800px wide or more it renders an `aside` named by `labels.title` (`"Detalhes do passo"`), which docks at the width of `width` and, closed, keeps its place in the layout at zero width and is `inert`. Narrower, it renders a sheet with the same body, also named by `labels.title`, and nothing while closed. Its only state is that media query.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | required | Controls whether the panel is docked open, or the sheet shown. |
+| `onClose` | `() => void` | required | Called by the close button and when the sheet is dismissed (`Escape`, a press outside); set `open` to `false` in it. |
+| `tab` | `"build"`, `"status"` or `"logs"` | required | Sets the active tab; only its panel is mounted. |
+| `onTabChange` | `(tab: FlowInspectorTab) => void` | required | Called when the user picks another tab, with its value. |
+| `title` | `ReactNode` | required | Sets the `h2` of the header, cut to one line. |
+| `icon` | `ReactNode` | - | Sets the icon in a frame before the title. |
+| `badge` | `ReactNode` | - | Sets an outline badge under the title. |
+| `headerActions` | `ReactNode` | - | Adds the consumer's buttons before the close button. |
+| `build` | `ReactNode` | - | Sets the content of Build: the details, or a form. |
+| `status` | `ReactNode` | - | Sets the content of Status. |
+| `logs` | `ReactNode` | - | Sets the content of Logs. |
+| `children` | `ReactNode` | - | Sets the footer, aligned to the end; without it the footer is not rendered. |
+| `unconnected` | `boolean` | `false` | When true, shows a warning alert at the top of Build: `labels.unconnectedTitle` and `labels.unconnectedDescription`. |
+| `disabledTabs` | `readonly FlowInspectorTab[]` | `[]` | Disables these tabs. |
+| `width` | `string` | `"24rem"` | Sets the width of the docked panel, as any CSS length. |
+| `labels` | `Partial<FlowInspectorLabels>` | - | Replaces any of the default texts, for the frame and the renderers inside it. |
+| `className` | `string` | - | Adds classes to the `aside`. |
+
+Takes no other prop. `width` and `className` act only on the docked `aside`; the sheet ignores them. The close button is always the last button of the header, named by `labels.close` (`"Fechar detalhes do passo"`). The tab list is named by `labels.tabsLabel` (`"Seções do passo"`). A disabled tab keeps its place with `aria-disabled="true"` and takes no press or key. The open and close of the docked panel animate its width over 200ms, with no animation under `prefers-reduced-motion`; the content keeps its width meanwhile, so it slides in without reflowing.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-inspector"` | Selects the `aside`, or the sheet popup below 800px |
+| `data-docked` | `"true"` or `"false"` | On the `aside` only: open or closed |
+| `data-slot` | `"flow-inspector-body"` | Selects the column with the header, the tabs and the footer |
+| `data-slot` | `"flow-inspector-header"` | Selects the `header` |
+| `data-slot` | `"flow-inspector-footer"` | Selects the `footer` |
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--flow-inspector-width` | `width`, `24rem` (384px) | The width of the docked panel and of its content, set on the `aside` |
+
+The panel does not move focus when it opens docked; when the content is a form, the consumer focuses its first field. The sheet moves focus into itself, as a modal does.
+
+## FlowInspectorDetails
+
+The details of the step, for Build. Renders a `section` named by its `h3` (`labels.details`, `"Detalhes"`) with a `dl` of label and value pairs, in the order of `items`. An item with an `owner` shows the avatar (the image, or the initials) and the name; an item with neither a `value` nor an `owner` is not rendered, while `0` and `""` are.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly FlowInspectorDetail[]` | required | Sets the pairs: `id`, `label`, and a `value` (`ReactNode`) or an `owner` (`{ name, avatarUrl? }`). |
+| `labels` | `Partial<FlowInspectorLabels>` | - | Replaces the heading; wins over the labels of an enclosing `FlowInspector`. |
+| `className` | `string` | - | Adds classes to the `section`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-inspector-details"` | Selects the `section` |
+| `data-slot` | `"flow-inspector-detail"` | Selects each pair, a grid with a 6.5rem label column |
+
+## FlowInspectorStatus
+
+The last run and the test runs of the step, for Status. Renders a `div` with up to two groups, each a `section` named by its `h3` with a `dl`, and renders a group only when it has something to show:
+
+- `labels.lastRun` (`"Última execução"`): the state as a badge with its icon (`status`), the duration (`durationMs`) and the run id (`runId`).
+- `labels.testRuns` (`"Execuções de teste"`): entered and completed (`stats`) and the abandonment, `(entered - completed) / entered` rounded to a percent, never negative, and `labels.empty` (`"—"`) when nothing entered.
+
+When no run reached the step (`status` absent, `"not-run"` or `"idle"`) and no test run entered it, it adds the note `labels.noRunNote`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `status` | `FlowRunStatus` | - | Sets the state of the last run. |
+| `durationMs` | `number` | - | Sets the duration, written `850 ms`, `1,5 s`, `42 s` or `2 min 5 s`. |
+| `runId` | `string` | - | Sets the id of the last run. |
+| `stats` | `FlowStepStats` | - | Sets the test runs: `{ entered, completed }`. |
+| `labels` | `Partial<FlowInspectorLabels>` | - | Replaces any of its texts; wins over the labels of an enclosing `FlowInspector`. |
+| `className` | `string` | - | Adds classes to the `div`. |
+
+Only `failed` is coloured: its badge is `destructive`, `skipped` is `secondary`, and the others are `outline`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-inspector-status"` | Selects the `div` |
+| `data-slot` | `"flow-inspector-stat-grid"` | Selects each group |
+| `data-slot` | `"flow-inspector-status-note"` | Selects the note |
+| `data-slot`, `data-status` | `"flow-status-icon"`, a `FlowRunStatus` | Selects the state icon, here and in the logs |
+
+## FlowInspectorLogs
+
+The log of a run, for Logs. Renders a `div` with the filter, the count (`labels.logCount`, `"3 entradas"`) and a `ul` of entries in the order of `entries`, or an empty state. The filter is a toggle group named `labels.logFilter` (`"Filtrar logs"`) with `"Este passo"` and `"Todos os passos"`, each a button with `aria-pressed`; pressing the active one does nothing. The entries arrive already filtered: the pattern does not filter them.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `entries` | `readonly FlowLogEntry[]` | required | Sets the entries to list. |
+| `filter` | `"step"` or `"all"` | required | Sets the pressed filter. |
+| `onFilterChange` | `(filter: FlowLogFilter) => void` | required | Called when the user presses the other filter, with its value. |
+| `emptyActionLabel` | `string` | - | Sets the text of the empty state's button. |
+| `onEmptyAction` | `() => void` | - | Called by the empty state's button, which renders only with both this and `emptyActionLabel`. |
+| `labels` | `Partial<FlowInspectorLabels>` | - | Replaces the filter, count and empty texts; wins over the labels of an enclosing `FlowInspector`. |
+| `className` | `string` | - | Adds classes to the `div`. |
+
+Each entry shows its state icon as an image named by the status (`"Falhou"`), the `stepName`, `#sequence` and the `description`. The status names of the entries come from the labels of the enclosing `FlowInspector`, or the defaults, and not from this `labels` prop. The list reaches 16px past each side of its box (`-mx-4`), to meet the edges of the inspector panel.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-inspector-logs"` | Selects the `div` |
+| `data-slot` | `"flow-inspector-log-list"` | Selects the `ul` |
+| `data-slot` | `"flow-inspector-log-entry"` | Selects each `li` |
+| `data-status` | a `FlowRunStatus` | On each `li`: the state of the entry |
+| `data-slot` | `"flow-inspector-logs-empty"` | Selects the empty state |
+
+`FlowLogEntry`: `id`, `stepId`, `stepName`, `status` and `sequence` (required), and `description`.
+
+## Labels
+
+Every text of the frame and the renderers, overridden through `labels` on `FlowInspector` (for everything inside it) or on a renderer. The defaults are in Portuguese. `statuses` and `tabs` are replaced whole.
+
+| Field | Default | Where |
+| --- | --- | --- |
+| `title` | `"Detalhes do passo"` | the name of the `aside` or the sheet |
+| `close` | `"Fechar detalhes do passo"` | the close button |
+| `tabsLabel`, `tabs` | `"Seções do passo"`; `"Build"`, `"Status"`, `"Logs"` | the tab list and the tabs |
+| `unconnectedTitle`, `unconnectedDescription` | `"Nada chega a este passo."`, `"Conecte um passo a este."` | the alert of `unconnected` |
+| `details` | `"Detalhes"` | `FlowInspectorDetails` |
+| `lastRun`, `state`, `duration`, `run` | `"Última execução"`, `"Estado"`, `"Duração"`, `"Execução"` | the last run group |
+| `testRuns`, `entered`, `completed`, `abandonment` | `"Execuções de teste"`, `"Entradas"`, `"Concluídas"`, `"Abandono"` | the test runs group |
+| `empty` | `"—"` | the abandonment with no entry |
+| `noRunNote` | `"Nenhuma execução chegou a este passo."` | the note of a step no run reached |
+| `statuses` | `"Ocioso"`, `"Executando"`, `"Sucesso"`, `"Falhou"`, `"Ignorado"`, `"Não executado"` | the state badge and the log icons |
+| `logFilter`, `logThisStep`, `logAllSteps` | `"Filtrar logs"`, `"Este passo"`, `"Todos os passos"` | the log filter |
+| `logCount` | `(count) => "1 entrada"` or `"count entradas"` | the log count |
+| `logsEmptyTitle`, `logsEmptyDescription` | `"Sem logs ainda"`, `"Execute o fluxo para ver o que cada passo registra."` | the empty log |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `defaultFlowInspectorLabels` | `constant` | The default `FlowInspectorLabels` above. |
+| `flowInspectorTabs` | `constant` | The tabs in order: `["build", "status", "logs"]`. |
+| `flowStepAbandonment` | `function` | The abandonment percent of the test runs, or `null` when nothing entered. `flowStepAbandonment(stats) => number \| null` |
+| `formatFlowDuration` | `function` | Writes a duration as the status does, or `null` for a missing or negative one. `formatFlowDuration(durationMs) => string \| null` |
+| `FlowInspectorTab`, `FlowLogFilter`, `FlowLogEntry`, `FlowStepStats`, `FlowInspectorDetail` | `type` | The tab and filter values, a log entry, the test runs and a detail pair. |
+| `FlowInspectorLabels`, `FlowInspectorProps`, `FlowInspectorDetailsProps`, `FlowInspectorStatusProps`, `FlowInspectorLogsProps` | `type` | The labels and the props of each part. |
+
+## Accessibility and theme
+
+- The panel is a complementary region, or a dialog below 800px, named by `labels.title`; keep it unique on the page.
+- Name the icon buttons you pass in `headerActions` with `aria-label`.
+- The state icons are `muted-foreground`, and `destructive-foreground` for `failed`; the warning alert of `unconnected` draws its icon in `warning-foreground`.
+- Measured contrast: `docs/accessibility.md`, the section on the Flow Inspector.

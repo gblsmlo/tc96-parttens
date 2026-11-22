@@ -63,7 +63,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/flow/inspector
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/flow/inspector/`: `frame.stories.tsx` (`Patterns/Flow/Inspector/Frame`: dock, tabs, footer, labels, and the Sheet below `md` through the `mobile2` viewport global) and `renderers/` (details, status and logs). The only bun test left is `core.test.ts`. Stories are in `apps/storybook/src/patterns/flow/inspector/flow-inspector.stories.tsx` (`Patterns/Flow/Inspector`, with the `Doc` page). The meta fixes the `desktop` viewport as environment so the dock renders; `Sheet` sets `mobile2` through `globals`, not `args`. `Edit` carries an example form (`Field`, `Input`, `Textarea`, `Select`) whose first field takes `autoFocus`: the pattern does not move focus on open in the dock.
+Interface tests are the `play` functions of `apps/storybook/src/patterns/flow/inspector/behavior.stories.tsx` (`Patterns/Flow/Inspector/Behavior`): the frame (dock, tabs, footer, labels, and the Sheet below `md` through the `mobile2` viewport global) and the three renderers. The only bun test left is `core.test.ts`. The stories are the six pages of `Patterns/Flow/Inspector` in the same folder. Each meta fixes the `desktop` viewport as environment so the dock renders; the Sheet stories set `mobile2` through `globals`, not `args`. `Usages/Edit Step` carries an example form (`Field`, `Input`, `Textarea`, `Select`) whose first field takes `autoFocus`: the pattern does not move focus on open in the dock.
 
 ## Pointers
 
