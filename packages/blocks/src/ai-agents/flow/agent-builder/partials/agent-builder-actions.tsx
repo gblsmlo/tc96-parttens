@@ -1,5 +1,6 @@
 'use client'
 
+import { renderAnchor } from '@tc96/ui/render-anchor'
 import type { ReactElement } from 'react'
 import { createPortal } from 'react-dom'
 import {
@@ -7,8 +8,7 @@ import {
   type FlowPageActionsProps,
   FlowPageHeader,
 } from '../../shared/flow-page-header'
-import { type FlowRenderLink, renderAnchor } from '../../shared/render-link'
-import type { FlowBreadcrumbItem } from '../../shared/types'
+import type { FlowBreadcrumbItem, FlowRenderLink } from '../../shared/types'
 import { agentBuilderLabels } from './agent-builder-labels'
 
 export interface AgentBuilderActionsProps

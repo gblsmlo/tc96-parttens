@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@tc96/ui/button'
+import { renderAnchor } from '@tc96/ui/render-anchor'
 import { Separator } from '@tc96/ui/separator'
 import {
   Sidebar,
@@ -14,7 +15,6 @@ import { cn } from '@tc96/utils'
 import { SearchIcon } from 'lucide-react'
 import type { CSSProperties, ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
-import { renderAnchor } from '../shared/render-link'
 import { ShellBackButton } from '../shared/shell-back-button'
 import { ShellHeader } from '../shared/shell-header'
 import { ShellNav } from '../shared/shell-nav'

@@ -14,8 +14,11 @@ import { Menu, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Spinner } from '@tc96/ui/spinner'
 import { EllipsisIcon, PlayIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 import { Fragment, type ReactElement, type ReactNode } from 'react'
-import type { FlowRenderLink } from './render-link'
-import type { FlowBreadcrumbItem, FlowPageLabels } from './types'
+import type {
+  FlowBreadcrumbItem,
+  FlowPageLabels,
+  FlowRenderLink,
+} from './types'
 
 export interface FlowPageActionsProps {
   addStepDisabled?: boolean

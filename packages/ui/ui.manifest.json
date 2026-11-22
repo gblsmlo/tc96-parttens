@@ -276,6 +276,9 @@
     "radio-group": {
       "origin": "coss"
     },
+    "render-anchor": {
+      "origin": "own"
+    },
     "scroll-area": {
       "origin": "coss"
     },
