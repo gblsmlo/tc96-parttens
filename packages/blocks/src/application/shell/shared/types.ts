@@ -1,6 +1,7 @@
-import type { ReactElement, ReactNode } from 'react'
+import type { RenderLink } from '@tc96/ui/render-anchor'
+import type { ReactNode } from 'react'
 
-export type ShellRenderLink = (href: string) => ReactElement
+export type ShellRenderLink = RenderLink
 
 export interface ShellAction {
   icon?: ReactNode

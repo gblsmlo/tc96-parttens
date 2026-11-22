@@ -15,6 +15,7 @@ import {
   MenuItem,
   MenuSeparator,
 } from '@tc96/ui/menu'
+import { renderAnchor } from '@tc96/ui/render-anchor'
 import { LockIcon, LockOpenIcon, Redo2Icon, Undo2Icon } from 'lucide-react'
 import { type ReactElement, useMemo } from 'react'
 import { createFlowEditorHandlers } from '../shared/create-flow-editor-handlers'
@@ -25,7 +26,6 @@ import { FlowPageLayout } from '../shared/flow-page-layout'
 import { FlowStepInspector } from '../shared/flow-step-inspector'
 import { FlowToolButton } from '../shared/flow-tool-button'
 import { resolveFlowPageLabels, workflowPageLabels } from '../shared/labels'
-import { renderAnchor } from '../shared/render-link'
 import type { FlowEditorProps } from '../shared/types'
 import { useFlowPageState } from '../shared/use-flow-page-state'
 

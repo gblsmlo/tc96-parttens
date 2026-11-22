@@ -1,13 +1,13 @@
 'use client'
 
 import { flowRunSummary } from '@tc96/parttens/flow/canvas/core'
+import { renderAnchor } from '@tc96/ui/render-anchor'
 import { type ReactElement, useMemo } from 'react'
 import { createFlowEditorHandlers } from '../../../shared/create-flow-editor-handlers'
 import { FlowAssistant } from '../../../shared/flow-assistant'
 import { FlowPageLayout } from '../../../shared/flow-page-layout'
 import { FlowStepInspector } from '../../../shared/flow-step-inspector'
 import { agentPageLabels, resolveFlowPageLabels } from '../../../shared/labels'
-import { renderAnchor } from '../../../shared/render-link'
 import type { FlowEditorProps } from '../../../shared/types'
 import { useFlowPageState } from '../../../shared/use-flow-page-state'
 import {

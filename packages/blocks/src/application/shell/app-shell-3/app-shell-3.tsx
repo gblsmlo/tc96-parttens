@@ -1,5 +1,6 @@
 'use client'
 
+import { renderAnchor } from '@tc96/ui/render-anchor'
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +12,6 @@ import {
 import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
-import { renderAnchor } from '../shared/render-link'
 import { ShellBackButton } from '../shared/shell-back-button'
 import { ShellHeader } from '../shared/shell-header'
 import { ShellNav } from '../shared/shell-nav'

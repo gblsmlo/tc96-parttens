@@ -20,8 +20,8 @@ import type {
   FlowRunCardLabels,
   FlowStepLibraryLabels,
 } from '@tc96/parttens/flow/step-library/core'
+import type { RenderLink } from '@tc96/ui/render-anchor'
 import type { ComponentProps, ReactNode } from 'react'
-import type { FlowRenderLink } from './render-link'
 
 export type {
   FlowConnection,
@@ -32,8 +32,9 @@ export type {
   FlowStepStats,
   AssistantMessage,
   AssistantSuggestion,
-  FlowRenderLink,
 }
+
+export type FlowRenderLink = RenderLink
 
 export interface FlowPosition {
   x: number
