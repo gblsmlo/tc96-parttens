@@ -41,14 +41,16 @@ Cinco blocks de acesso, uma variação cada (proposta mantida pelo dono em 2026-
 | `OTPField`, `OTPFieldInput`, `OTPFieldSeparator` | `@tc96/ui/otp-field` | `packages/ui/src/otp-field.tsx` |
 | `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardPanel`, `CardFooter` | `@tc96/ui/card` | `packages/ui/src/card.tsx` |
 | `Separator` | `@tc96/ui/separator` | importado por `otp-field.tsx` |
-| `Input`, `Button`, `Alert` | `@tc96/ui` | não lidos para este documento; o implementador confere os nomes e as props |
-| `Checkbox` (a caixa "lembrar de mim") | `@tc96/ui` | não lido; o implementador confere o nome e as props (proposed) |
+| `Input` (envolve o `Input` do Base UI; `InputGroup`, `InputGroupAddon` e `InputGroupInput` ficam em `input-group.tsx`) | `@tc96/ui/input`, `@tc96/ui/input-group` | `packages/ui/src/input.tsx`, `packages/ui/src/input-group.tsx` |
+| `Button` (`variant`, `size`, `loading`, `render`; o `type` padrão é `button`, então o envio leva `type="submit"`; `loading` desabilita e mostra o `Spinner`) | `@tc96/ui/button` | `packages/ui/src/button.tsx` |
+| `Alert`, `AlertTitle`, `AlertDescription` (`variant="error"`; renderiza `role="alert"` e repassa `ref` e `tabIndex`) | `@tc96/ui/alert` | `packages/ui/src/alert/alert.tsx` |
+| `Checkbox` (a caixa "lembrar de mim"; `Checkbox.Root` do Base UI: `checked`, `defaultChecked`, `onCheckedChange`, `name`; não traz rótulo, então vai dentro de `FieldLabel` de um `Field`, como em `FieldCheckbox` de `apps/storybook/src/ui/checkbox/checkbox-layouts.tsx`) | `@tc96/ui/checkbox` | `packages/ui/src/checkbox.tsx` |
 | `renderAnchor` | `@tc96/ui` (`@tc96/ui/render-anchor`, pelo padrão `@tc96/ui/<componente>`) | `packages/ui/src/render-anchor.tsx`, criado por esta entrega; o nome do arquivo e do export é proposto (proposed) |
 | `cn` | `@tc96/utils` | `packages/ui/src/field.tsx` importa de `@tc96/utils` |
 | Patterns | nenhum | o mapa de decisão prevê que os blocks de auth não usam pattern (`docs/architecture/layer-decision-map.md`, "Como o tc96 aplica", 1) |
 | Pasta do grupo | `application/auth/shared/` | criada por esta entrega |
 
-A spec do contrato do Base UI (`OTPField`, props de `Form` e `Field`) não está no input. [GAP: os nomes e o comportamento das props do `OTPField` do Base UI (tamanho do código, valor, evento de conclusão) — decides: o implementador, ao ler o componente, e o dono se algo mudar o contrato abaixo]
+Props lidas pelo implementador da fundação (T10, 2026-11-22): `OTPField` repassa as props de `OTPField.Root` do Base UI (`node_modules/@base-ui/react/otp-field/root/OTPFieldRoot.d.mts`): `length` (obrigatória), `value` e `defaultValue`, `onValueChange`, `onValueComplete(value, eventDetails)` (o evento de conclusão), `autoSubmit` (padrão `false`; ligado, envia o formulário ao completar) e `autoComplete` (padrão `one-time-code`); `size` é `default` ou `lg` (`packages/ui/src/otp-field.tsx`). O `otp-1` não liga `autoSubmit`, e `onComplete(code)` sai de `onValueComplete` (proposed). `Form` (`packages/ui/src/form.tsx`) repassa as props de `Form` do Base UI: `errors`, `onFormSubmit(values)`, `validationMode`, `ref`. As props de `Field` e `Field.Error` seguem o Base UI (`name` do `Field` liga o campo ao `errors` do `Form`).
 
 ## 4. O que fornece
 
@@ -364,7 +366,7 @@ Todos (proposed).
 
 Erros que o block não produz: ele não classifica falhas de rede, credenciais inválidas nem token expirado; o consumidor traduz isso em `error` e `fieldErrors`. O único erro de campo que o block produz é o da confirmação que não bate.
 
-[GAP: usar a validação do `Form` do Base UI (`errors`, modo de validação) ou `noValidate` com estado próprio para o foco no primeiro campo inválido — decides: o implementador da fundação, por delegação do dono em 2026-11-22; volta ao dono se mudar o contrato]
+**Validação (decidida pelo implementador da fundação, por delegação do dono, 2026-11-22; T9).** Os blocks usam o `Form` do COSS (`@tc96/ui/form`, o `Form` do Base UI): ele define `noValidate`, valida as restrições nativas no envio, bloqueia o envio e foca o primeiro controle inválido. A prop `errors` é indexada pelo `name` do `Field`, marca `aria-invalid`, mostra o `FieldError` e limpa quando o campo é editado; o block a monta com `useMemo(() => toFormErrors(fieldErrors), [fieldErrors])`, para o objeto só mudar quando `fieldErrors` mudar. O block liga `ref={formRef}`, `onFormSubmit={(values) => ...}` (que ignora o envio com `pending`) e `aria-busy={pending}`. O hook `useFocusFirstInvalid({ formRef, alertRef, error, fieldErrors })` cobre só o que o `Form` não cobre: o `Alert` e os erros de campo que chegam sem um envio. O contrato do dono não muda. As mensagens das restrições nativas (`required`, `type="email"`, `minLength`) são o `validationMessage` do navegador, já localizado; o dono as mantém por ora, e não há rótulo para elas em `labels`.
 
 ## 6. Fatos do código
 
@@ -485,8 +487,7 @@ Decidido pelo dono: a página inteira é do block, com o `main`, o conteúdo cen
 
 ## 12. Lacunas abertas
 
-- [GAP: validação do `Form` do Base UI ou estado próprio para o foco no erro — decides: o implementador da fundação, por delegação do dono em 2026-11-22; volta ao dono se mudar o contrato]
-- [GAP: props do `OTPField` do Base UI e nomes de `Input`, `Button`, `Alert` e `Checkbox` do `ui`, não lidos — decides: o implementador, ao ler os componentes]
+- Fechadas em 2026-11-22 pelo implementador da fundação: a validação do `Form` (§5.2) e as props do `OTPField` e dos componentes de `ui` (§3).
 - [GAP: o tipo de teste de cada invariante (proposed) — o [ADR 0009](../adr/0009-blocks-layer.md) já deixa a confirmação dos tipos de teste com o dono — decides: o dono]
 
 ## 13. Relacionados

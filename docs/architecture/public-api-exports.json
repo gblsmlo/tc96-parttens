@@ -1461,6 +1461,17 @@
     "ShellUser",
     "ShellWorkspace"
   ],
+  "block:login-1": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthProvider",
+    "AuthRenderLink",
+    "Login1",
+    "LoginLabels",
+    "LoginProps",
+    "LoginValues"
+  ],
   "block:workflow-editor": [
     "AssistantMessage",
     "AssistantSuggestion",
