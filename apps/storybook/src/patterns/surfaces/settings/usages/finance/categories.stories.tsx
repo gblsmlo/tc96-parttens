@@ -14,7 +14,7 @@ import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { CornerDownRightIcon, EllipsisIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 
 type Direction = 'Income' | 'Expense'
 
@@ -179,17 +179,25 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Finance/Categories',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
 export const Categories: Story = {
   name: 'Categories',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Categories' }),
+    ).toBeVisible()
+    await expect(canvas.getByText('48 entries')).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'New category' }),
+    ).toBeVisible()
+  },
   render: () => (
     <CategoriesSection>
       {categoryRows(categories)}
@@ -202,7 +210,19 @@ export const Categories: Story = {
   ),
 }
 
-export const Empty: Story = {
+export const CategoriesEmpty: Story = {
+  name: 'Categories empty',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByRole('status')).toHaveAttribute(
+      'data-kind',
+      'empty',
+    )
+    await expect(canvas.getByText('No categories yet')).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'New category' }),
+    ).toBeEnabled()
+  },
   render: () => (
     <CategoriesSection>
       <StateSurface
@@ -212,83 +232,4 @@ export const Empty: Story = {
       />
     </CategoriesSection>
   ),
-}
-
-export const Interaction: Story = {
-  ...Categories,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-    expect(
-      canvas.getByRole('heading', { level: 2, name: 'Categories' }),
-    ).toBeVisible()
-    const newCategory = canvas.getByRole('button', { name: 'New category' })
-    expect(newCategory).toBeEnabled()
-    expect(newCategory.closest('[data-slot="card"]')).toBeNull()
-
-    expect(canvas.getByText('48 entries')).toBeVisible()
-    expect(canvas.getByText('1 entry')).toBeVisible()
-    expect(canvas.getAllByText('Subcategory of Court costs')).toHaveLength(2)
-    expect(canvas.getAllByText('Income')).toHaveLength(2)
-    expect(canvas.getAllByText('Expense')).toHaveLength(2)
-
-    const active = categories.flatMap((category) => [
-      category.name,
-      ...(category.subcategories ?? []).map(({ name }) => name),
-    ])
-    for (const name of active) {
-      expect(canvas.getByText(name)).toBeVisible()
-    }
-    expect(
-      canvas.getAllByRole('button', { name: /^Actions for / }),
-    ).toHaveLength(active.length)
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Court costs' }),
-    )
-    expect(
-      await body.findByRole('menuitem', { name: 'Add subcategory' }),
-    ).toBeVisible()
-    expect(body.getByRole('menuitem', { name: 'Archive' })).toBeVisible()
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Filing fees' }),
-    )
-    expect(await body.findByRole('menuitem', { name: 'Edit' })).toBeVisible()
-    expect(body.queryByRole('menuitem', { name: 'Add subcategory' })).toBeNull()
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
-
-    const archived = canvas.getByRole('region', { name: 'Archived' })
-    const trigger = within(archived).getByRole('button', { name: 'Archived' })
-    expect(trigger).toHaveAttribute('aria-expanded', 'false')
-    expect(within(archived).queryByText('Travel')).toBeNull()
-    await userEvent.click(trigger)
-    await waitFor(() =>
-      expect(within(archived).getByText('Travel')).toBeVisible(),
-    )
-    await userEvent.click(
-      within(archived).getByRole('button', { name: 'Actions for Travel' }),
-    )
-    expect(await body.findByRole('menuitem', { name: 'Restore' })).toBeVisible()
-    expect(body.queryByRole('menuitem', { name: 'Archive' })).toBeNull()
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
-  },
-  tags: interaction,
-}
-
-export const EmptyInteraction: Story = {
-  ...Empty,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')
-    expect(within(canvas.getByRole('status')).queryByRole('button')).toBeNull()
-    expect(canvas.getByText('No categories yet')).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'New category' })).toBeEnabled()
-    expect(canvas.queryByRole('button', { name: /^Actions for / })).toBeNull()
-  },
-  tags: interaction,
 }

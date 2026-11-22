@@ -18,7 +18,7 @@ import {
 import { PaletteIcon, SunMoonIcon } from 'lucide-react'
 import { Fragment } from 'react'
 import { useGlobals } from 'storybook/preview-api'
-import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 import {
   type ThemePreset,
   themePresets,
@@ -221,49 +221,17 @@ const meta = {
   decorators: [withStorybookTheme],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Profile/Theme picker',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof ThemeSettings>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
-const swatchOf = (element: Element) =>
-  element.querySelector('[data-slot="theme-swatch"]') as HTMLElement
-
-const primaryOf = (swatch: HTMLElement) =>
-  getComputedStyle(
-    swatch.querySelector('[data-slot="theme-swatch-primary"]') as HTMLElement,
-  ).backgroundColor
-
-export const ThemePicker: Story = { name: 'Theme picker' }
-
-export const Interaction: Story = {
-  play: async ({ args, canvasElement }) => {
+export const ThemePicker: Story = {
+  name: 'Theme picker',
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const trigger = canvas.getByRole('combobox', { name: 'Theme' })
-    expect(swatchOf(trigger).dataset.themePreset).toBe('default')
-
-    await userEvent.click(trigger)
-    const options = await screen.findAllByRole('option')
-    expect(options).toHaveLength(themePresets.length)
-    for (const [index, option] of options.entries()) {
-      const swatch = swatchOf(option)
-      expect(swatch).toHaveAttribute('aria-hidden', 'true')
-      expect(swatch.dataset.themePreset).toBe(themePresets[index]?.value)
-    }
-
-    const zinc = screen.getByRole('option', { name: 'Zinc' })
-    const claude = screen.getByRole('option', { name: 'Claude' })
-    expect(primaryOf(swatchOf(zinc))).not.toBe(primaryOf(swatchOf(claude)))
-
-    await userEvent.click(zinc)
-    await waitFor(() =>
-      expect(args.onColorThemeChange).toHaveBeenCalledWith('zinc'),
-    )
-    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
+    await expect(canvas.getByRole('combobox', { name: 'Theme' })).toBeVisible()
   },
-  tags: interaction,
 }

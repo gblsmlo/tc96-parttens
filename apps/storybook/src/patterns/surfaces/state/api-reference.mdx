@@ -1,0 +1,175 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# State
+
+The surface a region shows in place of its data, and the guard that decides when to show it: an empty table, a search with no results, a failed request, a page the user cannot open, a record that no longer exists, or a list that is still loading. Reach for `StateSurface` when the consumer already knows the kind it has to show, and for `StateGuard` when one region switches between its data and those states. The consumer passes the state and the copy; the pattern never fetches, never maps an API error code to a kind and has no default text.
+
+The other pages of `Patterns/Surfaces/State`: [Playground](?path=/story/patterns-surfaces-state-playground--playground) to try the state, the texts, the icon and the actions, [Stories](?path=/story/patterns-surfaces-state-stories--default) for each kind, the loading and data states and the icon values, [Behavior](?path=/story/patterns-surfaces-state-behavior--role-follows-kind-without-aria-live) for the tests, [Usages](?path=/story/patterns-surfaces-state-usages--no-records) for each state with real copy, and [Layouts](?path=/story/patterns-surfaces-state-layouts--with-actions) for the actions row, a framed surface and a loading block without a description.
+
+## Import
+
+```tsx
+import {
+  StateGuard,
+  StateSurface,
+  type StateGuardProps,
+  type StateGuardState,
+  type StateSurfaceKind,
+  type StateSurfaceProps,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+`StateSurface` with the default icon of its kind, and the texts and the actions as slots:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<StateSurface
+  actions={actions}
+  className={className}
+  description={description}
+  icon={icon}
+  kind="empty"
+  title={title}
+/>
+```
+
+The tree `StateSurface` renders. `actions` renders only when it is passed, and `icon={null}` removes the media wrapper and the frame:
+
+```tsx
+<div data-slot="empty" data-kind="empty" role="status">
+  <div data-slot="empty-header">
+    <div data-slot="empty-media" data-variant="default">
+      <div>
+        <span
+          aria-hidden="true"
+          data-shape="rounded"
+          data-size="xl"
+          data-slot="icon-frame"
+          data-variant="color"
+        >
+          <svg />
+        </span>
+      </div>
+    </div>
+    <div data-slot="empty-title">{title}</div>
+    <div data-slot="empty-description">{description}</div>
+  </div>
+  <div data-slot="empty-content">{actions}</div>
+</div>
+```
+
+The loading block of `StateGuard`, with the children of the guard as a slot that never renders in this state:
+
+<Canvas of={ApiReferenceStories.LoadingAnatomy} />
+
+```tsx
+<StateGuard
+  state="loading"
+  surface={{ className, description, title }}
+>
+  {children}
+</StateGuard>
+```
+
+The tree it renders. The description renders only when it is passed:
+
+```tsx
+<output data-slot="state-guard-loading">
+  <span>
+    <svg aria-hidden="true" />
+  </span>
+  <p>{title}</p>
+  <p>{description}</p>
+</output>
+```
+
+## StateSurface
+
+The surface shown in place of data. Renders a `div` with `data-slot="empty"`, a `data-kind` and a role fixed by the kind: `alert` for `"error"` and `"permission"`, `status` for `"empty"`, `"no-result"` and `"not-found"`. It sets no `aria-live`, and there is no prop to override the role. It shows an icon in a rounded frame, the title, the description and, when passed, a row of actions. It has no state, never fetches and never decides which kind applies.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `kind` | `"empty"`, `"no-result"`, `"error"`, `"permission"` or `"not-found"` | required | Sets the role, the default icon and the color of the frame. |
+| `title` | `ReactNode` | required | Sets the title; there is no default text. |
+| `description` | `ReactNode` | required | Sets the text under the title; there is no default text. |
+| `icon` | `ReactNode` | the icon of the kind | Replaces the icon inside the frame; `null` removes the frame. |
+| `actions` | `ReactNode` | - | Renders consumer content in a row under the text, such as buttons; without it no row renders. |
+| `className` | `string` | - | Adds classes to the root, after its base classes. |
+
+The surface takes no other prop of a `div`.
+
+Default icons: `"empty"` an inbox, `"no-result"` a magnifier with a cross, `"error"` a warning triangle, `"permission"` a lock and `"not-found"` a file with a question mark.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"empty"` | Selects the root, which takes `className` |
+| `data-kind` | `"empty"`, `"no-result"`, `"error"`, `"permission"` or `"not-found"` | Selects the surface by kind |
+| `data-slot` | `"empty-header"` | Selects the column that holds the media, the title and the description |
+| `data-slot` | `"empty-media"` | Selects the wrapper of the icon frame, with `data-variant="default"`; it renders only while `icon` is not `null`, and a plain `div` inside it holds the frame |
+| `data-slot` | `"icon-frame"` | Selects the frame around the icon |
+| `data-shape`, `data-variant`, `data-size` | `"rounded"`, `"color"`, `"xl"` | Describe the frame, which is fixed |
+| `data-slot` | `"empty-title"` | Selects the title |
+| `data-slot` | `"empty-description"` | Selects the description |
+| `data-slot` | `"empty-content"` | Selects the row of `actions`; it renders only with `actions` |
+
+### Icon frame
+
+The frame is a 56px rounded square, decorative and `aria-hidden`, so a custom `icon` needs no label. The icon is 24px unless the icon sets its own size.
+
+`"error"` and `"permission"` color the frame with `var(--destructive)`: the icon takes that color and the frame a 6% tint of it, both inline. The other kinds use the default `foreground` on a `muted` background at 60% opacity, set as a class. There is no prop to style the frame, and the inline color of the first two wins over any class.
+
+### Actions
+
+`actions` is a slot and the pattern forces no button variant: the consumer picks the variant, the label and the handler. The row is centered, wraps and has an 8px gap, so several buttons stay side by side while they fit.
+
+### Spacing
+
+The root grows to fill its parent (`flex-1`) and centers its content, with 48px of vertical padding, 80px from `md` up. The header is 384px wide at most, and the actions row too. `className` is the way to change any of this, such as a border, a height or a smaller padding.
+
+## StateGuard
+
+Mounts its children only when the state is `data`, and shows a surface in every other state. Renders the children as they are in `data`, the loading block in `loading` and a `StateSurface` of the matching kind otherwise. The consumer owns the state: the guard never reads a query, never changes the state and never decides what an error means.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `state` | `StateGuardState` | required | Sets what renders: `"data"`, `"loading"` or one of the five kinds of `StateSurface`. |
+| `children` | `ReactNode` | required | Sets the content that mounts only when `state` is `"data"`. |
+| `surface` | `Omit<StateSurfaceProps, "kind">` | required outside `"data"` | Sets the props of the `StateSurface`, without its `kind`; in `"data"` it is optional and ignored. |
+
+In `"loading"`, `surface` is narrower: `title` is required, `description` is optional and `className` is the only other prop it reads. `icon` and `actions` are not accepted, since the block has no icon frame and no actions.
+
+Values of `StateGuardState`: `"data"`, `"loading"`, `"empty"`, `"no-result"`, `"error"`, `"permission"`, `"not-found"`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"state-guard-loading"` | Selects the loading block, which takes `surface.className` |
+
+### Loading block
+
+Loading is not a kind: the block is an `output`, so it is announced as a `status`, and it has no `data-kind`. It centers a 20px spinner, the title and, when passed, the description, with 32px of padding and a gap of 8px. The spinner is `aria-hidden`; the title and the description carry the announcement. Unlike `StateSurface`, the block does not fill its parent: pass `className` in `surface` to give it a height.
+
+### Switching states
+
+Each state mounts and unmounts its own content, so children do not stay mounted behind a surface: a form or a list inside the guard loses its internal state when the state leaves `"data"`. Keep any state that must survive above the guard.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `StateSurfaceProps` | `type` | The props of `StateSurface`. |
+| `StateSurfaceKind` | `type` | The five kinds a surface can show. |
+| `StateGuardProps` | `type` | The props of `StateGuard`, a union by `state`. |
+| `StateGuardState` | `type` | `"data"`, `"loading"` or a `StateSurfaceKind`. |
+
+## Accessibility and theme
+
+- Every text is the consumer's: pass `title` and `description`, which have no defaults, and name any icon-only button passed in `actions` with `aria-label`.
+- The role is fixed by the kind. `"error"` and `"permission"` render with `role="alert"`, which assistive technology announces as soon as it mounts, so mount them when the state changes. The other kinds are a `status`.
+- The icon frame and the loading spinner are decorative; the meaning lives in the title and the description.
+- The surface uses the `foreground`, `muted`, `muted-foreground` and `destructive` tokens. Measured contrast: `docs/accessibility.md`, section `state-surface`.

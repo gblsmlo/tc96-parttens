@@ -61,7 +61,7 @@ bun test packages/registry
 cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/patterns/surfaces/settings
 ```
 
-The stories are in `apps/storybook/src/patterns/surfaces/settings/`, with a `!dev` `<Story>Interaction` twin each, and run axe with `test: 'error'`. Interface tests are `play` functions in `composition/` there (collapsed, row and section); the pattern has no bun test.
+The docs are the six pages of `Patterns/Surfaces/Settings` in `apps/storybook/src/patterns/surfaces/settings/`; the settings screens are in `usages/`, all under the title `Patterns/Surfaces/Settings/Usages`. They run axe with `test: 'error'`. Interface tests are the `play` functions of `behavior.stories.tsx` there; the pattern has no bun test.
 
 ## Pointers
 

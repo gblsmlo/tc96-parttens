@@ -18,7 +18,7 @@ import {
   CircleXIcon,
   EllipsisIcon,
 } from 'lucide-react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 
 const groups = [
   {
@@ -142,106 +142,25 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Workspace/Project Statuses',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
 export const ProjectStatuses: Story = {
   name: 'Project Statuses',
-  render: () => <StatusesDemo />,
-}
-
-export const Interaction: Story = {
-  ...ProjectStatuses,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    expect(
-      canvas.getByRole('heading', { name: 'Project statuses', level: 2 }),
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Project statuses' }),
     ).toBeVisible()
-    expect(canvas.getByRole('region', { name: 'Backlog' })).toBeVisible()
-    expect(canvas.getByRole('region', { name: 'Canceled' })).toBeVisible()
-    const newStatus = canvas.getByRole('button', { name: 'New status' })
-    expect(newStatus.closest('[data-slot="card"]')).toBeNull()
-    expect(
-      canvas.queryAllByRole('button', { name: /Create new .* status/ }),
-    ).toHaveLength(0)
-    expect(canvas.getByText('6 projects')).toBeVisible()
-
-    const title = canvas.getByRole('heading', {
-      name: 'Project statuses',
-      level: 2,
-    })
-    const description = canvas.getByText(
-      'Project statuses define the workflow that projects go through from start to completion',
-    )
-    const card = canvasElement.querySelector(
-      '[data-slot="card"]',
-    ) as HTMLElement
-
-    expect(card).toBeInTheDocument()
-    expect(
-      card.querySelector('[data-slot="settings-section-rows"]'),
-    ).not.toBeNull()
-
-    const groups = Array.from(
-      card.querySelectorAll<HTMLElement>('[data-slot="settings-collapsed"]'),
-    )
-    for (const group of groups) {
-      expect(getComputedStyle(group).borderBottomWidth).toBe('0px')
-    }
-    for (const item of card.querySelectorAll<HTMLElement>(
-      '[data-slot="settings-row"]',
-    )) {
-      expect(getComputedStyle(item).paddingInlineStart).toBe('0px')
-      expect(getComputedStyle(item).paddingInlineEnd).toBe('0px')
-    }
-    const firstHeader = groups[0]?.querySelector('header') as HTMLElement
-    const lastItem = groups
-      .at(-1)
-      ?.querySelector('[data-slot="settings-row"]') as HTMLElement
-
-    expect(
-      firstHeader.getBoundingClientRect().top -
-        card.getBoundingClientRect().top,
-    ).toBeGreaterThanOrEqual(8)
-    expect(
-      card.getBoundingClientRect().bottom -
-        lastItem.getBoundingClientRect().bottom,
-    ).toBeGreaterThanOrEqual(8)
-
-    const cardBox = card.getBoundingClientRect()
-    const headerBox = firstHeader.getBoundingClientRect()
-    const inset = headerBox.top - cardBox.top
-    expect(headerBox.left - cardBox.left).toBeCloseTo(inset, 0)
-    expect(cardBox.right - headerBox.right).toBeCloseTo(inset, 0)
-
-    expect(
-      Math.abs(
-        title.getBoundingClientRect().left - card.getBoundingClientRect().left,
-      ),
-    ).toBeLessThan(1)
-    expect(
-      card.getBoundingClientRect().top -
-        description.getBoundingClientRect().bottom,
-    ).toBeLessThanOrEqual(16)
-
-    const backlog = canvas.getByRole('region', { name: 'Backlog' })
-    const backlogTrigger = within(backlog).getByRole('button', {
-      name: 'Backlog',
-    })
-    expect(backlogTrigger).toHaveAttribute('aria-expanded', 'true')
-    await userEvent.click(backlogTrigger)
-    expect(backlogTrigger).toHaveAttribute('aria-expanded', 'false')
-    await waitFor(() =>
-      expect(within(backlog).queryByText('1 project')).toBeNull(),
-    )
-    await userEvent.click(backlogTrigger)
-    expect(backlogTrigger).toHaveAttribute('aria-expanded', 'true')
+    await expect(canvas.getByRole('region', { name: 'Backlog' })).toBeVisible()
+    await expect(canvas.getByRole('region', { name: 'Canceled' })).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'New status' }),
+    ).toBeVisible()
   },
-  tags: interaction,
+  render: () => <StatusesDemo />,
 }

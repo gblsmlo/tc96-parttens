@@ -44,7 +44,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/surfaces/state
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/surfaces/state/composition/` (guard and surface), and they run axe with `test: 'error'`. The bun test left is `core.test.ts`: the kinds tuple and the `@ts-expect-error` cases that require `surface` outside `data`, which only `bun run typecheck` enforces.
+Interface tests are `play` functions in `apps/storybook/src/patterns/surfaces/state/behavior.stories.tsx` (surface and guard), and they run axe with `test: 'error'`. The bun test left is `core.test.ts`: the kinds tuple and the `@ts-expect-error` cases that require `surface` outside `data`, which only `bun run typecheck` enforces.
 
 ## Pointers
 

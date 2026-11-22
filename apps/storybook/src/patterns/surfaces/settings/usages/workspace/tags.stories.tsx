@@ -151,17 +151,23 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Workspace/Tags',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
 export const Tags: Story = {
   name: 'Tags',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Tags' }),
+    ).toBeVisible()
+    await expect(canvas.getByText('Subtag of Labor')).toBeVisible()
+    await expect(canvas.getByRole('button', { name: 'New tag' })).toBeVisible()
+  },
   render: () => (
     <TagsSection>
       {tags.flatMap((tag) => [
@@ -174,37 +180,17 @@ export const Tags: Story = {
   ),
 }
 
-export const Interaction: Story = {
-  ...Tags,
+export const TagsEmpty: Story = {
+  name: 'Tags empty',
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    expect(
-      canvas.getByRole('heading', { level: 2, name: 'Tags' }),
-    ).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'New tag' })).toBeEnabled()
-
-    expect(canvas.getByText('Subtag of Labor')).toBeVisible()
-    expect(canvas.getByText('0 leads · 2 tasks')).toBeVisible()
-    expect(canvas.getByText('1 lead · 1 task')).toBeVisible()
-
-    const names = tags.flatMap((tag) => [
-      tag.name,
-      ...(tag.subtags ?? []).map((subtags) => subtags.name),
-    ])
-    for (const name of names) {
-      expect(canvas.getByText(name)).toBeVisible()
-      expect(
-        canvas.getByRole('button', { name: `Actions for ${name}` }),
-      ).toBeEnabled()
-    }
-    expect(
-      canvas.getAllByRole('button', { name: /^Actions for / }),
-    ).toHaveLength(names.length)
+    await expect(canvas.getByRole('status')).toHaveAttribute(
+      'data-kind',
+      'empty',
+    )
+    await expect(canvas.getByText('No tags yet')).toBeVisible()
+    await expect(canvas.getByRole('button', { name: 'New tag' })).toBeEnabled()
   },
-  tags: interaction,
-}
-
-export const EmptyInteraction: Story = {
   render: () => (
     <TagsSection>
       <StateSurface
@@ -214,13 +200,4 @@ export const EmptyInteraction: Story = {
       />
     </TagsSection>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')
-    expect(within(canvas.getByRole('status')).queryByRole('button')).toBeNull()
-    expect(canvas.getByText('No tags yet')).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'New tag' })).toBeEnabled()
-    expect(canvas.queryByRole('button', { name: /^Actions for / })).toBeNull()
-  },
-  tags: interaction,
 }

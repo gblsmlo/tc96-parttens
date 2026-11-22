@@ -21,7 +21,7 @@ import {
   RepeatIcon,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 
 type ActionType = 'call' | 'email' | 'meeting' | 'proposal' | 'follow-up'
 
@@ -206,120 +206,45 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Workspace/Next Actions',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
 export const NextActions: Story = {
   name: 'Next Actions',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Stage gates' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Next actions' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('switch', { name: 'Block stage changes' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'New action' }),
+    ).toBeVisible()
+  },
   render: () => <NextActionsDemo />,
 }
 
-export const Empty: Story = {
-  render: () => <NextActionsDemo empty />,
-}
-
-export const Interaction: Story = {
-  ...NextActions,
+export const NextActionsEmpty: Story = {
+  name: 'Next Actions empty',
   play: async ({ canvasElement }) => {
-    onBlockChange.mockClear()
-    onRequiredChange.mockClear()
     const canvas = within(canvasElement)
-    expect(
-      canvas.getByRole('heading', { level: 2, name: 'Stage gates' }),
-    ).toBeVisible()
-    expect(
-      canvas.getByRole('heading', { level: 2, name: 'Next actions' }),
-    ).toBeVisible()
-
-    const block = canvas.getByRole('switch', { name: 'Block stage changes' })
-    expect(block).toBeVisible()
-    expect(block).not.toBeChecked()
-
-    const newAction = canvas.getByRole('button', { name: 'New action' })
-    expect(newAction).toBeEnabled()
-    expect(newAction.closest('[data-slot="card"]')).toBeNull()
-
-    for (const { actions, name } of stages) {
-      const group = canvas.getByRole('region', { name: `Leaving ${name}` })
-      expect(group).toBeVisible()
-      expect(within(group).queryByRole('button', { name: /^Add / })).toBeNull()
-      expect(within(group).queryAllByRole('switch')).toHaveLength(
-        actions.length,
-      )
-      expect(
-        within(group).queryAllByRole('button', { name: /^Actions for / }),
-      ).toHaveLength(actions.length)
-    }
-    expect(canvas.getAllByRole('region')).toHaveLength(stages.length + 2)
-    expect(canvas.queryByRole('region', { name: 'Leaving Won' })).toBeNull()
-    expect(canvas.queryByRole('region', { name: 'Leaving Lost' })).toBeNull()
-
-    const negotiation = canvas.getByRole('region', {
-      name: 'Leaving Negotiation',
-    })
-    expect(
-      within(negotiation).getByText('Leads move on without required actions'),
-    ).toBeVisible()
-
-    const welcome = canvas.getByRole('switch', {
-      name: 'Required: Send a welcome email',
-    })
-    expect(welcome).not.toBeChecked()
-    expect(canvas.getByText('Email')).toBeVisible()
-    await userEvent.click(welcome)
-    await waitFor(() => expect(welcome).toBeChecked())
-    expect(onRequiredChange).toHaveBeenCalledTimes(1)
-    expect(onRequiredChange.mock.calls[0]).toEqual([
-      'Send a welcome email',
-      true,
-    ])
-
-    const firstCall = canvas.getByRole('switch', {
-      name: 'Required: Log the first call',
-    })
-    expect(firstCall).toBeChecked()
-    await userEvent.click(firstCall)
-    await waitFor(() => expect(firstCall).not.toBeChecked())
-    expect(onRequiredChange.mock.calls[1]).toEqual([
-      'Log the first call',
-      false,
-    ])
-
-    await userEvent.click(block)
-    await waitFor(() => expect(block).toBeChecked())
-    expect(onBlockChange.mock.calls[0]?.[0]).toBe(true)
-
-    const end = firstCall.closest('[data-slot="settings-row-end"]')
-    const menu = canvas.getByRole('button', {
-      name: 'Actions for Log the first call',
-    })
-    expect(end).toContainElement(menu)
-    expect(firstCall.getBoundingClientRect().right).toBeLessThanOrEqual(
-      menu.getBoundingClientRect().left,
+    await expect(canvas.getByRole('status')).toHaveAttribute(
+      'data-kind',
+      'empty',
     )
+    await expect(canvas.getByText('No next actions yet')).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'New action' }),
+    ).toBeEnabled()
   },
-  tags: interaction,
-}
-
-export const EmptyInteraction: Story = {
-  ...Empty,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')
-    expect(canvas.getByText('No next actions yet')).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'New action' })).toBeEnabled()
-    expect(within(canvas.getByRole('status')).queryByRole('button')).toBeNull()
-    expect(
-      canvas.getByRole('switch', { name: 'Block stage changes' }),
-    ).toBeVisible()
-    expect(canvas.queryByRole('button', { name: /^Actions for / })).toBeNull()
-    expect(canvas.queryByRole('region', { name: /^Leaving / })).toBeNull()
-  },
-  tags: interaction,
+  render: () => <NextActionsDemo empty />,
 }

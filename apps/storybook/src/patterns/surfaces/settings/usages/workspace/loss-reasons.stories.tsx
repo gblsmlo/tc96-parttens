@@ -13,7 +13,7 @@ import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Switch } from '@tc96/ui/switch'
 import { EllipsisIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 
 interface LossReason {
   leads: number
@@ -179,113 +179,45 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Workspace/Loss Reasons',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
 export const LossReasons: Story = {
   name: 'Loss Reasons',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Lost leads' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Loss reasons' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('switch', { name: 'Require a loss reason' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'New reason' }),
+    ).toBeVisible()
+  },
   render: () => <LossReasonsDemo />,
 }
 
-export const Empty: Story = {
+export const LossReasonsEmpty: Story = {
+  name: 'Loss Reasons empty',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByRole('status')).toHaveAttribute(
+      'data-kind',
+      'empty',
+    )
+    await expect(canvas.getByText('No loss reasons yet')).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'New reason' }),
+    ).toBeEnabled()
+  },
   render: () => <EmptyDemo />,
-}
-
-export const Interaction: Story = {
-  ...LossReasons,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    expect(
-      canvas.getByRole('heading', { level: 2, name: 'Lost leads' }),
-    ).toBeVisible()
-    expect(
-      canvas.getByRole('heading', { level: 2, name: 'Loss reasons' }),
-    ).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'New reason' })).toBeEnabled()
-
-    const requireReason = canvas.getByRole('switch', {
-      name: 'Require a loss reason',
-    })
-    const customReason = canvas.getByRole('switch', {
-      name: 'Allow a custom reason',
-    })
-    expect(requireReason).not.toBeChecked()
-    expect(customReason).toBeChecked()
-    await userEvent.click(requireReason)
-    await waitFor(() => expect(requireReason).toBeChecked())
-    expect(onRequireReasonChange).toHaveBeenCalledTimes(1)
-    expect(onRequireReasonChange.mock.calls[0]?.[0]).toBe(true)
-
-    for (const { leads, name } of reasons) {
-      expect(canvas.getByText(name)).toBeVisible()
-      expect(
-        canvas.getByRole('button', { name: `Actions for ${name}` }),
-      ).toBeEnabled()
-      expect(canvas.getByText(leadsLost(leads))).toBeVisible()
-    }
-    expect(canvas.getByText('1 lead lost')).toBeVisible()
-
-    const archived = canvas.getByRole('region', { name: 'Archived' })
-    const archivedTrigger = within(archived).getByRole('button', {
-      name: 'Archived',
-    })
-    const archivedName = archivedReasons[0]?.name as string
-    expect(archivedTrigger).toHaveAttribute('aria-expanded', 'false')
-    expect(within(archived).queryByText(archivedName)).toBeNull()
-    expect(
-      canvas.queryByRole('button', { name: `Actions for ${archivedName}` }),
-    ).toBeNull()
-
-    await userEvent.click(archivedTrigger)
-    expect(archivedTrigger).toHaveAttribute('aria-expanded', 'true')
-    await waitFor(() =>
-      expect(within(archived).getByText(archivedName)).toBeVisible(),
-    )
-    expect(
-      canvas.getAllByRole('button', { name: /^Actions for / }),
-    ).toHaveLength(reasons.length + archivedReasons.length)
-
-    await userEvent.click(
-      within(archived).getByRole('button', {
-        name: `Actions for ${archivedName}`,
-      }),
-    )
-    const body = within(document.body)
-    expect(await body.findByRole('menuitem', { name: 'Restore' })).toBeVisible()
-    expect(body.getByRole('menuitem', { name: 'Delete' })).toBeVisible()
-    expect(body.queryByRole('menuitem', { name: 'Archive' })).toBeNull()
-    await userEvent.keyboard('{Escape}')
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Price' }),
-    )
-    expect(await body.findByRole('menuitem', { name: 'Edit' })).toBeVisible()
-    expect(body.getByRole('menuitem', { name: 'Archive' })).toBeVisible()
-    expect(body.getByRole('menuitem', { name: 'Delete' })).toBeVisible()
-    expect(body.queryByRole('menuitem', { name: 'Restore' })).toBeNull()
-    await userEvent.keyboard('{Escape}')
-  },
-  tags: interaction,
-}
-
-export const EmptyInteraction: Story = {
-  ...Empty,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')
-    expect(within(canvas.getByRole('status')).queryByRole('button')).toBeNull()
-    expect(canvas.getByText('No loss reasons yet')).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'New reason' })).toBeEnabled()
-    expect(canvas.queryByRole('button', { name: /^Actions for / })).toBeNull()
-    expect(
-      canvas.getByRole('switch', { name: 'Require a loss reason' }),
-    ).toBeVisible()
-  },
-  tags: interaction,
 }

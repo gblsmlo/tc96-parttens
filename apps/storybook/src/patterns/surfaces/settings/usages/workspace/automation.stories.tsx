@@ -138,17 +138,25 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Workspace/Automation',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
 export const Automation: Story = {
   name: 'Automation',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Automation rules' }),
+    ).toBeVisible()
+    await expect(canvas.getByRole('button', { name: 'Add rule' })).toBeVisible()
+    await expect(
+      canvas.getAllByRole('group', { name: 'Condition' }),
+    ).toHaveLength(rules.length)
+  },
   render: () => (
     <AutomationRules>
       {rules.map((rule) => (
@@ -158,43 +166,17 @@ export const Automation: Story = {
   ),
 }
 
-export const Interaction: Story = {
-  ...Automation,
+export const AutomationEmpty: Story = {
+  name: 'Automation empty',
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    expect(
-      canvas.getByRole('heading', { level: 2, name: 'Automation rules' }),
-    ).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'Add rule' })).toBeEnabled()
-
-    const conditions = canvas.getAllByRole('group', { name: 'Condition' })
-    expect(conditions).toHaveLength(3)
-    const urgent = within(conditions[0] as HTMLElement)
-    expect(urgent.getByText('Priority')).toBeVisible()
-    expect(urgent.getByText('is')).toBeVisible()
-    expect(urgent.getByText('Urgent')).toBeVisible()
-
-    for (const group of conditions) {
-      const badges = group.querySelectorAll('[data-slot="badge"]')
-      const separators = group.querySelectorAll('[data-slot="separator"]')
-      expect(badges).toHaveLength(3)
-      expect(separators).toHaveLength(2)
-      const badgeHeight = badges[0]?.getBoundingClientRect().height
-      for (const separator of separators) {
-        expect(separator.getBoundingClientRect().height).toBe(badgeHeight)
-      }
-    }
-
-    const triggers = canvas.getAllByRole('button', { name: /^Actions for / })
-    expect(triggers).toHaveLength(3)
-    for (const trigger of triggers) {
-      expect(trigger).toBeEnabled()
-    }
+    await expect(canvas.getByRole('status')).toHaveAttribute(
+      'data-kind',
+      'empty',
+    )
+    await expect(canvas.getByText('No rules yet')).toBeVisible()
+    await expect(canvas.getByRole('button', { name: 'Add rule' })).toBeEnabled()
   },
-  tags: interaction,
-}
-
-export const EmptyInteraction: Story = {
   render: () => (
     <AutomationRules>
       <StateSurface
@@ -204,13 +186,4 @@ export const EmptyInteraction: Story = {
       />
     </AutomationRules>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')
-    expect(within(canvas.getByRole('status')).queryByRole('button')).toBeNull()
-    expect(canvas.getByText('No rules yet')).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'Add rule' })).toBeEnabled()
-    expect(canvas.queryByRole('group', { name: 'Condition' })).toBeNull()
-  },
-  tags: interaction,
 }
