@@ -42,6 +42,10 @@ const pickAnaSouza = async (canvasElement: HTMLElement) => {
   )
 }
 
+const positionerAlign = () =>
+  document.querySelector<HTMLElement>('[data-slot="combobox-positioner"]')
+    ?.dataset.align
+
 const closeList = async () => {
   await userEvent.keyboard('{Escape}')
   await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
@@ -224,5 +228,52 @@ export const ReadOnlyEmptyShowsPlaceholder: Story = {
     await expect(
       within(canvasElement).getByText('Adicionar pessoa'),
     ).toBeVisible()
+  },
+}
+
+export const DropdownAlignsToStart: Story = {
+  args: { dropdownPlacement: { align: 'start' } },
+  play: async ({ args, canvasElement }) => {
+    await openList(canvasElement)
+
+    await waitFor(() => expect(positionerAlign()).toBe('start'))
+
+    await closeList()
+    await expect(args.onValueChange).not.toHaveBeenCalled()
+  },
+}
+
+export const ChipsMatchTheAddSurface: Story = {
+  play: async ({ canvasElement }) => {
+    const chip = canvasElement.querySelector<HTMLElement>(
+      '[data-slot="combobox-chip"]',
+    )
+    if (!chip) throw new Error('The story did not render the chip.')
+    const chipStyle = getComputedStyle(chip)
+    const addStyle = getComputedStyle(addChip(canvasElement))
+
+    await expect(chipStyle.fontSize).toBe('14px')
+    await expect(chipStyle.fontSize).toBe(addStyle.fontSize)
+    await expect(chipStyle.borderTopLeftRadius).not.toBe('0px')
+    await expect(chipStyle.borderTopLeftRadius).toBe(
+      addStyle.borderTopLeftRadius,
+    )
+  },
+}
+
+export const PlainChipsShowNoFocusRing: Story = {
+  play: async ({ args, canvasElement }) => {
+    const chips = canvasElement.querySelector<HTMLElement>(
+      '[data-slot="combobox-chips"]',
+    )
+    if (!chips) throw new Error('The story did not render the chips.')
+
+    await pickAnaSouza(canvasElement)
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
+
+    await waitFor(() => expect(chips.matches(':focus-within')).toBe(true))
+    await expect(getComputedStyle(chips).boxShadow).not.toContain('3px')
+    await expect(args.onValueChange).toHaveBeenCalledOnce()
   },
 }
