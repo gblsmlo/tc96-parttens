@@ -4,12 +4,15 @@ import { useState } from 'react'
 export function useFlowState(
   initialSteps: readonly FlowStep[],
   initialConnections: readonly FlowConnection[],
+  initialSelectedStepId: string | null = null,
 ) {
-  const [steps, setSteps] = useState<FlowStep[]>([...initialSteps])
-  const [connections, setConnections] = useState<FlowConnection[]>([
+  const [steps, setSteps] = useState<FlowStep[]>(() => [...initialSteps])
+  const [connections, setConnections] = useState<FlowConnection[]>(() => [
     ...initialConnections,
   ])
-  const [selectedStepId, setSelectedStepId] = useState<string | null>(null)
+  const [selectedStepId, setSelectedStepId] = useState<string | null>(
+    initialSelectedStepId,
+  )
 
   const addStep = (type: FlowStepType, position: { x: number; y: number }) => {
     const id = `${type.id}-${steps.length + 1}`

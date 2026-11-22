@@ -31,7 +31,7 @@ Import direction: `composition/` → `components/`, `lib/`, `types/`, `core.ts`;
 - Each group is a `fieldset` with a `legend`, so its name is the group label. Groups keep the order of `groups`, and steps keep the order of their group. `groupStepTypes` groups by `group` in order of first appearance.
 - `loading` puts `aria-busy` on the section and renders the skeleton instead of the groups; with no groups and no loading it renders `Empty`.
 - `FlowRunCard` is a `role="region"` named by `labels.title`. Its progress is `completed / total` rounded, zero when `total` is zero, and its `Progress` is named `<title>: <n>%`. The description is the `note` when there is one, otherwise the `summary` label with `{completed}` and `{total}`.
-- `collapsed` hides the title, the hint, the group labels and the item text, but the names stay on the buttons and the groups through `sr-only` and `aria-label`. The panel is 3.5rem wide (`data-collapsed`); the footer is still rendered, so the consumer decides whether to pass one.
+- `collapsed` hides the title, the hint, the group labels and the item text, but the names stay on the buttons and the groups through `sr-only` and `aria-label`. The panel is 4.25rem wide (`w-17`, `data-collapsed`); the footer is still rendered, so the consumer decides whether to pass one.
 - `labels` are pt-BR by default; a consumer `labels` object merges with the defaults key by key, and the run card `statuses` merge one level down.
 
 ## Styling
@@ -56,7 +56,7 @@ cd apps/storybook && bunx vitest run --project=storybook src/patterns/flow/step-
 bun run build:registry
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/flow/step-library/`: `panel.stories.tsx` (groups, click, drag payload, loading, empty, footer), `item.stories.tsx` (description, collapsed, disabled) and `run-card.stories.tsx` (status, progress, zero steps). The drag payload story dispatches a `dragstart` with a constructed `DataTransfer`; Chromium keeps `effectAllowed` at `none` on a constructed one, so the story spies the setter. The only bun test left is `core.test.ts`. The root stories are in `step-library.stories.tsx` (`Patterns/Flow/Step Library`); `Default`'s `play` clicks an item and asserts `onAdd`.
+Interface tests are the `play` functions of `apps/storybook/src/patterns/flow/step-library/behavior.stories.tsx` (`Patterns/Flow/Step Library/Behavior`): the panel (groups, click, drag payload, loading, empty, labels, footer, collapsed names), the item (description, collapsed, disabled) and the run card (status, progress, zero steps). The drag payload story dispatches a `dragstart` with a constructed `DataTransfer`; Chromium keeps `effectAllowed` at `none` on a constructed one, so the story spies the setter. The only bun test left is `core.test.ts`. The stories are the six pages of `Patterns/Flow/Step Library` in the same folder.
 
 ## Pointers
 
