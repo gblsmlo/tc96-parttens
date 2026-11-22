@@ -1,0 +1,146 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Breadcrumb
+
+The path from the top of a hierarchy to the current page, as a row of links: the folders above a file, the sections above a docs page, the categories above a product. It shows where the reader is and takes them back up one or more levels in one click.
+
+The other pages of `UI/Breadcrumb`: [Playground](?path=/story/ui-breadcrumb-playground--playground) to try the current page, the ellipsis menu, the separator and the element, [Stories](?path=/story/ui-breadcrumb-stories--default) for the base trail, [Behavior](?path=/story/ui-breadcrumb-behavior--navigation-landmark) for the tests, [Usages](?path=/story/ui-breadcrumb-usages--project-settings-header) for real paths and [Layouts](?path=/story/ui-breadcrumb-layouts--with-ellipsis-menu) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@acme/ui/breadcrumb'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="#" />
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbEllipsis />
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage />
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+```
+
+## Breadcrumb
+
+The landmark that holds the trail. Renders a `nav` named `"breadcrumb"` through `aria-label`, with no classes. It holds no state and knows nothing of routes: the consumer passes the levels in order, from the top down, and gives each link its `href` or `onClick`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | `"breadcrumb"` | Sets the accessible name of the landmark. |
+
+Also takes every prop of a `nav`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"breadcrumb"` | Selects the part in the theme and from other parts |
+
+## BreadcrumbList
+
+The ordered list of levels. Renders an `ol` in a row that wraps onto more lines when it runs out of width, with items centered on the cross axis, 6px apart below `sm` and 10px from `sm` up. It sets the text to `text-sm` in the `muted-foreground` color, which the links inherit, and breaks a word that is longer than the line.
+
+Also takes every prop of an `ol`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"breadcrumb-list"` | Selects the part in the theme and from other parts |
+
+## BreadcrumbItem
+
+One level of the trail. Renders an `li` as an inline row, its children centered and 6px apart, so an icon can sit next to the text. It holds a `BreadcrumbLink`, a `BreadcrumbPage`, a `BreadcrumbEllipsis` or a trigger that opens the collapsed levels.
+
+Also takes every prop of an `li`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"breadcrumb-item"` | Selects the part in the theme and from other parts |
+
+## BreadcrumbLink
+
+A link to a level above the current page. Renders an `a` in the color of the list that turns `foreground` on hover. Its children are the name of the level.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `href` | `string` | - | Sets the page the link goes to; without it the `a` is not a link and takes no focus. |
+| `render` | `ReactElement` or `(props: HTMLAttributes<HTMLElement>, state: {}) => ReactElement` | - | Replaces the `a` element, for example with a router link or a `button`; the `state` is empty. |
+| `className` | `string` | - | Adds classes after the link classes. |
+
+Also takes every prop of an `a`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"breadcrumb-link"` | Selects the part in the theme and from other parts |
+
+With `render`, the link classes still reach the element. An element passed as `render` joins its own `className` with the link's, runs its handlers with the link's and keeps every other prop it sets, `data-slot` included; the link's props fill the rest. A function passed as `render` receives the link's props as `props` and decides what to spread. A `button` passed as `render` needs `type="button"`, or it submits the form it sits in.
+
+The link sets no focus style of its own. A focused link shows the outline that the theme sets on every element: the example theme applies `outline-ring/50` to `*`, so the keyboard focus draws a 1px outline in `ring` at 50%. A theme without that rule leaves the browser's default outline.
+
+## BreadcrumbSeparator
+
+The mark between two levels. Renders an `li` with `role="presentation"` and `aria-hidden`, at 80% opacity, that holds a right chevron when it has no children. It sits directly in `BreadcrumbList`, between two `BreadcrumbItem`s, never inside one.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | chevron icon | Replaces the chevron, for example with a `/` or another icon. |
+
+Also takes every prop of an `li`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"breadcrumb-separator"` | Selects the part in the theme and from other parts |
+
+An `svg` that is a direct child of the separator is 16px by 16px. Passing `null` or `undefined` as `children` still renders the chevron; to show no mark, leave the part out. The chevron points right whatever the writing direction, so a right-to-left page passes its own child.
+
+## BreadcrumbEllipsis
+
+The mark of levels left out of the trail. Renders a `span` with `role="presentation"` and `aria-hidden`, that holds a 16px horizontal dots icon and the text "More" in `sr-only`. The `aria-hidden` keeps that text from screen readers too, so the skipped levels are not announced. It is not focusable and does nothing on its own: to let the reader reach the skipped levels, make it the child of a trigger, such as a `MenuTrigger` that lists them.
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"breadcrumb-ellipsis"` | Selects the part in the theme and from other parts |
+
+Its content is fixed: the icon and the "More" text replace any `children` it is given.
+
+## BreadcrumbPage
+
+The current page, the last level of the trail. Renders a `span` with `aria-current="page"` in the `foreground` color, so it stands out from the links. It is not a link and takes no focus.
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"breadcrumb-page"` | Selects the part in the theme and from other parts |
+
+## Accessibility and theme
+
+- Give each `Breadcrumb` an `aria-label` that names the trail ("Folder path") when a page has more than one, or when `"breadcrumb"` says too little.
+- End the trail with a `BreadcrumbPage` for the page the reader is on: its `aria-current="page"` is how a screen reader tells it apart.
+- Give every link an `href`, or render it as a `button` with `onClick` through `render`; an `a` without `href` cannot be reached with the keyboard.
+- The separators and the ellipsis are hidden from screen readers. When the collapsed levels have to be reachable, put the ellipsis inside a trigger and name the trigger with `aria-label` ("Show 2 more levels"), since the ellipsis gives it no name.
+- The links read in `muted-foreground` and the current page in `foreground`, so both tokens need text contrast on the surface the breadcrumb sits on.
