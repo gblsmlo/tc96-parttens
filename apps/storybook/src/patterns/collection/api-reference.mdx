@@ -9,7 +9,7 @@ One collection of records on one screen, in the layout the user picks: the tasks
 
 The other pages of `Patterns/Collection`: [Playground](?path=/story/patterns-collection-playground--playground) to try the layout, the frame mode, loading, the empty state and the toolbar parts, [Stories](?path=/story/patterns-collection-stories--default) for each layout and state, [Behavior](?path=/story/patterns-collection-behavior--fill-scrolls-the-body) for the tests and [Usages](?path=/story/patterns-collection-usages--tasks) for real screens (tasks, a pipeline, contacts, documents, campaigns, a calendar). The toolbar, the search field, the action and the footer are optional parts, toggled in the Playground: the root has no `Layouts` page, since `Patterns/Collection/Layouts` holds the layout nodes.
 
-Each layout has its own node, with its props, item parts and tests: [Calendar](?path=/docs/patterns-collection-layouts-calendar-api-reference--api-reference), [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference), [Data Table](?path=/docs/patterns-collection-layouts-data-table-api-reference--api-reference), [Gallery](?path=/docs/patterns-collection-layouts-gallery-api-reference--api-reference), [Kanban](?path=/docs/patterns-collection-layouts-kanban-api-reference--api-reference) and [List](?path=/docs/patterns-collection-layouts-list-api-reference--api-reference). The toolbar, the view switcher, the pagination and the bar over a selection have theirs: [Patterns/Toolbar](?path=/docs/patterns-toolbar--doc), [Patterns/Toolbar/View Switcher](?path=/story/patterns-toolbar-view-switcher--default), [Patterns/Pagination](?path=/docs/patterns-pagination--doc) and [Patterns/ActionBar](?path=/docs/patterns-actionbar--doc).
+Each layout has its own node, with its props, item parts and tests: [Calendar](?path=/docs/patterns-collection-layouts-calendar-api-reference--api-reference), [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference), [Data Table](?path=/docs/patterns-collection-layouts-data-table-api-reference--api-reference), [Gallery](?path=/docs/patterns-collection-layouts-gallery-api-reference--api-reference), [Kanban](?path=/docs/patterns-collection-layouts-kanban-api-reference--api-reference) and [List](?path=/docs/patterns-collection-layouts-list-api-reference--api-reference). The toolbar, the view switcher and the bar over a selection have theirs: [Patterns/Toolbar](?path=/docs/patterns-toolbar--doc), [Patterns/Toolbar/View Switcher](?path=/story/patterns-toolbar-view-switcher--default) and [Patterns/ActionBar](?path=/docs/patterns-actionbar--doc). The pagination of the collection is a part of this page, `CollectionPagination`, built on the parts of [UI/Pagination](?path=/docs/ui-pagination-api-reference--api-reference).
 
 Used in: [Templates/Contacts](?path=/story/templates-contacts--default) and [Templates/Deal Board](?path=/story/templates-deal-board--default), which mount copies of the Contacts and Pipeline screens of Usages (`fixtures/contacts-usage.tsx` and `fixtures/pipeline-usage.tsx`).
 
@@ -24,6 +24,7 @@ import {
   CollectionFrameHeader,
   CollectionFrameOverlay,
   CollectionLayoutOutlet,
+  CollectionPagination,
   CollectionProvider,
   CollectionSearchField,
   CollectionToolbar,
@@ -74,14 +75,21 @@ import { CircleDotIcon } from 'lucide-react'
       <CollectionLayoutOutlet collection={collection} renderListRecord={renderRow} />
     </CollectionFrameBody>
     <CollectionFrameFooter>
-      {pagination}
+      <CollectionPagination
+        label="Paginação de tarefas"
+        onPageChange={setPage}
+        page={page}
+        pageCount={pageCount}
+        pageSize={pageSize}
+        total={total}
+      />
       <CollectionFrameOverlay>{selectionActions}</CollectionFrameOverlay>
     </CollectionFrameFooter>
   </CollectionFrame>
 </CollectionProvider>
 ```
 
-`collection`, `setSearch`, `typeOptions`, `type`, `setType`, `clearFilters`, `create`, `renderRow`, `pagination` and `selectionActions` are the consumer's data, state and elements. `CollectionToolbar` is documented in `Patterns/Toolbar`; `CollectionSearchField`, `ViewSettingsMenu`, `Action` and `PresetsMenu` render toolbar buttons and inputs, so they only mount inside it. `PresetsMenu` takes the place of the view switcher on a screen whose views are a short list, so the anatomy does not show it.
+`collection`, `setSearch`, `typeOptions`, `type`, `setType`, `clearFilters`, `create`, `renderRow`, `page`, `setPage`, `pageCount`, `pageSize`, `total` and `selectionActions` are the consumer's data, state and elements. `CollectionToolbar` is documented in `Patterns/Toolbar`; `CollectionSearchField`, `ViewSettingsMenu`, `Action` and `PresetsMenu` render toolbar buttons and inputs, so they only mount inside it. `PresetsMenu` takes the place of the view switcher on a screen whose views are a short list, so the anatomy does not show it.
 
 The pattern is controlled. It never fetches, filters, searches, sorts or persists: the consumer passes the records already filtered, keeps the search, the filters and the saved views, and saves every edit. The pattern keeps only the active layout and grouping when they are uncontrolled, the move in progress while the consumer settles it, the collapse state of List and Data Grid groups and the table state of `useDataGrid` and `useDataTable`.
 
@@ -282,13 +290,39 @@ Other edits (a status changed in a row, a date in a cell) are the consumer's ren
 
 ## CollectionFrameFooter
 
-The area below the layout, for the pagination. Renders a positioned `div` that never shrinks. In `"flow"` it is `sticky` at the bottom of the scrolling page, above the records (`z-index: 10`), on the `background` color.
+The area below the layout, for `CollectionPagination`. Renders a positioned `div` that never shrinks. In `"flow"` it is `sticky` at the bottom of the scrolling page, above the records (`z-index: 10`), on the `background` color.
 
 Also takes every prop of a `div`.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-slot` | `"collection-frame-footer"` | Selects the footer |
+
+## CollectionPagination
+
+The page bar of a paginated collection, for `CollectionFrameFooter`: the range on screen, `1–25 de 57`, then the buttons `Primeira página`, `Página anterior`, the current page over the page count, `2 / 3`, `Próxima página` and `Última página`. Renders a `div`, a wrapping flex row with the range at its start and a `nav` at its end; the `nav`, its list and its items are `Pagination`, `PaginationContent` and `PaginationItem` of [UI/Pagination](?path=/docs/ui-pagination-api-reference--api-reference), and the buttons are ghost icon buttons of size `icon-sm`. It keeps no page of its own: the consumer keeps the page, whether the server or a table paginates, and decides when to show the bar. `DataGridPagination` of the [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference) node renders it from a table.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Names the `nav` (`aria-label`), in the words of the collection: `Paginação de contatos`. |
+| `page` | `number` | required | Sets the current page, counted from 1. |
+| `pageCount` | `number` | required | Sets the number of pages. |
+| `onPageChange` | `(page: number) => void` | required | Called when a button is clicked, with the page it leads to, never a step. |
+| `pageSize` | `number` | - | Sets the number of records per page; with `total`, shows the range. |
+| `total` | `number` | - | Sets the number of records; with `pageSize`, shows the range. |
+
+Also takes every prop of a `div` except `children` and `onChange`; they reach the outer `div`.
+
+The page is clamped: the last page is `pageCount`, or 1 when `pageCount` is below 1, and `page` is kept between 1 and the last page, so `page={9}` with `pageCount={0}` shows `1 / 1` with every button disabled. `Primeira página` and `Página anterior` are disabled on the first page, `Próxima página` and `Última página` on the last. The current page is a `span` with `aria-current="page"`.
+
+The range renders only when both `pageSize` and `total` are set, as `<first>–<last> de <total>`, and reads `0 de 0` when `total` is 0. It is a `p` with `aria-live="polite"`, so a screen reader announces the new range after a page change.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collection-pagination"` | Selects the bar, the outer `div`; a `data-slot` passed in the props replaces it, as `DataGridPagination` does with `"data-grid-pagination"` |
+| `data-slot` | `"collection-pagination-page"` | Selects the current page over the page count |
+
+The `nav`, the list and the items keep the `data-slot` of UI/Pagination: `"pagination"`, `"pagination-content"` and `"pagination-item"`.
 
 ## CollectionFrameOverlay
 
@@ -333,6 +367,7 @@ Also takes every prop of a `div`.
 | `CollectionFrameBodyProps` | `type` | The props of `CollectionFrameBody`. |
 | `CollectionFrameFooterProps` | `type` | The props of `CollectionFrameFooter`. |
 | `CollectionFrameOverlayProps` | `type` | The props of `CollectionFrameOverlay`. |
+| `CollectionPaginationProps` | `type` | The props of `CollectionPagination`. |
 | `ViewSettingsMenuProps` | `type` | The props of `ViewSettingsMenu`. |
 | `ViewSettingsMode` | `type` | One tab of `ViewSettingsMenu`, `{ icon, label, value }`. |
 | `ViewSettingsSectionProps` | `type` | The props of `ViewSettingsSection`. |
@@ -344,7 +379,7 @@ Also takes every prop of a `div`.
 ## Accessibility and theme
 
 - Name `CollectionFrameBody` with `aria-label`, so the records sit in a named `region`, and name each layout through its own props (`datatable["aria-label"]`, `datagrid["aria-label"]`).
-- Name `CollectionSearchField` with `label` when the default `Buscar` does not say what it searches.
-- Keyboard: the toolbar is one Tab stop whose controls the arrow keys move between; the layout tabs of `ViewSettingsMenu` are radio items of the menu. Every layout keeps a keyboard path for its moves, documented on its node.
-- The copy of the parts is Portuguese (`Exibição`, `Limpar filtros`, `Salvar preferência`, `Todos`, `Buscar`, `Adicionar`, `itens`); every one of those texts is a prop.
+- Name `CollectionSearchField` with `label` when the default `Buscar` does not say what it searches, and `CollectionPagination` with `label` after the collection it pages.
+- Keyboard: the toolbar is one Tab stop whose controls the arrow keys move between; the layout tabs of `ViewSettingsMenu` are radio items of the menu. Every layout keeps a keyboard path for its moves, documented on its node. Each button of `CollectionPagination` is its own Tab stop, and a disabled one is skipped.
+- The copy of the parts is Portuguese (`Exibição`, `Limpar filtros`, `Salvar preferência`, `Todos`, `Buscar`, `Adicionar`, `itens`); every one of those texts is a prop. The names of the `CollectionPagination` buttons (`Primeira página`, `Página anterior`, `Próxima página`, `Última página`) and the `de` of its range are fixed.
 - The colors come from the theme tokens `background`, `foreground`, `muted-foreground`, `accent`, `primary`, `primary-foreground` and `input`, through the menu, button, input and badge of the theme.

@@ -37,4 +37,4 @@ UI
 Patterns
 ```
 
-`Patterns` reúne Collection Views, Properties, Toolbar, Pagination e Action Bar.
+`Patterns` reúne Collection Views (com a paginação), Properties, Toolbar e Action Bar.

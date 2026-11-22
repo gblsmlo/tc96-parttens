@@ -87,14 +87,6 @@ export const collectionToolbarArgTypes = {
   variant: { control: 'inline-radio', options: ['default', 'plain', 'text'] },
 } as const
 
-/** `CollectionPagination`: a página corrente mora na story, o resto é número. */
-export const collectionPaginationArgTypes = {
-  page: withoutControl,
-  pageCount: { control: { min: 0, type: 'number' } },
-  pageSize: { control: { min: 1, type: 'number' } },
-  total: { control: { min: 0, type: 'number' } },
-} as const
-
 export const wizardArgTypes = {
   children: withoutControl,
   className: text,

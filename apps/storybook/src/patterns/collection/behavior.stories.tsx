@@ -12,6 +12,8 @@ import {
   type CollectionKanbanCardMove,
   type CollectionLayout,
   CollectionLayoutOutlet,
+  CollectionPagination,
+  type CollectionPaginationProps,
   type CollectionPreferences,
   type CollectionPreferencesChangeDetails,
   CollectionProvider,
@@ -88,6 +90,7 @@ interface BehaviorArgs {
   onCommit: (value: string) => void
   onModeChange: (mode: string) => void
   onMoveCard: (move: CollectionKanbanCardMove<Item>) => boolean
+  onPageChange: (page: number) => void
   onPreferencesChange: (
     preferences: CollectionPreferences,
     details: CollectionPreferencesChangeDetails,
@@ -104,6 +107,7 @@ const meta = {
     onCommit: fn(),
     onModeChange: fn(),
     onMoveCard: fn(() => true),
+    onPageChange: fn(),
     onPreferencesChange: fn(),
     onRecordChange: fn(() => true),
     onRowClick: fn(),
@@ -1176,5 +1180,217 @@ export const SaveCallsOnSavePreference: Story = {
     )
     await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
     await expect(args.onSavePreference).toHaveBeenCalledOnce()
+  },
+}
+
+function StatefulPagination({
+  onPageChange,
+  page: initialPage,
+  ...props
+}: Readonly<CollectionPaginationProps>) {
+  const [page, setPage] = useState(initialPage)
+
+  return (
+    <CollectionPagination
+      {...props}
+      onPageChange={(next) => {
+        setPage(next)
+        onPageChange(next)
+      }}
+      page={page}
+    />
+  )
+}
+
+const pageButton = (canvasElement: HTMLElement, name: string) =>
+  within(canvasElement).getByRole('button', { name })
+
+const pageOverCount = (canvasElement: HTMLElement) =>
+  layoutRoot(canvasElement, 'collection-pagination-page')
+
+export const PaginationNamesTheNavigation: Story = {
+  render: ({ onPageChange }) => (
+    <StatefulPagination
+      label="Paginação de contatos"
+      onPageChange={onPageChange}
+      page={2}
+      pageCount={4}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(
+      canvas.getByRole('navigation', { name: 'Paginação de contatos' }),
+    ).toBeVisible()
+    await expect(
+      canvas.queryByRole('navigation', { name: 'pagination' }),
+    ).toBeNull()
+    await expect(pageOverCount(canvasElement)).toHaveTextContent('2 / 4')
+    await expect(pageOverCount(canvasElement)).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+    await expect(args.onPageChange).not.toHaveBeenCalled()
+  },
+}
+
+export const PaginationSummarizesTheVisibleRange: Story = {
+  render: ({ onPageChange }) => (
+    <StatefulPagination
+      label="Paginação de contatos"
+      onPageChange={onPageChange}
+      page={1}
+      pageCount={3}
+      pageSize={25}
+      total={57}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const summary = within(canvasElement).getByText('1–25 de 57')
+
+    await expect(summary.tagName).toBe('P')
+    await expect(summary).toHaveAttribute('aria-live', 'polite')
+
+    await userEvent.click(pageButton(canvasElement, 'Próxima página'))
+    await expect(summary).toHaveTextContent('26–50 de 57')
+
+    await userEvent.click(pageButton(canvasElement, 'Última página'))
+    await expect(summary).toHaveTextContent('51–57 de 57')
+    await expect(args.onPageChange).toHaveBeenCalledTimes(2)
+    await expect(args.onPageChange).toHaveBeenNthCalledWith(1, 2)
+    await expect(args.onPageChange).toHaveBeenNthCalledWith(2, 3)
+  },
+}
+
+export const PaginationSummaryNeedsTotalAndPageSize: Story = {
+  render: ({ onPageChange }) => (
+    <div className="flex flex-col gap-2">
+      <StatefulPagination
+        label="Paginação só com total"
+        onPageChange={onPageChange}
+        page={1}
+        pageCount={3}
+        total={57}
+      />
+      <StatefulPagination
+        label="Paginação só com tamanho"
+        onPageChange={onPageChange}
+        page={1}
+        pageCount={3}
+        pageSize={25}
+      />
+    </div>
+  ),
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.getAllByRole('navigation')).toHaveLength(2)
+    await expect(canvas.queryByText(/ de /)).toBeNull()
+    await expect(canvasElement.querySelector('[aria-live]')).toBeNull()
+    await expect(args.onPageChange).not.toHaveBeenCalled()
+  },
+}
+
+export const PaginationSummaryReadsZeroOfZero: Story = {
+  render: ({ onPageChange }) => (
+    <StatefulPagination
+      label="Paginação de contatos"
+      onPageChange={onPageChange}
+      page={1}
+      pageCount={0}
+      pageSize={25}
+      total={0}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await expect(within(canvasElement).getByText('0 de 0')).toHaveAttribute(
+      'aria-live',
+      'polite',
+    )
+    await expect(args.onPageChange).not.toHaveBeenCalled()
+  },
+}
+
+export const PaginationFirstPageDisablesTheStart: Story = {
+  render: ({ onPageChange }) => (
+    <StatefulPagination
+      label="Paginação de contatos"
+      onPageChange={onPageChange}
+      page={1}
+      pageCount={3}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await expect(pageButton(canvasElement, 'Primeira página')).toBeDisabled()
+    await expect(pageButton(canvasElement, 'Página anterior')).toBeDisabled()
+    await expect(pageButton(canvasElement, 'Próxima página')).toBeEnabled()
+    await expect(pageButton(canvasElement, 'Última página')).toBeEnabled()
+    await expect(args.onPageChange).not.toHaveBeenCalled()
+  },
+}
+
+export const PaginationLastPageDisablesTheEnd: Story = {
+  render: ({ onPageChange }) => (
+    <StatefulPagination
+      label="Paginação de contatos"
+      onPageChange={onPageChange}
+      page={3}
+      pageCount={3}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await expect(pageButton(canvasElement, 'Próxima página')).toBeDisabled()
+    await expect(pageButton(canvasElement, 'Última página')).toBeDisabled()
+    await expect(pageButton(canvasElement, 'Primeira página')).toBeEnabled()
+    await expect(pageButton(canvasElement, 'Página anterior')).toBeEnabled()
+    await expect(args.onPageChange).not.toHaveBeenCalled()
+  },
+}
+
+export const PaginationReportsTheTargetPage: Story = {
+  render: ({ onPageChange }) => (
+    <StatefulPagination
+      label="Paginação de contatos"
+      onPageChange={onPageChange}
+      page={3}
+      pageCount={5}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await userEvent.click(pageButton(canvasElement, 'Próxima página'))
+    await userEvent.click(pageButton(canvasElement, 'Página anterior'))
+    await userEvent.click(pageButton(canvasElement, 'Última página'))
+    await userEvent.click(pageButton(canvasElement, 'Primeira página'))
+
+    await expect(args.onPageChange).toHaveBeenCalledTimes(4)
+    await expect(args.onPageChange).toHaveBeenNthCalledWith(1, 4)
+    await expect(args.onPageChange).toHaveBeenNthCalledWith(2, 3)
+    await expect(args.onPageChange).toHaveBeenNthCalledWith(3, 5)
+    await expect(args.onPageChange).toHaveBeenNthCalledWith(4, 1)
+    await expect(pageOverCount(canvasElement)).toHaveTextContent('1 / 5')
+  },
+}
+
+export const PaginationClampsTheOutOfRangePage: Story = {
+  render: ({ onPageChange }) => (
+    <StatefulPagination
+      label="Paginação de contatos"
+      onPageChange={onPageChange}
+      page={9}
+      pageCount={0}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await expect(pageOverCount(canvasElement)).toHaveTextContent('1 / 1')
+    for (const name of [
+      'Primeira página',
+      'Página anterior',
+      'Próxima página',
+      'Última página',
+    ]) {
+      await expect(pageButton(canvasElement, name)).toBeDisabled()
+    }
+    await expect(args.onPageChange).not.toHaveBeenCalled()
   },
 }
