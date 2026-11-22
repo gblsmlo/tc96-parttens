@@ -23,6 +23,11 @@ export const channels = { instagram, messenger, whatsapp } satisfies Record<
   IconModule
 >
 
+const portrait = (background: string, skin: string, clothes: string) =>
+  `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="${background}"/><circle cx="20" cy="16" r="7" fill="${skin}"/><path d="M6 40a14 13 0 0 1 28 0z" fill="${clothes}"/></svg>`,
+  )}`
+
 export const chats: ChatSummary[] = [
   {
     channel: 'messenger',
@@ -31,8 +36,7 @@ export const chats: ChatSummary[] = [
     lastMessage: 'Consegue me mandar a proposta até amanhã?',
     lastMessageAt: '2026-10-19T00:29',
     name: 'Marina Costa',
-    photo:
-      'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?w=120&h=120&dpr=2&q=80',
+    photo: portrait('#c7d2fe', '#e0b48c', '#4338ca'),
     time: '00:29',
     unreadCount: 2,
   },
@@ -53,8 +57,7 @@ export const chats: ChatSummary[] = [
     lastMessage: 'Pagamento confirmado, obrigada!',
     lastMessageAt: '2026-10-18T21:40',
     name: 'Luiza Ferreira',
-    photo:
-      'https://images.unsplash.com/photo-1628157588553-5eeea00af15c?w=120&h=120&dpr=2&q=80',
+    photo: portrait('#fde68a', '#8d5a3b', '#b45309'),
     time: 'Ontem',
     unreadCount: 1,
   },

@@ -396,6 +396,7 @@ export function EditablePreview(props: EditablePreviewProps) {
       {
         role: 'button',
         tabIndex: context.disabled ? undefined : 0,
+        'aria-disabled': context.disabled || undefined,
         ref,
         ...dataAttributes({
           'data-disabled': context.disabled ? '' : undefined,

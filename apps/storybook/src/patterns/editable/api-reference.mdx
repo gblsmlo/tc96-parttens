@@ -1,0 +1,282 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Editable
+
+A compound for editing one string in place: a project name, a file name, a document title, a note. Reach for the standard composition when the text reads as a value and the user enters an editing state to change it, with optional Save and Cancel buttons, and for `EditableField` when the text should read as text and be edited directly, with no state to enter.
+
+The other pages of `Patterns/Editable`: [Playground](?path=/story/patterns-editable-playground--playground) to try the texts, the states and the optional parts, [Stories](?path=/story/patterns-editable-stories--default) for each state, [Behavior](?path=/story/patterns-editable-behavior--parts-mount-by-state) for the tests, [Usages](?path=/story/patterns-editable-usages--project-name) for real content, and [Layouts](?path=/story/patterns-editable-layouts--without-trigger) for how the parts combine.
+
+Used in: `EditableText` of `Patterns/Properties` is `Editable` with `EditableField`, so the field is shown with the properties' sizes and commit rules in [Patterns/Properties/Display/Editable Text](?path=/docs/patterns-properties-display-editable-text--doc), and inside a property in [Text, Editable Inline](?path=/story/patterns-properties-display-text--editable-inline) and [Email, Inline Editing](?path=/story/patterns-properties-display-email--inline-editing). The checklist titles render the same field.
+
+## Import
+
+```tsx
+import {
+  Editable,
+  EditableArea,
+  EditableCancel,
+  EditableField,
+  EditableInput,
+  EditableLabel,
+  EditablePreview,
+  EditableSubmit,
+  EditableToolbar,
+  EditableTrigger,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+The standard composition, at rest and while editing:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+<Canvas of={ApiReferenceStories.EditingAnatomy} />
+
+```tsx
+<Editable>
+  <EditableLabel />
+  <EditableArea>
+    <EditablePreview />
+    <EditableInput />
+  </EditableArea>
+  <EditableTrigger />
+  <EditableToolbar>
+    <EditableSubmit />
+    <EditableCancel />
+  </EditableToolbar>
+</Editable>
+```
+
+Each part renders only in the state it belongs to: at rest the preview and the trigger, while editing the input and the toolbar. The label and the area render in both.
+
+The display composition, `EditableField` with an optional label:
+
+<Canvas of={ApiReferenceStories.FieldAnatomy} />
+
+```tsx
+<Editable>
+  <EditableLabel />
+  <EditableField />
+</Editable>
+```
+
+Every part renders a native element and takes `render` to change it. `render` also accepts a function, which receives the props and a `state` object with the same flags the part sets as `data-*` attributes (`slot`, `editing`, `disabled`, `invalid`, `required`, `readonly`, `empty`, `orientation`).
+
+## Editable
+
+The root that holds the value and the editing state and shares them with the parts. Renders a `div`, with the `id` the parts point at through `aria-controls`. It never fetches, validates or stores the value: each change reaches the consumer through `onValueChange`, and each commit through `onSubmit`. `value` and `editing` are uncontrolled unless their props are defined.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | - | Controls the value. |
+| `defaultValue` | `string` | `""` | Sets the initial value when `value` is not set. |
+| `onValueChange` | `(value: string) => void` | - | Called on every change of the text, with the value from before the session on cancel, and by `EditableField` with `""` when it starts from `emptyValue` and with the restored value after an unchanged blur. |
+| `editing` | `boolean` | - | Controls the editing state. |
+| `defaultEditing` | `boolean` | `false` | Sets the initial editing state when `editing` is not set. |
+| `onEditingChange` | `(editing: boolean) => void` | - | Called when the editing state changes. |
+| `onEdit` | `() => void` | - | Called when editing starts. |
+| `onSubmit` | `(value: string) => void` | - | Called when the edit is committed, with the value. |
+| `onCancel` | `() => void` | - | Called when the edit is cancelled, after the value is restored. |
+| `onEnterKeyDown` | `(event: KeyboardEvent) => void` | - | Called on Enter before the part reacts; `event.preventDefault()` blocks the commit or the start of editing. |
+| `onEscapeKeyDown` | `(event: KeyboardEvent) => void` | - | Called on Escape before the part cancels; `event.preventDefault()` blocks the cancel. |
+| `triggerMode` | `"click"`, `"dblclick"` or `"focus"` | `"click"` | Controls which event on `EditablePreview` and `EditableTrigger` starts editing. |
+| `placeholder` | `string` | - | Sets the text the preview, the input and the field show while the value is empty. |
+| `maxLength` | `number` | - | Sets the `maxLength` of the input and the field. |
+| `name` | `string` | - | When set, renders a hidden `input` with this `name` and the value, so a native form submits it. |
+| `dir` | `"ltr"` or `"rtl"` | - | Sets the text direction of the area, the input and the field. |
+| `autosize` | `boolean` | `false` | When true, the input grows with its text instead of filling the row. |
+| `disabled` | `boolean` | `false` | When true, editing cannot start, commit or cancel; the label, the area, the preview, the input and the field dim, and the trigger does not. |
+| `readOnly` | `boolean` | `false` | When true, editing cannot start; the input renders read-only in place of the preview, and the field renders as text. |
+| `required` | `boolean` | `false` | When true, the label shows a `*` and the input and the field are `required`. |
+| `invalid` | `boolean` | `false` | When true, the input and the field set `aria-invalid`. |
+| `id` | `string` | generated | Sets the `id` of the root. |
+
+Also takes every prop of a `div` except `defaultValue` and `onSubmit`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable"` | Selects the root |
+| `data-editing` | present while editing | Styles the root while editing |
+| `data-disabled` | present when `disabled` | Styles a disabled root |
+| `data-invalid` | present when `invalid` | Styles an invalid root |
+
+The root stacks its children 8px apart (`flex flex-col gap-2`). The hidden `input` of `name` sits after the root, not inside it, and carries `disabled` and `readOnly` too, so a disabled editable sends nothing.
+
+Committing never changes the value: the value is already the draft, and `onSubmit` only reports it. Cancelling writes the value from before the session back through `onValueChange`, then leaves editing and calls `onCancel`. On `EditablePreview`, `EditableInput` and `EditableField` the consumer's `onClick`, `onDoubleClick`, `onFocus`, `onBlur`, `onChange` and `onKeyDown` run before the part's own, and `event.preventDefault()` in them stops the part's reaction. On `EditableTrigger`, `EditableSubmit` and `EditableCancel` the consumer's handler also runs first, and only `event.preventBaseUIHandler()` stops the part.
+
+## EditableLabel
+
+The label of the value. Renders a `label` whose `htmlFor` points at the input or the field, which take their name from it through `aria-labelledby`. While the preview shows, no input is mounted, so the label points at nothing and the preview is named by its own text.
+
+Also takes every prop of a `label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable-label"` | Selects the label |
+| `data-required` | present when `required` | Adds the `*` after the label, in `text-destructive-foreground` |
+| `data-disabled` | present when `disabled` | Dims the label to 50% opacity, with a `not-allowed` cursor |
+| `data-invalid` | present when `invalid` | Styles an invalid label; the pattern sets no rule on it |
+
+## EditableArea
+
+The row that holds the preview and the input. Renders a `div` with `role="group"` and the `dir` of the root, as an inline flex row with 8px between children.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable-area"` | Selects the area |
+| `data-editing` | present while editing | Styles the area while editing |
+| `data-disabled` | present when `disabled` | Dims the area to 50% opacity, with a `not-allowed` cursor |
+
+## EditablePreview
+
+The value at rest. Renders a `div` with `role="button"` that shows the value, or the placeholder while the value is empty, cut to one line with an ellipsis. It renders nothing while editing or when `readOnly`.
+
+It starts editing on the `triggerMode` event (a click, a double click or focus) and on Enter. It is in the tab order (`tabIndex={0}`) unless `disabled`; Space does not start editing.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable-preview"` | Selects the preview |
+| `data-empty` | present while the value is empty | Shows the placeholder in `text-muted-foreground` |
+| `data-disabled` | present when `disabled` | Dims the preview to 50% opacity, with a `not-allowed` cursor; inside a disabled `EditableArea` the two opacities multiply |
+
+The preview has a transparent 1px border and `px-2 py-1.5` padding, takes `bg-accent/50` on hover and a ring on keyboard focus. A disabled preview keeps `role="button"`, leaves the tab order and sets `aria-disabled="true"`, so assistive technology announces it as unavailable and its dimmed text is exempt from the contrast minimum.
+
+## EditableInput
+
+The text input while editing. Renders an `input` named by the label, with the value and the placeholder of the root. It renders while editing, and when `readOnly` it renders read-only in place of the preview. Its own `readOnly` prop also mounts it outside editing, but the preview checks only the root's `readOnly`, so both render side by side.
+
+When editing starts it takes focus and selects its text, one animation frame later. Enter commits, Escape cancels, and losing focus commits, unless focus moves to `EditableTrigger`, `EditableSubmit` or `EditableCancel`. With `autosize` its width follows the text (its `scrollWidth` plus 4px, at least 32px); otherwise it fills the row.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `disabled` | `boolean` | `false` | When true, disables the input; combines with the root's `disabled`. |
+| `readOnly` | `boolean` | `false` | When true, makes the input read-only; combines with the root's `readOnly`. |
+| `required` | `boolean` | `false` | When true, makes the input required; combines with the root's `required`. |
+| `maxLength` | `number` | - | Sets the `maxLength`; wins over the root's. |
+
+Also takes every prop of an `input`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable-input"` | Selects the input |
+
+The input is 36px tall with a 1px `border-input` border and a ring on keyboard focus. It sets `aria-required` when required and `aria-invalid` when the root is `invalid`; the pattern sets no rule on either. Enter does not call `preventDefault()`, so inside a form whose only text field is this input, Enter also submits the form.
+
+## EditableTrigger
+
+The button that starts editing, for a preview the user may not know is editable. Renders a `button` with `type="button"` and `aria-controls` set to the root `id`. It starts editing on a click with `triggerMode="click"`, on a double click with `"dblclick"`, and does nothing with `"focus"`. It renders nothing while editing or when `readOnly`, unless `forceMount`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `forceMount` | `boolean` | `false` | When true, keeps the trigger rendered while editing and when `readOnly`. |
+
+Also takes every prop of a `button`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable-trigger"` | Selects the trigger; the input does not commit when focus moves to it |
+| `data-disabled` | present when `disabled` | Styles a disabled trigger |
+| `data-readonly` | present when `readOnly` | Styles a read-only trigger |
+
+When the root is `disabled` or `readOnly` the trigger sets `aria-disabled` but stays a focusable, enabled `button`, so its `disabled:` classes do not apply and it does not dim: style `data-disabled` instead.
+
+## EditableToolbar
+
+The row of the commit and cancel buttons. Renders a `div` with `role="toolbar"` and `aria-orientation`, only while editing.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `orientation` | `"horizontal"` or `"vertical"` | `"horizontal"` | Controls the direction: a row of centered buttons, or a column of buttons that fill its width. |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable-toolbar"` | Selects the toolbar |
+| `data-orientation` | `"horizontal"` or `"vertical"` | Follows `orientation` |
+
+Its buttons are separate tab stops: the arrow keys do not move focus between them.
+
+## EditableSubmit
+
+The button that commits the edit. Renders a `button` with `type="button"` and `aria-controls` set to the root `id`, in `bg-primary`, only while editing. Pressing it calls `onSubmit`. Moving focus from the input to it does not commit, so a Tab from the input to the button commits nothing until the button is pressed.
+
+Also takes every prop of a `button`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable-submit"` | Selects the button; the input does not commit when focus moves to it |
+
+## EditableCancel
+
+The button that cancels the edit. Renders a `button` with `type="button"` and `aria-controls` set to the root `id`, with a `border-input` border on `bg-background`, only while editing. A click restores the value from before the session and calls `onCancel`, without `onSubmit`.
+
+Also takes every prop of a `button`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable-cancel"` | Selects the button; the input does not commit when focus moves to it |
+
+The input skips the commit on blur only when focus lands on one of these buttons, so the exemption depends on the browser focusing a button on click. The tests prove it in Chromium only; browsers that do not focus a button on click are unverified.
+
+## EditableField
+
+The display composition: one field that is always mounted, reads as text and edits while it has focus. Renders an `input`, or a `textarea` with `multiline`, named by the label, or by its own `aria-label`, which then replaces `aria-labelledby`. It takes the place of the area, the preview, the input, the trigger and the toolbar; `triggerMode` and `autosize` do not apply.
+
+Focus starts the session; typing outside a session starts one first. Losing focus commits only when the draft changed since focus; otherwise it restores the value and leaves editing without `onSubmit` or `onCancel`. On a single-line field Enter blurs the field, so the blur commits once; on a `multiline` field Enter adds a line. Escape acts only when the draft changed: it cancels, blurs and stops the event; with an unchanged draft it does nothing and lets the event reach the page, so in a dialog the first Escape discards the edit and the second closes the dialog. The field never moves focus to itself.
+
+With `readOnly` it renders a `span` with the value, or the placeholder while the value is empty, and keeps only `className`, `dir` and the `data-*` attributes; it is no longer a field, and `aria-label` is dropped.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `multiline` | `boolean` | `false` | When true, renders a `textarea` with `rows={1}` and leaves Enter to it. |
+| `emptyValue` | `string` | - | Sets a value that stands for empty: when the value equals it, focus starts from an empty draft, and leaving it empty is not a change. |
+| `aria-label` | `string` | - | Names the field; it then drops `aria-labelledby`, for a field with no `EditableLabel`. |
+| `disabled` | `boolean` | `false` | When true, disables the field; combines with the root's `disabled`. |
+| `readOnly` | `boolean` | `false` | When true, renders the `span`; combines with the root's `readOnly`. |
+| `required` | `boolean` | `false` | When true, makes the field required; combines with the root's `required`. |
+| `maxLength` | `number` | - | Sets the `maxLength`; wins over the root's. |
+| `type` | `string` | - | Sets the `type` of the single-line `input`; ignored with `multiline`. |
+
+Also takes every prop of an `input` except `defaultValue` and `value`; `ref`, `onFocus`, `onBlur`, `onChange` and `onKeyDown` are typed for an `input` or a `textarea`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable-field"` | Selects the field; a `data-slot` the consumer passes replaces it, on the `span` too |
+| `data-editing` | present during a session | Styles the field while it is being edited |
+| `data-empty` | present while the value is empty | Styles the field while empty; the pattern sets no rule on it |
+| `data-disabled` | present when disabled | Styles a disabled field; the field itself dims through `disabled:` |
+| `data-readonly` | present on the read-only `span` | Styles the read-only text |
+
+The `multiline` field grows with its text through `field-sizing: content` in browsers that support it; elsewhere it stays one row tall and scrolls. The field is transparent with no border and no focus ring: the caret is the focus indicator. It fills its row (`w-full`) and shows the placeholder in `text-muted-foreground`; type size and weight are the consumer's, through `className`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `EditableProps` | `type` | The props of `Editable`. |
+| `EditableLabelProps` | `type` | The props of `EditableLabel`. |
+| `EditableAreaProps` | `type` | The props of `EditableArea`. |
+| `EditablePreviewProps` | `type` | The props of `EditablePreview`. |
+| `EditableInputProps` | `type` | The props of `EditableInput`. |
+| `EditableTriggerProps` | `type` | The props of `EditableTrigger`. |
+| `EditableToolbarProps` | `type` | The props of `EditableToolbar`. |
+| `EditableSubmitProps` | `type` | The props of `EditableSubmit`. |
+| `EditableCancelProps` | `type` | The props of `EditableCancel`. |
+| `EditableFieldProps` | `type` | The props of `EditableField`. |
+
+## Accessibility and theme
+
+- After a commit or a cancel the input and the toolbar unmount and no part takes focus, so focus falls to the `body`. Move it back yourself, for example to the preview from `onSubmit` and `onCancel`, so keyboard users keep their place.
+- Pass an `EditableLabel`, or an `aria-label` on `EditableField`: the input and the field take their name from one of them. Hide the label with `sr-only` when the context already names the value.
+- The preview is a button named by the value it shows, not by the label; put the label's meaning in the surrounding text when the value alone does not say what it is.
+- Give `EditableTrigger`, `EditableSubmit` and `EditableCancel` a visible text or an `aria-label`: they render no text of their own.
+- The parts read the theme tokens `muted-foreground`, `accent`, `input`, `ring`, `background`, `primary`, `primary-foreground` and `destructive-foreground`. Measured contrast of the required marker: `docs/accessibility.md`, section `Button` `destructive`.

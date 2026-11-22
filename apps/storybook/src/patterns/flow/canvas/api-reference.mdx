@@ -1,0 +1,234 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Flow Canvas
+
+The graph surface of a flow editor, where a user lays out the steps of an automation and connects them: a lead routing workflow, an AI agent that answers overdue invoices, an approval flow. It draws each step with its last run, lets the user drag, connect, select and drop steps, and reports every change. It is controlled: the consumer passes the steps, the connections, the selection and the labels, and owns the history, the execution, the persistence and every id; the canvas never fetches, persists, orders or computes a run.
+
+The other pages of `Patterns/Flow/Canvas`: [Playground](?path=/story/patterns-flow-canvas-playground--playground) to try the direction, the run, the states and each part, [Stories](?path=/story/patterns-flow-canvas-stories--default) for each direction and state, [Behavior](?path=/story/patterns-flow-canvas-behavior--step-named-by-name-type-and-state) for the tests, [Usages](?path=/story/patterns-flow-canvas-usages--lead-routing-workflow) for a lead routing workflow and an agent, and [Layouts](?path=/story/patterns-flow-canvas-layouts--without-controls) for how the parts combine.
+
+Used in: the flow editors combine the canvas with [Step Library](?path=/docs/patterns-flow-step-library-api-reference--api-reference) and [Inspector](?path=/docs/patterns-flow-inspector-api-reference--api-reference), with undo, redo, lock and tidy tree in the controls. See [Application/Flow/WorkflowEditor](?path=/story/application-flow-workfloweditor--default) and [Application/Flow/AgentBuilder](?path=/story/application-flow-agentbuilder--default).
+
+## Import
+
+```css
+/* the global CSS, once, next to the theme */
+@import '@xyflow/react/dist/base.css';
+```
+
+```tsx
+import {
+  FlowCanvas,
+  FlowCanvasControls,
+  FlowCanvasMinimap,
+  FlowShortcutsPopover,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<FlowCanvas steps connections stepTypes selectedStepId>
+  step: icon, name, description, status badge, footer, handles
+    toolbar of the selected step, context menu
+  connection: path, label
+  <FlowCanvasControls>
+    cursor mode, zoom out, zoom level, zoom in
+    {children}: <FlowShortcutsPopover />, consumer buttons
+  </FlowCanvasControls>
+  <FlowCanvasMinimap />
+</FlowCanvas>
+```
+
+## FlowCanvas
+
+The canvas. Renders a `section` named by `labels.canvas` (`"Canvas do fluxo"`) around a React Flow graph with a dotted background, and its own `ReactFlowProvider`, so two canvases on a page do not share state. Its only state is the cursor mode and the measured size of each node, which the minimap needs. With no steps and not `loading` it shows an empty state over the pane.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `steps` | `readonly FlowStep[]` | required | Sets the steps, each with its position and its last run. |
+| `connections` | `readonly FlowConnection[]` | required | Sets the connections between steps. |
+| `direction` | `"horizontal"` or `"vertical"` | `"horizontal"` | Controls where the handles sit (left and right, or top and bottom) and what the step footer shows. |
+| `selectedStepId` | `string` or `null` | `null` | Sets the selected step, which shows its ring and its toolbar. |
+| `locked` | `boolean` | `false` | When true, blocks dragging, connecting and dropping, forces the `select` cursor mode and disables every control that changes the graph. |
+| `loading` | `boolean` | `false` | When true, draws no step and no connection and sets `aria-busy`. |
+| `snapToGrid` | `boolean` | `false` | When true, snaps dragged steps and dropped positions to a 16px grid. |
+| `edgeControls` | `boolean` | `true` in `"vertical"`, else `false` | When true, adds an add button and a remove button on each connection. |
+| `stepMenu` | `boolean` | `true` in `"vertical"`, else `false` | When true, puts an actions menu in each step header in place of the status badge. |
+| `stepTypes` | `readonly FlowStepType[]` | `[]` | Resolves the type label of each step and the kind of a step without `kind`. |
+| `icons` | `Record<string, ReactNode>` | - | Maps a step `type` to its icon; a step without one shows the icon of its kind. |
+| `labels` | `Partial<FlowCanvasLabels>` | - | Replaces any of the default texts. |
+| `className` | `string` | - | Adds classes to the `section`. |
+| `children` | `ReactNode` | - | Renders inside the graph: `FlowCanvasControls` and `FlowCanvasMinimap`. |
+| `onStepsChange` | `(steps: FlowStep[]) => void` | - | Called on every drag tick with the whole list, the moved step at its new position; feed it back to `steps`. |
+| `onStepsChangeEnd` | `(steps: FlowStep[]) => void` | - | Called once when a drag ends, with the same list, so one drag makes one undo entry. |
+| `onConnect` | `(connection: FlowConnectInput) => void` | - | Called when the user joins two handles, with `source`, `target` and `sourceHandle`; the consumer creates the connection and its id. |
+| `onConnectionsChange` | `(connections: FlowConnection[]) => void` | - | Called by the remove button of a connection, with the list minus that connection. |
+| `onSelect` | `(stepId: string \| null) => void` | - | Called once per change of selection: a click on a step, `Enter` or `Space` on a focused step, a click on the pane or `Escape` on the focused step (`null`). |
+| `onStepDrop` | `(type: FlowStepType, position: FlowPosition) => void` | - | Called when a step type is dropped on the pane, with its position in the graph. |
+| `onStepAction` | `(action, stepId, connection?) => void` | - | Called by the toolbar, the menus, the add buttons and `Backspace`, with the action and the step id. |
+
+`onStepAction` receives a `FlowStepAction` (`"add-after"`, `"add-branch"`, `"view"`, `"edit"`, `"duplicate"` or `"delete"`), the step id and, from a connection's add button, that `FlowConnection`.
+
+Takes no other prop. The canvas sends no change it was not asked for: a step size change never reaches `onStepsChange`, and the canvas refuses only a connection from a step to itself; duplicates and cycles are for the consumer to refuse in `onConnect`. The callbacks may be new functions on every render. A box selection reports its first step.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-canvas"` | Selects the `section` |
+| `data-direction` | `"horizontal"` or `"vertical"` | Styles each direction |
+| `data-mode` | `"select"` or `"pan"` | The cursor mode: `select` drags steps and draws a selection box, and pans with the middle or right button; `pan` pans with any button |
+| `data-locked` | `"true"`, absent when unlocked | Styles the locked canvas |
+
+The empty state is a `div` with `data-slot="flow-canvas-empty"` that lets pointer events through to the pane.
+
+### Steps
+
+Each step is a React Flow node with `role="group"`, `aria-roledescription` from `labels.stepRoleDescription` (`"passo"`) and a name from `labels.stepName`: name, type label and status, as in `"Novo lead, Formulário enviado, Sucesso"`. The type label is the `label` of the matching `stepTypes` entry, or the step `type` itself.
+
+The visible card is the theme's `Card`: the icon of the step type or of its kind, the name, the description and, without `stepMenu`, the status badge. Its footer depends on `direction`: in `"horizontal"` the owner's avatar and the duration (`200ms`, `1.2s`), shown when the step has either; in `"vertical"` the status icon with the `metrics` joined by `·` (or the status) and the status badge, shown when the step has a `run`. A step with no `run` is `not-run`. Only `failed` is coloured (`destructive`); the other states read as text.
+
+A step has a target handle (none on a trigger) and a source handle, each `role="button"` named `"Conectar em …"` and `"Conectar a partir de …"`. They are not focusable, so connecting takes a pointer.
+
+| Action | Toolbar and context menu | Step menu |
+| --- | --- | --- |
+| `add-after` | yes | - |
+| `view` | yes | yes |
+| `edit` | yes | yes |
+| `add-branch` | - | yes |
+| `duplicate` | yes, not on a trigger | - |
+| `delete` | yes, not on a trigger | yes, not on a trigger |
+
+The toolbar shows above the selected step, in that order, with a tooltip on each button; the context menu opens with a right click on the card. In `"vertical"`, a step with no outgoing connection also gets an add button under it (`add-after`). While `locked`, `add-after`, `add-branch`, `duplicate` and `delete` are disabled everywhere, and `view` and `edit` stay enabled.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-step-node"` | Selects the trigger that wraps the card; the card keeps `data-slot="card"` |
+| `data-kind` | `"trigger"`, `"action"` or `"condition"` | The kind of the step |
+| `data-status` | a `FlowRunStatus` | The status of its last run |
+| `data-slot` | `"flow-step-toolbar"` | Selects the toolbar, a `group` named `"Ações de …"` |
+
+### Connections
+
+A connection is a rounded step path with an arrow, drawn in `muted-foreground`; a `taken` connection is drawn in `primary` and animated (without the animation under `prefers-reduced-motion`). Its `label` is an outline badge in the middle of the path. Connections are neither focusable nor selectable: their controls are buttons. With `edgeControls`, the middle of the path holds an add button (`onStepAction('add-after', source, connection)`) and a remove button (`onConnectionsChange`), named after the label (`"Adicionar um passo no caminho Sem resposta"`) or generically when there is none; they are transparent until the pointer is over them or focus is inside, and always visible on a coarse pointer.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-step-edge-label"` | Selects the box with the label and the controls |
+| `data-slot` | `"flow-edge-controls"` | Selects the two buttons |
+
+### Drop
+
+The pane accepts a drop whose `dataTransfer` carries `FLOW_STEP_TRANSFER_TYPE` with a payload `parseStepTransfer` accepts, which is what a `FlowStepLibraryItem` writes. Any other drop, and every drop while `locked` or `loading`, is ignored.
+
+### Keyboard
+
+The shortcuts act while focus is inside the canvas `section`, and never with `Ctrl`, `Meta` or `Alt`, inside an `input`, `textarea`, `select`, a `contenteditable` or a `role="textbox"`, or when another handler already called `preventDefault()`.
+
+| Key | Action |
+| --- | --- |
+| `V` | the `select` cursor mode |
+| `H` | the `pan` cursor mode |
+| `=` or `+` | zoom in |
+| `-` | zoom out |
+| `Shift` + `1` | fit the graph |
+| `Shift` + `0` | 100% zoom |
+| `Backspace` or `Delete` | `onStepAction('delete', selectedStepId)`, except on a trigger and while `locked` |
+
+Each step is reachable with `Tab`; on a focused step, `Enter` or `Space` selects it and `Escape` clears the selection.
+
+`Shift` + digit reads the physical key, so it works on any layout. A key pressed with `Shift` does nothing else: where `+` needs `Shift`, zoom in with `=`.
+
+## FlowCanvasControls
+
+The panel of the canvas controls, at the bottom left. Renders a `div` with `role="group"` named by `labels.controls` (`"Controles do canvas"`): the cursor mode as a toggle group (`"Selecionar"`, `"Mover"`), zoom out, the zoom level as a button that fits the graph, zoom in, and then `children`. Throws outside a `FlowCanvas`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | - | Adds the consumer's controls after the zoom: undo, redo, lock, tidy tree, `FlowShortcutsPopover`. |
+| `className` | `string` | - | Adds classes to the panel. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"flow-canvas-controls"` | Selects the panel |
+
+The zoom buttons have a tooltip with their name. The zoom level reads `"Nível de zoom 100%"`; the zoom runs from 25% to 200%.
+
+## FlowShortcutsPopover
+
+A button that opens the list of keyboard shortcuts. Renders an outline icon button named by `labels.trigger` and a popover titled `labels.title`, both `"Atalhos de teclado"`. It only lists the keys and does not need a `FlowCanvas`, so it can sit in the controls or in a page header.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `labels` | `Partial<FlowShortcutsLabels>` | - | Replaces any of the texts: `trigger`, `title`, `select`, `pan`, `zoomIn`, `zoomOut`, `fit`, `actualSize`, `remove`. |
+
+## FlowCanvasMinimap
+
+The minimap of the graph, at the bottom right. Renders the React Flow minimap, pannable and zoomable, named by `labels.minimap` (`"Minimapa"`) and hidden below `md`. Throws outside a `FlowCanvas`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `className` | `string` | - | Adds classes to the minimap. |
+
+## Data
+
+`FlowStep`, a step of `steps`:
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | required | Identifies the step in connections, selection and callbacks. |
+| `type` | `string` | required | Points to a `FlowStepType.id` and to the `icons` entry. |
+| `name` | `string` | required | Sets the title of the card and the first part of its name. |
+| `position` | `{ x: number; y: number }` | required | Sets the position in the graph. |
+| `description` | `string` | - | Sets the line under the name. |
+| `kind` | `"trigger"`, `"action"` or `"condition"` | the type's `kind`, else `"action"` | Sets the kind; a trigger has no target handle and cannot be duplicated or deleted from the canvas. |
+| `owner` | `{ name: string; avatarUrl?: string }` | - | Sets the avatar of the horizontal footer; without an image it shows the initials. |
+| `run` | `FlowStepRun` | - | Sets the last run: `status`, `durationMs`, `metrics` (`readonly string[]`) and `note`. |
+
+`FlowConnection`: `id`, `source` and `target` (required), `label`, `taken` (drawn as part of the last run) and `sourceHandle` (carried to `onConnect`, not drawn: a step has one output). `FlowStepType`: `id`, `label` and `group` (required), `kind` and `description`. `FlowRunStatus` is `"idle"`, `"running"`, `"success"`, `"failed"`, `"skipped"` or `"not-run"`. `FlowConnectInput` is `{ source, target, sourceHandle? }`, and `FlowPosition` is `{ x, y }`.
+
+## Labels
+
+Every text the canvas writes, overridden through `labels`. The defaults are in Portuguese. `labels` merges one level: `statuses`, `actions` and `menuActions` are replaced whole, so pass every key of the ones you change.
+
+| Field | Default | Where |
+| --- | --- | --- |
+| `canvas` | `"Canvas do fluxo"` | the name of the `section` |
+| `stepRoleDescription` | `"passo"` | the role description of each step |
+| `stepName` | `(name, type, status) => "name, type, status"` | the name of each step |
+| `statuses` | `"Parado"`, `"Executando"`, `"Sucesso"`, `"Falhou"`, `"Ignorado"`, `"Não executado"` | the status badge and the step name |
+| `stepToolbar`, `stepMenu` | `(name) => "Ações de name"` | the toolbar and the step menu button |
+| `actions` | `"Adicionar um passo depois de …"`, `"Adicionar ramo em …"`, `"Ver …"`, `"Editar …"`, `"Duplicar …"`, `"Excluir …"` | the toolbar buttons |
+| `menuActions` | `"Adicionar passo depois"`, `"Adicionar ramo"`, `"Ver"`, `"Editar"`, `"Duplicar"`, `"Excluir"` | the menu items and the toolbar tooltips |
+| `addAfterLeaf` | `(name) => "Adicionar um passo depois de name"` | the add button under a vertical leaf |
+| `sourceHandle`, `targetHandle` | `"Conectar a partir de …"`, `"Conectar em …"` | the handles |
+| `edgeAdd`, `edgeRemove` | `"Adicionar um passo no caminho …"`, `"Remover a conexão do caminho …"`; without a label `"Adicionar um passo aqui"`, `"Remover esta conexão"` | the connection buttons |
+| `controls`, `mode`, `select`, `pan` | `"Controles do canvas"`, `"Modo do cursor"`, `"Selecionar"`, `"Mover"` | the controls panel |
+| `zoomOut`, `zoomIn`, `zoomLevel` | `"Diminuir zoom"`, `"Aumentar zoom"`, `(percent) => "Nível de zoom percent%"` | the zoom buttons |
+| `minimap` | `"Minimapa"` | the minimap |
+| `emptyTitle`, `emptyDescription` | `"Nenhum passo ainda"`, `"Arraste um passo da biblioteca ou clique em Adicionar passo."` | the empty state |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `tidyTree` | `function` | Lays the steps out as a tree from the steps with no incoming connection, and returns them with new positions starting at 0. `tidyTree(steps, connections, { direction, nodeSize, gap }) => FlowStep[]` |
+| `flowStepNodeSize` | `constant` | The size of a step card to pass to `tidyTree` as `nodeSize`: `[256, 100]`. |
+| `FLOW_STEP_TRANSFER_TYPE` | `constant` | The `dataTransfer` format of a dragged step type: `"application/x-tc96-flow-step"`. |
+| `serializeStepTransfer` | `function` | Writes a step type for `dataTransfer`. `serializeStepTransfer(type) => string` |
+| `parseStepTransfer` | `function` | Reads a step type back, or `null` when the payload is not one. `parseStepTransfer(raw) => FlowStepType \| null` |
+| `incomingOf`, `outgoingOf` | `function` | The connections that end at or start from a step. `incomingOf(stepId, connections) => FlowConnection[]` |
+| `flowRunSummary` | `function` | Sums the last run of the steps for a `FlowRunCard`: `failed` (with the failed step's note) when one failed, else `running`, `skipped`, `success`, `not-run` or `idle`; `completed` counts the successes. `flowRunSummary(steps, { id }) => FlowRunSummary` |
+| `FlowStep`, `FlowStepRun`, `FlowStepType`, `FlowStepKind`, `FlowConnection`, `FlowRunStatus`, `FlowRunSummary`, `FlowStepAction`, `FlowDirection`, `TidyTreeOptions` | `type` | The vocabulary of the flow patterns. |
+| `FlowCanvasProps`, `FlowCanvasControlsProps`, `FlowCanvasMinimapProps`, `FlowShortcutsPopoverProps`, `FlowCanvasLabels`, `FlowShortcutsLabels`, `FlowCanvasMode`, `FlowConnectInput`, `FlowPosition` | `type` | The props, the labels and the values of the callbacks. |
+
+## Accessibility and theme
+
+- The canvas needs `@xyflow/react/dist/base.css` once in the global CSS; the pattern ships no CSS of its own.
+- The canvas is a region named by `labels.canvas`, and each step a group named by its name, type and status; translate them through `labels`.
+- Connecting two steps is pointer only, since the handles are not focusable. A keyboard user selects a step with `Enter` and reaches the toolbar, the menus and the connection buttons, so offer another way to connect (a form field, the add buttons) where it matters.
+- The step is the theme's `card`, and its selection and focus are rings on it. The graph colours come from the `--xy-*` variables, set over the theme's tokens on the `.react-flow` root.
+- Measured contrast: `docs/accessibility.md`, section "Flow Canvas".

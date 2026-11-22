@@ -1,0 +1,184 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Checklist
+
+A list of steps the user checks off, renames, reorders, deletes and adds to: the tasks of a deal, the steps of an onboarding, the to-dos of a case. Reach for it when the items belong to a record and the user works through them in place; the consumer keeps the items and decides what each change does.
+
+The other pages of `Patterns/Checklist`: [Playground](?path=/story/patterns-checklist-playground--playground) to try the title, the density, the variant, the metadata and the optional parts, [Stories](?path=/story/patterns-checklist-stories--default) for each density and state, [Behavior](?path=/story/patterns-checklist-behavior--delegates-changes-to-consumer) for the tests, [Usages](?path=/story/patterns-checklist-usages--deal-tasks) for real tasks and [Layouts](?path=/story/patterns-checklist-layouts--with-progress) for the header, the metadata, the feedback slot and titles that open the item.
+
+Used in: [Patterns/Records/Group/Usages, Tasks](?path=/story/patterns-records-group-usages--tasks), a `plain` checklist inside a `RecordGroup`. `plain` is made for a parent that frames the rows, so that story is where it is shown.
+
+## Import
+
+```tsx
+import { Checklist, type ChecklistItem } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+`Checklist` renders every part itself; the consumer passes data and callbacks only. The tree it renders:
+
+```tsx
+<section data-slot="checklist">
+  <div data-slot="progress">
+    <div data-slot="checklist-header" />
+    <div data-slot="progress-track" role="progressbar" />
+  </div>
+  <div data-slot="card">
+    <ol data-slot="checklist-items">
+      <li data-slot="checklist-item">
+        <button data-slot="checklist-drag-handle" />
+        <div data-slot="checklist-row">
+          <span>
+            <Checkbox />
+          </span>
+          <span data-slot="checklist-title" />
+          <span data-slot="checklist-actions" />
+          <button data-slot="checklist-delete" />
+        </div>
+      </li>
+      <li data-slot="checklist-draft-item">
+        <form>
+          <div data-slot="checklist-row" />
+        </form>
+      </li>
+    </ol>
+  </div>
+  {feedback}
+</section>
+```
+
+`div[data-slot="card"]` is a `Card` and renders only in `variant="card"`; in `plain` the `ol` is a direct child of the `section`, and the drag handle moves into the row, after the delete button.
+
+## Checklist
+
+The whole checklist. Renders a `section` named by `ariaLabel`, so it is a `region` landmark. It is controlled: it never adds, removes, reorders or edits `items` itself, never fetches and never stores; every change reaches the consumer as a callback, and the list changes only when the consumer passes new `items`. Its only state is the drag in progress and the text of a title being renamed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `ariaLabel` | `string` | required | Names the `section`. |
+| `items` | `readonly ChecklistItem[]` | required | Sets the items, in the order they are shown. |
+| `newItemTitle` | `string` | required | Sets the text of the draft row. |
+| `onCreate` | `(title: string, completed: boolean) => void` | required | Called when the draft is submitted, with the trimmed title and `false`, or when its checkbox is checked, with `true`. |
+| `onItemCompletionChange` | `(id: string, completed: boolean) => void` | required | Called when an item's checkbox changes, with its `id` and the new state. |
+| `onItemMove` | `(id: string, targetIndex: number) => void` | required | Called when an item is dropped at another index or moved with Alt+ArrowUp or Alt+ArrowDown. |
+| `onItemRename` | `(id: string, title: string) => void` | required | Called when an edited title loses focus or Enter is pressed, with the trimmed title, if it changed. |
+| `onNewItemTitleChange` | `(title: string) => void` | required | Called on every change of the draft text. |
+| `variant` | `"card"` or `"plain"` | `"card"` | Controls the frame: a `Card` around the list, or no frame for a parent that frames the rows. |
+| `density` | `"md"` or `"sm"` | `"md"` | Controls the row height and padding, the text size of the titles and the draft input, and the checkbox hit area. |
+| `title` | `React.ReactNode` | - | Sets the heading above the list; `null` or `undefined` removes it. |
+| `progress` | `boolean` | `false` | When true, adds a progress bar under the heading. |
+| `readOnly` | `boolean` | `false` | When true, disables the checkboxes and removes the draft row, the drag handles and the delete buttons. |
+| `creating` | `boolean` | `false` | When true, disables the draft input and checkbox while the consumer saves an item. |
+| `feedback` | `React.ReactNode` | - | Renders after the list, for a saving or error message. |
+| `authorOptions` | `readonly PersonPropertyOption[]` | `[]` | Lists the people an item's `authorId` can name. |
+| `locale` | `string` | `"en-US"` | Sets the locale of the due dates. |
+| `timeZone` | `string` | `"UTC"` | Sets the time zone that decides an item's due day. |
+| `onItemClick` | `(item: ChecklistItem) => void` | - | Called when a title is clicked; turns every title into a button. |
+| `onItemDelete` | `(id: string) => void` | - | Called when an item's delete button is clicked; without it the rows have no delete button. |
+| `onItemAuthorChange` | `(id: string, authorId: string) => void` | - | Called when another author is picked; without it the author is read-only. |
+| `onItemDueDateChange` | `(id: string, dueDate: string \| null) => void` | - | Called when a due date is picked or cleared (`null`); without it the due date is read-only. |
+| `className` | `string` | - | Adds classes to the `section` after its own, so a conflicting class wins. |
+
+Also takes every prop of a `section` except `title`.
+
+`PersonPropertyOption` is `{ value: string, label: string, fallback?: string, imageUrl?: string, supportingLabel?: string }`: the `label` names the person, and `imageUrl` or the `fallback` initials fill the avatar.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"checklist"` | Selects the root |
+| `data-variant` | `"card"` or `"plain"` | Styles the checklist by variant |
+| `data-density` | `"md"` or `"sm"` | Styles the checklist by density |
+| `data-readonly` | present when `readOnly` | Styles a read-only checklist |
+
+`variant="card"` pads the `section` (8px above, 16px below). `variant="plain"` adds no padding, puts 2px between rows and rounds each row on hover.
+
+### Heading and progress
+
+The heading shows `title` and the count of completed items, `1 de 2 concluídos` (`1 de 1 concluído` for a single item). `progress` adds a bar named by the same count, with `aria-valuemin` 0, `aria-valuemax` the number of items and `aria-valuenow` the completed ones. With no items, only `title` shows: no count and no bar.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"progress"` | Selects the wrapper of the heading and the bar; it renders whenever the list has items and a `title` or `progress` |
+| `data-slot` | `"checklist-header"` | Selects the row with the title and the count |
+| `data-slot` | `"progress-track"` | Selects the progress bar |
+
+### Items
+
+Each item is a `li` with a row: the checkbox, the title, the metadata, the delete button and, in `plain`, the drag handle. The checkbox is named by the item's title.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"checklist-items"` | Selects the `ol` |
+| `data-slot` | `"checklist-item"` | Selects an item's `li` |
+| `data-completed` | present when the item is completed | Styles a completed item; the title turns muted and struck through |
+| `data-dragging` | present on the item being dragged | Styles the dragged item, at 40% opacity |
+| `data-slot` | `"checklist-drag-handle"` | Selects the drag handle; in `card` it comes before the row, in `plain` it is the last child of the row |
+| `data-slot` | `"checklist-row"` | Selects the row inside an item or the draft |
+| `data-slot` | `"checklist-title"` | Selects the title |
+| `data-slot` | `"checklist-actions"` | Selects the metadata area, before the delete button |
+| `data-slot` | `"checklist-delete"` | Selects the delete button |
+
+Row heights: 40px for `card` at `md`, 32px at `sm` in both variants, and for `plain` at `md` the value of `--record-group-row-height`, 36px when it is unset. The inline padding of a row is 12px for `card` at `md` and 8px otherwise. At `md` the titles and the draft input use `text-base`, at `sm` `text-sm`; the checkbox hit area is 44px at `md` and 32px at `sm`.
+
+The title takes one of three forms. With `onItemClick` it is a button named `Abrir <title>`, even when the item is editable. Without it, it is a text field named `Título: <title>` that renames on blur or Enter; an empty or blank title is not emitted and the field returns to the current title. Without `onItemClick` and with `readOnly`, it is plain text.
+
+The delete button, named `Excluir <title>`, and the drag handle, named `Reordenar <title>`, are transparent until the row is hovered or they have keyboard focus. In `card` the handle sits outside the row, 24px past its right edge, and is also `invisible` until the row is hovered, so Tab skips it; in `plain` it sits in the row and Tab reaches it. The handle carries `aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"` and a tooltip, `Arraste para ordenar acima ou abaixo`. It drags with the pointer, or with the keyboard: Space picks the item up, the arrow keys move it, Space or Tab drops it and Escape cancels. Alt+ArrowUp and Alt+ArrowDown move the item one position at once, and do nothing at the ends of the list. With fewer than two items the handle is disabled. A drop on the same index or a cancelled drag calls nothing.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--card-surface-radius` | `var(--radius-2xl)` | Rounds the first and last rows of `card`, minus 1px, so their hover follows the card corners |
+| `--record-group-row-height` | `calc(var(--spacing) * 9)`, 36px | Sets the row height of `plain` at `md` |
+| `--record-group-hover-offset` | `0px` | Extends the hover of a `plain` row past the content edge, as a negative inline margin |
+
+Keep the list's parent without `overflow: hidden` in `card`, or it clips the drag handle.
+
+### Metadata
+
+The row shows the author and the due date of each item, on the right. Each field is three-state: `undefined` hides it, `null` shows it empty, a value shows it. With both `undefined` the area is not rendered.
+
+The author is a select named `Author: <name>`, with `Sem responsável` when empty; it is a read-only label without `onItemAuthorChange` or when `readOnly`. The due date is a button named `Due date: <date>` that opens a calendar with a `Limpar data` button, and shows `No due date` when empty; it is a read-only label without `onItemDueDateChange` or when `readOnly`. A due date within one day of today reads `Yesterday`, `Today` or `Tomorrow` in `locale`; any other reads as a short date. The day is computed in `timeZone` against the current date at render.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-due` | `"overdue"`, `"today"` or `"upcoming"` | Marks the due status on `[data-slot="checklist-actions"]`, set when `dueDate` is not `undefined`; `null` reads as `"upcoming"`. The due date takes the matching color, `text-destructive-foreground`, `text-warning-foreground` or `text-muted-foreground`, and an overdue date is also `font-medium` |
+
+### Draft row
+
+The last row creates items: a checkbox named `Concluir novo item` and a text input named `Novo item`, with the placeholder `Adicionar uma nova etapa`, inside a `form`. Submitting it, Enter included, calls `onCreate` with the trimmed title and `false`; checking the checkbox calls it with `true`. A blank title calls nothing and keeps the checkbox disabled. With no items, a plus icon takes the place of the checkbox, so the first item cannot be created completed. The consumer clears `newItemTitle` after creating.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"checklist-draft-item"` | Selects the draft row's `li` |
+
+## ChecklistItem
+
+The item a consumer passes in `items` and receives in `onItemClick`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | required | Identifies the item in every callback. |
+| `title` | `string` | required | Sets the title and names the checkbox, the delete button and the drag handle. |
+| `completed` | `boolean` | required | Checks the item. |
+| `authorId` | `string \| null` | - | Names the author among `authorOptions`; `null` shows the field empty. |
+| `dueDate` | `string \| null` | - | Sets the due date as an ISO string; `null` shows `No due date`. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ChecklistProps` | `type` | The props of `Checklist`. |
+| `ChecklistDensity` | `type` | `"md"` or `"sm"`. |
+| `ChecklistVariant` | `type` | `"card"` or `"plain"`. |
+
+## Accessibility and theme
+
+- Pass `ariaLabel`: it names the `region`. Each item's title names its checkbox, delete button and drag handle, so keep titles distinct.
+- The copy is Portuguese (`concluídos`, `Abrir`, `Título`, `Excluir`, `Reordenar`, `Novo item`, the placeholder and the tooltip); the metadata labels are English (`Author`, `Due date`, `No due date`).
+- In `card`, reordering by keyboard is not reachable: the handle is skipped by Tab. Use `plain` where keyboard reordering matters.
+- The colors come from the theme tokens `foreground`, `muted-foreground`, `muted`, `primary`, `ring`, `destructive-foreground`, `warning-foreground` and the `Card`'s `card`. Measured contrast: `docs/accessibility.md`, section `checklist`.

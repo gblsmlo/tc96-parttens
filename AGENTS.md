@@ -30,7 +30,7 @@ scripts/            boundary, COSS, override and public API checks
 
 ## Pattern families
 
-Patterns live under `packages/parttens/src/`, at the top level or inside a family folder. A family exists when at least two patterns share a domain; a pattern with no sibling stays at the top level. `chat/` is the exception, chosen by the owner on 2026-10-19: it holds only `chats-panel` so far. Since 2026-10-21 the COSS chat stories live in `UI/Chat`, and `Patterns/Chat` holds the `chats-panel` stories and the usages that use patterns.
+Patterns live under `packages/parttens/src/`, at the top level or inside a family folder. A family exists when at least two patterns share a domain; a pattern with no sibling stays at the top level. `chat/` is the exception, chosen by the owner on 2026-10-19: it holds only `chats-panel` so far. Since 2026-10-21 the COSS chat stories live in `UI/Chat`; `Patterns/Chat` holds one six-page node per pattern, `Patterns/Chat/Assistant` and `Patterns/Chat/Chats Panel`, and each pattern's usages are on its own `Usages` page (Inbox and Lead Qualification under `Chats Panel`, Workflow under `Assistant`).
 
 ```text
 packages/parttens/src/
