@@ -1,0 +1,76 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Stats
+
+One number with its label, its trend and room for a detail: the revenue of a month, the active users of a week, the uptime of a service, the goal of a team. `MetricWidget` is the card; its `children` take whatever sharpens the number (a sparkline, a meter, a breakdown, a badge), so a dashboard of stat cards is one component and a few small compositions, with no pattern code per card.
+
+The other pages of `Patterns/Widgets/Stats`: [Playground](?path=/story/patterns-widgets-stats-playground--playground) to try the label, the value, the format, the trend, the icon, the sparkline and the tone, [Stories](?path=/story/patterns-widgets-stats-stories--default) for the trend states and the inverted tone, [Behavior](?path=/story/patterns-widgets-stats-behavior--names-the-region-by-its-label) for the tests, [Usages](?path=/story/patterns-widgets-stats-usages--revenue-dashboard) for a dashboard of ten cards and the summary row of a campaigns screen, and [Layouts](?path=/story/patterns-widgets-stats-layouts--with-icon) for the cards composed from `MetricWidget`: icon, sparkline, progress, comparison, breakdown, donut, status, period toggle and accent border.
+
+The parts of the card (`Amount`, `TrendIndicator`, `WidgetShell`, `StatList`, `ProgressRing`, `WidgetPeriodToggle`) are documented on [Patterns/Widgets](?path=/docs/patterns-widgets-api-reference--api-reference); the other families have their own nodes there.
+
+Used in: the [CRM sales dashboard](?path=/story/patterns-widgets-crm-usages--sales-dashboard) mounts three `MetricWidget` as its key numbers, one of them with the inverted tone.
+
+## Import
+
+```tsx
+import { MetricWidget } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<MetricWidget
+  label="Total revenue"
+  value={45231.89}
+  change={0.201}
+  changeLabel="from last month"
+  icon={<IconFrame shape="rounded"><DollarSignIcon /></IconFrame>}
+>
+  <Sparkline values={weeks} />
+</MetricWidget>
+```
+
+The consumer passes the numbers already computed; the widget formats them, never fetches, sorts or stores them, and has no state.
+
+## MetricWidget
+
+A stat card. Renders a `WidgetShell` named by its `label`, so it is a `region` landmark: a header with the label as an `h3` and the `icon`, the value at `text-4xl`, a row with the trend and the `changeLabel`, and the `children` below.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `ReactNode` | required | Sets the title of the card; names the region. |
+| `value` | `number` or `ReactNode` | required | Sets the main value. A number is formatted with `format`; any other node is rendered as it is. |
+| `format` | `AmountFormatOptions` | `{ style: "currency" }` | Sets how a numeric `value` reads (US dollars by default); ignored for a node. |
+| `change` | `number` | - | Sets the trend as a ratio and adds a `TrendIndicator`; `0.201` reads 20.10%. |
+| `changeFormat` | `AmountFormatOptions` | `{ style: "percent" }` | Sets how the trend reads. |
+| `changeLabel` | `ReactNode` | - | Renders after the trend, on the same row (`from last month`, a status `Badge`). |
+| `icon` | `ReactNode` | - | Renders at the end of the header: an `IconFrame`, a `WidgetPeriodToggle`, a `TrendIndicator`. |
+| `tone` | `"default"` or `"inverted"` | `"default"` | Controls the palette. `"inverted"` renders the card in the dark palette of the theme. |
+| `children` | `ReactNode` | - | Renders below the value, in the card panel. |
+| `className` | `string` | - | Adds classes to the frame. |
+
+Also takes every prop of a `div`, except `title`, and passes them to the frame.
+
+A numeric `value` goes through `Amount` with `dimFraction`, so the cents are dimmed; a node `value` renders in a `span` with the same size and tabular figures. The row under the value renders only when `change` or `changeLabel` is passed.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card"` | Selects the frame, where the theme sets the radius |
+| `data-widget` | `"metric"` | Selects a stat card |
+| `data-tone` | `"default"` or `"inverted"` | Names the tone, on the frame |
+| `data-slot` | `"metric-widget-scope"` | Selects the `div` that wraps an inverted card, with the classes `dark contents` |
+
+The inverted tone wraps the frame in a `div` with `dark contents` and applies no colors of its own: the dark palette is the theme's. A wrapper with `display: contents` adds no box, so the card sits in the grid as any other.
+
+## Accessibility and theme
+
+- The `label` names the card; keep it a short text, since it is also the heading.
+- A sparkline, a ring or a meter passed as `children` needs its own name or its value in text: the widget does not describe it.
+- Pass the status of a card in words (`Healthy`), never in color alone.
+- The theme sets the card radius on `[data-slot="card"]`, the `.dark` palette that the inverted tone uses and the `--chart-1` to `--chart-5` colors that sparklines and breakdowns read.
+- Contrast ratios are in `docs/accessibility.md`, section `widgets`.

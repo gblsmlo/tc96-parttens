@@ -1,0 +1,219 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Productivity
+
+Cards for tasks and calendars: the progress of a team's tasks over a period, the next meeting of the day with its link, a project with its subtasks and people, a calendar with the events of the selected day, and a row of clocks. The consumer passes the series, the dates and the lists already prepared; the widgets draw them and never fetch, schedule or store anything.
+
+The other pages of `Patterns/Widgets/Productivity`: [Playground](?path=/story/patterns-widgets-productivity-playground--playground) to pick a widget and try its title, action, periods and tone, [Stories](?path=/story/patterns-widgets-productivity-stories--default) for each widget, the inverted tone, the live event and the empty agenda, [Behavior](?path=/story/patterns-widgets-productivity-behavior--task-progress-names-its-chart-and-counters) for the tests, [Usages](?path=/story/patterns-widgets-productivity-usages--overview) for a day dashboard, and [Layouts](?path=/story/patterns-widgets-productivity-layouts--task-progress-without-periods) for the cards with fewer parts.
+
+The parts these widgets are built from (`WidgetShell`, `WidgetPeriodToggle`, `ExpandableList`, `StatList`, `AvatarStack`) are documented on [Patterns/Widgets](?path=/docs/patterns-widgets-api-reference--api-reference); the other families have their own nodes: [CRM](?path=/docs/patterns-widgets-crm-api-reference--api-reference), [Finance](?path=/docs/patterns-widgets-finance-api-reference--api-reference) and [Gamification](?path=/docs/patterns-widgets-gamification-api-reference--api-reference).
+
+## Import
+
+```tsx
+import {
+  AgendaWidget,
+  ProjectCardWidget,
+  TaskProgressWidget,
+  UpcomingEventWidget,
+  WorldClockWidget,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ProjectCardWidget
+  title="Design Website"
+  action={action}
+  tags={[{ id: 'design', label: 'Design' }]}
+  description="A responsive store website."
+  subtasks={subtasks}
+  onSubtaskToggle={(id, done) => {}}
+  people={people}
+  meta={meta}
+  footer={footer}
+/>
+```
+
+The widgets are independent; `ProjectCardWidget` is shown because it has the most parts a consumer fills. Every widget except `WorldClockWidget` renders a `WidgetShell` named by its title, so it is a `region` landmark; the clocks are named by `label`. The default texts (`Progresso`, `Subtarefas`, `Sem eventos`, `Copiar link`) are Portuguese strings exposed as props.
+
+## TaskProgressWidget
+
+A bar chart of tasks over a period, with counters by status. Renders a `WidgetShell` with the title, the period toggle, an optional trend, a bar chart and a `StatList`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the title of the card; names the region. |
+| `data` | `readonly TaskProgressPoint[]` | required | Lists the bars, each `{ label: string, value: number }`. |
+| `stats` | `readonly WidgetStat[]` | - | Lists the counters under the chart, each `{ id: string, label: ReactNode, value: ReactNode }`. |
+| `change` | `number` | - | Sets the trend as a ratio and adds a `TrendIndicator`. |
+| `changeLabel` | `ReactNode` | - | Renders after the trend. |
+| `changeFormat` | `AmountFormatOptions` | `{ style: "percent" }` | Sets how the trend reads. |
+| `format` | `AmountFormatOptions` | `{ style: "decimal" }` | Sets how the value reads in the tooltip. |
+| `chartLabel` | `string` | the title, when it is a string, else `"Gráfico"` | Names the chart. |
+| `color` | `string` | `"var(--chart-1)"` | Sets the color of the bars. |
+| `height` | `number` | `140` | Sets the height of the chart in pixels. |
+| `periods` | `readonly WidgetPeriodOption[]` | - | Lists the periods, each `{ label: string, value: string }`; the toggle shows only when it has items. |
+| `period` | `string` | - | Sets the selected period; without it no item is pressed. |
+| `onPeriodChange` | `(period: string) => void` | - | Called when the user selects another period, with its `value`. Selecting the active one emits nothing. |
+| `periodLabel` | `string` | `"Período"` | Names the toggle group. |
+| `tone` | `"default"` or `"inverted"` | `"default"` | Controls the palette. `"inverted"` renders the card in the dark palette of the theme. |
+
+Also takes every prop of a `div`, except `children` and `title`. The widget is generic on the period type: pass `periods` as a typed list and `period` and `onPeriodChange` take that union.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-widget` | `"task-progress"` | Selects the card |
+| `data-tone` | `"default"` or `"inverted"` | Names the tone, on the frame |
+| `data-slot` | `"task-progress-chart"` | Selects the `div` with `role="img"` that holds the chart |
+| `data-slot` | `"task-progress-widget-scope"` | Selects the `div` that wraps an inverted card, with the classes `dark contents` |
+
+With `periods`, the toggle takes the header and the trend moves into the panel above the chart; without it the trend sits in the header. The chart is drawn with Recharts, with no animation and no keyboard layer, and is one image to assistive technology: describe it in `chartLabel`. The inverted tone applies no colors of its own: the dark palette is the theme's.
+
+## UpcomingEventWidget
+
+The next event on a day line, with its link. Renders a `WidgetShell` named by the title, which is an `h3` with no card header, an optional line above it, a timeline and, with `joinHref`, a link row.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the name of the event; names the region. |
+| `start` | `Date` | required | Sets the start of the event. |
+| `end` | `Date` | required | Sets the end of the event. |
+| `eyebrow` | `ReactNode` | - | Renders above the title (`In 30 minutes`). |
+| `live` | `boolean` | `false` | When true, adds a red dot before the `eyebrow`; it has no effect without one. |
+| `windowStart` | `Date` | 30 minutes before `start` | Sets the start of the timeline. |
+| `windowEnd` | `Date` | 30 minutes after `end` | Sets the end of the timeline. |
+| `timelineLabel` | `string` | `start – end` formatted | Names the timeline. |
+| `joinHref` | `string` | - | Adds the link row; without it the card has no link, no copy button and no provider. |
+| `joinLabel` | `ReactNode` | `"Entrar na reunião"` | Renders the text of the link. |
+| `joinText` | `ReactNode` | - | Renders the address under the link and adds the copy button. |
+| `copyLabel` | `string` | `"Copiar link"` | Names the copy button. |
+| `onCopy` | `(href: string) => void` | - | Called after the link is copied, with `joinHref`. |
+| `provider` | `ReactNode` | - | Renders an icon box at the end of the link row. |
+| `timeZone` | `string` | the runtime zone | Sets the IANA zone of the times. |
+| `locale` | `string` | `"en-US"` | Sets the locale of the times. |
+| `hourCycle` | `"h11"`, `"h12"`, `"h23"` or `"h24"` | the locale's | Sets the hour cycle of the times. |
+
+Also takes every prop of a `div`, except `children`, `onCopy` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-widget` | `"upcoming-event"` | Selects the card |
+| `data-slot` | `"upcoming-event-timeline"` | Selects the timeline, with `role="img"` |
+| `data-slot` | `"upcoming-event-slot"` | Selects the block of the event; its `left` and `width` are percentages of the window |
+| `data-slot` | `"upcoming-event-live"` | Selects the red dot |
+| `data-slot` | `"upcoming-event-join"` | Selects the link |
+| `data-slot` | `"upcoming-event-provider"` | Selects the icon box |
+
+The timeline has a mark every 30 minutes and labels the window and the event times; two labels at the same position show once. The copy button calls the clipboard and then `onCopy`, and a clipboard that fails is ignored: `onCopy` still runs. The timeline is one image whose name is the event time range.
+
+## ProjectCardWidget
+
+A project with its tags, subtasks, progress and people. Renders a `WidgetShell` with the title and `action`, the tags and description, a list of subtasks, a progress `Meter`, an avatar stack with `meta`, and a `footer`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the title of the card; names the region. |
+| `action` | `ReactNode` | - | Renders in the header, usually an icon `Button`. |
+| `tags` | `readonly ProjectTag[]` | - | Lists the tags as outline badges, each `{ id: string, label: ReactNode }`. |
+| `description` | `ReactNode` | - | Renders under the tags, in muted text. |
+| `subtasks` | `readonly ProjectSubtask[]` | - | Lists the subtasks as checkboxes, each `{ id: string, label: string, done: boolean }`. |
+| `onSubtaskToggle` | `(id: string, done: boolean) => void` | - | Called when a checkbox changes, with the subtask `id` and the next `done`. Without it the checkboxes are read-only. |
+| `subtasksLabel` | `string` | `"Subtarefas"` | Names the list of subtasks. |
+| `progress` | `number` | the share of subtasks done | Sets the progress as a ratio from 0 to 1, clamped. |
+| `progressLabel` | `ReactNode` | `"Progresso"` | Renders above the meter; a string also names it. |
+| `startLabel` | `ReactNode` | - | Renders at the start of the row under the meter. |
+| `endLabel` | `ReactNode` | - | Renders at the end of the row under the meter. |
+| `people` | `readonly AvatarStackPerson[]` | - | Lists the people for the `AvatarStack`. |
+| `peopleLabel` | `string` | `"Pessoas"` | Names the avatar stack. |
+| `meta` | `ReactNode` | - | Renders at the end of the people row (counts of comments and attachments). |
+| `footer` | `ReactNode` | - | Renders at the bottom of the card, usually a `Button`. |
+| `locale` | `string` | `"en-US"` | Sets the locale of the percentage. |
+| `expand` | `WidgetExpandProps` | - | Sets the fold of the subtasks; see `ExpandableList` on [Patterns/Widgets](?path=/docs/patterns-widgets-api-reference--api-reference). |
+
+Also takes every prop of a `div`, except `children` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-widget` | `"project-card"` | Selects the card |
+| `data-slot` | `"project-card-tags"` | Selects the tags |
+| `data-slot` | `"project-card-subtasks"` | Selects the list of subtasks |
+| `data-slot` | `"project-card-progress"` | Selects the meter |
+| `data-slot` | `"project-card-meta"` | Selects the `meta` |
+
+The meter runs from 0 to 100 with a whole percentage; with no `subtasks` and no `progress` it reads 0%. A done subtask is struck through. Every part is optional: the card shows only what it receives.
+
+## AgendaWidget
+
+A calendar with the events of the selected day. Renders a `WidgetShell` with the title and `action`, the `Calendar` with the busy days in bold and underlined, and the list of the day, or the `emptyLabel`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the title of the card; names the region. |
+| `events` | `readonly AgendaEvent[]` | required | Lists the events, each `{ id: string, date: string, title: ReactNode, startLabel?: ReactNode, endLabel?: ReactNode, color?: string }`; `date` is `YYYY-MM-DD`. |
+| `defaultSelected` | `Date` | today | Sets the day selected at first, when uncontrolled. |
+| `selected` | `Date` | - | Sets the selected day and makes it controlled. |
+| `onSelect` | `(date: Date) => void` | - | Called when the user picks a day, with that date. |
+| `emptyLabel` | `ReactNode` | `"Sem eventos"` | Renders when the selected day has no events. |
+| `listLabel` | `string` | `"Eventos do dia"` | Names the list of events. |
+| `action` | `ReactNode` | - | Renders in the header, usually a `Button`. |
+| `calendarProps` | `CalendarProps` | - | Passes props to the `Calendar`, the props of that component without `mode`, `modifiers`, `modifiersClassNames`, `onSelect` and `selected`, which the widget owns. |
+| `expand` | `WidgetExpandProps` | - | Sets the fold of the list of the day. |
+
+Also takes every prop of a `div`, except `children`, `onSelect` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-widget` | `"agenda"` | Selects the card |
+| `data-slot` | `"agenda-events"` | Selects the list of the day |
+| `data-slot` | `"agenda-event"` | Selects each event |
+| `data-slot` | `"agenda-empty"` | Selects the empty text |
+
+The events are matched to the day by their `date` key. A dot in the `color` (default `var(--chart-1)`) precedes each title, and the times show as `startLabel – endLabel` when both are passed. Picking the selected day again does not clear it.
+
+## WorldClockWidget
+
+Clocks for several time zones, all from one instant. Renders a `WidgetShell` named by `label`, with no header, and one `time` per clock.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `clocks` | `readonly WorldClock[]` | required | Lists the clocks, each `{ id: string, label: ReactNode, timeZone: string, meta?: ReactNode }`. |
+| `label` | `string` | `"Relógios"` | Names the region. |
+| `now` | `Date` | - | Sets the instant to show; without it the widget reads the time and ticks every second. |
+| `showSeconds` | `boolean` | `true` | When false, leaves the seconds out. |
+| `locale` | `string` | `"en-US"` | Sets the locale of the times. |
+| `hourCycle` | `"h11"`, `"h12"`, `"h23"` or `"h24"` | the locale's | Sets the hour cycle of the times. |
+
+Also takes every prop of a `div`, except `children` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-widget` | `"world-clock"` | Selects the card |
+| `data-slot` | `"world-clock-item"` | Selects each clock |
+
+Each `time` has the instant as its `dateTime`, in UTC, so two zones share the same value. With `now` the clocks never tick, which is what a test or a story wants. With `showSeconds` off, the small text that holds the seconds and the day period becomes `sr-only`: the seconds are gone and the `AM` or `PM` of a 12-hour clock is read but not seen.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `TaskProgressPoint` | `type` | `{ label: string, value: number }`, one bar of `TaskProgressWidget`. |
+| `AgendaEvent` | `type` | One event of `AgendaWidget`. |
+| `ProjectSubtask` | `type` | `{ id: string, label: string, done: boolean }`, one subtask of `ProjectCardWidget`. |
+| `ProjectTag` | `type` | `{ id: string, label: ReactNode }`, one tag of `ProjectCardWidget`. |
+| `WorldClock` | `type` | One clock of `WorldClockWidget`. |
+| `TaskProgressWidgetProps`, `UpcomingEventWidgetProps`, `ProjectCardWidgetProps`, `AgendaWidgetProps`, `WorldClockWidgetProps` | `type` | The props of each widget. |
+
+## Accessibility and theme
+
+- Name every card with a short title, and `WorldClockWidget` with `label`. Describe the chart of `TaskProgressWidget` in `chartLabel`, since it is one image.
+- Pass labels and a `locale` in the language of the interface (`copyLabel`, `joinLabel`, `emptyLabel`, `listLabel`, `progressLabel`): they are the names of the buttons and lists.
+- Name the icon buttons you pass as `action` (`aria-label`): the widgets cannot.
+- The theme sets the card radius on `[data-slot="card"]`, the `--chart-1` to `--chart-5` colors of the bars and the event dots, the `info` token of the event block, and the `.dark` palette of the inverted `TaskProgressWidget`.
+- Contrast ratios are in `docs/accessibility.md`, section `widgets`.

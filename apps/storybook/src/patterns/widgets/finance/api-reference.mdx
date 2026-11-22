@@ -1,0 +1,383 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Finance
+
+Dashboard cards for money: the market share of a few assets, a balance over time, a budget by category, the cash flow of a business, a list of transactions, the invoices by status, a risk score and the reward rate of one asset. They serve personal and business finances alike. The consumer passes amounts and ratios already computed; each card formats them, lays them out and never fetches, sorts, converts or stores a value.
+
+The other pages of `Patterns/Widgets/Finance`: [Playground](?path=/story/patterns-widgets-finance-playground--playground) to pick a widget and try its title, action, periods and list size, [Stories](?path=/story/patterns-widgets-finance-stories--default) for each widget, the risk tones, the inverted tone and the empty list, [Behavior](?path=/story/patterns-widgets-finance-behavior--market-share-derives-shares) for the tests, [Usages](?path=/story/patterns-widgets-finance-usages--market-overview) for a market dashboard, a personal one and a business one, and [Layouts](?path=/story/patterns-widgets-finance-layouts--balance-without-periods) for the cards with fewer parts.
+
+The parts every card is built from (`WidgetShell`, `Amount`, `TrendIndicator`, `WidgetPeriodToggle`, `ExpandableList`, `StatList`) are documented on [Patterns/Widgets](?path=/docs/patterns-widgets-api-reference--api-reference). `MetricWidget`, which the personal and business dashboards use for their key numbers, is on [Patterns/Widgets/Stats](?path=/docs/patterns-widgets-stats-api-reference--api-reference), and the other families have their own nodes: [CRM](?path=/docs/patterns-widgets-crm-api-reference--api-reference), [Gamification](?path=/docs/patterns-widgets-gamification-api-reference--api-reference) and [Productivity](?path=/docs/patterns-widgets-productivity-api-reference--api-reference).
+
+Used in: [Patterns/Widgets/CRM](?path=/docs/patterns-widgets-crm-api-reference--api-reference) mounts a `MarketShareWidget` as its lead sources card.
+
+## Import
+
+```tsx
+import {
+  AssetList,
+  AssetListItem,
+  AssetStatWidget,
+  BalanceWidget,
+  BudgetWidget,
+  CashFlowWidget,
+  InvoiceStatusWidget,
+  MarketShareWidget,
+  RiskScoreWidget,
+  ShareBar,
+  TransactionList,
+  TransactionListItem,
+  TransactionsWidget,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<MarketShareWidget title="Market Leaders" segments={segments} startLabel="1 May" endLabel="31 May">
+  <AssetList aria-label="Market leaders">
+    <AssetListItem icon={icon} name="Bitcoin" value="$115,485.04" meta="24h: +$500.00" />
+  </AssetList>
+</MarketShareWidget>
+```
+
+A transaction list takes the same shape: a `TransactionsWidget` renders the rows from `transactions`, and each row has an icon, a name, a line of metadata, an amount and a status.
+
+<Canvas of={ApiReferenceStories.TransactionsAnatomy} />
+
+```tsx
+<TransactionsWidget
+  title="Recent transactions"
+  transactions={[{ id: 'salary', name: 'Northwind Labs', amount: 4850, icon, meta: 'Salary · May 30', status }]}
+/>
+```
+
+Every widget below renders a `WidgetShell` named by its title, so it is a `region` landmark; `AssetStatWidget` is named by its `name` and `symbol`. Amounts and percentages go through `formatAmount`: a percentage is a ratio (`0.0934` reads 9.34%), and with no `format` an amount is a currency in US dollars. The default texts (`Limite`, `Saídas`, `Ver todas (+N)`) are Portuguese strings exposed as props.
+
+## Props every widget takes
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the title of the card; names the region. `AssetStatWidget` has no `title`. |
+| `format` | `AmountFormatOptions` | `{ style: "currency" }` | Sets how the amounts read; see `AmountFormatOptions` on [Patterns/Widgets](?path=/docs/patterns-widgets-api-reference--api-reference). Not on `MarketShareWidget` and `RiskScoreWidget`. |
+| `className` | `string` | - | Adds classes to the frame. |
+
+Also takes every prop of a `div`, except `children` and `title`, and passes them to the frame. `data-widget` on the frame names the widget (`"market-share"`, `"balance"`, `"budget"`, `"cash-flow"`, `"transactions"`, `"invoice-status"`, `"risk-score"`, `"asset-stat"`).
+
+### Periods
+
+`MarketShareWidget`, `BalanceWidget`, `BudgetWidget` and `CashFlowWidget` take the same four props and put a `WidgetPeriodToggle` in the header. The period is controlled: the widget keeps none.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `periods` | `readonly WidgetPeriodOption[]` | - | Lists the periods, each `{ label: string, value: string }`; the toggle shows only when it has items. |
+| `period` | `string` | - | Sets the selected period; without it no item is pressed. |
+| `onPeriodChange` | `(period: string) => void` | - | Called when the user selects another period, with its `value`. Selecting the active one emits nothing. |
+| `periodLabel` | `string` | `"Período"` | Names the toggle group. |
+
+The widgets are generic on the period type: pass `periods` as a typed list and `period` and `onPeriodChange` take that union.
+
+### Expanding
+
+`BudgetWidget` and `InvoiceStatusWidget` take `expand` and forward it to the `ExpandableList` that renders their rows.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `expand` | `WidgetExpandProps` | - | Sets `visibleCount` (5), `maxHeight` (420), `defaultExpanded`, `expanded`, `onExpandedChange`, `expandLabel` and `collapseLabel`; see `ExpandableList` on [Patterns/Widgets](?path=/docs/patterns-widgets-api-reference--api-reference). |
+
+`TransactionsWidget` takes the same options as props of its own, described in its section.
+
+## MarketShareWidget
+
+The share of a few segments, drawn as one bar with the change of each. Renders a `WidgetShell` with the title, the period toggle when `periods` has items, a `ShareBar`, a row with `startLabel` and `endLabel` when either is passed, and `children` below.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `segments` | `readonly MarketShareSegment[]` | required | Lists the segments of the bar, each `{ id: string, label: string, value: number, change?: number, color?: string }`. |
+| `startLabel` | `ReactNode` | - | Renders at the start of the row under the bar, for the first date. |
+| `endLabel` | `ReactNode` | - | Renders at the end of the row under the bar, for the last date. |
+| `children` | `ReactNode` | - | Renders below the bar; an `AssetList` is the usual content. |
+| `changeFormat` | `AmountFormatOptions` | `{ style: "percent" }` | Sets how the change of each segment reads. |
+| `locale` | `string` | `"en-US"` | Sets the locale of the share read by screen readers. |
+
+Also takes the period props and every prop of a `div`, except `title`.
+
+The `value` of a segment is a weight: the share is `value` over the sum of the values, and a negative value counts as 0. The `change` is a ratio shown as a plain `TrendIndicator` above the segment. A segment with no `color` takes `var(--chart-1)` to `var(--chart-5)` by position, repeating after five.
+
+### ShareBar
+
+The bar itself, for a card that is not a `MarketShareWidget`. Renders a `ul` of segments that grow in proportion to their share; each `li` holds the change, a block in the segment color and an `sr-only` text `label: NN.NN%`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `segments` | `readonly MarketShareSegment[]` | required | Lists the segments, as in `MarketShareWidget`. |
+| `changeFormat` | `AmountFormatOptions` | `{ style: "percent" }` | Sets how the change of each segment reads. |
+| `locale` | `string` | `"en-US"` | Sets the locale of the share text. |
+
+Also takes every prop of a `ul`, except `children`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"share-bar"` | Selects the bar |
+| `data-slot` | `"share-bar-segment"` | Selects each segment |
+
+A segment has no minimum width, so a narrow one grows only as far as its change needs. The block is `aria-hidden`; the `sr-only` text is the only way a screen reader hears the share.
+
+## AssetList
+
+A list of assets with their value. Renders a `ul` with a thin divider between the rows.
+
+Also takes every prop of a `ul`. Name it with `aria-label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"asset-list"` | Selects the list |
+
+### AssetListItem
+
+One asset. Renders an `li` with the `icon`, the name above the value, and `meta` at the end of the row.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `ReactNode` | required | Renders the name, in muted text above the value. |
+| `value` | `ReactNode` | required | Renders the value, in semibold tabular figures; format it before passing it. |
+| `icon` | `ReactNode` | - | Renders before the name; an `IconFrame` is the usual content. |
+| `meta` | `ReactNode` | - | Renders at the end, aligned with the value: a change over 24 hours, a `TrendIndicator`. |
+
+Also takes every prop of an `li`, except `title` and `value`, which the item defines.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"asset-list-item"` | Selects the row |
+
+## AssetStatWidget
+
+One number about one asset. Renders a `WidgetShell` named by the `name` and the `symbol`, with the `icon` and the change on one row, the name as an `h3`, the `label` and the value at `text-4xl`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `ReactNode` | required | Sets the name of the asset; with `symbol`, it names the region. |
+| `label` | `ReactNode` | required | Renders above the value, to say what it measures. |
+| `value` | `number` | required | Sets the value, formatted with `format` and with the cents dimmed. |
+| `symbol` | `ReactNode` | - | Renders after the name, in muted text (`ZEC`). |
+| `icon` | `ReactNode` | - | Renders at the start of the first row. |
+| `change` | `number` | - | Sets the change as a ratio and adds a `TrendIndicator` at the end of the first row. |
+| `changeFormat` | `AmountFormatOptions` | `{ style: "percent" }` | Sets how the change reads. |
+| `format` | `AmountFormatOptions` | `{ style: "currency" }` | Sets how the value reads. |
+| `tone` | `"default"` or `"inverted"` | `"default"` | Controls the palette. `"inverted"` renders the card in the dark palette of the theme. |
+
+Also takes every prop of a `div`, except `children` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-tone` | `"default"` or `"inverted"` | Names the tone, on the frame |
+| `data-slot` | `"asset-stat-widget-scope"` | Selects the `div` that wraps an inverted card, with the classes `dark contents` |
+
+The inverted tone applies no colors of its own: the dark palette is the theme's. The region name joins `name` and `symbol` without a space, so a script that queries it matches a pattern such as `/^Zcash ?ZEC$/`.
+
+## RiskScoreWidget
+
+A score on a scale, with the labels of both ends. Renders a `WidgetShell` with the title and `action` in the header, a `StatList` when `stats` has items, and a Base UI `Meter` that fills in the color of `tone`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `score` | `number` | required | Sets the value of the meter. |
+| `min` | `number` | `0` | Sets the start of the scale. |
+| `max` | `number` | `100` | Sets the end of the scale. |
+| `tone` | `"destructive"`, `"info"`, `"success"` or `"warning"` | `"success"` | Controls the color of the filled part; the widget never reads the score to pick it. |
+| `lowLabel` | `ReactNode` | `"Risco baixo"` | Renders under the start of the meter. |
+| `highLabel` | `ReactNode` | `"Risco alto"` | Renders under the end of the meter. |
+| `stats` | `readonly RiskScoreStat[]` | - | Lists pairs above the meter, each `{ id: string, label: ReactNode, value: ReactNode }`. |
+| `meterLabel` | `string` | the title, when it is a string, else `"Pontuação"` | Names the meter. |
+| `action` | `ReactNode` | - | Renders in the header, usually a `Button`. |
+
+Also takes every prop of a `div`, except `children` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"risk-score-meter"` | Selects the meter |
+| `data-tone` | `"destructive"`, `"info"`, `"success"` or `"warning"` | Names the tone, on the filled part of the meter |
+
+Which range of scores is good or bad is the consumer's rule: pass the `tone` it has decided.
+
+## BalanceWidget
+
+A balance and its history. Renders a `WidgetShell` with the title and the period toggle in the header, the value at `text-4xl`, an optional row with the change and its label, and an area chart.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `number` | required | Sets the balance shown above the chart. |
+| `data` | `readonly BalancePoint[]` | required | Lists the points of the chart, each `{ label: string, value: number }`. |
+| `change` | `number` | - | Sets the change as a ratio and adds the `TrendIndicator` row. |
+| `changeLabel` | `ReactNode` | - | Renders after the trend (`in the selected period`). |
+| `changeFormat` | `AmountFormatOptions` | `{ style: "percent" }` | Sets how the change reads. |
+| `chartLabel` | `string` | the title, when it is a string, else `"Gráfico"` | Names the chart. |
+| `color` | `string` | `"var(--chart-1)"` | Sets the color of the line and its gradient. |
+| `height` | `number` | `160` | Sets the height of the chart in pixels. |
+
+Also takes the period props and every prop of a `div`, except `children` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"balance-widget-chart"` | Selects the `div` with `role="img"` that holds the chart |
+
+The chart is drawn with Recharts, with no animation and no keyboard layer, and is a single image to assistive technology: describe it in `chartLabel` (`Balance grew from $38,200.00 to $48,250.75`). The vertical axis is hidden and runs from the lowest to the highest point; the tooltip shows the label and the value of the hovered point.
+
+## BudgetWidget
+
+Spending by category against a limit. Renders a `WidgetShell` with the total spent, the total limit and, per category, a name, the spent and limit amounts and a meter.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `categories` | `readonly BudgetCategory[]` | required | Lists the categories, each `{ id: string, label: string, limit: number, spent: number, color?: string, icon?: ReactNode }`. |
+| `spentLabel` | `ReactNode` | `"Gasto"` | Renders above the total spent. |
+| `limitLabel` | `ReactNode` | `"Limite"` | Renders before the total limit. |
+| `locale` | `string` | `"en-US"` | Sets the locale of the share read by screen readers. |
+| `action` | `ReactNode` | - | Renders in the header; dropped when `periods` has items. |
+
+Also takes the period props, `expand` and every prop of a `div`, except `children` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"budget-list"` | Selects the list of categories |
+| `data-slot` | `"budget-category"` | Selects each category |
+| `data-over` | `"true"` | Present on a category whose `spent` is above its `limit` |
+| `data-slot` | `"budget-meter"` | Selects the meter of a category |
+
+The meter is named by the category label, runs from 0 to the `limit` and clamps its value at the limit; an overspent category turns the amount and the bar to `destructive`. A category with an `icon` wraps it in an `IconFrame` of the same `color` as the bar, and the color falls back to `var(--chart-1)` to `var(--chart-5)` by position. Each category also has an `sr-only` share of its limit (`100.00%`).
+
+## CashFlowWidget
+
+Income against expenses over a series. Renders a `WidgetShell` with the title and period toggle in the header, a `StatList` with the totals, a grouped bar chart and a legend.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `data` | `readonly CashFlowPoint[]` | required | Lists the points, each `{ label: string, income: number, expenses: number }`; the totals are their sums. |
+| `incomeLabel` | `ReactNode` | `"Entradas"` | Names the income total, bars and legend. |
+| `expensesLabel` | `ReactNode` | `"Saídas"` | Names the expenses total, bars and legend. |
+| `netLabel` | `ReactNode` | `"Saldo"` | Names the net total. |
+| `incomeColor` | `string` | `"var(--chart-1)"` | Sets the color of the income bars. |
+| `expensesColor` | `string` | `"var(--chart-2)"` | Sets the color of the expenses bars. |
+| `chartLabel` | `string` | the title, when it is a string, else `"Gráfico"` | Names the chart. |
+| `height` | `number` | `160` | Sets the height of the chart in pixels. |
+
+Also takes the period props and every prop of a `div`, except `children` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"cash-flow-widget-chart"` | Selects the `div` with `role="img"` that holds the chart |
+| `data-slot` | `"cash-flow-legend"` | Selects the legend |
+
+The net is income minus expenses and reads in `destructive` when it is negative. The chart is a single image to assistive technology, as in `BalanceWidget`: describe it in `chartLabel`.
+
+## TransactionsWidget
+
+A list of transactions. Renders a `WidgetShell` with the title and `action`, and a `TransactionList` with one row per transaction, or the `emptyLabel` when there are none.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `transactions` | `readonly Transaction[]` | required | Lists the transactions, each `{ id: string, name: ReactNode, amount: number, icon?: ReactNode, kind?: "credit" or "debit", meta?: ReactNode, status?: ReactNode }`. |
+| `action` | `ReactNode` | - | Renders in the header, usually a `Button`. |
+| `emptyLabel` | `ReactNode` | `"Sem transações"` | Renders when `transactions` is empty. |
+| `listLabel` | `string` | the title, when it is a string | Names the list. |
+| `visibleCount` | `number` | `5` | Sets how many rows show before the rest folds. |
+| `maxHeight` | `number` | `420` | Sets the height in pixels of the scroll area once expanded. |
+| `defaultExpanded` | `boolean` | `false` | When true, starts expanded when uncontrolled. |
+| `expanded` | `boolean` | - | Sets the expanded state and makes it controlled. |
+| `onExpandedChange` | `(expanded: boolean) => void` | - | Called when a button is clicked, with the next state. |
+| `expandLabel` | `(hidden: number) => ReactNode` | `` `Ver todas (+${hidden})` `` | Renders the label of the expand button. |
+| `collapseLabel` | `ReactNode` | `"Ver menos"` | Sets the label of the collapse button; an empty value removes it. |
+
+Also takes `format` and every prop of a `div`, except `children` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-expanded` | `"true"` or `"false"` | Set on the frame only when there are more transactions than `visibleCount` |
+| `data-slot` | `"transactions-empty"` | Selects the empty text |
+| `data-slot` | `"transactions-collapsed"` | Selects the collapsed list with its fade and button |
+| `data-slot` | `"transactions-scroll"` | Selects the scroll area, present only while expanded |
+
+The widget folds like an `ExpandableList` but keeps its own copy of the logic, with the options flattened into props. The amount of a credit reads with a sign in `success-foreground`; the amount of a debit keeps its own minus sign.
+
+### TransactionList
+
+The list of rows, for a card that is not a `TransactionsWidget`. Renders a `ul` with a thin divider between the rows.
+
+Also takes every prop of a `ul`. Name it with `aria-label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"transaction-list"` | Selects the list |
+
+### TransactionListItem
+
+One transaction. Renders an `li` with the `icon`, the name above the metadata, and the amount above the status at the end.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `ReactNode` | required | Renders the name. |
+| `amount` | `number` | required | Sets the amount; a positive or zero amount is a credit. |
+| `kind` | `"credit"` or `"debit"` | by the sign of `amount` | Sets the kind, which sets the sign and the color of the amount. |
+| `icon` | `ReactNode` | - | Renders before the name. |
+| `meta` | `ReactNode` | - | Renders under the name, in muted text. |
+| `status` | `ReactNode` | - | Renders under the amount, usually a `Badge`. |
+| `format` | `AmountFormatOptions` | `{ style: "currency" }` | Sets how the amount reads. |
+
+Also takes every prop of an `li`, except `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"transaction-list-item"` | Selects the row |
+| `data-kind` | `"credit"` or `"debit"` | Names the kind |
+| `data-slot` | `"transaction-amount"` | Selects the amount |
+
+## InvoiceStatusWidget
+
+Invoices grouped by status. Renders a `WidgetShell` with the total, a `ShareBar` and a list with the amount of each status.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `statuses` | `readonly InvoiceStatus[]` | required | Lists the statuses, each `{ id: string, label: string, value: number, tone: "destructive", "info", "success" or "warning", count?: number }`. |
+| `totalLabel` | `ReactNode` | `"Total em aberto"` | Renders above the total. |
+| `countLabel` | `(count: number) => ReactNode` | - | Renders the count of a status (`3 invoices`); without it the bare number shows. |
+| `locale` | `string` | `"en-US"` | Sets the locale of the share read by screen readers. |
+| `action` | `ReactNode` | - | Renders in the header, usually a `Button`. |
+
+Also takes `expand`, `format` and every prop of a `div`, except `children` and `title`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"invoice-status-list"` | Selects the list |
+| `data-slot` | `"invoice-status-item"` | Selects each status |
+| `data-tone` | `"destructive"`, `"info"`, `"success"` or `"warning"` | Names the tone, on each status |
+
+The total is the sum of the values, and the bar and the dot of each status take the theme color of its `tone` (`--success`, `--warning`, `--destructive`, `--info`).
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `transactionKind` | `function` | Gives the kind of an amount, `"credit"` from zero up and `"debit"` below. `transactionKind(amount) => "credit" \| "debit"` |
+| `TransactionKind` | `type` | `"credit"` or `"debit"`. |
+| `MarketShareSegment` | `type` | One segment of `ShareBar` and `MarketShareWidget`. |
+| `BalancePoint` | `type` | `{ label: string, value: number }`, one point of `BalanceWidget`. |
+| `BudgetCategory` | `type` | One category of `BudgetWidget`. |
+| `CashFlowPoint` | `type` | `{ label: string, income: number, expenses: number }`, one point of `CashFlowWidget`. |
+| `InvoiceStatus` | `type` | One status of `InvoiceStatusWidget`. |
+| `RiskScoreStat` | `type` | `{ id: string, label: ReactNode, value: ReactNode }`, one pair of `RiskScoreWidget`. |
+| `Transaction` | `type` | One transaction of `TransactionsWidget`. |
+| `AssetStatWidgetProps`, `BalanceWidgetProps`, `BudgetWidgetProps`, `CashFlowWidgetProps`, `InvoiceStatusWidgetProps`, `MarketShareWidgetProps`, `RiskScoreWidgetProps`, `TransactionsWidgetProps` | `type` | The props of each widget. |
+| `AssetListProps`, `AssetListItemProps`, `ShareBarProps`, `TransactionListProps`, `TransactionListItemProps` | `type` | The props of the lists and the bar. |
+
+## Accessibility and theme
+
+- A card is named by its title; give every one a short text. `AssetStatWidget` is named by `name` and `symbol`.
+- Describe a chart in `chartLabel` with the story it tells (the start, the end, the trend): the chart is one image and its points are not reachable.
+- A share, a score or an overspent category is also in `sr-only` text or in the meter value; never leave the meaning to color alone.
+- Pass translated labels (`limitLabel`, `incomeLabel`, `lowLabel`, `expandLabel`) and a `locale` that matches them.
+- The theme sets the card radius on `[data-slot="card"]`, the `--chart-1` to `--chart-5` colors that the bars, the charts and the segments read, the `success`, `warning`, `destructive` and `info` tokens that the tones use, and the `.dark` palette of the inverted `AssetStatWidget`.
+- Contrast ratios and the avatar and border decisions are in `docs/accessibility.md`, section `widgets`.
