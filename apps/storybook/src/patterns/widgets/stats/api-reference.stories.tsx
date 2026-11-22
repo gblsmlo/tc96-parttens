@@ -3,7 +3,6 @@ import { MetricWidget } from '@tc96/parttens'
 import { Slot } from '../../../test-utils/anatomy-slot.tsx'
 
 const meta = {
-  component: MetricWidget,
   decorators: [
     (Story) => (
       <div className="w-96 p-4">
@@ -13,7 +12,7 @@ const meta = {
   ],
   tags: ['!autodocs', '!dev'],
   title: 'Patterns/Widgets/Stats/API Reference',
-} satisfies Meta<typeof MetricWidget>
+} satisfies Meta
 
 export default meta
 

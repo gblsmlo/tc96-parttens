@@ -4,7 +4,6 @@ import { Slot } from '../../../test-utils/anatomy-slot.tsx'
 import { initialSubtasks, projectPeople } from './productivity-data.ts'
 
 const meta = {
-  component: ProjectCardWidget,
   decorators: [
     (Story) => (
       <div className="w-96 p-4">
@@ -14,7 +13,7 @@ const meta = {
   ],
   tags: ['!autodocs', '!dev'],
   title: 'Patterns/Widgets/Productivity/API Reference',
-} satisfies Meta<typeof ProjectCardWidget>
+} satisfies Meta
 
 export default meta
 

@@ -3,7 +3,6 @@ import { QuestsWidget } from '@tc96/parttens'
 import { Slot } from '../../../test-utils/anatomy-slot.tsx'
 
 const meta = {
-  component: QuestsWidget,
   decorators: [
     (Story) => (
       <div className="w-96 p-4">
@@ -13,7 +12,7 @@ const meta = {
   ],
   tags: ['!autodocs', '!dev'],
   title: 'Patterns/Widgets/Gamification/API Reference',
-} satisfies Meta<typeof QuestsWidget>
+} satisfies Meta
 
 export default meta
 

@@ -9,7 +9,6 @@ import { Slot } from '../../../test-utils/anatomy-slot.tsx'
 import { marketSegments } from './finance-data.tsx'
 
 const meta = {
-  component: MarketShareWidget,
   decorators: [
     (Story) => (
       <div className="w-96 p-4">
@@ -19,7 +18,7 @@ const meta = {
   ],
   tags: ['!autodocs', '!dev'],
   title: 'Patterns/Widgets/Finance/API Reference',
-} satisfies Meta<typeof MarketShareWidget>
+} satisfies Meta
 
 export default meta
 
