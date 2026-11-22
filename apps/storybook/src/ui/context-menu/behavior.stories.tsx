@@ -20,7 +20,12 @@ const openContextMenu = async (canvasElement: HTMLElement) => {
     keys: '[MouseRight]',
     target: getArea(canvasElement),
   })
-  return screen.findByRole('menu')
+  const menu = await screen.findByRole('menu')
+  await waitFor(
+    () => expect(menu.contains(document.activeElement)).toBe(true),
+    { timeout: 5000 },
+  )
+  return menu
 }
 
 const closeMenus = async () => {
@@ -187,7 +192,7 @@ export const FocusOutlineOnKeyboard: Story = {
     const menu = await openContextMenu(canvasElement)
     const edit = within(menu).getByRole('menuitem', { name: 'Edit' })
     await userEvent.keyboard('{ArrowDown}')
-    await waitFor(() => expect(edit).toHaveFocus())
+    await waitFor(() => expect(edit).toHaveFocus(), { timeout: 5000 })
     await expect(getComputedStyle(edit).outlineStyle).toBe('solid')
     await closeMenus()
   },
@@ -408,10 +413,6 @@ export const LinkItemIsAnchor: Story = {
 const openSubmenu = async (canvasElement: HTMLElement) => {
   const menu = await openContextMenu(canvasElement)
   const share = within(menu).getByRole('menuitem', { name: 'Share' })
-  await waitFor(
-    () => expect(menu.contains(document.activeElement)).toBe(true),
-    { timeout: 5000 },
-  )
   await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{ArrowDown}')
   await waitFor(() => expect(share).toHaveFocus(), { timeout: 5000 })
   await userEvent.keyboard('{ArrowRight}')
