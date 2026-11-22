@@ -170,7 +170,7 @@ O rótulo do botão mede 14,52:1 no claro e 13,90:1 no escuro, 10,75:1 e 11,48:1
 
 ### `RichTextEditor`
 
-O Slate aplica `opacity: 0.333` inline no `span[data-slate-placeholder]`; o `renderPlaceholder` sobrescreve só a opacidade (`opacity: 1`), e o placeholder fica no `muted-foreground`. A story `Patterns/Rich Text Editor/Placeholder` deixa o editor vazio para o axe checar o par.
+O Slate aplica `opacity: 0.333` inline no `span[data-slate-placeholder]`; o `renderPlaceholder` sobrescreve só a opacidade (`opacity: 1`), e o placeholder fica no `muted-foreground`. As stories `Default` de `Patterns/Rich Text Editor/Stories` e `Placeholder Keeps Full Opacity` de `Patterns/Rich Text Editor/Behavior` deixam o editor vazio para o axe checar o par.
 
 | Par | Com a opacidade do Slate | Atual |
 | --- | --- | --- |
