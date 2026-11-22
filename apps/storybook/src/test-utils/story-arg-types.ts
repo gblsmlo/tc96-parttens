@@ -49,27 +49,6 @@ export const recordGroupArgTypes = {
   variant: { control: 'inline-radio', options: ['card', 'inset', 'plain'] },
 } as const
 
-/** `RecordPreview`: o estado aberto mora na story, os slots são JSX. */
-export const recordPreviewArgTypes = {
-  actions: withoutControl,
-  children: withoutControl,
-  footer: withoutControl,
-  open: withoutControl,
-} as const
-
-/** `RecordDialog`: tamanhos, os booleanos do envio e os slots de JSX. */
-export const recordDialogArgTypes = {
-  actions: withoutControl,
-  children: withoutControl,
-  footerStart: withoutControl,
-  keepOpenOnSuccess: boolean,
-  open: withoutControl,
-  size: { control: 'inline-radio', options: ['small', 'default', 'large'] },
-  stretchBody: boolean,
-  submitDisabled: boolean,
-  submitOnModEnter: boolean,
-} as const
-
 const text = { control: 'text' } as const
 
 /**

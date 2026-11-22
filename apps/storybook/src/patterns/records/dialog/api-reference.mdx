@@ -1,0 +1,255 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Record Dialog
+
+Dialogs for acting on a record. `RecordDialog` creates or edits one: a new project, a calendar event, a contact, a note. It holds the consumer's fields in a form and settles itself from what the save handler returns. `RecordConfirmDialog` asks before an action that is hard to undo, such as deleting or archiving, with an optional short choice. Fields, validation, the save and the error text stay with the consumer.
+
+The other pages of `Patterns/Records/Dialog`: [Playground](?path=/story/patterns-records-dialog-playground--playground) to try the texts, the size and the optional parts of `RecordDialog`, [Stories](?path=/story/patterns-records-dialog-stories--default) for each prop value of both dialogs (the texts of `RecordConfirmDialog` are controls on [its stories](?path=/story/patterns-records-dialog-stories--confirm)), [Behavior](?path=/story/patterns-records-dialog-behavior--prevents-native-submit-and-closes-on-true) for the tests, [Usages](?path=/story/patterns-records-dialog-usages--inline-properties) for real records, and [Layouts](?path=/story/patterns-records-dialog-layouts--with-description) for how the parts combine.
+
+Used in: the Contacts and Calendar screens of `Patterns/Collection` open the same create dialogs as [Contacts](?path=/story/patterns-records-dialog-usages--contacts) and [Calendar](?path=/story/patterns-records-dialog-usages--calendar), from Novo contato and Nova atividade, in [Patterns/Collection/Usages, Contacts](?path=/story/patterns-collection-usages--contacts), [Patterns/Collection/Usages, Calendar](?path=/story/patterns-collection-usages--calendar) and [Templates/Contacts](?path=/story/templates-contacts--default). [Patterns/Records/Group/Usages, Notes](?path=/story/patterns-records-group-usages--notes) opens the note editor of [New Note](?path=/story/patterns-records-dialog-usages--new-note) from a row and from +, and [Pipeline Stages](?path=/story/patterns-surfaces-settings-usages-workspace-pipeline-stages--pipeline-stages) of `Patterns/Surfaces/Settings` creates a stage in a `RecordDialog`.
+
+## Import
+
+```tsx
+import {
+  RecordConfirmDialog,
+  RecordDialog,
+  RecordDialogCreateMore,
+  RecordDialogHeadline,
+  useRecordDraft,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+`RecordDialog` with `RecordDialogHeadline` as its fields and `RecordDialogCreateMore` in `footerStart`:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RecordDialog
+  actions={actions}
+  cancelLabel="Cancel"
+  description={description}
+  errorMessage={errorMessage}
+  footerStart={<RecordDialogCreateMore />}
+  submitLabel="Save"
+  title={title}
+  titleAncestor="Projects"
+>
+  <RecordDialogHeadline />
+</RecordDialog>
+```
+
+The tree `RecordDialog` renders, in a portal on `body`:
+
+```tsx
+<div data-slot="dialog-popup" role="dialog" data-size>
+  <div data-slot="dialog-actions">{actions}</div>
+  <div data-slot="dialog-header">
+    <div data-slot="dialog-title-trail">
+      <span>{titleAncestor}</span>
+      <svg />
+      <h2 data-slot="dialog-title">{title}</h2>
+    </div>
+    <p data-slot="dialog-description">{description}</p>
+  </div>
+  <div data-slot="dialog-panel">
+    <form data-slot="record-dialog-form">{children}</form>
+  </div>
+  <p data-slot="dialog-error" role="alert">{errorMessage}</p>
+  <div data-slot="dialog-footer">
+    <div data-slot="dialog-footer-start">{footerStart}</div>
+    <button data-slot="record-dialog-cancel" />
+    <button data-slot="record-dialog-submit" type="submit" form>
+      <kbd data-slot="record-dialog-submit-hint" />
+    </button>
+  </div>
+  <button aria-label="Close" />
+</div>
+```
+
+`RecordConfirmDialog` with a short body:
+
+<Canvas of={ApiReferenceStories.ConfirmAnatomy} />
+
+```tsx
+<RecordConfirmDialog
+  cancelLabel="Cancel"
+  confirmLabel="Delete"
+  description={description}
+  errorMessage={errorMessage}
+  title={title}
+>
+  {children}
+</RecordConfirmDialog>
+```
+
+## RecordDialog
+
+A modal dialog that holds the fields of one record in a form. Renders a `div` with `role="dialog"` in a portal on `body`, named by `title`, with a header, a panel for `children`, an optional alert and a footer with an optional cancel button and the submit button. It is controlled: it opens and closes only through `open`, and asks to close through `onOpenChange(false)` on `Escape`, a press outside, the close button, the cancel button and an accepted save. It never validates, fetches or stores.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | required | Controls whether the dialog is open. |
+| `onOpenChange` | `(open: boolean) => void` | required | Called with `false` when the dialog asks to close, an accepted save included unless `keepOpenOnSuccess`. |
+| `title` | `ReactNode` | required | Sets the title, which names the dialog. |
+| `submitLabel` | `string` | required | Sets the text of the submit button. |
+| `onSubmit` | `(event: FormEvent<HTMLFormElement>) => boolean \| Promise<boolean>` | required | Called on submit, after `preventDefault`; `true` accepts the save, `false`, a rejection or a throw keeps the dialog open. |
+| `size` | `"small"`, `"default"` or `"large"` | `"default"` | Controls the width of the popup: 448px, 672px or 896px, with a 544px minimum height for `"large"`. |
+| `titleAncestor` | `string` | - | Sets a muted ancestor before a chevron, as `ancestor › title`; without it only the title shows. |
+| `description` | `ReactNode` | - | Sets the text under the title, which describes the dialog. |
+| `children` | `ReactNode` | - | Sets the fields inside the form; without it no panel renders. |
+| `cancelLabel` | `string` | - | Sets the text of a ghost cancel button before the submit; without it there is no cancel button. |
+| `submittingLabel` | `string` | `submitLabel` | Sets the text of the submit button while the save has not settled. |
+| `errorMessage` | `ReactNode` | - | Renders an alert above the footer. |
+| `actions` | `ReactNode` | - | Renders consumer shortcuts at the top end of the popup, left of the close button. |
+| `footerStart` | `ReactNode` | - | Renders content before the footer buttons, such as `RecordDialogCreateMore`. |
+| `submitDisabled` | `boolean` | `false` | When true, disables the submit button and Mod+Enter. |
+| `submitOnModEnter` | `boolean` | `false` | When true, Cmd+Enter or Ctrl+Enter inside the form submits it, and the submit button shows the key hint. |
+| `keepOpenOnSuccess` | `boolean` | `false` | When true, an accepted save resets the form and focuses its first field instead of closing. |
+| `stretchBody` | `boolean` | `false` | When true, the panel and the form become a flex column that fills the popup. |
+| `className` | `string` | - | Adds classes to the popup. |
+
+`FormEvent` is React's. `onSubmit` returns `RecordDialogSettlement`, `boolean` or `Promise<boolean>`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"dialog-popup"` | Selects the popup |
+| `data-size` | `"small"`, `"default"` or `"large"` | Styles the popup by size |
+| `data-pending` | present while the save has not settled | Styles the popup while it saves |
+| `data-slot` | `"dialog-actions"` | Selects the row of `actions`, absolutely placed 44px from the end and 8px from the top; it renders only with `actions` |
+| `data-slot` | `"dialog-title-trail"` | Selects the wrapper of the ancestor, the chevron and the title; it renders only with `titleAncestor` |
+| `data-slot` | `"dialog-panel"` | Selects the panel around the form; it renders only with `children` |
+| `data-stretch` | present on the panel with `stretchBody` | Styles the stretched panel |
+| `data-slot` | `"record-dialog-form"` | Selects the form |
+| `aria-busy` | `"true"` on the form while the save has not settled | Announces and styles the busy form |
+| `data-slot` | `"dialog-error"` | Selects the alert; it renders only with `errorMessage` |
+| `data-slot` | `"dialog-footer-start"` | Selects the wrapper of `footerStart`; it renders only with `footerStart` |
+| `data-slot` | `"record-dialog-cancel"` | Selects the cancel button |
+| `data-slot` | `"record-dialog-submit"` | Selects the submit button |
+| `data-slot` | `"record-dialog-submit-hint"` | Selects the key hint inside the submit button; it renders only with `submitOnModEnter` |
+
+### Header
+
+The title is an `h2` in `text-sm font-medium`, the size of the ancestor, in the `foreground` color. The ancestor is a muted `span` outside the title, so the accessible name of the dialog is the title alone, and the trail is not a `nav`. The chevron is `aria-hidden`. The close button at the top end is named `Close`.
+
+### Panel and form
+
+The panel is the dialog's scrolling body, with 24px of inline padding and a fade at the edges while the fields scroll. With `stretchBody` it is a plain `div` with `data-stretch` that is a flex column filling the popup and scrolls on its own, without the fade; the form inside is a flex column too, so `mt-auto` pins a child to the bottom. At `"default"` size `stretchBody` also sets a 384px minimum height from `sm` up, so there is height to fill. Below `sm` the popup takes the full width at every size and sits on the bottom edge.
+
+The form renders `noValidate`, so native constraints such as `required` or `type="email"` never block the submit: validate inside `onSubmit` and return `false`. A Base UI `Field` marked invalid blocks the submit and receives focus. `event.currentTarget` is `null` after the first `await`, so read `FormData` before awaiting. Without `children` the form still renders, empty, so the submit button keeps working.
+
+The submit button sits in the footer, outside the panel, and points at the form through its `form` attribute.
+
+### Saving
+
+`onSubmit` runs once per submit; a second submit while it runs is ignored. Until it settles the dialog is pending: the submit button shows a spinner and `submittingLabel`, the submit and cancel buttons are disabled, and `Escape`, a press outside and the close button do nothing. `true` calls `onOpenChange(false)`, or, with `keepOpenOnSuccess`, calls `reset()` on the form and focuses its first enabled `input`, `textarea` or `select`. `false`, a rejection or a throw keep the dialog open with every value as it was; the error itself is swallowed, so report it through `errorMessage`, and clear `errorMessage` at the start of the next save, since the dialog never clears it.
+
+When the submit button had focus and the save settles `false` or rejects, focus returns to it once it is enabled again. A submit from a field, such as Mod+Enter, leaves focus where it was.
+
+Pending belongs to one open session: when `open` turns `false` the pending state ends and a save still in flight is ignored, so a late `true` never closes a dialog that was reopened, and nothing runs after unmount.
+
+`reset()` clears the fields that keep their own value, such as an uncontrolled `RecordDialogHeadline` description; controlled fields keep theirs, so reset them inside `onSubmit` before returning `true`.
+
+### Mod+Enter
+
+With `submitOnModEnter`, Cmd+Enter or Ctrl+Enter from any element of the form submits it, except while pending or with `submitDisabled`. The submit button gets `aria-keyshortcuts="Meta+Enter Control+Enter"` and an `aria-hidden` key hint, `⌘ ↵` on Apple platforms and `Ctrl ↵` elsewhere, decided after mount. The hint uses `primary-foreground` over the `primary` button.
+
+## RecordDialogHeadline
+
+A borderless title and an optional description, the first fields of a quick create body. Renders a `div` with a text input and, with `descriptionLabel`, a `textarea`, each in a `Field` with a visually hidden label. The title is controlled and always takes focus when the dialog opens. The description is controlled when `description` is passed and uncontrolled otherwise, read through `FormData` under `descriptionName`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `string` | required | Sets the value of the title field. |
+| `onTitleChange` | `(title: string) => void` | required | Called on every change of the title. |
+| `titleLabel` | `string` | required | Sets the hidden label of the title field. |
+| `titlePlaceholder` | `string` | - | Sets the placeholder of the title field. |
+| `titleName` | `string` | `"title"` | Sets the `name` of the title field. |
+| `descriptionLabel` | `string` | - | Sets the hidden label of the description field; without it there is no description field. |
+| `description` | `string` | - | Sets the value of the description, which makes it controlled. |
+| `onDescriptionChange` | `(description: string) => void` | - | Called on every change of the description. |
+| `descriptionPlaceholder` | `string` | - | Sets the placeholder of the description. |
+| `descriptionName` | `string` | `"description"` | Sets the `name` of the description field. |
+| `stretch` | `boolean` | `false` | When true, the headline becomes a flex column and the description grows to fill a `stretchBody` panel. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-dialog-headline"` | Selects the headline |
+| `data-stretch` | present with `stretch` | Styles the stretched headline |
+
+The title is `text-lg font-semibold`. Both fields have no border, so the placeholder is the only sign of an empty field: it shows in `muted-foreground` at 60% opacity, and at full `muted-foreground` while the field has focus. The description is at least 64px tall, or 96px with `stretch`, and grows with its text.
+
+## RecordDialogCreateMore
+
+The switch that keeps the dialog open for the next record. Renders a `div` with a `Switch` and its `label`; pass it in `footerStart` and bind its state to `keepOpenOnSuccess`. It only renders the switch: reset the controlled fields after each save.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `checked` | `boolean` | required | Controls whether the switch is on. |
+| `onCheckedChange` | `(checked: boolean) => void` | required | Called when the switch or its label is clicked, with the new state. |
+| `label` | `string` | required | Sets the label, which names the switch. |
+| `disabled` | `boolean` | `false` | When true, disables the switch. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-dialog-create-more"` | Selects the wrapper |
+
+## RecordConfirmDialog
+
+A modal confirmation before an action that is hard to undo. Renders a `div` with `role="alertdialog"` in a portal on `body`, named by `title`, with an optional body, an optional alert and a footer with the cancel and confirm buttons. It is controlled like `RecordDialog` and settles the same way: `onConfirm` returning `true` calls `onOpenChange(false)`, while `false`, a rejection or a throw keep it open. It has no form, no Mod+Enter and no close button, and a press outside never closes it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | required | Controls whether the dialog is open. |
+| `onOpenChange` | `(open: boolean) => void` | required | Called when the dialog asks to close, on `Escape`, Cancel or an accepted confirm. |
+| `title` | `ReactNode` | required | Sets the title, which names the dialog. |
+| `confirmLabel` | `string` | required | Sets the text of the confirm button. |
+| `cancelLabel` | `string` | required | Sets the text of the cancel button. |
+| `onConfirm` | `() => boolean \| Promise<boolean>` | required | Called when the confirm button is clicked; `true` closes the dialog. |
+| `tone` | `"destructive"` or `"default"` | `"destructive"` | Controls the confirm button variant and the initial focus: Cancel for `"destructive"`, the confirm button for `"default"`. |
+| `description` | `ReactNode` | - | Sets the text under the title, which describes the dialog. |
+| `children` | `ReactNode` | - | Renders a short body between the header and the footer, such as a choice of destination. |
+| `confirmingLabel` | `string` | `confirmLabel` | Sets the text of the confirm button while the action has not settled. |
+| `confirmDisabled` | `boolean` | `false` | When true, disables the confirm button. |
+| `errorMessage` | `ReactNode` | - | Renders an alert above the footer. |
+| `className` | `string` | - | Adds classes to the popup. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"alert-dialog-popup"` | Selects the popup |
+| `data-tone` | `"destructive"` or `"default"` | Styles the popup by tone |
+| `data-pending`, `aria-busy` | present, and `"true"`, while the action has not settled | Style and announce the busy dialog |
+| `data-slot` | `"record-confirm-dialog-body"` | Selects the body; it renders only with `children` |
+| `data-slot` | `"dialog-error"` | Selects the alert; it renders only with `errorMessage` |
+| `data-slot` | `"record-confirm-dialog-cancel"` | Selects the cancel button |
+| `data-slot` | `"record-confirm-dialog-confirm"` | Selects the confirm button |
+
+While pending, the confirm button shows a spinner and `confirmingLabel`, both buttons are disabled, a second click is ignored and `Escape` does nothing. After a failed confirm, focus returns to the confirm button. The value of `children` is consumer state, read inside `onConfirm`. The popup is at most 512px wide and the title keeps the alert dialog's heading style.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `useRecordDraft` | `hook` | Keeps a draft as state plus a `latest` ref that `update` writes at once, so a Mod+Enter submit in the same event as a blur commit reads the committed value. `useRecordDraft<T>(initial: T \| (() => T)) => RecordDraft<T>` |
+| `RecordDraft` | `type` | What `useRecordDraft` returns: `draft`, `latest`, `update(patch)` and `reset()`, which puts back the first draft. |
+| `RecordDialogProps` | `type` | The props of `RecordDialog`. |
+| `RecordDialogSettlement` | `type` | `boolean` or `Promise<boolean>`, what `onSubmit` and `onConfirm` return. |
+| `RecordDialogSize` | `type` | `"small"`, `"default"` or `"large"`. |
+| `RecordDialogHeadlineProps` | `type` | The props of `RecordDialogHeadline`. |
+| `RecordDialogCreateMoreProps` | `type` | The props of `RecordDialogCreateMore`. |
+| `RecordConfirmDialogProps` | `type` | The props of `RecordConfirmDialog`. |
+| `RecordConfirmDialogTone` | `type` | `"destructive"` or `"default"`. |
+
+## Accessibility and theme
+
+- Every label is the consumer's: pass `submitLabel`, `confirmLabel`, `cancelLabel`, the headline's `titleLabel` and, when the description shows, `descriptionLabel`.
+- Name icon buttons passed in `actions` with `aria-label`.
+- Keep a way to close inside `RecordDialog` on touch screens: the close button is always there, and `cancelLabel` adds a second one.
+- Use `tone="default"` only for actions that are easy to reverse, such as archiving; a delete keeps the destructive default.
+- Focus does not return to the opener when a body autofocuses a field on open, as `RecordDialogHeadline` does.
+- The dialogs use the `popover`, `foreground`, `muted-foreground`, `primary`, `primary-foreground` and `destructive-foreground` tokens. Measured contrast: `docs/accessibility.md`, section `RecordDialog`.

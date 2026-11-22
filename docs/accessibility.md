@@ -157,7 +157,7 @@ O texto de erro, de alerta e do `Badge` usa `destructive-foreground`, acima de 4
 
 ### `RecordDialog`
 
-Com `submitOnModEnter`, o botão de enviar mostra um `Kbd` (`⌘ ↵` ou `Ctrl ↵`) sobre `bg-primary`. O `Kbd` do COSS pinta `bg-muted text-muted-foreground`, par feito para `background` e `muted`; sobre `primary` a dica usa `bg-primary-foreground/16 text-primary-foreground` (`record-dialog-submit-hint`, com exceção em `scripts/override-exceptions.json`). Medido na story `Patterns/Records/Dialog/Failed Submit`, com o botão em foco; o hover é `bg-primary/90` sobre `popover`:
+Com `submitOnModEnter`, o botão de enviar mostra um `Kbd` (`⌘ ↵` ou `Ctrl ↵`) sobre `bg-primary`. O `Kbd` do COSS pinta `bg-muted text-muted-foreground`, par feito para `background` e `muted`; sobre `primary` a dica usa `bg-primary-foreground/16 text-primary-foreground` (`record-dialog-submit-hint`, com exceção em `scripts/override-exceptions.json`). Medido com o botão em foco na antiga story `Failed Submit`; hoje o axe confere a dica em `Patterns/Records/Dialog/Stories`, `submitOnModEnter`, nos dois temas; o hover é `bg-primary/90` sobre `popover`:
 
 | Par | Com o par do COSS | Atual |
 | --- | --- | --- |
@@ -212,7 +212,7 @@ Invólucro de `card` e `inset`: contraste medido nas cores computadas da story `
 
 Métricas (`RecordGroupMetrics`): contraste medido na story `Usages/Indicators` sobre o `card` do tema do exemplo: rótulo e `target` (`muted-foreground`) 5,73:1 no claro e 5,07:1 no escuro; indicador do `Meter` (`primary`) 15,17:1 e 11,00:1 contra o card.
 
-`RecordStatusBadge`: o texto é `color` misturado a 90% com `--foreground` sobre o fundo de `color` a 8%, sem mudar token. Com `--warning-foreground` no claro, calculado sobre o `background` do tema: 4,95:1 (4,31:1 com a cor pura, medido pelo axe na usage `Versions`). As stories de `Layouts/Finance`, a usage `Versions` e `Composition/Status Badge` passam no axe no claro e no escuro; as demais razões não foram medidas.
+`RecordStatusBadge`: o texto é `color` misturado a 90% com `--foreground` sobre o fundo de `color` a 8%, sem mudar token. Com `--warning-foreground` no claro, calculado sobre o `background` do tema: 4,95:1 (4,31:1 com a cor pura, medido pelo axe na usage `Versions`). As stories `Finance …` de `Patterns/Records/Group/Layouts`, a usage `Versions` e as stories `Status Badge …` de `Patterns/Records/Group/Behavior` passam no axe no claro e no escuro; as demais razões não foram medidas.
 
 `actionsAlign`: contraste medido no botão `ghost` da versão apagada: texto 14,52:1 no claro e 16,03:1 no escuro; no hover (`bg-accent` sobre o fundo) 13,30:1 e 14,49:1; anel de foco 4,54:1 e 3,69:1.
 

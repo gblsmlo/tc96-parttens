@@ -1,0 +1,330 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Record Group
+
+A titled, collapsible group of rows on a record page: the details of a contact, the installments of a contract, the documents of a case, the indicators of a campaign. Reach for it when a record shows several blocks of fields, links or items that the user can fold away. The consumer passes the rows, the copy, the link targets and, when it wants to, the collapse state; the group never fetches, navigates, edits a value, filters or sorts.
+
+The other pages of `Patterns/Records/Group`: [Playground](?path=/story/patterns-records-group-playground--playground) to try the title, the variant, the header and the optional parts, [Stories](?path=/story/patterns-records-group-stories--default) for each prop value of `RecordGroup`, [Behavior](?path=/story/patterns-records-group-behavior--title-wraps-beside-the-actions) for the tests, [Usages](?path=/story/patterns-records-group-usages--tasks) for one group per job on a record page, and [Layouts](?path=/story/patterns-records-group-layouts--property-rows) for how rows, items, links, metrics and subgroups combine, from property rows to the finance, tasks and court groups of a legal record.
+
+Used in: [Templates/Contact Detail](?path=/story/templates-contact-detail--default) composes its detail blocks from `RecordGroup` and `RecordGroupRow`, and [Patterns/Records/Dialog/Usages, Row Properties](?path=/story/patterns-records-dialog-usages--row-properties) lays out its fields as `RecordGroupRow`s. [Patterns/Checklist](?path=/docs/patterns-checklist-api-reference--api-reference) links to [Usages, Tasks](?path=/story/patterns-records-group-usages--tasks), a `plain` `Checklist` inside a group.
+
+## Import
+
+```tsx
+import {
+  RecordGroup,
+  RecordGroupAction,
+  RecordGroupDivider,
+  RecordGroupFilter,
+  RecordGroupItem,
+  RecordGroupLink,
+  RecordGroupMetric,
+  RecordGroupMetrics,
+  RecordGroupRow,
+  RecordGroupSubgroup,
+  RecordStatusBadge,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+The shell of `RecordGroup`, with every slot passed:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RecordGroup actions={actions} footer={footer} title={title}>
+  {children}
+</RecordGroup>
+```
+
+The tree it renders:
+
+```tsx
+<section data-slot="record-group" data-variant aria-labelledby>
+  <div data-slot="record-group-header" data-actions-align>
+    <h2>
+      <button data-slot="collapsible-trigger" aria-expanded>
+        <svg />
+        <span>{title}</span>
+      </button>
+    </h2>
+    <div data-slot="record-group-actions">{actions}</div>
+  </div>
+  <div data-slot="collapsible-panel">
+    <div data-slot="record-group-content">{children}</div>
+    <div data-slot="record-group-footer">{footer}</div>
+  </div>
+</section>
+```
+
+In `card` a `Card` (`data-slot="card"`) wraps the header and the panel; in `inset` it wraps only `record-group-content`. The body takes any mix of `RecordGroupRow`, `RecordGroupItem`, `RecordGroupLink`, `RecordGroupSubgroup`, `RecordGroupMetrics`, `RecordGroupDivider` and other content, such as a `Checklist` in `plain`.
+
+## RecordGroup
+
+A titled group that folds its body. Renders a `section` named by an `h2` that wraps the collapse trigger, with an optional `actions` slot beside the title, the body and an optional `footer` below it. Controlled when `open` is passed, uncontrolled from `defaultOpen` otherwise; its only state is that uncontrolled collapse.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the title, which names the region and the trigger; it wraps instead of truncating. |
+| `variant` | `"plain"`, `"card"` or `"inset"` | `"plain"` | Controls the frame: no frame, a muted panel around header and body, or a muted panel around the body only. |
+| `open` | `boolean` | - | Controls whether the group is open; the group then changes only when `open` does. |
+| `defaultOpen` | `boolean` | `true` | Sets whether an uncontrolled group starts open. |
+| `onOpenChange` | `(open: boolean) => void` | - | Called when the trigger toggles the group, controlled or not. |
+| `empty` | `boolean` | `false` | When true, starts the group closed, drops the vertical padding of the body and sets `data-empty`. |
+| `actions` | `ReactNode` | - | Renders controls beside the title, outside the trigger; they stay visible when the group is closed. |
+| `actionsAlign` | `"between"` or `"start"` | `"between"` | Places `actions` at the end of the header, or 8px after the title. |
+| `chevron` | `"start"` or `"end"` | `"start"` | Places the chevron before the title or right after it, inside the trigger. |
+| `footer` | `ReactNode` | - | Renders content below the body, inside the panel; it hides with the body. |
+| `children` | `ReactNode` | - | Sets the body. |
+| `className` | `string` | - | Adds classes to the `section`, not to the visible card. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-group"` | Selects the `section` |
+| `data-variant` | `"plain"`, `"card"` or `"inset"` | Always present on the `section` |
+| `data-empty` | `"true"` when `empty` | Styles an empty group |
+| `data-open`, `data-closed` | present while open or closed | Set on the `section` and on the panel |
+| `data-slot` | `"record-group-header"` | Selects the header |
+| `data-actions-align` | `"between"` or `"start"` | Always present on the header |
+| `data-panel-open` | present on the trigger while open | Rotates the chevron |
+| `data-slot` | `"record-group-actions"` | Selects the wrapper of `actions`; it renders only with `actions` |
+| `data-slot` | `"collapsible-panel"` | Selects the panel; it is unmounted while closed |
+| `data-starting-style`, `data-ending-style` | present during the 200ms height transition | Set on the `section`, the trigger and the panel while it opens or closes |
+| `data-slot` | `"record-group-content"` | Selects the body, a `div` |
+| `data-slot` | `"record-group-footer"` | Selects the wrapper of `footer`; it renders only with `footer` |
+| `data-slot` | `"card"` | Selects the frame of `card` and `inset` |
+
+With `empty` the group starts closed whatever `defaultOpen` says. Only the flip of `empty` from `true` to `false` opens it, without calling `onOpenChange`; a flip back to `true` leaves it as it is, a manual collapse after the flip survives re-renders, and `empty` never overrides a controlled `open`. The body of an empty group has no vertical padding and keeps its text at the start.
+
+The panel gets `inert` as soon as the group closes, so the footer leaves the tab order during the 200ms height transition, and the panel is unmounted after it. Put controls that must stay reachable in `actions`.
+
+Every variant shares one row box: 32px rows with a 4px gap. The `card` and `inset` frames are a flat `bg-muted/72` panel with `p-3`, the card's border and radius and no shadow; `plain` has no horizontal gutter, so the chevron, the title and the row labels share the group's left edge. The body sets `--record-group-row-height`, `--record-group-row-gap` and `--record-group-hover-offset` (8px), which the rows, the subgroup and a `plain` `Checklist` read. A per-instance radius goes through `className="[--card-radius:…]"`, since `className` styles the `section`.
+
+## RecordGroupRow
+
+A label and its value. Renders a `dl` with one `dt` (an optional icon and the label) and one `dd` (the value), so a screen reader pairs them; a row is valid inside a group, a subgroup or anywhere else.
+
+<Canvas of={ApiReferenceStories.RowAnatomy} />
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `ReactNode` | required | Sets the label in the `dt`; it truncates past its column. |
+| `align` | `"start"` or `"between"` | `"start"` | Controls the layout: a fixed 112px label column, or the label at the start (at most 144px) and the value at the end. |
+| `leading` | `ReactNode` | - | Puts an icon before the label and hides every `[data-slot=property-icon]` in the value. |
+| `children` | `ReactNode` | - | Sets the value in the `dd`, usually a `properties` component in `plain`. |
+| `className` | `string` | - | Adds classes to the `dl`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-group-row"` | Selects the `dl` |
+| `data-align` | `"start"` or `"between"` | Always present on the `dl` |
+| `data-slot` | `"record-group-row-label"` | Selects the `dt` |
+| `data-slot` | `"record-group-row-value"` | Selects the `dd` |
+
+`start` rows share one 112px label column whatever the label length, which fits about 15 characters (88px of it with `leading`). `between` rows are a two-track grid: the label truncates first but keeps a 64px floor, and past it the value shrinks inside its cell, so a row never overflows. Editability belongs to the value: a `properties` component in a row is read-only or editable through its own props.
+
+## RecordGroupItem
+
+A list row that carries one control. Renders a `div` with an optional icon, a `title` that truncates first and a trailing slot for the control, which holds at most half the row. It is never a link, because a link cannot contain a control: when the whole row opens another record, use `RecordGroupLink`.
+
+<Canvas of={ApiReferenceStories.ItemAnatomy} />
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the subject of the row; it truncates first. |
+| `leading` | `ReactNode` | - | Puts an icon before the title; only a direct `svg` child is sized to 16px. |
+| `children` | `ReactNode` | - | Sets the trailing control, such as a property, an input or a menu button, in a 4px-gap wrapper. |
+| `interactive` | `boolean` | `false` | When true, the whole row takes the link hover with the 8px inline offset, for a title that is a link or a button. |
+| `className` | `string` | - | Adds classes to the row. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-group-item"` | Selects the row |
+| `data-interactive` | `"true"` when `interactive` | Selects an interactive row; not styled |
+| `data-slot` | `"record-group-item-title"` | Selects the title |
+| `data-slot` | `"record-group-item-trailing"` | Selects the trailing wrapper; it renders only with `children` |
+
+The item never knows its control, so the control carries its own accessible name (`ariaLabel`, `aria-label`). With `interactive` the action stays on the title control and a trailing control keeps its own. A layout row orders its trailing slot as the meta text (a date, an amount), a `RecordStatusBadge`, then the three-dots menu.
+
+## RecordGroupLink
+
+A row that is a link to another record or a document: the whole row is the link. Renders an `a` by default, or the consumer's element through `render` (a router link, a `button`), so the group never knows the router.
+
+<Canvas of={ApiReferenceStories.LinkAnatomy} />
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | - | Sets the name; it truncates first. |
+| `leading` | `ReactNode` | - | Puts an icon before the name; only a direct `svg` child is sized to 16px. |
+| `meta` | `ReactNode` | - | Sets muted text at the end (a status, a role, a type and date); it takes at most half the row. |
+| `render` | `ReactElement` or `(props, state) => ReactElement` | - | Replaces the `a` with the consumer's element, which receives the classes and the content. |
+| `className` | `string` | - | Adds classes to the element. |
+
+Also takes every prop of an `a`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-group-link"` | Selects the link |
+| `data-slot` | `"record-group-link-name"` | Selects the name |
+| `data-slot` | `"record-group-link-meta"` | Selects the meta; it renders only with `meta` |
+
+Its accessible name is the name followed by `meta`. The text sits at the start even when `render` makes it a `button`. The hover reaches 8px past the row on the inline axis inside a group, while the icon and the name keep the group's edge; outside a group the offset is 0.
+
+## RecordGroupSubgroup
+
+A collapsible subitem inside a group. Renders a `div` with an `h3` that wraps the trigger and a panel for the rows; it is not a landmark, since a group lists many of them. It starts closed.
+
+<Canvas of={ApiReferenceStories.SubgroupAnatomy} />
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the title in the `h3`. |
+| `count` | `ReactNode` | - | Sets a muted number right after the title, inside the trigger. |
+| `meta` | `ReactNode` | - | Sets muted content at the end of the trigger, such as a status badge or a date. |
+| `open` | `boolean` | - | Controls whether the subgroup is open. |
+| `defaultOpen` | `boolean` | `false` | Sets whether an uncontrolled subgroup starts open. |
+| `onOpenChange` | `(open: boolean) => void` | - | Called when the trigger toggles the subgroup. |
+| `chevron` | `"start"` or `"end"` | `"start"` | Places the chevron before the title or at the end of the trigger, next to `meta`. |
+| `collapsible` | `boolean` | `true` | When false, renders the title, `count` and `meta` in the `h3` with no button and the content always shown; `open`, `defaultOpen`, `onOpenChange` and `chevron` are ignored. |
+| `children` | `ReactNode` | - | Sets the content. |
+| `className` | `string` | - | Adds classes to the `div`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-group-subgroup"` | Selects the `div` |
+| `data-open`, `data-closed` | present while open or closed | Set on the `div` and on the panel of a collapsible subgroup |
+| `data-slot` | `"record-group-subgroup-count"` | Selects the count; it renders only with `count` |
+| `data-slot` | `"record-group-subgroup-meta"` | Selects the meta; it renders only with `meta` |
+| `data-slot` | `"record-group-subgroup-content"` | Selects the wrapper of the content |
+
+`count` and `meta` sit inside the trigger, so they are read with the title. The chevron aligns with the row labels and the content carries no indent. The panel keeps an 8px inline margin, so a `RecordGroupLink` or an `interactive` item inside keeps its hover offset unclipped.
+
+## RecordGroupMetrics
+
+A grid of indicator tiles. Renders a `div` with two columns by default; the body that holds it drops its own padding, so the tiles sit on the frame's padding in `card` and `inset` and on the group's edge in `plain`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `columns` | `1` or `2` | `2` | Sets the number of columns. |
+| `children` | `ReactNode` | - | Sets the tiles. |
+| `className` | `string` | - | Adds classes to the grid. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-group-metrics"` | Selects the grid |
+
+## RecordGroupMetric
+
+An indicator tile. Renders a `dl` that wraps a `Card`: the label and the icon in the `dt`, the value and the target in a `dd` and, with `progress`, a meter in a second `dd`. The group never formats or computes a number.
+
+<Canvas of={ApiReferenceStories.MetricAnatomy} />
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `ReactNode` | required | Sets the term, which also names the meter. |
+| `value` | `ReactNode` | required | Sets the value, as the consumer formatted it. |
+| `icon` | `ReactNode` | - | Puts a hidden icon at the end of the label. |
+| `target` | `ReactNode` | - | Sets muted text after the value, such as the planned amount or a unit; no separator is added. |
+| `progress` | `number` | - | Adds a meter for a ratio the consumer computed, clamped to 0..1; a non-finite ratio counts as 0. |
+| `className` | `string` | - | Adds classes to the `dl`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-group-metric"` | Selects the `dl` |
+| `data-slot` | `"card"` | Selects the tile inside it |
+| `data-slot` | `"record-group-metric-value"` | Selects the `dd` of the value |
+| `data-slot` | `"record-group-metric-target"` | Selects the target; it renders only with `target` |
+| `data-slot` | `"record-group-metric-progress"` | Selects the `dd` of the meter; it renders only with `progress` |
+
+The tile reads only by its `bg-card` fill: no border, no shadow, `p-3`, and `h-full`, so the tiles of a grid row share one height. The meter has `role="meter"`, its value is the percent and its name is the label.
+
+## RecordGroupAction
+
+An icon button for the `actions` slot. Renders a ghost `Button` at the `icon-sm` size with the icon hidden from assistive technology; it has no tooltip.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `icon` | `ComponentType<SVGProps<SVGSVGElement>>` | required | Sets the icon component, such as a Lucide icon. |
+| `label` | `string` | required | Sets the accessible name, the only one the button has. |
+| `onClick` | `() => void` | - | Called when the button is pressed. |
+| `disabled` | `boolean` | `false` | When true, disables the button. |
+
+The button keeps the `Button` attributes (`data-slot="button"`).
+
+## RecordGroupFilter
+
+The filter of a group, for the `actions` slot. Renders a ghost icon button named by `label` that opens a popover, also named by `label`, with a checkbox list per section and a radio list for the sort. It is controlled and applies nothing: the consumer filters and sorts the rows it passes, and passes `empty` to the group when none is left.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Names the button and the popover. |
+| `filterOptions` | `RecordGroupFilterOption[]` | - | Sets the checkboxes of the first section; without it the section does not render. |
+| `filterValue` | `string[]` | `[]` | Sets the checked values of the first section. |
+| `onFilterChange` | `(value: string[]) => void` | - | Called with the checked values of the first section, in option order. |
+| `filterLabel` | `ReactNode` | - | Sets the legend of the first section. |
+| `sections` | `RecordGroupFilterSection[]` | `[]` | Adds checkbox sections after the first, each with its own `label`, `options`, `value` and `onChange`. |
+| `sortOptions` | `RecordGroupFilterOption[]` | - | Sets the radios of the sort; without it the sort does not render. |
+| `sortValue` | `string` | - | Sets the chosen sort. |
+| `onSortChange` | `(value: string) => void` | - | Called with the chosen sort value. |
+| `sortLabel` | `ReactNode` | - | Sets the label of the sort, which names the radio group. |
+
+An option is `{ label: ReactNode, value: string }`. A section is `{ label: ReactNode, options: RecordGroupFilterOption[], value: string[], onChange: (value: string[]) => void }`; each one renders a `fieldset` with its `label` as the legend. The popover is 224px wide and aligned to the end of the button.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-group-filter"` | Selects the content of the popover |
+| `data-slot` | `"record-group-filter-options"` | Selects each checkbox `fieldset` |
+| `data-slot` | `"record-group-filter-sort"` | Selects the sort section |
+
+## RecordGroupDivider
+
+A line between the children of a group, usually collapsible `RecordGroupSubgroup`s that carry no actions of their own: the parent header keeps the only trigger. Renders a horizontal `Separator` with `role="separator"`, in the theme `border` color, with a 4px vertical margin on top of the row gap; it is not focusable.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `className` | `string` | - | Adds classes to the separator. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"separator"` | Selects the separator |
+| `data-record-group-divider` | present | Tells the divider from other separators; not styled |
+
+## RecordStatusBadge
+
+The status of a row, in one size. Renders a `Badge` with the text, tinted by `color` or neutral without it. The consumer maps each status to a color and passes the same color to the row icon frame.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | required | Sets the text. |
+| `color` | `string` | - | Tints the badge with any CSS color, usually a theme token such as `var(--success-foreground)`. |
+| `className` | `string` | - | Adds classes to the badge. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"badge"` | Selects the badge |
+| `data-color` | `"custom"` with `color`, `"neutral"` without | Tells a tinted badge from a neutral one |
+
+With `color` the background is the color at 8% and the text is the color mixed 90% with `--foreground`, set inline; without it the badge is the neutral `secondary` badge.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RecordGroupProps`, `RecordGroupRowProps`, `RecordGroupItemProps`, `RecordGroupLinkProps`, `RecordGroupSubgroupProps`, `RecordGroupMetricsProps`, `RecordGroupMetricProps`, `RecordGroupActionProps`, `RecordGroupFilterProps`, `RecordGroupDividerProps`, `RecordStatusBadgeProps` | `type` | The props of each part. |
+| `RecordGroupVariant` | `type` | `"card"`, `"inset"` or `"plain"`. |
+| `RecordGroupActionsAlign` | `type` | `"between"` or `"start"`. |
+| `RecordGroupRowAlign` | `type` | `"between"` or `"start"`. |
+| `RecordGroupMetricsColumns` | `type` | `1` or `2`. |
+| `RecordGroupFilterOption` | `type` | One option of a filter or sort list: `label` and `value`. |
+| `RecordGroupFilterSection` | `type` | One checkbox section of `RecordGroupFilter`: `label`, `options`, `value` and `onChange`. |
+
+## Accessibility and theme
+
+- The title names the region and its trigger, so keep it short enough to read as a heading; it wraps rather than truncates.
+- Every label is the consumer's: name each trailing control (`ariaLabel`, `aria-label`), each `RecordGroupAction` and `RecordGroupFilter` (`label`) and the sort (`sortLabel`).
+- An icon in `leading`, `icon` or a meta slot is decorative: pass it with `aria-hidden`.
+- The group uses the `background`, `muted`, `card`, `accent`, `border`, `foreground`, `muted-foreground` and `ring` tokens. Measured contrast: `docs/accessibility.md`, section `record-group`.
