@@ -47,10 +47,17 @@ jobs:
       - run: bun run build
       - run: bun run verify:public-api
 
-  storybook:
+  # The story tests run in three shards: one runner closed the browser mid-run
+  # when a widely used component pulled in 232 story files (PR #425).
+  storybook-shard:
     if: ${{ !startsWith(github.head_ref, 'chore/release-') }}
+    name: storybook (${{ matrix.shard }}/3)
     runs-on: ${{ inputs.storybook-runner || 'ubuntu-24.04' }}
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     steps:
       # On pull_request HEAD is the merge commit, so HEAD^1 is the base it merges into.
       - uses: actions/checkout@v4
@@ -107,15 +114,28 @@ jobs:
         working-directory: apps/storybook
 
       - if: steps.lane.outputs.tests == 'changed'
-        run: bun run test --project storybook --changed HEAD^1 --passWithNoTests
+        run: bun run test --project storybook --changed HEAD^1 --passWithNoTests --shard=${{ matrix.shard }}/3
         working-directory: apps/storybook
 
       - if: steps.lane.outputs.tests == 'full'
-        run: bun run test
+        run: bun run test --passWithNoTests --shard=${{ matrix.shard }}/3
         working-directory: apps/storybook
 
-      - if: steps.lane.outputs.storybook-build == 'true'
+      - if: matrix.shard == 1 && steps.lane.outputs.storybook-build == 'true'
         run: bun run storybook:build
 
-      - if: steps.lane.outputs.docs-build == 'true'
+      - if: matrix.shard == 1 && steps.lane.outputs.docs-build == 'true'
         run: bun run docs:build
+
+  # Keeps one `storybook` check for branch protection: it passes only when every shard passed or was skipped.
+  storybook:
+    if: ${{ always() && !startsWith(github.head_ref, 'chore/release-') }}
+    needs: storybook-shard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - env:
+          RESULT: ${{ needs.storybook-shard.result }}
+        run: |
+          echo "storybook shards: $RESULT"
+          [ "$RESULT" = success ] || [ "$RESULT" = skipped ]
