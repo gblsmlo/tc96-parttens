@@ -55,7 +55,7 @@ Mounting and focus:
 Accessibility and forms:
 
 - The root id is `id` or `useId()`. `EditableLabel` points `htmlFor` at the input, the input uses `aria-labelledby` the label, and the trigger, cancel and submit set `aria-controls` to the root id. `EditableField` takes the same id and drops `aria-labelledby` when it gets `aria-label`, so it never points at a label that is not mounted.
-- `EditableArea` is `role="group"` with `dir`; `EditablePreview` is `role="button"` with `tabIndex={0}` unless disabled; `EditableToolbar` is `role="toolbar"` with `aria-orientation`. The trigger uses `aria-disabled`, not `disabled`.
+- `EditableArea` is `role="group"` with `dir`; `EditablePreview` is `role="button"` with `tabIndex={0}` unless disabled, and `aria-disabled` when disabled (added 2026-11-21 so the dimmed preview is announced as unavailable); `EditableToolbar` is `role="toolbar"` with `aria-orientation`. The trigger uses `aria-disabled`, not `disabled`.
 - `name` renders `<input type="hidden">` with the value, `disabled` and `readOnly` as a sibling of the root inside the provider, so native forms read it (story `ExposesValueToNativeForms`).
 - Every part passes the same flags it sets as `data-*` to `render` callbacks as `state` (`slot`, `editing`, `disabled`, `invalid`, `required`, `readonly`, `empty`, `orientation`).
 
@@ -88,7 +88,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/editable
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/editable/composition/`: `editable.stories.tsx` (`Patterns/Editable/Composition/Editable`) covers the standard parts and `editable-field.stories.tsx` (`Patterns/Editable/Composition/Field`) the display session. They are nested files with no `Doc` page, and they run axe with `test: 'error'`; `DisabledPreventsEditing` turns off `color-contrast` because the disabled preview sets no `aria-disabled`. `Patterns/Properties/Display/Editable Text` exercises `EditableField` through `EditableText`, and the `Editable` story in `apps/storybook/src/ui/input.stories.tsx` is a COSS `Input` story. A change to the session also runs `cd apps/storybook && bunx vitest run --project=storybook src/patterns/properties src/patterns/checklist`. The pattern has no bun test.
+Interface tests are `play` functions in `apps/storybook/src/patterns/editable/behavior.stories.tsx` (`Patterns/Editable/Behavior`), run by the command above. `Patterns/Properties/Display/Editable Text` exercises `EditableField` through `EditableText`, and the `Editable` story in `apps/storybook/src/ui/input.stories.tsx` is a COSS `Input` story. A change to the session also runs `cd apps/storybook && bunx vitest run --project=storybook src/patterns/properties src/patterns/checklist`. The pattern has no bun test.
 
 ## Pointers
 
