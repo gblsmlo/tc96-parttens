@@ -34,7 +34,7 @@ View switcher:
 
 | Attribute | Where | Styled by |
 | --- | --- | --- |
-| `data-variant="default\|plain\|text"` | the toolbar root | consumers; the component picks its classes from the `variant` prop, and `apps/storybook/src/patterns/toolbar/toolbar.stories.tsx` asserts the attribute in a play |
+| `data-variant="default\|plain\|text"` | the toolbar root | consumers; the component picks its classes from the `variant` prop, and `apps/storybook/src/patterns/toolbar/behavior.stories.tsx` asserts the attribute in plays |
 | `data-selected` | the selected `ViewSwitcherItem` | consumers and tests |
 
 - `data-slot` names set here: `view-switcher-search`, `view-switcher-items`, `view-switcher-item`, `view-switcher-create`. `toolbar` and `toolbar-group` come from COSS.
@@ -50,7 +50,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/toolbar
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/toolbar/`: `behavior.stories.tsx` (`Patterns/Toolbar/Behavior`: slots, center slot, view settings, presets and action) and `view-switcher/behavior.stories.tsx` (`Patterns/Toolbar/View Switcher/Behavior`: one story per view switcher case), plus the `Interaction` twins of the documented stories. The only bun test left is `components/collection-toolbar.test.ts`, which renders nothing. Stories in `apps/storybook/src/patterns/toolbar/` (`Patterns/Toolbar` and `Patterns/Toolbar/View Switcher`) run axe with `test: 'error'`. The documented stories render the component directly, with no helper component, so the Code panel shows code the consumer can paste: each meta sets `component` and the args, a slot whose content has no state is JSX in `args` (`centerSlot` in `WithCenterSlot`), and slot content with state lives in the story's named `render`. Each play runs in a `!dev` `<Story>Interaction` twin; the view switcher `Default` renders the same composition as the toolbar's `Default` inside a `CollectionToolbar`, because `ViewSwitcherMenu` needs the toolbar context. The toolbar stories are typed `StoryObj<typeof CollectionToolbar>`, not `StoryObj<typeof meta>`: `CollectionToolbarProps` is a union, and with `typeof meta` the story args collapse to `never`. The layout wrapper is a decorator: `w-full max-w-6xl p-6` in the toolbar stories, `p-2` in the view switcher ones.
+Interface tests are `play` functions in `apps/storybook/src/patterns/toolbar/`, on the six pages of `Patterns/Toolbar`: `behavior.stories.tsx` (toolbar, slots, variants, keyboard, and the settings, presets and action parts that render inside it) and `behavior/view-switcher.stories.tsx` (one story per view switcher case, same title `Patterns/Toolbar/Behavior`). The view switcher has no node of its own: its Stories are in `stories/view-switcher.stories.tsx` (title `Patterns/Toolbar/Stories`) and its structures in `layouts.stories.tsx`. The only bun test left is `components/collection-toolbar.test.ts`, which renders nothing. Stories run axe with `test: 'error'`. `toolbar-layouts.tsx` holds the stateful compositions (`ComposedToolbar` and the others) that Playground, Stories, Layouts, Usages and Behavior share, and `toolbar-controls.ts` their controls. The toolbar stories are typed `StoryObj<typeof CollectionToolbar>`, not `StoryObj<typeof meta>`: `CollectionToolbarProps` is a union, and with `typeof meta` the story args collapse to `never`. The layout wrapper is the `ToolbarCanvas` decorator, `w-full max-w-6xl p-6`.
 
 ## Pointers
 
