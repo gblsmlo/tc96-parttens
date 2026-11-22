@@ -38,7 +38,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/action-bar
 ```
 
-`Patterns/ActionBar` (`apps/storybook/src/patterns/action-bar/`) holds the interaction tests as `play` functions, runs axe with `test: 'error'`, and carries the `Usage` and `API Reference` sections of its `Doc` page.
+`Patterns/ActionBar` (`apps/storybook/src/patterns/action-bar/`) is documented in the six component pages: the interaction tests are the `play` functions of `Patterns/ActionBar/Behavior`, every story runs axe with `test: 'error'`, and `api-reference.mdx` is its API Reference.
 
 ## Pointers
 
