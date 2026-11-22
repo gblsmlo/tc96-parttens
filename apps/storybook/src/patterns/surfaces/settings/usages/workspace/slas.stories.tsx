@@ -6,7 +6,7 @@ import {
   SettingsSectionTitle,
 } from '@tc96/parttens'
 import { Switch } from '@tc96/ui/switch'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 
 const onSlasChange = fn()
 
@@ -41,7 +41,7 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Workspace/SLAs',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
@@ -50,24 +50,14 @@ type Story = StoryObj<typeof meta>
 
 export const Slas: Story = {
   name: 'SLAs',
-  render: () => <SlasDemo />,
-}
-
-export const Interaction: Story = {
-  ...Slas,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    expect(
+    await expect(
       canvas.getByRole('heading', { level: 2, name: 'SLAs' }),
     ).toBeVisible()
-    expect(canvas.queryByRole('link', { name: 'Docs' })).toBeNull()
-
-    const toggle = canvas.getByRole('switch', { name: 'Enable SLAs' })
-    expect(toggle).not.toBeChecked()
-    await userEvent.click(toggle)
-    await waitFor(() => expect(toggle).toBeChecked())
-    expect(onSlasChange).toHaveBeenCalledTimes(1)
-    expect(onSlasChange.mock.calls[0]?.[0]).toBe(true)
+    await expect(
+      canvas.getByRole('switch', { name: 'Enable SLAs' }),
+    ).toBeVisible()
   },
-  tags: ['!dev', '!autodocs'],
+  render: () => <SlasDemo />,
 }

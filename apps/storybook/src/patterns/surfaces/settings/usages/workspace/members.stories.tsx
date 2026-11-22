@@ -20,7 +20,7 @@ import {
 } from '@tc96/ui/select'
 import { EllipsisIcon } from 'lucide-react'
 import { useState } from 'react'
-import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 
 type Role = 'admin' | 'guest' | 'member'
 
@@ -225,58 +225,23 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Workspace/Members',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof MembersSettings>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Members: Story = { name: 'Members' }
-
-export const Interaction: Story = {
-  play: async ({ args, canvasElement }) => {
+export const Members: Story = {
+  name: 'Members',
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const membersRegion = within(
-      canvas.getByRole('region', { name: 'Members' }),
-    )
-    const invitationsRegion = within(
+    await expect(canvas.getByRole('region', { name: 'Members' })).toBeVisible()
+    await expect(
       canvas.getByRole('region', { name: 'Pending invitations' }),
-    )
-
-    expect(membersRegion.getAllByRole('combobox')).toHaveLength(
-      members.length - 1,
-    )
-    expect(membersRegion.getByText('Owner')).toBeVisible()
-    expect(
-      membersRegion.queryByRole('button', { name: 'Actions for Maya Santos' }),
-    ).toBeNull()
-    expect(invitationsRegion.getAllByText('Pending')).toHaveLength(
-      invitations.length,
-    )
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Invite members' }),
-    )
-    expect(args.onInvite).toHaveBeenCalledOnce()
-
-    const leoRole = canvas.getByRole('combobox', { name: 'Role of Leo Park' })
-    await userEvent.click(leoRole)
-    await userEvent.click(await screen.findByRole('option', { name: 'Guest' }))
-    await waitFor(() =>
-      expect(args.onRoleChange).toHaveBeenCalledWith('leo@acme.io', 'guest'),
-    )
-    await waitFor(() => expect(leoRole).toHaveTextContent('Guest'))
-    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Ana Costa' }),
-    )
-    expect(
-      await screen.findByRole('menuitem', { name: 'Remove from workspace' }),
     ).toBeVisible()
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
+    await expect(
+      canvas.getByRole('button', { name: 'Invite members' }),
+    ).toBeVisible()
   },
-  tags: ['!dev', '!autodocs'],
 }

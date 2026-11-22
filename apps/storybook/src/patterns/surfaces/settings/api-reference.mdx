@@ -1,0 +1,181 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings
+
+The frames of a settings screen: a card of divided rows, each with a title, an optional description and a slot for the control, under an optional header that names the section; and a titled group of rows that opens and closes. Reach for it when a screen lists preferences, workspace options or account actions, where the consumer decides which control each row holds and what it saves.
+
+The other pages of `Patterns/Surfaces/Settings`: [Playground](?path=/story/patterns-surfaces-settings-playground--playground) to try the texts, the first row's control and the optional parts, [Stories](?path=/story/patterns-surfaces-settings-stories--default) for the open and closed group, [Behavior](?path=/story/patterns-surfaces-settings-behavior--title-description-and-end-slot) for the tests, [Usages](?path=/story/patterns-surfaces-settings-usages--accounts) for real settings screens and [Layouts](?path=/story/patterns-surfaces-settings-layouts--untitled) for how the parts combine.
+
+Used in: [Templates/Workspace Settings](?path=/story/templates-workspace-settings--default), a page of two sections with a save action each.
+
+## Import
+
+```tsx
+import {
+  SettingsCollapsed,
+  SettingsRow,
+  SettingsSection,
+  SettingsSectionDescription,
+  SettingsSectionHeader,
+  SettingsSectionTitle,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+The section with its header and a row:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsSection
+  header={
+    <SettingsSectionHeader actions={<Button />}>
+      <SettingsSectionTitle />
+      <SettingsSectionDescription />
+    </SettingsSectionHeader>
+  }
+>
+  <SettingsRow />
+</SettingsSection>
+```
+
+The collapsed group, which sits among the rows of a section or on its own:
+
+<Canvas of={ApiReferenceStories.CollapsedAnatomy} />
+
+```tsx
+<SettingsCollapsed actions={<Button />} title="Group">
+  <SettingsRow />
+</SettingsCollapsed>
+```
+
+The pattern holds no value and never saves: the consumer passes every text, icon and control, and handles every change. Only `SettingsCollapsed` keeps an open state of its own, and it can be controlled.
+
+## SettingsSection
+
+The card of a settings screen. Renders a `section` named by the `SettingsSectionTitle` of its `header`, with the header above a `Card`; without `header` it renders a plain `div` holding only the card, with no heading and no landmark, for a page whose own title already names its single card. The rows go in the card, divided by a 1px line, inside a wrapper with `data-slot="settings-section-rows"`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `header` | `ReactNode` | - | Sets the content above the card and names the section; it must hold a `SettingsSectionTitle`, or the section is named by an element that does not exist. |
+| `children` | `ReactNode` | - | Sets the rows, or a `div` holding `SettingsCollapsed` groups, inside the card. |
+| `className` | `string` | - | Adds classes to the root, the `section` or the `div`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"settings-section"` | Selects the root, a `section` or a `div` |
+| `data-slot` | `"settings-section-rows"` | Selects the divided wrapper of the rows, inside the card (`data-slot="card"`) |
+
+The title shown in `header` and the card sit 12px apart. The wrapper has 24px of side padding; when it holds a `SettingsCollapsed` or an element with `data-slot="record-group"` (the `RecordGroup` pattern), the sides drop to 16px, so a grouped card has even spacing on all four sides. A `SettingsCollapsed` has no separator of its own, and the lines only divide the direct children of the wrapper: wrap several groups in one `div` to keep them undivided. The card takes its radius, border and shadow from the theme's `Card`.
+
+## SettingsSectionHeader
+
+The row above the card that holds the title, the description and the section's action. Renders a `div` that places the children in a column on the left and `actions` on the right, aligned to the bottom edge of the text.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | - | Sets the title and the description, stacked 4px apart. |
+| `actions` | `ReactNode` | - | Sets the content of the right cell, outside the card, for the add action of the section; the cell renders only when this is passed. |
+| `className` | `string` | - | Adds classes to the `div`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"settings-section-header"` | Selects the header |
+| `data-slot` | `"settings-section-actions"` | Selects the right cell, drawn only when `actions` is passed |
+
+## SettingsSectionTitle
+
+The heading of the section. Renders an `h2` in the `base` size and `medium` weight, with the `id` that the section's `aria-labelledby` points at; outside the `header` of a `SettingsSection` it has no `id`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | - | Sets the title. |
+| `className` | `string` | - | Adds classes to the `h2`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"settings-section-title"` | Selects the heading |
+
+## SettingsSectionDescription
+
+The text under the title. Renders a `p` in the `sm` size and the muted color.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | - | Sets the description. |
+| `className` | `string` | - | Adds classes to the `p`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"settings-section-description"` | Selects the description |
+
+## SettingsRow
+
+One setting: text on the left and the control on the right. Renders a `div` with the heading cell in the middle, between an optional `startSlot` and an optional `endSlot`. The row knows nothing about its control: a select, a switch, an input or plain text enter through `endSlot`, and the control's value, saving and accessible name belong to the consumer. The row does not link its title to the control, so pass an `aria-label` to the control.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the title, a `p` in the `sm` size and `semibold` weight. |
+| `description` | `ReactNode` | - | Sets the line under the title, a `p` in the `sm` size and the muted color; the `p` renders only when this is passed. |
+| `startSlot` | `ReactNode` | - | Sets the content before the text, for an icon; the cell renders only when this is passed. |
+| `endSlot` | `ReactNode` | - | Sets the content after the text, for the control; the cell renders only when this is passed. |
+| `className` | `string` | - | Adds classes to the `div`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"settings-row"` | Selects the row |
+| `data-slot` | `"settings-row-start"` | Selects the cell of `startSlot` |
+| `data-slot` | `"settings-row-heading"` | Selects the cell that holds the title and the description |
+| `data-slot` | `"settings-row-end"` | Selects the cell of `endSlot` |
+| `data-slot` | `"settings-row-title"` | Selects the title `p` |
+| `data-slot` | `"settings-row-description"` | Selects the description `p` |
+
+A direct `svg` child of `startSlot` is sized to 16px; any other element, such as an `IconFrame`, keeps its own size. The `startSlot` cell sits 12px before the text and the `endSlot` cell 24px after it; the heading cell takes the free space and wraps, and the `endSlot` cell never shrinks: it lays several controls in a row, 8px apart, flush with the right edge of the card's content. A row passed only a `title` draws no empty cells.
+
+## SettingsCollapsed
+
+A titled group of rows that opens and closes, with actions that stay available while it is closed. Renders a `section` named by its title, with a muted header and the panel below it. The title is an `h2` that holds the trigger, a `button` with a chevron before the text; `actions` sit next to the heading, not inside the trigger, so they are always visible and never toggle the group. While closed, the panel renders no children. It starts open unless `defaultOpen` or `open` says otherwise.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | required | Sets the title inside the trigger; it also names the section. |
+| `actions` | `ReactNode` | - | Sets the content of the cell next to the title; the cell renders only when this is passed. |
+| `children` | `ReactNode` | - | Sets the content of the panel, usually `SettingsRow`s. |
+| `defaultOpen` | `boolean` | `true` | Sets the initial state when `open` is not set. |
+| `open` | `boolean` | - | Controls the state; the group then follows the value and only reports the click. |
+| `onOpenChange` | `(open: boolean) => void` | - | Called when the trigger is pressed, with the next state; Base UI passes its change details as a second argument. |
+| `className` | `string` | - | Adds classes to the `section`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"settings-collapsed"` | Selects the `section` |
+| `data-open` | present while open | Styles the open section |
+| `data-closed` | present while closed | Styles the closed section |
+| `data-slot` | `"settings-collapsed-title"` | Selects the `h2` that holds the trigger |
+| `data-panel-open` | present on the trigger while open | Styles the trigger, and turns the chevron down |
+| `data-slot` | `"settings-collapsed-actions"` | Selects the cell of `actions`, drawn only when `actions` is passed |
+| `data-slot` | `"settings-collapsed-items"` | Selects the wrapper of the panel's children |
+
+The header is at least 40px tall, with a rounded muted background. Each group keeps 4px above and below, and 16px above the first and below the last inside a card, so groups stack with no separator. The panel has 16px of side padding, and the rows inside use 4px of vertical padding in place of 12px.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsSectionProps` | `type` | The props of `SettingsSection`. |
+| `SettingsSectionHeaderProps` | `type` | The props of `SettingsSectionHeader`. |
+| `SettingsSectionTitleProps` | `type` | The props of `SettingsSectionTitle`. |
+| `SettingsSectionDescriptionProps` | `type` | The props of `SettingsSectionDescription`. |
+| `SettingsRowProps` | `type` | The props of `SettingsRow`. |
+| `SettingsCollapsedProps` | `type` | The props of `SettingsCollapsed`. |
+
+## Accessibility and theme
+
+- Pass an `aria-label` to every control in `endSlot`: the row's title is not its label. A `SettingsSectionTitle` in the `header` names the section as a region; without a `header` the card is not a landmark.
+- Give every `SettingsCollapsed` a distinct `title`, which is also the name of its region. The trigger is a button with `aria-expanded`, so it is reachable and operable by keyboard; the `actions` are separate tab stops.
+- Keep the add action in the `actions` of `SettingsSectionHeader`, outside the card, and never in a `SettingsCollapsed`'s `actions` or inside an empty state.
+- The parts read the theme tokens `card`, `border`, `muted` (at 80% in the collapsed header), `muted-foreground`, `foreground` and `ring`. The pattern sets no color of its own; measured contrast is in `docs/accessibility.md`, section `settings`.

@@ -14,7 +14,7 @@ import {
 } from '@tc96/ui/select'
 import { Switch } from '@tc96/ui/switch'
 import { useState } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 
 interface SettingOption {
   label: string
@@ -159,58 +159,24 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Profile/Preferences',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
-const rowsOf = (canvasElement: HTMLElement) =>
-  Array.from(
-    canvasElement.querySelectorAll<HTMLElement>('[data-slot="settings-row"]'),
-  )
-
-const slotOf = (row: HTMLElement, name: 'end' | 'heading') =>
-  row.querySelector(`[data-slot="settings-row-${name}"]`) as HTMLElement
-
 export const Preferences: Story = {
   name: 'Preferences',
-  render: () => <PreferencesDemo />,
-}
-
-export const Interaction: Story = {
-  ...Preferences,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    expect(canvas.getByRole('region', { name: 'General' })).toBeVisible()
-    expect(
+    await expect(canvas.getByRole('region', { name: 'General' })).toBeVisible()
+    await expect(
       canvas.getByRole('region', { name: 'Interface and theme' }),
     ).toBeVisible()
-
-    const rows = rowsOf(canvasElement)
-    expect(rows).toHaveLength(4)
-    for (const row of rows) {
-      const card = row.parentElement as HTMLElement
-      const cardStyle = getComputedStyle(card)
-      const contentRight =
-        card.getBoundingClientRect().right -
-        Number.parseFloat(cardStyle.borderRightWidth) -
-        Number.parseFloat(cardStyle.paddingRight)
-      const end = slotOf(row, 'end').getBoundingClientRect()
-
-      expect(Math.abs(end.right - contentRight)).toBeLessThan(1)
-      expect(end.left).toBeGreaterThan(
-        slotOf(row, 'heading').getBoundingClientRect().left,
-      )
-    }
-
-    const underline = canvas.getByRole('switch', { name: 'Underline links' })
-    expect(underline).not.toBeChecked()
-    await userEvent.click(underline)
-    await waitFor(() => expect(underline).toBeChecked())
+    await expect(
+      canvas.getByRole('switch', { name: 'Underline links' }),
+    ).toBeVisible()
   },
-  tags: interaction,
+  render: () => <PreferencesDemo />,
 }

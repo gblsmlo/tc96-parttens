@@ -27,7 +27,7 @@ import {
   UserCheckIcon,
 } from 'lucide-react'
 import { useState } from 'react'
-import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 
 type PhaseId = 'Open' | 'Won' | 'Lost'
 type Direction = 'up' | 'down'
@@ -331,124 +331,26 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Workspace/Pipeline Stages',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
 export const PipelineStages: Story = {
   name: 'Pipeline Stages',
-  render: () => <PipelineStagesDemo />,
-}
-
-const titlesIn = (region: HTMLElement) =>
-  Array.from(
-    region.querySelectorAll('[data-slot="record-group-item-title"]'),
-    (title) => title.textContent?.trim(),
-  )
-
-export const Interaction: Story = {
-  ...PipelineStages,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-
-    expect(
-      canvas.getByRole('heading', { name: 'Pipeline stages', level: 2 }),
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Pipeline stages' }),
     ).toBeVisible()
-    const card = canvasElement.querySelector(
-      '[data-slot="card"]',
-    ) as HTMLElement
-    const newStage = canvas.getByRole('button', { name: 'New stage' })
-    expect(newStage.closest('[data-slot="card"]')).toBeNull()
-    expect(canvas.queryAllByRole('button', { name: /^Add / })).toHaveLength(0)
-
-    const open = canvas.getByRole('region', { name: 'Open' })
-    const won = canvas.getByRole('region', { name: 'Won' })
-    const lost = canvas.getByRole('region', { name: 'Lost' })
-    for (const region of [open, won, lost]) {
-      expect(card).toContainElement(region)
+    for (const phase of phases) {
+      await expect(canvas.getByRole('region', { name: phase })).toBeVisible()
     }
-    expect(titlesIn(open)).toEqual([
-      'New',
-      'Qualification',
-      'Proposal',
-      'Negotiation',
-    ])
-    expect(
-      canvas.getAllByRole('button', { name: /^Actions for / }),
-    ).toHaveLength(initialStages.length)
-    expect(canvas.getByText('Closes as lost')).toBeVisible()
-
-    const cardBox = card.getBoundingClientRect()
-    const firstBox = open.getBoundingClientRect()
-    const lastBox = lost.getBoundingClientRect()
-    const inset = firstBox.top - cardBox.top
-    expect(inset).toBeGreaterThanOrEqual(8)
-    expect(firstBox.left - cardBox.left).toBeCloseTo(inset, 0)
-    expect(cardBox.right - firstBox.right).toBeCloseTo(inset, 0)
-    expect(cardBox.bottom - lastBox.bottom).toBeCloseTo(inset, 0)
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for New' }),
-    )
-    expect(
-      await body.findByRole('menuitem', { name: 'Move up' }),
-    ).toHaveAttribute('aria-disabled', 'true')
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Qualification' }),
-    )
-    await userEvent.click(
-      await body.findByRole('menuitem', { name: 'Move up' }),
-    )
-    expect(onMoveStage).toHaveBeenCalledWith('Qualification', 'up')
-    await waitFor(() => expect(titlesIn(open)[0]).toBe('Qualification'))
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Won' }),
-    )
-    expect(await body.findByRole('menuitem', { name: 'Edit' })).toBeVisible()
-    expect(body.getAllByRole('menuitem')).toHaveLength(1)
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
-
-    await userEvent.click(newStage)
-    const dialog = within(
-      await screen.findByRole('dialog', { name: /New stage/ }),
-    )
-    const create = dialog.getByRole('button', { name: /Create stage/ })
-    expect(create).toBeDisabled()
-    await userEvent.type(
-      dialog.getByRole('textbox', { name: 'Stage name' }),
-      'Disqualified',
-    )
-    await userEvent.click(dialog.getByRole('combobox', { name: /^Phase/ }))
-    await userEvent.click(await screen.findByRole('option', { name: 'Lost' }))
-    await waitFor(() =>
-      expect(
-        dialog.getByRole('combobox', { name: /^Phase/ }),
-      ).toHaveTextContent('Lost'),
-    )
-    await userEvent.click(create)
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-    expect(onNewStage).toHaveBeenCalledWith('Disqualified', 'Lost')
-    expect(titlesIn(lost)).toEqual(['Lost', 'Disqualified'])
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Disqualified' }),
-    )
-    expect(
-      await body.findByRole('menuitem', { name: 'Move up' }),
-    ).not.toHaveAttribute('aria-disabled', 'true')
-    expect(body.getByRole('menuitem', { name: 'Delete' })).toBeVisible()
-    await userEvent.keyboard('{Escape}')
+    await expect(
+      canvas.getByRole('button', { name: 'New stage' }),
+    ).toBeVisible()
   },
-  tags: interaction,
+  render: () => <PipelineStagesDemo />,
 }

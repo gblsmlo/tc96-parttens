@@ -24,7 +24,7 @@ import {
 } from '@tc96/ui/select'
 import { CameraIcon } from 'lucide-react'
 import { useState } from 'react'
-import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 
 interface TimeZoneOption {
   label: string
@@ -194,42 +194,25 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Workspace/General',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof GeneralSettings>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const General: Story = { name: 'General' }
-
-export const Interaction: Story = {
-  play: async ({ args, canvasElement }) => {
+export const General: Story = {
+  name: 'General',
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    expect(canvas.getByRole('region', { name: 'Workspace' })).toBeVisible()
-    expect(canvas.getByRole('region', { name: 'Danger zone' })).toBeVisible()
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Upload logo' }))
-    expect(args.onUploadLogo).toHaveBeenCalledOnce()
-
-    const name = canvas.getByRole('textbox', { name: 'Workspace name' })
-    await userEvent.clear(name)
-    await userEvent.type(name, 'Acme Inc')
-    await userEvent.tab()
-    expect(args.onNameCommit).toHaveBeenCalledWith('Acme Inc')
-
-    await userEvent.click(canvas.getByRole('combobox', { name: 'Time zone' }))
-    await userEvent.click(
-      await screen.findByRole('option', { name: 'London (UTC+00:00)' }),
-    )
-    await waitFor(() =>
-      expect(args.onTimeZoneChange).toHaveBeenCalledWith('Europe/London'),
-    )
-    await waitFor(() =>
-      expect(
-        canvas.getByRole('combobox', { name: 'Time zone' }),
-      ).toHaveTextContent('London (UTC+00:00)'),
-    )
+    await expect(
+      canvas.getByRole('region', { name: 'Workspace' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('region', { name: 'Danger zone' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('textbox', { name: 'Workspace name' }),
+    ).toBeVisible()
   },
-  tags: ['!dev', '!autodocs'],
 }

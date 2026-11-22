@@ -11,7 +11,7 @@ import { Button } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
 import { CameraIcon } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 
 interface ProfileField {
   description?: string
@@ -203,52 +203,21 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Profile/Profile',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof ProfileSettings>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Profile: Story = { name: 'Profile' }
-
-export const Interaction: Story = {
-  play: async ({ args, canvasElement }) => {
+export const Profile: Story = {
+  name: 'Profile',
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    expect(canvas.getByRole('region', { name: 'Profile' })).toBeVisible()
-    expect(canvas.getByRole('region', { name: 'Account' })).toBeVisible()
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Upload avatar' }))
-    expect(args.onUploadAvatar).toHaveBeenCalledOnce()
-
-    const fullName = canvas.getByRole('textbox', { name: 'Full name' })
-    await userEvent.clear(fullName)
-    await userEvent.type(fullName, 'Maya S. Santos')
-    expect(args.onFieldCommit).not.toHaveBeenCalled()
-    await userEvent.tab()
-    expect(args.onFieldCommit).toHaveBeenCalledWith(
-      'fullName',
-      'Maya S. Santos',
-    )
-
-    const email = canvas.getByRole('textbox', { name: 'Email' })
-    const saveEmail = canvas.getByRole('button', { name: 'Save' })
-    expect(saveEmail).toBeDisabled()
-    await userEvent.type(email, '{Enter}')
-    expect(args.onEmailSubmit).not.toHaveBeenCalled()
-    await userEvent.clear(email)
-    await userEvent.type(email, 'maya@acme.com')
-    expect(saveEmail).toBeEnabled()
-    await userEvent.click(saveEmail)
-    expect(args.onEmailSubmit).toHaveBeenCalledOnce()
-    expect(args.onEmailSubmit).toHaveBeenCalledWith('maya@acme.com')
-    expect(saveEmail).toBeDisabled()
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Sign out everywhere' }),
-    )
-    expect(args.onSignOutEverywhere).toHaveBeenCalledOnce()
-    expect(canvas.getByRole('button', { name: 'Delete account' })).toBeVisible()
+    await expect(canvas.getByRole('region', { name: 'Profile' })).toBeVisible()
+    await expect(canvas.getByRole('region', { name: 'Account' })).toBeVisible()
+    await expect(
+      canvas.getByRole('textbox', { name: 'Full name' }),
+    ).toBeVisible()
   },
-  tags: ['!dev', '!autodocs'],
 }

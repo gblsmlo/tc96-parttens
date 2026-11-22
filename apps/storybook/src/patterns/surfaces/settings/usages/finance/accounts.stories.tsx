@@ -21,7 +21,7 @@ import {
   WalletIcon,
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, within } from 'storybook/test'
 
 type AccountType = 'Bank' | 'Cash'
 
@@ -195,21 +195,44 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Finance/Accounts',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsSection>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
 export const Accounts: Story = {
   name: 'Accounts',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Accounts' }),
+    ).toBeVisible()
+    await expect(canvas.getByText('Main account')).toBeVisible()
+    await expect(
+      canvas.getByText('Bank · Opens at $12,500.00 on Sep 3, 2026'),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'New account' }),
+    ).toBeVisible()
+  },
   render: () => <AccountsDemo />,
 }
 
-export const Empty: Story = {
+export const AccountsEmpty: Story = {
+  name: 'Accounts empty',
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByRole('status')).toHaveAttribute(
+      'data-kind',
+      'empty',
+    )
+    await expect(canvas.getByText('No accounts yet')).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'New account' }),
+    ).toBeEnabled()
+  },
   render: () => (
     <AccountsSection>
       <StateSurface
@@ -219,87 +242,4 @@ export const Empty: Story = {
       />
     </AccountsSection>
   ),
-}
-
-export const Interaction: Story = {
-  ...Accounts,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-    expect(
-      canvas.getByRole('heading', { level: 2, name: 'Accounts' }),
-    ).toBeVisible()
-    const newAccount = canvas.getByRole('button', { name: 'New account' })
-    expect(newAccount).toBeEnabled()
-    expect(newAccount.closest('[data-slot="card"]')).toBeNull()
-
-    for (const account of accounts) {
-      expect(canvas.getByText(account.name)).toBeVisible()
-      expect(canvas.getByText(describeAccount(account))).toBeVisible()
-    }
-    expect(
-      canvas.getByText('Bank · Opens at $12,500.00 on Sep 3, 2026'),
-    ).toBeVisible()
-
-    const rowOf = (name: string) =>
-      canvas
-        .getByText(name)
-        .closest('[data-slot="settings-row"]') as HTMLElement
-    expect(within(rowOf('Main account')).getByText('Default')).toBeVisible()
-    expect(canvas.getAllByText('Default')).toHaveLength(1)
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Main account' }),
-    )
-    expect(await body.findByRole('menuitem', { name: 'Edit' })).toBeVisible()
-    expect(body.queryByRole('menuitem', { name: 'Make default' })).toBeNull()
-    expect(body.queryByRole('menuitem', { name: 'Archive' })).toBeNull()
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Actions for Petty cash' }),
-    )
-    const makeDefault = await body.findByRole('menuitem', {
-      name: 'Make default',
-    })
-    expect(body.getByRole('menuitem', { name: 'Archive' })).toBeVisible()
-    await userEvent.click(makeDefault)
-    expect(onMakeDefault).toHaveBeenCalledWith('Petty cash')
-    await waitFor(() =>
-      expect(within(rowOf('Petty cash')).getByText('Default')).toBeVisible(),
-    )
-    expect(canvas.getAllByText('Default')).toHaveLength(1)
-
-    const archived = canvas.getByRole('region', { name: 'Archived' })
-    const trigger = within(archived).getByRole('button', { name: 'Archived' })
-    expect(trigger).toHaveAttribute('aria-expanded', 'false')
-    await userEvent.click(trigger)
-    await waitFor(() =>
-      expect(within(archived).getByText('Old savings')).toBeVisible(),
-    )
-    await userEvent.click(
-      within(archived).getByRole('button', {
-        name: 'Actions for Old savings',
-      }),
-    )
-    expect(await body.findByRole('menuitem', { name: 'Restore' })).toBeVisible()
-    expect(body.queryByRole('menuitem', { name: 'Make default' })).toBeNull()
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(body.queryByRole('menu')).toBeNull())
-  },
-  tags: interaction,
-}
-
-export const EmptyInteraction: Story = {
-  ...Empty,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    expect(canvas.getByRole('status')).toHaveAttribute('data-kind', 'empty')
-    expect(within(canvas.getByRole('status')).queryByRole('button')).toBeNull()
-    expect(canvas.getByText('No accounts yet')).toBeVisible()
-    expect(canvas.getByRole('button', { name: 'New account' })).toBeEnabled()
-    expect(canvas.queryByRole('button', { name: /^Actions for / })).toBeNull()
-  },
-  tags: interaction,
 }

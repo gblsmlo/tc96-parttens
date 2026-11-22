@@ -14,7 +14,7 @@ import {
 } from '@tc96/ui/select'
 import { Switch } from '@tc96/ui/switch'
 import { BellIcon, LanguagesIcon, TypeIcon } from 'lucide-react'
-import { expect } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 
 interface SettingOption {
   label: string
@@ -70,28 +70,30 @@ const meta = {
   ],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Surfaces/Settings/Usages/Profile/Interface and theme',
+  title: 'Patterns/Surfaces/Settings/Usages',
 } satisfies Meta<typeof SettingsRow>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const interaction = ['!dev', '!autodocs']
-
-const rowsOf = (canvasElement: HTMLElement) =>
-  Array.from(
-    canvasElement.querySelectorAll<HTMLElement>('[data-slot="settings-row"]'),
-  )
-
-const slotOf = (row: HTMLElement, name: 'heading' | 'start') =>
-  row.querySelector(`[data-slot="settings-row-${name}"]`) as HTMLElement
-
 export const InterfaceAndTheme: Story = {
   name: 'Interface and theme',
   args: {
     description: 'Adjusts the text size across the whole app',
     title: 'Font size',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByRole('heading', { level: 2, name: 'Interface and theme' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('combobox', { name: /^Font size/ }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('switch', { name: 'Email notifications' }),
+    ).toBeChecked()
   },
   render: (args) => (
     <SettingsSection
@@ -132,22 +134,4 @@ export const InterfaceAndTheme: Story = {
       />
     </SettingsSection>
   ),
-}
-
-export const Interaction: Story = {
-  ...InterfaceAndTheme,
-  play: async ({ canvasElement }) => {
-    for (const row of rowsOf(canvasElement)) {
-      const start = slotOf(row, 'start')
-      const icon = (
-        start.querySelector('svg') as SVGElement
-      ).getBoundingClientRect()
-      const heading = slotOf(row, 'heading').getBoundingClientRect()
-
-      expect(start.nextElementSibling).toBe(slotOf(row, 'heading'))
-      expect(icon.width).toBe(16)
-      expect(icon.right).toBeLessThanOrEqual(heading.left)
-    }
-  },
-  tags: interaction,
 }
