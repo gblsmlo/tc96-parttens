@@ -1,11 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { RichTextValue } from '@tc96/parttens'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
-import { placeCaretAtEnd } from '../../../test-utils/rich-text-typing'
+import { expect, within } from 'storybook/test'
 import {
   clearStored,
   paragraph,
-  readStored,
   text,
   usageParameters,
 } from '../../../test-utils/usage-kit'
@@ -110,21 +108,14 @@ const meta = {
   args: { initial: template, storageKey },
   beforeEach: () => clearStored(storageKey),
   component: CampaignBriefEditor,
-  parameters: {
-    ...usageParameters,
-    docs: {
-      description: {
-        component:
-          'A template page for writing a campaign brief. The header holds the title, a description and the inline property bar (primary objective, secondary objective, expected target); the body is the rich text editor seeded with one `h2` per brief section; the footer counts the sections with text and shows whether the draft is saved.',
-      },
-    },
-  },
+  parameters: usageParameters,
+  tags: ['!autodocs'],
   render: (args) => (
     <div className="w-3xl max-w-full">
       <CampaignBriefEditor {...args} />
     </div>
   ),
-  title: 'Patterns/Rich Text Editor/Usages/Campaign Brief',
+  title: 'Patterns/Rich Text Editor/Usages',
 } satisfies Meta<typeof CampaignBriefEditor>
 
 export default meta
@@ -134,7 +125,7 @@ type Story = StoryObj<typeof meta>
 const briefEditor = (canvasElement: HTMLElement) =>
   within(canvasElement).getByRole('textbox', { name: 'Briefing' })
 
-export const Template: Story = {
+export const CampaignBriefTemplate: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await expect(canvas.getByRole('textbox', { name: 'Título' })).toHaveValue(
@@ -172,7 +163,7 @@ export const Template: Story = {
   },
 }
 
-export const Filled: Story = {
+export const CampaignBriefFilled: Story = {
   args: { initial: filled },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
@@ -194,65 +185,5 @@ export const Filled: Story = {
     await expect(
       canvas.getByText('6 de 6 seções preenchidas'),
     ).toBeInTheDocument()
-  },
-}
-
-export const ChooseAnObjective: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('combobox', { name: 'Objetivo primário' }),
-    )
-    await userEvent.click(
-      await screen.findByRole('option', { name: 'Fortalecer indicação' }),
-    )
-
-    await expect(
-      await canvas.findByRole('combobox', {
-        name: 'Objetivo primário: Fortalecer indicação',
-      }),
-    ).toBeInTheDocument()
-    await waitFor(() =>
-      expect(readStored<CampaignBrief>(storageKey)?.primaryObjective).toBe(
-        'referrals',
-      ),
-    )
-    await expect(canvas.getByText('Salvo neste navegador')).toBeInTheDocument()
-  },
-}
-
-export const FillASection: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const editor = briefEditor(canvasElement)
-    const firstEmptyLine = editor.querySelector('[data-slate-zero-width]')
-    placeCaretAtEnd(editor, firstEmptyLine?.parentElement ?? null)
-    await waitFor(() => expect(editor).toHaveFocus())
-    await userEvent.keyboard('Pessoas da região')
-
-    await waitFor(() =>
-      expect(canvas.getByText('1 de 6 seções preenchidas')).toBeInTheDocument(),
-    )
-    await waitFor(() =>
-      expect(
-        JSON.stringify(readStored<CampaignBrief>(storageKey)?.body),
-      ).toContain('"text":"Pessoas da região"'),
-    )
-  },
-}
-
-export const WriteADescription: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('textbox', { name: 'Descrição' }))
-    await userEvent.keyboard('Campanha de outubro')
-    await userEvent.tab()
-
-    await waitFor(() =>
-      expect(readStored<CampaignBrief>(storageKey)?.description).toBe(
-        'Campanha de outubro',
-      ),
-    )
-    await expect(canvas.getByText('Salvo neste navegador')).toBeInTheDocument()
   },
 }

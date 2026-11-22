@@ -1,0 +1,220 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Rich Text Editor
+
+A Notion-style editor for notes, articles, meeting minutes and task lists: a block editor with a floating toolbar over the selection, a `/` menu for blocks, an optional `@` menu for mentions, an optional drag handle per block and a separate one-line page title. It owns the editing surface only. It never uploads, fetches, saves or searches: the consumer seeds it once, receives every change, and answers the image picker and the mention list.
+
+The other pages of `Patterns/Rich Text Editor`: [Playground](?path=/story/patterns-rich-text-editor-playground--playground) to try the title, the content, the menus and the labels, [Stories](?path=/story/patterns-rich-text-editor-stories--default) for each state, [Behavior](?path=/story/patterns-rich-text-editor-behavior--placeholder-shows-until-typing) for the tests, [Usages](?path=/story/patterns-rich-text-editor-usages--article) for real content, and [Layouts](?path=/story/patterns-rich-text-editor-layouts--without-title) for how the parts combine.
+
+Used in: the note dialog of `Patterns/Records/Dialog` mounts `EditorTitle` and `RichTextEditor` as the body of a record, in [New Note](?path=/story/patterns-records-dialog-usages--new-note) and [Edit Note](?path=/story/patterns-records-dialog-usages--edit-note). The brief page of [Campaign Brief](?path=/story/patterns-rich-text-editor-usages--campaign-brief-template) puts a `PropertyCollection` between the title and the body.
+
+## Import
+
+```tsx
+import {
+  applyBlock,
+  defaultMaxListDepth,
+  EditorTitle,
+  filterSlashMenuOptions,
+  RICH_TEXT_BLOCKS,
+  RICH_TEXT_ELEMENTS,
+  RICH_TEXT_EXTRA_BLOCKS,
+  RICH_TEXT_MARKS,
+  RichTextEditor,
+  slashMenuOptions,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+The page title and the body, side by side. The floating toolbar, the `/` menu and the `@` menu are not rendered at rest: they open over the body, next to the selection or the caret.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<EditorTitle />
+<RichTextEditor />
+```
+
+`RichTextEditor` and `EditorTitle` are independent: neither imports the other, and the consumer moves focus between them through their handles and callbacks. `RichTextEditor` renders an editable area with no box of its own, so the page around it decides the width, the surface and the border.
+
+## RichTextEditor
+
+The block editor. Renders a `div` that holds an editable `div` with `role="textbox"`, named by `aria-label`, the floating toolbar and the menus. The editor reads `defaultValue` once when it mounts: there is no `value` prop and no read-only mode, so a new document means a new `key`. Every change reaches the consumer through `onValueChange`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aria-label` | `string` | required | Names the editable area. |
+| `defaultValue` | `RichTextValue` | - | Sets the document the editor starts with; read once. |
+| `onValueChange` | `(value: RichTextValue) => void` | - | Called when the document changes, with the whole document and no node ids; skipped while a `/` or `@` input is open. |
+| `placeholder` | `string` | - | Sets the text shown while the document is empty, and the `aria-placeholder` of the editable area. |
+| `autoFocus` | `boolean` | `false` | When true, focuses the editor with the caret at the end of the document on mount. |
+| `maxListDepth` | `number` | `defaultMaxListDepth` (4) | Sets how many levels a list can nest; must be an integer of at least 1, or the editor throws a `RangeError`. |
+| `draggableBlocks` | `boolean` | `false` | When true, gives every top-level block a drag handle and lets Escape select the current block. |
+| `mentions` | `readonly RichTextMention[]` | - | Sets the people the `@` menu offers; the menu exists only when this is passed, even as an empty array. |
+| `onPickImage` | `() => Promise<RichTextImage or null>` | - | Called when Image is chosen in the `/` menu; the option exists only when this is passed, and `null` inserts nothing. |
+| `onExitStart` | `() => void` | - | Called when the user presses ArrowUp on the first line of the first block, or Backspace at the start of the document when the first block is a paragraph. |
+| `className` | `string` | - | Adds classes to the root `div`, after `w-full`. |
+| `ref` | `Ref<RichTextEditorHandle>` | - | Receives the handle with `focusStart()`, which focuses the start of the document. |
+| `toolbarLabel` | `string` | `"Formatação"` | Names the floating toolbar. |
+| `blockTypeLabel` | `string` | `"Tipo de bloco"` | Names the block type select of the toolbar. |
+| `paragraphLabel` | `string` | `"Texto"` | Labels the paragraph in the block type select and in the `/` menu. |
+| `markLabels` | `Readonly<Record<RichTextMark, string>>` | see below | Names the mark toggles of the toolbar. |
+| `blockLabels` | `Readonly<Record<RichTextBlock, string>>` | see below | Labels the blocks in the toolbar, the select and the `/` menu. |
+| `extraBlockLabels` | `Readonly<Record<RichTextExtraBlock, string>>` | see below | Labels the extra blocks in the `/` menu. |
+| `linkLabels` | `LinkButtonLabels` | see below | Labels the link button, its address field and its two actions. |
+| `blockDragLabels` | `{ handle: string; selection: string }` | `{ handle: "Mover bloco", selection: "Blocos selecionados" }` | Names the drag handle and the block selection. |
+| `slashMenuLabel` | `string` | `"Blocos"` | Names the `/` menu listbox. |
+| `slashMenuEmptyLabel` | `string` | `"Nenhum bloco com esse nome"` | Sets the status text of the `/` menu when no block matches. |
+| `mentionLabel` | `string` | `"Pessoas"` | Names the `@` menu listbox. |
+| `mentionEmptyLabel` | `string` | `"Ninguém com esse nome"` | Sets the status text of the `@` menu when no person matches. |
+
+Default labels, in Portuguese:
+
+| Label prop | Default labels |
+| --- | --- |
+| `markLabels` | `bold` "Negrito", `italic` "Itálico", `underline` "Sublinhado", `strikethrough` "Tachado", `code` "Código", `highlight` "Destaque de texto" |
+| `blockLabels` | `h2` "Título de seção", `h3` "Subtítulo", `blockquote` "Citação", `ul` "Lista com marcadores", `ol` "Lista numerada" |
+| `extraBlockLabels` | `todo` "Lista de tarefas", `callout` "Destaque", `code` "Bloco de código", `hr` "Divisor", `date` "Data de hoje", `table` "Tabela", `image` "Imagem" |
+| `linkLabels` | `button` "Link", `url` "Endereço do link", `apply` "Aplicar", `remove` "Remover" |
+
+`RichTextMention` is `{ id: string; label: string }` and `RichTextImage` is `{ url: string; alt?: string }`. Each label prop replaces the whole record, so pass every key.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"rich-text-editor"` | Selects the root |
+| `data-slot` | `"rich-text-editor-content"` | Selects the editable area |
+| `data-slot` | `"rich-text-block"` | Selects the wrapper of a top-level block, only with `draggableBlocks` |
+| `data-block-selected` | present when the block is selected | Lets the consumer style a selected block; the pattern draws its own `bg-primary/12` overlay |
+
+While a `/` or `@` menu is open, the editable area carries `aria-controls` pointing at the listbox and `aria-activedescendant` pointing at the highlighted option, and focus never leaves it. `aria-expanded` is not set, because `role="textbox"` does not take it.
+
+Lists deeper than `maxListDepth` are flattened when the document normalizes. Tab with no room to nest, and Shift+Tab at the first level, leave the list alone and let focus leave the editor.
+
+## Document value
+
+`RichTextValue` is a Plate value: an array of nodes, each element `{ type, children }` and each text `{ text, ...marks }`. The vocabulary is closed, so a document the editor emits holds only the elements of `RICH_TEXT_ELEMENTS` and the marks of `RICH_TEXT_MARKS`, never a node `id` and never the `/` or `@` input.
+
+| Element | Fields | Notes |
+| --- | --- | --- |
+| `p` | - | The default block. |
+| `h2`, `h3` | - | Section heading and subheading; `h1` is reserved for `EditorTitle`, so `#` and a pasted `H1` make an `h2`, and a pasted `H4` to `H6` make an `h3`. |
+| `blockquote` | - | Flattens blocks pasted inside it, with a line break between them. |
+| `ul`, `ol`, `li`, `lic` | - | Lists are `ul` or `ol`, holding `li`; each `li` holds a `lic` with the text and, after it, an optional nested list. |
+| `a` | `url` | Inline link, rendered with `target="_blank"` and `rel="noopener noreferrer"`. |
+| `mention` | `value` | Inline, not editable; shows `@` followed by `value`. |
+| `action_item` | `checked` | A task with a checkbox named "Concluída". |
+| `callout` | `icon` (optional) | A boxed note; the icon defaults to a light bulb. |
+| `code_block` | - | Preformatted text. |
+| `hr` | - | A divider. |
+| `date` | `date` | An inline date as `YYYY-MM-DD`, formatted with `pt-BR`. |
+| `table`, `tr`, `td`, `th` | - | A table; the `/` menu inserts three rows of three cells. |
+| `img` | `url`, `alt` | A block image. |
+
+| Mark | Shortcut | Notes |
+| --- | --- | --- |
+| `bold` | Mod+B | Also `**text**`. |
+| `italic` | Mod+I | Also `*text*` and `_text_`. |
+| `underline` | Mod+U | No markdown rule. |
+| `strikethrough` | Mod+Shift+X | Also `~~text~~`. |
+| `code` | Mod+E | Also a pair of backticks around the text. |
+| `highlight` | Mod+Shift+H | A boolean `highlight` leaf; there is no free text color, so the highlight follows the consumer's theme. |
+
+A block starts from a markdown shortcut typed at the start of an empty line followed by a space: `#` or `##` for `h2`, `###` for `h3`, `>` for `blockquote`, `-` or `*` for `ul`, `1.` for `ol`. A shortcut does nothing inside a block of the same type, and the list shortcuts do nothing inside a list item.
+
+## Floating toolbar
+
+The formatting bar that opens above the selection. Renders a Base UI `Toolbar` with `role="toolbar"`, named by `toolbarLabel`, inside a popover with `role="presentation"`.
+
+It opens only while the selection is expanded and holds text, the pointer is up, and focus is inside the editor, the toolbar or one of its popups. Escape dismisses it for that selection, and Alt+F10 from the editor focuses its first control. From there the arrow keys move between the controls, and Enter applies one and returns focus to the editor with the selection intact.
+
+In order, the toolbar holds the block type select (a `combobox` named by `blockTypeLabel`), the six mark toggles, the link button and five block toggles (`h2`, `h3`, `blockquote`, `ul`, `ol`). Every toggle is a button with `aria-pressed`, pressed while the selection already has that mark or block. The link button opens a form with an address field, an Apply button and, on a selection that is already a link, a Remove button.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"floating-toolbar"` | Selects the toolbar |
+
+## Slash menu
+
+The menu that opens when the user types `/`. Renders a popover with `role="presentation"` holding a `div` with `role="listbox"` named by `slashMenuLabel`, one `button` with `role="option"` per block and an `output` for the status. The listbox never takes focus: the editor keeps it and points at the highlighted option through `aria-activedescendant`.
+
+The options, in order, are the paragraph, `h2`, `h3`, `blockquote`, `ul`, `ol`, then the extra blocks `todo`, `callout`, `code`, `hr`, `date` and `table`, and `image` after them when `onPickImage` is passed. Typing after the `/` filters them by label and by keyword. ArrowDown and ArrowUp move the highlight and wrap around, hovering moves it too, and Enter or a click applies it and removes the typed text.
+
+Escape dismisses the menu and leaves `/` and the query as plain text. So do Space with an empty query or no match, Enter with no match (which then goes on to the editor), blur, and moving the caret out of the typed text. While the menu is open `onValueChange` is not called; the next call carries the settled text.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"slash-menu"` | Selects the listbox |
+| `data-slot` | `"slash-menu-option"` | Selects an option |
+| `data-slot` | `"slash-menu-status"` | Selects the status line; empty and `sr-only` while there are matches, `slashMenuEmptyLabel` otherwise |
+| `data-highlighted` | present on the highlighted option | Styles the highlighted option, like `aria-selected` |
+
+`slashMenuOptions(labels)` builds the option list for a label record, and `filterSlashMenuOptions(options, query)` applies the filter; both are exported to render the same list elsewhere.
+
+## Mention menu
+
+The menu that opens when the user types `@` at the start of a line or after a space, only when `mentions` is passed. It is the same listbox as the slash menu, named by `mentionLabel`, with one option per person, filtered by label, and `mentionEmptyLabel` as its empty status. Choosing a person replaces the typed text with a `mention` element whose `value` is the person's `label`, followed by a space. The editor never searches people: the consumer decides who is in the list.
+
+## Block drag
+
+With `draggableBlocks`, every top-level block gets a handle, a `button` named by `blockDragLabels.handle`, to its left. The handle is invisible at rest and shows on hover, on focus and on touch screens, so the page needs room to the left of the editor. Dragging it moves the block, and Alt with ArrowUp or ArrowDown on the focused handle moves it one place without the pointer.
+
+Escape in the editor selects the current block; the selection takes focus in a hidden input named by `blockDragLabels.selection`. ArrowUp and ArrowDown move the selection, Backspace and Delete remove the selected blocks, Enter and Escape return to the editor. Only top-level blocks can be dragged or selected, and nested list items cannot.
+
+## EditorTitle
+
+The page title: an `h1` around a borderless `textarea` that is always one line. Renders a `div` holding the heading and, when the counter shows, a counter. While the title is empty the heading holds a `sr-only` span with `emptyLabel`, so the heading keeps a name, and the field shows the same text as its placeholder.
+
+Line breaks never get in: typing or pasting them collapses every run into one space and keeps the caret in place. Enter calls `onEnter` and inserts nothing, and ArrowDown with the caret at the end calls `onArrowDownAtEnd`, so the consumer can hand focus to the body. The value is uncontrolled and starts from `defaultValue`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `emptyLabel` | `string` | required | Names the heading and is the field placeholder while the title is empty. |
+| `defaultValue` | `string` | `""` | Sets the initial title; line breaks are flattened. |
+| `label` | `string` | `"Título"` | Names the field through `aria-label`. |
+| `autoFocus` | `boolean` | `false` | When true, focuses the field with the caret at the end on mount. |
+| `max` | `number` | - | Sets the `maxLength` of the field and the limit shown in the counter. |
+| `counterFrom` | `number` | - | Sets the length from which the counter shows; the counter needs `max` too. |
+| `onChange` | `(value: string) => void` | - | Called on every change, with the flattened title. |
+| `onEnter` | `() => void` | - | Called on Enter, which inserts no line break. |
+| `onArrowDownAtEnd` | `() => void` | - | Called on ArrowDown while the caret is at the end of the title. |
+| `className` | `string` | - | Adds classes to the root `div`, after `flex flex-col gap-1`. |
+| `ref` | `Ref<EditorTitleHandle>` | - | Receives the handle with `focusEnd()`, which focuses the field with the caret at the end. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editor-title"` | Selects the root |
+| `data-slot` | `"editor-title-heading"` | Selects the `h1` |
+| `data-slot` | `"editor-title-field"` | Selects the `textarea` |
+| `data-slot` | `"editor-title-counter"` | Selects the counter, a `span` that the field points at through `aria-describedby`; it renders the length over `max` |
+
+The heading is `text-2xl` and `font-semibold`; the field fills the row, takes the heading's type and grows with its text through `field-sizing: content` in browsers that support it. The field has no outline: the caret is the focus indicator.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `defaultMaxListDepth` | `constant` | The default of `maxListDepth`, `4`. |
+| `RICH_TEXT_ELEMENTS` | `constant` | Every element type the editor emits. |
+| `RICH_TEXT_MARKS` | `constant` | The six marks, in toolbar order. |
+| `RICH_TEXT_BLOCKS` | `constant` | `h2`, `h3`, `blockquote`, `ul` and `ol`. |
+| `RICH_TEXT_EXTRA_BLOCKS` | `constant` | `todo`, `callout`, `code`, `hr`, `date`, `table` and `image`. |
+| `applyBlock` | `function` | Toggles a block type on the selection, unwrapping a list item first, or toggles a list; the one path the toolbar, the select, the shortcuts and the `/` menu share. `applyBlock(editor, block)` |
+| `slashMenuOptions` | `function` | Builds the `/` menu options from a label record. `slashMenuOptions(labels) => SlashMenuOption[]` |
+| `filterSlashMenuOptions` | `function` | Filters options by label and keyword. `filterSlashMenuOptions(options, query) => SlashMenuOption[]` |
+| `RichTextEditorProps`, `EditorTitleProps` | `type` | The props of each component. |
+| `RichTextEditorHandle`, `EditorTitleHandle` | `type` | The handles with `focusStart()` and `focusEnd()`. |
+| `RichTextValue`, `RichTextMention`, `RichTextImage` | `type` | The document and the two shapes the consumer passes. |
+| `RichTextMark`, `RichTextBlock`, `RichTextExtraBlock` | `type` | The union of each vocabulary constant. |
+| `SlashMenuBlock`, `SlashMenuOption`, `LinkButtonLabels` | `type` | The menu block ids, one menu option and the link labels. |
+
+## Accessibility and theme
+
+- Pass `aria-label` to every `RichTextEditor` and a distinct `emptyLabel` to every `EditorTitle`; the defaults of the other labels are in Portuguese, so pass every label prop that the page language needs.
+- The placeholder is `aria-hidden` and drawn at `text-muted-foreground` with its opacity restored to 1; the editable area names it through `aria-placeholder`. The measured contrast is in `docs/accessibility.md`.
+- The toolbar and the menus are popups that take no focus from the editor, except the toolbar when the user asks for it with Alt+F10 and the link field, which takes focus while it is open.
+- The pattern reads the tokens `foreground`, `muted-foreground`, `muted`, `border`, `primary`, `warning`, `accent` and `accent-foreground`, and ships no CSS: dark mode follows the consumer's theme, and the highlight is `warning` at 30% (25% in dark).
+- Interface text is the consumer's. The date block formats with `pt-BR` and the default labels are Portuguese.

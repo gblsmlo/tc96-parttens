@@ -27,7 +27,7 @@ Import direction: `rich-text-editor.tsx` → every other file except `editor-tit
 
 Document:
 
-- The emitted document never carries node ids or a trigger input. The editor runs with `nodeId: { initialValueIds: 'always' }` because block selection and drag need ids; `withoutSlashInput` skips any value containing `slash_input` or `mention_input` (`hasTriggerInput`) and passes the rest through `stripRichTextNodeIds`. `plugins.test.ts` and `slash-menu.test.ts` cover the document side, and the `Patterns/Rich Text Editor/Slash Menu` plays cover what `onValueChange` receives.
+- The emitted document never carries node ids or a trigger input. The editor runs with `nodeId: { initialValueIds: 'always' }` because block selection and drag need ids; `withoutSlashInput` skips any value containing `slash_input` or `mention_input` (`hasTriggerInput`) and passes the rest through `stripRichTextNodeIds`. `plugins.test.ts` and `slash-menu.test.ts` cover the document side, and the `Patterns/Rich Text Editor/Behavior` plays `ValueChangeSkipsOpenMenu` and `CaretLeavingDropsTheMenuToLiteral` cover what `onValueChange` receives.
 - `richTextEditorOptions` throws `RangeError` unless `maxListDepth` is an integer of at least 1. Lists deeper than the cap are flattened on normalize; Tab without room and Shift+Tab at depth 1 return `false`, so focus leaves the editor by keyboard.
 - Lists are Plate's classic model (`ul`, `ol`, `li`, `lic`) with `TaskListPlugin` disabled. A blockquote flattens blocks pasted inside it, with a line break between them.
 - There is no free text color: highlight is the boolean `highlight` leaf, because a fixed color stored in the document would not follow the consumer's dark theme.
@@ -68,7 +68,7 @@ Copy: default labels are pt-BR props; the date block formats with `Intl.DateTime
 - No `cva`: every class is a literal string. Dragging is `isDragging && 'opacity-50'` through `cn`, not a `data-*` attribute.
 - Colors only from theme tokens with opacity modifiers; highlight is `bg-warning/30 text-foreground dark:bg-warning/25`, not a palette yellow.
 - The drag handle wrapper is `opacity-0` and shows with `group-hover/block:opacity-100`, `focus-within:opacity-100` and `pointer-coarse:opacity-100`, because `hover:` does not fire on touch.
-- `renderPlaceholder` overrides Slate's inline `opacity: 0.333` with `opacity: 1`, so the placeholder renders at `text-muted-foreground`: composited, it measured 1.60:1 (light) and 1.69:1 (dark) on the dialog popup, and 5.73:1 and 5.07:1 after. The ratios are in `docs/accessibility.md`, under Registros de contraste (`RichTextEditor`); the `Placeholder` story leaves the editor empty so axe checks the pair.
+- `renderPlaceholder` overrides Slate's inline `opacity: 0.333` with `opacity: 1`, so the placeholder renders at `text-muted-foreground`: composited, it measured 1.60:1 (light) and 1.69:1 (dark) on the dialog popup, and 5.73:1 and 5.07:1 after. The ratios are in `docs/accessibility.md`, under Registros de contraste (`RichTextEditor`); the `Default` story of `Stories` and `PlaceholderKeepsFullOpacity` of `Behavior` leave the editor empty so axe checks the pair.
 - The caret is the focus indicator: the editable and the title field carry `outline-none`, and the title's `h1` draws no focus background, removed by the owner on 2026-10-09.
 - `scripts/override-exceptions.json` has no entry for this pattern.
 
@@ -81,7 +81,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/rich-text-editor
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/rich-text-editor/`: the editor and title stories, `slash-menu.stories.tsx` (what `onValueChange` receives while the menu is open), `plugins.stories.tsx` (pasted HTML) and `editor-title/` (title behavior). The bun tests left in this folder are the pure document and transform checks in `plugins.test.ts` and `slash-menu.test.ts`, which run on `createPlateEditor` without mounting and need no DOM. Stories run axe with `test: 'error'`. The Base UI focus guards are excluded from axe for every story in `apps/storybook/.storybook/preview.ts`.
+Interface tests are `play` functions in `apps/storybook/src/patterns/rich-text-editor/`, on the six pages of `Patterns/Rich Text Editor`: `behavior.stories.tsx` and `behavior/` (one file per area: formatting, toolbar, menus, blocks, focus, title) all share the title `Patterns/Rich Text Editor/Behavior`, and `usages/` shares `Patterns/Rich Text Editor/Usages`; `fixtures/campaign-brief.tsx` is the only fixture, imported by the Campaign Brief usage. The bun tests left in this folder are the pure document and transform checks in `plugins.test.ts` and `slash-menu.test.ts`, which run on `createPlateEditor` without mounting and need no DOM. Stories run axe with `test: 'error'`. The Base UI focus guards are excluded from axe for every story in `apps/storybook/.storybook/preview.ts`.
 
 ## Pointers
 
