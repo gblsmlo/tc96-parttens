@@ -1,0 +1,262 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Toolbar
+
+The bar above a collection of records, for the controls that act on the whole view: the saved view the user is looking at, the display settings, a search field, the main action. `CollectionToolbar` places the controls in a start, a center and an end slot and keeps no state of its own. The view switcher (`ViewSwitcherMenu` and its parts) is the control that fills the start slot of a screen with saved views: a trigger with the active view and a popover with the search, the views, the options of a view and the creation of a new one. The consumer passes the views and the selection and handles every callback.
+
+The other pages of `Patterns/Toolbar`: [Playground](?path=/story/patterns-toolbar-playground--playground) to try the variant, the slots and the optional parts of the view switcher, [Stories](?path=/story/patterns-toolbar-stories--default) for each variant of the toolbar and of the view switcher trigger, [Behavior](?path=/story/patterns-toolbar-behavior--slots-and-free-composition-stay-out-of-the-dom) for the tests, [Usages](?path=/story/patterns-toolbar-usages--task-views) for real toolbars, and [Layouts](?path=/story/patterns-toolbar-layouts--with-center-slot) for how the parts combine.
+
+Used in: the collection frame places the toolbar above every layout, with the view switcher on the screens that have saved views. See the toolbar of [Tasks](?path=/story/patterns-collection-usages--tasks), [Pipeline](?path=/story/patterns-collection-usages--pipeline) and [Contacts](?path=/story/patterns-collection-usages--contacts), and the toolbar over a layout in [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference) and [Data Table](?path=/docs/patterns-collection-layouts-data-table-api-reference--api-reference).
+
+The controls a screen puts in the slots (`ViewSettingsMenu`, `ViewSettingsSection`, `CollectionSearchField`, `Action`, `PresetsMenu` and `FilterRadioSubmenu`) belong to [Patterns/Collection](?path=/docs/patterns-collection-api-reference--api-reference), where their props are documented. They render toolbar buttons and inputs, so they only mount inside a `CollectionToolbar`.
+
+## Import
+
+```tsx
+import {
+  CollectionToolbar,
+  CollectionToolbarGroup,
+  ViewSwitcherCreate,
+  ViewSwitcherItem,
+  ViewSwitcherItems,
+  ViewSwitcherMenu,
+  ViewSwitcherSearch,
+} from '@acme/patterns'
+```
+
+The prop types of each part are exported with it, listed under Exports.
+
+## Anatomy
+
+`CollectionToolbar` with the `text` variant and every slot filled:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<CollectionToolbar
+  centerSlot={centerSlot}
+  description="description"
+  endSlot={endSlot}
+  startSlot={startSlot}
+  title="title"
+  variant="text"
+>
+  {children}
+</CollectionToolbar>
+```
+
+The toolbar renders its groups itself around the slots. The tree it renders:
+
+```text
+div[role=toolbar][data-slot=toolbar][data-variant]
+├── div[role=group][data-slot=toolbar-group]   heading group, variant="text" only
+│   └── div
+│       ├── h2                                 title
+│       └── p                                  description
+├── div[role=group][data-slot=toolbar-group]   startSlot
+│   or div[aria-hidden]                        spacer, only with centerSlot and no startSlot
+├── div[role=group][data-slot=toolbar-group]   centerSlot, only with centerSlot
+├── children                                   free composition, as passed
+└── div[role=group][data-slot=toolbar-group]   endSlot
+    or div[aria-hidden]                        spacer, only with centerSlot and no endSlot
+```
+
+`ViewSwitcherMenu` inside the start slot, with a content slot in its popover:
+
+<Canvas of={ApiReferenceStories.ViewSwitcherAnatomy} />
+
+```tsx
+<CollectionToolbar
+  startSlot={
+    <ViewSwitcherMenu icon={<Icon />} label="ViewSwitcherMenu">
+      <ViewSwitcherSearch onValueChange={setQuery} value={query} />
+      <ViewSwitcherItems>
+        <ViewSwitcherItem
+          label="ViewSwitcherItem"
+          onSelect={select}
+          options={<MenuItem>Duplicar</MenuItem>}
+          selected
+        />
+      </ViewSwitcherItems>
+      <ViewSwitcherCreate onClick={create} />
+    </ViewSwitcherMenu>
+  }
+/>
+```
+
+The popover is closed in the canvas above, so the tree below lists what it holds once the trigger is pressed:
+
+```text
+button                                          trigger, aria-haspopup="dialog"
+├── span                                        icon, only with icon
+├── span                                        label, truncated
+└── svg                                         chevron, aria-hidden
+div[role=dialog][data-slot=popover-popup]       portaled, aria-label is the label
+└── div[data-slot=popover-viewport]
+    └── div                                     children, in a column
+        ├── div[data-slot=view-switcher-search]       ViewSwitcherSearch
+        │   └── input[type=search]
+        ├── fieldset[data-slot=view-switcher-items]   ViewSwitcherItems
+        │   ├── div[data-slot=view-switcher-item]     ViewSwitcherItem
+        │   │   ├── button                            label, closes the popover
+        │   │   └── button                            options trigger, only with options
+        │   └── div[aria-hidden]                      skeleton row, only with loading
+        └── button[data-slot=view-switcher-create]    ViewSwitcherCreate
+```
+
+## CollectionToolbar
+
+The bar for the controls of a collection. Renders a `div` with `role="toolbar"`, named by `aria-label`, that lays out its slots on one row. It keeps no state: the consumer composes the controls, and the toolbar never fetches, filters or runs anything.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"default"`, `"plain"` or `"text"` | `"plain"` | Controls the surface: `"default"` keeps the framed bar, `"plain"` sits straight on the page, `"text"` is plain with a heading and a description at the start. |
+| `title` | `string` | required with `"text"` | Sets the heading of the `"text"` variant; with the other variants it is the HTML `title` attribute of the bar, a tooltip. |
+| `description` | `string` | required with `"text"` | Sets the muted line under the heading; the other variants do not accept it. |
+| `startSlot` | `ReactNode` | - | Sets the controls at the start of the bar, such as the view switcher or the search field. |
+| `centerSlot` | `ReactNode` | - | Sets the controls at the middle of the bar, such as a period toggle. |
+| `endSlot` | `ReactNode` | - | Sets the controls at the end of the bar, such as the view settings and the main action. |
+| `children` | `ReactNode` | - | Renders free composition after the center group and before the end group, with no group around it. |
+| `aria-label` | `string` | `"Controles da coleção"` | Names the toolbar for assistive technology. |
+| `className` | `string` | - | Adds classes after the bar classes, so a conflicting class wins. |
+
+Also takes every prop of Base UI `Toolbar.Root` (a `div`), such as `orientation`, `disabled` and `loopFocus`, except `title` and `variant`, which the table defines.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toolbar"` | Selects the bar in the theme and in tests |
+| `data-variant` | `"default"`, `"plain"` or `"text"` | Follows `variant`, so the theme can tell the surfaces apart |
+| `data-orientation` | `"horizontal"` or `"vertical"` | Follows `orientation` |
+| `data-disabled` | present when `disabled` | Lets the theme style a disabled toolbar |
+
+The slots are never DOM attributes: `startSlot`, `centerSlot` and `endSlot` are read by the toolbar and each one is wrapped in its own group. The `"default"` variant is a bordered, rounded and padded bar on the card background; `"plain"` and `"text"` remove the border, the radius, the background and the padding. The bar is 36px tall (40px from `md`) in `"default"` and `"plain"`, and at least 56px tall in `"text"`. The heading of `"text"` is an `h2` and the description a muted `p`; both are truncated, and the heading group takes the free width.
+
+Without `centerSlot` the end group takes `ms-auto` and sits at the end. With it, the start and end groups share the remaining width equally (`flex-1 basis-0`) and an `aria-hidden` spacer stands in for a side that has no slot, so the center group sits at the middle of the toolbar whatever the width of the sides.
+
+The toolbar is one Tab stop, and the arrow keys move focus between its items: the trigger of `ViewSwitcherMenu`, `Action`, the triggers of `ViewSettingsMenu` and `PresetsMenu`, the field of `CollectionSearchField` and any `ToolbarButton` in a slot. A plain `button` is not an item and stays a tab stop of its own.
+
+## CollectionToolbarGroup
+
+A group of controls inside the toolbar, for the `children` composition. Renders a `div` with `role="group"`, a row with 4px between its controls.
+
+Also takes every prop of Base UI `Toolbar.Group` (a `div`), such as `disabled`, which disables every item in the group, and `aria-label`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"toolbar-group"` | Selects a group; the groups the toolbar draws around its slots carry it too |
+| `data-orientation` | `"horizontal"` or `"vertical"` | Follows the orientation of the toolbar |
+| `data-disabled` | present when disabled | Lets the theme style a disabled group |
+
+## ViewSwitcherMenu
+
+The trigger and the popover of the view switcher. Renders a ghost toolbar button that shows the active view and opens a popover with the views; mount it in the toolbar, since the trigger is a toolbar item. The popover has `role="dialog"`, not a menu, because it holds a search field and a button per view, and a `role="menu"` can hold neither. It opens under the trigger, aligned to its start, 18rem wide, and closes when a view, an option or the create button is chosen.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Sets the text of the trigger and the `aria-label` of the popover, usually the label of the active view. |
+| `children` | `ReactNode` | required | Sets the content of the popover, in a column with 4px between its parts. |
+| `icon` | `ReactNode` | - | Sets an icon before the label; without it the trigger has no icon wrapper. |
+| `variant` | `ButtonProps["variant"]` | `"ghost"` | Controls the look of the trigger with a `Button` variant. |
+| `className` | `string` | - | Adds classes to the trigger. |
+
+Values of `variant`: `"default"`, `"destructive"`, `"destructive-outline"`, `"ghost"`, `"link"`, `"outline"` and `"secondary"`.
+
+The label is truncated, so a long view name never widens the trigger past its container; the accessible name stays whole. A chevron after the label is always drawn.
+
+| Attribute | Part | Values | Description |
+| --- | --- | --- | --- |
+| `aria-haspopup` | trigger | `"dialog"` | Says the trigger opens a dialog |
+| `aria-expanded` | trigger | `"true"` or `"false"` | Follows the popover |
+| `data-popup-open` | trigger | present while the popover is open | Lets the theme style the open trigger |
+| `data-slot` | popover | `"popover-popup"` | Selects the popover |
+
+## ViewSwitcherSearch
+
+The search field of the popover. Renders a `div` with `data-slot="view-switcher-search"` around an `input` of `type="search"`. It filters nothing: the consumer keeps the typed text, filters the views it passes and renders the result.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | required | Sets the text of the field; the field is controlled. |
+| `onValueChange` | `(value: string) => void` | required | Called on every change, with the new text. |
+| `label` | `string` | `"Buscar views"` | Sets the `aria-label` of the field. |
+| `placeholder` | `string` | `"Buscar views..."` | Sets the placeholder of the field. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"view-switcher-search"` | Selects the wrapper of the field |
+
+## ViewSwitcherItems
+
+The list of views, or one group of them. Renders a `fieldset` with `role="group"` named by `label`, a column with 2px between its rows. A popover can hold several, such as a favorites group followed by the other views; separators and group headings are the consumer's markup.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | - | Sets the rows, usually `ViewSwitcherItem`. |
+| `label` | `string` | `"Views"` | Sets the `aria-label` of the group. |
+| `loading` | `boolean` | `false` | When true, marks the group busy and adds skeleton rows after the children. |
+| `loadingItemCount` | `number` | `3` | Sets how many skeleton rows `loading` adds. |
+
+With `loading` the children render first, so a view the consumer already knows (the default one) stays selectable while the saved views load. Each skeleton row is `aria-hidden` and holds two `Skeleton` blocks.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"view-switcher-items"` | Selects the group |
+| `aria-busy` | `"true"` while `loading` | Says the list is still loading |
+
+## ViewSwitcherItem
+
+One view of the list. Renders a `div` with `data-slot="view-switcher-item"` that holds a button with the label and, when it has `options`, a second button that opens the menu of the view. Choosing the label calls `onSelect` and closes the popover.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Sets the text of the row and its accessible name. |
+| `onSelect` | `() => void` | required | Called when the label is pressed, before the popover closes. |
+| `selected` | `boolean` | `false` | When true, marks the row as the current one and gives it the accent background. |
+| `icon` | `ReactNode` | - | Sets an icon before the label; without it the row has no icon wrapper. |
+| `options` | `ReactNode` | - | Sets the content of the options menu, usually `MenuItem` parts; without it the options button is not rendered. |
+| `optionsLabel` | `string` | `"Opções de {label}"` | Sets the `aria-label` of the options button. |
+
+The options menu is a `Menu` that opens to the right of the options button, aligned to its start and 16rem wide. It is a separate tree from the popover, so the item closes the popover itself: pressing an option closes the menu and the popover together, while closing the menu with Escape leaves the popover open. An option that is `disabled` stays visible and does nothing.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"view-switcher-item"` | Selects the row |
+| `data-selected` | present when `selected` | Lets the theme style the current row; absent otherwise |
+| `aria-current` | `"true"` on the label button when `selected` | Marks the current view for assistive technology |
+
+## ViewSwitcherCreate
+
+The button that creates a view. Renders a ghost button at the full width of the popover, with a plus icon and the label. Pressing it calls `onClick` and closes the popover.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onClick` | `() => void` | required | Called when the button is pressed, before the popover closes. |
+| `label` | `string` | `"Criar nova view"` | Sets the text of the button. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"view-switcher-create"` | Selects the button |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `CollectionToolbarProps` | `type` | The props of `CollectionToolbar`: a union on `variant`, since `"text"` requires `title` and `description` and the other variants accept no `description`. |
+| `CollectionToolbarGroupProps` | `type` | The props of `CollectionToolbarGroup`. |
+| `ViewSwitcherMenuProps` | `type` | The props of `ViewSwitcherMenu`. |
+| `ViewSwitcherSearchProps` | `type` | The props of `ViewSwitcherSearch`. |
+| `ViewSwitcherItemsProps` | `type` | The props of `ViewSwitcherItems`. |
+| `ViewSwitcherItemProps` | `type` | The props of `ViewSwitcherItem`. |
+| `ViewSwitcherCreateProps` | `type` | The props of `ViewSwitcherCreate`. |
+
+## Accessibility and theme
+
+- Name the toolbar with `aria-label` so it says which collection it controls; the default is in Portuguese, so pass a name in the language of the screen.
+- The labels the view switcher writes itself (`"Buscar views"`, `"Buscar views..."`, `"Views"`, `"Opções de {label}"` and `"Criar nova view"`) are in Portuguese too: pass `label`, `placeholder` and `optionsLabel` in the language of the screen.
+- Give `ViewSwitcherItems` a `label` that names its group, such as `"Favoritos"` for a favorites group; the popover is named by the `label` of `ViewSwitcherMenu`.
+- Pass icons that hide themselves (`aria-hidden="true"`; the `lucide-react` icons do by default), since the label already names the control.
+- Escape closes the popover and returns focus to the trigger, and the options menu closes before the popover does.
+- The framed bar reads `--card`, `--card-foreground`, `--border` and `--radius-xl`; the popover reads `--popover`, `--popover-foreground` and `--border`, the current row `--accent`, and the placeholder and the description `--muted-foreground`. The trigger and the buttons read the tokens of `Button`.
