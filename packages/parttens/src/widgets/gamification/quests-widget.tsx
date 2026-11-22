@@ -1,6 +1,6 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
 import { Badge } from '@tc96/ui/badge'
 import { CardPanel } from '@tc96/ui/card'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { MeterPrimitive } from '@tc96/ui/meter'
 import { cn } from '@tc96/utils'
 import { CheckIcon } from 'lucide-react'

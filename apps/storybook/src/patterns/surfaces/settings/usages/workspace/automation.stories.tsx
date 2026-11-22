@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Text } from '@tc96/elements/text'
 import {
   SettingsSection,
   SettingsSectionDescription,
@@ -11,6 +10,7 @@ import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { Group, GroupSeparator } from '@tc96/ui/group'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+import { Text } from '@tc96/ui/text'
 import {
   CircleXIcon,
   EllipsisIcon,

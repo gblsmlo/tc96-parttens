@@ -21,14 +21,12 @@ const config: InstallConfig = {
   aliases: {
     ui: '@consumer/visual',
     utils: '@consumer/helpers/cn',
-    elements: '@consumer/atoms',
     helpers: '@consumer/toolkit',
     patterns: '@consumer/patterns',
     templates: '@consumer/templates',
   },
   paths: {
     ui: 'packages/visual/src',
-    elements: 'packages/atoms/src',
     helpers: 'packages/toolkit/src',
     patterns: 'packages/patterns/src',
     templates: 'apps/web/src/templates',
@@ -76,8 +74,8 @@ test('accepts templates next to patterns', () => {
 test('maps template files and imports to the templates destination', () => {
   const result = prepareItem(
     item(
-      'templates/src/application/shell/app-shell-1/app-shell-1.tsx',
-      'import { Sidebar } from "@tc96/ui/sidebar"\nimport { ProgressRing } from "@tc96/parttens/widgets/shared/progress-ring"\nimport { NavMain } from "@tc96/templates/application/shell/shared/nav-main"\n',
+      'blocks/src/application/shell/app-shell-1/app-shell-1.tsx',
+      'import { Sidebar } from "@tc96/ui/sidebar"\nimport { ProgressRing } from "@tc96/parttens/widgets/shared/progress-ring"\nimport { NavMain } from "@tc96/blocks/application/shell/shared/nav-main"\n',
     ),
     config,
   )
@@ -89,7 +87,7 @@ test('maps template files and imports to the templates destination', () => {
   })
   const built = prepareItem(
     item(
-      'templates/src/application/shell/app-shell-1/app-shell-1.tsx',
+      'blocks/src/application/shell/app-shell-1/app-shell-1.tsx',
       'import { ProgressRing } from "@tc96/parttens/widgets/shared/progress-ring"\n',
     ),
     defaultConfig,
@@ -98,10 +96,10 @@ test('maps template files and imports to the templates destination', () => {
     'import { ProgressRing } from "@consumer/patterns/widgets/shared/progress-ring"\n',
   )
   expect(() =>
-    prepareItem(
-      item('templates/src/application/shell/app-shell-1/index.ts', ''),
-      { ...config, paths: { ...config.paths, templates: undefined } },
-    ),
+    prepareItem(item('blocks/src/application/shell/app-shell-1/index.ts', ''), {
+      ...config,
+      paths: { ...config.paths, templates: undefined },
+    }),
   ).toThrow('Invalid registry path')
 })
 test('rejects unknown or excluded patterns', () => {
@@ -134,29 +132,23 @@ test('maps destinations and imports without corrupting arbitrary string contents
   expect(result.files[0]?.content).toContain('from "@consumer/visual/button"')
   expect(result.files[0]?.content).toContain('const text = "@tc96/ui/button"')
 })
-test('maps elements files and imports to the elements destination', () => {
+test('rejects files of the removed elements package', () => {
+  expect(() =>
+    prepareItem(
+      item('elements/src/text.tsx', 'export const text = 1\n'),
+      config,
+    ),
+  ).toThrow('Invalid registry path')
+})
+test('maps the text import to the consumer ui alias', () => {
   const result = prepareItem(
-    {
-      name: 'proof',
-      type: 'registry:block',
-      files: [
-        {
-          path: 'elements/src/text.tsx',
-          type: 'registry:file',
-          content: 'export const text = 1\n',
-        },
-        {
-          path: 'parttens/src/shared/toolbar.tsx',
-          type: 'registry:file',
-          content: 'import { Text } from "@tc96/elements/text"\n',
-        },
-      ],
-      dependencies: [],
-    },
+    item(
+      'parttens/src/shared/toolbar.tsx',
+      'import { Text } from "@tc96/ui/text"\n',
+    ),
     config,
   )
-  expect(result.files[0]?.target).toBe('~/packages/atoms/src/text.tsx')
-  expect(result.files[1]?.content).toContain('from "@consumer/atoms/text"')
+  expect(result.files[0]?.content).toContain('from "@consumer/visual/text"')
 })
 test('maps helpers files and imports to the helpers destination', () => {
   const result = prepareItem(
@@ -220,15 +212,23 @@ test('requires every alias and both destination paths', () => {
   expect(() =>
     validateConfig({
       ...config,
-      aliases: { ...config.aliases, elements: undefined },
+      aliases: { ...config.aliases, helpers: undefined },
     } as unknown as InstallConfig),
-  ).toThrow('Invalid elements alias')
+  ).toThrow('Invalid helpers alias')
   expect(() =>
     validateConfig({
       ...config,
-      paths: { ...config.paths, elements: '../outside' },
+      paths: { ...config.paths, helpers: '../outside' },
     }),
-  ).toThrow('elements path must be inside the consumer workspace')
+  ).toThrow('helpers path must be inside the consumer workspace')
+})
+test('ignores an elements alias or path left over in the config', () => {
+  expect(() =>
+    validateConfig({
+      aliases: { ...config.aliases, elements: '@consumer/atoms' },
+      paths: { ...config.paths, elements: 'packages/atoms/src' },
+    } as unknown as InstallConfig),
+  ).not.toThrow()
 })
 test('combines COSS dependencies and leaves out the installed ones', () => {
   const combined = combineItems([
@@ -291,7 +291,6 @@ test('builds the record-group item shipping the properties catalog it imports by
 
   expect(item.name).toBe('record-group')
   expect(paths).toContain('parttens/src/properties/shared/property-catalog.ts')
-  expect(paths).not.toContain('elements/src/card-surface.tsx')
   expect(item.registryDependencies).toContain('@ui/card')
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
   expect(
@@ -350,11 +349,12 @@ test('builds the state-surface item with COSS-only dependencies and no test file
       dependency.startsWith('@ui/'),
     ),
   ).toBe(true)
-  expect(paths).toContain('elements/src/icon-frame.tsx')
+  expect(item.registryDependencies).toContain('@ui/icon-frame')
+  expect(paths.some((path) => path.startsWith('elements/'))).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
-test('builds the settings item shipping Text and no test files', () => {
+test('builds the settings item depending on the ui Text and shipping no test files', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(
     process.execPath,
@@ -368,9 +368,12 @@ test('builds the settings item shipping Text and no test files', () => {
   const paths = item.files.map((file) => file.path)
 
   expect(item.name).toBe('settings')
-  expect(item.registryDependencies).toEqual(['@ui/card', '@ui/collapsible'])
-  expect(paths).toContain('elements/src/text.tsx')
-  expect(paths).not.toContain('elements/src/card-surface.tsx')
+  expect(item.registryDependencies).toEqual([
+    '@ui/card',
+    '@ui/collapsible',
+    '@ui/text',
+  ])
+  expect(paths.some((path) => path.startsWith('elements/'))).toBe(false)
   expect(paths).toContain('parttens/src/surfaces/settings/index.ts')
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
@@ -432,7 +435,7 @@ test('builds the chat-assistant item with the COSS chat and composer dependencie
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
-test('builds the wizard item from its folder with IconFrame and COSS dependencies', () => {
+test('builds the wizard item from its folder with IconFrame and COSS as ui dependencies', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(
     process.execPath,
@@ -446,16 +449,15 @@ test('builds the wizard item from its folder with IconFrame and COSS dependencie
   const paths = item.files.map((file) => file.path)
 
   expect(item.name).toBe('wizard')
-  expect(item.registryDependencies).toEqual(['@ui/button', '@ui/card'])
+  expect(item.registryDependencies).toEqual([
+    '@ui/button',
+    '@ui/card',
+    '@ui/icon-frame',
+  ])
   expect(paths).toContain('parttens/src/wizard/index.ts')
-  expect(paths).toContain('elements/src/icon-frame.tsx')
-  expect(
-    paths.every(
-      (path) =>
-        path.startsWith('parttens/src/wizard/') ||
-        path === 'elements/src/icon-frame.tsx',
-    ),
-  ).toBe(true)
+  expect(paths.every((path) => path.startsWith('parttens/src/wizard/'))).toBe(
+    true,
+  )
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
@@ -463,7 +465,7 @@ test('lists every template folder in templateSources', () => {
   const root = resolve(import.meta.dir, '../../..')
   const folders = [
     ...new Bun.Glob('*/*/*/index.ts').scanSync(
-      join(root, 'packages/templates/src'),
+      join(root, 'packages/blocks/src'),
     ),
   ]
     .map((path) => path.replace(/\/index\.ts$/, ''))
@@ -519,7 +521,7 @@ test('resolves the core entry of a pattern from a template import', () => {
   )
   const resolved = ts.resolveModuleName(
     '@tc96/parttens/flow/canvas/core',
-    join(root, 'packages/templates/src/application/flow/shared/types.ts'),
+    join(root, 'packages/blocks/src/ai-agents/flow/shared/types.ts'),
     parsed.options,
     ts.sys,
   ).resolvedModule
@@ -544,17 +546,12 @@ test('builds the app-shell-1 item with the shell shared files and the sidebar fr
   expect(item.name).toBe('app-shell-1')
   expect(item.registryDependencies).toContain('@ui/sidebar')
   expect(item.registryDependencies).toContain('@ui/breadcrumb')
-  expect(paths).toContain(
-    'templates/src/application/shell/app-shell-1/index.ts',
-  )
-  expect(paths).toContain(
-    'templates/src/application/shell/shared/shell-nav.tsx',
-  )
+  expect(paths).toContain('blocks/src/application/shell/app-shell-1/index.ts')
+  expect(paths).toContain('blocks/src/application/shell/shared/shell-nav.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('templates/src/application/shell/') ||
-        path.startsWith('elements/src/') ||
+        path.startsWith('blocks/src/application/shell/') ||
         path.startsWith('helpers/src/'),
     ),
   ).toBe(true)
@@ -562,7 +559,7 @@ test('builds the app-shell-1 item with the shell shared files and the sidebar fr
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
-test('builds the flow templates from application/flow, the flow patterns, the assistant, elements and helpers only', () => {
+test('builds the flow blocks from ai-agents/flow, the flow patterns, the assistant and helpers only', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(
     process.execPath,
@@ -579,14 +576,13 @@ test('builds the flow templates from application/flow, the flow patterns, the as
     expect(item.name).toBe(name)
     expect(item.dependencies).toContain('@xyflow/react@12.12.0')
     expect(item.dependencies).toContain('d3-hierarchy@3.1.2')
-    expect(paths).toContain(`templates/src/application/flow/${name}/index.ts`)
+    expect(paths).toContain(`blocks/src/ai-agents/flow/${name}/index.ts`)
     expect(
       paths.every(
         (path) =>
-          path.startsWith('templates/src/application/flow/') ||
+          path.startsWith('blocks/src/ai-agents/flow/') ||
           path.startsWith('parttens/src/flow/') ||
           path.startsWith('parttens/src/chat/assistant/') ||
-          path.startsWith('elements/src/') ||
           path.startsWith('helpers/src/'),
       ),
     ).toBe(true)

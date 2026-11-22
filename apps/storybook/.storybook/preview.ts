@@ -120,14 +120,7 @@ const preview: Preview = {
     layout: 'centered',
     options: {
       storySort: (a, b) => {
-        const roots = [
-          'Get Started',
-          'UI',
-          'Elements',
-          'Patterns',
-          'Application',
-          'Templates',
-        ]
+        const roots = ['Get Started', 'UI', 'Patterns', 'Blocks', 'Templates']
         const rootA = a.title.split('/')[0] ?? ''
         const rootB = b.title.split('/')[0] ?? ''
         const rankA = roots.includes(rootA)

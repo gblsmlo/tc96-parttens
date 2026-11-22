@@ -7,37 +7,16 @@
     "strict": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
-    "types": [
-      "bun",
-      "node"
-    ],
+    "types": ["bun", "node"],
     "noEmit": true,
     "paths": {
-      "@tc96/ui/*": [
-        "./packages/ui/src/*"
-      ],
-      "@tc96/elements/*": [
-        "./packages/elements/src/*"
-      ],
-      "@tc96/helpers/*": [
-        "./packages/helpers/src/*"
-      ],
-      "@tc96/utils": [
-        "./packages/utils/src/index.ts"
-      ],
-      "@tc96/parttens": [
-        "./packages/parttens/src/index.ts"
-      ],
-      "@tc96/parttens/*": [
-        "./packages/parttens/src/*"
-      ],
-      "@tc96/templates/*": [
-        "./packages/templates/src/*"
-      ]
+      "@tc96/ui/*": ["./packages/ui/src/*"],
+      "@tc96/helpers/*": ["./packages/helpers/src/*"],
+      "@tc96/utils": ["./packages/utils/src/index.ts"],
+      "@tc96/parttens": ["./packages/parttens/src/index.ts"],
+      "@tc96/parttens/*": ["./packages/parttens/src/*"],
+      "@tc96/blocks/*": ["./packages/blocks/src/*"]
     }
   },
-  "exclude": [
-    "**/node_modules",
-    "**/dist"
-  ]
+  "exclude": ["**/node_modules", "**/dist"]
 }

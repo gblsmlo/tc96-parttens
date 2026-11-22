@@ -70,7 +70,17 @@ export function sourceClassStrings(source: string): string[] {
   )
   const strings: string[] = []
   const visit = (node: ts.Node) => {
-    if (ts.isStringLiteral(node) && isClassValue(node)) strings.push(node.text)
+    const isKey =
+      node.parent !== undefined &&
+      ts.isPropertyAssignment(node.parent) &&
+      node.parent.name === node
+    if (
+      ts.isStringLiteral(node) &&
+      node.text.trim() &&
+      !isKey &&
+      isClassValue(node)
+    )
+      strings.push(node.text)
     ts.forEachChild(node, visit)
   }
   visit(file)

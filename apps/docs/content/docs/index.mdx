@@ -20,11 +20,12 @@ npx @tc96/parttens add collection-views properties
 Os patterns se apoiam numa estrutura em camadas, configurada pelo
 `components.json` na raiz do monorepo:
 
-- `ui`: os componentes COSS do seu projeto. O TC96 não distribui UI própria;
-  consulte a [documentação do COSS](https://coss.com/ui) para `Button`, `Input`,
-  `Field` e os demais.
+- `ui`: os componentes COSS do seu projeto, mais os componentes do TC96 que o
+  COSS não tem, como `Text` e `IconFrame`, que o CLI instala junto com os
+  demais quando um pattern precisa deles. Consulte a
+  [documentação do COSS](https://coss.com/ui) para `Button`, `Input`, `Field` e
+  os demais.
 - `utils`: o `cn` que o COSS já instala.
-- `elements`: componentes do TC96 que não existem no COSS, como `Text`.
 - `patterns`: os patterns do TC96.
 
 Os patterns usam o tema e as personalizações dos seus componentes COSS. O TC96

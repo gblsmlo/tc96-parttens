@@ -1,11 +1,11 @@
 'use client'
 
-import { Text } from '@tc96/elements/text'
 import {
   Collapsible,
   CollapsiblePanel,
   CollapsibleTrigger,
 } from '@tc96/ui/collapsible'
+import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
 import { ChevronDownIcon } from 'lucide-react'
 import { type ReactElement, useId } from 'react'

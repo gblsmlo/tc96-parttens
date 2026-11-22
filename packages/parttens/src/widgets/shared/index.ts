@@ -1,12 +1,12 @@
+export type { AmountFormatOptions } from '@tc96/helpers/format'
+export { formatAmount } from '@tc96/helpers/format'
 export type {
   IconFrameProps,
   IconFrameShape,
   IconFrameSize,
   IconFrameVariant,
-} from '@tc96/elements/icon-frame'
-export { IconFrame } from '@tc96/elements/icon-frame'
-export type { AmountFormatOptions } from '@tc96/helpers/format'
-export { formatAmount } from '@tc96/helpers/format'
+} from '@tc96/ui/icon-frame'
+export { IconFrame } from '@tc96/ui/icon-frame'
 export type { AmountProps } from './amount'
 export { Amount } from './amount'
 export type { AvatarStackPerson, AvatarStackProps } from './avatar-stack'

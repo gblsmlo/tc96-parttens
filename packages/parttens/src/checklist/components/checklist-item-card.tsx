@@ -1,6 +1,6 @@
 'use client'
 
-import { Text } from '@tc96/elements/text'
+import { Text } from '@tc96/ui/text'
 import type { ReactElement, ReactNode } from 'react'
 import { EditableText } from '../../properties/display/editable-text/editable-text'
 import {

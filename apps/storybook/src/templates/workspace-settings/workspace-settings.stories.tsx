@@ -19,7 +19,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A workspace settings page: two `SettingsSection`s of `SettingsRow`s, each with its own save action that stays disabled until a value in that section changes. It renders inside `Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
+          'A workspace settings page: two `SettingsSection`s of `SettingsRow`s, each with its own save action that stays disabled until a value in that section changes. It renders inside `Blocks/Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
       },
       story: appShellDocs,
     },

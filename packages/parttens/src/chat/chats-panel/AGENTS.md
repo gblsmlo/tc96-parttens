@@ -21,7 +21,7 @@ Import direction: `composition/` → `lib/`, `store/`, `core.ts`; `ChatsPanelLis
 - `packages/parttens/src/index.ts` re-exports `chat/chats-panel/index`.
 - `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts` list the folder `chat/chats-panel` for the registry item `chats-panel`; `packages/registry/src/manifest.test.ts` asserts the built item ships only files under `parttens/src/chat/` and depends on `@coss/badge`, `@coss/card`, `@coss/scroll-area` and `@coss/skeleton`. Renaming the folder breaks the registry and the pattern test run.
 - `@thesvg/icons` is a `peerDependency` of `packages/parttens/package.json` (3.4.1, exact, like the other peers), a root `devDependency` for the workspace and a dependency of `apps/storybook`, which plays the consumer. The registry build reads the type import, so the `chats-panel` item lists `@thesvg/icons@3.4.1` in `dependencies` and the CLI installs it when the consumer lacks it; `manifest.test.ts` asserts it.
-- The `--avatar-size` the root sets is read by the COSS `Avatar` (`packages/ui/src/avatar.tsx`, synced on 2026-10-19), not by `@tc96/elements/avatar`, which keeps a fixed size per variant (issue #212). It is a string in a class, so renaming it breaks the avatar size without a type error.
+- The `--avatar-size` the root sets is read by the COSS `Avatar` (`packages/ui/src/avatar.tsx`, synced on 2026-10-19); an avatar that sets its own `--avatar-size` class ignores the root (issue #212). It is a string in a class, so renaming it breaks the avatar size without a type error.
 
 ## Invariants
 

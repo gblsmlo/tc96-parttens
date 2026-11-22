@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@tc96/elements/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'
 import { useFlowInspectorLabels } from '../../store/flow-inspector-context'
@@ -56,7 +56,7 @@ export function FlowInspectorDetails({
             <dd className="min-w-0 break-words">
               {item.owner ? (
                 <span className="flex items-center gap-2">
-                  <Avatar size="xs">
+                  <Avatar className="[--avatar-size:--spacing(4)] text-[0.625rem]">
                     {item.owner.avatarUrl ? (
                       <AvatarImage alt="" src={item.owner.avatarUrl} />
                     ) : null}

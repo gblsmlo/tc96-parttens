@@ -1393,7 +1393,7 @@
     "wizardStepStatus",
     "wizardStepStatuses"
   ],
-  "template:app-shell-1": [
+  "block:app-shell-1": [
     "AppShell1",
     "AppShell1Props",
     "AppShellBaseProps",
@@ -1409,7 +1409,7 @@
     "ShellUser",
     "ShellWorkspace"
   ],
-  "template:app-shell-2": [
+  "block:app-shell-2": [
     "AppShell2",
     "AppShell2Props",
     "AppShellBaseProps",
@@ -1425,7 +1425,7 @@
     "ShellUser",
     "ShellWorkspace"
   ],
-  "template:app-shell-3": [
+  "block:app-shell-3": [
     "AppShell3",
     "AppShell3Props",
     "AppShellBaseProps",
@@ -1444,7 +1444,7 @@
     "ShellUser",
     "ShellWorkspace"
   ],
-  "template:app-shell-4": [
+  "block:app-shell-4": [
     "AppShell4",
     "AppShell4Props",
     "ShellAction",
@@ -1461,7 +1461,7 @@
     "ShellUser",
     "ShellWorkspace"
   ],
-  "template:workflow-editor": [
+  "block:workflow-editor": [
     "AssistantMessage",
     "AssistantSuggestion",
     "FlowAssistantConfig",
@@ -1483,7 +1483,7 @@
     "WorkflowEditor",
     "WorkflowEditorProps"
   ],
-  "template:agent-builder": [
+  "block:agent-builder": [
     "AgentBuilder",
     "AgentBuilderProps",
     "AssistantMessage",

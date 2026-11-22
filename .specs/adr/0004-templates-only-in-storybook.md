@@ -3,6 +3,7 @@
 - **Status:** Accepted (dono, na conversa de 2026-10-20)
 - **Date:** 2026-10-20
 - **Amended by:** [ADR 0005](0005-installable-templates.md), em 2026-10-21: templates instaláveis vivem em `packages/templates` e têm item no registry; os templates daqui continuam só no Storybook
+- **Amended by:** [ADR 0009](0009-blocks-layer.md), em 2026-11-22: os templates instaláveis viram blocks, em `packages/blocks`; a palavra "bloco" do D3 lê-se "peça"; `Templates/` guarda só as telas do Storybook, que não são blocks
 - **Origin:** mapeamento do Verve CRM (`docs/plans/2026-10-20-verve-crm-mapeamento.md`), pedido do dono: "Full page devem ser montada em Templates"
 
 ## Context

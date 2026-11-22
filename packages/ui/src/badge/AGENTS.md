@@ -13,7 +13,7 @@ The component comes from COSS, built on the Base UI `useRender` hook, and is own
 
 ## Architecture
 
-- Layer: `packages/ui`, the bottom of `templates` → `parttens` → `elements` → `ui` → `utils`. `badge.tsx` imports only Base UI (`useRender`, `mergeProps`), `class-variance-authority` and `cn` from `@tc96/utils`.
+- Layer: `packages/ui`, the bottom of `templates` → `parttens` → `ui` → `utils`. `badge.tsx` imports only Base UI (`useRender`, `mergeProps`), `class-variance-authority` and `cn` from `@tc96/utils`.
 - Resolution: `packages/ui/package.json` exports `./badge` as `./src/badge/index.ts`, ahead of the `./*` → `./src/*.tsx` pattern; `tsconfig.base.json` maps `@tc96/ui/*` to `packages/ui/src/*`, which reaches `badge/index.ts` as a folder index.
 - Manifest: the `badge` item of `packages/ui/ui.manifest.json` lists the five files of this folder and the status color tokens (`cssVars`). `check:coss` fails on a file here that the manifest does not list.
 - Scripts: `scripts/check-boundaries.ts` and `packages/registry/src/build-registry.ts` read a manifest path ending in `/index` as the folder module, so `@tc96/ui/badge` resolves to the `badge` item.
@@ -23,7 +23,7 @@ The component comes from COSS, built on the Base UI `useRender` hook, and is own
 ## Dependents
 
 - `packages/parttens`: `collection` (data-grid, kanban and list layouts, shared components), `properties/shared` (`PropertySurface` chips), `records/group` (`RecordStatusBadge`), `widgets` (crm, gamification, productivity, shared), `flow` (canvas, inspector, step library), `chat` (assistant panel, chats panel item).
-- `packages/templates/src/application/shell/shared`.
+- `packages/blocks/src/application/shell/shared`.
 - `sidebar.tsx` has its own `SidebarMenuBadge`; an edit here does not reach it.
 - `RecordStatusBadge` and the `PropertySurface` chips build on `Badge` with their own classes; read `records/group/AGENTS.md` and `properties/AGENTS.md` before changing the radius, height or padding here.
 

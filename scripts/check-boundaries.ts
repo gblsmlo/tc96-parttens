@@ -8,9 +8,8 @@ const allowed: Record<string, string[]> = {
   utils: [],
   helpers: [],
   ui: ['utils'],
-  elements: ['ui', 'utils', 'helpers'],
-  parttens: ['ui', 'elements', 'utils', 'helpers'],
-  templates: ['parttens', 'ui', 'elements', 'utils', 'helpers'],
+  parttens: ['ui', 'utils', 'helpers'],
+  blocks: ['parttens', 'ui', 'utils', 'helpers'],
   registry: [],
 }
 const cossModules = new Set(
@@ -20,6 +19,13 @@ const cossModules = new Set(
     ),
   ),
 )
+function blockFolder(file: string) {
+  const parts = file.match(
+    /^packages\/blocks\/src\/([^/]+)\/([^/]+)\/([^/]+)\//,
+  )
+  if (!parts) return undefined
+  return { group: `${parts[1]}/${parts[2]}`, folder: parts[3] }
+}
 const graph = new Map<string, string[]>()
 const violations: string[] = []
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)
@@ -76,6 +82,15 @@ for (const owner of Object.keys(allowed)) {
       if (resolved) {
         const target = relative(process.cwd(), resolved.resolvedFileName)
         if (target.startsWith('packages/')) edges.push(target)
+        const from = blockFolder(file)
+        const to = blockFolder(target)
+        if (
+          from &&
+          to &&
+          (from.group !== to.group ||
+            (to.folder !== 'shared' && to.folder !== from.folder))
+        )
+          violations.push(`${file}: a block cannot depend on ${target}`)
       }
     }
     graph.set(file, edges)

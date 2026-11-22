@@ -16,7 +16,6 @@
     "utils": "@acme/ui/lib/utils",
     "lib": "@acme/ui/lib",
     "hooks": "@acme/ui/hooks",
-    "elements": "@acme/elements",
     "helpers": "@acme/helpers",
     "patterns": "@acme/patterns"
   }

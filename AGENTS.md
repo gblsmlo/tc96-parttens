@@ -13,11 +13,10 @@ Stack: Bun workspaces, React 19, TypeScript, Tailwind CSS v4, Base UI, Storybook
 ```text
 packages/
   parttens/    pattern source, grouped in families (see Pattern families)
-  elements/    components COSS does not have (Text, IconFrame)
   helpers/     React-free functions (amount formatting, dates, rich text)
-  templates/   installable templates (application shells), above parttens; see packages/templates/AGENTS.md
-  ui/          COSS-origin components owned by this repo, listed in ui.manifest.json
-               a component may be a folder with index.ts, AGENTS.md, TOKENS.md and ACCESSIBILITY.md (menu/, badge/, alert/); read its AGENTS.md before changing it
+  blocks/      installable blocks by category (<category>/<group>/<block>), above parttens; see packages/blocks/AGENTS.md
+  ui/          COSS-origin and own components (Text, IconFrame) owned by this repo, listed in ui.manifest.json
+               a component may be a folder with index.ts, AGENTS.md, TOKENS.md and ACCESSIBILITY.md (menu/, badge/, alert/, text/, icon-frame/); read its AGENTS.md before changing it
   utils/       shared helpers (cn)
   registry/    registry build and the CLI published as @tc96/parttens
 apps/
@@ -68,7 +67,7 @@ Files are kebab-case and named after what they export (`checklist-row.tsx` expor
 
 ## Rules that are enforced by scripts
 
-- **Layering:** imports only go down: `templates` → `parttens` → `elements` → `ui` → `utils` (`helpers` is React-free). Checked by `bun run boundaries:check`.
+- **Layering:** imports only go down: `blocks` → `parttens` → `ui` → `utils` (`helpers` is React-free). A pattern never imports a block, and a block imports only its own folder and its group's `shared/`, never another block. Checked by `bun run boundaries:check`. Whether new code is a `ui` component, a pattern or a block, and which block category it takes, is decided with `docs/architecture/layer-decision-map.md` ([ADR 0009](.specs/adr/0009-blocks-layer.md)).
 - **`packages/ui` is repo-owned source** (ADR 0008, 2026-11-01). Its files start as COSS copies and may be edited, for example to drop unused variants and sizes. `bun run check:coss` only checks that every file is listed in `packages/ui/ui.manifest.json` and every listed item exists. `bun run sync:coss <item>` adds new COSS items, records them in the manifest and refuses to overwrite a file. Themes and tokens belong to the consumer, not to `packages/ui`. A COSS component, menu items included, is changed in `packages/ui`; a pattern never recreates or wraps one to change how it looks (decided 2026-11-19).
 - **Overriding COSS styles needs a registered exception.** Any `className` that overrides a COSS component's border, radius, etc. must be listed with a reason in `scripts/override-exceptions.json`, or `bun run overrides:check` fails. Update the entry whenever the class changes.
 - **Public API baseline:** adding or removing exports changes `docs/architecture/public-api-exports.json`. Regenerate with `bun scripts/verify-public-api.ts --record` and mention it in the summary, since the diff may include unrelated pending exports.
@@ -87,7 +86,7 @@ bun run lint:ci              # biome on scripts and registry
 bun run storybook:lint
 bun run check:coss && bun run boundaries:check && bun run overrides:check
 bun run verify:public-api
-bun run test                 # ui/utils, helpers, boundaries, patterns, registry
+bun run test                 # helpers, boundaries, patterns, registry
 bun run storybook:test       # vitest browser + axe (a11y violations fail)
 bun run story:source <id>    # one story as a ready-to-use component; needs the dev server
 bun run check                # full gate; run before a release or PR
@@ -102,7 +101,7 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 
 - Biome formatting: 2 spaces, single quotes, no semicolons. Do not hand-format against it.
 - **No comments in pattern or component code** (no JSDoc, no inline notes). The component name, its types and `docs/architecture/tc96-parttens.md` carry the explanation. Exception: exported functions in `packages/helpers` get JSDoc in English, with `@param` when a parameter is not obvious and `@returns` when it helps.
-- Use `cn` from `@tc96/utils` for class merging and import COSS components through `@tc96/ui/<component>`.
+- Use `cn` from `@tc96/utils` for class merging and import COSS components, `Text` and `IconFrame` through `@tc96/ui/<component>`.
 - Components are controlled: the consumer passes prepared data and handles events. No fetching, filtering, sorting or persistence inside a pattern.
 - **Interface tests live in Storybook.** Behavior a user sees (clicks, menus, visibility, callbacks) is tested with a story `play` from `storybook/test`, not with `bun test` and JSDOM. `bun test` keeps code that renders nothing (`core.ts`, `lib/`, pure functions). A component test stays in `bun test` only when it cannot run as a `play`: a server render or a render that must throw.
 - Widgets render through `WidgetShell` (`packages/parttens/src/widgets/shared/widget-shell.tsx`), which is the COSS `Card` with a transparent border. Card radius is the consumer's: the example theme sets it on `[data-slot="card"]` (`apps/example/packages/ui/src/styles.css`), so a pattern never restates radius, border or shadow on a card.
@@ -112,7 +111,7 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 
 ## Visual work (widgets, stories, theme)
 
-- The sidebar follows the layers, from the base to whole screens: `Get Started`, `UI` (COSS, alias `ui`), `Elements`, `Patterns`, `Application` (installable templates, alias `templates`) and `Templates` (`Templates/Doc` and the Storybook-only screens). The order is fixed in `storySort` (`.storybook/preview.ts`), which Storybook evaluates as plain JavaScript, so it takes no type annotations; a new root goes into its list. A story sits under the layer of what it renders: one that imports only `@tc96/ui` is `UI/...` even when it composes several COSS parts, `Patterns/...` needs a pattern, and a component with its own folder outside a pattern sits at the root of `Patterns` (`Patterns/ActionBar` and `Patterns/Toolbar`; the view switcher renders inside the toolbar, so it is a part of the `Patterns/Toolbar` node, in its API Reference, Stories, Layouts and Behavior, and has no node of its own); the decision of 2026-10-31 gives each such page its own folder in `packages/parttens/src/` instead of `shared/`. `Patterns/Pagination` and its `pagination/` folder folded into the collection on 2026-11-21, because `UI/Pagination` covers pagination: `CollectionPagination` lives in `collection/shared/components/` and is documented on the `Patterns/Collection` pages. Story files mirror the title (`apps/storybook/src/ui/chat/`, `patterns/widgets/stats/`, `application/shell/`).
+- The sidebar follows the layers, from the base to whole screens: `Get Started`, `UI` (COSS and own components, alias `ui`), `Patterns`, `Blocks` (installable blocks as `Blocks/<Category>/<Group>/<Name>`, with `Blocks/Doc`; the CLI still writes them to the `templates` alias) and `Templates` (the Storybook-only screens, never installed). The order is fixed in `storySort` (`.storybook/preview.ts`), which Storybook evaluates as plain JavaScript, so it takes no type annotations; a new root goes into its list. A story sits under the layer of what it renders: one that imports only `@tc96/ui` is `UI/...` even when it composes several COSS parts, `Patterns/...` needs a pattern, and a component with its own folder outside a pattern sits at the root of `Patterns` (`Patterns/ActionBar` and `Patterns/Toolbar`; the view switcher renders inside the toolbar, so it is a part of the `Patterns/Toolbar` node, in its API Reference, Stories, Layouts and Behavior, and has no node of its own); the decision of 2026-10-31 gives each such page its own folder in `packages/parttens/src/` instead of `shared/`. `Patterns/Pagination` and its `pagination/` folder folded into the collection on 2026-11-21, because `UI/Pagination` covers pagination: `CollectionPagination` lives in `collection/shared/components/` and is documented on the `Patterns/Collection` pages. Story files mirror the title (`apps/storybook/src/ui/chat/`, `patterns/widgets/stats/`, `blocks/application/shell/`).
 - Pattern stories live in `apps/storybook/src/patterns/`. The Storybook theme is the example app's `styles.css`, imported by `.storybook/preview.ts`; do not add a separate theme file or CSS rule in Storybook.
 - Accessibility and usability live in `docs/accessibility.md`, the single source of truth: the validation layers, the contrast rules (WCAG thresholds, fixes that never change token values), the story rules, the axe exceptions and every measured ratio. Read it before visual work and record new ratios and decisions there; scale decisions stay in the architecture doc.
 - The example theme is the `Default` preset. Other presets are rule sets in `apps/example/packages/ui/src/themes/`, selected by `data-theme-preset` on `html` and by the paintbrush (`themePreset` global) in the Storybook toolbar. `base-colors.css` (stone, neutral, slate, zinc) is hand-written on the COSS recipe; `tweakcn.css` and `presets.ts` are generated by `bun run sync:themes`, so never edit them by hand. Visual checks, axe and recorded ratios use the `Default`; a new preset records its contrast in `docs/accessibility.md` (`Temas do exemplo`).

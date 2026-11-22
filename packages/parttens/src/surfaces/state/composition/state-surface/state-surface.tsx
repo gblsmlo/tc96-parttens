@@ -1,4 +1,3 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
 import {
   Empty,
   EmptyContent,
@@ -7,6 +6,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@tc96/ui/empty'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
 import {
   AlertTriangleIcon,

@@ -53,7 +53,6 @@ async function consumer() {
         paths: {
           '@consumer/ui/*': ['./src/ui/*'],
           '@consumer/utils/*': ['./src/utils/*'],
-          '@consumer/elements/*': ['./src/elements/*'],
           '@consumer/helpers/*': ['./src/helpers/*'],
           '@consumer/patterns/*': ['./src/patterns/*'],
         },

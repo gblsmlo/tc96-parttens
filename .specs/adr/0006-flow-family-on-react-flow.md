@@ -2,6 +2,7 @@
 
 - **Status:** Accepted (dono, na conversa de 2026-10-23)
 - **Date:** 2026-10-23
+- **Amended by:** [ADR 0009](0009-blocks-layer.md), em 2026-11-22: `workflow-editor` e `agent-builder` são blocks da categoria AI & Agents, em `packages/blocks/src/ai-agents/flow/`
 - **Origin:** pedido do dono em 2026-10-23: "engenharia reversa com o React para construir componentes e templates para atender workflow editor (`https://flowly-app.reui.io/workflow-editor`) e agent builder (`https://flowly-app.reui.io/agent-builder`); usar libs de UI internas ou COSS; se necessário, instalar libs de apoio"
 - **Supersedes:** none
 - **Amends:** none. O ADR 0005 continua valendo para os templates instaláveis que este ADR cria

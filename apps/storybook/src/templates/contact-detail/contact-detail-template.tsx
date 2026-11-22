@@ -1,5 +1,3 @@
-import { Avatar, AvatarFallback } from '@tc96/elements/avatar'
-import { Text } from '@tc96/elements/text'
 import { getInitials } from '@tc96/helpers/initials'
 import {
   type Activity,
@@ -16,7 +14,9 @@ import {
   TextProperty,
   type WidgetTone,
 } from '@tc96/parttens'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
+import { Text } from '@tc96/ui/text'
 import {
   ArrowLeftIcon,
   BriefcaseIcon,
@@ -149,7 +149,7 @@ export function ContactDetailTemplate({
 
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
-            <Avatar size="lg">
+            <Avatar className="[--avatar-size:--spacing(10)]">
               <AvatarFallback>{getInitials(contact.name)}</AvatarFallback>
             </Avatar>
             <div className="grid min-w-0 gap-0.5">

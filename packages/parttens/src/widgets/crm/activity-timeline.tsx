@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@tc96/elements/avatar'
 import { resolveInitials } from '@tc96/helpers/initials'
+import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import type { AvatarStackPerson } from '../shared/avatar-stack'

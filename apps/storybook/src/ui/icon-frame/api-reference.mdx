@@ -1,0 +1,88 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# IconFrame
+
+A decorative frame for the icon of an account, category, channel or workspace: a square of one of five sizes, round or with rounded corners, that centers its child and sizes the icon to fit. It tints its background and paints the icon with a color the data brings, such as the color of a category, or falls back to the theme's `muted` and `foreground`. It is hidden from assistive technology: the name of the thing it marks is written next to it.
+
+The other pages of `UI/IconFrame`: [Playground](?path=/story/ui-iconframe-playground--playground) to try the color, the shape, the size, the variant and the element, [Stories](?path=/story/ui-iconframe-stories--default) for each size, shape, variant and the default colors, [Behavior](?path=/story/ui-iconframe-behavior--decorative-markup) for the tests, [Usages](?path=/story/ui-iconframe-usages--account-list) for frames in context and [Layouts](?path=/story/ui-iconframe-layouts--as-div) for the element, the icon size and the content.
+
+## Import
+
+```tsx
+import {
+  IconFrame,
+  type IconFrameProps,
+  iconFrameShapes,
+  iconFrameSizes,
+  iconFrameStyle,
+  iconFrameVariantNames,
+  iconFrameVariants,
+} from '@acme/ui/icon-frame'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<IconFrame>
+  <Icon />
+</IconFrame>
+```
+
+## IconFrame
+
+The frame itself. Renders a `span` with `aria-hidden="true"`, or the element passed in `render`. It centers its children and never shrinks in a flex row. An `svg` child takes the size of the frame unless it has a `size-*` class of its own.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"xs"`, `"sm"`, `"default"`, `"lg"` or `"xl"` | `"default"` | Sets the width and height of the frame and the size of the icon: 24px with a 16px icon, 32px with 16px, 36px with 18px, 44px with 20px or 56px with 24px. |
+| `shape` | `"circle"` or `"rounded"` | `"circle"` | Sets the corners: fully round, or rounded with the `lg` radius. |
+| `variant` | `"color"` or `"plain"` | `"color"` | Controls the background: `color` fills it with `muted`, or with a 6% tint of `color`; `plain` leaves it transparent. |
+| `color` | `string` | - | Paints the icon with any CSS color and, with `variant="color"`, tints the background with 6% of it. Without it the frame uses the `foreground` text color. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `span` with another element, such as a `div`, which receives the frame props. |
+| `className` | `string` | - | Adds classes after the variant classes, so a conflicting class wins. |
+| `style` | `React.CSSProperties` | - | Merges inline styles after the ones `color` sets, so a conflicting value wins. |
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"icon-frame"` | Selects the part in the theme and from other parts |
+| `data-size` | `"xs"`, `"sm"`, `"default"`, `"lg"` or `"xl"` | Mirrors `size` |
+| `data-shape` | `"circle"` or `"rounded"` | Mirrors `shape` |
+| `data-variant` | `"color"` or `"plain"` | Mirrors `variant` |
+
+The frame has no border and no shadow. `color` is a runtime value, so it travels as an inline `style`: the tint is `color-mix(in srgb, <color> 6%, transparent)` and the icon takes the color through `currentColor`. The frame holds an icon, not text: a brand color on its 6% tint meets the 3:1 of a graphic, not the 4.5:1 of text, so initials belong in an `Avatar`.
+
+## iconFrameVariants
+
+The class function behind `IconFrame`. Returns the class string of a shape, a size and a variant, to give the frame look to an element that cannot be passed to `render`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `shape` | `"circle"` or `"rounded"` | `"circle"` | Selects the corner classes. |
+| `size` | `"xs"`, `"sm"`, `"default"`, `"lg"` or `"xl"` | `"default"` | Selects the size classes of the frame and its icon. |
+| `variant` | `"color"` or `"plain"` | `"color"` | Selects the background and text classes. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `iconFrameStyle` | `function` | `(color, variant)` returns the inline style `IconFrame` sets for a color: the 6% tint and the color with `variant="color"`, only the color with `"plain"`, and `undefined` without a color. |
+| `iconFrameShapes` | `constant` | The values of `shape`: `"circle"` and `"rounded"`. |
+| `iconFrameSizes` | `constant` | The values of `size`, from `"xs"` to `"xl"`. |
+| `iconFrameVariantNames` | `constant` | The values of `variant`: `"color"` and `"plain"`. |
+| `IconFrameShape`, `IconFrameSize`, `IconFrameVariant` | `type` | The unions of the three constants. |
+| `IconFrameProps` | `type` | The props of `IconFrame`: the `span` props plus `color`, `shape`, `size`, `variant` and `render`. |
+
+## Accessibility and theme
+
+- The frame is decorative: it sets `aria-hidden="true"` and nothing inside it is read. Never put the only name of a control in it; name the control with text beside it or with `aria-label`.
+- A frame that marks a state or a category by color alone says nothing to someone who cannot tell the colors apart. Repeat the meaning in text.
+- Pass a `color` whose icon reaches 3:1 against the tinted background; the tint is 6% of the color over the page, so measure the color against the surface the frame sits on.
+- Without `color` the frame reads `--muted` and `--foreground` from the theme. On a surface close to `muted`, such as a sidebar, pass `variant="plain"` or a `color`.
+- Decisions and measured contrast: `packages/ui/src/icon-frame/ACCESSIBILITY.md`. Classes of the base, each shape, size and variant: `packages/ui/src/icon-frame/TOKENS.md`.

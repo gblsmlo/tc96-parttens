@@ -25,11 +25,7 @@ export interface OverrideException {
 
 export const styledElements: Record<string, string[]> = {}
 
-const roots = [
-  'packages/parttens/src',
-  'packages/elements/src',
-  'packages/templates/src',
-]
+const roots = ['packages/parttens/src', 'packages/blocks/src']
 const exceptionsPath = 'scripts/override-exceptions.json'
 
 const neutral =

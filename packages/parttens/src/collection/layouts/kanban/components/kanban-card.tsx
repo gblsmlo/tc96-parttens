@@ -2,7 +2,6 @@
 
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
-import { Text } from '@tc96/elements/text'
 import {
   Card,
   CardAction,
@@ -12,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@tc96/ui/card'
+import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {

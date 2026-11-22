@@ -1,5 +1,3 @@
-import { Avatar, AvatarFallback } from '@tc96/elements/avatar'
-import { IconFrame } from '@tc96/elements/icon-frame'
 import {
   RecordGroup,
   RecordGroupAction,
@@ -12,7 +10,9 @@ import {
   type RecordGroupVariant,
   RecordStatusBadge,
 } from '@tc96/parttens'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import {
   Menu,
   MenuGroup,
@@ -804,7 +804,10 @@ export function AddFinanceMenu() {
 
 export function UserAvatar({ user }: Readonly<{ user: Person }>) {
   return (
-    <Avatar aria-hidden size="sm">
+    <Avatar
+      aria-hidden
+      className="[--avatar-size:--spacing(6)] text-[0.625rem]"
+    >
       <AvatarFallback>{user.initials}</AvatarFallback>
     </Avatar>
   )

@@ -10,7 +10,7 @@ Controlled surfaces for the state of a region: `StateSurface` shows one of five 
 | `composition/state-surface/` | `StateSurface` on the COSS `Empty` |
 | `composition/state-guard/` | `StateGuard` and its loading block |
 
-Import direction: `composition/state-guard/` → `composition/state-surface/` → `core.ts`. Composition imports COSS (`empty`, `spinner`), `IconFrame` from `@tc96/elements/icon-frame` and `lucide-react`; `core.ts` imports only React types.
+Import direction: `composition/state-guard/` → `composition/state-surface/` → `core.ts`. Composition imports COSS (`empty`, `spinner`), `IconFrame` from `@tc96/ui/icon-frame` and `lucide-react`; `core.ts` imports only React types.
 
 ## Dependents
 

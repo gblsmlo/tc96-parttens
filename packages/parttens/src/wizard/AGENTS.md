@@ -14,7 +14,7 @@ A controlled multi-step flow after the Multi Step 2 block of shadcn studio: `Wiz
 | `test/dom.ts` | the JSDOM setup `wizard-footer.test.tsx` imports; this pattern's own copy |
 | `core.ts` | React-free surface: the prop types, `wizardStepStatuses`, `wizardStepStatus` and `adjacentWizardStep`, with `core.test.ts` |
 
-Import direction: `composition/` → `components/`, `lib/`, `store/`, `core.ts`; `components/` → `lib/`, `core.ts` and `@tc96/elements/icon-frame`. The step helpers live in `core.ts`, not `lib/`, because `lib/steps.ts` importing the types from `core.ts` while `core.ts` re-exported it was a cycle for `boundaries:check`. No import into another pattern or into `packages/parttens/src/shared`.
+Import direction: `composition/` → `components/`, `lib/`, `store/`, `core.ts`; `components/` → `lib/`, `core.ts` and `@tc96/ui/icon-frame`. The step helpers live in `core.ts`, not `lib/`, because `lib/steps.ts` importing the types from `core.ts` while `core.ts` re-exported it was a cycle for `boundaries:check`. No import into another pattern or into `packages/parttens/src/shared`.
 
 ## Dependents
 

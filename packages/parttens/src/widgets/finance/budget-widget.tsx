@@ -1,6 +1,6 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
 import { type AmountFormatOptions, formatAmount } from '@tc96/helpers/format'
 import { CardPanel } from '@tc96/ui/card'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { MeterPrimitive } from '@tc96/ui/meter'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'

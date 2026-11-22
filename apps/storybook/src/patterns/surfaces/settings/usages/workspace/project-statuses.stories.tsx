@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { IconFrame } from '@tc96/elements/icon-frame'
 import {
   SettingsCollapsed,
   SettingsRow,
@@ -9,6 +8,7 @@ import {
   SettingsSectionTitle,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   CircleCheckIcon,

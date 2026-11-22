@@ -1,6 +1,6 @@
 'use client'
 
-import { IconFrame } from '@tc96/elements/icon-frame'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
 import { BoxIcon, GitBranchIcon, ZapIcon } from 'lucide-react'
 import { type ReactElement, useId } from 'react'

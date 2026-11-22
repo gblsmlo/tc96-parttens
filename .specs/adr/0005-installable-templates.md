@@ -2,6 +2,7 @@
 
 - **Status:** Accepted (dono, na conversa de 2026-10-21)
 - **Date:** 2026-10-21
+- **Amended by:** [ADR 0009](0009-blocks-layer.md), em 2026-11-22: o template instalável passa a se chamar block e vive em `packages/blocks/src/<categoria>/<grupo>/<block>/` (D1, D2, D4 e D8); o item do registry e o alias `templates` (D5 e D6) mudam no refactor do CLI; "bloco" no D3 lê-se "peça"
 - **Origin:** pedido do dono em 2026-10-21: "use o registro para o usuário instalar o template que ele deseja", começando por Application / Shell, com stories em `Templates/.../AppShell{n}` e os comandos documentados em `Templates/Doc`
 - **Amends:** [ADR 0004](0004-templates-only-in-storybook.md), nos aspectos D1, D3, D4 e D5, só para templates instaláveis. Os templates que já existem (`Templates/Contacts`, `Companies`, `ContactDetail`, `DealBoard`, `WorkspaceSettings`) continuam só no Storybook, como o ADR 0004 decidiu
 

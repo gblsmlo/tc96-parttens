@@ -7,7 +7,7 @@ Fonte única das regras, boas práticas e uso de acessibilidade e usabilidade do
 | Camada | Onde | Responsabilidade |
 | --- | --- | --- |
 | 1. Tema | `apps/example/packages/ui/src/styles.css` e `themes/` | Tokens do consumidor. Contraste nunca muda valor de token; a correção global é uma regra por `data-slot`. |
-| 2. UI e patterns | `packages/ui`, `packages/elements`, `packages/parttens`, `packages/templates` | Markup, ARIA, foco e o par cor/superfície certo. Uma violação real se corrige aqui, onde o elemento encontra a superfície. |
+| 2. UI e patterns | `packages/ui`, `packages/parttens`, `packages/blocks` | Markup, ARIA, foco e o par cor/superfície certo. Uma violação real se corrige aqui, onde o elemento encontra a superfície. |
 | 3. Story | `apps/storybook/src/**/*.stories.tsx` | Renderiza cada estado e testa o comportamento no `play`. Não contorna o axe: uma exceção na story precisa de motivo em [Exceções](#exceções). |
 | 4. Config do Storybook | `apps/storybook/.storybook/preview.ts` | O `@storybook/addon-a11y` com `test: 'error'` roda o axe depois de cada story; as regras e exclusões que valem para todas as stories ficam aqui. |
 | 5. Runner | `@storybook/addon-vitest` em `apps/storybook/vitest.config.ts` | Executa render, `play` e axe no Chromium, nos projetos `storybook` (claro) e `storybook-dark` (escuro). |
@@ -302,7 +302,7 @@ Story de documentos: Medido sobre `bg-card`, `foreground` fica em 15,20:1 no cla
 
 ### App Shells
 
-Contraste (medido em 2026-10-21, `AppShell1/Default`): item ativo 13,3:1 (claro) e 16,03:1 (escuro); item comum, rótulo de grupo e contador 4,58:1 e 18,11:1; página atual do breadcrumb 14,52:1 e 16,03:1; link do breadcrumb 5,48:1 e 5,34:1. As iniciais do avatar no menu da conta herdavam o `sidebar-foreground` sobre o `bg-border` do fallback e mediam 3,83:1 no claro; o `AvatarFallback` recebe `text-foreground`, o par que ele tem no resto do app, e passa a 12,15:1 e 16,22:1. O `overrides:check` não vê o `AvatarFallback` reexportado por `@tc96/elements/avatar` (o mesmo vale para `person-option-content.tsx`) e recusa exceção que não detecta, por isso o registro fica aqui. O quadro do logo do workspace usa `bg-sidebar-primary text-sidebar-primary-foreground`, o par do sidebar, porque o `bg-muted` do `IconFrame` sumia sobre o `bg-sidebar` no escuro.
+Contraste (medido em 2026-10-21, `AppShell1/Default`): item ativo 13,3:1 (claro) e 16,03:1 (escuro); item comum, rótulo de grupo e contador 4,58:1 e 18,11:1; página atual do breadcrumb 14,52:1 e 16,03:1; link do breadcrumb 5,48:1 e 5,34:1. As iniciais do avatar no menu da conta herdavam o `sidebar-foreground` sobre o `bg-border` do fallback e mediam 3,83:1 no claro; o `AvatarFallback` recebe `text-foreground`, o par que ele tem no resto do app, e passa a 12,15:1 e 16,22:1. Desde 2026-11-22 o `AvatarFallback` vem de `@tc96/ui/avatar`, e a exceção está em `scripts/override-exceptions.json` (o mesmo vale para `person-option-content.tsx`). O quadro do logo do workspace usa `bg-sidebar-primary text-sidebar-primary-foreground`, o par do sidebar, porque o `bg-muted` do `IconFrame` sumia sobre o `bg-sidebar` no escuro.
 
 Nível de settings: contraste medido em 2026-11-02 (`AppShell1/Settings`, tema `Default`): texto e ícone de "Voltar ao app" sobre `sidebar` 4,58:1 (claro) e 18,11:1 (escuro), o mesmo par do item comum.
 

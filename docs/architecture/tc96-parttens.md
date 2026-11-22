@@ -641,7 +641,7 @@ Decidido em 2026-10-23 ([ADR 0006](../../.specs/adr/0006-flow-family-on-react-fl
 
 ## Storybook: sidebar por camada
 
-Decidido em 2026-10-21, a pedido do dono: a sidebar segue a progressão do atomic design (peças base, peças compostas, blocos de produto, layouts e telas), sem o vocabulário dele, com o nome das camadas que o CLI instala. As raízes ficam nesta ordem, fixada no `storySort` de `apps/storybook/.storybook/preview.ts`: `Get Started`, `UI` (COSS, alias `ui`), `Elements` (alias `elements`), `Patterns` (alias `patterns`), `Application` (templates instaláveis, alias `templates`) e `Templates` (`Templates/Doc` e as telas que vivem só no Storybook, ADR 0004). Antes a ordem era alfabética e punha `Application` antes de `UI`. O `Get Started` ganhou a seção "How this Storybook is organized" com a mesma tabela.
+Decidido em 2026-10-21, a pedido do dono: a sidebar segue a progressão do atomic design (peças base, peças compostas, componentes de produto, layouts e telas), sem o vocabulário dele, com o nome das camadas que o CLI instala. As raízes ficam nesta ordem, fixada no `storySort` de `apps/storybook/.storybook/preview.ts`: `Get Started`, `UI` (COSS, alias `ui`), `Elements` (alias `elements`), `Patterns` (alias `patterns`), `Application` (templates instaláveis, alias `templates`) e `Templates` (`Templates/Doc` e as telas que vivem só no Storybook, ADR 0004). Antes a ordem era alfabética e punha `Application` antes de `UI`. O `Get Started` ganhou a seção "How this Storybook is organized" com a mesma tabela.
 
 Uma story fica na camada do que renderiza. Por isso, no mesmo dia:
 

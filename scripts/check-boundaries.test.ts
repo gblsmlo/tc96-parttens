@@ -6,15 +6,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 const script = join(import.meta.dir, 'check-boundaries.ts')
-const owners = [
-  'utils',
-  'helpers',
-  'ui',
-  'elements',
-  'parttens',
-  'templates',
-  'registry',
-]
+const owners = ['utils', 'helpers', 'ui', 'parttens', 'blocks', 'registry']
 let root = ''
 
 async function workspace(sources: Record<string, string>) {
@@ -36,21 +28,16 @@ async function workspace(sources: Record<string, string>) {
 
 afterEach(() => rm(root, { recursive: true, force: true }))
 
-test('lets patterns depend on elements, and elements on ui', async () => {
+test('lets patterns depend on ui', async () => {
   const result = await workspace({
-    'packages/parttens/src/a.ts':
-      "import { Text } from '@tc96/elements/text'\n",
-    'packages/elements/src/text.tsx':
-      "import { Button } from '@tc96/ui/button'\n",
+    'packages/parttens/src/a.ts': "import { Button } from '@tc96/ui/button'\n",
   })
   expect(result.status).toBe(0)
 })
 
-test('lets patterns and elements depend on helpers', async () => {
+test('lets patterns depend on helpers', async () => {
   const result = await workspace({
     'packages/parttens/src/a.ts':
-      "import { formatAmount } from '@tc96/helpers/format'\n",
-    'packages/elements/src/text.tsx':
       "import { formatAmount } from '@tc96/helpers/format'\n",
     'packages/helpers/src/format.ts': 'export const formatAmount = 1\n',
   })
@@ -67,48 +54,85 @@ test('rejects helpers depending on React or on another layer', async () => {
   expect(result.stderr).toContain('helpers cannot depend on utils')
 })
 
-test('rejects ui depending on elements', async () => {
+test('rejects ui depending on patterns', async () => {
   const result = await workspace({
-    'packages/ui/src/button.tsx':
+    'packages/ui/src/button.tsx': "import { Kanban } from '@tc96/parttens'\n",
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain('ui cannot depend on parttens')
+})
+
+test('rejects imports of the removed elements layer', async () => {
+  const result = await workspace({
+    'packages/parttens/src/a.ts':
       "import { Text } from '@tc96/elements/text'\n",
   })
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('ui cannot depend on elements')
+  expect(result.stderr).toContain('parttens cannot depend on elements')
 })
 
-test('rejects elements depending on patterns', async () => {
+test('lets blocks depend on patterns and ui', async () => {
   const result = await workspace({
-    'packages/elements/src/text.tsx':
-      "import { Kanban } from '@tc96/parttens'\n",
-  })
-  expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('elements cannot depend on parttens')
-})
-
-test('lets templates depend on patterns, elements and ui', async () => {
-  const result = await workspace({
-    'packages/templates/src/a.tsx':
-      "import { WidgetShell } from '@tc96/parttens'\nimport { Text } from '@tc96/elements/text'\nimport { Button } from '@tc96/ui/button'\n",
+    'packages/blocks/src/a.tsx':
+      "import { WidgetShell } from '@tc96/parttens'\nimport { Button } from '@tc96/ui/button'\n",
   })
   expect(result.status).toBe(0)
 })
 
-test('rejects patterns depending on templates', async () => {
+test('rejects patterns depending on blocks', async () => {
   const result = await workspace({
     'packages/parttens/src/a.ts':
-      "import { AppShell1 } from '@tc96/templates/application/shell/app-shell-1'\n",
+      "import { AppShell1 } from '@tc96/blocks/application/shell/app-shell-1'\n",
   })
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('parttens cannot depend on templates')
+  expect(result.stderr).toContain('parttens cannot depend on blocks')
 })
 
-test('rejects templates depending on the registry', async () => {
+test('rejects blocks depending on the registry', async () => {
   const result = await workspace({
-    'packages/templates/src/a.ts':
+    'packages/blocks/src/a.ts':
       "import { patternNames } from '@tc96/registry'\n",
   })
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('templates cannot depend on registry')
+  expect(result.stderr).toContain('blocks cannot depend on registry')
+})
+
+test("lets a block depend on its own folder and its group's shared", async () => {
+  const result = await workspace({
+    'packages/blocks/src/application/auth/login-1/login-1.tsx':
+      "import { fields } from './fields'\nimport { labels } from '../shared/labels'\nexport const page = [fields, labels]\n",
+    'packages/blocks/src/application/auth/login-1/fields.ts':
+      'export const fields = []\n',
+    'packages/blocks/src/application/auth/shared/labels.ts':
+      'export const labels = {}\n',
+  })
+  expect(result.status).toBe(0)
+})
+
+test('rejects a block depending on another block of its group', async () => {
+  const result = await workspace({
+    'packages/blocks/src/application/auth/login-2/login-2.tsx':
+      "import { page } from '../login-1/login-1'\nexport const next = page\n",
+    'packages/blocks/src/application/auth/login-1/login-1.tsx':
+      'export const page = 1\n',
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain(
+    'a block cannot depend on packages/blocks/src/application/auth/login-1/login-1.tsx',
+  )
+})
+
+test("rejects a block depending on another group's shared", async () => {
+  const result = await workspace({
+    'packages/blocks/src/application/auth/login-1/login-1.tsx':
+      "import { labels } from '../../shell/shared/labels'\nexport const page = labels\n",
+    'packages/blocks/src/application/shell/shared/labels.ts':
+      'export const labels = {}\n',
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain(
+    'a block cannot depend on packages/blocks/src/application/shell/shared/labels.ts',
+  )
 })
 
 test('rejects a ui import that is not in the ui manifest', async () => {
@@ -129,7 +153,7 @@ test('rejects the removed ui barrel', async () => {
 
 test('keeps @xyflow/react inside the flow canvas pattern', () => {
   const repository = join(import.meta.dir, '..')
-  const offenders = ['packages/parttens/src', 'packages/templates/src']
+  const offenders = ['packages/parttens/src', 'packages/blocks/src']
     .flatMap((folder) =>
       readdirSync(join(repository, folder), { recursive: true }).map((path) =>
         join(folder, String(path)),

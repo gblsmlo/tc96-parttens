@@ -41,7 +41,7 @@ import { CollectionLayoutOutlet, TextProperty } from '@acme/patterns'
 - COSS set up with shadcn, with `components.json` at the monorepo root
 - Node and npm to run the CLI. Bun is not required
 
-Whole layouts, such as application shells, install the same way; see [Templates](?path=/docs/templates-doc--doc):
+Blocks, such as application shells, install the same way; see [Blocks](?path=/docs/blocks-doc--doc):
 
 ```bash
 npx @tc96/parttens add app-shell-1
@@ -69,10 +69,9 @@ To use one, copy its rules from `apps/example/packages/ui/src/themes/` into your
 
 The sidebar follows the layers of your design system, from the smallest parts to whole screens. Each section is named after the alias where its code lives in your workspace, so what you browse here is what you install:
 
-- **UI**: the COSS components the rest is built on, such as Button, Input, Select, Calendar, Chat and Composer. Lives in your `ui` alias.
-- **Elements**: parts COSS does not have, made from the base: Text, IconFrame, Avatar. Lives in your `elements` alias.
-- **Patterns**: product blocks with behavior: records, properties, collection views, widgets, checklist, wizard, rich text editor. Lives in your `patterns` alias.
-- **Application**: installable layouts for a whole app, such as the shells. Lives in your `templates` alias.
-- **Templates**: how to install templates, and full reference screens to copy from the Code panel into your app.
+- **UI**: the COSS components the rest is built on, such as Button, Input, Select, Calendar, Chat and Composer, plus Text and IconFrame, which COSS does not have. Lives in your `ui` alias.
+- **Patterns**: reusable product components with behavior, placed by your pages in many places: records, properties, collection views, widgets, checklist, wizard, rich text editor. Lives in your `patterns` alias.
+- **Blocks**: numbered variations of a page, a page frame or a page section, such as the shells and the flow editors, grouped in categories (Application, Data, Charts, Solutions, AI & Agents, eCommerce, Marketing). You install one and edit it. The CLI still writes them to your `templates` alias.
+- **Templates**: full reference screens with example data, to copy from the Code panel into your app. They are not installed.
 
-Each section only builds on the ones above it: a pattern uses elements and UI, a shell uses patterns, elements and UI.
+Each section only builds on the ones above it: a pattern uses UI, a block uses patterns and UI. A pattern never imports a block, and a block never imports another block.

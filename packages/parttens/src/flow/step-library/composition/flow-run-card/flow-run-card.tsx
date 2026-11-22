@@ -1,8 +1,8 @@
 'use client'
 
-import { IconFrame } from '@tc96/elements/icon-frame'
 import { Badge, type BadgeProps } from '@tc96/ui/badge'
 import { Card, CardPanel } from '@tc96/ui/card'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { Progress } from '@tc96/ui/progress'
 import { cn } from '@tc96/utils'
 import { HistoryIcon } from 'lucide-react'

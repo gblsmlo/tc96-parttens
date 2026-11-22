@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Avatar, AvatarFallback } from '@tc96/elements/avatar'
 import {
   Checklist,
   type ChecklistItem,
@@ -19,6 +18,7 @@ import {
   type SelectPropertyOption,
   TextProperty,
 } from '@tc96/parttens'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import {
@@ -1005,7 +1005,10 @@ export const Activity: Story = {
           <RecordGroupItem
             key={id}
             leading={
-              <Avatar aria-hidden size="xs">
+              <Avatar
+                aria-hidden
+                className="[--avatar-size:--spacing(4)] text-[0.625rem]"
+              >
                 <AvatarFallback>{actor.initials}</AvatarFallback>
               </Avatar>
             }
@@ -1095,7 +1098,10 @@ export const Notes: Story = {
             <RecordGroupLink
               key={note.id}
               leading={
-                <Avatar aria-hidden size="xs">
+                <Avatar
+                  aria-hidden
+                  className="[--avatar-size:--spacing(4)] text-[0.625rem]"
+                >
                   <AvatarFallback>{authorInitial(note.author)}</AvatarFallback>
                 </Avatar>
               }

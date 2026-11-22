@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Text } from '@tc96/elements/text'
 import {
   SettingsRow,
   SettingsSection,
@@ -18,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@tc96/ui/select'
+import { Text } from '@tc96/ui/text'
 import { EllipsisIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, within } from 'storybook/test'

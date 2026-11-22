@@ -13,8 +13,8 @@ import {
 const requiredAliasNames = ['ui', 'utils'] as const
 
 // The consumer's components.json is the only configuration. ui and utils are
-// its standard aliases; elements, helpers, patterns and templates are tc96 keys
-// read from the same aliases object. When one is absent it is derived from the ui alias
+// its standard aliases; helpers, patterns and templates are tc96 keys read from
+// the same aliases object. When one is absent it is derived from the ui alias
 // by replacing its last segment, so "@acme/ui/components" yields "@acme/ui/patterns".
 export function readAliases(components: unknown): Aliases {
   const aliases =
@@ -29,14 +29,13 @@ export function readAliases(components: unknown): Aliases {
   const { ui, utils } = aliases as Pick<Aliases, 'ui' | 'utils'>
   const derive = (name: string) =>
     ui.includes('/') ? `${ui.slice(0, ui.lastIndexOf('/'))}/${name}` : name
-  const pick = (name: 'elements' | 'helpers' | 'patterns' | 'templates') =>
+  const pick = (name: 'helpers' | 'patterns' | 'templates') =>
     typeof aliases[name] === 'string' && aliases[name]
       ? aliases[name]
       : derive(name)
   return {
     ui,
     utils,
-    elements: pick('elements'),
     helpers: pick('helpers'),
     patterns: pick('patterns'),
     templates: pick('templates'),

@@ -16,12 +16,12 @@ A controlled graph editor on `@xyflow/react`: `FlowCanvas` (its own `ReactFlowPr
 | `types/` | the props, labels and the React Flow node and edge types |
 | `core.ts` | the React-free vocabulary of the whole `flow` family (`FlowStep`, `FlowConnection`, `tidyTree`, `flowStepNodeSize`, `parseStepTransfer`, ...), with `core.test.ts`; owned by the plan, not edited by the canvas. `flowStepNodeSize` moved here from `lib/steps.ts` in T5 so a template reaches it through `@tc96/parttens/flow/canvas/core`, the only `.ts` entry of the `exports` map |
 
-Import direction: `composition/` → `components/`, `hooks/`, `lib/`, `store/`, `types/`, `core.ts`; `components/` → `lib/`, `store/`, `types/`, `core.ts`, `@tc96/elements` and COSS; `lib/`, `hooks/` and `store/` → `core.ts` and `types/`. `@xyflow/react` is imported only inside this folder (`scripts/check-boundaries.test.ts`). No import into another pattern.
+Import direction: `composition/` → `components/`, `hooks/`, `lib/`, `store/`, `types/`, `core.ts`; `components/` → `lib/`, `store/`, `types/`, `core.ts` and `@tc96/ui` (COSS, `IconFrame`); `lib/`, `hooks/` and `store/` → `core.ts` and `types/`. `@xyflow/react` is imported only inside this folder (`scripts/check-boundaries.test.ts`). No import into another pattern.
 
 ## Dependents
 
 - `flow/step-library` and `flow/inspector` import types and `serializeStepTransfer` from `../canvas/core` only, never from this folder's React files.
-- `packages/templates` (`workflow-editor`, `agent-builder`) import `FlowCanvas`, `FlowCanvasControls` and `FlowCanvasMinimap` by file path (`@tc96/parttens/flow/canvas/composition/flow-canvas/flow-canvas`) and `tidyTree` from `@tc96/parttens/flow/canvas/core`. Renaming a composition file breaks them.
+- `packages/blocks/src/ai-agents/flow/` (`workflow-editor`, `agent-builder`) import `FlowCanvas`, `FlowCanvasControls` and `FlowCanvasMinimap` by file path (`@tc96/parttens/flow/canvas/composition/flow-canvas/flow-canvas`) and `tidyTree` from `@tc96/parttens/flow/canvas/core`. Renaming a composition file breaks them.
 - `packages/parttens/src/index.ts` re-exports `flow/canvas/index`; `packages/registry/src/manifest.ts` and `scripts/test-patterns.ts` list the folder `flow/canvas` for the item `flow-canvas`; `manifest.test.ts` asserts it declares `@xyflow/react@12.12.0` and `d3-hierarchy@3.1.2`.
 
 ## Invariants

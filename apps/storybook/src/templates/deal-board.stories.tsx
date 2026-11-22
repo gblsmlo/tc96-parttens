@@ -15,7 +15,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A deal board page: the `Pipeline` screen of `Patterns/Collection/Usages` with its toolbar and `KanbanView` grouped by stage. It renders inside `Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
+          'A deal board page: the `Pipeline` screen of `Patterns/Collection/Usages` with its toolbar and `KanbanView` grouped by stage. It renders inside `Blocks/Application/Shell/AppShell1`, the layout it mounts in; the Code panel shows only the page, which goes in the `children` of the shell.',
       },
       story: appShellDocs,
     },

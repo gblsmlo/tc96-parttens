@@ -9,7 +9,7 @@ Not a pattern: the toolbar frame of a collection (`CollectionToolbar`, `Collecti
 | `components/` | `collection-toolbar.tsx`, `view-switcher.tsx` and `collection-toolbar.test.ts`, the bun check of the root barrel's toolbar surface |
 | `index.ts` | the barrel |
 
-Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/elements/text`, `@tc96/utils`, `lucide-react` and React only; `collection-toolbar.test.ts` imports the root barrel `../../index`. It never imports a pattern.
+Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/ui/text`, `@tc96/utils`, `lucide-react` and React only; `collection-toolbar.test.ts` imports the root barrel `../../index`. It never imports a pattern.
 
 ## Dependents
 

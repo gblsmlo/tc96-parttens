@@ -1,6 +1,6 @@
-import { IconFrame } from '@tc96/elements/icon-frame'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import { XIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useFlowInspectorContext } from '../store/flow-inspector-context'

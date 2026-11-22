@@ -1,0 +1,76 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Text
+
+The one element for interface text: a label, a description, a heading, a cell of a table, a line of code. It sets the family, size, weight, color, alignment, line height, letter spacing and truncation from the theme scale, and renders a `span` or the element a heading, paragraph or label needs. It carries no margin, no display and no state: the layout around it decides those.
+
+The other pages of `UI/Text`: [Playground](?path=/story/ui-text-playground--playground) to try the text, the element and every style prop, [Stories](?path=/story/ui-text-stories--default) for each family, foreground, size, weight, tracking and truncation, [Behavior](?path=/story/ui-text-behavior--default-style) for the tests, [Usages](?path=/story/ui-text-usages--page-heading) for text in context and [Layouts](?path=/story/ui-text-layouts--as-paragraph) for the element it renders.
+
+## Import
+
+```tsx
+import { Text, type TextProps, textSizes, textVariants } from '@acme/ui/text'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Text>children</Text>
+```
+
+## Text
+
+The text itself. Renders a `span`, or the element passed in `render`, with the classes of its variants and no role of its own. With no prop it is `text-base`, `text-foreground`, `font-sans` and `font-normal`; `align`, `leading`, `tracking` and `truncate` set nothing until they are passed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `"xs"`, `"sm"`, `"base"`, `"lg"`, `"xl"`, `"2xl"`, `"3xl"`, `"4xl"`, `"5xl"`, `"6xl"`, `"7xl"` or `"8xl"` | `"base"` | Sets the font size and its line height from the theme scale. |
+| `weight` | `"thin"`, `"extralight"`, `"light"`, `"normal"`, `"medium"`, `"semibold"`, `"bold"`, `"extrabold"` or `"black"` | `"normal"` | Sets the font weight. |
+| `family` | `"sans"`, `"heading"` or `"mono"` | `"sans"` | Sets the font family from `--font-sans`, `--font-heading` or `--font-mono`. |
+| `foreground` | `"base"`, `"muted"`, `"destructive"` or `"inherit"` | `"base"` | Sets the text color: `foreground`, `muted-foreground`, `destructive-foreground`, or the color of the parent. |
+| `align` | `"left"`, `"center"`, `"right"`, `"justify"`, `"start"` or `"end"` | - | Sets the text alignment; it acts on a block element. |
+| `leading` | `"none"`, `"tight"`, `"snug"`, `"normal"`, `"relaxed"` or `"loose"` | - | Sets the line height; without it the line height comes from `size`. |
+| `tracking` | `"tighter"`, `"tight"`, `"normal"`, `"wide"`, `"wider"` or `"widest"` | - | Sets the letter spacing. |
+| `truncate` | `boolean` | - | When true, keeps the text on one line and ends it with an ellipsis where it overflows; it acts on a block element. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `span` with another element, such as an `h2`, a `p` or a `label`, which receives the text props. |
+| `className` | `string` | - | Adds classes after the variant classes, so a conflicting class wins. |
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"text"` | Selects the part in the theme and from other parts |
+
+A `span` is inline, so `align` and `truncate` do nothing on it: pass `render={<p />}` or another block element, and give the line a width narrower than the text for `truncate` to cut it. Truncation also needs the parent to let the element shrink; in a flex row, add `min-w-0` to the text.
+
+`size` takes the names of the Tailwind scale and sets only the size: pair a large `size` with `leading` and `tracking` for a heading. `foreground="destructive"` reads `--destructive-foreground`, the text color of the destructive status.
+
+## textVariants
+
+The class function behind `Text`. Returns the class string of a set of variants, to give the text look to an element that cannot be passed to `render`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size`, `weight`, `family`, `foreground`, `align`, `leading`, `tracking`, `truncate` | the unions of `Text` | the defaults of `Text` | Select the classes of each variant. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `textSizes` | `constant` | The twelve values of `size`, from `"xs"` to `"8xl"`, in order. |
+| `TextSize` | `type` | The union of `textSizes`. |
+| `TextProps` | `type` | The props of `Text`: the `span` props plus the variants and `render`. |
+
+## Accessibility and theme
+
+- `Text` adds no role, name or state. Choose the element for what the text is: `render={<h2 />}` for a heading, `<p />` for a paragraph, `<label />` for the name of a field. A heading level follows the outline of the page, not the `size`.
+- A size, weight or family never replaces the element: bold `Text` is still a `span` to a screen reader.
+- Muted text reads `--muted-foreground` and is measured on the page `background`; on a tinted surface such as a card or a status color, measure again. `destructive` reads `--destructive-foreground`.
+- Truncated text hides the end of the line from sight but not from a screen reader; when the whole text matters, show it in a tooltip or a `title`.
+- `--font-heading` belongs to the theme; a theme without it falls back to the inherited family.
+- Decisions on elements, contrast and truncation: `packages/ui/src/text/ACCESSIBILITY.md`. Classes of each variant value: `packages/ui/src/text/TOKENS.md`.

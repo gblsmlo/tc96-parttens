@@ -23,7 +23,7 @@ await mkdir(output, { recursive: true })
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)
 const parsed = ts.parseJsonConfigFileContent(configuration.config, ts.sys, root)
 const versions: Record<string, string> = {}
-for (const pkg of ['elements', 'helpers', 'parttens']) {
+for (const pkg of ['helpers', 'parttens']) {
   const manifest = JSON.parse(
     await readFile(`packages/${pkg}/package.json`, 'utf8'),
   )
@@ -69,7 +69,7 @@ const areas = ts
     (area): area is string =>
       !!area && !patternNames.includes(area as PatternName),
   )
-// A template's item carries the pattern, elements and helpers files it imports,
+// A template's item carries the pattern and helpers files it imports,
 // walked the same way as a pattern's.
 const entries: [ItemName, string][] = [
   ...patternNames.map((name): [ItemName, string] => [
@@ -78,7 +78,7 @@ const entries: [ItemName, string][] = [
   ]),
   ...templateNames.map((name): [ItemName, string] => [
     name,
-    `packages/templates/src/${templateSources[name]}/index.ts`,
+    `packages/blocks/src/${templateSources[name]}/index.ts`,
   ]),
 ]
 for (const area of Object.values(itemAreas).flat())
