@@ -1,0 +1,201 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Properties
+
+The values of a record shown in place, one display per kind of value: the status, priority, assignee, due date and tags of a task, the owner and next contact of a lead. Each display renders one value on a small surface and, when the consumer passes a handler, edits it in a popup. `PropertyCollection` lines up the displays of a record in one row and lets the user pick which ones show.
+
+The other pages of `Patterns/Properties`: [Playground](?path=/story/patterns-properties-playground--playground) to try the row, its labels, its surface and its visible properties, [Stories](?path=/story/patterns-properties-stories--default) for each state of the row, [Behavior](?path=/story/patterns-properties-behavior--collection-shows-default-visible-items) for the tests of the row and of the parts every display shares, [Usages](?path=/story/patterns-properties-usages--task) for the header of a task and of a lead, and [Layouts](?path=/story/patterns-properties-layouts--plain-column) for plain values, editable and read-only, in one column.
+
+Each display has its own node, with its props, states and tests: [Assigned](?path=/docs/patterns-properties-display-assigned-api-reference--api-reference), [Attachments](?path=/docs/patterns-properties-display-attachments-api-reference--api-reference), [Date](?path=/docs/patterns-properties-display-date-api-reference--api-reference), [Date Range](?path=/docs/patterns-properties-display-daterange-api-reference--api-reference), [Editable Text](?path=/docs/patterns-properties-display-editable-text-api-reference--api-reference), [Email](?path=/docs/patterns-properties-display-email-api-reference--api-reference), [Flag](?path=/docs/patterns-properties-display-flag-api-reference--api-reference), [Icon Label](?path=/docs/patterns-properties-display-icon-label-api-reference--api-reference), [People](?path=/docs/patterns-properties-display-people-api-reference--api-reference), [Person](?path=/docs/patterns-properties-display-person-api-reference--api-reference), [Phone](?path=/docs/patterns-properties-display-phone-api-reference--api-reference), [Phone Input](?path=/docs/patterns-properties-display-phone-input-api-reference--api-reference), [Reference](?path=/docs/patterns-properties-display-reference-api-reference--api-reference), [Schedule](?path=/docs/patterns-properties-display-schedule-api-reference--api-reference), [Select](?path=/docs/patterns-properties-display-select-api-reference--api-reference), [Tags](?path=/docs/patterns-properties-display-tags-api-reference--api-reference) and [Text](?path=/docs/patterns-properties-display-text-api-reference--api-reference). This page documents what they share: the surface, the row, the select and multi-select shells, the add trigger, the entry form and its editor, and the calendar popover.
+
+Used in: the brief header of [Patterns/Rich Text Editor/Usages/Campaign Brief](?path=/story/patterns-rich-text-editor-usages-campaign-brief--template) mounts a `PropertyCollection`.
+
+## Import
+
+```tsx
+import {
+  PropertyCollection,
+  PropertySurface,
+  type PropertyCollectionItem,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+import { CircleDotIcon, TagIcon } from 'lucide-react'
+
+<PropertyCollection
+  ariaLabel="Task properties"
+  items={[
+    { defaultVisible: true, icon: CircleDotIcon, id: 'status', label: 'Status', render: () => <SelectProperty {...status} /> },
+    { icon: TagIcon, id: 'tags', label: 'Tags', render: () => <TagsProperty {...tags} /> },
+  ]}
+/>
+```
+
+`status` and `tags` stand for the props of each display: its value, options and handler, which the consumer keeps in its own state.
+
+Every display is controlled. The consumer passes the value and the options, and receives the next value through `onValueChange`, or through `action` with a context that carries `previousValue`. A display is read-only when `readOnly` is set or when it has neither `action` nor `onValueChange` (`onCommit` for `TextProperty` and `EditableText`); with both, `action` runs and `onValueChange` does not. A display never fetches, filters, sorts or persists, and it has no invalid state: field errors stay with the consumer, except in the email and phone popups, which parse what the user types. Its only state is the open popup, the drafts of that popup and, in `PropertyCollection`, the uncontrolled visibility.
+
+## PropertyCollection
+
+The properties of one record in a row, with a menu to pick which of them show. Renders the shared row, a `fieldset` that wraps its items 4px apart in a line and 2px between lines, then a 24px badge button with an ellipsis that opens the menu. The row shows the visible items in catalog order, each through its `render`; a hidden item is not rendered.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly PropertyCollectionItem[]` | required | Lists the catalog in order: every property the record can show. |
+| `ariaLabel` | `string` | - | Names the `fieldset`. |
+| `defaultVisible` | `readonly string[]` | ids of the items with `defaultVisible: true` | Sets the ids visible at first when uncontrolled; wins over the items' own `defaultVisible`. |
+| `visible` | `readonly string[]` | - | Sets the visible ids and makes the visibility controlled. |
+| `readOnly` | `boolean` | `false` | When true, removes the menu trigger. The displays keep their own handlers. |
+| `triggerLabel` | `string` | `"Ajustar propriedades"` | Names the menu trigger (`aria-label`). |
+| `onVisibleChange` | `(visible: readonly string[]) => void` | - | Called when the user toggles an item, with the visible ids in catalog order. |
+| `className` | `string` | - | Adds classes to the `fieldset`. |
+
+The menu opens below the trigger, aligned to its start, and lists the whole catalog as checkbox items, each with its icon and label, checked when visible; it has no group label. A click toggles the item and keeps the menu open. The ids reach `onVisibleChange` in catalog order, so an item turned back on returns to its place. With `visible` passed, a click only calls `onVisibleChange`: the row changes when the consumer passes the new ids.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"property-collection"` | Selects the `fieldset` |
+| `data-slot` | `"menu-trigger"` | Selects the trigger: the menu's slot replaces the one of `PropertySurface` |
+| `data-variant` | `"badge"` | Set on the trigger by `PropertySurface` |
+| `data-slot` | `"menu-checkbox-item"` | Selects an item of the menu |
+
+### PropertyCollectionItem
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | required | Identifies the item in `defaultVisible`, `visible` and `onVisibleChange`. |
+| `label` | `string` | required | Names the item in the menu. |
+| `render` | `() => React.ReactNode` | required | Renders the display while the item is visible. |
+| `icon` | `PropertyIcon` | - | Sets the icon beside the label in the menu, 16px in `muted-foreground`. |
+| `defaultVisible` | `boolean` | - | When true, the item shows at first, unless the collection sets `defaultVisible`. |
+
+## PropertySurface
+
+The surface every display draws its value on: a chip or plain text with an optional icon. Renders a `span` by default; `render` swaps the element (a `button` for a trigger).
+
+<Canvas of={ApiReferenceStories.Surface} />
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the look. `"badge"` renders a `Badge`, `secondary`, 24px high; `"plain"` renders inline text with no fill. |
+| `muted` | `boolean` | `false` | When true, marks the value absent: the badge turns `outline`, plain text turns `muted-foreground`. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `span` with another element, keeping the surface's props. |
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"property-surface"` | Selects the surface. A trigger that renders through it (menu, popover, tooltip) replaces it with its own slot |
+| `data-variant` | `"badge"` or `"plain"` | Styles the surface by variant |
+| `data-empty` | `"true"` when `muted` | Styles an absent value |
+
+With an `aria-label` and no `role` or `render`, the surface takes `role="img"`, so a read-only value reads as one named image; a `button` passed through `render` keeps its role. The badge takes `propertyBadgeClassName` (`h-6`, `min-w-6`, `text-sm`). Both variants show a 2px `ring` focus ring, and a disabled `button` drops to 64% opacity.
+
+A `plain` surface rendered as a `button` or an `a` (the trigger of an editable display) is a 24px box with a small radius and 6px of inline padding, pulled out by 6px at its start and by 2px above and below. Its text therefore starts at the same x as a read-only plain value in the same column, and it takes the 20px of a line of `text-sm` in the row. The end is not pulled out, so a trigger at the end of a row never overflows it; its text ends 6px before the end of the box. On hover (on devices that hover), on keyboard focus and while its popup is open (`data-popup-open`), the box fills with `secondary` and the text turns `secondary-foreground`; only the colors change, so neither the text nor the row moves. At rest a muted trigger keeps `muted-foreground`. A read-only plain surface, a `span`, never fills.
+
+## Shared parts
+
+The parts below are not exported: the displays render them, so what they do holds for every display that uses them, and the `Behavior` page tests them through those displays. A display page names the part it renders and links here.
+
+### PropertyRow
+
+The row of a display that holds several surfaces. Renders a `fieldset` with its margin, padding, border and minimum width reset (`m-0 min-w-0 border-0 p-0`); the display adds its own layout. Rendered by `PropertyCollection`, `AttachmentsProperty`, `EmailProperty`, `PeopleProperty`, `PhoneProperty` and `TagsProperty`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"property-collection"`, `"attachments-property"`, `"email-property"`, `"people-property"`, `"phone-property"` or `"tags-property"` | Names the display that renders the row |
+| `data-variant` | `"badge"` or `"plain"`, absent when the display passes none | The `variant` of the display |
+
+`aria-label` comes from the display's `ariaLabel` and is absent without it. A display's `className` reaches the row after the reset, so a class that conflicts with it wins (`min-w-fit` replaces `min-w-0`). Displays add their own attributes to the row: `data-display` on `TagsProperty`, `data-editing` on an editable `EmailProperty`.
+
+### PropertySelectShell
+
+The single choice of `PersonProperty` and `SelectProperty`. Editable, it renders the surface as a `button` with `role="combobox"` that opens a list of options below it, aligned to its start; read-only, it renders the surface with `role="img"` and no list. The display names both: `PersonProperty` as `<ariaLabel>: <person or placeholder>`, `SelectProperty` as `<ariaLabel>: <option>` with a value and as `ariaLabel` alone without one.
+
+<Canvas of={ApiReferenceStories.SelectShell} />
+
+The trigger keeps `data-slot="property-surface"` and adds the state attributes of the Base UI select trigger (`data-popup-open`, `data-disabled`, `data-placeholder` and the others). Every option takes `propertySelectItemClassName`, which places the check mark in a right-hand column whatever the order of its children.
+
+### PropertyMultiSelectShell
+
+The multiple choice of `PeopleProperty`, `TagsProperty` and the reminders of `ScheduleProperty`. Renders the chips of the chosen options, each with a remove button, then an add chip, and opens a filterable list (a combobox) of every option.
+
+<Canvas of={ApiReferenceStories.MultiSelect} />
+
+- With no value, the add chip is a muted surface with the display's add icon (12px) and the placeholder, and the placeholder names it.
+- With a value, the add chip is a 24px square with a 14px plus, named by the display's add label (`Adicionar tag`); each chip's remove button is named by the display (`Remover tag Documentos`).
+- The `plain` variant, the default of `PeopleProperty` and `TagsProperty`, clears the border, fill, shadow and focus ring of the chips container (`[data-slot=combobox-chips]`).
+- The list opens aligned to the end of the chips; `dropdownPlacement.align` wins. It is as wide as its longest option. While `isLoading`, it shows the loading text in a status; with no match, the empty text.
+- Every change reports the next value and `{ added, removed, previousValue }`, where `added` or `removed` is the option, with its label, or `null`.
+- A display may replace the chips with its own trigger (`TagsProperty` with `display="count"`); the list then opens from that trigger.
+
+### PropertyAddTrigger
+
+The trigger that adds an entry in `EmailProperty`, `PhoneProperty` and `AttachmentsProperty`. Renders the surface as a `button` named by the add label.
+
+<Canvas of={ApiReferenceStories.AddTrigger} />
+
+- With no value, it is muted (`data-empty="true"`) and shows the display's icon (12px) and placeholder.
+- With a value, it is a 24px square with a 14px plus and no text, not muted.
+- `AttachmentsProperty` keeps an action trigger unmuted even with no value.
+- A disabled trigger is a disabled `button`: it runs nothing on click.
+- In email and phone it is the popover trigger, so it carries `aria-haspopup="dialog"` and `aria-expanded`, and `data-slot="popover-trigger"`.
+
+### PropertyEntryForm
+
+The popup of `EmailProperty` and `PhoneProperty`: one field per entry, then Adicionar outro and Salvar. Renders a 320px popover named by the add label (a `dialog`) holding a `form` with `noValidate`, so the browser never blocks the save with its own message.
+
+- Each field is named by its entry label (`Principal`, `Secundário`); past the last label, by the add label. The labels show above the fields only when there is more than one field or more than one label; past the last label, the label shown is the position (`3`).
+- A remove button, named `Remover <entry label> <kind>`, follows each field only while there is more than one; it shows on hover or focus.
+- Enter in a field saves and stops there, so the popup never sees the key; other keys only type. Salvar submits the form.
+- An error of a field shows below it with `role="alert"` and marks the field `aria-invalid`. The display's `errorMessage`, the consumer's refusal, shows after the fields, also with `role="alert"`.
+- Adicionar outro is disabled while `useEntryListEditor` allows no other entry.
+
+### useEntryListEditor
+
+The session of the entry form, inside `EmailProperty` and `PhoneProperty`. It is not exported.
+
+- Opening copies the value into the drafts, or one blank draft when the value is empty, and clears the errors. A new `value` while the popup is open does not touch the drafts; closing and opening again drops what was typed.
+- Editing a draft clears only that draft's error. Removing a draft removes its error with it.
+- A new draft can be added while every draft parses and the list is under its limit.
+- Saving trims every draft, skips the blank ones and parses the rest. An invalid draft gets the parser's message; a draft equal to an earlier one gets the duplicate message, on the later draft. Any error keeps the popup open and commits nothing. Otherwise the display reports the parsed values with `{ added, removed, previousValue }` and the popup closes.
+
+### PropertyCalendarPopover
+
+The date picker of `DateProperty` and `DateRangeProperty`. Renders the surface as a `button` with a 12px calendar icon (`data-slot="property-icon"`) and the label cut to one line, named `<ariaLabel>: <label>`, that opens a popover named by `ariaLabel` (a `dialog`) holding the calendar.
+
+<Canvas of={ApiReferenceStories.CalendarPopover} />
+
+- The trigger takes `data-slot="popover-trigger"`, `data-empty="true"` with no value and `data-overdue="true"` when the display says so.
+- The popover opens below the trigger, aligned to its start; a display may change the alignment (`DateRangeProperty` centers it), and its `dropdownPlacement` wins over both.
+- With a clear action, a footer button below the calendar, with the display's clear label (`Limpar data`, `Limpar período`), clears the value; without one (`allowClear={false}` on `DateProperty`), there is no footer.
+- A disabled trigger does not open.
+- With a tooltip, `DateProperty` shows the full date on hover and focus through `PropertyTooltip`, which also names it in a `hidden` span the trigger points to with `aria-describedby`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `PropertyCollectionProps` | `type` | The props of `PropertyCollection`. |
+| `PropertySurfaceProps` | `type` | The props of `PropertySurface`. |
+| `PropertyVariant` | `type` | `"badge"` or `"plain"`. |
+| `PropertyIcon` | `type` | An icon component that takes SVG props, as the `lucide-react` icons. |
+| `PropertyTone` | `type` | `"danger"`, `"info"`, `"neutral"`, `"success"` or `"warning"`. |
+| `PropertyPreset` | `type` | A preset option, `{ icon, label, tone, value }`. |
+| `propertyBadgeClassName` | `constant` | The classes the badge surface adds to `Badge`. |
+| `propertyToneClassName` | `constant` | The text color of each tone, from the theme tokens: `Record<PropertyTone, string>`. |
+
+## Accessibility and theme
+
+- Name `PropertyCollection` with `ariaLabel` and every display with its own `ariaLabel`: the triggers read `<ariaLabel>: <value>`, and a read-only value reads as an image with that name.
+- Keyboard: every trigger is a `button` in the Tab order; Enter or Space opens its popup or menu, and Escape closes it. In the entry form, Enter saves.
+- The copy is Portuguese (`Ajustar propriedades`, `Adicionar outro`, `Salvar`, `Limpar data`); the labels of each display are props.
+- The colors come from the theme tokens `secondary`, `muted-foreground`, `foreground`, `ring`, `destructive-foreground` and the tone tokens of `propertyToneClassName`, through the badge, menu, popover, combobox and select of the theme.

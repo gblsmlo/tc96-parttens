@@ -1,0 +1,68 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Flag
+
+A read-only property for a boolean state: automatic, overdue, blocked, archived, locked, the default account. Reach for it when the state matters only while it is on, so the flag shows then and disappears otherwise, or when both states need a word of their own ("Pixel ativo" and "Sem pixel").
+
+The other pages of `Patterns/Properties/Display/Flag`: [Playground](?path=/story/patterns-properties-display-flag-playground--playground) to try the state, the texts, the surface and the icons, [Stories](?path=/story/patterns-properties-display-flag-stories--default) for each state and surface, [Behavior](?path=/story/patterns-properties-display-flag-behavior--active-shows-label-and-icon) for the tests, [Usages](?path=/story/patterns-properties-display-flag-usages--default-account) for real content, and [Layouts](?path=/story/patterns-properties-display-flag-layouts--without-icon) for the flag without icons.
+
+Used in: the default account of [Patterns/Surfaces/Settings/Usages/Finance/Accounts](?path=/story/patterns-surfaces-settings-usages-finance-accounts--accounts).
+
+## Import
+
+```tsx
+import { FlagProperty } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<FlagProperty active activeIcon={BotIcon} label="label" variant="plain" />
+```
+
+The flag is an [`IconLabelProperty`](?path=/docs/patterns-properties-display-icon-label-api-reference--api-reference) whose icon and label follow `active`.
+
+## FlagProperty
+
+Renders the `IconLabelProperty` of the current state: `label` and `activeIcon` while `active`, `inactiveLabel` and `inactiveIcon` otherwise. While inactive it renders nothing unless `showInactive`. It has no editing: the consumer changes `active`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `active` | `boolean` | required | Sets the state the flag shows. |
+| `label` | `string` | required | Sets the text while active, and while inactive when `inactiveLabel` is not set. |
+| `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface: a 24px filled badge, or inline text with no fill. |
+| `showInactive` | `boolean` | `false` | When true, shows the flag while inactive instead of rendering nothing. |
+| `inactiveLabel` | `string` | - | Sets the text while inactive. |
+| `activeIcon` | `FlagPropertyIcon` | - | Sets the icon while active, at 12px. |
+| `inactiveIcon` | `FlagPropertyIcon` | - | Sets the icon while inactive, at 12px. |
+| `ariaLabel` | `string` | - | Names the flag `"<ariaLabel>: <text>"` and gives it `role="img"`. |
+| `iconClassName` | `string` | - | Adds classes to the icon, merged over its `size-3`. |
+| `className` | `string` | - | Adds classes to the surface. |
+
+Takes no other prop.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"property-surface"` | Selects the flag |
+| `data-variant` | `"badge"` or `"plain"` | Follows `variant` |
+| `data-slot` | `"property-icon"` | Selects the icon |
+
+The flag has no attribute for its state: the consumer knows `active` and can style the flag through `className`. An inactive flag is not muted: it has the same surface as an active one.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `FlagPropertyIcon` | `type` | A component that renders an `svg` and takes its props, such as a `lucide-react` icon. |
+| `FlagPropertyProps` | `type` | The props of `FlagProperty`. |
+
+## Accessibility and theme
+
+- Pass `ariaLabel` when the text alone does not say what the flag is about; the icons are hidden from assistive technology.
+- A flag that renders nothing leaves no trace for a screen reader either: pass `showInactive` when the absence of the state is information the reader needs.
+- The surface reads the theme tokens `secondary` and `secondary-foreground` for the badge.

@@ -1,0 +1,63 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Reference
+
+A chip that names another record this one points to: the account of a deal, the product of an order, the lead or support ticket a task came from. It only shows the name with an icon for its kind; it opens nothing and edits nothing.
+
+The other pages of `Patterns/Properties/Display/Reference`: [Playground](?path=/story/patterns-properties-display-reference-playground--playground) to try the label, the kind, the surface and the accessible name, [Stories](?path=/story/patterns-properties-display-reference-stories--default) for each kind and surface, [Behavior](?path=/story/patterns-properties-display-reference-behavior--kind-picks-icon) for the tests, and [Usages](?path=/story/patterns-properties-display-reference-usages--deal-relations) for the relations of a deal and the header of a ticket.
+
+The chip is an `IconLabelProperty` with an icon chosen by `kind` ([Patterns/Properties/Display/Icon Label](?path=/docs/patterns-properties-display-icon-label-api-reference--api-reference)), drawn on the shared `PropertySurface`, documented once in the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference).
+
+## Import
+
+```tsx
+import { ReferenceProperty } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ReferenceProperty ariaLabel="ariaLabel" kind="record" label="label" />
+```
+
+The chip holds the icon of the kind and the label, cut to one line with an ellipsis.
+
+## ReferenceProperty
+
+Renders a `span` with the icon and the label. With `ariaLabel` the `span` takes `role="img"` and the name `"<ariaLabel>: <label>"`, so the reference reads as one named image; without it, the label is plain text and the chip has no role. It never fetches or links the record: the consumer passes the label it already has.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Sets the name of the referenced record. |
+| `kind` | `"account"`, `"product"` or `"record"` | `"record"` | Picks the icon: a building for `"account"`, a package for `"product"`, a box for `"record"`. |
+| `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface: a filled chip, or text with no fill. |
+| `ariaLabel` | `string` | - | Names the chip `"<ariaLabel>: <label>"` and gives it `role="img"`. |
+| `className` | `string` | - | Adds classes to the chip. |
+
+Takes no other prop. It has no handler: a reference is always read-only.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"property-surface"` | Selects the chip |
+| `data-variant` | `"badge"` or `"plain"` | Reports `variant` |
+| `data-slot` | `"property-icon"` | Selects the icon of the kind |
+
+The icon is 12px and hidden from assistive technology (`aria-hidden`); the kind reaches a screen reader only through the words of `ariaLabel` and `label`. The chip takes `max-w-full`, so a long label is cut to the width of its container.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ReferencePropertyKind` | `type` | `"account"`, `"product"` or `"record"`. |
+| `ReferencePropertyProps` | `type` | The props of `ReferenceProperty`. |
+
+## Accessibility and theme
+
+- Pass `ariaLabel` with the relation (`Conta`, `Produto`): the icon says the kind only visually, so without it a screen reader reads the bare label.
+- The chip is not focusable and is not a link. To open the referenced record, render your own link or button next to it.
+- The `"badge"` chip reads `secondary` and `secondary-foreground`, with the icon at 80% opacity; the `"plain"` text takes the color of its container.

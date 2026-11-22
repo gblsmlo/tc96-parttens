@@ -169,6 +169,10 @@ const preview: Preview = {
           if (segmentB === partsB[1]) return 1
           const sectionA = sections.indexOf(segmentA)
           const sectionB = sections.indexOf(segmentB)
+          const pageA = sectionA !== -1 && depth === partsA.length - 1
+          const pageB = sectionB !== -1 && depth === partsB.length - 1
+          if (pageA && sectionB === -1) return -1
+          if (pageB && sectionA === -1) return 1
           if (sectionA !== -1 && sectionB !== -1) return sectionA - sectionB
         }
         return 0

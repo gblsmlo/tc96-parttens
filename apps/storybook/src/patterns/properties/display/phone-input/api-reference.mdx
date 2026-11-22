@@ -1,0 +1,94 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Phone Input
+
+A phone number field with its country: a country picker on the left and the number on the right, formatted in the country's national pattern as it is typed. The consumer keeps the value in E.164 (`+5511987654321`) and receives the next one; the field never validates on its own, and the same library that formats it also validates it through `phoneNumberSchema`.
+
+The other pages of `Patterns/Properties/Display/Phone Input`: [Playground](?path=/story/patterns-properties-display-phone-input-playground--playground) to try the value, the country and the states, [Stories](?path=/story/patterns-properties-display-phone-input-stories--default) for each state, [Behavior](?path=/story/patterns-properties-display-phone-input-behavior--saved-number-in-national-format) for the tests, and [Usages](?path=/story/patterns-properties-display-phone-input-usages--contact-mobile) for a mobile number, a number abroad and a rejected number.
+
+Used in: each field of the entry popup of [Patterns/Properties/Display/Phone](?path=/docs/patterns-properties-display-phone-api-reference--api-reference).
+
+## Import
+
+`PhoneInput` is not exported from the patterns barrel. It ships with the properties pattern, in `properties/display/phone-input/`, and is imported from that folder:
+
+```tsx
+import { PhoneInput, phoneNumberSchema } from '@acme/patterns/properties/display/phone-input'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<PhoneInput ariaLabel="ariaLabel" onValueChange={setValue} value="+5511987654321" />
+```
+
+The field renders all its parts itself:
+
+```text
+PhoneInput                  div, role="group", data-slot="phone-input"
+├── country trigger         button, role="combobox", named "País: <country>"
+│   ├── flag                20px, hidden from assistive technology
+│   ├── calling code        "+55"
+│   └── chevron
+├── separator               1px, hidden from assistive technology
+└── number field            input, named by ariaLabel
+```
+
+The country trigger opens a list anchored to the whole field: a search field, `Nenhum país encontrado.` when nothing matches, and one option per country.
+
+## PhoneInput
+
+Renders a group with the country trigger and the number field. It is controlled: it shows `value` and reports every change through `onValueChange`, in E.164, or `null` when the number is cleared. It never fetches, stores or validates the number; `invalid` only marks it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string \| null` | required | Sets the number in E.164; `null` is no number. |
+| `onValueChange` | `(value: string \| null) => void` | required | Called with the number in E.164 as it is typed, after a country change, or with `null` when it is cleared. |
+| `ariaLabel` | `string` | - | Names the number field. |
+| `defaultCountry` | `PhoneCountryCode` | `"BR"` | Sets the country while the number names none. Read when the field mounts. |
+| `placeholder` | `string` | - | Sets the placeholder of the number field. |
+| `invalid` | `boolean` | `false` | When true, marks the number field `aria-invalid`; the country trigger is not marked. |
+| `disabled` | `boolean` | `false` | When true, disables the number field and the country trigger. |
+| `readOnly` | `boolean` | `false` | When true, makes the number field read-only and disables the country trigger. |
+| `required` | `boolean` | `false` | When true, sets `required` on the number field. |
+| `name` | `string` | - | Sets the `name` of the number field. |
+| `onKeyDown` | `React.KeyboardEventHandler<HTMLInputElement>` | - | Called for keys pressed in the number field only, never in the country picker. |
+| `onBlur` | `React.FocusEventHandler<HTMLInputElement>` | - | Called when the number field loses focus. |
+| `className` | `string` | - | Adds classes to the group. |
+
+Takes no other prop. The number field is an `input` with `type="tel"` and `autoComplete="tel"`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"phone-input"` | Selects the group |
+| `data-slot` | `"input"` | Selects the number field |
+| `data-slot` | `"combobox-trigger"` | Selects the country trigger |
+| `aria-invalid` | `"true"` when `invalid` | Marks the number field; the group draws its border in `destructive` while it holds an invalid field |
+
+The country comes from the number itself, even an incomplete one (`+551198` is Brazil), and only when the number names none from the last country picked, which starts at `defaultCountry`. Picking another country keeps the national digits and reports them under the new calling code (`+5511987654321` becomes `+35111987654321`); with no digits typed it reports `null`, and picking the current country reports nothing. The number shows in the national pattern of its country (`(11) 98765-4321`, `912 345 678`).
+
+The countries are listed by their Portuguese name, in Portuguese alphabetical order, each with its flag, name and calling code, and the check mark of the current one in a right-hand column. The search matches the name, ignoring case and accents, or the start of the calling code when the query has digits (`351` finds Portugal). The list is as wide as its longest option.
+
+A disabled field dims to 64% opacity.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `phoneNumberSchema` | `function` | A zod schema that trims the text and accepts only a valid number, with the library that formats the field. `phoneNumberSchema({ invalidMessage, requiredMessage }) => z.ZodType<string, string>` |
+| `PhoneNumberSchemaOptions` | `type` | The messages of `phoneNumberSchema`: `invalidMessage` (`"Informe um telefone válido."`) and `requiredMessage` (`"Informe um telefone."`). |
+| `defaultPhoneCountry` | `constant` | `"BR"`, the default of `defaultCountry`. |
+| `PhoneCountryCode` | `type` | A two-letter country code the field knows (`"BR"`, `"PT"`, `"US"`). |
+| `PhoneInputProps` | `type` | The props of `PhoneInput`. |
+
+## Accessibility and theme
+
+- Pass `ariaLabel`: the number field has no visible label of its own, and the group is not named. A `label` element wrapping the field would name the country trigger, the first control inside it, not the number.
+- The country trigger is named `País: <country>` and the list `Selecionar país`, in Portuguese; the country names are Portuguese too. They cannot be changed.
+- Show the error text yourself, next to the field: `invalid` only marks the number field.
+- The group reads `input` for its border, `background` (and `input` at 32% in dark) for its fill, and `destructive` for the border of an invalid number; the calling code reads `muted-foreground`.

@@ -1,0 +1,84 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Icon Label
+
+A read-only property value made of an optional icon and a short label on the property surface: an origin ("Manual"), a creation date, a category with a colored dot. Reach for it when the value is already text and only needs to sit in a record row or a card the same way the other properties do; it has no editing of its own.
+
+The other pages of `Patterns/Properties/Display/Icon Label`: [Playground](?path=/story/patterns-properties-display-icon-label-playground--playground) to try the texts, the surface, the parts and the element, [Stories](?path=/story/patterns-properties-display-icon-label-stories--default) for each surface, [Behavior](?path=/story/patterns-properties-display-icon-label-behavior--aria-label-names-the-surface-as-image) for the tests, [Usages](?path=/story/patterns-properties-display-icon-label-usages--record-dates) for real content, and [Layouts](?path=/story/patterns-properties-display-icon-label-layouts--without-icon) for how the parts combine.
+
+Used in: [Flag](?path=/docs/patterns-properties-display-flag-api-reference--api-reference) is an `IconLabelProperty` chosen by a boolean, and the [Email](?path=/docs/patterns-properties-display-email-api-reference--api-reference) chips are `IconLabelProperty` with a remove button as `trailing`; date range, phone, reference and attachments draw their values with it too. The record dates of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages-tasks--default) and the direction of [Patterns/Surfaces/Settings/Usages/Finance/Categories](?path=/story/patterns-surfaces-settings-usages-finance-categories--categories) render it directly.
+
+## Import
+
+```tsx
+import { IconLabelProperty } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<IconLabelProperty
+  icon={TagIcon}
+  label="label"
+  leading={<Leading />}
+  trailing={<Trailing />}
+  variant="plain"
+/>
+```
+
+`leading`, the icon, the label and `trailing` render in this order inside one surface; only `label` is required.
+
+## IconLabelProperty
+
+Renders the property surface, a `span` by default, with the label cut to one line with an ellipsis. The surface is the one every property shares: see [`PropertySurface`](?path=/docs/patterns-properties-api-reference--api-reference) in the API Reference of `Patterns/Properties` for the badge and plain looks.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `React.ReactNode` | required | Sets the text of the value. |
+| `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface: a 24px filled badge, or inline text with no fill; a plain `button` or link draws a `secondary` box on hover, on keyboard focus and while its popup is open. |
+| `muted` | `boolean` | `false` | When true, gives the surface the empty look: an outlined badge, or muted text when plain. |
+| `ariaLabel` | `string` | - | Names the surface `"<ariaLabel>: <label>"` and gives it `role="img"`. |
+| `icon` | `IconLabelPropertyIcon` | - | Sets the icon before the label, at 12px. |
+| `iconClassName` | `string` | - | Adds classes to the icon, merged over its `size-3`. |
+| `leading` | `React.ReactNode` | - | Sets content before the icon, such as a colored dot or an avatar. |
+| `trailing` | `React.ReactNode` | - | Sets content after the label, such as a remove button. |
+| `trailingVisibility` | `"always"` or `"hover"` | `"always"` | Controls when `trailing` shows: always, or only while the surface is hovered or holds focus. |
+| `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `span` of the surface, for a `button` or a link. |
+| `className` | `string` | - | Adds classes to the surface. |
+
+Takes no other prop.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"property-surface"` | Selects the surface |
+| `data-variant` | `"badge"` or `"plain"` | Follows `variant` |
+| `data-empty` | `"true"` when `muted` | Styles the empty value |
+| `data-slot` | `"property-icon"` | Selects the icon; a record row hides it when the row has a leading icon of its own |
+| `data-slot` | `"property-trailing"` | Selects the wrapper of `trailing`, present only with `trailingVisibility="hover"` |
+
+### Naming
+
+With `ariaLabel` and a string `label`, the surface is named `"<ariaLabel>: <label>"` and gets `role="img"`, so a screen reader reads one name instead of the icon and the text apart. With `trailing` as well it gets `role="group"` instead, so the control inside it stays reachable. With `render` it keeps the role of the element it renders, and the name stays. A `label` that is not a string adds nothing to the name, so the surface is named only `"<ariaLabel>:"`. Without `ariaLabel` the surface has no role and no name, and the label is read as plain text.
+
+### Trailing on hover
+
+With `trailingVisibility="hover"`, `trailing` sits in a `span` that is transparent until the pointer is over the surface or focus is inside it, and stays visible on a coarse pointer (touch). It keeps its space while hidden, so the surface does not change width.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `IconLabelPropertyIcon` | `type` | A component that renders an `svg` and takes its props, such as a `lucide-react` icon. |
+| `IconLabelPropertyProps` | `type` | The props of `IconLabelProperty`. |
+
+## Accessibility and theme
+
+- Pass `ariaLabel` when the label alone does not say what the value is ("27/09/2026" is a creation date); a record row whose label already names it can leave it out.
+- The icon is hidden from assistive technology: put its meaning in the label or in `ariaLabel`.
+- Name every control you pass as `trailing`, and do not pass one with `render` set to a `button` or a link, which cannot hold another control.
+- The surface reads the theme tokens `secondary` and `secondary-foreground` for the badge, `input` and `background` for the muted badge, and `muted-foreground` for muted plain text.

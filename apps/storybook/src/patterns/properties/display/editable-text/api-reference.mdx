@@ -1,0 +1,83 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Editable Text
+
+A text that reads as text and is edited in place, with no editing state to enter: a task title, a record name, a description, an email shown inline. The consumer passes the confirmed value and receives each commit; the field keeps the draft, commits on blur or Enter, and discards on Escape.
+
+The other pages of `Patterns/Properties/Display/Editable Text`: [Playground](?path=/story/patterns-properties-display-editable-text-playground--playground) to try the texts, the size and the read-only state, [Stories](?path=/story/patterns-properties-display-editable-text-stories--default) for each size, [Behavior](?path=/story/patterns-properties-display-editable-text-behavior--does-not-commit-while-typing) for the tests, [Usages](?path=/story/patterns-properties-display-editable-text-usages--task-title) for titles, a description and a read-only email, and [Layouts](?path=/story/patterns-properties-display-editable-text-layouts--multiline) for the multiline and read-only elements.
+
+`EditableText` is `Editable` with one `EditableField`: the focus session, the dirty check, Enter, Escape and the read-only text are the field's, documented in the API Reference of `Patterns/Editable`. This page covers the contract the properties add on top.
+
+Used in: [Text](?path=/docs/patterns-properties-display-text-api-reference--api-reference) and [Email](?path=/docs/patterns-properties-display-email-api-reference--api-reference), which edit their value inline with it, and the title of each checklist item.
+
+## Import
+
+```tsx
+import { EditableText } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<EditableText ariaLabel="ariaLabel" onCommit={commit} placeholder="placeholder" value="value" />
+```
+
+One field and nothing around it: the `Editable` root renders as a `span` with `display: contents`, so no box enters the row, the sentence or the card the text sits in.
+
+## EditableText
+
+The field. Renders an `input`, or a `textarea` with `multiline`, named by `ariaLabel`, with no border, no fill and no focus ring: the caret is the focus indicator. It fills its row and shows the placeholder while the value is empty. With `readOnly` it renders a `span` with the value, or the placeholder, and is no longer a field. It never validates, fetches or stores the value.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `ariaLabel` | `string` | required | Names the field. |
+| `value` | `string \| null` | required | Sets the confirmed value; `null` is empty. |
+| `onCommit` | `(value: string \| null) => void` | required | Called once per commit, with the trimmed text, or `null` when it is empty. |
+| `size` | `"sm"`, `"base"`, `"lg"` or `"xl"` | `"base"` | Controls the text scale: 14px, 16px, 24px or 32px. |
+| `placeholder` | `string` | - | Sets the text shown while the value is empty. |
+| `multiline` | `boolean` | `false` | When true, renders a `textarea` that grows with its text, where Enter adds a line. |
+| `readOnly` | `boolean` | `false` | When true, renders the value as a `span`, with no field. |
+| `emptyValue` | `string` | - | Sets a value that stands for empty: it reads like the placeholder, and focus starts from an empty draft. |
+| `revertWhenEmpty` | `boolean` | `false` | When true, an empty draft puts the confirmed value back instead of committing `null`. |
+| `autoFocus` | `boolean` | `false` | When true, focuses the field on mount, which starts the edit. |
+| `type` | `"text"` or `"email"` | `"text"` | Sets the `type` of the single-line `input`. |
+| `className` | `string` | - | Adds classes to the field, or to the read-only `span`. |
+
+Takes no other prop.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"editable-text"` | Selects the field, and the read-only `span` |
+| `data-editing` | present while the field has focus | Styles the field during an edit |
+| `data-empty` | present while the value is empty | Styles the empty field; the pattern sets no rule on it |
+| `data-readonly` | present on the read-only `span` | Styles the read-only text |
+| `data-slot` | `"editable"` | Selects the root `span`, which has no box |
+
+### Committing
+
+Focus starts the edit. Losing focus commits when the text changed since focus; Enter on a single line blurs the field, so the commit happens once, on blur; on a `multiline` field Enter adds a line and only the blur commits. Escape with a changed text puts the confirmed value back, commits nothing and stops the event; Escape with no change lets the event go, so in a dialog the first Escape discards the edit and the second closes the dialog.
+
+The committed text is trimmed. A text that trims to the confirmed value commits nothing; one that trims to empty commits `null`, or, with `revertWhenEmpty`, puts the confirmed value back and commits nothing. With `emptyValue`, a value equal to it shows in `muted-foreground` like a placeholder, focus clears it, and leaving the field untouched puts it back without a commit.
+
+A new `value` replaces the text only while the field is not being edited, so a save that lands mid-edit does not overwrite typing. After a commit the committed text stays on screen until the consumer passes a new `value`, so an asynchronous save does not flash the old one.
+
+The text size is the only type style the field sets; weight, family, line height and width are the consumer's, through `className` or the container. The `multiline` field grows with its text through `field-sizing: content` in browsers that support it; elsewhere it stays one row tall and scrolls.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `EditableTextProps` | `type` | The props of `EditableText`. |
+| `EditableTextSize` | `type` | `"sm"`, `"base"`, `"lg"` or `"xl"`. |
+
+## Accessibility and theme
+
+- Pass an `ariaLabel` that says what the text is (`Task title`): the field has no visible label, and the text alone may not say it.
+- After a commit no part moves focus, and focus stays where the user sent it (Tab, a click elsewhere, or the `body` after Enter).
+- The field has no focus ring by design: the caret is its focus indicator, as recorded in `docs/accessibility.md`, section `Boas práticas`.
+- The placeholder, the empty value and the `emptyValue` state read `muted-foreground`; the rest of the text inherits the color of its container.

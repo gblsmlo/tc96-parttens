@@ -1,0 +1,117 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Select
+
+A property for one value out of a closed list the consumer defines: the type of an activity, the stage of a deal, the template of a meeting. The value shows on a small surface with an optional icon, and the same surface opens the list. For a person, use [Person](?path=/docs/patterns-properties-display-person-api-reference--api-reference); for several values at once, [Tags](?path=/docs/patterns-properties-display-tags-api-reference--api-reference).
+
+The other pages of `Patterns/Properties/Display/Select`: [Playground](?path=/story/patterns-properties-display-select-playground--playground) to try the value, the texts, the catalog, the surface and the states, [Stories](?path=/story/patterns-properties-display-select-stories--default) for each state and surface, [Behavior](?path=/story/patterns-properties-display-select-behavior--badge-surface-is-filled) for the tests, [Usages](?path=/story/patterns-properties-display-select-usages--activity-type) for real content, and [Layouts](?path=/story/patterns-properties-display-select-layouts--without-icons) for a catalog without icons.
+
+Used in: the frequency of [Schedule](?path=/docs/patterns-properties-display-schedule-api-reference--api-reference), the status, priority and type of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages-tasks--default), the details and stage blocks of [Patterns/Records/Group/Usages](?path=/story/patterns-records-group-usages--details), and the event dialog of [Patterns/Records/Dialog/Create/Row Properties](?path=/story/patterns-records-dialog-create-row-properties--row-properties).
+
+## Import
+
+```tsx
+import { SelectProperty } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SelectProperty
+  ariaLabel="Tipo"
+  onValueChange={setValue}
+  options={options}
+  value="meeting"
+/>
+```
+
+The trigger holds the icon and the label of the value; the list opens below it with one option per entry of the catalog. The trigger and the list are the select shell every single-choice property shares: see [`PropertySurface`](?path=/docs/patterns-properties-api-reference--api-reference) and `PropertySelectShell` in the API Reference of `Patterns/Properties`.
+
+## SelectProperty
+
+Renders a `button` with `role="combobox"` that opens a list, or, read-only, a `span` with `role="img"`. It never fetches, filters or sorts the catalog: the consumer passes every option and receives the `value` of the picked one. It is read-only when `readOnly` is set or when neither `action` nor `onValueChange` is passed; with both, only `action` is called.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `ariaLabel` | `string` | required | Names the value: `"<ariaLabel>: <label>"`, or `ariaLabel` alone while the value is absent. |
+| `value` | `string \| null` | required | Sets the `value` of the current option; `null` is absent. |
+| `options` | `readonly SelectPropertyOption[]` | required without `groups` | Sets the catalog as one list, in order. |
+| `groups` | `readonly SelectPropertyGroup[]` | required without `options` | Sets the catalog as named sections, in order. Pass `options` or `groups`, never both. |
+| `onValueChange` | `(value: string \| null) => void` | - | Called with the `value` of the picked option, or `null` for the empty option. |
+| `action` | `(value: string \| null, context: SelectPropertyActionContext) => void` | - | Called instead of `onValueChange`, with the value before the pick. |
+| `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface: a 24px filled badge, or inline text with no fill that, while editable, draws a `secondary` box on hover, on keyboard focus and while the list is open. |
+| `placeholder` | `string` | - | Sets the text while the value is `null`; without it, `fallback` shows. |
+| `fallback` | `string` | `"—"` | Sets the text of a value no option declares, and of a `null` value with no `placeholder`. |
+| `emptyOptionLabel` | `string` | - | Adds an option with this label at the top of the list that reports `null`. |
+| `dropdownPlacement` | `SelectPropertyDropdownPlacement` | - | Sets the `side`, `align`, `sideOffset`, `alignOffset` and `alignItemWithTrigger` of the list; it opens below the trigger, 4px away, aligned to its start. |
+| `disabled` | `boolean` | `false` | When true, disables the trigger. |
+| `readOnly` | `boolean` | `false` | When true, renders the value with no list, with the same look. |
+| `className` | `string` | - | Adds classes to the surface. |
+
+Takes no other prop.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"property-surface"` | Selects the trigger, or the read-only value |
+| `data-variant` | `"badge"` or `"plain"` | Follows `variant` |
+| `data-empty` | `"true"` while the value is absent | Styles the absent value |
+| `data-slot` | `"property-icon"` | Selects the icon of the value and of each option |
+| `data-slot` | `"select-item"`, `"select-group"` or `"select-group-label"` | Selects each option, each section and its label in the list |
+
+### The value
+
+The value shows the `icon` of its option at 12px, colored by its `tone`, and the `label` cut to one line. A `null` value is absent: the surface takes the empty look (an outlined badge, or muted plain text) and shows `placeholder`. A value that no option declares is not absent: it keeps the filled look and shows `fallback`.
+
+### The list
+
+The list opens from the trigger with one option per entry, each with its icon and label, and a check at the right of the current option. With `groups`, each section is a group named by its `label`. Picking another option calls the handler once and closes the list; picking the current option closes the list and calls nothing.
+
+### The empty option
+
+With `emptyOptionLabel`, the list starts with an option of that label, outside every section, that reports `null`. It carries a dashed-circle icon when any option of the catalog has an icon, and none otherwise. Once the user picks it, the surface shows it filled, with its label and that icon, instead of the absent look, even when the value was already `null`; the next non-null `value` ends that. The choice lives in the component, so a remount that receives `null` shows the absent look again.
+
+## SelectPropertyOption
+
+An entry of `options`, or of a section of `groups`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | required | The value reported when the option is picked. |
+| `label` | `string` | required | The text of the option and of the value. |
+| `icon` | `PropertyIcon` | - | A component that renders an `svg`, such as a `lucide-react` icon, shown before the label. |
+| `tone` | `"danger"`, `"info"`, `"neutral"`, `"success"` or `"warning"` | - | Colors the icon with the matching `-foreground` token; `"neutral"` uses `muted-foreground`. |
+
+## SelectPropertyGroup
+
+A section of `groups`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | The name of the section, shown above its options. |
+| `options` | `readonly SelectPropertyOption[]` | required | The options of the section, in order. |
+
+## SelectPropertyActionContext
+
+What `action` receives with the picked value.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `previousValue` | `string \| null` | - | The value before the pick. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SelectPropertyDropdownPlacement` | `type` | `side`, `align`, `sideOffset`, `alignOffset` and `alignItemWithTrigger` of the list. |
+| `SelectPropertyProps` | `type` | The props of `SelectProperty`. |
+
+## Accessibility and theme
+
+- Give `ariaLabel` the name of the property ("Tipo da atividade"): the catalog has no domain of its own to name it.
+- The icon is hidden from assistive technology: the label carries the value.
+- The tones read the theme tokens `destructive-foreground`, `info-foreground`, `success-foreground`, `warning-foreground` and `muted-foreground`; the section labels of the list are `muted-foreground` on `popover`.

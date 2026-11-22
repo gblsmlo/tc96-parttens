@@ -1,0 +1,110 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# People
+
+A property for several people at once: the participants of a meeting, the members of a task, the people with access to a document. Each person is a chip with an avatar and a name, and an add chip at the end opens a list of the people the consumer offers. For a single person, use [Person](?path=/docs/patterns-properties-display-person-api-reference--api-reference).
+
+The other pages of `Patterns/Properties/Display/People`: [Playground](?path=/story/patterns-properties-display-people-playground--playground) to try the people, the texts and the states, [Stories](?path=/story/patterns-properties-display-people-stories--default) for each state and surface, [Behavior](?path=/story/patterns-properties-display-people-behavior--empty-trigger-shows-placeholder-last) for the tests, and [Usages](?path=/story/patterns-properties-display-people-usages--meeting-participants) for real content.
+
+Used in: the access block of [Patterns/Records/Group/Usages](?path=/story/patterns-records-group-usages--access) and the event dialog of [Patterns/Records/Dialog/Create/Row Properties](?path=/story/patterns-records-dialog-create-row-properties--row-properties).
+
+## Import
+
+```tsx
+import { PeopleProperty } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<PeopleProperty
+  onValueChange={setValue}
+  options={options}
+  value={['person-1', 'person-2']}
+/>
+```
+
+The row holds one chip per person, each with its remove button, and the add chip last; the list opens below it. The row and the list are the multi-select shell every multiple property shares (`PropertyRow`, `PropertyMultiSelectShell`): see the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference). The avatar and the option content are the ones of [Person](?path=/docs/patterns-properties-display-person-api-reference--api-reference).
+
+## PeopleProperty
+
+Renders a `fieldset` named by `ariaLabel` that holds a multiple combobox. It never fetches, filters or sorts people: the consumer passes every option in `options`, keeps the applied ids in `value` and receives the next list. It is read-only when `readOnly` is set or when neither `action` nor `onValueChange` is passed; with both, only `action` is called.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `readonly TValue[]` | required | Sets the ids of the applied people, in the order of the chips. |
+| `options` | `readonly PeoplePropertyOption<TValue>[]` | required | Sets the people the list offers, in order. |
+| `onValueChange` | `(value: readonly TValue[]) => void` | - | Called with the next list after a person is picked or removed. |
+| `action` | `(value: readonly TValue[], context: PeoplePropertyActionContext<TValue>) => void` | - | Called instead of `onValueChange`, with who changed. |
+| `variant` | `"badge"` or `"plain"` | `"plain"` | Controls the frame: the bordered frame of a combobox field around the chips, or no frame. |
+| `placeholder` | `string` | `"Adicionar pessoa"` | Sets the text of the add chip, and of the read-only row, while no one is applied. |
+| `ariaLabel` | `string` | `"Pessoas"` | Names the row, the list and its popup. |
+| `isLoading` | `boolean` | `false` | When true, shows `"Carregando pessoas…"` at the top of the open list. |
+| `dropdownPlacement` | `PeoplePropertyDropdownPlacement` | - | Sets the `side`, `align`, `sideOffset` and `alignOffset` of the list; it aligns to the end of the add chip by default. |
+| `disabled` | `boolean` | `false` | When true, disables the combobox, the add chip and the remove buttons. |
+| `readOnly` | `boolean` | `false` | When true, shows the people with no add chip and no remove buttons. |
+| `className` | `string` | - | Adds classes to the row. |
+
+`TValue` is a string type of the ids, `string` by default. Takes no other prop.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"people-property"` | Selects the row |
+| `data-variant` | `"badge"` or `"plain"` | Follows `variant` on the row |
+| `data-slot` | `"combobox-chip"` | Selects each person of the editable row |
+| `data-slot` | `"property-surface"` | Selects the add chip, and each person of the read-only row |
+| `data-empty` | `"true"` while no one is applied | Styles the empty add chip |
+| `data-slot` | `"avatar"`, with `data-size` | Selects each avatar: `"xs"` in the row, `"sm"` in the list |
+
+### The row
+
+Each person is a chip with a 16px avatar, the name, the `supportingLabel` from the `sm` breakpoint (in `foreground` at 72% inside the chip, `muted-foreground` elsewhere), and a remove button named `"Remover <name>"`; the chip sets its text size and radius to match the property surface. An id that no option declares shows as a chip with the id as its name. The add chip comes last: while no one is applied it shows a user icon and `placeholder` and takes its name from that text; once someone is applied it shrinks to a 24px `+` named `"Adicionar pessoa"`, whatever `placeholder` says.
+
+### The list
+
+The list opens from the add chip, as wide as its longest option. Each option shows the person with a 24px avatar, the name and, from the `sm` breakpoint, the `supportingLabel`; an applied person is marked with a check at the right. Picking a person adds them to the end of the list, and picking an applied person removes them; the list stays open, so several people are applied in a row. With no option, the list says `"Nenhuma pessoa encontrada."`.
+
+### Read-only
+
+A read-only `PeopleProperty` renders the row with each person on a `variant` surface with a 16px avatar, the name and, from the `sm` breakpoint, the `supportingLabel`, or one surface with `placeholder` in muted text while no one is applied. It has no button and no list.
+
+## PeoplePropertyOption
+
+A person of `options`, the same shape as the option of `PersonProperty`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `TValue` | required | The id of the person. |
+| `label` | `string` | required | The name, shown and used for the initials. |
+| `imageUrl` | `string` | - | The photo of the avatar, shown over the initials once it loads. |
+| `fallback` | `string` | the initials of `label` | The text of the avatar when there is no photo. |
+| `supportingLabel` | `string` | - | A second text in the list, such as a role, shown from the `sm` breakpoint. |
+
+## PeoplePropertyActionContext
+
+What `action` receives with the next list.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `added` | `PeoplePropertyOption<TValue> \| null` | - | The person who was picked. |
+| `removed` | `PeoplePropertyOption<TValue> \| null` | - | The person who was removed. |
+| `previousValue` | `readonly TValue[]` | - | The ids before the change. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `PeoplePropertyDropdownPlacement` | `type` | `side`, `align`, `sideOffset` and `alignOffset` of the list. |
+| `PeoplePropertyProps` | `type` | The props of `PeopleProperty`. |
+
+## Accessibility and theme
+
+- Give each row an `ariaLabel` that says whose people they are ("Participantes da reunião"): it names the row and the list.
+- The built-in texts are Brazilian Portuguese: the add name `"Adicionar pessoa"`, `"Remover <name>"`, `"Carregando pessoas…"` and `"Nenhuma pessoa encontrada."` cannot be changed.
+- The photo is decorative (`alt=""`): the name next to it carries the person.
+- The avatar initials are 10px on the `border` fill, with an `input` outline; the chips and the add chip read the badge tokens of the property surface.
