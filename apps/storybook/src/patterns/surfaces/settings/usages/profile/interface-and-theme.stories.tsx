@@ -14,7 +14,7 @@ import {
 } from '@tc96/ui/select'
 import { Switch } from '@tc96/ui/switch'
 import { BellIcon, LanguagesIcon, TypeIcon } from 'lucide-react'
-import { expect } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 
 interface SettingOption {
   label: string
