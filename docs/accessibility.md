@@ -234,7 +234,13 @@ Prazo dos itens: o prazo de cada item usa os tokens de texto do tema, `text-dest
 
 ### `ScheduleProperty`
 
-As stories em `Patterns/Properties/Display/Schedule` desligam só `color-contrast` quando o calendário fica aberto, pela exceção do calendário do COSS em [Exceções](#exceções).
+As stories de `Patterns/Properties/Display/Schedule` passam no axe nos dois temas sem exceção, inclusive com o popup e o calendário abertos (`Stories/Open`, `Layouts/Date Only`, `Layouts/Drill In`, `API Reference/Popup Anatomy` e as plays de `Behavior`).
+
+### `PeopleProperty` e `TagsProperty`
+
+O `supportingLabel` de uma pessoa dentro do chip de `PeopleProperty` media 4,47:1 no escuro em `text-muted-foreground` sobre o `accent` do chip (`#938d89` sobre `#2b2826`, axe em `Patterns/Properties/Display/People/Stories/Badge`). `text-foreground/64` foi testado e reprovou no claro (4,43:1, `#716e6d` sobre `#f0f0ef`); a correção, escolhida pelo dono, é `in-data-[slot=combobox-chip]:text-foreground/72` em `person-option-content.tsx`, só dentro do chip: 5,65:1 no claro e 7,68:1 no escuro. Fora do chip o rótulo segue em `muted-foreground`.
+
+O placeholder de um `TagsProperty` somente leitura e vazio, em `muted-foreground` sobre o badge `secondary`, mede 5,03:1 no claro e 4,83:1 no escuro.
 
 ### `PropertySurface` `plain` interativa
 
