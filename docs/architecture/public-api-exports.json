@@ -1472,6 +1472,16 @@
     "LoginProps",
     "LoginValues"
   ],
+  "block:otp-1": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthRenderLink",
+    "Otp1",
+    "OtpLabels",
+    "OtpProps",
+    "OtpValues"
+  ],
   "block:workflow-editor": [
     "AssistantMessage",
     "AssistantSuggestion",
