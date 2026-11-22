@@ -49,21 +49,21 @@ jobs:
       - run: bun run build
       - run: bun run verify:public-api
 
-  # The story tests run in three shards: one runner closed the browser mid-run
-  # when a widely used component pulled in 232 story files (PR #425).
+  # The story tests run in five shards: one runner closed the browser mid-run
+  # with 232 story files (PR #425), and with 448 files per shard on the full suite (PR #429).
   # Skipped on draft PRs and on PRs labeled skip-storybook; the release gate still runs every story.
   storybook-shard:
     if: >-
       ${{ !startsWith(github.head_ref, 'chore/release-')
       && !github.event.pull_request.draft
       && !contains(github.event.pull_request.labels.*.name, 'skip-storybook') }}
-    name: storybook (${{ matrix.shard }}/3)
+    name: storybook (${{ matrix.shard }}/5)
     runs-on: ${{ inputs.storybook-runner || 'ubuntu-24.04' }}
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: [1, 2, 3, 4, 5]
     steps:
       # On pull_request HEAD is the merge commit, so HEAD^1 is the base it merges into.
       - uses: actions/checkout@v4
@@ -120,11 +120,11 @@ jobs:
         working-directory: apps/storybook
 
       - if: steps.lane.outputs.tests == 'changed'
-        run: bun run test --project storybook --changed HEAD^1 --passWithNoTests --shard=${{ matrix.shard }}/3
+        run: bun run test --project storybook --changed HEAD^1 --passWithNoTests --shard=${{ matrix.shard }}/5
         working-directory: apps/storybook
 
       - if: steps.lane.outputs.tests == 'full'
-        run: bun run test --passWithNoTests --shard=${{ matrix.shard }}/3
+        run: bun run test --passWithNoTests --shard=${{ matrix.shard }}/5
         working-directory: apps/storybook
 
       - if: matrix.shard == 1 && steps.lane.outputs.storybook-build == 'true'
