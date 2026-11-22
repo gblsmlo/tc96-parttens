@@ -1,0 +1,159 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Wizard
+
+A controlled multi-step flow: the steps in a side nav and the current step in a panel beside it. Reach for it when a form or a setup is too long for one screen and the user moves through ordered steps, such as a coupon, a campaign or an onboarding. The consumer owns the current step, the data of each step, the validation and the submission, and decides which steps the nav can reach; the pattern renders the steps, their status and the moves between them.
+
+The other pages of `Patterns/Wizard`: [Playground](?path=/story/patterns-wizard-playground--playground) to try the nav label, the step content, the footer texts and the optional parts, [Stories](?path=/story/patterns-wizard-stories--default) for each current step, [Behavior](?path=/story/patterns-wizard-behavior--steps-in-ordered-list-inside-named-nav) for the tests, [Usages](?path=/story/patterns-wizard-usages--coupon) for real flows and [Layouts](?path=/story/patterns-wizard-layouts--numbered) for steps without icons or descriptions, locked steps and other footers.
+
+## Import
+
+```tsx
+import {
+  Wizard,
+  WizardFooter,
+  WizardNext,
+  WizardPrevious,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+`children` is the content of the current step, which the consumer renders from `value`; the steps themselves come from `steps`.
+
+```tsx
+<Wizard label="Etapas do cupom" onValueChange={setStep} steps={steps} value={step}>
+  {step === 'type' ? <DealTypeFields /> : null}
+  {step === 'details' ? <DealDetailsFields /> : null}
+  <WizardFooter>
+    <WizardPrevious>
+      <ArrowLeftIcon aria-hidden="true" />
+      Anterior
+    </WizardPrevious>
+    {step === 'review' ? (
+      <Button onClick={submit}>Criar cupom</Button>
+    ) : (
+      <WizardNext onClick={(event) => !isValid(step) && event.preventDefault()}>
+        Próximo
+        <ArrowRightIcon aria-hidden="true" />
+      </WizardNext>
+    )}
+  </WizardFooter>
+</Wizard>
+```
+
+## Wizard
+
+The root. Renders a `div` with two stacked cards: a recessed outer card that holds the steps in a `nav` named by `label`, and a raised inner card that holds the current step in a `section`. It is controlled: it never validates, submits, fetches or stores, and its only state is the step it should focus after a move.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Names the `nav`. |
+| `onValueChange` | `(value: string) => void` | required | Called with the `value` of the step a click on the nav, `WizardPrevious` or `WizardNext` asks for; a click on the current step calls nothing. |
+| `steps` | `readonly WizardStep[]` | required | Lists the steps in order, each rendered as a button in the nav. |
+| `value` | `string` | required | Sets the current step by its `value`. |
+| `children` | `React.ReactNode` | - | Renders inside the panel, below which the footer usually goes. |
+| `className` | `string` | - | Adds classes to the root `div` after its own, so a conflicting class wins. |
+
+The `Wizard` takes no other props.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"wizard"` | Selects the root, which is an `@container/wizard` |
+| `data-slot` | `"card"` | Selects the outer card, the only child of the root, and the inner card that holds the panel |
+| `data-slot` | `"wizard-nav"` | Selects the `nav` |
+| `data-slot` | `"wizard-panel"` | Selects the `section` that holds `children` |
+
+The layout follows the width of the root, not the viewport. From a root of 42rem the outer card is a grid with a 16rem nav beside the inner card; below that the nav stacks above it. Children can use the same container with the `@xl/wizard:` variants of Tailwind.
+
+The two cards read as two planes: the outer card is `bg-muted` (the `sidebar` token in dark), with no shadow, and the inner card keeps the default `Card` fill, border and shadow. The corners are concentric when the theme sets the card radius through `--card-radius` on `[data-slot="card"]`: the inner card takes the radius of the outer one minus 4px, the gap between them. Without that rule both cards keep the default `Card` radius.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--card-surface-radius` | `var(--radius-2xl)` | Read as the radius of the outer card to derive the inner one, which is 4px smaller |
+
+### Steps
+
+Each step is an `li` of the ordered list in the nav, with a button that shows an indicator, the title and the description. The status of a step comes from its position against `value`: before it `complete`, at it `current`, after it `upcoming`. A `value` that is not a step makes every step `upcoming`, leaves the panel unnamed and disables both moves.
+
+The indicator is the step `icon`; without one it is a check once the step is `complete` and the step number otherwise. It is hidden from assistive technology, so the button is named by its title and description. The current step's button has `aria-current="step"`.
+
+A click on another step calls `onValueChange`. A `disabled` step is a disabled button, so the nav cannot reach it, but `WizardPrevious` and `WizardNext` still move onto it: `disabled` limits jumps, not the order.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"wizard-step"` | Selects a step's `li` |
+| `data-status` | `"complete"`, `"current"` or `"upcoming"` | Styles the step by status; the indicator takes `bg-primary` once `complete` and a ring as well when `current` |
+| `data-slot` | `"wizard-step-trigger"` | Selects the button |
+| `data-slot` | `"wizard-step-indicator"` | Selects the indicator, which also carries the `data-shape`, `data-size` and `data-variant` of the frame that draws it |
+| `data-slot` | `"wizard-step-title"` | Selects the title |
+| `data-slot` | `"wizard-step-description"` | Selects the description; it renders only when the step has one |
+
+### Panel and focus
+
+The panel is a `section` with `tabindex="-1"`, named by the title of the current step, so it is a `region` landmark; it is unnamed when `value` is not a step.
+
+After a move by `WizardPrevious` or `WizardNext`, and only once the new `value` renders, the panel takes focus, because the button that moved may unmount or become disabled. A `value` change that the consumer makes (an edit button on a review, a reset) focuses the panel only when focus fell to `body`, which is what happens when the element that triggered it unmounted. A click on the nav keeps focus on the nav, the first render never takes focus, and a move the consumer ignores leaves focus where it was.
+
+## WizardStep
+
+The step a consumer passes in `steps`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | required | Identifies the step in `value` and in `onValueChange`. |
+| `title` | `React.ReactNode` | required | Shows the title, which names the step's button and, when current, the panel. |
+| `description` | `React.ReactNode` | - | Shows a line under the title, in the muted color. |
+| `icon` | `React.ReactNode` | - | Replaces the check or the number in the indicator. |
+| `disabled` | `boolean` | `false` | When true, the nav cannot reach the step; `WizardPrevious` and `WizardNext` still can. |
+
+## WizardFooter
+
+The row of actions at the end of the panel. Renders a `div` pushed to the bottom of the panel, with the first child at the start and the last at the end, and wrapping when the width is short.
+
+Also takes every prop of a `div`, `className` included, which is added after its own classes.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"wizard-footer"` | Selects the footer |
+
+## WizardPrevious and WizardNext
+
+Buttons that call `onValueChange` with the step before or after `value`, including a step disabled in the nav, and then focus the panel. Each is disabled when there is no such step, so `WizardPrevious` is on the first step and `WizardNext` on the last. On the last step the consumer usually renders its own submit button in place of `WizardNext`. Both throw an error when rendered outside a `Wizard`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onClick` | `(event: React.MouseEvent<HTMLButtonElement>) => void` | - | Called before the move; `event.preventDefault()` there keeps the wizard on the step, which is how a step validates. |
+| `disabled` | `boolean` | `false` | When true, disables the button; it adds to the disabled state of a missing step and never removes it. |
+| `variant` | `ButtonProps["variant"]` | `"secondary"` on `WizardPrevious`, `"default"` on `WizardNext` | Controls the look of the button. |
+
+Also takes every prop of `Button`, shown in [UI/Button](?path=/docs/ui-button-api-reference--api-reference). The pattern ships no label: the text and the arrow icons are `children`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"wizard-previous"` or `"wizard-next"` | Selects each button, in place of the `"button"` slot |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `WizardProps` | `type` | The props of `Wizard`. |
+| `WizardStep` | `type` | The step a consumer passes in `steps`. |
+| `WizardStepStatus` | `type` | `"complete"`, `"current"` or `"upcoming"`. |
+| `WizardFooterProps` | `type` | The props of `WizardFooter`. |
+| `WizardPreviousProps` | `type` | The props of `WizardPrevious`, the `Button` props. |
+| `WizardNextProps` | `type` | The props of `WizardNext`, the `Button` props. |
+| `wizardStepStatuses` | `constant` | The three statuses, in order. |
+| `wizardStepStatus` | `function` | Gives the status of one step. `wizardStepStatus(steps, value, stepValue) => WizardStepStatus` |
+| `adjacentWizardStep` | `function` | Gives the step before (`-1`) or after (`1`) `value`, or `undefined` at the ends or when `value` is not a step. `adjacentWizardStep(steps, value, offset) => WizardStep \| undefined` |
+
+## Accessibility and theme
+
+- Pass `label`: it names the `nav`. Keep step titles distinct, because the current title names the panel.
+- Name the buttons of the footer with text and mark the arrow icons `aria-hidden="true"`; the pattern adds no copy of its own.
+- The colors come from the theme tokens `muted`, `sidebar` (dark), `card`, `border`, `primary`, `primary-foreground`, `accent`, `muted-foreground` and `ring`. Measured contrast: `docs/accessibility.md`, section `wizard`.

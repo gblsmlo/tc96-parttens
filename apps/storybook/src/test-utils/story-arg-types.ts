@@ -65,10 +65,3 @@ export const collectionToolbarArgTypes = {
   title: text,
   variant: { control: 'inline-radio', options: ['default', 'plain', 'text'] },
 } as const
-
-export const wizardArgTypes = {
-  children: withoutControl,
-  className: text,
-  label: text,
-  steps: withoutControl,
-} as const

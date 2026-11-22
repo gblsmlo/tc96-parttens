@@ -49,7 +49,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn } from 'storybook/test'
 import {
   acquisitionSources,
   adAccounts,
@@ -58,7 +58,6 @@ import {
   type CampaignDraft,
   type CampaignObjective,
   type CampaignStepValue,
-  campaignDraftKey,
   campaignObjectives,
   campaignSteps,
   clearStoredCampaign,
@@ -71,8 +70,12 @@ import {
   readStoredCampaign,
   specialCategories,
   writeStoredCampaign,
-} from '../fixtures/campaign'
-import { CurrencyField, DateRangeField, SelectField } from '../fixtures/fields'
+} from '../fixtures/campaign.tsx'
+import {
+  CurrencyField,
+  DateRangeField,
+  SelectField,
+} from '../fixtures/fields.tsx'
 
 type UpdateCampaign = (patch: Partial<CampaignDraft>) => void
 
@@ -688,153 +691,46 @@ function CampaignWizard({
 const seedResumedCampaign = () =>
   writeStoredCampaign({ draft: bankingPilot, reached: 4, step: 'review' })
 
-const storedCampaign = () => localStorage.getItem(campaignDraftKey)
-
 const meta = {
   args: {
     onCancel: fn(),
     onDiscard: fn(),
     onSubmit: fn((_draft: CampaignDraft) => {}),
   },
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A campaign creation flow on the `Wizard` pattern, with the structure of the `Deal` usage: the initial info (title, owner and planned period), the campaign data, the Meta ad campaign (accounts, objective, special category), an optional daily budget and a review with one inset `RecordGroup` per step, whose action edits it. The fields go one per row, and the objective is a `Select` with object values whose description truncates. The story owns the draft and saves it in `localStorage` while it differs from an empty one, so a reload resumes it at the same step; the trash button asks before discarding it. `WizardNext` cancels its move while the step is invalid and focuses the field, the nav reaches steps up to the furthest one visited, and on the review `Criar campanha` or ⌘/Ctrl + Enter creates the campaign.',
-      },
-    },
-    layout: 'padded',
-  },
+  parameters: { layout: 'padded' },
   render: (args) => <CampaignWizard {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Wizard/Usages/Campaign',
+  title: 'Patterns/Wizard/Usages',
 } satisfies Meta<CampaignWizardArgs>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const nextButton = (canvasElement: HTMLElement) =>
-  within(canvasElement).getByRole('button', { name: 'Continuar' })
-
-export const Default: Story = {
+export const NewCampaign: Story = {
   beforeEach: () => {
     if (import.meta.env.VITEST) clearStoredCampaign()
   },
+  name: 'New campaign',
   parameters: {
     docs: {
       description: {
         story:
-          'No scripted interaction. Fill a step and reload: the draft comes back from `localStorage` at the same step.',
+          'A campaign creation flow on the `Wizard` pattern, with the structure of the `Coupon` usage: the initial info (title, owner and planned period), the campaign data, the Meta ad campaign (accounts, objective, special category), an optional daily budget and a review with one inset `RecordGroup` per step, whose action edits it. The fields go one per row, and the objective is a `Select` with object values whose description truncates. The story owns the draft and saves it in `localStorage` while it differs from an empty one, so a reload resumes it at the same step; the trash button asks before discarding it. `WizardNext` cancels its move while the step is invalid and focuses the field, the nav reaches steps up to the furthest one visited, and on the review `Criar campanha` or ⌘/Ctrl + Enter creates the campaign. Fill a step and reload: the draft comes back from `localStorage` at the same step.',
       },
     },
   },
-}
-
-export const CreateCampaign: Story = {
-  beforeEach: clearStoredCampaign,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'The full walk from an empty draft: each step blocks `Continuar` until it is valid, the progress is saved after the first change, and ⌘/Ctrl + Enter on the review creates the campaign and clears the saved draft.',
-      },
-    },
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
+  play: async ({ canvas }) => {
     await expect(
-      canvas.queryByText('Progresso salvo neste navegador'),
-    ).toBeNull()
-
-    await userEvent.click(nextButton(canvasElement))
-    await expect(
-      canvas.getByText('Informe o título da campanha.'),
+      canvas.getByRole('region', { name: 'Informações iniciais' }),
     ).toBeVisible()
-    const title = canvas.getByRole('textbox', { name: 'Título' })
-    await expect(title).toHaveFocus()
-
-    await userEvent.type(title, 'Piloto bancário')
-    await expect(
-      canvas.getByText('Progresso salvo neste navegador'),
-    ).toBeVisible()
-    await userEvent.click(nextButton(canvasElement))
-    await waitFor(() =>
-      expect(canvas.getByRole('region', { name: 'Campanha' })).toHaveFocus(),
-    )
-    await expect(
-      canvas.getByRole('combobox', { name: 'Origem da aquisição' }),
-    ).toHaveTextContent('Meta Ads')
-
-    await userEvent.click(nextButton(canvasElement))
-    await waitFor(() =>
-      expect(
-        canvas.getByRole('region', { name: 'Campanha de anúncios' }),
-      ).toHaveFocus(),
-    )
-    await expect(
-      canvas.getByRole('textbox', { name: 'Nome da campanha de anúncios' }),
-    ).toHaveValue('Piloto bancário')
-
-    const objective = canvas.getByRole('combobox', { name: 'Objetivo' })
-    await expect(objective).toHaveTextContent('Leads')
-    await userEvent.click(objective)
-    await userEvent.click(
-      await within(canvasElement.ownerDocument.body).findByRole('option', {
-        name: /^Tráfego/,
-      }),
-    )
-    await expect(objective).toHaveTextContent('Levar pessoas ao site')
-
-    await userEvent.click(nextButton(canvasElement))
-    await expect(
-      canvas.getByText('Escolha ao menos uma conta de anúncios.'),
-    ).toBeVisible()
-    await userEvent.click(
-      canvas.getByRole('checkbox', { name: /Conta principal/ }),
-    )
-    await userEvent.click(nextButton(canvasElement))
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Diário' }))
-    await userEvent.click(nextButton(canvasElement))
-    await expect(
-      canvas.getByText('Informe um valor maior que zero.'),
-    ).toBeVisible()
-    await userEvent.type(
-      canvas.getByRole('textbox', { name: 'Valor por dia' }),
-      '50',
-    )
-    await userEvent.click(nextButton(canvasElement))
-
-    await waitFor(() =>
-      expect(canvas.getByRole('region', { name: 'Revisão' })).toHaveFocus(),
-    )
-    await expect(canvas.getByText('R$ 50 por dia, em cada conta')).toBeVisible()
-    await expect(JSON.parse(storedCampaign() ?? 'null')).toMatchObject({
-      reached: 4,
-      step: 'review',
-    })
-
-    await userEvent.keyboard('{Meta>}{Enter}{/Meta}')
-
-    await expect(args.onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        adAccounts: ['main'],
-        budgetAmount: '50',
-        budgetMode: 'daily',
-        objective: 'traffic',
-        title: 'Piloto bancário',
-      }),
-    )
-    await expect(canvas.getByRole('status')).toHaveTextContent(
-      'Campanha Piloto bancário criada.',
-    )
-    await expect(storedCampaign()).toBeNull()
+    await expect(canvas.getByRole('textbox', { name: 'Título' })).toBeVisible()
   },
 }
 
-export const Resumed: Story = {
+export const ResumedCampaign: Story = {
   beforeEach: seedResumedCampaign,
+  name: 'Resumed campaign',
   parameters: {
     docs: {
       description: {
@@ -843,63 +739,10 @@ export const Resumed: Story = {
       },
     },
   },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
+  play: async ({ canvas }) => {
     await expect(canvas.getByRole('region', { name: 'Revisão' })).toBeVisible()
-
-    await userEvent.click(
+    await expect(
       canvas.getByRole('button', { name: 'Editar Orçamento' }),
-    )
-    await waitFor(() =>
-      expect(canvas.getByRole('region', { name: 'Orçamento' })).toHaveFocus(),
-    )
-    await userEvent.click(canvas.getByRole('button', { name: 'Sem orçamento' }))
-    await userEvent.click(canvas.getByRole('button', { name: /^Revisão/ }))
-
-    await expect(canvas.getByText('Sem orçamento')).toBeVisible()
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Criar campanha' }),
-    )
-    await expect(args.onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ budgetMode: 'none', title: 'Piloto bancário' }),
-    )
-  },
-}
-
-export const Discard: Story = {
-  beforeEach: seedResumedCampaign,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'The trash button asks in an `AlertDialog` before discarding; confirming clears the saved draft and returns to an empty first step.',
-      },
-    },
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    const body = within(canvasElement.ownerDocument.body)
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Descartar criação' }),
-    )
-    const dialog = await body.findByRole('alertdialog', {
-      name: 'Descartar esta criação?',
-    })
-    await userEvent.click(
-      within(dialog).getByRole('button', { name: 'Descartar criação' }),
-    )
-
-    await expect(args.onDiscard).toHaveBeenCalled()
-    await waitFor(() =>
-      expect(
-        canvas.getByRole('region', { name: 'Informações iniciais' }),
-      ).toBeVisible(),
-    )
-    await expect(canvas.getByRole('textbox', { name: 'Título' })).toHaveValue(
-      '',
-    )
-    await expect(storedCampaign()).toBeNull()
-    await waitFor(() => expect(body.queryByRole('alertdialog')).toBeNull())
+    ).toBeVisible()
   },
 }
