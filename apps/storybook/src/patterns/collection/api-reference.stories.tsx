@@ -7,6 +7,7 @@ import {
   CollectionFrameHeader,
   CollectionFrameOverlay,
   CollectionLayoutOutlet,
+  CollectionPagination,
   CollectionProvider,
   CollectionSearchField,
   CollectionToolbar,
@@ -77,7 +78,14 @@ const meta = {
             />
           </CollectionFrameBody>
           <CollectionFrameFooter>
-            <Slot name="CollectionFrameFooter" />
+            <CollectionPagination
+              label="CollectionPagination"
+              onPageChange={ignore}
+              page={2}
+              pageCount={3}
+              pageSize={25}
+              total={57}
+            />
             <CollectionFrameOverlay>
               <Slot name="CollectionFrameOverlay" />
             </CollectionFrameOverlay>
@@ -100,6 +108,8 @@ const frameSlots = [
   'collection-frame-body',
   'collection-frame-footer',
   'collection-frame-overlay',
+  'collection-pagination',
+  'collection-pagination-page',
   'list-view',
 ]
 
@@ -117,6 +127,9 @@ export const Anatomy: Story = {
     ).toBeVisible()
     await expect(canvas.getByRole('button', { name: 'Exibição' })).toBeVisible()
     await expect(canvas.getByRole('button', { name: 'Action' })).toBeVisible()
+    await expect(
+      canvas.getByRole('navigation', { name: 'CollectionPagination' }),
+    ).toBeVisible()
     await expect(canvas.getAllByText('renderListRecord')).toHaveLength(2)
   },
 }

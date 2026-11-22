@@ -2,7 +2,7 @@
 
 import type { PaginationState } from '@tanstack/react-table'
 import type React from 'react'
-import { CollectionPagination } from '../../../../pagination/components/collection-pagination'
+import { CollectionPagination } from '../../../shared/components/collection-pagination'
 
 export interface PaginatedTable {
   readonly store: { readonly state: { pagination: PaginationState } }
