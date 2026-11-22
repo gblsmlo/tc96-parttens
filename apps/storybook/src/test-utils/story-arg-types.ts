@@ -95,15 +95,6 @@ export const collectionPaginationArgTypes = {
   total: { control: { min: 0, type: 'number' } },
 } as const
 
-/** `ChatsPanel`: o invólucro, os textos e os slots de JSX sem controle. */
-export const chatsPanelArgTypes = {
-  actions: withoutControl,
-  children: withoutControl,
-  className: text,
-  title: text,
-  variant: { control: 'inline-radio', options: ['card', 'inset', 'plain'] },
-} as const
-
 export const wizardArgTypes = {
   children: withoutControl,
   className: text,

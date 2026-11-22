@@ -1,0 +1,171 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# ActionBar
+
+A bar of actions over the records a user has selected, for work on a batch at once: resend invitations to several members, mark messages as read, print the labels of several orders. It shows the selection count, the actions in groups, extra actions in a submenu and a button that clears the selection, and keeps no state: the consumer passes the selection and the actions, and handles each choice.
+
+The other pages of `Patterns/ActionBar`: [Playground](?path=/story/patterns-actionbar-playground--playground) to try the selection count, the first action and the optional parts, [Stories](?path=/story/patterns-actionbar-stories--default) for each selection and action state, [Behavior](?path=/story/patterns-actionbar-behavior--toolbar-role) for the tests, [Usages](?path=/story/patterns-actionbar-usages--team-members) for real actions, and [Layouts](?path=/story/patterns-actionbar-layouts--without-submenu) for how the parts combine.
+
+Used in: the data grid of a collection renders it over the footer while rows are selected, through `selectionActions`. See [Patterns/Collection/Layouts/Data Grid](?path=/docs/patterns-collection-layouts-data-grid--doc), and the bar over a real selection in [Contacts](?path=/story/patterns-collection-usages-contacts--delete-selection), [Campaigns](?path=/story/patterns-collection-usages-campaigns--pause-selection) and [Tasks](?path=/story/patterns-collection-usages-tasks--default).
+
+## Import
+
+```tsx
+import {
+  ActionBar,
+  type ActionBarContext,
+  type ActionBarGroup,
+  type ActionBarItem,
+  type ActionBarProps,
+} from '@acme/patterns'
+```
+
+`ActionBarProps<TData>` is the type of the props of `ActionBar`, below.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ActionBar
+  actions={[
+    {
+      id: 'first',
+      items: [
+        { id: 'primary', label: 'ActionBarItem', variant: 'primary' },
+        { icon: <Icon />, id: 'shortcut', label: 'ActionBarItem', shortcut: 'K' },
+      ],
+    },
+    {
+      id: 'second',
+      items: [
+        {
+          label: 'ActionBarItem with submenu',
+          submenu: [{ items: [{ label: 'ActionBarItem' }], label: 'ActionBarGroup' }],
+        },
+      ],
+    },
+  ]}
+  onClearSelection={clearSelection}
+  selectedCount={1}
+/>
+```
+
+The bar renders every part itself from `actions`; it takes no children. The tree it renders:
+
+```text
+div[role=toolbar][data-slot=action-bar]
+├── svg                     grip icon, aria-hidden
+├── span                    "1 selecionado" or "N selecionados"
+├── div                     one per ActionBarGroup
+│   ├── hr                  divider, from the second group on
+│   ├── Button              an ActionBarItem
+│   └── MenuTrigger         an ActionBarItem with submenu, rendered as a Button
+│       └── MenuPopup       portaled, above the bar
+│           ├── MenuGroup   one per submenu ActionBarGroup, with MenuGroupLabel when it has a label
+│           ├── MenuSeparator   between submenu groups
+│           └── MenuItem    one per submenu ActionBarItem
+└── Button                  "Limpar seleção", only with onClearSelection
+```
+
+## ActionBar
+
+The bar over the selection. Renders a `div` with `role="toolbar"` named "Ações dos itens selecionados", and nothing while `selectedCount` is below 1. It never selects, filters or runs anything: each choice calls the `onSelect` of its item with the same `ActionBarContext`, and the bar does not position itself.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `actions` | `ActionBarGroup<TData>[]` | required | Sets the groups of actions, in order, with a divider between groups. |
+| `selectedCount` | `number` | required | Sets the count shown in the bar; below 1 the bar renders nothing. |
+| `selectedRows` | `readonly TData[]` | `[]` | Sets the records passed to every `onSelect` in the context. |
+| `onClearSelection` | `() => void` | - | Called when the clear button is pressed; when set, adds the button at the end of the bar. |
+| `className` | `string` | - | Adds classes after the bar classes, so a conflicting class wins. |
+
+It takes no other prop: the role, the name, `data-slot` and the texts are fixed, and no `ref` reaches the `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"action-bar"` | Selects the bar in the theme and in tests; the bar has no rule on it |
+
+The count reads "1 selecionado" for one record and "N selecionados" for any other count. The bar is `w-fit` up to `max-w-full`, at least 44px tall (`min-h-11`), with a 1px `border`, `rounded-xl` corners, `shadow-lg` and the `bg-popover` background; past its parent's width it scrolls sideways. The actions do not shrink, but the count does: in a tight bar "1 selecionado" breaks onto two lines.
+
+The bar spaces its children 4px apart and a group spaces its actions 2px apart. The divider before a group is an `hr` with `aria-orientation="vertical"`, 1px wide and 20px tall in `bg-border`, with 4px of margin on each side.
+
+The clear button is an icon-only ghost `Button` at `size="sm"` with `data-slot="button"`, named "Limpar seleção" through `aria-label` and `title`.
+
+## ActionBarGroup
+
+A group of actions, in the bar or inside a submenu.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `ActionBarItem<TData>[]` | required | Sets the actions of the group, in order. |
+| `label` | `string` | - | Sets the label of the group; rendered only inside a submenu, where it names the group. |
+| `id` | `string` | - | Sets the React key; without it the key is `label`, then the keys of the items joined. |
+
+In the bar a group is a `div` with no role. Inside a submenu it is a `MenuGroup` with `role="group"`, named by its `MenuGroupLabel` through `aria-labelledby`, and a `MenuSeparator` sits between two groups.
+
+| Attribute | Part | Values | Description |
+| --- | --- | --- | --- |
+| `data-slot` | group in a submenu | `"menu-group"` | Selects a submenu group |
+| `data-slot` | label of a submenu group | `"menu-label"` | Selects the group label |
+| `data-slot` | line between submenu groups | `"menu-separator"` | Selects the line |
+
+## ActionBarItem
+
+One action. In the bar it renders a `Button` at `size="sm"`; with `submenu`, a `MenuTrigger` with the same look that opens the submenu. Inside a submenu it renders a `MenuItem`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Sets the text of the action and, in the bar, its `aria-label`; a plain action also gets it as `title`. |
+| `variant` | `"default"`, `"primary"` or `"destructive"` | `"default"` | Controls the look: in the bar a ghost, a filled primary or a ghost in `text-destructive-foreground` `Button`; in a submenu `"destructive"` sets the `MenuItem` variant and `"primary"` looks like `"default"`. |
+| `icon` | `ReactNode` | - | Sets an icon before the label. |
+| `shortcut` | `string` | - | Shows a `kbd` after the label; it only shows the key and binds nothing. |
+| `disabled` | `boolean` | - | When true, disables the action. |
+| `submenu` | `ActionBarGroup<TData>[]` | - | Sets the groups of a submenu; the action then opens it instead of calling its own `onSelect`. |
+| `onSelect` | `(context: ActionBarContext<TData>) => void` | - | Called when the action is chosen, with the selection. |
+| `id` | `string` | - | Sets the React key; without it the key is `label`, so two actions with the same label in a group need an `id`. |
+
+In the bar, a disabled action is a native `disabled` `button` that dims to 64% opacity, and a disabled action with `submenu` is a disabled trigger with `data-disabled`. Inside a submenu a disabled `MenuItem` dims too and sets `aria-disabled`; choosing it neither calls `onSelect` nor closes the submenu.
+
+| Attribute | Part | Values | Description |
+| --- | --- | --- | --- |
+| `data-slot` | action in the bar | `"button"` | Selects a plain action |
+| `data-slot` | action with submenu | `"menu-trigger"` | Selects the trigger; it replaces the `"button"` slot |
+| `data-popup-open` | action with submenu | present while the submenu is open | Lets the theme style the open trigger |
+| `data-pressed` | action with submenu | present while the submenu is open | Gives the trigger its pressed background: `bg-accent` for a ghost trigger (`"default"` or `"destructive"`), `bg-primary/90` for a `"primary"` one |
+| `data-disabled` | action with submenu | present when `disabled` | Lets the theme style a disabled trigger |
+| `data-slot` | action in a submenu | `"menu-item"` | Selects a submenu action |
+| `data-variant` | action in a submenu | `"default"` or `"destructive"` | Follows `variant` |
+| `data-highlighted` | action in a submenu | present while highlighted | Lets the theme style the highlighted row |
+| `data-disabled` | action in a submenu | present when `disabled` | Lets the theme style a disabled row |
+
+The submenu is a non-modal `Menu`: it opens above the trigger (`side="top"`, 8px away, centered), the rest of the page stays usable while it is open, and the page does not lock its scroll. Choosing an item calls its `onSelect` and closes the submenu; after a choice made with the keyboard, focus returns to the trigger. A submenu holds one level: an item's own `submenu` is ignored there.
+
+| Attribute | Part | Values | Description |
+| --- | --- | --- | --- |
+| `data-slot` | positioner | `"menu-positioner"` | Selects the element that places the popup |
+| `data-slot` | popup | `"menu-popup"` | Selects the submenu popup |
+| `data-side` | positioner and popup | `"top"`, or another side when there is no room above | The side the popup opened on |
+| `data-align` | positioner and popup | `"center"`, or another alignment when there is no room | The alignment the popup took |
+| `data-open` and `data-closed` | positioner and popup | present while open or closed | Let the theme style each state |
+| `data-starting-style` and `data-ending-style` | popup | present while it animates in or out | Let the theme animate the popup |
+
+## ActionBarContext
+
+The value every `onSelect` receives, in the bar and in a submenu.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `selectedCount` | `number` | required | Holds the `selectedCount` of the bar. |
+| `selectedRows` | `readonly TData[]` | required | Holds the `selectedRows` of the bar, or `[]` when the bar got none. |
+
+## Accessibility and theme
+
+- The bar takes `role="toolbar"`, but each action is its own tab stop: `Tab` moves from action to action, and the arrow keys do not move focus between them.
+- Give `label` a text that says the action alone: it is the name of the action in the bar. Inside a submenu the name comes from the content, so a `shortcut` joins the label in the name ("Duplicar" with `"D"` is named "DuplicarD").
+- Pass icons that hide themselves (`aria-hidden="true"`; the `lucide-react` icons do by default), since the label already names the action.
+- Place the bar where it should float, such as over the bottom of a list: the bar does not position itself.
+- The bar reads `--popover`, `--popover-foreground`, `--border`, `--muted-foreground` and `--radius-xl` from the theme, plus the `shadow-lg` shadow; its actions read the tokens of `Button` and `Menu`.

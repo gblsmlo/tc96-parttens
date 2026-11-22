@@ -1,0 +1,174 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Assistant
+
+An AI assistant card for an editor: asking why a workflow step failed, drafting a summary of a run, getting help on the step being edited. It floats over the editor's canvas or fills a side column, greets with suggestions when the conversation is empty and shows the conversation once it starts. It is controlled: the consumer passes the messages, the suggestions and `typing`, and answers `onSend` and `onSuggestion` itself; the pattern never calls a model, fetches, streams or persists.
+
+The other pages of `Patterns/Chat/Assistant`: [Playground](?path=/story/patterns-chat-assistant-playground--playground) to try the texts, the placement, the messages and each header action, [Stories](?path=/story/patterns-chat-assistant-stories--default) for each state, [Behavior](?path=/story/patterns-chat-assistant-behavior--docked-by-default) for the tests, [Usages](?path=/story/patterns-chat-assistant-usages--workflow) for real conversations and [Layouts](?path=/story/patterns-chat-assistant-layouts--without-header-actions) for how the parts combine.
+
+## Import
+
+```tsx
+import {
+  AssistantComposer,
+  AssistantPanel,
+  AssistantSuggestions,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+Once there are messages or `typing`, the conversation replaces the greeting:
+
+<Canvas of={ApiReferenceStories.ConversationAnatomy} />
+
+`AssistantPanel` renders every part from its props:
+
+```tsx
+<AssistantPanel>
+  header: labels.title, Beta badge, onNewChat, onHistory, onExpandedChange, onEnd
+  body, with no messages and no typing:
+    greeting, description
+    <AssistantSuggestions />
+  body, otherwise:
+    messages, each with its time and, on a failed answer, the retry button
+    typing indicator
+  footer:
+    <AssistantComposer />
+    disclaimer
+</AssistantPanel>
+```
+
+## AssistantPanel
+
+The assistant card. Renders a `section` named by its `h2` (`labels.title`, `"Assistente"` by default) around a `Card`; it is not a dialog, takes no focus and traps nothing. Its only state is the composer draft and the scroll position: it follows the last message, and a message sent from the composer brings the list back to the end even when the user had scrolled up.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `messages` | `readonly AssistantMessage[]` | required | Sets the conversation; with none and no `typing`, the body is the greeting. |
+| `onSend` | `(text: string) => void` | required | Called when the composer sends, with the trimmed text. |
+| `placement` | `"docked"` or `"floating"` | `"docked"` | Controls where the card sits: filling its parent, or over the bottom end corner of the nearest positioned ancestor. |
+| `expanded` | `boolean` | `false` | When true, a floating card is larger; a docked card does not change. |
+| `badge` | `boolean` | `true` | When true, shows the `labels.beta` badge after the title. |
+| `greeting` | `ReactNode` | - | Sets the large line of the empty state. |
+| `description` | `ReactNode` | - | Sets the line under the greeting. |
+| `suggestions` | `readonly AssistantSuggestion[]` | `[]` | Sets the questions the empty state offers; with none the list is not rendered. |
+| `typing` | `boolean` | `false` | When true, shows the typing indicator after the last message. |
+| `disclaimer` | `ReactNode` | `assistantDefaultDisclaimer` | Sets the fixed line under the composer. |
+| `placeholder` | `string` | `assistantDefaultPlaceholder` | Sets the placeholder of the composer. |
+| `labels` | `Partial<AssistantLabels>` | - | Replaces any of the default texts. |
+| `className` | `string` | - | Adds classes to the `section`. |
+| `onSuggestion` | `(suggestion: AssistantSuggestion) => void` | - | Called when a suggestion is pressed, with the suggestion. |
+| `onRetry` | `(messageId: string) => void` | - | Called when the retry button of a failed answer is pressed; without it the button is not rendered. |
+| `onAttach` | `() => void` | - | Called when the attach button is pressed; without it the button is not rendered. |
+| `onNewChat` | `() => void` | - | Called by the `Nova conversa` header button; without it the button is not rendered. |
+| `onHistory` | `() => void` | - | Called by the `Histórico` header button; without it the button is not rendered. |
+| `onExpandedChange` | `(expanded: boolean) => void` | - | Called by the `Expandir` or `Minimizar` header button with the opposite of `expanded`; without it the button is not rendered. |
+| `onEnd` | `() => void` | - | Called by the `Encerrar` header button; without it the button is not rendered. |
+
+Takes no other prop. The pattern sends nothing and clears no message: the consumer adds the question and the answer to `messages`, sets `typing` while it waits and clears `messages` on `onNewChat`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"assistant-panel"` | Selects the `section` |
+| `data-placement` | `"docked"` or `"floating"` | Styles each placement |
+| `data-expanded` | `"true"` or `"false"` | Styles the larger floating card |
+
+Inside it, `data-slot` also marks the header (`"assistant-header"`), its button group (`"assistant-actions"`), the empty state (`"assistant-empty"`) with its `"assistant-greeting"` and `"assistant-description"`, the footer (`"assistant-footer"`) and the disclaimer (`"assistant-disclaimer"`). A failed answer is a chat message with `data-error="true"`.
+
+A floating card is `absolute` at 16px from the bottom and the end of the nearest positioned ancestor, so that ancestor must be the editor's canvas. It measures `min(24rem, 100% - 2rem)` by `min(32rem, 100% - 2rem)`, and `min(36rem, 100% - 2rem)` by `min(44rem, 100% - 2rem)` when expanded. A docked card is `size-full`.
+
+Each header button is an icon button with a tooltip that repeats its name. With messages the body is a log named `labels.conversation`, with a `labels.jump` button that appears when the user scrolls up. A failed answer (`role: "assistant"` with `error`) shows its text with `role="alert"` and, with `onRetry`, the `labels.retry` button; the pattern does not resend.
+
+## AssistantSuggestions
+
+The "try asking" list of the empty state, also usable on its own. Renders a `section` named by its `h3` (`labels.suggestions`) with a `ul` of outline buttons, and nothing when `suggestions` is empty. Outside `AssistantPanel` it uses the default labels.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `suggestions` | `readonly AssistantSuggestion[]` | required | Sets the questions, one button each, labeled by `label`. |
+| `onSuggestion` | `(suggestion: AssistantSuggestion) => void` | - | Called when a suggestion is pressed, with the suggestion. |
+| `className` | `string` | - | Adds classes to the `section`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"assistant-suggestions"` | Selects the `section` |
+| `data-slot` | `"assistant-suggestion"` | Selects each button |
+
+## AssistantComposer
+
+The message field of the panel, also usable on its own. Renders a `form` with a `textarea` named `labels.composer` and a send button named `labels.send`. `Enter` sends and `Shift+Enter` breaks the line; `onSend` receives the trimmed text and the field clears. The send button is disabled while the draft is empty or blank, and a blank draft sends nothing.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSend` | `(text: string) => void` | required | Called when the draft is sent, with the trimmed text. |
+| `onAttach` | `() => void` | - | Called when the attach button is pressed; without it the button is not rendered. |
+| `placeholder` | `string` | `assistantDefaultPlaceholder` | Sets the placeholder of the `textarea`. |
+| `className` | `string` | - | Adds classes to the `form`. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"assistant-composer"` | Selects the `form` |
+
+The draft is the composer's own state: the consumer cannot set or read it before it is sent. The placeholder is drawn in `muted-foreground`.
+
+## AssistantMessage
+
+One message of `messages`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | required | Identifies the message; `onRetry` receives it. |
+| `role` | `"user"` or `"assistant"` | required | Sets the side: the user's messages on the end, the assistant's on the start. |
+| `text` | `string` | required | Sets the text of the message. |
+| `time` | `string` | - | Sets the time shown under the message. |
+| `at` | `string` | - | Sets the `dateTime` of that time. |
+| `error` | `boolean` | - | When true on an assistant message, shows it as a failed answer. |
+
+Two messages in a row with the same `role` are grouped. An `AssistantSuggestion` has an `id` and a `label`.
+
+## Labels
+
+Every text the pattern writes, overridden through `labels`. The defaults are in Portuguese.
+
+| Field | Default | Where |
+| --- | --- | --- |
+| `title` | `"Assistente"` | the `h2` that names the panel |
+| `beta` | `"Beta"` | the badge |
+| `newChat` | `"Nova conversa"` | header button |
+| `history` | `"Histórico"` | header button |
+| `expand` | `"Expandir"` | header button while not expanded |
+| `minimize` | `"Minimizar"` | header button while expanded |
+| `end` | `"Encerrar"` | header button |
+| `suggestions` | `"Experimente perguntar"` | the heading of the suggestions |
+| `conversation` | `"Mensagens do assistente"` | the name of the conversation log |
+| `jump` | `"Ir para a mais recente"` | the button back to the last message |
+| `typing` | `"O assistente está digitando"` | the typing indicator |
+| `retry` | `"Tentar de novo"` | the retry button of a failed answer |
+| `composer` | `"Mensagem para o assistente"` | the name of the `textarea` |
+| `attach` | `"Anexar contexto"` | the attach button |
+| `send` | `"Enviar"` | the send button |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `assistantDefaultLabels` | `constant` | The default `AssistantLabels` above. |
+| `assistantDefaultDisclaimer` | `constant` | The default `disclaimer`: `"As respostas podem estar erradas. Confira antes de publicar."` |
+| `assistantDefaultPlaceholder` | `constant` | The default `placeholder`: `"Pergunte sobre este fluxo…"` |
+| `AssistantMessage`, `AssistantMessageRole`, `AssistantSuggestion` | `type` | A message, its `role`, and a suggestion. |
+| `AssistantLabels`, `AssistantPlacement` | `type` | The texts of `labels`, and the `placement` values. |
+| `AssistantPanelProps`, `AssistantSuggestionsProps`, `AssistantComposerProps` | `type` | The props of each part. |
+
+## Accessibility and theme
+
+- The panel is a region named by its title; keep `labels.title` short and unique on the page.
+- The typing indicator is a `role="status"` with its text visible, and a failed answer is a `role="alert"`, so both are announced.
+- The header and attach buttons are named by their labels; translate them through `labels`, not through `aria-label`.
+- The card is the theme's `card`, and the conversation fades its edges into `popover`: where the two tokens differ, a faint band shows at the top and bottom of the list.
+- Measured contrast: `docs/accessibility.md`, section "Chat Assistant".
