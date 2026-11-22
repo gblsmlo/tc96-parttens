@@ -1,0 +1,350 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Collection
+
+One collection of records on one screen, in the layout the user picks: the tasks of a launch as a table, a board or a calendar, the contacts of a sales team as a table or a list. The consumer declares the collection, `CollectionProvider` keeps the active layout and grouping, `CollectionLayoutOutlet` mounts that layout, and `CollectionFrame` places the toolbar, the layout and the footer. When a screen only ever shows one layout, mount that layout alone and skip the provider and the outlet; when it shows one record, use `RecordPreview`, `RecordDialog` or `RecordGroup`.
+
+The other pages of `Patterns/Collection`: [Playground](?path=/story/patterns-collection-playground--playground) to try the layout, the frame mode, loading, the empty state and the toolbar parts, [Stories](?path=/story/patterns-collection-stories--default) for each layout and state, [Behavior](?path=/story/patterns-collection-behavior--fill-scrolls-the-body) for the tests and [Usages](?path=/story/patterns-collection-usages--tasks) for real screens (tasks, a pipeline, contacts, documents, campaigns, a calendar). The toolbar, the search field, the action and the footer are optional parts, toggled in the Playground: the root has no `Layouts` page, since `Patterns/Collection/Layouts` holds the layout nodes.
+
+Each layout has its own node, with its props, item parts and tests: [Calendar](?path=/docs/patterns-collection-layouts-calendar-api-reference--api-reference), [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference), [Data Table](?path=/docs/patterns-collection-layouts-data-table-api-reference--api-reference), [Gallery](?path=/docs/patterns-collection-layouts-gallery-api-reference--api-reference), [Kanban](?path=/docs/patterns-collection-layouts-kanban-api-reference--api-reference) and [List](?path=/docs/patterns-collection-layouts-list-api-reference--api-reference). The toolbar, the view switcher, the pagination and the bar over a selection have theirs: [Patterns/Toolbar](?path=/docs/patterns-toolbar--doc), [Patterns/Toolbar/View Switcher](?path=/story/patterns-toolbar-view-switcher--default), [Patterns/Pagination](?path=/docs/patterns-pagination--doc) and [Patterns/ActionBar](?path=/docs/patterns-actionbar--doc).
+
+Used in: [Templates/Contacts](?path=/story/templates-contacts--default) and [Templates/Deal Board](?path=/story/templates-deal-board--default), which mount copies of the Contacts and Pipeline screens of Usages (`fixtures/contacts-usage.tsx` and `fixtures/pipeline-usage.tsx`).
+
+## Import
+
+```tsx
+import {
+  Action,
+  CollectionFrame,
+  CollectionFrameBody,
+  CollectionFrameFooter,
+  CollectionFrameHeader,
+  CollectionFrameOverlay,
+  CollectionLayoutOutlet,
+  CollectionProvider,
+  CollectionSearchField,
+  CollectionToolbar,
+  FilterRadioSubmenu,
+  PresetsMenu,
+  projectCollection,
+  useCollectionPreferences,
+  ViewSettingsMenu,
+  ViewSettingsSection,
+  type CollectionDefinition,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+import { CircleDotIcon } from 'lucide-react'
+
+<CollectionProvider
+  collection={collection}
+  defaultPreferences={{ groupBy: null, layout: 'list' }}
+>
+  <CollectionFrame>
+    <CollectionFrameHeader>
+      <CollectionToolbar
+        startSlot={<CollectionSearchField onCommit={setSearch} />}
+        endSlot={
+          <>
+            <ViewSettingsMenu onClearFilters={clearFilters}>
+              <ViewSettingsSection label="Filtros">
+                <FilterRadioSubmenu
+                  icon={CircleDotIcon}
+                  label="Tipo"
+                  onValueChange={setType}
+                  options={typeOptions}
+                  value={type}
+                />
+              </ViewSettingsSection>
+            </ViewSettingsMenu>
+            <Action onClick={create} />
+          </>
+        }
+      />
+    </CollectionFrameHeader>
+    <CollectionFrameBody aria-label="Tarefas">
+      <CollectionLayoutOutlet collection={collection} renderListRecord={renderRow} />
+    </CollectionFrameBody>
+    <CollectionFrameFooter>
+      {pagination}
+      <CollectionFrameOverlay>{selectionActions}</CollectionFrameOverlay>
+    </CollectionFrameFooter>
+  </CollectionFrame>
+</CollectionProvider>
+```
+
+`collection`, `setSearch`, `typeOptions`, `type`, `setType`, `clearFilters`, `create`, `renderRow`, `pagination` and `selectionActions` are the consumer's data, state and elements. `CollectionToolbar` is documented in `Patterns/Toolbar`; `CollectionSearchField`, `ViewSettingsMenu`, `Action` and `PresetsMenu` render toolbar buttons and inputs, so they only mount inside it. `PresetsMenu` takes the place of the view switcher on a screen whose views are a short list, so the anatomy does not show it.
+
+The pattern is controlled. It never fetches, filters, searches, sorts or persists: the consumer passes the records already filtered, keeps the search, the filters and the saved views, and saves every edit. The pattern keeps only the active layout and grouping when they are uncontrolled, the move in progress while the consumer settles it, the collapse state of List and Data Grid groups and the table state of `useDataGrid` and `useDataTable`.
+
+## CollectionProvider
+
+Holds the preferences of the screen, `{ layout, groupBy }`, for the outlet and the toolbar. Renders no element of its own. Controlled through `preferences` and `onPreferencesChange`, or uncontrolled from `defaultPreferences`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `collection` | `CollectionDefinition<TRecord>` | required | Sets the collection the render function receives. |
+| `children` | `React.ReactNode` or `(value: CollectionProviderValue<TRecord>) => React.ReactNode` | required | Renders the screen; a function receives `{ collection, preferences, setPreferences }`. |
+| `preferences` | `CollectionPreferences` | - | Sets the preferences and makes them controlled. |
+| `defaultPreferences` | `Partial<CollectionPreferences>` | `{ layout: "kanban", groupBy: <first grouping id> }` | Sets the starting preferences when uncontrolled; without a `groupBy`, the first dimension of `groupings` is used, or `null` when there is none. |
+| `onPreferencesChange` | `(preferences: CollectionPreferences, details: { reason: "grouping" \| "layout" }) => void` | - | Called when a part sets the preferences, with the new value and the reason it gave. |
+
+`CollectionPreferences` is `{ layout: CollectionLayout, groupBy: string | null }`. `CollectionLayout` is `"calendar"`, `"datagrid"`, `"datatable"`, `"gallery"`, `"kanban"` or `"list"`. `groupBy: null` is the ungrouped collection, which List and Data Grid render flat.
+
+`useCollectionPreferences()` returns `{ preferences, setPreferences }` inside the provider and throws outside it. `setPreferences(next, reason)` takes the preferences or a function of the current ones, and a reason, `"layout"` or `"grouping"`; when controlled it only calls `onPreferencesChange`.
+
+### CollectionDefinition
+
+The collection the consumer declares: the records, how to key and label them, and the dimensions they can be grouped by. Pass the same object to `CollectionProvider` and `CollectionLayoutOutlet`, memoized on the records.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `records` | `readonly TRecord[]` | required | Sets the records, already filtered and sorted. |
+| `getKey` | `(record: TRecord) => string \| number` | required | Returns the stable key of a record. |
+| `getLabel` | `(record: TRecord) => string` | required | Returns the name of a record; Kanban uses it in the move handle, `Mover card <label>`. |
+| `groupings` | `readonly CollectionGroupingDimension<TRecord>[]` | required | Lists the dimensions a layout can group by; `[]` when none. |
+
+A grouping dimension:
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | required | Identifies the dimension; `groupBy` holds it. |
+| `label` | `string` | required | Names the dimension. |
+| `options` | `readonly CollectionOption[]` | required | Lists the groups in order, each `{ id, label, icon? }`. |
+| `getGroupId` | `(record: TRecord) => string \| null` | required | Returns the group of a record; `null` puts it in the unassigned group. |
+| `setGroupId` | `(record: TRecord, groupId: string \| null) => TRecord` | - | Returns the record moved to another group. Without it a Kanban card cannot change group through `onRecordChange`. |
+| `unassignedLabel` | `string` | `"Sem valor"` | Names the unassigned group. |
+
+`projectCollection(collection, groupBy)` turns a collection into groups, the same way List and Kanban do: one group per option, in option order, then a group per value no option declares, labeled by the value, then the unassigned group when a record returns `null`. Group ids are `<groupBy>:<option id>`, and `<groupBy>:unassigned` for the unassigned group. It throws when `groupBy` is `null` or names a dimension `groupings` does not declare.
+
+## CollectionFrame
+
+The column that holds the screen: a header for the toolbar, a body for the layout and a footer for the pagination. Renders a `div`, a flex column with 12px between its parts.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `mode` | `"fill"` or `"flow"` | `"fill"` | Controls the height. `"fill"` takes the free height of a flex column and scrolls the body; `"flow"` grows with its content and keeps the footer in view. |
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collection-frame"` | Selects the frame |
+| `data-mode` | `"fill"` or `"flow"` | Styles the frame by mode |
+
+`"fill"` holds only inside a flex column of bounded height (a page of `h-dvh`, a panel); anywhere else the frame grows like `"flow"`. Data Table, Data Grid and List scroll themselves inside a `"fill"` body, with the table and grid header and footer and the List group titles sticky, so only the rows move. The body and the footer read the mode of the nearest frame, so a frame nested in another keeps its own.
+
+## CollectionFrameHeader
+
+The area above the layout, for the toolbar and anything that stays above the records. Renders a `div` that never shrinks, a flex column with 8px between its children.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collection-frame-header"` | Selects the header |
+
+## CollectionSearchField
+
+The search of the collection, at the start of the toolbar. Renders a `form` with a search icon and an `input` of `type="search"`, 224px wide, 256px from `sm`. It keeps the typed text as a draft and commits it, trimmed, only on submit (Enter) or when the field is emptied, never on each key, so the consumer can write the search to the URL without a history entry per letter. When `value` changes, the draft follows it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onCommit` | `(value: string) => void` | required | Called on submit with the trimmed draft, and with `""` when the field is emptied. |
+| `value` | `string` | `""` | Sets the committed search. |
+| `label` | `string` | `"Buscar"` | Names the input (`aria-label`). |
+| `placeholder` | `string` | `"Buscar"` | Sets the placeholder. |
+| `className` | `string` | - | Adds classes to the `form`, not to the input. |
+
+## ViewSettingsMenu
+
+The settings of the view in one menu: tabs for the layouts, the consumer's sections (grouping, sorting, columns, filters), then Limpar filtros and Salvar preferência. Renders a ghost toolbar button with a sliders icon that opens a menu aligned to its end.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `React.ReactNode` | required | Renders the sections, between the tabs and the footer items. |
+| `onClearFilters` | `() => void` | required | Called when Limpar filtros is picked. |
+| `modes` | `readonly ViewSettingsMode<TMode>[]` | `[]` | Lists the layouts as tabs, each `{ icon, label, value }`; fewer than two show no tabs. |
+| `mode` | `TMode` | - | Sets the checked tab. |
+| `onModeChange` | `(mode: TMode) => void` | - | Called when a tab is picked; the menu closes. |
+| `activeFilterCount` | `number` | `0` | Sets the count in the trigger, `Exibição (2)`, and enables Limpar filtros above zero. |
+| `onSavePreference` | `() => void` | - | Called when Salvar preferência is picked; without it the item is not rendered. |
+| `savePreferenceDisabled` | `boolean` | `false` | When true, disables Salvar preferência. |
+| `label` | `string` | `"Exibição"` | Sets the text of the trigger. |
+| `clearLabel` | `string` | `"Limpar filtros"` | Sets the text of the clear item. |
+| `savePreferenceLabel` | `string` | `"Salvar preferência"` | Sets the text of the save item. |
+| `className` | `string` | - | Adds classes to the trigger. |
+
+The width of the menu follows the number of tabs: 14rem (224px) with fewer than two, 16rem with two, 18rem with three, 24rem with four or more. Up to three tabs sit in one row with the icon beside the label; four or more stack the icon above the label. Each tab is a `menuitemradio`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"view-settings-mode-tab"` | Selects a layout tab |
+| `data-layout` | `"inline"` or `"stacked"` | Styles a tab by arrangement: `"inline"` below four tabs, `"stacked"` from four |
+| `data-checked` | present on the active tab | Styles the active tab, on `background` with a shadow (`input` in dark) |
+
+### ViewSettingsSection
+
+A named section of the menu. Renders a menu group whose label comes first.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `React.ReactNode` | required | Sets the label of the group. |
+| `children` | `React.ReactNode` | required | Renders the items and submenus of the section. |
+
+### FilterRadioSubmenu
+
+A single-choice filter inside a menu: a submenu whose first option means "any". Renders a submenu trigger with the icon and the label, and a radio group of the options.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `icon` | `LucideIcon` | required | Sets the icon of the trigger. |
+| `label` | `string` | required | Sets the text of the trigger. |
+| `options` | `readonly (readonly [value: string, label: string])[]` | required | Lists the options as `[value, label]` pairs, in order. |
+| `onValueChange` | `(value: string) => void` | required | Called when an option is picked, with its value, or `""` for the "any" option. |
+| `value` | `string` | - | Sets the checked option; `""` or `undefined` checks the "any" option. |
+| `clearLabel` | `string` | `"Todos"` | Sets the text of the "any" option. |
+| `loading` | `boolean` | `false` | When true, replaces the options with skeleton rows and marks the submenu `aria-busy`; the "any" option stays. |
+| `loadingOptionCount` | `number` | `3` | Sets the number of skeleton rows. |
+
+The skeleton rows are hidden from assistive technology and carry no role, since a menu cannot own a status. `"__all__"` is the internal value of the "any" option, so it cannot be an option value.
+
+## Action
+
+The main action of the toolbar, such as Nova tarefa. Renders a toolbar `button` with the default look of `Button` and `type="button"`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onClick` | `() => void` | required | Called when the button is clicked. |
+| `label` | `string` | `"Adicionar"` | Sets the text of the button. |
+| `disabled` | `boolean` | `false` | When true, disables the button. |
+| `className` | `string` | - | Adds classes to the button. |
+
+## PresetsMenu
+
+A toolbar menu of saved presets with a count, for a screen whose views are a short list of menu items rather than the view switcher. Renders a ghost toolbar button with the label, a `secondary` `Badge` with the count and a chevron, and a 14rem menu aligned to its start.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Sets the text of the trigger, truncated when it does not fit. |
+| `count` | `number` | required | Sets the number in the badge; below zero shows `0`. |
+| `children` | `React.ReactNode` | required | Renders the menu items. |
+| `countLabel` | `string` | `"<count> itens"` | Names the badge for assistive technology. |
+| `className` | `string` | - | Adds classes to the trigger. |
+
+## CollectionFrameBody
+
+The area of the layout. Renders a `section`, so an `aria-label` makes it a `region` landmark; name it after the collection. In `"fill"` it takes the remaining height and scrolls (`overflow: auto`) content placed beside the layout; in `"flow"` it does not scroll.
+
+Also takes every prop of a `section`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collection-frame-body"` | Selects the body |
+
+## CollectionLayoutOutlet
+
+Mounts the layout of the active preferences: `DataTable`, `ListView`, `DataGrid`, `GalleryView`, `KanbanView` or `CalendarView`. Renders that layout and no element of its own, and must sit inside `CollectionProvider`. Each layout needs its own prop, and a missing one throws when that layout is active, so pass the props of the layouts the screen offers and nothing else.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `collection` | `CollectionDefinition<TRecord>` | required | Sets the records each layout renders. |
+| `renderListRecord` | `(record: TRecord) => React.ReactNode` | - | Renders a row of List; required for `"list"`. |
+| `renderKanbanRecord` | `(record: TRecord) => React.ReactNode` | - | Renders a card of Kanban; required for `"kanban"`. |
+| `renderGalleryRecord` | `(record: TRecord) => React.ReactNode` | - | Renders a card of Gallery; required for `"gallery"`. |
+| `datatable` | `CollectionDataTableViewProps<TRecord>` | - | Passes the props of `DataTable`, its `table` included; required for `"datatable"`. |
+| `datagrid` | `CollectionDataGridViewProps<TRecord>` | - | Passes the props of `DataGrid`, its `table` included; required for `"datagrid"`. |
+| `calendar` | `CollectionCalendarViewProps<TRecord>` | - | Passes the props of `CalendarView` except `collection`; required for `"calendar"`. |
+| `list` | `CollectionListViewProps<TRecord>` | - | Passes the props of `ListView` except `collection`, `grouping` and `renderRecord`. |
+| `kanban` | `CollectionKanbanViewProps<TRecord>` | - | Passes the props of `KanbanView` except `columns`, `getKey` and `renderCard`, with an `onMoveCard` that also receives the groups. |
+| `gallery` | `CollectionGalleryViewProps<TRecord>` | - | Passes the props of `GalleryView` except `collection` and `renderRecord`. |
+| `groups` | `readonly CollectionGroup<TRecord>[]` | - | Sets prepared groups for List and Kanban instead of projecting `collection`. |
+| `loading` | `boolean` | - | When true, the active layout renders its loading state, unless its own props set one. |
+| `onRecordChange` | `(change: CollectionRecordChange<TRecord>) => boolean \| Promise<boolean>` | - | Called when a Kanban card is dropped in another group, with the record rebuilt by `setGroupId`; return `false` or reject to move it back. |
+
+The active layout and `groupBy` come from the provider. List groups by `groupBy` and renders a flat list for `null`; Kanban always groups, so `groupBy: null` throws there unless `groups` is passed. Kanban takes `getKey` from the collection, and `getLabel` as its card label unless `kanban.getCardLabel` sets another.
+
+`loading` is the default of each layout's own flag: `isLoading` of `datatable` and `datagrid`, `loading` of `list`, `kanban`, `gallery` and `calendar`. A value set there wins, `false` included.
+
+`groups` win over the projection in List and Kanban, and an empty array renders no groups; it never falls back to `collection.records`. A `CollectionGroup` is an option (`id`, `label`, `icon?`) plus `count`, `grouping`, `records` and `value`, the group id the records share, `null` for the unassigned group. In List, `groups` also wins over `list.groups`.
+
+A Kanban card drags when `kanban.onMoveCard` is passed, or when `onRecordChange` is passed and the active dimension has `setGroupId`; otherwise the board is static. A drop in another group calls `onRecordChange` with `{ grouping, record, previousRecord, reason: "grouping" }`, where `record` is `setGroupId(card, target group value)`. A drop inside the same group returns `false`, since the order of the collection is the consumer's. `kanban.onMoveCard` wins over `onRecordChange` and receives the move with `sourceGroup` and `targetGroup`; a column with no matching group rejects the move. While a returned promise is pending, the card stays in the target column.
+
+Other edits (a status changed in a row, a date in a cell) are the consumer's renderers and columns calling the consumer's own update; the outlet does not see them.
+
+## CollectionFrameFooter
+
+The area below the layout, for the pagination. Renders a positioned `div` that never shrinks. In `"flow"` it is `sticky` at the bottom of the scrolling page, above the records (`z-index: 10`), on the `background` color.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collection-frame-footer"` | Selects the footer |
+
+## CollectionFrameOverlay
+
+A floating area for the bar of a selection. Renders a `div` placed 12px above the footer, across the full width of the footer with 12px of inline padding, centering its children, above the records (`z-index: 20`); it lets the pointer through, and its children, wrapped in an inner `div`, take it. Place it inside `CollectionFrameFooter`: inside the body it would scroll with the records. `className` reaches the outer `div`.
+
+Also takes every prop of a `div`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collection-frame-overlay"` | Selects the overlay |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `projectCollection` | `function` | Turns a collection into groups. `projectCollection(collection, groupBy) => readonly CollectionGroup[]` |
+| `useCollectionPreferences` | `hook` | Reads and sets the preferences inside `CollectionProvider`. `useCollectionPreferences() => { preferences, setPreferences }` |
+| `CollectionDefinition` | `type` | The collection the consumer declares. |
+| `CollectionGroupingDimension` | `type` | One dimension of `groupings`. |
+| `CollectionGroupingId` | `type` | The id of a dimension, `string`. |
+| `CollectionOption` | `type` | One option of a dimension, `{ id, label, icon? }`. |
+| `CollectionGroup` | `type` | A projected or prepared group. |
+| `CollectionLayout` | `type` | The layout names. |
+| `CollectionPreferences` | `type` | `{ layout, groupBy }`. |
+| `CollectionPreferencesChangeDetails` | `type` | `{ reason }`, the second argument of `onPreferencesChange`. |
+| `CollectionPreferencesChangeReason` | `type` | `"grouping"` or `"layout"`. |
+| `CollectionProviderProps` | `type` | The props of `CollectionProvider`. |
+| `CollectionProviderValue` | `type` | The value the render function of `CollectionProvider` receives. |
+| `CollectionPreferencesContextValue` | `type` | The value of `useCollectionPreferences`. |
+| `CollectionRecordChange` | `type` | The change `onRecordChange` receives. |
+| `CollectionKanbanCardMove` | `type` | The move `kanban.onMoveCard` receives, with `sourceGroup` and `targetGroup`. |
+| `CollectionLayoutOutletProps` | `type` | The props of `CollectionLayoutOutlet`. |
+| `CollectionCalendarViewProps` | `type` | The `calendar` block of the outlet. |
+| `CollectionDataGridViewProps` | `type` | The `datagrid` block of the outlet. |
+| `CollectionDataTableViewProps` | `type` | The `datatable` block of the outlet. |
+| `CollectionGalleryViewProps` | `type` | The `gallery` block of the outlet. |
+| `CollectionKanbanViewProps` | `type` | The `kanban` block of the outlet. |
+| `CollectionListViewProps` | `type` | The `list` block of the outlet. |
+| `CollectionFrameMode` | `type` | `"fill"` or `"flow"`. |
+| `CollectionFrameProps` | `type` | The props of `CollectionFrame`. |
+| `CollectionFrameHeaderProps` | `type` | The props of `CollectionFrameHeader`. |
+| `CollectionFrameBodyProps` | `type` | The props of `CollectionFrameBody`. |
+| `CollectionFrameFooterProps` | `type` | The props of `CollectionFrameFooter`. |
+| `CollectionFrameOverlayProps` | `type` | The props of `CollectionFrameOverlay`. |
+| `ViewSettingsMenuProps` | `type` | The props of `ViewSettingsMenu`. |
+| `ViewSettingsMode` | `type` | One tab of `ViewSettingsMenu`, `{ icon, label, value }`. |
+| `ViewSettingsSectionProps` | `type` | The props of `ViewSettingsSection`. |
+| `FilterRadioSubmenuProps` | `type` | The props of `FilterRadioSubmenu`. |
+| `CollectionSearchFieldProps` | `type` | The props of `CollectionSearchField`. |
+| `ActionProps` | `type` | The props of `Action`. |
+| `PresetsMenuProps` | `type` | The props of `PresetsMenu`. |
+
+## Accessibility and theme
+
+- Name `CollectionFrameBody` with `aria-label`, so the records sit in a named `region`, and name each layout through its own props (`datatable["aria-label"]`, `datagrid["aria-label"]`).
+- Name `CollectionSearchField` with `label` when the default `Buscar` does not say what it searches.
+- Keyboard: the toolbar is one Tab stop whose controls the arrow keys move between; the layout tabs of `ViewSettingsMenu` are radio items of the menu. Every layout keeps a keyboard path for its moves, documented on its node.
+- The copy of the parts is Portuguese (`Exibição`, `Limpar filtros`, `Salvar preferência`, `Todos`, `Buscar`, `Adicionar`, `itens`); every one of those texts is a prop.
+- The colors come from the theme tokens `background`, `foreground`, `muted-foreground`, `accent`, `primary`, `primary-foreground` and `input`, through the menu, button, input and badge of the theme.

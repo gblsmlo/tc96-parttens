@@ -8,7 +8,7 @@ Each item is rendered through a memoized wrapper keyed on `{ item, renderRecord 
 
 ## Scale
 
-The view is intended for tens to a few hundred visible records. It uses one column by default, two from `sm`, three from `lg` and four from `xl`. Virtualization and pagination stay with the consumer.
+The view is intended for tens to a few hundred visible records. It uses one column by default, two from `sm` and three from `lg` (`gallery-view.tsx`). Virtualization and pagination stay with the consumer.
 
 ## Benchmark
 
