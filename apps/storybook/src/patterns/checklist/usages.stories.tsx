@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, within } from 'storybook/test'
 import { ChecklistCanvas } from './checklist-canvas.tsx'
-import { authorOptions, dealTasks } from './checklist-data.ts'
-import { StatefulChecklist } from './checklist-layouts.tsx'
+import { authorOptions, dealTasks, subtaskItems } from './checklist-data.ts'
+import { StatefulChecklist, useStatusFilter } from './checklist-layouts.tsx'
 
 const meta = {
   decorators: [ChecklistCanvas],
@@ -16,66 +16,92 @@ type Story = StoryObj<typeof meta>
 
 const openTask = () => undefined
 
-export const DealTasks: Story = {
-  render: () => (
+const DealTasksChecklist = ({ readOnly = false }: { readOnly?: boolean }) => {
+  const status = useStatusFilter('Filtrar tasks')
+
+  return (
     <StatefulChecklist
+      addLabel="Adicionar task"
       ariaLabel="Tasks"
       authorOptions={authorOptions}
+      density={readOnly ? 'md' : 'sm'}
+      filter={status.filter}
       initialItems={dealTasks()}
       onItemClick={openTask}
+      readOnly={readOnly}
       title="Tasks"
+      variant="complete"
+      visibleItems={status.visibleItems}
     />
-  ),
+  )
+}
+
+export const DealTasks: Story = {
+  render: () => <DealTasksChecklist />,
   play: async ({ canvasElement }) => {
     const tasks = within(
-      within(canvasElement).getByRole('region', { name: 'Tasks' }),
+      within(canvasElement).getByRole('region', { name: /^Tasks/ }),
     )
     await expect(
       tasks.getByRole('button', { name: 'Abrir Ligar amanhã' }),
     ).toBeVisible()
-    await expect(tasks.getByText('0 de 3 concluídos')).toBeVisible()
-  },
-}
-
-export const CompactWithProgress: Story = {
-  render: () => (
-    <StatefulChecklist
-      ariaLabel="Tasks"
-      authorOptions={authorOptions}
-      density="sm"
-      initialItems={dealTasks()}
-      onItemClick={openTask}
-      progress
-      title="Tasks"
-    />
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
+    await expect(tasks.getByText('0/3')).toBeVisible()
     await expect(
-      canvas.getByRole('progressbar', { name: '0 de 3 concluídos' }),
+      tasks.getByRole('button', { name: 'Filtrar tasks' }),
     ).toBeVisible()
     await expect(
-      canvas.getByRole('button', {
-        name: 'Abrir @Deal test Ligue para a monique amanhã',
-      }),
-    ).toBeVisible()
+      tasks.getByRole('button', { name: 'Adicionar task' }),
+    ).toBeEnabled()
   },
 }
 
 export const ReadOnlyTasks: Story = {
-  render: () => (
-    <StatefulChecklist
-      ariaLabel="Tasks"
-      authorOptions={authorOptions}
-      initialItems={dealTasks()}
-      onItemClick={openTask}
-      readOnly
-      title="Tasks"
-    />
-  ),
+  render: () => <DealTasksChecklist readOnly />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await expect(canvas.getAllByRole('checkbox')).toHaveLength(3)
     await expect(canvas.getAllByText('Today')).toHaveLength(2)
+    await expect(
+      canvas.getByRole('button', { name: 'Filtrar tasks' }),
+    ).toBeEnabled()
+    await expect(
+      canvas.getByRole('button', { name: 'Adicionar task' }),
+    ).toBeDisabled()
+  },
+}
+
+const SubtasksChecklist = () => {
+  const status = useStatusFilter('Filtrar subtarefas')
+
+  return (
+    <StatefulChecklist
+      addLabel="Adicionar subtarefas"
+      ariaLabel="Subtarefas"
+      authorOptions={authorOptions}
+      filter={status.filter}
+      initialItems={subtaskItems}
+      title="Subtarefas"
+      variant="complete"
+      visibleItems={status.visibleItems}
+    />
+  )
+}
+
+export const Subtasks: Story = {
+  render: () => <SubtasksChecklist />,
+  play: async ({ canvasElement }) => {
+    const group = within(
+      within(canvasElement).getByRole('region', { name: /^Subtarefas/ }),
+    )
+    await expect(group.getByText('2/6')).toBeVisible()
+    await expect(
+      group.getByRole('checkbox', { name: 'Criar o endpoint de validação' }),
+    ).toBeChecked()
+    await expect(
+      group.getByRole('button', { name: 'Filtrar subtarefas' }),
+    ).toBeVisible()
+    await expect(
+      group.getByRole('button', { name: 'Adicionar subtarefas' }),
+    ).toBeVisible()
   },
 }

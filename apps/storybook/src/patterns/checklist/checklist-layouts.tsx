@@ -23,6 +23,7 @@ interface StatefulChecklistProps
   extends Omit<ChecklistProps, ConsumerHandledProps> {
   deletable?: boolean
   initialItems: readonly ChecklistItem[]
+  visibleItems?: (items: readonly ChecklistItem[]) => readonly ChecklistItem[]
 }
 
 const moveItem = (
@@ -39,6 +40,7 @@ const moveItem = (
 export const StatefulChecklist = ({
   deletable = true,
   initialItems,
+  visibleItems,
   ...props
 }: Readonly<StatefulChecklistProps>) => {
   const [items, setItems] = useState(initialItems)
@@ -51,7 +53,7 @@ export const StatefulChecklist = ({
   return (
     <Checklist
       {...props}
-      items={items}
+      items={visibleItems ? visibleItems(items) : items}
       newItemTitle={newItemTitle}
       onCreate={(title, completed) => {
         setItems((current) => [
@@ -80,7 +82,29 @@ export const StatefulChecklist = ({
 
 const openItem = () => undefined
 
+const statusOptions = [
+  { label: 'Abertas', value: 'open' },
+  { label: 'Concluídas', value: 'done' },
+]
+
+export const useStatusFilter = (label: string) => {
+  const [status, setStatus] = useState(
+    statusOptions.map((option) => option.value),
+  )
+  const filter: ChecklistProps['filter'] = {
+    filterLabel: 'Status',
+    filterOptions: statusOptions,
+    filterValue: status,
+    label,
+    onFilterChange: setStatus,
+  }
+  const visibleItems = (items: readonly ChecklistItem[]) =>
+    items.filter((item) => status.includes(item.completed ? 'done' : 'open'))
+  return { filter, visibleItems }
+}
+
 export const ComposedChecklist = ({
+  addLabel,
   author,
   creating,
   deleteButton,
@@ -88,29 +112,35 @@ export const ComposedChecklist = ({
   dueDate,
   empty,
   feedback,
+  filter,
   openable,
-  progress,
   readOnly,
   title,
   variant,
-}: Readonly<ChecklistControls>) => (
-  <StatefulChecklist
-    ariaLabel={title || 'Etapas'}
-    authorOptions={authorOptions}
-    creating={creating}
-    deletable={deleteButton}
-    density={density}
-    feedback={
-      feedback ? (
-        <p className="text-muted-foreground text-sm">{feedback}</p>
-      ) : undefined
-    }
-    initialItems={empty ? [] : sampleItems({ author, dueDate })}
-    key={[author, dueDate, empty].join()}
-    onItemClick={openable ? openItem : undefined}
-    progress={progress}
-    readOnly={readOnly}
-    title={title || null}
-    variant={variant}
-  />
-)
+}: Readonly<ChecklistControls>) => {
+  const status = useStatusFilter('Filtrar etapas')
+
+  return (
+    <StatefulChecklist
+      addLabel={addLabel}
+      ariaLabel={title || 'Etapas'}
+      authorOptions={authorOptions}
+      creating={creating}
+      deletable={deleteButton}
+      density={density}
+      filter={filter ? status.filter : undefined}
+      feedback={
+        feedback ? (
+          <p className="text-muted-foreground text-sm">{feedback}</p>
+        ) : undefined
+      }
+      initialItems={empty ? [] : sampleItems({ author, dueDate })}
+      key={[author, dueDate, empty].join()}
+      onItemClick={openable ? openItem : undefined}
+      readOnly={readOnly}
+      title={title || null}
+      variant={variant}
+      visibleItems={filter ? status.visibleItems : undefined}
+    />
+  )
+}

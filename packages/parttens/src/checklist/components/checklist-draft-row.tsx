@@ -3,10 +3,10 @@
 import { Checkbox } from '@tc96/ui/checkbox'
 import { InputPrimitive } from '@tc96/ui/input'
 import { PlusIcon } from 'lucide-react'
-import type { ReactElement } from 'react'
+import type { ReactElement, Ref } from 'react'
 import {
   type ChecklistDensity,
-  type ChecklistVariant,
+  type ChecklistFrame,
   checklistCheckboxVariants,
   checklistDraftInputVariants,
   checklistItemVariants,
@@ -18,16 +18,22 @@ export function ChecklistDraftRow({
   callToAction,
   creating,
   density,
+  inputRef,
   variant,
   onCreate,
+  onEscape,
+  onLeave,
   onTitleChange,
   title,
 }: Readonly<{
   callToAction: boolean
   creating: boolean
   density: ChecklistDensity
-  variant: ChecklistVariant
+  inputRef?: Ref<HTMLInputElement>
+  variant: ChecklistFrame
   onCreate: ChecklistProps['onCreate']
+  onEscape?: () => void
+  onLeave?: () => void
   onTitleChange: ChecklistProps['onNewItemTitleChange']
   title: string
 }>): ReactElement {
@@ -75,8 +81,23 @@ export function ChecklistDraftRow({
               aria-label="Novo item"
               className={checklistDraftInputVariants({ density })}
               disabled={creating}
+              onBlur={(event) => {
+                if (!onLeave || normalizedTitle.length > 0) return
+                const root = event.currentTarget.closest(
+                  '[data-slot="checklist"]',
+                )
+                const next = event.relatedTarget
+                if (next instanceof Node && root?.contains(next)) return
+                onLeave()
+              }}
               onChange={(event) => onTitleChange(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Escape' && normalizedTitle.length === 0) {
+                  onEscape?.()
+                }
+              }}
               placeholder="Adicionar uma nova etapa"
+              ref={inputRef}
               type="text"
               value={title}
             />

@@ -13,7 +13,7 @@ const meta = {
   decorators: [ChecklistCanvas],
   parameters: {
     controls: {
-      exclude: ['density', 'empty', 'openable', 'readOnly'],
+      exclude: ['density', 'empty', 'openable', 'readOnly', 'variant'],
     },
   },
   render: (args) => <ComposedChecklist {...args} />,
@@ -38,4 +38,22 @@ export const ReadOnly: Story = {
 
 export const Empty: Story = {
   args: { empty: true },
+}
+
+export const Card: Story = {
+  args: { variant: 'card' },
+}
+
+export const Plain: Story = {
+  args: { variant: 'plain' },
+}
+
+export const OnlyTrigger: Story = {
+  args: {
+    addLabel: 'Adicionar subtarefas',
+    empty: true,
+    title: 'Subtarefas',
+    variant: 'trigger',
+  },
+  name: 'Only Trigger',
 }

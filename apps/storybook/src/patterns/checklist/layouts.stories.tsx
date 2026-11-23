@@ -13,12 +13,10 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const WithProgress: Story = {
-  render: () => <ComposedChecklist {...checklistControlArgs} progress />,
-}
-
 export const WithoutTitle: Story = {
-  render: () => <ComposedChecklist {...checklistControlArgs} title="" />,
+  render: () => (
+    <ComposedChecklist {...checklistControlArgs} title="" variant="card" />
+  ),
 }
 
 export const WithoutMetadata: Story = {
