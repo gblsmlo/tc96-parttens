@@ -49,6 +49,8 @@ export const blockNames = [
   'login-1',
   'otp-1',
   'signup-1',
+  'reset-password-1',
+  'reset-password-2',
   'workflow-editor',
   'agent-builder',
 ] as const
@@ -62,6 +64,8 @@ export const blockSources: Record<BlockName, string> = {
   'login-1': 'application/auth/login-1',
   'otp-1': 'application/auth/otp-1',
   'signup-1': 'application/auth/signup-1',
+  'reset-password-1': 'application/auth/reset-password-1',
+  'reset-password-2': 'application/auth/reset-password-2',
   'workflow-editor': 'ai-agents/flow/workflow-editor',
   'agent-builder': 'ai-agents/flow/agent-builder',
 }

@@ -4,7 +4,7 @@
 - **Date:** 2026-11-22
 - **Origin:** [`requirements.md`](requirements.md) (CAP-1 a CAP-7); [ADR 0009](../adr/0009-blocks-layer.md)
 - **Convenção:** o que o dono decidiu está escrito sem marca. O que o texto propõe leva `(proposed)`. O que ninguém decidiu é uma lacuna `[GAP: ... — decides: ...]`. Os nomes de código ficam em inglês.
-- **Decisões do dono em 2026-11-22:** visibilidade da senha, lembrar de mim, nome no cadastro, confirmação de senha, retorno sobre a senha, OTP com botão Verificar, reenvio contado pelo consumidor, `renderAnchor` em `ui`; segunda rodada: termos e privacidade só como links, confirmação de "e-mail enviado" do `forgot-password-1` pela prop `sent`, documentação com uma página `Doc` por block, moldura da página inteira (`main`, centralização, `logo` acima do Card) dentro do block; propostas mantidas pelo dono (ele não se opôs): login só por e-mail, `passwordMinLength` padrão 8, uma variação por block na primeira entrega, ordem de entrega `login-1`, `otp-1`, `signup-1`, `reset-password-1`, `forgot-password-1`.
+- **Decisões do dono em 2026-11-22:** visibilidade da senha, lembrar de mim, nome no cadastro, confirmação de senha, retorno sobre a senha, OTP com botão Verificar, reenvio contado pelo consumidor, `renderAnchor` em `ui`; segunda rodada: termos e privacidade só como links, confirmação de "e-mail enviado" do `forgot-password-1` pela prop `sent`, documentação com uma página `Doc` por block, moldura da página inteira (`main`, centralização, `logo` acima do Card) dentro do block; pedido do dono depois da primeira entrega: variação `reset-password-2` com tempo de validade da solicitação, passado por props e decidido pelo consumidor (§4.5.1); propostas mantidas pelo dono (ele não se opôs): login só por e-mail, `passwordMinLength` padrão 8, uma variação por block na primeira entrega, ordem de entrega `login-1`, `otp-1`, `signup-1`, `reset-password-1`, `forgot-password-1`.
 
 ## 1. Resumo
 
@@ -290,6 +290,55 @@ Padrões pt-BR (proposed): `title` "Redefinir senha"; `description` "Escolha uma
 
 Campos: senha nova (`autoComplete="new-password"`, `minLength={passwordMinLength}`, com o botão de mostrar/ocultar e o retorno sobre a senha) e confirmação da senha (com o botão de mostrar/ocultar; ver 4.1). `onSubmit` recebe só `password`. O token de redefinição não passa pelo block: o consumidor o guarda e o usa em `onSubmit`. Um token expirado volta pelo consumidor em `error`.
 
+### 4.5.1 `reset-password-2`
+
+Pedido do dono em 2026-11-22: uma versão do `reset-password-n` com um tempo de validade para a solicitação de redefinição de senha; o tempo passa por props e o consumidor decide. Decidido: o block é uma variação numerada, `reset-password-2`, o valor do tempo chega por props e o tempo é do consumidor (o block não roda timer, a mesma regra da contagem do reenvio de `otp-1` e de `forgot-password-1`). A forma concreta abaixo é proposta (proposed) e espera a confirmação do dono.
+
+```ts
+export interface ResetPassword2Values {
+  password: string
+}
+
+export interface ResetPassword2Labels
+  extends Pick<AuthCommonLabels, 'errorTitle' | 'showPassword' | 'hidePassword'>,
+    AuthNewPasswordLabels {
+  title: string
+  description: string
+  newPassword: string
+  submit: string
+  submitPending: string
+  backToLogin: string
+  linkExpiresIn: (time: string) => string
+  expiringSoon: string
+  expiredTitle: string
+  expiredDescription: string
+  requestNewLink: string
+  requestNewLinkIn: (time: string) => string
+}
+
+export interface ResetPassword2Props extends AuthBaseProps<ResetPassword2Labels> {
+  expiresIn?: number
+  fieldErrors?: AuthFieldErrors<ResetPassword2Values>
+  loginHref?: string
+  onRequestNewLink?: () => void
+  onSubmit: (values: ResetPassword2Values) => void
+  passwordMinLength?: number
+  passwordSuggestions?: AuthPasswordSuggestion[]
+  requestNewLinkIn?: number
+}
+```
+
+Tudo o que não é o tempo é igual a `reset-password-1` (4.5): campos, confirmação, retorno sobre a senha, mostrar/ocultar, `onSubmit({ password })` sem token, `error`, `fieldErrors`, `pending`, moldura da página. O block copia o formulário de `reset-password-1.tsx` e não o importa. Sem `expiresIn`, o comportamento é exatamente o de `reset-password-1`. Detalhes propostos (proposed):
+
+- `expiresIn` são os segundos que faltam para o link expirar; o consumidor os decrementa e passa o valor novo a cada tick, e o block não tem `setInterval`, `setTimeout` nem relógio. Com `expiresIn` maior que zero, o block mostra `linkExpiresIn(tempo)` acima do formulário, com o tempo em `m:ss` (581 vira `9:41`), como texto simples;
+- `formatCountdown(segundos)` é uma função pura em `reset-password-2/format-countdown.ts`, com teste em `bun test` ao lado: descarta a fração, preenche os segundos com dois dígitos, não passa os minutos para horas (3600 vira `60:00`) e trata valor negativo ou não finito como `0:00`. O block não importa o formatador de outro block;
+- com `expiresIn` igual a zero ou menor, o formulário é substituído, no mesmo Card, pelo estado expirado: título `expiredTitle` (`h1`), descrição `expiredDescription`, o link de volta ao login (mesma regra de `loginHref` e `renderLink`) e, só quando o consumidor passa `onRequestNewLink`, o botão `requestNewLink`. Sem o formulário, `onSubmit` não pode ser chamado. `error` continua no Alert nos dois estados;
+- o foco vai ao título expirado (`titleRef` do `AuthCard`, `tabIndex={-1}`) quando `expiresIn` passa de maior que zero a zero, como o `forgot-password-1` faz com o título da confirmação; não vai na montagem, para uma página que já abre expirada não roubar o foco. O `titleRef` só é passado no estado expirado, para o título do formulário não ganhar `tabIndex`;
+- `requestNewLinkIn` são os segundos, também do consumidor, até outro pedido ser permitido. Com `requestNewLinkIn` maior que zero, o botão fica desabilitado e mostra `requestNewLinkIn(tempo)` em `m:ss`, como texto simples; com zero ou ausente, fica habilitado. `pending` também o desabilita, e o callback não é chamado com `pending` nem durante a contagem. O botão de pedido só existe no estado expirado;
+- anúncio (escolha proposta): a contagem visível nunca fica numa região `aria-live`, para o leitor de tela não ler a cada segundo. O block tem um único anúncio, educado (`aria-live="polite"`, classe `sr-only`), com o texto `expiringSoon` que aparece uma só vez, quando `expiresIn` fica menor ou igual a 60. O texto é derivado da prop, sem estado nem efeito, e não muda mais enquanto a contagem desce, então o leitor de tela anuncia uma vez. Ao expirar, quem avisa é o foco no título expirado, e a região some junto com o formulário. O limite de 60 segundos é uma constante do block, não uma prop.
+
+Padrões pt-BR (proposed), além dos de 4.5: `linkExpiresIn(tempo)` "Este link expira em {tempo}"; `expiringSoon` "Falta menos de um minuto para este link expirar."; `expiredTitle` "Link expirado"; `expiredDescription` "Este link de redefinição expirou. Solicite um novo para continuar."; `requestNewLink` "Solicitar novo link"; `requestNewLinkIn(tempo)` "Solicitar novamente em {tempo}".
+
 ### 4.6 `otp-1`
 
 ```ts
@@ -360,6 +409,8 @@ Todos (proposed).
 | `error` mostra um Alert do COSS com `role="alert"` e `errorTitle` | mensagem do formulário, não de um campo |
 | Quando `fieldErrors` ou `error` passam de vazios a preenchidos, o foco vai ao primeiro campo inválido; sem campo inválido, vai ao Alert | o Alert recebe `tabIndex={-1}` |
 | Quando `sent` do `forgot-password-1` passa de falso a verdadeiro, o foco vai ao título da confirmação | o título recebe `tabIndex={-1}`; não há região `aria-live` extra |
+| No `reset-password-2`, `expiresIn` e `requestNewLinkIn` são do consumidor: o block não roda timer e não guarda a contagem; com `expiresIn` igual a zero ou menor, o formulário é substituído pelo estado expirado e `onSubmit` não pode ser chamado | o consumidor decrementa os dois valores e decide o que acontece ao expirar; sem `expiresIn`, o block é o `reset-password-1` |
+| Quando `expiresIn` do `reset-password-2` passa de maior que zero a zero, o foco vai ao título expirado | o título recebe `tabIndex={-1}`; a página que monta já expirada não move o foco |
 | Os campos são não controlados; o block lê os valores do formulário no envio | os valores permanecem após um erro; `defaultValues` não existe nesta proposta |
 | O estado de interação do block é só a visibilidade de cada campo de senha, o valor da senha nova para o retorno e a mensagem de divergência da confirmação | o block não guarda mais nada; a mensagem de divergência some quando um dos dois campos é editado |
 | `providers` vazio ou ausente não renderiza botões nem separador | `onProviderSelect(id)` recebe o `id` do provedor |
@@ -442,6 +493,7 @@ Copiados do que o pedido forneceu; nada foi aberto para conferir.
 - O foco vai ao primeiro campo inválido ou ao Alert; o Alert usa `role="alert"`.
 - No `forgot-password-1`, quando `sent` passa a verdadeiro, o foco vai ao título da confirmação (`h1` com `tabIndex={-1}`), e a confirmação não cria região `aria-live` extra.
 - A contagem do reenvio, no `otp-1` e na confirmação do `forgot-password-1`, não fica numa região `aria-live`, para o leitor de tela não ler a cada segundo.
+- No `reset-password-2`, a contagem de validade do link e a do novo pedido também não ficam numa região `aria-live`; o único anúncio é o de menos de um minuto, educado e dado uma só vez, e ao expirar o foco vai ao título expirado (proposed).
 - Cada dígito do OTP tem o rótulo `digit(position, total)`.
 - Contraste conforme `docs/accessibility.md`; qualquer razão nova entra lá.
 
@@ -483,7 +535,7 @@ Decidido pelo dono: a página inteira é do block, com o `main`, o conteúdo cen
 
 ## 11. Documentação e Storybook
 
-- Título: `Blocks/Application/Auth/<Nome>`, com `Login1`, `Otp1`, `Signup1`, `ResetPassword1` e `ForgotPassword1` (proposed, pelo precedente `AppShell1`).
+- Título: `Blocks/Application/Auth/<Nome>`, com `Login1`, `Otp1`, `Signup1`, `ResetPassword1`, `ResetPassword2` e `ForgotPassword1` (proposed, pelo precedente `AppShell1`).
 - Cada block tem uma única página `Doc`, como `AppShell1` a `AppShell4` e os editores de fluxo (decidido pelo dono). A estrutura de seis páginas (API Reference, Playground, Stories, Behavior, Usages, Layouts) não se aplica a estes blocks. A forma da `Doc` segue a do `AppShell1`, que o implementador lê (proposed).
 - Os dados de exemplo ficam em `fixtures/` da story e não vão para o registry.
 
