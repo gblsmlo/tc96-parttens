@@ -19,12 +19,14 @@ const cossModules = new Set(
     ),
   ),
 )
+const flatBlockCategories = new Set(['auth'])
 function blockFolder(file: string) {
-  const parts = file.match(
-    /^packages\/blocks\/src\/([^/]+)\/([^/]+)\/([^/]+)\//,
-  )
-  if (!parts) return undefined
-  return { group: `${parts[1]}/${parts[2]}`, folder: parts[3] }
+  const prefix = 'packages/blocks/src/'
+  if (!file.startsWith(prefix)) return undefined
+  const segments = file.slice(prefix.length).split('/')
+  const depth = flatBlockCategories.has(segments[0]) ? 1 : 2
+  if (segments.length <= depth + 1) return undefined
+  return { group: segments.slice(0, depth).join('/'), folder: segments[depth] }
 }
 const graph = new Map<string, string[]>()
 const violations: string[] = []
