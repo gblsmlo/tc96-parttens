@@ -13,16 +13,13 @@ export const defaultAuthCommonLabels: AuthCommonLabels = {
 
 export const defaultAuthNewPasswordLabels: AuthNewPasswordLabels = {
   confirmPassword: 'Confirmar senha',
-  passwordLength: (count, minLength) =>
-    `${Math.min(count, minLength)} de ${minLength} caracteres`,
   passwordMismatch: 'As senhas não coincidem.',
-  passwordSuggestionsTitle: 'Para uma senha mais segura, use:',
-  suggestionLowercase: 'letra minúscula',
+  suggestionLowercase: 'minúscula',
   suggestionMet: 'atendida',
   suggestionMissing: 'faltando',
   suggestionNumber: 'número',
   suggestionSymbol: 'símbolo',
-  suggestionUppercase: 'letra maiúscula',
+  suggestionUppercase: 'maiúscula',
 }
 
 export function resolveAuthLabels<TLabels>(

@@ -13,6 +13,5 @@ export const defaultResetPasswordLabels: ResetPasswordLabels = {
   newPassword: 'Nova senha',
   showPassword: defaultAuthCommonLabels.showPassword,
   submit: 'Redefinir senha',
-  submitPending: 'Redefinindo…',
   title: 'Redefinir senha',
 }

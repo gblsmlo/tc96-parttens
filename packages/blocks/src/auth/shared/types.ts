@@ -30,9 +30,7 @@ export interface AuthCommonLabels {
 
 export interface AuthNewPasswordLabels {
   confirmPassword: string
-  passwordLength: (count: number, minLength: number) => string
   passwordMismatch: string
-  passwordSuggestionsTitle: string
   suggestionLowercase: string
   suggestionMet: string
   suggestionMissing: string

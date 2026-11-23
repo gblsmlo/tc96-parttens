@@ -19,6 +19,7 @@ export interface AuthCardProps {
   errorTitle: string
   footer?: ReactNode
   logo?: ReactNode
+  notice?: ReactNode
   title: ReactNode
   titleRef?: Ref<HTMLDivElement>
 }
@@ -31,6 +32,7 @@ export function AuthCard({
   errorTitle,
   footer,
   logo,
+  notice,
   title,
   titleRef,
 }: Readonly<AuthCardProps>): ReactElement {
@@ -66,6 +68,7 @@ export function AuthCard({
             </CardFooter>
           ) : null}
         </Card>
+        {notice}
       </div>
     </main>
   )

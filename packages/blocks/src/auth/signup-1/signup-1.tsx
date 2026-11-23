@@ -68,19 +68,24 @@ export function Signup1({
       description={labels.description}
       error={error}
       errorTitle={labels.errorTitle}
-      footer={
-        loginHref ? (
-          <>
-            <span>{labels.hasAccount}</span>
-            <Button
-              className="underline"
-              render={renderLink(loginHref)}
-              size="sm"
-              variant="link"
-            >
-              {labels.login}
-            </Button>
-          </>
+      notice={
+        legalLinks.length ? (
+          <p className="flex flex-wrap items-center justify-center gap-x-1 text-center text-muted-foreground text-xs">
+            <span>{labels.termsLead}</span>
+            {legalLinks.map((link, index) => (
+              <Fragment key={link.href}>
+                {index > 0 ? <span>{labels.termsAnd}</span> : null}
+                <Button
+                  className="px-0 underline"
+                  render={renderLink(link.href)}
+                  size="xs"
+                  variant="link"
+                >
+                  {link.label}
+                </Button>
+              </Fragment>
+            ))}
+          </p>
         ) : undefined
       }
       logo={logo}
@@ -124,7 +129,6 @@ export function Signup1({
         >
           <AuthPasswordFeedback
             labels={labels}
-            minLength={passwordMinLength}
             password={password}
             suggestions={passwordSuggestions}
           />
@@ -137,8 +141,8 @@ export function Signup1({
           onValueChange={() => setMismatch(false)}
           showLabel={labels.showPassword}
         />
-        <Button className="w-full" disabled={pending} type="submit">
-          {pending ? labels.submitPending : labels.submit}
+        <Button className="w-full" loading={pending} type="submit">
+          {labels.submit}
         </Button>
       </Form>
       <AuthProviders
@@ -147,22 +151,17 @@ export function Signup1({
         pending={pending}
         providers={providers}
       />
-      {legalLinks.length ? (
-        <p className="flex flex-wrap items-center justify-center gap-x-1 text-center text-muted-foreground text-xs">
-          <span>{labels.termsLead}</span>
-          {legalLinks.map((link, index) => (
-            <Fragment key={link.href}>
-              {index > 0 ? <span>{labels.termsAnd}</span> : null}
-              <Button
-                className="px-0 underline"
-                render={renderLink(link.href)}
-                size="xs"
-                variant="link"
-              >
-                {link.label}
-              </Button>
-            </Fragment>
-          ))}
+      {loginHref ? (
+        <p className="flex items-center justify-center gap-1 text-sm">
+          <span>{labels.hasAccount}</span>
+          <Button
+            className="underline"
+            render={renderLink(loginHref)}
+            size="sm"
+            variant="link"
+          >
+            {labels.login}
+          </Button>
         </p>
       ) : null}
     </AuthCard>

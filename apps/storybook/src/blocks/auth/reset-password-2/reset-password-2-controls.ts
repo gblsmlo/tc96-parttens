@@ -90,8 +90,7 @@ export const resetPassword2ControlArgTypes: Partial<
   },
   passwordMinLength: {
     control: { max: 32, min: 1, type: 'number' },
-    description:
-      'The `passwordMinLength`: the native `minLength` and the number in the feedback.',
+    description: 'The `passwordMinLength`: the native `minLength`.',
   },
   passwordSuggestions: {
     control: 'inline-check',

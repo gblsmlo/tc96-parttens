@@ -9,6 +9,5 @@ export const defaultLoginLabels: LoginLabels = {
   remember: 'Lembrar de mim',
   signup: 'Criar conta',
   submit: 'Entrar',
-  submitPending: 'Entrando…',
   title: 'Entrar',
 }

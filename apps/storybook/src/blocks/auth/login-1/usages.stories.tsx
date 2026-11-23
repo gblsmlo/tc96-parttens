@@ -72,7 +72,7 @@ export const SigningIn: Story = {
   render: () => <ComposedLogin {...loginControlArgs} pending />,
   play: async ({ canvasElement }) => {
     await expect(
-      within(canvasElement).getByRole('button', { name: 'Entrando…' }),
+      within(canvasElement).getByRole('button', { name: /^Entrar/ }),
     ).toBeDisabled()
   },
 }

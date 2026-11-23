@@ -67,7 +67,7 @@ export const Verifying: Story = {
   render: () => <ComposedOtp {...otpControlArgs} pending />,
   play: async ({ canvasElement }) => {
     await expect(
-      within(canvasElement).getByRole('button', { name: 'Verificando…' }),
+      within(canvasElement).getByRole('button', { name: /^Verificar/ }),
     ).toBeDisabled()
   },
 }

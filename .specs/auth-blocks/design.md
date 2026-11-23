@@ -88,8 +88,6 @@ export interface AuthCommonLabels {
 export interface AuthNewPasswordLabels {
   confirmPassword: string
   passwordMismatch: string
-  passwordLength: (count: number, minLength: number) => string
-  passwordSuggestionsTitle: string
   suggestionLowercase: string
   suggestionUppercase: string
   suggestionNumber: string
@@ -119,15 +117,15 @@ export interface AuthBaseProps<TLabels> {
 
 **Confirmação da senha.** `signup-1` e `reset-password-1` têm um segundo campo de senha. No envio, o block confere que os dois valores batem. Se não batem, ele mostra o erro de `labels.passwordMismatch` no campo de confirmação, move o foco para ele e não chama `onSubmit`. Detalhes propostos: o campo se chama `confirmPassword`, é `required` e usa `autoComplete="new-password"`; o valor da confirmação não é enviado, e os valores trazem só `password`; a mensagem some quando o usuário edita um dos dois campos; a conferência roda depois das restrições nativas (proposed). O consumidor não pode definir erro para a confirmação por `fieldErrors`, porque ela não é uma chave dos valores (proposed).
 
-**Retorno sobre a senha nova.** O campo de senha nova de `signup-1` e `reset-password-1` mostra, enquanto o usuário digita: (a) o número de caracteres em relação ao tamanho mínimo (por exemplo "6 de 8 caracteres") e (b) os tipos de caractere sugeridos (por exemplo letra minúscula, letra maiúscula, número e símbolo). Os textos vêm de `labels` (`AuthNewPasswordLabels`). O tamanho mínimo é `passwordMinLength`, com padrão 8 (proposta mantida pelo dono em 2026-11-22); é o mesmo número da restrição `minLength` e do retorno "n de N caracteres". Uma pontuação de força não faz parte da decisão. Detalhes propostos:
+**Retorno sobre a senha nova.** O campo de senha nova de `signup-1` e `reset-password-1` mostra, enquanto o usuário digita, os tipos de caractere sugeridos (por exemplo minúscula, maiúscula, número e símbolo). Os textos vêm de `labels` (`AuthNewPasswordLabels`). O tamanho mínimo é `passwordMinLength`, com padrão 8 (proposta mantida pelo dono em 2026-11-22); é o mesmo número da restrição `minLength`. Uma pontuação de força não faz parte da decisão. Detalhes propostos:
 
 - a lista de sugestões padrão é minúscula, maiúscula, número e símbolo; o consumidor a configura por `passwordSuggestions?: AuthPasswordSuggestion[]`, e uma lista vazia esconde as sugestões;
 - as sugestões são conselhos e não bloqueiam o envio; só `minLength` bloqueia, pela restrição nativa;
-- o retorno liga-se ao campo por `aria-describedby`; um anúncio educado (`aria-live="polite"`) avisa só quando o mínimo é atingido ou quando uma sugestão passa de faltando a atendida (ou o contrário), sem anunciar cada tecla;
-- cada sugestão mostra o estado em texto (`suggestionMet`, `suggestionMissing`), não só em cor;
+- o retorno liga-se ao campo por `aria-describedby`; um anúncio educado (`aria-live="polite"`) avisa só quando uma sugestão passa de faltando a atendida (ou o contrário), sem anunciar cada tecla;
+- as sugestões ficam em uma única linha, com círculo enquanto faltam e check na cor `success` quando atendidas; o estado em texto (`suggestionMet`, `suggestionMissing`) fica só para leitores de tela;
 - o valor da senha nova é lido por um estado de interação do block só para calcular o retorno (proposed).
 
-Padrões pt-BR (proposed): `showPassword` "Mostrar senha"; `hidePassword` "Ocultar senha"; `confirmPassword` "Confirmar senha"; `passwordMismatch` "As senhas não coincidem."; `passwordLength(count, minLength)` "{count} de {minLength} caracteres" (o padrão limita `count` ao mínimo); `passwordSuggestionsTitle` "Para uma senha mais segura, use:"; `suggestionLowercase` "letra minúscula"; `suggestionUppercase` "letra maiúscula"; `suggestionNumber` "número"; `suggestionSymbol` "símbolo"; `suggestionMet` "atendida"; `suggestionMissing` "faltando".
+Padrões pt-BR (proposed): `showPassword` "Mostrar senha"; `hidePassword` "Ocultar senha"; `confirmPassword` "Confirmar senha"; `passwordMismatch` "As senhas não coincidem."; `suggestionLowercase` "minúscula"; `suggestionUppercase` "maiúscula"; `suggestionNumber` "número"; `suggestionSymbol` "símbolo"; `suggestionMet` "atendida"; `suggestionMissing` "faltando".
 
 ### 4.2 `login-1`
 
@@ -142,7 +140,6 @@ export interface LoginLabels extends AuthCommonLabels {
   title: string
   description: string
   submit: string
-  submitPending: string
   remember: string
   forgotPassword: string
   noAccount: string
@@ -163,7 +160,7 @@ export interface LoginProps extends AuthBaseProps<LoginLabels> {
 
 O login identifica só por e-mail: não há campo de nome de usuário, e `LoginValues` não tem chave para ele (proposta mantida pelo dono em 2026-11-22).
 
-Padrões pt-BR (proposed): `title` "Entrar"; `description` "Informe seu e-mail e sua senha para acessar a conta."; `email` "E-mail"; `password` "Senha"; `submit` "Entrar"; `submitPending` "Entrando…"; `remember` "Lembrar de mim"; `forgotPassword` "Esqueceu a senha?"; `noAccount` "Não tem uma conta?"; `signup` "Criar conta"; `errorTitle` "Não foi possível continuar"; `providersGroup` "Entrar com outro serviço"; `providersSeparator` "ou continue com"; `providerContinue(label)` "Continuar com {label}".
+Padrões pt-BR (proposed): `title` "Entrar"; `description` "Informe seu e-mail e sua senha para acessar a conta."; `email` "E-mail"; `password` "Senha"; `submit` "Entrar"; `remember` "Lembrar de mim"; `forgotPassword` "Esqueceu a senha?"; `noAccount` "Não tem uma conta?"; `signup` "Criar conta"; `errorTitle` "Não foi possível continuar"; `providersGroup` "Entrar com outro serviço"; `providersSeparator` "ou continue com"; `providerContinue(label)` "Continuar com {label}".
 
 Campos: e-mail (`type="email"`, `autoComplete="username"`, `required`; o token `username` fica por ser o que os gerenciadores de senha esperam no campo de identificação, mesmo só com e-mail (proposed)), senha (`type="password"`, `autoComplete="current-password"`, `required`, sem `minLength`, porque a conta existente pode ter regra anterior; com o botão de mostrar/ocultar) e a caixa "lembrar de mim" (`remember`, desmarcada por padrão, e `false` no valor quando desmarcada) (proposed, o estado inicial e o valor).
 
@@ -181,7 +178,6 @@ export interface SignupLabels extends AuthCommonLabels, AuthNewPasswordLabels {
   description: string
   name: string
   submit: string
-  submitPending: string
   hasAccount: string
   login: string
   termsLead: string
@@ -209,7 +205,7 @@ export interface SignupProps extends AuthBaseProps<SignupLabels> {
 
 **Termos e privacidade.** O aviso é só texto com links: "Ao criar a conta você concorda com…" e os links de termos e de privacidade que o consumidor passa em `termsHref` e `privacyHref`. Não há caixa de aceite, e o aceite não gera campo nem valor em `SignupValues`. Detalhes propostos: o aviso só renderiza os links cujo `href` o consumidor passa, por `renderLink(href)`; sem nenhum dos dois `href`, o aviso não renderiza (proposed).
 
-Padrões pt-BR (proposed): `title` "Criar conta"; `description` "Preencha os dados para começar."; `name` "Nome"; `submit` "Criar conta"; `submitPending` "Criando conta…"; `hasAccount` "Já tem uma conta?"; `login` "Entrar"; `termsLead` "Ao criar a conta você concorda com os"; `terms` "Termos de Uso"; `termsAnd` "e a"; `privacy` "Política de Privacidade". Os textos de senha, confirmação e retorno são os de 4.1.
+Padrões pt-BR (proposed): `title` "Criar conta"; `description` "Preencha os dados para começar."; `name` "Nome"; `submit` "Criar conta"; `hasAccount` "Já tem uma conta?"; `login` "Entrar"; `termsLead` "Ao criar a conta você concorda com os"; `terms` "Termos de Uso"; `termsAnd` "e a"; `privacy` "Política de Privacidade". Os textos de senha, confirmação e retorno são os de 4.1.
 
 Campos: nome (`autoComplete="name"`, `required` (proposed)), e-mail (`autoComplete="email"`), senha (`autoComplete="new-password"`, `minLength={passwordMinLength}`, com o botão de mostrar/ocultar e o retorno sobre a senha) e confirmação da senha (com o botão de mostrar/ocultar).
 
@@ -224,7 +220,6 @@ export interface ForgotPasswordLabels extends Pick<AuthCommonLabels, 'email' | '
   title: string
   description: string
   submit: string
-  submitPending: string
   backToLogin: string
   sentTitle: string
   sentDescription: (destination?: string) => string
@@ -246,7 +241,7 @@ export interface ForgotPasswordProps extends AuthBaseProps<ForgotPasswordLabels>
 
 Os campos novos são `sent` (decidido pelo dono) e, propostos, `destination`, `onResend`, `resendIn` e os rótulos `sentTitle`, `sentDescription`, `didNotReceive`, `resend` e `resendIn` (proposed).
 
-Padrões pt-BR (proposed): `title` "Esqueceu a senha?"; `description` "Informe seu e-mail e enviaremos um link para redefinir a senha."; `submit` "Enviar link"; `submitPending` "Enviando…"; `backToLogin` "Voltar para entrar"; `sentTitle` "Verifique seu e-mail"; `sentDescription(destination)` "Enviamos um link para redefinir a senha para {destination}." (sem `destination`: "Enviamos um link para redefinir a senha para o seu e-mail."); `didNotReceive` "Não recebeu o e-mail?"; `resend` "Reenviar e-mail"; `resendIn` "Reenviar em {seconds}s".
+Padrões pt-BR (proposed): `title` "Esqueceu a senha?"; `description` "Informe seu e-mail e enviaremos um link para redefinir a senha."; `submit` "Enviar link"; `backToLogin` "Voltar para entrar"; `sentTitle` "Verifique seu e-mail"; `sentDescription(destination)` "Enviamos um link para redefinir a senha para {destination}." (sem `destination`: "Enviamos um link para redefinir a senha para o seu e-mail."); `didNotReceive` "Não recebeu o e-mail?"; `resend` "Reenviar e-mail"; `resendIn` "Reenviar em {seconds}s".
 
 **Confirmação "e-mail enviado" (`sent`).** `sent` é uma prop booleana do consumidor. Com `sent` verdadeiro, o block substitui o formulário por uma confirmação dentro do mesmo Card, com um link de volta ao login e a opção de reenviar. O consumidor decide quando `sent` fica verdadeiro, normalmente depois de `onSubmit` ter dado certo; o block não guarda esse estado. Detalhes propostos:
 
@@ -271,7 +266,6 @@ export interface ResetPasswordLabels
   description: string
   newPassword: string
   submit: string
-  submitPending: string
   backToLogin: string
 }
 
@@ -284,9 +278,9 @@ export interface ResetPasswordProps extends AuthBaseProps<ResetPasswordLabels> {
 }
 ```
 
-`passwordMinLength` tem padrão 8, o mesmo número do retorno "n de N caracteres" (proposta mantida pelo dono em 2026-11-22).
+`passwordMinLength` tem padrão 8 (proposta mantida pelo dono em 2026-11-22).
 
-Padrões pt-BR (proposed): `title` "Redefinir senha"; `description` "Escolha uma nova senha para a sua conta."; `newPassword` "Nova senha"; `submit` "Redefinir senha"; `submitPending` "Redefinindo…"; `backToLogin` "Voltar para entrar". Os textos de confirmação e retorno são os de 4.1.
+Padrões pt-BR (proposed): `title` "Redefinir senha"; `description` "Escolha uma nova senha para a sua conta."; `newPassword` "Nova senha"; `submit` "Redefinir senha"; `backToLogin` "Voltar para entrar". Os textos de confirmação e retorno são os de 4.1.
 
 Campos: senha nova (`autoComplete="new-password"`, `minLength={passwordMinLength}`, com o botão de mostrar/ocultar e o retorno sobre a senha) e confirmação da senha (com o botão de mostrar/ocultar; ver 4.1). `onSubmit` recebe só `password`. O token de redefinição não passa pelo block: o consumidor o guarda e o usa em `onSubmit`. Um token expirado volta pelo consumidor em `error`.
 
@@ -306,7 +300,6 @@ export interface ResetPassword2Labels
   description: string
   newPassword: string
   submit: string
-  submitPending: string
   backToLogin: string
   linkExpiresIn: (time: string) => string
   expiringSoon: string
@@ -352,7 +345,6 @@ export interface OtpLabels extends Pick<AuthCommonLabels, 'errorTitle'> {
   code: string
   digit: (position: number, total: number) => string
   submit: string
-  submitPending: string
   didNotReceive: string
   resend: string
   resendIn: (seconds: number) => string
@@ -369,7 +361,7 @@ export interface OtpProps extends AuthBaseProps<OtpLabels> {
 }
 ```
 
-Padrões pt-BR (proposed): `title` "Verifique seu código"; `description` "Enviamos um código de {length} dígitos para {destination}." (sem `destination`: "Enviamos um código de {length} dígitos."); `code` "Código de verificação"; `digit` "Dígito {position} de {total}"; `submit` "Verificar"; `submitPending` "Verificando…"; `didNotReceive` "Não recebeu o código?"; `resend` "Reenviar código"; `resendIn` "Reenviar em {seconds}s".
+Padrões pt-BR (proposed): `title` "Verifique seu código"; `description` "Enviamos um código de {length} dígitos para {destination}." (sem `destination`: "Enviamos um código de {length} dígitos."); `code` "Código de verificação"; `digit` "Dígito {position} de {total}"; `submit` "Verificar"; `didNotReceive` "Não recebeu o código?"; `resend` "Reenviar código"; `resendIn` "Reenviar em {seconds}s".
 
 `length` tem padrão 6. O block não envia sozinho: há sempre o botão "Verificar", e `onSubmit` só roda por ele ou por Enter. `onComplete(code)` é opcional e só notifica que o código ficou completo; não envia. `resendIn` é o número de segundos que o consumidor controla: o block só o mostra, desabilita o botão de reenvio enquanto ele for maior que zero e não roda timer.
 
@@ -386,9 +378,9 @@ Padrões pt-BR (proposed): `title` "Verifique seu código"; `description` "Envia
 | O login identifica só por e-mail (proposta mantida pelo dono em 2026-11-22) | `LoginValues` traz `email`, `password` e `remember`; não há chave de nome de usuário |
 | `signup-1` coleta o nome | `SignupValues.name`; a chave e a obrigatoriedade são propostas |
 | Termos e privacidade do `signup-1` são só links, sem caixa de aceite | `SignupValues` não ganha chave por causa deles; o aviso renderiza os links que o consumidor passa por `href` |
-| `passwordMinLength` tem padrão 8 (proposta mantida pelo dono em 2026-11-22) | o mesmo número vale para `minLength` e para o retorno "n de N caracteres" |
+| `passwordMinLength` tem padrão 8 (proposta mantida pelo dono em 2026-11-22) | o número vale para `minLength` |
 | Em `signup-1` e `reset-password-1`, o block confere que a senha e a confirmação batem; se não batem, mostra `labels.passwordMismatch` no campo de confirmação, move o foco para ele e não chama `onSubmit` | o consumidor só recebe `onSubmit` com os dois valores iguais; (proposed) o valor da confirmação não é enviado |
-| O campo de senha nova mostra, enquanto o usuário digita, o retorno sobre o número de caracteres em relação ao mínimo e sobre os tipos de caractere sugeridos | (proposed) as sugestões não bloqueiam o envio, só `minLength`; o retorno é ligado ao campo por `aria-describedby` e anunciado de forma educada, sem anunciar cada tecla |
+| O campo de senha nova mostra, enquanto o usuário digita, o retorno sobre os tipos de caractere sugeridos | (proposed) as sugestões não bloqueiam o envio, só `minLength`; o retorno é ligado ao campo por `aria-describedby` e anunciado de forma educada, sem anunciar cada tecla |
 | `forgot-password-1` com `sent` verdadeiro troca o formulário por uma confirmação dentro do mesmo Card, com link de volta ao login e opção de reenviar | `sent` é do consumidor; o block não guarda estado de "enviado"; (proposed) `onResend` só existe quando o consumidor o passa, e o endereço só aparece com `destination` |
 | O block renderiza a moldura da página inteira: `main`, centralização vertical na janela e `logo` acima do Card | o consumidor só monta o block na rota; (proposed) não envolve o block em outro `main`, e `min-h-svh` é a classe de centralização |
 | `otp-1` tem sempre o botão "Verificar"; `onSubmit` só roda por ele ou por Enter | completar o código não envia; (proposed) `onSubmit` não roda com o código incompleto |
@@ -404,7 +396,7 @@ Todos (proposed).
 | O block não guarda estado de envio | `pending` é do consumidor; o retorno de `onSubmit` é ignorado |
 | `onSubmit` só é chamado com as restrições nativas satisfeitas (`required`, `type="email"`, `minLength`) | o consumidor recebe valores que passaram nelas; valida o resto no servidor |
 | Com `pending` verdadeiro, `onSubmit`, `onProviderSelect` e `onResend` não são chamados | o envio por Enter também fica retido |
-| `pending` desabilita o botão de envio, marca `aria-busy` no formulário e troca o texto por `submitPending` | |
+| `pending` desabilita o botão de envio, marca `aria-busy` no formulário e coloca o botão de envio em `loading` | |
 | `fieldErrors[campo]` marca `aria-invalid` e mostra a mensagem em `FieldError` ligada ao campo | a mensagem é uma string do consumidor |
 | `error` mostra um Alert do COSS com `role="alert"` e `errorTitle` | mensagem do formulário, não de um campo |
 | Quando `fieldErrors` ou `error` passam de vazios a preenchidos, o foco vai ao primeiro campo inválido; sem campo inválido, vai ao Alert | o Alert recebe `tabIndex={-1}` |
@@ -488,7 +480,7 @@ Copiados do que o pedido forneceu; nada foi aberto para conferir.
 - O block renderiza o landmark `main` (decidido); a página deve ter um só, então o consumidor não envolve o block em outro (proposed). `CardTitle` renderiza como `h1` por `render` (o `Card` do COSS aceita `render`).
 - Tokens de `autoComplete`: `username` (login), `name` (nome do cadastro), `email` (cadastro e esquecimento), `current-password`, `new-password` (senha nova e confirmação), `one-time-code`.
 - O botão de mostrar/ocultar é `type="button"`, alcançável por teclado, e seu nome acessível vem de `labels.showPassword` e `labels.hidePassword` e muda com o estado; Enter no campo envia o formulário e não alterna a visibilidade.
-- O retorno sobre a senha liga-se ao campo por `aria-describedby`. O anúncio é educado (`aria-live="polite"`) e só ocorre quando uma condição muda (mínimo atingido, sugestão atendida ou perdida), não a cada tecla; o estado de cada sugestão aparece em texto, não só em cor.
+- O retorno sobre a senha liga-se ao campo por `aria-describedby`. O anúncio é educado (`aria-live="polite"`) e só ocorre quando uma condição muda (sugestão atendida ou perdida), não a cada tecla; o estado de cada sugestão é lido em texto oculto para leitores de tela, além do ícone e da cor.
 - Na confirmação que não bate, o erro é `FieldError` ligado ao campo de confirmação, com `aria-invalid`, e o foco vai para ele.
 - O foco vai ao primeiro campo inválido ou ao Alert; o Alert usa `role="alert"`.
 - No `forgot-password-1`, quando `sent` passa a verdadeiro, o foco vai ao título da confirmação (`h1` com `tabIndex={-1}`), e a confirmação não cria região `aria-live` extra.

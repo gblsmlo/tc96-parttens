@@ -20,7 +20,6 @@ export interface ResetPasswordLabels
   description: string
   newPassword: string
   submit: string
-  submitPending: string
   title: string
 }
 

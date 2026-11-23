@@ -81,7 +81,7 @@ The whole verification page. Renders a `main` that fills the window height and c
 | `destination` | `string` | - | Names where the code was sent (an e-mail or a phone) in the description. |
 | `onResend` | `() => void` | - | Renders the resend footer when set, and is called by its button. |
 | `resendIn` | `number` | `0` | Sets the seconds the app counts down before another resend; above zero the button is disabled and shows the seconds. |
-| `pending` | `boolean` | `false` | When true, disables the submit and resend buttons, shows `labels.submitPending` and sets `aria-busy` on the form. |
+| `pending` | `boolean` | `false` | When true, disables the submit and resend buttons, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
 | `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
 | `fieldErrors` | `Partial<Record<keyof OtpValues, string>>` | - | Shows a message for the code, marks every digit invalid and describes the group with it. |
 | `logo` | `ReactNode` | - | Renders above the card, outside it, centered. |
@@ -109,7 +109,7 @@ The resend button renders only when `onResend` is passed, in the footer next to 
 
 ### Pending
 
-`pending` is the app's state. While it is true `onSubmit` is not called, Enter included, and the submit button reads `labels.submitPending`.
+`pending` is the app's state. While it is true `onSubmit` is not called, Enter included, and the submit button shows its `loading` state.
 
 ### Errors
 
@@ -136,7 +136,6 @@ Every visible or accessible text the block owns. `labels` is partial and merged 
 | `code` | `string` | `"Código de verificação"` |
 | `digit` | `(position: number, total: number) => string` | `` `Dígito ${position} de ${total}` `` |
 | `submit` | `string` | `"Verificar"` |
-| `submitPending` | `string` | `"Verificando…"` |
 | `didNotReceive` | `string` | `"Não recebeu o código?"` |
 | `resend` | `string` | `"Reenviar código"` |
 | `resendIn` | `(seconds: number) => string` | `` `Reenviar em ${seconds}s` `` |

@@ -1472,6 +1472,13 @@
     "LoginProps",
     "LoginValues"
   ],
+  "block:login-2": [
+    "AuthFieldErrors",
+    "Login2",
+    "Login2Labels",
+    "Login2Props",
+    "Login2Values"
+  ],
   "block:otp-1": [
     "AuthBaseProps",
     "AuthCommonLabels",

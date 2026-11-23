@@ -13,6 +13,5 @@ export const defaultOtpLabels: OtpLabels = {
   resend: 'Reenviar código',
   resendIn: (seconds) => `Reenviar em ${seconds}s`,
   submit: 'Verificar',
-  submitPending: 'Verificando…',
   title: 'Verifique seu código',
 }

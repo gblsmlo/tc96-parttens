@@ -20,7 +20,6 @@ export interface SignupLabels extends AuthCommonLabels, AuthNewPasswordLabels {
   name: string
   privacy: string
   submit: string
-  submitPending: string
   terms: string
   termsAnd: string
   termsLead: string

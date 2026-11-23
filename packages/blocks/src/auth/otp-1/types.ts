@@ -16,7 +16,6 @@ export interface OtpLabels extends Pick<AuthCommonLabels, 'errorTitle'> {
   resend: string
   resendIn: (seconds: number) => string
   submit: string
-  submitPending: string
   title: string
 }
 

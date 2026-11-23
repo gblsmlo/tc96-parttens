@@ -18,7 +18,6 @@ export interface ForgotPasswordLabels
   sentDescription: (destination?: string) => string
   sentTitle: string
   submit: string
-  submitPending: string
   title: string
 }
 
