@@ -24,7 +24,7 @@ const meta = {
   component: ForgotPassword1,
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/ForgotPassword1/Behavior',
+  title: 'Blocks/Auth/ForgotPassword/ForgotPassword1/Behavior',
 } satisfies Meta<typeof ForgotPassword1>
 
 export default meta

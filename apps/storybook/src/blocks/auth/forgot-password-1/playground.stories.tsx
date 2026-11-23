@@ -12,7 +12,7 @@ const meta = {
   parameters: { layout: 'fullscreen' },
   render: (args) => <ComposedForgotPassword1 {...args} />,
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/ForgotPassword1/Playground',
+  title: 'Blocks/Auth/ForgotPassword/ForgotPassword1/Playground',
 } satisfies Meta<ForgotPassword1Controls>
 
 export default meta

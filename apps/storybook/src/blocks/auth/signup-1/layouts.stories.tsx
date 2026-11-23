@@ -12,19 +12,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Minimal: Story = {
-  render: () => (
-    <ComposedSignup
-      {...signupControlArgs}
-      login={false}
-      logo={false}
-      privacy={false}
-      providers={false}
-      terms={false}
-    />
-  ),
-}
-
 export const WithoutProviders: Story = {
   render: () => <ComposedSignup {...signupControlArgs} providers={false} />,
 }

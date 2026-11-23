@@ -1502,6 +1502,15 @@
     "SignupProps",
     "SignupValues"
   ],
+  "block:signup-2": [
+    "AuthFieldErrors",
+    "AuthNewPasswordLabels",
+    "AuthPasswordSuggestion",
+    "Signup2",
+    "Signup2Labels",
+    "Signup2Props",
+    "Signup2Values"
+  ],
   "block:reset-password-1": [
     "AuthBaseProps",
     "AuthCommonLabels",
@@ -1535,6 +1544,13 @@
     "ForgotPasswordLabels",
     "ForgotPasswordProps",
     "ForgotPasswordValues"
+  ],
+  "block:forgot-password-2": [
+    "AuthFieldErrors",
+    "ForgotPassword2",
+    "ForgotPassword2Labels",
+    "ForgotPassword2Props",
+    "ForgotPassword2Values"
   ],
   "block:workflow-editor": [
     "AssistantMessage",

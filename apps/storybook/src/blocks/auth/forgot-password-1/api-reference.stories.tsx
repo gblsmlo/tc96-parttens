@@ -17,7 +17,7 @@ const meta = {
     layout: 'fullscreen',
   },
   tags: ['!autodocs', '!dev'],
-  title: 'Blocks/Auth/ForgotPassword1/API Reference',
+  title: 'Blocks/Auth/ForgotPassword/ForgotPassword1/API Reference',
 } satisfies Meta<typeof ForgotPassword1>
 
 export default meta
