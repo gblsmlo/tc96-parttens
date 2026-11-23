@@ -12,7 +12,7 @@ const meta = {
   parameters: { layout: 'fullscreen' },
   render: (args) => <ComposedLogin {...args} />,
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/Login1/Playground',
+  title: 'Blocks/Auth/Login/Login1/Playground',
 } satisfies Meta<LoginControls>
 
 export default meta

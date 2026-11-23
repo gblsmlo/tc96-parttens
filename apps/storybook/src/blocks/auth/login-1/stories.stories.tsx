@@ -17,7 +17,7 @@ const meta = {
   },
   render: (args) => <ComposedLogin {...args} />,
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/Login1/Stories',
+  title: 'Blocks/Auth/Login/Login1/Stories',
 } satisfies Meta<LoginControls>
 
 export default meta

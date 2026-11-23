@@ -6,7 +6,7 @@ import { ComposedLogin } from './login-1-layouts.tsx'
 const meta = {
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/Login1/Usages',
+  title: 'Blocks/Auth/Login/Login1/Usages',
 } satisfies Meta
 
 export default meta

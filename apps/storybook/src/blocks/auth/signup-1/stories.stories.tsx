@@ -25,7 +25,7 @@ const meta = {
   },
   render: (args) => <ComposedSignup {...args} />,
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/Signup1/Stories',
+  title: 'Blocks/Auth/Register/Register1/Stories',
 } satisfies Meta<SignupControls>
 
 export default meta

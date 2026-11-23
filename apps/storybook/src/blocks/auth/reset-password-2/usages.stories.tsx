@@ -19,7 +19,7 @@ const meta = {
   component: ResetPassword2,
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/ResetPassword2/Usages',
+  title: 'Blocks/Auth/ResetPassword/ResetPassword2/Usages',
 } satisfies Meta<typeof ResetPassword2>
 
 export default meta

@@ -5,7 +5,7 @@ import { ComposedResetPassword2 } from './reset-password-2-layouts.tsx'
 const meta = {
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/ResetPassword2/Layouts',
+  title: 'Blocks/Auth/ResetPassword/ResetPassword2/Layouts',
 } satisfies Meta
 
 export default meta

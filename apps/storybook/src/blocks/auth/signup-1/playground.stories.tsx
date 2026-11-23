@@ -12,7 +12,7 @@ const meta = {
   parameters: { layout: 'fullscreen' },
   render: (args) => <ComposedSignup {...args} />,
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/Signup1/Playground',
+  title: 'Blocks/Auth/Register/Register1/Playground',
 } satisfies Meta<SignupControls>
 
 export default meta
