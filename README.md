@@ -60,7 +60,7 @@ import { CollectionLayoutOutlet, TextProperty } from '@acme/patterns'
 
 ### Blocks
 
-A block is a numbered variation of a page, a page frame or a page section that you install and then edit, such as an application shell. Blocks consume patterns; a pattern never imports a block. They live in categories: Application, Data, Charts, Solutions, AI & Agents, eCommerce and Marketing. The first ones are application shells, `app-shell-1` to `app-shell-4`:
+A block is a numbered variation of a page, a page frame or a page section that you install and then edit, such as an application shell. Blocks consume patterns; a pattern never imports a block. They live in categories: Application, Data, Charts, Solutions, AI & Agents, eCommerce and Marketing. The first ones are application shells, `app-shell-1` to `app-shell-4`, followed by the auth pages and the flow editors:
 
 ```bash
 npx @tc96/parttens add app-shell-1
@@ -73,6 +73,21 @@ import { AppShell1 } from '@acme/blocks/application/shell/app-shell-1'
 ```
 
 The `tsconfig` `paths` entry for `blocks` is needed only when you install a block; a consumer that still uses `aliases.templates` or the `templates` entry keeps working with a warning. The Blocks page in Storybook lists every block and its options.
+
+#### Application: auth pages
+
+`login-1`, `otp-1`, `signup-1`, `reset-password-1`, `reset-password-2` and `forgot-password-1` are the pages of the sign in flow. Each one is a whole page (the `main`, the centered card and your `logo` above it), so you only mount it on the route:
+
+```bash
+npx @tc96/parttens add login-1
+npx @tc96/parttens add forgot-password-1
+```
+
+```tsx
+import { Login1 } from '@acme/blocks/application/auth/login-1'
+```
+
+The pages are controlled: you pass `pending`, `error` and `fieldErrors` and receive `onSubmit(values)`, after the native constraints pass. They never fetch, keep a session or import an auth provider; links go through `renderLink` and only appear when you pass their `href`, every text is in `labels` (pt-BR by default), and the resend and link validity countdowns are numbers you count down and pass in. `reset-password-2` is `reset-password-1` with a validity timer for the reset link, and `forgot-password-1` swaps its form for a confirmation when you pass `sent`.
 
 #### AI & Agents: flow editors
 

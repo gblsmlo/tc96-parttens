@@ -66,6 +66,15 @@ As métricas e as metas abaixo foram confirmadas pelo dono em 2026-11-22.
 
 O dono confirmou em 2026-11-22 que os quatro objetivos bastam, com estas metas.
 
+### Medição (T36, neste PR, 2026-11-22)
+
+| ID | Medido | Meta | Situação |
+| --- | --- | --- | --- |
+| OBJ-1 | 6 blocks instaláveis em `application/auth` (`login-1`, `otp-1`, `signup-1`, `reset-password-1`, `reset-password-2`, `forgot-password-1`), todos em `blockNames` e `blockSources` de `packages/registry/src/manifest.ts` | 5 | atingida: os cinco da meta existem; `reset-password-2` é uma variação extra, pedida pelo dono depois da primeira entrega (CAP-8), e não conta para a meta |
+| OBJ-2 | 1 prop obrigatória em cada um dos seis blocks: `onSubmit`. Os links (`loginHref`, `signupHref`, `forgotPasswordHref`, `termsHref`, `privacyHref`) e todo o resto (`labels`, `logo`, `pending`, `error`, `fieldErrors`, `renderLink`) são opcionais; um link só renderiza com o `href` passado | `onSubmit` mais os links; o resto é opcional | atingida, com folga: os links também são opcionais (lidos de `types.ts` de cada block) |
+| OBJ-3 | 0 violações de axe: os plays dos seis blocks passaram com axe nos temas claro e escuro (`login-1` 16, `otp-1` 18, `signup-1` 24, `reset-password-1` 23, `reset-password-2` 22, `forgot-password-1` 29 testes por tema), rodados um tema por vez | 0 violações de axe nas stories de `Blocks/Application/Auth` | atingida |
+| OBJ-4 | 0 arquivos fora: cada item tem um caso em `packages/registry/src/manifest.test.ts` que afirma só `application/auth`, `helpers` e as dependências de `ui`, sem pasta de outro block nem arquivo de teste (97 testes do registry passando); no consumidor real (`test:consumer:registry`) os seis blocks instalam compatíveis em `blocks/src/application/auth/` | 0 arquivos do item fora de `application/auth`, `helpers` e das dependências de `ui` | atingida |
+
 ## 4. Escopo
 
 ### Primeira entrega

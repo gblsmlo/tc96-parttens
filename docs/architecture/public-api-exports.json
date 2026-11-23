@@ -1519,6 +1519,16 @@
     "ResetPassword2Props",
     "ResetPassword2Values"
   ],
+  "block:forgot-password-1": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthRenderLink",
+    "ForgotPassword1",
+    "ForgotPasswordLabels",
+    "ForgotPasswordProps",
+    "ForgotPasswordValues"
+  ],
   "block:workflow-editor": [
     "AssistantMessage",
     "AssistantSuggestion",

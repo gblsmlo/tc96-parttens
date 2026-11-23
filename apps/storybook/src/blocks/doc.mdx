@@ -107,6 +107,28 @@ export function AppLayout() {
 - **[AppShell3](?path=/docs/blocks-application-shell-appshell3--doc)**, `npx @tc96/parttens add app-shell-3`: inset sidebar with projects and progress rings, a usage panel, and a notifications popover in the header.
 - **[AppShell4](?path=/docs/blocks-application-shell-appshell4--doc)**, `npx @tc96/parttens add app-shell-4`: icon rail of sections beside the navigation of the active section, with ⌘K search, notifications and a Create action in the header.
 
+### Application / Auth
+
+Six pages of the sign in flow, in `Blocks/Application/Auth`, installed under `application/auth/`. Each one is a whole page: it renders the `main`, centers the card in the window and puts your `logo` above the card, so you only mount it on the route and never wrap it in another `main`.
+
+| Block | Install | What it is |
+| --- | --- | --- |
+| **[Login1](?path=/docs/blocks-application-auth-login1--doc)** | `npx @tc96/parttens add login-1` | e-mail and password with a show and hide toggle, "remember me", links to recover the password and to sign up, optional providers |
+| **[Otp1](?path=/docs/blocks-application-auth-otp1--doc)** | `npx @tc96/parttens add otp-1` | one input per digit and a Verificar button that is the only way to send the code, with an optional resend whose countdown is yours |
+| **[Signup1](?path=/docs/blocks-application-auth-signup1--doc)** | `npx @tc96/parttens add signup-1` | name, e-mail, new password with live feedback and a confirmation, optional providers, and a terms notice that is only links |
+| **[ResetPassword1](?path=/docs/blocks-application-auth-resetpassword1--doc)** | `npx @tc96/parttens add reset-password-1` | new password with live feedback and a confirmation, and the way back to sign in; the reset token stays in your app |
+| **[ResetPassword2](?path=/docs/blocks-application-auth-resetpassword2--doc)** | `npx @tc96/parttens add reset-password-2` | `ResetPassword1` with a validity timer you control: the time left above the form, and an expired state with a request for a new link |
+| **[ForgotPassword1](?path=/docs/blocks-application-auth-forgotpassword1--doc)** | `npx @tc96/parttens add forgot-password-1` | an e-mail field that asks for the reset link, and a confirmation that replaces the form when you pass `sent`, with a resend and the way back to sign in |
+
+All six share one contract:
+
+- **Controlled:** you pass `pending`, `error` and `fieldErrors`, and the block keeps only interaction state (password visibility, the typed password for the feedback). It never fetches, keeps a session, reads a cookie or imports an auth provider.
+- **`onSubmit(values)`:** it runs only after the native constraints pass and never while `pending`; the values are typed per block (`{ email, password, remember }`, `{ code }`, `{ password }`...). The password confirmation is checked by the block and never sent.
+- **Links:** every link renders through `renderLink(href)` and only when you pass its `href` (`loginHref`, `signupHref`, `forgotPasswordHref`, `termsHref`...); without `renderLink` it is a plain `a`.
+- **Texts:** every text the block owns is in `labels`, with pt-BR defaults.
+- **Timers are yours:** the resend countdown (`resendIn`) and the link validity (`expiresIn`, `requestNewLinkIn`) are numbers you count down and pass in; no block runs a timer, and a visible countdown is never read by a screen reader every second.
+- **State you decide:** `ForgotPassword1` shows its confirmation only when you pass `sent`, and `ResetPassword2` its expired state only when `expiresIn` reaches zero; focus moves to the new title on that change, never on mount.
+
 ### AI & Agents / Flow
 
 Two editor pages on React Flow, in `Blocks/AI & Agents/Flow`, installed under `ai-agents/flow/`. They bring `@xyflow/react` and `d3-hierarchy`, the four flow pattern items they import and the COSS `tabs`, `context-menu`, `progress` and `alert`.
