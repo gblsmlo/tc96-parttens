@@ -10,7 +10,7 @@ const meta = {
     layout: 'fullscreen',
   },
   tags: ['!autodocs', '!dev'],
-  title: 'Blocks/Auth/Signup1/API Reference',
+  title: 'Blocks/Auth/Register/Register1/API Reference',
 } satisfies Meta
 
 export default meta

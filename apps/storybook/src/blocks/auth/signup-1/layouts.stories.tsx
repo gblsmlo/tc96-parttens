@@ -5,7 +5,7 @@ import { ComposedSignup } from './signup-1-layouts.tsx'
 const meta = {
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/Signup1/Layouts',
+  title: 'Blocks/Auth/Register/Register1/Layouts',
 } satisfies Meta
 
 export default meta

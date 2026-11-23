@@ -30,7 +30,7 @@ const meta = {
   component: Signup1,
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/Signup1/Behavior',
+  title: 'Blocks/Auth/Register/Register1/Behavior',
 } satisfies Meta<typeof Signup1>
 
 export default meta

@@ -17,7 +17,7 @@ const meta = {
   component: Login1,
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/Login1/Behavior',
+  title: 'Blocks/Auth/Login/Login1/Behavior',
 } satisfies Meta<typeof Login1>
 
 export default meta

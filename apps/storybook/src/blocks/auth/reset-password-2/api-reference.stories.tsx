@@ -17,7 +17,7 @@ const meta = {
     layout: 'fullscreen',
   },
   tags: ['!autodocs', '!dev'],
-  title: 'Blocks/Auth/ResetPassword2/API Reference',
+  title: 'Blocks/Auth/ResetPassword/ResetPassword2/API Reference',
 } satisfies Meta<typeof ResetPassword2>
 
 export default meta

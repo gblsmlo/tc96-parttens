@@ -12,7 +12,7 @@ const meta = {
   parameters: { layout: 'fullscreen' },
   render: (args) => <ComposedResetPassword2 {...args} />,
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/ResetPassword2/Playground',
+  title: 'Blocks/Auth/ResetPassword/ResetPassword2/Playground',
 } satisfies Meta<ResetPassword2Controls>
 
 export default meta
