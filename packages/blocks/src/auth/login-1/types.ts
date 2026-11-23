@@ -18,7 +18,6 @@ export interface LoginLabels extends AuthCommonLabels {
   remember: string
   signup: string
   submit: string
-  submitPending: string
   title: string
 }
 

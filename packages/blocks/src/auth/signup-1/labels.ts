@@ -13,7 +13,6 @@ export const defaultSignupLabels: SignupLabels = {
   name: 'Nome',
   privacy: 'Política de Privacidade',
   submit: 'Criar conta',
-  submitPending: 'Criando conta…',
   terms: 'Termos de Uso',
   termsAnd: 'e a',
   termsLead: 'Ao criar a conta você concorda com os',

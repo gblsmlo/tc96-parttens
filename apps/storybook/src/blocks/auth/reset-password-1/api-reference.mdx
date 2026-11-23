@@ -77,10 +77,10 @@ The reset password page. Renders a `main` landmark that centers its content in t
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `onSubmit` | `(values: ResetPasswordValues) => void` | required | Called with `{ password }` after the native constraints pass and both passwords match; the return value is ignored. |
-| `pending` | `boolean` | `false` | When true, disables the submit button, shows `labels.submitPending`, sets `aria-busy` on the form and stops `onSubmit`, Enter included. |
+| `pending` | `boolean` | `false` | When true, disables the submit button, puts the submit button in its `loading` state, sets `aria-busy` on the form and stops `onSubmit`, Enter included. |
 | `error` | `string` | - | Sets a message for the whole form, shown in an `Alert` with the title `labels.errorTitle`; rendered as text, never as HTML. |
 | `fieldErrors` | `{ password?: string }` | - | Sets a message for the new password field, shown under it and tied to it with `aria-invalid`. |
-| `passwordMinLength` | `number` | `8` | Sets the native `minLength` of the new password and the number in the characters feedback. |
+| `passwordMinLength` | `number` | `8` | Sets the native `minLength` of the new password. |
 | `passwordSuggestions` | `AuthPasswordSuggestion[]` | `"lowercase"`, `"uppercase"`, `"number"` and `"symbol"` | Lists the character types the feedback suggests; an empty list hides them. |
 | `loginHref` | `string` | - | Adds the footer link back to sign in, named by `labels.backToLogin`; without it the footer is not rendered. |
 | `logo` | `ReactNode` | - | Renders above the card, outside it, centered; nothing renders in its place when missing. |
@@ -102,7 +102,7 @@ The first field is `password` (the label `labels.newPassword`) and the second is
 
 On submit, after the native constraints, the block checks that both passwords are equal. When they differ it shows `labels.passwordMismatch` in the confirmation field, marks it `aria-invalid`, moves focus to it and does not call `onSubmit`. The message clears when either field is edited. The confirmation is not a key of `ResetPasswordValues`, so `fieldErrors` cannot target it and its value never leaves the block.
 
-Under the new password field the feedback shows `n of N characters` and the suggested character types, each with its state in text (`labels.suggestionMet` or `labels.suggestionMissing`). The feedback is advice: only the native constraints block the submit. It is tied to the field by `aria-describedby`, and a polite live region announces only when the minimum is reached or a suggestion changes state, not on every key. The fields are uncontrolled: the values stay in the form after an error.
+Under the new password field the feedback shows the suggested character types, inline on one line, with a check in the `success` color once met (the state is also read by screen readers through `labels.suggestionMet` or `labels.suggestionMissing`). The feedback is advice: only the native constraints block the submit. It is tied to the field by `aria-describedby`, and a polite live region announces only when a suggestion changes state, not on every key. The fields are uncontrolled: the values stay in the form after an error.
 
 ## Errors and focus
 
@@ -131,16 +131,13 @@ Every visible or accessible text the block owns is a key of `ResetPasswordLabels
 | `showPassword` | `string` | `"Mostrar senha"` |
 | `hidePassword` | `string` | `"Ocultar senha"` |
 | `passwordMismatch` | `string` | `"As senhas não coincidem."` |
-| `passwordLength` | `(count: number, minLength: number) => string` | `"3 de 8 caracteres"` for 3 and 8; the count stops at `minLength` |
-| `passwordSuggestionsTitle` | `string` | `"Para uma senha mais segura, use:"` |
-| `suggestionLowercase` | `string` | `"letra minúscula"` |
-| `suggestionUppercase` | `string` | `"letra maiúscula"` |
+| `suggestionLowercase` | `string` | `"minúscula"` |
+| `suggestionUppercase` | `string` | `"maiúscula"` |
 | `suggestionNumber` | `string` | `"número"` |
 | `suggestionSymbol` | `string` | `"símbolo"` |
 | `suggestionMet` | `string` | `"atendida"` |
 | `suggestionMissing` | `string` | `"faltando"` |
 | `submit` | `string` | `"Redefinir senha"` |
-| `submitPending` | `string` | `"Redefinindo…"` |
 | `backToLogin` | `string` | `"Voltar para entrar"` |
 | `errorTitle` | `string` | `"Não foi possível continuar"` |
 

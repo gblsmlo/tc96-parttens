@@ -87,7 +87,7 @@ export const CreatingAccount: Story = {
   render: () => <ComposedSignup {...signupControlArgs} pending />,
   play: async ({ canvasElement }) => {
     await expect(
-      within(canvasElement).getByRole('button', { name: 'Criando conta…' }),
+      within(canvasElement).getByRole('button', { name: /^Criar conta/ }),
     ).toBeDisabled()
   },
 }
@@ -101,8 +101,7 @@ export const StrictPasswordPolicy: Story = {
     />
   ),
   play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('0 de 12 caracteres'),
-    ).toBeVisible()
+    await expect(within(canvasElement).getByText('número')).toBeVisible()
+    await expect(within(canvasElement).getByText('símbolo')).toBeVisible()
   },
 }

@@ -1,0 +1,127 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Login2
+
+The minimal sign-in page: e-mail, password with a show and hide button and the submit button, inside a centered card. It has no remember me box, no links, no providers and no logo. Reach for it when the app only needs the credentials, or as the smallest page to edit into your own. Install it with `npx @tc96/parttens add login-2`.
+
+It is a whole page, not a form to place inside one: it renders its own `main` landmark. Authentication, the session, cookies and redirects stay in the app; the block only calls `onSubmit`, and it never fetches or stores anything. For the remember me box, the recovery and sign up links and the providers, use [Login1](?path=/docs/blocks-auth-login-login1-api-reference--api-reference).
+
+The other pages of `Blocks/Auth/Login/Login2`: [Playground](?path=/story/blocks-auth-login-login2-playground--playground) to try the errors and the pending state, [Stories](?path=/story/blocks-auth-login-login2-stories--default) for the pending, error and field error states, [Behavior](?path=/story/blocks-auth-login-login2-behavior--page-heading) for the tests and [Usages](?path=/story/blocks-auth-login-login2-usages--sign-in) for real sign-in screens.
+
+## Import
+
+```tsx
+import { Login2 } from '@acme/blocks/auth/login-2'
+```
+
+The same path exports the types `Login2Props`, `Login2Values`, `Login2Labels` and `AuthFieldErrors`.
+
+## Anatomy
+
+The page with a form `error`:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Login2
+  error={error}
+  fieldErrors={fieldErrors}
+  onSubmit={({ email, password }) => signIn(email, password)}
+  pending={isSigningIn}
+/>
+```
+
+The tree `Login2` renders:
+
+```tsx
+<main>
+  <div data-slot="card">
+    <div data-slot="card-header">
+      <h1 data-slot="card-title">{labels.title}</h1>
+      <div data-slot="card-description">{labels.description}</div>
+    </div>
+    <div data-slot="card-panel">
+      <div data-slot="alert" role="alert" tabIndex={-1}>{error}</div>
+      <form data-slot="form" aria-busy={pending} noValidate>
+        <div data-slot="field">{/* email */}</div>
+        <div data-slot="field">{/* password, with the show and hide button */}</div>
+        <button type="submit" />
+      </form>
+    </div>
+  </div>
+</main>
+```
+
+## Login2
+
+The whole sign-in page. Renders a `main` that fills the window height and centers its content, and inside the card the title (an `h1`), the description, the form message and the form. Mount it on the route and do not wrap it in another `main`. It only takes the props below.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: Login2Values) => void` | required | Called with `email` and `password` after the native constraints pass; never while `pending`. |
+| `pending` | `boolean` | `false` | When true, disables the submit button, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
+| `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
+| `fieldErrors` | `Partial<Record<keyof Login2Values, string>>` | - | Shows a message under each field it names and marks that field invalid. |
+| `labels` | `Partial<Login2Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card"` | Marks the card, which holds everything |
+| `data-slot` | `"form"` | Marks the form; it carries `aria-busy` |
+
+### Submit
+
+`onSubmit` runs when the form is submitted by the button or by Enter, and only after the native constraints pass: `required` on both fields and `type="email"` on the e-mail. The return value is ignored. The fields are uncontrolled, so what the user typed stays in the form after an error. The messages of the native constraints are the browser's own and have no label.
+
+### Pending
+
+`pending` is the app's state. While it is true `onSubmit` is not called, Enter included, and the submit button shows its `loading` state.
+
+### Errors
+
+- `error` is rendered as text, never as HTML. When it goes from empty to a message, focus moves to the alert, unless `fieldErrors` names a field, which takes the focus.
+- `fieldErrors` ties each message to its field with `aria-invalid` and the field's error text. When it goes from empty to filled, focus moves to the first of those fields in the form. A message clears when the user edits its field.
+- Both are the app's state: the block never sets either of them.
+
+### Login2Values
+
+The argument of `onSubmit`.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `email` | `string` | The e-mail field. |
+| `password` | `string` | The password field. |
+
+### Login2Labels
+
+Every visible or accessible text the block owns. `labels` is partial and merged over these defaults.
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Entrar"` |
+| `description` | `string` | `"Informe seu e-mail e sua senha para acessar a conta."` |
+| `email` | `string` | `"E-mail"` |
+| `password` | `string` | `"Senha"` |
+| `showPassword` | `string` | `"Mostrar senha"` |
+| `hidePassword` | `string` | `"Ocultar senha"` |
+| `submit` | `string` | `"Entrar"` |
+| `errorTitle` | `string` | `"Não foi possível continuar"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Login2` | `component` | The minimal sign-in page. |
+| `Login2Props` | `type` | The props of `Login2`. |
+| `Login2Values` | `type` | The argument of `onSubmit`. |
+| `Login2Labels` | `type` | The keys of `labels`. |
+| `AuthFieldErrors` | `type` | `Partial<Record<keyof TValues, string>>`, the type of `fieldErrors`. |
+
+## Accessibility and theme
+
+- The page has one `main` landmark and one `h1`, the card title; do not wrap the block in another `main`.
+- The password button is named by `labels.showPassword` and `labels.hidePassword`; override both when you translate the block.
+- The block carries no theme rule: it reads the card, field, button and alert tokens of the theme it renders in.

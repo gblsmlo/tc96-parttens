@@ -79,7 +79,7 @@ export const Sending: Story = {
   args: { pending: true },
   play: async ({ canvasElement }) => {
     await expect(
-      within(canvasElement).getByRole('button', { name: 'Enviando…' }),
+      within(canvasElement).getByRole('button', { name: /^Enviar link/ }),
     ).toBeDisabled()
   },
 }

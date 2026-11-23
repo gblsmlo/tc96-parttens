@@ -26,7 +26,6 @@ export interface ResetPassword2Labels
   requestNewLink: string
   requestNewLinkIn: (time: string) => string
   submit: string
-  submitPending: string
   title: string
 }
 

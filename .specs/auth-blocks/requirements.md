@@ -27,7 +27,7 @@ Decidido pelo dono em 2026-11-22:
 - `login-1` tem a caixa "lembrar de mim", e o valor dela viaja em `onSubmit`;
 - `signup-1` coleta o nome, além de e-mail e senha;
 - `signup-1` e `reset-password-1` têm o campo de confirmação da senha, e o próprio block confere que os dois valores batem;
-- o campo de senha nova de `signup-1` e `reset-password-1` mostra, enquanto o usuário digita, o retorno sobre o número de caracteres em relação ao tamanho mínimo e sobre os tipos de caractere sugeridos; uma pontuação de força não faz parte da decisão e fica fora a menos que o dono peça;
+- o campo de senha nova de `signup-1` e `reset-password-1` mostra, enquanto o usuário digita, o retorno sobre os tipos de caractere sugeridos; uma pontuação de força não faz parte da decisão e fica fora a menos que o dono peça;
 - `otp-1` não envia sozinho: há sempre um botão "Verificar", e `onSubmit` só roda por ele (ou por Enter); `onComplete(code)` é uma notificação opcional de código completo;
 - a contagem regressiva do reenvio é do consumidor: o block só mostra `resendIn` e desabilita o reenvio enquanto ele for maior que zero; não roda timer;
 - `renderAnchor` sobe para `ui` como item próprio do repositório (`origin: "own"`, como Text e IconFrame), porque uma peça sem domínio usada por blocks de grupos diferentes desce para `ui` ([mapa de decisão](../../docs/architecture/layer-decision-map.md)); os blocks de auth importam de `@tc96/ui`, e a mesma entrega move para ele os `render-link.tsx` de `application/shell/shared` e de `ai-agents/flow/shared`.
@@ -232,8 +232,7 @@ Como consumidor, quero que as páginas com senha ajudem o usuário a digitá-la 
 - **AC-9.1** Todo campo de senha de `login-1`, `signup-1` e `reset-password-1`, a confirmação incluída, tem um botão que alterna entre mostrar e ocultar a senha. O texto do botão e o nome acessível vêm de `labels` (nomes e padrões em pt-BR propostos, por exemplo "Mostrar senha" e "Ocultar senha") (proposed). O estado visível ou oculto é estado de interação do block.
 - **AC-9.2** `signup-1` e `reset-password-1` têm o campo de confirmação da senha. No envio, o block confere que os dois valores batem; se não batem, mostra um erro de campo, com texto vindo de `labels`, no campo de confirmação, move o foco para ele e não chama `onSubmit`.
 - **AC-9.3** O valor da confirmação não vai em `onSubmit`: os valores trazem só `password` (proposed).
-- **AC-9.4** O campo de senha nova mostra, enquanto o usuário digita, o retorno sobre o número de caracteres em relação ao tamanho mínimo, que é 8 por padrão (proposta mantida pelo dono em 2026-11-22), por exemplo "6 de 8 caracteres"; o texto é proposto (proposed).
-- **AC-9.5** O campo de senha nova mostra, enquanto o usuário digita, o retorno sobre os tipos de caractere sugeridos: letra minúscula, letra maiúscula, número e símbolo; a lista, o fato de o consumidor poder configurá-la e os rótulos são proposta (proposed).
+- **AC-9.5** O campo de senha nova mostra, enquanto o usuário digita, o retorno sobre os tipos de caractere sugeridos: minúscula, maiúscula, número e símbolo; a lista, o fato de o consumidor poder configurá-la e os rótulos são proposta (proposed).
 - **AC-9.6** As sugestões são avisos e não bloqueiam o envio: só o tamanho mínimo bloqueia, pela restrição nativa (`minLength`) (proposed).
 
 ### US-10. Entrar e lembrar do usuário (CAP-1)

@@ -76,7 +76,7 @@ The `tsconfig` `paths` entry for `blocks` is needed only when you install a bloc
 
 #### Auth pages
 
-`login-1`, `otp-1`, `signup-1`, `reset-password-1`, `reset-password-2` and `forgot-password-1` are the pages of the sign in flow. Each one is a whole page (the `main`, the centered card and your `logo` above it), so you only mount it on the route:
+`login-1`, `login-2`, `otp-1`, `signup-1`, `reset-password-1`, `reset-password-2` and `forgot-password-1` are the pages of the sign in flow. Each one is a whole page (the `main`, the centered card and your `logo` above it), so you only mount it on the route:
 
 ```bash
 npx @tc96/parttens add login-1
@@ -87,7 +87,7 @@ npx @tc96/parttens add forgot-password-1
 import { Login1 } from '@acme/blocks/auth/login-1'
 ```
 
-The pages are controlled: you pass `pending`, `error` and `fieldErrors` and receive `onSubmit(values)`, after the native constraints pass. They never fetch, keep a session or import an auth provider; links go through `renderLink` and only appear when you pass their `href`, every text is in `labels` (pt-BR by default), and the resend and link validity countdowns are numbers you count down and pass in. `reset-password-2` is `reset-password-1` with a validity timer for the reset link, and `forgot-password-1` swaps its form for a confirmation when you pass `sent`.
+The pages are controlled: you pass `pending`, `error` and `fieldErrors` and receive `onSubmit(values)`, after the native constraints pass. They never fetch, keep a session or import an auth provider; links go through `renderLink` and only appear when you pass their `href`, every text is in `labels` (pt-BR by default), and the resend and link validity countdowns are numbers you count down and pass in. `login-2` is the minimal `login-1`, with only e-mail, password and the submit button. `reset-password-2` is `reset-password-1` with a validity timer for the reset link, and `forgot-password-1` swaps its form for a confirmation when you pass `sent`.
 
 #### AI & Agents: flow editors
 

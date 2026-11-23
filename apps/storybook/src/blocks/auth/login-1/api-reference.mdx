@@ -9,7 +9,7 @@ A sign-in page: e-mail, password with a show and hide button, a remember me box,
 
 It is a whole page, not a form to place inside one: it renders its own `main` landmark. Authentication, the session, cookies and redirects stay in the app; the block only calls `onSubmit` and `onProviderSelect`, and it never fetches or stores anything.
 
-The other pages of `Blocks/Auth/Login/Login1`: [Playground](?path=/story/blocks-auth-login-login1-playground--playground) to try the errors, the pending state and the optional parts, [Stories](?path=/story/blocks-auth-login-login1-stories--default) for the pending, error and field error states, [Behavior](?path=/story/blocks-auth-login-login1-behavior--page-heading) for the tests, [Usages](?path=/story/blocks-auth-login-login1-usages--sign-in) for real sign-in screens and [Layouts](?path=/story/blocks-auth-login-login1-layouts--minimal) for the page without its optional parts.
+The other pages of `Blocks/Auth/Login/Login1`: [Playground](?path=/story/blocks-auth-login-login1-playground--playground) to try the errors, the pending state and the optional parts, [Stories](?path=/story/blocks-auth-login-login1-stories--default) for the pending, error and field error states, [Behavior](?path=/story/blocks-auth-login-login1-behavior--page-heading) for the tests, [Usages](?path=/story/blocks-auth-login-login1-usages--sign-in) for real sign-in screens and [Layouts](?path=/story/blocks-auth-login-login1-layouts--without-providers) for the page without its optional parts. For a page with only the credentials, see [Login2](?path=/docs/blocks-auth-login-login2-api-reference--api-reference).
 
 ## Import
 
@@ -73,7 +73,7 @@ The whole sign-in page. Renders a `main` that fills the window height and center
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `onSubmit` | `(values: LoginValues) => void` | required | Called with `email`, `password` and `remember` after the native constraints pass; never while `pending`. |
-| `pending` | `boolean` | `false` | When true, disables the submit button and the provider buttons, shows `labels.submitPending` and sets `aria-busy` on the form. |
+| `pending` | `boolean` | `false` | When true, disables the submit button and the provider buttons, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
 | `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
 | `fieldErrors` | `Partial<Record<keyof LoginValues, string>>` | - | Shows a message under each field it names and marks that field invalid. |
 | `providers` | `AuthProvider[]` | - | Lists the provider buttons below the form; empty or missing renders neither the buttons nor their separator. |
@@ -95,7 +95,7 @@ The whole sign-in page. Renders a `main` that fills the window height and center
 
 ### Pending
 
-`pending` is the app's state. While it is true neither `onSubmit` nor `onProviderSelect` is called, Enter included, and the submit button reads `labels.submitPending`.
+`pending` is the app's state. While it is true neither `onSubmit` nor `onProviderSelect` is called, Enter included, and the submit button shows its `loading` state.
 
 ### Errors
 
@@ -142,7 +142,6 @@ Every visible or accessible text the block owns. `labels` is partial and merged 
 | `remember` | `string` | `"Lembrar de mim"` |
 | `forgotPassword` | `string` | `"Esqueceu a senha?"` |
 | `submit` | `string` | `"Entrar"` |
-| `submitPending` | `string` | `"Entrando…"` |
 | `errorTitle` | `string` | `"Não foi possível continuar"` |
 | `providersSeparator` | `string` | `"ou continue com"` |
 | `providersGroup` | `string` | `"Entrar com outro serviço"` |

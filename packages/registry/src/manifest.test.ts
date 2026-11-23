@@ -601,6 +601,46 @@ test('builds the login-1 item with the auth shared files and the form parts from
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
+test('builds the login-2 item with the auth shared files and only the form parts it renders', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/login-2.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+
+  expect(item.name).toBe('login-2')
+  expect(item.registryDependencies).toEqual(
+    expect.arrayContaining([
+      '@ui/alert',
+      '@ui/button',
+      '@ui/card',
+      '@ui/field',
+      '@ui/form',
+      '@ui/input',
+      '@ui/input-group',
+    ]),
+  )
+  expect(paths).toContain('blocks/src/auth/login-2/index.ts')
+  expect(paths).toContain('blocks/src/auth/shared/auth-card.tsx')
+  expect(
+    paths.every(
+      (path) =>
+        path.startsWith('blocks/src/auth/') || path.startsWith('helpers/src/'),
+    ),
+  ).toBe(true)
+  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(
+    paths.some((path) => path.startsWith('blocks/src/auth/login-1/')),
+  ).toBe(false)
+  expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
 test('builds the otp-1 item with the auth shared files and the otp field from COSS', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(

@@ -16,6 +16,5 @@ export const defaultForgotPasswordLabels: ForgotPasswordLabels = {
       : 'Enviamos um link para redefinir a senha para o seu e-mail.',
   sentTitle: 'Verifique seu e-mail',
   submit: 'Enviar link',
-  submitPending: 'Enviando…',
   title: 'Esqueceu a senha?',
 }

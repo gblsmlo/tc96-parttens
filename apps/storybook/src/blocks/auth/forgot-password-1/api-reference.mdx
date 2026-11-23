@@ -107,7 +107,7 @@ The forgot password page. Renders a `main` landmark that centers its content in 
 | `destination` | `string` | - | Names where the link was sent in the confirmation, through `labels.sentDescription(destination)`; without it the text is generic. |
 | `onResend` | `() => void` | - | Called when the resend button of the confirmation is clicked; the button renders only when this is passed. |
 | `resendIn` | `number` | `0` | Sets the seconds left before another resend, counted by the app; above zero it disables the resend button. |
-| `pending` | `boolean` | `false` | When true, disables the submit button and the resend button, shows `labels.submitPending`, sets `aria-busy` on the form and stops `onSubmit` and `onResend`. |
+| `pending` | `boolean` | `false` | When true, disables the submit button and the resend button, puts the submit button in its `loading` state, sets `aria-busy` on the form and stops `onSubmit` and `onResend`. |
 | `error` | `string` | - | Sets a message for the whole page, shown in an `Alert` with the title `labels.errorTitle`, in the form and in the confirmation; rendered as text, never as HTML. |
 | `fieldErrors` | `{ email?: string }` | - | Sets a message for the e-mail field, shown under it and tied to it with `aria-invalid`. |
 | `loginHref` | `string` | - | Adds the footer link back to sign in, named by `labels.backToLogin`, in the form and in the confirmation; without it the footer is not rendered. |
@@ -150,7 +150,6 @@ Every visible or accessible text the block owns is a key of `ForgotPasswordLabel
 | `description` | `string` | `"Informe seu e-mail e enviaremos um link para redefinir a senha."` |
 | `email` | `string` | `"E-mail"` |
 | `submit` | `string` | `"Enviar link"` |
-| `submitPending` | `string` | `"Enviando…"` |
 | `sentTitle` | `string` | `"Verifique seu e-mail"` |
 | `sentDescription` | `(destination?: string) => string` | `"Enviamos um link para redefinir a senha para ana@acme.com."` for `"ana@acme.com"`, and `"Enviamos um link para redefinir a senha para o seu e-mail."` without a destination |
 | `didNotReceive` | `string` | `"Não recebeu o e-mail?"` |

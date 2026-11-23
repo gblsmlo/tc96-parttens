@@ -96,7 +96,6 @@ export function ResetPassword1({
         >
           <AuthPasswordFeedback
             labels={labels}
-            minLength={passwordMinLength}
             password={password}
             suggestions={passwordSuggestions}
           />
@@ -109,8 +108,8 @@ export function ResetPassword1({
           onValueChange={() => setMismatch(false)}
           showLabel={labels.showPassword}
         />
-        <Button className="w-full" disabled={pending} type="submit">
-          {pending ? labels.submitPending : labels.submit}
+        <Button className="w-full" loading={pending} type="submit">
+          {labels.submit}
         </Button>
       </Form>
     </AuthCard>

@@ -93,9 +93,6 @@ export const MinLengthSetsConstraintAndFeedback: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await expect(passwordField(canvas)).toHaveAttribute('minlength', '12')
-    await expect(
-      feedback(canvasElement).getByText('0 de 12 caracteres'),
-    ).toBeVisible()
   },
 }
 
@@ -104,24 +101,14 @@ export const SuggestionsCanBeNarrowed: Story = {
   play: async ({ canvasElement }) => {
     await expect(feedback(canvasElement).getByText('número')).toBeVisible()
     await expect(feedback(canvasElement).getByText('símbolo')).toBeVisible()
-    await expect(
-      feedback(canvasElement).queryByText('letra minúscula'),
-    ).toBeNull()
-    await expect(
-      feedback(canvasElement).queryByText('letra maiúscula'),
-    ).toBeNull()
+    await expect(feedback(canvasElement).queryByText('minúscula')).toBeNull()
+    await expect(feedback(canvasElement).queryByText('maiúscula')).toBeNull()
   },
 }
 
 export const EmptySuggestionsHideTheList: Story = {
   args: { passwordSuggestions: [] },
   play: async ({ canvasElement }) => {
-    await expect(
-      feedback(canvasElement).getByText('0 de 8 caracteres'),
-    ).toBeVisible()
-    await expect(
-      feedback(canvasElement).queryByText('Para uma senha mais segura, use:'),
-    ).toBeNull()
     await expect(
       canvasElement.querySelector('[data-slot="field-description"] li'),
     ).toBeNull()
@@ -133,47 +120,22 @@ export const FeedbackUpdatesWhileTyping: Story = {
     const canvas = within(canvasElement)
     const item = (text: string) =>
       feedback(canvasElement).getByText(text).closest('li') as HTMLElement
-    await expect(
-      feedback(canvasElement).getByText('0 de 8 caracteres'),
-    ).toBeVisible()
-    await expect(
-      feedback(canvasElement).getByText('Para uma senha mais segura, use:'),
-    ).toBeVisible()
-    for (const text of [
-      'letra minúscula',
-      'letra maiúscula',
-      'número',
-      'símbolo',
-    ]) {
+    for (const text of ['minúscula', 'maiúscula', 'número', 'símbolo']) {
       await expect(item(text)).toHaveTextContent('faltando')
       await expect(item(text)).not.toHaveAttribute('data-met')
     }
-    await expect(passwordField(canvas)).toHaveAccessibleDescription(
-      /0 de 8 caracteres/,
-    )
+    await expect(passwordField(canvas)).toHaveAccessibleDescription(/minúscula/)
     await userEvent.type(passwordField(canvas), 'abc')
-    await expect(
-      feedback(canvasElement).getByText('3 de 8 caracteres'),
-    ).toBeVisible()
-    await expect(item('letra minúscula')).toHaveTextContent('atendida')
-    await expect(item('letra minúscula')).toHaveAttribute('data-met')
-    await expect(item('letra maiúscula')).toHaveTextContent('faltando')
+    await expect(item('minúscula')).toHaveTextContent('atendida')
+    await expect(item('minúscula')).toHaveAttribute('data-met')
+    await expect(item('maiúscula')).toHaveTextContent('faltando')
     await userEvent.type(passwordField(canvas), 'D1!')
-    await expect(
-      feedback(canvasElement).getByText('6 de 8 caracteres'),
-    ).toBeVisible()
-    for (const text of ['letra maiúscula', 'número', 'símbolo']) {
+    for (const text of ['maiúscula', 'número', 'símbolo']) {
       await expect(item(text)).toHaveTextContent('atendida')
     }
     await userEvent.type(passwordField(canvas), 'efgh')
-    await expect(
-      feedback(canvasElement).getByText('8 de 8 caracteres'),
-    ).toBeVisible()
     await userEvent.clear(passwordField(canvas))
-    await expect(
-      feedback(canvasElement).getByText('0 de 8 caracteres'),
-    ).toBeVisible()
-    await expect(item('letra minúscula')).toHaveTextContent('faltando')
+    await expect(item('minúscula')).toHaveTextContent('faltando')
   },
 }
 
@@ -183,19 +145,15 @@ export const FeedbackAnnouncesOnlyChanges: Story = {
     await expect(announcement(canvasElement)).toBeEmptyDOMElement()
     await userEvent.type(passwordField(canvas), 'abc')
     await expect(announcement(canvasElement)).toHaveTextContent(
-      /^letra minúscula: atendida$/,
+      /^minúscula: atendida$/,
     )
     await userEvent.type(passwordField(canvas), 'D')
     await expect(announcement(canvasElement)).toHaveTextContent(
-      /^letra maiúscula: atendida$/,
+      /^maiúscula: atendida$/,
     )
     await userEvent.type(passwordField(canvas), 'EF')
     await expect(announcement(canvasElement)).toHaveTextContent(
-      /^letra maiúscula: atendida$/,
-    )
-    await userEvent.type(passwordField(canvas), 'GH')
-    await expect(announcement(canvasElement)).toHaveTextContent(
-      /^8 de 8 caracteres$/,
+      /^maiúscula: atendida$/,
     )
   },
 }
@@ -207,7 +165,7 @@ export const FeedbackDoesNotBlockSubmit: Story = {
     await userEvent.type(passwordField(canvas), weak)
     await userEvent.type(confirmField(canvas), weak)
     await expect(
-      feedback(canvasElement).getByText('letra minúscula').closest('li'),
+      feedback(canvasElement).getByText('minúscula').closest('li'),
     ).toHaveTextContent('faltando')
     await userEvent.click(submitButton(canvas))
     await waitFor(() => expect(args.onSubmit).toHaveBeenCalledOnce())

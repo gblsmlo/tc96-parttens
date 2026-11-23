@@ -144,8 +144,9 @@ export const PendingBlocksActions: Story = {
   args: { pending: true },
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement)
-    const submit = canvas.getByRole('button', { name: 'Criando conta…' })
+    const submit = canvas.getByRole('button', { name: /^Criar conta/ })
     await expect(submit).toBeDisabled()
+    await expect(submit).toHaveAttribute('data-loading')
     await expect(submit).toHaveAttribute('type', 'submit')
     await expect(
       canvasElement.querySelector('[data-slot="form"]'),

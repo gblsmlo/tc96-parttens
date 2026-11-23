@@ -94,8 +94,8 @@ export function Otp1({
           </span>
           <FieldError />
         </Field>
-        <Button className="w-full" disabled={pending} type="submit">
-          {pending ? labels.submitPending : labels.submit}
+        <Button className="w-full" loading={pending} type="submit">
+          {labels.submit}
         </Button>
       </Form>
     </AuthCard>

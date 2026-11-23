@@ -20,6 +20,5 @@ export const defaultResetPassword2Labels: ResetPassword2Labels = {
   requestNewLinkIn: (time) => `Solicitar novamente em ${time}`,
   showPassword: defaultAuthCommonLabels.showPassword,
   submit: 'Redefinir senha',
-  submitPending: 'Redefinindo…',
   title: 'Redefinir senha',
 }

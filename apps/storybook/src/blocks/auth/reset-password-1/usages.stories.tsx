@@ -65,9 +65,6 @@ export const PasswordAlreadyUsed: Story = {
 export const StricterPasswordPolicy: Story = {
   args: { passwordMinLength: 12, passwordSuggestions: ['number', 'symbol'] },
   play: async ({ canvasElement }) => {
-    await expect(
-      feedback(canvasElement).getByText('0 de 12 caracteres'),
-    ).toBeVisible()
     await expect(feedback(canvasElement).getByText('número')).toBeVisible()
     await expect(feedback(canvasElement).getByText('símbolo')).toBeVisible()
   },
