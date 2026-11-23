@@ -1482,6 +1482,19 @@
     "OtpProps",
     "OtpValues"
   ],
+  "block:signup-1": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthNewPasswordLabels",
+    "AuthPasswordSuggestion",
+    "AuthProvider",
+    "AuthRenderLink",
+    "Signup1",
+    "SignupLabels",
+    "SignupProps",
+    "SignupValues"
+  ],
   "block:workflow-editor": [
     "AssistantMessage",
     "AssistantSuggestion",
