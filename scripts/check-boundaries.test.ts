@@ -99,11 +99,11 @@ test('rejects blocks depending on the registry', async () => {
 
 test("lets a block depend on its own folder and its group's shared", async () => {
   const result = await workspace({
-    'packages/blocks/src/application/auth/login-1/login-1.tsx':
-      "import { fields } from './fields'\nimport { labels } from '../shared/labels'\nexport const page = [fields, labels]\n",
-    'packages/blocks/src/application/auth/login-1/fields.ts':
-      'export const fields = []\n',
-    'packages/blocks/src/application/auth/shared/labels.ts':
+    'packages/blocks/src/application/shell/app-shell-1/app-shell-1.tsx':
+      "import { nav } from './nav'\nimport { labels } from '../shared/labels'\nexport const page = [nav, labels]\n",
+    'packages/blocks/src/application/shell/app-shell-1/nav.ts':
+      'export const nav = []\n',
+    'packages/blocks/src/application/shell/shared/labels.ts':
       'export const labels = {}\n',
   })
   expect(result.status).toBe(0)
@@ -111,27 +111,89 @@ test("lets a block depend on its own folder and its group's shared", async () =>
 
 test('rejects a block depending on another block of its group', async () => {
   const result = await workspace({
-    'packages/blocks/src/application/auth/login-2/login-2.tsx':
-      "import { page } from '../login-1/login-1'\nexport const next = page\n",
-    'packages/blocks/src/application/auth/login-1/login-1.tsx':
+    'packages/blocks/src/application/shell/app-shell-2/app-shell-2.tsx':
+      "import { page } from '../app-shell-1/app-shell-1'\nexport const next = page\n",
+    'packages/blocks/src/application/shell/app-shell-1/app-shell-1.tsx':
       'export const page = 1\n',
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain(
-    'a block cannot depend on packages/blocks/src/application/auth/login-1/login-1.tsx',
+    'a block cannot depend on packages/blocks/src/application/shell/app-shell-1/app-shell-1.tsx',
   )
 })
 
 test("rejects a block depending on another group's shared", async () => {
   const result = await workspace({
-    'packages/blocks/src/application/auth/login-1/login-1.tsx':
-      "import { labels } from '../../shell/shared/labels'\nexport const page = labels\n",
+    'packages/blocks/src/application/shell/app-shell-1/app-shell-1.tsx':
+      "import { labels } from '../../settings/shared/labels'\nexport const page = labels\n",
+    'packages/blocks/src/application/settings/shared/labels.ts':
+      'export const labels = {}\n',
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain(
+    'a block cannot depend on packages/blocks/src/application/settings/shared/labels.ts',
+  )
+})
+
+test("lets a block of a category without groups depend on its own folder and the category's shared", async () => {
+  const result = await workspace({
+    'packages/blocks/src/auth/login-1/login-1.tsx':
+      "import { fields } from './components/fields'\nimport { labels } from '../shared/lib/labels'\nexport const page = [fields, labels]\n",
+    'packages/blocks/src/auth/login-1/components/fields.ts':
+      "import { labels } from '../../shared/lib/labels'\nexport const fields = [labels]\n",
+    'packages/blocks/src/auth/shared/lib/labels.ts':
+      'export const labels = {}\n',
+  })
+  expect(result.status).toBe(0)
+})
+
+test('rejects a block of a category without groups depending on another block of it', async () => {
+  const result = await workspace({
+    'packages/blocks/src/auth/login-2/login-2.tsx':
+      "import { page } from '../login-1/login-1'\nexport const next = page\n",
+    'packages/blocks/src/auth/login-1/login-1.tsx': 'export const page = 1\n',
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain(
+    'a block cannot depend on packages/blocks/src/auth/login-1/login-1.tsx',
+  )
+})
+
+test('rejects a block of a category without groups depending on a nested file of another block', async () => {
+  const result = await workspace({
+    'packages/blocks/src/auth/login-2/components/form.tsx':
+      "import { fields } from '../../login-1/components/fields'\nexport const form = fields\n",
+    'packages/blocks/src/auth/login-1/components/fields.ts':
+      'export const fields = []\n',
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain(
+    'a block cannot depend on packages/blocks/src/auth/login-1/components/fields.ts',
+  )
+})
+
+test("rejects a block of a category without groups depending on another category's shared", async () => {
+  const result = await workspace({
+    'packages/blocks/src/auth/login-1/login-1.tsx':
+      "import { labels } from '../../application/shell/shared/labels'\nexport const page = labels\n",
     'packages/blocks/src/application/shell/shared/labels.ts':
       'export const labels = {}\n',
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain(
     'a block cannot depend on packages/blocks/src/application/shell/shared/labels.ts',
+  )
+})
+
+test("rejects a grouped block depending on a category's shared without groups", async () => {
+  const result = await workspace({
+    'packages/blocks/src/application/shell/app-shell-1/app-shell-1.tsx':
+      "import { labels } from '../../../auth/shared/labels'\nexport const page = labels\n",
+    'packages/blocks/src/auth/shared/labels.ts': 'export const labels = {}\n',
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain(
+    'a block cannot depend on packages/blocks/src/auth/shared/labels.ts',
   )
 })
 

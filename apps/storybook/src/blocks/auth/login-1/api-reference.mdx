@@ -1,0 +1,171 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Login1
+
+A sign-in page: e-mail, password with a show and hide button, a remember me box, a forgot password link, optional providers and a sign up link, inside a centered card. Reach for it as the route of an app's sign-in screen, or as the page to edit into your own. Install it with `npx @tc96/parttens add login-1`.
+
+It is a whole page, not a form to place inside one: it renders its own `main` landmark. Authentication, the session, cookies and redirects stay in the app; the block only calls `onSubmit` and `onProviderSelect`, and it never fetches or stores anything.
+
+The other pages of `Blocks/Auth/Login1`: [Playground](?path=/story/blocks-auth-login1-playground--playground) to try the errors, the pending state and the optional parts, [Stories](?path=/story/blocks-auth-login1-stories--default) for the pending, error and field error states, [Behavior](?path=/story/blocks-auth-login1-behavior--page-heading) for the tests, [Usages](?path=/story/blocks-auth-login1-usages--sign-in) for real sign-in screens and [Layouts](?path=/story/blocks-auth-login1-layouts--minimal) for the page without its optional parts.
+
+## Import
+
+```tsx
+import { Login1 } from '@acme/blocks/auth/login-1'
+```
+
+The same path exports the types `LoginProps`, `LoginValues`, `LoginLabels`, `AuthProvider`, `AuthRenderLink`, `AuthBaseProps`, `AuthCommonLabels` and `AuthFieldErrors`.
+
+## Anatomy
+
+The page with a form `error`, the providers and both links:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Login1
+  error={error}
+  fieldErrors={fieldErrors}
+  forgotPasswordHref="/forgot-password"
+  logo={<Logo />}
+  onProviderSelect={(id) => signInWith(id)}
+  onSubmit={({ email, password, remember }) => signIn(email, password, remember)}
+  pending={isSigningIn}
+  providers={[{ id: 'google', label: 'Google', icon: <GoogleIcon /> }]}
+  renderLink={(href) => <Link to={href} />}
+  signupHref="/signup"
+/>
+```
+
+The tree `Login1` renders:
+
+```tsx
+<main>
+  <div>{logo}</div>
+  <div data-slot="card">
+    <div data-slot="card-header">
+      <h1 data-slot="card-title">{labels.title}</h1>
+      <div data-slot="card-description">{labels.description}</div>
+    </div>
+    <div data-slot="card-panel">
+      <div data-slot="alert" role="alert" tabIndex={-1}>{error}</div>
+      <form data-slot="form" aria-busy={pending} noValidate>
+        <div data-slot="field">{/* email */}</div>
+        <div data-slot="field">{/* password, with the show and hide button */}</div>
+        <div data-slot="field">{/* remember me */}</div>
+        <a>{labels.forgotPassword}</a>
+        <button type="submit" />
+      </form>
+      <fieldset>{/* one button per provider */}</fieldset>
+    </div>
+    <div data-slot="card-footer">{/* sign up link */}</div>
+  </div>
+</main>
+```
+
+## Login1
+
+The whole sign-in page. Renders a `main` that fills the window height and centers its content, the optional `logo` above a card, and inside it the title (an `h1`), the description, the form message, the form, the optional providers and the footer. Mount it on the route and do not wrap it in another `main`. It only takes the props below.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: LoginValues) => void` | required | Called with `email`, `password` and `remember` after the native constraints pass; never while `pending`. |
+| `pending` | `boolean` | `false` | When true, disables the submit button and the provider buttons, shows `labels.submitPending` and sets `aria-busy` on the form. |
+| `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
+| `fieldErrors` | `Partial<Record<keyof LoginValues, string>>` | - | Shows a message under each field it names and marks that field invalid. |
+| `providers` | `AuthProvider[]` | - | Lists the provider buttons below the form; empty or missing renders neither the buttons nor their separator. |
+| `onProviderSelect` | `(id: string) => void` | - | Called with the `id` of the provider button clicked; never while `pending`. |
+| `forgotPasswordHref` | `string` | - | Renders the forgot password link next to the remember me box when set. |
+| `signupHref` | `string` | - | Renders the sign up link in the footer when set; without it the footer is not rendered. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Returns the element each link renders as, so the app's router owns navigation. |
+| `logo` | `ReactNode` | - | Renders above the card, outside it, centered. |
+| `labels` | `Partial<LoginLabels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card"` | Marks the card, which holds everything but the `logo` |
+| `data-slot` | `"form"` | Marks the form; it carries `aria-busy` |
+
+### Submit
+
+`onSubmit` runs when the form is submitted by the button or by Enter, and only after the native constraints pass: `required` on both fields and `type="email"` on the e-mail. `remember` is `false` while the box is unchecked. The return value is ignored. The fields are uncontrolled, so what the user typed stays in the form after an error. The messages of the native constraints are the browser's own and have no label.
+
+### Pending
+
+`pending` is the app's state. While it is true neither `onSubmit` nor `onProviderSelect` is called, Enter included, and the submit button reads `labels.submitPending`.
+
+### Errors
+
+- `error` is rendered as text, never as HTML. When it goes from empty to a message, focus moves to the alert, unless `fieldErrors` names a field, which takes the focus.
+- `fieldErrors` ties each message to its field with `aria-invalid` and the field's error text. When it goes from empty to filled, focus moves to the first of those fields in the form. A message clears when the user edits its field.
+- Both are the app's state: the block never sets either of them.
+
+### Links
+
+Every link renders through `renderLink(href)`, and only when its `href` is passed: `forgotPasswordHref` and `signupHref`. The element receives the class names and the text through its props, so it needs no children; the default is a plain `a`.
+
+### AuthProvider
+
+One entry of `providers`. Each renders an outline button named by `labels.providerContinue(label)`, inside a group named by `labels.providersGroup`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | required | Identifies the provider; `onProviderSelect` receives it. |
+| `label` | `string` | required | Names the provider in the button text. |
+| `icon` | `ReactNode` | - | Renders before the text of the button. |
+
+### LoginValues
+
+The argument of `onSubmit`.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `email` | `string` | The e-mail field. |
+| `password` | `string` | The password field. |
+| `remember` | `boolean` | Whether the remember me box is checked. |
+
+### LoginLabels
+
+Every visible or accessible text the block owns. `labels` is partial and merged over these defaults.
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Entrar"` |
+| `description` | `string` | `"Informe seu e-mail e sua senha para acessar a conta."` |
+| `email` | `string` | `"E-mail"` |
+| `password` | `string` | `"Senha"` |
+| `showPassword` | `string` | `"Mostrar senha"` |
+| `hidePassword` | `string` | `"Ocultar senha"` |
+| `remember` | `string` | `"Lembrar de mim"` |
+| `forgotPassword` | `string` | `"Esqueceu a senha?"` |
+| `submit` | `string` | `"Entrar"` |
+| `submitPending` | `string` | `"Entrando…"` |
+| `errorTitle` | `string` | `"Não foi possível continuar"` |
+| `providersSeparator` | `string` | `"ou continue com"` |
+| `providersGroup` | `string` | `"Entrar com outro serviço"` |
+| `providerContinue` | `(label: string) => string` | `` `Continuar com ${label}` `` |
+| `noAccount` | `string` | `"Não tem uma conta?"` |
+| `signup` | `string` | `"Criar conta"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Login1` | `component` | The sign-in page. |
+| `LoginProps` | `type` | The props of `Login1`. |
+| `LoginValues` | `type` | The argument of `onSubmit`. |
+| `LoginLabels` | `type` | The keys of `labels`. |
+| `AuthProvider` | `type` | An entry of `providers`. |
+| `AuthRenderLink` | `type` | `(href: string) => ReactElement`, the type of `renderLink`. |
+| `AuthBaseProps` | `type` | The props every auth block shares: `error`, `labels`, `logo`, `pending` and `renderLink`. |
+| `AuthCommonLabels` | `type` | The label keys the auth blocks share. |
+| `AuthFieldErrors` | `type` | `Partial<Record<keyof TValues, string>>`, the type of `fieldErrors`. |
+
+## Accessibility and theme
+
+- The page has one `main` landmark and one `h1`, the card title; do not wrap the block in another `main`.
+- The password button is named by `labels.showPassword` and `labels.hidePassword`; override both when you translate the block.
+- The block carries no theme rule: it reads the card, field, button and alert tokens of the theme it renders in.

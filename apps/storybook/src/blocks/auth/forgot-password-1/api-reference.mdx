@@ -1,0 +1,178 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# ForgotPassword1
+
+The page where a user asks for the link that resets a forgotten password: an e-mail field and, once the app says the link was sent, a confirmation that replaces the form in the same card, with a way back to sign in and an optional resend whose countdown the app controls. Reach for it as the route behind the forgot password link of a sign in page. The block keeps no "sent" state and runs no timer, and sending the link stays in the app.
+
+The other pages of `Blocks/Auth/ForgotPassword1`: [Playground](?path=/story/blocks-auth-forgotpassword1-playground--playground) to try the texts, the confirmation, the form message and the optional parts, [Stories](?path=/story/blocks-auth-forgotpassword1-stories--default) for the confirmation, error, field error and pending states, [Behavior](?path=/story/blocks-auth-forgotpassword1-behavior--page-heading) for the tests, [Usages](?path=/story/blocks-auth-forgotpassword1-usages--request-reset-link) for real cases and [Layouts](?path=/story/blocks-auth-forgotpassword1-layouts--minimal) for the page without its optional parts.
+
+The auth blocks share one contract: `pending`, `error`, `fieldErrors`, `renderLink`, `labels`, `logo` and the page frame work the same way in each of them, and each block's page describes them for itself.
+
+## Import
+
+Install it with `npx @tc96/parttens add forgot-password-1`, then import it from the `blocks` alias of the app:
+
+```tsx
+import { ForgotPassword1 } from '@acme/blocks/auth/forgot-password-1'
+```
+
+The same path exports the types `ForgotPasswordProps`, `ForgotPasswordValues`, `ForgotPasswordLabels`, `AuthRenderLink`, `AuthBaseProps`, `AuthCommonLabels` and `AuthFieldErrors`.
+
+## Anatomy
+
+The page with the e-mail form, the logo and the way back to sign in:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ForgotPassword1
+  destination={sentTo}
+  error={error}
+  fieldErrors={fieldErrors}
+  loginHref="/login"
+  logo={<Logo />}
+  onResend={() => requestResetLink(sentTo)}
+  onSubmit={({ email }) => requestResetLink(email)}
+  pending={isPending}
+  renderLink={(href) => <Link to={href} />}
+  resendIn={secondsLeft}
+  sent={Boolean(sentTo)}
+/>
+```
+
+The tree it renders while `sent` is false, with the `data-slot` of each part:
+
+```tsx
+<main>
+  <div>{logo}</div>
+  <div data-slot="card">
+    <div data-slot="card-header">
+      <h1 data-slot="card-title">{labels.title}</h1>
+      <div data-slot="card-description">{labels.description}</div>
+    </div>
+    <div data-slot="card-panel">
+      <div data-slot="alert" role="alert" tabIndex={-1}>{error}</div>
+      <form data-slot="form" aria-busy={pending} noValidate>
+        <div data-slot="field">
+          <label data-slot="field-label">{labels.email}</label>
+          <input name="email" type="email" autoComplete="email" required />
+          <div data-slot="field-error" />
+        </div>
+        <button type="submit">{labels.submit}</button>
+      </form>
+    </div>
+    <div data-slot="card-footer">
+      <a href={loginHref}>{labels.backToLogin}</a>
+    </div>
+  </div>
+</main>
+```
+
+The `logo` wrapper renders only with `logo`, the `alert` only with `error`, and the `card-footer` only with `loginHref`.
+
+When `sent` is true the form is replaced, inside the same `main` and card:
+
+```tsx
+<div data-slot="card">
+  <div data-slot="card-header">
+    <h1 data-slot="card-title" tabIndex={-1}>{labels.sentTitle}</h1>
+    <div data-slot="card-description">{labels.sentDescription(destination)}</div>
+  </div>
+  <div data-slot="card-panel">
+    <div data-slot="alert" role="alert" tabIndex={-1}>{error}</div>
+    <div>
+      <span>{labels.didNotReceive}</span>
+      <button type="button">{labels.resend}</button>
+    </div>
+  </div>
+  <div data-slot="card-footer">
+    <a href={loginHref}>{labels.backToLogin}</a>
+  </div>
+</div>
+```
+
+The resend row renders only with `onResend`.
+
+## ForgotPassword1
+
+The forgot password page. Renders a `main` landmark that centers its content in the window height, the optional `logo` above a `Card`, and inside it the title (an `h1`), the description, the form message, the e-mail form or the confirmation, and the footer. Mount it on the route and do not wrap it in another `main`. Sending the link, the session and the redirect stay in the app: the block only calls `onSubmit` and `onResend`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: ForgotPasswordValues) => void` | required | Called with `{ email }` after the native constraints pass (`required` and a valid e-mail); never while `pending` and never in the confirmation, where there is no form. Enter in the field sends too, and the return value is ignored. |
+| `sent` | `boolean` | `false` | When true, replaces the form by the confirmation inside the same card; the app decides when it turns true. |
+| `destination` | `string` | - | Names where the link was sent in the confirmation, through `labels.sentDescription(destination)`; without it the text is generic. |
+| `onResend` | `() => void` | - | Called when the resend button of the confirmation is clicked; the button renders only when this is passed. |
+| `resendIn` | `number` | `0` | Sets the seconds left before another resend, counted by the app; above zero it disables the resend button. |
+| `pending` | `boolean` | `false` | When true, disables the submit button and the resend button, shows `labels.submitPending`, sets `aria-busy` on the form and stops `onSubmit` and `onResend`. |
+| `error` | `string` | - | Sets a message for the whole page, shown in an `Alert` with the title `labels.errorTitle`, in the form and in the confirmation; rendered as text, never as HTML. |
+| `fieldErrors` | `{ email?: string }` | - | Sets a message for the e-mail field, shown under it and tied to it with `aria-invalid`. |
+| `loginHref` | `string` | - | Adds the footer link back to sign in, named by `labels.backToLogin`, in the form and in the confirmation; without it the footer is not rendered. |
+| `logo` | `ReactNode` | - | Renders above the card, outside it, centered; nothing renders in its place when missing. |
+| `renderLink` | `(href: string) => ReactElement` | a plain `a` | Renders every link of the page, so the router of the app owns navigation (`(href) => <Link to={href} />`). |
+| `labels` | `Partial<ForgotPasswordLabels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+
+The block takes no other props.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `aria-busy` | `"true"` or `"false"` | Set on the form from `pending` |
+| `aria-invalid` | `"true"` | Set on the e-mail field while it has a message |
+
+## The confirmation
+
+`sent` is the app's state: the block keeps no "sent" state of its own and never reads the e-mail from the form. The app turns `sent` on once its request succeeded, usually from the same place that receives `onSubmit`.
+
+While `sent` is true the form is replaced, inside the same `main` and card, by the title `labels.sentTitle` (an `h1`), the description `labels.sentDescription(destination)`, the resend row and the back to sign in link. `onSubmit` cannot be called from there. `destination` is the only source of the address in the text: the app passes it, and decides whether to reveal it; without it the description reads as a generic sentence. When `sent` goes from false to true, focus moves to the title of the confirmation, which has `tabindex="-1"`; a page that mounts with `sent` already true does not take focus, and the confirmation adds no extra `aria-live` region. If `sent` goes back to false, the form returns.
+
+## Resend
+
+The resend row renders only in the confirmation and only when `onResend` is passed: the text `labels.didNotReceive` and a button. `resendIn` is the app's countdown: while it is above zero the button is disabled and reads `labels.resendIn(seconds)` as plain text outside any `aria-live` region, so a screen reader does not read it every second; at zero, or when `resendIn` is missing, it reads `labels.resend` and calls `onResend()`. The button is also disabled while `pending`, and the callback is guarded in both cases. What a resend does (send another e-mail, restart the countdown) stays in the app, and the block runs no timer.
+
+## Errors and focus
+
+`error` and `fieldErrors` come from the app after it handles the submit or the resend. `error` stays in the `Alert` in both states, so a failed resend can show in the confirmation; `fieldErrors.email` has a field only in the form. When `fieldErrors.email` goes from empty to filled, focus moves to the e-mail field. When `error` goes from empty to filled and no field is invalid, focus moves to the `Alert`. Nothing takes focus on mount, and a field message clears when the user edits its field. Whether the e-mail exists is the app's to reveal: the block only shows the message it receives. The native constraint messages (`required`, a valid e-mail) are the browser's own and have no label.
+
+## Links
+
+The back to sign in link renders only when `loginHref` is passed, through `renderLink(loginHref)`, in the form and in the confirmation. Without `renderLink` it is a plain `a`.
+
+## Labels
+
+Every visible or accessible text the block owns is a key of `ForgotPasswordLabels`, with a pt-BR default. `labels` is partial and merged over the defaults. Of the common auth labels it carries only `email` and `errorTitle`.
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Esqueceu a senha?"` |
+| `description` | `string` | `"Informe seu e-mail e enviaremos um link para redefinir a senha."` |
+| `email` | `string` | `"E-mail"` |
+| `submit` | `string` | `"Enviar link"` |
+| `submitPending` | `string` | `"Enviando…"` |
+| `sentTitle` | `string` | `"Verifique seu e-mail"` |
+| `sentDescription` | `(destination?: string) => string` | `"Enviamos um link para redefinir a senha para ana@acme.com."` for `"ana@acme.com"`, and `"Enviamos um link para redefinir a senha para o seu e-mail."` without a destination |
+| `didNotReceive` | `string` | `"Não recebeu o e-mail?"` |
+| `resend` | `string` | `"Reenviar e-mail"` |
+| `resendIn` | `(seconds: number) => string` | `"Reenviar em 30s"` for 30 |
+| `backToLogin` | `string` | `"Voltar para entrar"` |
+| `errorTitle` | `string` | `"Não foi possível continuar"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ForgotPassword1` | `component` | The page. |
+| `ForgotPasswordProps` | `type` | The props of the page. |
+| `ForgotPasswordValues` | `type` | The values `onSubmit` receives: `{ email: string }`. |
+| `ForgotPasswordLabels` | `type` | The keys of `labels`. |
+| `AuthBaseProps`, `AuthFieldErrors`, `AuthRenderLink` | `type` | The props shared by the auth blocks, the shape of `fieldErrors` and the type of `renderLink`. |
+| `AuthCommonLabels` | `type` | The label keys that the auth blocks share. |
+
+## Accessibility and theme
+
+- The page renders its own `main` landmark and one `h1`, the title of the form or of the confirmation; a consumer that wraps it in another `main` ends up with two.
+- The block never announces the resend countdown, so the app does not need to throttle the ticks of `resendIn` for assistive technology.
+- Pass a `logo` that carries its own text or `aria-label`; the block adds none.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.
