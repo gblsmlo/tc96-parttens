@@ -5,22 +5,12 @@ import { ComposedForgotPassword1 } from './forgot-password-1-layouts.tsx'
 const meta = {
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/ForgotPassword1/Layouts',
+  title: 'Blocks/Auth/ForgotPassword/ForgotPassword1/Layouts',
 } satisfies Meta
 
 export default meta
 
 type Story = StoryObj<typeof meta>
-
-export const Minimal: Story = {
-  render: () => (
-    <ComposedForgotPassword1
-      {...forgotPassword1ControlArgs}
-      loginHref={false}
-      logo={false}
-    />
-  ),
-}
 
 export const WithoutLogo: Story = {
   render: () => (
@@ -33,19 +23,6 @@ export const WithoutLoginLink: Story = {
     <ComposedForgotPassword1
       {...forgotPassword1ControlArgs}
       loginHref={false}
-    />
-  ),
-}
-
-export const SentMinimal: Story = {
-  render: () => (
-    <ComposedForgotPassword1
-      {...forgotPassword1ControlArgs}
-      destination=""
-      loginHref={false}
-      logo={false}
-      resend={false}
-      sent
     />
   ),
 }

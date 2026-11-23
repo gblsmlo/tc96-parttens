@@ -15,7 +15,7 @@ const meta = {
   },
   render: (args) => <ComposedForgotPassword1 {...args} />,
   tags: ['!autodocs'],
-  title: 'Blocks/Auth/ForgotPassword1/Stories',
+  title: 'Blocks/Auth/ForgotPassword/ForgotPassword1/Stories',
 } satisfies Meta<ForgotPassword1Controls>
 
 export default meta

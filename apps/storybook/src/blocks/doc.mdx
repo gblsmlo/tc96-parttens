@@ -109,7 +109,7 @@ export function AppLayout() {
 
 ### Auth
 
-Seven pages of the sign in flow, in `Blocks/Auth`, installed under `auth/`. Each one is a whole page: it renders the `main`, centers the card in the window and puts your `logo` above the card, so you only mount it on the route and never wrap it in another `main`.
+Nine pages of the sign in flow, in `Blocks/Auth`, installed under `auth/`. Each one is a whole page: it renders the `main` and centers the card in the window (the numbered `-1` pages also put your `logo` above it), so you only mount it on the route and never wrap it in another `main`.
 
 | Block | Install | What it is |
 | --- | --- | --- |
@@ -117,18 +117,20 @@ Seven pages of the sign in flow, in `Blocks/Auth`, installed under `auth/`. Each
 | **[Login2](?path=/docs/blocks-auth-login-login2-api-reference--api-reference)** | `npx @tc96/parttens add login-2` | the minimal sign in: e-mail, password with a show and hide toggle and the submit button, with no "remember me", links, providers or logo |
 | **[Otp1](?path=/docs/blocks-auth-otp1-api-reference--api-reference)** | `npx @tc96/parttens add otp-1` | one input per digit and a Verificar button that is the only way to send the code, with an optional resend whose countdown is yours |
 | **[Signup1](?path=/docs/blocks-auth-register-register1-api-reference--api-reference)** | `npx @tc96/parttens add signup-1` | name, e-mail, new password with live feedback and a confirmation, optional providers, and a terms notice that is only links |
+| **[Signup2](?path=/docs/blocks-auth-register-register2-api-reference--api-reference)** | `npx @tc96/parttens add signup-2` | the minimal sign up: name, e-mail, new password with live feedback and a confirmation, and the submit button, with no providers, terms notice, links or logo |
 | **[ResetPassword1](?path=/docs/blocks-auth-resetpassword-resetpassword1-api-reference--api-reference)** | `npx @tc96/parttens add reset-password-1` | new password with live feedback and a confirmation, and the way back to sign in; the reset token stays in your app |
 | **[ResetPassword2](?path=/docs/blocks-auth-resetpassword-resetpassword2-api-reference--api-reference)** | `npx @tc96/parttens add reset-password-2` | `ResetPassword1` with a validity timer you control: the time left above the form, and an expired state with a request for a new link |
-| **[ForgotPassword1](?path=/docs/blocks-auth-forgotpassword1-api-reference--api-reference)** | `npx @tc96/parttens add forgot-password-1` | an e-mail field that asks for the reset link, and a confirmation that replaces the form when you pass `sent`, with a resend and the way back to sign in |
+| **[ForgotPassword1](?path=/docs/blocks-auth-forgotpassword-forgotpassword1-api-reference--api-reference)** | `npx @tc96/parttens add forgot-password-1` | an e-mail field that asks for the reset link, and a confirmation that replaces the form when you pass `sent`, with a resend and the way back to sign in |
+| **[ForgotPassword2](?path=/docs/blocks-auth-forgotpassword-forgotpassword2-api-reference--api-reference)** | `npx @tc96/parttens add forgot-password-2` | the minimal forgot password: the e-mail field and a confirmation that replaces the form when you pass `sent`, with no resend, link back or logo |
 
-All seven share one contract:
+All nine share one contract:
 
 - **Controlled:** you pass `pending`, `error` and `fieldErrors`, and the block keeps only interaction state (password visibility, the typed password for the feedback). It never fetches, keeps a session, reads a cookie or imports an auth provider.
 - **`onSubmit(values)`:** it runs only after the native constraints pass and never while `pending`; the values are typed per block (`{ email, password, remember }`, `{ email, password }`, `{ code }`, `{ password }`...). The password confirmation is checked by the block and never sent.
-- **Links:** every link renders through `renderLink(href)` and only when you pass its `href` (`loginHref`, `signupHref`, `forgotPasswordHref`, `termsHref`...); without `renderLink` it is a plain `a`.
+- **Links:** every link renders through `renderLink(href)` and only when you pass its `href` (`loginHref`, `signupHref`, `forgotPasswordHref`, `termsHref`...); without `renderLink` it is a plain `a`. `Login2`, `Signup2` and `ForgotPassword2` have no links, so they take no `renderLink`, `logo` or `href`.
 - **Texts:** every text the block owns is in `labels`, with pt-BR defaults.
 - **Timers are yours:** the resend countdown (`resendIn`) and the link validity (`expiresIn`, `requestNewLinkIn`) are numbers you count down and pass in; no block runs a timer, and a visible countdown is never read by a screen reader every second.
-- **State you decide:** `ForgotPassword1` shows its confirmation only when you pass `sent`, and `ResetPassword2` its expired state only when `expiresIn` reaches zero; focus moves to the new title on that change, never on mount.
+- **State you decide:** `ForgotPassword1` and `ForgotPassword2` show its confirmation only when you pass `sent`, and `ResetPassword2` its expired state only when `expiresIn` reaches zero; focus moves to the new title on that change, never on mount.
 
 ### AI & Agents / Flow
 
