@@ -36,6 +36,7 @@ Agentes que escrevem código não rodam `tsc`, `vitest`, Storybook nem `bun test
 | 4 · signup-1 | Sonnet 5.5 | os mesmos, `design.md` §4.3, §4.1; `requirements.md` US-4, US-9 | `signup-1` com stories, registro e baseline |
 | 5 · reset-password-1 | Sonnet 5.5 | os mesmos, `design.md` §4.5; `requirements.md` US-5, US-9 | `reset-password-1` com stories, registro e baseline |
 | 6 · forgot-password-1 | Sonnet 5.5 | os mesmos, `design.md` §4.4; `requirements.md` US-5 | `forgot-password-1` com a confirmação `sent`, stories, registro e baseline |
+| 8 · reset-password-2 | Sonnet 5.5 | os mesmos, `design.md` §4.5.1; `requirements.md` US-12 | `reset-password-2` com o tempo de validade do consumidor, stories, registro e baseline |
 | 7 · Polish | Sonnet 5.5 | `packages/blocks/AGENTS.md`, `design.md` §9 a §11 | AGENTS do grupo, páginas `Doc`, catálogo, README, gate |
 
 ---
@@ -255,6 +256,25 @@ Documentação do grupo, catálogo e gate. Nada aqui muda comportamento de bloco
 
 ---
 
+### Fase 8 · Bloco `reset-password-2`
+
+Pedido do dono em 2026-11-22, depois das fases de bloco: uma versão do `reset-password-n` com um tempo de validade para a solicitação de redefinição de senha; o tempo passa por props e o consumidor decide. A forma concreta (`expiresIn`, `requestNewLinkIn`, `onRequestNewLink`, estado expirado, anúncio de um minuto) é proposta em `design.md` §4.5.1. O formulário é copiado de `reset-password-1`, não importado. A pasta tocada é só `packages/blocks/src/application/auth/reset-password-2/`.
+
+- [x] T37 [AC-12.1, AC-12.2, AC-12.3, AC-12.4, AC-12.5, AC-12.6, AC-12.7, AC-12.8, AC-12.9, AC-5.3, AC-8.1, AC-8.2] Montar `reset-password-2`: `expiresIn` e `requestNewLinkIn` do consumidor (sem timer no block), contagem em `m:ss` por `formatCountdown` (função pura com `bun test` ao lado), estado expirado no mesmo Card com foco no título, botão de novo link só com `onRequestNewLink`, anúncio educado único com um minuto ou menos, e o restante idêntico a `reset-password-1` — `packages/blocks/src/application/auth/reset-password-2/`
+  - Depende de: T29
+  - Pronto quando: `format-countdown.test.ts` passa; os plays provam a contagem formatada (581 vira `9:41`), o comportamento de `reset-password-1` sem `expiresIn`, o estado expirado no lugar do formulário com foco no título e sem `onSubmit`, o botão de novo link (chama, desabilitado com contagem, oculto sem `onRequestNewLink`, desabilitado com `pending`), a story com estado que desce a contagem até zero, o link de volta nos dois estados e um só `main`. Quem roda: sessão principal, `bun test packages/blocks/src/application/auth/reset-password-2`, `bun run typecheck && bun run storybook:typecheck && bunx biome check packages/blocks/src/application/auth/reset-password-2 apps/storybook/src/blocks/application/auth` exit 0. CI, `bunx vitest run --project=storybook --project=storybook-dark --maxWorkers=2 src/blocks/application/auth/reset-password-2`.
+  - Feito neste PR (fase 8, `feat/auth-reset-password-2`).
+- [x] T38 [AC-8.1, AC-8.2] Escrever as stories `Blocks/Application/Auth/ResetPassword2` com a página `Doc` (a contagem é do consumidor, com um uso de `setInterval` no lado do consumidor) e um `play` por garantia — `apps/storybook/src/blocks/application/auth/reset-password-2.stories.tsx`
+  - Depende de: T37
+  - Pronto quando: cada garantia de T37 tem um `play`, com axe sem violação. Quem roda: sessão principal, `bunx biome check apps/storybook/src/blocks/application/auth`; CI, plays e axe do grupo.
+  - Feito neste PR (fase 8, `feat/auth-reset-password-2`).
+- [x] T39 [AC-1.3, AC-8.3] Registrar `reset-password-2` no registry e no baseline: entrada em `blockNames` e `blockSources`, caso em `manifest.test.ts` e `block:reset-password-2` em `docs/architecture/public-api-exports.json` — `packages/registry/src/manifest.ts`, `packages/registry/src/manifest.test.ts`, `docs/architecture/public-api-exports.json`
+  - Depende de: T37
+  - Pronto quando: o item leva só arquivos de `application/auth` e `helpers`, não leva a pasta de `reset-password-1` nem arquivos `.test`. Quem roda: sessão principal, `bun test --isolate packages/registry/src` exit 0; `bun scripts/verify-public-api.ts --record` e `bun run verify:public-api` exit 0.
+  - Feito neste PR (fase 8, `feat/auth-reset-password-2`): `manifest.ts` e `manifest.test.ts`; o baseline `block:reset-password-2` é gravado pela sessão principal na revisão (`bun scripts/verify-public-api.ts --record`).
+
+---
+
 ### Ordem
 
 - Ordem de entrega decidida pelo dono em 2026-11-22 (proposta mantida): `login-1` (fase 2), `otp-1` (fase 3), `signup-1` (fase 4), `reset-password-1` (fase 5), `forgot-password-1` (fase 6). Está em `requirements.md` §4 e §5.
@@ -272,7 +292,7 @@ Regra de leitura: confirmação de senha, retorno sobre a senha e mostrar/oculta
 | --- | --- |
 | AC-1.1 | T22, T35 |
 | AC-1.2 | T22, T35 |
-| AC-1.3 | T22, T25, T28, T30, T32 |
+| AC-1.3 | T22, T25, T28, T30, T32, T39 |
 | AC-1.4 | T35 |
 | AC-2.1 | T20 |
 | AC-2.2 | T20, T31 |
@@ -290,7 +310,7 @@ Regra de leitura: confirmação de senha, retorno sobre a senha e mostrar/oculta
 | AC-4.5 | T26 |
 | AC-5.1 | T31 |
 | AC-5.2 | T29 |
-| AC-5.3 | T29 |
+| AC-5.3 | T29, T37 |
 | AC-5.4 | T31 |
 | AC-5.5 | T31 |
 | AC-5.6 | T31 |
@@ -307,9 +327,9 @@ Regra de leitura: confirmação de senha, retorno sobre a senha e mostrar/oculta
 | AC-7.5 | T21, T35 |
 | AC-7.6 | T21, T27, T29 |
 | AC-7.7 | T27, T29 |
-| AC-8.1 | T20, T23, T26, T29, T31, T34 |
-| AC-8.2 | T20, T21, T23, T24, T27, T29, T31 |
-| AC-8.3 | T22, T25, T28, T30, T32 |
+| AC-8.1 | T20, T23, T26, T29, T31, T34, T37, T38 |
+| AC-8.2 | T20, T21, T23, T24, T27, T29, T31, T37, T38 |
+| AC-8.3 | T22, T25, T28, T30, T32, T39 |
 | AC-9.1 | T21, T27, T29 |
 | AC-9.2 | T27, T29 |
 | AC-9.3 | T27, T29 |
@@ -323,6 +343,15 @@ Regra de leitura: confirmação de senha, retorno sobre a senha e mostrar/oculta
 | AC-11.2 | T16 |
 | AC-11.3 | T16, T21 |
 | AC-11.4 | T16 |
+| AC-12.1 | T37 |
+| AC-12.2 | T37 |
+| AC-12.3 | T37 |
+| AC-12.4 | T37 |
+| AC-12.5 | T37 |
+| AC-12.6 | T37 |
+| AC-12.7 | T37 |
+| AC-12.8 | T37 |
+| AC-12.9 | T37 |
 
 | Capacidade | Tarefas |
 | --- | --- |
@@ -332,7 +361,8 @@ Regra de leitura: confirmação de senha, retorno sobre a senha e mostrar/oculta
 | CAP-4 `reset-password-1` | T18, T29, T30 |
 | CAP-5 `otp-1` | T23, T24, T25 |
 | CAP-6 contrato comum | T12, T13, T14, T16, T17, T19 |
-| CAP-7 instalação, docs e registro | T22, T25, T28, T30, T32, T33, T34, T35 |
+| CAP-7 instalação, docs e registro | T22, T25, T28, T30, T32, T33, T34, T35, T39 |
+| CAP-8 `reset-password-2` | T37, T38, T39 |
 
 ### Fora deste plano
 
@@ -359,3 +389,5 @@ Cada sessão acrescenta aqui a data, a tarefa e cada desvio do plano, com o luga
 - 2026-11-22 · fase 3 (T23 a T25, `otp-1`) feita neste PR na branch `feat/auth-otp-1`, empilhada sobre `feat/auth-login-1`: `Otp1` com `labels.ts` e `types.ts` próprios, o `OTPField` sem `autoSubmit` e sem valor guardado no block, o botão "Verificar" como único caminho até `onSubmit` (a guarda `code.length < length` vem além da restrição nativa), o reenvio no rodapé do Card só com `onResend`, desabilitado com `resendIn` maior que zero e enquanto `pending`, stories `Blocks/Application/Auth/Otp1` com um `play` por garantia e o item `otp-1` no registry. Escolhas e desvios: (1) o `OTPField` do Base UI nomeia o primeiro dígito pelo `FieldLabel` e ignora `aria-label` nele; para o primeiro dígito também ter `digit(1, total)`, o block aponta o `aria-labelledby` dele para um `span hidden` com esse texto, e o `FieldLabel` nomeia o grupo; (2) o foco em `fieldErrors.code` usa o `useFocusFirstInvalid` sem mudança: o input de validação do `OTPField` leva o `name` do `Field` (`type="text"`, não é pulado) e focá-lo repassa o foco ao primeiro dígito; (3) sem link de volta, porque o design não define `loginHref` para o `otp-1`; (4) `pending` desabilita o reenvio além do envio (`onResend` não roda com `pending`, como no `forgot-password-1`). (5) código vazio ou incompleto: opção A, sem `validate` nem rótulo `codeIncomplete`. As restrições nativas do input de validação do `OTPField` (`required` e o `pattern` de `length` dígitos) barram o envio, o `Form` foca o primeiro dígito e o `FieldError` mostra a mensagem do navegador; um `validate` do `Field` não roda enquanto uma restrição nativa falha, e o Base UI marca `aria-invalid` nos dígitos só por `errors` do `Form` ou `invalid` do `Field`, não pela validade nativa. O `play` `IncompleteCodeDoesNotSubmit` afirma o foco no primeiro dígito, o `FieldError` visível e não vazio e `onSubmit` e `onComplete` sem chamada, sem `aria-invalid` nos dígitos. Marcar os dígitos nesses casos exigiria que o dono aceitasse tirar as restrições nativas do `OtpField` (ligado à decisão pendente sobre as mensagens nativas, também do `login-1`); detalhe em `design.md` §4.6. O baseline `block:otp-1` não foi gravado pelo implementador (fica com a sessão principal).
 - 2026-11-22 · fase 4 (T26 a T28, `signup-1`) feita neste PR na branch `feat/auth-signup-1`, empilhada sobre `feat/auth-otp-1`: `Signup1` com `labels.ts` e `types.ts` próprios, nome, e-mail, senha com mostrar/ocultar e o retorno sobre a senha (`AuthPasswordFeedback`), confirmação com o próprio botão, aviso de termos e privacidade só com links, link de entrar só com `loginHref`, stories `Blocks/Application/Auth/Signup1` com um `play` por garantia e o item `signup-1` no registry. Escolhas e desvios: (1) a conferência usa só o `Form`: `onFormSubmit` compara `password` e `confirmPassword`, em divergência guarda `mismatch` no estado e não chama `onSubmit`, e o `useMemo` dos `errors` junta `{ confirmPassword: labels.passwordMismatch }`; lido no código do Base UI, o `Form` refocaliza o primeiro campo inválido quando seus `errors` mudam depois de um envio válido (`submittedRef`), então o foco na confirmação não é manual; `onValueChange` de senha e confirmação limpa `mismatch`; (2) o aviso com só `privacyHref` usa `termsLead` ("... com os") antes de "Política de Privacidade", que em pt-BR pede o artigo "a": o consumidor ajusta `labels.termsLead` nesse caso; (3) o play de senha curta foi removido: o Chromium não aplica `minLength`/`tooShort` a valores gravados por script nos testes (o `userEvent` do Testing Library grava assim), então a restrição `minlength` é afirmada no `Default`; (4) no play de restrições nativas, o `FieldError` visível afirma-se só no primeiro campo inválido (nome, `Input` simples), com o mesmo mecanismo que o play do `otp-1` prova; `aria-invalid` só nos `Input` simples, como no `login-1`. O baseline `block:signup-1` não foi gravado pelo implementador (fica com a sessão principal).
 - 2026-11-22 · fase 5 (T29 e T30, `reset-password-1`) feita neste PR na branch `feat/auth-reset-password-1`, empilhada sobre `feat/auth-signup-1`: `ResetPassword1` com `labels.ts` e `types.ts` próprios, senha nova (`labels.newPassword`) com mostrar/ocultar e o retorno sobre a senha, confirmação com o próprio botão e a conferência copiada do `signup-1` (`mismatch` junto aos `errors` do `Form`, limpo ao editar qualquer um dos campos), `onSubmit({ password })`, link de volta só com `loginHref` como todo o rodapé do Card, stories `Blocks/Application/Auth/ResetPassword1` com um `play` por garantia (incluindo que não há campo nem valor de token) e o item `reset-password-1` no registry. Escolhas e desvios: (1) o token de redefinição não existe no block: sem prop, sem campo, sem valor; o link expirado volta pelo `error`; (2) `ResetPasswordLabels` leva só `errorTitle`, `showPassword` e `hidePassword` dos rótulos comuns, como no design; (3) o play de restrições nativas afirma só o foco e a ausência de `onSubmit` (não `aria-invalid` nem `FieldError` nos campos de senha, onde o registro do `signup-1` já limita essas asserções); (4) sem play de senha curta, pelo mesmo motivo do `signup-1`: afirma-se o atributo `minlength` (`Default` e `PasswordRules`). O baseline `block:reset-password-1` não foi gravado pelo implementador (fica com a sessão principal).
+
+- 2026-11-22 · fase 8 (T37 a T39, `reset-password-2`) feita neste PR na branch `feat/auth-reset-password-2`, empilhada sobre `feat/auth-reset-password-1`, por pedido do dono em 2026-11-22 ("criar uma versão do reset-password-n que tenha um tempo de validade para uma nova solicitação de redefinição de senha; passe o tempo por props, o consumidor decide"). Decidido pelo dono: variação numerada `reset-password-2`, tempo por props, tempo do consumidor. Proposto pelo implementador e gravado em `requirements.md` (US-12, CAP-8) e `design.md` §4.5.1 como `(proposed)`: `expiresIn` em segundos acima do formulário em `m:ss` (`formatCountdown`, função pura com `bun test`), estado expirado no mesmo Card com foco no título quando `expiresIn` chega a zero (não na montagem), botão de novo link só com `onRequestNewLink`, `requestNewLinkIn` com o botão desabilitado e a contagem em texto, e o anúncio educado único de "menos de um minuto" (região `sr-only` derivada da prop, sem estado nem efeito; a contagem visível nunca fica em `aria-live`). O formulário é copiado de `reset-password-1`, não importado. O baseline `block:reset-password-2` não foi gravado pelo implementador (fica com a sessão principal).
