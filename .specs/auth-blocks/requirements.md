@@ -89,6 +89,10 @@ O block renderiza a página inteira: `main`, centralização vertical na janela 
 - `renderAnchor` vira um item próprio de `ui` (`origin: "own"`), listado em `packages/ui/ui.manifest.json`; o arquivo `packages/ui/src/render-anchor.tsx` e o export `renderAnchor` são o nome proposto (proposed).
 - `application/shell/shared/render-link.tsx` e `ai-agents/flow/shared/render-link.tsx` passam a usar esse item. Os tipos `ShellRenderLink` e `FlowRenderLink` podem ficar como aliases de grupo (proposed).
 
+### Variação pedida depois
+
+- `reset-password-2`: pedido do dono em 2026-11-22, uma versão do `reset-password-n` com um tempo de validade para a solicitação de redefinição de senha; o tempo vem por props e o consumidor decide (decidido). A forma concreta (`expiresIn`, `requestNewLinkIn`, `onRequestNewLink`, o estado expirado) é proposta (proposed), em [`design.md`](design.md) §4.5.1.
+
 ### Candidatos fora desta entrega
 
 - `login-2` e as demais `-2`: página dividida, com um painel de marca ou mídia ao lado do formulário. Ficam fora da primeira entrega (proposta mantida pelo dono em 2026-11-22).
@@ -122,6 +126,7 @@ O block renderiza a página inteira: `main`, centralização vertical na janela 
 | CAP-5 | `otp-1`: informar o código de verificação, com botão "Verificar", reenvio e contagem regressiva controlada pelo consumidor | média (proposed) |
 | CAP-6 | Contrato comum do grupo: controlado, `labels` em pt-BR, `renderLink` com `renderAnchor` de `ui`, `pending`, `error`, `fieldErrors`, provedores opcionais, `logo` opcional, moldura da página (`main`, centralização, `logo` acima do Card) | alta (proposed) |
 | CAP-7 | Instalação e documentação: item no registry, stories com testes, uma página `Doc` por block | alta (proposed) |
+| CAP-8 | `reset-password-2`: variação de `reset-password-1` com um tempo de validade da solicitação de redefinição, passado por props e decidido pelo consumidor; estado expirado com pedido de um novo link e contagem do novo pedido, também do consumidor | média (proposed) |
 
 A ordem de entrega dos blocks é `login-1`, `otp-1`, `signup-1`, `reset-password-1`, `forgot-password-1` (proposta mantida pelo dono em 2026-11-22). As prioridades da tabela são derivadas: CAP-6 e CAP-1 destravam os demais.
 
@@ -239,6 +244,20 @@ Como consumidor, quero que o block desenhe a página inteira para só montá-lo 
 - **AC-11.3** O `logo`, quando o consumidor o passa, renderiza acima do Card, fora dele.
 - **AC-11.4** O consumidor só monta o block na rota e não precisa de layout próprio para a página; ele não envolve o block em outro `main` (proposed).
 
+### US-12. Dar um tempo de validade ao link de redefinição (CAP-8)
+
+Como consumidor, quero que a página de redefinição mostre o tempo que falta para o link expirar, com o tempo vindo por props, para eu decidir a contagem e o que acontece ao expirar. (Pedido do dono em 2026-11-22: uma versão do `reset-password-n` com um tempo de validade para a solicitação de redefinição; o tempo passa por props e o consumidor decide.)
+
+- **AC-12.1** `reset-password-2` recebe o tempo de validade por props e o block não roda timer: o consumidor decrementa o valor e passa o novo a cada tick (decidido pelo dono; o nome `expiresIn` e a unidade em segundos são propostos).
+- **AC-12.2** Com `expiresIn` maior que zero, o block mostra o tempo que falta acima do formulário, em `m:ss` (581 segundos aparecem como `9:41`), como texto simples fora de qualquer região `aria-live` (proposed).
+- **AC-12.3** Sem `expiresIn`, `reset-password-2` se comporta exatamente como `reset-password-1`: `onSubmit({ password })`, sem token, com confirmação, retorno sobre a senha e mostrar/ocultar (proposed).
+- **AC-12.4** Com `expiresIn` igual a zero ou menor, o formulário é substituído, no mesmo Card, por um estado expirado com título, descrição e o link de volta ao login; `onSubmit` não pode ser chamado (proposed).
+- **AC-12.5** Quando `expiresIn` passa a zero, o foco vai ao título do estado expirado (proposed).
+- **AC-12.6** No estado expirado, o botão de pedir um novo link só renderiza com `onRequestNewLink` e o chama; `pending` o desabilita e bloqueia o callback (proposed).
+- **AC-12.7** Com `requestNewLinkIn` maior que zero, o botão fica desabilitado e mostra o tempo em `m:ss`, como texto simples fora de `aria-live`; com zero ou ausente, fica habilitado. A contagem é do consumidor (proposed).
+- **AC-12.8** A contagem visível não é anunciada a cada segundo; o único anúncio é um aviso educado, dado uma só vez, quando falta um minuto ou menos (proposed; a alternativa é não anunciar nada).
+- **AC-12.9** O link de volta ao login aparece nos dois estados, só com `loginHref`, por `renderLink` (proposed).
+
 ## 7. Rastreabilidade
 
 ### História para capacidade e critério
@@ -256,6 +275,7 @@ Como consumidor, quero que o block desenhe a página inteira para só montá-lo 
 | US-9 | CAP-1, CAP-2, CAP-4 | AC-9.1 a AC-9.6 |
 | US-10 | CAP-1 | AC-10.1 a AC-10.3 |
 | US-11 | CAP-6 | AC-11.1 a AC-11.4 |
+| US-12 | CAP-8 | AC-12.1 a AC-12.9 |
 
 ### Capacidade para história
 
@@ -268,6 +288,7 @@ Como consumidor, quero que o block desenhe a página inteira para só montá-lo 
 | CAP-5 | US-1, US-2, US-6 |
 | CAP-6 | US-2, US-3, US-7, US-11 |
 | CAP-7 | US-1, US-8 |
+| CAP-8 | US-1, US-2, US-8, US-9, US-12 |
 
 ### Objetivo para história
 
