@@ -1495,6 +1495,18 @@
     "SignupProps",
     "SignupValues"
   ],
+  "block:reset-password-1": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthNewPasswordLabels",
+    "AuthPasswordSuggestion",
+    "AuthRenderLink",
+    "ResetPassword1",
+    "ResetPasswordLabels",
+    "ResetPasswordProps",
+    "ResetPasswordValues"
+  ],
   "block:workflow-editor": [
     "AssistantMessage",
     "AssistantSuggestion",
