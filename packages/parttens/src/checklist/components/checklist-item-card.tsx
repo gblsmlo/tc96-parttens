@@ -9,7 +9,7 @@ import {
   CHECKLIST_TITLE_SIZE,
   CHECKLIST_TITLE_TEXT_CLASSNAME,
   type ChecklistDensity,
-  type ChecklistVariant,
+  type ChecklistFrame,
   checklistRowVariants,
 } from '../lib/variants'
 import type { ChecklistItem, ChecklistProps } from '../types/index'
@@ -25,7 +25,7 @@ export function ChecklistItemCard({
   checkbox: ReactNode
   density: ChecklistDensity
   title: ReactNode
-  variant: ChecklistVariant
+  variant: ChecklistFrame
 }>): ReactElement {
   return (
     <div

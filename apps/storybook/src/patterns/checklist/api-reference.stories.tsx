@@ -21,7 +21,6 @@ const meta = {
     onItemMove: ignore,
     onItemRename: ignore,
     onNewItemTitleChange: ignore,
-    progress: true,
     title: 'title',
   },
   component: Checklist,
@@ -36,9 +35,9 @@ type Story = StoryObj<typeof meta>
 
 const anatomySlots = [
   'checklist',
-  'progress',
   'checklist-header',
-  'progress-track',
+  'checklist-count',
+  'checklist-count-ring',
   'card',
   'checklist-items',
   'checklist-item',

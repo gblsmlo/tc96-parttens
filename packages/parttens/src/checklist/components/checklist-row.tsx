@@ -15,7 +15,7 @@ import {
 import {
   CHECKLIST_DELETE_BUTTON_CLASSNAME,
   type ChecklistDensity,
-  type ChecklistVariant,
+  type ChecklistFrame,
   checklistCheckboxVariants,
   checklistDragHandleVariants,
   checklistItemVariants,
@@ -43,7 +43,7 @@ export function ChecklistRow({
 }: Readonly<{
   authorOptions: readonly PersonPropertyOption[]
   density: ChecklistDensity
-  variant: ChecklistVariant
+  variant: ChecklistFrame
   item: ChecklistItem
   itemCount: number
   itemIndex: number
@@ -103,7 +103,7 @@ export function ChecklistRow({
       data-slot="checklist-item"
       ref={ref}
     >
-      {variant === 'card' ? dragHandle : null}
+      {dragHandle}
       <ChecklistItemCard
         action={
           <>
@@ -121,7 +121,6 @@ export function ChecklistRow({
                 onDelete={onDelete}
               />
             ) : null}
-            {variant === 'plain' ? dragHandle : null}
           </>
         }
         checkbox={

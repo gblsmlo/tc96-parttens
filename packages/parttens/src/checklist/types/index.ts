@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import type { PersonPropertyOption } from '../../properties/display/person/person-property'
+import type { RecordGroupFilterProps } from '../../records/group/core'
 import type { ChecklistDensity, ChecklistVariant } from '../lib/variants'
 
 export type { ChecklistDensity, ChecklistVariant } from '../lib/variants'
@@ -14,11 +15,14 @@ export interface ChecklistItem {
 
 export interface ChecklistProps
   extends Omit<ComponentPropsWithoutRef<'section'>, 'title'> {
+  actions?: ReactNode
+  addLabel?: string
   ariaLabel: string
   authorOptions?: readonly PersonPropertyOption[]
   creating?: boolean
   density?: ChecklistDensity
   feedback?: ReactNode
+  filter?: RecordGroupFilterProps
   items: readonly ChecklistItem[]
   locale?: string
   newItemTitle: string
@@ -31,7 +35,6 @@ export interface ChecklistProps
   onItemMove: (id: string, targetIndex: number) => void
   onItemRename: (id: string, title: string) => void
   onNewItemTitleChange: (title: string) => void
-  progress?: boolean
   readOnly?: boolean
   title?: ReactNode
   timeZone?: string

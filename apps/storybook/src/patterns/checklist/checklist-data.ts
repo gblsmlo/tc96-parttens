@@ -77,3 +77,42 @@ export const dealTasks = (): ChecklistItem[] => [
     title: '@Deal test Testes, para a uma task',
   },
 ]
+
+export const subtaskItems: ChecklistItem[] = [
+  {
+    authorId: 'gabriel',
+    completed: true,
+    id: 'fields',
+    title: 'Mapear os campos do formulário de cadastro',
+  },
+  {
+    authorId: 'ana',
+    completed: true,
+    id: 'endpoint',
+    title: 'Criar o endpoint de validação',
+  },
+  {
+    authorId: 'gabriel',
+    completed: false,
+    id: 'masks',
+    title: 'Aplicar máscara de CPF e telefone',
+  },
+  {
+    authorId: null,
+    completed: false,
+    id: 'errors',
+    title: 'Exibir os erros dentro de cada campo',
+  },
+  {
+    authorId: 'ana',
+    completed: false,
+    id: 'tests',
+    title: 'Cobrir o fluxo com testes de interface',
+  },
+  {
+    authorId: null,
+    completed: false,
+    id: 'docs',
+    title: 'Atualizar a documentação do componente',
+  },
+]

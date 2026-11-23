@@ -1,24 +1,25 @@
 'use client'
 
-import { DragDropProvider } from '@dnd-kit/react'
 import { cn } from '@tc96/utils'
-import type { ReactElement } from 'react'
-import { ChecklistDraftRow } from '../../components/checklist-draft-row'
+import { type ReactElement, useEffect, useRef, useState } from 'react'
+import { ChecklistBody } from '../../components/checklist-body'
+import { ChecklistGroup } from '../../components/checklist-group'
 import { ChecklistHeader } from '../../components/checklist-header'
-import { ChecklistList } from '../../components/checklist-list'
-import { ChecklistReadOnlyRow } from '../../components/checklist-read-only-row'
-import { ChecklistRow } from '../../components/checklist-row'
-import { handleDragEnd } from '../../lib/sortable'
+import { ChecklistTrigger } from '../../components/checklist-trigger'
+import { checklistFilterNarrows } from '../../lib/filter'
 import { checklistVariants } from '../../lib/variants'
 import type { ChecklistProps } from '../../types/index'
 
 export function Checklist({
+  actions,
+  addLabel = 'Adicionar etapas',
   ariaLabel,
   authorOptions = [],
   className,
   creating = false,
   density = 'md',
   feedback,
+  filter,
   items,
   locale = 'en-US',
   newItemTitle,
@@ -31,18 +32,77 @@ export function Checklist({
   onItemMove,
   onItemRename,
   onNewItemTitleChange,
-  progress = false,
   readOnly = false,
   title,
   timeZone = 'UTC',
   variant = 'card',
   ...props
 }: Readonly<ChecklistProps>): ReactElement {
-  const completed = items.filter((item) => item.completed).length
+  const [composing, setComposing] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const restoreTriggerFocus = useRef(false)
+
+  useEffect(() => {
+    if (!composing && restoreTriggerFocus.current) {
+      restoreTriggerFocus.current = false
+      triggerRef.current?.focus()
+    }
+  }, [composing])
+
+  if (composing && items.length > 0) setComposing(false)
+
+  const body = {
+    authorOptions,
+    creating,
+    density,
+    items,
+    locale,
+    newItemTitle,
+    onCreate,
+    onItemAuthorChange,
+    onItemClick,
+    onItemCompletionChange,
+    onItemDelete,
+    onItemDueDateChange,
+    onItemMove,
+    onItemRename,
+    onNewItemTitleChange,
+    readOnly,
+    timeZone,
+  }
+
+  if (variant === 'card' || variant === 'plain') {
+    return (
+      <section
+        aria-label={ariaLabel}
+        className={cn(checklistVariants({ variant }), className)}
+        data-density={density}
+        data-readonly={readOnly || undefined}
+        data-slot="checklist"
+        data-variant={variant}
+        {...props}
+      >
+        <ChecklistHeader
+          completed={items.filter((item) => item.completed).length}
+          title={title}
+          total={items.length}
+        />
+
+        <ChecklistBody {...body} frame={variant} />
+
+        {feedback}
+      </section>
+    )
+  }
+
+  const grouped =
+    variant === 'complete' ||
+    items.length > 0 ||
+    composing ||
+    checklistFilterNarrows(filter)
 
   return (
-    <section
-      aria-label={ariaLabel}
+    <div
       className={cn(checklistVariants({ variant }), className)}
       data-density={density}
       data-readonly={readOnly || undefined}
@@ -50,71 +110,34 @@ export function Checklist({
       data-variant={variant}
       {...props}
     >
-      <ChecklistHeader
-        completed={completed}
-        progress={progress}
-        title={title}
-        total={items.length}
-      />
-
-      {readOnly ? (
-        <ChecklistList variant={variant}>
-          {items.map((item) => (
-            <ChecklistReadOnlyRow
-              density={density}
-              variant={variant}
-              item={item}
-              key={item.id}
-              authorOptions={authorOptions}
-              locale={locale}
-              onItemClick={onItemClick}
-              timeZone={timeZone}
-            />
-          ))}
-        </ChecklistList>
+      {grouped ? (
+        <ChecklistGroup
+          {...body}
+          actions={actions}
+          addLabel={addLabel}
+          autoFocusDraft={composing}
+          filter={filter}
+          onDraftEscape={
+            composing
+              ? () => {
+                  restoreTriggerFocus.current = true
+                  setComposing(false)
+                }
+              : undefined
+          }
+          onDraftLeave={composing ? () => setComposing(false) : undefined}
+          title={title ?? ariaLabel}
+        />
       ) : (
-        <DragDropProvider
-          onDragEnd={(event) => handleDragEnd(event, items, onItemMove)}
-        >
-          <ChecklistList variant={variant}>
-            {items.map((item, index) => (
-              <ChecklistRow
-                density={density}
-                variant={variant}
-                item={item}
-                itemCount={items.length}
-                itemIndex={index}
-                key={item.id}
-                authorOptions={authorOptions}
-                locale={locale}
-                onItemClick={onItemClick}
-                onItemAuthorChange={onItemAuthorChange}
-                onCompletionChange={(completed) =>
-                  onItemCompletionChange(item.id, completed)
-                }
-                onDelete={
-                  onItemDelete ? () => onItemDelete(item.id) : undefined
-                }
-                onItemDueDateChange={onItemDueDateChange}
-                onMove={(targetIndex) => onItemMove(item.id, targetIndex)}
-                onRename={(title) => onItemRename(item.id, title)}
-                timeZone={timeZone}
-              />
-            ))}
-            <ChecklistDraftRow
-              callToAction={items.length === 0}
-              creating={creating}
-              density={density}
-              variant={variant}
-              onCreate={onCreate}
-              onTitleChange={onNewItemTitleChange}
-              title={newItemTitle}
-            />
-          </ChecklistList>
-        </DragDropProvider>
+        <ChecklistTrigger
+          addLabel={addLabel}
+          disabled={readOnly}
+          onClick={() => setComposing(true)}
+          triggerRef={triggerRef}
+        />
       )}
 
       {feedback}
-    </section>
+    </div>
   )
 }

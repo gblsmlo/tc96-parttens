@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A list of steps the user checks off, renames, reorders, deletes and adds to: the tasks of a deal, the steps of an onboarding, the to-dos of a case. Reach for it when the items belong to a record and the user works through them in place; the consumer keeps the items and decides what each change does.
 
-The other pages of `Patterns/Checklist`: [Playground](?path=/story/patterns-checklist-playground--playground) to try the title, the density, the variant, the metadata and the optional parts, [Stories](?path=/story/patterns-checklist-stories--default) for each density and state, [Behavior](?path=/story/patterns-checklist-behavior--delegates-changes-to-consumer) for the tests, [Usages](?path=/story/patterns-checklist-usages--deal-tasks) for real tasks and [Layouts](?path=/story/patterns-checklist-layouts--with-progress) for the header, the metadata, the feedback slot and titles that open the item.
+The other pages of `Patterns/Checklist`: [Playground](?path=/story/patterns-checklist-playground--playground) to try the title, the density, the variant, the metadata and the optional parts, [Stories](?path=/story/patterns-checklist-stories--default) for each density and state, [Behavior](?path=/story/patterns-checklist-behavior--delegates-changes-to-consumer) for the tests, [Usages](?path=/story/patterns-checklist-usages--deal-tasks) for real tasks and [Layouts](?path=/story/patterns-checklist-layouts--without-title) for the header, the metadata, the feedback slot and titles that open the item.
 
 Used in: [Patterns/Records/Group/Usages, Tasks](?path=/story/patterns-records-group-usages--tasks), a `plain` checklist inside a `RecordGroup`. `plain` is made for a parent that frames the rows, so that story is where it is shown.
 
@@ -25,9 +25,10 @@ import { Checklist, type ChecklistItem } from '@acme/patterns'
 
 ```tsx
 <section data-slot="checklist">
-  <div data-slot="progress">
-    <div data-slot="checklist-header" />
-    <div data-slot="progress-track" role="progressbar" />
+  <div data-slot="checklist-header">
+    <span data-slot="checklist-count" role="progressbar">
+      <svg data-slot="checklist-count-ring" />
+    </span>
   </div>
   <div data-slot="card">
     <ol data-slot="checklist-items">
@@ -53,11 +54,11 @@ import { Checklist, type ChecklistItem } from '@acme/patterns'
 </section>
 ```
 
-`div[data-slot="card"]` is a `Card` and renders only in `variant="card"`; in `plain` the `ol` is a direct child of the `section`, and the drag handle moves into the row, after the delete button.
+`div[data-slot="card"]` is a `Card` and renders only in `variant="card"`; in `plain` the `ol` is a direct child of the `section`, and the drag handle stays before the row, outside it on the left, as in `card`.
 
 ## Checklist
 
-The whole checklist. Renders a `section` named by `ariaLabel`, so it is a `region` landmark. It is controlled: it never adds, removes, reorders or edits `items` itself, never fetches and never stores; every change reaches the consumer as a callback, and the list changes only when the consumer passes new `items`. Its only state is the drag in progress and the text of a title being renamed.
+The whole checklist. Renders a `section` named by `ariaLabel`, so it is a `region` landmark (in `trigger` and `complete` the root is a `div` and the `region` is the group). It is controlled: it never adds, removes, reorders or edits `items` itself, never fetches and never stores; every change reaches the consumer as a callback, and the list changes only when the consumer passes new `items`. Its only state is the drag in progress and the text of a title being renamed.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -69,11 +70,13 @@ The whole checklist. Renders a `section` named by `ariaLabel`, so it is a `regio
 | `onItemMove` | `(id: string, targetIndex: number) => void` | required | Called when an item is dropped at another index or moved with Alt+ArrowUp or Alt+ArrowDown. |
 | `onItemRename` | `(id: string, title: string) => void` | required | Called when an edited title loses focus or Enter is pressed, with the trimmed title, if it changed. |
 | `onNewItemTitleChange` | `(title: string) => void` | required | Called on every change of the draft text. |
-| `variant` | `"card"` or `"plain"` | `"card"` | Controls the frame: a `Card` around the list, or no frame for a parent that frames the rows. |
+| `variant` | `"card"`, `"plain"`, `"trigger"` or `"complete"` | `"card"` | Controls the frame: a `Card` around the list, no frame for a parent that frames the rows, only an add button until the list has items (`trigger`), or the list inside a collapsible `RecordGroup` with a count (`complete`). |
 | `density` | `"md"` or `"sm"` | `"md"` | Controls the row height and padding, the text size of the titles and the draft input, and the checkbox hit area. |
-| `title` | `React.ReactNode` | - | Sets the heading above the list; `null` or `undefined` removes it. |
-| `progress` | `boolean` | `false` | When true, adds a progress bar under the heading. |
-| `readOnly` | `boolean` | `false` | When true, disables the checkboxes and removes the draft row, the drag handles and the delete buttons. |
+| `title` | `React.ReactNode` | - | Sets the heading above the list; `null` or `undefined` removes it. In `trigger` and `complete` it is the title of the group, and `ariaLabel` stands in when it is missing. |
+| `actions` | `React.ReactNode` | - | Renders in the header of the group, before the `+` action, for a filter or a menu. Used only by `trigger` and `complete`. |
+| `filter` | `RecordGroupFilterProps` | - | Renders a `RecordGroupFilter` with these props in the header of the group, right before the `+`. Controlled: the consumer filters the `items` it passes. Used only by `trigger` and `complete`; a `trigger` whose filter leaves options unchecked stays a group even with no items. |
+| `addLabel` | `string` | `"Adicionar etapas"` | Sets the text of the `trigger` button and the accessible name of the `+` action of the group. |
+| `readOnly` | `boolean` | `false` | When true, disables the checkboxes and removes the draft row, the drag handles and the delete buttons; in `trigger` and `complete` it disables the add button and the `+`. |
 | `creating` | `boolean` | `false` | When true, disables the draft input and checkbox while the consumer saves an item. |
 | `feedback` | `React.ReactNode` | - | Renders after the list, for a saving or error message. |
 | `authorOptions` | `readonly PersonPropertyOption[]` | `[]` | Lists the people an item's `authorId` can name. |
@@ -92,25 +95,35 @@ Also takes every prop of a `section` except `title`.
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-slot` | `"checklist"` | Selects the root |
-| `data-variant` | `"card"` or `"plain"` | Styles the checklist by variant |
+| `data-variant` | `"card"`, `"plain"`, `"trigger"` or `"complete"` | Styles the checklist by variant |
 | `data-density` | `"md"` or `"sm"` | Styles the checklist by density |
 | `data-readonly` | present when `readOnly` | Styles a read-only checklist |
 
 `variant="card"` pads the `section` (8px above, 16px below). `variant="plain"` adds no padding, puts 2px between rows and rounds each row on hover.
 
-### Heading and progress
+### Trigger and complete
 
-The heading shows `title` and the count of completed items, `1 de 2 concluídos` (`1 de 1 concluído` for a single item). `progress` adds a bar named by the same count, with `aria-valuemin` 0, `aria-valuemax` the number of items and `aria-valuenow` the completed ones. With no items, only `title` shows: no count and no bar.
+`variant="complete"` renders the checklist inside a `RecordGroup` (`plain`): a collapsible header with the chevron, the title, a count and an actions area, then the same `plain` rows and the draft row. The count is the same pill as the heading: a small progress ring with `completed/total`, shown when the list has items; inside the group trigger it is read as hidden text, `1 de 2 concluídos`, instead of a `progressbar`. The actions area holds `actions`, then the `filter`, when passed, then a `+` button named by `addLabel`; the `+` opens the group, if collapsed, and focuses the draft input. The checklist adds no `checklist-header` and no `Card`. The root is a `div`, because the group is already the named `region`; `ariaLabel` names the group only when `title` is missing. With `readOnly` the `+` stays, disabled, and the filter stays enabled.
+
+`variant="trigger"` renders only a ghost button, `+ addLabel`, while the list has no items. Clicking it shows the group with the draft input focused. Escape in the empty draft, or focus leaving the checklist with an empty draft and still no items, goes back to the button; Escape also returns focus to it. Once the list has items it renders exactly as `complete`. With `readOnly` and no items it renders the button disabled.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
-| `data-slot` | `"progress"` | Selects the wrapper of the heading and the bar; it renders whenever the list has items and a `title` or `progress` |
-| `data-slot` | `"checklist-header"` | Selects the row with the title and the count |
-| `data-slot` | `"progress-track"` | Selects the progress bar |
+| `data-slot` | `"checklist-trigger"` | Selects the `trigger` button |
+
+### Heading and count
+
+The heading shows `title` and, right after it, the count of completed items as a pill: a progress ring and `1/2`, the same pill the `complete` group shows. The pill is a `progressbar` named `1 de 2 concluídos` (`1 de 1 concluído` for a single item), with `aria-valuemin` 0, `aria-valuemax` the number of items and `aria-valuenow` the completed ones. With no items, only `title` shows. Without `title` there is no heading and no count.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"checklist-header"` | Selects the row with the title and the count; it renders whenever `title` is passed |
+| `data-slot` | `"checklist-count"` | Selects the count pill, in the heading and in the `complete` group header |
+| `data-slot` | `"checklist-count-ring"` | Selects the ring inside the pill |
 
 ### Items
 
-Each item is a `li` with a row: the checkbox, the title, the metadata, the delete button and, in `plain`, the drag handle. The checkbox is named by the item's title.
+Each item is a `li` with the drag handle, outside the row on the left, and a row: the checkbox, the title, the metadata and the delete button. The checkbox is named by the item's title.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
@@ -118,7 +131,7 @@ Each item is a `li` with a row: the checkbox, the title, the metadata, the delet
 | `data-slot` | `"checklist-item"` | Selects an item's `li` |
 | `data-completed` | present when the item is completed | Styles a completed item; the title turns muted and struck through |
 | `data-dragging` | present on the item being dragged | Styles the dragged item, at 40% opacity |
-| `data-slot` | `"checklist-drag-handle"` | Selects the drag handle; in `card` it comes before the row, in `plain` it is the last child of the row |
+| `data-slot` | `"checklist-drag-handle"` | Selects the drag handle; comes before the row in every variant, absolute, 36px past the row's left edge |
 | `data-slot` | `"checklist-row"` | Selects the row inside an item or the draft |
 | `data-slot` | `"checklist-title"` | Selects the title |
 | `data-slot` | `"checklist-actions"` | Selects the metadata area, before the delete button |
@@ -128,7 +141,7 @@ Row heights: 40px for `card` at `md`, 32px at `sm` in both variants, and for `pl
 
 The title takes one of three forms. With `onItemClick` it is a button named `Abrir <title>`, even when the item is editable. Without it, it is a text field named `Título: <title>` that renames on blur or Enter; an empty or blank title is not emitted and the field returns to the current title. Without `onItemClick` and with `readOnly`, it is plain text.
 
-The delete button, named `Excluir <title>`, and the drag handle, named `Reordenar <title>`, are transparent until the row is hovered or they have keyboard focus. In `card` the handle sits outside the row, 24px past its right edge, and is also `invisible` until the row is hovered, so Tab skips it; in `plain` it sits in the row and Tab reaches it. The handle carries `aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"` and a tooltip, `Arraste para ordenar acima ou abaixo`. It drags with the pointer, or with the keyboard: Space picks the item up, the arrow keys move it, Space or Tab drops it and Escape cancels. Alt+ArrowUp and Alt+ArrowDown move the item one position at once, and do nothing at the ends of the list. With fewer than two items the handle is disabled. A drop on the same index or a cancelled drag calls nothing.
+The delete button, named `Excluir <title>`, and the drag handle, named `Reordenar <title>`, are transparent until the row is hovered or they have keyboard focus. In `card` the handle sits outside the card, 36px before its left edge, and is also `invisible` until the row is hovered, so Tab skips it; in `plain` it sits at the same place outside the row, without `invisible`, so Tab reaches it. Either way the row gets no indent. The handle carries `aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"` and a tooltip, `Arraste para ordenar acima ou abaixo`. It drags with the pointer, or with the keyboard: Space picks the item up, the arrow keys move it, Space or Tab drops it and Escape cancels. Alt+ArrowUp and Alt+ArrowDown move the item one position at once, and do nothing at the ends of the list. With fewer than two items the handle is disabled. A drop on the same index or a cancelled drag calls nothing.
 
 | Variable | Default | Description |
 | --- | --- | --- |
@@ -136,7 +149,7 @@ The delete button, named `Excluir <title>`, and the drag handle, named `Reordena
 | `--record-group-row-height` | `calc(var(--spacing) * 9)`, 36px | Sets the row height of `plain` at `md` |
 | `--record-group-hover-offset` | `0px` | Extends the hover of a `plain` row past the content edge, as a negative inline margin |
 
-Keep the list's parent without `overflow: hidden` in `card`, or it clips the drag handle.
+Keep the list's parent without `overflow: hidden` on the inline axis, in every variant, or it clips the drag handle; `RecordGroup` clips only vertically for this reason.
 
 ### Metadata
 
@@ -174,7 +187,7 @@ The item a consumer passes in `items` and receives in `onItemClick`.
 | --- | --- | --- |
 | `ChecklistProps` | `type` | The props of `Checklist`. |
 | `ChecklistDensity` | `type` | `"md"` or `"sm"`. |
-| `ChecklistVariant` | `type` | `"card"` or `"plain"`. |
+| `ChecklistVariant` | `type` | `"card"`, `"plain"`, `"trigger"` or `"complete"`. |
 
 ## Accessibility and theme
 

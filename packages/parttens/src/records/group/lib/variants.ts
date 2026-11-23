@@ -60,7 +60,7 @@ export const recordGroupSubgroupPanelClassName =
   '-mx-[var(--record-group-hover-offset,0px)] px-[var(--record-group-hover-offset,0px)]'
 
 export const recordGroupPanelClassName = (variant: RecordGroupVariant) =>
-  cn(variant !== 'inset' && '-mx-2 px-2')
+  cn('overflow-x-visible overflow-y-clip', variant !== 'inset' && '-mx-2 px-2')
 
 export const recordGroupContentVariants = cva(
   `flex flex-col [--record-group-row-gap:calc(var(--spacing)*1)] ${recordGroupRowGapClassName} has-[[data-slot=record-group-metrics]]:p-0`,

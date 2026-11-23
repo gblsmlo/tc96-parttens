@@ -89,7 +89,9 @@ export const checklistVariants = cva('min-w-0 space-y-2', {
   variants: {
     variant: {
       card: 'pt-2 pb-4',
+      complete: null,
       plain: null,
+      trigger: null,
     },
   },
 })
@@ -110,6 +112,10 @@ export const checklistListVariants = cva('', {
   },
 })
 
+export type ChecklistFrame = NonNullable<
+  VariantProps<typeof checklistListVariants>['variant']
+>
+
 export const checklistItemVariants = cva(
   'group relative min-w-0 transition-colors hover:bg-muted/60 data-dragging:opacity-40',
   {
@@ -118,8 +124,9 @@ export const checklistItemVariants = cva(
     },
     variants: {
       variant: {
-        card: 'first:rounded-t-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)] last:rounded-b-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]',
-        plain: 'rounded-md -mx-[var(--record-group-hover-offset,0px)]',
+        card: "before:-left-9 before:absolute before:inset-y-0 before:w-9 before:content-[''] first:rounded-t-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)] last:rounded-b-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]",
+        plain:
+          "before:-left-9 before:absolute before:inset-y-0 before:w-9 before:content-[''] rounded-md -mx-[var(--record-group-hover-offset,0px)]",
       },
     },
   },
@@ -133,8 +140,8 @@ export const checklistDragHandleVariants = cva(
     },
     variants: {
       variant: {
-        card: '-right-6 -translate-y-1/2 invisible absolute top-1/2 z-10 focus-visible:visible group-hover:visible',
-        plain: 'shrink-0',
+        card: '-left-9 -translate-y-1/2 invisible absolute top-1/2 z-10 focus-visible:visible group-hover:visible',
+        plain: '-left-9 -translate-y-1/2 absolute top-1/2 z-10',
       },
     },
   },
@@ -149,3 +156,6 @@ export const CHECKLIST_TITLE_CLASSNAME =
 export const CHECKLIST_TITLE_TEXT_CLASSNAME = `${CHECKLIST_TITLE_CLASSNAME} truncate`
 
 export const CHECKLIST_TITLE_BUTTON_CLASSNAME = `${CHECKLIST_TITLE_TEXT_CLASSNAME} h-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-ring`
+
+export const CHECKLIST_COUNT_CLASSNAME =
+  'inline-flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 font-normal text-muted-foreground text-xs tabular-nums'

@@ -46,9 +46,9 @@ const openPopup = async (canvasElement: HTMLElement) => {
   await userEvent.click(
     within(canvasElement).getByRole('button', { name: 'Filtrar' }),
   )
-  const dialog = await screen.findByRole('dialog')
-  await waitFor(() => expect(dialog).toBeVisible())
-  return within(dialog)
+  const menu = await screen.findByRole('menu')
+  await waitFor(() => expect(menu).toBeVisible())
+  return within(menu)
 }
 
 const meta = {
@@ -86,12 +86,12 @@ export const FilterSectionsOnlyWhenOptionsArePassed: Story = {
   play: async ({ canvasElement }) => {
     const popup = await openPopup(canvasElement)
 
-    await expect(screen.getByRole('dialog', { name: 'Filtrar' })).toBeVisible()
-    await expect(popup.queryByRole('group')).toBeNull()
-    await expect(popup.queryAllByRole('checkbox')).toHaveLength(0)
+    await expect(screen.getByRole('menu', { name: 'Filtrar' })).toBeVisible()
+    await expect(popup.queryAllByRole('menuitemcheckbox')).toHaveLength(0)
     await expect(
-      popup.getByRole('radiogroup', { name: 'Ordenar por' }),
+      popup.getByRole('group', { name: 'Ordenar por' }),
     ).toBeVisible()
+    await expect(popup.getAllByRole('menuitemradio')).toHaveLength(2)
     await userEvent.keyboard('{Escape}')
   },
 }
@@ -102,30 +102,40 @@ export const FilterReportsValuesInOptionOrder: Story = {
     const popup = await openPopup(canvasElement)
 
     await expect(popup.getByRole('group', { name: 'Tipo' })).toBeVisible()
-    await expect(popup.getByRole('checkbox', { name: 'Tarefas' })).toBeChecked()
     await expect(
-      popup.getByRole('checkbox', { name: 'Prazos' }),
-    ).not.toBeChecked()
+      popup.getByRole('menuitemcheckbox', { name: 'Tarefas' }),
+    ).toHaveAttribute('aria-checked', 'true')
+    await expect(
+      popup.getByRole('menuitemcheckbox', { name: 'Prazos' }),
+    ).toHaveAttribute('aria-checked', 'false')
 
     onFilterChange.mockClear()
-    await userEvent.click(popup.getByRole('checkbox', { name: 'Prazos' }))
+    await userEvent.click(
+      popup.getByRole('menuitemcheckbox', { name: 'Prazos' }),
+    )
     await expect(onFilterChange).toHaveBeenLastCalledWith([
       'task',
       'deadline',
       'event',
     ])
-    await userEvent.click(popup.getByRole('checkbox', { name: 'Tarefas' }))
+    await expect(screen.getByRole('menu')).toBeVisible()
+    await userEvent.click(
+      popup.getByRole('menuitemcheckbox', { name: 'Tarefas' }),
+    )
     await expect(onFilterChange).toHaveBeenLastCalledWith(['deadline', 'event'])
 
     onSortChange.mockClear()
-    await userEvent.click(popup.getByRole('radio', { name: 'Mais distante' }))
+    await userEvent.click(
+      popup.getByRole('menuitemradio', { name: 'Mais distante' }),
+    )
     await expect(onSortChange).toHaveBeenCalledWith('desc')
     await expect(
-      popup.getByRole('radio', { name: 'Mais distante' }),
-    ).toBeChecked()
+      popup.getByRole('menuitemradio', { name: 'Mais distante' }),
+    ).toHaveAttribute('aria-checked', 'true')
+    await expect(screen.getByRole('menu')).toBeVisible()
 
     await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
     await expect(
       within(canvasElement).getByRole('button', { name: 'Filtrar' }),
     ).toHaveFocus()
@@ -166,7 +176,7 @@ function TwoSectionsFilter() {
   )
 }
 
-export const FilterOneFieldsetPerSection: Story = {
+export const FilterOneGroupPerSection: Story = {
   render: () => <TwoSectionsFilter />,
   play: async ({ canvasElement }) => {
     const popup = await openPopup(canvasElement)
@@ -174,21 +184,25 @@ export const FilterOneFieldsetPerSection: Story = {
     const period = within(popup.getByRole('group', { name: 'Período' }))
 
     await expect(popup.getAllByRole('group')).toHaveLength(2)
-    await expect(modality.getAllByRole('checkbox')).toHaveLength(2)
+    await expect(modality.getAllByRole('menuitemcheckbox')).toHaveLength(2)
     await expect(
-      period.getByRole('checkbox', { name: 'Passados' }),
-    ).not.toBeChecked()
+      period.getByRole('menuitemcheckbox', { name: 'Passados' }),
+    ).toHaveAttribute('aria-checked', 'false')
 
     onFilterChange.mockClear()
-    await userEvent.click(modality.getByRole('checkbox', { name: 'Vídeo' }))
+    await userEvent.click(
+      modality.getByRole('menuitemcheckbox', { name: 'Vídeo' }),
+    )
     await expect(onFilterChange).toHaveBeenLastCalledWith(['phone'])
-    await userEvent.click(period.getByRole('checkbox', { name: 'Passados' }))
+    await userEvent.click(
+      period.getByRole('menuitemcheckbox', { name: 'Passados' }),
+    )
     await expect(
-      period.getByRole('checkbox', { name: 'Passados' }),
-    ).toBeChecked()
+      period.getByRole('menuitemcheckbox', { name: 'Passados' }),
+    ).toHaveAttribute('aria-checked', 'true')
     await expect(
-      modality.getByRole('checkbox', { name: 'Telefone' }),
-    ).toBeChecked()
+      modality.getByRole('menuitemcheckbox', { name: 'Telefone' }),
+    ).toHaveAttribute('aria-checked', 'true')
     await userEvent.keyboard('{Escape}')
   },
 }

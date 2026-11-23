@@ -5,7 +5,7 @@ import type { ReactElement } from 'react'
 import type { PersonPropertyOption } from '../../properties/display/person/person-property'
 import {
   type ChecklistDensity,
-  type ChecklistVariant,
+  type ChecklistFrame,
   checklistCheckboxVariants,
   checklistItemVariants,
 } from '../lib/variants'
@@ -24,7 +24,7 @@ export function ChecklistReadOnlyRow({
 }: Readonly<{
   authorOptions: readonly PersonPropertyOption[]
   density: ChecklistDensity
-  variant: ChecklistVariant
+  variant: ChecklistFrame
   item: ChecklistItem
   locale: string
   onItemClick?: ChecklistProps['onItemClick']

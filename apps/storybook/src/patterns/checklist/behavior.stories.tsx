@@ -115,15 +115,15 @@ export const DelegatesChangesToConsumer: Story = {
   },
 }
 
-export const ProgressCountsCompleted: Story = {
-  args: { progress: true },
+export const HeaderCountsCompleted: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const progressbar = canvas.getByRole('progressbar', {
       name: '1 de 2 concluídos',
     })
 
-    await expect(canvas.getByText('1 de 2 concluídos')).toBeVisible()
+    await expect(within(progressbar).getByText('1/2')).toBeVisible()
+    await expect(canvas.queryByText('1 de 2 concluídos')).toBeNull()
     await expect(progressbar).toHaveAttribute('aria-valuenow', '1')
     await expect(progressbar).toHaveAttribute('aria-valuemax', '2')
   },
@@ -144,7 +144,6 @@ export const ReadOnlyWithoutEditingControls: Story = {
     await expect(
       canvasElement.querySelector('[data-slot="checklist-delete"]'),
     ).toBeNull()
-    await expect(canvas.queryByText('1 de 2 concluídos')).toBeNull()
   },
 }
 
@@ -277,13 +276,14 @@ export const MetadataFollowsThreeStates: Story = {
   },
 }
 
-export const MarksDueStatus: Story = {
+export const DueDatesMarkStatusAndNearDays: Story = {
   args: { readOnly: true, title: undefined },
   render: (args) => (
     <Checklist
       {...args}
       items={[
         { ...behaviorItems[0], dueDate: dueDateFromToday(-3), id: 'late' },
+        { ...behaviorItems[0], dueDate: dueDateFromToday(-1), id: 'yesterday' },
         { ...behaviorItems[0], dueDate: dueDateFromToday(0), id: 'today' },
         { ...behaviorItems[0], dueDate: dueDateFromToday(3), id: 'soon' },
         { ...behaviorItems[0], dueDate: null, id: 'none' },
@@ -291,29 +291,19 @@ export const MarksDueStatus: Story = {
     />
   ),
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     const statuses = Array.from(
       canvasElement.querySelectorAll('[data-slot="checklist-actions"]'),
       (actions) => actions.getAttribute('data-due'),
     )
 
-    await expect(statuses).toEqual(['overdue', 'today', 'upcoming', 'upcoming'])
-  },
-}
-
-export const RelativeDueDatesNearToday: Story = {
-  args: { readOnly: true, title: undefined },
-  render: (args) => (
-    <Checklist
-      {...args}
-      items={[
-        { ...behaviorItems[0], dueDate: dueDateFromToday(0) },
-        { ...behaviorItems[1], dueDate: dueDateFromToday(-1) },
-      ]}
-    />
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-
+    await expect(statuses).toEqual([
+      'overdue',
+      'overdue',
+      'today',
+      'upcoming',
+      'upcoming',
+    ])
     await expect(canvas.getByText('Today')).toBeVisible()
     await expect(canvas.getByText('Yesterday')).toBeVisible()
   },
@@ -447,11 +437,6 @@ export const PlainHandleMovesByKeyboard: Story = {
 
     ;(focusedElement(canvasElement) as HTMLElement | null)?.blur()
     await userEvent.tab()
-    await expect(
-      canvas.getByRole('checkbox', { name: 'Primeira etapa' }),
-    ).toHaveFocus()
-    await userEvent.tab()
-    await userEvent.tab()
     await expect(handle).toHaveFocus()
     await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}')
 
@@ -460,36 +445,6 @@ export const PlainHandleMovesByKeyboard: Story = {
 
     await userEvent.tab()
     await waitFor(() => expect(screen.queryByRole('tooltip')).toBeNull())
-  },
-}
-
-export const FlatRowsInsideOneOutlinedList: Story = {
-  play: async ({ canvasElement }) => {
-    const list = canvasElement.querySelector('[data-slot="checklist-items"]')
-    const card = list?.parentElement
-
-    await expect(list?.tagName).toBe('OL')
-    await expect(card).toHaveAttribute('data-slot', 'card')
-    await expect(card?.className).toContain('rounded-2xl')
-    await expect(card?.className).not.toContain('overflow-hidden')
-    await expect(list?.hasAttribute('class')).toBe(false)
-    for (const frameClass of ['rounded', 'border', 'bg-card', 'shadow']) {
-      await expect(list?.className ?? '').not.toContain(frameClass)
-    }
-    await expect(
-      canvasElement.querySelectorAll(
-        'section[data-slot="checklist"] [data-slot="card"]',
-      ),
-    ).toHaveLength(1)
-    const firstRow = list?.querySelector('li')
-    await expect(firstRow?.className).toContain('hover:bg-muted/60')
-    await expect(firstRow?.className).toContain(
-      'first:rounded-t-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]',
-    )
-    await expect(firstRow?.className).toContain(
-      'last:rounded-b-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]',
-    )
-    await expect(firstRow?.className).not.toContain('rounded-xl')
   },
 }
 
@@ -504,18 +459,28 @@ export const CardFramesListWithHandleOutsideRow: Story = {
 
     await expect(section).toHaveAttribute('data-variant', 'card')
     await expect(section.className).toContain('pt-2 pb-4')
+    await expect(list?.tagName).toBe('OL')
+    await expect(list?.hasAttribute('class')).toBe(false)
     await expect(card).toHaveAttribute('data-slot', 'card')
     await expect(card?.className).toContain('border')
     await expect(card?.className).not.toContain('overflow-hidden')
-    await expect(
-      section.querySelector('[data-slot="checklist-item"]')?.className,
-    ).not.toContain('hover-offset')
+    await expect(section.querySelectorAll('[data-slot="card"]')).toHaveLength(1)
+    const firstRow = section.querySelector('[data-slot="checklist-item"]')
+    await expect(firstRow?.className).not.toContain('hover-offset')
+    await expect(firstRow?.className).toContain(
+      'first:rounded-t-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]',
+    )
+    await expect(firstRow?.className).toContain(
+      'last:rounded-b-[calc(var(--card-surface-radius,var(--radius-2xl))-1px)]',
+    )
     await expect(handle.closest('[data-slot="checklist-row"]')).toBeNull()
-    await expect(handle.className).toContain('-right-6')
+    await expect(handle.getBoundingClientRect().right).toBeLessThan(
+      (card as HTMLElement).getBoundingClientRect().left,
+    )
   },
 }
 
-export const PlainPutsHandleAtRowEnd: Story = {
+export const PlainPutsHandleOutsideRowStart: Story = {
   args: { onItemDelete: ignore, title: undefined, variant: 'plain' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
@@ -540,13 +505,162 @@ export const PlainPutsHandleAtRowEnd: Story = {
     await expect(row.className).toContain(
       'h-[var(--record-group-row-height,calc(var(--spacing)*9))] px-2',
     )
-    await expect(row.contains(handle)).toBe(true)
-    await expect(row.lastElementChild?.contains(handle)).toBe(true)
+    await expect(row.contains(handle)).toBe(false)
+    await expect(item.firstElementChild).toBe(handle)
+    await expect(handle.getBoundingClientRect().right).toBeLessThan(
+      row.getBoundingClientRect().left,
+    )
+    await expect(handle.className.split(' ')).not.toContain('invisible')
+  },
+}
+
+const triggerSelector = '[data-slot="checklist-trigger"]'
+
+export const TriggerShowsOnlyTheAddButton: Story = {
+  args: { items: [], variant: 'trigger' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const trigger = canvas.getByRole('button', { name: 'Adicionar etapas' })
+
+    await expect(canvas.getAllByRole('button')).toHaveLength(1)
+    await expect(canvas.queryByRole('region')).toBeNull()
+    await expect(canvas.queryByRole('list')).toBeNull()
+    await expect(canvas.queryByRole('textbox')).toBeNull()
+
+    await userEvent.click(trigger)
+    await expect(canvas.getByRole('region', { name: 'Etapas' })).toBeVisible()
+    const input = canvas.getByRole('textbox', { name: 'Novo item' })
+    await waitFor(() => expect(input).toHaveFocus())
+    await expect(canvasElement.querySelector(triggerSelector)).toBeNull()
+
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(canvas.queryByRole('region')).toBeNull())
+    await expect(canvas.queryByRole('textbox')).toBeNull()
+    await expect(canvas.getAllByRole('button')).toHaveLength(1)
+    await waitFor(() =>
+      expect(
+        canvas.getByRole('button', { name: 'Adicionar etapas' }),
+      ).toHaveFocus(),
+    )
+  },
+}
+
+export const TriggerWithItemsRendersTheGroup: Story = {
+  args: { variant: 'trigger' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    const region = canvas.getByRole('region', { name: /^Etapas/ })
+    const heading = within(region).getByRole('heading', { level: 2 })
+
+    await expect(region).toBeVisible()
     await expect(
-      within(row)
-        .getByRole('button', { name: 'Excluir Primeira etapa' })
-        .compareDocumentPosition(handle) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy()
-    await expect(handle.className.split(' ')).not.toContain('absolute')
+      canvas.getAllByRole('checkbox', { name: /etapa$/ }),
+    ).toHaveLength(2)
+    await expect(canvasElement.querySelector(triggerSelector)).toBeNull()
+    await expect(
+      canvasElement.querySelector('[data-slot="checklist"]')?.tagName,
+    ).toBe('DIV')
+    await expect(within(heading).getByText('1/2')).toBeVisible()
+    await expect(
+      within(heading).getByText('1 de 2 concluídos'),
+    ).toBeInTheDocument()
+  },
+}
+
+export const CompleteAddActionOpensAndFocusesDraft: Story = {
+  args: { variant: 'complete' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const heading = canvas.getByRole('heading', { level: 2 })
+    const toggle = within(heading).getByRole('button')
+
+    await userEvent.click(toggle)
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    await waitFor(() =>
+      expect(canvas.queryByRole('textbox', { name: 'Novo item' })).toBeNull(),
+    )
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Adicionar etapas' }),
+    )
+    const input = await canvas.findByRole('textbox', { name: 'Novo item' })
+    await waitFor(() => expect(input).toHaveFocus())
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true')
+  },
+}
+
+const statusOptions = [
+  { label: 'Abertas', value: 'open' },
+  { label: 'Concluídas', value: 'done' },
+]
+
+export const CompleteFilterSitsBesideAdd: Story = {
+  args: {
+    filter: {
+      filterLabel: 'Status',
+      filterOptions: statusOptions,
+      filterValue: ['open', 'done'],
+      label: 'Filtrar etapas',
+      onFilterChange: fn(),
+    },
+    variant: 'complete',
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    const filter = canvas.getByRole('button', { name: 'Filtrar etapas' })
+    const add = canvas.getByRole('button', { name: 'Adicionar etapas' })
+
+    await expect(filter.nextElementSibling).toBe(add)
+    await expect(
+      filter.closest('[data-slot="record-group-actions"]'),
+    ).not.toBeNull()
+
+    await userEvent.click(filter)
+    const menu = await screen.findByRole('menu')
+    await waitFor(() => expect(menu).toBeVisible())
+    await userEvent.click(
+      within(menu).getByRole('menuitemcheckbox', { name: 'Concluídas' }),
+    )
+    await expect(args.filter?.onFilterChange).toHaveBeenLastCalledWith(['open'])
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
+  },
+}
+
+export const TriggerStaysGroupedWhileFilterNarrows: Story = {
+  args: {
+    filter: {
+      filterLabel: 'Status',
+      filterOptions: statusOptions,
+      filterValue: ['open'],
+      label: 'Filtrar etapas',
+      onFilterChange: ignore,
+    },
+    items: [],
+    variant: 'trigger',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.getByRole('region', { name: 'Etapas' })).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Filtrar etapas' }),
+    ).toBeVisible()
+    await expect(
+      canvasElement.querySelector('[data-slot="checklist-trigger"]'),
+    ).toBeNull()
+  },
+}
+
+export const ReadOnlyTriggerIsDisabled: Story = {
+  args: { items: [], readOnly: true, variant: 'trigger' },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Adicionar etapas',
+    })
+
+    await expect(trigger).toBeDisabled()
+    await expect(trigger).toHaveAttribute('data-slot', 'checklist-trigger')
   },
 }

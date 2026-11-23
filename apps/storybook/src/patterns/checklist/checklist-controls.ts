@@ -3,6 +3,7 @@ import type { ChecklistDensity, ChecklistVariant } from '@tc96/parttens'
 import { checklistDensities, checklistVariants } from './checklist-variants.ts'
 
 export interface ChecklistControls {
+  addLabel: string
   author: boolean
   creating: boolean
   deleteButton: boolean
@@ -10,14 +11,15 @@ export interface ChecklistControls {
   dueDate: boolean
   empty: boolean
   feedback: string
+  filter: boolean
   openable: boolean
-  progress: boolean
   readOnly: boolean
   title: string
   variant: ChecklistVariant
 }
 
 export const checklistControlArgs: ChecklistControls = {
+  addLabel: 'Adicionar etapas',
   author: true,
   creating: false,
   deleteButton: true,
@@ -25,14 +27,19 @@ export const checklistControlArgs: ChecklistControls = {
   dueDate: true,
   empty: false,
   feedback: '',
+  filter: true,
   openable: false,
-  progress: false,
   readOnly: false,
   title: 'Etapas',
-  variant: 'card',
+  variant: 'complete',
 }
 
 export const checklistControlArgTypes: Partial<ArgTypes<ChecklistControls>> = {
+  addLabel: {
+    control: 'text',
+    description:
+      'The `addLabel` of `Checklist`: text of the trigger button and label of the `+` action.',
+  },
   author: {
     control: 'boolean',
     description:
@@ -65,14 +72,15 @@ export const checklistControlArgTypes: Partial<ArgTypes<ChecklistControls>> = {
     description:
       'Text of the `feedback` slot after the list; empty removes it.',
   },
+  filter: {
+    control: 'boolean',
+    description:
+      'Passes `filter`, a Status filter (Abertas, Concluídas) beside the `+` of the group, and filters the items passed in. Shown by `trigger` and `complete`.',
+  },
   openable: {
     control: 'boolean',
     description:
       'Passes `onItemClick`, which turns every title into a button that opens the item.',
-  },
-  progress: {
-    control: 'boolean',
-    description: 'The `progress` of `Checklist`: adds the progress bar.',
   },
   readOnly: {
     control: 'boolean',
@@ -84,7 +92,8 @@ export const checklistControlArgTypes: Partial<ArgTypes<ChecklistControls>> = {
   },
   variant: {
     control: 'inline-radio',
-    description: 'The `variant` of `Checklist`.',
+    description:
+      'The `variant` of `Checklist`: `card` frames the list, `plain` leaves the frame to a parent, `trigger` shows only an add button until there are items, and `complete` renders the list in a collapsible `RecordGroup` with a count.',
     options: checklistVariants,
   },
 }
