@@ -257,28 +257,28 @@ The button keeps the `Button` attributes (`data-slot="button"`).
 
 ## RecordGroupFilter
 
-The filter of a group, for the `actions` slot. Renders a ghost icon button named by `label` that opens a popover, also named by `label`, with a checkbox list per section and a radio list for the sort. It is controlled and applies nothing: the consumer filters and sorts the rows it passes, and passes `empty` to the group when none is left.
+The filter of a group, for the `actions` slot. Renders a ghost icon button named by `label` that opens a menu, also named by `label`, with a group of checkbox items per section and a group of radio items for the sort. It is controlled and applies nothing: the consumer filters and sorts the rows it passes, and passes `empty` to the group when none is left.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `label` | `string` | required | Names the button and the popover. |
+| `label` | `string` | required | Names the button and the menu. |
 | `filterOptions` | `RecordGroupFilterOption[]` | - | Sets the checkboxes of the first section; without it the section does not render. |
 | `filterValue` | `string[]` | `[]` | Sets the checked values of the first section. |
 | `onFilterChange` | `(value: string[]) => void` | - | Called with the checked values of the first section, in option order. |
-| `filterLabel` | `ReactNode` | - | Sets the legend of the first section. |
+| `filterLabel` | `ReactNode` | - | Sets the group label of the first section. |
 | `sections` | `RecordGroupFilterSection[]` | `[]` | Adds checkbox sections after the first, each with its own `label`, `options`, `value` and `onChange`. |
-| `sortOptions` | `RecordGroupFilterOption[]` | - | Sets the radios of the sort; without it the sort does not render. |
+| `sortOptions` | `RecordGroupFilterOption[]` | - | Sets the radio items of the sort; without it the sort does not render. |
 | `sortValue` | `string` | - | Sets the chosen sort. |
 | `onSortChange` | `(value: string) => void` | - | Called with the chosen sort value. |
-| `sortLabel` | `ReactNode` | - | Sets the label of the sort, which names the radio group. |
+| `sortLabel` | `ReactNode` | - | Sets the label of the sort, which names the sort group. |
 
-An option is `{ label: ReactNode, value: string }`. A section is `{ label: ReactNode, options: RecordGroupFilterOption[], value: string[], onChange: (value: string[]) => void }`; each one renders a `fieldset` with its `label` as the legend. The popover is 224px wide and aligned to the end of the button.
+An option is `{ label: ReactNode, value: string }`. A section is `{ label: ReactNode, options: RecordGroupFilterOption[], value: string[], onChange: (value: string[]) => void }`; each one renders a `MenuGroup` with its `label` as the `MenuGroupLabel` and one `MenuCheckboxItem` per option. The menu is the COSS `Menu`, as in `UI/Menu/Usages/View Settings`: 224px wide, aligned to the end of the button, with a separator between consecutive groups; checking an item or choosing a sort does not close it, and `Escape` does.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
-| `data-slot` | `"record-group-filter"` | Selects the content of the popover |
-| `data-slot` | `"record-group-filter-options"` | Selects each checkbox `fieldset` |
-| `data-slot` | `"record-group-filter-sort"` | Selects the sort section |
+| `data-slot` | `"record-group-filter"` | Selects the menu popup, which carries it in place of `"menu-popup"` |
+| `data-slot` | `"record-group-filter-options"` | Selects each checkbox group, in place of `"menu-group"` |
+| `data-slot` | `"record-group-filter-sort"` | Selects the sort group, in place of `"menu-group"` |
 
 ## RecordGroupDivider
 
