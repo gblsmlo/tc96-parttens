@@ -18,6 +18,7 @@ import { recordDialogControlArgs } from './record-dialog-controls.ts'
 import {
   ComposedRecordDialog,
   type ComposedRecordDialogProps,
+  DescriptionOverBodyFormation,
   InlinePropertiesFormation,
   type ProjectDraft,
   PropertyBarOverBodyFormation,
@@ -786,6 +787,48 @@ export const NoPropertiesByDefault: Story = {
     await expect(
       slotIn(canvasElement, '[data-slot="dialog-properties"]'),
     ).toBeNull()
+  },
+}
+
+export const DescriptionOverBodyHasNoHeadline: Story = {
+  args: {
+    description: 'Fill in the project before it goes live.',
+    headline: false,
+  },
+  render: ({ onSave, ...props }) => (
+    <ComposedRecordDialog {...props}>
+      <DescriptionOverBodyFormation />
+    </ComposedRecordDialog>
+  ),
+  play: async ({ canvasElement }) => {
+    const dialog = within(await findDialog(canvasElement))
+    const description = slotIn(
+      canvasElement,
+      '[data-slot="dialog-description"]',
+    )
+    const body = slotIn(canvasElement, '[data-slot="dialog-panel"]')
+    if (!description || !body) throw new Error('The dialog did not render.')
+
+    await expect(
+      slotIn(canvasElement, '[data-slot="record-dialog-headline"]'),
+    ).toBeNull()
+    await expect(
+      dialog.queryByRole('textbox', { name: 'Project title' }),
+    ).toBeNull()
+    await expect(
+      dialog
+        .getAllByRole('heading', { level: 2 })
+        .map((heading) => heading.textContent),
+    ).toEqual(['New project'])
+    await expect(description).toHaveTextContent(
+      'Fill in the project before it goes live.',
+    )
+    await expect(body.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+      description.getBoundingClientRect().bottom,
+    )
+    await expect(
+      within(body).getByRole('combobox', { name: /^Status/ }),
+    ).toBeVisible()
   },
 }
 

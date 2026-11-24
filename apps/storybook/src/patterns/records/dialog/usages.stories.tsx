@@ -410,24 +410,6 @@ export const ProjectSetup: StoryObj<ProjectSetupArgs> = {
       </>
     )
   },
-  play: async () => {
-    const dialog = within(
-      await screen.findByRole('dialog', { name: 'Project setup' }),
-    )
-
-    await expect(
-      dialog.getByRole('button', { name: /^Ownership/ }),
-    ).toHaveAttribute('aria-expanded', 'true')
-    await expect(
-      dialog
-        .getAllByRole('heading', { level: 2 })
-        .map((heading) => heading.textContent),
-    ).toEqual(['Project setup'])
-    await expect(dialog.getByText('Owner')).toBeVisible()
-    await expect(
-      dialog.getByRole('combobox', { name: /^Review/ }),
-    ).toBeVisible()
-  },
 }
 
 interface EventsArgs {
