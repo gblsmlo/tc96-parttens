@@ -1,0 +1,74 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# List4
+
+An integrations directory: one row per app with its initials, name, description and a Connect button or a Connected badge. Reach for it on a settings or onboarding screen. Install it with `npx @tc96/parttens add list-4`.
+
+It is a list, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app.
+
+The other pages of `Blocks/Application/List/List4`: [Playground](?path=/story/blocks-application-list-list4-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list4-behavior--each-row-shows-name-and-description) for the tests and [Usages](?path=/story/blocks-application-list-list4-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { List4 } from '@tc96/blocks/application/list/list-4'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four rows: three to connect and one already connected.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<List4 integrations={integrations} onConnect={connect} />
+```
+
+## List4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `integrations` | `List4Integration[]` | required | The rows, in order. Empty renders the empty state. |
+| `onConnect` | `(id: string) => void` | - | Called with the integration id when Connect is clicked. Without it no Connect button renders. |
+| `labels` | `Partial<List4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## List4Integration
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row. |
+| `name` | `string` | Name of the integration; its initials fill the frame. |
+| `description` | `string` | One sentence on what it does. |
+| `connected` | `boolean` | Shows the Connected badge instead of the button. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Integrações"`; the accessible name of the list |
+| `connect` | `string` | `"Conectar"`; the visible text of the button |
+| `connectTo` | `(name: string) => string` | `"Conectar Slack"`; the accessible name of the button |
+| `connected` | `string` | `"Conectado"`; the badge text |
+| `emptyTitle` | `string` | `"Sem integrações"` |
+| `emptyDescription` | `string` | `"Nenhuma integração disponível no momento."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `List4` | `component` | The integrations list. |
+| `List4Props` | `type` | The props of the list. |
+| `List4Integration` | `type` | A row. |
+| `List4Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The rows are a list named by `labels.title`; each row is a list item.
+- The button is named by `labels.connectTo`, so rows are told apart by assistive technology; the frame is `aria-hidden`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

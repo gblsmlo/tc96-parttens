@@ -1,0 +1,85 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# List3
+
+A transactions feed: a header with a title and period tabs, then rows with an icon, the description, the date and a signed amount that reads green for a credit and red for a debit. Reach for it on an account or wallet screen that lists recent movements by period. Install it with `npx @tc96/parttens add list-3`.
+
+It is a section, not a page: it renders no `main` landmark. The block keeps no state and never fetches: `period` is controlled, so the app reads the transactions of the chosen period and passes them back. An empty array renders the empty state under the tabs.
+
+The other pages of `Blocks/Application/List/List3`: [Playground](?path=/story/blocks-application-list-list3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list3-behavior--each-transaction-shows-description-date-and-amount) for the tests and [Usages](?path=/story/blocks-application-list-list3-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { List3 } from '@tc96/blocks/application/list/list-3'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Five transactions of the month: two credits and three debits.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<List3
+  onPeriodChange={setPeriod}
+  period={period}
+  transactions={transactions}
+/>
+```
+
+## List3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `transactions` | `List3Transaction[]` | required | The rows, in order. An empty array renders the empty state. |
+| `period` | `'week' \| 'month' \| 'year'` | required | The selected period; controlled. |
+| `onPeriodChange` | `(period: List3Period) => void` | - | Called when another tab is picked. The tabs keep showing `period` until the app changes it. |
+| `periods` | `List3Period[]` | `['week', 'month', 'year']` | The tabs, in order. |
+| `locale` | `string` | `"pt-BR"` | BCP 47 tag used to format amounts and dates. |
+| `currency` | `string` | `"BRL"` | ISO 4217 code of the amounts. |
+| `labels` | `Partial<List3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## List3Transaction
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row. |
+| `description` | `string` | What the transaction was. |
+| `amount` | `number` | Raw signed amount: positive is a credit, negative a debit. |
+| `date` | `string` | ISO calendar day (`2026-11-20`), shown as day and month in `locale`. A value that is not a date is shown as given. |
+| `icon` | `ReactNode` | Optional category icon; without it an arrow marks the direction. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Transações"`; the heading and the accessible name of the section |
+| `period` | `string` | `"Período"`; the accessible name of the tabs |
+| `periods` | `Record<List3Period, string>` | `"Semana"`, `"Mês"`, `"Ano"` |
+| `credit` | `string` | `"Entrada"`; read before a credit amount |
+| `debit` | `string` | `"Saída"`; read before a debit amount |
+| `emptyTitle` | `string` | `"Nenhuma transação no período"` |
+| `emptyDescription` | `string` | `"As transações aparecem aqui quando houver movimentações."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `List3` | `component` | The transactions feed. |
+| `List3Props` | `type` | The props of the feed. |
+| `List3Transaction` | `type` | A row. |
+| `List3Period` | `type` | The periods of the tabs. |
+| `List3Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Credit and debit are not told by color alone: the amount carries a sign and a hidden prefix from `labels.credit` and `labels.debit`.
+- The credit and debit colors are the theme tokens `success-foreground` and `destructive-foreground`; the block carries no raw color, radius or shadow.
+- The tabs are named by `labels.period`.
