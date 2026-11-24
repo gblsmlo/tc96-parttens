@@ -6,17 +6,25 @@ import {
   exceptions,
   filterOptions,
   kpis,
+  reasons,
 } from '../fixtures/dashboard-1.ts'
+import { breadcrumbsFor, periodOptions } from '../fixtures/shared.ts'
 
 const meta = {
   args: {
+    breadcrumbs: breadcrumbsFor('Exceções de expedição'),
     capacity,
     exceptions,
     filter: 'all',
     filterOptions,
     kpis,
+    onExport: fn(),
     onFilterChange: fn(),
+    onPeriodChange: fn(),
     onRetry: fn(),
+    period: '7d',
+    periodOptions,
+    reasons,
   },
   component: Dashboard1,
   parameters: { layout: 'padded' },
@@ -56,7 +64,7 @@ export const Failed: Story = {
 }
 
 export const Empty: Story = {
-  args: { capacity: [], exceptions: [], kpis: [] },
+  args: { capacity: [], exceptions: [], kpis: [], reasons: [] },
   play: async ({ canvasElement }) => {
     await expect(
       within(canvasElement).getByText('Nenhuma exceção de expedição'),

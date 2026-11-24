@@ -11,18 +11,36 @@ import {
   TableRow,
 } from '@tc96/ui/table'
 import { cn } from '@tc96/utils'
-import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts'
+import {
+  Area,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ComposedChart,
+  Line,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import { ChartFrame } from '../shared/chart-frame'
 import { ChartLegend, ChartTooltip, chartColor } from '../shared/chart-tooltip'
 import { DashboardError } from '../shared/dashboard-error'
+import { DashboardHeader } from '../shared/dashboard-header'
 import { DashboardKpiCard } from '../shared/dashboard-kpi-card'
+import { DashboardPagination } from '../shared/dashboard-pagination'
 import { DashboardPanel } from '../shared/dashboard-panel'
+import { DashboardRowActions } from '../shared/dashboard-row-actions'
+import { DashboardSearch } from '../shared/dashboard-search'
 import { createDashboardFormatter } from '../shared/format'
 import { Dashboard2Skeleton } from './dashboard-2-skeleton'
 import { defaultDashboard2Labels } from './labels'
 import type { Dashboard2Props, Dashboard2SortKey } from './types'
 
+const planColor = 'var(--muted-foreground)'
+
 export function Dashboard2({
+  breadcrumbs,
   channels,
   className,
   currency,
@@ -30,11 +48,22 @@ export function Dashboard2({
   kpis,
   labels: labelsProp,
   locale,
+  onExport,
+  onPageChange,
+  onPeriodChange,
   onRetry,
+  onRowAction,
+  onSearchChange,
   onSortChange,
   orders,
+  pagination,
   pending = false,
+  period,
+  periodOptions,
+  renderLink,
+  rowActions,
   sales,
+  search = '',
   sort,
 }: Readonly<Dashboard2Props>) {
   const labels = { ...defaultDashboard2Labels, ...labelsProp }
@@ -51,9 +80,21 @@ export function Dashboard2({
 
   const formatter = createDashboardFormatter({ currency, locale })
   const isEmpty = kpis.length === 0 && sales.length === 0 && orders.length === 0
+  const hasPlan = sales.some((point) => point.plan !== undefined)
+  const hasRowActions = Boolean(onRowAction && rowActions?.length)
+  const columnCount = hasRowActions ? 6 : 5
   const chartData = sales.map((point) => ({
     label: point.label,
+    plan: point.plan,
     ...point.values,
+  }))
+  const mix = channels.map((channel) => ({
+    id: channel.id,
+    label: channel.label,
+    total: sales.reduce(
+      (sum, point) => sum + (point.values[channel.id] ?? 0),
+      0,
+    ),
   }))
   const ariaSort = (key: Dashboard2SortKey) =>
     sort.key === key
@@ -61,6 +102,11 @@ export function Dashboard2({
         ? 'ascending'
         : 'descending'
       : 'none'
+  const changeSort = (key: Dashboard2SortKey) =>
+    onSortChange({
+      direction: sort.key === key && sort.direction === 'asc' ? 'desc' : 'asc',
+      key,
+    })
   const sortHead = (key: Dashboard2SortKey, label: string, right = false) => (
     <TableHead
       aria-sort={ariaSort(key)}
@@ -76,11 +122,6 @@ export function Dashboard2({
       </SortButton>
     </TableHead>
   )
-  const changeSort = (key: Dashboard2SortKey) =>
-    onSortChange({
-      direction: sort.key === key && sort.direction === 'asc' ? 'desc' : 'asc',
-      key,
-    })
 
   return (
     <section
@@ -88,7 +129,16 @@ export function Dashboard2({
       className={cn('grid gap-4', className)}
       data-block="dashboard-2"
     >
-      <h2 className="font-semibold text-lg">{labels.title}</h2>
+      <DashboardHeader
+        breadcrumbs={breadcrumbs}
+        labels={labels}
+        onExport={onExport}
+        onPeriodChange={onPeriodChange}
+        period={period}
+        periodOptions={periodOptions}
+        renderLink={renderLink}
+        showExport={!error && !isEmpty}
+      />
       {error ? (
         <DashboardError
           description={labels.errorDescription}
@@ -114,80 +164,161 @@ export function Dashboard2({
               </li>
             ))}
           </ul>
-          <DashboardPanel title={labels.salesTitle}>
-            <ChartFrame
-              label={labels.salesLabel}
-              summary={labels.salesSummary(
-                sales.map((point) => ({
-                  label: point.label,
-                  total: formatter.value(
-                    channels.reduce(
-                      (sum, channel) => sum + (point.values[channel.id] ?? 0),
-                      0,
+          <div className="grid items-start gap-4 xl:grid-cols-[2fr_1fr]">
+            <DashboardPanel title={labels.salesTitle}>
+              <ChartFrame
+                label={labels.salesLabel}
+                summary={labels.salesSummary(
+                  sales.map((point) => ({
+                    label: point.label,
+                    total: formatter.value(
+                      channels.reduce(
+                        (sum, channel) => sum + (point.values[channel.id] ?? 0),
+                        0,
+                      ),
+                      'currency',
                     ),
-                    'currency',
-                  ),
-                })),
-              )}
-            >
-              <BarChart
-                accessibilityLayer={false}
-                data={chartData}
-                margin={{ bottom: 0, left: 4, right: 4, top: 4 }}
+                  })),
+                )}
               >
-                <CartesianGrid
-                  stroke="var(--border)"
-                  strokeDasharray="3 3"
-                  vertical={false}
-                />
-                <XAxis
-                  axisLine={false}
-                  dataKey="label"
-                  tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
-                  tickLine={false}
-                  tickMargin={8}
-                />
-                <YAxis
-                  axisLine={false}
-                  tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
-                  tickFormatter={(value) =>
-                    formatter.value(Number(value), 'currency')
-                  }
-                  tickLine={false}
-                  width={72}
-                />
-                <Tooltip
-                  content={(tooltip) => (
-                    <ChartTooltip
-                      {...tooltip}
-                      formatValue={(value) =>
-                        formatter.value(value, 'currency')
-                      }
-                    />
-                  )}
-                  cursor={{ fill: 'var(--muted)' }}
-                />
-                {channels.map((channel, index) => (
-                  <Bar
-                    dataKey={channel.id}
-                    fill={chartColor(index)}
-                    isAnimationActive={false}
-                    key={channel.id}
-                    name={channel.label}
-                    radius={index === channels.length - 1 ? [4, 4, 0, 0] : 0}
-                    stackId="sales"
+                <ComposedChart
+                  accessibilityLayer={false}
+                  data={chartData}
+                  margin={{ bottom: 0, left: 4, right: 4, top: 4 }}
+                >
+                  <CartesianGrid
+                    stroke="var(--border)"
+                    strokeDasharray="3 3"
+                    vertical={false}
                   />
-                ))}
-              </BarChart>
-            </ChartFrame>
-            <ChartLegend
-              items={channels.map((channel, index) => ({
-                color: chartColor(index),
-                label: channel.label,
-              }))}
-            />
-          </DashboardPanel>
-          <DashboardPanel title={labels.ordersTitle}>
+                  <XAxis
+                    axisLine={false}
+                    dataKey="label"
+                    tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                    tickLine={false}
+                    tickMargin={8}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                    tickFormatter={(value) =>
+                      formatter.value(Number(value), 'currency')
+                    }
+                    tickLine={false}
+                    width={72}
+                  />
+                  <Tooltip
+                    content={(tooltip) => (
+                      <ChartTooltip
+                        {...tooltip}
+                        formatValue={(value) =>
+                          formatter.value(value, 'currency')
+                        }
+                      />
+                    )}
+                  />
+                  {channels.map((channel, index) => (
+                    <Area
+                      dataKey={channel.id}
+                      fill={chartColor(index)}
+                      fillOpacity={0.35}
+                      isAnimationActive={false}
+                      key={channel.id}
+                      name={channel.label}
+                      stackId="sales"
+                      stroke={chartColor(index)}
+                      strokeWidth={1.5}
+                      type="monotone"
+                    />
+                  ))}
+                  {hasPlan ? (
+                    <Line
+                      dataKey="plan"
+                      dot={false}
+                      isAnimationActive={false}
+                      name={labels.planSeries}
+                      stroke={planColor}
+                      strokeDasharray="5 4"
+                      strokeWidth={1.5}
+                      type="monotone"
+                    />
+                  ) : null}
+                </ComposedChart>
+              </ChartFrame>
+              <ChartLegend
+                items={[
+                  ...channels.map((channel, index) => ({
+                    color: chartColor(index),
+                    label: channel.label,
+                  })),
+                  ...(hasPlan
+                    ? [{ color: planColor, label: labels.planSeries }]
+                    : []),
+                ]}
+              />
+            </DashboardPanel>
+            <DashboardPanel title={labels.mixTitle}>
+              <ChartFrame
+                label={labels.mixLabel}
+                summary={labels.mixSummary(
+                  mix.map((item) => ({
+                    label: item.label,
+                    total: formatter.value(item.total, 'currency'),
+                  })),
+                )}
+              >
+                <BarChart
+                  accessibilityLayer={false}
+                  data={mix}
+                  layout="vertical"
+                  margin={{ bottom: 0, left: 4, right: 12, top: 4 }}
+                >
+                  <XAxis hide type="number" />
+                  <YAxis
+                    axisLine={false}
+                    dataKey="label"
+                    tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                    tickLine={false}
+                    type="category"
+                    width={88}
+                  />
+                  <Tooltip
+                    content={(tooltip) => (
+                      <ChartTooltip
+                        {...tooltip}
+                        formatValue={(value) =>
+                          formatter.value(value, 'currency')
+                        }
+                      />
+                    )}
+                    cursor={{ fill: 'var(--muted)' }}
+                  />
+                  <Bar
+                    dataKey="total"
+                    isAnimationActive={false}
+                    name={labels.mixTitle}
+                    radius={[0, 4, 4, 0]}
+                  >
+                    {mix.map((item, index) => (
+                      <Cell fill={chartColor(index)} key={item.id} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ChartFrame>
+            </DashboardPanel>
+          </div>
+          <DashboardPanel
+            action={
+              onSearchChange ? (
+                <DashboardSearch
+                  label={labels.search}
+                  onValueChange={onSearchChange}
+                  value={search}
+                />
+              ) : undefined
+            }
+            title={labels.ordersTitle}
+          >
             <Table aria-label={labels.ordersTitle}>
               <TableHeader>
                 <TableRow>
@@ -196,12 +327,17 @@ export function Dashboard2({
                   <TableHead>{labels.columnStatus}</TableHead>
                   {sortHead('placedAt', labels.columnPlacedAt)}
                   {sortHead('total', labels.columnTotal, true)}
+                  {hasRowActions ? (
+                    <TableHead className="w-10">
+                      <span className="sr-only">{labels.columnActions}</span>
+                    </TableHead>
+                  ) : null}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {orders.length === 0 ? (
                   <TableRow>
-                    <TableCell className="text-center" colSpan={5}>
+                    <TableCell className="text-center" colSpan={columnCount}>
                       <span className="text-muted-foreground">
                         {labels.noOrders}
                       </span>
@@ -227,11 +363,33 @@ export function Dashboard2({
                       <TableCell className="text-right tabular-nums">
                         {formatter.currency(order.total)}
                       </TableCell>
+                      {hasRowActions && rowActions && onRowAction ? (
+                        <TableCell className="text-right">
+                          <DashboardRowActions
+                            actions={rowActions}
+                            label={labels.rowActionsFor(order.number)}
+                            onAction={(actionId) =>
+                              onRowAction(actionId, order.id)
+                            }
+                          />
+                        </TableCell>
+                      ) : null}
                     </TableRow>
                   ))
                 )}
               </TableBody>
             </Table>
+            {pagination && onPageChange ? (
+              <DashboardPagination
+                label={labels.pagination}
+                nextLabel={labels.nextPage}
+                onPageChange={onPageChange}
+                page={pagination.page}
+                pageCount={pagination.pageCount}
+                pageOf={labels.pageOf}
+                previousLabel={labels.previousPage}
+              />
+            ) : null}
           </DashboardPanel>
         </>
       )}

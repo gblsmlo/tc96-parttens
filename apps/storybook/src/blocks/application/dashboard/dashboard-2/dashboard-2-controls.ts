@@ -5,6 +5,7 @@ export interface Dashboard2Controls {
   error: boolean
   pending: boolean
   sparklines: boolean
+  tableTools: boolean
   title: string
 }
 
@@ -13,6 +14,7 @@ export const dashboard2ControlArgs: Dashboard2Controls = {
   error: false,
   pending: false,
   sparklines: true,
+  tableTools: true,
   title: 'Receita do varejo',
 }
 
@@ -33,6 +35,11 @@ export const dashboard2ControlArgTypes: Partial<ArgTypes<Dashboard2Controls>> =
     sparklines: {
       control: 'boolean',
       description: 'Keeps or drops the `sparkline` of every KPI.',
+    },
+    tableTools: {
+      control: 'boolean',
+      description:
+        'Passes `onSearchChange`, `pagination` with `onPageChange` and `onRowAction`; off, the table shows every row with no search, pages or row menu.',
     },
     title: {
       control: 'text',

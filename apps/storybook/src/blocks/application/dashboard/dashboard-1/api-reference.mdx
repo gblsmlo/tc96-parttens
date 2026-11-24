@@ -5,9 +5,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Dashboard1
 
-A fulfillment exceptions dashboard: a row of four KPI cards, a bar chart of capacity used against capacity per distribution center, and a table of open exceptions with status badges and a status filter. Reach for it on an operations home page that shows what is stuck and where. Install it with `npx @tc96/parttens add dashboard-1`.
+A fulfillment exceptions dashboard in four layers: a header with breadcrumb, title, description, period select and Exportar; a row of four KPI cards; a bar chart of capacity used against capacity per distribution center beside a donut of exceptions by reason; and a table of open exceptions with a status filter that shows a count per option, a search, pagination and a menu per row. Reach for it on an operations home page that shows what is stuck and where. Install it with `npx @tc96/parttens add dashboard-1`.
 
-It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The filter is controlled: the app passes `filter` and `filterOptions`, handles `onFilterChange` and passes the rows it already filtered. Numbers arrive raw and the block formats them with `locale` and `currency` (`pt-BR` and `BRL` by default). Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `kpis`, `capacity` and `exceptions` the empty state. The precedence is `pending`, then `error`, then empty.
+It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The filter is controlled: the app passes `filter` and `filterOptions` (with an optional `count` each), handles `onFilterChange` and passes the rows it already filtered. The period select, Exportar, the search, the pagination and the row menu render only when their callbacks are passed, and the app searches and pages the rows. The donut renders only with `reasons`. Numbers arrive raw and the block formats them with `locale` and `currency` (`pt-BR` and `BRL` by default). Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `kpis`, `capacity`, `reasons` and `exceptions` the empty state. The precedence is `pending`, then `error`, then empty.
 
 The other pages of `Blocks/Application/Dashboard/Dashboard1`: [Playground](?path=/story/blocks-application-dashboard-dashboard1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-dashboard-dashboard1-behavior--kpis-show-formatted-values-and-deltas) for the tests, [States](?path=/story/blocks-application-dashboard-dashboard1-states--default) for the four states and [Usages](?path=/story/blocks-application-dashboard-dashboard1-usages--loaded) for the data read over the network.
 
@@ -21,21 +21,34 @@ The same path exports the types listed under Exports.
 
 ## Anatomy
 
-Four KPIs, the capacity of five centers and six open exceptions.
+Four KPIs, the capacity of five centers, four reasons and six open exceptions.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
 <Dashboard1
+  breadcrumbs={[{ href: '/painel', label: 'Painéis' }, { label: 'Exceções de expedição' }]}
   capacity={capacity}
   error={isError}
-  exceptions={visibleExceptions}
+  exceptions={pageRows}
   filter={filter}
   filterOptions={filterOptions}
   kpis={kpis}
+  onExport={exportReport}
   onFilterChange={setFilter}
+  onPageChange={setPage}
+  onPeriodChange={setPeriod}
   onRetry={() => refetch()}
+  onRowAction={(actionId, exceptionId) => act(actionId, exceptionId)}
+  onSearchChange={setSearch}
+  pagination={{ page, pageCount }}
   pending={isPending}
+  period={period}
+  periodOptions={periodOptions}
+  reasons={reasons}
+  renderLink={(href) => <Link to={href} />}
+  rowActions={rowActions}
+  search={search}
 />
 ```
 
@@ -49,6 +62,19 @@ Four KPIs, the capacity of five centers and six open exceptions.
 | `filter` | `string` | required | The `value` of the active filter option. |
 | `filterOptions` | `Dashboard1FilterOption[]` | required | The filter buttons. |
 | `onFilterChange` | `(filter: string) => void` | required | Called with the `value` of the picked option. |
+| `breadcrumbs` | `{ label: string; href?: string }[]` | - | The trail above the title; the last item is the current page. |
+| `renderLink` | `RenderLink` | - | Builds the element of each breadcrumb link, for the app's router; without it the trail is plain text. |
+| `period` | `string` | - | The `value` of the active period. |
+| `periodOptions` | `{ label: string; value: string }[]` | - | The options of the period select. |
+| `onPeriodChange` | `(period: string) => void` | - | Called with the picked period; the select renders only with `period`, `periodOptions` and this callback. |
+| `onExport` | `() => void` | - | Renders the Exportar button in the header; hidden on error and on the empty state. |
+| `search` | `string` | `''` | The text of the table search. |
+| `onSearchChange` | `(search: string) => void` | - | Renders the table search; the app filters the rows. |
+| `pagination` | `{ page: number; pageCount: number }` | - | The current page, from 1, and the page count. |
+| `onPageChange` | `(page: number) => void` | - | Renders the pagination under the table with `pagination`; the app passes the rows of the page. |
+| `reasons` | `Dashboard1ReasonSlice[]` | `[]` | The slices of the donut; without them the capacity chart takes the whole row. |
+| `rowActions` | `{ id: string; label: string; destructive?: boolean }[]` | - | The items of the menu at the end of each row. |
+| `onRowAction` | `(actionId: string, rowId: string) => void` | - | Called with the action `id` and the row `id`; the menu column renders only with `rowActions` and this callback. |
 | `locale` | `string` | `'pt-BR'` | Locale of every formatted number. |
 | `currency` | `string` | `'BRL'` | Currency of the `currency` KPIs. |
 | `pending` | `boolean` | `false` | Renders the skeleton; wins over `error` and the empty state. |
@@ -75,7 +101,8 @@ Four KPIs, the capacity of five centers and six open exceptions.
 | --- | --- |
 | `Dashboard1CapacityPoint` | `id`, `label` (the center), `used` and `capacity`, both raw numbers. |
 | `Dashboard1Exception` | `id`, `order`, `hub`, `reason`, `delayHours` (raw number) and `status` (`{ label, tone? }`). |
-| `Dashboard1FilterOption` | `value` and `label`. |
+| `Dashboard1FilterOption` | `value`, `label` and an optional `count`, shown after the label. |
+| `Dashboard1ReasonSlice` | `id`, `label` and `value`, a raw number. |
 
 ## Labels
 
@@ -93,6 +120,17 @@ Four KPIs, the capacity of five centers and six open exceptions.
 | `columnOrder`, `columnHub`, `columnReason`, `columnDelay`, `columnStatus` | `string` | `"Pedido"`, `"Centro"`, `"Motivo"`, `"Atraso"`, `"Status"` |
 | `delay` | `(hours: string) => string` | `` `${hours} h` `` |
 | `noExceptions` | `string` | `"Nenhuma exceção para este filtro"` |
+| `breadcrumb` | `string` | `"Navegação estrutural"`; the accessible name of the trail |
+| `period`, `export` | `string` | `"Período"`, `"Exportar"` |
+| `search` | `string` | `"Buscar pedido"`; the name and placeholder of the search |
+| `pagination` | `string` | `"Paginação das exceções"`; the name of the pagination |
+| `pageOf` | `(page, pageCount) => string` | `` `Página ${page} de ${pageCount}` `` |
+| `previousPage`, `nextPage` | `string` | `"Página anterior"`, `"Próxima página"` |
+| `description` | `string` | `"Pedidos parados, onde estão e há quanto tempo."`; the text under the title |
+| `reasonsTitle`, `reasonsLabel` | `string` | `"Motivos"`, `"Exceções por motivo"`; the title and the accessible name of the donut |
+| `reasonsSummary` | `(items) => string` | Joins `label: value` with `; ` |
+| `columnActions` | `string` | `"Ações"`; the hidden header of the menu column |
+| `rowActionsFor` | `(order: string) => string` | `` `Ações de ${order}` ``; the name of each row menu |
 | `errorTitle`, `errorDescription`, `retry` | `string` | `"Não foi possível carregar as exceções"`, `"Tente novamente em instantes."`, `"Tentar novamente"` |
 | `emptyTitle`, `emptyDescription` | `string` | `"Nenhuma exceção de expedição"`, `"As exceções aparecem aqui assim que forem registradas."` |
 
@@ -108,10 +146,17 @@ Four KPIs, the capacity of five centers and six open exceptions.
 | `Dashboard1Exception` | `type` | A table row. |
 | `Dashboard1FilterOption` | `type` | A filter button. |
 | `Dashboard1Labels` | `type` | The keys of `labels`. |
+| `Dashboard1ReasonSlice` | `type` | A slice of the donut. |
+| `Dashboard1ReasonSummaryItem` | `type` | The formatted item `reasonsSummary` receives. |
+| `Dashboard1RowAction` | `type` | An item of the row menu. |
+| `Dashboard1Pagination` | `type` | The `pagination` prop. |
 
 ## Accessibility and theme
 
-- The chart is an `img` named by `labels.capacityLabel` and described by a visually hidden text from `labels.capacitySummary`.
+- The header is a `header` with the `h2` title; the breadcrumb is a `navigation` named by `labels.breadcrumb` and the period select a `combobox` named by `labels.period`.
+- The search is a `searchbox` named by `labels.search`; the pagination is a `navigation` named by `labels.pagination` whose buttons are disabled at the ends.
+- The capacity chart and the donut are `img`s named by `labels.capacityLabel` and `labels.reasonsLabel` and described by visually hidden texts from `labels.capacitySummary` and `labels.reasonsSummary`.
+- Each row menu is a button named by `labels.rowActionsFor`.
 - The filter is a toggle group named by `labels.filter`; the active option has `aria-pressed`.
 - The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
-- Chart colors come from `--chart-1` and `--chart-2`; status colors from the theme badge tones. The block carries no raw color, radius or shadow.
+- Chart colors come from `--chart-1` to `--chart-5`; status colors from the theme badge tones. The block carries no raw color, radius or shadow.

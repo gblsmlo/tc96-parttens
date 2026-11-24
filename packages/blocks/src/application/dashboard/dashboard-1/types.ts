@@ -1,7 +1,13 @@
 import type {
   DashboardBadgeData,
+  DashboardFilterOption,
   DashboardFormatProps,
+  DashboardHeaderLabels,
+  DashboardHeaderProps,
   DashboardKpi,
+  DashboardPagination,
+  DashboardRowAction,
+  DashboardTableLabels,
 } from '../shared/types'
 
 export type Dashboard1Kpi = DashboardKpi
@@ -13,6 +19,12 @@ export interface Dashboard1CapacityPoint {
   used: number
 }
 
+export interface Dashboard1ReasonSlice {
+  id: string
+  label: string
+  value: number
+}
+
 export interface Dashboard1Exception {
   delayHours: number
   hub: string
@@ -22,10 +34,11 @@ export interface Dashboard1Exception {
   status: DashboardBadgeData
 }
 
-export interface Dashboard1FilterOption {
-  label: string
-  value: string
-}
+export type Dashboard1FilterOption = DashboardFilterOption
+
+export type Dashboard1RowAction = DashboardRowAction
+
+export type Dashboard1Pagination = DashboardPagination
 
 export interface Dashboard1CapacitySummaryItem {
   capacity: string
@@ -33,12 +46,20 @@ export interface Dashboard1CapacitySummaryItem {
   used: string
 }
 
-export interface Dashboard1Labels {
+export interface Dashboard1ReasonSummaryItem {
+  label: string
+  value: string
+}
+
+export interface Dashboard1Labels
+  extends DashboardHeaderLabels,
+    DashboardTableLabels {
   capacityLabel: string
   capacitySummary: (items: Dashboard1CapacitySummaryItem[]) => string
   capacityTitle: string
   capacityTotal: string
   capacityUsed: string
+  columnActions: string
   columnDelay: string
   columnHub: string
   columnOrder: string
@@ -54,11 +75,16 @@ export interface Dashboard1Labels {
   indicators: string
   loading: string
   noExceptions: string
+  reasonsLabel: string
+  reasonsSummary: (items: Dashboard1ReasonSummaryItem[]) => string
+  reasonsTitle: string
   retry: string
-  title: string
+  rowActionsFor: (order: string) => string
 }
 
-export interface Dashboard1Props extends DashboardFormatProps {
+export interface Dashboard1Props
+  extends DashboardFormatProps,
+    DashboardHeaderProps {
   capacity: Dashboard1CapacityPoint[]
   className?: string
   error?: boolean
@@ -68,6 +94,13 @@ export interface Dashboard1Props extends DashboardFormatProps {
   kpis: Dashboard1Kpi[]
   labels?: Partial<Dashboard1Labels>
   onFilterChange: (filter: string) => void
+  onPageChange?: (page: number) => void
   onRetry?: () => void
+  onRowAction?: (actionId: string, exceptionId: string) => void
+  onSearchChange?: (search: string) => void
+  pagination?: Dashboard1Pagination
   pending?: boolean
+  reasons?: Dashboard1ReasonSlice[]
+  rowActions?: Dashboard1RowAction[]
+  search?: string
 }

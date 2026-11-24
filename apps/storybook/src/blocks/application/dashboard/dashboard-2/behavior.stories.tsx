@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Dashboard2 } from '@tc96/blocks/application/dashboard/dashboard-2'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, within } from 'storybook/test'
 import {
   channels,
   initialSort,
@@ -15,13 +15,30 @@ import {
 import { ComposedDashboard2 } from './dashboard-2-layouts.tsx'
 
 const meta = {
-  args: { ...dashboard2ControlArgs, onRetry: fn(), onSortChange: fn() },
+  args: {
+    ...dashboard2ControlArgs,
+    onExport: fn(),
+    onPageChange: fn(),
+    onPeriodChange: fn(),
+    onRetry: fn(),
+    onRowAction: fn(),
+    onSearchChange: fn(),
+    onSortChange: fn(),
+  },
   parameters: { layout: 'padded' },
   render: (args) => <ComposedDashboard2 {...args} />,
   tags: ['!autodocs'],
   title: 'Blocks/Application/Dashboard/Dashboard2/Behavior',
 } satisfies Meta<
-  Dashboard2Controls & { onRetry: () => void; onSortChange: () => void }
+  Dashboard2Controls & {
+    onExport: () => void
+    onPageChange: (page: number) => void
+    onPeriodChange: (period: string) => void
+    onRetry: () => void
+    onRowAction: (actionId: string, orderId: string) => void
+    onSearchChange: (search: string) => void
+    onSortChange: () => void
+  }
 >
 
 export default meta
@@ -78,6 +95,104 @@ export const SalesChartHasNameAndTextSummary: Story = {
       name: 'Vendas por canal ao longo do período',
     })
     await expect(chart).toHaveAccessibleDescription(/Seg: R\$\s23\.100.*Dom/)
+  },
+}
+
+export const HeaderShowsBreadcrumbPeriodAndExport: Story = {
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      within(
+        canvas.getByRole('navigation', { name: 'Navegação estrutural' }),
+      ).getByRole('link', { name: 'Início' }),
+    ).toHaveAttribute('href', '/')
+    await userEvent.click(canvas.getByRole('combobox', { name: 'Período' }))
+    await userEvent.click(
+      await screen.findByRole('option', { name: 'Este trimestre' }),
+    )
+    await expect(args.onPeriodChange).toHaveBeenCalledWith('quarter')
+    await userEvent.click(canvas.getByRole('button', { name: 'Exportar' }))
+    await expect(args.onExport).toHaveBeenCalledTimes(1)
+  },
+}
+
+export const MixChartHasNameAndTextSummary: Story = {
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole('img', {
+        name: 'Participação de cada canal na receita do período',
+      }),
+    ).toHaveAccessibleDescription(
+      /Loja física: R\$\s?77\.900.*Marketplace: R\$\s?51\.300/,
+    )
+  },
+}
+
+export const PlanLineJoinsTheLegendOnlyWithAPlan: Story = {
+  render: () => (
+    <Dashboard2
+      {...baseProps}
+      sales={sales.map(({ plan: _plan, ...point }) => point)}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).queryByText('Plano')).toBeNull()
+  },
+}
+
+export const SearchCallsOnSearchChange: Story = {
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.type(
+      canvas.getByRole('searchbox', { name: 'Buscar pedido ou cliente' }),
+      'Caio',
+    )
+    await expect(args.onSearchChange).toHaveBeenLastCalledWith('Caio')
+    await expect(rowNumbers(canvasElement)).toEqual(['#10479'])
+  },
+}
+
+export const PaginationCallsOnPageChange: Story = {
+  play: async ({ args, canvasElement }) => {
+    const pages = within(canvasElement).getByRole('navigation', {
+      name: 'Paginação dos pedidos',
+    })
+    await expect(pages).toHaveTextContent('Página 1 de 2')
+    await userEvent.click(
+      within(pages).getByRole('button', { name: 'Próxima página' }),
+    )
+    await expect(args.onPageChange).toHaveBeenCalledWith(2)
+    await expect(rowNumbers(canvasElement)).toEqual(['#10478'])
+    await expect(
+      within(pages).getByRole('button', { name: 'Próxima página' }),
+    ).toBeDisabled()
+  },
+}
+
+export const RowMenuCallsOnRowActionWithTheIds: Story = {
+  play: async ({ args, canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Ações de #10482' }),
+    )
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Reembolsar' }),
+    )
+    await expect(args.onRowAction).toHaveBeenCalledWith('refund', 'o1')
+  },
+}
+
+export const TableToolsRenderOnlyWithTheirCallbacks: Story = {
+  args: { tableTools: false },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.queryByRole('searchbox')).toBeNull()
+    await expect(
+      canvas.queryByRole('navigation', { name: 'Paginação dos pedidos' }),
+    ).toBeNull()
+    await expect(
+      canvas.queryByRole('button', { name: 'Ações de #10482' }),
+    ).toBeNull()
+    await expect(rowNumbers(canvasElement)).toHaveLength(orders.length)
   },
 }
 

@@ -1,7 +1,12 @@
 import type {
   DashboardBadgeData,
   DashboardFormatProps,
+  DashboardHeaderLabels,
+  DashboardHeaderProps,
   DashboardKpi,
+  DashboardPagination,
+  DashboardRowAction,
+  DashboardTableLabels,
 } from '../shared/types'
 
 export type Dashboard2Kpi = DashboardKpi
@@ -13,8 +18,13 @@ export interface Dashboard2Channel {
 
 export interface Dashboard2SalesPoint {
   label: string
+  plan?: number
   values: Record<string, number>
 }
+
+export type Dashboard2RowAction = DashboardRowAction
+
+export type Dashboard2Pagination = DashboardPagination
 
 export interface Dashboard2Order {
   customer: string
@@ -39,7 +49,15 @@ export interface Dashboard2SalesSummaryItem {
   total: string
 }
 
-export interface Dashboard2Labels {
+export interface Dashboard2MixSummaryItem {
+  label: string
+  total: string
+}
+
+export interface Dashboard2Labels
+  extends DashboardHeaderLabels,
+    DashboardTableLabels {
+  columnActions: string
   columnCustomer: string
   columnOrder: string
   columnPlacedAt: string
@@ -51,9 +69,14 @@ export interface Dashboard2Labels {
   errorTitle: string
   indicators: string
   loading: string
+  mixLabel: string
+  mixSummary: (items: Dashboard2MixSummaryItem[]) => string
+  mixTitle: string
   noOrders: string
   ordersTitle: string
+  planSeries: string
   retry: string
+  rowActionsFor: (order: string) => string
   salesLabel: string
   salesSummary: (items: Dashboard2SalesSummaryItem[]) => string
   salesTitle: string
@@ -61,16 +84,24 @@ export interface Dashboard2Labels {
   title: string
 }
 
-export interface Dashboard2Props extends DashboardFormatProps {
+export interface Dashboard2Props
+  extends DashboardFormatProps,
+    DashboardHeaderProps {
   channels: Dashboard2Channel[]
   className?: string
   error?: boolean
   kpis: Dashboard2Kpi[]
   labels?: Partial<Dashboard2Labels>
+  onPageChange?: (page: number) => void
   onRetry?: () => void
+  onRowAction?: (actionId: string, orderId: string) => void
+  onSearchChange?: (search: string) => void
   onSortChange: (sort: Dashboard2Sort) => void
   orders: Dashboard2Order[]
+  pagination?: Dashboard2Pagination
   pending?: boolean
+  rowActions?: Dashboard2RowAction[]
   sales: Dashboard2SalesPoint[]
+  search?: string
   sort: Dashboard2Sort
 }

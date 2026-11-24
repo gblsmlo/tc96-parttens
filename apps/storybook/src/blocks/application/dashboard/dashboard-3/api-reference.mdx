@@ -5,9 +5,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Dashboard3
 
-A team coverage dashboard: a crew table with a coverage bar per person, an action queue with a button per item and a line chart of staff supply against forecast demand across the day. Reach for it on a scheduling or workforce home page that shows who is covered and what needs a decision. Install it with `npx @tc96/parttens add dashboard-3`.
+A team coverage dashboard in four layers: a header with breadcrumb, title, description, period select and Exportar; an optional row of KPI cards; an area chart of staff supply against a dashed forecast line beside an action queue with a button per item; and a crew table with a coverage bar per person, a search and pagination. Reach for it on a scheduling or workforce home page that shows who is covered and what needs a decision. Install it with `npx @tc96/parttens add dashboard-3`.
 
-It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The queue buttons render only when `onAction(id)` is passed, and the app removes or updates the item it resolved. Coverage is a raw ratio (`0.92`) the block formats with `locale`; `shift` and the series values are the app's. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `crew`, `queue` and `forecast` the empty state. The precedence is `pending`, then `error`, then empty.
+It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The queue buttons render only when `onAction(id)` is passed, and the app removes or updates the item it resolved. The period select, Exportar, the search and the pagination render only when their callbacks are passed, and the app searches and pages the crew. Coverage is a raw ratio (`0.92`) the block formats with `locale`; `shift` and the series values are the app's. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `kpis`, `crew`, `queue` and `forecast` the empty state. The precedence is `pending`, then `error`, then empty.
 
 The other pages of `Blocks/Application/Dashboard/Dashboard3`: [Playground](?path=/story/blocks-application-dashboard-dashboard3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-dashboard-dashboard3-behavior--crew-table-shows-member-role-and-shift) for the tests, [States](?path=/story/blocks-application-dashboard-dashboard3-states--default) for the four states and [Usages](?path=/story/blocks-application-dashboard-dashboard3-usages--loaded) for the data read over the network.
 
@@ -21,19 +21,29 @@ The same path exports the types listed under Exports.
 
 ## Anatomy
 
-Four crew members, three queue items and seven forecast points.
+Four KPIs, four crew members, three queue items and seven forecast points.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
 <Dashboard3
-  crew={crew}
+  breadcrumbs={[{ href: '/painel', label: 'Painéis' }, { label: 'Cobertura das equipes' }]}
+  crew={pageRows}
   error={isError}
   forecast={forecast}
+  kpis={kpis}
   onAction={(id) => resolve(id)}
+  onExport={exportReport}
+  onPageChange={setPage}
+  onPeriodChange={setPeriod}
   onRetry={() => refetch()}
+  onSearchChange={setSearch}
+  pagination={{ page, pageCount }}
   pending={isPending}
+  period={period}
+  periodOptions={periodOptions}
   queue={queue}
+  search={search}
 />
 ```
 
@@ -45,6 +55,18 @@ Four crew members, three queue items and seven forecast points.
 | `queue` | `Dashboard3QueueItem[]` | required | The action items, in order. An empty array renders a message. |
 | `forecast` | `Dashboard3ForecastPoint[]` | required | The points of the line chart. |
 | `onAction` | `(id: string) => void` | - | Called with the item `id`; without it no button is rendered. |
+| `breadcrumbs` | `{ label: string; href?: string }[]` | - | The trail above the title; the last item is the current page. |
+| `renderLink` | `RenderLink` | - | Builds the element of each breadcrumb link, for the app's router; without it the trail is plain text. |
+| `period` | `string` | - | The `value` of the active period. |
+| `periodOptions` | `{ label: string; value: string }[]` | - | The options of the period select. |
+| `onPeriodChange` | `(period: string) => void` | - | Called with the picked period; the select renders only with `period`, `periodOptions` and this callback. |
+| `onExport` | `() => void` | - | Renders the Exportar button in the header; hidden on error and on the empty state. |
+| `search` | `string` | `''` | The text of the table search. |
+| `onSearchChange` | `(search: string) => void` | - | Renders the table search; the app filters the rows. |
+| `pagination` | `{ page: number; pageCount: number }` | - | The current page, from 1, and the page count. |
+| `onPageChange` | `(page: number) => void` | - | Renders the pagination under the table with `pagination`; the app passes the rows of the page. |
+| `kpis` | `Dashboard3Kpi[]` | `[]` | The KPI cards; without them the row is not rendered. |
+| `currency` | `string` | `'BRL'` | Currency of the `currency` KPIs. |
 | `locale` | `string` | `'pt-BR'` | Locale of every formatted number. |
 | `pending` | `boolean` | `false` | Renders the skeleton; wins over `error` and the empty state. |
 | `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
@@ -58,7 +80,8 @@ Four crew members, three queue items and seven forecast points.
 | --- | --- |
 | `Dashboard3Member` | `id`, `name` (its initials fill the avatar), `role`, `shift`, `coverage` (ratio from 0 to 1), `status` (`{ label, tone? }`) and `avatarSrc`. |
 | `Dashboard3QueueItem` | `id`, `title`, `description`, `priority` (`{ label, tone? }`) and `actionLabel`, which replaces `labels.action` on that item. |
-| `Dashboard3ForecastPoint` | `label`, `supply` and `forecast`, both raw numbers. |
+| `Dashboard3ForecastPoint` | `label`, `supply` (the area) and `forecast` (the dashed line), both raw numbers. |
+| `Dashboard3Kpi` | The same fields as the KPI of `Dashboard1`: `id`, `label`, `value`, `format`, `delta`, `trend` and `sparkline`. |
 
 ## Labels
 
@@ -78,6 +101,14 @@ Four crew members, three queue items and seven forecast points.
 | `forecastLabel` | `string` | `"Oferta de pessoal e demanda prevista ao longo do dia"`; the accessible name of the chart |
 | `forecastSummary` | `(items) => string` | Joins `label: oferta x, previsão y` with `; `; the text read by screen readers as the chart description |
 | `supplySeries`, `forecastSeries` | `string` | `"Oferta"`, `"Previsão"` |
+| `breadcrumb` | `string` | `"Navegação estrutural"`; the accessible name of the trail |
+| `period`, `export` | `string` | `"Período"`, `"Exportar"` |
+| `search` | `string` | `"Buscar pessoa"`; the name and placeholder of the search |
+| `pagination` | `string` | `"Paginação da equipe"`; the name of the pagination |
+| `pageOf` | `(page, pageCount) => string` | `` `Página ${page} de ${pageCount}` `` |
+| `previousPage`, `nextPage` | `string` | `"Página anterior"`, `"Próxima página"` |
+| `description` | `string` | `"Quem está escalado, o que falta cobrir e o que fazer agora."`; the text under the title |
+| `indicators` | `string` | `"Indicadores"`; the accessible name of the KPI list |
 | `errorTitle`, `errorDescription`, `retry` | `string` | `"Não foi possível carregar a cobertura"`, `"Tente novamente em instantes."`, `"Tentar novamente"` |
 | `emptyTitle`, `emptyDescription` | `string` | `"Nenhuma escala cadastrada"`, `"A cobertura aparece aqui assim que houver escalas."` |
 
@@ -92,9 +123,13 @@ Four crew members, three queue items and seven forecast points.
 | `Dashboard3ForecastPoint` | `type` | A point of the chart. |
 | `Dashboard3ForecastSummaryItem` | `type` | The formatted item `forecastSummary` receives. |
 | `Dashboard3Labels` | `type` | The keys of `labels`. |
+| `Dashboard3Kpi` | `type` | A KPI card. |
+| `Dashboard3Pagination` | `type` | The `pagination` prop. |
 
 ## Accessibility and theme
 
+- The header is a `header` with the `h2` title; the breadcrumb is a `navigation` named by `labels.breadcrumb` and the period select a `combobox` named by `labels.period`.
+- The search is a `searchbox` named by `labels.search`; the pagination is a `navigation` named by `labels.pagination` whose buttons are disabled at the ends.
 - The chart is an `img` named by `labels.forecastLabel` and described by a visually hidden text from `labels.forecastSummary`.
 - Each coverage bar is a `progressbar` named by `labels.coverageOf` and shows its value as text; each queue button is named by `labels.actionFor`, which keeps the visible text in the name.
 - The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.

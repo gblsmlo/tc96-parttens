@@ -6,17 +6,25 @@ import {
   exceptions,
   filterOptions,
   kpis,
+  reasons,
 } from '../fixtures/dashboard-1.ts'
+import { breadcrumbsFor, periodOptions } from '../fixtures/shared.ts'
 
 const meta = {
   args: {
+    breadcrumbs: breadcrumbsFor('Exceções de expedição'),
     capacity,
     exceptions,
     filter: 'all',
     filterOptions,
     kpis,
+    onExport: fn(),
     onFilterChange: fn(),
+    onPeriodChange: fn(),
     onRetry: fn(),
+    period: '7d',
+    periodOptions,
+    reasons,
   },
   component: Dashboard1,
   parameters: { layout: 'padded' },
