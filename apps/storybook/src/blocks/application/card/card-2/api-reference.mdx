@@ -1,0 +1,74 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Card2
+
+A grid of integration cards: icon or initials, name, description, tier badge and a Connect button or a Connected status. Reach for it on an integrations catalog. Install it with `npx @tc96/parttens add card-2`.
+
+It is a card, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app.
+
+The other pages of `Blocks/Application/Card/Card2`: [Playground](?path=/story/blocks-application-card-card2-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card2-behavior--each-integration-shows-name-description-and-tier) for the tests and [Usages](?path=/story/blocks-application-card-card2-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Card2 } from '@tc96/blocks/application/card/card-2'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four cards: three to connect and one already connected.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Card2 integrations={integrations} onConnect={connect} />
+```
+
+## Card2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `integrations` | `Card2Integration[]` | required | The cards, in order. |
+| `onConnect` | `(id: string) => void` | - | Called with the integration id when Connect is clicked. Without it no Connect button renders. |
+| `labels` | `Partial<Card2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Card2Integration
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the card. |
+| `name` | `string` | Name of the integration; with no `icon` its initials fill the frame. |
+| `description` | `string` | One sentence on what it does. |
+| `icon` | `ReactNode` | Optional icon inside the `IconFrame`. |
+| `tier` | `{ label: string; tone?: CardBadgeTone }` | Optional badge, such as the plan that includes it. |
+| `connected` | `boolean` | Shows the Connected status instead of the button. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Integrações"`; the accessible name of the list |
+| `connect` | `string` | `"Conectar"`; the visible text of the button |
+| `connectTo` | `(name: string) => string` | `"Conectar Slack"`; the accessible name of the button |
+| `connected` | `string` | `"Conectado"`; the status text |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Card2` | `component` | The integrations grid. |
+| `Card2Props` | `type` | The props of the grid. |
+| `Card2Integration` | `type` | A card. |
+| `Card2Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The grid is a list named by `labels.title`; each card is a list item.
+- The button is named by `labels.connectTo`, so cards are told apart by assistive technology; the frame is `aria-hidden`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

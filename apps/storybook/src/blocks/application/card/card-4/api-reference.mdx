@@ -1,0 +1,79 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Card4
+
+A grid of meeting cards. Each card shows the title, the time range, a duration badge and the attendees as a stack of avatars, with a join button when the app handles it. Reach for it when a dashboard needs the day's meetings at a glance. Install it with `npx @tc96/parttens add card-4`.
+
+It is a list of cards, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing: the app passes the meetings already prepared, and the time range and the duration are the final strings it shows.
+
+The other pages of `Blocks/Application/Card/Card4`: [Playground](?path=/story/blocks-application-card-card4-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card4-behavior--meetings-show-time-and-duration) for the tests and [Usages](?path=/story/blocks-application-card-card4-usages--loaded) for the cards read over the network.
+
+## Import
+
+```tsx
+import { Card4 } from '@tc96/blocks/application/card/card-4'
+```
+
+The same path exports the types `Card4Props`, `Card4Meeting` and `Card4Labels`.
+
+## Anatomy
+
+The cards with a join button:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Card4 meetings={meetings} onJoin={(meetingId) => openRoom(meetingId)} />
+```
+
+## Card4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `meetings` | `readonly Card4Meeting[]` | required | One card per meeting, in order. An empty list shows the empty state. |
+| `onJoin` | `(meetingId: string) => void` | - | Called with the id of the meeting when its join button is pressed. Without it the button is not rendered. |
+| `maxAttendees` | `number` | `4` | Avatars shown before the `+n` counter. |
+| `labels` | `Partial<Card4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root element's classes. |
+
+The block takes no other props.
+
+## Card4Meeting
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Key of the card and the value passed to `onJoin`. |
+| `title` | `string` | Heading of the card. |
+| `timeRange` | `string` | Time range as the app wants it read, for example `09:00 - 09:45`. |
+| `duration` | `string` | Text of the badge, for example `45 min`. |
+| `attendees` | `readonly AvatarStackPerson[]` | People of the avatar stack: `id`, `label` and optionally `fallback` and `imageUrl`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Agenda de reuniões"`; the accessible name of the list |
+| `join` | `string` | `"Entrar"`; the visible text of the button |
+| `joinMeeting` | `(title: string) => string` | `"Entrar na reunião Revisão de design"`; the accessible name of the button |
+| `attendees` | `(title: string) => string` | `"Participantes de Revisão de design"`; the accessible name of the stack |
+| `emptyTitle` | `string` | `"Nenhuma reunião hoje"` |
+| `emptyDescription` | `string` | `"Quando houver reuniões marcadas, elas aparecem aqui."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Card4` | `component` | The meeting agenda. |
+| `Card4Props` | `type` | The props of the block. |
+| `Card4Meeting` | `type` | One meeting. |
+| `Card4Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each card is a `section` named by its title; the cards sit in a list named by `labels.title`.
+- The join button keeps `labels.join` as its visible text and takes `labels.joinMeeting` as its name, so several cards stay distinguishable.
+- The avatar stack is a list named by `labels.attendees`, with every name available to screen readers.
+- The block carries no color of its own: the theme belongs to the app.

@@ -1,0 +1,76 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Card3
+
+A profile card: avatar, name, role, an availability badge, a strip of three numbers and up to two actions. Reach for it in a team directory or a contact page. Install it with `npx @tc96/parttens add card-3`.
+
+It is a card, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app.
+
+The other pages of `Blocks/Application/Card/Card3`: [Playground](?path=/story/blocks-application-card-card3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card3-behavior--shows-name-role-and-availability) for the tests and [Usages](?path=/story/blocks-application-card-card3-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Card3 } from '@tc96/blocks/application/card/card-3'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+A profile with all three stats and both actions.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Card3 profile={profile} onMessage={message} onFollow={follow} />
+```
+
+## Card3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `profile` | `Card3Profile` | required | The person shown. |
+| `locale` | `string` | `"pt-BR"` | Locale of the stat numbers. |
+| `onMessage` | `(id: string) => void` | - | Called with the profile id by Mensagem. Without it the button does not render. |
+| `onFollow` | `(id: string) => void` | - | Called with the profile id by Seguir. Without it the button does not render. |
+| `labels` | `Partial<Card3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Card3Profile
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the person; passed to the callbacks. |
+| `name` | `string` | Name of the person; it names the card and, with no `imageUrl`, gives the initials. |
+| `role` | `string` | Role under the name. |
+| `imageUrl` | `string` | Optional photo. |
+| `availability` | `{ label: string; tone?: CardBadgeTone }` | Optional badge under the role. |
+| `stats` | `Card3Stat[]` | `{ id, label, value }`; only the first three are shown, `value` formatted with `locale`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `stats` | `string` | `"Números"`; the accessible name of the strip |
+| `message` | `string` | `"Mensagem"` |
+| `follow` | `string` | `"Seguir"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Card3` | `component` | The profile card. |
+| `Card3Props` | `type` | The props of the card. |
+| `Card3Profile` | `type` | The person. |
+| `Card3Stat` | `type` | One number of the strip. |
+| `Card3Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The card is a `region` named by the person's name; the strip is a description list.
+- Actions are buttons; the avatar is decorative, the name beside it carries the identity.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

@@ -1,0 +1,80 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Card5
+
+A grid of shortcut tiles. Each tile has an icon, a title and a description, and is a button or a link: a shortcut with an `href` renders as a link, any other renders as a button that calls `onSelect`. Reach for it when a dashboard needs the actions people use most one click away. Install it with `npx @tc96/parttens add card-5`.
+
+It is a list of tiles, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing, and it never navigates: links go through `renderLink`, so the app's router owns them.
+
+The other pages of `Blocks/Application/Card/Card5`: [Playground](?path=/story/blocks-application-card-card5-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card5-behavior--tiles-show-title-and-description) for the tests and [Usages](?path=/story/blocks-application-card-card5-usages--loaded) for the tiles read over the network.
+
+## Import
+
+```tsx
+import { Card5 } from '@tc96/blocks/application/card/card-5'
+```
+
+The same path exports the types `Card5Props`, `Card5Shortcut` and `Card5Labels`.
+
+## Anatomy
+
+Three buttons and one link:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Card5
+  onSelect={(shortcutId) => run(shortcutId)}
+  renderLink={(href) => <Link to={href} />}
+  shortcuts={shortcuts}
+/>
+```
+
+## Card5
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `shortcuts` | `readonly Card5Shortcut[]` | required | One tile per shortcut, in order. An empty list shows the empty state. |
+| `onSelect` | `(shortcutId: string) => void` | - | Called with the id of a shortcut without `href` when its tile is pressed. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Builds the element of a shortcut with `href`, for example a router link. The block gives it the tile's classes and content. |
+| `labels` | `Partial<Card5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root element's classes. |
+
+The block takes no other props.
+
+## Card5Shortcut
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Key of the tile and the value passed to `onSelect`. |
+| `title` | `string` | Name of the shortcut. |
+| `description` | `string` | One line about what it does. |
+| `icon` | `Icon` | A Phosphor icon component, for example `CalendarPlusIcon`. |
+| `href` | `string` | When set, the tile is a link and `onSelect` is not called for it. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Atalhos rápidos"`; the accessible name of the list |
+| `emptyTitle` | `string` | `"Nenhum atalho disponível"` |
+| `emptyDescription` | `string` | `"Os atalhos disponíveis para você aparecem aqui."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Card5` | `component` | The shortcut launcher. |
+| `Card5Props` | `type` | The props of the block. |
+| `Card5Shortcut` | `type` | One shortcut. |
+| `Card5Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each tile is a native `button` or a link, named by its title and description.
+- The icon is decorative and hidden from assistive technology.
+- Focus shows a ring on the whole tile.
+- The block carries no color of its own: the theme belongs to the app.

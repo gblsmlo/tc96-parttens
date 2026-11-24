@@ -90,6 +90,12 @@ export const blockNames = [
   'stats-4',
   'stats-5',
   'stats-6',
+  'card-1',
+  'card-2',
+  'card-3',
+  'card-4',
+  'card-5',
+  'card-6',
 ] as const
 export type BlockName = (typeof blockNames)[number]
 /** Folder under packages/blocks/src, kept as the path in the consumer. */
@@ -138,6 +144,12 @@ export const blockSources: Record<BlockName, string> = {
   'stats-4': 'application/stats/stats-4',
   'stats-5': 'application/stats/stats-5',
   'stats-6': 'application/stats/stats-6',
+  'card-1': 'application/card/card-1',
+  'card-2': 'application/card/card-2',
+  'card-3': 'application/card/card-3',
+  'card-4': 'application/card/card-4',
+  'card-5': 'application/card/card-5',
+  'card-6': 'application/card/card-6',
 }
 export type ItemName = PatternName | BlockName
 /** Areas under packages/parttens/src that ship with an item no file of it imports. */

@@ -1,0 +1,69 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Card1
+
+A card of detail tiles: a grid of label and value pairs, each value optionally followed by an accent. Reach for it at the top of a record to summarize who owns it, its status, the team and the deadline. Install it with `npx @tc96/parttens add card-1`.
+
+It is a card, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app.
+
+The other pages of `Blocks/Application/Card/Card1`: [Playground](?path=/story/blocks-application-card-card1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card1-behavior--each-fact-shows-label-and-value) for the tests and [Usages](?path=/story/blocks-application-card-card1-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Card1 } from '@tc96/blocks/application/card/card-1'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four tiles: plain, with a badge, with an avatar group and plain.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Card1 facts={facts} />
+```
+
+## Card1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `facts` | `Card1Fact[]` | required | The tiles, in order. |
+| `labels` | `Partial<Card1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Card1Fact
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the tile. |
+| `label` | `string` | What the value is. |
+| `value` | `string` | The text of the fact, already formatted. |
+| `accent` | `Card1Accent` | Optional: `{ kind: 'badge', badge: { label, tone? } }`, `{ kind: 'people', people }` (an `AvatarStack`) or `{ kind: 'icon', icon }` (inside an `IconFrame`). |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Detalhes"`; the accessible name of the card |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Card1` | `component` | The detail tiles card. |
+| `Card1Props` | `type` | The props of the card. |
+| `Card1Fact` | `type` | A tile. |
+| `Card1Accent` | `type` | The accent of a tile. |
+| `Card1Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The card is a `region` named by `labels.title`; the tiles are a description list (`dt` label, `dd` value).
+- A people accent is a list named by the label of its fact; an icon accent is `aria-hidden`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

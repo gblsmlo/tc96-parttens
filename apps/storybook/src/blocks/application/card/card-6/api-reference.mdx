@@ -1,0 +1,94 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Card6
+
+A grid of job recommendation cards. Each card shows the company initials, the title, the company, the location, a work mode badge and the salary range, with an apply button and a save toggle when the app handles them. Reach for it when a page recommends jobs to a candidate. Install it with `npx @tc96/parttens add card-6`.
+
+It is a list of cards, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing: the saved jobs are controlled through `saved`, and the app updates them in `onSaveChange`.
+
+The other pages of `Blocks/Application/Card/Card6`: [Playground](?path=/story/blocks-application-card-card6-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card6-behavior--jobs-show-company-location-and-work-mode) for the tests and [Usages](?path=/story/blocks-application-card-card6-usages--loaded) for the cards read over the network.
+
+## Import
+
+```tsx
+import { Card6 } from '@tc96/blocks/application/card/card-6'
+```
+
+The same path exports the types `Card6Props`, `Card6Job`, `Card6Salary`, `Card6WorkMode` and `Card6Labels`.
+
+## Anatomy
+
+The cards with both actions and one saved job:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Card6
+  jobs={jobs}
+  onApply={(jobId) => openApplication(jobId)}
+  onSaveChange={(jobId, next) => toggleSaved(jobId, next)}
+  saved={savedIds}
+/>
+```
+
+## Card6
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `jobs` | `readonly Card6Job[]` | required | One card per job, in order. An empty list shows the empty state. |
+| `saved` | `readonly string[]` | `[]` | Ids of the saved jobs. Controlled: the block keeps no copy. |
+| `onSaveChange` | `(jobId: string, saved: boolean) => void` | - | Called with the new state when the save toggle is pressed. Without it the toggle is not rendered. |
+| `onApply` | `(jobId: string) => void` | - | Called with the id of the job when the apply button is pressed. Without it the button is not rendered. |
+| `currency` | `string` | `'BRL'` | Currency of salaries that carry none. |
+| `locale` | `string` | `'pt-BR'` | Locale of the salary. |
+| `labels` | `Partial<Card6Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root element's classes. |
+
+The block takes no other props.
+
+## Card6Job
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Key of the card and the value passed to the callbacks. |
+| `title` | `string` | Heading of the card. |
+| `company` | `string` | Company name; its initials fill the logo frame. |
+| `location` | `string` | Where the job is. |
+| `workMode` | `Card6WorkMode` | `'remote'`, `'hybrid'` or `'onsite'`; shown as a badge with the text of `labels.workModes`. |
+| `salary` | `Card6Salary` | `min`, `max` and an optional `currency`. Formatted with `formatAmount`; without it no salary is shown. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Vagas recomendadas"`; the accessible name of the list |
+| `workModes` | `Record<Card6WorkMode, string>` | `"Remoto"`, `"Híbrido"`, `"Presencial"` |
+| `salary` | `(min: string, max: string) => string` | `"R$ 9.000 a R$ 14.000"` |
+| `apply` | `string` | `"Candidatar-se"`; the visible text of the button |
+| `applyTo` | `(title: string, company: string) => string` | `"Candidatar-se a Gerente de produto em Vale Logística"`; the accessible name of the button |
+| `save` | `(title: string) => string` | `"Salvar vaga Gerente de produto"` |
+| `unsave` | `(title: string) => string` | `"Remover Gerente de produto das vagas salvas"` |
+| `emptyTitle` | `string` | `"Nenhuma vaga recomendada"` |
+| `emptyDescription` | `string` | `"As vagas recomendadas para você aparecem aqui."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Card6` | `component` | The job recommendation cards. |
+| `Card6Props` | `type` | The props of the block. |
+| `Card6Job` | `type` | One job. |
+| `Card6Salary` | `type` | A salary range. |
+| `Card6WorkMode` | `type` | `'remote' \| 'hybrid' \| 'onsite'`. |
+| `Card6Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each card is a `section` named by its title; the cards sit in a list named by `labels.title`.
+- The save toggle reports its state with `aria-pressed` and changes its name between `labels.save` and `labels.unsave`.
+- The apply button keeps `labels.apply` as its visible text and takes `labels.applyTo` as its name.
+- The company initials are decorative; the company name is also written as text.
+- The block carries no color of its own: the theme belongs to the app.
