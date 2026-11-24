@@ -8,6 +8,8 @@ import {
 } from './settings-19-controls.ts'
 import { ComposedSettings19 } from './settings-19-layouts.tsx'
 
+const retryHandler = fn()
+
 const meta = {
   args: {
     ...settings19ControlArgs,
@@ -154,5 +156,66 @@ export const LabelsOverrideTexts: Story = {
     ).toBeVisible()
     await expect(canvas.getByText('Falha nas entregas')).toBeVisible()
     await expect(canvas.queryByText('Webhooks')).toBeNull()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: (args) => <ComposedSettings19 {...args} pending />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByLabelText('Carregando webhooks'),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      canvasElement.querySelector('[data-slot="settings-row"], table'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: (args) => (
+    <ComposedSettings19 {...args} error onRetry={retryHandler} />
+  ),
+  play: async ({ canvasElement }) => {
+    retryHandler.mockClear()
+    const canvas = within(canvasElement)
+    await expect(canvas.getByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retryHandler).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: (args) => <ComposedSettings19 {...args} error />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByRole('alert')).toBeVisible()
+    await expect(
+      canvas.queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: (args) => <ComposedSettings19 {...args} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando webhooks')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorWinsOverEmpty: Story = {
+  render: (args) => <ComposedSettings19 {...args} empty error />,
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByRole('alert')).toBeVisible()
+    await expect(canvasElement.querySelector('[data-kind="empty"]')).toBeNull()
   },
 }

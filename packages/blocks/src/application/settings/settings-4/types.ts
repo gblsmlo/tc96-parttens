@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings4Option {
   label: string
   value: string
@@ -9,7 +10,7 @@ export interface Settings4ThemeGroup {
   options: Settings4Option[]
 }
 
-export interface Settings4Labels {
+export interface Settings4Labels extends SettingsLoadLabels {
   mode: string
   modeDescription: string
   theme: string
@@ -17,7 +18,7 @@ export interface Settings4Labels {
   title: string
 }
 
-export interface Settings4Props {
+export interface Settings4Props extends SettingsLoadProps {
   className?: string
   colorTheme: string
   labels?: Partial<Settings4Labels>

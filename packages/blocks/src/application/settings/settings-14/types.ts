@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export type Settings14AccountType = 'bank' | 'cash'
 
 export interface Settings14Account {
@@ -8,7 +9,7 @@ export interface Settings14Account {
   type: Settings14AccountType
 }
 
-export interface Settings14Labels {
+export interface Settings14Labels extends SettingsLoadLabels {
   accountType: (type: Settings14AccountType) => string
   actions: (name: string) => string
   archive: string
@@ -27,7 +28,7 @@ export interface Settings14Labels {
 
 export type Settings14Action = 'edit' | 'make-default' | 'archive' | 'restore'
 
-export interface Settings14Props {
+export interface Settings14Props extends SettingsLoadProps {
   accounts: Settings14Account[]
   archivedAccounts?: Settings14Account[]
   className?: string

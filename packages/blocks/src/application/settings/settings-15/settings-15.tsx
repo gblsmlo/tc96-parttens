@@ -12,9 +12,11 @@ import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-su
 import { Button } from '@tc96/ui/button'
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsRowActions } from '../shared/settings-row-actions'
 import { SettingsSwatch } from '../shared/settings-swatch'
 import { defaultSettings15Labels } from './labels'
+import { Settings15Skeleton } from './settings-15-skeleton'
 import type {
   Settings15Action,
   Settings15Category,
@@ -126,6 +128,9 @@ function categoryRows(
 }
 
 export function Settings15({
+  error,
+  onRetry,
+  pending,
   archivedCategories = [],
   categories,
   className,
@@ -134,6 +139,13 @@ export function Settings15({
   onCreate,
 }: Readonly<Settings15Props>) {
   const labels = { ...defaultSettings15Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings15Skeleton />,
+  })
 
   return (
     <SettingsSection
@@ -155,22 +167,31 @@ export function Settings15({
         </SettingsSectionHeader>
       }
     >
-      {categories.length === 0 ? (
-        <StateSurface
-          description={labels.emptyDescription}
-          kind="empty"
-          title={labels.emptyTitle}
-        />
-      ) : (
-        categoryRows(categories, labels, onCategoryAction)
+      {loadState ?? (
+        <>
+          {categories.length === 0 ? (
+            <StateSurface
+              description={labels.emptyDescription}
+              kind="empty"
+              title={labels.emptyTitle}
+            />
+          ) : (
+            categoryRows(categories, labels, onCategoryAction)
+          )}
+          {archivedCategories.length > 0 ? (
+            <div>
+              <SettingsCollapsed defaultOpen={false} title={labels.archived}>
+                {categoryRows(
+                  archivedCategories,
+                  labels,
+                  onCategoryAction,
+                  true,
+                )}
+              </SettingsCollapsed>
+            </div>
+          ) : null}
+        </>
       )}
-      {archivedCategories.length > 0 ? (
-        <div>
-          <SettingsCollapsed defaultOpen={false} title={labels.archived}>
-            {categoryRows(archivedCategories, labels, onCategoryAction, true)}
-          </SettingsCollapsed>
-        </div>
-      ) : null}
     </SettingsSection>
   )
 }

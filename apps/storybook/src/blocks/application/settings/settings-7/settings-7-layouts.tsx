@@ -6,6 +6,9 @@ import { tags } from '../fixtures/tags.ts'
 import type { Settings7Controls } from './settings-7-controls.ts'
 
 interface ComposedSettings7Props extends Settings7Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onCreate?: Settings7Props['onCreate']
   onTagAction?: Settings7Props['onTagAction']
 }
@@ -13,6 +16,9 @@ interface ComposedSettings7Props extends Settings7Controls {
 const ignore = () => undefined
 
 export const ComposedSettings7 = ({
+  error,
+  onRetry,
+  pending,
   description,
   empty,
   newTag,
@@ -22,6 +28,9 @@ export const ComposedSettings7 = ({
   withActions,
 }: Readonly<ComposedSettings7Props>) => (
   <Settings7
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     labels={{ description, newTag, title }}
     onCreate={withActions ? onCreate : undefined}
     onTagAction={withActions ? onTagAction : undefined}

@@ -44,6 +44,9 @@ The cost centers section. Renders the title, the description and, with `onCreate
 | `archivedCostCenters` | `Settings16CostCenter[]` | `[]` | Cost centers listed in the collapsed archived section. Only rendered when not empty. |
 | `onCreate` | `() => void` | - | Called when the New cost center button is clicked. Without it the button is not rendered. |
 | `onCostCenterAction` | `(costCenterId: string, action: Settings16Action) => void` | - | Called with the cost center id and `'edit'`, `'archive'` or `'restore'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings16Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -72,6 +75,10 @@ The block takes no other props.
 | `emptyDescription` | `string` | `"Crie um centro de custo para ver onde o dinheiro é gasto."` |
 | `actions` | `(name: string) => string` | `"Ações de Indicação"` for `"Indicação"`; the accessible name of the row menu |
 | `entries` | `(count: number) => string` | `"12 lançamentos"`; `1 lançamento` in the singular |
+| `loading` | `string` | `"Carregando centros de custo"` |
+| `errorTitle` | `string` | `"Não foi possível carregar os centros de custo"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

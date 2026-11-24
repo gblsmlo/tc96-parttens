@@ -49,6 +49,9 @@ The profile and account sections. Renders the avatar row, one row per field, the
 | `email` | `string` | required | Starting value of the e-mail field. The form keeps its own value after that. |
 | `fields` | `Settings1Field[]` | required | The editable rows of the profile section, in order. |
 | `sessionCount` | `number` | required | Count shown in the sessions row, in the singular or the plural. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `onDeleteAccount` | `() => void` | - | Called when the delete button is clicked. Without it the button is not rendered. |
 | `onEmailSubmit` | `(email: string) => void` | - | Called with the trimmed e-mail when the save button is clicked and the address is valid. |
@@ -88,6 +91,10 @@ The profile and account sections. Renders the avatar row, one row per field, the
 | `deleteAccountTitle` | `string` | `"Excluir conta"` |
 | `deleteAccountDescription` | `string` | `"Remove sua conta e seu acesso a todos os espaços de trabalho"` |
 | `deleteAccount` | `string` | `"Excluir conta"` |
+| `loading` | `string` | `"Carregando conta"` |
+| `errorTitle` | `string` | `"Não foi possível carregar a conta"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

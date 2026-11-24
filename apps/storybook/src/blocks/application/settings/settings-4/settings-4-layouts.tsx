@@ -6,6 +6,9 @@ import { settings4Data } from '../fixtures/settings-4.ts'
 import type { Settings4Controls } from './settings-4-controls.ts'
 
 interface ComposedSettings4Props extends Settings4Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onColorThemeChange?: Settings4Props['onColorThemeChange']
   onModeChange?: Settings4Props['onModeChange']
 }
@@ -13,6 +16,9 @@ interface ComposedSettings4Props extends Settings4Controls {
 const ignore = () => undefined
 
 export const ComposedSettings4 = ({
+  error,
+  onRetry,
+  pending,
   colorTheme,
   mode,
   modeDescription,
@@ -25,6 +31,9 @@ export const ComposedSettings4 = ({
   withChanges,
 }: Readonly<ComposedSettings4Props>) => (
   <Settings4
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     colorTheme={colorTheme}
     labels={{
       mode: modeLabel,

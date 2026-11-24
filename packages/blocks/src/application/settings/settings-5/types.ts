@@ -1,9 +1,10 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings5TimeZone {
   label: string
   value: string
 }
 
-export interface Settings5Labels {
+export interface Settings5Labels extends SettingsLoadLabels {
   dangerTitle: string
   deleteDescription: string
   deleteTitle: string
@@ -21,7 +22,7 @@ export interface Settings5Labels {
   workspaceTitle: string
 }
 
-export interface Settings5Props {
+export interface Settings5Props extends SettingsLoadProps {
   className?: string
   initials: string
   labels?: Partial<Settings5Labels>

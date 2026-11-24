@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings6Labels } from './types'
 
 export const defaultSettings6Labels: Settings6Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar os membros',
+  loading: 'Carregando membros',
   actions: (name) => `Ações de ${name}`,
   invitationMeta: (role, sent) => `${role} · Enviado ${sent}`,
   invitationsTitle: 'Convites pendentes',

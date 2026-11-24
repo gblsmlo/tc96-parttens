@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings22Key {
   active: boolean
   createdAt: string
@@ -7,7 +8,7 @@ export interface Settings22Key {
   name: string
 }
 
-export interface Settings22Labels {
+export interface Settings22Labels extends SettingsLoadLabels {
   actions: (name: string) => string
   columnActions: string
   columnCreated: string
@@ -29,7 +30,7 @@ export interface Settings22Labels {
 
 export type Settings22Action = 'rotate' | 'revoke'
 
-export interface Settings22Props {
+export interface Settings22Props extends SettingsLoadProps {
   className?: string
   keys: Settings22Key[]
   labels?: Partial<Settings22Labels>

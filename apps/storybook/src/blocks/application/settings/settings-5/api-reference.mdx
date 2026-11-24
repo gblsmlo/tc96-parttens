@@ -56,6 +56,9 @@ The workspace settings. Renders the workspace section, with the logo, the name, 
 | `onTimeZoneChange` | `(value: string) => void` | - | Called with the chosen time zone value. |
 | `onUploadLogo` | `() => void` | - | Called when the logo placeholder is clicked. |
 | `onDeleteWorkspace` | `() => void` | - | Called when the delete button is clicked. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root element's classes. |
 
@@ -87,6 +90,10 @@ The block takes no other props.
 | `deleteTitle` | `string` | `"Excluir workspace"` |
 | `deleteDescription` | `string` | `"Exclui todos os registros e remove o acesso de todos os membros"` |
 | `deleteWorkspace` | `string` | `"Excluir workspace"` |
+| `loading` | `string` | `"Carregando workspace"` |
+| `errorTitle` | `string` | `"Não foi possível carregar o workspace"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

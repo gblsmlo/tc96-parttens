@@ -1,9 +1,13 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings7Labels } from './types'
 
 const plural = (value: number, one: string, many: string) =>
   `${value} ${value === 1 ? one : many}`
 
 export const defaultSettings7Labels: Settings7Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar as tags',
+  loading: 'Carregando tags',
   actions: (name) => `Ações de ${name}`,
   addSubtag: 'Adicionar subtag',
   delete: 'Excluir',

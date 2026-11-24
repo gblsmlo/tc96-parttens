@@ -10,8 +10,10 @@ import { Button } from '@tc96/ui/button'
 import { Group, GroupSeparator } from '@tc96/ui/group'
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsRowActions } from '../shared/settings-row-actions'
 import { defaultSettings9Labels } from './labels'
+import { Settings9Skeleton } from './settings-9-skeleton'
 import type {
   Settings9Action,
   Settings9Labels,
@@ -79,6 +81,9 @@ function RuleItem({ labels, onRuleAction, rule }: Readonly<RuleItemProps>) {
 }
 
 export function Settings9({
+  error,
+  onRetry,
+  pending,
   className,
   labels: labelsProp,
   onCreate,
@@ -86,6 +91,13 @@ export function Settings9({
   rules,
 }: Readonly<Settings9Props>) {
   const labels = { ...defaultSettings9Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings9Skeleton />,
+  })
 
   return (
     <SettingsSection
@@ -107,22 +119,23 @@ export function Settings9({
         </SettingsSectionHeader>
       }
     >
-      {rules.length === 0 ? (
-        <StateSurface
-          description={labels.emptyDescription}
-          kind="empty"
-          title={labels.emptyTitle}
-        />
-      ) : (
-        rules.map((rule) => (
-          <RuleItem
-            key={rule.id}
-            labels={labels}
-            onRuleAction={onRuleAction}
-            rule={rule}
+      {loadState ??
+        (rules.length === 0 ? (
+          <StateSurface
+            description={labels.emptyDescription}
+            kind="empty"
+            title={labels.emptyTitle}
           />
-        ))
-      )}
+        ) : (
+          rules.map((rule) => (
+            <RuleItem
+              key={rule.id}
+              labels={labels}
+              onRuleAction={onRuleAction}
+              rule={rule}
+            />
+          ))
+        ))}
     </SettingsSection>
   )
 }

@@ -159,6 +159,7 @@ const preview: Preview = {
           'Stories',
           'Layouts',
           'Behavior',
+          'States',
           'Usages',
         ]
         const partsA = a.title.split('/')

@@ -40,6 +40,9 @@ The SLA section. Renders the title, then one row with the description and the sw
 | --- | --- | --- | --- |
 | `enabled` | `boolean` | `undefined` (off) | Whether the switch is on. The block keeps no copy: update it from `onEnabledChange`. |
 | `onEnabledChange` | `(enabled: boolean) => void` | - | Called with the new state each time the switch changes. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings8Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -52,6 +55,10 @@ The block takes no other props.
 | `title` | `string` | `"SLAs"` |
 | `description` | `string` | `"Aplique prazos às issues que correspondem às regras de automação"` |
 | `enable` | `string` | `"Ativar SLAs"` |
+| `loading` | `string` | `"Carregando SLAs"` |
+| `errorTitle` | `string` | `"Não foi possível carregar os SLAs"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

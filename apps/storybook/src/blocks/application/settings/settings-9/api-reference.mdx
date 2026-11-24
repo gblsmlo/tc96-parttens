@@ -42,6 +42,9 @@ The rules section. Renders the title, the description and, with `onCreate`, the 
 | `rules` | `Settings9Rule[]` | required | The rules to list; an empty array shows the empty state. |
 | `onCreate` | `() => void` | - | Called when the Add rule button is clicked. Without it the button is not rendered. |
 | `onRuleAction` | `(ruleId: string, action: Settings9Action) => void` | - | Called with the rule id and `'edit'` or `'delete'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings9Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -72,6 +75,10 @@ The block takes no other props.
 | `thenLabel` | `string` | `"Então"` |
 | `condition` | `string` | `"Condição"`; the accessible name of the group with the three badges |
 | `actions` | `(field: string, operator: string, value: string) => string` | `"Ações de Etapa é igual a Proposta"` for `("Etapa", "é igual a", "Proposta")`; the accessible name of the row menu |
+| `loading` | `string` | `"Carregando regras"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as regras"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

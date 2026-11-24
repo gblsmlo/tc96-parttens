@@ -10,8 +10,10 @@ import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-su
 import { Button } from '@tc96/ui/button'
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsRowActions } from '../shared/settings-row-actions'
 import { defaultSettings16Labels } from './labels'
+import { Settings16Skeleton } from './settings-16-skeleton'
 import type {
   Settings16Action,
   Settings16CostCenter,
@@ -65,6 +67,9 @@ function CostCenterRow({
 }
 
 export function Settings16({
+  error,
+  onRetry,
+  pending,
   archivedCostCenters = [],
   className,
   costCenters,
@@ -73,6 +78,13 @@ export function Settings16({
   onCreate,
 }: Readonly<Settings16Props>) {
   const labels = { ...defaultSettings16Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings16Skeleton />,
+  })
 
   return (
     <SettingsSection
@@ -94,37 +106,41 @@ export function Settings16({
         </SettingsSectionHeader>
       }
     >
-      {costCenters.length === 0 ? (
-        <StateSurface
-          description={labels.emptyDescription}
-          kind="empty"
-          title={labels.emptyTitle}
-        />
-      ) : (
-        costCenters.map((costCenter) => (
-          <CostCenterRow
-            costCenter={costCenter}
-            key={costCenter.id}
-            labels={labels}
-            onCostCenterAction={onCostCenterAction}
-          />
-        ))
-      )}
-      {archivedCostCenters.length > 0 ? (
-        <div>
-          <SettingsCollapsed defaultOpen={false} title={labels.archived}>
-            {archivedCostCenters.map((costCenter) => (
+      {loadState ?? (
+        <>
+          {costCenters.length === 0 ? (
+            <StateSurface
+              description={labels.emptyDescription}
+              kind="empty"
+              title={labels.emptyTitle}
+            />
+          ) : (
+            costCenters.map((costCenter) => (
               <CostCenterRow
-                archived
                 costCenter={costCenter}
                 key={costCenter.id}
                 labels={labels}
                 onCostCenterAction={onCostCenterAction}
               />
-            ))}
-          </SettingsCollapsed>
-        </div>
-      ) : null}
+            ))
+          )}
+          {archivedCostCenters.length > 0 ? (
+            <div>
+              <SettingsCollapsed defaultOpen={false} title={labels.archived}>
+                {archivedCostCenters.map((costCenter) => (
+                  <CostCenterRow
+                    archived
+                    costCenter={costCenter}
+                    key={costCenter.id}
+                    labels={labels}
+                    onCostCenterAction={onCostCenterAction}
+                  />
+                ))}
+              </SettingsCollapsed>
+            </div>
+          ) : null}
+        </>
+      )}
     </SettingsSection>
   )
 }

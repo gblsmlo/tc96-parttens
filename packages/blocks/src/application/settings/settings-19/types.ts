@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings19Endpoint {
   enabled: boolean
   events: number
@@ -9,7 +10,7 @@ export interface Settings19Endpoint {
 
 export type Settings19Action = 'edit' | 'send-test' | 'delete'
 
-export interface Settings19Labels {
+export interface Settings19Labels extends SettingsLoadLabels {
   actions: (url: string) => string
   delete: string
   description: string
@@ -27,7 +28,7 @@ export interface Settings19Labels {
   title: string
 }
 
-export interface Settings19Props {
+export interface Settings19Props extends SettingsLoadProps {
   className?: string
   endpoints: Settings19Endpoint[]
   labels?: Partial<Settings19Labels>

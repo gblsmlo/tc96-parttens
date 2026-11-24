@@ -6,6 +6,9 @@ import { settings1Fields } from '../fixtures/settings-1.ts'
 import type { Settings1Controls } from './settings-1-controls.ts'
 
 interface ComposedSettings1Props extends Settings1Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onDeleteAccount?: Settings1Props['onDeleteAccount']
   onEmailSubmit?: Settings1Props['onEmailSubmit']
   onFieldCommit?: Settings1Props['onFieldCommit']
@@ -14,6 +17,9 @@ interface ComposedSettings1Props extends Settings1Controls {
 }
 
 export const ComposedSettings1 = ({
+  error,
+  onRetry,
+  pending,
   avatarInitials,
   email,
   onDeleteAccount,
@@ -26,6 +32,9 @@ export const ComposedSettings1 = ({
   withActions,
 }: Readonly<ComposedSettings1Props>) => (
   <Settings1
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     avatarInitials={avatarInitials}
     email={email}
     fields={settings1Fields}

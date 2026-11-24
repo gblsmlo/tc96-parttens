@@ -6,6 +6,9 @@ import { settings13Data } from '../fixtures/settings-13.ts'
 import type { Settings13Controls } from './settings-13-controls.ts'
 
 interface ComposedSettings13Props extends Settings13Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onAllowCustomReasonChange?: Settings13Props['onAllowCustomReasonChange']
   onCreate?: Settings13Props['onCreate']
   onReasonAction?: Settings13Props['onReasonAction']
@@ -15,6 +18,9 @@ interface ComposedSettings13Props extends Settings13Controls {
 const ignore = () => undefined
 
 export const ComposedSettings13 = ({
+  error,
+  onRetry,
+  pending,
   allowCustomReason,
   description,
   empty,
@@ -29,6 +35,9 @@ export const ComposedSettings13 = ({
   withArchived,
 }: Readonly<ComposedSettings13Props>) => (
   <Settings13
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     allowCustomReason={allowCustomReason}
     archivedReasons={withArchived ? settings13Data.archivedReasons : []}
     labels={{ description, newReason, title }}

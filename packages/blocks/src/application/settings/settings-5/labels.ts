@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings5Labels } from './types'
 
 export const defaultSettings5Labels: Settings5Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar o workspace',
+  loading: 'Carregando workspace',
   dangerTitle: 'Zona de perigo',
   deleteDescription:
     'Exclui todos os registros e remove o acesso de todos os membros',

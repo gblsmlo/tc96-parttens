@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings6Role {
   label: string
   value: string
@@ -27,7 +28,7 @@ export type Settings6MemberAction = 'remove'
 
 export type Settings6InvitationAction = 'resend' | 'revoke'
 
-export interface Settings6Labels {
+export interface Settings6Labels extends SettingsLoadLabels {
   actions: (name: string) => string
   invitationMeta: (role: string, sent: string) => string
   invitationsTitle: string
@@ -42,7 +43,7 @@ export interface Settings6Labels {
   title: string
 }
 
-export interface Settings6Props {
+export interface Settings6Props extends SettingsLoadProps {
   className?: string
   invitations: Settings6Invitation[]
   labels?: Partial<Settings6Labels>

@@ -42,6 +42,9 @@ The tags section. Renders the title, the description and, with `onCreate`, the N
 | `tags` | `Settings7Tag[]` | required | The tags to list; an empty array shows the empty state. Each tag may carry `subtags`, listed right below it. |
 | `onCreate` | `() => void` | - | Called when the New tag button is clicked. Without it the button is not rendered. |
 | `onTagAction` | `(tagId: string, action: Settings7Action) => void` | - | Called with the tag id and `'edit'`, `'add-subtag'` or `'delete'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings7Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -73,6 +76,10 @@ The block takes no other props.
 | `actions` | `(name: string) => string` | `"Ações de Indicação"` for `"Indicação"`; the accessible name of the row menu |
 | `subtagOf` | `(parent: string) => string` | `"Subtag de Cliente ativo"` for `"Cliente ativo"` |
 | `usage` | `(leads: number, tasks: number) => string` | `"12 leads · 5 tarefas"`; `1 lead` and `1 tarefa` in the singular |
+| `loading` | `string` | `"Carregando tags"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as tags"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

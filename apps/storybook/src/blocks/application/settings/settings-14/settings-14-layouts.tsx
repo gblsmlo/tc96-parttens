@@ -10,6 +10,9 @@ import {
 import type { Settings14Controls } from './settings-14-controls.ts'
 
 interface ComposedSettings14Props extends Settings14Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onAccountAction?: Settings14Props['onAccountAction']
   onCreate?: Settings14Props['onCreate']
 }
@@ -17,6 +20,9 @@ interface ComposedSettings14Props extends Settings14Controls {
 const ignore = () => undefined
 
 export const ComposedSettings14 = ({
+  error,
+  onRetry,
+  pending,
   description,
   empty,
   newAccount,
@@ -27,6 +33,9 @@ export const ComposedSettings14 = ({
   withArchived,
 }: Readonly<ComposedSettings14Props>) => (
   <Settings14
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     accounts={empty ? [] : settings14Accounts}
     archivedAccounts={withArchived ? settings14ArchivedAccounts : undefined}
     defaultAccountId={settings14DefaultAccountId}

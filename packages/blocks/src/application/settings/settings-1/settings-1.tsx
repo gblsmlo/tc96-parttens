@@ -13,7 +13,9 @@ import { Field, FieldError } from '@tc96/ui/field'
 import { Input } from '@tc96/ui/input'
 import { cn } from '@tc96/utils'
 import { useState } from 'react'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { defaultSettings1Labels } from './labels'
+import { Settings1Skeleton } from './settings-1-skeleton'
 import type { Settings1Labels, Settings1Props } from './types'
 
 interface AvatarUploadTriggerProps {
@@ -121,6 +123,9 @@ function EmailForm({
 }
 
 export function Settings1({
+  error,
+  onRetry,
+  pending,
   avatarInitials,
   className,
   email,
@@ -134,6 +139,13 @@ export function Settings1({
   sessionCount,
 }: Readonly<Settings1Props>) {
   const labels = { ...defaultSettings1Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings1Skeleton />,
+  })
 
   return (
     <div
@@ -149,79 +161,93 @@ export function Settings1({
           </SettingsSectionHeader>
         }
       >
-        <SettingsRow
-          description={labels.avatarDescription}
-          endSlot={
-            <AvatarUploadTrigger
-              initials={avatarInitials}
-              label={labels.uploadAvatar}
-              onClick={onUploadAvatar}
+        {loadState ?? (
+          <>
+            <SettingsRow
+              description={labels.avatarDescription}
+              endSlot={
+                <AvatarUploadTrigger
+                  initials={avatarInitials}
+                  label={labels.uploadAvatar}
+                  onClick={onUploadAvatar}
+                />
+              }
+              title={labels.avatarTitle}
             />
-          }
-          title={labels.avatarTitle}
-        />
-        {fields.map((field) => (
-          <SettingsRow
-            description={field.description}
-            endSlot={
-              <Input
-                aria-label={field.label}
-                className="w-56"
-                defaultValue={field.value}
-                onBlur={(event) =>
-                  onFieldCommit?.(field.id, event.currentTarget.value)
+            {fields.map((field) => (
+              <SettingsRow
+                description={field.description}
+                endSlot={
+                  <Input
+                    aria-label={field.label}
+                    className="w-56"
+                    defaultValue={field.value}
+                    onBlur={(event) =>
+                      onFieldCommit?.(field.id, event.currentTarget.value)
+                    }
+                  />
                 }
+                key={field.id}
+                title={field.label}
+              />
+            ))}
+          </>
+        )}
+      </SettingsSection>
+      {loadState ? null : (
+        <SettingsSection
+          header={
+            <SettingsSectionHeader>
+              <SettingsSectionTitle>{labels.accountTitle}</SettingsSectionTitle>
+              <SettingsSectionDescription>
+                {labels.accountDescription}
+              </SettingsSectionDescription>
+            </SettingsSectionHeader>
+          }
+        >
+          <SettingsRow
+            description={labels.emailDescription}
+            endSlot={
+              <EmailForm
+                defaultEmail={email}
+                labels={labels}
+                onSubmit={onEmailSubmit}
               />
             }
-            key={field.id}
-            title={field.label}
+            title={labels.emailTitle}
           />
-        ))}
-      </SettingsSection>
-      <SettingsSection
-        header={
-          <SettingsSectionHeader>
-            <SettingsSectionTitle>{labels.accountTitle}</SettingsSectionTitle>
-            <SettingsSectionDescription>
-              {labels.accountDescription}
-            </SettingsSectionDescription>
-          </SettingsSectionHeader>
-        }
-      >
-        <SettingsRow
-          description={labels.emailDescription}
-          endSlot={
-            <EmailForm
-              defaultEmail={email}
-              labels={labels}
-              onSubmit={onEmailSubmit}
-            />
-          }
-          title={labels.emailTitle}
-        />
-        <SettingsRow
-          description={labels.sessionsDescription(sessionCount)}
-          endSlot={
-            onSignOutEverywhere ? (
-              <Button onClick={onSignOutEverywhere} size="sm" variant="outline">
-                {labels.signOutEverywhere}
-              </Button>
-            ) : undefined
-          }
-          title={labels.sessionsTitle}
-        />
-        <SettingsRow
-          description={labels.deleteAccountDescription}
-          endSlot={
-            onDeleteAccount ? (
-              <Button onClick={onDeleteAccount} size="sm" variant="destructive">
-                {labels.deleteAccount}
-              </Button>
-            ) : undefined
-          }
-          title={labels.deleteAccountTitle}
-        />
-      </SettingsSection>
+          <SettingsRow
+            description={labels.sessionsDescription(sessionCount)}
+            endSlot={
+              onSignOutEverywhere ? (
+                <Button
+                  onClick={onSignOutEverywhere}
+                  size="sm"
+                  variant="outline"
+                >
+                  {labels.signOutEverywhere}
+                </Button>
+              ) : undefined
+            }
+            title={labels.sessionsTitle}
+          />
+          <SettingsRow
+            description={labels.deleteAccountDescription}
+            endSlot={
+              onDeleteAccount ? (
+                <Button
+                  onClick={onDeleteAccount}
+                  size="sm"
+                  variant="destructive"
+                >
+                  {labels.deleteAccount}
+                </Button>
+              ) : undefined
+            }
+            title={labels.deleteAccountTitle}
+          />
+        </SettingsSection>
+      )}
     </div>
   )
 }

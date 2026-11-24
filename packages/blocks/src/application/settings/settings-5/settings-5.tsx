@@ -24,7 +24,9 @@ import {
 } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
 import { useState } from 'react'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { defaultSettings5Labels } from './labels'
+import { Settings5Skeleton } from './settings-5-skeleton'
 import type { Settings5Props } from './types'
 
 interface AvatarUploadTriggerProps {
@@ -57,6 +59,9 @@ function AvatarUploadTrigger({
 }
 
 export function Settings5({
+  error,
+  onRetry,
+  pending,
   className,
   initials,
   labels: labelsProp,
@@ -71,6 +76,13 @@ export function Settings5({
   timeZones,
 }: Readonly<Settings5Props>) {
   const labels = { ...defaultSettings5Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings5Skeleton />,
+  })
   const [timeZone, setTimeZone] = useState(timeZoneProp)
 
   return (
@@ -87,88 +99,103 @@ export function Settings5({
           </SettingsSectionHeader>
         }
       >
-        <SettingsRow
-          description={labels.logoDescription}
-          endSlot={
-            <AvatarUploadTrigger
-              initials={initials}
-              label={labels.uploadLogo}
-              onClick={onUploadLogo}
+        {loadState ?? (
+          <>
+            <SettingsRow
+              description={labels.logoDescription}
+              endSlot={
+                <AvatarUploadTrigger
+                  initials={initials}
+                  label={labels.uploadLogo}
+                  onClick={onUploadLogo}
+                />
+              }
+              title={labels.logoTitle}
             />
-          }
-          title={labels.logoTitle}
-        />
-        <SettingsRow
-          endSlot={
-            <Input
-              aria-label={labels.nameLabel}
-              className="w-64"
-              defaultValue={name}
-              onBlur={(event) => onNameCommit?.(event.currentTarget.value)}
+            <SettingsRow
+              endSlot={
+                <Input
+                  aria-label={labels.nameLabel}
+                  className="w-64"
+                  defaultValue={name}
+                  onBlur={(event) => onNameCommit?.(event.currentTarget.value)}
+                />
+              }
+              title={labels.nameLabel}
             />
-          }
-          title={labels.nameLabel}
-        />
-        <SettingsRow
-          description={labels.urlDescription}
-          endSlot={
-            <InputGroup className="w-64">
-              <InputGroupAddon>
-                <InputGroupText>{labels.urlPrefix}</InputGroupText>
-              </InputGroupAddon>
-              <InputGroupInput
-                aria-label={labels.urlLabel}
-                defaultValue={slug}
-                onBlur={(event) => onSlugCommit?.(event.currentTarget.value)}
-              />
-            </InputGroup>
-          }
-          title={labels.urlLabel}
-        />
-        <SettingsRow
-          description={labels.timeZoneDescription}
-          endSlot={
-            <Select
-              items={timeZones}
-              onValueChange={(next) => {
-                if (!next) return
-                setTimeZone(next)
-                onTimeZoneChange?.(next)
-              }}
-              value={timeZone}
-            >
-              <SelectTrigger aria-label={labels.timeZoneLabel} className="w-64">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectPopup>
-                {timeZones.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectPopup>
-            </Select>
-          }
-          title={labels.timeZoneLabel}
-        />
+            <SettingsRow
+              description={labels.urlDescription}
+              endSlot={
+                <InputGroup className="w-64">
+                  <InputGroupAddon>
+                    <InputGroupText>{labels.urlPrefix}</InputGroupText>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    aria-label={labels.urlLabel}
+                    defaultValue={slug}
+                    onBlur={(event) =>
+                      onSlugCommit?.(event.currentTarget.value)
+                    }
+                  />
+                </InputGroup>
+              }
+              title={labels.urlLabel}
+            />
+            <SettingsRow
+              description={labels.timeZoneDescription}
+              endSlot={
+                <Select
+                  items={timeZones}
+                  onValueChange={(next) => {
+                    if (!next) return
+                    setTimeZone(next)
+                    onTimeZoneChange?.(next)
+                  }}
+                  value={timeZone}
+                >
+                  <SelectTrigger
+                    aria-label={labels.timeZoneLabel}
+                    className="w-64"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {timeZones.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              }
+              title={labels.timeZoneLabel}
+            />
+          </>
+        )}
       </SettingsSection>
-      <SettingsSection
-        header={
-          <SettingsSectionHeader>
-            <SettingsSectionTitle>{labels.dangerTitle}</SettingsSectionTitle>
-          </SettingsSectionHeader>
-        }
-      >
-        <SettingsRow
-          description={labels.deleteDescription}
-          endSlot={
-            <Button onClick={onDeleteWorkspace} size="sm" variant="destructive">
-              {labels.deleteWorkspace}
-            </Button>
+      {loadState ? null : (
+        <SettingsSection
+          header={
+            <SettingsSectionHeader>
+              <SettingsSectionTitle>{labels.dangerTitle}</SettingsSectionTitle>
+            </SettingsSectionHeader>
           }
-          title={labels.deleteTitle}
-        />
-      </SettingsSection>
+        >
+          <SettingsRow
+            description={labels.deleteDescription}
+            endSlot={
+              <Button
+                onClick={onDeleteWorkspace}
+                size="sm"
+                variant="destructive"
+              >
+                {labels.deleteWorkspace}
+              </Button>
+            }
+            title={labels.deleteTitle}
+          />
+        </SettingsSection>
+      )}
     </div>
   )
 }

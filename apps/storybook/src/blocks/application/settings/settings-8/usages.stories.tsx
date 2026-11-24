@@ -1,27 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { Settings8 } from '@tc96/blocks/application/settings/settings-8'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
+import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settings8Handlers } from '../../../../mocks/settings-8.ts'
 import type { Settings8Sla } from '../fixtures/settings-8.ts'
+import { settings8ControlArgs } from './settings-8-controls.ts'
+import { ComposedSettings8 } from './settings-8-layouts.tsx'
 
 const SlaSettings = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Settings8Sla>('/settings/sla'),
     queryKey: ['settings', 'sla'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando SLAs" />
-  if (error)
+  if (isPending || isError)
     return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar os SLAs</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
+      <ComposedSettings8
+        {...settings8ControlArgs}
+        error={isError}
+        onRetry={refetch}
+        pending={isPending}
+      />
     )
 
   return <SlaSwitch initial={data.enabled} />
@@ -59,11 +60,17 @@ export const Failed: Story = {
     msw.use(settings8Handlers.error)
   },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os SLAs',
-      ),
+      await canvas.findByText('Não foi possível carregar os SLAs'),
     ).toBeVisible()
+    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
+    await expect(retry).toBeEnabled()
+    await userEvent.click(retry)
+    await expect(await canvas.findByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
   },
 }
 
@@ -72,8 +79,8 @@ export const Pending: Story = {
     msw.use(settings8Handlers.pending)
   },
   play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando SLAs'),
-    ).toBeVisible()
+    const skeleton =
+      await within(canvasElement).findByLabelText('Carregando SLAs')
+    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

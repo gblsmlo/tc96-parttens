@@ -4,25 +4,26 @@ import {
   Settings15,
   type Settings15Category,
 } from '@tc96/blocks/application/settings/settings-15'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
-import { expect, fn, within } from 'storybook/test'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settings15Handlers } from '../../../../mocks/settings-15.ts'
+import { settings15ControlArgs } from './settings-15-controls.ts'
+import { ComposedSettings15 } from './settings-15-layouts.tsx'
 
 const WorkspaceCategories = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Settings15Category[]>('/settings/categories'),
     queryKey: ['settings', 'categories'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando categorias" />
-  if (error)
+  if (isPending || isError)
     return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar as categorias</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
+      <ComposedSettings15
+        {...settings15ControlArgs}
+        error={isError}
+        onRetry={refetch}
+        pending={isPending}
+      />
     )
 
   return (
@@ -68,11 +69,17 @@ export const Failed: Story = {
     msw.use(settings15Handlers.categoriesError)
   },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as categorias',
-      ),
+      await canvas.findByText('Não foi possível carregar as categorias'),
     ).toBeVisible()
+    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
+    await expect(retry).toBeEnabled()
+    await userEvent.click(retry)
+    await expect(await canvas.findByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
   },
 }
 
@@ -81,8 +88,9 @@ export const Pending: Story = {
     msw.use(settings15Handlers.categoriesPending)
   },
   play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando categorias'),
-    ).toBeVisible()
+    const skeleton = await within(canvasElement).findByLabelText(
+      'Carregando categorias',
+    )
+    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

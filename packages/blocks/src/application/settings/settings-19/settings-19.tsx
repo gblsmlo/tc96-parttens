@@ -12,8 +12,10 @@ import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { Switch } from '@tc96/ui/switch'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsRowActions } from '../shared/settings-row-actions'
 import { defaultSettings19Labels } from './labels'
+import { Settings19Skeleton } from './settings-19-skeleton'
 import type {
   Settings19Action,
   Settings19Endpoint,
@@ -68,6 +70,9 @@ function EndpointRow({
 }
 
 export function Settings19({
+  error,
+  onRetry,
+  pending,
   className,
   endpoints,
   labels: labelsProp,
@@ -76,13 +81,20 @@ export function Settings19({
   onEndpointAction,
 }: Readonly<Settings19Props>) {
   const labels = { ...defaultSettings19Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings19Skeleton />,
+  })
   const failingCount = endpoints.filter((endpoint) => endpoint.failing).length
 
   return (
     <div
       className={cn('mx-auto flex w-full max-w-2xl flex-col gap-4', className)}
     >
-      {failingCount > 0 ? (
+      {!loadState && failingCount > 0 ? (
         <Alert variant="error">
           <WarningIcon aria-hidden="true" />
           <AlertTitle>{labels.failingTitle}</AlertTitle>
@@ -109,23 +121,24 @@ export function Settings19({
           </SettingsSectionHeader>
         }
       >
-        {endpoints.length === 0 ? (
-          <StateSurface
-            description={labels.emptyDescription}
-            kind="empty"
-            title={labels.emptyTitle}
-          />
-        ) : (
-          endpoints.map((endpoint) => (
-            <EndpointRow
-              endpoint={endpoint}
-              key={endpoint.id}
-              labels={labels}
-              onEnabledChange={onEnabledChange}
-              onEndpointAction={onEndpointAction}
+        {loadState ??
+          (endpoints.length === 0 ? (
+            <StateSurface
+              description={labels.emptyDescription}
+              kind="empty"
+              title={labels.emptyTitle}
             />
-          ))
-        )}
+          ) : (
+            endpoints.map((endpoint) => (
+              <EndpointRow
+                endpoint={endpoint}
+                key={endpoint.id}
+                labels={labels}
+                onEnabledChange={onEnabledChange}
+                onEndpointAction={onEndpointAction}
+              />
+            ))
+          ))}
       </SettingsSection>
     </div>
   )

@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings13Labels } from './types'
 
 export const defaultSettings13Labels: Settings13Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar os motivos',
+  loading: 'Carregando motivos',
   actions: (name) => `Ações de ${name}`,
   allowCustomReason: 'Permitir motivo personalizado',
   allowCustomReasonDescription:

@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings11Labels } from './types'
 
 export const defaultSettings11Labels: Settings11Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar os status',
+  loading: 'Carregando status',
   actions: (name) => `Ações de ${name}`,
   delete: 'Excluir',
   description:

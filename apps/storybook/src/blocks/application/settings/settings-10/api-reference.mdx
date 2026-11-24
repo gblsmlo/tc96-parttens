@@ -44,6 +44,9 @@ The stages section. Renders the title, the description and, with `onStageCreate`
 | `stages` | `Settings10Stage[]` | required | The stages; each one is listed in the group of its `phase`. |
 | `onStageCreate` | `(name: string, phaseId: string) => void` | - | Called with the trimmed name and the chosen phase when the dialog is submitted. Without it the New stage button is not rendered. |
 | `onStageAction` | `(stageId: string, action: Settings10Action) => void` | - | Called with the stage id and `'edit'`, `'move-up'`, `'move-down'` or `'delete'` when a menu item is chosen. Without it the stage menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings10Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -88,6 +91,10 @@ The block takes no other props.
 | `stageName` | `string` | `"Nome da etapa"`; the name field of the dialog |
 | `phase` | `string` | `"Fase"`; the phase select of the dialog |
 | `stageDescription` | `(leads: number, phaseLabel: string, closed: boolean) => string \| undefined` | `"12 leads · Fecha como ganho"`; `"4 leads"` for an open phase; `undefined` when there is nothing to show |
+| `loading` | `string` | `"Carregando etapas"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as etapas"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

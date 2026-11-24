@@ -12,6 +12,8 @@ type Settings2Spies = {
   onValueChange: (key: string, value: string | boolean) => void
 }
 
+const retryHandler = fn()
+
 const meta = {
   args: { ...settings2ControlArgs, onValueChange: fn() },
   parameters: { layout: 'padded' },
@@ -125,5 +127,57 @@ export const LabelsOverrideTexts: Story = {
     ).toBeVisible()
     await expect(canvas.queryByText('Geral', { exact: true })).toBeNull()
     await expect(canvas.queryByText('Tema da interface')).toBeNull()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: (args) => <ComposedSettings2 {...args} pending />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByLabelText('Carregando preferências'),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      canvasElement.querySelector('[data-slot="settings-row"], table'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: (args) => (
+    <ComposedSettings2 {...args} error onRetry={retryHandler} />
+  ),
+  play: async ({ canvasElement }) => {
+    retryHandler.mockClear()
+    const canvas = within(canvasElement)
+    await expect(canvas.getByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retryHandler).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: (args) => <ComposedSettings2 {...args} error />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByRole('alert')).toBeVisible()
+    await expect(
+      canvas.queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: (args) => <ComposedSettings2 {...args} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByLabelText('Carregando preferências'),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(canvas.queryByRole('alert')).toBeNull()
   },
 }

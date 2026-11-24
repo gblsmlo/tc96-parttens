@@ -1,4 +1,5 @@
 import type { Icon } from '@phosphor-icons/react'
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 
 export interface Settings10Phase {
   closed?: boolean
@@ -18,7 +19,7 @@ export interface Settings10Stage {
 
 export type Settings10Action = 'edit' | 'move-up' | 'move-down' | 'delete'
 
-export interface Settings10Labels {
+export interface Settings10Labels extends SettingsLoadLabels {
   actions: (name: string) => string
   cancel: string
   createStage: string
@@ -40,7 +41,7 @@ export interface Settings10Labels {
   title: string
 }
 
-export interface Settings10Props {
+export interface Settings10Props extends SettingsLoadProps {
   className?: string
   labels?: Partial<Settings10Labels>
   onStageAction?: (stageId: string, action: Settings10Action) => void

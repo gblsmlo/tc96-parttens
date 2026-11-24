@@ -4,25 +4,26 @@ import {
   Settings16,
   type Settings16CostCenter,
 } from '@tc96/blocks/application/settings/settings-16'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
-import { expect, fn, within } from 'storybook/test'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settings16Handlers } from '../../../../mocks/settings-16.ts'
+import { settings16ControlArgs } from './settings-16-controls.ts'
+import { ComposedSettings16 } from './settings-16-layouts.tsx'
 
 const WorkspaceCostCenters = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Settings16CostCenter[]>('/settings/cost-centers'),
     queryKey: ['settings', 'cost-centers'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando centros de custo" />
-  if (error)
+  if (isPending || isError)
     return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar os centros de custo</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
+      <ComposedSettings16
+        {...settings16ControlArgs}
+        error={isError}
+        onRetry={refetch}
+        pending={isPending}
+      />
     )
 
   return (
@@ -68,11 +69,17 @@ export const Failed: Story = {
     msw.use(settings16Handlers.costCentersError)
   },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os centros de custo',
-      ),
+      await canvas.findByText('Não foi possível carregar os centros de custo'),
     ).toBeVisible()
+    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
+    await expect(retry).toBeEnabled()
+    await userEvent.click(retry)
+    await expect(await canvas.findByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
   },
 }
 

@@ -1,3 +1,4 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings15Direction, Settings15Labels } from './types'
 
 const directionLabels: Record<Settings15Direction, string> = {
@@ -6,6 +7,9 @@ const directionLabels: Record<Settings15Direction, string> = {
 }
 
 export const defaultSettings15Labels: Settings15Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar as categorias',
+  loading: 'Carregando categorias',
   actions: (name) => `Ações de ${name}`,
   addSubcategory: 'Adicionar subcategoria',
   archive: 'Arquivar',

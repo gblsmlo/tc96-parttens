@@ -6,8 +6,6 @@ import {
   type Settings10Action,
   type Settings10Stage,
 } from '@tc96/blocks/application/settings/settings-10'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
@@ -17,6 +15,8 @@ import {
   type Settings10StageRecord,
   toStages,
 } from '../fixtures/settings-10.ts'
+import { settings10ControlArgs } from './settings-10-controls.ts'
+import { ComposedSettings10 } from './settings-10-layouts.tsx'
 
 const onEditStage = fn()
 const onDeleteStage = fn()
@@ -81,18 +81,19 @@ const StageSettings = ({
 }
 
 const WorkspaceStages = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Settings10StageRecord[]>('/settings/stages'),
     queryKey: ['settings', 'stages'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando etapas" />
-  if (error)
+  if (isPending || isError)
     return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar as etapas</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
+      <ComposedSettings10
+        {...settings10ControlArgs}
+        error={isError}
+        onRetry={refetch}
+        pending={isPending}
+      />
     )
 
   return <StageSettings initialStages={toStages(data)} />
@@ -125,11 +126,17 @@ export const Failed: Story = {
     msw.use(settings10Handlers.error)
   },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as etapas',
-      ),
+      await canvas.findByText('Não foi possível carregar as etapas'),
     ).toBeVisible()
+    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
+    await expect(retry).toBeEnabled()
+    await userEvent.click(retry)
+    await expect(await canvas.findByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
   },
 }
 
@@ -138,9 +145,9 @@ export const Pending: Story = {
     msw.use(settings10Handlers.pending)
   },
   play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando etapas'),
-    ).toBeVisible()
+    const skeleton =
+      await within(canvasElement).findByLabelText('Carregando etapas')
+    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }
 
@@ -171,6 +178,7 @@ export const NewStageAppendsToFirstPhase: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
+    await canvas.findByRole('region', { name: 'Em aberto' })
     await userEvent.click(
       await canvas.findByRole('button', { name: 'Nova etapa' }),
     )

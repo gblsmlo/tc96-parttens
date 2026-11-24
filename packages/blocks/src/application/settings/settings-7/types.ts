@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings7Tag {
   colorClassName: string
   id: string
@@ -7,7 +8,7 @@ export interface Settings7Tag {
   tasks: number
 }
 
-export interface Settings7Labels {
+export interface Settings7Labels extends SettingsLoadLabels {
   actions: (name: string) => string
   addSubtag: string
   delete: string
@@ -23,7 +24,7 @@ export interface Settings7Labels {
 
 export type Settings7Action = 'edit' | 'add-subtag' | 'delete'
 
-export interface Settings7Props {
+export interface Settings7Props extends SettingsLoadProps {
   className?: string
   labels?: Partial<Settings7Labels>
   onCreate?: () => void

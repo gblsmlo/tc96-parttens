@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings1Field {
   description?: string
   id: string
@@ -5,7 +6,7 @@ export interface Settings1Field {
   value: string
 }
 
-export interface Settings1Labels {
+export interface Settings1Labels extends SettingsLoadLabels {
   accountDescription: string
   accountTitle: string
   avatarDescription: string
@@ -26,7 +27,7 @@ export interface Settings1Labels {
   uploadAvatar: string
 }
 
-export interface Settings1Props {
+export interface Settings1Props extends SettingsLoadProps {
   avatarInitials: string
   className?: string
   email: string

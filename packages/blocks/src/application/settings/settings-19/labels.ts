@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings19Labels } from './types'
 
 export const defaultSettings19Labels: Settings19Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar os webhooks',
+  loading: 'Carregando webhooks',
   actions: (url) => `Ações de ${url}`,
   delete: 'Excluir',
   description: 'Receba eventos do workspace em URLs que você controla.',

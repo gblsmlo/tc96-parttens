@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export type Settings15Direction = 'income' | 'expense'
 
 export interface Settings15Category {
@@ -8,7 +9,7 @@ export interface Settings15Category {
   subcategories?: Settings15Category[]
 }
 
-export interface Settings15Labels {
+export interface Settings15Labels extends SettingsLoadLabels {
   actions: (name: string) => string
   addSubcategory: string
   archive: string
@@ -31,7 +32,7 @@ export type Settings15Action =
   | 'archive'
   | 'restore'
 
-export interface Settings15Props {
+export interface Settings15Props extends SettingsLoadProps {
   archivedCategories?: Settings15Category[]
   categories: Settings15Category[]
   className?: string

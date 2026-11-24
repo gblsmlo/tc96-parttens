@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export type Settings12ActionType =
   | 'call'
   | 'email'
@@ -18,7 +19,7 @@ export interface Settings12Stage {
   name: string
 }
 
-export interface Settings12Labels {
+export interface Settings12Labels extends SettingsLoadLabels {
   actionType: (type: Settings12ActionType) => string
   actions: (title: string) => string
   blockStageChanges: string
@@ -38,7 +39,7 @@ export interface Settings12Labels {
 
 export type Settings12Action = 'edit' | 'delete'
 
-export interface Settings12Props {
+export interface Settings12Props extends SettingsLoadProps {
   blockStageChanges?: boolean
   className?: string
   labels?: Partial<Settings12Labels>

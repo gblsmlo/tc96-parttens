@@ -44,6 +44,9 @@ The section for the Editor role:
 | `capabilities` | `Settings18Capability[]` | required | The cards of the selected role; an empty array shows the empty state. |
 | `onRoleChange` | `(role: string) => void` | - | Called with the `value` of the chosen role. |
 | `onCapabilityChange` | `(capabilityId: string, checked: boolean) => void` | - | Called when a switch is toggled. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings18Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -67,6 +70,10 @@ The section for the Editor role:
 | `role` | `string` | `"Função"`; the accessible name of the select |
 | `emptyTitle` | `string` | `"Nenhuma capacidade"` |
 | `emptyDescription` | `string` | `"Esta função ainda não tem capacidades configuráveis."` |
+| `loading` | `string` | `"Carregando permissões"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as permissões"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

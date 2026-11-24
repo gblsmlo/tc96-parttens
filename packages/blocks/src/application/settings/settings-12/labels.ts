@@ -1,3 +1,4 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings12ActionType, Settings12Labels } from './types'
 
 const actionTypeLabels: Record<Settings12ActionType, string> = {
@@ -9,6 +10,9 @@ const actionTypeLabels: Record<Settings12ActionType, string> = {
 }
 
 export const defaultSettings12Labels: Settings12Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar as próximas ações',
+  loading: 'Carregando próximas ações',
   actionType: (type) => actionTypeLabels[type],
   actions: (title) => `Ações de ${title}`,
   blockStageChanges: 'Bloquear mudança de etapa',
