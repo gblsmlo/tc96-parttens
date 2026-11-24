@@ -113,6 +113,19 @@ export const lawsuitInstanceOptions = [
   { label: 'Tribunais superiores', value: 'superior' },
 ] as const satisfies readonly SelectPropertyOption[]
 
+export const lawsuitPartyRoleOptions = [
+  { label: 'Cliente', value: 'client' },
+  { label: 'Parte contrária', value: 'opposing' },
+  { label: 'Testemunha', value: 'witness' },
+  { label: 'Correspondente', value: 'correspondent' },
+  { label: 'Indicação', value: 'referral' },
+] as const satisfies readonly SelectPropertyOption[]
+
+export const lawsuitContractOptions = [
+  { label: 'Contrato de honorários 2025/014', value: 'fee-2025-014' },
+  { label: 'Contrato de êxito 2025/021', value: 'success-2025-021' },
+] as const satisfies readonly SelectPropertyOption[]
+
 export const initialLawsuitValues: LawsuitValues = {
   action: null,
   clientId: null,

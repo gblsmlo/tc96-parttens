@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   PersonProperty,
+  type PersonPropertyOption,
   RecordDialog,
   RecordGroup,
   RecordGroupRow,
@@ -17,31 +18,43 @@ import {
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
+import { Switch } from '@tc96/ui/switch'
 import {
   BellIcon,
+  BookOpenIcon,
   BriefcaseIcon,
-  CalendarClockIcon,
-  GitBranchIcon,
+  Building2Icon,
+  ContactIcon,
+  FileTextIcon,
+  FlagIcon,
   HashIcon,
+  LandmarkIcon,
+  LayersIcon,
   type LucideIcon,
-  MailIcon,
-  ShieldCheckIcon,
+  ScaleIcon,
+  SettingsIcon,
+  TagIcon,
   UserIcon,
-  WorkflowIcon,
+  UsersIcon,
 } from 'lucide-react'
 import { useState } from 'react'
-import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, within } from 'storybook/test'
 import { initialContacts } from '../../collection/fixtures/contacts'
 import { CreateContactDialog, type NewContact } from './create-contact-dialog'
 import { CreateEventDialog } from './create-event-dialog'
 import type { EventSlot, EventValues } from './event-record'
-import { LawsuitDialog } from './lawsuit-dialog'
-import type { LawsuitLookup, LawsuitValues } from './lawsuit-record'
+import {
+  lawsuitClients,
+  lawsuitContractOptions,
+  lawsuitInstanceOptions,
+  lawsuitOwners,
+  lawsuitPartyRoleOptions,
+  lawsuitPhaseOptions,
+} from './lawsuit-record'
 import { LeadDialog } from './lead-dialog'
 import type { NewLead } from './lead-record'
 import { NoteDialog } from './note-dialog'
 import { type NoteValues, noteRecordName } from './note-record'
-import { people, repos } from './project-record'
 
 const meta = {
   tags: ['!autodocs'],
@@ -187,141 +200,213 @@ export const Note: StoryObj<NoteArgs> = {
   },
 }
 
-type SetupValues = Record<string, string | null>
+type ManualLawsuitValues = Record<string, string | boolean | null>
 
-interface SetupRow {
-  fallback: string
+interface ManualLawsuitRow {
+  fallback?: string
   icon: LucideIcon
   id: string
   label: string
   options?: readonly SelectPropertyOption[]
+  people?: readonly PersonPropertyOption[]
+  toggle?: true
 }
 
-interface SetupSection {
+interface ManualLawsuitSection {
   description: string
   icon: LucideIcon
   id: string
-  rows: readonly SetupRow[]
+  rows: readonly ManualLawsuitRow[]
   title: string
 }
 
-const option = (label: string, value = label): SelectPropertyOption => ({
-  label,
-  value,
-})
-
-const setupSections: readonly SetupSection[] = [
+const manualLawsuitSections: readonly ManualLawsuitSection[] = [
   {
-    description: 'Who runs the project and when the team reviews it.',
-    icon: ShieldCheckIcon,
-    id: 'ownership',
-    rows: [
-      { fallback: 'Add owner', icon: UserIcon, id: 'owner', label: 'Owner' },
-      {
-        fallback: 'Add alias',
-        icon: BriefcaseIcon,
-        id: 'alias',
-        label: 'Alias',
-      },
-      {
-        fallback: 'Add review window',
-        icon: CalendarClockIcon,
-        id: 'review',
-        label: 'Review',
-        options: [
-          option('Weekly', 'weekly'),
-          option('Every two weeks', 'biweekly'),
-          option('Monthly', 'monthly'),
-        ],
-      },
-    ],
-    title: 'Ownership',
-  },
-  {
-    description: 'Where the work lives and where updates are posted.',
-    icon: WorkflowIcon,
-    id: 'integrations',
+    description: 'Número, ação e onde o processo corre.',
+    icon: LandmarkIcon,
+    id: 'lawsuit',
     rows: [
       {
-        fallback: 'Add repository',
-        icon: GitBranchIcon,
-        id: 'repository',
-        label: 'Repository',
-        options: repos.map((repo) => option(repo)),
-      },
-      {
-        fallback: 'Add channel',
+        fallback: 'Adicionar número',
         icon: HashIcon,
-        id: 'channel',
-        label: 'Channel',
-        options: ['#launch', '#engineering', '#design'].map((channel) =>
-          option(channel),
-        ),
+        id: 'number',
+        label: 'Número',
+      },
+      {
+        fallback: 'Adicionar ação',
+        icon: ScaleIcon,
+        id: 'action',
+        label: 'Ação',
+      },
+      {
+        fallback: 'Adicionar objeto',
+        icon: BookOpenIcon,
+        id: 'subject',
+        label: 'Objeto',
+      },
+      {
+        fallback: 'Adicionar foro',
+        icon: LandmarkIcon,
+        id: 'venue',
+        label: 'Foro',
+      },
+      {
+        fallback: 'Adicionar vara',
+        icon: Building2Icon,
+        id: 'division',
+        label: 'Vara',
+      },
+      {
+        fallback: 'Escolher instância',
+        icon: LayersIcon,
+        id: 'instance',
+        label: 'Instância',
+        options: lawsuitInstanceOptions,
       },
     ],
-    title: 'Integrations',
+    title: 'Processo',
   },
   {
-    description: 'Who hears about it when the project is blocked.',
-    icon: BellIcon,
-    id: 'alerts',
+    description: 'Quem participa do processo e em qual papel.',
+    icon: UsersIcon,
+    id: 'party',
     rows: [
       {
-        fallback: 'Add person',
-        icon: MailIcon,
-        id: 'escalation',
-        label: 'Escalation',
+        fallback: 'Adicionar nome',
+        icon: UserIcon,
+        id: 'partyName',
+        label: 'Nome',
+      },
+      {
+        fallback: 'Escolher papel',
+        icon: TagIcon,
+        id: 'partyRole',
+        label: 'Papel',
+        options: lawsuitPartyRoleOptions,
+      },
+      {
+        fallback: 'Escolher contato',
+        icon: ContactIcon,
+        id: 'partyContact',
+        label: 'Contato',
+        people: lawsuitClients,
       },
     ],
-    title: 'Alerts',
+    title: 'Partes',
+  },
+  {
+    description: 'Quem acompanha o processo no escritório.',
+    icon: BriefcaseIcon,
+    id: 'office',
+    rows: [
+      {
+        fallback: 'Escolher responsável',
+        icon: UserIcon,
+        id: 'owner',
+        label: 'Responsável',
+        people: lawsuitOwners,
+      },
+      {
+        fallback: 'Escolher fase',
+        icon: FlagIcon,
+        id: 'phase',
+        label: 'Fase',
+        options: lawsuitPhaseOptions,
+      },
+      {
+        fallback: 'Vincular contrato',
+        icon: FileTextIcon,
+        id: 'contract',
+        label: 'Contrato',
+        options: lawsuitContractOptions,
+      },
+    ],
+    title: 'Escritório',
+  },
+  {
+    description: 'Como o processo é acompanhado no tribunal.',
+    icon: SettingsIcon,
+    id: 'settings',
+    rows: [{ icon: BellIcon, id: 'monitor', label: 'Monitorar', toggle: true }],
+    title: 'Configurações',
   },
 ]
 
-const initialSetupValues: SetupValues = {
-  alias: 'growth-command',
-  owner: 'ana',
-  review: null,
+const initialManualLawsuitValues: ManualLawsuitValues = {
+  instance: 'first',
+  monitor: true,
+  owner: 'admin',
+  phase: 'initial',
 }
 
-const setupStatus = (section: SetupSection, values: SetupValues) => {
-  const filled = section.rows.filter(({ id }) => values[id]).length
+const manualLawsuitStatus = (
+  section: ManualLawsuitSection,
+  values: ManualLawsuitValues,
+) => {
+  const filled = section.rows.filter(
+    ({ id }) => typeof values[id] === 'boolean' || Boolean(values[id]),
+  ).length
   if (filled === section.rows.length)
-    return { label: 'Done', variant: 'success' } as const
-  if (filled > 0) return { label: 'In progress', variant: 'info' } as const
-  return { label: 'Pending', variant: 'secondary' } as const
+    return { label: 'Concluída', variant: 'success' } as const
+  if (filled > 0) return { label: 'Em andamento', variant: 'info' } as const
+  return { label: 'Pendente', variant: 'secondary' } as const
 }
 
-const isPersonRow = (row: SetupRow) =>
-  row.id === 'owner' || row.id === 'escalation'
-
-interface ProjectSetupArgs {
-  onCreate: (values: SetupValues) => void
+interface LawsuitsArgs {
+  onCreate: (values: ManualLawsuitValues) => void
 }
 
-export const ProjectSetup: StoryObj<ProjectSetupArgs> = {
-  args: { onCreate: fn((_values: SetupValues) => {}) },
+export const Lawsuits: StoryObj<LawsuitsArgs> = {
+  args: { onCreate: fn((_values: ManualLawsuitValues) => {}) },
   parameters: {
     docs: {
       description: {
         story:
-          'The setup of a project, on the [Description Over Body](?path=/story/patterns-records-recorddialog-layouts--description-over-body) layout: the trail and the dialog description, with no headline, and sections in an accordion, each with an icon, a title, a description and a status derived from its rows. Each section holds a `RecordGroup` with `collapsible={false}` and no `title`, so the accordion is the only fold and its trigger the only heading, and its rows are selectable: a person picker, an inline text or a select.',
+          'A lawsuit filled in by hand, on the [Description Over Body](?path=/story/patterns-records-recorddialog-layouts--description-over-body) layout: the trail and the dialog description, with no headline, and Processo, Partes, Escritório and Configurações in an accordion, each with an icon, a title, a description and a status derived from its rows. Each section holds a `RecordGroup` with `collapsible={false}` and no `title`, so the accordion is the only fold and its trigger the only heading. Partes takes a name, a role (Cliente, Parte contrária, Testemunha, Correspondente, Indicação) and a contact, and Configurações holds Monitorar as a `Switch`; Instância, Responsável, Fase and Monitorar start filled, and Mod+Enter submits.',
       },
     },
   },
-  render: function ProjectSetup({ onCreate }) {
-    const [open, setOpen] = useState(true)
-    const [values, setValues] = useState(initialSetupValues)
-    const update = (id: string, value: string | null) =>
+  play: async ({ args }) => {
+    const dialog = within(
+      await screen.findByRole('dialog', { name: 'Processo manual' }),
+    )
+
+    await expect(
+      dialog.getByRole('button', { name: /^Processo/ }),
+    ).toHaveAttribute('aria-expanded', 'true')
+    await expect(
+      dialog.getByRole('combobox', { name: /^Instância/ }),
+    ).toHaveTextContent('1º grau')
+    await expect(
+      dialog.getByRole('button', { name: /^Configurações/ }),
+    ).toHaveAttribute('aria-expanded', 'false')
+    await userEvent.click(
+      dialog.getByRole('button', { name: /Criar processo/ }),
+    )
+    await expect(args.onCreate).toHaveBeenCalledWith(initialManualLawsuitValues)
+  },
+  render: function Lawsuits({ onCreate }) {
+    const [values, setValues] = useState(initialManualLawsuitValues)
+    const update = (id: string, value: string | boolean | null) =>
       setValues((current) => ({ ...current, [id]: value }))
 
-    const control = (row: SetupRow) => {
-      const value = values[row.id] ?? null
-      if (isPersonRow(row))
+    const control = (row: ManualLawsuitRow) => {
+      if (row.toggle)
+        return (
+          <Switch
+            aria-label={row.label}
+            checked={values[row.id] === true}
+            onCheckedChange={(next) => update(row.id, next)}
+          />
+        )
+      const current = values[row.id]
+      const value = typeof current === 'string' ? current : null
+      if (row.people)
         return (
           <PersonProperty
             ariaLabel={row.label}
             onValueChange={(next) => update(row.id, next)}
-            options={people}
+            options={row.people}
             placeholder={row.fallback}
             value={value}
             variant="plain"
@@ -331,9 +416,9 @@ export const ProjectSetup: StoryObj<ProjectSetupArgs> = {
         return (
           <SelectProperty
             ariaLabel={row.label}
-            placeholder={row.fallback}
             onValueChange={(next) => update(row.id, next)}
             options={row.options}
+            placeholder={row.fallback}
             value={value}
             variant="plain"
           />
@@ -351,65 +436,61 @@ export const ProjectSetup: StoryObj<ProjectSetupArgs> = {
     }
 
     return (
-      <>
-        <Button onClick={() => setOpen(true)} variant="outline">
-          Set up project
-        </Button>
-        <RecordDialog
-          cancelLabel="Cancel"
-          description="Fill in each section before the project goes live."
-          onOpenChange={(next) => {
-            setOpen(next)
-            if (!next) setValues(initialSetupValues)
-          }}
-          onSubmit={() => {
-            onCreate(values)
-            return true
-          }}
-          open={open}
-          submitLabel="Save setup"
-          title="Project setup"
-          titleAncestor="Projects"
-        >
-          <Accordion defaultValue={[setupSections[0]?.id]}>
-            {setupSections.map((section) => {
-              const status = setupStatus(section, values)
+      <RecordDialog
+        cancelLabel="Cancelar"
+        description="Preencha cada seção antes de criar o processo."
+        onOpenChange={(next) => {
+          if (!next) setValues(initialManualLawsuitValues)
+        }}
+        onSubmit={() => {
+          onCreate(values)
+          return true
+        }}
+        open
+        submitLabel="Criar processo"
+        submitOnModEnter
+        submittingLabel="Criando"
+        title="Processo manual"
+        titleAncestor="Processos"
+      >
+        <Accordion defaultValue={[manualLawsuitSections[0]?.id]}>
+          {manualLawsuitSections.map((section) => {
+            const status = manualLawsuitStatus(section, values)
 
-              return (
-                <AccordionItem key={section.id} value={section.id}>
-                  <AccordionTrigger>
-                    <span className="flex flex-1 items-start gap-3">
-                      <IconFrame shape="rounded" size="sm">
-                        <section.icon aria-hidden />
-                      </IconFrame>
-                      <span className="grid flex-1 gap-0.5">
-                        <span>{section.title}</span>
-                        <span className="font-normal text-muted-foreground">
-                          {section.description}
-                        </span>
+            return (
+              <AccordionItem key={section.id} value={section.id}>
+                <AccordionTrigger>
+                  <span className="flex flex-1 items-start gap-3">
+                    <IconFrame shape="rounded" size="sm">
+                      <section.icon aria-hidden />
+                    </IconFrame>
+                    <span className="grid flex-1 gap-0.5">
+                      <span>{section.title}</span>
+                      <span className="font-normal text-muted-foreground">
+                        {section.description}
                       </span>
-                      <Badge variant={status.variant}>{status.label}</Badge>
                     </span>
-                  </AccordionTrigger>
-                  <AccordionPanel>
-                    <RecordGroup className="ms-11" collapsible={false}>
-                      {section.rows.map((row) => (
-                        <RecordGroupRow
-                          key={row.id}
-                          label={row.label}
-                          leading={<row.icon aria-hidden />}
-                        >
-                          {control(row)}
-                        </RecordGroupRow>
-                      ))}
-                    </RecordGroup>
-                  </AccordionPanel>
-                </AccordionItem>
-              )
-            })}
-          </Accordion>
-        </RecordDialog>
-      </>
+                    <Badge variant={status.variant}>{status.label}</Badge>
+                  </span>
+                </AccordionTrigger>
+                <AccordionPanel>
+                  <RecordGroup className="ms-11" collapsible={false}>
+                    {section.rows.map((row) => (
+                      <RecordGroupRow
+                        key={row.id}
+                        label={row.label}
+                        leading={<row.icon aria-hidden />}
+                      >
+                        {control(row)}
+                      </RecordGroupRow>
+                    ))}
+                  </RecordGroup>
+                </AccordionPanel>
+              </AccordionItem>
+            )
+          })}
+        </Accordion>
+      </RecordDialog>
     )
   },
 }
@@ -472,82 +553,5 @@ export const Events: StoryObj<EventsArgs> = {
       dialog.getByRole('combobox', { name: /^Availability/ }),
     ).toHaveTextContent('Busy')
     await expect(dialog.getByRole('button', { name: 'Save' })).toBeDisabled()
-  },
-}
-
-interface LawsuitsArgs {
-  lookup: LawsuitLookup
-  onCreate: (values: LawsuitValues) => void
-  onCreateCase: (values: LawsuitValues) => void
-  onOpenExisting: (number: string) => void
-  onSearchByOab: () => void
-}
-
-export const Lawsuits: StoryObj<LawsuitsArgs> = {
-  args: {
-    lookup: 'slow',
-    onCreate: fn(),
-    onCreateCase: fn(),
-    onOpenExisting: fn(),
-    onSearchByOab: fn(),
-  },
-  argTypes: {
-    lookup: {
-      control: 'inline-radio',
-      description:
-        'How the simulated sources answer: all in time, DataJud still searching, DataJud failing, or a number already registered.',
-      options: ['fast', 'slow', 'failing', 'duplicate'],
-    },
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'A lawsuit created from its number, in two steps of one dialog. `origin` asks for the number, says why `Continuar` is disabled through `submitHint`, warns when the number is already registered and offers the other ways to start. `details` lists the sources in a `RecordStatusList` while every field stays editable: a value a source brings fills only a field the user did not touch and shows the source beside it, the parties wait in `Skeleton`, and the hint says the lawsuit can be created before the slow source answers. `Ainda não foi distribuído` moves to the `case` step. Each move is a `step` change, so focus goes to the first field of the new body.',
-      },
-    },
-  },
-  play: async ({ args }) => {
-    const dialog = within(
-      await screen.findByRole('dialog', { name: 'Novo processo' }),
-    )
-    const submit = dialog.getByRole('button', { name: 'Continuar' })
-    await expect(submit).toBeDisabled()
-    await expect(submit).toHaveAccessibleDescription('Digite os 20 dígitos.')
-    await userEvent.type(
-      dialog.getByRole('textbox', { name: 'Número do processo' }),
-      '9990011-96.2025.8.26.9999',
-    )
-    await waitFor(() => expect(submit).toBeEnabled())
-    await userEvent.click(submit)
-    await waitFor(() =>
-      expect(
-        dialog.getByRole('textbox', { name: 'Título do processo' }),
-      ).toHaveFocus(),
-    )
-    await expect(
-      dialog.getByRole('list', { name: 'Fontes consultadas' }),
-    ).toBeVisible()
-    await waitFor(() =>
-      expect(
-        dialog.getByRole('textbox', { name: 'Título do processo' }),
-      ).toHaveValue('Ada Lovelace × Comercial Aurora Ltda'),
-    )
-    await userEvent.click(
-      dialog.getByRole('button', { name: /Criar processo/ }),
-    )
-    await waitFor(() => expect(args.onCreate).toHaveBeenCalledOnce())
-  },
-  render: function Lawsuits(args) {
-    const [open, setOpen] = useState(true)
-
-    return (
-      <>
-        <Button onClick={() => setOpen(true)} variant="outline">
-          Novo processo
-        </Button>
-        <LawsuitDialog {...args} onOpenChange={setOpen} open={open} />
-      </>
-    )
   },
 }
