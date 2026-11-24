@@ -1869,5 +1869,45 @@
     "Card6Props",
     "Card6Salary",
     "Card6WorkMode"
+  ],
+  "block:list-1": [
+    "List1",
+    "List1Labels",
+    "List1Metric",
+    "List1MetricKind",
+    "List1Props"
+  ],
+  "block:list-2": [
+    "List2",
+    "List2Entry",
+    "List2Labels",
+    "List2Props",
+    "List2Range"
+  ],
+  "block:list-3": [
+    "List3",
+    "List3Labels",
+    "List3Period",
+    "List3Props",
+    "List3Transaction"
+  ],
+  "block:list-4": [
+    "List4",
+    "List4Integration",
+    "List4Labels",
+    "List4Props"
+  ],
+  "block:list-5": [
+    "List5",
+    "List5Labels",
+    "List5Module",
+    "List5Props"
+  ],
+  "block:list-6": [
+    "List6",
+    "List6Labels",
+    "List6Mover",
+    "List6MoverStatus",
+    "List6Props"
   ]
 }

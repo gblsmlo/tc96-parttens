@@ -1,0 +1,72 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# List5
+
+A list of capability modules: one row per module with its icon, name, description and an add button, plus an optional Ver mais footer button. Reach for it on a screen where the user picks what to enable. Install it with `npx @tc96/parttens add list-5`.
+
+It is a list, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app.
+
+The other pages of `Blocks/Application/List/List5`: [Playground](?path=/story/blocks-application-list-list5-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list5-behavior--each-row-shows-name-and-description) for the tests and [Usages](?path=/story/blocks-application-list-list5-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { List5 } from '@tc96/blocks/application/list/list-5'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four modules, each with an add button, and the footer button.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<List5 modules={modules} onAdd={add} onBrowseMore={browse} />
+```
+
+## List5
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `modules` | `List5Module[]` | required | The rows, in order. |
+| `onAdd` | `(id: string) => void` | - | Called with the module id when its add button is clicked. Without it no add button renders. |
+| `onBrowseMore` | `() => void` | - | Called when the footer button is clicked. Without it the footer does not render. |
+| `labels` | `Partial<List5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## List5Module
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row. |
+| `name` | `string` | Name of the module. |
+| `description` | `string` | One sentence on what it does. |
+| `icon` | `Icon` | A Phosphor icon component, rendered inside the `IconFrame`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Módulos disponíveis"`; the accessible name of the list |
+| `add` | `(name: string) => string` | `"Adicionar Relatórios"`; the accessible name of each add button |
+| `browseMore` | `string` | `"Ver mais"`; the text of the footer button |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `List5` | `component` | The modules list. |
+| `List5Props` | `type` | The props of the list. |
+| `List5Module` | `type` | A row. |
+| `List5Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The rows are a list named by `labels.title`; each row is a list item.
+- The add button is an icon button named by `labels.add`, so rows are told apart by assistive technology; the icon is `aria-hidden`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

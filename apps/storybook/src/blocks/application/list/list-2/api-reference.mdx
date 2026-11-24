@@ -1,0 +1,80 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# List2
+
+A ranked leaderboard: a header with a title and a range select, then numbered rows with initials or an icon, the name, the amount and its share of the total. Reach for it to rank people, products or accounts over a period the reader can change. Install it with `npx @tc96/parttens add list-2`.
+
+It is a section, not a page: it renders no `main` landmark. The block keeps no state and never fetches: `range` is controlled, so the app reads the entries of the chosen range and passes them back, already ordered.
+
+The other pages of `Blocks/Application/List/List2`: [Playground](?path=/story/blocks-application-list-list2-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list2-behavior--each-entry-shows-rank-name-amount-and-share) for the tests and [Usages](?path=/story/blocks-application-list-list2-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { List2 } from '@tc96/blocks/application/list/list-2'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four entries ranked over the last 30 days.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<List2 entries={entries} onRangeChange={setRange} range={range} />
+```
+
+## List2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `entries` | `List2Entry[]` | required | The rows, already ordered; the position is the index. An empty array renders the empty state under the header. |
+| `range` | `'7d' \| '30d' \| '12m'` | required | The selected range; controlled. |
+| `onRangeChange` | `(range: List2Range) => void` | - | Called when another range is picked. The select shows `range` until the app changes it. |
+| `ranges` | `List2Range[]` | `['7d', '30d', '12m']` | The options of the select, in order. |
+| `locale` | `string` | `"pt-BR"` | BCP 47 tag used to format amounts and shares. |
+| `currency` | `string` | `"BRL"` | ISO 4217 code of the amounts. |
+| `labels` | `Partial<List2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## List2Entry
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row. |
+| `name` | `string` | Name of the entry; with no `icon` its initials fill the frame. |
+| `amount` | `number` | Raw amount, never a formatted string. |
+| `share` | `number` | Share of the total as a ratio (`0.42` is 42%). |
+| `icon` | `ReactNode` | Optional icon inside the frame. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Ranking de vendedores"`; the heading and the accessible name of the section |
+| `range` | `string` | `"Período"`; the accessible name of the select |
+| `ranges` | `Record<List2Range, string>` | `"Últimos 7 dias"`, `"Últimos 30 dias"`, `"Últimos 12 meses"` |
+| `rank` | `(position: number) => string` | `"Posição 1"`; read by screen readers next to the number |
+| `emptyTitle` | `string` | `"Nenhum resultado no período"` |
+| `emptyDescription` | `string` | `"O ranking aparece aqui quando houver vendas no período."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `List2` | `component` | The leaderboard. |
+| `List2Props` | `type` | The props of the leaderboard. |
+| `List2Entry` | `type` | A row. |
+| `List2Range` | `type` | The ranges of the select. |
+| `List2Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The rows are an ordered list; the position is also spoken through `labels.rank`, while the digit is hidden from assistive technology.
+- The select is named by `labels.range`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

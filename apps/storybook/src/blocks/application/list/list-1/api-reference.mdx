@@ -1,0 +1,77 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# List1
+
+A list of metric rows: an icon or initials, the metric name, an optional description, the value and a trend badge that points up, down or sideways. Reach for it on a dashboard that tracks a few indicators and compares each with the previous period. Install it with `npx @tc96/parttens add list-1`.
+
+It is a list, not a page: it renders a `ul` and no `main` landmark. The block keeps no state and never fetches; the app passes raw numbers and the block formats them with the `locale` and `currency` props.
+
+The other pages of `Blocks/Application/List/List1`: [Playground](?path=/story/blocks-application-list-list1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list1-behavior--each-metric-shows-name-description-and-value) for the tests and [Usages](?path=/story/blocks-application-list-list1-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { List1 } from '@tc96/blocks/application/list/list-1'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four metrics: a currency, a count, a percentage and a flat count.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<List1 metrics={metrics} />
+```
+
+## List1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `metrics` | `List1Metric[]` | required | The rows, in order. An empty array renders the empty state. |
+| `locale` | `string` | `"pt-BR"` | BCP 47 tag used to format values and changes. |
+| `currency` | `string` | `"BRL"` | ISO 4217 code of the `currency` metrics. |
+| `labels` | `Partial<List1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## List1Metric
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row. |
+| `name` | `string` | Name of the metric; with no `icon` its initials fill the frame. |
+| `value` | `number` | Raw value, never a formatted string. |
+| `kind` | `'currency' \| 'number' \| 'percent'` | How `value` is formatted; defaults to `number`. A percent is a ratio (`0.021` is 2,1%). |
+| `change` | `number` | Optional change as a ratio (`0.084` is 8,4%). Its sign sets the trend direction; without it no badge renders. |
+| `description` | `string` | Optional line under the name. |
+| `icon` | `ReactNode` | Optional icon inside the frame. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Métricas"`; the accessible name of the list |
+| `trend` | `{ down: string; flat: string; up: string }` | `"Queda de"`, `"Sem variação"`, `"Alta de"`; read by screen readers before the change |
+| `emptyTitle` | `string` | `"Nenhuma métrica ainda"` |
+| `emptyDescription` | `string` | `"As métricas aparecem aqui quando houver dados."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `List1` | `component` | The metric list. |
+| `List1Props` | `type` | The props of the list. |
+| `List1Metric` | `type` | A row. |
+| `List1MetricKind` | `type` | The formats of a value. |
+| `List1Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The list is named by `labels.title`; each metric is a list item.
+- The trend direction is also read: the badge carries a hidden prefix from `labels.trend`, so the arrow is not the only signal.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.
