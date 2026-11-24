@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { IconRow } from '@tc96/parttens'
+import { List } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { CheckboxGroup } from '@tc96/ui/checkbox-group'
@@ -28,13 +28,13 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
-import { IconRowCanvas } from './icon-row-canvas.tsx'
-import { dividedListClassName, IconRowChevron } from './icon-row-layouts.tsx'
+import { ListCanvas } from './list-canvas.tsx'
+import { dividedListClassName, ListChevron } from './list-layouts.tsx'
 
 const meta = {
-  decorators: [IconRowCanvas],
+  decorators: [ListCanvas],
   tags: ['!autodocs'],
-  title: 'Patterns/IconRow/Usages',
+  title: 'Patterns/List/Usages',
 } satisfies Meta
 
 export default meta
@@ -101,7 +101,7 @@ export const Attachments: Story = {
     docs: {
       description: {
         story:
-          'The attachments of a lawsuit, on the [Stacked Rows](?path=/story/patterns-iconrow-layouts--stacked-rows) layout: each file with Baixar and a menu to rename or delete it.',
+          'The attachments of a lawsuit, on the [Stacked Rows](?path=/story/patterns-list-layouts--stacked-rows) layout: each file with Baixar and a menu to rename or delete it.',
       },
     },
   },
@@ -109,7 +109,7 @@ export const Attachments: Story = {
     <ul aria-label="Anexos" className="flex flex-col gap-2">
       {attachments.map((file) => (
         <li key={file.id}>
-          <IconRow
+          <List
             actions={<AttachmentActions name={file.title} />}
             description={file.description}
             icon={<file.icon />}
@@ -169,7 +169,7 @@ function IntegrationsList() {
 
         return (
           <li key={integration.id}>
-            <IconRow
+            <List
               actions={
                 <Button
                   aria-label={`${isConnected ? 'Desconectar' : 'Conectar'} ${integration.title}`}
@@ -198,7 +198,7 @@ export const Integrations: Story = {
     docs: {
       description: {
         story:
-          'The integrations of an office, on the [Divided Rows](?path=/story/patterns-iconrow-layouts--divided-rows) layout: each service tinted with its color, with Conectar or Desconectar at the end.',
+          'The integrations of an office, on the [Divided Rows](?path=/story/patterns-list-layouts--divided-rows) layout: each service tinted with its color, with Conectar or Desconectar at the end.',
       },
     },
   },
@@ -247,7 +247,7 @@ export const AccountSettings: Story = {
     docs: {
       description: {
         story:
-          'The sections of the account settings, on the [Link Rows](?path=/story/patterns-iconrow-layouts--link-rows) layout: each row opens its page.',
+          'The sections of the account settings, on the [Link Rows](?path=/story/patterns-list-layouts--link-rows) layout: each row opens its page.',
       },
     },
   },
@@ -256,8 +256,8 @@ export const AccountSettings: Story = {
       <ul className={dividedListClassName}>
         {settings.map((section) => (
           <li key={section.id}>
-            <IconRow
-              actions={<IconRowChevron />}
+            <List
+              actions={<ListChevron />}
               description={section.description}
               icon={<section.icon />}
               render={(props) => <a {...props} href={`#${section.id}`} />}
@@ -304,7 +304,7 @@ export const ChoosePlan: Story = {
     docs: {
       description: {
         story:
-          'The plan step of a sign-up, on the [Single Choice Rows](?path=/story/patterns-iconrow-layouts--single-choice-rows) layout: Profissional starts checked.',
+          'The plan step of a sign-up, on the [Single Choice Rows](?path=/story/patterns-list-layouts--single-choice-rows) layout: Profissional starts checked.',
       },
     },
   },
@@ -315,7 +315,7 @@ export const ChoosePlan: Story = {
       defaultValue="profissional"
     >
       {plans.map((plan) => (
-        <IconRow
+        <List
           actions={<Radio value={plan.id} />}
           description={plan.description}
           icon={<plan.icon />}
@@ -365,7 +365,7 @@ export const NotificationChannels: Story = {
     docs: {
       description: {
         story:
-          'Where the deadline alerts reach a lawyer, on the [Multiple Choice Rows](?path=/story/patterns-iconrow-layouts--multiple-choice-rows) layout: E-mail and Alerta no app start checked.',
+          'Where the deadline alerts reach a lawyer, on the [Multiple Choice Rows](?path=/story/patterns-list-layouts--multiple-choice-rows) layout: E-mail and Alerta no app start checked.',
       },
     },
   },
@@ -376,7 +376,7 @@ export const NotificationChannels: Story = {
       defaultValue={['email', 'app']}
     >
       {channels.map((channel) => (
-        <IconRow
+        <List
           actions={<Checkbox value={channel.id} />}
           description={channel.description}
           icon={<channel.icon />}

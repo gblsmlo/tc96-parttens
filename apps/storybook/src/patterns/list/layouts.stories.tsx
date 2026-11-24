@@ -1,19 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { IconRowCanvas } from './icon-row-canvas.tsx'
-import { iconRowControlArgs } from './icon-row-controls.ts'
+import { ListCanvas } from './list-canvas.tsx'
+import { listControlArgs } from './list-controls.ts'
 import {
-  ComposedIconRow,
+  ComposedList,
   DividedRowsFormation,
   LinkRowsFormation,
   MultipleChoiceRowsFormation,
   SingleChoiceRowsFormation,
   StackedRowsFormation,
-} from './icon-row-layouts.tsx'
+} from './list-layouts.tsx'
 
 const meta = {
-  decorators: [IconRowCanvas],
+  decorators: [ListCanvas],
   tags: ['!autodocs'],
-  title: 'Patterns/IconRow/Layouts',
+  title: 'Patterns/List/Layouts',
 } satisfies Meta
 
 export default meta
@@ -21,7 +21,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  render: () => <ComposedIconRow {...iconRowControlArgs} />,
+  render: () => <ComposedList {...listControlArgs} />,
 }
 
 export const StackedRows: Story = {

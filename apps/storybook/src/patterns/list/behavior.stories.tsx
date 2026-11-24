@@ -7,14 +7,14 @@ import {
   waitFor,
   within,
 } from 'storybook/test'
-import { IconRowCanvas } from './icon-row-canvas.tsx'
-import { iconRowControlArgs } from './icon-row-controls.ts'
+import { ListCanvas } from './list-canvas.tsx'
+import { listControlArgs } from './list-controls.ts'
 import {
-  ComposedIconRow,
+  ComposedList,
   LinkRowsFormation,
   MultipleChoiceRowsFormation,
   SingleChoiceRowsFormation,
-} from './icon-row-layouts.tsx'
+} from './list-layouts.tsx'
 
 interface BehaviorArgs {
   onDownload: () => void
@@ -22,9 +22,9 @@ interface BehaviorArgs {
 }
 
 const meta = {
-  decorators: [IconRowCanvas],
+  decorators: [ListCanvas],
   tags: ['!autodocs'],
-  title: 'Patterns/IconRow/Behavior',
+  title: 'Patterns/List/Behavior',
 } satisfies Meta<BehaviorArgs>
 
 export default meta
@@ -35,13 +35,13 @@ const slot = (root: HTMLElement, name: string) =>
   root.querySelector<HTMLElement>(`[data-slot="${name}"]`)
 
 const rowOf = (element: HTMLElement) => {
-  const row = element.closest<HTMLElement>('[data-slot="icon-row"]')
+  const row = element.closest<HTMLElement>('[data-slot="list"]')
   if (!row) throw new Error('No icon row around the element')
   return row
 }
 
 export const IconIsHiddenFromAssistiveTechnology: Story = {
-  render: () => <ComposedIconRow {...iconRowControlArgs} />,
+  render: () => <ComposedList {...listControlArgs} />,
   play: async ({ canvasElement }) => {
     const frame = slot(canvasElement, 'icon-frame')
 
@@ -52,14 +52,14 @@ export const IconIsHiddenFromAssistiveTechnology: Story = {
 
 export const LongTitleTruncatesAndActionsKeepTheirWidth: Story = {
   render: () => (
-    <ComposedIconRow
-      {...iconRowControlArgs}
+    <ComposedList
+      {...listControlArgs}
       title="Quarterly report for the board meeting with every regional appendix"
     />
   ),
   play: async ({ canvasElement }) => {
-    const row = slot(canvasElement, 'icon-row') as HTMLElement
-    const title = slot(canvasElement, 'icon-row-title') as HTMLElement
+    const row = slot(canvasElement, 'list') as HTMLElement
+    const title = slot(canvasElement, 'list-title') as HTMLElement
     const download = within(canvasElement).getByRole('button', {
       name: /^Download/,
     })
@@ -72,16 +72,13 @@ export const LongTitleTruncatesAndActionsKeepTheirWidth: Story = {
 
 export const LongDescriptionClampsAtTwoLines: Story = {
   render: () => (
-    <ComposedIconRow
-      {...iconRowControlArgs}
+    <ComposedList
+      {...listControlArgs}
       description="Updated 2 hours ago by Anna, who added the regional appendix, the new revenue chart and the notes from the finance review"
     />
   ),
   play: async ({ canvasElement }) => {
-    const description = slot(
-      canvasElement,
-      'icon-row-description',
-    ) as HTMLElement
+    const description = slot(canvasElement, 'list-description') as HTMLElement
     const lineHeight = Number.parseFloat(
       getComputedStyle(description).lineHeight,
     )
@@ -94,19 +91,19 @@ export const LongDescriptionClampsAtTwoLines: Story = {
 }
 
 export const NoDescriptionWithoutDescription: Story = {
-  render: () => <ComposedIconRow {...iconRowControlArgs} description="" />,
+  render: () => <ComposedList {...listControlArgs} description="" />,
   play: async ({ canvasElement }) => {
-    await expect(slot(canvasElement, 'icon-row-title')).toHaveTextContent(
+    await expect(slot(canvasElement, 'list-title')).toHaveTextContent(
       'Quarterly report',
     )
-    await expect(slot(canvasElement, 'icon-row-description')).toBeNull()
+    await expect(slot(canvasElement, 'list-description')).toBeNull()
   },
 }
 
 export const NoActionsWithoutActions: Story = {
-  render: () => <ComposedIconRow {...iconRowControlArgs} actions={false} />,
+  render: () => <ComposedList {...listControlArgs} actions={false} />,
   play: async ({ canvasElement }) => {
-    await expect(slot(canvasElement, 'icon-row-actions')).toBeNull()
+    await expect(slot(canvasElement, 'list-actions')).toBeNull()
     await expect(within(canvasElement).queryAllByRole('button')).toHaveLength(0)
   },
 }
@@ -114,7 +111,7 @@ export const NoActionsWithoutActions: Story = {
 export const ActionsAreReachedByKeyboard: Story = {
   args: { onDownload: fn() },
   render: (args) => (
-    <ComposedIconRow {...iconRowControlArgs} onDownload={args.onDownload} />
+    <ComposedList {...listControlArgs} onDownload={args.onDownload} />
   ),
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement)
@@ -135,9 +132,9 @@ export const ActionsAreReachedByKeyboard: Story = {
 }
 
 export const PlainVariantDropsTheBorder: Story = {
-  render: () => <ComposedIconRow {...iconRowControlArgs} variant="plain" />,
+  render: () => <ComposedList {...listControlArgs} variant="plain" />,
   play: async ({ canvasElement }) => {
-    const row = slot(canvasElement, 'icon-row') as HTMLElement
+    const row = slot(canvasElement, 'list') as HTMLElement
     const style = getComputedStyle(row)
 
     await expect(row).toHaveAttribute('data-variant', 'plain')
@@ -147,9 +144,9 @@ export const PlainVariantDropsTheBorder: Story = {
 }
 
 export const OutlineVariantDrawsTheBorder: Story = {
-  render: () => <ComposedIconRow {...iconRowControlArgs} />,
+  render: () => <ComposedList {...listControlArgs} />,
   play: async ({ canvasElement }) => {
-    const row = slot(canvasElement, 'icon-row') as HTMLElement
+    const row = slot(canvasElement, 'list') as HTMLElement
     const style = getComputedStyle(row)
 
     await expect(row).toHaveAttribute('data-variant', 'outline')
@@ -159,7 +156,7 @@ export const OutlineVariantDrawsTheBorder: Story = {
 }
 
 export const IconColorTintsTheFrame: Story = {
-  render: () => <ComposedIconRow {...iconRowControlArgs} iconColor="#2563eb" />,
+  render: () => <ComposedList {...listControlArgs} iconColor="#2563eb" />,
   play: async ({ canvasElement }) => {
     const frame = slot(canvasElement, 'icon-frame') as HTMLElement
 
@@ -168,7 +165,7 @@ export const IconColorTintsTheFrame: Story = {
 }
 
 export const ButtonRowFillsTheWidthWithTextAtTheStart: Story = {
-  render: () => <ComposedIconRow {...iconRowControlArgs} element="button" />,
+  render: () => <ComposedList {...listControlArgs} element="button" />,
   play: async ({ canvasElement }) => {
     const row = within(canvasElement).getByRole('button', {
       name: /^Quarterly report/,
@@ -176,7 +173,7 @@ export const ButtonRowFillsTheWidthWithTextAtTheStart: Story = {
     const frame = row.parentElement as HTMLElement
 
     await expect(row.tagName).toBe('BUTTON')
-    await expect(row).toHaveAttribute('data-slot', 'icon-row')
+    await expect(row).toHaveAttribute('data-slot', 'list')
     await expect(row.getBoundingClientRect().width).toBe(
       frame.getBoundingClientRect().width,
     )
@@ -193,7 +190,7 @@ export const LinkRowIsOneLinkWithNoInnerControl: Story = {
     await expect(links).toHaveLength(3)
     await expect(members).toHaveAccessibleName(/^Members/)
     await expect(members).toHaveAttribute('href', '#members')
-    await expect(members).toHaveAttribute('data-slot', 'icon-row')
+    await expect(members).toHaveAttribute('data-slot', 'list')
     await expect(
       within(members as HTMLElement).queryAllByRole('button'),
     ).toHaveLength(0)

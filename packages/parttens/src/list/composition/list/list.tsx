@@ -5,15 +5,15 @@ import { IconFrame } from '@tc96/ui/icon-frame'
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
-import type { IconRowProps } from '../../core'
+import type { ListProps } from '../../core'
 import {
-  iconRowActionsClassName,
-  iconRowContentClassName,
-  iconRowDescriptionClassName,
-  iconRowRootVariants,
+  listActionsClassName,
+  listContentClassName,
+  listDescriptionClassName,
+  listRootVariants,
 } from '../../lib/variants'
 
-export function IconRow({
+export function List({
   actions,
   className,
   description,
@@ -22,7 +22,7 @@ export function IconRow({
   render,
   title,
   variant = 'outline',
-}: Readonly<IconRowProps>): ReactElement {
+}: Readonly<ListProps>): ReactElement {
   return useRender({
     defaultTagName: 'div',
     props: {
@@ -31,17 +31,14 @@ export function IconRow({
           <IconFrame color={iconColor} shape="rounded" size="sm">
             {icon}
           </IconFrame>
-          <span
-            className={iconRowContentClassName}
-            data-slot="icon-row-content"
-          >
-            <Text data-slot="icon-row-title" size="sm" truncate weight="medium">
+          <span className={listContentClassName} data-slot="list-content">
+            <Text data-slot="list-title" size="sm" truncate weight="medium">
               {title}
             </Text>
             {description ? (
               <Text
-                className={iconRowDescriptionClassName}
-                data-slot="icon-row-description"
+                className={listDescriptionClassName}
+                data-slot="list-description"
                 foreground="muted"
                 size="sm"
               >
@@ -50,17 +47,14 @@ export function IconRow({
             ) : null}
           </span>
           {actions ? (
-            <span
-              className={iconRowActionsClassName}
-              data-slot="icon-row-actions"
-            >
+            <span className={listActionsClassName} data-slot="list-actions">
               {actions}
             </span>
           ) : null}
         </>
       ),
-      className: cn(iconRowRootVariants({ variant }), className),
-      'data-slot': 'icon-row',
+      className: cn(listRootVariants({ variant }), className),
+      'data-slot': 'list',
       'data-variant': variant,
     },
     render,

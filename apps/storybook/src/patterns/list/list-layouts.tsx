@@ -1,4 +1,4 @@
-import { IconRow, type IconRowVariant } from '@tc96/parttens'
+import { List, type ListVariant } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { CheckboxGroup } from '@tc96/ui/checkbox-group'
@@ -21,21 +21,21 @@ import {
   Trash2Icon,
   UsersIcon,
 } from 'lucide-react'
-import type { IconRowControls } from './icon-row-controls.ts'
+import type { ListControls } from './list-controls.ts'
 
-export interface IconRowActionsProps {
+export interface ListActionsProps {
   name: string
   onDelete?: () => void
   onDownload?: () => void
   onRename?: () => void
 }
 
-export function IconRowActions({
+export function ListActions({
   name,
   onDelete,
   onDownload,
   onRename,
-}: Readonly<IconRowActionsProps>) {
+}: Readonly<ListActionsProps>) {
   return (
     <>
       <Button
@@ -68,20 +68,20 @@ export function IconRowActions({
   )
 }
 
-export const IconRowChevron = () => (
+export const ListChevron = () => (
   <ChevronRightIcon
     aria-hidden="true"
     className="size-4 text-muted-foreground"
   />
 )
 
-export type ComposedIconRowProps = IconRowControls &
-  Omit<IconRowActionsProps, 'name'> & {
+export type ComposedListProps = ListControls &
+  Omit<ListActionsProps, 'name'> & {
     className?: string
     onSelect?: () => void
   }
 
-export const ComposedIconRow = ({
+export const ComposedList = ({
   actions,
   className,
   description,
@@ -93,21 +93,21 @@ export const ComposedIconRow = ({
   onSelect,
   title,
   variant,
-}: ComposedIconRowProps) => {
+}: ComposedListProps) => {
   const actionsPart =
     element === 'div' ? (
-      <IconRowActions
+      <ListActions
         name={title}
         onDelete={onDelete}
         onDownload={onDownload}
         onRename={onRename}
       />
     ) : (
-      <IconRowChevron />
+      <ListChevron />
     )
 
   return (
-    <IconRow
+    <List
       actions={actions ? actionsPart : undefined}
       className={className}
       description={description || undefined}
@@ -196,11 +196,11 @@ export const sampleChannels: readonly SampleRow[] = [
   },
 ]
 
-const FileRows = ({ variant }: Readonly<{ variant: IconRowVariant }>) =>
+const FileRows = ({ variant }: Readonly<{ variant: ListVariant }>) =>
   sampleFiles.map((file) => (
     <li key={file.id}>
-      <IconRow
-        actions={<IconRowActions name={file.title} />}
+      <List
+        actions={<ListActions name={file.title} />}
         description={file.description}
         icon={<file.icon />}
         title={file.title}
@@ -229,8 +229,8 @@ export const LinkRowsFormation = () => (
     <ul className={dividedListClassName}>
       {sampleLinks.map((link) => (
         <li key={link.id}>
-          <IconRow
-            actions={<IconRowChevron />}
+          <List
+            actions={<ListChevron />}
             description={link.description}
             icon={<link.icon />}
             render={(props) => <a {...props} href={`#${link.id}`} />}
@@ -259,7 +259,7 @@ export const SingleChoiceRowsFormation = ({
     onValueChange={onValueChange}
   >
     {sampleChannels.map((channel) => (
-      <IconRow
+      <List
         actions={<Radio value={channel.id} />}
         description={channel.description}
         icon={<channel.icon />}
@@ -290,7 +290,7 @@ export const MultipleChoiceRowsFormation = ({
     onValueChange={onValueChange}
   >
     {sampleChannels.map((channel) => (
-      <IconRow
+      <List
         actions={<Checkbox value={channel.id} />}
         description={channel.description}
         icon={<channel.icon />}
