@@ -4,6 +4,7 @@ import { StatsCanvas } from './stats-canvas.tsx'
 import { statsControlArgs } from './stats-controls.ts'
 import {
   AccentBorderCard,
+  ActionsCard,
   BreakdownCard,
   ComparisonCard,
   ComposedMetric,
@@ -86,4 +87,8 @@ export const WithPeriodToggle: Story = {
 
 export const WithAccentBorder: Story = {
   render: () => <AccentBorderCard />,
+}
+
+export const WithActions: Story = {
+  render: () => <ActionsCard />,
 }

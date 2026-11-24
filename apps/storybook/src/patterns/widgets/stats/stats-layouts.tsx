@@ -1,6 +1,9 @@
 import {
   CheckCircleIcon,
   CurrencyDollarIcon,
+  DotsThreeIcon,
+  DownloadSimpleIcon,
+  PushPinIcon,
   WarningIcon,
   XCircleIcon,
 } from '@phosphor-icons/react'
@@ -17,7 +20,9 @@ import {
   WidgetShell,
 } from '@tc96/parttens'
 import { Badge } from '@tc96/ui/badge'
+import { Button } from '@tc96/ui/button'
 import { CardPanel } from '@tc96/ui/card'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { MeterPrimitive } from '@tc96/ui/meter'
 import { type ReactElement, useId, useState } from 'react'
 import type { StatsControls, StatsFormatName } from './stats-controls.ts'
@@ -306,5 +311,41 @@ export function AccentBorderCard(): ReactElement {
       label="Total sales"
       value={23456}
     />
+  )
+}
+
+export function ActionsCard(): ReactElement {
+  return (
+    <MetricWidget
+      change={0.084}
+      changeLabel="from last month"
+      format={wholeCurrency}
+      icon={
+        <Menu>
+          <MenuTrigger
+            aria-label="Total revenue actions"
+            render={<Button size="icon-sm" variant="ghost" />}
+          >
+            <DotsThreeIcon aria-hidden="true" />
+          </MenuTrigger>
+          <MenuPopup align="end">
+            <MenuItem>
+              <DownloadSimpleIcon aria-hidden="true" />
+              Export CSV
+            </MenuItem>
+            <MenuItem>
+              <PushPinIcon aria-hidden="true" />
+              Pin to dashboard
+            </MenuItem>
+          </MenuPopup>
+        </Menu>
+      }
+      label="Total revenue"
+      value={48250}
+    >
+      <Button className="justify-self-start" size="sm" variant="outline">
+        View report
+      </Button>
+    </MetricWidget>
   )
 }
