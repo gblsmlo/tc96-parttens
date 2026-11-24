@@ -33,7 +33,7 @@ const TransactionsFeed = () => {
 const meta = {
   component: TransactionsFeed,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/List/List3/Usages',
 } satisfies Meta<typeof TransactionsFeed>
 

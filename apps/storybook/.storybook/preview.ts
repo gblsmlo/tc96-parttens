@@ -62,6 +62,12 @@ const listenToSystem = () => {
   })
 }
 
+const mockedNetwork = mswLoader(async () => {
+  const worker = setupWorker()
+  await worker.start({ onUnhandledRequest: 'bypass', quiet: true })
+  return worker
+})
+
 const preview: Preview = {
   decorators: [
     (Story, context) => {
@@ -75,11 +81,7 @@ const preview: Preview = {
     withQueryClient,
   ],
   loaders: [
-    mswLoader(async () => {
-      const worker = setupWorker()
-      await worker.start({ onUnhandledRequest: 'bypass', quiet: true })
-      return worker
-    }),
+    (context) => (context.tags.includes('msw') ? mockedNetwork(context) : {}),
   ],
   globalTypes: {
     themePreset: {

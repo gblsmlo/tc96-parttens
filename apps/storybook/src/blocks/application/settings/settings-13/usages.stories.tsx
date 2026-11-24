@@ -51,7 +51,7 @@ const WorkspaceLossReasons = () => {
 const meta = {
   component: WorkspaceLossReasons,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings13/Usages',
 } satisfies Meta<typeof WorkspaceLossReasons>
 

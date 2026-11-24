@@ -54,7 +54,7 @@ const WorkspaceWebhooks = () => {
 const meta = {
   component: WorkspaceWebhooks,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings19/Usages',
 } satisfies Meta<typeof WorkspaceWebhooks>
 

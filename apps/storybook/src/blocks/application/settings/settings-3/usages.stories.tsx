@@ -36,7 +36,7 @@ const InterfaceSettings = () => {
 const meta = {
   component: InterfaceSettings,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings3/Usages',
 } satisfies Meta<typeof InterfaceSettings>
 

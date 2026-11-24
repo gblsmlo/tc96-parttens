@@ -32,7 +32,7 @@ const Leaderboard = () => {
 const meta = {
   component: Leaderboard,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/List/List2/Usages',
 } satisfies Meta<typeof Leaderboard>
 

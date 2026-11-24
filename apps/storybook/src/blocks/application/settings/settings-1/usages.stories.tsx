@@ -46,7 +46,7 @@ const AccountSettings = () => {
 const meta = {
   component: AccountSettings,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings1/Usages',
 } satisfies Meta<typeof AccountSettings>
 

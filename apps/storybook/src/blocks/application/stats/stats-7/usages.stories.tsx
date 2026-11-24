@@ -28,7 +28,7 @@ const ProductMetrics = () => {
 const meta = {
   component: ProductMetrics,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Stats/Stats7/Usages',
 } satisfies Meta<typeof ProductMetrics>
 

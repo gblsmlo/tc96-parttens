@@ -64,7 +64,7 @@ const WorkspaceNextActions = () => {
 const meta = {
   component: WorkspaceNextActions,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings12/Usages',
 } satisfies Meta<typeof WorkspaceNextActions>
 

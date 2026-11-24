@@ -29,7 +29,7 @@ const TopMovers = () => {
 const meta = {
   component: TopMovers,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/List/List6/Usages',
 } satisfies Meta<typeof TopMovers>
 

@@ -35,7 +35,7 @@ const JobsCard = () => {
 const meta = {
   component: JobsCard,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Card/Card6/Usages',
 } satisfies Meta<typeof JobsCard>
 

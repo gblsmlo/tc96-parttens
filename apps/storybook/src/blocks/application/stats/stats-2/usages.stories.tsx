@@ -31,7 +31,7 @@ const ApiQuota = () => {
 const meta = {
   component: ApiQuota,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Stats/Stats2/Usages',
 } satisfies Meta<typeof ApiQuota>
 

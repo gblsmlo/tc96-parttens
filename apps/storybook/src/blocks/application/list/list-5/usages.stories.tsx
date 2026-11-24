@@ -27,7 +27,7 @@ const ModuleCatalog = () => {
 const meta = {
   component: ModuleCatalog,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/List/List5/Usages',
 } satisfies Meta<typeof ModuleCatalog>
 

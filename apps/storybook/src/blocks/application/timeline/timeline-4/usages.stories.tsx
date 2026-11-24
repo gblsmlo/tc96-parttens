@@ -38,7 +38,7 @@ const openSheet = async (canvasElement: HTMLElement) => {
 const meta = {
   component: ActivitySheet,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Timeline/Timeline4/Usages',
 } satisfies Meta<typeof ActivitySheet>
 

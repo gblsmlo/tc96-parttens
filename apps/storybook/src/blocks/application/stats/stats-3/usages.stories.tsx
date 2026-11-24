@@ -24,7 +24,7 @@ const WorkspaceCapacity = () => {
 const meta = {
   component: WorkspaceCapacity,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Stats/Stats3/Usages',
 } satisfies Meta<typeof WorkspaceCapacity>
 

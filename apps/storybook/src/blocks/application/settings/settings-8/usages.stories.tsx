@@ -36,7 +36,7 @@ const SlaSwitch = ({ initial }: { initial: boolean }) => {
 const meta = {
   component: SlaSettings,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings8/Usages',
 } satisfies Meta<typeof SlaSettings>
 

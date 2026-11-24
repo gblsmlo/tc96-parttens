@@ -41,7 +41,7 @@ const InvoiceSearch = () => {
 const meta = {
   component: InvoiceSearch,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Empty State/EmptyState2/Usages',
 } satisfies Meta<typeof InvoiceSearch>
 

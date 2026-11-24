@@ -43,7 +43,7 @@ const FirstProject = () => {
 const meta = {
   component: FirstProject,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Empty State/EmptyState3/Usages',
 } satisfies Meta<typeof FirstProject>
 

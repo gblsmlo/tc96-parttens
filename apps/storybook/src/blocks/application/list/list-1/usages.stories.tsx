@@ -24,7 +24,7 @@ const MetricList = () => {
 const meta = {
   component: MetricList,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/List/List1/Usages',
 } satisfies Meta<typeof MetricList>
 

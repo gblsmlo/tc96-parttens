@@ -34,7 +34,7 @@ const LeadsCard = () => {
 const meta = {
   component: LeadsCard,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Stats/Stats4/Usages',
 } satisfies Meta<typeof LeadsCard>
 

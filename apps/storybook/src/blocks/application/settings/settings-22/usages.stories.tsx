@@ -40,7 +40,7 @@ const WorkspaceApiKeys = () => {
 const meta = {
   component: WorkspaceApiKeys,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings22/Usages',
 } satisfies Meta<typeof WorkspaceApiKeys>
 

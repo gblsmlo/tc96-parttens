@@ -38,7 +38,7 @@ const WorkspaceBilling = () => {
 const meta = {
   component: WorkspaceBilling,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings23/Usages',
 } satisfies Meta<typeof WorkspaceBilling>
 

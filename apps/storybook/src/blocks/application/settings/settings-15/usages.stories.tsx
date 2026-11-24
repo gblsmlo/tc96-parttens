@@ -34,7 +34,7 @@ const WorkspaceCategories = () => {
 const meta = {
   component: WorkspaceCategories,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings15/Usages',
 } satisfies Meta<typeof WorkspaceCategories>
 

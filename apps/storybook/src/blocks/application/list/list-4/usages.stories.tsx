@@ -28,7 +28,7 @@ const IntegrationDirectory = () => {
 const meta = {
   component: IntegrationDirectory,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/List/List4/Usages',
 } satisfies Meta<typeof IntegrationDirectory>
 

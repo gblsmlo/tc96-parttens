@@ -38,7 +38,7 @@ const ReleaseRun = () => {
 const meta = {
   component: ReleaseRun,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/AI & Agents/Flow/RunMonitor/Usages',
 } satisfies Meta<typeof ReleaseRun>
 
