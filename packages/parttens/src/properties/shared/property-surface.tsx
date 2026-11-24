@@ -35,7 +35,7 @@ export function PropertySurface({
     props: mergeProps<'span'>(
       {
         className: cn(
-          muted && 'text-muted-foreground',
+          muted ? 'text-muted-foreground' : 'text-primary',
           'inline-flex min-w-0 max-w-full items-center gap-1 whitespace-nowrap text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-64 [button&,a&]:cursor-pointer',
           '[button&,a&]:-ms-1.5 [button&,a&]:-my-0.5 [button&,a&]:h-6 [button&,a&]:rounded-sm [button&,a&]:px-1.5',
           '[button&,a&]:hover:bg-secondary [button&,a&]:hover:text-secondary-foreground',
@@ -54,7 +54,11 @@ export function PropertySurface({
 
   return (
     <Badge
-      className={cn(propertyBadgeClassName, className)}
+      className={cn(
+        propertyBadgeClassName,
+        !muted && 'text-primary',
+        className,
+      )}
       variant={muted ? 'outline' : 'secondary'}
       {...(render ? { render } : {})}
       {...state}

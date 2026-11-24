@@ -365,6 +365,35 @@ const rowOfValue = (canvasElement: HTMLElement, row: string) => {
 const contentLeft = (surface: HTMLElement) =>
   surface.firstElementChild?.getBoundingClientRect().left
 
+const colorWithPrimary = (canvasElement: HTMLElement, element: HTMLElement) => {
+  element.style.transition = 'none'
+  canvasElement.style.setProperty('--primary', 'rgb(255, 0, 0)')
+
+  const { color } = getComputedStyle(element)
+
+  canvasElement.style.removeProperty('--primary')
+  element.style.removeProperty('transition')
+
+  return color
+}
+
+export const SurfaceValueUsesPrimaryAndPlaceholderStaysMuted: Story = {
+  render: () => <PlainPropertyColumn />,
+  play: async ({ canvasElement }) => {
+    const { interactive } = columnSurfaces(canvasElement)
+    const placeholder = within(canvasElement).getByRole('button', {
+      name: 'Due date: Set due date',
+    })
+
+    await expect(colorWithPrimary(canvasElement, interactive)).toBe(
+      'rgb(255, 0, 0)',
+    )
+    await expect(colorWithPrimary(canvasElement, placeholder)).not.toBe(
+      'rgb(255, 0, 0)',
+    )
+  },
+}
+
 export const SurfacePlainHoverShowsSecondary: Story = {
   render: () => <PlainPropertyColumn />,
   play: async ({ canvasElement }) => {

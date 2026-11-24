@@ -68,6 +68,31 @@ export const InactiveFallsBackToLabel: Story = {
   },
 }
 
+const surfaceColorWithPrimary = (canvasElement: HTMLElement) => {
+  canvasElement.style.setProperty('--primary', 'rgb(255, 0, 0)')
+
+  const { color } = getComputedStyle(
+    canvasElement.querySelector('[data-slot="property-surface"]') as Element,
+  )
+
+  canvasElement.style.removeProperty('--primary')
+
+  return color
+}
+
+export const ActiveBadgeUsesPrimary: Story = {
+  play: async ({ canvasElement }) => {
+    await expect(surfaceColorWithPrimary(canvasElement)).toBe('rgb(255, 0, 0)')
+  },
+}
+
+export const ActivePlainUsesPrimary: Story = {
+  args: { variant: 'plain' },
+  play: async ({ canvasElement }) => {
+    await expect(surfaceColorWithPrimary(canvasElement)).toBe('rgb(255, 0, 0)')
+  },
+}
+
 export const BadgeFillsTheSurface: Story = {
   play: async ({ canvasElement }) => {
     await esperarSuperficieDeBadge(canvasElement)

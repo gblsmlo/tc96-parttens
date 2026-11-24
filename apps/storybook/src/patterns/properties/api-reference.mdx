@@ -86,7 +86,7 @@ The surface every display draws its value on: a chip or plain text with an optio
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the look. `"badge"` renders a `Badge`, `secondary`, 24px high; `"plain"` renders inline text with no fill. |
-| `muted` | `boolean` | `false` | When true, marks the value absent: the badge turns `outline`, plain text turns `muted-foreground`. |
+| `muted` | `boolean` | `false` | When true, marks the value absent: the badge turns `outline`, plain text turns `muted-foreground`. A surface that is not muted draws its text in `primary`. |
 | `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `span` with another element, keeping the surface's props. |
 
 Also takes every prop of a `span`.
@@ -198,4 +198,4 @@ The date picker of `DateProperty` and `DateRangeProperty`. Renders the surface a
 - Name `PropertyCollection` with `ariaLabel` and every display with its own `ariaLabel`: the triggers read `<ariaLabel>: <value>`, and a read-only value reads as an image with that name.
 - Keyboard: every trigger is a `button` in the Tab order; Enter or Space opens its popup or menu, and Escape closes it. In the entry form, Enter saves.
 - The copy is Portuguese (`Ajustar propriedades`, `Adicionar outro`, `Salvar`, `Limpar data`); the labels of each display are props.
-- The colors come from the theme tokens `secondary`, `muted-foreground`, `foreground`, `ring`, `destructive-foreground` and the tone tokens of `propertyToneClassName`, through the badge, menu, popover, combobox and select of the theme.
+- The colors come from the theme tokens `primary` (the text of a value), `secondary`, `muted-foreground`, `foreground`, `ring`, `destructive-foreground` and the tone tokens of `propertyToneClassName`, through the badge, menu, popover, combobox and select of the theme.
