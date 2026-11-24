@@ -1,9 +1,12 @@
 import type { Preview } from '@storybook/react-vite'
+import { setupWorker } from 'msw/browser'
+import { mswLoader } from 'msw-storybook-addon/csf3'
 import '../../example/packages/ui/src/styles.css'
 import '@xyflow/react/dist/base.css'
 import { themePresets } from '../../example/packages/ui/src/themes/presets.ts'
 import { ThemedDocsContainer } from './docs-container.tsx'
 import { DocsPage } from './docs-page.tsx'
+import { withQueryClient } from './query-client.tsx'
 
 type ThemeMode = 'system' | 'light' | 'dark'
 
@@ -69,6 +72,14 @@ const preview: Preview = {
 
       return Story()
     },
+    withQueryClient,
+  ],
+  loaders: [
+    mswLoader(async () => {
+      const worker = setupWorker()
+      await worker.start({ onUnhandledRequest: 'bypass', quiet: true })
+      return worker
+    }),
   ],
   globalTypes: {
     themePreset: {

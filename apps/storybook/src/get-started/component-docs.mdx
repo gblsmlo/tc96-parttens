@@ -49,6 +49,18 @@ The two pages split on what changes between their stories, after Storybook's rul
 
 A story that changes both props and structure is a `Usages` case, or two stories: one in each page.
 
+## Mocked data
+
+A component, pattern or block never fetches: it takes prepared data through props. Only `Usages` stories and `Templates` may read through the network, so a reader sees the loading, empty and error states a real screen goes through.
+
+- The network is [MSW](https://mswjs.io) through `msw-storybook-addon`. The worker starts once in `.storybook/preview.ts` with `onUnhandledRequest: 'bypass'`, so stories without handlers are untouched.
+- Handlers live in `apps/storybook/src/mocks/<domain>.ts`, one named handler per state (`members`, `membersEmpty`, `membersError`, `membersPending`), with paths built by `apiUrl`.
+- A story picks its state in `beforeEach: ({ msw }) => { msw.use(settingsHandlers.members) }`; handlers reset between stories.
+- Data is read with TanStack Query. Every story gets its own `QueryClient` with retries off (`.storybook/query-client.tsx`), so no cache leaks from one story to the next.
+- `Playground`, `Stories`, `Layouts` and `Behavior` keep passing fixtures straight to props.
+
+[Get Started/Data Mocking](?path=/story/get-started-data-mocking--loaded) is the reference.
+
 ## Trade-offs
 
 - **MDX against autodocs.** Autodocs writes the page from the CSF and never drifts, but it shows only the root's props as TypeScript sees them; it knows nothing of the other parts, the `data-*` attributes or how the parts are meant to be used. The MDX page says all of it, at the cost of being written and kept by hand: neither `tsc` nor the Vitest project checks it, so a renamed prop or a story id in a link goes stale silently. Storybook advises against keeping both for one component, hence `!autodocs` on every story file.
