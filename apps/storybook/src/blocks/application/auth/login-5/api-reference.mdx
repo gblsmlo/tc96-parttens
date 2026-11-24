@@ -1,0 +1,102 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Login5
+
+The method picker sign-in page: a list of sign-in methods as buttons (a passkey, SSO, any method the app offers) plus an e-mail and password method that reveals its form in place. Reach for it when the app offers more than one way in and the user should choose first. Install it with `npx @tc96/parttens add login-5`.
+
+It is a whole page: it renders its own `main` landmark. Passkeys, SSO redirects, the session and cookies stay in the app; the block only calls `onMethod`, `onMethodChange` and `onSubmit`. Which view shows is the app's: `method` and `onMethodChange` are controlled.
+
+The other pages of `Blocks/Application/Auth/Login/Login5`: [Playground](?path=/story/blocks-application-auth-login-login5-playground--playground), [Stories](?path=/story/blocks-application-auth-login-login5-stories--email-form), [States](?path=/story/blocks-application-auth-login-login5-states--default), [Behavior](?path=/story/blocks-application-auth-login-login5-behavior--page-heading) and [Usages](?path=/story/blocks-application-auth-login-login5-usages--choose-how-to-sign-in).
+
+## Import
+
+```tsx
+import { Login5 } from '@acme/blocks/application/auth/login-5'
+```
+
+The same path exports the types `Login5Props`, `Login5Values`, `Login5Labels`, `Login5Method`, `Login5EmailMethod` and `AuthFieldErrors`.
+
+## Anatomy
+
+The method list:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+The e-mail form, with `method="email"`:
+
+<Canvas of={ApiReferenceStories.AnatomyEmail} />
+
+```tsx
+const [method, setMethod] = useState<'email'>()
+
+<Login5
+  method={method}
+  methods={[
+    { id: 'passkey', label: 'Entrar com chave de acesso' },
+    { id: 'sso', label: 'Entrar com SSO' },
+  ]}
+  onMethod={(id) => startMethod(id)}
+  onMethodChange={setMethod}
+  onSubmit={({ email, password }) => signIn(email, password)}
+  pending={isSigningIn}
+/>
+```
+
+## Login5
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `methods` | `Login5Method[]` | required | The buttons of the list, `{ id, label, icon? }`, in order. The e-mail method is always added last. |
+| `onMethod` | `(id: string) => void` | required | Called with the `id` of the clicked method; never while `pending`. |
+| `method` | `'email'` | - | When `'email'`, the list is replaced by the e-mail and password form inside the same card. |
+| `onMethodChange` | `(method: 'email' \| undefined) => void` | - | Called with `'email'` by the e-mail method button and with `undefined` by the back button. Without `method` changing, nothing changes on screen. |
+| `onSubmit` | `(values: Login5Values) => void` | required | Called with `email` and `password` after the native constraints pass; never while `pending`. |
+| `pending` | `boolean` | `false` | Disables every method button and the back button, puts the submit button in its `loading` state and sets `aria-busy`. |
+| `error` | `string` | - | Shows a message in an alert, in both views. |
+| `fieldErrors` | `Partial<Record<keyof Login5Values, string>>` | - | Shows a message under each field it names and marks that field invalid. |
+| `signupHref` | `string` | - | Renders the sign up link only when passed. |
+| `forgotPasswordHref` | `string` | - | Renders the recovery link in the e-mail form only when passed. |
+| `logo` | `ReactNode` | - | Rendered inside the card, above the title. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders each link with the app's router. |
+| `labels` | `Partial<Login5Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
+
+### Focus
+
+- When `method` goes to `'email'`, focus moves to the e-mail field; when it goes back, to the e-mail method button. Never on mount.
+- `error` and `fieldErrors` move focus as in the other sign-in blocks.
+
+### Login5Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `email` | `string` | The e-mail field. |
+| `password` | `string` | The password field. |
+
+### Login5Labels
+
+| Key | Default |
+| --- | --- |
+| `title` | `"Entrar"` |
+| `description` | `"Escolha como você quer acessar a conta."` |
+| `methodsGroup` | `"Formas de entrar"` |
+| `emailMethod` | `"E-mail e senha"` |
+| `emailTitle` | `"Entrar com e-mail"` |
+| `emailDescription` | `"Informe seu e-mail e sua senha para acessar a conta."` |
+| `backToMethods` | `"Outras formas de entrar"` |
+| `email` | `"E-mail"` |
+| `password` | `"Senha"` |
+| `showPassword` | `"Mostrar senha"` |
+| `hidePassword` | `"Ocultar senha"` |
+| `forgotPassword` | `"Esqueceu a senha?"` |
+| `noAccount` | `"Não tem uma conta?"` |
+| `signup` | `"Criar conta"` |
+| `submit` | `"Entrar"` |
+| `errorTitle` | `"Não foi possível continuar"` |
+
+## Accessibility and theme
+
+- One `main` and one `h1` in both views; the methods sit in a group named by `labels.methodsGroup`.
+- The block carries no theme rule: it reads the card, field, button and alert tokens of the theme it renders in.

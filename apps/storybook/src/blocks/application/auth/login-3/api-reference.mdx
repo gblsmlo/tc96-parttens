@@ -1,0 +1,91 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Login3
+
+The split screen sign-in page: the same form as [Login1](?path=/docs/blocks-application-auth-login-login1-api-reference--api-reference) (e-mail, password with a show and hide button, remember me, recovery and sign up links, providers) in one column and an `aside` slot in the other, from the `md` breakpoint up. Reach for it when the sign-in page should carry a testimonial, an image or a product message. Install it with `npx @tc96/parttens add login-3`.
+
+It is a whole page: the form column renders the `main` landmark and the aside is a complementary landmark beside it, so do not wrap the block in another `main`. Authentication, the session, cookies and redirects stay in the app; the block only calls `onSubmit` and `onProviderSelect`.
+
+The other pages of `Blocks/Application/Auth/Login/Login3`: [Playground](?path=/story/blocks-application-auth-login-login3-playground--playground), [Stories](?path=/story/blocks-application-auth-login-login3-stories--without-aside), [States](?path=/story/blocks-application-auth-login-login3-states--default), [Behavior](?path=/story/blocks-application-auth-login-login3-behavior--page-heading) and [Usages](?path=/story/blocks-application-auth-login-login3-usages--sign-in-with-testimonial).
+
+## Import
+
+```tsx
+import { Login3 } from '@acme/blocks/application/auth/login-3'
+```
+
+The same path exports the types `Login3Props`, `Login3Values`, `Login3Labels`, `AuthProvider` and `AuthFieldErrors`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Login3
+  aside={<Testimonial />}
+  error={error}
+  fieldErrors={fieldErrors}
+  onSubmit={({ email, password, remember }) => signIn(email, password, remember)}
+  pending={isSigningIn}
+/>
+```
+
+## Login3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: Login3Values) => void` | required | Called with `email`, `password` and `remember` after the native constraints pass; never while `pending`. |
+| `aside` | `ReactNode` | - | The content of the second column. Without it the page is the single centered card. Below `md` the aside is hidden and the form fills the page. |
+| `pending` | `boolean` | `false` | Disables the submit button and the providers, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
+| `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
+| `fieldErrors` | `Partial<Record<keyof Login3Values, string>>` | - | Shows a message under each field it names and marks that field invalid. |
+| `logo` | `ReactNode` | - | Rendered inside the card, above the title. |
+| `signupHref` | `string` | - | Renders the sign up link only when passed. |
+| `forgotPasswordHref` | `string` | - | Renders the recovery link only when passed. |
+| `providers` | `AuthProvider[]` | - | `{ id, label, icon? }` buttons above the form, two per row from `sm` up. |
+| `onProviderSelect` | `(id: string) => void` | - | Called with the provider id; never while `pending`. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders each link with the app's router. |
+| `labels` | `Partial<Login3Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
+
+### Login3Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `email` | `string` | The e-mail field. |
+| `password` | `string` | The password field. |
+| `remember` | `boolean` | The remember me box. |
+
+### Errors and focus
+
+- The form state lives in TanStack Form; the native constraints (`required`, `type="email"`) run on submit through the COSS `Form`, which focuses the first invalid field.
+- `error` is rendered as text. When it goes from empty to a message, focus moves to the alert, unless `fieldErrors` names a field, which takes the focus.
+- `fieldErrors` ties each message to its field. When it goes from empty to filled, focus moves to the first of those fields. A message clears when the user edits its field.
+
+### Login3Labels
+
+| Key | Default |
+| --- | --- |
+| `title` | `"Entrar"` |
+| `description` | `"Informe seu e-mail e sua senha para acessar a conta."` |
+| `asideLabel` | `"Informações sobre o produto"` |
+| `email` | `"E-mail"` |
+| `password` | `"Senha"` |
+| `showPassword` | `"Mostrar senha"` |
+| `hidePassword` | `"Ocultar senha"` |
+| `remember` | `"Lembrar de mim"` |
+| `forgotPassword` | `"Esqueceu a senha?"` |
+| `noAccount` | `"Não tem uma conta?"` |
+| `signup` | `"Criar conta"` |
+| `submit` | `"Entrar"` |
+| `errorTitle` | `"Não foi possível continuar"` |
+| `providersSeparator` | `"ou continue com e-mail"` |
+| `providersGroup` | `"Entrar com outro serviço"` |
+| `providerContinue` | `(label) => "Continuar com " + label` |
+
+## Accessibility and theme
+
+- One `main` and one `h1`; the aside is a complementary landmark named by `labels.asideLabel`, outside the `main`.
+- The block carries no theme rule: it reads the card, field, button, alert and `muted` tokens of the theme it renders in.

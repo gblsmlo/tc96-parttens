@@ -1,0 +1,89 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Login6
+
+The two column sign-in page: the logo at the top of the left column, a centered title and description, the e-mail and password form with the recovery link beside the password label, then the providers in a row of two below the form and the sign up link. The right column renders the `media` slot inside a rounded, bordered panel that fills the page height, from the `md` breakpoint up. There is no card around the form and no remember me box. Reach for it when the sign-in page should carry an image or a product illustration. Install it with `npx @tc96/parttens add login-6`.
+
+It is a whole page: the form column renders the `main` landmark and the media panel is a complementary landmark beside it, so do not wrap the block in another `main`. Authentication, the session, cookies and redirects stay in the app; the block only calls `onSubmit` and `onProviderSelect`.
+
+The other pages of `Blocks/Application/Auth/Login/Login6`: [Playground](?path=/story/blocks-application-auth-login-login6-playground--playground), [Stories](?path=/story/blocks-application-auth-login-login6-stories--default), [Layouts](?path=/story/blocks-application-auth-login-login6-layouts--without-providers), [Behavior](?path=/story/blocks-application-auth-login-login6-behavior--media-slot) and [Usages](?path=/story/blocks-application-auth-login-login6-usages--sign-in).
+
+## Import
+
+```tsx
+import { Login6 } from '@acme/blocks/application/auth/login-6'
+```
+
+The same path exports the types `Login6Props`, `Login6Values`, `Login6Labels`, `AuthProvider` and `AuthFieldErrors`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Login6
+  media={<ProductShot />}
+  error={error}
+  fieldErrors={fieldErrors}
+  onSubmit={({ email, password }) => signIn(email, password)}
+  pending={isSigningIn}
+/>
+```
+
+## Login6
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: Login6Values) => void` | required | Called with `email` and `password` after the native constraints pass; never while `pending`. |
+| `media` | `ReactNode` | - | The content of the right column, inside a rounded, bordered panel. Without it the form column fills the page. Below `md` the panel is hidden. |
+| `pending` | `boolean` | `false` | Disables the submit button and the providers, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
+| `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
+| `fieldErrors` | `Partial<Record<keyof Login6Values, string>>` | - | Shows a message under each field it names and marks that field invalid. |
+| `logo` | `ReactNode` | - | Rendered at the top of the form column, outside the form. |
+| `signupHref` | `string` | - | Renders the sign up link only when passed. |
+| `forgotPasswordHref` | `string` | - | Renders the recovery link beside the password label only when passed. |
+| `providers` | `AuthProvider[]` | - | `{ id, label, icon? }` buttons below the form, after a separator, two per row. |
+| `onProviderSelect` | `(id: string) => void` | - | Called with the provider id; never while `pending`. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders each link with the app's router. |
+| `labels` | `Partial<Login6Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
+
+### Login6Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `email` | `string` | The e-mail field. |
+| `password` | `string` | The password field. |
+
+### Errors and focus
+
+- The form state lives in TanStack Form; the native constraints (`required`, `type="email"`) run on submit through the COSS `Form`, which focuses the first invalid field.
+- `error` is rendered as text. When it goes from empty to a message, focus moves to the alert, unless `fieldErrors` names a field, which takes the focus.
+- `fieldErrors` ties each message to its field. When it goes from empty to filled, focus moves to the first of those fields. A message clears when the user edits its field.
+
+### Login6Labels
+
+| Key | Default |
+| --- | --- |
+| `title` | `"Entrar"` |
+| `description` | `"Informe seu e-mail e sua senha para acessar a conta."` |
+| `mediaLabel` | `"Apresentação do produto"` |
+| `email` | `"E-mail"` |
+| `password` | `"Senha"` |
+| `showPassword` | `"Mostrar senha"` |
+| `hidePassword` | `"Ocultar senha"` |
+| `forgotPassword` | `"Esqueceu a senha?"` |
+| `noAccount` | `"Não tem uma conta?"` |
+| `signup` | `"Criar conta"` |
+| `submit` | `"Entrar"` |
+| `errorTitle` | `"Não foi possível continuar"` |
+| `providersSeparator` | `"ou continue com"` |
+| `providersGroup` | `"Entrar com outro serviço"` |
+| `providerContinue` | `(label) => "Continuar com " + label` |
+
+## Accessibility and theme
+
+- One `main` and one `h1`; the media panel is a complementary landmark named by `labels.mediaLabel`, outside the `main`.
+- The block carries no theme rule: it reads the field, button, alert, border and `muted` tokens of the theme it renders in.

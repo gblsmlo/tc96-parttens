@@ -1,0 +1,104 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Signup3
+
+The marketing sign-up page for a free trial: a top bar with the logo and the sign in link, a pitch column on the left (an optional badge, a large heading the consumer can highlight and a description) and a card on the right with the providers stacked full width, the work e-mail and password form and the terms notice, followed by an optional row of customer brands. Reach for it when the sign-up page is the landing of a trial campaign. Install it with `npx @tc96/parttens add signup-3`.
+
+It is a whole page: the top bar is the `header`, the columns and the brands sit in the `main` landmark, so do not wrap the block in another `main`. Account creation, the session and redirects stay in the app; the block only calls `onSubmit` and `onProviderSelect`.
+
+The other pages of `Blocks/Application/Auth/Register/Register3`: [Playground](?path=/story/blocks-application-auth-register-register3-playground--playground), [Stories](?path=/story/blocks-application-auth-register-register3-stories--pending), [Layouts](?path=/story/blocks-application-auth-register-register3-layouts--without-providers), [Behavior](?path=/story/blocks-application-auth-register-register3-behavior--page-headings) and [Usages](?path=/story/blocks-application-auth-register-register3-usages--trial-signup).
+
+## Import
+
+```tsx
+import { Signup3 } from '@acme/blocks/application/auth/signup-3'
+```
+
+The same path exports the types `Signup3Props`, `Signup3Values`, `Signup3Labels`, `AuthProvider` and `AuthFieldErrors`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Signup3
+  logo={<Logo />}
+  badge="Novo: relatórios com IA"
+  labels={{ heading: <>O CRM que faz seu time <span className="text-primary">vender mais</span></> }}
+  providers={providers}
+  brandsLabel="Times que já vendem mais com a Acme"
+  brands={<BrandLogos />}
+  loginHref="/login"
+  termsHref="/terms"
+  privacyHref="/privacy"
+  onSubmit={({ email, password }) => startTrial(email, password)}
+  pending={isCreating}
+/>
+```
+
+## Signup3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: Signup3Values) => void` | required | Called with `email` and `password` after the native constraints pass; never while `pending`. |
+| `badge` | `string` | - | Text in a badge above the heading. |
+| `brands` | `ReactNode` | - | A row of customer logos below the columns. |
+| `brandsLabel` | `string` | - | Text above the brands; it also names the brands region, which falls back to `labels.brandsGroup`. |
+| `pending` | `boolean` | `false` | Disables the submit button and the providers, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
+| `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
+| `fieldErrors` | `Partial<Record<keyof Signup3Values, string>>` | - | Shows a message under each field it names and marks that field invalid. |
+| `logo` | `ReactNode` | - | Rendered at the left of the top bar, never inside the card. |
+| `loginHref` | `string` | - | Renders the sign in line at the right of the top bar only when passed. |
+| `termsHref` | `string` | - | Renders the terms link in the notice only when passed. |
+| `privacyHref` | `string` | - | Renders the privacy link in the notice only when passed. |
+| `passwordMinLength` | `number` | `8` | The `minLength` of the password field. |
+| `providers` | `AuthProvider[]` | - | `{ id, label, icon? }` buttons stacked full width above the form, each reading `providerContinue(label)`. |
+| `onProviderSelect` | `(id: string) => void` | - | Called with the provider id; never while `pending`. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders each link with the app's router. |
+| `labels` | `Partial<Signup3Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. `heading` takes a `ReactNode`. |
+
+### Signup3Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `email` | `string` | The work e-mail field. |
+| `password` | `string` | The password field. |
+
+### Errors and focus
+
+- The native constraints (`required`, `type="email"`, `minLength`) run on submit through the COSS `Form`, which focuses the first invalid field.
+- When `error` goes from empty to a message, focus moves to the alert, unless `fieldErrors` names a field, which takes the focus.
+
+### Signup3Labels
+
+| Key | Default |
+| --- | --- |
+| `heading` | `"Tudo o que seu time precisa para vender mais"` |
+| `pitch` | `"Centralize clientes, negócios e conversas e acompanhe cada etapa do funil."` |
+| `title` | `"Comece seu teste de 14 dias"` |
+| `description` | `"Sem cartão de crédito. Cancele quando quiser."` |
+| `email` | `"E-mail de trabalho"` |
+| `password` | `"Senha"` |
+| `passwordPlaceholder` | `"Mínimo de 8 caracteres"` |
+| `showPassword` | `"Mostrar senha"` |
+| `hidePassword` | `"Ocultar senha"` |
+| `submit` | `"Começar teste grátis"` |
+| `hasAccount` | `"Já tem uma conta?"` |
+| `login` | `"Entrar"` |
+| `termsLead` | `"Ao criar a conta você concorda com os"` |
+| `terms` | `"Termos de Uso"` |
+| `termsAnd` | `"e a"` |
+| `privacy` | `"Política de Privacidade"` |
+| `brandsGroup` | `"Empresas que usam o produto"` |
+| `errorTitle` | `"Não foi possível continuar"` |
+| `providersSeparator` | `"OU"` |
+| `providersGroup` | `"Criar conta com outro serviço"` |
+| `providerContinue` | `(label) => "Continuar com " + label` |
+
+## Accessibility and theme
+
+- One `main` with the `h1` (the heading); the card title is an `h2`. The logo and the sign in link sit in the `header`.
+- The block carries no theme rule: it reads the card, badge, field, button and alert tokens of the theme it renders in.

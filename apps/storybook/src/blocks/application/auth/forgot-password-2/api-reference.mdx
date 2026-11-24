@@ -1,0 +1,135 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# ForgotPassword2
+
+The minimal forgot password page: an e-mail field and the submit button, and, once the app says the link was sent, a confirmation that replaces the form in the same card. It has no logo, no way back to sign in and no resend. Reach for it when the app only needs to ask for the reset link, or as the smallest page to edit into your own. Install it with `npx @tc96/parttens add forgot-password-2`.
+
+It is a whole page, not a form to place inside one: it renders its own `main` landmark. Sending the link, the session and the redirect stay in the app; the block only calls `onSubmit`, keeps no "sent" state and never fetches or stores anything. For the logo, the link back to sign in and the resend with its countdown, use [ForgotPassword1](?path=/docs/blocks-application-auth-forgotpassword-forgotpassword1-api-reference--api-reference).
+
+The other pages of `Blocks/Application/Auth/ForgotPassword/ForgotPassword2`: [Playground](?path=/story/blocks-application-auth-forgotpassword-forgotpassword2-playground--playground) to try the texts, the confirmation and the form message, [Stories](?path=/story/blocks-application-auth-forgotpassword-forgotpassword2-stories--default) for the confirmation, error, field error and pending states, [Behavior](?path=/story/blocks-application-auth-forgotpassword-forgotpassword2-behavior--page-heading) for the tests and [Usages](?path=/story/blocks-application-auth-forgotpassword-forgotpassword2-usages--request-reset-link) for real cases.
+
+## Import
+
+```tsx
+import { ForgotPassword2 } from '@acme/blocks/application/auth/forgot-password-2'
+```
+
+The same path exports the types `ForgotPassword2Props`, `ForgotPassword2Values`, `ForgotPassword2Labels` and `AuthFieldErrors`.
+
+## Anatomy
+
+The page with the e-mail form:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ForgotPassword2
+  destination={sentTo}
+  error={error}
+  fieldErrors={fieldErrors}
+  onSubmit={({ email }) => requestResetLink(email)}
+  pending={isPending}
+  sent={Boolean(sentTo)}
+/>
+```
+
+The tree it renders while `sent` is false:
+
+```tsx
+<main>
+  <div data-slot="card">
+    <div data-slot="card-header">
+      <h1 data-slot="card-title">{labels.title}</h1>
+      <div data-slot="card-description">{labels.description}</div>
+    </div>
+    <div data-slot="card-panel">
+      <div data-slot="alert" role="alert" tabIndex={-1}>{error}</div>
+      <form data-slot="form" aria-busy={pending} noValidate>
+        <div data-slot="field">
+          <label data-slot="field-label">{labels.email}</label>
+          <input name="email" type="email" autoComplete="email" required />
+          <div data-slot="field-error" />
+        </div>
+        <button type="submit">{labels.submit}</button>
+      </form>
+    </div>
+  </div>
+</main>
+```
+
+When `sent` is true the form is replaced, inside the same `main` and card, by the title and the description of the confirmation:
+
+```tsx
+<div data-slot="card">
+  <div data-slot="card-header">
+    <h1 data-slot="card-title" tabIndex={-1}>{labels.sentTitle}</h1>
+    <div data-slot="card-description">{labels.sentDescription(destination)}</div>
+  </div>
+  <div data-slot="card-panel">
+    <div data-slot="alert" role="alert" tabIndex={-1}>{error}</div>
+  </div>
+</div>
+```
+
+## ForgotPassword2
+
+The forgot password page. Renders a `main` landmark that centers its content in the window height, and inside the card the title (an `h1`), the description, the form message and the e-mail form or the confirmation. Mount it on the route and do not wrap it in another `main`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: ForgotPassword2Values) => void` | required | Called with `{ email }` after the native constraints pass (`required` and a valid e-mail); never while `pending` and never in the confirmation, where there is no form. Enter in the field sends too, and the return value is ignored. |
+| `sent` | `boolean` | `false` | When true, replaces the form by the confirmation inside the same card; the app decides when it turns true. |
+| `destination` | `string` | - | Names where the link was sent in the confirmation, through `labels.sentDescription(destination)`; without it the text is generic. |
+| `pending` | `boolean` | `false` | When true, disables the submit button, puts it in its `loading` state, sets `aria-busy` on the form and stops `onSubmit`. |
+| `error` | `string` | - | Sets a message for the whole page, shown in an `Alert` with the title `labels.errorTitle`, in the form and in the confirmation; rendered as text, never as HTML. |
+| `fieldErrors` | `{ email?: string }` | - | Sets a message for the e-mail field, shown under it and tied to it with `aria-invalid`. |
+| `labels` | `Partial<ForgotPassword2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+
+The block takes no other props.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `aria-busy` | `"true"` or `"false"` | Set on the form from `pending` |
+| `aria-invalid` | `"true"` | Set on the e-mail field while it has a message |
+
+## The confirmation
+
+`sent` is the app's state: the block keeps no "sent" state of its own and never reads the e-mail from the form. The app turns `sent` on once its request succeeded, usually from the same place that receives `onSubmit`.
+
+While `sent` is true the form is replaced, inside the same `main` and card, by the title `labels.sentTitle` (an `h1`) and the description `labels.sentDescription(destination)`. `onSubmit` cannot be called from there. `destination` is the only source of the address in the text: the app passes it, and decides whether to reveal it; without it the description reads as a generic sentence. When `sent` goes from false to true, focus moves to the title of the confirmation, which has `tabindex="-1"`; a page that mounts with `sent` already true does not take focus, and the confirmation adds no extra `aria-live` region. If `sent` goes back to false, the form returns.
+
+## Errors and focus
+
+`error` and `fieldErrors` come from the app after it handles the submit. `error` stays in the `Alert` in both states; `fieldErrors.email` has a field only in the form. When `fieldErrors.email` goes from empty to filled, focus moves to the e-mail field. When `error` goes from empty to filled and no field is invalid, focus moves to the `Alert`. Nothing takes focus on mount, and a field message clears when the user edits its field. Whether the e-mail exists is the app's to reveal: the block only shows the message it receives. The native constraint messages (`required`, a valid e-mail) are the browser's own and have no label.
+
+## Labels
+
+Every visible or accessible text the block owns is a key of `ForgotPassword2Labels`, with a pt-BR default. `labels` is partial and merged over the defaults.
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Esqueceu a senha?"` |
+| `description` | `string` | `"Informe seu e-mail e enviaremos um link para redefinir a senha."` |
+| `email` | `string` | `"E-mail"` |
+| `submit` | `string` | `"Enviar link"` |
+| `sentTitle` | `string` | `"Verifique seu e-mail"` |
+| `sentDescription` | `(destination?: string) => string` | `"Enviamos um link para redefinir a senha para ana@acme.com."` for `"ana@acme.com"`, and `"Enviamos um link para redefinir a senha para o seu e-mail."` without a destination |
+| `errorTitle` | `string` | `"Não foi possível continuar"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ForgotPassword2` | `component` | The minimal forgot password page. |
+| `ForgotPassword2Props` | `type` | The props of the page. |
+| `ForgotPassword2Values` | `type` | The values `onSubmit` receives: `{ email: string }`. |
+| `ForgotPassword2Labels` | `type` | The keys of `labels`. |
+| `AuthFieldErrors` | `type` | `Partial<Record<keyof TValues, string>>`, the type of `fieldErrors`. |
+
+## Accessibility and theme
+
+- The page renders its own `main` landmark and one `h1`, the title of the form or of the confirmation; a consumer that wraps it in another `main` ends up with two.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

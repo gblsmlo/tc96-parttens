@@ -1,0 +1,161 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Otp1
+
+A verification page: one input per digit, a Verificar button that is the only way to send the code, and an optional resend with a countdown the app controls, inside a centered card. Reach for it after a sign-in or a sign-up that sends a one-time code by e-mail or SMS. Install it with `npx @tc96/parttens add otp-1`.
+
+It is a whole page, not a field to place inside one: it renders its own `main` landmark. Verifying the code, the session and the redirect stay in the app; the block only calls `onSubmit`, `onComplete` and `onResend`, and it keeps no copy of the code.
+
+The other pages of `Blocks/Application/Auth/Otp1`: [Playground](?path=/story/blocks-application-auth-otp1-playground--playground) to try the errors, the pending state, the resend countdown and the optional parts, [Stories](?path=/story/blocks-application-auth-otp1-stories--default) for the pending, countdown, error and code error states, [Behavior](?path=/story/blocks-application-auth-otp1-behavior--page-heading) for the tests, [Usages](?path=/story/blocks-application-auth-otp1-usages--email-code) for real verification screens and [Layouts](?path=/story/blocks-application-auth-otp1-layouts--minimal) for the page without its optional parts and with another number of digits.
+
+## Import
+
+```tsx
+import { Otp1 } from '@acme/blocks/application/auth/otp-1'
+```
+
+The same path exports the types `OtpProps`, `OtpValues`, `OtpLabels`, `AuthRenderLink`, `AuthBaseProps`, `AuthCommonLabels` and `AuthFieldErrors`.
+
+## Anatomy
+
+The page with a form `error`, the destination and the resend:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Otp1
+  destination="ana@acme.com"
+  error={error}
+  fieldErrors={fieldErrors}
+  logo={<Logo />}
+  onComplete={(code) => console.log('complete', code.length)}
+  onResend={() => resendCode()}
+  onSubmit={({ code }) => verifyCode(code)}
+  pending={isVerifying}
+  resendIn={secondsLeft}
+/>
+```
+
+The tree `Otp1` renders:
+
+```tsx
+<main>
+  <div data-slot="card">
+    <div data-slot="card-header">
+      <div>{logo}</div>
+      <h1 data-slot="card-title">{labels.title}</h1>
+      <div data-slot="card-description">{labels.description(length, destination)}</div>
+    </div>
+    <div data-slot="card-panel">
+      <div data-slot="alert" role="alert" tabIndex={-1}>{error}</div>
+      <form data-slot="form" aria-busy={pending} noValidate>
+        <div data-slot="field">
+          <label data-slot="field-label">{labels.code}</label>
+          <div data-slot="otp-field" role="group">
+            <input data-slot="otp-field-input" />
+          </div>
+          <div data-slot="field-error" />
+        </div>
+        <button type="submit" />
+      </form>
+    </div>
+  </div>
+  <div data-slot="auth-footer">{/* resend */}</div>
+</main>
+```
+
+`otp-field-input` repeats `length` times.
+
+## Otp1
+
+The whole verification page. Renders a `main` that fills the window height and centers its content, a card with the optional `logo` above the title (an `h1`), the description, the form message, the code field, the Verificar button and the resend footer. Mount it on the route and do not wrap it in another `main`. It only takes the props below.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: OtpValues) => void` | required | Called with the `code` when the form is submitted with a complete code; never while `pending`. |
+| `length` | `number` | `6` | Sets the number of digits, one input each. |
+| `onComplete` | `(code: string) => void` | - | Called each time the code reaches `length` digits; it never submits the form. |
+| `destination` | `string` | - | Names where the code was sent (an e-mail or a phone) in the description. |
+| `onResend` | `() => void` | - | Renders the resend footer when set, and is called by its button. |
+| `resendIn` | `number` | `0` | Sets the seconds the app counts down before another resend; above zero the button is disabled and shows the seconds. |
+| `pending` | `boolean` | `false` | When true, disables the submit and resend buttons, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
+| `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
+| `fieldErrors` | `Partial<Record<keyof OtpValues, string>>` | - | Shows a message for the code, marks every digit invalid and describes the group with it. |
+| `logo` | `ReactNode` | - | Renders inside the card, centered above the title. |
+| `labels` | `Partial<OtpLabels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
+| `renderLink` | `(href: string) => ReactElement` | - | Accepted so every auth block shares one contract; this block renders no link. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"card"` | Marks the card, which holds everything but the footer |
+| `data-slot` | `"form"` | Marks the form; it carries `aria-busy` |
+| `data-slot` | `"otp-field"` | Marks the group of digits |
+| `data-slot` | `"otp-field-input"` | Marks each digit input |
+
+### Code
+
+The field is uncontrolled and the block keeps no value of it: the code reaches the app only through `onSubmit` and `onComplete`. Each digit is its own input named by `labels.digit(position, length)`, the first one included, and the group is named by `labels.code`. The first input carries `autocomplete="one-time-code"`, so the browser and the password manager can fill the whole code. Typing, autofill and paste all fill the digits.
+
+### Submit
+
+The Verificar button is the only way to send the code, and Enter in a digit does the same. `onSubmit` runs only with a complete code: an empty or incomplete code stops the submit, focuses the first digit and shows the native constraint message of the browser in the field error. Completing the code does not send it, since there is no auto-submit; `onComplete` only notifies. The return value of both callbacks is ignored.
+
+### Resend
+
+The resend button renders only when `onResend` is passed, in the footer next to `labels.didNotReceive`. `resendIn` is the app's countdown: while it is above zero the button is disabled and shows `labels.resendIn(seconds)`; at zero, or when missing, it shows `labels.resend` and calls `onResend()`. The block runs no timer, and the countdown is plain text outside any live region. `pending` disables the button too, and `onResend` is not called while it is true.
+
+### Pending
+
+`pending` is the app's state. While it is true `onSubmit` is not called, Enter included, and the submit button shows its `loading` state.
+
+### Errors
+
+- `error` is rendered as text, never as HTML. When it goes from empty to a message, focus moves to the alert, unless `fieldErrors` names the code, which takes the focus.
+- `fieldErrors.code` shows its message in the field error, marks every digit `aria-invalid` and describes the group with it. When it goes from empty to filled, focus moves to the first digit. The message clears when the user edits the code.
+- Both are the app's state: the block never sets either of them.
+
+### OtpValues
+
+The argument of `onSubmit`.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `code` | `string` | The digits typed, `length` of them. |
+
+### OtpLabels
+
+Every visible or accessible text the block owns. `labels` is partial and merged over these defaults. Of the common auth labels it carries only `errorTitle`.
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Verifique seu código"` |
+| `description` | `(length: number, destination?: string) => string` | `` `Enviamos um código de ${length} dígitos para ${destination}.` ``, or the same without `para ${destination}` when there is no destination |
+| `code` | `string` | `"Código de verificação"` |
+| `digit` | `(position: number, total: number) => string` | `` `Dígito ${position} de ${total}` `` |
+| `submit` | `string` | `"Verificar"` |
+| `didNotReceive` | `string` | `"Não recebeu o código?"` |
+| `resend` | `string` | `"Reenviar código"` |
+| `resendIn` | `(seconds: number) => string` | `` `Reenviar em ${seconds}s` `` |
+| `errorTitle` | `string` | `"Não foi possível continuar"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Otp1` | `component` | The verification page. |
+| `OtpProps` | `type` | The props of `Otp1`. |
+| `OtpValues` | `type` | The argument of `onSubmit`. |
+| `OtpLabels` | `type` | The keys of `labels`. |
+| `AuthRenderLink` | `type` | `(href: string) => ReactElement`, the type of `renderLink`. |
+| `AuthBaseProps` | `type` | The props every auth block shares: `error`, `labels`, `logo`, `pending` and `renderLink`. |
+| `AuthCommonLabels` | `type` | The label keys the auth blocks share. |
+| `AuthFieldErrors` | `type` | `Partial<Record<keyof TValues, string>>`, the type of `fieldErrors`. |
+
+## Accessibility and theme
+
+- The page has one `main` landmark and one `h1`, the card title; do not wrap the block in another `main`.
+- The first digit takes its name from `labels.digit(1, length)` and the group from `labels.code`; override `digit` and `code` together when you translate the block.
+- The block carries no theme rule: it reads the card, field, button and alert tokens of the theme it renders in.

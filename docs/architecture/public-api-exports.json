@@ -2131,6 +2131,77 @@
     "Login5Props",
     "Login5Values"
   ],
+  "block:login-6": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthProvider",
+    "AuthRenderLink",
+    "Login6",
+    "Login6Labels",
+    "Login6Props",
+    "Login6Values"
+  ],
+  "block:login-7": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthProvider",
+    "AuthRenderLink",
+    "Login7",
+    "Login7FooterLink",
+    "Login7Labels",
+    "Login7Props",
+    "Login7Values"
+  ],
+  "block:login-8": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthProvider",
+    "AuthRenderLink",
+    "Login8",
+    "Login8Labels",
+    "Login8Props",
+    "Login8Values"
+  ],
+  "block:login-9": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthProvider",
+    "AuthRenderLink",
+    "Login9",
+    "Login9Labels",
+    "Login9Props",
+    "Login9Testimonial",
+    "Login9TestimonialAuthor",
+    "Login9Values"
+  ],
+  "block:login-10": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthProvider",
+    "AuthRenderLink",
+    "Login10",
+    "Login10FooterLink",
+    "Login10Labels",
+    "Login10Props",
+    "Login10Testimonial",
+    "Login10Values"
+  ],
+  "block:signup-3": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthProvider",
+    "AuthRenderLink",
+    "Signup3",
+    "Signup3Labels",
+    "Signup3Props",
+    "Signup3Values"
+  ],
   "block:run-monitor": [
     "RunMonitor",
     "RunMonitorConnection",
