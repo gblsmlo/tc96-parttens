@@ -2028,5 +2028,37 @@
     "Onboarding3Labels",
     "Onboarding3Props",
     "OnboardingStep"
+  ],
+  "block:dashboard-1": [
+    "Dashboard1",
+    "Dashboard1CapacityPoint",
+    "Dashboard1CapacitySummaryItem",
+    "Dashboard1Exception",
+    "Dashboard1FilterOption",
+    "Dashboard1Kpi",
+    "Dashboard1Labels",
+    "Dashboard1Props"
+  ],
+  "block:dashboard-2": [
+    "Dashboard2",
+    "Dashboard2Channel",
+    "Dashboard2Kpi",
+    "Dashboard2Labels",
+    "Dashboard2Order",
+    "Dashboard2Props",
+    "Dashboard2SalesPoint",
+    "Dashboard2SalesSummaryItem",
+    "Dashboard2Sort",
+    "Dashboard2SortDirection",
+    "Dashboard2SortKey"
+  ],
+  "block:dashboard-3": [
+    "Dashboard3",
+    "Dashboard3ForecastPoint",
+    "Dashboard3ForecastSummaryItem",
+    "Dashboard3Labels",
+    "Dashboard3Member",
+    "Dashboard3Props",
+    "Dashboard3QueueItem"
   ]
 }

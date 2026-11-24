@@ -1,0 +1,117 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Dashboard1
+
+A fulfillment exceptions dashboard: a row of four KPI cards, a bar chart of capacity used against capacity per distribution center, and a table of open exceptions with status badges and a status filter. Reach for it on an operations home page that shows what is stuck and where. Install it with `npx @tc96/parttens add dashboard-1`.
+
+It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The filter is controlled: the app passes `filter` and `filterOptions`, handles `onFilterChange` and passes the rows it already filtered. Numbers arrive raw and the block formats them with `locale` and `currency` (`pt-BR` and `BRL` by default). Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `kpis`, `capacity` and `exceptions` the empty state. The precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/Application/Dashboard/Dashboard1`: [Playground](?path=/story/blocks-application-dashboard-dashboard1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-dashboard-dashboard1-behavior--kpis-show-formatted-values-and-deltas) for the tests, [States](?path=/story/blocks-application-dashboard-dashboard1-states--default) for the four states and [Usages](?path=/story/blocks-application-dashboard-dashboard1-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Dashboard1 } from '@tc96/blocks/application/dashboard/dashboard-1'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four KPIs, the capacity of five centers and six open exceptions.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Dashboard1
+  capacity={capacity}
+  error={isError}
+  exceptions={visibleExceptions}
+  filter={filter}
+  filterOptions={filterOptions}
+  kpis={kpis}
+  onFilterChange={setFilter}
+  onRetry={() => refetch()}
+  pending={isPending}
+/>
+```
+
+## Dashboard1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `kpis` | `Dashboard1Kpi[]` | required | The KPI cards, in order. |
+| `capacity` | `Dashboard1CapacityPoint[]` | required | One pair of bars per center. |
+| `exceptions` | `Dashboard1Exception[]` | required | The table rows, already filtered by the app. An empty array renders a message row. |
+| `filter` | `string` | required | The `value` of the active filter option. |
+| `filterOptions` | `Dashboard1FilterOption[]` | required | The filter buttons. |
+| `onFilterChange` | `(filter: string) => void` | required | Called with the `value` of the picked option. |
+| `locale` | `string` | `'pt-BR'` | Locale of every formatted number. |
+| `currency` | `string` | `'BRL'` | Currency of the `currency` KPIs. |
+| `pending` | `boolean` | `false` | Renders the skeleton; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `labels` | `Partial<Dashboard1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Dashboard1Kpi
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the card. |
+| `label` | `string` | What the number measures. |
+| `value` | `number` | The raw number. |
+| `format` | `'number' \| 'currency' \| 'percent'` | How the value is formatted; `number` by default. A percent is a ratio (`0.943`). |
+| `delta` | `number` | Optional change as a ratio, shown with its sign. |
+| `trend` | `'positive' \| 'negative' \| 'neutral'` | Colors the delta; the sign carries the direction. |
+| `sparkline` | `number[]` | Optional small line next to the value. |
+
+## Dashboard1CapacityPoint, Dashboard1Exception and Dashboard1FilterOption
+
+| Type | Fields |
+| --- | --- |
+| `Dashboard1CapacityPoint` | `id`, `label` (the center), `used` and `capacity`, both raw numbers. |
+| `Dashboard1Exception` | `id`, `order`, `hub`, `reason`, `delayHours` (raw number) and `status` (`{ label, tone? }`). |
+| `Dashboard1FilterOption` | `value` and `label`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Exceções de expedição"`; the heading and the accessible name of the section |
+| `loading` | `string` | `"Carregando exceções de expedição"`; the accessible name of the skeleton |
+| `indicators` | `string` | `"Indicadores"`; the accessible name of the KPI list |
+| `capacityTitle` | `string` | `"Capacidade por centro"` |
+| `capacityLabel` | `string` | `"Capacidade utilizada por centro de distribuição"`; the accessible name of the chart |
+| `capacitySummary` | `(items) => string` | Joins `label: used de capacity` with `; `; the text read by screen readers as the chart description |
+| `capacityUsed`, `capacityTotal` | `string` | `"Utilizada"`, `"Capacidade"`; the series names |
+| `exceptionsTitle` | `string` | `"Exceções abertas"`; the title and the table name |
+| `filter` | `string` | `"Filtrar por status"` |
+| `columnOrder`, `columnHub`, `columnReason`, `columnDelay`, `columnStatus` | `string` | `"Pedido"`, `"Centro"`, `"Motivo"`, `"Atraso"`, `"Status"` |
+| `delay` | `(hours: string) => string` | `` `${hours} h` `` |
+| `noExceptions` | `string` | `"Nenhuma exceção para este filtro"` |
+| `errorTitle`, `errorDescription`, `retry` | `string` | `"Não foi possível carregar as exceções"`, `"Tente novamente em instantes."`, `"Tentar novamente"` |
+| `emptyTitle`, `emptyDescription` | `string` | `"Nenhuma exceção de expedição"`, `"As exceções aparecem aqui assim que forem registradas."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Dashboard1` | `component` | The dashboard. |
+| `Dashboard1Props` | `type` | The props of the dashboard. |
+| `Dashboard1Kpi` | `type` | A KPI card. |
+| `Dashboard1CapacityPoint` | `type` | A center of the chart. |
+| `Dashboard1CapacitySummaryItem` | `type` | The formatted item `capacitySummary` receives. |
+| `Dashboard1Exception` | `type` | A table row. |
+| `Dashboard1FilterOption` | `type` | A filter button. |
+| `Dashboard1Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The chart is an `img` named by `labels.capacityLabel` and described by a visually hidden text from `labels.capacitySummary`.
+- The filter is a toggle group named by `labels.filter`; the active option has `aria-pressed`.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- Chart colors come from `--chart-1` and `--chart-2`; status colors from the theme badge tones. The block carries no raw color, radius or shadow.

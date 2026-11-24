@@ -132,6 +132,7 @@
         "@tc96/parttens": "workspace:*",
         "@tc96/ui": "workspace:*",
         "@tc96/utils": "workspace:*",
+        "recharts": "3.10.1",
       },
       "peerDependencies": {
         "@base-ui/react": "1.8.0",

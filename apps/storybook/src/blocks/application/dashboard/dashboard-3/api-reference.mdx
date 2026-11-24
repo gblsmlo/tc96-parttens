@@ -1,0 +1,101 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Dashboard3
+
+A team coverage dashboard: a crew table with a coverage bar per person, an action queue with a button per item and a line chart of staff supply against forecast demand across the day. Reach for it on a scheduling or workforce home page that shows who is covered and what needs a decision. Install it with `npx @tc96/parttens add dashboard-3`.
+
+It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The queue buttons render only when `onAction(id)` is passed, and the app removes or updates the item it resolved. Coverage is a raw ratio (`0.92`) the block formats with `locale`; `shift` and the series values are the app's. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `crew`, `queue` and `forecast` the empty state. The precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/Application/Dashboard/Dashboard3`: [Playground](?path=/story/blocks-application-dashboard-dashboard3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-dashboard-dashboard3-behavior--crew-table-shows-member-role-and-shift) for the tests, [States](?path=/story/blocks-application-dashboard-dashboard3-states--default) for the four states and [Usages](?path=/story/blocks-application-dashboard-dashboard3-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Dashboard3 } from '@tc96/blocks/application/dashboard/dashboard-3'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four crew members, three queue items and seven forecast points.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Dashboard3
+  crew={crew}
+  error={isError}
+  forecast={forecast}
+  onAction={(id) => resolve(id)}
+  onRetry={() => refetch()}
+  pending={isPending}
+  queue={queue}
+/>
+```
+
+## Dashboard3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `crew` | `Dashboard3Member[]` | required | The table rows. An empty array renders a message row. |
+| `queue` | `Dashboard3QueueItem[]` | required | The action items, in order. An empty array renders a message. |
+| `forecast` | `Dashboard3ForecastPoint[]` | required | The points of the line chart. |
+| `onAction` | `(id: string) => void` | - | Called with the item `id`; without it no button is rendered. |
+| `locale` | `string` | `'pt-BR'` | Locale of every formatted number. |
+| `pending` | `boolean` | `false` | Renders the skeleton; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `labels` | `Partial<Dashboard3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Data types
+
+| Type | Fields |
+| --- | --- |
+| `Dashboard3Member` | `id`, `name` (its initials fill the avatar), `role`, `shift`, `coverage` (ratio from 0 to 1), `status` (`{ label, tone? }`) and `avatarSrc`. |
+| `Dashboard3QueueItem` | `id`, `title`, `description`, `priority` (`{ label, tone? }`) and `actionLabel`, which replaces `labels.action` on that item. |
+| `Dashboard3ForecastPoint` | `label`, `supply` and `forecast`, both raw numbers. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Cobertura das equipes"`; the heading and the accessible name of the section |
+| `loading` | `string` | `"Carregando cobertura das equipes"`; the accessible name of the skeleton |
+| `crewTitle` | `string` | `"Equipe do turno"`; the title and the table name |
+| `columnMember`, `columnShift`, `columnCoverage`, `columnStatus` | `string` | `"Equipe"`, `"Turno"`, `"Cobertura"`, `"Status"` |
+| `coverageOf` | `(name: string) => string` | `` `Cobertura de ${name}` ``; the accessible name of a bar |
+| `noCrew` | `string` | `"Nenhuma pessoa escalada"` |
+| `queueTitle` | `string` | `"Fila de ações"`; the title and the list name |
+| `action` | `string` | `"Resolver"`; the text of a queue button |
+| `actionFor` | `(action: string, title: string) => string` | `` `${action}: ${title}` ``; the accessible name of a queue button |
+| `noQueue` | `string` | `"Nenhuma ação pendente"` |
+| `forecastTitle` | `string` | `"Oferta e previsão"` |
+| `forecastLabel` | `string` | `"Oferta de pessoal e demanda prevista ao longo do dia"`; the accessible name of the chart |
+| `forecastSummary` | `(items) => string` | Joins `label: oferta x, previsão y` with `; `; the text read by screen readers as the chart description |
+| `supplySeries`, `forecastSeries` | `string` | `"Oferta"`, `"Previsão"` |
+| `errorTitle`, `errorDescription`, `retry` | `string` | `"Não foi possível carregar a cobertura"`, `"Tente novamente em instantes."`, `"Tentar novamente"` |
+| `emptyTitle`, `emptyDescription` | `string` | `"Nenhuma escala cadastrada"`, `"A cobertura aparece aqui assim que houver escalas."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Dashboard3` | `component` | The dashboard. |
+| `Dashboard3Props` | `type` | The props of the dashboard. |
+| `Dashboard3Member` | `type` | A crew row. |
+| `Dashboard3QueueItem` | `type` | A queue item. |
+| `Dashboard3ForecastPoint` | `type` | A point of the chart. |
+| `Dashboard3ForecastSummaryItem` | `type` | The formatted item `forecastSummary` receives. |
+| `Dashboard3Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The chart is an `img` named by `labels.forecastLabel` and described by a visually hidden text from `labels.forecastSummary`.
+- Each coverage bar is a `progressbar` named by `labels.coverageOf` and shows its value as text; each queue button is named by `labels.actionFor`, which keeps the visible text in the name.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- Chart colors come from `--chart-1` and `--chart-2`, and the forecast line is dashed so color is not the only cue; status colors come from the theme badge tones. The block carries no raw color, radius or shadow.
