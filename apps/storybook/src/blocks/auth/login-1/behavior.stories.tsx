@@ -314,11 +314,27 @@ export const PageFrame: Story = {
     const logo = canvas.getByText('Acme')
     const card = canvasElement.querySelector('[data-slot="card"]')
     await expect(card).not.toBeNull()
-    await expect(card?.contains(logo)).toBe(false)
+    await expect(card).toContainElement(logo)
     await expect(
-      logo.compareDocumentPosition(card as Element) &
+      logo.compareDocumentPosition(canvas.getByRole('heading', { level: 1 })) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy()
     await expect(canvas.getByRole('main')).toContainElement(logo)
+  },
+}
+
+export const ProvidersSitAboveTheForm: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const providers = canvas.getByRole('group', {
+      name: 'Entrar com outro serviço',
+    })
+    await expect(
+      providers.compareDocumentPosition(emailField(canvas)) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    await expect(
+      canvas.getByRole('button', { name: 'Continuar com Google' }),
+    ).toHaveTextContent('Google')
   },
 }

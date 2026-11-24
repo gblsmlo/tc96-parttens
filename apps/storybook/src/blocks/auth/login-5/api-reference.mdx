@@ -59,7 +59,7 @@ const [method, setMethod] = useState<'email'>()
 | `fieldErrors` | `Partial<Record<keyof Login5Values, string>>` | - | Shows a message under each field it names and marks that field invalid. |
 | `signupHref` | `string` | - | Renders the sign up link only when passed. |
 | `forgotPasswordHref` | `string` | - | Renders the recovery link in the e-mail form only when passed. |
-| `logo` | `ReactNode` | - | Rendered above the card. |
+| `logo` | `ReactNode` | - | Rendered inside the card, above the title. |
 | `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders each link with the app's router. |
 | `labels` | `Partial<Login5Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
 

@@ -7,6 +7,9 @@ export const defaultLogin4Labels: Login4Labels = {
   email: defaultAuthCommonLabels.email,
   errorTitle: defaultAuthCommonLabels.errorTitle,
   passwordLogin: 'Entrar com senha',
+  providerContinue: defaultAuthCommonLabels.providerContinue,
+  providersGroup: defaultAuthCommonLabels.providersGroup,
+  providersSeparator: defaultAuthCommonLabels.providersSeparator,
   resend: 'Reenviar link',
   resendIn: (seconds) => `Reenviar em ${seconds}s`,
   sentDescription: (destination) =>

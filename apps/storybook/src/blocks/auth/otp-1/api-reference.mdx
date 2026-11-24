@@ -43,9 +43,9 @@ The tree `Otp1` renders:
 
 ```tsx
 <main>
-  <div>{logo}</div>
   <div data-slot="card">
     <div data-slot="card-header">
+      <div>{logo}</div>
       <h1 data-slot="card-title">{labels.title}</h1>
       <div data-slot="card-description">{labels.description(length, destination)}</div>
     </div>
@@ -62,8 +62,8 @@ The tree `Otp1` renders:
         <button type="submit" />
       </form>
     </div>
-    <div data-slot="card-footer">{/* resend */}</div>
   </div>
+  <div data-slot="auth-footer">{/* resend */}</div>
 </main>
 ```
 
@@ -71,7 +71,7 @@ The tree `Otp1` renders:
 
 ## Otp1
 
-The whole verification page. Renders a `main` that fills the window height and centers its content, the optional `logo` above a card, and inside it the title (an `h1`), the description, the form message, the code field, the Verificar button and the resend footer. Mount it on the route and do not wrap it in another `main`. It only takes the props below.
+The whole verification page. Renders a `main` that fills the window height and centers its content, a card with the optional `logo` above the title (an `h1`), the description, the form message, the code field, the Verificar button and the resend footer. Mount it on the route and do not wrap it in another `main`. It only takes the props below.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -84,13 +84,13 @@ The whole verification page. Renders a `main` that fills the window height and c
 | `pending` | `boolean` | `false` | When true, disables the submit and resend buttons, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
 | `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
 | `fieldErrors` | `Partial<Record<keyof OtpValues, string>>` | - | Shows a message for the code, marks every digit invalid and describes the group with it. |
-| `logo` | `ReactNode` | - | Renders above the card, outside it, centered. |
+| `logo` | `ReactNode` | - | Renders inside the card, centered above the title. |
 | `labels` | `Partial<OtpLabels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
 | `renderLink` | `(href: string) => ReactElement` | - | Accepted so every auth block shares one contract; this block renders no link. |
 
 | Attribute | Values | Description |
 | --- | --- | --- |
-| `data-slot` | `"card"` | Marks the card, which holds everything but the `logo` |
+| `data-slot` | `"card"` | Marks the card, which holds everything but the footer |
 | `data-slot` | `"form"` | Marks the form; it carries `aria-busy` |
 | `data-slot` | `"otp-field"` | Marks the group of digits |
 | `data-slot` | `"otp-field-input"` | Marks each digit input |

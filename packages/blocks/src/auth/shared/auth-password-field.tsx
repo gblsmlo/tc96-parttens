@@ -15,6 +15,7 @@ export interface AuthPasswordFieldProps {
   children?: ReactNode
   hideLabel: string
   label: string
+  labelAction?: ReactNode
   minLength?: number
   name: string
   onValueChange?: (value: string) => void
@@ -27,6 +28,7 @@ export function AuthPasswordField({
   children,
   hideLabel,
   label,
+  labelAction,
   minLength,
   name,
   onValueChange,
@@ -37,7 +39,14 @@ export function AuthPasswordField({
   const toggleLabel = visible ? hideLabel : showLabel
   return (
     <Field name={name}>
-      <FieldLabel>{label}</FieldLabel>
+      {labelAction ? (
+        <div className="flex w-full items-center justify-between gap-2">
+          <FieldLabel>{label}</FieldLabel>
+          {labelAction}
+        </div>
+      ) : (
+        <FieldLabel>{label}</FieldLabel>
+      )}
       <InputGroup>
         <InputGroupInput
           autoComplete={autoComplete}

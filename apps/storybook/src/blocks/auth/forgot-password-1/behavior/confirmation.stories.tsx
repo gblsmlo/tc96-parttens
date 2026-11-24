@@ -146,7 +146,7 @@ export const PageFrameWhenSent: Story = {
     const logo = canvas.getByText('Acme')
     const card = canvasElement.querySelector('[data-slot="card"]')
     await expect(card).not.toBeNull()
-    await expect(card?.contains(logo)).toBe(false)
+    await expect(card).toContainElement(logo)
     await expect(canvas.getByRole('main')).toContainElement(logo)
   },
 }

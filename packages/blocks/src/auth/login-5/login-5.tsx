@@ -113,22 +113,24 @@ export function Login5({
                 autoComplete="current-password"
                 hideLabel={labels.hidePassword}
                 label={labels.password}
+                labelAction={
+                  forgotPasswordHref ? (
+                    <Button
+                      className="underline"
+                      render={renderLink(forgotPasswordHref)}
+                      size="sm"
+                      variant="link"
+                    >
+                      {labels.forgotPassword}
+                    </Button>
+                  ) : undefined
+                }
                 name={field.name}
                 onValueChange={(value) => field.handleChange(value)}
                 showLabel={labels.showPassword}
               />
             )}
           </form.Field>
-          {forgotPasswordHref ? (
-            <Button
-              className="self-end underline"
-              render={renderLink(forgotPasswordHref)}
-              size="sm"
-              variant="link"
-            >
-              {labels.forgotPassword}
-            </Button>
-          ) : null}
           <Button className="w-full" loading={pending} type="submit">
             {labels.submit}
           </Button>

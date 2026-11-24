@@ -68,6 +68,12 @@ export function Login3({
       logo={logo}
       title={labels.title}
     >
+      <AuthProviders
+        labels={labels}
+        onSelect={onProviderSelect}
+        pending={pending}
+        providers={providers}
+      />
       <Form
         aria-busy={pending}
         className="flex flex-col gap-4"
@@ -100,47 +106,41 @@ export function Login3({
               autoComplete="current-password"
               hideLabel={labels.hidePassword}
               label={labels.password}
+              labelAction={
+                forgotPasswordHref ? (
+                  <Button
+                    className="underline"
+                    render={renderLink(forgotPasswordHref)}
+                    size="sm"
+                    variant="link"
+                  >
+                    {labels.forgotPassword}
+                  </Button>
+                ) : undefined
+              }
               name={field.name}
               onValueChange={(value) => field.handleChange(value)}
               showLabel={labels.showPassword}
             />
           )}
         </form.Field>
-        <div className="flex items-center justify-between gap-2">
-          <form.Field name="remember">
-            {(field) => (
-              <Field name={field.name}>
-                <FieldLabel>
-                  <Checkbox
-                    checked={field.state.value}
-                    onCheckedChange={(checked) => field.handleChange(checked)}
-                  />
-                  {labels.remember}
-                </FieldLabel>
-              </Field>
-            )}
-          </form.Field>
-          {forgotPasswordHref ? (
-            <Button
-              className="underline"
-              render={renderLink(forgotPasswordHref)}
-              size="sm"
-              variant="link"
-            >
-              {labels.forgotPassword}
-            </Button>
-          ) : null}
-        </div>
+        <form.Field name="remember">
+          {(field) => (
+            <Field name={field.name}>
+              <FieldLabel>
+                <Checkbox
+                  checked={field.state.value}
+                  onCheckedChange={(checked) => field.handleChange(checked)}
+                />
+                {labels.remember}
+              </FieldLabel>
+            </Field>
+          )}
+        </form.Field>
         <Button className="w-full" loading={pending} type="submit">
           {labels.submit}
         </Button>
       </Form>
-      <AuthProviders
-        labels={labels}
-        onSelect={onProviderSelect}
-        pending={pending}
-        providers={providers}
-      />
     </AuthCard>
   )
 

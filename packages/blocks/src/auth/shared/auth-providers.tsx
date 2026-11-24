@@ -24,6 +24,31 @@ export function AuthProviders({
   if (!providers?.length) return null
   return (
     <div className="flex flex-col gap-4">
+      <fieldset
+        className={
+          providers.length > 1
+            ? 'grid min-w-0 gap-2 sm:grid-cols-2'
+            : 'grid min-w-0 gap-2'
+        }
+      >
+        <legend className="sr-only">{labels.providersGroup}</legend>
+        {providers.map((provider) => (
+          <Button
+            aria-label={labels.providerContinue(provider.label)}
+            className="w-full"
+            disabled={pending}
+            key={provider.id}
+            onClick={() => {
+              if (!pending) onSelect?.(provider.id)
+            }}
+            type="button"
+            variant="outline"
+          >
+            {provider.icon}
+            {provider.label}
+          </Button>
+        ))}
+      </fieldset>
       <div
         aria-hidden="true"
         className="flex items-center gap-3 text-muted-foreground text-xs"
@@ -36,24 +61,6 @@ export function AuthProviders({
           <Separator />
         </div>
       </div>
-      <fieldset className="flex min-w-0 flex-col gap-2">
-        <legend className="sr-only">{labels.providersGroup}</legend>
-        {providers.map((provider) => (
-          <Button
-            className="w-full"
-            disabled={pending}
-            key={provider.id}
-            onClick={() => {
-              if (!pending) onSelect?.(provider.id)
-            }}
-            type="button"
-            variant="outline"
-          >
-            {provider.icon}
-            {labels.providerContinue(provider.label)}
-          </Button>
-        ))}
-      </fieldset>
     </div>
   )
 }

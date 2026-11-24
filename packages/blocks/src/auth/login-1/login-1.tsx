@@ -68,6 +68,12 @@ export function Login1({
       logo={logo}
       title={labels.title}
     >
+      <AuthProviders
+        labels={labels}
+        onSelect={onProviderSelect}
+        pending={pending}
+        providers={providers}
+      />
       <Form
         aria-busy={pending}
         className="flex flex-col gap-4"
@@ -87,37 +93,31 @@ export function Login1({
           autoComplete="current-password"
           hideLabel={labels.hidePassword}
           label={labels.password}
+          labelAction={
+            forgotPasswordHref ? (
+              <Button
+                className="underline"
+                render={renderLink(forgotPasswordHref)}
+                size="sm"
+                variant="link"
+              >
+                {labels.forgotPassword}
+              </Button>
+            ) : undefined
+          }
           name="password"
           showLabel={labels.showPassword}
         />
-        <div className="flex items-center justify-between gap-2">
-          <Field name="remember">
-            <FieldLabel>
-              <Checkbox />
-              {labels.remember}
-            </FieldLabel>
-          </Field>
-          {forgotPasswordHref ? (
-            <Button
-              className="underline"
-              render={renderLink(forgotPasswordHref)}
-              size="sm"
-              variant="link"
-            >
-              {labels.forgotPassword}
-            </Button>
-          ) : null}
-        </div>
+        <Field name="remember">
+          <FieldLabel>
+            <Checkbox />
+            {labels.remember}
+          </FieldLabel>
+        </Field>
         <Button className="w-full" loading={pending} type="submit">
           {labels.submit}
         </Button>
       </Form>
-      <AuthProviders
-        labels={labels}
-        onSelect={onProviderSelect}
-        pending={pending}
-        providers={providers}
-      />
     </AuthCard>
   )
 }

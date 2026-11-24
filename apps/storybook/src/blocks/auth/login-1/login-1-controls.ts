@@ -37,7 +37,7 @@ export const loginControlArgTypes: Partial<ArgTypes<LoginControls>> = {
   },
   logo: {
     control: 'boolean',
-    description: 'Passes a `logo` rendered above the card.',
+    description: 'Passes a `logo` rendered inside the card, above the title.',
   },
   passwordError: {
     control: 'text',

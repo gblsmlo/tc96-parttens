@@ -64,15 +64,15 @@ export const OneMainLandmark: Story = {
   },
 }
 
-export const LogoSitsAboveTheCard: Story = {
+export const LogoSitsAboveTheTitle: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const logo = canvas.getByText('Acme')
     const card = canvasElement.querySelector('[data-slot="card"]')
     await expect(card).not.toBeNull()
-    await expect(card?.contains(logo)).toBe(false)
+    await expect(card).toContainElement(logo)
     await expect(
-      logo.compareDocumentPosition(card as Element) &
+      logo.compareDocumentPosition(canvas.getByRole('heading', { level: 1 })) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy()
     await expect(canvas.getByRole('main')).toContainElement(logo)

@@ -8,6 +8,7 @@ import { Input } from '@tc96/ui/input'
 import { renderAnchor } from '@tc96/ui/render-anchor'
 import { type ReactElement, useEffect, useMemo, useRef } from 'react'
 import { AuthCard } from '../shared/auth-card'
+import { AuthProviders } from '../shared/auth-providers'
 import { resolveAuthLabels } from '../shared/labels'
 import { toFormErrors } from '../shared/to-form-errors'
 import { useFocusFirstInvalid } from '../shared/use-focus-first-invalid'
@@ -22,10 +23,12 @@ export function Login4({
   fieldErrors,
   labels: labelsProp,
   logo,
+  onProviderSelect,
   onResend,
   onSubmit,
   passwordLoginHref,
   pending = false,
+  providers,
   renderLink = renderAnchor,
   resendIn = 0,
   sent = false,
@@ -104,6 +107,12 @@ export function Login4({
       logo={logo}
       title={labels.title}
     >
+      <AuthProviders
+        labels={labels}
+        onSelect={onProviderSelect}
+        pending={pending}
+        providers={providers}
+      />
       <Form
         aria-busy={pending}
         className="flex flex-col gap-4"

@@ -1,6 +1,6 @@
 import { Login4, type Login4Props } from '@tc96/blocks/auth/login-4'
 import { useState } from 'react'
-import { authLogo } from '../fixtures/auth-data'
+import { authLogo, authProviders } from '../fixtures/auth-data'
 import type { Login4Controls } from './login-4-controls.ts'
 
 interface ComposedLogin4Props extends Login4Controls {
@@ -30,6 +30,7 @@ export const ComposedLogin4 = ({
     onSubmit={onSubmit}
     passwordLoginHref="/login"
     pending={pending}
+    providers={authProviders}
     resendIn={resendIn}
     sent={sent}
   />

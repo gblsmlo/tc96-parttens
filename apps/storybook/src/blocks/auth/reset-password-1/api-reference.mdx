@@ -35,9 +35,9 @@ The tree it renders, with the `data-slot` of each part:
 
 ```tsx
 <main>
-  <div>{logo}</div>
   <div data-slot="card">
     <div data-slot="card-header">
+      <div>{logo}</div>
       <h1 data-slot="card-title">{labels.title}</h1>
       <div data-slot="card-description">{labels.description}</div>
     </div>
@@ -61,18 +61,18 @@ The tree it renders, with the `data-slot` of each part:
         <button type="submit">{labels.submit}</button>
       </form>
     </div>
-    <div data-slot="card-footer">
-      <a href={loginHref}>{labels.backToLogin}</a>
-    </div>
+  </div>
+  <div data-slot="auth-footer">
+    <a href={loginHref}>{labels.backToLogin}</a>
   </div>
 </main>
 ```
 
-The `logo` wrapper renders only with `logo`, the `alert` only with `error`, and the `card-footer` only with `loginHref`.
+The `logo` wrapper renders only with `logo`, the `alert` only with `error`, and the `auth-footer` only with `loginHref`.
 
 ## ResetPassword1
 
-The reset password page. Renders a `main` landmark that centers its content in the window height, the optional `logo` above a `Card`, and inside it the title (an `h1`), the description, the form message, the form and the footer. Mount it on the route and do not wrap it in another `main`. The password change, the session and the redirect after it stay in the app.
+The reset password page. Renders a `main` landmark that centers its content in the window height, a `Card` with the optional `logo` above the title (an `h1`), the description, the form message, the form and the footer. Mount it on the route and do not wrap it in another `main`. The password change, the session and the redirect after it stay in the app.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -83,7 +83,7 @@ The reset password page. Renders a `main` landmark that centers its content in t
 | `passwordMinLength` | `number` | `8` | Sets the native `minLength` of the new password. |
 | `passwordSuggestions` | `AuthPasswordSuggestion[]` | `"lowercase"`, `"uppercase"`, `"number"` and `"symbol"` | Lists the character types the feedback suggests; an empty list hides them. |
 | `loginHref` | `string` | - | Adds the footer link back to sign in, named by `labels.backToLogin`; without it the footer is not rendered. |
-| `logo` | `ReactNode` | - | Renders above the card, outside it, centered; nothing renders in its place when missing. |
+| `logo` | `ReactNode` | - | Renders inside the card, centered above the title; nothing renders in its place when missing. |
 | `renderLink` | `(href: string) => ReactElement` | a plain `a` | Renders every link of the page, so the router of the app owns navigation (`(href) => <Link to={href} />`). |
 | `labels` | `Partial<ResetPasswordLabels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 
