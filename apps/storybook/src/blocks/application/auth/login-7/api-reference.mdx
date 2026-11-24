@@ -1,0 +1,89 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Login7
+
+The centered card sign-in page: the logo above the card, a card with the title, the description, the e-mail and password form with the recovery link beside the password label, then the providers in a row of up to three below the form. The sign up link sits below the card and the `footerLinks` (privacy, terms, status) at the bottom of the page. There is no remember me box. Reach for it when the sign-in page needs legal or status links. Install it with `npx @tc96/parttens add login-7`.
+
+It is a whole page: the card renders inside the `main` landmark and the footer links are a navigation landmark after it, so do not wrap the block in another `main`. Authentication, the session, cookies and redirects stay in the app; the block only calls `onSubmit` and `onProviderSelect`.
+
+The other pages of `Blocks/Application/Auth/Login/Login7`: [Playground](?path=/story/blocks-application-auth-login-login7-playground--playground), [Stories](?path=/story/blocks-application-auth-login-login7-stories--default), [Layouts](?path=/story/blocks-application-auth-login-login7-layouts--without-providers), [Behavior](?path=/story/blocks-application-auth-login-login7-behavior--footer-links-render) and [Usages](?path=/story/blocks-application-auth-login-login7-usages--sign-in).
+
+## Import
+
+```tsx
+import { Login7 } from '@acme/blocks/application/auth/login-7'
+```
+
+The same path exports the types `Login7Props`, `Login7Values`, `Login7Labels`, `Login7FooterLink`, `AuthProvider` and `AuthFieldErrors`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Login7
+  footerLinks={[{ href: '/privacy', label: 'Privacidade' }]}
+  error={error}
+  fieldErrors={fieldErrors}
+  onSubmit={({ email, password }) => signIn(email, password)}
+  pending={isSigningIn}
+/>
+```
+
+## Login7
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: Login7Values) => void` | required | Called with `email` and `password` after the native constraints pass; never while `pending`. |
+| `footerLinks` | `Login7FooterLink[]` | - | `{ label, href }` links at the bottom of the page, each rendered with `renderLink`. Without it the page has no footer. |
+| `pending` | `boolean` | `false` | Disables the submit button and the providers, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
+| `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
+| `fieldErrors` | `Partial<Record<keyof Login7Values, string>>` | - | Shows a message under each field it names and marks that field invalid. |
+| `logo` | `ReactNode` | - | Rendered above the card, outside it. |
+| `signupHref` | `string` | - | Renders the sign up link only when passed. |
+| `forgotPasswordHref` | `string` | - | Renders the recovery link beside the password label only when passed. |
+| `providers` | `AuthProvider[]` | - | `{ id, label, icon? }` buttons below the form, after a separator, up to three per row from `sm` up. |
+| `onProviderSelect` | `(id: string) => void` | - | Called with the provider id; never while `pending`. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders each link with the app's router. |
+| `labels` | `Partial<Login7Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
+
+### Login7Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `email` | `string` | The e-mail field. |
+| `password` | `string` | The password field. |
+
+### Errors and focus
+
+- The form state lives in TanStack Form; the native constraints (`required`, `type="email"`) run on submit through the COSS `Form`, which focuses the first invalid field.
+- `error` is rendered as text. When it goes from empty to a message, focus moves to the alert, unless `fieldErrors` names a field, which takes the focus.
+- `fieldErrors` ties each message to its field. When it goes from empty to filled, focus moves to the first of those fields. A message clears when the user edits its field.
+
+### Login7Labels
+
+| Key | Default |
+| --- | --- |
+| `title` | `"Entrar"` |
+| `description` | `"Informe seu e-mail e sua senha para acessar a conta."` |
+| `footerLinksLabel` | `"Links do rodapé"` |
+| `email` | `"E-mail"` |
+| `password` | `"Senha"` |
+| `showPassword` | `"Mostrar senha"` |
+| `hidePassword` | `"Ocultar senha"` |
+| `forgotPassword` | `"Esqueceu a senha?"` |
+| `noAccount` | `"Não tem uma conta?"` |
+| `signup` | `"Criar conta"` |
+| `submit` | `"Entrar"` |
+| `errorTitle` | `"Não foi possível continuar"` |
+| `providersSeparator` | `"ou continue com"` |
+| `providersGroup` | `"Entrar com outro serviço"` |
+| `providerContinue` | `(label) => "Continuar com " + label` |
+
+## Accessibility and theme
+
+- One `main` and one `h1`; the footer links are a navigation landmark named by `labels.footerLinksLabel`, outside the `main`.
+- The block carries no theme rule: it reads the card, field, button, alert, border and `muted` tokens of the theme it renders in.

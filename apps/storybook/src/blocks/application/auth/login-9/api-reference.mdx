@@ -1,0 +1,68 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Login9
+
+The magic link sign-in page in two columns: a media panel on the left and, on the right, the logo, a left-aligned heading, one e-mail field with a hint and providers stacked full width below the form. Install it with `npx @tc96/parttens add login-9`.
+
+It is a whole page: it renders its own `main` landmark. Sending the link, the confirmation, the session and the redirect stay in the app.
+
+The other pages of `Blocks/Application/Auth/Login/Login9`: [Playground](?path=/story/blocks-application-auth-login-login9-playground--playground), [Stories](?path=/story/blocks-application-auth-login-login9-stories--pending), [Behavior](?path=/story/blocks-application-auth-login-login9-behavior--page-heading) and [Usages](?path=/story/blocks-application-auth-login-login9-usages--magic-link-with-media).
+
+## Import
+
+```tsx
+import { Login9 } from '@acme/blocks/application/auth/login-9'
+```
+
+The same path exports the types `Login9Props`, `Login9Values`, `Login9Labels` and `AuthFieldErrors`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Login9
+  logo={<Logo />}
+  media={<img alt="" className="size-full object-cover" src={cover} />}
+  onProviderSelect={signInWith}
+  onSubmit={({ email }) => sendLink(email)}
+  pending={isSending}
+  providers={providers}
+/>
+```
+
+## Login9
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: Login9Values) => void` | required | Called with `email` after the native constraints pass; never while `pending`. |
+| `media` | `ReactNode` | - | Fills a rounded bordered panel on the left, the full height of the page; hidden below `md`. |
+| `providers` | `AuthProvider[]` | - | `{ id, label, icon? }` buttons, one per row, below the form after the separator. |
+| `onProviderSelect` | `(id: string) => void` | - | Called with the `id` of the provider button clicked; never while `pending`. |
+| `pending` | `boolean` | `false` | Disables the submit and provider buttons and sets `aria-busy` on the form. |
+| `error` | `string` | - | Shows a message for the whole form in an alert. |
+| `fieldErrors` | `Partial<Record<keyof Login9Values, string>>` | - | Shows a message under the e-mail field and marks it invalid. |
+| `logo` | `ReactNode` | - | Rendered above the heading, left-aligned, outside any card. |
+| `labels` | `Partial<Login9Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
+
+### Login9Labels
+
+| Key | Default |
+| --- | --- |
+| `title` | `"Entrar na sua conta"` |
+| `description` | `"Informe seu e-mail e enviaremos um link para você entrar."` |
+| `email` | `"E-mail"` |
+| `emailHint` | `"Seu link de acesso vale por 15 minutos."` |
+| `submit` | `"Enviar link de acesso"` |
+| `providersSeparator` | `"ou continue com"` |
+| `providersGroup` | `"Entrar com outro serviço"` |
+| `providerContinue` | `(label) => "Continuar com " + label` |
+| `errorTitle` | `"Não foi possível continuar"` |
+
+## Accessibility and theme
+
+- One `main` and one `h1`; the e-mail hint is the field's description.
+- The block carries no theme rule: it reads the field, button and alert tokens of the theme it renders in.

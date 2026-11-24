@@ -1,0 +1,107 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Login10
+
+The social proof sign-in page: a product column on the left (logo, a large heading and description, a testimonial carousel, an optional rating and a proof line) and a sign-in form without a card on the right, with the providers in a row of three below the form and a footer with links in the bottom right corner. Reach for it when the sign-in page should sell the product with customer quotes. Install it with `npx @tc96/parttens add login-10`.
+
+It is a whole page: the form column renders the `main` landmark, the left column is a complementary landmark beside it and the links sit in a `footer`, so do not wrap the block in another `main`. Authentication, the session, cookies and redirects stay in the app; the block only calls `onSubmit` and `onProviderSelect`.
+
+The other pages of `Blocks/Application/Auth/Login/Login10`: [Playground](?path=/story/blocks-application-auth-login-login10-playground--playground), [Stories](?path=/story/blocks-application-auth-login-login10-stories--pending), [Layouts](?path=/story/blocks-application-auth-login-login10-layouts--without-testimonials), [Behavior](?path=/story/blocks-application-auth-login-login10-behavior--page-heading) and [Usages](?path=/story/blocks-application-auth-login-login10-usages--sign-in-with-social-proof).
+
+## Import
+
+```tsx
+import { Login10 } from '@acme/blocks/application/auth/login-10'
+```
+
+The same path exports the types `Login10Props`, `Login10Values`, `Login10Labels`, `Login10Testimonial`, `Login10FooterLink`, `AuthProvider` and `AuthFieldErrors`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Login10
+  logo={<Logo />}
+  testimonials={testimonials}
+  rating={<Stars />}
+  proof="Mais de 2.000 times confiam na Acme"
+  providers={providers}
+  footerLinks={[{ href: '/terms', label: 'Termos' }]}
+  copyright="© 2026 Acme"
+  onSubmit={({ email, password }) => signIn(email, password)}
+  pending={isSigningIn}
+/>
+```
+
+## Login10
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: Login10Values) => void` | required | Called with `email` and `password` after the native constraints pass; never while `pending`. |
+| `testimonials` | `Login10Testimonial[]` | - | `{ quote, name, role, avatar? }` cards in the left column. The active one is centered and its neighbours are faded at the sides; the dots below switch it. |
+| `rating` | `ReactNode` | - | Rendered below the carousel, for example a row of stars. |
+| `proof` | `string` | - | A line of text below the rating. |
+| `footerLinks` | `Login10FooterLink[]` | - | `{ label, href }` links in the page footer, bottom right. |
+| `copyright` | `string` | - | Text beside the footer links. |
+| `pending` | `boolean` | `false` | Disables the submit button and the providers, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
+| `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
+| `fieldErrors` | `Partial<Record<keyof Login10Values, string>>` | - | Shows a message under each field it names and marks that field invalid. |
+| `logo` | `ReactNode` | - | Rendered at the top of the left column, and above the form below `lg`, never inside a card. |
+| `signupHref` | `string` | - | Renders the sign up line only when passed. |
+| `forgotPasswordHref` | `string` | - | Renders the recovery link beside the password label only when passed. |
+| `providers` | `AuthProvider[]` | - | `{ id, label, icon? }` buttons below the form, three per row. |
+| `onProviderSelect` | `(id: string) => void` | - | Called with the provider id; never while `pending`. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders each link with the app's router. |
+| `labels` | `Partial<Login10Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
+
+### Login10Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `email` | `string` | The e-mail field. |
+| `password` | `string` | The password field. |
+
+### Carousel
+
+- The active testimonial is interaction state inside the block; it starts at the first one and never changes on its own (no autoplay).
+- Each dot is a button named by `labels.showTestimonial(name)` with `aria-pressed`; the dots render only with two or more testimonials.
+- The cards that are not active are `aria-hidden` and `inert`. The slide and fade transitions run only under `prefers-reduced-motion: no-preference`.
+
+### Errors and focus
+
+- The form state lives in TanStack Form; the native constraints (`required`, `type="email"`) run on submit through the COSS `Form`, which focuses the first invalid field.
+- When `error` goes from empty to a message, focus moves to the alert, unless `fieldErrors` names a field, which takes the focus.
+
+### Login10Labels
+
+| Key | Default |
+| --- | --- |
+| `title` | `"Bem-vindo de volta"` |
+| `description` | `"Informe seu e-mail e sua senha para acessar a conta."` |
+| `asideHeading` | `"Todo o seu trabalho, em um só lugar"` |
+| `asideDescription` | `"Organize clientes, tarefas e conversas do time em um só lugar."` |
+| `asideLabel` | `"Sobre o produto"` |
+| `testimonials` | `"Depoimentos de clientes"` |
+| `showTestimonial` | `(name) => "Mostrar depoimento de " + name` |
+| `footerLinks` | `"Links do rodapé"` |
+| `email` | `"E-mail"` |
+| `password` | `"Senha"` |
+| `showPassword` | `"Mostrar senha"` |
+| `hidePassword` | `"Ocultar senha"` |
+| `forgotPassword` | `"Esqueceu a senha?"` |
+| `noAccount` | `"Não tem uma conta?"` |
+| `signup` | `"Criar conta"` |
+| `submit` | `"Entrar"` |
+| `errorTitle` | `"Não foi possível continuar"` |
+| `providersSeparator` | `"ou continue com"` |
+| `providersGroup` | `"Entrar com outro serviço"` |
+| `providerContinue` | `(label) => "Continuar com " + label` |
+
+## Accessibility and theme
+
+- One `main` with the `h1`; the left column is a complementary landmark named by `labels.asideLabel` with its heading as `h2`, hidden below `lg`.
+- The block carries no theme rule: it reads the field, button, alert and `muted` tokens of the theme it renders in.
