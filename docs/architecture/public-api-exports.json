@@ -2010,5 +2010,23 @@
     "Navbar5Person",
     "Navbar5Props",
     "Navbar5Status"
+  ],
+  "block:onboarding-1": [
+    "Onboarding1",
+    "Onboarding1Labels",
+    "Onboarding1Props",
+    "OnboardingStep"
+  ],
+  "block:onboarding-2": [
+    "Onboarding2",
+    "Onboarding2Labels",
+    "Onboarding2Props",
+    "OnboardingStep"
+  ],
+  "block:onboarding-3": [
+    "Onboarding3",
+    "Onboarding3Labels",
+    "Onboarding3Props",
+    "OnboardingStep"
   ]
 }

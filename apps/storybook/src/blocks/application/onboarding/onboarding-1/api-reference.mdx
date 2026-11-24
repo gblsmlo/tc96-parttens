@@ -1,0 +1,97 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Onboarding1
+
+A sidebar stepper: a vertical list of the steps (done, current, upcoming) beside the content of the current step, ending in a success state. Reach for it on a first-run setup with three to six steps that the person may want to revisit. Install it with `npx @tc96/parttens add onboarding-1`.
+
+The block keeps no state and never fetches: the current step is controlled with `step` and `onStepChange`, the step forms are the consumer's `content`, and moving on, finishing and skipping are callbacks. The success state is also controlled with `completed`. The stepper and the content card are the `Wizard` pattern, imported by file path.
+
+The other pages of `Blocks/Application/Onboarding/Onboarding1`: [Playground](?path=/story/blocks-application-onboarding-onboarding1-playground--playground) to try the controls, [States](?path=/story/blocks-application-onboarding-onboarding1-states--default) for default, pending, error and success, [Behavior](?path=/story/blocks-application-onboarding-onboarding1-behavior--shows-current-step-and-counter) for the tests and [Usages](?path=/story/blocks-application-onboarding-onboarding1-usages--complete-setup) for a full flow with TanStack Form.
+
+## Import
+
+```tsx
+import { Onboarding1 } from '@tc96/blocks/application/onboarding/onboarding-1'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Three steps on the first one.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Onboarding1
+  onComplete={saveSetup}
+  onContinue={validateStep}
+  onFinish={goToApp}
+  onSkip={skipSetup}
+  onStepChange={setStep}
+  pending={saving}
+  step={step}
+  steps={steps}
+/>
+```
+
+## Onboarding1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `steps` | `OnboardingStep[]` | - | The steps, in order. |
+| `step` | `string` | - | The `id` of the current step. An unknown `id` renders no step and disables the moves. |
+| `onStepChange` | `(id: string) => void` | - | Called with the `id` of the step to show when Voltar or Continuar moves. |
+| `onContinue` | `(stepId: string) => boolean \| undefined` | - | Called before Continuar moves or completes. Returning `false` keeps the step: that is where a step validates. |
+| `onComplete` | `() => void` | - | Called by the action of the last step, after `onContinue`. The consumer submits and then sets `completed`. |
+| `onSkip` | `(stepId: string) => void` | - | Called by Pular. Without it the action is not rendered. |
+| `onFinish` | `() => void` | - | Called by Começar on the success state. |
+| `completed` | `boolean` | `false` | Shows the success state in place of the steps. |
+| `pending` | `boolean` | `false` | Disables Voltar and Pular and puts Continuar in its loading state. |
+| `error` | `string` | - | Shown in an `Alert` above the actions. |
+| `labels` | `Partial<Onboarding1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## OnboardingStep
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the step and is passed to the callbacks. |
+| `title` | `string` | The step heading. |
+| `description` | `string` | Optional line under the title. |
+| `content` | `ReactNode` | The step body, usually a form. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `back` | `string` | `"Voltar"` |
+| `next` | `string` | `"Continuar"` |
+| `finish` | `string` | `"Concluir"`; replaces `next` on the last step |
+| `skip` | `string` | `"Pular"` |
+| `start` | `string` | `"Começar"` |
+| `stepOf` | `(current: number, total: number) => string` | `"Passo 1 de 3"` |
+| `errorTitle` | `string` | `"Não foi possível continuar"` |
+| `successTitle` | `string` | `"Tudo pronto"` |
+| `successDescription` | `string` | `"Sua conta está configurada. Você já pode começar a usar."` |
+| `label` | `string` | `"Configuração inicial"`; the accessible name of the section |
+| `steps` | `string` | `"Etapas da configuração"`; the accessible name of the stepper |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Onboarding1` | `component` | The sidebar stepper. |
+| `Onboarding1Props` | `type` | The props of the block. |
+| `Onboarding1Labels` | `type` | The keys of `labels`. |
+| `OnboardingStep` | `type` | One step. |
+
+## Accessibility and theme
+
+- The stepper is a `nav` named by `labels.steps`; the current step has `aria-current="step"` and the steps after it are disabled.
+- The step heading takes focus when the step changes, and the success heading when it shows.
+- An `error` renders in an `Alert`, which has `role="alert"`.
+- The block carries no raw color, radius or shadow: it uses COSS components and the `Wizard` pattern.

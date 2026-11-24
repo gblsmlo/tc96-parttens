@@ -104,7 +104,7 @@ Caminho: `packages/blocks/src/<categoria>/<grupo>/<block>/`. Story: `Blocks/<Cat
 
 | Categoria | Pasta | Escolha quando a tela serve para… | Grupos atuais e previstos | Patterns que costuma consumir |
 | --- | --- | --- | --- | --- |
-| Application | `application/` | dar moldura ou acesso ao app | `shell` (`app-shell-1..4`), `auth` (`login-1`, `signup-1`, `forgot-password-1`, `reset-password-1`, `otp-1`), `settings` (`settings-1..23`), `stats` (`stats-1..6`), `card` (`card-1..6`), `list` (`list-1..6`), `empty-state` (`empty-state-1..6`), `timeline` (`timeline-1..4`), `navbar` (`navbar-1..5`), `errors` | `surfaces/settings`, `surfaces/state`, `widgets` |
+| Application | `application/` | dar moldura ou acesso ao app | `shell` (`app-shell-1..4`), `auth` (`login-1`, `signup-1`, `forgot-password-1`, `reset-password-1`, `otp-1`), `settings` (`settings-1..23`), `stats` (`stats-1..6`), `card` (`card-1..6`), `list` (`list-1..6`), `empty-state` (`empty-state-1..6`), `timeline` (`timeline-1..4`), `navbar` (`navbar-1..5`), `onboarding` (`onboarding-1..3`), `errors` | `surfaces/settings`, `surfaces/state`, `widgets` |
 | Data | `data/` | ver e editar registros de qualquer domínio | `table`, `board`, `record` | `collection`, `records/*`, `properties`, `editable` |
 | Charts | `charts/` | ler métricas | `dashboard`, `report` | `widgets` |
 | Solutions | `solutions/` | uma vertical sem categoria própria (CRM, helpdesk) | `crm` (candidatos: `Templates/Contacts`, `DealBoard`, `ContactDetail`) | vários |
