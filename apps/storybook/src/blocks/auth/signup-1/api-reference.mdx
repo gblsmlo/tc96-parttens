@@ -46,14 +46,16 @@ The tree `Signup1` renders:
 
 ```tsx
 <main>
-  <div>{logo}</div>
   <div data-slot="card">
     <div data-slot="card-header">
+      <div>{logo}</div>
       <h1 data-slot="card-title">{labels.title}</h1>
       <div data-slot="card-description">{labels.description}</div>
     </div>
     <div data-slot="card-panel">
       <div data-slot="alert" role="alert" tabIndex={-1}>{error}</div>
+      <fieldset>{/* one button per provider */}</fieldset>
+      <div aria-hidden>{labels.providersSeparator}</div>
       <form data-slot="form" aria-busy={pending} noValidate>
         <div data-slot="field">{/* name */}</div>
         <div data-slot="field">{/* e-mail */}</div>
@@ -69,17 +71,16 @@ The tree `Signup1` renders:
         <div data-slot="field">{/* confirmation, with the show and hide button */}</div>
         <button type="submit" />
       </form>
-      <fieldset>{/* one button per provider */}</fieldset>
-      <p>{/* sign in link */}</p>
     </div>
   </div>
+  <div data-slot="auth-footer">{/* sign in link */}</div>
   <p>{/* terms notice, outside the card */}</p>
 </main>
 ```
 
 ## Signup1
 
-The whole sign-up page. Renders a `main` that fills the window height and centers its content, the optional `logo` above a card, and inside it the title (an `h1`), the description, the form message, the form, the optional providers and the sign in link, and, below the card, the terms notice. Mount it on the route and do not wrap it in another `main`. It only takes the props below.
+The whole sign-up page. Renders a `main` that fills the window height and centers its content, a card with the optional `logo` above the title (an `h1`), the description, the form message, the optional providers and the form, and, below the card, the sign in link and the terms notice. Mount it on the route and do not wrap it in another `main`. It only takes the props below.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -89,18 +90,18 @@ The whole sign-up page. Renders a `main` that fills the window height and center
 | `pending` | `boolean` | `false` | When true, disables the submit button and the provider buttons, puts the submit button in its `loading` state and sets `aria-busy` on the form. |
 | `error` | `string` | - | Shows a message for the whole form in an alert titled `labels.errorTitle`. |
 | `fieldErrors` | `Partial<Record<keyof SignupValues, string>>` | - | Shows a message under each field it names (`name`, `email` or `password`) and marks that field invalid. |
-| `providers` | `AuthProvider[]` | - | Lists the provider buttons below the form; empty or missing renders neither the buttons nor their separator. |
+| `providers` | `AuthProvider[]` | - | Lists the provider buttons above the form, two per row from `sm` up; empty or missing renders neither the buttons nor their separator. |
 | `onProviderSelect` | `(id: string) => void` | - | Called with the `id` of the provider button clicked; never while `pending`. |
 | `termsHref` | `string` | - | Renders the terms link of the terms notice when set. |
 | `privacyHref` | `string` | - | Renders the privacy link of the terms notice when set. |
-| `loginHref` | `string` | - | Renders the sign in link below the providers when set. |
+| `loginHref` | `string` | - | Renders the sign in link in the footer below the card when set. |
 | `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Returns the element each link renders as, so the app's router owns navigation. |
-| `logo` | `ReactNode` | - | Renders above the card, outside it, centered. |
+| `logo` | `ReactNode` | - | Renders inside the card, centered above the title. |
 | `labels` | `Partial<SignupLabels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
 
 | Attribute | Values | Description |
 | --- | --- | --- |
-| `data-slot` | `"card"` | Marks the card, which holds everything but the `logo` |
+| `data-slot` | `"card"` | Marks the card, which holds everything but the footer |
 | `data-slot` | `"form"` | Marks the form; it carries `aria-busy` |
 | `data-slot` | `"field-description"` | Marks the password feedback: the length and the suggestions |
 | `data-met` | present when met | On the `li` of a suggestion the password already satisfies |
@@ -135,7 +136,7 @@ Every link renders through `renderLink(href)`, and only when its `href` is passe
 
 ### AuthProvider
 
-One entry of `providers`. Each renders an outline button named by `labels.providerContinue(label)`, inside a group named by `labels.providersGroup`.
+One entry of `providers`. Each renders an outline button that shows `label` and is named by `labels.providerContinue(label)`, inside a group named by `labels.providersGroup`.
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -176,7 +177,7 @@ Every visible or accessible text the block owns. `labels` is partial and merged 
 | `suggestionMissing` | `string` | `"faltando"` |
 | `submit` | `string` | `"Criar conta"` |
 | `errorTitle` | `string` | `"Não foi possível continuar"` |
-| `providersSeparator` | `string` | `"ou continue com"` |
+| `providersSeparator` | `string` | `"ou continue com e-mail"` |
 | `providersGroup` | `string` | `"Entrar com outro serviço"` |
 | `providerContinue` | `(label: string) => string` | `` `Continuar com ${label}` `` |
 | `termsLead` | `string` | `"Ao criar a conta você concorda com os"` |

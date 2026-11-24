@@ -7,7 +7,7 @@ export const defaultAuthCommonLabels: AuthCommonLabels = {
   password: 'Senha',
   providerContinue: (label) => `Continuar com ${label}`,
   providersGroup: 'Entrar com outro serviço',
-  providersSeparator: 'ou continue com',
+  providersSeparator: 'ou continue com e-mail',
   showPassword: 'Mostrar senha',
 }
 

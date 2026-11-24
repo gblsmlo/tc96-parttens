@@ -68,6 +68,21 @@ export function Signup1({
       description={labels.description}
       error={error}
       errorTitle={labels.errorTitle}
+      footer={
+        loginHref ? (
+          <>
+            <span>{labels.hasAccount}</span>
+            <Button
+              className="underline"
+              render={renderLink(loginHref)}
+              size="sm"
+              variant="link"
+            >
+              {labels.login}
+            </Button>
+          </>
+        ) : undefined
+      }
       notice={
         legalLinks.length ? (
           <p className="flex flex-wrap items-center justify-center gap-x-1 text-center text-muted-foreground text-xs">
@@ -78,7 +93,7 @@ export function Signup1({
                 <Button
                   className="px-0 underline"
                   render={renderLink(link.href)}
-                  size="xs"
+                  size="sm"
                   variant="link"
                 >
                   {link.label}
@@ -91,6 +106,12 @@ export function Signup1({
       logo={logo}
       title={labels.title}
     >
+      <AuthProviders
+        labels={labels}
+        onSelect={onProviderSelect}
+        pending={pending}
+        providers={providers}
+      />
       <Form
         aria-busy={pending}
         className="flex flex-col gap-4"
@@ -145,25 +166,6 @@ export function Signup1({
           {labels.submit}
         </Button>
       </Form>
-      <AuthProviders
-        labels={labels}
-        onSelect={onProviderSelect}
-        pending={pending}
-        providers={providers}
-      />
-      {loginHref ? (
-        <p className="flex items-center justify-center gap-1 text-sm">
-          <span>{labels.hasAccount}</span>
-          <Button
-            className="underline"
-            render={renderLink(loginHref)}
-            size="sm"
-            variant="link"
-          >
-            {labels.login}
-          </Button>
-        </p>
-      ) : null}
     </AuthCard>
   )
 }

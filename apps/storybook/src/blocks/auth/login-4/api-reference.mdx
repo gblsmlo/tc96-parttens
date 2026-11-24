@@ -48,10 +48,12 @@ The confirmation, with `sent`:
 | `onResend` | `() => void` | - | Renders the resend row in the confirmation; never called while `pending` or counting down. |
 | `resendIn` | `number` | `0` | Seconds before the resend button works again; shown as plain text, never in a live region. |
 | `passwordLoginHref` | `string` | - | Renders the "Entrar com senha" link in both states, only when passed. |
+| `providers` | `AuthProvider[]` | - | `{ id, label, icon? }` buttons above the e-mail field, two per row from `sm` up; only in the form state. |
+| `onProviderSelect` | `(id: string) => void` | - | Called with the `id` of the provider button clicked; never while `pending`. |
 | `pending` | `boolean` | `false` | Disables the submit button, puts it in its `loading` state and sets `aria-busy` on the form. |
 | `error` | `string` | - | Shows a message for the whole form in an alert, in both states. |
 | `fieldErrors` | `Partial<Record<keyof Login4Values, string>>` | - | Shows a message under the e-mail field and marks it invalid. |
-| `logo` | `ReactNode` | - | Rendered above the card. |
+| `logo` | `ReactNode` | - | Rendered inside the card, above the title. |
 | `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders the link with the app's router. |
 | `labels` | `Partial<Login4Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
 
@@ -80,6 +82,9 @@ The confirmation, with `sent`:
 | `resend` | `"Reenviar link"` |
 | `resendIn` | `(seconds) => "Reenviar em " + seconds + "s"` |
 | `passwordLogin` | `"Entrar com senha"` |
+| `providersSeparator` | `"ou continue com e-mail"` |
+| `providersGroup` | `"Entrar com outro serviço"` |
+| `providerContinue` | `(label) => "Continuar com " + label` |
 | `errorTitle` | `"Não foi possível continuar"` |
 
 ## Accessibility and theme

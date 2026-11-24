@@ -4,7 +4,6 @@ import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
 import {
   Card,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardPanel,
   CardTitle,
@@ -39,9 +38,11 @@ export function AuthCard({
   return (
     <main className="flex min-h-svh items-center justify-center p-4 sm:p-6">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        {logo ? <div className="flex justify-center">{logo}</div> : null}
         <Card>
-          <CardHeader>
+          <CardHeader className="justify-items-center text-center">
+            {logo ? (
+              <div className="mb-2 flex justify-center">{logo}</div>
+            ) : null}
             <CardTitle
               ref={titleRef}
               render={(props) => <h1 {...props} />}
@@ -62,12 +63,15 @@ export function AuthCard({
             ) : null}
             {children}
           </CardPanel>
-          {footer ? (
-            <CardFooter className="justify-center gap-1 text-sm">
-              {footer}
-            </CardFooter>
-          ) : null}
         </Card>
+        {footer ? (
+          <div
+            className="flex flex-wrap items-center justify-center gap-1 text-muted-foreground text-sm"
+            data-slot="auth-footer"
+          >
+            {footer}
+          </div>
+        ) : null}
         {notice}
       </div>
     </main>

@@ -63,7 +63,7 @@ export const signupControlArgTypes: Partial<ArgTypes<SignupControls>> = {
   },
   logo: {
     control: 'boolean',
-    description: 'Passes a `logo` rendered above the card.',
+    description: 'Passes a `logo` rendered inside the card, above the title.',
   },
   nameError: {
     control: 'text',
