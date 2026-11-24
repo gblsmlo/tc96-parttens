@@ -1,0 +1,90 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings16
+
+A settings section that lists the cost centers, the places where a cost is booked, such as a practice area, an office or a project. Each row shows its name, how many entries use it and a menu to edit or archive. Archived cost centers wait in a collapsed section and can be restored. Reach for it when the app tracks where money is spent and lets people manage those places. Install it with `npx @tc96/parttens add settings-16`.
+
+It is a section, not a page: it renders no `main` landmark. Creating, editing and archiving stay in the app; the block only calls `onCreate` and `onCostCenterAction`, keeps no list of its own and never fetches or stores anything.
+
+The other pages of `Blocks/Application/Settings/Settings16`: [Playground](?path=/story/blocks-application-settings-settings16-playground--playground) to try the texts, the empty list, the archived cost centers and the actions, [Behavior](?path=/story/blocks-application-settings-settings16-behavior--empty-list-shows-state-surface) for the tests and [Usages](?path=/story/blocks-application-settings-settings16-usages--loaded) for the list read over the network.
+
+## Import
+
+```tsx
+import { Settings16 } from '@tc96/blocks/application/settings/settings-16'
+```
+
+The same path exports the types `Settings16Props`, `Settings16CostCenter`, `Settings16Action` and `Settings16Labels`.
+
+## Anatomy
+
+The section with cost centers and the archived section:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Settings16
+  archivedCostCenters={archivedCostCenters}
+  costCenters={costCenters}
+  onCostCenterAction={(costCenterId, action) => handleCostCenterAction(costCenterId, action)}
+  onCreate={openNewCostCenter}
+/>
+```
+
+## Settings16
+
+The cost centers section. Renders the title, the description and, with `onCreate`, the New cost center button, then one row per cost center. With no cost centers it renders an empty state in place of the rows. With `archivedCostCenters` it renders a collapsed section, closed by default, after the active rows; without archived cost centers the section is not rendered.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `costCenters` | `Settings16CostCenter[]` | required | The active cost centers to list; an empty array shows the empty state. |
+| `archivedCostCenters` | `Settings16CostCenter[]` | `[]` | Cost centers listed in the collapsed archived section. Only rendered when not empty. |
+| `onCreate` | `() => void` | - | Called when the New cost center button is clicked. Without it the button is not rendered. |
+| `onCostCenterAction` | `(costCenterId: string, action: Settings16Action) => void` | - | Called with the cost center id and `'edit'`, `'archive'` or `'restore'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `labels` | `Partial<Settings16Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+The block takes no other props.
+
+## Settings16CostCenter
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the cost center in `onCostCenterAction`. |
+| `name` | `string` | Title of the row. |
+| `entries` | `number` | Entries using the cost center, shown in `labels.entries`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Centros de custo"` |
+| `description` | `string` | `"Onde um custo é lançado: uma área de atuação, um escritório, um projeto."` |
+| `newCostCenter` | `string` | `"Novo centro de custo"` |
+| `edit` | `string` | `"Editar"` |
+| `archive` | `string` | `"Arquivar"` |
+| `restore` | `string` | `"Restaurar"` |
+| `archived` | `string` | `"Arquivados"` |
+| `emptyTitle` | `string` | `"Nenhum centro de custo ainda"` |
+| `emptyDescription` | `string` | `"Crie um centro de custo para ver onde o dinheiro é gasto."` |
+| `actions` | `(name: string) => string` | `"Ações de Indicação"` for `"Indicação"`; the accessible name of the row menu |
+| `entries` | `(count: number) => string` | `"12 lançamentos"`; `1 lançamento` in the singular |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Settings16` | `component` | The cost centers section. |
+| `Settings16Props` | `type` | The props of the section. |
+| `Settings16CostCenter` | `type` | A cost center, with its entry count. |
+| `Settings16Action` | `type` | `'edit' \| 'archive' \| 'restore'`. |
+| `Settings16Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The row menu button is named by `labels.actions(name)`, so each row's menu is told apart by screen readers.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

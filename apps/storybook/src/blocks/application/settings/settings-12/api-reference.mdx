@@ -1,0 +1,110 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings12
+
+A settings section for the next actions a lead must complete before leaving each open stage. It has a gate switch that decides whether a stage change waits for the required actions, and under it one collapsible group per stage with its actions. Each action row shows its type, a switch that marks it required and, when the app handles actions, a menu to edit or delete. Reach for it when the app lets people set the steps a lead must go through. Install it with `npx @tc96/parttens add settings-12`.
+
+It is a section, not a page: it renders no `main` landmark. Creating, editing and deleting stay in the app; the block only calls its callbacks, keeps no list of its own and never fetches or stores anything.
+
+The other pages of `Blocks/Application/Settings/Settings12`: [Playground](?path=/story/blocks-application-settings-settings12-playground--playground) to try the texts, the empty list and the actions, [Behavior](?path=/story/blocks-application-settings-settings12-behavior--block-stage-changes-switch-calls-on-change) for the tests and [Usages](?path=/story/blocks-application-settings-settings12-usages--loaded) for the list read over the network.
+
+## Import
+
+```tsx
+import { Settings12 } from '@tc96/blocks/application/settings/settings-12'
+```
+
+The same path exports the types `Settings12Props`, `Settings12Stage`, `Settings12NextAction`, `Settings12ActionType`, `Settings12Action` and `Settings12Labels`.
+
+## Anatomy
+
+The gate switch, then a stage with its actions:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Settings12
+  blockStageChanges={blockStageChanges}
+  onBlockStageChangesChange={setBlockStageChanges}
+  onCreate={openNewAction}
+  onNextActionAction={(actionId, action) => handleAction(actionId, action)}
+  onRequiredChange={(actionId, required) => setRequired(actionId, required)}
+  stages={stages}
+/>
+```
+
+## Settings12
+
+The next actions section. Renders the gates section with its switch, then the actions section with the title, the description and, with `onCreate`, the New action button, then one collapsible group per stage. With no stages it renders an empty state in place of the groups.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `stages` | `Settings12Stage[]` | required | The stages to list; an empty array shows the empty state. |
+| `blockStageChanges` | `boolean` | `false` | The state of the gate switch. |
+| `onBlockStageChangesChange` | `(checked: boolean) => void` | - | Called with the new value when the gate switch is toggled. |
+| `onRequiredChange` | `(actionId: string, required: boolean) => void` | - | Called with the action id and the new value when a required switch is toggled. |
+| `onCreate` | `() => void` | - | Called when the New action button is clicked. Without it the button is not rendered. |
+| `onNextActionAction` | `(actionId: string, action: Settings12Action) => void` | - | Called with the action id and `'edit'` or `'delete'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `labels` | `Partial<Settings12Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root's classes. |
+
+The block takes no other props.
+
+## Settings12Stage
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the stage. |
+| `name` | `string` | Name of the stage, shown in `labels.leaving`. |
+| `actions` | `Settings12NextAction[]` | The actions of the stage. An empty array shows `labels.emptyStage`. |
+
+## Settings12NextAction
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the action in `onRequiredChange` and `onNextActionAction`. |
+| `title` | `string` | Title of the row. |
+| `type` | `Settings12ActionType` | `'call'`, `'email'`, `'meeting'`, `'proposal'` or `'follow-up'`; its icon and label follow the type. |
+| `required` | `boolean` | The state of the row's switch. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Próximas ações"` |
+| `description` | `string` | `"Ações que um lead precisa cumprir antes de sair de cada etapa aberta."` |
+| `newAction` | `string` | `"Nova ação"` |
+| `edit` | `string` | `"Editar"` |
+| `delete` | `string` | `"Excluir"` |
+| `gatesTitle` | `string` | `"Bloqueio de etapas"` |
+| `blockStageChanges` | `string` | `"Bloquear mudança de etapa"` |
+| `blockStageChangesDescription` | `string` | `"Leads só avançam para a próxima etapa quando todas as ações obrigatórias estiverem concluídas. Desativado, apenas avisa."` |
+| `leaving` | `(stage: string) => string` | `"Saindo de Novo lead"` for `"Novo lead"` |
+| `required` | `(title: string) => string` | `"Obrigatória: Primeiro contato"` for `"Primeiro contato"`; the accessible name of each required switch |
+| `actions` | `(title: string) => string` | `"Ações de Primeiro contato"` for `"Primeiro contato"`; the accessible name of the row menu |
+| `actionType` | `(type: Settings12ActionType) => string` | `"Ligação"` for `"call"`, `"E-mail"`, `"Reunião"`, `"Proposta"` and `"Acompanhamento"` for the others |
+| `emptyStage` | `string` | `"Leads avançam sem ações obrigatórias"` |
+| `emptyTitle` | `string` | `"Nenhuma próxima ação ainda"` |
+| `emptyDescription` | `string` | `"Adicione ações às etapas pelas quais os leads passam."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Settings12` | `component` | The next actions section. |
+| `Settings12Props` | `type` | The props of the section. |
+| `Settings12Stage` | `type` | A stage with its actions. |
+| `Settings12NextAction` | `type` | An action row, with its type and required flag. |
+| `Settings12ActionType` | `type` | The action types. |
+| `Settings12Action` | `type` | `'edit' \| 'delete'`. |
+| `Settings12Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The gate switch is named by `labels.blockStageChanges`, and each required switch by `labels.required(title)`.
+- The row menu button is named by `labels.actions(title)`, so each row's menu is told apart by screen readers.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

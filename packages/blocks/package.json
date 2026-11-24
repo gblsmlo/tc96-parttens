@@ -6,11 +6,12 @@
     "./*": "./src/*/index.ts"
   },
   "dependencies": {
+    "@phosphor-icons/react": "2.1.10",
+    "@tanstack/react-form": "1.33.5",
     "@tc96/helpers": "workspace:*",
     "@tc96/parttens": "workspace:*",
     "@tc96/ui": "workspace:*",
-    "@tc96/utils": "workspace:*",
-    "@phosphor-icons/react": "2.1.10"
+    "@tc96/utils": "workspace:*"
   },
   "peerDependencies": {
     "react": "19.1.1",

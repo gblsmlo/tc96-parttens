@@ -244,5 +244,53 @@
     "component": "AvatarFallback",
     "className": "text-foreground",
     "reason": "O fallback do avatar do usuário fica sobre `bg-border` e herdava o `sidebar-foreground` esmaecido da sidebar: 3,83:1 no claro. `text-foreground` é o token do tema. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
+  },
+  {
+    "file": "packages/blocks/src/application/settings/settings-1/settings-1.tsx",
+    "component": "Avatar",
+    "className": "focus-visible:ring-2",
+    "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
+  },
+  {
+    "file": "packages/blocks/src/application/settings/settings-1/settings-1.tsx",
+    "component": "Avatar",
+    "className": "focus-visible:ring-ring",
+    "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
+  },
+  {
+    "file": "packages/blocks/src/application/settings/settings-1/settings-1.tsx",
+    "component": "Avatar",
+    "className": "focus-visible:ring-offset-1",
+    "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
+  },
+  {
+    "file": "packages/blocks/src/application/settings/settings-1/settings-1.tsx",
+    "component": "Avatar",
+    "className": "focus-visible:ring-offset-background",
+    "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
+  },
+  {
+    "file": "packages/blocks/src/application/settings/settings-5/settings-5.tsx",
+    "component": "Avatar",
+    "className": "focus-visible:ring-2",
+    "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
+  },
+  {
+    "file": "packages/blocks/src/application/settings/settings-5/settings-5.tsx",
+    "component": "Avatar",
+    "className": "focus-visible:ring-ring",
+    "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
+  },
+  {
+    "file": "packages/blocks/src/application/settings/settings-5/settings-5.tsx",
+    "component": "Avatar",
+    "className": "focus-visible:ring-offset-1",
+    "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
+  },
+  {
+    "file": "packages/blocks/src/application/settings/settings-5/settings-5.tsx",
+    "component": "Avatar",
+    "className": "focus-visible:ring-offset-background",
+    "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   }
 ]

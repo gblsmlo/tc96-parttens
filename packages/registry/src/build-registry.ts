@@ -23,7 +23,7 @@ await mkdir(output, { recursive: true })
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)
 const parsed = ts.parseJsonConfigFileContent(configuration.config, ts.sys, root)
 const versions: Record<string, string> = {}
-for (const pkg of ['helpers', 'parttens']) {
+for (const pkg of ['helpers', 'parttens', 'blocks']) {
   const manifest = JSON.parse(
     await readFile(`packages/${pkg}/package.json`, 'utf8'),
   )

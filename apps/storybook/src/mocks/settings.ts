@@ -1,4 +1,5 @@
 import { delay, HttpResponse, http } from 'msw'
+import { tags } from '../blocks/application/settings/fixtures/tags.ts'
 import { apiUrl } from './api.ts'
 
 export type WorkspaceMember = {
@@ -30,6 +31,15 @@ export const settingsHandlers = {
     HttpResponse.json({ message: 'Falha ao carregar' }, { status: 500 }),
   ),
   membersPending: http.get(apiUrl('/settings/members'), async () => {
+    await delay('infinite')
+    return HttpResponse.json([])
+  }),
+  tags: http.get(apiUrl('/settings/tags'), () => HttpResponse.json(tags)),
+  tagsEmpty: http.get(apiUrl('/settings/tags'), () => HttpResponse.json([])),
+  tagsError: http.get(apiUrl('/settings/tags'), () =>
+    HttpResponse.json({ message: 'Falha ao carregar' }, { status: 500 }),
+  ),
+  tagsPending: http.get(apiUrl('/settings/tags'), async () => {
     await delay('infinite')
     return HttpResponse.json([])
   }),

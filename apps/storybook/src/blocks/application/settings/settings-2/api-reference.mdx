@@ -1,0 +1,96 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings2
+
+A preferences section with two groups: a general group with the display names select, and an interface group with the font size select, the underline switch and the theme select. Reach for it when the app lets people choose how names are shown and how the interface looks. Install it with `npx @tc96/parttens add settings-2`.
+
+It is a section, not a page: it renders no `main` landmark. The block keeps no state of its own: each change goes to `onValueChange` and the values come back through `values`, so the app decides whether and where to save them.
+
+The other pages of `Blocks/Application/Settings/Settings2`: [Playground](?path=/story/blocks-application-settings-settings2-playground--playground) to try the texts and the values, [Behavior](?path=/story/blocks-application-settings-settings2-behavior--theme-select-calls-on-value-change) for the tests and [Usages](?path=/story/blocks-application-settings-settings2-usages--loaded) for the preferences read over the network.
+
+## Import
+
+```tsx
+import { Settings2 } from '@tc96/blocks/application/settings/settings-2'
+```
+
+The same path exports the types `Settings2Labels`, `Settings2Options`, `Settings2Props`, `Settings2SettingOption` and `Settings2Values`.
+
+## Anatomy
+
+The general group with the display names select, then the interface group with the font size select, the underline switch and the theme select:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Settings2
+  onValueChange={(key, value) => savePreference(key, value)}
+  options={options}
+  values={values}
+/>
+```
+
+## Settings2
+
+The preferences sections. Renders one row per setting: the display names select, the font size select, the underline switch and the theme select. Each row takes its value from `values` and its choices from `options`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `values` | `Settings2Values` | required | The current value of each setting. |
+| `options` | `Settings2Options` | required | The choices of the three selects. |
+| `onValueChange` | `<K extends keyof Settings2Values>(key: K, value: Settings2Values[K]) => void` | - | Called with the setting key and the new value when a select or the switch changes. |
+| `labels` | `Partial<Settings2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root element's classes. |
+
+## Settings2Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `displayNames` | `string` | The value of the display names select. |
+| `fontSize` | `string` | The value of the font size select. |
+| `theme` | `string` | The value of the theme select. |
+| `underlineLinks` | `boolean` | The state of the underline switch. |
+
+## Settings2Options
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `displayNames` | `Settings2SettingOption[]` | The choices of the display names select. |
+| `fontSize` | `Settings2SettingOption[]` | The choices of the font size select. |
+| `theme` | `Settings2SettingOption[]` | The choices of the theme select. |
+
+`Settings2SettingOption` is `{ label: string; value: string }`: the label is shown, the value goes to `onValueChange`.
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `generalTitle` | `string` | `"Geral"` |
+| `displayNames` | `string` | `"Nomes de exibição"` |
+| `displayNamesDescription` | `string` | `"Como os nomes das pessoas aparecem na interface"` |
+| `interfaceTitle` | `string` | `"Interface e tema"` |
+| `fontSize` | `string` | `"Tamanho da fonte"` |
+| `fontSizeDescription` | `string` | `"Ajusta o tamanho do texto em todo o app"` |
+| `underlineLinks` | `string` | `"Sublinhar links"` |
+| `underlineLinksDescription` | `string` | `"Sempre sublinha os títulos das listas"` |
+| `theme` | `string` | `"Tema da interface"` |
+| `themeDescription` | `string` | `"Escolha o esquema de cores da interface"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Settings2` | `component` | The preferences sections. |
+| `Settings2Props` | `type` | The props of the sections. |
+| `Settings2Values` | `type` | The current value of each setting. |
+| `Settings2Options` | `type` | The choices of the three selects. |
+| `Settings2SettingOption` | `type` | A choice: a label and a value. |
+| `Settings2Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each select trigger is named by its setting's label, and the switch by `labels.underlineLinks`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.
