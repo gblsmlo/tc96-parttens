@@ -23,3 +23,8 @@ export interface CardLoadProps {
   onRetry?: () => void
   pending?: boolean
 }
+
+export interface CardMenuAction {
+  id: string
+  label: string
+}

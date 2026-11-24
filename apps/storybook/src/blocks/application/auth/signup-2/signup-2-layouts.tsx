@@ -1,4 +1,7 @@
-import { Signup2, type Signup2Props } from '@tc96/blocks/application/auth/signup-2'
+import {
+  Signup2,
+  type Signup2Props,
+} from '@tc96/blocks/application/auth/signup-2'
 import {
   type Signup2Controls,
   signup2Suggestions,

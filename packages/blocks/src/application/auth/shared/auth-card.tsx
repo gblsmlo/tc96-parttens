@@ -38,9 +38,11 @@ export function AuthCard({
   return (
     <main className="flex min-h-svh items-center justify-center p-4 sm:p-6">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        {logo ? <div className="flex justify-center">{logo}</div> : null}
         <Card>
-          <CardHeader className="gap-1">
+          <CardHeader className="justify-items-center text-center">
+            {logo ? (
+              <div className="mb-2 flex justify-center">{logo}</div>
+            ) : null}
             <CardTitle
               ref={titleRef}
               render={(props) => <h1 {...props} />}
