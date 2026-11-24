@@ -1615,5 +1615,31 @@
     "FlowStepStats",
     "FlowStepType",
     "FlowStepValues"
+  ],
+  "block:lookup-create-1": [
+    "LookupAlternative",
+    "LookupCreate1",
+    "LookupCreate1Labels",
+    "LookupCreate1Props",
+    "LookupCreate1Step",
+    "LookupExisting",
+    "LookupIdentifierState",
+    "RecordsRenderLink",
+    "RecordsStatusRow"
+  ],
+  "block:bulk-import-1": [
+    "BulkImport1",
+    "BulkImport1Labels",
+    "BulkImport1Props",
+    "BulkImport1Step",
+    "BulkImportRow",
+    "RecordsStatusRow"
+  ],
+  "block:next-steps-1": [
+    "NextStepTask",
+    "NextSteps1",
+    "NextSteps1Labels",
+    "NextSteps1Props",
+    "RecordsStatusRow"
   ]
 }

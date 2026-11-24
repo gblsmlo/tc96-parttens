@@ -25,6 +25,7 @@ export interface RecordDialogControls {
   size: RecordDialogSize
   stretchBody: boolean
   submitDisabled: boolean
+  submitHint: string
   submitLabel: string
   submitOnModEnter: boolean
   submittingLabel: string
@@ -46,6 +47,7 @@ export const recordDialogControlArgs: RecordDialogControls = {
   size: 'default',
   stretchBody: false,
   submitDisabled: false,
+  submitHint: '',
   submitLabel: 'Create project',
   submitOnModEnter: false,
   submittingLabel: 'Creating',
@@ -115,6 +117,11 @@ export const recordDialogControlArgTypes: Partial<
   submitDisabled: {
     control: 'boolean',
     description: 'The `submitDisabled` of `RecordDialog`.',
+  },
+  submitHint: {
+    control: 'text',
+    description:
+      'The `submitHint` of `RecordDialog`: the reason at the start of the footer that describes the submit button; empty leaves the region silent.',
   },
   submitLabel: {
     control: 'text',

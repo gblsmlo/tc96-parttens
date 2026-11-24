@@ -45,8 +45,10 @@ export function RecordDialog({
   open,
   properties,
   size,
+  step,
   stretchBody,
   submitDisabled = false,
+  submitHint,
   submitLabel,
   submitOnModEnter = false,
   submittingLabel,
@@ -54,12 +56,22 @@ export function RecordDialog({
   titleAncestor,
 }: RecordDialogProps) {
   const formId = useId()
+  const hintId = useId()
   const formRef = useRef<HTMLFormElement>(null)
   const submitRef = useRef<HTMLButtonElement>(null)
   const modifier = useModifierHint(submitOnModEnter)
-  const { pending, run } = useSettledAction(open, () => {
+  const { cancelFocusReturn, pending, run } = useSettledAction(open, () => {
     if (!keepOpenOnSuccess) return onOpenChange(false)
     formRef.current?.reset()
+    formRef.current?.querySelector<HTMLElement>(FIRST_FIELD)?.focus()
+  })
+  const renderedStep = useRef(step)
+
+  useEffect(() => {
+    if (renderedStep.current === step) return
+    renderedStep.current = step
+    if (!open) return
+    cancelFocusReturn()
     formRef.current?.querySelector<HTMLElement>(FIRST_FIELD)?.focus()
   })
 
@@ -116,6 +128,7 @@ export function RecordDialog({
             </Button>
           ) : null}
           <Button
+            aria-describedby={submitHint ? hintId : undefined}
             aria-keyshortcuts={
               submitOnModEnter ? 'Meta+Enter Control+Enter' : undefined
             }
@@ -138,6 +151,16 @@ export function RecordDialog({
             ) : null}
           </Button>
         </>
+      }
+      footerHint={
+        <p
+          aria-live="polite"
+          className="text-muted-foreground text-sm empty:sr-only sm:order-first sm:me-auto"
+          data-slot="record-dialog-hint"
+          id={hintId}
+        >
+          {submitHint}
+        </p>
       }
       footerStart={footerStart}
       formHost={children ? undefined : form}

@@ -57,5 +57,9 @@ export function useSettledAction(open: boolean, onAccepted: () => void) {
     }
   }
 
-  return { pending, run }
+  const cancelFocusReturn = () => {
+    focusOnFailure.current = null
+  }
+
+  return { cancelFocusReturn, pending, run }
 }

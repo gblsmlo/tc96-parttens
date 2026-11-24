@@ -61,6 +61,9 @@ export const blockNames = [
   'forgot-password-2',
   'workflow-editor',
   'agent-builder',
+  'lookup-create-1',
+  'bulk-import-1',
+  'next-steps-1',
 ] as const
 export type BlockName = (typeof blockNames)[number]
 /** Folder under packages/blocks/src, kept as the path in the consumer. */
@@ -80,6 +83,9 @@ export const blockSources: Record<BlockName, string> = {
   'forgot-password-2': 'auth/forgot-password-2',
   'workflow-editor': 'ai-agents/flow/workflow-editor',
   'agent-builder': 'ai-agents/flow/agent-builder',
+  'lookup-create-1': 'records/lookup-create-1',
+  'bulk-import-1': 'records/bulk-import-1',
+  'next-steps-1': 'records/next-steps-1',
 }
 export type ItemName = PatternName | BlockName
 /** Areas under packages/parttens/src that ship with an item no file of it imports. */

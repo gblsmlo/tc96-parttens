@@ -677,6 +677,108 @@ export const FooterStartBeforeTheButtons: Story = {
   },
 }
 
+export const SubmitHintDescribesTheSubmit: Story = {
+  args: { submitDisabled: true, submitHint: 'Add a title to create.' },
+  play: async ({ canvasElement }) => {
+    await findDialog(canvasElement)
+    const hint = slotIn(canvasElement, '[data-slot="record-dialog-hint"]')
+
+    await expect(hint).toHaveTextContent('Add a title to create.')
+    await expect(hint).toHaveAttribute('aria-live', 'polite')
+    await expect(hint?.parentElement).toHaveAttribute(
+      'data-slot',
+      'dialog-footer',
+    )
+    await expect(saveButton(canvasElement)).toHaveAccessibleDescription(
+      'Add a title to create.',
+    )
+  },
+}
+
+export const NoSubmitHintByDefault: Story = {
+  play: async ({ canvasElement }) => {
+    await findDialog(canvasElement)
+
+    await expect(
+      slotIn(canvasElement, '[data-slot="record-dialog-hint"]'),
+    ).toBeEmptyDOMElement()
+    await expect(saveButton(canvasElement)).not.toHaveAttribute(
+      'aria-describedby',
+    )
+  },
+}
+
+const StepHarness = (props: BehaviorArgs) => {
+  const [step, setStep] = useState('project')
+
+  return (
+    <ComposedRecordDialog
+      {...props}
+      headline={step === 'project'}
+      onSubmit={(event) => {
+        props.onSubmit(event)
+        if (step === 'project') {
+          setStep('owner')
+          return false
+        }
+        return true
+      }}
+      step={step}
+    >
+      {step === 'owner' ? (
+        <div className="flex flex-col gap-3">
+          <label className="flex flex-col gap-1 text-sm">
+            Owner
+            <input className="rounded-md border px-2 py-1" name="owner" />
+          </label>
+          <button onClick={() => setStep('project')} type="button">
+            Back to project
+          </button>
+        </div>
+      ) : null}
+    </ComposedRecordDialog>
+  )
+}
+
+export const StepMovesFocusToTheNewBody: Story = {
+  play: async ({ args, canvasElement }) => {
+    await findDialog(canvasElement)
+    await typeDraft(canvasElement)
+    await userEvent.click(saveButton(canvasElement))
+
+    await waitFor(() =>
+      expect(
+        page(canvasElement).getByRole('textbox', { name: 'Owner' }),
+      ).toHaveFocus(),
+    )
+    await expect(args.onSubmit).toHaveBeenCalledOnce()
+    await expect(openChanges(args)).toEqual([])
+    await expect(await findDialog(canvasElement)).toBeVisible()
+  },
+  render: (args) => <StepHarness {...args} />,
+}
+
+export const StepBackKeepsTheDraft: Story = {
+  play: async ({ canvasElement }) => {
+    await findDialog(canvasElement)
+    await typeDraft(canvasElement)
+    await userEvent.click(saveButton(canvasElement))
+    await userEvent.click(
+      await page(canvasElement).findByRole('button', {
+        name: 'Back to project',
+      }),
+    )
+
+    const title =
+      await page(canvasElement).findByLabelText<HTMLInputElement>(
+        'Project title',
+      )
+    await expect(title).toHaveValue('Draft title')
+    await waitFor(() => expect(title).toHaveFocus())
+  },
+  render: (args) => <StepHarness {...args} />,
+}
+
 export const NoPanelWithoutChildren: Story = {
   args: { headline: false },
   play: async ({ args, canvasElement }) => {

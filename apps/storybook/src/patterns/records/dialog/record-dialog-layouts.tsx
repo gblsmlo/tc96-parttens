@@ -26,6 +26,7 @@ export interface ComposedRecordDialogProps extends RecordDialogControls {
   onSubmit?: RecordDialogProps['onSubmit']
   onTitleChange?: (title: string) => void
   open?: boolean
+  step?: string
 }
 
 const ProjectPropertyBar = () => {
@@ -81,8 +82,10 @@ export const ComposedRecordDialog = ({
   open: controlledOpen,
   properties,
   size,
+  step,
   stretchBody,
   submitDisabled,
+  submitHint,
   submitLabel,
   submitOnModEnter,
   submittingLabel,
@@ -165,8 +168,10 @@ export const ComposedRecordDialog = ({
         open={controlledOpen ?? open}
         properties={properties ? <ProjectPropertyBar /> : undefined}
         size={size}
+        step={step}
         stretchBody={stretchBody}
         submitDisabled={submitDisabled}
+        submitHint={submitHint || undefined}
         submitLabel={submitLabel}
         submitOnModEnter={submitOnModEnter}
         submittingLabel={submittingLabel || undefined}
