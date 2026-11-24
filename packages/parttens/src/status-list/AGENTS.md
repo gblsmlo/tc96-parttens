@@ -18,7 +18,6 @@ Import direction: `composition/` → `store/`, `lib/`, `core.ts`. No import into
 
 - `packages/parttens/src/index.ts` re-exports `status-list/index`.
 - `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts` list the folder `status-list` for the registry item `record-status-list`.
-- `apps/storybook/src/patterns/records/dialog/lawsuit-dialog.tsx` lists the sources of `Patterns/Records/RecordDialog/Usages, Lawsuits` with it.
 
 ## Invariants
 
@@ -46,5 +45,5 @@ The stories are in `apps/storybook/src/patterns/status-list/`, on `Patterns/Stat
 
 ## Pointers
 
-- `Patterns/Records/RecordDialog/Usages, Lawsuits`: the sources of a create dialog.
+- `Blocks/Records/LookupCreate1/Usages, Lawsuits`: the sources of a create dialog.
 - `docs/accessibility.md`: the contrast rules for the `failed` row.

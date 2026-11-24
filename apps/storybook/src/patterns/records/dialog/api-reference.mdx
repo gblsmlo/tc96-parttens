@@ -151,7 +151,7 @@ Pending belongs to one open session: when `open` turns `false` the pending state
 
 ### Steps
 
-A dialog with steps keeps one `RecordDialog` and changes its `children`, `title`, `size` and `submitLabel` with `step`. To move forward, `onSubmit` sets the next `step` and returns `false`: the dialog stays open, the focus return of a failed save is dropped, and focus goes to the first enabled `input`, `textarea` or `select` of the new body once it renders. Going back is a button in `footerStart` that sets the previous `step`; the draft lives in the consumer, so it survives the round trip. [Usages, Lawsuits](?path=/story/patterns-records-recorddialog-usages--lawsuits) has three steps: the number, the lawsuit and the case without a number.
+A dialog with steps keeps one `RecordDialog` and changes its `children`, `title`, `size` and `submitLabel` with `step`. To move forward, `onSubmit` sets the next `step` and returns `false`: the dialog stays open, the focus return of a failed save is dropped, and focus goes to the first enabled `input`, `textarea` or `select` of the new body once it renders. Going back is a button in `footerStart` that sets the previous `step`; the draft lives in the consumer, so it survives the round trip. [Behavior, Step Moves Focus To The New Body](?path=/story/patterns-records-recorddialog-behavior--step-moves-focus-to-the-new-body) and [Step Back Keeps The Draft](?path=/story/patterns-records-recorddialog-behavior--step-back-keeps-the-draft) prove both moves.
 
 ### Submit hint
 
