@@ -1,31 +1,49 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RecordConfirmDialog } from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { Field, FieldLabel } from '@tc96/ui/field'
 import {
-  Select,
-  SelectItem,
-  SelectPopup,
-  SelectTrigger,
-  SelectValue,
-} from '@tc96/ui/select'
+  PersonProperty,
+  RecordDialog,
+  RecordGroup,
+  RecordGroupRow,
+  SelectProperty,
+  type SelectPropertyOption,
+  TextProperty,
+} from '@tc96/parttens'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from '@tc96/ui/accordion'
+import { Badge } from '@tc96/ui/badge'
+import { Button } from '@tc96/ui/button'
+import { IconFrame } from '@tc96/ui/icon-frame'
+import {
+  BellIcon,
+  BriefcaseIcon,
+  CalendarClockIcon,
+  GitBranchIcon,
+  HashIcon,
+  type LucideIcon,
+  MailIcon,
+  ShieldCheckIcon,
+  UserIcon,
+  WorkflowIcon,
+} from 'lucide-react'
 import { useState } from 'react'
-import { expect, fn, screen, waitFor, within } from 'storybook/test'
+import { expect, fn, screen, within } from 'storybook/test'
 import { initialContacts } from '../../collection/fixtures/contacts'
 import { CreateContactDialog, type NewContact } from './create-contact-dialog'
+import { CreateEventDialog } from './create-event-dialog'
+import type { EventSlot, EventValues } from './event-record'
 import { LeadDialog } from './lead-dialog'
 import type { NewLead } from './lead-record'
 import { NoteDialog } from './note-dialog'
-import {
-  initialNotes,
-  type Note,
-  type NoteValues,
-  noteRecordName,
-} from './note-record'
+import { type NoteValues, noteRecordName } from './note-record'
+import { people, repos } from './project-record'
 
 const meta = {
   tags: ['!autodocs'],
-  title: 'Patterns/Records/Dialog/Usages',
+  title: 'Patterns/Records/RecordDialog/Usages',
 } satisfies Meta
 
 export default meta
@@ -43,7 +61,7 @@ export const Contacts: StoryObj<ContactsArgs> = {
     docs: {
       description: {
         story:
-          'The create step of the Contacts collection, built like Inline Properties: the name as a borderless title, a short description below it, and every other field as a property chip. Telefone, E-mail, Tipo (CPF or CNPJ) and Documento are always shown. The ... chip opens a menu whose switches show or hide Etapa, Tags, Empresa and Cargo; Etapa starts at Sem etapa and has no Lead. Empresa and Cargo share one combobox chip: search, the existing roles or companies of the collection, and a footer that creates the typed name and selects it. The Contacts usage of `Patterns/Collection` opens the same dialog from Novo contato.',
+          'The create step of the Contacts collection, on the [Inline Properties](?path=/story/patterns-records-recorddialog-layouts--inline-properties) layout without `stretchBody`: the name as a borderless title, a short description below it, and every other field as a property chip. Telefone, E-mail, Tipo (CPF or CNPJ) and Documento are always shown. The ... chip opens a menu whose switches show or hide Etapa, Tags, Empresa and Cargo; Etapa starts at Sem etapa and has no Lead. Empresa and Cargo share one combobox chip: search, the existing roles or companies of the collection, and a footer that creates the typed name and selects it. The Contacts usage of `Patterns/Collection` opens the same dialog from Novo contato.',
       },
     },
   },
@@ -90,7 +108,7 @@ export const Leads: StoryObj<LeadsArgs> = {
     docs: {
       description: {
         story:
-          'The create step of a lead, built like Row Properties: a borderless title and description, then labeled rows (`RecordGroupRow`) for Etapa, Origem, Responsável and Próxima ação. Etapa starts at Novo, Origem, Responsável and Próxima ação start empty, and Próxima ação lists the next step (Ligar, Enviar e-mail, Agendar reunião, Enviar proposta, Fazer follow-up). Criar lead stays disabled until the title has text.',
+          'The create step of a lead, on the [Row Properties](?path=/story/patterns-records-recorddialog-layouts--row-properties) layout: a borderless title and description, then labeled rows (`RecordGroupRow`) for Etapa, Origem, Responsável and Próxima ação. Etapa starts at Novo, Origem, Responsável and Próxima ação start empty, and Próxima ação lists the next step (Ligar, Enviar e-mail, Agendar reunião, Enviar proposta, Fazer follow-up). Criar lead stays disabled until the title has text.',
       },
     },
   },
@@ -118,229 +136,339 @@ export const Leads: StoryObj<LeadsArgs> = {
   },
 }
 
-interface NotesArgs {
-  note: Note | null
-  onCopyLink: (id: string) => void
+interface NoteArgs {
   onSave: (values: NoteValues) => void | Promise<void>
 }
 
-const notesArgTypes = {
-  note: { control: false },
-  onCopyLink: { control: false },
-  onSave: { control: false },
-} as const
-
-const notesDescription =
-  'The note editor of a record, at the `large` size with `stretchBody`: the record name as the ancestor, then an `EditorTitle`, the author and Vínculos as `plain` property chips, and a `RichTextEditor` that fills the rest of the dialog. Enter or ArrowDown at the end of the title moves to the body, and ArrowUp at its first line goes back. Vínculos ties the note to other records: a menu with one submenu per kind (Contato, Lead, Contratos, Reunião), each holding `MenuCheckboxItem` items with the check on the right. The Notes usage of `Patterns/Records/Group/Usages` opens the same dialog instance from a row or from the + action, and the dialog resets its fields when `note` changes.'
-
-const renderNotes = function Notes({ note, onCopyLink, onSave }: NotesArgs) {
-  const [open, setOpen] = useState(true)
-
-  return (
-    <>
-      <Button onClick={() => setOpen(true)} variant="outline">
-        {note ? 'Abrir nota' : 'Nova nota'}
-      </Button>
-      <NoteDialog
-        note={note}
-        onCopyLink={onCopyLink}
-        onOpenChange={setOpen}
-        onSave={onSave}
-        open={open}
-        recordName={noteRecordName}
-      />
-    </>
-  )
-}
-
-export const NewNote: StoryObj<NotesArgs> = {
-  argTypes: notesArgTypes,
-  args: {
-    note: null,
-    onCopyLink: fn((_id: string) => {}),
-    onSave: fn((_values: NoteValues) => {}),
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: `${notesDescription}\n\nA new note for Helena Duarte: the title is focused, the author is the current user and nothing is linked. Criar nota stays disabled until the title or the body has text.`,
-      },
-      source: { inlineLimit: 250 },
-    },
-  },
-  render: renderNotes,
-  play: async () => {
-    const dialog = within(
-      await screen.findByRole('dialog', { name: 'Nova nota' }),
-    )
-
-    await expect(dialog.getByText(noteRecordName)).toBeVisible()
-    await expect(dialog.getByText('Gabriel Melo')).toBeVisible()
-    await expect(
-      dialog.getByRole('button', { name: /Criar nota/ }),
-    ).toBeDisabled()
-  },
-}
-
-export const EditNote: StoryObj<NotesArgs> = {
-  argTypes: notesArgTypes,
-  args: {
-    note: initialNotes[0],
-    onCopyLink: fn((_id: string) => {}),
-    onSave: fn((_values: NoteValues) => {}),
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: `${notesDescription}\n\nAn existing note opens with its title, body and links, and the header adds Copiar link, a shortcut the consumer owns. Mod+Enter saves from any field.`,
-      },
-      source: { inlineLimit: 250 },
-    },
-  },
-  render: renderNotes,
-  play: async () => {
-    const dialog = within(
-      await screen.findByRole('dialog', { name: 'Editar nota' }),
-    )
-
-    await expect(
-      dialog.getByRole('textbox', { name: 'Título da nota' }),
-    ).toHaveValue('Preferências de contato')
-    await expect(
-      dialog.getByRole('button', { name: 'Copiar link' }),
-    ).toBeVisible()
-  },
-}
-
-interface DeleteProjectArgs {
-  onDelete: () => void
-}
-
-export const DeleteProject: StoryObj<DeleteProjectArgs> = {
-  args: { onDelete: fn() },
+export const Note: StoryObj<NoteArgs> = {
+  args: { onSave: fn((_values: NoteValues) => {}) },
   parameters: {
     docs: {
       description: {
         story:
-          'A confirmation with no body in the default `tone`, `destructive`: the confirm button is red and the initial focus is on Cancel.',
+          'A new note on a record, on the [Property Bar Over Body](?path=/story/patterns-records-recorddialog-layouts--property-bar-over-body) layout: the record name as the ancestor, then the headline title without a description, Status, Prioridade and Responsável as a bar of `plain` property chips, the same properties as the layout, and a `RichTextEditor` that fills the rest of the dialog in the `readable` column. Criar nota stays disabled until the title or the body has text. The Notes usage of `Patterns/Records/Group/Usages` opens the same dialog from the + action.',
       },
+      source: { inlineLimit: 250 },
     },
   },
-  render: function DeleteProject({ onDelete }) {
+  render: function NoteUsage({ onSave }) {
     const [open, setOpen] = useState(true)
 
     return (
       <>
         <Button onClick={() => setOpen(true)} variant="outline">
-          Delete project
+          Nova nota
         </Button>
-        <RecordConfirmDialog
-          cancelLabel="Cancel"
-          confirmingLabel="Deleting"
-          confirmLabel="Delete project"
-          description="Aurora and its 12 issues will be removed. This cannot be undone."
-          onConfirm={() => {
-            onDelete()
-            return true
-          }}
+        <NoteDialog
+          note={null}
+          onCopyLink={() => {}}
           onOpenChange={setOpen}
+          onSave={onSave}
           open={open}
-          title="Delete project?"
+          recordName={noteRecordName}
         />
       </>
     )
   },
   play: async () => {
     const dialog = within(
-      await screen.findByRole('alertdialog', { name: 'Delete project?' }),
+      await screen.findByRole('dialog', { name: 'Nova nota' }),
     )
 
+    await expect(dialog.getByText(noteRecordName)).toBeVisible()
     await expect(
-      dialog.getByRole('button', { name: 'Delete project' }),
-    ).toBeVisible()
-    await waitFor(() =>
-      expect(dialog.getByRole('button', { name: 'Cancel' })).toHaveFocus(),
-    )
+      dialog.getByRole('combobox', { name: /^Status/ }),
+    ).toHaveTextContent('Planejada')
+    await expect(
+      dialog.getByRole('button', { name: /Criar nota/ }),
+    ).toBeDisabled()
   },
 }
 
-const targets = [
-  { label: 'Backlog', value: 'backlog' },
-  { label: 'Archive', value: 'archive' },
-  { label: 'Q4 planning', value: 'q4-planning' },
-]
+type SetupValues = Record<string, string | null>
 
-interface ArchiveProjectArgs {
-  onArchive: (target: string) => void
+interface SetupRow {
+  fallback: string
+  icon: LucideIcon
+  id: string
+  label: string
+  options?: readonly SelectPropertyOption[]
 }
 
-export const ArchiveProject: StoryObj<ArchiveProjectArgs> = {
-  args: { onArchive: fn((_target: string) => {}) },
+interface SetupSection {
+  description: string
+  icon: LucideIcon
+  id: string
+  rows: readonly SetupRow[]
+  title: string
+}
+
+const option = (label: string, value = label): SelectPropertyOption => ({
+  label,
+  value,
+})
+
+const setupSections: readonly SetupSection[] = [
+  {
+    description: 'Who runs the project and when the team reviews it.',
+    icon: ShieldCheckIcon,
+    id: 'ownership',
+    rows: [
+      { fallback: 'Add owner', icon: UserIcon, id: 'owner', label: 'Owner' },
+      {
+        fallback: 'Add alias',
+        icon: BriefcaseIcon,
+        id: 'alias',
+        label: 'Alias',
+      },
+      {
+        fallback: 'Add review window',
+        icon: CalendarClockIcon,
+        id: 'review',
+        label: 'Review',
+        options: [
+          option('Weekly', 'weekly'),
+          option('Every two weeks', 'biweekly'),
+          option('Monthly', 'monthly'),
+        ],
+      },
+    ],
+    title: 'Ownership',
+  },
+  {
+    description: 'Where the work lives and where updates are posted.',
+    icon: WorkflowIcon,
+    id: 'integrations',
+    rows: [
+      {
+        fallback: 'Add repository',
+        icon: GitBranchIcon,
+        id: 'repository',
+        label: 'Repository',
+        options: repos.map((repo) => option(repo)),
+      },
+      {
+        fallback: 'Add channel',
+        icon: HashIcon,
+        id: 'channel',
+        label: 'Channel',
+        options: ['#launch', '#engineering', '#design'].map((channel) =>
+          option(channel),
+        ),
+      },
+    ],
+    title: 'Integrations',
+  },
+  {
+    description: 'Who hears about it when the project is blocked.',
+    icon: BellIcon,
+    id: 'alerts',
+    rows: [
+      {
+        fallback: 'Add person',
+        icon: MailIcon,
+        id: 'escalation',
+        label: 'Escalation',
+      },
+    ],
+    title: 'Alerts',
+  },
+]
+
+const initialSetupValues: SetupValues = {
+  alias: 'growth-command',
+  owner: 'ana',
+  review: null,
+}
+
+const setupStatus = (section: SetupSection, values: SetupValues) => {
+  const filled = section.rows.filter(({ id }) => values[id]).length
+  if (filled === section.rows.length)
+    return { label: 'Done', variant: 'success' } as const
+  if (filled > 0) return { label: 'In progress', variant: 'info' } as const
+  return { label: 'Pending', variant: 'secondary' } as const
+}
+
+const isPersonRow = (row: SetupRow) =>
+  row.id === 'owner' || row.id === 'escalation'
+
+interface ProjectSetupArgs {
+  onCreate: (values: SetupValues) => void
+}
+
+export const ProjectSetup: StoryObj<ProjectSetupArgs> = {
+  args: { onCreate: fn((_values: SetupValues) => {}) },
   parameters: {
     docs: {
       description: {
         story:
-          'A neutral confirmation with a choice in `children`: `tone="default"` puts the initial focus on Archive project, which stays disabled through `confirmDisabled` until a destination is chosen. The chosen value is the consumer state, read inside `onConfirm`.',
+          'The setup of a project, on the [Description Over Body](?path=/story/patterns-records-recorddialog-layouts--description-over-body) layout: the trail and the dialog description, with no headline, and sections in an accordion, each with an icon, a title, a description and a status derived from its rows. Each section holds a `RecordGroup` with `collapsible={false}` and no `title`, so the accordion is the only fold and its trigger the only heading, and its rows are selectable: a person picker, an inline text or a select.',
       },
     },
   },
-  render: function ArchiveProject({ onArchive }) {
+  render: function ProjectSetup({ onCreate }) {
     const [open, setOpen] = useState(true)
-    const [target, setTarget] = useState<string | null>(null)
+    const [values, setValues] = useState(initialSetupValues)
+    const update = (id: string, value: string | null) =>
+      setValues((current) => ({ ...current, [id]: value }))
+
+    const control = (row: SetupRow) => {
+      const value = values[row.id] ?? null
+      if (isPersonRow(row))
+        return (
+          <PersonProperty
+            ariaLabel={row.label}
+            onValueChange={(next) => update(row.id, next)}
+            options={people}
+            placeholder={row.fallback}
+            value={value}
+            variant="plain"
+          />
+        )
+      if (row.options)
+        return (
+          <SelectProperty
+            ariaLabel={row.label}
+            placeholder={row.fallback}
+            onValueChange={(next) => update(row.id, next)}
+            options={row.options}
+            value={value}
+            variant="plain"
+          />
+        )
+      return (
+        <TextProperty
+          ariaLabel={row.label}
+          editing="inline"
+          fallback={row.fallback}
+          onCommit={(next) => update(row.id, next)}
+          value={value}
+          variant="plain"
+        />
+      )
+    }
 
     return (
       <>
         <Button onClick={() => setOpen(true)} variant="outline">
-          Archive project
+          Set up project
         </Button>
-        <RecordConfirmDialog
+        <RecordDialog
           cancelLabel="Cancel"
-          confirmDisabled={target === null}
-          confirmingLabel="Archiving"
-          confirmLabel="Archive project"
-          description="Move the 12 open issues of Aurora before archiving it."
-          onConfirm={() => {
-            if (target === null) return false
-            onArchive(target)
-            return true
-          }}
+          description="Fill in each section before the project goes live."
           onOpenChange={(next) => {
             setOpen(next)
-            if (!next) setTarget(null)
+            if (!next) setValues(initialSetupValues)
+          }}
+          onSubmit={() => {
+            onCreate(values)
+            return true
           }}
           open={open}
-          title="Archive project?"
-          tone="default"
+          submitLabel="Save setup"
+          title="Project setup"
+          titleAncestor="Projects"
         >
-          <Field name="target">
-            <FieldLabel>Move issues to</FieldLabel>
-            <Select items={targets} onValueChange={setTarget} value={target}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a destination" />
-              </SelectTrigger>
-              <SelectPopup>
-                {targets.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectPopup>
-            </Select>
-          </Field>
-        </RecordConfirmDialog>
+          <Accordion defaultValue={[setupSections[0]?.id]}>
+            {setupSections.map((section) => {
+              const status = setupStatus(section, values)
+
+              return (
+                <AccordionItem key={section.id} value={section.id}>
+                  <AccordionTrigger>
+                    <span className="flex flex-1 items-start gap-3">
+                      <IconFrame shape="rounded" size="sm">
+                        <section.icon aria-hidden />
+                      </IconFrame>
+                      <span className="grid flex-1 gap-0.5">
+                        <span>{section.title}</span>
+                        <span className="font-normal text-muted-foreground">
+                          {section.description}
+                        </span>
+                      </span>
+                      <Badge variant={status.variant}>{status.label}</Badge>
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionPanel>
+                    <RecordGroup className="ms-11" collapsible={false}>
+                      {section.rows.map((row) => (
+                        <RecordGroupRow
+                          key={row.id}
+                          label={row.label}
+                          leading={<row.icon aria-hidden />}
+                        >
+                          {control(row)}
+                        </RecordGroupRow>
+                      ))}
+                    </RecordGroup>
+                  </AccordionPanel>
+                </AccordionItem>
+              )
+            })}
+          </Accordion>
+        </RecordDialog>
+      </>
+    )
+  },
+}
+
+interface EventsArgs {
+  onCreate: (values: EventValues) => void
+  slot: EventSlot
+}
+
+export const Events: StoryObj<EventsArgs> = {
+  argTypes: {
+    onCreate: { control: false },
+    slot: {
+      control: 'object',
+      description:
+        'The day (an ISO instant at noon UTC) and the `HH:mm` window of the Date row. The dialog reads it when it mounts and when it closes, so a change shows on the next open.',
+    },
+  },
+  args: {
+    onCreate: fn((_values: EventValues) => {}),
+    slot: { date: '2026-10-14T12:00:00.000Z', end: '10:00', start: '09:00' },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: [
+          'A calendar event or appointment on the [Row Properties](?path=/story/patterns-records-recorddialog-layouts--row-properties) layout, prefilled with the slot the calendar picked: a borderless title and description, then rows ordered from what places the event to what classifies it: Date (a `ScheduleProperty` for the day, times, repeat and reminders), Guests, Location, Type (Event, Appointment), Calendar (Appointments, Sales, Personal) and Availability (Busy, Free). The title follows Type.',
+          'Location commits on blur and Mod+Enter submits in the same event, so the draft lives in `useRecordDraft` and `onSubmit` reads `latest`. An end before the start, or a failed save, shows in `errorMessage`. Create more keeps the dialog open after saving and puts the fields back to the slot.',
+          'The `Calendar` story of `Patterns/Collection/Usages` opens the same dialog from Nova atividade and from an empty slot of the time grid, giving it a new `key` for each request instead of passing a new slot to an open dialog.',
+        ].join('\n\n'),
+      },
+    },
+  },
+  render: function Events({ onCreate, slot }) {
+    const [open, setOpen] = useState(true)
+
+    return (
+      <>
+        <Button onClick={() => setOpen(true)} variant="outline">
+          Nova atividade
+        </Button>
+        <CreateEventDialog
+          onCreate={onCreate}
+          onOpenChange={setOpen}
+          open={open}
+          slot={slot}
+        />
       </>
     )
   },
   play: async () => {
     const dialog = within(
-      await screen.findByRole('alertdialog', { name: 'Archive project?' }),
+      await screen.findByRole('dialog', { name: 'New event' }),
     )
 
     await expect(
-      dialog.getByRole('combobox', { name: 'Move issues to' }),
-    ).toBeVisible()
+      dialog.getByRole('button', { name: /^Date:/ }),
+    ).toHaveTextContent('Oct 14 · 09:00 – 10:00')
     await expect(
-      dialog.getByRole('button', { name: 'Archive project' }),
-    ).toBeDisabled()
+      dialog.getByRole('combobox', { name: /^Availability/ }),
+    ).toHaveTextContent('Busy')
+    await expect(dialog.getByRole('button', { name: 'Save' })).toBeDisabled()
   },
 }

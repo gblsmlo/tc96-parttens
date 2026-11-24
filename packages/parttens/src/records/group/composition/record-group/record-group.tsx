@@ -6,8 +6,9 @@ import {
   CollapsiblePanel,
   CollapsibleTrigger,
 } from '@tc96/ui/collapsible'
+import { cn } from '@tc96/utils'
 import { ChevronDownIcon } from 'lucide-react'
-import { type ReactElement, useId, useState } from 'react'
+import { type ReactElement, type ReactNode, useId, useState } from 'react'
 import type { RecordGroupProps } from '../../core'
 import {
   recordGroupClassName,
@@ -15,6 +16,7 @@ import {
   recordGroupHeaderClassName,
   recordGroupPanelClassName,
   recordGroupShellClassName,
+  recordGroupTitleVariants,
   recordGroupTriggerVariants,
 } from '../../lib/variants'
 
@@ -31,6 +33,7 @@ export function RecordGroup({
   chevron = 'start',
   children,
   className,
+  collapsible = true,
   defaultOpen = true,
   empty = false,
   footer,
@@ -59,22 +62,45 @@ export function RecordGroup({
     </div>
   )
 
-  const parts = (
-    <>
+  const titleText = (
+    <span className="min-w-0 break-words text-start">{title}</span>
+  )
+
+  const hasTitle = title !== undefined && title !== null && title !== ''
+  const labelledBy = hasTitle ? titleId : undefined
+
+  const header =
+    hasTitle || actions ? (
       <div
         className={recordGroupHeaderClassName(variant, actionsAlign)}
         data-actions-align={actionsAlign}
         data-slot="record-group-header"
       >
-        <h2 className="min-w-0 font-medium text-sm" id={titleId}>
-          <CollapsibleTrigger
-            className={recordGroupTriggerVariants({ variant })}
+        {hasTitle ? (
+          <h2
+            className={
+              collapsible
+                ? 'min-w-0 font-medium text-sm'
+                : cn(
+                    'font-medium text-sm',
+                    recordGroupTitleVariants({ variant }),
+                  )
+            }
+            id={titleId}
           >
-            {chevron === 'start' ? chevronIcon : null}
-            <span className="min-w-0 break-words text-start">{title}</span>
-            {chevron === 'end' ? chevronIcon : null}
-          </CollapsibleTrigger>
-        </h2>
+            {collapsible ? (
+              <CollapsibleTrigger
+                className={recordGroupTriggerVariants({ variant })}
+              >
+                {chevron === 'start' ? chevronIcon : null}
+                {titleText}
+                {chevron === 'end' ? chevronIcon : null}
+              </CollapsibleTrigger>
+            ) : (
+              titleText
+            )}
+          </h2>
+        ) : null}
         {actions ? (
           <div
             className="flex shrink-0 items-center gap-1"
@@ -84,27 +110,51 @@ export function RecordGroup({
           </div>
         ) : null}
       </div>
-      <CollapsiblePanel
-        className={recordGroupPanelClassName(variant)}
-        inert={!isOpen}
-      >
-        {variant === 'inset' ? (
-          <Card className={recordGroupShellClassName}>{content}</Card>
-        ) : (
-          content
-        )}
-        {footer ? (
-          <div className="py-2" data-slot="record-group-footer">
-            {footer}
-          </div>
-        ) : null}
-      </CollapsiblePanel>
+    ) : null
+
+  const body = (
+    <>
+      {variant === 'inset' ? (
+        <Card className={recordGroupShellClassName}>{content}</Card>
+      ) : (
+        content
+      )}
+      {footer ? (
+        <div className="py-2" data-slot="record-group-footer">
+          {footer}
+        </div>
+      ) : null}
     </>
   )
 
+  const shell = (parts: ReactNode) =>
+    variant === 'card' ? (
+      <Card className={recordGroupShellClassName}>{parts}</Card>
+    ) : (
+      parts
+    )
+
+  if (!collapsible)
+    return (
+      <section
+        aria-labelledby={labelledBy}
+        className={recordGroupClassName(variant, className)}
+        data-empty={empty ? 'true' : undefined}
+        data-slot="record-group"
+        data-variant={variant}
+      >
+        {shell(
+          <>
+            {header}
+            <div className={recordGroupPanelClassName(variant)}>{body}</div>
+          </>,
+        )}
+      </section>
+    )
+
   return (
     <Collapsible
-      aria-labelledby={titleId}
+      aria-labelledby={labelledBy}
       className={recordGroupClassName(variant, className)}
       data-empty={empty ? 'true' : undefined}
       data-slot="record-group"
@@ -116,10 +166,16 @@ export function RecordGroup({
       open={isOpen}
       render={<section />}
     >
-      {variant === 'card' ? (
-        <Card className={recordGroupShellClassName}>{parts}</Card>
-      ) : (
-        parts
+      {shell(
+        <>
+          {header}
+          <CollapsiblePanel
+            className={recordGroupPanelClassName(variant)}
+            inert={!isOpen}
+          >
+            {body}
+          </CollapsiblePanel>
+        </>,
       )}
     </Collapsible>
   )

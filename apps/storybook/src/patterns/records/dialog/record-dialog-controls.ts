@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { RecordConfirmDialogTone, RecordDialogSize } from '@tc96/parttens'
+import type { RecordDialogBodyWidth, RecordDialogSize } from '@tc96/parttens'
 
 export const recordDialogSizes: readonly RecordDialogSize[] = [
   'small',
@@ -7,19 +7,21 @@ export const recordDialogSizes: readonly RecordDialogSize[] = [
   'large',
 ]
 
-export const recordConfirmDialogTones: readonly RecordConfirmDialogTone[] = [
-  'destructive',
-  'default',
+export const recordDialogBodyWidths: readonly RecordDialogBodyWidth[] = [
+  'fill',
+  'readable',
 ]
 
 export interface RecordDialogControls {
   actions: boolean
+  bodyWidth: RecordDialogBodyWidth
   cancelLabel: string
   createMore: boolean
   description: string
   errorMessage: string
   headline: boolean
   headlineDescription: boolean
+  properties: boolean
   size: RecordDialogSize
   stretchBody: boolean
   submitDisabled: boolean
@@ -33,12 +35,14 @@ export interface RecordDialogControls {
 
 export const recordDialogControlArgs: RecordDialogControls = {
   actions: false,
+  bodyWidth: 'fill',
   cancelLabel: 'Cancel',
   createMore: false,
   description: '',
   errorMessage: '',
   headline: true,
   headlineDescription: true,
+  properties: false,
   size: 'default',
   stretchBody: false,
   submitDisabled: false,
@@ -57,6 +61,12 @@ export const recordDialogControlArgTypes: Partial<
     control: 'boolean',
     description:
       'Passes an "Open as page" icon button in `actions`, at the top end of the header.',
+  },
+  bodyWidth: {
+    control: 'inline-radio',
+    description:
+      'The `bodyWidth` of `RecordDialog`: `readable` holds the form in a centered 672px column, which shows at `large` size.',
+    options: recordDialogBodyWidths,
   },
   cancelLabel: {
     control: 'text',
@@ -88,6 +98,11 @@ export const recordDialogControlArgTypes: Partial<
     description:
       'Passes `descriptionLabel` to `RecordDialogHeadline`, which adds the description field.',
   },
+  properties: {
+    control: 'boolean',
+    description:
+      'Passes Status, Priority and Lead as `plain` chips in `properties`, under the description, or under the title without one.',
+  },
   size: {
     control: 'inline-radio',
     description: 'The `size` of `RecordDialog`.',
@@ -95,8 +110,7 @@ export const recordDialogControlArgTypes: Partial<
   },
   stretchBody: {
     control: 'boolean',
-    description:
-      'The `stretchBody` of `RecordDialog`, also passed as `stretch` to the headline.',
+    description: 'The `stretchBody` of `RecordDialog`.',
   },
   submitDisabled: {
     control: 'boolean',
@@ -124,84 +138,6 @@ export const recordDialogControlArgTypes: Partial<
     control: 'text',
     description:
       'The `titleAncestor` of `RecordDialog`, before a chevron; empty removes the trail.',
-  },
-  trigger: {
-    control: 'text',
-    description: 'Text of the button that opens the dialog again.',
-  },
-}
-
-export interface RecordConfirmDialogControls {
-  body: boolean
-  cancelLabel: string
-  confirmDisabled: boolean
-  confirmLabel: string
-  confirmingLabel: string
-  description: string
-  errorMessage: string
-  title: string
-  tone: RecordConfirmDialogTone
-  trigger: string
-}
-
-export const recordConfirmDialogControlArgs: RecordConfirmDialogControls = {
-  body: false,
-  cancelLabel: 'Cancel',
-  confirmDisabled: false,
-  confirmLabel: 'Delete project',
-  confirmingLabel: 'Deleting',
-  description:
-    'Aurora and its 12 issues will be removed. This cannot be undone.',
-  errorMessage: '',
-  title: 'Delete project?',
-  tone: 'destructive',
-  trigger: 'Delete project',
-}
-
-export const recordConfirmDialogControlArgTypes: Partial<
-  ArgTypes<RecordConfirmDialogControls>
-> = {
-  body: {
-    control: 'boolean',
-    description:
-      'Passes a short choice as `children`, which renders the body between the header and the footer.',
-  },
-  cancelLabel: {
-    control: 'text',
-    description: 'The `cancelLabel` of `RecordConfirmDialog`.',
-  },
-  confirmDisabled: {
-    control: 'boolean',
-    description: 'The `confirmDisabled` of `RecordConfirmDialog`.',
-  },
-  confirmLabel: {
-    control: 'text',
-    description: 'The `confirmLabel` of `RecordConfirmDialog`.',
-  },
-  confirmingLabel: {
-    control: 'text',
-    description:
-      'The `confirmingLabel` of `RecordConfirmDialog`; the confirm here settles after one second, so the label shows meanwhile.',
-  },
-  description: {
-    control: 'text',
-    description:
-      'The `description` of `RecordConfirmDialog`; empty removes it.',
-  },
-  errorMessage: {
-    control: 'text',
-    description:
-      'The `errorMessage` of `RecordConfirmDialog`, the alert above the footer; empty removes it.',
-  },
-  title: {
-    control: 'text',
-    description:
-      'The `title` of `RecordConfirmDialog`, which names the dialog.',
-  },
-  tone: {
-    control: 'inline-radio',
-    description: 'The `tone` of `RecordConfirmDialog`.',
-    options: recordConfirmDialogTones,
   },
   trigger: {
     control: 'text',

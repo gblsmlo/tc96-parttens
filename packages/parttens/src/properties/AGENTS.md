@@ -61,7 +61,7 @@ Editing:
 Errors:
 
 - A property has no invalid state: `PropertySurface` sets no `aria-invalid` or error styling, no display takes an `invalid` prop and `RecordGroupRow` has no message slot. Field-level errors stay with the consumer, who validates in its own handler and reports through the surface that owns the form (`RecordDialog` shows `errorMessage` as a `role="alert"` above the footer). The exception is the entry lists of `EmailProperty` and `PhoneProperty`: their popups parse typed text with zod, so `PropertyEntryForm` marks the bad row `invalid`. A pick from options or a calendar cannot be malformed, so what the consumer rejects is the record, not the value.
-- The `Failed Submit` stories under `Patterns/Records/Dialog` therefore show the alert and the kept values, not an error on a property.
+- The `Failed Submit` stories under `Patterns/Records/RecordDialog` therefore show the alert and the kept values, not an error on a property.
 
 Markup:
 

@@ -13,7 +13,14 @@ const meta = {
   decorators: [RecordGroupCanvas],
   parameters: {
     controls: {
-      exclude: ['actionsAlign', 'chevron', 'defaultOpen', 'empty', 'variant'],
+      exclude: [
+        'actionsAlign',
+        'chevron',
+        'collapsible',
+        'defaultOpen',
+        'empty',
+        'variant',
+      ],
     },
   },
   render: (args) => <ComposedRecordGroup {...args} />,
@@ -47,6 +54,11 @@ export const ChevronEnd: Story = {
 
 export const Empty: Story = {
   args: { empty: true },
+}
+
+export const NotCollapsible: Story = {
+  args: { collapsible: false },
+  name: 'collapsible false',
 }
 
 export const Closed: Story = {

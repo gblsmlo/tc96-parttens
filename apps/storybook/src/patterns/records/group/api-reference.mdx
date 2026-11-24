@@ -9,7 +9,7 @@ A titled, collapsible group of rows on a record page: the details of a contact, 
 
 The other pages of `Patterns/Records/Group`: [Playground](?path=/story/patterns-records-group-playground--playground) to try the title, the variant, the header and the optional parts, [Stories](?path=/story/patterns-records-group-stories--default) for each prop value of `RecordGroup`, [Behavior](?path=/story/patterns-records-group-behavior--title-wraps-beside-the-actions) for the tests, [Usages](?path=/story/patterns-records-group-usages--tasks) for one group per job on a record page, and [Layouts](?path=/story/patterns-records-group-layouts--property-rows) for how rows, items, links, metrics and subgroups combine, from property rows to the finance, tasks and court groups of a legal record.
 
-Used in: [Templates/Contact Detail](?path=/story/templates-contact-detail--default) composes its detail blocks from `RecordGroup` and `RecordGroupRow`, and [Patterns/Records/Dialog/Usages, Row Properties](?path=/story/patterns-records-dialog-usages--row-properties) lays out its fields as `RecordGroupRow`s. [Patterns/Checklist](?path=/docs/patterns-checklist-api-reference--api-reference) links to [Usages, Tasks](?path=/story/patterns-records-group-usages--tasks), a `plain` `Checklist` inside a group.
+Used in: [Templates/Contact Detail](?path=/story/templates-contact-detail--default) composes its detail blocks from `RecordGroup` and `RecordGroupRow`, and [Patterns/Records/RecordDialog/Usages, Events](?path=/story/patterns-records-recorddialog-usages--events) lays out its fields as `RecordGroupRow`s. [Patterns/Checklist](?path=/docs/patterns-checklist-api-reference--api-reference) links to [Usages, Tasks](?path=/story/patterns-records-group-usages--tasks), a `plain` `Checklist` inside a group.
 
 ## Import
 
@@ -69,7 +69,7 @@ A titled group that folds its body. Renders a `section` named by an `h2` that wr
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `title` | `ReactNode` | required | Sets the title, which names the region and the trigger; it wraps instead of truncating. |
+| `title` | `ReactNode` | - | Sets the title, which names the region and the trigger; it wraps instead of truncating. Without it there is no `h2` and no trigger, so the group is not a named region and cannot be folded by the user; the header renders only for `actions`. |
 | `variant` | `"plain"`, `"card"` or `"inset"` | `"plain"` | Controls the frame: no frame, a muted panel around header and body, or a muted panel around the body only. |
 | `open` | `boolean` | - | Controls whether the group is open; the group then changes only when `open` does. |
 | `defaultOpen` | `boolean` | `true` | Sets whether an uncontrolled group starts open. |
@@ -78,6 +78,7 @@ A titled group that folds its body. Renders a `section` named by an `h2` that wr
 | `actions` | `ReactNode` | - | Renders controls beside the title, outside the trigger; they stay visible when the group is closed. |
 | `actionsAlign` | `"between"` or `"start"` | `"between"` | Places `actions` at the end of the header, or 8px after the title. |
 | `chevron` | `"start"` or `"end"` | `"start"` | Places the chevron before the title or right after it, inside the trigger. |
+| `collapsible` | `boolean` | `true` | When false, renders the title in the `h2` with no button and no chevron and the body and `footer` always shown; `open`, `defaultOpen`, `onOpenChange` and `chevron` are ignored. |
 | `footer` | `ReactNode` | - | Renders content below the body, inside the panel; it hides with the body. |
 | `children` | `ReactNode` | - | Sets the body. |
 | `className` | `string` | - | Adds classes to the `section`, not to the visible card. |

@@ -7,9 +7,10 @@ import {
   ScheduleProperty,
   SelectProperty,
   TextProperty,
+  useRecordDraft,
 } from '@tc96/parttens'
 import { MapPinIcon } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
 import {
   availabilityOptions,
@@ -40,27 +41,25 @@ export function CreateEventDialog({
   open: boolean
   slot?: EventSlot
 }>) {
-  const [title, setTitle] = useState('')
-  const [schedule, setSchedule] = useState(() => slotSchedule(slot))
-  const [guests, setGuests] = useState<readonly string[]>([])
-  const [location, setLocation] = useState<string | null>(null)
-  // Mod+Enter submits in the same event as the blur that commits Location, before React re-renders.
-  const committedLocation = useRef<string | null>(null)
-  const [type, setType] = useState('event')
-  const [calendar, setCalendar] = useState('personal')
-  const [availability, setAvailability] = useState('busy')
+  const {
+    draft,
+    latest,
+    reset: resetDraft,
+    update,
+  } = useRecordDraft(() => ({
+    availability: 'busy',
+    calendar: 'personal',
+    guests: [] as readonly string[],
+    location: null as string | null,
+    schedule: slotSchedule(slot),
+    title: '',
+    type: 'event',
+  }))
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [createMore, setCreateMore] = useState(false)
 
   const reset = () => {
-    setTitle('')
-    setSchedule(slotSchedule(slot))
-    setGuests([])
-    setLocation(null)
-    committedLocation.current = null
-    setType('event')
-    setCalendar('personal')
-    setAvailability('busy')
+    resetDraft()
     setErrorMessage(null)
   }
 
@@ -82,17 +81,18 @@ export function CreateEventDialog({
       onSubmit={async (event) => {
         setErrorMessage(null)
         const data = new FormData(event.currentTarget)
+        const { schedule, ...values } = latest.current
         const parsed = eventSchema.safeParse({
           allDay: schedule.allDay,
-          availability,
-          calendar,
+          availability: values.availability,
+          calendar: values.calendar,
           description: String(data.get('description') ?? ''),
           frequency: schedule.frequency,
-          guests,
-          location: committedLocation.current ?? '',
+          guests: values.guests,
+          location: values.location ?? '',
           reminderMinutes: schedule.reminders.map(Number),
-          title,
-          type,
+          title: values.title,
+          type: values.type,
           until: schedule.until,
           ...eventWindow({
             allDay: schedule.allDay,
@@ -118,19 +118,19 @@ export function CreateEventDialog({
         return true
       }}
       open={open}
-      submitDisabled={title.trim() === ''}
+      submitDisabled={draft.title.trim() === ''}
       submitLabel="Save"
       submitOnModEnter
       submittingLabel="Saving"
-      title={dialogTitles[type] ?? 'New event'}
+      title={dialogTitles[draft.type] ?? 'New event'}
       titleAncestor="Calendar"
     >
       <div className="grid gap-4">
         <RecordDialogHeadline
           descriptionLabel="Description"
           descriptionPlaceholder="Add notes or a meeting link"
-          onTitleChange={setTitle}
-          title={title}
+          onTitleChange={(title) => update({ title })}
+          title={draft.title}
           titleLabel="Event title"
           titlePlaceholder="Add title"
         />
@@ -140,20 +140,20 @@ export function CreateEventDialog({
               ariaLabel="Date"
               labels={scheduleLabels}
               locale="en-US"
-              onValueChange={setSchedule}
+              onValueChange={(schedule) => update({ schedule })}
               recurrenceOptions={scheduleRecurrenceOptions}
               reminderOptions={scheduleReminderOptions}
-              value={schedule}
+              value={draft.schedule}
             />
           </RecordGroupRow>
           <RecordGroupRow label="Guests">
             <PeopleProperty
               ariaLabel="Guests"
               dropdownPlacement={{ align: 'start' }}
-              onValueChange={setGuests}
+              onValueChange={(guests) => update({ guests })}
               options={people}
               placeholder="Add guests"
-              value={guests}
+              value={draft.guests}
             />
           </RecordGroupRow>
           <RecordGroupRow label="Location">
@@ -162,35 +162,36 @@ export function CreateEventDialog({
               editing="inline"
               fallback="Add location"
               icon={MapPinIcon}
-              onCommit={(next) => {
-                committedLocation.current = next
-                setLocation(next)
-              }}
-              value={location}
+              onCommit={(location) => update({ location })}
+              value={draft.location}
             />
           </RecordGroupRow>
           <RecordGroupRow label="Type">
             <SelectProperty
               ariaLabel="Type"
-              onValueChange={(value) => setType(value ?? 'event')}
+              onValueChange={(value) => update({ type: value ?? 'event' })}
               options={typeOptions}
-              value={type}
+              value={draft.type}
             />
           </RecordGroupRow>
           <RecordGroupRow label="Calendar">
             <SelectProperty
               ariaLabel="Calendar"
-              onValueChange={(value) => setCalendar(value ?? 'personal')}
+              onValueChange={(value) =>
+                update({ calendar: value ?? 'personal' })
+              }
               options={calendarOptions}
-              value={calendar}
+              value={draft.calendar}
             />
           </RecordGroupRow>
           <RecordGroupRow label="Availability">
             <SelectProperty
               ariaLabel="Availability"
-              onValueChange={(value) => setAvailability(value ?? 'busy')}
+              onValueChange={(value) =>
+                update({ availability: value ?? 'busy' })
+              }
               options={availabilityOptions}
-              value={availability}
+              value={draft.availability}
             />
           </RecordGroupRow>
         </div>

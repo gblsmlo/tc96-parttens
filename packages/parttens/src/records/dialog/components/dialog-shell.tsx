@@ -42,6 +42,7 @@ interface DialogShellProps {
   onOpenChange: (open: boolean) => void
   open: boolean
   pending?: boolean
+  properties?: ReactNode
   size?: RecordDialogSize
   stretchBody?: boolean
   title: ReactNode
@@ -82,6 +83,7 @@ export function DialogShell({
   onOpenChange,
   open,
   pending,
+  properties,
   size = 'default',
   stretchBody = false,
   title,
@@ -131,11 +133,21 @@ export function DialogShell({
       >
         {actionsRow}
         <DialogHeader>
-          <TitleTrail ancestor={titleAncestor}>
-            <DialogTitle className={TITLE_CLASS}>{title}</DialogTitle>
-          </TitleTrail>
-          {description ? (
-            <DialogDescription>{description}</DialogDescription>
+          <div className="flex flex-col gap-2" data-slot="dialog-heading">
+            <TitleTrail ancestor={titleAncestor}>
+              <DialogTitle className={TITLE_CLASS}>{title}</DialogTitle>
+            </TitleTrail>
+            {description ? (
+              <DialogDescription>{description}</DialogDescription>
+            ) : null}
+          </div>
+          {properties ? (
+            <div
+              className="mt-2 flex flex-wrap items-center gap-2"
+              data-slot="dialog-properties"
+            >
+              {properties}
+            </div>
           ) : null}
         </DialogHeader>
         {formHost}

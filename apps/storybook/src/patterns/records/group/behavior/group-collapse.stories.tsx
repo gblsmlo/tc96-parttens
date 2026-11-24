@@ -374,3 +374,42 @@ export const DefaultOpenFalseStartsWithoutFooter: Story = {
     ).toBeNull()
   },
 }
+
+export const NotCollapsibleShowsTheBody: Story = {
+  args: { collapsible: false, footer: <p>Footer</p> },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const heading = canvas.getByRole('heading', { level: 2, name: 'Details' })
+    const rows = canvasElement.querySelector(
+      '[data-slot="record-group-content"]',
+    ) as HTMLElement
+
+    await expect(canvas.getByRole('region', { name: 'Details' })).toBeVisible()
+    await expect(canvas.queryByRole('button')).toBeNull()
+    await expect(heading.querySelector('svg')).toBeNull()
+    await expect(canvas.getByText('Body')).toBeVisible()
+    await expect(canvas.getByText('Footer')).toBeVisible()
+    await expect(rows.getBoundingClientRect().left).toBeCloseTo(
+      heading.getBoundingClientRect().left,
+      0,
+    )
+  },
+}
+
+export const WithoutTitleRendersOnlyTheBody: Story = {
+  args: { collapsible: false, title: undefined },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const group = canvasElement.querySelector(
+      '[data-slot="record-group"]',
+    ) as HTMLElement
+
+    await expect(canvas.queryByRole('heading')).toBeNull()
+    await expect(canvas.queryByRole('region')).toBeNull()
+    await expect(group).not.toHaveAttribute('aria-labelledby')
+    await expect(
+      group.querySelector('[data-slot="record-group-header"]'),
+    ).toBeNull()
+    await expect(canvas.getByText('Body')).toBeVisible()
+  },
+}

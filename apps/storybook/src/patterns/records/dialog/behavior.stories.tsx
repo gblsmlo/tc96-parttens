@@ -1,12 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
-  RecordDialog,
-  RecordDialogCreateMore,
-  RecordDialogHeadline,
-  type RecordDialogProps,
   type RecordDialogSettlement,
   type RecordDialogSize,
-  TextProperty,
   useRecordDraft,
 } from '@tc96/parttens'
 import { type FormEvent, useState } from 'react'
@@ -19,25 +14,25 @@ import {
   waitFor,
   within,
 } from 'storybook/test'
+import { recordDialogControlArgs } from './record-dialog-controls.ts'
+import {
+  ComposedRecordDialog,
+  type ComposedRecordDialogProps,
+  DescriptionOverBodyFormation,
+  InlinePropertiesFormation,
+  type ProjectDraft,
+  PropertyBarOverBodyFormation,
+  RowPropertiesFormation,
+} from './record-dialog-layouts.tsx'
 
-interface DraftValues {
-  location: string | null
-  title: string
-}
-
-type BehaviorArgs = RecordDialogProps & {
-  onAction: () => void
-  onCheckedChange: (checked: boolean) => void
-  onSave: (values: DraftValues) => void
+type BehaviorArgs = ComposedRecordDialogProps & {
+  onCreateMoreChange: (checked: boolean) => void
+  onOpenAsPage: () => void
+  onOpenChange: (open: boolean) => void
+  onSave: (values: Partial<ProjectDraft>) => void
+  onSubmit: NonNullable<ComposedRecordDialogProps['onSubmit']>
   onTitleChange: (title: string) => void
 }
-
-type Harness = Readonly<
-  Omit<
-    BehaviorArgs,
-    'onAction' | 'onCheckedChange' | 'onSave' | 'onTitleChange'
-  >
->
 
 const page = (canvasElement: HTMLElement) =>
   within(canvasElement.ownerDocument.body)
@@ -46,7 +41,7 @@ const slotIn = (canvasElement: HTMLElement, selector: string) =>
   canvasElement.ownerDocument.querySelector<HTMLElement>(selector)
 
 const findDialog = (canvasElement: HTMLElement) =>
-  page(canvasElement).findByRole('dialog', { name: 'New card' })
+  page(canvasElement).findByRole('dialog', { name: 'New project' })
 
 const openChanges = (args: BehaviorArgs) =>
   mocked(args.onOpenChange).mock.calls.map(([next]) => next)
@@ -73,26 +68,31 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 const typeDraft = async (canvasElement: HTMLElement) => {
   const input =
-    await page(canvasElement).findByLabelText<HTMLInputElement>('Title')
+    await page(canvasElement).findByLabelText<HTMLInputElement>('Project title')
   await userEvent.type(input, 'Draft title')
   return input
 }
 
+const descriptionField = (canvasElement: HTMLElement) =>
+  page(canvasElement).getByRole<HTMLTextAreaElement>('textbox', {
+    name: 'Description',
+  })
+
 const saveButton = (canvasElement: HTMLElement) =>
-  page(canvasElement).getByRole<HTMLButtonElement>('button', { name: /Save/ })
+  page(canvasElement).getByRole<HTMLButtonElement>('button', {
+    name: /Create project/,
+  })
 
 const formOf = (input: HTMLElement) => input.closest('form') as HTMLFormElement
 
 const modEnter = (input: HTMLElement, key: 'metaKey' | 'ctrlKey') =>
   fireEvent.keyDown(input, { [key]: true, key: 'Enter' })
 
-const FieldDialog = (props: Harness) => (
-  <RecordDialog {...props}>
-    <input aria-label="Title" defaultValue="" />
-  </RecordDialog>
-)
-
-const SessionDialog = (props: Harness) => {
+const SessionHarness = ({
+  ending,
+  onSave,
+  ...props
+}: BehaviorArgs & { ending: 'close' | 'unmount' }) => {
   const [open, setOpen] = useState(true)
   const [mounted, setMounted] = useState(true)
 
@@ -102,24 +102,26 @@ const SessionDialog = (props: Harness) => {
         Reopen
       </button>
       {mounted ? (
-        <RecordDialog {...props} open={open}>
-          <input aria-label="Title" defaultValue="" />
-          <button onClick={() => setOpen(false)} type="button">
-            Close from parent
-          </button>
-          <button onClick={() => setMounted(false)} type="button">
-            Unmount
-          </button>
-        </RecordDialog>
+        <ComposedRecordDialog
+          {...props}
+          actions
+          onOpenAsPage={() =>
+            ending === 'unmount' ? setMounted(false) : setOpen(false)
+          }
+          open={open}
+        />
       ) : null}
     </>
   )
 }
 
-const closeAndReopen = async (canvasElement: HTMLElement) => {
-  await userEvent.click(
-    page(canvasElement).getByRole('button', { name: 'Close from parent' }),
+const leaveThroughOpenAsPage = (canvasElement: HTMLElement) =>
+  userEvent.click(
+    page(canvasElement).getByRole('button', { name: 'Open as page' }),
   )
+
+const closeAndReopen = async (canvasElement: HTMLElement) => {
+  await leaveThroughOpenAsPage(canvasElement)
   await waitFor(() =>
     expect(page(canvasElement).queryByRole('dialog')).toBeNull(),
   )
@@ -128,98 +130,24 @@ const closeAndReopen = async (canvasElement: HTMLElement) => {
   )
 }
 
-interface HeadlineDialogProps {
-  descriptionField?: boolean
-  onCheckedChange: (checked: boolean) => void
-  onOpenChange: (open: boolean) => void
-  onSubmit: RecordDialogProps['onSubmit']
-  onTitleChange: (title: string) => void
-  stretch?: boolean
-}
-
-const HeadlineDialog = ({
-  descriptionField = true,
-  onCheckedChange,
-  onOpenChange,
-  onSubmit,
-  onTitleChange,
-  stretch,
-}: Readonly<HeadlineDialogProps>) => {
-  const [title, setTitle] = useState('')
-  const [createMore, setCreateMore] = useState(false)
+const DraftHarness = ({ onSave, ...props }: BehaviorArgs) => {
+  const { latest, update } = useRecordDraft<Partial<ProjectDraft>>({})
 
   return (
-    <RecordDialog
-      footerStart={
-        <RecordDialogCreateMore
-          checked={createMore}
-          label="Create more"
-          onCheckedChange={(checked) => {
-            setCreateMore(checked)
-            onCheckedChange(checked)
-          }}
-        />
-      }
-      keepOpenOnSuccess={createMore}
-      onOpenChange={onOpenChange}
-      onSubmit={onSubmit}
-      open
-      stretchBody={stretch}
-      submitLabel="Save"
-      title="New card"
-    >
-      <RecordDialogHeadline
-        descriptionLabel={descriptionField ? 'Description' : undefined}
-        descriptionPlaceholder="Add description..."
-        onTitleChange={(next) => {
-          setTitle(next)
-          onTitleChange(next)
-        }}
-        stretch={stretch}
-        title={title}
-        titleLabel="Card title"
-        titlePlaceholder="Card title"
-      />
-    </RecordDialog>
-  )
-}
-
-const DraftDialog = ({
-  onOpenChange,
-  onSave,
-}: Readonly<Pick<BehaviorArgs, 'onOpenChange' | 'onSave'>>) => {
-  const { draft, latest, update } = useRecordDraft<DraftValues>({
-    location: null,
-    title: '',
-  })
-
-  return (
-    <RecordDialog
-      onOpenChange={onOpenChange}
+    <ComposedRecordDialog
+      {...props}
       onSubmit={() => {
         onSave(latest.current)
         return true
       }}
-      open
-      submitLabel="Save"
+      onTitleChange={(title) => {
+        props.onTitleChange?.(title)
+        update({ title })
+      }}
       submitOnModEnter
-      title="New card"
     >
-      <div className="grid gap-4">
-        <RecordDialogHeadline
-          onTitleChange={(title) => update({ title })}
-          title={draft.title}
-          titleLabel="Card title"
-        />
-        <TextProperty
-          ariaLabel="Location"
-          editing="inline"
-          fallback="Add location"
-          onCommit={(location) => update({ location })}
-          value={draft.location}
-        />
-      </div>
-    </RecordDialog>
+      <RowPropertiesFormation onChange={update} />
+    </ComposedRecordDialog>
   )
 }
 
@@ -257,24 +185,18 @@ const expectSize = async (
 
 const meta = {
   args: {
-    cancelLabel: 'Cancel',
-    onAction: fn(),
-    onCheckedChange: fn(),
+    ...recordDialogControlArgs,
+    onCreateMoreChange: fn(),
+    onOpenAsPage: fn(),
     onOpenChange: fn(),
     onSave: fn(),
     onSubmit: fn(),
     onTitleChange: fn(),
     open: true,
-    submitLabel: 'Save',
-    submittingLabel: 'Saving',
-    title: 'New card',
-    titleAncestor: 'Acme',
   },
-  render: ({ onAction, onCheckedChange, onSave, onTitleChange, ...props }) => (
-    <FieldDialog {...props} />
-  ),
+  render: ({ onSave, ...props }) => <ComposedRecordDialog {...props} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Records/Dialog/Behavior',
+  title: 'Patterns/Records/RecordDialog/Behavior',
 } satisfies Meta<BehaviorArgs>
 
 export default meta
@@ -367,7 +289,7 @@ export const ReturnsFocusToSubmitWhenRejecting: Story = {
 
     await userEvent.click(save)
 
-    await page(canvasElement).findByRole('button', { name: 'Saving' })
+    await page(canvasElement).findByRole('button', { name: 'Creating' })
     await expect(save).not.toHaveFocus()
     pending.reject(new Error('boom'))
     await waitFor(() => expect(save).toBeEnabled())
@@ -384,7 +306,7 @@ export const LocksDismissalWhilePending: Story = {
 
     await userEvent.click(saveButton(canvasElement))
 
-    const submitting = await screen.findByRole('button', { name: 'Saving' })
+    const submitting = await screen.findByRole('button', { name: 'Creating' })
     await expect(submitting).toBeDisabled()
     await expect(screen.getByRole('dialog')).toHaveAttribute('data-pending', '')
     await expect(formOf(input)).toHaveAttribute('aria-busy', 'true')
@@ -431,19 +353,15 @@ export const ClosesThroughEscapeAndCancelWhenIdle: Story = {
 }
 
 export const NoCloseAfterUnmount: Story = {
-  render: ({ onAction, onCheckedChange, onSave, onTitleChange, ...props }) => (
-    <SessionDialog {...props} />
-  ),
+  render: (args) => <SessionHarness {...args} ending="unmount" />,
   play: async ({ args, canvasElement }) => {
     const pending = deferred()
     settleWith(args, () => pending.promise)
     await typeDraft(canvasElement)
 
     await userEvent.click(saveButton(canvasElement))
-    await page(canvasElement).findByRole('button', { name: 'Saving' })
-    await userEvent.click(
-      page(canvasElement).getByRole('button', { name: 'Unmount' }),
-    )
+    await page(canvasElement).findByRole('button', { name: 'Creating' })
+    await leaveThroughOpenAsPage(canvasElement)
     pending.resolve(true)
     await flush()
 
@@ -453,20 +371,18 @@ export const NoCloseAfterUnmount: Story = {
 }
 
 export const ReopenIsNotLockedAndIgnoresLateSettlement: Story = {
-  render: ({ onAction, onCheckedChange, onSave, onTitleChange, ...props }) => (
-    <SessionDialog {...props} />
-  ),
+  render: (args) => <SessionHarness {...args} ending="close" />,
   play: async ({ args, canvasElement }) => {
     const pending = deferred()
     settleWith(args, () => pending.promise)
     await typeDraft(canvasElement)
 
     await userEvent.click(saveButton(canvasElement))
-    await page(canvasElement).findByRole('button', { name: 'Saving' })
+    await page(canvasElement).findByRole('button', { name: 'Creating' })
     await closeAndReopen(canvasElement)
 
     const save = await page(canvasElement).findByRole('button', {
-      name: 'Save',
+      name: 'Create project',
     })
     await expect(save).toBeEnabled()
     pending.resolve(true)
@@ -475,15 +391,13 @@ export const ReopenIsNotLockedAndIgnoresLateSettlement: Story = {
     await expect(args.onSubmit).toHaveBeenCalledOnce()
     await expect(openChanges(args)).toEqual([])
     await expect(
-      page(canvasElement).getByRole('dialog', { name: 'New card' }),
+      page(canvasElement).getByRole('dialog', { name: 'New project' }),
     ).toBeTruthy()
   },
 }
 
 export const ReopenAfterFailedSubmitIsNotPending: Story = {
-  render: ({ onAction, onCheckedChange, onSave, onTitleChange, ...props }) => (
-    <SessionDialog {...props} />
-  ),
+  render: (args) => <SessionHarness {...args} ending="close" />,
   play: async ({ args, canvasElement }) => {
     settleWith(args, () => false)
     await typeDraft(canvasElement)
@@ -494,7 +408,7 @@ export const ReopenAfterFailedSubmitIsNotPending: Story = {
     await closeAndReopen(canvasElement)
 
     const save = await page(canvasElement).findByRole('button', {
-      name: 'Save',
+      name: 'Create project',
     })
     await expect(save).toBeEnabled()
   },
@@ -569,11 +483,11 @@ export const ModEnterIgnoredWhileDisabled: Story = {
   },
 }
 
-export const ModEnterHintAndShortcut: Story = {
+export const ModEnterShowsTheHintAndShortcut: Story = {
   args: { submitOnModEnter: true },
   play: async ({ canvasElement }) => {
     await findDialog(canvasElement)
-    const save = page(canvasElement).getByRole('button', { name: /Save/ })
+    const save = saveButton(canvasElement)
 
     await expect(save).toHaveAttribute(
       'aria-keyshortcuts',
@@ -582,14 +496,16 @@ export const ModEnterHintAndShortcut: Story = {
     await expect(
       save.querySelector('[data-slot="record-dialog-submit-hint"]'),
     ).toHaveAttribute('aria-hidden', 'true')
-    await expect(save).toHaveAccessibleName('Save')
+    await expect(save).toHaveAccessibleName('Create project')
   },
 }
 
 export const NoModEnterHintByDefault: Story = {
   play: async ({ canvasElement }) => {
     await findDialog(canvasElement)
-    const save = page(canvasElement).getByRole('button', { name: 'Save' })
+    const save = page(canvasElement).getByRole('button', {
+      name: 'Create project',
+    })
 
     await expect(save.getAttribute('aria-keyshortcuts')).toBeNull()
     await expect(save.querySelector('kbd')).toBeNull()
@@ -600,18 +516,18 @@ export const KeepOpenOnSuccessResetsAndFocusesFirstField: Story = {
   args: { keepOpenOnSuccess: true },
   play: async ({ args, canvasElement }) => {
     settleWith(args, () => true)
-    const input = await typeDraft(canvasElement)
+    await findDialog(canvasElement)
+    const description = descriptionField(canvasElement)
+    await userEvent.type(description, 'Draft description')
 
-    await expect(input).toHaveValue('Draft title')
     await userEvent.click(saveButton(canvasElement))
 
-    await waitFor(() => expect(input).toHaveValue(''))
+    await waitFor(() => expect(description).toHaveValue(''))
     await expect(args.onSubmit).toHaveBeenCalledOnce()
-    await expect(input).toHaveFocus()
-    await expect(openChanges(args)).toEqual([])
     await expect(
-      page(canvasElement).getByRole('dialog', { name: 'New card' }),
-    ).toBeTruthy()
+      page(canvasElement).getByRole('textbox', { name: 'Project title' }),
+    ).toHaveFocus()
+    await expect(openChanges(args)).toEqual([])
   },
 }
 
@@ -619,36 +535,36 @@ export const KeepOpenOnSuccessKeepsValuesOnFailure: Story = {
   args: { keepOpenOnSuccess: true },
   play: async ({ args, canvasElement }) => {
     settleWith(args, () => false)
-    const input = await typeDraft(canvasElement)
+    await findDialog(canvasElement)
+    const description = descriptionField(canvasElement)
+    await userEvent.type(description, 'Draft description')
 
     await userEvent.click(saveButton(canvasElement))
     await waitFor(() => expect(saveButton(canvasElement)).toBeEnabled())
 
     await expect(args.onSubmit).toHaveBeenCalledOnce()
-    await expect(input).toHaveValue('Draft title')
+    await expect(description).toHaveValue('Draft description')
   },
 }
 
-export const FieldsInsideAForm: Story = {
+export const FieldsSitInsideAForm: Story = {
   play: async ({ canvasElement }) => {
     const dialog = await findDialog(canvasElement)
     const form = dialog.querySelector('form')
 
     await expect(form).toHaveAttribute('data-slot', 'record-dialog-form')
-    await expect(form?.contains(within(dialog).getByLabelText('Title'))).toBe(
-      true,
-    )
     await expect(
-      page(canvasElement).getByRole('button', { name: 'Save' }),
-    ).toHaveAttribute('type', 'submit')
+      form?.contains(within(dialog).getByLabelText('Project title')),
+    ).toBe(true)
+    await expect(saveButton(canvasElement)).toHaveAttribute('type', 'submit')
   },
 }
 
 export const SubmitTiedToTheFormFromOutside: Story = {
   play: async ({ canvasElement }) => {
-    const input = await page(canvasElement).findByLabelText('Title')
-    const form = input.closest('form') as HTMLFormElement
-    const save = page(canvasElement).getByRole('button', { name: 'Save' })
+    const input = await page(canvasElement).findByLabelText('Project title')
+    const form = formOf(input)
+    const save = saveButton(canvasElement)
 
     await expect(save).toHaveAttribute('form', form.id)
     await expect(form.contains(save)).toBe(false)
@@ -663,9 +579,8 @@ export const ErrorIsAnAlertAboveTheFooter: Story = {
 
     await expect(alert.textContent).toBe('Could not save')
     await expect(
-      alert.compareDocumentPosition(
-        page(canvasElement).getByRole('button', { name: 'Save' }),
-      ) & Node.DOCUMENT_POSITION_FOLLOWING,
+      alert.compareDocumentPosition(saveButton(canvasElement)) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy()
   },
 }
@@ -675,9 +590,9 @@ export const HeaderTrailAncestorBeforeTitle: Story = {
     await findDialog(canvasElement)
     const trail = slotIn(canvasElement, '[data-slot="dialog-title-trail"]')
 
-    await expect(trail?.textContent).toBe('AcmeNew card')
-    await expect(trail?.firstElementChild?.textContent).toBe('Acme')
-    await expect(trail?.lastElementChild?.textContent).toBe('New card')
+    await expect(trail?.textContent).toBe('ProjectsNew project')
+    await expect(trail?.firstElementChild?.textContent).toBe('Projects')
+    await expect(trail?.lastElementChild?.textContent).toBe('New project')
     await expect(trail?.querySelector('svg')).toHaveAttribute(
       'aria-hidden',
       'true',
@@ -689,14 +604,14 @@ export const NamedByTheTitleOnly: Story = {
   play: async ({ canvasElement }) => {
     await expect(await findDialog(canvasElement)).toBeTruthy()
     await expect(
-      page(canvasElement).queryByRole('dialog', { name: /Acme/ }),
+      page(canvasElement).queryByRole('dialog', { name: /Projects/ }),
     ).toBeNull()
     await expect(slotIn(canvasElement, 'nav')).toBeNull()
   },
 }
 
 export const OnlyTheTitleWithoutAncestor: Story = {
-  args: { titleAncestor: undefined },
+  args: { titleAncestor: '' },
   play: async ({ canvasElement }) => {
     await expect(await findDialog(canvasElement)).toBeTruthy()
     await expect(
@@ -719,16 +634,7 @@ export const NoTopActionsByDefault: Story = {
 }
 
 export const TopActionsWhenGiven: Story = {
-  render: ({ onAction, onCheckedChange, onSave, onTitleChange, ...props }) => (
-    <FieldDialog
-      {...props}
-      actions={
-        <button onClick={onAction} type="button">
-          Expand
-        </button>
-      }
-    />
-  ),
+  args: { actions: true },
   play: async ({ args, canvasElement }) => {
     const dialog = await findDialog(canvasElement)
     const actions = slotIn(canvasElement, '[data-slot="dialog-actions"]')
@@ -736,28 +642,26 @@ export const TopActionsWhenGiven: Story = {
 
     await expect(dialog.contains(actions)).toBe(true)
     await userEvent.click(
-      within(actions).getByRole('button', { name: 'Expand' }),
+      within(actions).getByRole('button', { name: 'Open as page' }),
     )
-    await expect(args.onAction).toHaveBeenCalledOnce()
+    await expect(args.onOpenAsPage).toHaveBeenCalledOnce()
   },
 }
 
 export const NoCancelWithoutCancelLabel: Story = {
-  args: { cancelLabel: undefined },
+  args: { cancelLabel: '' },
   play: async ({ canvasElement }) => {
     await findDialog(canvasElement)
 
     await expect(
       page(canvasElement).queryByRole('button', { name: 'Cancel' }),
     ).toBeNull()
-    await expect(
-      page(canvasElement).getByRole('button', { name: 'Save' }),
-    ).toBeTruthy()
+    await expect(saveButton(canvasElement)).toBeTruthy()
   },
 }
 
 export const FooterStartBeforeTheButtons: Story = {
-  args: { footerStart: <span>Create more</span> },
+  args: { createMore: true },
   play: async ({ canvasElement }) => {
     await findDialog(canvasElement)
     const start = slotIn(canvasElement, '[data-slot="dialog-footer-start"]')
@@ -768,21 +672,16 @@ export const FooterStartBeforeTheButtons: Story = {
       'dialog-footer',
     )
     await expect(
-      start?.compareDocumentPosition(
-        page(canvasElement).getByRole('button', { name: 'Save' }),
-      ),
+      start?.compareDocumentPosition(saveButton(canvasElement)),
     ).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
   },
 }
 
 export const NoPanelWithoutChildren: Story = {
-  args: { submitLabel: 'Create', title: 'New record' },
-  render: ({ onAction, onCheckedChange, onSave, onTitleChange, ...props }) => (
-    <RecordDialog {...props} />
-  ),
+  args: { headline: false },
   play: async ({ args, canvasElement }) => {
     settleWith(args, () => true)
-    await page(canvasElement).findByRole('dialog', { name: 'New record' })
+    await findDialog(canvasElement)
 
     await expect(slotIn(canvasElement, '[data-slot="dialog-panel"]')).toBeNull()
     await expect(
@@ -792,54 +691,195 @@ export const NoPanelWithoutChildren: Story = {
       slotIn(canvasElement, '[data-slot="dialog-footer"]'),
     ).toBeTruthy()
 
-    await userEvent.click(
-      page(canvasElement).getByRole('button', { name: 'Create' }),
-    )
+    await userEvent.click(saveButton(canvasElement))
 
     await waitFor(() => expect(openChanges(args)).toEqual([false]))
     await expect(args.onSubmit).toHaveBeenCalledOnce()
   },
 }
 
-export const DefaultSize: Story = {
+export const DefaultSizeCapsTheWidthAt672: Story = {
   play: ({ canvasElement }) => expectSize(canvasElement, 'default'),
 }
 
-export const SmallSize: Story = {
+export const SmallSizeNarrowsThePopup: Story = {
   args: { size: 'small' },
   play: ({ canvasElement }) => expectSize(canvasElement, 'small'),
 }
 
-export const LargeSize: Story = {
+export const LargeSizeWidensThePopup: Story = {
   args: { size: 'large' },
   play: ({ canvasElement }) => expectSize(canvasElement, 'large'),
 }
 
 export const StretchBodyFillsThePopup: Story = {
   args: { stretchBody: true },
-  render: ({ onAction, onCheckedChange, onSave, onTitleChange, ...props }) => (
-    <RecordDialog {...props}>
-      <input aria-label="Title" defaultValue="" />
-      <p className="mt-auto text-sm">Pinned to the bottom</p>
-    </RecordDialog>
+  render: ({ onSave, ...props }) => (
+    <ComposedRecordDialog {...props}>
+      <InlinePropertiesFormation />
+    </ComposedRecordDialog>
   ),
   play: async ({ canvasElement }) => {
     const dialog = await findDialog(canvasElement)
     const body = slotIn(canvasElement, '[data-slot="dialog-panel"]')
     if (!body) throw new Error('The body did not render.')
-    const input = within(dialog).getByLabelText('Title')
-    const pinned = within(dialog).getByText('Pinned to the bottom')
+    const title = within(dialog).getByLabelText('Project title')
+    const status = within(dialog).getByRole('combobox', { name: /^Status/ })
 
     await expect(body).toHaveAttribute('data-stretch')
-    await expect(body.contains(input)).toBe(true)
+    await expect(body.contains(title)).toBe(true)
     await expect(getComputedStyle(dialog).minHeight).toBe('384px')
     await expect(
-      pinned.getBoundingClientRect().top - input.getBoundingClientRect().bottom,
+      status.getBoundingClientRect().top - title.getBoundingClientRect().bottom,
     ).toBeGreaterThan(100)
     await expect(
       body.getBoundingClientRect().bottom -
-        pinned.getBoundingClientRect().bottom,
+        status.getBoundingClientRect().bottom,
     ).toBeLessThan(40)
+  },
+}
+
+const propertyBarOf = async (canvasElement: HTMLElement) => {
+  await findDialog(canvasElement)
+  const bar = slotIn(canvasElement, '[data-slot="dialog-properties"]')
+  if (!bar) throw new Error('The property bar did not render.')
+  return bar
+}
+
+export const PropertiesSitUnderTheTitle: Story = {
+  args: { properties: true },
+  play: async ({ canvasElement }) => {
+    const bar = await propertyBarOf(canvasElement)
+    const header = slotIn(canvasElement, '[data-slot="dialog-header"]')
+
+    const heading = slotIn(canvasElement, '[data-slot="dialog-heading"]')
+
+    await expect(bar.parentElement).toBe(header)
+    await expect(bar.previousElementSibling).toBe(heading)
+    await expect(heading?.lastElementChild).toHaveAttribute(
+      'data-slot',
+      'dialog-title-trail',
+    )
+    await expect(getComputedStyle(bar).marginTop).toBe('8px')
+    await expect(
+      within(bar).getByRole('combobox', { name: /^Status/ }),
+    ).toBeVisible()
+  },
+}
+
+export const PropertiesSitUnderTheDescription: Story = {
+  args: { description: 'Fill in the project.', properties: true },
+  play: async ({ canvasElement }) => {
+    const bar = await propertyBarOf(canvasElement)
+    const heading = slotIn(canvasElement, '[data-slot="dialog-heading"]')
+    const description = heading?.lastElementChild
+
+    await expect(bar.previousElementSibling).toBe(heading)
+    await expect(description).toHaveAttribute('data-slot', 'dialog-description')
+    await expect(description).toHaveTextContent('Fill in the project.')
+  },
+}
+
+export const NoPropertiesByDefault: Story = {
+  play: async ({ canvasElement }) => {
+    await findDialog(canvasElement)
+
+    await expect(
+      slotIn(canvasElement, '[data-slot="dialog-properties"]'),
+    ).toBeNull()
+  },
+}
+
+export const DescriptionOverBodyHasNoHeadline: Story = {
+  args: {
+    description: 'Fill in the project before it goes live.',
+    headline: false,
+  },
+  render: ({ onSave, ...props }) => (
+    <ComposedRecordDialog {...props}>
+      <DescriptionOverBodyFormation />
+    </ComposedRecordDialog>
+  ),
+  play: async ({ canvasElement }) => {
+    const dialog = within(await findDialog(canvasElement))
+    const description = slotIn(
+      canvasElement,
+      '[data-slot="dialog-description"]',
+    )
+    const body = slotIn(canvasElement, '[data-slot="dialog-panel"]')
+    if (!description || !body) throw new Error('The dialog did not render.')
+
+    await expect(
+      slotIn(canvasElement, '[data-slot="record-dialog-headline"]'),
+    ).toBeNull()
+    await expect(
+      dialog.queryByRole('textbox', { name: 'Project title' }),
+    ).toBeNull()
+    await expect(
+      dialog
+        .getAllByRole('heading', { level: 2 })
+        .map((heading) => heading.textContent),
+    ).toEqual(['New project'])
+    await expect(description).toHaveTextContent(
+      'Fill in the project before it goes live.',
+    )
+    await expect(body.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+      description.getBoundingClientRect().bottom,
+    )
+    await expect(
+      within(body).getByRole('combobox', { name: /^Status/ }),
+    ).toBeVisible()
+  },
+}
+
+export const ReadableBodyWidthCentersTheForm: Story = {
+  args: { bodyWidth: 'readable', size: 'large', stretchBody: true },
+  render: ({ onSave, ...props }) => (
+    <ComposedRecordDialog {...props}>
+      <PropertyBarOverBodyFormation />
+    </ComposedRecordDialog>
+  ),
+  play: async ({ canvasElement }) => {
+    const { page: browser } = await import('vitest/browser')
+    const { innerHeight, innerWidth } = window
+    await browser.viewport(1280, 900)
+
+    try {
+      await findDialog(canvasElement)
+      const body = slotIn(canvasElement, '[data-slot="dialog-panel"]')
+      const form = slotIn(canvasElement, '[data-slot="record-dialog-form"]')
+      if (!body || !form) throw new Error('The body did not render.')
+
+      await expect(form).toHaveAttribute('data-body-width', 'readable')
+      await waitFor(() => expect(form.getBoundingClientRect().width).toBe(672))
+      const panel = body.getBoundingClientRect()
+      const column = form.getBoundingClientRect()
+      await expect(column.left - panel.left).toBeCloseTo(
+        panel.right - column.right,
+        0,
+      )
+      await expect(
+        page(canvasElement).getByRole('textbox', { name: 'Project brief' }),
+      ).toBeVisible()
+    } finally {
+      await browser.viewport(innerWidth, innerHeight)
+    }
+  },
+}
+
+export const BodyFillsThePanelWidthByDefault: Story = {
+  args: { size: 'large' },
+  play: async ({ canvasElement }) => {
+    await findDialog(canvasElement)
+    const form = slotIn(canvasElement, '[data-slot="record-dialog-form"]')
+    const body = slotIn(canvasElement, '[data-slot="dialog-panel"]')
+    if (!body || !form) throw new Error('The body did not render.')
+
+    await expect(form).toHaveAttribute('data-body-width', 'fill')
+    await expect(getComputedStyle(form).maxWidth).toBe('none')
+    await expect(form.getBoundingClientRect().width).toBeGreaterThan(
+      body.getBoundingClientRect().width - 64,
+    )
   },
 }
 
@@ -857,37 +897,36 @@ export const NoStretchByDefault: Story = {
 }
 
 export const HeadlineLabelsBothFields: Story = {
-  render: (args) => <HeadlineDialog {...args} />,
   play: async ({ canvasElement }) => {
     const dialog = within(await findDialog(canvasElement))
-    const title = dialog.getByRole('textbox', { name: 'Card title' })
+    const title = dialog.getByRole('textbox', { name: 'Project title' })
     const description = dialog.getByRole('textbox', { name: 'Description' })
 
     await expect(title).toHaveAttribute('name', 'title')
     await expect(description.tagName).toBe('TEXTAREA')
     await expect(description).toHaveAttribute('name', 'description')
     await expect(
-      dialog.getByText('Card title', { selector: 'label' }),
+      dialog.getByText('Project title', { selector: 'label' }),
     ).toHaveClass('sr-only')
   },
 }
 
 export const HeadlineAutofocusesTheTitle: Story = {
-  render: (args) => <HeadlineDialog {...args} />,
   play: async ({ canvasElement }) => {
     const dialog = within(await findDialog(canvasElement))
 
     await waitFor(() =>
-      expect(dialog.getByRole('textbox', { name: 'Card title' })).toHaveFocus(),
+      expect(
+        dialog.getByRole('textbox', { name: 'Project title' }),
+      ).toHaveFocus(),
     )
   },
 }
 
 export const HeadlineTitleIsControlled: Story = {
-  render: (args) => <HeadlineDialog {...args} />,
   play: async ({ args, canvasElement }) => {
     const dialog = within(await findDialog(canvasElement))
-    const title = dialog.getByRole('textbox', { name: 'Card title' })
+    const title = dialog.getByRole('textbox', { name: 'Project title' })
 
     await userEvent.type(title, 'Ship it')
 
@@ -897,10 +936,9 @@ export const HeadlineTitleIsControlled: Story = {
 }
 
 export const HeadlineTitleSpansTheRow: Story = {
-  render: (args) => <HeadlineDialog {...args} />,
   play: async ({ canvasElement }) => {
     const dialog = within(await findDialog(canvasElement))
-    const title = dialog.getByRole('textbox', { name: 'Card title' })
+    const title = dialog.getByRole('textbox', { name: 'Project title' })
     const headline = slotIn(
       canvasElement,
       '[data-slot="record-dialog-headline"]',
@@ -924,7 +962,7 @@ export const HeadlineTitleSpansTheRow: Story = {
 }
 
 export const HeadlineWithoutDescription: Story = {
-  render: (args) => <HeadlineDialog {...args} descriptionField={false} />,
+  args: { headlineDescription: false },
   play: async ({ canvasElement }) => {
     const dialog = within(await findDialog(canvasElement))
 
@@ -932,20 +970,25 @@ export const HeadlineWithoutDescription: Story = {
   },
 }
 
-export const HeadlineDescriptionMinHeight: Story = {
-  render: (args) => <HeadlineDialog {...args} />,
+export const HeadlineDescriptionStartsAtOneLine: Story = {
   play: async ({ canvasElement }) => {
-    const dialog = within(await findDialog(canvasElement))
-    const description = dialog.getByRole('textbox', { name: 'Description' })
+    await findDialog(canvasElement)
+    const description = descriptionField(canvasElement)
+    const oneLine = description.getBoundingClientRect().height
 
-    await userEvent.type(description, 'Met the team at the October event.')
+    await expect(oneLine).toBeLessThan(40)
 
-    await expect(description.getBoundingClientRect().height).toBeCloseTo(64, 0)
+    await userEvent.type(description, 'Goal.{Enter}Scope.')
+
+    await waitFor(() =>
+      expect(description.getBoundingClientRect().height).toBeGreaterThan(
+        oneLine,
+      ),
+    )
   },
 }
 
 export const HeadlineDescriptionReachesTheForm: Story = {
-  render: (args) => <HeadlineDialog {...args} />,
   play: async ({ args, canvasElement }) => {
     const descriptions: string[] = []
     settleWith(args, (event) => {
@@ -954,35 +997,21 @@ export const HeadlineDescriptionReachesTheForm: Story = {
       )
       return true
     })
-    const dialog = within(await findDialog(canvasElement))
+    await findDialog(canvasElement)
 
     await userEvent.type(
-      dialog.getByRole('textbox', { name: 'Description' }),
+      descriptionField(canvasElement),
       'Referred by Renata Costa.',
     )
-    await userEvent.click(dialog.getByRole('button', { name: 'Save' }))
+    await userEvent.click(saveButton(canvasElement))
 
     await waitFor(() => expect(args.onSubmit).toHaveBeenCalledOnce())
     await expect(descriptions).toEqual(['Referred by Renata Costa.'])
   },
 }
 
-export const HeadlineStretch: Story = {
-  render: (args) => <HeadlineDialog {...args} stretch />,
-  play: async ({ canvasElement }) => {
-    await findDialog(canvasElement)
-    const headline = slotIn(
-      canvasElement,
-      '[data-slot="record-dialog-headline"]',
-    )
-
-    await expect(headline).toHaveAttribute('data-stretch')
-    await expect(headline?.className.includes('flex-1')).toBe(true)
-  },
-}
-
 export const CreateMoreToggles: Story = {
-  render: (args) => <HeadlineDialog {...args} />,
+  args: { createMore: true },
   play: async ({ args, canvasElement }) => {
     const dialog = within(await findDialog(canvasElement))
     const toggle = dialog.getByRole('switch', { name: 'Create more' })
@@ -990,26 +1019,26 @@ export const CreateMoreToggles: Story = {
     await expect(toggle).not.toBeChecked()
     await userEvent.click(dialog.getByText('Create more'))
     await expect(toggle).toBeChecked()
-    await expect(args.onCheckedChange).toHaveBeenLastCalledWith(true)
+    await expect(args.onCreateMoreChange).toHaveBeenLastCalledWith(true)
     await userEvent.click(toggle)
     await expect(toggle).not.toBeChecked()
-    await expect(args.onCheckedChange).toHaveBeenLastCalledWith(false)
+    await expect(args.onCreateMoreChange).toHaveBeenLastCalledWith(false)
   },
 }
 
 export const CreateMoreKeepsTheDialogOpen: Story = {
-  render: (args) => <HeadlineDialog {...args} />,
+  args: { createMore: true },
   play: async ({ args, canvasElement }) => {
     settleWith(args, () => true)
     const dialog = within(await findDialog(canvasElement))
-    const title = dialog.getByRole('textbox', { name: 'Card title' })
-    const description = dialog.getByRole('textbox', { name: 'Description' })
+    const title = dialog.getByRole('textbox', { name: 'Project title' })
+    const description = descriptionField(canvasElement)
 
     await userEvent.click(dialog.getByRole('switch', { name: 'Create more' }))
-    await expect(args.onCheckedChange).toHaveBeenLastCalledWith(true)
+    await expect(args.onCreateMoreChange).toHaveBeenLastCalledWith(true)
     await userEvent.type(title, 'First')
-    await userEvent.type(description, 'The first card.')
-    await userEvent.click(dialog.getByRole('button', { name: 'Save' }))
+    await userEvent.type(description, 'The first project.')
+    await userEvent.click(saveButton(canvasElement))
 
     await waitFor(() => expect(title).toHaveFocus())
     await expect(args.onSubmit).toHaveBeenCalledOnce()
@@ -1019,25 +1048,23 @@ export const CreateMoreKeepsTheDialogOpen: Story = {
 }
 
 export const RecordDraftReadsACommitInTheSameEvent: Story = {
-  render: ({ onOpenChange, onSave }) => (
-    <DraftDialog onOpenChange={onOpenChange} onSave={onSave} />
-  ),
+  render: (args) => <DraftHarness {...args} />,
   play: async ({ args, canvasElement }) => {
     const dialog = within(await findDialog(canvasElement))
 
     await userEvent.type(
-      dialog.getByRole('textbox', { name: 'Card title' }),
+      dialog.getByRole('textbox', { name: 'Project title' }),
       'Quick sync',
     )
     await userEvent.type(
-      dialog.getByRole('textbox', { name: 'Location' }),
-      'Room 4',
+      dialog.getByRole('textbox', { name: 'Repository' }),
+      'tc96/parttens',
     )
     await userEvent.keyboard('{Control>}{Enter}{/Control}')
 
     await waitFor(() =>
       expect(args.onSave).toHaveBeenCalledWith({
-        location: 'Room 4',
+        repository: 'tc96/parttens',
         title: 'Quick sync',
       }),
     )

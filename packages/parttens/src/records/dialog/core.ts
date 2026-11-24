@@ -4,8 +4,11 @@ export type RecordDialogSettlement = boolean | Promise<boolean>
 
 export type RecordDialogSize = 'small' | 'default' | 'large'
 
+export type RecordDialogBodyWidth = 'fill' | 'readable'
+
 export interface RecordDialogProps {
   actions?: ReactNode
+  bodyWidth?: RecordDialogBodyWidth
   cancelLabel?: string
   children?: ReactNode
   className?: string
@@ -16,6 +19,7 @@ export interface RecordDialogProps {
   onOpenChange: (open: boolean) => void
   onSubmit: (event: FormEvent<HTMLFormElement>) => RecordDialogSettlement
   open: boolean
+  properties?: ReactNode
   size?: RecordDialogSize
   stretchBody?: boolean
   submitDisabled?: boolean
@@ -33,7 +37,6 @@ export interface RecordDialogHeadlineProps {
   descriptionPlaceholder?: string
   onDescriptionChange?: (description: string) => void
   onTitleChange: (title: string) => void
-  stretch?: boolean
   title: string
   titleLabel: string
   titleName?: string
@@ -45,22 +48,4 @@ export interface RecordDialogCreateMoreProps {
   disabled?: boolean
   label: string
   onCheckedChange: (checked: boolean) => void
-}
-
-export type RecordConfirmDialogTone = 'default' | 'destructive'
-
-export interface RecordConfirmDialogProps {
-  cancelLabel: string
-  children?: ReactNode
-  className?: string
-  confirmDisabled?: boolean
-  confirmLabel: string
-  confirmingLabel?: string
-  description?: ReactNode
-  errorMessage?: ReactNode
-  onConfirm: () => RecordDialogSettlement
-  onOpenChange: (open: boolean) => void
-  open: boolean
-  title: ReactNode
-  tone?: RecordConfirmDialogTone
 }

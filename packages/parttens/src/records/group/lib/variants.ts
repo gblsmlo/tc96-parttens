@@ -23,12 +23,19 @@ export const recordGroupHeaderClassName = (
 ) =>
   cn(recordGroupHeaderVariants({ actionsAlign }), variant === 'inset' && 'px-1')
 
+const recordGroupTitleVariantConfig = {
+  defaultVariants: { variant: 'plain' },
+  variants: { variant: { card: 'px-1', inset: 'px-1', plain: '' } },
+} as const
+
+export const recordGroupTitleVariants = cva(
+  'flex min-w-0 items-center gap-1 py-1',
+  recordGroupTitleVariantConfig,
+)
+
 export const recordGroupTriggerVariants = cva(
   'group/trigger flex min-w-0 items-center gap-1 rounded-md py-1 outline-none focus-visible:ring-2 focus-visible:ring-ring',
-  {
-    defaultVariants: { variant: 'plain' },
-    variants: { variant: { card: 'px-1', inset: 'px-1', plain: '' } },
-  },
+  recordGroupTitleVariantConfig,
 )
 
 export const recordGroupRowHeightClassName =
