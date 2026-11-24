@@ -997,3 +997,48 @@ test('builds the flow blocks from ai-agents/flow, the flow patterns, the assista
     expect(paths.some((path) => path.includes('application/shell'))).toBe(false)
   }
 })
+
+test('builds run-monitor with the flow canvas and impact-map with the flow core only', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const read = (name: string): RegistryItem =>
+    JSON.parse(readFileSync(join(root, `dist/registry/${name}.json`), 'utf8'))
+  const allowed = (path: string) =>
+    path.startsWith('blocks/src/ai-agents/flow/') ||
+    path.startsWith('parttens/src/flow/canvas/') ||
+    path.startsWith('parttens/src/surfaces/state/') ||
+    path.startsWith('helpers/src/')
+
+  const monitor = read('run-monitor')
+  const monitorPaths = monitor.files.map((file) => file.path)
+  expect(monitor.dependencies).toContain('@xyflow/react@12.12.0')
+  expect(monitor.dependencies).toContain('d3-hierarchy@3.1.2')
+  expect(monitorPaths).toContain(
+    'blocks/src/ai-agents/flow/run-monitor/index.ts',
+  )
+  expect(monitorPaths.every(allowed)).toBe(true)
+
+  const map = read('impact-map')
+  const mapPaths = map.files.map((file) => file.path)
+  expect(map.dependencies).toContain('d3-hierarchy@3.1.2')
+  expect(map.dependencies).not.toContain('@xyflow/react@12.12.0')
+  expect(mapPaths).toContain('blocks/src/ai-agents/flow/impact-map/index.ts')
+  expect(mapPaths.every(allowed)).toBe(true)
+  expect(
+    mapPaths.some((path) =>
+      path.startsWith('blocks/src/ai-agents/flow/shared/'),
+    ),
+  ).toBe(false)
+  expect(
+    mapPaths.some((path) =>
+      path.startsWith('parttens/src/flow/canvas/composition/'),
+    ),
+  ).toBe(false)
+  for (const path of [...monitorPaths, ...mapPaths])
+    expect(/\.test\.(ts|tsx)$/.test(path)).toBe(false)
+})

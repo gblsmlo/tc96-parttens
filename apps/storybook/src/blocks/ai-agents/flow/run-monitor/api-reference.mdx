@@ -1,0 +1,108 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RunMonitor
+
+A pipeline run monitor: a read-only horizontal canvas where each step is a node with its status and duration, and a side panel with the run summary, the steps waiting for approval and a replay button. Reach for it on a run page that shows what a pipeline did and lets a person decide on the steps that wait for them. Install it with `npx @tc96/parttens add run-monitor`.
+
+It is a section, not a page: it renders no `main` landmark. The block never fetches, keeps no state and runs no timer: the app passes the steps with the status and `durationMs` it already knows, and refreshes them itself. The block computes only the layout of the nodes and the summary counts. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, an empty `steps` the empty state. The precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/AI & Agents/Flow/RunMonitor`: [Playground](?path=/story/blocks-ai-agents-flow-runmonitor-playground--playground) to try the controls, [Behavior](?path=/story/blocks-ai-agents-flow-runmonitor-behavior--each-step-shows-its-status) for the tests, [States](?path=/story/blocks-ai-agents-flow-runmonitor-states--default) for the four states and [Usages](?path=/story/blocks-ai-agents-flow-runmonitor-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+// import '@xyflow/react/dist/base.css' in your global CSS
+import { RunMonitor } from '@tc96/blocks/ai-agents/flow/run-monitor'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+A release run: three steps done, one failed, one running, one waiting for approval and one pending.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RunMonitor
+  connections={connections}
+  error={isError}
+  onApprove={(stepId) => approve(stepId)}
+  onReject={(stepId) => reject(stepId)}
+  onReplay={() => replay()}
+  onRetry={() => refetch()}
+  pending={isPending}
+  steps={steps}
+/>
+```
+
+## RunMonitor
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `steps` | `RunMonitorStep[]` | required | The steps of the run. An empty array renders the empty state. |
+| `connections` | `RunMonitorConnection[]` | required | Which step feeds which; the block lays the nodes out as a left to right tree. |
+| `onApprove` | `(stepId: string) => void` | - | Called by Aprovar on a step waiting for approval; without it the button is not rendered. |
+| `onReject` | `(stepId: string) => void` | - | Called by Recusar on a step waiting for approval; without it the button is not rendered. |
+| `onReplay` | `() => void` | - | Called by Reexecutar; without it the button is not rendered. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `labels` | `Partial<RunMonitorLabels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## RunMonitorStep
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the step; it is what `onApprove` and `onReject` receive. |
+| `name` | `string` | The title of the node. |
+| `status` | `'pending' \| 'running' \| 'succeeded' \| 'failed' \| 'waiting-approval'` | The status shown on the node and counted by the summary. |
+| `durationMs` | `number` | Optional duration, formatted by the canvas ("38.0s"); omit it for a step that has not run. |
+| `description` | `string` | Optional line under the name. |
+| `owner` | `string` | Optional person; its initials show on the node. |
+
+`RunMonitorConnection` is `{ id: string; source: string; target: string }`.
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Execução do pipeline"`; the heading and the accessible name of the section |
+| `canvas` | `string` | `"Passos da execução"`; the accessible name of the canvas |
+| `statuses` | `Record<RunMonitorStatus, string>` | `Pendente`, `Executando`, `Concluído`, `Falhou`, `Aguardando aprovação` |
+| `summaryTitle` | `string` | `"Resumo da execução"` |
+| `summary` | `(completed, total) => string` | `"3 de 7 passos concluídos"` |
+| `approvalsTitle` | `string` | `"Aguardando aprovação"` |
+| `approvalDescription` | `string` | `"Este passo espera uma decisão para continuar."` |
+| `noApprovals` | `string` | `"Nenhuma aprovação pendente."` |
+| `approve`, `reject` | `string` | `"Aprovar"`, `"Recusar"` |
+| `approveStep`, `rejectStep` | `(name) => string` | `"Aprovar <passo>"`, `"Recusar <passo>"`; the accessible names of the buttons |
+| `replay` | `string` | `"Reexecutar"` |
+| `loading` | `string` | `"Carregando execução"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar a execução"` |
+| `errorDescription` | `string` | `"Tente novamente em instantes."` |
+| `retry` | `string` | `"Tentar novamente"` |
+| `emptyTitle` | `string` | `"Nenhum passo na execução"` |
+| `emptyDescription` | `string` | `"Os passos aparecem aqui assim que a execução começar."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RunMonitor` | `component` | The pipeline run monitor. |
+| `RunMonitorProps` | `type` | The props of the monitor. |
+| `RunMonitorStep` | `type` | A step of the run. |
+| `RunMonitorStatus` | `type` | The five statuses. |
+| `RunMonitorConnection` | `type` | A link between two steps. |
+| `RunMonitorLabels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each node is a group named by the step and its status; the canvas is locked, so nothing can be dragged, connected or deleted.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- Aprovar and Recusar carry the step name in their accessible name, so two waiting steps stay distinguishable.
+- Status colors come from the theme badge tones; the block carries no raw color, radius or shadow.

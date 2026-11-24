@@ -2093,5 +2093,21 @@
     "Login5Method",
     "Login5Props",
     "Login5Values"
+  ],
+  "block:run-monitor": [
+    "RunMonitor",
+    "RunMonitorConnection",
+    "RunMonitorLabels",
+    "RunMonitorProps",
+    "RunMonitorStatus",
+    "RunMonitorStep"
+  ],
+  "block:impact-map": [
+    "ImpactMap",
+    "ImpactMapKind",
+    "ImpactMapLabels",
+    "ImpactMapLink",
+    "ImpactMapNode",
+    "ImpactMapProps"
   ]
 }
