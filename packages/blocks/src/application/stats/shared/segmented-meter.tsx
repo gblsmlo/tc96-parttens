@@ -1,5 +1,4 @@
-import { Meter } from '@tc96/ui/meter'
-import { cn } from '@tc96/utils'
+import { Gauge } from '@tc96/ui/gauge'
 
 export interface SegmentedMeterProps {
   className?: string
@@ -26,30 +25,19 @@ export function SegmentedMeter({
 }: Readonly<SegmentedMeterProps>) {
   const safeMax = Math.max(max, 1)
   const filled = filledSegments(value, max, segments)
-  const bars = Array.from({ length: segments }, (_, bar) => bar)
 
   return (
-    <Meter
+    <Gauge
       aria-labelledby={labelledBy}
-      className={cn('flex-row gap-1', className)}
+      className={className}
       data-filled={filled}
       data-slot="segmented-meter"
       getAriaValueText={() => valueText}
       max={safeMax}
-      min={0}
+      segments={segments}
+      size="lg"
       value={Math.min(Math.max(value, 0), safeMax)}
-    >
-      {bars.map((bar) => (
-        <span
-          aria-hidden="true"
-          className={cn(
-            'h-4 min-w-0 flex-1 rounded-xs',
-            bar < filled ? 'bg-primary' : 'bg-input',
-          )}
-          data-filled={bar < filled}
-          key={bar}
-        />
-      ))}
-    </Meter>
+      variant="segmented"
+    />
   )
 }

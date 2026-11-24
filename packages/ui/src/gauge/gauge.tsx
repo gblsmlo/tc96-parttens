@@ -93,12 +93,14 @@ export function filledSegments(ratio: number, segments: number): number {
 
 function GaugeRingGraphic({
   children,
+  color,
   empty,
   ratio,
   strokeWidth,
   tone,
 }: {
   children?: React.ReactNode;
+  color?: string;
   empty: boolean;
   ratio: number;
   strokeWidth: number;
@@ -133,6 +135,7 @@ function GaugeRingGraphic({
             r={RING_RADIUS}
             strokeDasharray={RING_CIRCUMFERENCE}
             strokeDashoffset={RING_CIRCUMFERENCE * (1 - Math.min(Math.max(ratio, 0), 1))}
+            style={color ? { stroke: color } : undefined}
             strokeLinecap="round"
             strokeWidth={strokeWidth}
           />
@@ -148,8 +151,9 @@ function GaugeRingGraphic({
 }
 
 export interface GaugeRingProps
-  extends Omit<React.ComponentProps<"div">, "children"> {
+  extends Omit<React.ComponentProps<"div">, "children" | "color"> {
   children?: React.ReactNode;
+  color?: string;
   empty?: boolean;
   ratio: number;
   size?: GaugeSize;
@@ -160,6 +164,7 @@ export interface GaugeRingProps
 export function GaugeRing({
   children,
   className,
+  color,
   empty = false,
   ratio,
   size = "default",
@@ -182,6 +187,7 @@ export function GaugeRing({
       {...props}
     >
       <GaugeRingGraphic
+        color={color}
         empty={empty}
         ratio={empty ? 0 : ratio}
         strokeWidth={strokeWidth}
@@ -197,6 +203,7 @@ export interface GaugeProps
   extends Omit<MeterPrimitive.Root.Props, "children" | "className"> {
   children?: React.ReactNode;
   className?: string;
+  color?: string;
   empty?: boolean;
   segments?: number;
   size?: GaugeSize;
@@ -208,6 +215,7 @@ export interface GaugeProps
 export function Gauge({
   children,
   className,
+  color,
   empty = false,
   max = 100,
   min = 0,
@@ -219,6 +227,7 @@ export function Gauge({
   variant = "bar",
   ...props
 }: GaugeProps): React.ReactElement {
+  const fillStyle = color ? { backgroundColor: color } : undefined;
   const ratio = empty ? 0 : gaugeRatio(value, min, max);
   const filled = filledSegments(ratio, segments);
 
@@ -251,6 +260,7 @@ export function Gauge({
                 gaugeFillVariants({ tone }),
               )}
               data-slot="gauge-indicator"
+              style={fillStyle}
             />
           )}
         </MeterPrimitive.Track>
@@ -267,7 +277,8 @@ export function Gauge({
                 "flex-1 rounded-full",
                 segment < filled ? gaugeFillVariants({ tone }) : "bg-muted",
               )}
-              data-filled={segment < filled ? "true" : undefined}
+              data-filled={segment < filled ? "true" : "false"}
+              style={segment < filled ? fillStyle : undefined}
               data-slot="gauge-segment"
               key={segment}
             />
@@ -276,6 +287,7 @@ export function Gauge({
       ) : null}
       {variant === "ring" ? (
         <GaugeRingGraphic
+          color={color}
           empty={empty}
           ratio={ratio}
           strokeWidth={strokeWidth}

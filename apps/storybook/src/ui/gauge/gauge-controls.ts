@@ -9,6 +9,7 @@ import {
 } from '@tc96/ui/gauge'
 
 export interface GaugeControls {
+  color: string
   content: string
   empty: boolean
   label: string
@@ -21,6 +22,7 @@ export interface GaugeControls {
 }
 
 export const gaugeControlArgs: GaugeControls = {
+  color: '',
   content: '64%',
   empty: false,
   label: 'Storage used',
@@ -33,6 +35,11 @@ export const gaugeControlArgs: GaugeControls = {
 }
 
 export const gaugeControlArgTypes: Partial<ArgTypes<GaugeControls>> = {
+  color: {
+    control: 'color',
+    description:
+      'The `color` of `Gauge`: any CSS color for the fill, over `tone`. Empty uses `tone`.',
+  },
   content: {
     control: 'text',
     description:

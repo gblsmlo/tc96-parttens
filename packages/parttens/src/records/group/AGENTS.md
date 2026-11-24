@@ -12,7 +12,7 @@ A controlled, collapsible group of rows for record surfaces: `RecordGroup` (a ti
 | `composition/record-group-item/` | `RecordGroupItem` and its barrel |
 | `composition/record-group-link/` | `RecordGroupLink` on Base UI `useRender` and its barrel |
 | `composition/record-group-metrics/` | `RecordGroupMetrics`, the tile grid, and its barrel |
-| `composition/record-group-metric/` | `RecordGroupMetric` on the COSS `Card` and `Meter` and its barrel |
+| `composition/record-group-metric/` | `RecordGroupMetric` on the COSS `Card` and the ui `Gauge` and its barrel |
 | `composition/record-group-subgroup/` | `RecordGroupSubgroup` on the COSS `Collapsible` and its barrel |
 | `composition/record-group-filter/` | `RecordGroupFilter` on the COSS `Menu` and `Button`, and its barrel |
 | `composition/record-group-divider/` | `RecordGroupDivider` on the COSS `Separator` and its barrel |

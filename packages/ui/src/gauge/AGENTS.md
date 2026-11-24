@@ -20,7 +20,10 @@ COSS has `Meter` and `Progress` but no segmented bar, stacked bar or ring; each 
 ## Dependents
 
 - `packages/parttens/src/widgets/shared/progress-ring.tsx`: `ProgressRing` renders `GaugeRing` with `data-slot="progress-ring"`, so its public name, DOM hooks, text content and plays stay as they were.
+- `packages/parttens`: the meters of `widgets` (`BudgetWidget` with `color` per category and `tone="destructive"` over the limit, `QuestsWidget`, `XpMeter`, `ProjectCardWidget`) and `records/group` (`RecordGroupMetric`).
+- `packages/blocks/src/application`: `stats/shared/segmented-meter.tsx` (`stats-3`), `stats/stats-6`, `settings/settings-23`, `shell/app-shell-3/usage-card.tsx`; each names its gauge with `aria-labelledby` on a visible label built from `useId()`.
 - `apps/storybook/src/patterns/stats/stats-layouts.tsx` (`LeadsOverviewCard`).
+- Not migrated, on purpose: `Progress` stays where a task runs (`flow-run-card`, `run-monitor`, `impact-map`, `dashboard-3`, `stats-4`, `onboarding-2`), since that is a `progressbar`, not a `meter`; `RiskScoreWidget` (a striped scale) and `ShareBar` (a trend column per segment) are not plain bars; `stats-2` has no bar.
 
 ## Invariants
 
@@ -29,12 +32,13 @@ COSS has `Meter` and `Progress` but no segmented bar, stacked bar or ring; each 
 - `empty` is not zero: it drops the indicator (and the filled segments), dashes the ring track and sets `data-empty="true"`; at zero `data-empty` is absent.
 - `segmented` fills `Math.round(ratio * segments)` segments; the segments are `aria-hidden`, the meter carries the value.
 - Props spread last, so a consumer can override `data-slot`, as `ProgressRing` does.
+- `color` paints the fill inline (indicator, filled segments, ring arc) and wins over `tone`; `data-tone` still reports `tone`.
 - The Base UI `Meter` root renders a hidden text node (`x`), so an `aria-hidden` `Gauge` still changes the `textContent` of its container; a decorative ring is `GaugeRing`, which has no meter. `Gauge` with `variant="ring"` and `GaugeRing` share one private drawing, `GaugeRingGraphic`.
 - `GaugeStack` sizes each part by `flexGrow: value`; a negative value counts as zero. The label is the part's whole accessible text: the consumer passes it already formatted (`Vendas 38,7%`), the component composes nothing.
 
 ## Styling
 
-- `data-slot`: `gauge`, `gauge-ring`, `gauge-track`, `gauge-indicator`, `gauge-segment`, `gauge-stack`, `gauge-stack-part`; `data-variant`, `data-size`, `data-tone`, `data-empty`, and `data-filled` on a filled segment.
+- `data-slot`: `gauge`, `gauge-ring`, `gauge-track`, `gauge-indicator`, `gauge-segment`, `gauge-stack`, `gauge-stack-part`; `data-variant`, `data-size`, `data-tone`, `data-empty`, and `data-filled` (`"true"` or `"false"`) on each segment.
 - A part color in `GaugeStack` goes through `color` (inline), never a `bg-*` class.
 
 ## Verify

@@ -77,7 +77,7 @@ export const FillsSegmentsByRatio: Story = {
       meter.querySelectorAll('[data-slot="gauge-segment"]'),
     ).toHaveLength(30)
     await expect(
-      meter.querySelectorAll('[data-slot="gauge-segment"][data-filled]'),
+      meter.querySelectorAll('[data-slot="gauge-segment"][data-filled="true"]'),
     ).toHaveLength(24)
   },
 }
@@ -162,6 +162,49 @@ export const TonesPaintTheFill: Story = {
       await expect(meter).toHaveAttribute('data-tone', tone)
       await expect(slotIn(meter, 'gauge-indicator')).toHaveClass(`bg-${tone}`)
     }
+  },
+}
+
+export const ColorWinsOverTone: Story = {
+  render: () => (
+    <div className="grid gap-4">
+      <Gauge
+        aria-label="Bar"
+        color="rgb(37, 99, 235)"
+        tone="success"
+        value={60}
+      />
+      <Gauge
+        aria-label="Segments"
+        color="rgb(37, 99, 235)"
+        segments={4}
+        value={50}
+        variant="segmented"
+      />
+      <Gauge
+        aria-label="Ring"
+        color="rgb(37, 99, 235)"
+        value={60}
+        variant="ring"
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const bar = canvas.getByRole('meter', { name: 'Bar' })
+    await expect(bar).toHaveAttribute('data-tone', 'success')
+    await expect(slotIn(bar, 'gauge-indicator').style.backgroundColor).toBe(
+      'rgb(37, 99, 235)',
+    )
+    const segments = canvas
+      .getByRole('meter', { name: 'Segments' })
+      .querySelectorAll<HTMLElement>('[data-slot="gauge-segment"]')
+    await expect(segments[0]?.style.backgroundColor).toBe('rgb(37, 99, 235)')
+    await expect(segments[3]?.style.backgroundColor).toBe('')
+    const arc = canvas
+      .getByRole('meter', { name: 'Ring' })
+      .querySelector<SVGElement>('[data-slot="gauge-indicator"]')
+    await expect(arc?.style.stroke).toBe('rgb(37, 99, 235)')
   },
 }
 

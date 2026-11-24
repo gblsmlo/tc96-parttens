@@ -1,7 +1,7 @@
 import { type AmountFormatOptions, formatAmount } from '@tc96/helpers/format'
 import { CardPanel } from '@tc96/ui/card'
+import { Gauge } from '@tc96/ui/gauge'
 import { IconFrame } from '@tc96/ui/icon-frame'
-import { MeterPrimitive } from '@tc96/ui/meter'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
@@ -136,24 +136,14 @@ export function BudgetWidget<TPeriod extends string = string>({
                         </span>
                       </span>
                     </div>
-                    <MeterPrimitive.Root
+                    <Gauge
                       aria-label={category.label}
-                      className="block"
                       data-slot="budget-meter"
                       max={category.limit}
-                      min={0}
+                      size="sm"
                       value={Math.min(category.spent, category.limit)}
-                    >
-                      <MeterPrimitive.Track className="block h-1.5 overflow-hidden rounded-full bg-muted">
-                        <MeterPrimitive.Indicator
-                          className={cn(
-                            'block h-full rounded-full transition-[width] duration-500',
-                            over && 'bg-destructive',
-                          )}
-                          style={over ? undefined : { backgroundColor: color }}
-                        />
-                      </MeterPrimitive.Track>
-                    </MeterPrimitive.Root>
+                      {...(over ? { tone: 'destructive' as const } : { color })}
+                    />
                     <span className="sr-only">
                       {formatAmount(share, {
                         style: 'percent',

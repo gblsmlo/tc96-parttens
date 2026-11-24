@@ -20,7 +20,7 @@ No rule in the consumer's stylesheet targets the gauge.
 
 ## Parts
 
-`Gauge` (`gauge`) is the Base UI `Meter` root, a `div` with `role="meter"`, carrying `data-variant`, `data-size`, `data-tone` and `data-empty` when empty. `bar` and `segmented` render a track (`gauge-track`); `bar` fills it with one indicator (`gauge-indicator`), `segmented` with `segments` spans (`gauge-segment`, `data-filled` on the filled ones). `ring` renders an SVG track circle and an indicator circle (`gauge-indicator`), and centers its `children` above them. `GaugeRing` (`gauge-ring`) is an `aria-hidden` `div` with the ring root classes and the same drawing, without a meter. `GaugeStack` (`gauge-stack`) is a `ul` of parts (`gauge-stack-part`), each an `li` whose width follows its share and whose text is `sr-only`.
+`Gauge` (`gauge`) is the Base UI `Meter` root, a `div` with `role="meter"`, carrying `data-variant`, `data-size`, `data-tone` and `data-empty` when empty. `bar` and `segmented` render a track (`gauge-track`); `bar` fills it with one indicator (`gauge-indicator`), `segmented` with `segments` spans (`gauge-segment`, `data-filled="true"` or `"false"`). `ring` renders an SVG track circle and an indicator circle (`gauge-indicator`), and centers its `children` above them. `GaugeRing` (`gauge-ring`) is an `aria-hidden` `div` with the ring root classes and the same drawing, without a meter. `GaugeStack` (`gauge-stack`) is a `ul` of parts (`gauge-stack-part`), each an `li` whose width follows its share and whose text is `sr-only`.
 
 ### Root `bar`
 

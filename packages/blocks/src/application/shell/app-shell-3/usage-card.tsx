@@ -1,7 +1,7 @@
 'use client'
 
-import { Meter, MeterIndicator, MeterLabel, MeterTrack } from '@tc96/ui/meter'
-import type { ReactElement, ReactNode } from 'react'
+import { Gauge } from '@tc96/ui/gauge'
+import { type ReactElement, type ReactNode, useId } from 'react'
 
 export interface ShellUsage {
   action?: ReactNode
@@ -17,19 +17,21 @@ export interface UsageCardProps {
 }
 
 export function UsageCard({ usage }: Readonly<UsageCardProps>): ReactElement {
+  const labelId = useId()
   return (
     <div className="flex flex-col gap-2 rounded-lg bg-sidebar-accent p-3 text-sidebar-accent-foreground group-data-[collapsible=icon]:hidden">
-      <Meter
-        getAriaValueText={() => usage.valueLabel}
-        max={usage.max}
-        value={usage.value}
-      >
-        <MeterLabel className="text-xs">{usage.label}</MeterLabel>
-        <MeterTrack>
-          <MeterIndicator />
-        </MeterTrack>
+      <div className="flex flex-col gap-2">
+        <span className="font-medium text-xs" id={labelId}>
+          {usage.label}
+        </span>
+        <Gauge
+          aria-labelledby={labelId}
+          getAriaValueText={() => usage.valueLabel}
+          max={usage.max}
+          value={usage.value}
+        />
         <span className="text-xs tabular-nums">{usage.valueLabel}</span>
-      </Meter>
+      </div>
       {usage.description ? (
         <p className="text-xs">{usage.description}</p>
       ) : null}

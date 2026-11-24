@@ -50,6 +50,7 @@ Renders the Base UI `Meter` root, a `div` with `role="meter"`. The `bar` draws o
 | `variant` | `"bar"`, `"segmented"` or `"ring"` | `"bar"` | Picks the drawing. |
 | `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | Sets the bar thickness (4, 8 or 12px) or the ring diameter (40, 56 or 80px). A `size-*` class on a ring wins. |
 | `tone` | `"primary"`, `"foreground"`, `"success"`, `"warning"`, `"destructive"` or `"info"` | `"primary"` | Paints the filled part with the theme color of the same name. |
+| `color` | `string` | - | Paints the filled part with any CSS color, such as the color of a category; wins over `tone`, while `data-tone` still reports `tone`. |
 | `segments` | `number` | `10` | How many pieces `segmented` draws; `Math.round(ratio * segments)` of them are filled. |
 | `empty` | `boolean` | `false` | Marks that there is no value yet: no fill, a dashed ring track and `data-empty`. Zero still draws the empty track without it. |
 | `strokeWidth` | `number` | `10` | The ring line width, in a 100-unit viewBox. |
@@ -67,7 +68,7 @@ Also takes the other props of the Base UI `Meter` root, such as `format` and `lo
 | `data-size` | `"sm"`, `"default"` or `"lg"` | Mirrors `size` |
 | `data-tone` | one of the six tones | Mirrors `tone` |
 | `data-empty` | `"true"` | Present only with `empty` |
-| `data-filled` | `"true"` | On each filled `gauge-segment` |
+| `data-filled` | `"true"` or `"false"` | On each `gauge-segment` |
 
 ## GaugeRing
 
@@ -79,6 +80,7 @@ The ring drawing alone, for a ring that only repeats a number already written ne
 | `empty` | `boolean` | `false` | No value yet: a dashed track and no arc. |
 | `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | 40, 56 or 80px; a `size-*` class wins. |
 | `tone` | one of the six tones | `"primary"` | The arc color. |
+| `color` | `string` | - | Any CSS color for the arc; wins over `tone`. |
 | `strokeWidth` | `number` | `10` | The line width, in a 100-unit viewBox. |
 | `children` | `React.ReactNode` | - | Content centered over the ring. |
 

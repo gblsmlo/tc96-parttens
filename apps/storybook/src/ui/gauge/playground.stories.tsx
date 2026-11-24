@@ -17,8 +17,8 @@ const meta = {
     ),
   ],
   parameters: { layout: 'centered' },
-  render: ({ content, label, ...args }) => (
-    <Gauge {...args} aria-label={label}>
+  render: ({ color, content, label, ...args }) => (
+    <Gauge {...args} aria-label={label} {...(color ? { color } : {})}>
       {content ? (
         <span className="font-medium text-xs tabular-nums">{content}</span>
       ) : null}

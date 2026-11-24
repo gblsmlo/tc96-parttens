@@ -21,7 +21,7 @@ Six files still carry Portuguese JSDoc from before the no-comments rule (`shared
 - `packages/parttens/src/index.ts` re-exports `widgets/index`; the stories import from `@tc96/parttens`, not by path.
 - `stats/metric-widget.tsx` and `stats/area-metric-widget.tsx` import `shared/amount`, `shared/trend-indicator` and `shared/widget-shell` by relative path; moving or renaming those files breaks the `stats` pattern.
 - `packages/registry/src/manifest.ts` and `scripts/test-patterns.ts` list `widgets`; `packages/registry/src/manifest.test.ts` asserts the path `parttens/src/widgets/index.ts`. Renaming the folder or the barrel breaks both.
-- `WidgetShell` (`shared/widget-shell.tsx`) renders `Card` from `@tc96/ui/card`; the registry item for `widgets` depends on that COSS component. `AvatarStack`, `ActivityTimeline` and `ContactWidget` import `@tc96/ui/avatar` the same way, and `ProgressRing` renders `GaugeRing` from `@tc96/ui/gauge`.
+- `WidgetShell` (`shared/widget-shell.tsx`) renders `Card` from `@tc96/ui/card`; the registry item for `widgets` depends on that COSS component. `AvatarStack`, `ActivityTimeline` and `ContactWidget` import `@tc96/ui/avatar` the same way, and `ProgressRing` renders `GaugeRing` from `@tc96/ui/gauge`. The meters of `BudgetWidget`, `QuestsWidget`, `XpMeter` and `ProjectCardWidget` are `Gauge`; `RiskScoreWidget` keeps its striped scale on the Base UI `Meter`, and `ShareBar` its own columns.
 
 ## Invariants
 

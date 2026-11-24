@@ -1,5 +1,5 @@
 import { Card } from '@tc96/ui/card'
-import { Meter, MeterIndicator, MeterTrack } from '@tc96/ui/meter'
+import { Gauge } from '@tc96/ui/gauge'
 import { cn } from '@tc96/utils'
 import { type ReactElement, useId } from 'react'
 import type { RecordGroupMetricProps } from '../../core'
@@ -48,16 +48,10 @@ export function RecordGroupMetric({
         </dd>
         {progress === undefined ? null : (
           <dd data-slot="record-group-metric-progress">
-            <Meter
+            <Gauge
               aria-labelledby={labelId}
-              max={100}
-              min={0}
               value={clampMetricProgress(progress) * 100}
-            >
-              <MeterTrack>
-                <MeterIndicator />
-              </MeterTrack>
-            </Meter>
+            />
           </dd>
         )}
       </Card>
