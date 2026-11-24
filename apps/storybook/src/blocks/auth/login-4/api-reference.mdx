@@ -1,0 +1,88 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Login4
+
+The magic link sign-in page: one e-mail field and a button that asks the app to e-mail a sign-in link, then a confirmation state. Reach for it when the app has no password. Install it with `npx @tc96/parttens add login-4`.
+
+It is a whole page: it renders its own `main` landmark. Sending the link, the session and the redirect stay in the app. The block never keeps a "sent" state: `sent` is the app's, set after the link goes out.
+
+The other pages of `Blocks/Auth/Login/Login4`: [Playground](?path=/story/blocks-auth-login-login4-playground--playground), [Stories](?path=/story/blocks-auth-login-login4-stories--email-field-error), [States](?path=/story/blocks-auth-login-login4-states--default), [Behavior](?path=/story/blocks-auth-login-login4-behavior--page-heading) and [Usages](?path=/story/blocks-auth-login-login4-usages--request-link).
+
+## Import
+
+```tsx
+import { Login4 } from '@acme/blocks/auth/login-4'
+```
+
+The same path exports the types `Login4Props`, `Login4Values`, `Login4Labels` and `AuthFieldErrors`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+The confirmation, with `sent`:
+
+<Canvas of={ApiReferenceStories.AnatomySent} />
+
+```tsx
+<Login4
+  destination={email}
+  onResend={() => sendLink(email)}
+  onSubmit={({ email }) => sendLink(email)}
+  pending={isSending}
+  resendIn={secondsLeft}
+  sent={linkSent}
+/>
+```
+
+## Login4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(values: Login4Values) => void` | required | Called with `email` after the native constraints pass; never while `pending`. |
+| `sent` | `boolean` | `false` | Replaces the form with the confirmation inside the same card. |
+| `destination` | `string` | - | The address named in the confirmation; the block never reads it from the form. Without it the text is generic. |
+| `onResend` | `() => void` | - | Renders the resend row in the confirmation; never called while `pending` or counting down. |
+| `resendIn` | `number` | `0` | Seconds before the resend button works again; shown as plain text, never in a live region. |
+| `passwordLoginHref` | `string` | - | Renders the "Entrar com senha" link in both states, only when passed. |
+| `pending` | `boolean` | `false` | Disables the submit button, puts it in its `loading` state and sets `aria-busy` on the form. |
+| `error` | `string` | - | Shows a message for the whole form in an alert, in both states. |
+| `fieldErrors` | `Partial<Record<keyof Login4Values, string>>` | - | Shows a message under the e-mail field and marks it invalid. |
+| `logo` | `ReactNode` | - | Rendered above the card. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders the link with the app's router. |
+| `labels` | `Partial<Login4Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |
+
+### Focus
+
+- On the change from not sent to sent, focus moves to the confirmation title; never on mount.
+- `error` and `fieldErrors` move focus as in the other sign-in blocks: the first invalid field, or the alert.
+
+### Login4Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `email` | `string` | The e-mail field. |
+
+### Login4Labels
+
+| Key | Default |
+| --- | --- |
+| `title` | `"Entrar com link"` |
+| `description` | `"Informe seu e-mail e enviaremos um link para você entrar."` |
+| `email` | `"E-mail"` |
+| `submit` | `"Enviar link"` |
+| `sentTitle` | `"Verifique seu e-mail"` |
+| `sentDescription` | `(destination) => "Enviamos um link para entrar para " + destination + "."` |
+| `didNotReceive` | `"Não recebeu o e-mail?"` |
+| `resend` | `"Reenviar link"` |
+| `resendIn` | `(seconds) => "Reenviar em " + seconds + "s"` |
+| `passwordLogin` | `"Entrar com senha"` |
+| `errorTitle` | `"Não foi possível continuar"` |
+
+## Accessibility and theme
+
+- One `main` and one `h1` in both states.
+- The block carries no theme rule: it reads the card, field, button and alert tokens of the theme it renders in.
