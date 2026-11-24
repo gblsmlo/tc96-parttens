@@ -5,8 +5,6 @@ import {
   type Stats6Period,
   type Stats6Sleeve,
 } from '@tc96/blocks/application/stats/stats-6'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
@@ -14,22 +12,22 @@ import { stats6Handlers } from '../../../../mocks/stats-6.ts'
 
 const PortfolioCard = () => {
   const [period, setPeriod] = useState<Stats6Period>('month')
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () =>
       fetchJson<Stats6Sleeve[]>(`/stats/portfolio?period=${period}`),
     queryKey: ['stats', 'portfolio', period],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando carteira" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar a carteira</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
-  return <Stats6 onPeriodChange={setPeriod} period={period} sleeves={data} />
+  return (
+    <Stats6
+      error={isError}
+      onRetry={() => refetch()}
+      pending={isPending}
+      onPeriodChange={setPeriod}
+      period={period}
+      sleeves={data ?? []}
+    />
+  )
 }
 
 const meta = {

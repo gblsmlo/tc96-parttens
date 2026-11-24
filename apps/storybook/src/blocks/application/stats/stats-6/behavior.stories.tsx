@@ -1,9 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Stats6 } from '@tc96/blocks/application/stats/stats-6'
+import {
+  Stats6,
+  type Stats6Props,
+} from '@tc96/blocks/application/stats/stats-6'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { sleeves } from '../fixtures/stats-6.ts'
 import { type Stats6Controls, stats6ControlArgs } from './stats-6-controls.ts'
 import { ComposedStats6 } from './stats-6-layouts.tsx'
+
+const loaded: Stats6Props = { period: 'month', sleeves }
+
+const retry = fn()
 
 const meta = {
   args: { ...stats6ControlArgs, onPeriodChange: fn() },
@@ -122,5 +129,54 @@ export const LabelsOverrideTexts: Story = {
     await expect(canvas.getByRole('tab', { name: '1A' })).toBeVisible()
     await expect(canvas.getAllByText('Peso')).toHaveLength(3)
     await expect(canvas.queryByText('Participação')).toBeNull()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Stats6 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando carteira')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(
+      canvas.getByRole('region', { name: 'Alocação da carteira' }),
+    ).toBeVisible()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Stats6 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar a carteira'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Stats6 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Stats6 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando carteira')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar a carteira'),
+    ).toBeNull()
   },
 }

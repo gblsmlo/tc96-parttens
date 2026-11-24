@@ -1,3 +1,4 @@
+import type { StatsLoadLabels, StatsLoadProps } from '../shared/types'
 export type Stats6Period = 'day' | 'week' | 'month' | 'year'
 
 export interface Stats6Sleeve {
@@ -8,14 +9,14 @@ export interface Stats6Sleeve {
   share: number
 }
 
-export interface Stats6Labels {
+export interface Stats6Labels extends StatsLoadLabels {
   period: string
   periods: Record<Stats6Period, string>
   share: string
   title: string
 }
 
-export interface Stats6Props {
+export interface Stats6Props extends StatsLoadProps {
   className?: string
   currency?: string
   labels?: Partial<Stats6Labels>

@@ -5,6 +5,17 @@ import { quotaUsage } from '../fixtures/stats-2.ts'
 import { type Stats2Controls, stats2ControlArgs } from './stats-2-controls.ts'
 import { ComposedStats2 } from './stats-2-layouts.tsx'
 
+const loaded = {
+  className: 'mx-auto max-w-md',
+  cost: quotaUsage.cost,
+  limit: quotaUsage.limit,
+  renewsAt: new Date(quotaUsage.renewsAt),
+  timeZone: 'UTC',
+  used: quotaUsage.used,
+}
+
+const retry = fn()
+
 const meta = {
   args: { ...stats2ControlArgs, onUpgrade: fn() },
   parameters: { layout: 'padded' },
@@ -91,5 +102,53 @@ export const LabelsOverrideTexts: Story = {
       '742.000/1.000.000 chamadas',
     )
     await expect(canvas.queryByText('Uso da API')).toBeNull()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Stats2 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByLabelText('Carregando uso da API'),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      canvas.getByRole('region', { name: 'Uso da API' }),
+    ).toBeVisible()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Stats2 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar o uso da API'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Stats2 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Stats2 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando uso da API')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar o uso da API'),
+    ).toBeNull()
   },
 }

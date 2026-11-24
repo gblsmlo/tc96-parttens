@@ -6,7 +6,9 @@ import { CardPanel } from '@tc96/ui/card'
 import { cn } from '@tc96/utils'
 import { useId } from 'react'
 import { StatsCardActions } from '../shared/stats-card-actions'
+import { statsLoadState } from '../shared/stats-load-state'
 import { defaultStats1Labels } from './labels'
+import { Stats1Skeleton } from './stats-1-skeleton'
 import type {
   Stats1Action,
   Stats1Labels,
@@ -78,6 +80,9 @@ function StatCard({
 }
 
 export function Stats1({
+  error,
+  onRetry,
+  pending,
   className,
   currency = 'BRL',
   labels: labelsProp,
@@ -86,6 +91,20 @@ export function Stats1({
   stats,
 }: Readonly<Stats1Props>) {
   const labels = { ...defaultStats1Labels, ...labelsProp }
+  const loadState = statsLoadState({
+    error,
+    labels: labels,
+    onRetry,
+    pending,
+    skeleton: <Stats1Skeleton label={labels.loading} />,
+  })
+
+  if (loadState)
+    return (
+      <section aria-label={labels.title} className={className}>
+        {loadState}
+      </section>
+    )
 
   if (stats.length === 0) {
     return (

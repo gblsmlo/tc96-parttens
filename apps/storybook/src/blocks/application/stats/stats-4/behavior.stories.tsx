@@ -1,9 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Stats4 } from '@tc96/blocks/application/stats/stats-4'
+import {
+  Stats4,
+  type Stats4Props,
+} from '@tc96/blocks/application/stats/stats-4'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { leadsOverview } from '../fixtures/stats-4.ts'
 import { type Stats4Controls, stats4ControlArgs } from './stats-4-controls.ts'
 import { ComposedStats4 } from './stats-4-layouts.tsx'
+
+const loaded: Stats4Props = {
+  goal: leadsOverview.goal,
+  range: '30d',
+  sources: leadsOverview.sources,
+  total: leadsOverview.total,
+}
+
+const retry = fn()
 
 const meta = {
   args: { ...stats4ControlArgs, onRangeChange: fn() },
@@ -132,5 +144,54 @@ export const LabelsOverrideTexts: Story = {
       canvas.getByRole('combobox', { name: 'Janela' }),
     ).toHaveTextContent('30 d')
     await expect(canvas.queryByText('Visão geral de leads')).toBeNull()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Stats4 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando leads')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(
+      canvas.getByRole('region', { name: 'Visão geral de leads' }),
+    ).toBeVisible()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Stats4 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar os leads'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Stats4 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Stats4 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando leads')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar os leads'),
+    ).toBeNull()
   },
 }

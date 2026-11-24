@@ -1,28 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { Stats1, type Stats1Stat } from '@tc96/blocks/application/stats/stats-1'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { expect, fn, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { stats1Handlers } from '../../../../mocks/stats-1.ts'
 
 const OverviewStats = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Stats1Stat[]>('/stats/overview'),
     queryKey: ['stats', 'overview'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando indicadores" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar os indicadores</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
-  return <Stats1 onStatAction={fn()} stats={data} />
+  return (
+    <Stats1
+      error={isError}
+      onRetry={() => refetch()}
+      pending={isPending}
+      onStatAction={fn()}
+      stats={data ?? []}
+    />
+  )
 }
 
 const meta = {

@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A responsive grid of KPI cards. Each card shows a label, a value, the trend against the previous period and, when the app handles actions, an overflow menu. Reach for it at the top of a dashboard or a list page that needs a quick read of the numbers. Install it with `npx @tc96/parttens add stats-1`.
 
-It is a section, not a page: it renders no `main` landmark. Values arrive as numbers and the block formats them; it keeps no state, never fetches and never computes a trend.
+It is a section, not a page: it renders no `main` landmark. Values arrive as numbers and the block formats them; it keeps no state, never fetches and never computes a trend. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
-The other pages of `Blocks/Application/Stats/Stats1`: [Playground](?path=/story/blocks-application-stats-stats1-playground--playground) to try the texts, the empty list and the menu, [Behavior](?path=/story/blocks-application-stats-stats1-behavior--each-stat-is-a-region-named-by-its-label) for the tests and [Usages](?path=/story/blocks-application-stats-stats1-usages--loaded) for the numbers read over the network.
+The other pages of `Blocks/Application/Stats/Stats1`: [Playground](?path=/story/blocks-application-stats-stats1-playground--playground) to try the texts, the empty list and the menu, [Behavior](?path=/story/blocks-application-stats-stats1-behavior--each-stat-is-a-region-named-by-its-label) for the tests, [States](?path=/story/blocks-application-stats-stats1-states--default) for the loaded, loading and error states and the empty one and [Usages](?path=/story/blocks-application-stats-stats1-usages--loaded) for the numbers read over the network.
 
 ## Import
 
@@ -42,6 +42,9 @@ The grid. One column on small screens, two from `sm` and four from `xl` (three w
 | `locale` | `string` | `"pt-BR"` | Locale of every number. |
 | `currency` | `string` | `"BRL"` | Currency of the stats whose `kind` is `currency`. |
 | `onStatAction` | `(statId: string, action: Stats1Action) => void` | - | Called with the stat id and `'details'` or `'export'` when a menu item is chosen. Without it the card menus are not rendered. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<Stats1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root element. |
 
@@ -68,6 +71,10 @@ The block takes no other props.
 | `emptyDescription` | `string` | `"Os indicadores aparecem aqui quando houver dados."` |
 | `actions` | `(label: string) => string` | `"Ações de Novos leads"`; the accessible name of the card menu |
 | `trend` | `{ up: string; down: string; flat: string }` | `"Alta de"`, `"Queda de"`, `"Sem variação"`; read by screen readers before the percentage |
+| `loading` | `string` | `"Carregando indicadores"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar os indicadores"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 
@@ -82,6 +89,7 @@ The block takes no other props.
 
 ## Accessibility and theme
 
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
 - Each card is a `region` named by its label, and the grid is a `region` named by `labels.title`.
 - The trend direction is also in text, in a `sr-only` prefix, so color is never the only signal.
 - The card menu button is named by `labels.actions(label)`.

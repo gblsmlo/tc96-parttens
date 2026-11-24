@@ -1,4 +1,5 @@
 import type { TrendIndicatorLabels } from '@tc96/parttens/widgets/shared/trend-indicator'
+import type { StatsLoadLabels, StatsLoadProps } from '../shared/types'
 
 export type Stats1ValueKind = 'currency' | 'number' | 'percent'
 
@@ -12,7 +13,7 @@ export interface Stats1Stat {
 
 export type Stats1Action = 'details' | 'export'
 
-export interface Stats1Labels {
+export interface Stats1Labels extends StatsLoadLabels {
   actions: (label: string) => string
   details: string
   emptyDescription: string
@@ -22,7 +23,7 @@ export interface Stats1Labels {
   trend: TrendIndicatorLabels
 }
 
-export interface Stats1Props {
+export interface Stats1Props extends StatsLoadProps {
   className?: string
   currency?: string
   labels?: Partial<Stats1Labels>

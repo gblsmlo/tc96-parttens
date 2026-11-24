@@ -1,37 +1,29 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { Stats2 } from '@tc96/blocks/application/stats/stats-2'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { expect, fn, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { stats2Handlers } from '../../../../mocks/stats-2.ts'
 import type { QuotaUsage } from '../fixtures/stats-2.ts'
 
 const ApiQuota = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<QuotaUsage>('/stats/quota'),
     queryKey: ['stats', 'quota'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando uso da API" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar o uso da API</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
   return (
     <Stats2
       className="mx-auto max-w-md"
-      cost={data.cost}
-      limit={data.limit}
+      cost={data?.cost ?? 0}
+      error={isError}
+      limit={data?.limit ?? 0}
       onUpgrade={fn()}
-      renewsAt={new Date(data.renewsAt)}
+      onRetry={() => refetch()}
+      pending={isPending}
+      renewsAt={new Date(data?.renewsAt ?? 0)}
       timeZone="UTC"
-      used={data.used}
+      used={data?.used ?? 0}
     />
   )
 }

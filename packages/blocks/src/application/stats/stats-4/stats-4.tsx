@@ -21,12 +21,17 @@ import {
   SelectValue,
 } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
+import { statsLoadState } from '../shared/stats-load-state'
 import { defaultStats4Labels } from './labels'
+import { Stats4Skeleton } from './stats-4-skeleton'
 import type { Stats4Props, Stats4Range } from './types'
 
 const defaultRanges: Stats4Range[] = ['7d', '30d', '90d']
 
 export function Stats4({
+  error,
+  onRetry,
+  pending,
   className,
   goal,
   labels,
@@ -38,6 +43,13 @@ export function Stats4({
   total,
 }: Readonly<Stats4Props>) {
   const text = { ...defaultStats4Labels, ...labels }
+  const loadState = statsLoadState({
+    error,
+    labels: text,
+    onRetry,
+    pending,
+    skeleton: <Stats4Skeleton label={text.loading} />,
+  })
   const number = (value: number) =>
     formatAmount(value, { locale, style: 'decimal' })
   const percent = (ratio: number) =>
@@ -72,78 +84,89 @@ export function Stats4({
           </Select>
         </CardAction>
       </CardHeader>
-      <CardContent className="flex flex-col gap-6">
-        <div className="flex flex-col gap-3">
-          <p
-            className="font-semibold text-4xl tabular-nums"
-            data-slot="stats-4-total"
-          >
-            {number(total)}
-          </p>
-          <Progress
-            getAriaValueText={() =>
-              text.goalProgress(number(total), number(goal), percent(progress))
-            }
-            max={1}
-            value={progress}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <ProgressLabel>{text.goal(number(goal))}</ProgressLabel>
-              <span
-                className="font-medium text-sm tabular-nums"
-                data-slot="stats-4-progress"
-              >
-                {percent(progress)}
-              </span>
-            </div>
-            <ProgressTrack>
-              <ProgressIndicator />
-            </ProgressTrack>
-          </Progress>
-        </div>
-        <div className="flex flex-col gap-3">
-          <p className="font-medium text-sm">{text.sources}</p>
-          <div
-            aria-label={text.sourcesBar}
-            className="flex h-2.5 w-full gap-0.5 overflow-hidden rounded-full bg-input"
-            data-slot="stats-4-bar"
-            role="img"
-          >
-            {sourcesTotal > 0
-              ? sources
-                  .filter((source) => source.value > 0)
-                  .map((source) => (
-                    <span
-                      className={cn('h-full', source.colorClassName)}
-                      data-source={source.id}
-                      key={source.id}
-                      style={{
-                        width: `${(source.value / sourcesTotal) * 100}%`,
-                      }}
-                    />
-                  ))
-              : null}
-          </div>
-          <ul className="grid gap-2 sm:grid-cols-2" data-slot="stats-4-legend">
-            {sources.map((source) => (
-              <li className="flex items-center gap-2 text-sm" key={source.id}>
+      {loadState ?? (
+        <CardContent className="flex flex-col gap-6">
+          <div className="flex flex-col gap-3">
+            <p
+              className="font-semibold text-4xl tabular-nums"
+              data-slot="stats-4-total"
+            >
+              {number(total)}
+            </p>
+            <Progress
+              getAriaValueText={() =>
+                text.goalProgress(
+                  number(total),
+                  number(goal),
+                  percent(progress),
+                )
+              }
+              max={1}
+              value={progress}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <ProgressLabel>{text.goal(number(goal))}</ProgressLabel>
                 <span
-                  aria-hidden="true"
-                  className={cn(
-                    'size-2.5 shrink-0 rounded-full',
-                    source.colorClassName,
-                  )}
-                />
-                <span className="truncate">{source.name}</span>
-                <span className="ms-auto text-muted-foreground tabular-nums">
-                  {number(source.value)} ·{' '}
-                  {percent(sourcesTotal > 0 ? source.value / sourcesTotal : 0)}
+                  className="font-medium text-sm tabular-nums"
+                  data-slot="stats-4-progress"
+                >
+                  {percent(progress)}
                 </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </CardContent>
+              </div>
+              <ProgressTrack>
+                <ProgressIndicator />
+              </ProgressTrack>
+            </Progress>
+          </div>
+          <div className="flex flex-col gap-3">
+            <p className="font-medium text-sm">{text.sources}</p>
+            <div
+              aria-label={text.sourcesBar}
+              className="flex h-2.5 w-full gap-0.5 overflow-hidden rounded-full bg-input"
+              data-slot="stats-4-bar"
+              role="img"
+            >
+              {sourcesTotal > 0
+                ? sources
+                    .filter((source) => source.value > 0)
+                    .map((source) => (
+                      <span
+                        className={cn('h-full', source.colorClassName)}
+                        data-source={source.id}
+                        key={source.id}
+                        style={{
+                          width: `${(source.value / sourcesTotal) * 100}%`,
+                        }}
+                      />
+                    ))
+                : null}
+            </div>
+            <ul
+              className="grid gap-2 sm:grid-cols-2"
+              data-slot="stats-4-legend"
+            >
+              {sources.map((source) => (
+                <li className="flex items-center gap-2 text-sm" key={source.id}>
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'size-2.5 shrink-0 rounded-full',
+                      source.colorClassName,
+                    )}
+                  />
+                  <span className="truncate">{source.name}</span>
+                  <span className="ms-auto text-muted-foreground tabular-nums">
+                    {number(source.value)} ·{' '}
+                    {percent(
+                      sourcesTotal > 0 ? source.value / sourcesTotal : 0,
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </CardContent>
+      )}
     </WidgetShell>
   )
 }

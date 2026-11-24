@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A single card split into divided columns, one per metric. Each column shows a label, a large value and a trend badge with the direction and the percent change. Reach for it when a dashboard compares a few headline numbers, such as sales, new customers and churn. Install it with `npx @tc96/parttens add stats-5`.
 
-It is a card, not a page: it renders a `section` and no `main` landmark. It is made for three items: on screens from `sm` they sit side by side, below that they stack. Values arrive as numbers and the block formats them; it keeps no state and fetches nothing.
+It is a card, not a page: it renders a `section` and no `main` landmark. It is made for three items: on screens from `sm` they sit side by side, below that they stack. Values arrive as numbers and the block formats them; it keeps no state and fetches nothing. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
-The other pages of `Blocks/Application/Stats/Stats5`: [Playground](?path=/story/blocks-application-stats-stats5-playground--playground) to try the trends and the currency, [Behavior](?path=/story/blocks-application-stats-stats5-behavior--columns-show-label-value-and-trend) for the tests and [Usages](?path=/story/blocks-application-stats-stats5-usages--loaded) for the card read over the network.
+The other pages of `Blocks/Application/Stats/Stats5`: [Playground](?path=/story/blocks-application-stats-stats5-playground--playground) to try the trends and the currency, [Behavior](?path=/story/blocks-application-stats-stats5-behavior--columns-show-label-value-and-trend) for the tests, [States](?path=/story/blocks-application-stats-stats5-states--default) for the loaded, loading and error states and [Usages](?path=/story/blocks-application-stats-stats5-usages--loaded) for the card read over the network.
 
 ## Import
 
@@ -36,6 +36,9 @@ The card with revenue, new customers and churn:
 | `items` | `Stats5Item[]` | required | The columns, in order. |
 | `currency` | `string` | `'BRL'` | ISO currency of the items whose `format` is `'currency'`. |
 | `locale` | `string` | `'pt-BR'` | Locale of the numbers. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<Stats5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the card's classes. |
 
@@ -60,6 +63,10 @@ The block takes no other props.
 | `up` | `string` | `"Alta de"`; read by screen readers before the percent |
 | `down` | `string` | `"Queda de"` |
 | `flat` | `string` | `"Sem variação"` |
+| `loading` | `string` | `"Carregando vendas"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar as vendas"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 
@@ -73,6 +80,7 @@ The block takes no other props.
 
 ## Accessibility and theme
 
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
 - The card is a `region` named by `labels.title`; the columns are a list.
 - The direction is also in text: the badge carries a screen reader prefix from `labels.up`, `labels.down` or `labels.flat`, so color is never the only signal.
 - `data-direction` and `data-tone` (`good`, `bad` or `neutral`) on each badge record what the badge shows.

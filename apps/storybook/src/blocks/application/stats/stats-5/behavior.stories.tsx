@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Stats5 } from '@tc96/blocks/application/stats/stats-5'
-import { expect, within } from 'storybook/test'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { salesAndChurn } from '../fixtures/stats-5.ts'
 import { type Stats5Controls, stats5ControlArgs } from './stats-5-controls.ts'
 import { ComposedStats5 } from './stats-5-layouts.tsx'
+
+const loaded = { items: salesAndChurn }
+
+const retry = fn()
 
 const meta = {
   args: stats5ControlArgs,
@@ -92,5 +96,54 @@ export const LabelsOverrideTexts: Story = {
     await expect(
       canvasElement.querySelector('[data-slot="stats-5-trend"]'),
     ).toHaveTextContent('Subiu 8,20%')
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Stats5 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando vendas')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(
+      canvas.getByRole('region', { name: 'Vendas e cancelamentos' }),
+    ).toBeVisible()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Stats5 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar as vendas'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Stats5 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Stats5 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando vendas')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar as vendas'),
+    ).toBeNull()
   },
 }
