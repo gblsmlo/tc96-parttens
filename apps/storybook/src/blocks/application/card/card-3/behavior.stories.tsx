@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Card3 } from '@tc96/blocks/application/card/card-3'
+import { Card3, type Card3Props } from '@tc96/blocks/application/card/card-3'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { profile } from '../fixtures/card-3.ts'
 import { type Card3Controls, card3ControlArgs } from './card-3-controls.ts'
 import { ComposedCard3 } from './card-3-layouts.tsx'
+
+const loaded: Card3Props = { profile }
+
+const retry = fn()
 
 const meta = {
   args: card3ControlArgs,
@@ -89,5 +93,52 @@ export const OnlyTheGivenActionRenders: Story = {
 export const InitialsStandInForMissingImage: Story = {
   play: async ({ canvasElement }) => {
     await expect(within(canvasElement).getByText('MC')).toBeVisible()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Card3 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando perfil')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Card3 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar o perfil'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Card3 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Card3 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando perfil')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar o perfil'),
+    ).toBeNull()
   },
 }

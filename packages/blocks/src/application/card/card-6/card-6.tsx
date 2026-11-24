@@ -9,6 +9,8 @@ import { CardPanel } from '@tc96/ui/card'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { Toggle } from '@tc96/ui/toggle'
 import { useId } from 'react'
+import { cardLoadState } from '../shared/card-load-state'
+import { Card6Skeleton } from './card-6-skeleton'
 import { defaultCard6Labels } from './labels'
 import type { Card6Job, Card6Labels, Card6Props, Card6WorkMode } from './types'
 
@@ -110,6 +112,9 @@ function JobCard({
 }
 
 export function Card6({
+  error,
+  onRetry,
+  pending,
   className,
   currency = 'BRL',
   jobs,
@@ -120,6 +125,20 @@ export function Card6({
   saved = [],
 }: Readonly<Card6Props>) {
   const labels = { ...defaultCard6Labels, ...labelsProp }
+  const loadState = cardLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Card6Skeleton label={labels.loading} />,
+  })
+
+  if (loadState)
+    return (
+      <section aria-label={labels.title} className={className}>
+        {loadState}
+      </section>
+    )
 
   if (jobs.length === 0) {
     return (

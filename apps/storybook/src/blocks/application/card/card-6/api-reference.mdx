@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A grid of job recommendation cards. Each card shows the company initials, the title, the company, the location, a work mode badge and the salary range, with an apply button and a save toggle when the app handles them. Reach for it when a page recommends jobs to a candidate. Install it with `npx @tc96/parttens add card-6`.
 
-It is a list of cards, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing: the saved jobs are controlled through `saved`, and the app updates them in `onSaveChange`.
+It is a list of cards, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing: the saved jobs are controlled through `saved`, and the app updates them in `onSaveChange`. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
-The other pages of `Blocks/Application/Card/Card6`: [Playground](?path=/story/blocks-application-card-card6-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card6-behavior--jobs-show-company-location-and-work-mode) for the tests and [Usages](?path=/story/blocks-application-card-card6-usages--loaded) for the cards read over the network.
+The other pages of `Blocks/Application/Card/Card6`: [Playground](?path=/story/blocks-application-card-card6-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card6-behavior--jobs-show-company-location-and-work-mode) for the tests, [States](?path=/story/blocks-application-card-card6-states--default) for the loaded, loading and error states and the empty one and [Usages](?path=/story/blocks-application-card-card6-usages--loaded) for the cards read over the network.
 
 ## Import
 
@@ -44,6 +44,9 @@ The cards with both actions and one saved job:
 | `onApply` | `(jobId: string) => void` | - | Called with the id of the job when the apply button is pressed. Without it the button is not rendered. |
 | `currency` | `string` | `'BRL'` | Currency of salaries that carry none. |
 | `locale` | `string` | `'pt-BR'` | Locale of the salary. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<Card6Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root element's classes. |
 
@@ -73,6 +76,10 @@ The block takes no other props.
 | `unsave` | `(title: string) => string` | `"Remover Gerente de produto das vagas salvas"` |
 | `emptyTitle` | `string` | `"Nenhuma vaga recomendada"` |
 | `emptyDescription` | `string` | `"As vagas recomendadas para você aparecem aqui."` |
+| `loading` | `string` | `"Carregando vagas"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar as vagas"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 
@@ -87,6 +94,7 @@ The block takes no other props.
 
 ## Accessibility and theme
 
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
 - Each card is a `section` named by its title; the cards sit in a list named by `labels.title`.
 - The save toggle reports its state with `aria-pressed` and changes its name between `labels.save` and `labels.unsave`.
 - The apply button keeps `labels.apply` as its visible text and takes `labels.applyTo` as its name.

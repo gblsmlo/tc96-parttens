@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A grid of shortcut tiles. Each tile has an icon, a title and a description, and is a button or a link: a shortcut with an `href` renders as a link, any other renders as a button that calls `onSelect`. Reach for it when a dashboard needs the actions people use most one click away. Install it with `npx @tc96/parttens add card-5`.
 
-It is a list of tiles, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing, and it never navigates: links go through `renderLink`, so the app's router owns them.
+It is a list of tiles, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing, and it never navigates: links go through `renderLink`, so the app's router owns them. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
-The other pages of `Blocks/Application/Card/Card5`: [Playground](?path=/story/blocks-application-card-card5-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card5-behavior--tiles-show-title-and-description) for the tests and [Usages](?path=/story/blocks-application-card-card5-usages--loaded) for the tiles read over the network.
+The other pages of `Blocks/Application/Card/Card5`: [Playground](?path=/story/blocks-application-card-card5-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card5-behavior--tiles-show-title-and-description) for the tests, [States](?path=/story/blocks-application-card-card5-states--default) for the loaded, loading and error states and the empty one and [Usages](?path=/story/blocks-application-card-card5-usages--loaded) for the tiles read over the network.
 
 ## Import
 
@@ -40,6 +40,9 @@ Three buttons and one link:
 | `shortcuts` | `readonly Card5Shortcut[]` | required | One tile per shortcut, in order. An empty list shows the empty state. |
 | `onSelect` | `(shortcutId: string) => void` | - | Called with the id of a shortcut without `href` when its tile is pressed. |
 | `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Builds the element of a shortcut with `href`, for example a router link. The block gives it the tile's classes and content. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<Card5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root element's classes. |
 
@@ -62,6 +65,10 @@ The block takes no other props.
 | `title` | `string` | `"Atalhos rápidos"`; the accessible name of the list |
 | `emptyTitle` | `string` | `"Nenhum atalho disponível"` |
 | `emptyDescription` | `string` | `"Os atalhos disponíveis para você aparecem aqui."` |
+| `loading` | `string` | `"Carregando atalhos"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar os atalhos"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 
@@ -74,6 +81,7 @@ The block takes no other props.
 
 ## Accessibility and theme
 
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
 - Each tile is a native `button` or a link, named by its title and description.
 - The icon is decorative and hidden from assistive technology.
 - Focus shows a ring on the whole tile.

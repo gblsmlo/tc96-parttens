@@ -1,6 +1,10 @@
+import { defaultCardLoadLabels } from '../shared/labels'
 import type { Card6Labels } from './types'
 
 export const defaultCard6Labels: Card6Labels = {
+  ...defaultCardLoadLabels,
+  errorTitle: 'Não foi possível carregar as vagas',
+  loading: 'Carregando vagas',
   apply: 'Candidatar-se',
   applyTo: (title, company) => `Candidatar-se a ${title} em ${company}`,
   emptyDescription: 'As vagas recomendadas para você aparecem aqui.',

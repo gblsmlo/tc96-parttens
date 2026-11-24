@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A grid of meeting cards. Each card shows the title, the time range, a duration badge and the attendees as a stack of avatars, with a join button when the app handles it. Reach for it when a dashboard needs the day's meetings at a glance. Install it with `npx @tc96/parttens add card-4`.
 
-It is a list of cards, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing: the app passes the meetings already prepared, and the time range and the duration are the final strings it shows.
+It is a list of cards, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing: the app passes the meetings already prepared, and the time range and the duration are the final strings it shows. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
-The other pages of `Blocks/Application/Card/Card4`: [Playground](?path=/story/blocks-application-card-card4-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card4-behavior--meetings-show-time-and-duration) for the tests and [Usages](?path=/story/blocks-application-card-card4-usages--loaded) for the cards read over the network.
+The other pages of `Blocks/Application/Card/Card4`: [Playground](?path=/story/blocks-application-card-card4-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card4-behavior--meetings-show-time-and-duration) for the tests, [States](?path=/story/blocks-application-card-card4-states--default) for the loaded, loading and error states and the empty one and [Usages](?path=/story/blocks-application-card-card4-usages--loaded) for the cards read over the network.
 
 ## Import
 
@@ -36,6 +36,9 @@ The cards with a join button:
 | `meetings` | `readonly Card4Meeting[]` | required | One card per meeting, in order. An empty list shows the empty state. |
 | `onJoin` | `(meetingId: string) => void` | - | Called with the id of the meeting when its join button is pressed. Without it the button is not rendered. |
 | `maxAttendees` | `number` | `4` | Avatars shown before the `+n` counter. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<Card4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root element's classes. |
 
@@ -61,6 +64,10 @@ The block takes no other props.
 | `attendees` | `(title: string) => string` | `"Participantes de Revisão de design"`; the accessible name of the stack |
 | `emptyTitle` | `string` | `"Nenhuma reunião hoje"` |
 | `emptyDescription` | `string` | `"Quando houver reuniões marcadas, elas aparecem aqui."` |
+| `loading` | `string` | `"Carregando reuniões"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar as reuniões"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 
@@ -73,6 +80,7 @@ The block takes no other props.
 
 ## Accessibility and theme
 
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
 - Each card is a `section` named by its title; the cards sit in a list named by `labels.title`.
 - The join button keeps `labels.join` as its visible text and takes `labels.joinMeeting` as its name, so several cards stay distinguishable.
 - The avatar stack is a list named by `labels.attendees`, with every name available to screen readers.

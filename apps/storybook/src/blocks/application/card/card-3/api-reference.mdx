@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A profile card: avatar, name, role, an availability badge, a strip of three numbers and up to two actions. Reach for it in a team directory or a contact page. Install it with `npx @tc96/parttens add card-3`.
 
-It is a card, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app.
+It is a card, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
-The other pages of `Blocks/Application/Card/Card3`: [Playground](?path=/story/blocks-application-card-card3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card3-behavior--shows-name-role-and-availability) for the tests and [Usages](?path=/story/blocks-application-card-card3-usages--loaded) for the data read over the network.
+The other pages of `Blocks/Application/Card/Card3`: [Playground](?path=/story/blocks-application-card-card3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-card-card3-behavior--shows-name-role-and-availability) for the tests, [States](?path=/story/blocks-application-card-card3-states--default) for the loaded, loading and error states and [Usages](?path=/story/blocks-application-card-card3-usages--loaded) for the data read over the network.
 
 ## Import
 
@@ -33,10 +33,13 @@ A profile with all three stats and both actions.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `profile` | `Card3Profile` | required | The person shown. |
+| `profile` | `Card3Profile` | - | The person shown; while the app has none, pass `pending` or `error`. Without it and without a state the block renders nothing. |
 | `locale` | `string` | `"pt-BR"` | Locale of the stat numbers. |
 | `onMessage` | `(id: string) => void` | - | Called with the profile id by Mensagem. Without it the button does not render. |
 | `onFollow` | `(id: string) => void` | - | Called with the profile id by Seguir. Without it the button does not render. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<Card3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root classes. |
 
@@ -56,8 +59,13 @@ A profile with all three stats and both actions.
 | Key | Type | Default |
 | --- | --- | --- |
 | `stats` | `string` | `"Números"`; the accessible name of the strip |
+| `title` | `string` | `"Perfil"`; the accessible name of the card while loading or failed |
 | `message` | `string` | `"Mensagem"` |
 | `follow` | `string` | `"Seguir"` |
+| `loading` | `string` | `"Carregando perfil"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar o perfil"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 
@@ -71,6 +79,7 @@ A profile with all three stats and both actions.
 
 ## Accessibility and theme
 
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
 - The card is a `region` named by the person's name; the strip is a description list.
 - Actions are buttons; the avatar is decorative, the name beside it carries the identity.
 - The block carries no color, radius or shadow of its own: the theme belongs to the app.

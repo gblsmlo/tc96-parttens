@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Card1 } from '@tc96/blocks/application/card/card-1'
-import { expect, within } from 'storybook/test'
+import { Card1, type Card1Props } from '@tc96/blocks/application/card/card-1'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { facts } from '../fixtures/card-1.ts'
 import { type Card1Controls, card1ControlArgs } from './card-1-controls.ts'
 import { ComposedCard1 } from './card-1-layouts.tsx'
+
+const loaded: Card1Props = { facts }
+
+const retry = fn()
 
 const meta = {
   args: card1ControlArgs,
@@ -64,5 +68,52 @@ export const LabelsOverrideTheTitle: Story = {
     await expect(
       within(canvasElement).getByRole('region', { name: 'Resumo' }),
     ).toBeVisible()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Card1 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando detalhes')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Card1 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar os detalhes'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Card1 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Card1 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando detalhes')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar os detalhes'),
+    ).toBeNull()
   },
 }
