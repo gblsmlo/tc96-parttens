@@ -4,28 +4,25 @@ import {
   List4,
   type List4Integration,
 } from '@tc96/blocks/application/list/list-4'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { list4Handlers } from '../../../../mocks/list-4.ts'
 
 const IntegrationDirectory = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<List4Integration[]>('/list/integrations'),
     queryKey: ['list', 'integrations'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando integrações" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar as integrações</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
-  return <List4 integrations={data} onConnect={() => {}} />
+  return (
+    <List4
+      error={isError}
+      integrations={data ?? []}
+      onConnect={() => {}}
+      onRetry={() => refetch()}
+      pending={isPending}
+    />
+  )
 }
 
 const meta = {

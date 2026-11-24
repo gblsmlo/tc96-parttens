@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import type { ListLoadLabels, ListLoadProps } from '../shared/types'
 
 export type List1MetricKind = 'currency' | 'number' | 'percent'
 
@@ -12,14 +13,14 @@ export interface List1Metric {
   value: number
 }
 
-export interface List1Labels {
+export interface List1Labels extends ListLoadLabels {
   emptyDescription: string
   emptyTitle: string
   title: string
   trend: { down: string; flat: string; up: string }
 }
 
-export interface List1Props {
+export interface List1Props extends ListLoadProps {
   className?: string
   currency?: string
   labels?: Partial<List1Labels>

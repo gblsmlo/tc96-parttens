@@ -1,6 +1,10 @@
+import { defaultListLoadLabels } from '../shared/labels'
 import type { List3Labels } from './types'
 
 export const defaultList3Labels: List3Labels = {
+  ...defaultListLoadLabels,
+  errorTitle: 'Não foi possível carregar as transações',
+  loading: 'Carregando transações',
   credit: 'Entrada',
   debit: 'Saída',
   emptyDescription: 'As transações aparecem aqui quando houver movimentações.',

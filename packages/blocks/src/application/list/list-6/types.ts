@@ -1,3 +1,4 @@
+import type { ListLoadLabels, ListLoadProps } from '../shared/types'
 export type List6MoverStatus = 'delayed' | 'halted' | 'live'
 
 export interface List6Mover {
@@ -8,7 +9,7 @@ export interface List6Mover {
   status: List6MoverStatus
 }
 
-export interface List6Labels {
+export interface List6Labels extends ListLoadLabels {
   columnChange: string
   columnName: string
   columnPrice: string
@@ -23,7 +24,7 @@ export interface List6Labels {
   title: string
 }
 
-export interface List6Props {
+export interface List6Props extends ListLoadProps {
   className?: string
   currency?: string
   labels?: Partial<List6Labels>

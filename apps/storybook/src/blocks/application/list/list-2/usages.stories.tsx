@@ -5,8 +5,6 @@ import {
   type List2Entry,
   type List2Range,
 } from '@tc96/blocks/application/list/list-2'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
@@ -14,21 +12,21 @@ import { list2Handlers } from '../../../../mocks/list-2.ts'
 
 const Leaderboard = () => {
   const [range, setRange] = useState<List2Range>('30d')
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<List2Entry[]>(`/list/leaderboard?range=${range}`),
     queryKey: ['list', 'leaderboard', range],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando ranking" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar o ranking</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
-  return <List2 entries={data} onRangeChange={setRange} range={range} />
+  return (
+    <List2
+      entries={data ?? []}
+      error={isError}
+      onRangeChange={setRange}
+      onRetry={() => refetch()}
+      pending={isPending}
+      range={range}
+    />
+  )
 }
 
 const meta = {

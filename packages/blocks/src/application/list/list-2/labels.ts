@@ -1,6 +1,10 @@
+import { defaultListLoadLabels } from '../shared/labels'
 import type { List2Labels } from './types'
 
 export const defaultList2Labels: List2Labels = {
+  ...defaultListLoadLabels,
+  errorTitle: 'Não foi possível carregar o ranking',
+  loading: 'Carregando ranking',
   emptyDescription: 'O ranking aparece aqui quando houver vendas no período.',
   emptyTitle: 'Nenhum resultado no período',
   range: 'Período',

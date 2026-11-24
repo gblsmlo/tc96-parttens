@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 An integrations directory: one row per app with its initials, name, description and a Connect button or a Connected badge. Reach for it on a settings or onboarding screen. Install it with `npx @tc96/parttens add list-4`.
 
-It is a list, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app.
+It is a list, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
-The other pages of `Blocks/Application/List/List4`: [Playground](?path=/story/blocks-application-list-list4-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list4-behavior--each-row-shows-name-and-description) for the tests and [Usages](?path=/story/blocks-application-list-list4-usages--loaded) for the data read over the network.
+The other pages of `Blocks/Application/List/List4`: [Playground](?path=/story/blocks-application-list-list4-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list4-behavior--each-row-shows-name-and-description) for the tests, [States](?path=/story/blocks-application-list-list4-states--default) for the loaded, loading and error states and the empty one and [Usages](?path=/story/blocks-application-list-list4-usages--loaded) for the data read over the network.
 
 ## Import
 
@@ -35,6 +35,9 @@ Four rows: three to connect and one already connected.
 | --- | --- | --- | --- |
 | `integrations` | `List4Integration[]` | required | The rows, in order. Empty renders the empty state. |
 | `onConnect` | `(id: string) => void` | - | Called with the integration id when Connect is clicked. Without it no Connect button renders. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<List4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root classes. |
 
@@ -57,6 +60,10 @@ Four rows: three to connect and one already connected.
 | `connected` | `string` | `"Conectado"`; the badge text |
 | `emptyTitle` | `string` | `"Sem integrações"` |
 | `emptyDescription` | `string` | `"Nenhuma integração disponível no momento."` |
+| `loading` | `string` | `"Carregando integrações"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar as integrações"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 
@@ -69,6 +76,7 @@ Four rows: three to connect and one already connected.
 
 ## Accessibility and theme
 
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
 - The rows are a list named by `labels.title`; each row is a list item.
 - The button is named by `labels.connectTo`, so rows are told apart by assistive technology; the frame is `aria-hidden`.
 - The block carries no color, radius or shadow of its own: the theme belongs to the app.

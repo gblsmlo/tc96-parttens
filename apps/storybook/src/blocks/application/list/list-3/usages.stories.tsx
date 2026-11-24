@@ -5,8 +5,6 @@ import {
   type List3Period,
   type List3Transaction,
 } from '@tc96/blocks/application/list/list-3'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
@@ -14,23 +12,21 @@ import { list3Handlers } from '../../../../mocks/list-3.ts'
 
 const TransactionsFeed = () => {
   const [period, setPeriod] = useState<List3Period>('month')
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () =>
       fetchJson<List3Transaction[]>(`/list/transactions?period=${period}`),
     queryKey: ['list', 'transactions', period],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando transações" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar as transações</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
   return (
-    <List3 onPeriodChange={setPeriod} period={period} transactions={data} />
+    <List3
+      error={isError}
+      onPeriodChange={setPeriod}
+      onRetry={() => refetch()}
+      pending={isPending}
+      period={period}
+      transactions={data ?? []}
+    />
   )
 }
 

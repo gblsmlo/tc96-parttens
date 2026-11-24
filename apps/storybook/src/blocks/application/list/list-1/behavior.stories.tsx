@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List1 } from '@tc96/blocks/application/list/list-1'
-import { expect, within } from 'storybook/test'
+import { List1, type List1Props } from '@tc96/blocks/application/list/list-1'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { metrics } from '../fixtures/list-1.ts'
 import { type List1Controls, list1ControlArgs } from './list-1-controls.ts'
 import { ComposedList1 } from './list-1-layouts.tsx'
+
+const loaded: List1Props = { metrics }
+
+const retry = fn()
 
 const meta = {
   args: list1ControlArgs,
@@ -107,5 +111,63 @@ export const LabelsOverrideTexts: Story = {
       canvasElement.querySelector('[data-direction="up"]'),
     ).toHaveTextContent('Subiu')
     await expect(canvas.queryByText(/Alta de/)).toBeNull()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <List1 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando métricas')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <List1 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar as métricas'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <List1 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <List1 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando métricas')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar as métricas'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorWinsOverEmpty: Story = {
+  render: () => <List1 {...loaded} metrics={[]} error />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar as métricas'),
+    ).toBeVisible()
+    await expect(canvas.queryByText('Nenhuma métrica ainda')).toBeNull()
   },
 }

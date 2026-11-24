@@ -4,16 +4,35 @@ import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-su
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { cn } from '@tc96/utils'
+import { listLoadState } from '../shared/list-load-state'
 import { defaultList4Labels } from './labels'
+import { List4Skeleton } from './list-4-skeleton'
 import type { List4Props } from './types'
 
 export function List4({
+  error,
+  onRetry,
+  pending,
   className,
   integrations,
   labels: labelsProp,
   onConnect,
 }: Readonly<List4Props>) {
   const labels = { ...defaultList4Labels, ...labelsProp }
+  const loadState = listLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <List4Skeleton label={labels.loading} />,
+  })
+
+  if (loadState)
+    return (
+      <section aria-label={labels.title} className={className}>
+        {loadState}
+      </section>
+    )
 
   if (integrations.length === 0) {
     return (

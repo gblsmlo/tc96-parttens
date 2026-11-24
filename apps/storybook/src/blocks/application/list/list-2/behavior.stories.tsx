@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List2 } from '@tc96/blocks/application/list/list-2'
+import { List2, type List2Props } from '@tc96/blocks/application/list/list-2'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { entries } from '../fixtures/list-2.ts'
 import { type List2Controls, list2ControlArgs } from './list-2-controls.ts'
 import { ComposedList2 } from './list-2-layouts.tsx'
+
+const loaded: List2Props = { entries, range: '30d' }
+
+const retry = fn()
 
 const meta = {
   args: { ...list2ControlArgs, onRangeChange: fn() },
@@ -122,5 +126,63 @@ export const LabelsOverrideTexts: Story = {
     ).toHaveTextContent('30D')
     await expect(canvas.getByText('Lugar 1')).toBeInTheDocument()
     await expect(canvas.queryByText('Posição 1')).toBeNull()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <List2 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando ranking')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <List2 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar o ranking'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <List2 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <List2 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando ranking')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar o ranking'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorWinsOverEmpty: Story = {
+  render: () => <List2 {...loaded} entries={[]} error />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar o ranking'),
+    ).toBeVisible()
+    await expect(canvas.queryByText('Nenhum resultado no período')).toBeNull()
   },
 }

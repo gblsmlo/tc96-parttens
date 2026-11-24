@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List6 } from '@tc96/blocks/application/list/list-6'
+import { List6, type List6Props } from '@tc96/blocks/application/list/list-6'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { movers } from '../fixtures/list-6.ts'
 import { type List6Controls, list6ControlArgs } from './list-6-controls.ts'
 import { ComposedList6 } from './list-6-layouts.tsx'
+
+const loaded: List6Props = { movers, onQueryChange: () => {}, query: '' }
+
+const retry = fn()
 
 const meta = {
   args: list6ControlArgs,
@@ -128,5 +132,63 @@ export const LabelsOverrideTexts: Story = {
       canvas.getByRole('searchbox', { name: 'Filtrar' }),
     ).toBeVisible()
     await expect(canvas.getByText('Parado')).toBeVisible()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <List6 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando ativos')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <List6 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar os ativos'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <List6 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <List6 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando ativos')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar os ativos'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorWinsOverEmpty: Story = {
+  render: () => <List6 {...loaded} movers={[]} error />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar os ativos'),
+    ).toBeVisible()
+    await expect(canvas.queryByText('Sem ativos')).toBeNull()
   },
 }

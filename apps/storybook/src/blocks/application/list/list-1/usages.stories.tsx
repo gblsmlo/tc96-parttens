@@ -1,28 +1,24 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { List1, type List1Metric } from '@tc96/blocks/application/list/list-1'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { list1Handlers } from '../../../../mocks/list-1.ts'
 
 const MetricList = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<List1Metric[]>('/list/metrics'),
     queryKey: ['list', 'metrics'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando métricas" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar as métricas</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
-  return <List1 metrics={data} />
+  return (
+    <List1
+      error={isError}
+      metrics={data ?? []}
+      onRetry={() => refetch()}
+      pending={isPending}
+    />
+  )
 }
 
 const meta = {

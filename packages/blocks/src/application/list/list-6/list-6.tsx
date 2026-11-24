@@ -19,7 +19,9 @@ import {
   TableRow,
 } from '@tc96/ui/table'
 import { cn } from '@tc96/utils'
+import { listLoadState } from '../shared/list-load-state'
 import { defaultList6Labels } from './labels'
+import { List6Skeleton } from './list-6-skeleton'
 import type { List6MoverStatus, List6Props } from './types'
 
 const statusVariant = {
@@ -36,6 +38,9 @@ const trendClassName = (change: number) =>
       : 'text-muted-foreground'
 
 export function List6({
+  error,
+  onRetry,
+  pending,
   className,
   currency = 'BRL',
   labels: labelsProp,
@@ -45,6 +50,13 @@ export function List6({
   query,
 }: Readonly<List6Props>) {
   const labels = { ...defaultList6Labels, ...labelsProp }
+  const loadState = listLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <List6Skeleton label={labels.loading} />,
+  })
 
   return (
     <div className={cn('grid gap-3', className)}>
@@ -60,69 +72,72 @@ export function List6({
           value={query}
         />
       </InputGroup>
-      {movers.length === 0 ? (
-        <StateSurface
-          description={
-            query ? labels.noResultDescription : labels.emptyDescription
-          }
-          kind={query ? 'no-result' : 'empty'}
-          title={query ? labels.noResultTitle : labels.emptyTitle}
-        />
-      ) : (
-        <Table>
-          <TableCaption className="sr-only">{labels.title}</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{labels.columnName}</TableHead>
-              <TableHead>{labels.columnStatus}</TableHead>
-              <TableHead className="text-end">{labels.columnPrice}</TableHead>
-              <TableHead className="text-end">{labels.columnChange}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {movers.map((mover) => (
-              <TableRow data-mover={mover.id} key={mover.id}>
-                <TableCell>
-                  <span className="flex items-center gap-3">
-                    <IconFrame aria-hidden="true" shape="rounded" size="sm">
-                      <span className="font-medium text-xs">
-                        {getInitials(mover.name)}
-                      </span>
-                    </IconFrame>
-                    <span className="font-medium">{mover.name}</span>
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={statusVariant[mover.status]}>
-                    {labels.statuses[mover.status]}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-end tabular-nums">
-                  {formatAmount(mover.price, { currency, locale })}
-                </TableCell>
-                <TableCell className="text-end tabular-nums">
-                  <span
-                    className={trendClassName(mover.change)}
-                    data-trend={
-                      mover.change > 0
-                        ? 'up'
-                        : mover.change < 0
-                          ? 'down'
-                          : 'flat'
-                    }
-                  >
-                    {formatAmount(mover.change, {
-                      locale,
-                      signDisplay: 'exceptZero',
-                      style: 'percent',
-                    })}
-                  </span>
-                </TableCell>
+      {loadState ??
+        (movers.length === 0 ? (
+          <StateSurface
+            description={
+              query ? labels.noResultDescription : labels.emptyDescription
+            }
+            kind={query ? 'no-result' : 'empty'}
+            title={query ? labels.noResultTitle : labels.emptyTitle}
+          />
+        ) : (
+          <Table>
+            <TableCaption className="sr-only">{labels.title}</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{labels.columnName}</TableHead>
+                <TableHead>{labels.columnStatus}</TableHead>
+                <TableHead className="text-end">{labels.columnPrice}</TableHead>
+                <TableHead className="text-end">
+                  {labels.columnChange}
+                </TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+            </TableHeader>
+            <TableBody>
+              {movers.map((mover) => (
+                <TableRow data-mover={mover.id} key={mover.id}>
+                  <TableCell>
+                    <span className="flex items-center gap-3">
+                      <IconFrame aria-hidden="true" shape="rounded" size="sm">
+                        <span className="font-medium text-xs">
+                          {getInitials(mover.name)}
+                        </span>
+                      </IconFrame>
+                      <span className="font-medium">{mover.name}</span>
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={statusVariant[mover.status]}>
+                      {labels.statuses[mover.status]}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-end tabular-nums">
+                    {formatAmount(mover.price, { currency, locale })}
+                  </TableCell>
+                  <TableCell className="text-end tabular-nums">
+                    <span
+                      className={trendClassName(mover.change)}
+                      data-trend={
+                        mover.change > 0
+                          ? 'up'
+                          : mover.change < 0
+                            ? 'down'
+                            : 'flat'
+                      }
+                    >
+                      {formatAmount(mover.change, {
+                        locale,
+                        signDisplay: 'exceptZero',
+                        style: 'percent',
+                      })}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ))}
     </div>
   )
 }

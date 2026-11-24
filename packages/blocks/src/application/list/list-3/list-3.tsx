@@ -5,7 +5,9 @@ import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-su
 import { Amount } from '@tc96/parttens/widgets/shared/amount'
 import { Tabs, TabsList, TabsTab } from '@tc96/ui/tabs'
 import { cn } from '@tc96/utils'
+import { listLoadState } from '../shared/list-load-state'
 import { defaultList3Labels } from './labels'
+import { List3Skeleton } from './list-3-skeleton'
 import type { List3Period, List3Props } from './types'
 
 const defaultPeriods: List3Period[] = ['week', 'month', 'year']
@@ -16,6 +18,9 @@ function formatDay(value: string, locale: string) {
 }
 
 export function List3({
+  error,
+  onRetry,
+  pending,
   className,
   currency = 'BRL',
   labels: labelsProp,
@@ -26,6 +31,13 @@ export function List3({
   transactions,
 }: Readonly<List3Props>) {
   const labels = { ...defaultList3Labels, ...labelsProp }
+  const loadState = listLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <List3Skeleton label={labels.loading} />,
+  })
 
   return (
     <section aria-label={labels.title} className={cn('grid gap-3', className)}>
@@ -44,54 +56,55 @@ export function List3({
           </TabsList>
         </Tabs>
       </div>
-      {transactions.length === 0 ? (
-        <StateSurface
-          description={labels.emptyDescription}
-          kind="empty"
-          title={labels.emptyTitle}
-        />
-      ) : (
-        <ul className="grid list-none gap-2">
-          {transactions.map((transaction) => {
-            const kind = transaction.amount < 0 ? 'debit' : 'credit'
-            const DefaultIcon =
-              kind === 'debit' ? ArrowUpRightIcon : ArrowDownLeftIcon
+      {loadState ??
+        (transactions.length === 0 ? (
+          <StateSurface
+            description={labels.emptyDescription}
+            kind="empty"
+            title={labels.emptyTitle}
+          />
+        ) : (
+          <ul className="grid list-none gap-2">
+            {transactions.map((transaction) => {
+              const kind = transaction.amount < 0 ? 'debit' : 'credit'
+              const DefaultIcon =
+                kind === 'debit' ? ArrowUpRightIcon : ArrowDownLeftIcon
 
-            return (
-              <List
-                actions={
-                  <span
-                    className={cn(
-                      'text-sm',
-                      kind === 'debit'
-                        ? 'text-destructive-foreground'
-                        : 'text-success-foreground',
-                    )}
-                    data-kind={kind}
-                  >
-                    <span className="sr-only">{labels[kind]} </span>
-                    <Amount
-                      className="font-medium"
-                      format={{
-                        currency,
-                        locale,
-                        signDisplay: 'always',
-                        style: 'currency',
-                      }}
-                      value={transaction.amount}
-                    />
-                  </span>
-                }
-                description={formatDay(transaction.date, locale)}
-                icon={transaction.icon ?? <DefaultIcon aria-hidden="true" />}
-                key={transaction.id}
-                render={<li data-transaction={transaction.id} />}
-                title={transaction.description}
-              />
-            )
-          })}
-        </ul>
-      )}
+              return (
+                <List
+                  actions={
+                    <span
+                      className={cn(
+                        'text-sm',
+                        kind === 'debit'
+                          ? 'text-destructive-foreground'
+                          : 'text-success-foreground',
+                      )}
+                      data-kind={kind}
+                    >
+                      <span className="sr-only">{labels[kind]} </span>
+                      <Amount
+                        className="font-medium"
+                        format={{
+                          currency,
+                          locale,
+                          signDisplay: 'always',
+                          style: 'currency',
+                        }}
+                        value={transaction.amount}
+                      />
+                    </span>
+                  }
+                  description={formatDay(transaction.date, locale)}
+                  icon={transaction.icon ?? <DefaultIcon aria-hidden="true" />}
+                  key={transaction.id}
+                  render={<li data-transaction={transaction.id} />}
+                  title={transaction.description}
+                />
+              )
+            })}
+          </ul>
+        ))}
     </section>
   )
 }

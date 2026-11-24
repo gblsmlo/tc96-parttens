@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List5 } from '@tc96/blocks/application/list/list-5'
+import { List5, type List5Props } from '@tc96/blocks/application/list/list-5'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { modules } from '../fixtures/list-5.ts'
 import { type List5Controls, list5ControlArgs } from './list-5-controls.ts'
 import { ComposedList5 } from './list-5-layouts.tsx'
+
+const loaded: List5Props = { modules }
+
+const retry = fn()
 
 const meta = {
   args: list5ControlArgs,
@@ -104,5 +108,52 @@ export const LabelsOverrideTexts: Story = {
       canvas.getByRole('button', { name: 'Incluir Relatórios' }),
     ).toBeVisible()
     await expect(canvas.getByRole('button', { name: 'Explorar' })).toBeVisible()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <List5 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando módulos')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <List5 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar os módulos'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <List5 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <List5 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando módulos')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar os módulos'),
+    ).toBeNull()
   },
 }

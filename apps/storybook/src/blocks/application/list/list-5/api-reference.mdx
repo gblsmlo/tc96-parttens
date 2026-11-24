@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A list of capability modules: one row per module with its icon, name, description and an add button, plus an optional Ver mais footer button. Reach for it on a screen where the user picks what to enable. Install it with `npx @tc96/parttens add list-5`.
 
-It is a list, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app.
+It is a list, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
-The other pages of `Blocks/Application/List/List5`: [Playground](?path=/story/blocks-application-list-list5-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list5-behavior--each-row-shows-name-and-description) for the tests and [Usages](?path=/story/blocks-application-list-list5-usages--loaded) for the data read over the network.
+The other pages of `Blocks/Application/List/List5`: [Playground](?path=/story/blocks-application-list-list5-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list5-behavior--each-row-shows-name-and-description) for the tests, [States](?path=/story/blocks-application-list-list5-states--default) for the loaded, loading and error states and [Usages](?path=/story/blocks-application-list-list5-usages--loaded) for the data read over the network.
 
 ## Import
 
@@ -36,6 +36,9 @@ Four modules, each with an add button, and the footer button.
 | `modules` | `List5Module[]` | required | The rows, in order. |
 | `onAdd` | `(id: string) => void` | - | Called with the module id when its add button is clicked. Without it no add button renders. |
 | `onBrowseMore` | `() => void` | - | Called when the footer button is clicked. Without it the footer does not render. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<List5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root classes. |
 
@@ -55,6 +58,10 @@ Four modules, each with an add button, and the footer button.
 | `title` | `string` | `"Módulos disponíveis"`; the accessible name of the list |
 | `add` | `(name: string) => string` | `"Adicionar Relatórios"`; the accessible name of each add button |
 | `browseMore` | `string` | `"Ver mais"`; the text of the footer button |
+| `loading` | `string` | `"Carregando módulos"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar os módulos"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 
@@ -67,6 +74,7 @@ Four modules, each with an add button, and the footer button.
 
 ## Accessibility and theme
 
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
 - The rows are a list named by `labels.title`; each row is a list item.
 - The add button is an icon button named by `labels.add`, so rows are told apart by assistive technology; the icon is `aria-hidden`.
 - The block carries no color, radius or shadow of its own: the theme belongs to the app.
