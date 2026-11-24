@@ -4,8 +4,6 @@ import {
   Stats4,
   type Stats4Range,
 } from '@tc96/blocks/application/stats/stats-4'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
@@ -14,27 +12,21 @@ import type { LeadsOverview } from '../fixtures/stats-4.ts'
 
 const LeadsCard = () => {
   const [range, setRange] = useState<Stats4Range>('30d')
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<LeadsOverview>(`/stats/leads?range=${range}`),
     queryKey: ['stats', 'leads', range],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando leads" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar os leads</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
   return (
     <Stats4
-      goal={data.goal}
+      error={isError}
+      goal={data?.goal ?? 0}
       onRangeChange={setRange}
+      onRetry={() => refetch()}
+      pending={isPending}
       range={range}
-      sources={data.sources}
-      total={data.total}
+      sources={data?.sources ?? []}
+      total={data?.total ?? 0}
     />
   )
 }

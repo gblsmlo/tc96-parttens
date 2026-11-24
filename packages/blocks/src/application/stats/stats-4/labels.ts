@@ -1,6 +1,10 @@
+import { defaultStatsLoadLabels } from '../shared/labels'
 import type { Stats4Labels } from './types'
 
 export const defaultStats4Labels: Stats4Labels = {
+  ...defaultStatsLoadLabels,
+  errorTitle: 'Não foi possível carregar os leads',
+  loading: 'Carregando leads',
   goal: (goal) => `Meta de ${goal} leads`,
   goalProgress: (total, goal, percent) =>
     `${total} de ${goal} leads, ${percent} da meta`,

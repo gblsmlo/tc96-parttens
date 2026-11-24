@@ -3,7 +3,9 @@ import { formatAmount } from '@tc96/helpers/format'
 import { trendDirection } from '@tc96/parttens/widgets/shared/trend-indicator'
 import { WidgetShell } from '@tc96/parttens/widgets/shared/widget-shell'
 import { Badge } from '@tc96/ui/badge'
+import { statsLoadState } from '../shared/stats-load-state'
 import { defaultStats5Labels } from './labels'
+import { Stats5Skeleton } from './stats-5-skeleton'
 import type { Stats5Item, Stats5Labels, Stats5Props } from './types'
 
 const icons = { down: ArrowDownIcon, flat: MinusIcon, up: ArrowUpIcon }
@@ -44,6 +46,9 @@ function TrendBadge({
 }
 
 export function Stats5({
+  error,
+  onRetry,
+  pending,
   className,
   currency = 'BRL',
   items,
@@ -51,6 +56,13 @@ export function Stats5({
   locale = 'pt-BR',
 }: Readonly<Stats5Props>) {
   const text = { ...defaultStats5Labels, ...labels }
+  const loadState = statsLoadState({
+    error,
+    labels: text,
+    onRetry,
+    pending,
+    skeleton: <Stats5Skeleton label={text.loading} />,
+  })
   const formatValue = (item: Stats5Item) =>
     formatAmount(item.value, {
       currency,
@@ -61,31 +73,35 @@ export function Stats5({
 
   return (
     <WidgetShell aria-label={text.title} className={className}>
-      <ul
-        className="grid divide-y sm:grid-cols-3 sm:divide-x sm:divide-y-0"
-        data-slot="stats-5-list"
-      >
-        {items.map((item) => (
-          <li
-            className="flex flex-col gap-3 p-6"
-            data-slot="stats-5-item"
-            key={item.id}
-          >
-            <span className="text-muted-foreground text-sm">{item.label}</span>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="font-semibold text-3xl tabular-nums">
-                {formatValue(item)}
+      {loadState ?? (
+        <ul
+          className="grid divide-y sm:grid-cols-3 sm:divide-x sm:divide-y-0"
+          data-slot="stats-5-list"
+        >
+          {items.map((item) => (
+            <li
+              className="flex flex-col gap-3 p-6"
+              data-slot="stats-5-item"
+              key={item.id}
+            >
+              <span className="text-muted-foreground text-sm">
+                {item.label}
               </span>
-              <TrendBadge
-                labels={text}
-                locale={locale}
-                lowerIsBetter={item.lowerIsBetter}
-                value={item.trend}
-              />
-            </div>
-          </li>
-        ))}
-      </ul>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-semibold text-3xl tabular-nums">
+                  {formatValue(item)}
+                </span>
+                <TrendBadge
+                  labels={text}
+                  locale={locale}
+                  lowerIsBetter={item.lowerIsBetter}
+                  value={item.trend}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </WidgetShell>
   )
 }

@@ -1,3 +1,4 @@
+import type { StatsLoadLabels, StatsLoadProps } from '../shared/types'
 export type Stats4Range = '7d' | '30d' | '90d'
 
 export interface Stats4Source {
@@ -7,7 +8,7 @@ export interface Stats4Source {
   value: number
 }
 
-export interface Stats4Labels {
+export interface Stats4Labels extends StatsLoadLabels {
   goal: (goal: string) => string
   goalProgress: (total: string, goal: string, percent: string) => string
   range: string
@@ -18,7 +19,7 @@ export interface Stats4Labels {
   total: (range: string) => string
 }
 
-export interface Stats4Props {
+export interface Stats4Props extends StatsLoadProps {
   className?: string
   goal: number
   labels?: Partial<Stats4Labels>

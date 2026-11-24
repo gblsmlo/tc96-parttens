@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Stats3 } from '@tc96/blocks/application/stats/stats-3'
-import { expect, within } from 'storybook/test'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { capacity } from '../fixtures/stats-3.ts'
 import { type Stats3Controls, stats3ControlArgs } from './stats-3-controls.ts'
 import { ComposedStats3 } from './stats-3-layouts.tsx'
+
+const loaded = { items: capacity }
+
+const retry = fn()
 
 const meta = {
   args: stats3ControlArgs,
@@ -81,5 +85,53 @@ export const LabelsOverrideTexts: Story = {
     await expect(canvas.getByRole('region', { name: 'Limites' })).toBeVisible()
     await expect(canvas.getAllByText('18 de 25')).not.toHaveLength(0)
     await expect(canvas.queryByText('18 / 25')).toBeNull()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Stats3 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByLabelText('Carregando capacidade'),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      canvas.getByRole('region', { name: 'Capacidade' }),
+    ).toBeVisible()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Stats3 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar a capacidade'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Stats3 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Stats3 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando capacidade')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar a capacidade'),
+    ).toBeNull()
   },
 }

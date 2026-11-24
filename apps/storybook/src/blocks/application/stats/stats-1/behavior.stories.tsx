@@ -5,6 +5,10 @@ import { stats } from '../fixtures/stats-1.ts'
 import { type Stats1Controls, stats1ControlArgs } from './stats-1-controls.ts'
 import { ComposedStats1 } from './stats-1-layouts.tsx'
 
+const loaded = { stats }
+
+const retry = fn()
+
 const meta = {
   args: { ...stats1ControlArgs, onStatAction: fn() },
   parameters: { layout: 'padded' },
@@ -106,5 +110,64 @@ export const LabelsOverrideTexts: Story = {
     ).toBeVisible()
     await expect(canvas.getAllByText(/Subida de/)).toHaveLength(2)
     await expect(canvas.queryByText(/Alta de/)).toBeNull()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Stats1 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByLabelText('Carregando indicadores'),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      canvas.getByRole('region', { name: 'Indicadores' }),
+    ).toBeVisible()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Stats1 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar os indicadores'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Stats1 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Stats1 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando indicadores')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar os indicadores'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorWinsOverEmpty: Story = {
+  render: () => <Stats1 {...loaded} error stats={[]} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar os indicadores'),
+    ).toBeVisible()
+    await expect(canvas.queryByText('Nenhum indicador ainda')).toBeNull()
   },
 }
