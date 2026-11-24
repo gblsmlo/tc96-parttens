@@ -1615,5 +1615,126 @@
     "FlowStepStats",
     "FlowStepType",
     "FlowStepValues"
+  ],
+  "block:settings-1": [
+    "Settings1",
+    "Settings1Field",
+    "Settings1Labels",
+    "Settings1Props"
+  ],
+  "block:settings-2": [
+    "Settings2",
+    "Settings2Labels",
+    "Settings2Options",
+    "Settings2Props",
+    "Settings2SettingOption",
+    "Settings2Values"
+  ],
+  "block:settings-3": [
+    "Settings3",
+    "Settings3Labels",
+    "Settings3Options",
+    "Settings3Props",
+    "Settings3SettingOption",
+    "Settings3Values"
+  ],
+  "block:settings-4": [
+    "Settings4",
+    "Settings4Labels",
+    "Settings4Option",
+    "Settings4Props",
+    "Settings4ThemeGroup"
+  ],
+  "block:settings-5": [
+    "Settings5",
+    "Settings5Labels",
+    "Settings5Props",
+    "Settings5TimeZone"
+  ],
+  "block:settings-6": [
+    "Settings6",
+    "Settings6Invitation",
+    "Settings6InvitationAction",
+    "Settings6Labels",
+    "Settings6Member",
+    "Settings6MemberAction",
+    "Settings6Props",
+    "Settings6Role",
+    "Settings6Seats"
+  ],
+  "block:settings-7": [
+    "Settings7",
+    "Settings7Action",
+    "Settings7Labels",
+    "Settings7Props",
+    "Settings7Tag"
+  ],
+  "block:settings-8": [
+    "Settings8",
+    "Settings8Labels",
+    "Settings8Props"
+  ],
+  "block:settings-9": [
+    "Settings9",
+    "Settings9Action",
+    "Settings9Labels",
+    "Settings9Props",
+    "Settings9Rule",
+    "Settings9RuleIcon"
+  ],
+  "block:settings-10": [
+    "Settings10",
+    "Settings10Action",
+    "Settings10Labels",
+    "Settings10Phase",
+    "Settings10Props",
+    "Settings10Stage"
+  ],
+  "block:settings-11": [
+    "Settings11",
+    "Settings11Action",
+    "Settings11Group",
+    "Settings11Labels",
+    "Settings11Props",
+    "Settings11Status"
+  ],
+  "block:settings-12": [
+    "Settings12",
+    "Settings12Action",
+    "Settings12ActionType",
+    "Settings12Labels",
+    "Settings12NextAction",
+    "Settings12Props",
+    "Settings12Stage"
+  ],
+  "block:settings-13": [
+    "Settings13",
+    "Settings13Action",
+    "Settings13Labels",
+    "Settings13Props",
+    "Settings13Reason"
+  ],
+  "block:settings-14": [
+    "Settings14",
+    "Settings14Account",
+    "Settings14AccountType",
+    "Settings14Action",
+    "Settings14Labels",
+    "Settings14Props"
+  ],
+  "block:settings-15": [
+    "Settings15",
+    "Settings15Action",
+    "Settings15Category",
+    "Settings15Direction",
+    "Settings15Labels",
+    "Settings15Props"
+  ],
+  "block:settings-16": [
+    "Settings16",
+    "Settings16Action",
+    "Settings16CostCenter",
+    "Settings16Labels",
+    "Settings16Props"
   ]
 }

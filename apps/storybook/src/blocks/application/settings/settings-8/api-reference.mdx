@@ -1,0 +1,67 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings8
+
+A settings section with one switch that turns SLAs on or off. Reach for it when the app lets admins set deadlines for issues that match automation rules. Install it with `npx @tc96/parttens add settings-8`.
+
+It is a section, not a page: it renders no `main` landmark. The block keeps the switch state itself and only calls `onEnabledChange`; it never fetches or stores the setting. Saving stays in the app.
+
+The other pages of `Blocks/Application/Settings/Settings8`: [Playground](?path=/story/blocks-application-settings-settings8-playground--playground) to try the texts and the initial state, [Behavior](?path=/story/blocks-application-settings-settings8-behavior--switch-calls-on-enabled-change) for the tests and [Usages](?path=/story/blocks-application-settings-settings8-usages--loaded) for the setting read over the network.
+
+## Import
+
+```tsx
+import { Settings8 } from '@tc96/blocks/application/settings/settings-8'
+```
+
+The same path exports the types `Settings8Props` and `Settings8Labels`.
+
+## Anatomy
+
+The section with the title, the description and the switch:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Settings8
+  enabled={sla.enabled}
+  onEnabledChange={(enabled) => saveSla(enabled)}
+/>
+```
+
+## Settings8
+
+The SLA section. Renders the title, then one row with the description and the switch named by `labels.enable`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `enabled` | `boolean` | `undefined` (off) | Whether the switch is on. The block keeps no copy: update it from `onEnabledChange`. |
+| `onEnabledChange` | `(enabled: boolean) => void` | - | Called with the new state each time the switch changes. |
+| `labels` | `Partial<Settings8Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+The block takes no other props.
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"SLAs"` |
+| `description` | `string` | `"Aplique prazos às issues que correspondem às regras de automação"` |
+| `enable` | `string` | `"Ativar SLAs"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Settings8` | `component` | The SLA section. |
+| `Settings8Props` | `type` | The props of the section. |
+| `Settings8Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The switch is named by `labels.enable`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

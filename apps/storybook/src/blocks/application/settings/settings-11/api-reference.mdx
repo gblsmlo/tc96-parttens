@@ -1,0 +1,95 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings11
+
+A settings section that lists the statuses of projects, grouped under collapsible titles. Each row shows an icon, the status name, how many projects use it and, when the app handles actions, a menu to edit or delete. Reach for it when the app lets people set the stages a project goes through. Install it with `npx @tc96/parttens add settings-11`.
+
+It is a section, not a page: it renders no `main` landmark. Creating, editing and deleting stay in the app; the block only calls `onCreate` and `onStatusAction`, keeps no list of its own and never fetches or stores anything.
+
+The other pages of `Blocks/Application/Settings/Settings11`: [Playground](?path=/story/blocks-application-settings-settings11-playground--playground) to try the texts and the actions, [Behavior](?path=/story/blocks-application-settings-settings11-behavior--new-status-button-calls-on-create) for the tests and [Usages](?path=/story/blocks-application-settings-settings11-usages--loaded) for the list read over the network.
+
+## Import
+
+```tsx
+import { Settings11 } from '@tc96/blocks/application/settings/settings-11'
+```
+
+The same path exports the types `Settings11Props`, `Settings11Group`, `Settings11Status`, `Settings11Action` and `Settings11Labels`.
+
+## Anatomy
+
+The section with its groups and the row menus:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Settings11
+  groups={statusGroups}
+  onCreate={openNewStatus}
+  onStatusAction={(statusId, action) => handleStatusAction(statusId, action)}
+/>
+```
+
+## Settings11
+
+The statuses section. Renders the title, the description and, with `onCreate`, the New status button, then one collapsible group per entry of `groups`, each with its statuses as rows.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `groups` | `Settings11Group[]` | required | The groups to list, each with its statuses. |
+| `onCreate` | `() => void` | - | Called when the New status button is clicked. Without it the button is not rendered. |
+| `onStatusAction` | `(statusId: string, action: Settings11Action) => void` | - | Called with the status id and `'edit'` or `'delete'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `labels` | `Partial<Settings11Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+The block takes no other props.
+
+## Settings11Group
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the group and its collapsible. |
+| `title` | `string` | Title of the collapsible group. |
+| `statuses` | `Settings11Status[]` | Rows listed inside the group. |
+
+## Settings11Status
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the status in `onStatusAction`. |
+| `label` | `string` | Title of the row. |
+| `icon` | `Icon` | A Phosphor icon component, shown in a frame at the start of the row. |
+| `projects` | `number` | Projects using the status, shown in `labels.projects`. Without it the row has no description. |
+| `toneClassName` | `string` | Classes of the icon frame, for example `text-sky-700 dark:text-sky-300`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Status de projetos"` |
+| `description` | `string` | `"Os status definem o fluxo que os projetos percorrem do início à conclusão"` |
+| `newStatus` | `string` | `"Novo status"` |
+| `edit` | `string` | `"Editar"` |
+| `delete` | `string` | `"Excluir"` |
+| `actions` | `(name: string) => string` | `"Ações de Em andamento"` for `"Em andamento"`; the accessible name of the row menu |
+| `projects` | `(count: number) => string` | `"12 projetos"`; `1 projeto` in the singular |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Settings11` | `component` | The statuses section. |
+| `Settings11Props` | `type` | The props of the section. |
+| `Settings11Group` | `type` | A collapsible group with its statuses. |
+| `Settings11Status` | `type` | A status row, with its icon and optional count. |
+| `Settings11Action` | `type` | `'edit' \| 'delete'`. |
+| `Settings11Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The row menu button is named by `labels.actions(name)`, so each row's menu is told apart by screen readers.
+- Each group is a section labelled by its title, and it opens and closes from that title.
+- The block carries no color, radius or shadow of its own beyond `toneClassName`: the theme belongs to the app.

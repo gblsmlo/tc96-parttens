@@ -1,0 +1,92 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings9
+
+A settings section that lists automation rules. Each rule reads in two lines: the condition, a field, an operator and a value, and the action it applies. Each row has a menu to edit or delete the rule when the app handles actions. Reach for it when the app lets people add or remove SLAs automatically from filters. Install it with `npx @tc96/parttens add settings-9`.
+
+It is a section, not a page: it renders no `main` landmark. Creating, editing and deleting stay in the app; the block only calls `onCreate` and `onRuleAction`, keeps no list of its own and never fetches or stores anything.
+
+The other pages of `Blocks/Application/Settings/Settings9`: [Playground](?path=/story/blocks-application-settings-settings9-playground--playground) to try the texts, the empty list and the actions, [Behavior](?path=/story/blocks-application-settings-settings9-behavior--empty-list-shows-state-surface) for the tests and [Usages](?path=/story/blocks-application-settings-settings9-usages--loaded) for the list read over the network.
+
+## Import
+
+```tsx
+import { Settings9 } from '@tc96/blocks/application/settings/settings-9'
+```
+
+The same path exports the types `Settings9Props`, `Settings9Rule`, `Settings9RuleIcon`, `Settings9Action` and `Settings9Labels`.
+
+## Anatomy
+
+The section with rules, each with its condition and its action:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Settings9
+  onCreate={openNewRule}
+  onRuleAction={(ruleId, action) => handleRuleAction(ruleId, action)}
+  rules={rules}
+/>
+```
+
+## Settings9
+
+The rules section. Renders the title, the description and, with `onCreate`, the Add rule button, then one row per rule. With no rules it renders an empty state in place of the rows.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `rules` | `Settings9Rule[]` | required | The rules to list; an empty array shows the empty state. |
+| `onCreate` | `() => void` | - | Called when the Add rule button is clicked. Without it the button is not rendered. |
+| `onRuleAction` | `(ruleId: string, action: Settings9Action) => void` | - | Called with the rule id and `'edit'` or `'delete'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `labels` | `Partial<Settings9Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+The block takes no other props.
+
+## Settings9Rule
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the rule in `onRuleAction`. |
+| `field` | `string` | The field of the condition, shown in the first badge. |
+| `operator` | `string` | The operator of the condition, shown in the second badge. |
+| `value` | `{ icon?: Settings9RuleIcon; label: string }` | The value of the condition, shown in the third badge; the optional icon is drawn before the label. |
+| `action` | `{ icon?: Settings9RuleIcon; text: string }` | The action of the rule, shown on the Then line; the optional icon is drawn before the text. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Regras de automação"` |
+| `description` | `string` | `"Use regras de automação para adicionar ou remover SLAs automaticamente com base em filtros."` |
+| `addRule` | `string` | `"Adicionar regra"` |
+| `edit` | `string` | `"Editar"` |
+| `delete` | `string` | `"Excluir"` |
+| `emptyTitle` | `string` | `"Nenhuma regra ainda"` |
+| `emptyDescription` | `string` | `"Adicione uma regra para aplicar ou remover SLAs automaticamente."` |
+| `whenLabel` | `string` | `"Quando"` |
+| `thenLabel` | `string` | `"Então"` |
+| `condition` | `string` | `"Condição"`; the accessible name of the group with the three badges |
+| `actions` | `(field: string, operator: string, value: string) => string` | `"Ações de Etapa é igual a Proposta"` for `("Etapa", "é igual a", "Proposta")`; the accessible name of the row menu |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Settings9` | `component` | The rules section. |
+| `Settings9Props` | `type` | The props of the section. |
+| `Settings9Rule` | `type` | A rule: its condition, its action and its id. |
+| `Settings9RuleIcon` | `type` | The component type of the optional icons. |
+| `Settings9Action` | `type` | `'edit' \| 'delete'`. |
+| `Settings9Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The condition is a group named by `labels.condition`, so each rule's three badges are read together.
+- The row menu button is named by `labels.actions(field, operator, value)`, so each rule's menu is told apart by screen readers.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

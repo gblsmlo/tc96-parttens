@@ -1,0 +1,106 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings1
+
+A profile and account section: an avatar, the editable fields, the e-mail with its own save button, the sessions count and the account actions. Reach for it when the app lets people edit their own profile and account. Install it with `npx @tc96/parttens add settings-1`.
+
+It is a section, not a page: it renders no `main` landmark. Saving the fields, uploading the avatar, signing out and deleting the account stay in the app; the block only calls the handlers and never fetches or stores anything. The e-mail form validates the address itself and clears its error on the next valid submit.
+
+The other pages of `Blocks/Application/Settings/Settings1`: [Playground](?path=/story/blocks-application-settings-settings1-playground--playground) to try the texts, the sessions count and the actions, [Behavior](?path=/story/blocks-application-settings-settings1-behavior--email-submit-calls-on-email-submit) for the tests and [Usages](?path=/story/blocks-application-settings-settings1-usages--loaded) for the account read over the network.
+
+## Import
+
+```tsx
+import { Settings1 } from '@tc96/blocks/application/settings/settings-1'
+```
+
+The same path exports the types `Settings1Field`, `Settings1Labels` and `Settings1Props`.
+
+## Anatomy
+
+The profile section with the avatar and one editable field, then the account section with the e-mail form, the sessions row and the delete row:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Settings1
+  avatarInitials="AR"
+  email={email}
+  fields={fields}
+  onDeleteAccount={deleteAccount}
+  onEmailSubmit={changeEmail}
+  onFieldCommit={saveField}
+  onSignOutEverywhere={signOutAll}
+  onUploadAvatar={pickAvatar}
+  sessionCount={2}
+/>
+```
+
+## Settings1
+
+The profile and account sections. Renders the avatar row, one row per field, the e-mail form, the sessions row and the delete row. The avatar button and the e-mail form are always rendered; the sign-out and delete buttons appear only with their callbacks.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `avatarInitials` | `string` | required | Initials shown in the avatar button. |
+| `email` | `string` | required | Starting value of the e-mail field. The form keeps its own value after that. |
+| `fields` | `Settings1Field[]` | required | The editable rows of the profile section, in order. |
+| `sessionCount` | `number` | required | Count shown in the sessions row, in the singular or the plural. |
+| `labels` | `Partial<Settings1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `onDeleteAccount` | `() => void` | - | Called when the delete button is clicked. Without it the button is not rendered. |
+| `onEmailSubmit` | `(email: string) => void` | - | Called with the trimmed e-mail when the save button is clicked and the address is valid. |
+| `onFieldCommit` | `(fieldId: string, value: string) => void` | - | Called with the field id and its value when a field loses focus. |
+| `onSignOutEverywhere` | `() => void` | - | Called when the sign-out button is clicked. Without it the button is not rendered. |
+| `onUploadAvatar` | `() => void` | - | Called when the avatar button is clicked. |
+| `className` | `string` | - | Merged into the root element's classes. |
+
+## Settings1Field
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the field in `onFieldCommit`. |
+| `label` | `string` | Title of the row and the accessible name of its input. |
+| `value` | `string` | Starting value of the input. |
+| `description` | `string` | Optional text under the title. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `profileTitle` | `string` | `"Perfil"` |
+| `profileDescription` | `string` | `"Como você aparece para sua equipe em todos os espaços de trabalho."` |
+| `avatarTitle` | `string` | `"Avatar"` |
+| `avatarDescription` | `string` | `"PNG ou JPG, com pelo menos 256 × 256 px"` |
+| `uploadAvatar` | `string` | `"Enviar avatar"` |
+| `accountTitle` | `string` | `"Conta"` |
+| `accountDescription` | `string` | `"Dados de acesso e sessões da sua conta."` |
+| `emailTitle` | `string` | `"E-mail"` |
+| `emailDescription` | `string` | `"Usado para entrar e para receber notificações"` |
+| `emailLabel` | `string` | `"E-mail"` |
+| `emailSave` | `string` | `"Salvar"` |
+| `emailInvalid` | `string` | `"Informe um e-mail válido."` |
+| `sessionsTitle` | `string` | `"Sessões"` |
+| `sessionsDescription` | `(count: number) => string` | `"Conectado em 2 dispositivos"` for `2`; `"dispositivo"` in the singular for `1` |
+| `signOutEverywhere` | `string` | `"Sair de todos os dispositivos"` |
+| `deleteAccountTitle` | `string` | `"Excluir conta"` |
+| `deleteAccountDescription` | `string` | `"Remove sua conta e seu acesso a todos os espaços de trabalho"` |
+| `deleteAccount` | `string` | `"Excluir conta"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Settings1` | `component` | The profile and account sections. |
+| `Settings1Props` | `type` | The props of the sections. |
+| `Settings1Field` | `type` | An editable row of the profile section. |
+| `Settings1Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The avatar is a button named by `labels.uploadAvatar`; its initials are its fallback text.
+- Each field input is named by its `label`, and the e-mail input by `labels.emailLabel`.
+- A rejected e-mail shows its error under the input through the field's error text.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

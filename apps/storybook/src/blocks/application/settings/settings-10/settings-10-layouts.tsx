@@ -1,0 +1,30 @@
+import {
+  Settings10,
+  type Settings10Props,
+} from '@tc96/blocks/application/settings/settings-10'
+import { phases, stages } from '../fixtures/settings-10.ts'
+import type { Settings10Controls } from './settings-10-controls.ts'
+
+interface ComposedSettings10Props extends Settings10Controls {
+  onStageAction?: Settings10Props['onStageAction']
+  onStageCreate?: Settings10Props['onStageCreate']
+}
+
+const ignore = () => undefined
+
+export const ComposedSettings10 = ({
+  description,
+  newStage,
+  onStageAction = ignore,
+  onStageCreate = ignore,
+  title,
+  withActions,
+}: Readonly<ComposedSettings10Props>) => (
+  <Settings10
+    labels={{ description, newStage, title }}
+    onStageAction={withActions ? onStageAction : undefined}
+    onStageCreate={withActions ? onStageCreate : undefined}
+    phases={phases}
+    stages={stages}
+  />
+)
