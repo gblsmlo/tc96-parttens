@@ -1,41 +1,85 @@
 import {
-  RecordConfirmDialog,
-  type RecordConfirmDialogProps,
+  PersonProperty,
   RecordDialog,
   RecordDialogCreateMore,
   RecordDialogHeadline,
   type RecordDialogProps,
+  RecordGroupRow,
+  RichTextEditor,
+  SelectProperty,
+  TextProperty,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { Checkbox } from '@tc96/ui/checkbox'
-import { Label } from '@tc96/ui/label'
-import { Maximize2Icon } from 'lucide-react'
-import { useState } from 'react'
+import { GitBranchIcon, Maximize2Icon } from 'lucide-react'
+import { type ReactNode, useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
-import type {
-  RecordConfirmDialogControls,
-  RecordDialogControls,
-} from './record-dialog-controls.ts'
+import { people, priorityOptions, statusOptions } from './project-record'
+import type { RecordDialogControls } from './record-dialog-controls.ts'
 
-interface ComposedRecordDialogProps extends RecordDialogControls {
+export interface ComposedRecordDialogProps extends RecordDialogControls {
+  children?: ReactNode
   defaultOpen?: boolean
+  keepOpenOnSuccess?: boolean
+  onCreateMoreChange?: (checked: boolean) => void
   onOpenAsPage?: () => void
   onOpenChange?: (open: boolean) => void
   onSubmit?: RecordDialogProps['onSubmit']
+  onTitleChange?: (title: string) => void
+  open?: boolean
+}
+
+const ProjectPropertyBar = () => {
+  const [lead, setLead] = useState<string | null>(null)
+  const [priority, setPriority] = useState('none')
+  const [status, setStatus] = useState('planned')
+
+  return (
+    <>
+      <SelectProperty
+        ariaLabel="Status"
+        onValueChange={(value) => setStatus(value ?? 'planned')}
+        options={statusOptions}
+        value={status}
+        variant="plain"
+      />
+      <SelectProperty
+        ariaLabel="Priority"
+        onValueChange={(value) => setPriority(value ?? 'none')}
+        options={priorityOptions}
+        value={priority}
+        variant="plain"
+      />
+      <PersonProperty
+        ariaLabel="Lead"
+        onValueChange={setLead}
+        options={people}
+        placeholder="Lead"
+        value={lead}
+        variant="plain"
+      />
+    </>
+  )
 }
 
 export const ComposedRecordDialog = ({
   actions,
+  bodyWidth,
   cancelLabel,
+  children,
   createMore,
   defaultOpen = true,
   description,
   errorMessage,
   headline,
   headlineDescription,
+  keepOpenOnSuccess,
+  onCreateMoreChange,
   onOpenAsPage,
   onOpenChange,
   onSubmit,
+  onTitleChange,
+  open: controlledOpen,
+  properties,
   size,
   stretchBody,
   submitDisabled,
@@ -56,6 +100,27 @@ export const ComposedRecordDialog = ({
     return true
   }
 
+  const headlineField = headline ? (
+    <RecordDialogHeadline
+      descriptionLabel={headlineDescription ? 'Description' : undefined}
+      descriptionPlaceholder="Add description..."
+      onTitleChange={(next) => {
+        setRecordTitle(next)
+        onTitleChange?.(next)
+      }}
+      title={recordTitle}
+      titleLabel="Project title"
+      titlePlaceholder="Project title"
+    />
+  ) : null
+  const body =
+    headlineField || children ? (
+      <>
+        {headlineField}
+        {children}
+      </>
+    ) : null
+
   return (
     <>
       <Button onClick={() => setOpen(true)} variant="outline">
@@ -74,6 +139,7 @@ export const ComposedRecordDialog = ({
             </Button>
           ) : undefined
         }
+        bodyWidth={bodyWidth}
         cancelLabel={cancelLabel || undefined}
         description={description || undefined}
         errorMessage={errorMessage || undefined}
@@ -82,18 +148,22 @@ export const ComposedRecordDialog = ({
             <RecordDialogCreateMore
               checked={keepOpen}
               label="Create more"
-              onCheckedChange={setKeepOpen}
+              onCheckedChange={(checked) => {
+                setKeepOpen(checked)
+                onCreateMoreChange?.(checked)
+              }}
             />
           ) : undefined
         }
-        keepOpenOnSuccess={createMore && keepOpen}
+        keepOpenOnSuccess={keepOpenOnSuccess ?? (createMore && keepOpen)}
         onOpenChange={(next) => {
           setOpen(next)
           if (!next) setRecordTitle('')
           onOpenChange?.(next)
         }}
         onSubmit={onSubmit ?? save}
-        open={open}
+        open={controlledOpen ?? open}
+        properties={properties ? <ProjectPropertyBar /> : undefined}
         size={size}
         stretchBody={stretchBody}
         submitDisabled={submitDisabled}
@@ -103,78 +173,136 @@ export const ComposedRecordDialog = ({
         title={title}
         titleAncestor={titleAncestor || undefined}
       >
-        {headline ? (
-          <RecordDialogHeadline
-            descriptionLabel={headlineDescription ? 'Description' : undefined}
-            descriptionPlaceholder="Add description..."
-            onTitleChange={setRecordTitle}
-            stretch={stretchBody}
-            title={recordTitle}
-            titleLabel="Project title"
-            titlePlaceholder="Project title"
-          />
-        ) : null}
+        {body}
       </RecordDialog>
     </>
   )
 }
 
-interface ComposedRecordConfirmDialogProps extends RecordConfirmDialogControls {
-  defaultOpen?: boolean
-  onConfirm?: RecordConfirmDialogProps['onConfirm']
-  onOpenChange?: (open: boolean) => void
+export interface ProjectDraft {
+  lead: string | null
+  priority: string
+  repository: string | null
+  status: string
+  title: string
 }
 
-export const ComposedRecordConfirmDialog = ({
-  body,
-  cancelLabel,
-  confirmDisabled,
-  confirmLabel,
-  confirmingLabel,
-  defaultOpen = true,
-  description,
-  errorMessage,
-  onConfirm,
-  onOpenChange,
-  title,
-  tone,
-  trigger,
-}: Readonly<ComposedRecordConfirmDialogProps>) => {
-  const [open, setOpen] = useState(defaultOpen)
+interface FormationProps {
+  onChange?: (patch: Partial<ProjectDraft>) => void
+}
 
-  const confirm = async () => {
-    await sleep(1000)
-    return true
+const useProjectProperties = (onChange?: FormationProps['onChange']) => {
+  const [draft, setDraft] = useState<ProjectDraft>({
+    lead: null,
+    priority: 'none',
+    repository: null,
+    status: 'planned',
+    title: '',
+  })
+
+  const update = (patch: Partial<ProjectDraft>) => {
+    setDraft((current) => ({ ...current, ...patch }))
+    onChange?.(patch)
   }
 
+  const status = (
+    <SelectProperty
+      ariaLabel="Status"
+      onValueChange={(value) => update({ status: value ?? 'planned' })}
+      options={statusOptions}
+      value={draft.status}
+    />
+  )
+  const priority = (
+    <SelectProperty
+      ariaLabel="Priority"
+      onValueChange={(value) => update({ priority: value ?? 'none' })}
+      options={priorityOptions}
+      value={draft.priority}
+    />
+  )
+  const lead = (
+    <PersonProperty
+      ariaLabel="Lead"
+      onValueChange={(value) => update({ lead: value })}
+      options={people}
+      placeholder="Lead"
+      value={draft.lead}
+    />
+  )
+  const repository = (
+    <TextProperty
+      ariaLabel="Repository"
+      editing="inline"
+      fallback="Add repository"
+      icon={GitBranchIcon}
+      onCommit={(value) => update({ repository: value })}
+      value={draft.repository}
+    />
+  )
+
+  return { lead, priority, repository, status }
+}
+
+export const InlinePropertiesFormation = ({
+  onChange,
+}: Readonly<FormationProps>) => {
+  const { lead, priority, status } = useProjectProperties(onChange)
+
   return (
-    <>
-      <Button onClick={() => setOpen(true)} variant="outline">
-        {trigger}
-      </Button>
-      <RecordConfirmDialog
-        cancelLabel={cancelLabel}
-        confirmDisabled={confirmDisabled}
-        confirmingLabel={confirmingLabel || undefined}
-        confirmLabel={confirmLabel}
-        description={description || undefined}
-        errorMessage={errorMessage || undefined}
-        onConfirm={onConfirm ?? confirm}
-        onOpenChange={(next) => {
-          setOpen(next)
-          onOpenChange?.(next)
-        }}
-        open={open}
-        title={title}
-        tone={tone}
-      >
-        {body ? (
-          <Label>
-            <Checkbox />
-            Also delete its 12 issues
-          </Label>
-        ) : null}
-      </RecordConfirmDialog>
-    </>
+    <div className="flex flex-1 flex-col pt-3">
+      <div className="mt-auto flex flex-wrap items-center gap-2">
+        {status}
+        {priority}
+        {lead}
+      </div>
+    </div>
+  )
+}
+
+export const RowPropertiesFormation = ({
+  onChange,
+}: Readonly<FormationProps>) => {
+  const { lead, priority, repository, status } = useProjectProperties(onChange)
+
+  return (
+    <div className="mt-4">
+      <div>
+        <RecordGroupRow label="Status">{status}</RecordGroupRow>
+        <RecordGroupRow label="Priority">{priority}</RecordGroupRow>
+        <RecordGroupRow label="Lead">{lead}</RecordGroupRow>
+        <RecordGroupRow label="Repository">{repository}</RecordGroupRow>
+      </div>
+    </div>
+  )
+}
+
+export const PropertyBarOverBodyFormation = () => (
+  <div className="flex flex-1 flex-col">
+    <div className="mt-2 flex flex-wrap items-center gap-2">
+      <ProjectPropertyBar />
+    </div>
+    <div className="flex flex-1 flex-col pt-6">
+      <RichTextEditor
+        aria-label="Project brief"
+        className="flex-1"
+        placeholder="Write the brief"
+      />
+    </div>
+  </div>
+)
+
+export const DescriptionOverBodyFormation = ({
+  onChange,
+}: Readonly<FormationProps>) => {
+  const { lead, priority, repository, status } = useProjectProperties(onChange)
+
+  return (
+    <div>
+      <RecordGroupRow label="Status">{status}</RecordGroupRow>
+      <RecordGroupRow label="Priority">{priority}</RecordGroupRow>
+      <RecordGroupRow label="Lead">{lead}</RecordGroupRow>
+      <RecordGroupRow label="Repository">{repository}</RecordGroupRow>
+    </div>
   )
 }

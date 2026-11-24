@@ -1038,7 +1038,7 @@ export const Notes: Story = {
     docs: {
       description: {
         story:
-          'Keeps the notes of the record, newest first: the title carries the count, and each note is a `RecordGroupLink` rendered as a `button` with the author avatar, the title in ink, the first lines of the body muted and the relative date as a `time` in `meta`. A row opens the note in the `NoteDialog` of [Patterns/Records/Dialog/Usages, New Note](?path=/story/patterns-records-dialog-usages--new-note), + opens it empty, and a save moves the note to the top. One `NoteDialog` serves every request and resets its fields when `note` changes. `Ver tudo` opens the full list.',
+          'Keeps the notes of the record, newest first: the title carries the count, and each note is a `RecordGroupLink` rendered as a `button` with the author avatar, the title in ink, the first lines of the body muted and the relative date as a `time` in `meta`. A row opens the note in the `NoteDialog` of [Patterns/Records/RecordDialog/Usages, Note](?path=/story/patterns-records-recorddialog-usages--note), + opens it empty, and a save moves the note to the top. One `NoteDialog` serves every request and resets its fields when `note` changes. `Ver tudo` opens the full list.',
       },
       source: { inlineLimit: 250 },
     },

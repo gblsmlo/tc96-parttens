@@ -11,7 +11,7 @@ const meta = {
   argTypes: recordDialogControlArgTypes,
   render: (args) => <ComposedRecordDialog {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Records/Dialog/Playground',
+  title: 'Patterns/Records/RecordDialog/Playground',
 } satisfies Meta<RecordDialogControls>
 
 export default meta

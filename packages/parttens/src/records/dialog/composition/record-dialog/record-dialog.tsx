@@ -4,6 +4,7 @@ import { Button } from '@tc96/ui/button'
 import { Form } from '@tc96/ui/form'
 import { Kbd } from '@tc96/ui/kbd'
 import { Spinner } from '@tc96/ui/spinner'
+import { cn } from '@tc96/utils'
 import {
   type FormEvent,
   type KeyboardEvent,
@@ -31,6 +32,7 @@ function useModifierHint(enabled: boolean) {
 
 export function RecordDialog({
   actions,
+  bodyWidth = 'fill',
   cancelLabel,
   children,
   className,
@@ -41,6 +43,7 @@ export function RecordDialog({
   onOpenChange,
   onSubmit,
   open,
+  properties,
   size,
   stretchBody,
   submitDisabled = false,
@@ -77,7 +80,11 @@ export function RecordDialog({
   const form = (
     <Form
       aria-busy={pending || undefined}
-      className={stretchBody ? 'flex flex-1 flex-col' : undefined}
+      className={cn(
+        stretchBody && 'flex flex-1 flex-col',
+        bodyWidth === 'readable' && 'mx-auto w-full max-w-2xl',
+      )}
+      data-body-width={bodyWidth}
       data-slot="record-dialog-form"
       id={formId}
       onKeyDown={handleKeyDown}
@@ -137,6 +144,7 @@ export function RecordDialog({
       onOpenChange={onOpenChange}
       open={open}
       pending={pending}
+      properties={properties}
       size={size}
       stretchBody={stretchBody}
       title={title}

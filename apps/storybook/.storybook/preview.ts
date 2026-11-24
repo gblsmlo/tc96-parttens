@@ -146,9 +146,9 @@ const preview: Preview = {
           'API Reference',
           'Playground',
           'Stories',
+          'Layouts',
           'Behavior',
           'Usages',
-          'Layouts',
         ]
         const partsA = a.title.split('/')
         const partsB = b.title.split('/')

@@ -30,7 +30,7 @@ import {
   statusOptions,
 } from '../project-record'
 
-interface InlinePropertiesArgs {
+interface ProjectsArgs {
   onCreate: (values: ProjectValues) => void | Promise<void>
   onOpenSingle: () => void
 }
@@ -40,7 +40,7 @@ const meta = {
     onCreate: fn(async (_values: ProjectValues) => {}),
     onOpenSingle: fn(),
   },
-  render: function InlineProperties({ onCreate, onOpenSingle }) {
+  render: function Projects({ onCreate, onOpenSingle }) {
     const [open, setOpen] = useState(true)
     const [createMore, setCreateMore] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -131,7 +131,6 @@ const meta = {
               descriptionLabel="Description"
               descriptionPlaceholder="Add description..."
               onTitleChange={setTitle}
-              stretch
               title={title}
               titleLabel="Project title"
               titlePlaceholder="Project title"
@@ -233,19 +232,19 @@ const meta = {
     )
   },
   tags: ['!autodocs'],
-  title: 'Patterns/Records/Dialog/Usages',
-} satisfies Meta<InlinePropertiesArgs>
+  title: 'Patterns/Records/RecordDialog/Usages',
+} satisfies Meta<ProjectsArgs>
 
 export default meta
 
-type Story = StoryObj<InlinePropertiesArgs>
+type Story = StoryObj<ProjectsArgs>
 
-export const InlineProperties: Story = {
+export const Projects: Story = {
   parameters: {
     docs: {
       description: {
         story:
-          'Quick capture of a project with the properties inline: a borderless title and description, and every property as a chip pinned to the bottom with `stretchBody`. Use it when the fields are few and optional. Open as page sits in `actions`, Create more in `footerStart`, and Mod+Enter submits.',
+          'Quick capture of a project on the [Inline Properties](?path=/story/patterns-records-recorddialog-layouts--inline-properties) layout: a borderless title and description, and Status, Priority, Lead, Repos and the dates as chips pinned to the bottom. Open as page sits in `actions`, Create more in `footerStart`, and Mod+Enter submits.',
       },
     },
   },

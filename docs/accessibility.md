@@ -157,7 +157,7 @@ O texto de erro, de alerta e do `Badge` usa `destructive-foreground`, acima de 4
 
 ### `RecordDialog`
 
-Com `submitOnModEnter`, o botão de enviar mostra um `Kbd` (`⌘ ↵` ou `Ctrl ↵`) sobre `bg-primary`. O `Kbd` do COSS pinta `bg-muted text-muted-foreground`, par feito para `background` e `muted`; sobre `primary` a dica usa `bg-primary-foreground/16 text-primary-foreground` (`record-dialog-submit-hint`, com exceção em `scripts/override-exceptions.json`). Medido com o botão em foco na antiga story `Failed Submit`; hoje o axe confere a dica em `Patterns/Records/Dialog/Stories`, `submitOnModEnter`, nos dois temas; o hover é `bg-primary/90` sobre `popover`:
+Com `submitOnModEnter`, o botão de enviar mostra um `Kbd` (`⌘ ↵` ou `Ctrl ↵`) sobre `bg-primary`. O `Kbd` do COSS pinta `bg-muted text-muted-foreground`, par feito para `background` e `muted`; sobre `primary` a dica usa `bg-primary-foreground/16 text-primary-foreground` (`record-dialog-submit-hint`, com exceção em `scripts/override-exceptions.json`). Medido com o botão em foco na antiga story `Failed Submit`; hoje o axe confere a dica em `Patterns/Records/RecordDialog/Stories`, `submitOnModEnter`, nos dois temas; o hover é `bg-primary/90` sobre `popover`:
 
 | Par | Com o par do COSS | Atual |
 | --- | --- | --- |

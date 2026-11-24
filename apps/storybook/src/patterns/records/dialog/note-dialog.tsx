@@ -1,103 +1,22 @@
 import {
-  EditorTitle,
-  type EditorTitleHandle,
   PersonProperty,
-  PropertySurface,
   RecordDialog,
+  RecordDialogHeadline,
   RichTextEditor,
-  type RichTextEditorHandle,
   type RichTextValue,
+  SelectProperty,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import {
-  Menu,
-  MenuCheckboxItem,
-  MenuPopup,
-  MenuSub,
-  MenuSubPopup,
-  MenuSubTrigger,
-  MenuTrigger,
-} from '@tc96/ui/menu'
-import { Link2Icon, LinkIcon } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { LinkIcon } from 'lucide-react'
+import { useState } from 'react'
 import {
   isNoteEmpty,
   type Note,
   type NoteValues,
-  noteAuthor,
   noteAuthors,
-  noteLink,
-  noteLinkGroups,
+  notePriorityOptions,
+  noteStatusOptions,
 } from './note-record'
-
-function LinksProperty({
-  onValueChange,
-  value,
-}: Readonly<{
-  onValueChange: (value: readonly string[]) => void
-  value: readonly string[]
-}>) {
-  const single = value.length === 1 ? noteLink(value[0] ?? '') : null
-  const Icon = single?.icon ?? Link2Icon
-  const summary =
-    value.length === 0 ? null : (single?.label ?? `${value.length} vínculos`)
-
-  return (
-    <Menu>
-      <MenuTrigger
-        render={
-          <PropertySurface
-            aria-label={summary ? `Vínculos: ${summary}` : undefined}
-            muted={summary === null}
-            render={<button type="button" />}
-            variant="plain"
-          />
-        }
-      >
-        <Icon aria-hidden className="size-3.5" />
-        {summary ?? 'Vínculos'}
-      </MenuTrigger>
-      <MenuPopup align="start">
-        {noteLinkGroups.map(({ icon: GroupIcon, label, options }) => {
-          const linked = options.filter((option) =>
-            value.includes(option.value),
-          ).length
-
-          return (
-            <MenuSub key={label}>
-              <MenuSubTrigger>
-                <GroupIcon aria-hidden />
-                <span className="flex-1">{label}</span>
-                {linked > 0 ? (
-                  <span className="text-muted-foreground text-xs tabular-nums">
-                    {linked}
-                  </span>
-                ) : null}
-              </MenuSubTrigger>
-              <MenuSubPopup>
-                {options.map((option) => (
-                  <MenuCheckboxItem
-                    checked={value.includes(option.value)}
-                    key={option.value}
-                    onCheckedChange={(checked) =>
-                      onValueChange(
-                        checked
-                          ? [...value, option.value]
-                          : value.filter((link) => link !== option.value),
-                      )
-                    }
-                  >
-                    {option.label}
-                  </MenuCheckboxItem>
-                ))}
-              </MenuSubPopup>
-            </MenuSub>
-          )
-        })}
-      </MenuPopup>
-    </Menu>
-  )
-}
 
 export interface NoteDialogProps {
   note: Note | null
@@ -119,16 +38,18 @@ export function NoteDialog({
   const [shownNote, setShownNote] = useState(note)
   const [title, setTitle] = useState(note?.title ?? '')
   const [body, setBody] = useState<RichTextValue>(note?.body ?? [])
-  const [links, setLinks] = useState(note?.links ?? [])
+  const [status, setStatus] = useState(note?.status ?? 'planned')
+  const [priority, setPriority] = useState(note?.priority ?? 'none')
+  const [responsible, setResponsible] = useState(note?.responsible ?? null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const titleRef = useRef<EditorTitleHandle>(null)
-  const bodyRef = useRef<RichTextEditorHandle>(null)
-  const values = { body, links, title: title.trim() }
+  const values = { body, priority, responsible, status, title: title.trim() }
 
   const reset = () => {
     setTitle(note?.title ?? '')
     setBody(note?.body ?? [])
-    setLinks(note?.links ?? [])
+    setStatus(note?.status ?? 'planned')
+    setPriority(note?.priority ?? 'none')
+    setResponsible(note?.responsible ?? null)
     setErrorMessage(null)
   }
 
@@ -168,6 +89,7 @@ export function NoteDialog({
         }
         return true
       }}
+      bodyWidth="readable"
       open={open}
       size="large"
       stretchBody
@@ -178,38 +100,46 @@ export function NoteDialog({
       title={note ? 'Editar nota' : 'Nova nota'}
       titleAncestor={recordName}
     >
-      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 pt-6">
-        <div className="flex flex-col gap-2">
-          <EditorTitle
-            autoFocus
-            defaultValue={title}
-            emptyLabel="Nota sem título"
-            label="Título da nota"
-            onArrowDownAtEnd={() => bodyRef.current?.focusStart()}
-            onChange={setTitle}
-            onEnter={() => bodyRef.current?.focusStart()}
-            ref={titleRef}
-          />
-          <div className="flex flex-wrap items-center gap-2">
-            <PersonProperty
-              ariaLabel="Autor"
-              options={noteAuthors}
-              readOnly
-              value={note?.author ?? noteAuthor}
-              variant="plain"
-            />
-            <LinksProperty onValueChange={setLinks} value={links} />
-          </div>
-        </div>
-        <RichTextEditor
-          aria-label="Conteúdo da nota"
-          className="flex-1"
-          defaultValue={body.length > 0 ? body : undefined}
-          onExitStart={() => titleRef.current?.focusEnd()}
-          onValueChange={setBody}
-          placeholder="Comece a escrever sua nota"
-          ref={bodyRef}
+      <div className="flex flex-1 flex-col">
+        <RecordDialogHeadline
+          onTitleChange={setTitle}
+          title={title}
+          titleLabel="Título da nota"
+          titlePlaceholder="Nota sem título"
         />
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <SelectProperty
+            ariaLabel="Status"
+            onValueChange={(value) => setStatus(value ?? 'planned')}
+            options={noteStatusOptions}
+            value={status}
+            variant="plain"
+          />
+          <SelectProperty
+            ariaLabel="Prioridade"
+            onValueChange={(value) => setPriority(value ?? 'none')}
+            options={notePriorityOptions}
+            value={priority}
+            variant="plain"
+          />
+          <PersonProperty
+            ariaLabel="Responsável"
+            onValueChange={setResponsible}
+            options={noteAuthors}
+            placeholder="Responsável"
+            value={responsible}
+            variant="plain"
+          />
+        </div>
+        <div className="flex flex-1 flex-col pt-6">
+          <RichTextEditor
+            aria-label="Conteúdo da nota"
+            className="flex-1"
+            defaultValue={body.length > 0 ? body : undefined}
+            onValueChange={setBody}
+            placeholder="Comece a escrever sua nota"
+          />
+        </div>
       </div>
     </RecordDialog>
   )

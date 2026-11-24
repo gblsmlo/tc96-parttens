@@ -1,16 +1,27 @@
 import { richTextToPlainText } from '@tc96/helpers/rich-text'
-import type { PersonPropertyOption, RichTextValue } from '@tc96/parttens'
+import type {
+  PersonPropertyOption,
+  RichTextValue,
+  SelectPropertyOption,
+} from '@tc96/parttens'
 import {
-  CalendarIcon,
-  FileSignatureIcon,
-  type LucideIcon,
-  TargetIcon,
-  UserIcon,
+  CircleCheckIcon,
+  CircleDashedIcon,
+  CircleDotIcon,
+  CircleIcon,
+  CircleXIcon,
+  MinusIcon,
+  SignalHighIcon,
+  SignalLowIcon,
+  SignalMediumIcon,
+  TriangleAlertIcon,
 } from 'lucide-react'
 
 export interface NoteValues {
   body: RichTextValue
-  links: readonly string[]
+  priority: string
+  responsible: string | null
+  status: string
   title: string
 }
 
@@ -31,51 +42,41 @@ export const noteAuthors: readonly PersonPropertyOption[] = [
   { fallback: 'GM', label: 'Gabriel Melo', value: 'gabriel' },
 ]
 
-export interface NoteLinkGroup {
-  icon: LucideIcon
-  label: string
-  options: readonly { label: string; value: string }[]
-}
-
-export const noteLinkGroups: readonly NoteLinkGroup[] = [
+export const noteStatusOptions: readonly SelectPropertyOption[] = [
+  { icon: CircleIcon, label: 'Backlog', tone: 'neutral', value: 'backlog' },
   {
-    icon: UserIcon,
-    label: 'Contato',
-    options: [
-      { label: 'Otávio Ramos', value: 'contact:otavio' },
-      { label: 'Ricardo Melo', value: 'contact:ricardo' },
-    ],
+    icon: CircleDashedIcon,
+    label: 'Planejada',
+    tone: 'neutral',
+    value: 'planned',
   },
   {
-    icon: TargetIcon,
-    label: 'Lead',
-    options: [{ label: 'Revisional bancária', value: 'lead:banking' }],
+    icon: CircleDotIcon,
+    label: 'Em andamento',
+    tone: 'warning',
+    value: 'in-progress',
   },
   {
-    icon: FileSignatureIcon,
-    label: 'Contratos',
-    options: [
-      { label: 'Contrato de honorários', value: 'contract:fees' },
-      { label: 'Aditivo 01', value: 'contract:addendum' },
-    ],
+    icon: CircleCheckIcon,
+    label: 'Concluída',
+    tone: 'success',
+    value: 'completed',
   },
-  {
-    icon: CalendarIcon,
-    label: 'Reunião',
-    options: [
-      { label: 'Consulta inicial · 14/10', value: 'meeting:first' },
-      { label: 'Revisão de contrato · 21/10', value: 'meeting:review' },
-    ],
-  },
+  { icon: CircleXIcon, label: 'Cancelada', tone: 'danger', value: 'canceled' },
 ]
 
-export const noteLink = (value: string) => {
-  for (const group of noteLinkGroups) {
-    const option = group.options.find((item) => item.value === value)
-    if (option) return { ...option, icon: group.icon }
-  }
-  return null
-}
+export const notePriorityOptions: readonly SelectPropertyOption[] = [
+  { icon: MinusIcon, label: 'Sem prioridade', tone: 'neutral', value: 'none' },
+  {
+    icon: TriangleAlertIcon,
+    label: 'Urgente',
+    tone: 'danger',
+    value: 'urgent',
+  },
+  { icon: SignalHighIcon, label: 'Alta', tone: 'warning', value: 'high' },
+  { icon: SignalMediumIcon, label: 'Média', tone: 'info', value: 'medium' },
+  { icon: SignalLowIcon, label: 'Baixa', tone: 'neutral', value: 'low' },
+]
 
 export const initialNotes: readonly Note[] = [
   {
@@ -87,7 +88,9 @@ export const initialNotes: readonly Note[] = [
       },
     ],
     id: 'note-contact',
-    links: ['meeting:first', 'contract:fees'],
+    priority: 'high',
+    responsible: 'gabriel',
+    status: 'in-progress',
     title: 'Preferências de contato',
     updatedAt: '2026-10-18T13:58:00.000Z',
   },
@@ -95,7 +98,9 @@ export const initialNotes: readonly Note[] = [
     author: 'ana',
     body: [],
     id: 'note-empty',
-    links: [],
+    priority: 'none',
+    responsible: null,
+    status: 'planned',
     title: '',
     updatedAt: '2026-10-15T14:00:00.000Z',
   },

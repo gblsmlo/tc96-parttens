@@ -4,21 +4,20 @@ Guide for agents working in `packages/parttens/src/records/dialog`. The repo-wid
 
 ## What it is
 
-A dialog for acting on a record. `RecordDialog` covers create and edit: an internal shell on the COSS `Dialog` (header with an optional icon and a breadcrumb-style trail `ancestor › title`, optional actions row, optional panel, error slot, footer), a COSS `Form` that holds the consumer's fields, and a footer with an optional cancel and the submit. Fields, validation, mutation and error text belong to the consumer; there is no form library in the pattern. Two optional parts ship with it for the bodies below: `RecordDialogHeadline`, the borderless title and description, and `RecordDialogCreateMore`, the switch meant for `footerStart` with `keepOpenOnSuccess`.
+A dialog for creating a record. `RecordDialog` is the create step: an internal shell on the COSS `Dialog` (header with an optional icon and a breadcrumb-style trail `ancestor › title`, optional actions row, optional panel, error slot, footer), a COSS `Form` that holds the consumer's fields, and a footer with an optional cancel and the submit. Fields, validation, mutation and error text belong to the consumer; there is no form library in the pattern. Two optional parts ship with it for the bodies below: `RecordDialogHeadline`, the borderless title and description, and `RecordDialogCreateMore`, the switch meant for `footerStart` with `keepOpenOnSuccess`.
 
-`RecordConfirmDialog` is the second compound of the folder: a confirmation (delete, archive, cancel) on the COSS `AlertDialog`, with a destructive tone by default and optional `children` for a short choice such as where to move items. It lives here, and not in a pattern of its own, because it shares `useSettledAction` and the error line with `RecordDialog`: a separate pattern would import `../dialog/hooks/` by path and the registry would ship loose pieces of this folder. Installing `record-dialog` brings both.
+A confirmation before an action that is hard to undo is the COSS `AlertDialog` (`UI/AlertDialog`), not a compound of this pattern: `RecordConfirmDialog` duplicated it and was removed on 2026-11-23.
 
 ## Files
 
 | File | Owns | Public |
 | --- | --- | --- |
 | `index.ts` | the barrel: re-exports `composition/index.ts` and the types from `core.ts` | yes |
-| `core.ts` | the React-free surface: `RecordDialogProps`, `RecordDialogSettlement`, `RecordDialogHeadlineProps`, `RecordDialogCreateMoreProps`, `RecordConfirmDialogProps`, `RecordConfirmDialogTone` | types through the barrel |
+| `core.ts` | the React-free surface: `RecordDialogProps`, `RecordDialogSettlement`, `RecordDialogHeadlineProps`, `RecordDialogCreateMoreProps`, `RecordDialogSize` | types through the barrel |
 | `composition/index.ts` | re-exports the compounds | through the barrel |
 | `components/dialog-shell.tsx` | `DialogShell`: popup with the size scale, actions, header trail, panel, error and footer, on the COSS `Dialog` | no |
-| `components/dialog-error.tsx` | `DialogError`: the `role="alert"` line shared by both compounds | no |
+| `components/dialog-error.tsx` | `DialogError`: the `role="alert"` line above the footer | no |
 | `composition/record-dialog/record-dialog.tsx` | `RecordDialog` | yes |
-| `composition/record-confirm-dialog/record-confirm-dialog.tsx` | `RecordConfirmDialog`: COSS `AlertDialog` with the settle rule of `RecordDialog` | yes |
 | `composition/record-dialog/record-dialog-headline.tsx` | `RecordDialogHeadline`: borderless title and optional description on COSS `Field`, `Input` and `Textarea` | yes |
 | `composition/record-dialog/record-dialog-create-more.tsx` | `RecordDialogCreateMore`: COSS `Switch` with its label | yes |
 | `hooks/use-settled-action.ts` | `useSettledAction`: pending state, re-entry guard, the settle rule and the focus return after a failure | no |
@@ -28,20 +27,14 @@ Import direction: `composition/` → `components/` and `hooks/` → `core.ts`.
 
 ## Use cases
 
-`RecordDialog` has two documented bodies on the same shell, both with the `actions` open-as-page shortcut, `RecordDialogCreateMore` in `footerStart` bound to `keepOpenOnSuccess`, and `submitOnModEnter`:
+The bodies are documented on `Patterns/Records/RecordDialog`, on the five component pages of the `storybook-write` skill (API Reference, Playground, Layouts, Behavior, Usages), and a body appears on one page only:
 
-- `InlineProperties` (inline): `RecordDialogHeadline` with `stretch`, property chips pinned to the bottom with `stretchBody`. Use it for quick capture where the fields are few and the properties are optional.
-- `SimpleForm` (form): the same fields and payload as labeled COSS `Field` rows, scrolling in the panel without `stretchBody`. Use it for explicit entry, long bodies or required fields that need a visible label.
+- `Layouts` holds the formations that serve more than one case, with the generic project content of `ComposedRecordDialog`, in `record-dialog-layouts.tsx`: `Default` (the headline, title and description, and nothing else in the body; it is also the Playground's render), `InlineProperties` (the properties as chips pinned to the bottom, with `stretchBody`), `RowProperties` (one `RecordGroupRow` per property), `PropertyBarOverBody` (without the headline description, a bar of `plain` chips 8px under the title, and a free body 24px below, here a `RichTextEditor`, that fills a `large` popup with `stretchBody` in the `readable` column, as `Note`) and `DescriptionOverBody` (no headline: the trail with the dialog `description` under it, and a body free for content, here one `RecordGroupRow` per project property). `ComposedRecordDialog` always renders the headline of `Default`, and each `<Name>Formation`, passed as its `children`, only adds what comes after it: a layout never replaces or restyles the title and the description, and drops the headline or its description only through the `headline` and `headlineDescription` controls. Turning a part on or off is a Playground control and a Behavior guarantee, not a layout; a body that only arranges fields for one case is a Usage on `Default`.
+- `Usages` holds one create case per record, with real content, and each links the layout it fills: `Projects` and `Contacts` on Inline Properties (`Contacts` without `stretchBody`), `Leads` and `Events` on Row Properties, `Note` on Property Bar Over Body (the headline without a description), and `Project Setup` on Description Over Body (accordion sections, each holding a `RecordGroup` with `collapsible={false}` and selectable properties). Editing and confirmations are not cases of this pattern.
 
-`RowProperties` is a third body for a calendar event or appointment, prefilled with a clicked slot: `RecordDialogHeadline`, then a list of `RecordGroupRow` rows whose values are `properties` displays. The order goes from what places the event to what classifies it: Date (a `ScheduleProperty` that owns the day, times, all day, repeat and reminders), Guests, Location (an inline `TextProperty`), Type (Event or Appointment, what it is), Calendar (where it is filed) and Availability (Busy, Free). Type and Calendar are separate selects because they are independent choices, and the title follows Type. The last three have defaults, so they come last. Each row label is also the `ariaLabel` of its value. An inline `TextProperty` commits on blur, and Mod+Enter submits in the same event, so the story keeps the draft in `useRecordDraft` and `onSubmit` reads `latest.current`; `reset` pairs with `keepOpenOnSuccess`. It has no `actions` shortcut; `Create more` is in `footerStart` and puts every field back to its default after a save. It is the documented use of `errorMessage`: an end time before the start, or a failed save, keeps the dialog open with the message.
+`Events` renders `CreateEventDialog` (`create-event-dialog.tsx`, fixtures in `event-record.ts`), the only copy of the event body, prefilled with the clicked slot. The row order goes from what places the event to what classifies it: Date (a `ScheduleProperty` that owns the day, times, all day, repeat and reminders), Guests, Location (an inline `TextProperty`), Type (Event or Appointment), Calendar and Availability. Type and Calendar are separate selects because they are independent choices, and the title follows Type. An inline `TextProperty` commits on blur, and Mod+Enter submits in the same event, so the draft lives in `useRecordDraft` and `onSubmit` reads `latest.current`; `reset` pairs with `keepOpenOnSuccess`. It is the documented use of `errorMessage`: an end time before the start, or a failed save, keeps the dialog open with the message.
 
-The stories are in `apps/storybook/src/patterns/records/dialog/`; the shared lists, the zod schema and the payload shape live in `project-record.ts` there, and in `event-record.ts` for `RowProperties`.
-
-Usages sit on `Patterns/Records/Dialog/Usages`, in `usages.stories.tsx` and `usages/`. `Contacts` is the `InlineProperties` body for the Contacts collection: name as title, a description textarea, and every other field as a property chip, without `stretchBody` so the popup keeps the height of its content. Cargo and Empresa share `CreatableProperty` (`creatable-property.tsx`), a COSS `Combobox` with search, the existing values and a footer button that creates the typed value. `CreateContactDialog` (`create-contact-dialog.tsx`) is controlled, and the Contacts usage of `Patterns/Collection` mounts the same component from Novo contato.
-
-`Leads` is the create step of a lead, built like `Row Properties`: `RecordDialogHeadline` and `RecordGroupRow` rows for Etapa and Origem (`SelectProperty`), Responsável (`PersonProperty`) and Próxima ação (`SelectProperty`). `LeadDialog` (`lead-dialog.tsx`, fixtures in `lead-record.ts`) is controlled and resets its fields when it closes.
-
-`Notes` is the note editor of a record, `large` with `stretchBody`: `EditorTitle`, the author and Vínculos as `plain` chips, and a `RichTextEditor` filling the rest. Vínculos is a `PropertySurface` menu with one COSS submenu per kind (Contato, Lead, Contratos, Reunião) holding `MenuCheckboxItem` items, so the check sits in the trailing column as in the collection view menus. `NoteDialog` (`note-dialog.tsx`, fixtures in `note-record.ts`) is controlled and resets its fields when `note` changes, so one instance serves every request; the Notes usage of `Patterns/Records/Group/Usages` mounts it from a row and from +. Focus does not return to the opener on close: the title autofocuses before Base UI records the element focused before open, as in every body here that autofocuses a field (issue #210).
+`Contacts` renders `CreateContactDialog` (`create-contact-dialog.tsx`): name as title, a description textarea, and every other field as a property chip. Cargo and Empresa share `CreatableProperty` (`creatable-property.tsx`), a COSS `Combobox` with search, the existing values and a footer button that creates the typed value. `Leads` renders `LeadDialog` (`lead-dialog.tsx`, fixtures in `lead-record.ts`), which resets its fields when it closes. `Note` renders `NoteDialog` (`note-dialog.tsx`, fixtures in `note-record.ts`) with `note={null}`; its bar holds Status, Prioridade and Responsável, the properties of the layout. `NoteDialog` also edits an existing note for `Patterns/Records/Group/Usages`, which is not documented here. Focus does not return to the opener on close: the title autofocuses before Base UI records the element focused before open, as in every body here that autofocuses a field (issue #210).
 
 ## Public API
 
@@ -50,6 +43,7 @@ type RecordDialogSettlement = boolean | Promise<boolean>
 
 interface RecordDialogProps {
   actions?: ReactNode                // consumer-owned header shortcuts, left of the close button
+  bodyWidth?: 'fill' | 'readable'    // default 'fill'; 'readable' centers the form in a 672px column
   cancelLabel?: string               // no cancel button when absent
   children?: ReactNode               // the consumer's fields; no panel renders without it
   className?: string                 // forwarded to the popup
@@ -60,6 +54,7 @@ interface RecordDialogProps {
   onOpenChange: (open: boolean) => void
   onSubmit: (event: FormEvent<HTMLFormElement>) => RecordDialogSettlement
   open: boolean
+  properties?: ReactNode             // property chips at the end of the header, outside the form
   size?: 'small' | 'default' | 'large'   // default 'default'; see Sizes below
   stretchBody?: boolean              // the shell's own body wrapper (data-stretch) is a flex column filling the popup; mt-auto works inside
   submitDisabled?: boolean
@@ -77,7 +72,6 @@ interface RecordDialogHeadlineProps {
   descriptionPlaceholder?: string
   onDescriptionChange?: (description: string) => void
   onTitleChange: (title: string) => void
-  stretch?: boolean                  // flex column filling a stretchBody panel
   title: string
   titleLabel: string                 // sr-only label
   titleName?: string                 // default 'title'
@@ -108,6 +102,8 @@ Behavior the tests fix:
   - `large`: `max-w-4xl sm:min-h-136` (896px, Lemind's 920x540), for long or dense bodies.
   Below the `sm` breakpoint the popup is full width whatever the size. With `stretchBody` the default size gets `sm:min-h-96` so there is height to stretch; `large` already has `min-h-136`.
 - `stretchBody` replaces the COSS `DialogPanel` (which has no stretch support) with a shell-owned `div[data-slot=dialog-panel][data-stretch]`, `flex min-h-0 flex-1 flex-col overflow-y-auto`, and the form is a flex column inside it. The COSS panel scroll fade does not apply in this mode.
+- `bodyWidth="readable"` puts `mx-auto w-full max-w-2xl` on the form, not on the panel, so the panel keeps scrolling at the popup's width while the fields keep a reading measure. It is a prop and not a formation's own wrapper so every formation in a `large` popup reuses it.
+- `DialogHeader` holds two groups: `div[data-slot=dialog-heading]` (`flex flex-col gap-2`) with the title trail and the description, and, with `properties`, the bar after it as `div[data-slot=dialog-properties]` with `mt-2 flex flex-wrap items-center gap-2`. It is in the header and not in `children` so the bar stays in view while the panel scrolls, which leaves the body free. It is outside the form, so the consumer keeps its values in state and reads them in `onSubmit`.
 - `actions` are consumer-owned header shortcuts, for example a button that opens the single (full record) view; navigation stays with the consumer and the pattern has no prop for it.
 - Labels have no defaults; the consumer passes them. `cancelLabel` is optional and means no cancel button.
 - The header is `ancestor › title`. The ancestor is outside `DialogTitle`, so the accessible name is the title only, and the trail is not a `nav`.
@@ -118,34 +114,6 @@ Behavior the tests fix:
 - `RecordDialogHeadline` always autofocuses the title, with no prop to turn it off: the Base UI `Dialog` focuses the first tabbable field on open anyway. The title is controlled so the consumer can drive `submitDisabled`; an uncontrolled description is cleared by the `form.reset()` above.
 - `RecordDialogCreateMore` only renders the switch; the consumer passes its state to `keepOpenOnSuccess` and resets its fields after a save.
 
-### `RecordConfirmDialog`
-
-```ts
-type RecordConfirmDialogTone = 'default' | 'destructive'
-
-interface RecordConfirmDialogProps {
-  cancelLabel: string                 // required: a confirmation always has an exit
-  children?: ReactNode                // short body, e.g. a Select for the destination
-  className?: string                  // forwarded to the popup
-  confirmDisabled?: boolean           // e.g. no destination chosen yet
-  confirmLabel: string
-  confirmingLabel?: string            // shown with the spinner while pending
-  description?: ReactNode
-  errorMessage?: ReactNode            // rendered with role="alert" above the footer
-  onConfirm: () => RecordDialogSettlement
-  onOpenChange: (open: boolean) => void
-  open: boolean
-  title: ReactNode
-  tone?: RecordConfirmDialogTone      // default 'destructive'
-}
-```
-
-- The settle rule, pending ownership by open session and the re-entry guard are the ones of `RecordDialog`, from the same hook. `true` calls `onOpenChange(false)`.
-- No form and no Mod+Enter: the value of `children` is the consumer's state, read inside `onConfirm`.
-- `tone` defaults to `destructive`: an unintended neutral Delete is a safety error, a red Archive is only visual. `destructive` uses the `destructive` `Button` variant and focuses Cancel first, the least destructive action as the WAI-ARIA `alertdialog` pattern asks; `default` focuses Confirm.
-- While pending, Escape does not close and Cancel and Confirm are disabled. The COSS `AlertDialog` already ignores outside press. There is no close button.
-- After a failed confirm, focus goes back to Confirm.
-
 ## Styling contract
 
 `data-slot` names on the popup are left to COSS (`dialog-popup`), because COSS selectors depend on them.
@@ -155,15 +123,15 @@ interface RecordConfirmDialogProps {
 | `data-pending` | the popup | the handler has not settled |
 | `data-size` | the popup | `small`, `default` or `large` |
 | `data-stretch` | the body wrapper | `stretchBody` is set |
-| `data-stretch` | `record-dialog-headline` | `stretch` is set |
+| `data-body-width` | the form | `fill` or `readable` |
 | `data-slot=dialog-actions` | the actions row | `absolute end-11 top-2` |
 | `data-slot=dialog-title-trail` | the ancestor and title wrapper | only with `titleAncestor` |
+| `data-slot=dialog-heading` | the title and description group in the header | always |
+| `data-slot=dialog-properties` | the property bar in the header | only with `properties` |
 | | `data-slot=dialog-footer-start` | the `footerStart` wrapper | only with `footerStart` |
 | `aria-busy` | the form | the handler has not settled |
-| `data-pending`, `aria-busy` | the `RecordConfirmDialog` popup | the handler has not settled |
-| `data-tone` | the `RecordConfirmDialog` popup | `default` or `destructive` |
 
-`data-slot` names: `record-dialog-form`, `dialog-error`, `record-dialog-submit-hint`, `record-dialog-cancel`, `record-dialog-submit`, `record-dialog-headline`, `record-dialog-create-more`, `record-confirm-dialog-body` (only with `children`), `record-confirm-dialog-cancel`, `record-confirm-dialog-confirm`. The title keeps the COSS `AlertDialogTitle` typography, so `RecordConfirmDialog` has no override exception.
+`data-slot` names: `record-dialog-form`, `dialog-error`, `record-dialog-submit-hint`, `record-dialog-cancel`, `record-dialog-submit`, `record-dialog-headline`, `record-dialog-create-more`.
 
 Override exceptions, registered in `scripts/override-exceptions.json`:
 
@@ -181,8 +149,9 @@ cd apps/storybook && bunx vitest run --project=storybook src/patterns/records/di
 
 Run both Storybook projects (`storybook` and `storybook-dark`): color contrast differs per theme, and the submit hint failed only in `storybook-dark`.
 
-The stories are in `apps/storybook/src/patterns/records/dialog/`, on the six component pages of `Patterns/Records/Dialog`, and all run axe with `test: 'error'`. The pattern has no bun tests.
+The stories are in `apps/storybook/src/patterns/records/dialog/`, on the five component pages of `Patterns/Records/RecordDialog`, and all run axe with `test: 'error'`. The pattern has no bun tests.
 
-- `Behavior`: the interface tests, one `play` per guarantee. `behavior.stories.tsx` covers `RecordDialog` (the settle rule, the pending lock, focus return, reopen and unmount, Mod+Enter, `keepOpenOnSuccess`, the form, the alert, the header trail, the slots, the sizes, which widen the viewport with `page.viewport()` and restore it, and `stretchBody`), the headline and create-more parts, and `useRecordDraft`; `behavior/confirm.stories.tsx` covers `RecordConfirmDialog` (the settle rule, pending lock, second click, error with focus return, `confirmDisabled`, focus by tone, the body only with `children`, and reopen after a late settlement).
-- `Stories`: `stories.stories.tsx` for the `RecordDialog` values and `stories/confirm.stories.tsx` for the `RecordConfirmDialog` values, both rendering `record-dialog-layouts.tsx`. The red of the destructive button must pass contrast in `storybook-dark`.
-- `Usages`: `usages.stories.tsx` holds `Contacts`, `Leads`, `New Note`, `Edit Note`, `Delete Project` and `Archive Project`; `usages/` holds `Inline Properties`, `Simple Form`, `Row Properties` and `Calendar`, each written inline in its story so the Code panel shows the whole body. `Row Properties` and `Calendar` set `parameters.docs.source.inlineLimit` to 200 on their meta, so their snippets also carry `event-record.ts` and `project-record.ts` and have no relative import; the two Notes stories set it to 250. `records/group/usages.stories.tsx` imports `note-dialog.tsx` and `note-record.ts` by path for its Notes story. `collection/usages/contacts.stories.tsx`, `collection/fixtures/contacts-usage.tsx` and `collection/usages/calendar.stories.tsx` import `create-contact-dialog.tsx`, `create-event-dialog.tsx` and `event-record.ts` by path for the Contacts and Calendar usages of `Patterns/Collection`, and both dialog files render the title and description through `RecordDialogHeadline`. The event dialog body exists in `create-event-dialog.tsx`, `Usages/Row Properties` and `Usages/Calendar`, so a change to one goes to the other two.
+- `Behavior`: the interface tests, one `play` per guarantee, in `behavior.stories.tsx`: the settle rule, the pending lock, focus return, reopen and unmount, Mod+Enter, `keepOpenOnSuccess`, the form, the alert, the header trail, the slots, the sizes, which widen the viewport with `page.viewport()` and restore it, and `stretchBody`, the headline and create-more parts, and `useRecordDraft`.
+- `Behavior` renders only the formations of `record-dialog-layouts.tsx`: `Default` for the shell guarantees, `InlinePropertiesFormation` for `stretchBody`, `PropertyBarOverBodyFormation` for `bodyWidth`, `Default` with `properties` for the header bar, and `RowPropertiesFormation` with `useRecordDraft` for the same-event commit. The reopen and unmount guarantees wrap `Default` in a harness whose `Open as page` action closes or unmounts the dialog, as a navigation would. Every value of `size`, `bodyWidth`, `stretchBody`, `submitDisabled` and `submitOnModEnter` has its own story, since there is no `Stories` page.
+- `Layouts`: `layouts.stories.tsx`, `Default` first, then one story per formation.
+- `Usages`: `usages.stories.tsx` holds `Contacts`, `Leads`, `Note`, `Project Setup` and `Events`; `usages/projects.stories.tsx` holds `Projects`, written inline in its story so the Code panel shows the whole body. `Note` sets `parameters.docs.source.inlineLimit` to 250. `records/group/usages.stories.tsx` imports `note-dialog.tsx` and `note-record.ts` by path for its Notes story. `collection/usages/contacts.stories.tsx`, `collection/fixtures/contacts-usage.tsx` and `collection/usages/calendar.stories.tsx` import `create-contact-dialog.tsx`, `create-event-dialog.tsx` and `event-record.ts` by path for the Contacts and Calendar usages of `Patterns/Collection`.
