@@ -1,0 +1,17 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Stats5 } from '@tc96/blocks/application/stats/stats-5'
+import { salesAndChurn } from '../fixtures/stats-5.ts'
+
+const meta = {
+  args: { items: salesAndChurn },
+  component: Stats5,
+  parameters: { layout: 'padded' },
+  tags: ['!autodocs', '!dev'],
+  title: 'Blocks/Application/Stats/Stats5/API Reference',
+} satisfies Meta<typeof Stats5>
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Anatomy: Story = {}

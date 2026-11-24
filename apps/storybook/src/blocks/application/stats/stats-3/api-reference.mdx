@@ -1,0 +1,72 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Stats3
+
+A card with capacity cells separated by dividers. Each cell shows `value / total` and a segmented meter: a row of small bars, filled in proportion to the ratio. Reach for it to show seats, storage or projects against the plan limits. Install it with `npx @tc96/parttens add stats-3`.
+
+It is a card, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the numbers come from the app.
+
+The other pages of `Blocks/Application/Stats/Stats3`: [Playground](?path=/story/blocks-application-stats-stats3-playground--playground) to try the bar count, [Behavior](?path=/story/blocks-application-stats-stats3-behavior--each-cell-shows-value-over-total) for the tests and [Usages](?path=/story/blocks-application-stats-stats3-usages--loaded) for the capacity read over the network.
+
+## Import
+
+```tsx
+import { Stats3 } from '@tc96/blocks/application/stats/stats-3'
+```
+
+The same path exports the types `Stats3Props`, `Stats3Item` and `Stats3Labels`.
+
+## Anatomy
+
+Three cells with ten bars each:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Stats3 items={capacity} />
+```
+
+## Stats3
+
+The cells sit in a row from `sm` (three columns for three items) and stack with a divider below `sm`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `Stats3Item[]` | required | The cells, in order. |
+| `segments` | `number` | `10` | Bars in each meter. The filled count is `round(value / total * segments)`, never above `segments`. |
+| `locale` | `string` | `"pt-BR"` | Locale of the numbers. |
+| `labels` | `Partial<Stats3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the card's classes. |
+
+## Stats3Item
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the cell. |
+| `label` | `string` | Title of the cell; it also names its meter. |
+| `value` | `number` | Amount in use. |
+| `total` | `number` | Amount the plan allows. A `value` above it fills every bar. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Capacidade"`; the accessible name of the card |
+| `ratio` | `(value: string, total: string) => string` | `"18 / 25"`; receives the numbers already formatted, and is also the meter's value text |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Stats3` | `component` | The capacity card. |
+| `Stats3Props` | `type` | The props of the card. |
+| `Stats3Item` | `type` | A cell. |
+| `Stats3Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The card is a `region` named by `labels.title`; each meter has `role="meter"`, is named by its cell label and reads `labels.ratio` as its value text. The bars are `aria-hidden`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

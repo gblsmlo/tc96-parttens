@@ -1,0 +1,81 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Stats6
+
+A card with period tabs above three sleeve cards. Each sleeve shows its name, its amount, a delta badge and a meter with its share of the portfolio. Reach for it when a dashboard breaks an investment portfolio into parts and lets people switch the period of the deltas. Install it with `npx @tc96/parttens add stats-6`.
+
+It is a card, not a page: it renders a `section` and no `main` landmark. The three sleeves sit side by side from `md` and stack below. The block keeps no state and fetches nothing: `period` is controlled, so the app reads the sleeves of the chosen period and passes them back.
+
+The other pages of `Blocks/Application/Stats/Stats6`: [Playground](?path=/story/blocks-application-stats-stats6-playground--playground) to try the period, the delta and the currency, [Behavior](?path=/story/blocks-application-stats-stats6-behavior--sleeves-show-name-amount-and-delta) for the tests and [Usages](?path=/story/blocks-application-stats-stats6-usages--loaded) for the card read over the network.
+
+## Import
+
+```tsx
+import { Stats6 } from '@tc96/blocks/application/stats/stats-6'
+```
+
+The same path exports the types `Stats6Props`, `Stats6Sleeve`, `Stats6Period` and `Stats6Labels`.
+
+## Anatomy
+
+The card with the month period:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Stats6 onPeriodChange={setPeriod} period={period} sleeves={sleeves} />
+```
+
+## Stats6
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `sleeves` | `Stats6Sleeve[]` | required | The sleeve cards, in order. Made for three. |
+| `period` | `Stats6Period` | required | The selected period. Controlled: the block keeps no copy. |
+| `onPeriodChange` | `(period: Stats6Period) => void` | - | Called with `'day'`, `'week'`, `'month'` or `'year'` when a tab is chosen. |
+| `periods` | `Stats6Period[]` | `['day', 'week', 'month', 'year']` | Tabs, in order. |
+| `currency` | `string` | `'BRL'` | ISO currency of the amounts. |
+| `locale` | `string` | `'pt-BR'` | Locale of the numbers. |
+| `labels` | `Partial<Stats6Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the card's classes. |
+
+The block takes no other props.
+
+## Stats6Sleeve
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Key of the card. |
+| `name` | `string` | Name of the sleeve. |
+| `amount` | `number` | Amount, shown as currency. |
+| `delta` | `number` | Change in the period as a ratio: `0.021` shows `2,10%`. Above zero is up, below is down. |
+| `share` | `number` | Share of the portfolio from `0` to `1`, drawn by the meter and shown as a whole percent. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Alocação da carteira"` |
+| `period` | `string` | `"Período"`; the accessible name of the tabs |
+| `periods` | `Record<Stats6Period, string>` | `"Dia"`, `"Semana"`, `"Mês"`, `"Ano"` |
+| `share` | `string` | `"Participação"`; the name of each meter |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Stats6` | `component` | The portfolio allocation card. |
+| `Stats6Props` | `type` | The props of the card. |
+| `Stats6Sleeve` | `type` | One sleeve. |
+| `Stats6Period` | `type` | `'day' \| 'week' \| 'month' \| 'year'`. |
+| `Stats6Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The tabs are a `tablist` named by `labels.period`, with arrow key navigation from the COSS `Tabs`.
+- Each meter is a `meter` named by `labels.share`, and its spoken value is the whole percent.
+- The delta badge has a screen reader prefix (`Alta de`, `Queda de`, `Sem variação`) and `data-direction`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

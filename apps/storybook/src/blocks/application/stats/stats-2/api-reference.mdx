@@ -1,0 +1,75 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Stats2
+
+A card with the API quota usage: a meter of used over limit, the cost billed in the cycle, the renewal date and, when the app handles it, an Upgrade button. Reach for it in billing, usage or developer settings. Install it with `npx @tc96/parttens add stats-2`.
+
+It is a card, not a page: it renders no `main` landmark. The block keeps no state, never fetches and never converts a plan; upgrading is the app's, through `onUpgrade`.
+
+The other pages of `Blocks/Application/Stats/Stats2`: [Playground](?path=/story/blocks-application-stats-stats2-playground--playground) to try the numbers and the button, [Behavior](?path=/story/blocks-application-stats-stats2-behavior--meter-reports-used-of-limit) for the tests and [Usages](?path=/story/blocks-application-stats-stats2-usages--loaded) for the quota read over the network.
+
+## Import
+
+```tsx
+import { Stats2 } from '@tc96/blocks/application/stats/stats-2'
+```
+
+The same path exports the types `Stats2Props` and `Stats2Labels`.
+
+## Anatomy
+
+The card with the Upgrade button:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Stats2
+  cost={289.9}
+  limit={1_000_000}
+  onUpgrade={openPlans}
+  renewsAt={new Date('2026-12-15')}
+  used={742_000}
+/>
+```
+
+## Stats2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `used` | `number` | required | Requests used in the cycle. |
+| `limit` | `number` | required | Requests the plan allows; the top of the meter. Above it the meter stays full. |
+| `cost` | `number` | required | Amount billed in the cycle. |
+| `renewsAt` | `Date` | required | When the quota renews, shown as a medium date. |
+| `timeZone` | `string` | - | IANA zone used to read `renewsAt`; the runtime zone when omitted. |
+| `locale` | `string` | `"pt-BR"` | Locale of the numbers and the date. |
+| `currency` | `string` | `"BRL"` | Currency of `cost`. |
+| `onUpgrade` | `() => void` | - | Called when the Upgrade button is clicked. Without it the button is not rendered. |
+| `labels` | `Partial<Stats2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the card's classes. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Uso da API"`; also the name of the card region |
+| `quota` | `string` | `"Uso da cota"`; the name of the meter |
+| `billed` | `string` | `"Cobrado neste ciclo"` |
+| `upgrade` | `string` | `"Fazer upgrade"` |
+| `usage` | `(used: string, limit: string) => string` | `"742.000 de 1.000.000 requisições"`; receives the numbers already formatted, and is also the meter's value text |
+| `renewsOn` | `(date: string) => string` | `"Renova em 15 de dez. de 2026"`; receives the date already formatted |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Stats2` | `component` | The quota card. |
+| `Stats2Props` | `type` | The props of the card. |
+| `Stats2Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The card is a `region` named by `labels.title`; the meter has `role="meter"` with `aria-valuenow`, `aria-valuemax` and `aria-valuetext` from `labels.usage`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

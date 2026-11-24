@@ -1,0 +1,91 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Stats4
+
+A card with the leads of a period: a headline total, a progress bar toward a goal and a stacked bar that splits the total by source, with a legend. A select in the header switches the period. Reach for it when a dashboard needs one glance at how many leads came in, how close the team is to the goal and where they came from. Install it with `npx @tc96/parttens add stats-4`.
+
+It is a card, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing: `range` is controlled, so the app reads the numbers of the chosen period and passes them back.
+
+The other pages of `Blocks/Application/Stats/Stats4`: [Playground](?path=/story/blocks-application-stats-stats4-playground--playground) to try the numbers and the empty bar, [Behavior](?path=/story/blocks-application-stats-stats4-behavior--total-and-goal-progress) for the tests and [Usages](?path=/story/blocks-application-stats-stats4-usages--loaded) for the card read over the network.
+
+## Import
+
+```tsx
+import { Stats4 } from '@tc96/blocks/application/stats/stats-4'
+```
+
+The same path exports the types `Stats4Props`, `Stats4Source`, `Stats4Range` and `Stats4Labels`.
+
+## Anatomy
+
+The card with the 30 days range:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Stats4
+  goal={1500}
+  onRangeChange={setRange}
+  range={range}
+  sources={sources}
+  total={1200}
+/>
+```
+
+## Stats4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `total` | `number` | required | Leads in the period, shown as the headline. |
+| `goal` | `number` | required | Goal of the period. The progress bar is `total / goal`, capped at 100%; a goal of `0` shows 0%. |
+| `sources` | `Stats4Source[]` | required | The segments of the stacked bar and the legend rows. An empty list leaves the bar and the legend empty. |
+| `range` | `Stats4Range` | required | The selected period. Controlled: the block keeps no copy. |
+| `onRangeChange` | `(range: Stats4Range) => void` | - | Called with `'7d'`, `'30d'` or `'90d'` when an option is chosen. |
+| `ranges` | `Stats4Range[]` | `['7d', '30d', '90d']` | Options of the select, in order. |
+| `locale` | `string` | `'pt-BR'` | Locale of the numbers. |
+| `labels` | `Partial<Stats4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the card's classes. |
+
+The block takes no other props.
+
+## Stats4Source
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Key of the segment and the legend row. |
+| `name` | `string` | Name in the legend. |
+| `value` | `number` | Leads from the source. Segment widths and legend percentages are `value` over the sum of all sources. |
+| `colorClassName` | `string` | Classes of the segment and its legend dot, for example `bg-sky-700 dark:bg-sky-500`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Visão geral de leads"` |
+| `range` | `string` | `"Período"`; the accessible name of the select |
+| `ranges` | `Record<Stats4Range, string>` | `"7 dias"`, `"30 dias"`, `"90 dias"` |
+| `total` | `(range: string) => string` | `"Leads nos últimos 30 dias"` for `"30 dias"` |
+| `goal` | `(goal: string) => string` | `"Meta de 1.500 leads"` |
+| `goalProgress` | `(total: string, goal: string, percent: string) => string` | `"1.200 de 1.500 leads, 80% da meta"`; the spoken value of the progress bar |
+| `sources` | `string` | `"Leads por origem"` |
+| `sourcesBar` | `string` | `"Distribuição dos leads por origem"`; the accessible name of the stacked bar |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Stats4` | `component` | The leads overview card. |
+| `Stats4Props` | `type` | The props of the card. |
+| `Stats4Source` | `type` | A source of leads. |
+| `Stats4Range` | `type` | `'7d' \| '30d' \| '90d'`. |
+| `Stats4Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The select is named by `labels.range`.
+- The progress bar is a `progressbar` whose spoken value is `labels.goalProgress`.
+- The stacked bar is an `img` named by `labels.sourcesBar`; the legend carries the same data as text.
+- The block carries no color of its own besides the `colorClassName` of each source: the theme belongs to the app.
