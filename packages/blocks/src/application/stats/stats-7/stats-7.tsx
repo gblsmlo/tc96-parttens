@@ -1,6 +1,6 @@
 import type { AmountFormatOptions } from '@tc96/helpers/format'
+import { AreaMetricWidget } from '@tc96/parttens/stats/area-metric-widget'
 import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-surface/state-surface'
-import { AreaMetricWidget } from '@tc96/parttens/widgets/analytics/area-metric-widget'
 import { statsLoadState } from '../shared/stats-load-state'
 import { defaultStats7Labels } from './labels'
 import { Stats7Skeleton } from './stats-7-skeleton'

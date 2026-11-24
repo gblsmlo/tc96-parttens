@@ -1,3 +1,4 @@
+import { GaugeRing } from '@tc96/ui/gauge'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 
@@ -13,9 +14,6 @@ export function clampRatio(current: number, target: number): number {
   return target > 0 ? Math.min(Math.max(current / target, 0), 1) : 0
 }
 
-const radius = 42
-const circumference = 2 * Math.PI * radius
-
 export function ProgressRing({
   children,
   className,
@@ -25,48 +23,15 @@ export function ProgressRing({
   ...props
 }: Readonly<ProgressRingProps>): ReactElement {
   return (
-    <div
-      aria-hidden="true"
-      className={cn('relative size-10 shrink-0', className)}
-      data-empty={empty ? 'true' : undefined}
+    <GaugeRing
+      className={cn('size-10', className)}
       data-slot="progress-ring"
+      empty={empty}
+      ratio={ratio}
+      strokeWidth={strokeWidth}
       {...props}
     >
-      <svg
-        aria-hidden="true"
-        className="-rotate-90 size-full"
-        viewBox="0 0 100 100"
-      >
-        <circle
-          className={empty ? 'stroke-input' : 'stroke-muted'}
-          cx="50"
-          cy="50"
-          fill="none"
-          r={radius}
-          strokeDasharray={empty ? '6 10' : undefined}
-          strokeWidth={strokeWidth}
-        />
-        {empty ? null : (
-          <circle
-            className="stroke-primary transition-[stroke-dashoffset] duration-700 ease-out motion-reduce:transition-none"
-            cx="50"
-            cy="50"
-            fill="none"
-            r={radius}
-            strokeDasharray={circumference}
-            strokeDashoffset={
-              circumference * (1 - Math.min(Math.max(ratio, 0), 1))
-            }
-            strokeLinecap="round"
-            strokeWidth={strokeWidth}
-          />
-        )}
-      </svg>
-      {children ? (
-        <span className="absolute inset-0 flex flex-col items-center justify-center">
-          {children}
-        </span>
-      ) : null}
-    </div>
+      {children}
+    </GaugeRing>
   )
 }

@@ -280,7 +280,9 @@ export const ProjectCardDerivesProgressFromSubtasks: Story = {
     const canvas = within(canvasElement)
     const meter = canvas.getByRole('meter', { name: 'Progresso' })
     await expect(meter).toHaveAttribute('aria-valuenow', '50')
-    await expect(meter.textContent).toContain('50%')
+    await expect(
+      canvas.getByRole('region', { name: 'Design Website' }),
+    ).toHaveTextContent('Progresso50%')
     await expect(
       canvas.getByRole('list', { name: 'Subtarefas' }).querySelectorAll('li'),
     ).toHaveLength(4)

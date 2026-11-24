@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MetricWidget } from '@tc96/parttens'
-import { Slot } from '../../../test-utils/anatomy-slot.tsx'
+import { Slot } from '../../test-utils/anatomy-slot.tsx'
 
 const meta = {
   decorators: [
@@ -11,7 +11,7 @@ const meta = {
     ),
   ],
   tags: ['!autodocs', '!dev'],
-  title: 'Patterns/Widgets/Stats/API Reference',
+  title: 'Patterns/Stats/API Reference',
 } satisfies Meta
 
 export default meta

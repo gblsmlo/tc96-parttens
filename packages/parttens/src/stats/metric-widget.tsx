@@ -2,9 +2,9 @@ import type { AmountFormatOptions } from '@tc96/helpers/format'
 import { CardPanel } from '@tc96/ui/card'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
-import { Amount } from './amount'
-import { TrendIndicator } from './trend-indicator'
-import { WidgetShell } from './widget-shell'
+import { Amount } from '../widgets/shared/amount'
+import { TrendIndicator } from '../widgets/shared/trend-indicator'
+import { WidgetShell } from '../widgets/shared/widget-shell'
 
 export interface MetricWidgetProps
   extends Omit<ComponentProps<'div'>, 'children' | 'title'> {

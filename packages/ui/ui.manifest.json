@@ -194,6 +194,16 @@
     "frame": {
       "origin": "coss"
     },
+    "gauge": {
+      "origin": "own",
+      "paths": [
+        "gauge/ACCESSIBILITY.md",
+        "gauge/AGENTS.md",
+        "gauge/TOKENS.md",
+        "gauge/gauge.tsx",
+        "gauge/index.ts"
+      ]
+    },
     "group": {
       "origin": "coss"
     },

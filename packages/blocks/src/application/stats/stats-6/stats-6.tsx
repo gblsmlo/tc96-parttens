@@ -2,8 +2,9 @@ import { formatAmount } from '@tc96/helpers/format'
 import { TrendIndicator } from '@tc96/parttens/widgets/shared/trend-indicator'
 import { WidgetShell } from '@tc96/parttens/widgets/shared/widget-shell'
 import { Card, CardContent, CardHeader, CardTitle } from '@tc96/ui/card'
-import { Meter, MeterIndicator, MeterLabel, MeterTrack } from '@tc96/ui/meter'
+import { Gauge } from '@tc96/ui/gauge'
 import { Tabs, TabsList, TabsTab } from '@tc96/ui/tabs'
+import { useId } from 'react'
 import { statsLoadState } from '../shared/stats-load-state'
 import { defaultStats6Labels } from './labels'
 import { Stats6Skeleton } from './stats-6-skeleton'
@@ -25,6 +26,7 @@ export function Stats6({
   sleeves,
 }: Readonly<Stats6Props>) {
   const text = { ...defaultStats6Labels, ...labels }
+  const baseId = useId()
   const loadState = statsLoadState({
     error,
     labels: text,
@@ -75,21 +77,25 @@ export function Stats6({
                         value={sleeve.delta}
                       />
                     </div>
-                    <Meter
-                      getAriaValueText={() => percent(sleeve.share)}
-                      max={1}
-                      value={sleeve.share}
-                    >
+                    <div className="flex flex-col gap-2">
                       <div className="flex items-center justify-between gap-2">
-                        <MeterLabel>{text.share}</MeterLabel>
+                        <span
+                          className="font-medium text-foreground text-sm"
+                          id={`${baseId}-${sleeve.id}-share`}
+                        >
+                          {text.share}
+                        </span>
                         <span className="text-sm tabular-nums">
                           {percent(sleeve.share)}
                         </span>
                       </div>
-                      <MeterTrack>
-                        <MeterIndicator />
-                      </MeterTrack>
-                    </Meter>
+                      <Gauge
+                        aria-labelledby={`${baseId}-${sleeve.id}-share`}
+                        getAriaValueText={() => percent(sleeve.share)}
+                        max={1}
+                        value={sleeve.share}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               </li>

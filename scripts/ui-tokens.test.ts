@@ -14,6 +14,7 @@ const components = [
     source: 'icon-frame/icon-frame.tsx',
     tokens: 'icon-frame/TOKENS.md',
   },
+  { name: 'gauge', source: 'gauge/gauge.tsx', tokens: 'gauge/TOKENS.md' },
   { name: 'text', source: 'text/text.tsx', tokens: 'text/TOKENS.md' },
 ]
 

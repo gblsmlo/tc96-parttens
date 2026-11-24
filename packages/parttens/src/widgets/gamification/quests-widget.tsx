@@ -1,8 +1,8 @@
 import { CheckIcon } from '@phosphor-icons/react'
 import { Badge } from '@tc96/ui/badge'
 import { CardPanel } from '@tc96/ui/card'
+import { Gauge } from '@tc96/ui/gauge'
 import { IconFrame } from '@tc96/ui/icon-frame'
-import { MeterPrimitive } from '@tc96/ui/meter'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
@@ -98,21 +98,16 @@ export function QuestsWidget({
                       ) : null}
                     </div>
                     {!quest.done && quest.progress ? (
-                      <MeterPrimitive.Root
+                      <Gauge
                         aria-label={quest.label}
-                        className="block"
                         data-slot="quest-meter"
                         max={Math.max(quest.progress.target, 1)}
-                        min={0}
+                        size="sm"
                         value={Math.min(
                           quest.progress.current,
                           quest.progress.target,
                         )}
-                      >
-                        <MeterPrimitive.Track className="block h-1.5 overflow-hidden rounded-full bg-muted">
-                          <MeterPrimitive.Indicator className="block h-full rounded-full bg-primary transition-[width] duration-500" />
-                        </MeterPrimitive.Track>
-                      </MeterPrimitive.Root>
+                      />
                     ) : quest.detail ? (
                       <p className="text-muted-foreground text-xs">
                         {quest.detail}

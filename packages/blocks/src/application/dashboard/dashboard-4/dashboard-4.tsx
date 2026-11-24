@@ -8,8 +8,8 @@ import {
 } from '@phosphor-icons/react'
 import type { AmountFormatOptions } from '@tc96/helpers/format'
 import { resolveInitials } from '@tc96/helpers/initials'
+import { AreaMetricWidget } from '@tc96/parttens/stats/area-metric-widget'
 import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-surface/state-surface'
-import { AreaMetricWidget } from '@tc96/parttens/widgets/analytics/area-metric-widget'
 import { AvatarStack } from '@tc96/parttens/widgets/shared/avatar-stack'
 import {
   clampRatio,

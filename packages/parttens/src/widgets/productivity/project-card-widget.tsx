@@ -4,7 +4,7 @@ import { formatAmount } from '@tc96/helpers/format'
 import { Badge } from '@tc96/ui/badge'
 import { CardPanel } from '@tc96/ui/card'
 import { Checkbox } from '@tc96/ui/checkbox'
-import { Meter, MeterIndicator, MeterTrack, MeterValue } from '@tc96/ui/meter'
+import { Gauge } from '@tc96/ui/gauge'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
@@ -141,39 +141,34 @@ export function ProjectCardWidget({
             )}
           </ExpandableList>
         ) : null}
-        <Meter
-          aria-label={
-            typeof progressLabel === 'string' ? progressLabel : undefined
-          }
-          data-slot="project-card-progress"
-          max={100}
-          min={0}
-          value={value}
-        >
+        <div className="grid gap-2">
           <div className="flex items-center justify-between gap-3">
-            <span className="text-muted-foreground text-sm">
+            <span
+              className="text-muted-foreground text-sm"
+              id={`${titleId}-progress`}
+            >
               {progressLabel}
             </span>
-            <MeterValue className="font-medium">
-              {() =>
-                formatAmount(value / 100, {
-                  maximumFractionDigits: 0,
-                  style: 'percent',
-                  ...(locale ? { locale } : {}),
-                })
-              }
-            </MeterValue>
+            <span className="font-medium text-foreground text-sm tabular-nums">
+              {formatAmount(value / 100, {
+                maximumFractionDigits: 0,
+                style: 'percent',
+                ...(locale ? { locale } : {}),
+              })}
+            </span>
           </div>
-          <MeterTrack>
-            <MeterIndicator />
-          </MeterTrack>
+          <Gauge
+            aria-labelledby={`${titleId}-progress`}
+            data-slot="project-card-progress"
+            value={value}
+          />
           {startLabel || endLabel ? (
             <div className="flex justify-between gap-3 text-muted-foreground text-xs">
               <span>{startLabel}</span>
               <span>{endLabel}</span>
             </div>
           ) : null}
-        </Meter>
+        </div>
         {people?.length || meta || footer ? (
           <div className="flex items-center justify-between gap-3">
             {people?.length ? (

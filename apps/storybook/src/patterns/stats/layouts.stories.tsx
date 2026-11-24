@@ -9,6 +9,8 @@ import {
   ComparisonCard,
   ComposedMetric,
   DonutCard,
+  LeadsOverviewCard,
+  PreviousPeriodCard,
   ProgressCard,
   StatusCard,
   ToggleCard,
@@ -18,7 +20,7 @@ const meta = {
   decorators: [StatsCanvas],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Widgets/Stats/Layouts',
+  title: 'Patterns/Stats/Layouts',
 } satisfies Meta
 
 export default meta
@@ -91,4 +93,13 @@ export const WithAccentBorder: Story = {
 
 export const WithActions: Story = {
   render: () => <ActionsCard />,
+}
+
+export const WithPreviousPeriod: Story = {
+  render: () => <PreviousPeriodCard />,
+}
+
+export const WithLeadsOverview: Story = {
+  parameters: { statsCanvas: 'wide' },
+  render: () => <LeadsOverviewCard />,
 }

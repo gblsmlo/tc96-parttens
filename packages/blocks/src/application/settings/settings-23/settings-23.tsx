@@ -10,7 +10,7 @@ import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-su
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { Card } from '@tc96/ui/card'
-import { Meter, MeterIndicator, MeterLabel, MeterTrack } from '@tc96/ui/meter'
+import { Gauge } from '@tc96/ui/gauge'
 import {
   Table,
   TableBody,
@@ -55,7 +55,8 @@ export function Settings23({
     pending,
     skeleton: <Settings23Skeleton />,
   })
-  const planId = `settings-23-plan-${useId()}`
+  const baseId = useId()
+  const planId = `settings-23-plan-${baseId}`
 
   return (
     <div
@@ -103,15 +104,14 @@ export function Settings23({
               >
                 {usage.map((metric) => (
                   <li key={metric.id}>
-                    <Meter
-                      getAriaValueText={() =>
-                        labels.usage(metric.used, metric.limit, metric.unit)
-                      }
-                      max={metric.limit}
-                      value={metric.used}
-                    >
+                    <div className="flex flex-col gap-2">
                       <div className="flex items-center justify-between gap-2">
-                        <MeterLabel>{metric.label}</MeterLabel>
+                        <span
+                          className="font-medium text-foreground text-sm"
+                          id={`${baseId}-${metric.id}-usage`}
+                        >
+                          {metric.label}
+                        </span>
                         <Text
                           foreground="muted"
                           render={
@@ -126,10 +126,15 @@ export function Settings23({
                           size="sm"
                         />
                       </div>
-                      <MeterTrack>
-                        <MeterIndicator />
-                      </MeterTrack>
-                    </Meter>
+                      <Gauge
+                        aria-labelledby={`${baseId}-${metric.id}-usage`}
+                        getAriaValueText={() =>
+                          labels.usage(metric.used, metric.limit, metric.unit)
+                        }
+                        max={metric.limit}
+                        value={metric.used}
+                      />
+                    </div>
                   </li>
                 ))}
               </ul>
