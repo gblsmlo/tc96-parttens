@@ -463,7 +463,7 @@ test('builds the wizard item from its folder with IconFrame and COSS as ui depen
 
 test('lists every block folder in blockSources', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const folders = ['*/*/*/index.ts', 'auth/*/index.ts']
+  const folders = ['*/*/*/index.ts', 'auth/*/index.ts', 'records/*/index.ts']
     .flatMap((pattern) => [
       ...new Bun.Glob(pattern).scanSync(join(root, 'packages/blocks/src')),
     ])

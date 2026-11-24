@@ -19,7 +19,7 @@ const cossModules = new Set(
     ),
   ),
 )
-const flatBlockCategories = new Set(['auth'])
+const flatBlockCategories = new Set(['auth', 'records'])
 function blockFolder(file: string) {
   const prefix = 'packages/blocks/src/'
   if (!file.startsWith(prefix)) return undefined
