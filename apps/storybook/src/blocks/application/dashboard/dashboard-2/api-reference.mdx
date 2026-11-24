@@ -1,0 +1,106 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Dashboard2
+
+A retail revenue dashboard: a row of four KPI cards with sparklines, a stacked bar chart of sales per channel and a table of recent orders with sortable columns. Reach for it on a store or commerce home page that shows how much was sold, through which channel and which orders came in. Install it with `npx @tc96/parttens add dashboard-2`.
+
+It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The sort is controlled: the app passes `sort`, handles `onSortChange` and passes the rows already sorted; the block never reorders them. Numbers arrive raw and the block formats them with `locale` and `currency` (`pt-BR` and `BRL` by default); `placedAt` is a string the app formats. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `kpis`, `sales` and `orders` the empty state. The precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/Application/Dashboard/Dashboard2`: [Playground](?path=/story/blocks-application-dashboard-dashboard2-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-dashboard-dashboard2-behavior--kpis-show-formatted-values-and-deltas) for the tests, [States](?path=/story/blocks-application-dashboard-dashboard2-states--default) for the four states and [Usages](?path=/story/blocks-application-dashboard-dashboard2-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Dashboard2 } from '@tc96/blocks/application/dashboard/dashboard-2'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four KPIs with sparklines, a week of sales in three channels and five orders sorted by date.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Dashboard2
+  channels={channels}
+  error={isError}
+  kpis={kpis}
+  onRetry={() => refetch()}
+  onSortChange={setSort}
+  orders={sortedOrders}
+  pending={isPending}
+  sales={sales}
+  sort={sort}
+/>
+```
+
+## Dashboard2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `kpis` | `Dashboard2Kpi[]` | required | The KPI cards, in order. |
+| `channels` | `Dashboard2Channel[]` | required | The stacked series, bottom to top. |
+| `sales` | `Dashboard2SalesPoint[]` | required | One stack per point. |
+| `orders` | `Dashboard2Order[]` | required | The table rows, already sorted by the app. |
+| `sort` | `Dashboard2Sort` | required | The active column and direction; marks `aria-sort`. |
+| `onSortChange` | `(sort: Dashboard2Sort) => void` | required | Called by a column button: the same key flips the direction, another key starts `asc`. |
+| `locale` | `string` | `'pt-BR'` | Locale of every formatted number. |
+| `currency` | `string` | `'BRL'` | Currency of the amounts. |
+| `pending` | `boolean` | `false` | Renders the skeleton; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `labels` | `Partial<Dashboard2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Data types
+
+| Type | Fields |
+| --- | --- |
+| `Dashboard2Kpi` | `id`, `label`, `value` (raw), `format` (`'number' \| 'currency' \| 'percent'`, a percent is a ratio), `delta` (ratio), `trend` (`'positive' \| 'negative' \| 'neutral'`) and `sparkline` (`number[]`). |
+| `Dashboard2Channel` | `id` and `label`. |
+| `Dashboard2SalesPoint` | `label` and `values`, a record from channel `id` to a raw amount. |
+| `Dashboard2Order` | `id`, `number`, `customer`, `placedAt` (formatted string), `total` (raw amount) and `status` (`{ label, tone? }`). |
+| `Dashboard2Sort` | `key` (`'customer' \| 'placedAt' \| 'total'`) and `direction` (`'asc' \| 'desc'`). |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Receita do varejo"`; the heading and the accessible name of the section |
+| `loading` | `string` | `"Carregando receita do varejo"`; the accessible name of the skeleton |
+| `indicators` | `string` | `"Indicadores"`; the accessible name of the KPI list |
+| `salesTitle` | `string` | `"Vendas por canal"` |
+| `salesLabel` | `string` | `"Vendas por canal ao longo do período"`; the accessible name of the chart |
+| `salesSummary` | `(items) => string` | Joins `label: total` with `; `; the text read by screen readers as the chart description |
+| `ordersTitle` | `string` | `"Pedidos recentes"`; the title and the table name |
+| `columnOrder`, `columnCustomer`, `columnStatus`, `columnPlacedAt`, `columnTotal` | `string` | `"Pedido"`, `"Cliente"`, `"Status"`, `"Data"`, `"Total"` |
+| `sortBy` | `(column: string) => string` | `` `Ordenar por ${column}` ``; the accessible name of a sort button |
+| `noOrders` | `string` | `"Nenhum pedido no período"` |
+| `errorTitle`, `errorDescription`, `retry` | `string` | `"Não foi possível carregar as vendas"`, `"Tente novamente em instantes."`, `"Tentar novamente"` |
+| `emptyTitle`, `emptyDescription` | `string` | `"Nenhuma venda registrada"`, `"As vendas aparecem aqui assim que forem registradas."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Dashboard2` | `component` | The dashboard. |
+| `Dashboard2Props` | `type` | The props of the dashboard. |
+| `Dashboard2Kpi` | `type` | A KPI card. |
+| `Dashboard2Channel` | `type` | A series of the chart. |
+| `Dashboard2SalesPoint` | `type` | A stack of the chart. |
+| `Dashboard2SalesSummaryItem` | `type` | The formatted item `salesSummary` receives. |
+| `Dashboard2Order` | `type` | A table row. |
+| `Dashboard2Sort`, `Dashboard2SortKey`, `Dashboard2SortDirection` | `type` | The sort state. |
+| `Dashboard2Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The chart is an `img` named by `labels.salesLabel` and described by a visually hidden text from `labels.salesSummary`; the sparklines are decorative and hidden, because the card already shows the number.
+- Each sortable header carries `aria-sort` and a button named by `labels.sortBy`.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- Chart colors come from `--chart-1` to `--chart-5`; status colors from the theme badge tones. The block carries no raw color, radius or shadow.

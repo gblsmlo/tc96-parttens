@@ -11,7 +11,8 @@
     "@tc96/helpers": "workspace:*",
     "@tc96/parttens": "workspace:*",
     "@tc96/ui": "workspace:*",
-    "@tc96/utils": "workspace:*"
+    "@tc96/utils": "workspace:*",
+    "recharts": "3.10.1"
   },
   "peerDependencies": {
     "react": "19.1.1",

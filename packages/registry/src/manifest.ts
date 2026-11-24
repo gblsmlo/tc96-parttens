@@ -120,6 +120,9 @@ export const blockNames = [
   'onboarding-1',
   'onboarding-2',
   'onboarding-3',
+  'dashboard-1',
+  'dashboard-2',
+  'dashboard-3',
 ] as const
 export type BlockName = (typeof blockNames)[number]
 /** Folder under packages/blocks/src, kept as the path in the consumer. */
@@ -198,6 +201,9 @@ export const blockSources: Record<BlockName, string> = {
   'onboarding-1': 'application/onboarding/onboarding-1',
   'onboarding-2': 'application/onboarding/onboarding-2',
   'onboarding-3': 'application/onboarding/onboarding-3',
+  'dashboard-1': 'application/dashboard/dashboard-1',
+  'dashboard-2': 'application/dashboard/dashboard-2',
+  'dashboard-3': 'application/dashboard/dashboard-3',
 }
 export type ItemName = PatternName | BlockName
 /** Areas under packages/parttens/src that ship with an item no file of it imports. */
