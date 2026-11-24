@@ -3,6 +3,7 @@
 export * from './action-bar/index'
 export * from './chat/assistant/index'
 export * from './chat/chats-panel/index'
+export * from './charts/index'
 export * from './checklist/index'
 export * from './collection/index'
 export { KanbanView as Kanban } from './collection/index'

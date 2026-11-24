@@ -1,0 +1,72 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Charts
+
+A scatter plot of rows the consumer already prepared: two numbers place each point, a third sets its size and a category sets its color. `ScatterChart` runs on TanStack Charts and hands the consumer's own row back to the tooltip, focus and select callbacks, typed as the row.
+
+The other pages of `Patterns/Charts`: [Playground](?path=/story/patterns-charts-playground--playground) to try the labels, the height, the radius range and the tooltip, [Stories](?path=/story/patterns-charts-stories--default) for the default, empty, equal sizes and single segment states, [Layouts](?path=/story/patterns-charts-layouts--default-tooltip) for the default tooltip, a formatted tooltip and a detail panel driven by `onSelect`, [Behavior](?path=/story/patterns-charts-behavior--named-by-aria-label) for the tests, and [Usages](?path=/story/patterns-charts-usages--account-health-scatter) for accounts by revenue and retention.
+
+## Import
+
+```tsx
+import { ScatterChart } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ScatterChart
+  ariaLabel="Account retention by monthly revenue"
+  data={accounts}
+  getKey={(account) => account.id}
+  x={(account) => account.monthlyRevenue}
+  y={(account) => account.retention}
+  size={(account) => account.seats}
+  color={(account) => account.segment}
+  formatTooltip={(account) => account.name}
+  onFocusChange={(account) => setFocused(account)}
+/>
+```
+
+The consumer passes the rows and reads each value through an accessor; the chart never fetches, filters, aggregates or stores them, and has no state.
+
+## ScatterChart
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `data` | `readonly TDatum[]` | required | Sets the rows, one point each. |
+| `getKey` | `(datum) => string \| number` | required | Sets the stable key of a point. |
+| `x` | `(datum) => number` | required | Sets the horizontal position. |
+| `y` | `(datum) => number` | required | Sets the vertical position. |
+| `size` | `(datum) => number` | required | Sets the point area through a square-root radius scale. |
+| `color` | `(datum) => string` | required | Sets the category that picks the color and the legend entry. |
+| `ariaLabel` | `string` | required | Names the chart. |
+| `ariaDescription` | `string` | - | Describes the chart, as the `desc` of the `svg`. |
+| `xLabel` | `string` | - | Sets the x axis title. |
+| `yLabel` | `string` | - | Sets the y axis title. |
+| `colorLabel` | `string` | - | Sets the legend title. |
+| `colors` | `readonly string[]` | `--chart-1` to `--chart-5` | Sets the category colors, in order. |
+| `radiusRange` | `readonly [number, number]` | `[4, 22]` | Sets the radius, in pixels, of the smallest and the largest `size`. |
+| `height` | `number` | `360` | Sets the chart height, in pixels. |
+| `className` | `string` | - | Adds classes to the wrapper. |
+| `formatTooltip` | `(datum) => string` | - | Sets the tooltip text. Without it the tooltip lists the channel values. |
+| `onFocusChange` | `(datum \| null) => void` | - | Runs when pointer or keyboard focus moves to a point, or leaves with `null`. |
+| `onSelect` | `(datum \| null) => void` | - | Runs when a point is selected, or cleared with `null`. |
+
+The x and y domains come from the data, rounded to nice ticks. The radius grows with the square root of `size`, so the point area, not its radius, is proportional to the value; equal sizes take the middle of `radiusRange`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"scatter-chart"` | Selects the wrapper around the chart host |
+
+## Accessibility and theme
+
+- The chart is one `svg` with `role="img"` named by `ariaLabel`; it takes focus with Tab and the arrow keys move between points.
+- Name what the size and the color mean in `ariaDescription` or in the text around the chart: the legend shows only the color.
+- Pass a `formatTooltip` that states every value in words, so the tooltip does not depend on color.
+- The theme sets the `--chart-1` to `--chart-5` colors the points read.

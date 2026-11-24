@@ -22,6 +22,7 @@ export const patternNames = [
   'flow-inspector',
   'chat-assistant',
   'list',
+  'charts',
 ] as const
 export type PatternName = (typeof patternNames)[number]
 /** Folder under packages/parttens/src, kept as the path in the consumer. */
@@ -36,6 +37,7 @@ export const patternSources: Record<PatternName, string> = {
   'record-status-list': 'status-list',
   widgets: 'widgets',
   stats: 'stats',
+  charts: 'charts',
   'rich-text-editor': 'rich-text-editor',
   'state-surface': 'surfaces/state',
   settings: 'surfaces/settings',
