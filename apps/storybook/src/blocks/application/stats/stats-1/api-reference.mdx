@@ -1,0 +1,88 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Stats1
+
+A responsive grid of KPI cards. Each card shows a label, a value, the trend against the previous period and, when the app handles actions, an overflow menu. Reach for it at the top of a dashboard or a list page that needs a quick read of the numbers. Install it with `npx @tc96/parttens add stats-1`.
+
+It is a section, not a page: it renders no `main` landmark. Values arrive as numbers and the block formats them; it keeps no state, never fetches and never computes a trend.
+
+The other pages of `Blocks/Application/Stats/Stats1`: [Playground](?path=/story/blocks-application-stats-stats1-playground--playground) to try the texts, the empty list and the menu, [Behavior](?path=/story/blocks-application-stats-stats1-behavior--each-stat-is-a-region-named-by-its-label) for the tests and [Usages](?path=/story/blocks-application-stats-stats1-usages--loaded) for the numbers read over the network.
+
+## Import
+
+```tsx
+import { Stats1 } from '@tc96/blocks/application/stats/stats-1'
+```
+
+The same path exports the types `Stats1Props`, `Stats1Stat`, `Stats1ValueKind`, `Stats1Action` and `Stats1Labels`.
+
+## Anatomy
+
+Four cards: a currency, a count, a percentage and a flat trend:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Stats1
+  onStatAction={(statId, action) => handleStatAction(statId, action)}
+  stats={stats}
+/>
+```
+
+## Stats1
+
+The grid. One column on small screens, two from `sm` and four from `xl` (three when there are three cards). With no stats it renders an empty state in place of the grid.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `stats` | `Stats1Stat[]` | required | The cards, in order; an empty array shows the empty state. |
+| `locale` | `string` | `"pt-BR"` | Locale of every number. |
+| `currency` | `string` | `"BRL"` | Currency of the stats whose `kind` is `currency`. |
+| `onStatAction` | `(statId: string, action: Stats1Action) => void` | - | Called with the stat id and `'details'` or `'export'` when a menu item is chosen. Without it the card menus are not rendered. |
+| `labels` | `Partial<Stats1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root element. |
+
+The block takes no other props.
+
+## Stats1Stat
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the stat in `onStatAction`. |
+| `label` | `string` | Title of the card; it also names the card region. |
+| `value` | `number` | The value. For `percent` it is a ratio (`0.241` reads `24,1%`). |
+| `kind` | `'number' \| 'currency' \| 'percent'` | How `value` is formatted; defaults to `number`. |
+| `change` | `number` | Variation as a ratio (`0.124` reads `12,4%`). The sign picks the direction; without it no trend is shown. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Indicadores"`; the accessible name of the grid |
+| `details` | `string` | `"Ver detalhes"` |
+| `export` | `string` | `"Exportar"` |
+| `emptyTitle` | `string` | `"Nenhum indicador ainda"` |
+| `emptyDescription` | `string` | `"Os indicadores aparecem aqui quando houver dados."` |
+| `actions` | `(label: string) => string` | `"Ações de Novos leads"`; the accessible name of the card menu |
+| `trend` | `{ up: string; down: string; flat: string }` | `"Alta de"`, `"Queda de"`, `"Sem variação"`; read by screen readers before the percentage |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Stats1` | `component` | The grid of cards. |
+| `Stats1Props` | `type` | The props of the grid. |
+| `Stats1Stat` | `type` | A card. |
+| `Stats1ValueKind` | `type` | `'number' \| 'currency' \| 'percent'`. |
+| `Stats1Action` | `type` | `'details' \| 'export'`. |
+| `Stats1Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each card is a `region` named by its label, and the grid is a `region` named by `labels.title`.
+- The trend direction is also in text, in a `sr-only` prefix, so color is never the only signal.
+- The card menu button is named by `labels.actions(label)`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

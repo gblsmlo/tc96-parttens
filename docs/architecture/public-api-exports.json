@@ -1789,5 +1789,45 @@
     "Settings23Plan",
     "Settings23Props",
     "Settings23Usage"
+  ],
+  "block:stats-1": [
+    "Stats1",
+    "Stats1Action",
+    "Stats1Labels",
+    "Stats1Props",
+    "Stats1Stat",
+    "Stats1ValueKind"
+  ],
+  "block:stats-2": [
+    "Stats2",
+    "Stats2Labels",
+    "Stats2Props"
+  ],
+  "block:stats-3": [
+    "Stats3",
+    "Stats3Item",
+    "Stats3Labels",
+    "Stats3Props"
+  ],
+  "block:stats-4": [
+    "Stats4",
+    "Stats4Labels",
+    "Stats4Props",
+    "Stats4Range",
+    "Stats4Source"
+  ],
+  "block:stats-5": [
+    "Stats5",
+    "Stats5Format",
+    "Stats5Item",
+    "Stats5Labels",
+    "Stats5Props"
+  ],
+  "block:stats-6": [
+    "Stats6",
+    "Stats6Labels",
+    "Stats6Period",
+    "Stats6Props",
+    "Stats6Sleeve"
   ]
 }
