@@ -52,7 +52,7 @@ Takes no other prop.
 | `data-variant` | `"badge"` or `"plain"` | Follows `variant` |
 | `data-slot` | `"property-icon"` | Selects the icon |
 
-The flag has no attribute for its state: the consumer knows `active` and can style the flag through `className`. An inactive flag is not muted: it has the same surface as an active one.
+The flag has no attribute for its state: the consumer knows `active` and can style the flag through `className`. The flag is never muted, so its icon and label take the `primary` text color of the property surface, active or not; `className` is merged after it, so the consumer can still override the color. An inactive flag is not muted: it has the same surface as an active one.
 
 ## Exports
 
@@ -65,4 +65,4 @@ The flag has no attribute for its state: the consumer knows `active` and can sty
 
 - Pass `ariaLabel` when the text alone does not say what the flag is about; the icons are hidden from assistive technology.
 - A flag that renders nothing leaves no trace for a screen reader either: pass `showInactive` when the absence of the state is information the reader needs.
-- The surface reads the theme tokens `secondary` and `secondary-foreground` for the badge.
+- The surface reads the theme tokens `secondary` and `secondary-foreground` for the badge, and `primary` for its text.
