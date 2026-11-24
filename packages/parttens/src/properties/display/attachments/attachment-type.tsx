@@ -1,5 +1,10 @@
+import {
+  FileIcon,
+  FileTextIcon,
+  LinkIcon,
+  WaveformIcon,
+} from '@phosphor-icons/react'
 import { cn } from '@tc96/utils'
-import { AudioLinesIcon, FileIcon, FileTextIcon, LinkIcon } from 'lucide-react'
 import {
   type PropertyIcon,
   type PropertyTone,
@@ -18,7 +23,7 @@ export const attachmentTypeCatalog: Record<
   AttachmentType,
   AttachmentTypePreset
 > = {
-  audio: { icon: AudioLinesIcon, label: 'Áudio', tone: 'warning' },
+  audio: { icon: WaveformIcon, label: 'Áudio', tone: 'warning' },
   doc: { icon: FileIcon, label: 'Documento', tone: 'info' },
   link: { icon: LinkIcon, label: 'Link', tone: 'neutral' },
   pdf: { icon: FileTextIcon, label: 'PDF', tone: 'danger' },
@@ -40,7 +45,7 @@ export function AttachmentTypeIcon({
     <Icon
       aria-hidden="true"
       className={cn(
-        'size-3.5 shrink-0',
+        'size-4 shrink-0',
         propertyToneClassName[preset.tone],
         className,
       )}

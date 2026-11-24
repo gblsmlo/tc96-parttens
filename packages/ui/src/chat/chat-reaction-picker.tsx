@@ -1,6 +1,6 @@
 "use client";
 
-import { HeartIcon } from "lucide-react";
+import { HeartIcon } from "@phosphor-icons/react";
 import type { ComponentProps, ReactElement } from "react";
 import { useRef, useState } from "react";
 import { Button } from "@tc96/ui/button";

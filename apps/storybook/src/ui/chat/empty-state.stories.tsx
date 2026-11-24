@@ -1,21 +1,21 @@
+import {
+  ChatsIcon,
+  CloudWarningIcon,
+  ProhibitIcon,
+  ShieldSlashIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import { ChatEmptyState } from '@tc96/ui/chat/chat-states'
-import {
-  BanIcon,
-  CloudAlertIcon,
-  MessagesSquareIcon,
-  ShieldOffIcon,
-} from 'lucide-react'
 import { expect, fn, userEvent } from 'storybook/test'
 
 const onAction = fn()
 
 const icons = {
-  Ban: <BanIcon aria-hidden="true" />,
-  CloudAlert: <CloudAlertIcon aria-hidden="true" />,
-  Messages: <MessagesSquareIcon aria-hidden="true" />,
-  ShieldOff: <ShieldOffIcon aria-hidden="true" />,
+  Ban: <ProhibitIcon aria-hidden="true" />,
+  CloudAlert: <CloudWarningIcon aria-hidden="true" />,
+  Messages: <ChatsIcon aria-hidden="true" />,
+  ShieldOff: <ShieldSlashIcon aria-hidden="true" />,
 }
 
 const actions = {

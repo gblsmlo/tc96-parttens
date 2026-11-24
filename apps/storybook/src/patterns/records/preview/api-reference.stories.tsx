@@ -1,10 +1,10 @@
+import { ArrowsOutSimpleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   RecordPreview,
   RecordPreviewAction,
   RecordPreviewBody,
 } from '@tc96/parttens'
-import { Maximize2Icon } from 'lucide-react'
 import { Slot } from '../../../test-utils/anatomy-slot'
 
 const ignore = () => undefined
@@ -26,7 +26,7 @@ export const Anatomy: Story = {
     <RecordPreview
       actions={
         <RecordPreviewAction label="RecordPreviewAction">
-          <Maximize2Icon aria-hidden />
+          <ArrowsOutSimpleIcon aria-hidden />
         </RecordPreviewAction>
       }
       closeLabel="closeLabel"

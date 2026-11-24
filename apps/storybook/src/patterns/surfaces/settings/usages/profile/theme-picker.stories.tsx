@@ -1,3 +1,4 @@
+import { CircleHalfIcon, PaletteIcon } from '@phosphor-icons/react'
 import type { Decorator, Meta, StoryObj } from '@storybook/react-vite'
 import {
   SettingsRow,
@@ -15,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@tc96/ui/select'
-import { PaletteIcon, SunMoonIcon } from 'lucide-react'
 import { Fragment } from 'react'
 import { useGlobals } from 'storybook/preview-api'
 import { expect, fn, within } from 'storybook/test'
@@ -164,7 +164,7 @@ function ThemeSettings({
             </SelectPopup>
           </Select>
         }
-        startSlot={<SunMoonIcon aria-hidden="true" />}
+        startSlot={<CircleHalfIcon aria-hidden="true" />}
         title="Mode"
       />
       <SettingsRow

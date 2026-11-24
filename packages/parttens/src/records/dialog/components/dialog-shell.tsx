@@ -1,5 +1,6 @@
 'use client'
 
+import { CaretRightIcon } from '@phosphor-icons/react'
 import {
   Dialog,
   DialogDescription,
@@ -10,7 +11,6 @@ import {
   DialogTitle,
 } from '@tc96/ui/dialog'
 import { cn } from '@tc96/utils'
-import { ChevronRightIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { RecordDialogSize } from '../core'
 import { DialogError } from './dialog-error'
@@ -62,7 +62,7 @@ function TitleTrail({
       data-slot="dialog-title-trail"
     >
       <span className="text-muted-foreground">{ancestor}</span>
-      <ChevronRightIcon
+      <CaretRightIcon
         aria-hidden="true"
         className="size-4 shrink-0 text-muted-foreground"
       />

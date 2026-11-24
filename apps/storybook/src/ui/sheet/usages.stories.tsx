@@ -1,3 +1,11 @@
+import {
+  FolderIcon,
+  GearIcon,
+  HouseIcon,
+  ListIcon,
+  ReceiptIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import { Field, FieldLabel } from '@tc96/ui/field'
@@ -14,14 +22,6 @@ import {
   SheetTrigger,
 } from '@tc96/ui/sheet'
 import { Switch } from '@tc96/ui/switch'
-import {
-  FolderIcon,
-  HomeIcon,
-  MenuIcon,
-  ReceiptIcon,
-  SettingsIcon,
-  UsersIcon,
-} from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { expect, screen, within } from 'storybook/test'
 
@@ -100,11 +100,11 @@ export const EditProfile: Story = {
 }
 
 const navigation = [
-  { href: '#dashboard', icon: HomeIcon, label: 'Dashboard' },
+  { href: '#dashboard', icon: HouseIcon, label: 'Dashboard' },
   { href: '#projects', icon: FolderIcon, label: 'Projects' },
   { href: '#team', icon: UsersIcon, label: 'Team' },
   { href: '#billing', icon: ReceiptIcon, label: 'Billing' },
-  { href: '#settings', icon: SettingsIcon, label: 'Settings' },
+  { href: '#settings', icon: GearIcon, label: 'Settings' },
 ]
 
 export const NavigationMenu: Story = {
@@ -114,7 +114,7 @@ export const NavigationMenu: Story = {
         aria-label="Open navigation"
         render={<Button size="icon" variant="outline" />}
       >
-        <MenuIcon aria-hidden="true" />
+        <ListIcon aria-hidden="true" />
       </SheetTrigger>
       <SheetPopup side="left">
         <SheetHeader>

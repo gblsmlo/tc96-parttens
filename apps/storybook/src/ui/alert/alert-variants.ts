@@ -1,10 +1,10 @@
 import {
-  CircleAlertIcon,
-  CircleCheckIcon,
+  CheckCircleIcon,
   InfoIcon,
-  type LucideIcon,
-  TriangleAlertIcon,
-} from 'lucide-react'
+  type Icon as PhosphorIcon,
+  WarningCircleIcon,
+  WarningIcon,
+} from '@phosphor-icons/react'
 
 export const alertVariantNames = [
   'default',
@@ -18,11 +18,11 @@ export type AlertVariantName = (typeof alertVariantNames)[number]
 
 export const alertStatusIcons: Record<
   AlertVariantName,
-  { icon: LucideIcon; label: string }
+  { icon: PhosphorIcon; label: string }
 > = {
   default: { icon: InfoIcon, label: 'Note' },
-  error: { icon: CircleAlertIcon, label: 'Error' },
+  error: { icon: WarningCircleIcon, label: 'Error' },
   info: { icon: InfoIcon, label: 'Information' },
-  success: { icon: CircleCheckIcon, label: 'Success' },
-  warning: { icon: TriangleAlertIcon, label: 'Warning' },
+  success: { icon: CheckCircleIcon, label: 'Success' },
+  warning: { icon: WarningIcon, label: 'Warning' },
 }

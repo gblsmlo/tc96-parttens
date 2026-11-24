@@ -1,17 +1,17 @@
 import {
+  BuildingIcon,
+  CalendarBlankIcon,
+  EnvelopeSimpleIcon,
+  FileTextIcon,
+  PhoneIcon,
+} from '@phosphor-icons/react'
+import {
   type Activity,
   type Deal,
   IconFrame,
   type MarketShareSegment,
   type PipelineStage,
 } from '@tc96/parttens'
-import {
-  BuildingIcon,
-  CalendarIcon,
-  FileTextIcon,
-  MailIcon,
-  PhoneIcon,
-} from 'lucide-react'
 
 export type PipelinePeriod = 'month' | 'quarter'
 
@@ -45,7 +45,7 @@ export const people = {
 
 const companyIcon = (
   <IconFrame>
-    <BuildingIcon />
+    <BuildingIcon aria-hidden="true" />
   </IconFrame>
 )
 
@@ -90,7 +90,7 @@ export const bareDeals: Deal[] = [
 export const activities: Activity[] = [
   {
     description: 'Discussed renewal terms and the Q3 rollout.',
-    icon: <PhoneIcon />,
+    icon: <PhoneIcon aria-hidden="true" />,
     id: 'call',
     person: people.ana,
     timeLabel: '2h ago',
@@ -98,7 +98,7 @@ export const activities: Activity[] = [
     tone: 'success',
   },
   {
-    icon: <MailIcon />,
+    icon: <EnvelopeSimpleIcon aria-hidden="true" />,
     id: 'mail',
     person: people.gabriel,
     timeLabel: '5h ago',
@@ -107,14 +107,14 @@ export const activities: Activity[] = [
   },
   {
     description: 'Demo scheduled for Thursday, 10:00.',
-    icon: <CalendarIcon />,
+    icon: <CalendarBlankIcon aria-hidden="true" />,
     id: 'meeting',
     person: people.marina,
     timeLabel: 'Yesterday',
     title: 'booked a demo with Initech',
   },
   {
-    icon: <FileTextIcon />,
+    icon: <FileTextIcon aria-hidden="true" />,
     id: 'note',
     person: people.ana,
     timeLabel: '2 days ago',
@@ -126,7 +126,7 @@ export const activities: Activity[] = [
 export const contactActivities: Activity[] = [
   {
     description: 'Asked for the enterprise tier comparison.',
-    icon: <PhoneIcon />,
+    icon: <PhoneIcon aria-hidden="true" />,
     id: 'call',
     person: people.gabriel,
     timeLabel: '2h ago',
@@ -134,7 +134,7 @@ export const contactActivities: Activity[] = [
     tone: 'success',
   },
   {
-    icon: <MailIcon />,
+    icon: <EnvelopeSimpleIcon aria-hidden="true" />,
     id: 'mail',
     person: people.marina,
     timeLabel: 'Yesterday',
@@ -143,7 +143,7 @@ export const contactActivities: Activity[] = [
   },
   {
     description: 'Quarterly review booked for Jun 18, 14:00.',
-    icon: <CalendarIcon />,
+    icon: <CalendarBlankIcon aria-hidden="true" />,
     id: 'meeting',
     person: people.gabriel,
     timeLabel: '3 days ago',

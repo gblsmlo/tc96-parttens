@@ -1,3 +1,11 @@
+import {
+  ArrowRightIcon,
+  ArrowUpIcon,
+  CheckIcon,
+  CopyIcon,
+  InfoIcon,
+  PlusIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
@@ -16,14 +24,6 @@ import { NumberField, NumberFieldInput } from '@tc96/ui/number-field'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { Spinner } from '@tc96/ui/spinner'
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@tc96/ui/tooltip'
-import {
-  ArrowRightIcon,
-  ArrowUpIcon,
-  CheckIcon,
-  CopyIcon,
-  InfoIcon,
-  PlusIcon,
-} from 'lucide-react'
 import { useRef } from 'react'
 import { expect, within } from 'storybook/test'
 import { InputGroupCanvas } from './input-group-frame.tsx'
@@ -124,7 +124,7 @@ export const PasswordRequirements: Story = {
               />
             }
           >
-            <InfoIcon />
+            <InfoIcon aria-hidden="true" />
           </PopoverTrigger>
           <PopoverPopup side="top" tooltipStyle>
             <p>Min. 8 characters</p>
@@ -171,7 +171,11 @@ const CopyLinkInputGroup = () => {
               />
             }
           >
-            {isCopied ? <CheckIcon /> : <CopyIcon />}
+            {isCopied ? (
+              <CheckIcon aria-hidden="true" />
+            ) : (
+              <CopyIcon aria-hidden="true" />
+            )}
           </TooltipTrigger>
           <TooltipPopup>
             <p>Copy to clipboard</p>
@@ -292,7 +296,7 @@ export const NotificationEmail: Story = {
               />
             }
           >
-            <InfoIcon />
+            <InfoIcon aria-hidden="true" />
           </PopoverTrigger>
           <PopoverPopup side="top" tooltipStyle>
             <p>We&apos;ll use this to send you notifications</p>
@@ -397,7 +401,7 @@ export const ChatComposer: Story = {
                     />
                   }
                 >
-                  <PlusIcon />
+                  <PlusIcon aria-hidden="true" />
                 </MenuTrigger>
               }
             />
@@ -420,7 +424,7 @@ export const ChatComposer: Story = {
                 size="icon-sm"
                 variant="default"
               >
-                <ArrowUpIcon />
+                <ArrowUpIcon aria-hidden="true" />
               </Button>
             }
           />

@@ -1,7 +1,7 @@
 'use client'
 
+import { CheckIcon, CircleIcon } from '@phosphor-icons/react'
 import { FieldDescription } from '@tc96/ui/field'
-import { CheckIcon, CircleIcon } from 'lucide-react'
 import { type ReactElement, useState } from 'react'
 import { getPasswordSuggestions } from './password-suggestions'
 import type { AuthNewPasswordLabels, AuthPasswordSuggestion } from './types'

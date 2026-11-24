@@ -1,20 +1,20 @@
 import {
-  BoxIcon,
-  CircleCheckIcon,
+  CheckCircleIcon,
   CircleDashedIcon,
-  CircleXIcon,
   CopyIcon,
+  CubeIcon,
   EyeIcon,
   GitBranchIcon,
-  GitBranchPlusIcon,
-  type LucideIcon,
+  GitDiffIcon,
+  LightningIcon,
   MinusCircleIcon,
-  PencilIcon,
+  PencilSimpleIcon,
+  type Icon as PhosphorIcon,
   PlayIcon,
   PlusIcon,
-  Trash2Icon,
-  ZapIcon,
-} from 'lucide-react'
+  TrashIcon,
+  XCircleIcon,
+} from '@phosphor-icons/react'
 import type {
   FlowRunStatus,
   FlowStep,
@@ -23,29 +23,29 @@ import type {
   FlowStepType,
 } from '../core'
 
-export const flowKindIcons: Record<FlowStepKind, LucideIcon> = {
+export const flowKindIcons: Record<FlowStepKind, PhosphorIcon> = {
   action: PlayIcon,
   condition: GitBranchIcon,
-  trigger: ZapIcon,
+  trigger: LightningIcon,
 }
 
-export const flowFallbackIcon: LucideIcon = BoxIcon
+export const flowFallbackIcon: PhosphorIcon = CubeIcon
 
-export const flowStatusIcons: Record<FlowRunStatus, LucideIcon> = {
-  failed: CircleXIcon,
+export const flowStatusIcons: Record<FlowRunStatus, PhosphorIcon> = {
+  failed: XCircleIcon,
   idle: CircleDashedIcon,
   'not-run': CircleDashedIcon,
   running: PlayIcon,
   skipped: MinusCircleIcon,
-  success: CircleCheckIcon,
+  success: CheckCircleIcon,
 }
 
-export const flowActionIcons: Record<FlowStepAction, LucideIcon> = {
+export const flowActionIcons: Record<FlowStepAction, PhosphorIcon> = {
   'add-after': PlusIcon,
-  'add-branch': GitBranchPlusIcon,
-  delete: Trash2Icon,
+  'add-branch': GitDiffIcon,
+  delete: TrashIcon,
   duplicate: CopyIcon,
-  edit: PencilIcon,
+  edit: PencilSimpleIcon,
   view: EyeIcon,
 }
 

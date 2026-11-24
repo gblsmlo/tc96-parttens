@@ -1,21 +1,21 @@
+import {
+  CellSignalHighIcon,
+  CellSignalLowIcon,
+  CellSignalMediumIcon,
+  CheckCircleIcon,
+  CircleDashedIcon,
+  CircleIcon,
+  MinusIcon,
+  RadioButtonIcon,
+  WarningIcon,
+  XCircleIcon,
+} from '@phosphor-icons/react'
 import { richTextToPlainText } from '@tc96/helpers/rich-text'
 import type {
   PersonPropertyOption,
   RichTextValue,
   SelectPropertyOption,
 } from '@tc96/parttens'
-import {
-  CircleCheckIcon,
-  CircleDashedIcon,
-  CircleDotIcon,
-  CircleIcon,
-  CircleXIcon,
-  MinusIcon,
-  SignalHighIcon,
-  SignalLowIcon,
-  SignalMediumIcon,
-  TriangleAlertIcon,
-} from 'lucide-react'
 
 export interface NoteValues {
   body: RichTextValue
@@ -51,31 +51,31 @@ export const noteStatusOptions: readonly SelectPropertyOption[] = [
     value: 'planned',
   },
   {
-    icon: CircleDotIcon,
+    icon: RadioButtonIcon,
     label: 'Em andamento',
     tone: 'warning',
     value: 'in-progress',
   },
   {
-    icon: CircleCheckIcon,
+    icon: CheckCircleIcon,
     label: 'Concluída',
     tone: 'success',
     value: 'completed',
   },
-  { icon: CircleXIcon, label: 'Cancelada', tone: 'danger', value: 'canceled' },
+  { icon: XCircleIcon, label: 'Cancelada', tone: 'danger', value: 'canceled' },
 ]
 
 export const notePriorityOptions: readonly SelectPropertyOption[] = [
   { icon: MinusIcon, label: 'Sem prioridade', tone: 'neutral', value: 'none' },
   {
-    icon: TriangleAlertIcon,
+    icon: WarningIcon,
     label: 'Urgente',
     tone: 'danger',
     value: 'urgent',
   },
-  { icon: SignalHighIcon, label: 'Alta', tone: 'warning', value: 'high' },
-  { icon: SignalMediumIcon, label: 'Média', tone: 'info', value: 'medium' },
-  { icon: SignalLowIcon, label: 'Baixa', tone: 'neutral', value: 'low' },
+  { icon: CellSignalHighIcon, label: 'Alta', tone: 'warning', value: 'high' },
+  { icon: CellSignalMediumIcon, label: 'Média', tone: 'info', value: 'medium' },
+  { icon: CellSignalLowIcon, label: 'Baixa', tone: 'neutral', value: 'low' },
 ]
 
 export const initialNotes: readonly Note[] = [

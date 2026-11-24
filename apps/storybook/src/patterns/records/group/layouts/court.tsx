@@ -1,4 +1,11 @@
 import {
+  ArrowSquareOutIcon,
+  LinkIcon,
+  type Icon as PhosphorIcon,
+  PlusIcon,
+  ScalesIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupDivider,
   RecordGroupLink,
@@ -10,13 +17,6 @@ import {
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import {
-  ExternalLinkIcon,
-  LinkIcon,
-  type LucideIcon,
-  PlusIcon,
-  ScaleIcon,
-} from 'lucide-react'
 import { Fragment, useState } from 'react'
 
 type ProceedingRole =
@@ -78,14 +78,14 @@ const courtOptions: readonly SelectPropertyOption[] = [
 ]
 
 const addItems: readonly {
-  icon: LucideIcon
+  icon: PhosphorIcon
   label: string
   value: ProceedingRole
 }[] = [
-  { icon: ScaleIcon, label: 'Recurso', value: 'appeal' },
-  { icon: ScaleIcon, label: 'Cumprimento', value: 'enforcement' },
-  { icon: ScaleIcon, label: 'Cautelar', value: 'precautionary' },
-  { icon: ScaleIcon, label: 'Incidental', value: 'incidental' },
+  { icon: ScalesIcon, label: 'Recurso', value: 'appeal' },
+  { icon: ScalesIcon, label: 'Cumprimento', value: 'enforcement' },
+  { icon: ScalesIcon, label: 'Cautelar', value: 'precautionary' },
+  { icon: ScalesIcon, label: 'Incidental', value: 'incidental' },
   { icon: LinkIcon, label: 'Apenso', value: 'attachment' },
 ]
 
@@ -275,7 +275,7 @@ export function CourtPropertiesGroup({
               </RecordGroupRow>
               <RecordGroupLink
                 href={proceeding.courtLink}
-                leading={<ExternalLinkIcon aria-hidden />}
+                leading={<ArrowSquareOutIcon aria-hidden />}
                 meta={proceeding.stage}
                 rel="noopener noreferrer"
                 target="_blank"

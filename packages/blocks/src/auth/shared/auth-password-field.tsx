@@ -1,5 +1,6 @@
 'use client'
 
+import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Field, FieldError, FieldLabel } from '@tc96/ui/field'
 import {
@@ -7,7 +8,6 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@tc96/ui/input-group'
-import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { type ReactElement, type ReactNode, useState } from 'react'
 
 export interface AuthPasswordFieldProps {
@@ -55,7 +55,7 @@ export function AuthPasswordField({
             type="button"
             variant="ghost"
           >
-            {visible ? <EyeOffIcon aria-hidden /> : <EyeIcon aria-hidden />}
+            {visible ? <EyeSlashIcon aria-hidden /> : <EyeIcon aria-hidden />}
           </Button>
         </InputGroupAddon>
       </InputGroup>

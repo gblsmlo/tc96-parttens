@@ -1,11 +1,16 @@
 'use client'
 
+import {
+  CursorIcon,
+  HandIcon,
+  MinusIcon,
+  PlusIcon,
+} from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Group } from '@tc96/ui/group'
 import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
 import { cn } from '@tc96/utils'
 import { Panel, useReactFlow, useStore } from '@xyflow/react'
-import { HandIcon, MinusIcon, MousePointer2Icon, PlusIcon } from 'lucide-react'
 import type { ReactElement, ReactNode } from 'react'
 import { FlowControlButton } from '../../components/flow-control-button'
 import { flowControlsPanelClassName } from '../../lib/variants'
@@ -44,7 +49,7 @@ export function FlowCanvasControls({
         variant="outline"
       >
         <ToggleGroupItem aria-label={labels.select} value="select">
-          <MousePointer2Icon aria-hidden="true" />
+          <CursorIcon aria-hidden="true" />
         </ToggleGroupItem>
         <ToggleGroupItem aria-label={labels.pan} value="pan">
           <HandIcon aria-hidden="true" />

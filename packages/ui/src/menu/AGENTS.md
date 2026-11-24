@@ -13,7 +13,7 @@ The parts come from COSS on top of Base UI `Menu` and are owned by this repo (AD
 
 ## Architecture
 
-- Layer: `packages/ui`, the bottom of `templates` → `parttens` → `ui` → `utils`. `menu.tsx` imports only Base UI, `lucide-react` and `cn` from `@tc96/utils`.
+- Layer: `packages/ui`, the bottom of `templates` → `parttens` → `ui` → `utils`. `menu.tsx` imports only Base UI, `@phosphor-icons/react` and `cn` from `@tc96/utils`.
 - Resolution: `packages/ui/package.json` exports `./menu` as `./src/menu/index.ts`, ahead of the `./*` → `./src/*.tsx` pattern that serves the single-file components; `tsconfig.base.json` maps `@tc96/ui/*` to `packages/ui/src/*`, which reaches `menu/index.ts` as a folder index.
 - Manifest: the `menu` item of `packages/ui/ui.manifest.json` lists the five files of this folder. `check:coss` fails on a file here that the manifest does not list.
 - Scripts: `scripts/check-boundaries.ts` and `packages/registry/src/build-registry.ts` read a manifest path ending in `/index` as the folder module, so `@tc96/ui/menu` still resolves to the `menu` item.

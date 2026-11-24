@@ -1,4 +1,19 @@
 import {
+  ArrowSquareOutIcon,
+  CalendarBlankIcon,
+  CalendarDotIcon,
+  DotsThreeIcon,
+  FileTextIcon,
+  FlagIcon,
+  ListChecksIcon,
+  MapPinIcon,
+  PencilSimpleIcon,
+  PlusIcon,
+  SigmaIcon,
+  TrashIcon,
+  VideoCameraIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupAction,
   RecordGroupDivider,
@@ -19,21 +34,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  CalendarClockIcon,
-  CalendarIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  FileCheckIcon,
-  FlagIcon,
-  ListTodoIcon,
-  MapPinIcon,
-  PencilIcon,
-  PlusIcon,
-  SigmaIcon,
-  Trash2Icon,
-  VideoIcon,
-} from 'lucide-react'
 import { Fragment, type ReactNode, useState } from 'react'
 
 interface TaskEntry {
@@ -165,7 +165,7 @@ const agenda: readonly AgendaEntry[] = [
 
 const kindIcon = {
   deadline: { color: '#dc2626', icon: FlagIcon },
-  event: { color: '#2563eb', icon: CalendarIcon },
+  event: { color: '#2563eb', icon: CalendarBlankIcon },
 } as const
 
 type TodoStatus = 'open' | 'overdue' | 'done'
@@ -263,7 +263,7 @@ const processEventStatus = {
 
 const modalityFrame = {
   in_person: { color: '#ea580c', icon: MapPinIcon },
-  video: { color: '#2563eb', icon: VideoIcon },
+  video: { color: '#2563eb', icon: VideoCameraIcon },
 } as const
 
 const deadlineColor = '#dc2626'
@@ -363,8 +363,8 @@ const processTasks: readonly ProcessTask[] = [
 
 const addTodoOptions = [
   { icon: FlagIcon, label: 'Novo prazo', value: 'deadline' },
-  { icon: CalendarIcon, label: 'Nova audiência', value: 'hearing' },
-  { icon: ListTodoIcon, label: 'Nova tarefa', value: 'task' },
+  { icon: CalendarBlankIcon, label: 'Nova audiência', value: 'hearing' },
+  { icon: ListChecksIcon, label: 'Nova tarefa', value: 'task' },
 ] as const
 
 const taskStatus = (task: ProcessTask, completed: boolean): TodoStatus => {
@@ -379,24 +379,24 @@ export function TaskMenu({ task }: Readonly<{ task: TaskEntry }>) {
         aria-label={`Ações de ${task.title}`}
         render={<Button size="icon-sm" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem onClick={() => onOpenTask(task.id)}>
-          <ExternalLinkIcon aria-hidden="true" />
+          <ArrowSquareOutIcon aria-hidden="true" />
           Abrir
         </MenuItem>
         <MenuItem onClick={() => onEditTask(task.id)}>
-          <PencilIcon aria-hidden="true" />
+          <PencilSimpleIcon aria-hidden="true" />
           Editar
         </MenuItem>
         <MenuItem onClick={() => onPostponeTask(task.id)}>
-          <CalendarClockIcon aria-hidden="true" />
+          <CalendarDotIcon aria-hidden="true" />
           Adiar
         </MenuItem>
         <MenuSeparator />
         <MenuItem onClick={() => onDeleteTask(task.id)} variant="destructive">
-          <Trash2Icon aria-hidden="true" />
+          <TrashIcon aria-hidden="true" />
           Excluir
         </MenuItem>
       </MenuPopup>
@@ -562,16 +562,16 @@ export function DeadlineMenu({ deadline }: Readonly<{ deadline: Deadline }>) {
         aria-label={`Ações de ${deadline.label}`}
         render={<Button size="icon-sm" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem onClick={() => onOpenDeadline(deadline.id)}>
-          <ExternalLinkIcon aria-hidden="true" />
+          <ArrowSquareOutIcon aria-hidden="true" />
           Abrir
         </MenuItem>
         {deadline.status === 'open' ? (
           <MenuItem onClick={() => onFileDeadline(deadline.id)}>
-            <FileCheckIcon aria-hidden="true" />
+            <FileTextIcon aria-hidden="true" />
             Protocolar
           </MenuItem>
         ) : null}
@@ -584,7 +584,7 @@ export function DeadlineMenu({ deadline }: Readonly<{ deadline: Deadline }>) {
           onClick={() => onDeleteDeadline(deadline.id)}
           variant="destructive"
         >
-          <Trash2Icon aria-hidden="true" />
+          <TrashIcon aria-hidden="true" />
           Excluir
         </MenuItem>
       </MenuPopup>

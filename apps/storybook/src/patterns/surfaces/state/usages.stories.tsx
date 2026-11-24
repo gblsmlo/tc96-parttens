@@ -1,7 +1,7 @@
+import { BellSlashIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { StateGuard, StateSurface } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { BellOffIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { StateCanvas } from './state-canvas.tsx'
@@ -210,7 +210,7 @@ export const NoNotifications: Story = {
   render: () => (
     <StateSurface
       description="You will see new activity here."
-      icon={<BellOffIcon />}
+      icon={<BellSlashIcon aria-hidden="true" />}
       kind="empty"
       title="No notifications"
     />

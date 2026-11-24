@@ -1,4 +1,15 @@
 import {
+  ArrowSquareOutIcon,
+  CalendarDotIcon,
+  CopyIcon,
+  DotsThreeIcon,
+  MapPinIcon,
+  PhoneIcon,
+  PlusIcon,
+  ProhibitIcon,
+  VideoCameraIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupAction,
   RecordGroupFilter,
@@ -17,17 +28,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  BanIcon,
-  CalendarClockIcon,
-  CopyIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  MapPinIcon,
-  PhoneIcon,
-  PlusIcon,
-  VideoIcon,
-} from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 
 type Modality = 'in_person' | 'video' | 'phone'
@@ -61,7 +61,7 @@ const today = '2026-11-19'
 const modalityIcon = {
   in_person: MapPinIcon,
   phone: PhoneIcon,
-  video: VideoIcon,
+  video: VideoCameraIcon,
 } as const
 
 const modalityColor = {
@@ -232,11 +232,11 @@ export function EventMenu({
         aria-label={`Ações de ${event.title}`}
         render={<Button size="icon-sm" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem onClick={() => onOpenEvent(event.id)}>
-          <ExternalLinkIcon aria-hidden="true" />
+          <ArrowSquareOutIcon aria-hidden="true" />
           Abrir
         </MenuItem>
         {open && event.meetingUrl ? (
@@ -245,7 +245,7 @@ export function EventMenu({
             rel="noreferrer"
             target="_blank"
           >
-            <VideoIcon aria-hidden="true" />
+            <VideoCameraIcon aria-hidden="true" />
             Entrar na reunião
           </MenuLinkItem>
         ) : null}
@@ -257,7 +257,7 @@ export function EventMenu({
         ) : null}
         {isPast(event) ? null : (
           <MenuItem onClick={() => onRescheduleEvent(event.id)}>
-            <CalendarClockIcon aria-hidden="true" />
+            <CalendarDotIcon aria-hidden="true" />
             Remarcar
           </MenuItem>
         )}
@@ -265,7 +265,7 @@ export function EventMenu({
           <>
             <MenuSeparator />
             <MenuItem onClick={onCancel} variant="destructive">
-              <BanIcon aria-hidden="true" />
+              <ProhibitIcon aria-hidden="true" />
               Cancelar
             </MenuItem>
           </>

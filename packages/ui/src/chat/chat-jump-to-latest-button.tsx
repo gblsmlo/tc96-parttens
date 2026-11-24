@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDownIcon } from "lucide-react";
+import { ArrowDownIcon } from "@phosphor-icons/react";
 import type { ReactElement, ReactNode } from "react";
 import { cn } from "@tc96/utils";
 import { Button, type ButtonProps } from "@tc96/ui/button";

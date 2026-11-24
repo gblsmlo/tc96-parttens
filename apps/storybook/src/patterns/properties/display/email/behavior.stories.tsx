@@ -1,6 +1,8 @@
+import { PlusIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EmailProperty } from '@tc96/parttens'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { isIcon } from '../../../../test-utils/is-icon'
 import { EmailCanvas } from './email-canvas.tsx'
 
 const EMAIL = 'ana@example.com'
@@ -61,7 +63,7 @@ export const FilledTriggerCollapsesToPlus: Story = {
     const trigger = addTrigger(canvasElement)
 
     await expect(trigger.textContent).toBe('')
-    await expect(trigger.querySelector('svg')).toHaveClass('lucide-plus')
+    await expect(isIcon(trigger.querySelector('svg'), PlusIcon)).toBe(true)
     await expect(within(canvasElement).getByText(EMAIL)).toBeVisible()
   },
 }

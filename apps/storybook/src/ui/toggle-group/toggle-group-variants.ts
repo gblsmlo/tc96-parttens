@@ -1,10 +1,10 @@
-import type { ToggleGroup } from '@tc96/ui/toggle-group'
 import {
-  AlignCenterIcon,
-  AlignLeftIcon,
-  AlignRightIcon,
-  type LucideIcon,
-} from 'lucide-react'
+  type Icon as PhosphorIcon,
+  TextAlignCenterIcon,
+  TextAlignLeftIcon,
+  TextAlignRightIcon,
+} from '@phosphor-icons/react'
+import type { ToggleGroup } from '@tc96/ui/toggle-group'
 import type { ComponentProps } from 'react'
 
 type ToggleGroupProps = ComponentProps<typeof ToggleGroup>
@@ -34,15 +34,15 @@ export const toggleGroupOrientationNames = [
 ] as const satisfies readonly ToggleGroupOrientationName[]
 
 export interface AlignmentOption {
-  icon: LucideIcon
+  icon: PhosphorIcon
   label: string
   value: string
 }
 
 export const alignments: readonly AlignmentOption[] = [
-  { icon: AlignLeftIcon, label: 'Left', value: 'left' },
-  { icon: AlignCenterIcon, label: 'Center', value: 'center' },
-  { icon: AlignRightIcon, label: 'Right', value: 'right' },
+  { icon: TextAlignLeftIcon, label: 'Left', value: 'left' },
+  { icon: TextAlignCenterIcon, label: 'Center', value: 'center' },
+  { icon: TextAlignRightIcon, label: 'Right', value: 'right' },
 ]
 
 export const disabledAlignment = 'center'

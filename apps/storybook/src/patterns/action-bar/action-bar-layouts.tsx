@@ -1,9 +1,13 @@
 import {
+  ArchiveIcon,
+  PaperPlaneRightIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
+import {
   ActionBar,
   type ActionBarContext,
   type ActionBarGroup,
 } from '@tc96/parttens'
-import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
 import type { ActionBarControls } from './action-bar-controls.ts'
 
 export interface DraftRow {
@@ -59,7 +63,9 @@ export const ComposedActionBar = ({
           ? [
               {
                 disabled: disabled || undefined,
-                icon: icons ? <SendIcon /> : undefined,
+                icon: icons ? (
+                  <PaperPlaneRightIcon aria-hidden="true" />
+                ) : undefined,
                 id: 'send',
                 label,
                 onSelect: select('send'),
@@ -69,7 +75,7 @@ export const ComposedActionBar = ({
             ]
           : []),
         {
-          icon: icons ? <ArchiveIcon /> : undefined,
+          icon: icons ? <ArchiveIcon aria-hidden="true" /> : undefined,
           id: 'archive',
           label: 'Arquivar',
           onSelect: select('archive'),
@@ -113,7 +119,7 @@ export const ComposedActionBar = ({
               id: 'danger',
               items: [
                 {
-                  icon: icons ? <Trash2Icon /> : undefined,
+                  icon: icons ? <TrashIcon aria-hidden="true" /> : undefined,
                   id: 'delete',
                   label: 'Excluir',
                   onSelect: select('delete'),

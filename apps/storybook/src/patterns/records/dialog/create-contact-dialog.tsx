@@ -1,4 +1,10 @@
 import {
+  BriefcaseIcon,
+  BuildingsIcon,
+  DotsThreeIcon,
+  FileTextIcon,
+} from '@phosphor-icons/react'
+import {
   EmailProperty,
   PhoneProperty,
   PropertySurface,
@@ -10,12 +16,6 @@ import {
   TextProperty,
 } from '@tc96/parttens'
 import { Menu, MenuCheckboxItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import {
-  BriefcaseIcon,
-  Building2Icon,
-  EllipsisIcon,
-  FileTextIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
 import {
@@ -237,7 +237,7 @@ export function CreateContactDialog({
           {visible.has('company') ? (
             <CreatableProperty
               ariaLabel="Empresa"
-              icon={Building2Icon}
+              icon={BuildingsIcon}
               items={uniqueSorted([...companies, ...createdCompanies])}
               labels={companyLabels}
               onCreate={(created) => {
@@ -269,7 +269,7 @@ export function CreateContactDialog({
                 <PropertySurface muted render={<button type="button" />} />
               }
             >
-              <EllipsisIcon aria-hidden className="size-3.5" />
+              <DotsThreeIcon aria-hidden className="size-3.5" />
             </MenuTrigger>
             <MenuPopup align="start">
               {optionalProperties.map(({ key, label }) => (

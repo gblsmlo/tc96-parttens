@@ -1,8 +1,8 @@
+import { DotsThreeIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AgentBuilderMenu } from '@tc96/blocks/ai-agents/flow/agent-builder/partials'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import { EllipsisIcon } from 'lucide-react'
 import { expect, fn, userEvent, within } from 'storybook/test'
 
 const meta = {
@@ -19,7 +19,7 @@ const meta = {
           <Button aria-label="Ações do agente" size="icon" variant="outline" />
         }
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="start">
         <AgentBuilderMenu {...args} />

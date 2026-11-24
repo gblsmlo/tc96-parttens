@@ -1,4 +1,5 @@
 import type { DateRange, DropdownProps } from '@daypicker/react'
+import { CalendarBlankIcon } from '@phosphor-icons/react'
 import {
   addDays,
   addMonths,
@@ -22,7 +23,6 @@ import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { ScrollArea } from '@tc96/ui/scroll-area'
 import { Toggle } from '@tc96/ui/toggle'
 import { ToggleGroup } from '@tc96/ui/toggle-group'
-import { CalendarIcon } from 'lucide-react'
 import { type ChangeEvent, useId, useState } from 'react'
 import type { CalendarControls } from './calendar-controls.ts'
 
@@ -151,7 +151,7 @@ export const PopoverRangeCalendar = () => {
       <PopoverTrigger
         render={<Button className="w-full justify-start" variant="outline" />}
       >
-        <CalendarIcon aria-hidden="true" />
+        <CalendarBlankIcon aria-hidden="true" />
         {date?.from ? (
           date.to ? (
             <>
@@ -326,7 +326,7 @@ export const FieldDatePicker = () => {
           id={id}
           render={<Button className="w-full justify-start" variant="outline" />}
         >
-          <CalendarIcon aria-hidden="true" />
+          <CalendarBlankIcon aria-hidden="true" />
           {date ? formatLongDate(date, locale) : 'Pick a date'}
         </PopoverTrigger>
         <PopoverPopup>

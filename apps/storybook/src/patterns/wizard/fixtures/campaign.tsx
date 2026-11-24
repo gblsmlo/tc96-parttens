@@ -1,41 +1,41 @@
-import type { WizardStep } from '@tc96/parttens'
 import {
-  ClipboardCheckIcon,
+  ClipboardIcon,
   FileTextIcon,
   MegaphoneIcon,
   TargetIcon,
   WalletIcon,
-} from 'lucide-react'
+} from '@phosphor-icons/react'
+import type { WizardStep } from '@tc96/parttens'
 import type { SelectOption } from './fields'
 
 export const campaignSteps = [
   {
     description: 'Título, responsável e período',
-    icon: <FileTextIcon />,
+    icon: <FileTextIcon aria-hidden="true" />,
     title: 'Informações iniciais',
     value: 'basics',
   },
   {
     description: 'Origem, canal e metas',
-    icon: <MegaphoneIcon />,
+    icon: <MegaphoneIcon aria-hidden="true" />,
     title: 'Campanha',
     value: 'campaign',
   },
   {
     description: 'Contas e objetivo no Meta',
-    icon: <TargetIcon />,
+    icon: <TargetIcon aria-hidden="true" />,
     title: 'Campanha de anúncios',
     value: 'ads',
   },
   {
     description: 'Opcional, por dia',
-    icon: <WalletIcon />,
+    icon: <WalletIcon aria-hidden="true" />,
     title: 'Orçamento',
     value: 'budget',
   },
   {
     description: 'Confira e crie',
-    icon: <ClipboardCheckIcon />,
+    icon: <ClipboardIcon aria-hidden="true" />,
     title: 'Revisão',
     value: 'review',
   },

@@ -1,8 +1,8 @@
 'use client'
 
+import { DotsThreeIcon } from '@phosphor-icons/react'
 import { Menu, MenuCheckboxItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { cn } from '@tc96/utils'
-import { EllipsisIcon } from 'lucide-react'
 import type React from 'react'
 import { Fragment, useState } from 'react'
 import type { PropertyIcon } from '../shared/property-catalog'
@@ -83,7 +83,7 @@ export function PropertyCollection({
               />
             }
           >
-            <EllipsisIcon aria-hidden className="size-3.5" />
+            <DotsThreeIcon aria-hidden className="size-4" />
           </MenuTrigger>
           <MenuPopup align="start">
             {items.map((item) => {

@@ -1,3 +1,4 @@
+import { CheckIcon } from '@phosphor-icons/react'
 import {
   CalendarEventChip,
   CalendarEventChipOpenTrigger,
@@ -8,7 +9,6 @@ import {
   CalendarView,
   type CalendarViewProps,
 } from '@tc96/parttens'
-import { CheckIcon } from 'lucide-react'
 import { type ReactNode, useCallback, useMemo, useState } from 'react'
 import { ANCHOR, NOW, TIME_ZONE } from '../../fixtures/calendar-view-harness'
 import type { CalendarControls, CalendarToneName } from './calendar-controls.ts'

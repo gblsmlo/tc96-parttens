@@ -43,7 +43,7 @@ import {
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
-import { CircleDotIcon } from 'lucide-react'
+import { RadioButtonIcon } from '@phosphor-icons/react'
 
 <CollectionProvider
   collection={collection}
@@ -58,7 +58,7 @@ import { CircleDotIcon } from 'lucide-react'
             <ViewSettingsMenu onClearFilters={clearFilters}>
               <ViewSettingsSection label="Filtros">
                 <FilterRadioSubmenu
-                  icon={CircleDotIcon}
+                  icon={RadioButtonIcon}
                   label="Tipo"
                   onValueChange={setType}
                   options={typeOptions}

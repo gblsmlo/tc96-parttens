@@ -1,5 +1,11 @@
 'use client'
 
+import {
+  ArrowUUpLeftIcon,
+  ArrowUUpRightIcon,
+  LockIcon,
+  LockOpenIcon,
+} from '@phosphor-icons/react'
 import { FlowCanvas } from '@tc96/parttens/flow/canvas/composition/flow-canvas/flow-canvas'
 import { FlowCanvasControls } from '@tc96/parttens/flow/canvas/composition/flow-canvas-controls/flow-canvas-controls'
 import { FlowCanvasMinimap } from '@tc96/parttens/flow/canvas/composition/flow-canvas-minimap/flow-canvas-minimap'
@@ -16,7 +22,6 @@ import {
   MenuSeparator,
 } from '@tc96/ui/menu'
 import { renderAnchor } from '@tc96/ui/render-anchor'
-import { LockIcon, LockOpenIcon, Redo2Icon, Undo2Icon } from 'lucide-react'
 import { type ReactElement, useMemo } from 'react'
 import { createFlowEditorHandlers } from '../shared/create-flow-editor-handlers'
 import { FlowAssistant } from '../shared/flow-assistant'
@@ -108,14 +113,14 @@ export function WorkflowEditor(
                   label={labels.undo}
                   onClick={onUndo}
                 >
-                  <Undo2Icon aria-hidden="true" />
+                  <ArrowUUpLeftIcon aria-hidden="true" />
                 </FlowToolButton>
                 <FlowToolButton
                   disabled={!canRedo}
                   label={labels.redo}
                   onClick={onRedo}
                 >
-                  <Redo2Icon aria-hidden="true" />
+                  <ArrowUUpRightIcon aria-hidden="true" />
                 </FlowToolButton>
                 <FlowToolButton
                   aria-pressed={state.locked}

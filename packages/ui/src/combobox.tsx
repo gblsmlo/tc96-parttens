@@ -1,7 +1,7 @@
 "use client";
 
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox";
-import { ChevronsUpDownIcon, XIcon } from "lucide-react";
+import { CaretUpDownIcon, XIcon } from "@phosphor-icons/react";
 import * as React from "react";
 import { cn } from "@tc96/utils";
 import { Input } from "@tc96/ui/input";
@@ -120,8 +120,8 @@ export function ComboboxInput({
           )}
           {...triggerProps}
         >
-          <ComboboxPrimitive.Icon data-slot="combobox-icon">
-            <ChevronsUpDownIcon />
+          <ComboboxPrimitive.Icon aria-hidden="true" data-slot="combobox-icon">
+            <CaretUpDownIcon aria-hidden="true" />
           </ComboboxPrimitive.Icon>
         </ComboboxTrigger>
       )}
@@ -134,7 +134,7 @@ export function ComboboxInput({
           )}
           {...clearProps}
         >
-          <XIcon />
+          <XIcon aria-hidden="true" />
         </ComboboxClear>
       )}
     </ComboboxPrimitive.InputGroup>
@@ -430,7 +430,7 @@ export function ComboboxChipRemove(
       data-slot="combobox-chip-remove"
       {...props}
     >
-      <XIcon />
+      <XIcon aria-hidden="true" />
     </ComboboxPrimitive.ChipRemove>
   );
 }

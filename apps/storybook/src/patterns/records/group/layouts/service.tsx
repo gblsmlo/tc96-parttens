@@ -1,4 +1,22 @@
 import {
+  ArrowSquareOutIcon,
+  ChatCircleIcon,
+  CheckCircleIcon,
+  DotsThreeIcon,
+  EnvelopeSimpleIcon,
+  HandshakeIcon,
+  ListChecksIcon,
+  NoteIcon,
+  PencilSimpleIcon,
+  PhoneIcon,
+  type Icon as PhosphorIcon,
+  PlusIcon,
+  PushPinIcon,
+  PushPinSlashIcon,
+  TrashIcon,
+  VideoCameraIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupDivider,
   RecordGroupFilter,
@@ -16,24 +34,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  CircleCheckIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  HandshakeIcon,
-  ListTodoIcon,
-  type LucideIcon,
-  MailIcon,
-  MessageCircleIcon,
-  PencilIcon,
-  PhoneIcon,
-  PinIcon,
-  PinOffIcon,
-  PlusIcon,
-  StickyNoteIcon,
-  Trash2Icon,
-  VideoIcon,
-} from 'lucide-react'
 import { Fragment, type ReactNode, useState } from 'react'
 
 type Channel = 'in_person' | 'phone' | 'whatsapp' | 'email' | 'video'
@@ -75,13 +75,13 @@ const onDeleteNote = ignore
 
 const channelFrame: Record<
   Channel,
-  { color: string; icon: LucideIcon; label: string }
+  { color: string; icon: PhosphorIcon; label: string }
 > = {
-  email: { color: '#ea580c', icon: MailIcon, label: 'E-mail' },
+  email: { color: '#ea580c', icon: EnvelopeSimpleIcon, label: 'E-mail' },
   in_person: { color: '#7c3aed', icon: HandshakeIcon, label: 'Presencial' },
   phone: { color: '#2563eb', icon: PhoneIcon, label: 'Telefone' },
-  video: { color: '#db2777', icon: VideoIcon, label: 'Videochamada' },
-  whatsapp: { color: '#059669', icon: MessageCircleIcon, label: 'WhatsApp' },
+  video: { color: '#db2777', icon: VideoCameraIcon, label: 'Videochamada' },
+  whatsapp: { color: '#059669', icon: ChatCircleIcon, label: 'WhatsApp' },
 }
 
 const noteColor = '#d97706'
@@ -214,7 +214,7 @@ export function RowMenu({
         aria-label={`Ações de ${name}`}
         render={<Button size="icon-sm" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">{children}</MenuPopup>
     </Menu>
@@ -245,27 +245,27 @@ export function EntryRow({ entry }: Readonly<{ entry: ServiceEntry }>) {
       ) : null}
       <RowMenu name={entry.summary}>
         <MenuItem onClick={() => onOpenEntry(entry.id)}>
-          <ExternalLinkIcon aria-hidden="true" />
+          <ArrowSquareOutIcon aria-hidden="true" />
           Abrir
         </MenuItem>
         <MenuItem onClick={() => onEditEntry(entry.id)}>
-          <PencilIcon aria-hidden="true" />
+          <PencilSimpleIcon aria-hidden="true" />
           Editar
         </MenuItem>
         {entry.nextStep === 'pending' ? (
           <MenuItem onClick={() => onNextStep(entry.id, 'complete')}>
-            <CircleCheckIcon aria-hidden="true" />
+            <CheckCircleIcon aria-hidden="true" />
             Concluir próximo passo
           </MenuItem>
         ) : (
           <MenuItem onClick={() => onNextStep(entry.id, 'record')}>
-            <ListTodoIcon aria-hidden="true" />
+            <ListChecksIcon aria-hidden="true" />
             Registrar próximo passo
           </MenuItem>
         )}
         <MenuSeparator />
         <MenuItem onClick={() => onDeleteEntry(entry.id)} variant="destructive">
-          <Trash2Icon aria-hidden="true" />
+          <TrashIcon aria-hidden="true" />
           Excluir
         </MenuItem>
       </RowMenu>
@@ -282,7 +282,7 @@ export function NoteRow({
       interactive
       leading={
         <IconFrame color={noteColor} shape="rounded" size="xs">
-          <StickyNoteIcon aria-hidden />
+          <NoteIcon aria-hidden />
         </IconFrame>
       }
       title={
@@ -301,7 +301,7 @@ export function NoteRow({
       ) : null}
       <RowMenu name={note.title}>
         <MenuItem onClick={() => onOpenNote(note.id)}>
-          <ExternalLinkIcon aria-hidden="true" />
+          <ArrowSquareOutIcon aria-hidden="true" />
           Abrir
         </MenuItem>
         <MenuItem
@@ -311,15 +311,15 @@ export function NoteRow({
           }}
         >
           {note.pinned ? (
-            <PinOffIcon aria-hidden="true" />
+            <PushPinSlashIcon aria-hidden="true" />
           ) : (
-            <PinIcon aria-hidden="true" />
+            <PushPinIcon aria-hidden="true" />
           )}
           {note.pinned ? 'Desafixar' : 'Fixar'}
         </MenuItem>
         <MenuSeparator />
         <MenuItem onClick={() => onDeleteNote(note.id)} variant="destructive">
-          <Trash2Icon aria-hidden="true" />
+          <TrashIcon aria-hidden="true" />
           Excluir
         </MenuItem>
       </RowMenu>
@@ -338,11 +338,11 @@ export function AddMenu() {
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem onClick={() => onAdd('entry')}>
-          <MessageCircleIcon aria-hidden="true" />
+          <ChatCircleIcon aria-hidden="true" />
           Novo atendimento
         </MenuItem>
         <MenuItem onClick={() => onAdd('note')}>
-          <StickyNoteIcon aria-hidden="true" />
+          <NoteIcon aria-hidden="true" />
           Nova nota
         </MenuItem>
       </MenuPopup>

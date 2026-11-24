@@ -1,7 +1,9 @@
 import { ptBR } from '@daypicker/react/locale'
+import { RepeatIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ScheduleProperty } from '@tc96/parttens'
 import { expect, within } from 'storybook/test'
+import { isIcon } from '../../../../test-utils/is-icon'
 import { ScheduleCanvas } from './schedule-canvas.tsx'
 import { scheduleToday, timedWeeklySchedule } from './schedule-data.ts'
 import { OpenOnMount, StatefulSchedule } from './schedule-layouts.tsx'
@@ -35,7 +37,11 @@ export const Anatomy: Story = {
     await expect(
       trigger.querySelector('[data-slot="property-icon"]'),
     ).not.toBeNull()
-    await expect(trigger.querySelector('.lucide-repeat')).not.toBeNull()
+    await expect(
+      [...trigger.querySelectorAll('svg')].some((svg) =>
+        isIcon(svg, RepeatIcon),
+      ),
+    ).toBe(true)
   },
 }
 

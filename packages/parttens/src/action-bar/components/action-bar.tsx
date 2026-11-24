@@ -1,5 +1,6 @@
 'use client'
 
+import { DotsSixVerticalIcon, XIcon } from '@phosphor-icons/react'
 import { Button, type ButtonProps } from '@tc96/ui/button'
 import {
   Menu,
@@ -11,7 +12,6 @@ import {
   MenuTrigger,
 } from '@tc96/ui/menu'
 import { cn } from '@tc96/utils'
-import { GripVerticalIcon, XIcon } from 'lucide-react'
 import { Fragment, type ReactNode } from 'react'
 
 export interface ActionBarContext<TData = unknown> {
@@ -173,7 +173,7 @@ export function ActionBar<TData = unknown>({
       data-slot="action-bar"
       role="toolbar"
     >
-      <GripVerticalIcon
+      <DotsSixVerticalIcon
         aria-hidden="true"
         className="size-4 shrink-0 text-muted-foreground"
       />
@@ -205,7 +205,7 @@ export function ActionBar<TData = unknown>({
           title="Limpar seleção"
           variant="ghost"
         >
-          <XIcon />
+          <XIcon aria-hidden="true" />
         </Button>
       ) : null}
     </div>

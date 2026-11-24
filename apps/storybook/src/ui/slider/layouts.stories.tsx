@@ -1,5 +1,5 @@
+import { SunDimIcon, SunIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { SunDimIcon, SunIcon } from 'lucide-react'
 import { sliderControlArgs } from './slider-controls.ts'
 import { SliderCanvas } from './slider-frame.tsx'
 import {

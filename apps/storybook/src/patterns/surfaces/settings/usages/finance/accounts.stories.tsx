@@ -1,3 +1,10 @@
+import {
+  BankIcon,
+  DotsThreeIcon,
+  type Icon as PhosphorIcon,
+  StarIcon,
+  WalletIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { formatAmount } from '@tc96/helpers/format'
 import {
@@ -13,13 +20,6 @@ import {
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import {
-  EllipsisIcon,
-  LandmarkIcon,
-  type LucideIcon,
-  StarIcon,
-  WalletIcon,
-} from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { expect, fn, within } from 'storybook/test'
 
@@ -32,8 +32,8 @@ interface Account {
   type: AccountType
 }
 
-const accountIcons: Record<AccountType, LucideIcon> = {
-  Bank: LandmarkIcon,
+const accountIcons: Record<AccountType, PhosphorIcon> = {
+  Bank: BankIcon,
   Cash: WalletIcon,
 }
 
@@ -108,7 +108,7 @@ function AccountRow({
               aria-label={`Actions for ${name}`}
               render={<Button size="icon-xs" variant="ghost" />}
             >
-              <EllipsisIcon aria-hidden="true" />
+              <DotsThreeIcon aria-hidden="true" />
             </MenuTrigger>
             <MenuPopup align="end">
               {archived ? (

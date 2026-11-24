@@ -1,4 +1,13 @@
 import {
+  ArrowSquareOutIcon,
+  BuildingsIcon,
+  DotsThreeIcon,
+  PencilSimpleIcon,
+  PlusIcon,
+  ProhibitInsetIcon,
+  UserIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupAction,
   RecordGroupFilter,
@@ -16,15 +25,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  Building2Icon,
-  CircleOffIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  PencilIcon,
-  PlusIcon,
-  UserRoundIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 
 interface Affiliation {
@@ -146,7 +146,7 @@ const kindColor = {
 export function AffiliationFrame({
   affiliation,
 }: Readonly<{ affiliation: Affiliation }>) {
-  const Icon = affiliation.kind === 'company' ? Building2Icon : UserRoundIcon
+  const Icon = affiliation.kind === 'company' ? BuildingsIcon : UserIcon
   return (
     <IconFrame color={kindColor[affiliation.kind]} shape="rounded" size="xs">
       <Icon aria-hidden />
@@ -236,22 +236,22 @@ export function AffiliationRow({
           aria-label={`Ações de ${affiliation.name}`}
           render={<Button size="icon-sm" variant="ghost" />}
         >
-          <EllipsisIcon aria-hidden="true" />
+          <DotsThreeIcon aria-hidden="true" />
         </MenuTrigger>
         <MenuPopup align="end">
           <MenuItem onClick={() => onOpen(affiliation.id)}>
-            <ExternalLinkIcon aria-hidden="true" />
+            <ArrowSquareOutIcon aria-hidden="true" />
             Abrir
           </MenuItem>
           {active ? (
             <>
               <MenuItem onClick={() => onEditJobTitle(affiliation.id)}>
-                <PencilIcon aria-hidden="true" />
+                <PencilSimpleIcon aria-hidden="true" />
                 Editar cargo
               </MenuItem>
               <MenuSeparator />
               <MenuItem onClick={onEnd} variant="destructive">
-                <CircleOffIcon aria-hidden="true" />
+                <ProhibitInsetIcon aria-hidden="true" />
                 Encerrar vínculo
               </MenuItem>
             </>

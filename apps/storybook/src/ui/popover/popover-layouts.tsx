@@ -1,3 +1,4 @@
+import { InfoIcon, XIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Field, FieldLabel } from '@tc96/ui/field'
 import { Input } from '@tc96/ui/input'
@@ -11,7 +12,6 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from '@tc96/ui/popover'
-import { InfoIcon, XIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { type PopoverControls, popoverControlArgs } from './popover-controls.ts'
 

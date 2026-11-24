@@ -1,11 +1,11 @@
 'use client'
 
+import { CopyIcon } from '@phosphor-icons/react'
 import { copyToClipboard } from '@tc96/helpers/clipboard'
 import { formatTimeOfDay, type TimeOfDayOptions } from '@tc96/helpers/time'
 import { Button } from '@tc96/ui/button'
 import { CardPanel } from '@tc96/ui/card'
 import { cn } from '@tc96/utils'
-import { CopyIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { WidgetShell } from '../shared/widget-shell'

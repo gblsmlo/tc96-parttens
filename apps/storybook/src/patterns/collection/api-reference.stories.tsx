@@ -1,3 +1,4 @@
+import { RadioButtonIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Action,
@@ -15,7 +16,6 @@ import {
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/parttens'
-import { CircleDotIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { Slot } from '../../test-utils/anatomy-slot'
 
@@ -52,7 +52,7 @@ const meta = {
                   <ViewSettingsMenu onClearFilters={ignore}>
                     <ViewSettingsSection label="ViewSettingsSection">
                       <FilterRadioSubmenu
-                        icon={CircleDotIcon}
+                        icon={RadioButtonIcon}
                         label="FilterRadioSubmenu"
                         onValueChange={ignore}
                         options={[]}

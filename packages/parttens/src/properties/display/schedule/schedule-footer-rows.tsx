@@ -1,7 +1,7 @@
 'use client'
 
+import { CaretDownIcon, CaretRightIcon } from '@phosphor-icons/react'
 import { cn } from '@tc96/utils'
-import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react'
 import { useId } from 'react'
 import {
   type ScheduleFooterProps,
@@ -29,7 +29,7 @@ function SectionRow({
   const labelId = useId()
   const valueId = useId()
   const Icon = scheduleSectionIcons[section]
-  const Chevron = expanded === undefined ? ChevronRightIcon : ChevronDownIcon
+  const Chevron = expanded === undefined ? CaretRightIcon : CaretDownIcon
   const summary = scheduleSectionSummary(section, props)
 
   return (

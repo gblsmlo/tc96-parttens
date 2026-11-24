@@ -1,4 +1,12 @@
 import {
+  ArchiveIcon,
+  BookOpenIcon,
+  CopyIcon,
+  PencilSimpleIcon,
+  ShareNetworkIcon,
+  TrashSimpleIcon,
+} from '@phosphor-icons/react'
+import {
   ContextMenu,
   ContextMenuCheckboxItem,
   ContextMenuGroup,
@@ -15,14 +23,6 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from '@tc96/ui/context-menu'
-import {
-  ArchiveIcon,
-  BookOpenIcon,
-  CopyIcon,
-  PencilIcon,
-  Share2Icon,
-  TrashIcon,
-} from 'lucide-react'
 import { type ComponentProps, useEffect, useRef } from 'react'
 import type { ContextMenuControls } from './context-menu-controls.ts'
 
@@ -99,7 +99,7 @@ export const ComposedContextMenu = ({
         closeOnClick={closeOnClick}
         onClick={() => onAction?.('edit')}
       >
-        {icons ? <PencilIcon /> : null}
+        {icons ? <PencilSimpleIcon aria-hidden="true" /> : null}
         Edit
         {shortcuts ? <ContextMenuShortcut>⌘E</ContextMenuShortcut> : null}
       </ContextMenuItem>
@@ -108,7 +108,7 @@ export const ComposedContextMenu = ({
         closeOnClick={closeOnClick}
         onClick={() => onAction?.('duplicate')}
       >
-        {icons ? <CopyIcon /> : null}
+        {icons ? <CopyIcon aria-hidden="true" /> : null}
         Duplicate
         {shortcuts ? <ContextMenuShortcut>⌘D</ContextMenuShortcut> : null}
       </ContextMenuItem>
@@ -117,7 +117,7 @@ export const ComposedContextMenu = ({
         inset={inset || undefined}
         onClick={() => onAction?.('archive')}
       >
-        {icons && !inset ? <ArchiveIcon /> : null}
+        {icons && !inset ? <ArchiveIcon aria-hidden="true" /> : null}
         Archive
         {disabledItem ? (
           <span className="ms-auto text-muted-foreground text-xs">
@@ -128,7 +128,7 @@ export const ComposedContextMenu = ({
       {submenu ? (
         <ContextMenuSub>
           <ContextMenuSubTrigger>
-            {icons ? <Share2Icon /> : null}
+            {icons ? <ShareNetworkIcon aria-hidden="true" /> : null}
             Share
           </ContextMenuSubTrigger>
           <ContextMenuSubPopup>
@@ -205,7 +205,7 @@ export const ComposedContextMenu = ({
           <>
             <ContextMenuSeparator />
             <ContextMenuLinkItem href="#documentation">
-              {icons ? <BookOpenIcon /> : null}
+              {icons ? <BookOpenIcon aria-hidden="true" /> : null}
               Documentation
             </ContextMenuLinkItem>
           </>
@@ -215,7 +215,7 @@ export const ComposedContextMenu = ({
           onClick={() => onAction?.('delete')}
           variant={destructiveItem ? 'destructive' : 'default'}
         >
-          {icons ? <TrashIcon /> : null}
+          {icons ? <TrashSimpleIcon aria-hidden="true" /> : null}
           Delete
         </ContextMenuItem>
       </ContextMenuPopup>

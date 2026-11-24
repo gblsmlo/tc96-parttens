@@ -1,5 +1,11 @@
 'use client'
 
+import {
+  CaretDoubleLeftIcon,
+  CaretDoubleRightIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+} from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Pagination,
@@ -7,12 +13,6 @@ import {
   PaginationItem,
 } from '@tc96/ui/pagination'
 import { cn } from '@tc96/utils'
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronsLeftIcon,
-  ChevronsRightIcon,
-} from 'lucide-react'
 import type React from 'react'
 
 export interface CollectionPaginationProps
@@ -80,7 +80,7 @@ export function CollectionPagination({
               size="icon-sm"
               variant="ghost"
             >
-              <ChevronsLeftIcon />
+              <CaretDoubleLeftIcon aria-hidden="true" />
             </Button>
           </PaginationItem>
           <PaginationItem>
@@ -91,7 +91,7 @@ export function CollectionPagination({
               size="icon-sm"
               variant="ghost"
             >
-              <ChevronLeftIcon />
+              <CaretLeftIcon aria-hidden="true" />
             </Button>
           </PaginationItem>
           <PaginationItem>
@@ -111,7 +111,7 @@ export function CollectionPagination({
               size="icon-sm"
               variant="ghost"
             >
-              <ChevronRightIcon />
+              <CaretRightIcon aria-hidden="true" />
             </Button>
           </PaginationItem>
           <PaginationItem>
@@ -122,7 +122,7 @@ export function CollectionPagination({
               size="icon-sm"
               variant="ghost"
             >
-              <ChevronsRightIcon />
+              <CaretDoubleRightIcon aria-hidden="true" />
             </Button>
           </PaginationItem>
         </PaginationContent>

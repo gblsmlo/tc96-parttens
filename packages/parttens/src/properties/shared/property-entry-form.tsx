@@ -1,8 +1,8 @@
 'use client'
 
+import { PlusIcon, XIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { PopoverPopup } from '@tc96/ui/popover'
-import { PlusIcon, XIcon } from 'lucide-react'
 import type { FormEvent, KeyboardEventHandler, ReactNode } from 'react'
 
 export interface PropertyEntryField {

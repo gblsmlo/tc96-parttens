@@ -2,8 +2,8 @@
 
 'use client'
 
+import { PlusIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
-import { PlusIcon } from 'lucide-react'
 
 export interface DataGridAddRowProps {
   ariaRowIndex: number
@@ -42,7 +42,7 @@ export function DataGridAddRow({
             onClick={() => void onAdd()}
             variant="ghost"
           >
-            <PlusIcon />
+            <PlusIcon aria-hidden="true" />
             {label}
           </Button>
         </div>

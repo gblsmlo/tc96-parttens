@@ -1,3 +1,4 @@
+import { TrayIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Empty,
@@ -8,7 +9,6 @@ import {
   EmptyTitle,
 } from '@tc96/ui/empty'
 import { Input } from '@tc96/ui/input'
-import { InboxIcon } from 'lucide-react'
 import type { EmptyControls } from './empty-controls.ts'
 
 export const ComposedEmpty = ({
@@ -22,7 +22,7 @@ export const ComposedEmpty = ({
     <EmptyHeader>
       {media ? (
         <EmptyMedia variant={mediaVariant}>
-          <InboxIcon aria-hidden="true" />
+          <TrayIcon aria-hidden="true" />
         </EmptyMedia>
       ) : null}
       {title ? <EmptyTitle>{title}</EmptyTitle> : null}
@@ -40,7 +40,7 @@ export const ActionRowEmpty = () => (
   <Empty>
     <EmptyHeader>
       <EmptyMedia>
-        <InboxIcon aria-hidden="true" />
+        <TrayIcon aria-hidden="true" />
       </EmptyMedia>
       <EmptyTitle>No items yet</EmptyTitle>
       <EmptyDescription>Items you add show up here.</EmptyDescription>
@@ -60,7 +60,7 @@ export const LinkInDescriptionEmpty = () => (
   <Empty>
     <EmptyHeader>
       <EmptyMedia>
-        <InboxIcon aria-hidden="true" />
+        <TrayIcon aria-hidden="true" />
       </EmptyMedia>
       <EmptyTitle>No items yet</EmptyTitle>
       <EmptyDescription>
@@ -77,7 +77,7 @@ export const InputInContentEmpty = () => (
   <Empty>
     <EmptyHeader>
       <EmptyMedia>
-        <InboxIcon aria-hidden="true" />
+        <TrayIcon aria-hidden="true" />
       </EmptyMedia>
       <EmptyTitle>No items yet</EmptyTitle>
       <EmptyDescription>Items you add show up here.</EmptyDescription>

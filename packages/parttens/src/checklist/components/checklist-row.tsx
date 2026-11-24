@@ -1,10 +1,10 @@
 'use client'
 
 import { useSortable } from '@dnd-kit/react/sortable'
+import { DotsSixVerticalIcon, TrashIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@tc96/ui/tooltip'
-import { GripVerticalIcon, Trash2Icon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { PersonPropertyOption } from '../../properties/display/person/person-property'
 import {
@@ -89,7 +89,7 @@ export function ChecklistRow({
           />
         }
       >
-        <GripVerticalIcon aria-hidden="true" />
+        <DotsSixVerticalIcon aria-hidden="true" />
       </TooltipTrigger>
       <TooltipPopup>Arraste para ordenar acima ou abaixo</TooltipPopup>
     </Tooltip>
@@ -160,7 +160,7 @@ function ChecklistDeleteButton({
       type="button"
       variant="ghost"
     >
-      <Trash2Icon aria-hidden="true" />
+      <TrashIcon aria-hidden="true" />
     </Button>
   )
 }

@@ -1,3 +1,4 @@
+import { BellIcon, XIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import {
@@ -9,7 +10,6 @@ import {
   PopoverTrigger,
 } from '@tc96/ui/popover'
 import { Textarea } from '@tc96/ui/textarea'
-import { BellIcon, XIcon } from 'lucide-react'
 import type { FormEvent } from 'react'
 import { expect, screen, within } from 'storybook/test'
 import { PasswordHintPopover } from './popover-layouts.tsx'

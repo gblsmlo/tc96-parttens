@@ -1,9 +1,9 @@
+import { CheckIcon, ChecksIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { ChatMessageBubble } from '@tc96/ui/chat/chat-message-bubble'
 import { ChatMessageInfo } from '@tc96/ui/chat/chat-message-info'
 import { ChatMessageText } from '@tc96/ui/chat/chat-message-text'
-import { CheckCheckIcon, CheckIcon } from 'lucide-react'
 import { expect } from 'storybook/test'
 
 function person(name: string) {
@@ -22,7 +22,7 @@ const meta = {
   args: {
     groups: [
       {
-        icon: <CheckCheckIcon aria-hidden="true" className="size-3.5" />,
+        icon: <ChecksIcon aria-hidden="true" className="size-3.5" />,
         id: 'read',
         label: 'Read by',
         members: [person('Casey')],

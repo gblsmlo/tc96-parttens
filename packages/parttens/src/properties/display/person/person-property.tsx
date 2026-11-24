@@ -1,8 +1,8 @@
 'use client'
 
+import { UserPlusIcon } from '@phosphor-icons/react'
 import { SelectItem } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
-import { UserPlusIcon } from 'lucide-react'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import { resolveOption } from '../../shared/lib/property-options'
 import {
@@ -158,7 +158,7 @@ function PersonPropertyContent<TValue extends string = string>({
   if (!option) {
     return (
       <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
-        <UserPlusIcon aria-hidden className="size-3" />
+        <UserPlusIcon aria-hidden className="size-4" />
         <span className="truncate">{placeholder}</span>
       </span>
     )

@@ -1,7 +1,7 @@
 'use client'
 
+import { PlusIcon } from '@phosphor-icons/react'
 import { cn } from '@tc96/utils'
-import { PlusIcon } from 'lucide-react'
 import type { PropertyIcon } from './property-catalog'
 import { PropertySurface, type PropertySurfaceProps } from './property-surface'
 
@@ -34,12 +34,7 @@ export function PropertyAddTrigger({
       muted={muted}
       render={<button disabled={disabled} type="button" />}
     >
-      {Glyph ? (
-        <Glyph
-          aria-hidden="true"
-          className={hasValue ? 'size-3.5' : 'size-3'}
-        />
-      ) : null}
+      {Glyph ? <Glyph aria-hidden="true" className="size-4" /> : null}
       {hasValue ? null : <span className="truncate">{placeholder}</span>}
     </PropertySurface>
   )

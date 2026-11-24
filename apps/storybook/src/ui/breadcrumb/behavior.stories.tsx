@@ -1,3 +1,4 @@
+import { CaretRightIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Breadcrumb,
@@ -8,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from '@tc96/ui/breadcrumb'
 import { expect, fn, isInaccessible, userEvent, within } from 'storybook/test'
+import { isIcon } from '../../test-utils/is-icon'
 import { breadcrumbControlArgs } from './breadcrumb-controls.ts'
 import { ComposedBreadcrumb } from './breadcrumb-layouts.tsx'
 
@@ -141,7 +143,7 @@ export const ChevronByDefault: Story = {
     for (const separator of getSlots(canvasElement, 'breadcrumb-separator')) {
       const icon = separator.querySelector(':scope > svg')
       if (!(icon instanceof SVGElement)) throw new Error('No chevron.')
-      await expect(icon).toHaveClass('lucide-chevron-right')
+      await expect(isIcon(icon, CaretRightIcon)).toBe(true)
       const box = icon.getBoundingClientRect()
       await expect([box.width, box.height]).toEqual([16, 16])
     }

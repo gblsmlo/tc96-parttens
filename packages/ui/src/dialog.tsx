@@ -3,7 +3,7 @@
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
-import { XIcon } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import type React from "react";
 import { cn } from "@tc96/utils";
 import { Button } from "@tc96/ui/button";
@@ -102,7 +102,7 @@ export function DialogPopup({
               render={<Button size="icon" variant="ghost" />}
               {...closeProps}
             >
-              <XIcon />
+              <XIcon aria-hidden="true" />
             </DialogPrimitive.Close>
           )}
         </DialogPrimitive.Popup>

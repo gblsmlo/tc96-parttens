@@ -1,5 +1,11 @@
 'use client'
 
+import {
+  ArrowsInLineVerticalIcon,
+  ArrowsVerticalIcon,
+  EqualsIcon,
+  MinusIcon,
+} from '@phosphor-icons/react'
 import type { RowData } from '@tanstack/react-table'
 import {
   MenuRadioGroup,
@@ -8,12 +14,6 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
-import {
-  AlignVerticalSpaceAroundIcon,
-  ChevronsDownUpIcon,
-  EqualIcon,
-  MinusIcon,
-} from 'lucide-react'
 import type React from 'react'
 import type { DataGridTable } from '../lib/data-grid-features'
 import type { DataGridDensity } from '../types'
@@ -26,9 +26,9 @@ interface DensityOption {
 
 const DENSITIES: [DensityOption, ...DensityOption[]] = [
   { icon: MinusIcon, label: 'Compacta', value: 'short' },
-  { icon: EqualIcon, label: 'Média', value: 'medium' },
-  { icon: AlignVerticalSpaceAroundIcon, label: 'Alta', value: 'tall' },
-  { icon: ChevronsDownUpIcon, label: 'Extra alta', value: 'extra-tall' },
+  { icon: EqualsIcon, label: 'Média', value: 'medium' },
+  { icon: ArrowsVerticalIcon, label: 'Alta', value: 'tall' },
+  { icon: ArrowsInLineVerticalIcon, label: 'Extra alta', value: 'extra-tall' },
 ]
 
 export interface DataGridDensitySubmenuProps<TData extends RowData> {
@@ -62,7 +62,7 @@ export function DataGridDensitySubmenu<TData extends RowData>({
         >
           {DENSITIES.map((option) => (
             <MenuRadioItem key={option.value} value={option.value}>
-              <option.icon />
+              <option.icon aria-hidden="true" />
               {option.label}
             </MenuRadioItem>
           ))}

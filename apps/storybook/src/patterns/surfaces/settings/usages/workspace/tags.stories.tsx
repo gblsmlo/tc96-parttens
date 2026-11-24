@@ -1,3 +1,4 @@
+import { ArrowElbowDownRightIcon, DotsThreeIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   SettingsRow,
@@ -10,7 +11,6 @@ import {
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Text } from '@tc96/ui/text'
-import { CornerDownRightIcon, EllipsisIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { expect, within } from 'storybook/test'
 
@@ -94,7 +94,7 @@ function TagRow({ tag, parent }: { tag: Tag; parent?: string }) {
               aria-label={`Actions for ${name}`}
               render={<Button size="icon-xs" variant="ghost" />}
             >
-              <EllipsisIcon aria-hidden="true" />
+              <DotsThreeIcon aria-hidden="true" />
             </MenuTrigger>
             <MenuPopup align="end">
               <MenuItem>Edit</MenuItem>
@@ -107,7 +107,7 @@ function TagRow({ tag, parent }: { tag: Tag; parent?: string }) {
       startSlot={
         parent ? (
           <span className="flex items-center gap-2">
-            <CornerDownRightIcon
+            <ArrowElbowDownRightIcon
               aria-hidden="true"
               className="size-4 text-muted-foreground"
             />

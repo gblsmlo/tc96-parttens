@@ -1,5 +1,6 @@
 'use client'
 
+import { CheckIcon, MinusIcon } from '@phosphor-icons/react'
 import type { CellContext, RowData } from '@tanstack/react-table'
 import { Badge } from '@tc96/ui/badge'
 import {
@@ -10,7 +11,6 @@ import {
   SelectValue,
 } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
-import { CheckIcon, MinusIcon } from 'lucide-react'
 import { CELL_ALIGN } from '../lib/constants'
 import type { DataGridFeatures } from '../lib/data-grid-features'
 import { formatDate, toStringValue } from '../lib/format-value'

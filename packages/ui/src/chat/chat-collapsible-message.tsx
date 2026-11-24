@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
 import type { ReactElement, ReactNode } from "react";
 import { useState } from "react";
 import { cn } from "@tc96/utils";
@@ -97,7 +97,7 @@ function ExpandableChatMessage({
     if (controlledOpen === undefined) setInternalOpen(nextOpen);
     onOpenChange?.(nextOpen);
   };
-  const Icon = open ? ChevronUpIcon : ChevronDownIcon;
+  const Icon = open ? CaretUpIcon : CaretDownIcon;
 
   return (
     <Collapsible

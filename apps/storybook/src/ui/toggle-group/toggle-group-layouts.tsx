@@ -1,18 +1,18 @@
 import {
+  CalendarDotsIcon,
+  KanbanIcon,
+  ListBulletsIcon,
+  TextBIcon,
+  TextItalicIcon,
+  TextStrikethroughIcon,
+  TextUnderlineIcon,
+} from '@phosphor-icons/react'
+import {
   ToggleGroup,
   ToggleGroupItem,
   ToggleGroupSeparator,
 } from '@tc96/ui/toggle-group'
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@tc96/ui/tooltip'
-import {
-  BoldIcon,
-  CalendarDaysIcon,
-  ItalicIcon,
-  KanbanIcon,
-  ListIcon,
-  StrikethroughIcon,
-  UnderlineIcon,
-} from 'lucide-react'
 import { Fragment, useState } from 'react'
 import type { ToggleGroupControls } from './toggle-group-controls.ts'
 import { alignments, disabledAlignment } from './toggle-group-variants.ts'
@@ -76,9 +76,9 @@ export const ComposedToggleGroup = ({
 }
 
 export const viewModes = [
-  { icon: ListIcon, label: 'List', value: 'list' },
+  { icon: ListBulletsIcon, label: 'List', value: 'list' },
   { icon: KanbanIcon, label: 'Board', value: 'board' },
-  { icon: CalendarDaysIcon, label: 'Calendar', value: 'calendar' },
+  { icon: CalendarDotsIcon, label: 'Calendar', value: 'calendar' },
 ] as const
 
 export type ViewMode = (typeof viewModes)[number]['value']
@@ -113,16 +113,21 @@ export const ViewSwitcher = () => {
 }
 
 export const formattingMarks = [
-  { icon: BoldIcon, label: 'Bold', shortcut: 'Ctrl+B', value: 'bold' },
-  { icon: ItalicIcon, label: 'Italic', shortcut: 'Ctrl+I', value: 'italic' },
+  { icon: TextBIcon, label: 'Bold', shortcut: 'Ctrl+B', value: 'bold' },
   {
-    icon: UnderlineIcon,
+    icon: TextItalicIcon,
+    label: 'Italic',
+    shortcut: 'Ctrl+I',
+    value: 'italic',
+  },
+  {
+    icon: TextUnderlineIcon,
     label: 'Underline',
     shortcut: 'Ctrl+U',
     value: 'underline',
   },
   {
-    icon: StrikethroughIcon,
+    icon: TextStrikethroughIcon,
     label: 'Strikethrough',
     shortcut: 'Ctrl+Shift+X',
     value: 'strikethrough',

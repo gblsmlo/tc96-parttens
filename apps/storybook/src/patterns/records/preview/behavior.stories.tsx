@@ -1,10 +1,10 @@
+import { ArrowsOutSimpleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   RecordPreview,
   RecordPreviewAction,
   type RecordPreviewProps,
 } from '@tc96/parttens'
-import { Maximize2Icon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, mocked, userEvent, waitFor, within } from 'storybook/test'
 
@@ -26,7 +26,7 @@ const longTitle =
 
 const openAsPage = (
   <RecordPreviewAction label="Open as page">
-    <Maximize2Icon aria-hidden />
+    <ArrowsOutSimpleIcon aria-hidden />
   </RecordPreviewAction>
 )
 

@@ -1,3 +1,4 @@
+import { MagnifyingGlassIcon, PuzzlePieceIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Combobox,
@@ -23,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@tc96/ui/select'
-import { BlocksIcon, SearchIcon } from 'lucide-react'
 import { type FormEvent, Fragment } from 'react'
 import { type SelectControls, selectControlArgs } from './select-controls.ts'
 import {
@@ -118,7 +118,7 @@ const OptionsTrigger = ({
     aria-label={text ? undefined : label}
     size={size}
   >
-    {icon ? <BlocksIcon aria-hidden="true" /> : null}
+    {icon ? <PuzzlePieceIcon aria-hidden="true" /> : null}
     {multiple ? (
       <SelectValue>
         {(value: string[]) => summarize(value, placeholder)}
@@ -204,7 +204,7 @@ export const SelectButtonCombobox = ({
           aria-label={`Search ${label.toLowerCase()}`}
           placeholder="Search…"
           showTrigger={false}
-          startAddon={<SearchIcon />}
+          startAddon={<MagnifyingGlassIcon aria-hidden="true" />}
         />
       </div>
       <ComboboxEmpty>No framework found.</ComboboxEmpty>

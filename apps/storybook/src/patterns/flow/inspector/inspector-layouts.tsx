@@ -1,3 +1,4 @@
+import { EnvelopeSimpleIcon, TrashIcon } from '@phosphor-icons/react'
 import {
   FlowInspector,
   FlowInspectorDetails,
@@ -9,7 +10,6 @@ import {
   type FlowLogFilter,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { MailIcon, Trash2Icon } from 'lucide-react'
 import { useState } from 'react'
 import type { InspectorControls } from './inspector-controls.ts'
 import {
@@ -98,7 +98,7 @@ export const LogsPanel = ({
 
 export const DeleteStepButton = () => (
   <Button aria-label="Excluir passo" size="icon-sm" variant="ghost">
-    <Trash2Icon aria-hidden="true" />
+    <TrashIcon aria-hidden="true" />
   </Button>
 )
 
@@ -121,7 +121,7 @@ export const ComposedInspector = ({
     build={<FlowInspectorDetails items={stepDetails} />}
     disabledTabs={disabledTabs ? ['status', 'logs'] : undefined}
     headerActions={headerActions ? <DeleteStepButton /> : undefined}
-    icon={icon ? <MailIcon /> : undefined}
+    icon={icon ? <EnvelopeSimpleIcon aria-hidden="true" /> : undefined}
     initialOpen={open}
     initialTab={tab}
     key={[open, tab].join()}

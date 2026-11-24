@@ -1,9 +1,10 @@
+import { CircleDashedIcon, CircleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SelectProperty, type SelectPropertyOption } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { CircleIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { isIcon } from '../../../../test-utils/is-icon'
 import {
   esperarIndicadorADireita,
   esperarSuperficieDeBadge,
@@ -297,8 +298,11 @@ export const EmptyOptionShowsDashedIconWhenCatalogHasIcons: Story = {
 
     await expect(trigger).toHaveAccessibleName('Tipo: Sem tipo')
     await expect(
-      trigger.querySelector('[data-slot="property-icon"]'),
-    ).toHaveClass('lucide-circle-dashed')
+      isIcon(
+        trigger.querySelector('[data-slot="property-icon"]'),
+        CircleDashedIcon,
+      ),
+    ).toBe(true)
   },
 }
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { renderAnchor } from '@tc96/ui/render-anchor'
 import { Separator } from '@tc96/ui/separator'
@@ -12,7 +13,6 @@ import {
   SidebarProvider,
 } from '@tc96/ui/sidebar'
 import { cn } from '@tc96/utils'
-import { SearchIcon } from 'lucide-react'
 import type { CSSProperties, ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
 import { ShellBackButton } from '../shared/shell-back-button'
@@ -165,7 +165,7 @@ export function AppShell4({
                 onNavigate={onNavigate}
                 trigger={<Button size="sm" variant="outline" />}
               >
-                <SearchIcon />
+                <MagnifyingGlassIcon aria-hidden="true" />
                 <span className="max-sm:sr-only">{labels.search}</span>
                 <span className="max-sm:hidden">
                   <ShellSearchShortcut />

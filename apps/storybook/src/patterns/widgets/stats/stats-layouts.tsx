@@ -1,4 +1,10 @@
 import {
+  CheckCircleIcon,
+  CurrencyDollarIcon,
+  WarningIcon,
+  XCircleIcon,
+} from '@phosphor-icons/react'
+import {
   type AmountFormatOptions,
   clampRatio,
   formatAmount,
@@ -13,12 +19,6 @@ import {
 import { Badge } from '@tc96/ui/badge'
 import { CardPanel } from '@tc96/ui/card'
 import { MeterPrimitive } from '@tc96/ui/meter'
-import {
-  CircleCheckIcon,
-  CircleXIcon,
-  DollarSignIcon,
-  TriangleAlertIcon,
-} from 'lucide-react'
 import { type ReactElement, useId, useState } from 'react'
 import type { StatsControls, StatsFormatName } from './stats-controls.ts'
 import {
@@ -39,9 +39,9 @@ const statsFormats: Record<StatsFormatName, AmountFormatOptions | undefined> = {
 }
 
 const healthStates = {
-  critical: { icon: CircleXIcon, label: 'Critical', variant: 'error' },
-  degraded: { icon: TriangleAlertIcon, label: 'Degraded', variant: 'warning' },
-  healthy: { icon: CircleCheckIcon, label: 'Healthy', variant: 'success' },
+  critical: { icon: XCircleIcon, label: 'Critical', variant: 'error' },
+  degraded: { icon: WarningIcon, label: 'Degraded', variant: 'warning' },
+  healthy: { icon: CheckCircleIcon, label: 'Healthy', variant: 'success' },
 } as const satisfies Record<
   SystemHealth,
   { icon: unknown; label: string; variant: 'error' | 'success' | 'warning' }
@@ -107,7 +107,7 @@ export function ComposedMetric({
       icon={
         icon ? (
           <IconFrame shape="rounded">
-            <DollarSignIcon />
+            <CurrencyDollarIcon aria-hidden="true" />
           </IconFrame>
         ) : undefined
       }

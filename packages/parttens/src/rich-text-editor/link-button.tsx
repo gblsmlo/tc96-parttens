@@ -1,12 +1,12 @@
 'use client'
 
+import { LinkIcon } from '@phosphor-icons/react'
 import { unwrapLink, upsertLink, validateUrl } from '@platejs/link'
 import { Button } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
 import { Popover, PopoverPopup } from '@tc96/ui/popover'
 import { Toggle } from '@tc96/ui/toggle'
 import { ToolbarButton } from '@tc96/ui/toolbar'
-import { LinkIcon } from 'lucide-react'
 import type { TRange } from 'platejs'
 import { useEditorRef, useEditorSelector } from 'platejs/react'
 import type { FormEvent, ReactElement } from 'react'

@@ -1,11 +1,11 @@
 'use client'
 
+import { WarningIcon } from '@phosphor-icons/react'
 import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
 import { ScrollArea } from '@tc96/ui/scroll-area'
 import { Sheet, SheetPopup } from '@tc96/ui/sheet'
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@tc96/ui/tabs'
 import { cn } from '@tc96/utils'
-import { TriangleAlertIcon } from 'lucide-react'
 import { type CSSProperties, type ReactNode, useMemo } from 'react'
 import { InspectorHeader } from '../../components/inspector-header'
 import { type FlowInspectorTab, flowInspectorTabs } from '../../core'
@@ -113,7 +113,7 @@ export function FlowInspector({
                   className="[&>svg]:text-warning-foreground"
                   variant="warning"
                 >
-                  <TriangleAlertIcon aria-hidden="true" />
+                  <WarningIcon aria-hidden="true" />
                   <AlertTitle>{labels.unconnectedTitle}</AlertTitle>
                   <AlertDescription>
                     {labels.unconnectedDescription}

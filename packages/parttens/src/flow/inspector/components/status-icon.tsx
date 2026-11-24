@@ -1,11 +1,11 @@
-import { cn } from '@tc96/utils'
 import {
-  CheckCircle2Icon,
+  CheckCircleIcon,
   CircleDashedIcon,
-  Loader2Icon,
+  CircleNotchIcon,
   SkipForwardIcon,
   XCircleIcon,
-} from 'lucide-react'
+} from '@phosphor-icons/react'
+import { cn } from '@tc96/utils'
 import type { FlowRunStatus } from '../../canvas/core'
 import { flowStatusIconClassName } from '../lib/variants'
 
@@ -13,9 +13,9 @@ const icons = {
   failed: XCircleIcon,
   idle: CircleDashedIcon,
   'not-run': CircleDashedIcon,
-  running: Loader2Icon,
+  running: CircleNotchIcon,
   skipped: SkipForwardIcon,
-  success: CheckCircle2Icon,
+  success: CheckCircleIcon,
 } as const
 
 export function StatusIcon({ status }: Readonly<{ status: FlowRunStatus }>) {

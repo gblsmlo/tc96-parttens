@@ -1,3 +1,21 @@
+import {
+  AddressBookIcon,
+  BankIcon,
+  BellIcon,
+  BookOpenIcon,
+  BriefcaseIcon,
+  BuildingsIcon,
+  FileTextIcon,
+  FlagIcon,
+  GearIcon,
+  HashIcon,
+  type Icon as PhosphorIcon,
+  ScalesIcon,
+  StackIcon,
+  TagIcon,
+  UserIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   PersonProperty,
@@ -19,24 +37,6 @@ import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { Switch } from '@tc96/ui/switch'
-import {
-  BellIcon,
-  BookOpenIcon,
-  BriefcaseIcon,
-  Building2Icon,
-  ContactIcon,
-  FileTextIcon,
-  FlagIcon,
-  HashIcon,
-  LandmarkIcon,
-  LayersIcon,
-  type LucideIcon,
-  ScaleIcon,
-  SettingsIcon,
-  TagIcon,
-  UserIcon,
-  UsersIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, within } from 'storybook/test'
 import { initialContacts } from '../../collection/fixtures/contacts'
@@ -204,7 +204,7 @@ type ManualLawsuitValues = Record<string, string | boolean | null>
 
 interface ManualLawsuitRow {
   fallback?: string
-  icon: LucideIcon
+  icon: PhosphorIcon
   id: string
   label: string
   options?: readonly SelectPropertyOption[]
@@ -214,7 +214,7 @@ interface ManualLawsuitRow {
 
 interface ManualLawsuitSection {
   description: string
-  icon: LucideIcon
+  icon: PhosphorIcon
   id: string
   rows: readonly ManualLawsuitRow[]
   title: string
@@ -223,7 +223,7 @@ interface ManualLawsuitSection {
 const manualLawsuitSections: readonly ManualLawsuitSection[] = [
   {
     description: 'Número, ação e onde o processo corre.',
-    icon: LandmarkIcon,
+    icon: BankIcon,
     id: 'lawsuit',
     rows: [
       {
@@ -234,7 +234,7 @@ const manualLawsuitSections: readonly ManualLawsuitSection[] = [
       },
       {
         fallback: 'Adicionar ação',
-        icon: ScaleIcon,
+        icon: ScalesIcon,
         id: 'action',
         label: 'Ação',
       },
@@ -246,19 +246,19 @@ const manualLawsuitSections: readonly ManualLawsuitSection[] = [
       },
       {
         fallback: 'Adicionar foro',
-        icon: LandmarkIcon,
+        icon: BankIcon,
         id: 'venue',
         label: 'Foro',
       },
       {
         fallback: 'Adicionar vara',
-        icon: Building2Icon,
+        icon: BuildingsIcon,
         id: 'division',
         label: 'Vara',
       },
       {
         fallback: 'Escolher instância',
-        icon: LayersIcon,
+        icon: StackIcon,
         id: 'instance',
         label: 'Instância',
         options: lawsuitInstanceOptions,
@@ -286,7 +286,7 @@ const manualLawsuitSections: readonly ManualLawsuitSection[] = [
       },
       {
         fallback: 'Escolher contato',
-        icon: ContactIcon,
+        icon: AddressBookIcon,
         id: 'partyContact',
         label: 'Contato',
         people: lawsuitClients,
@@ -325,7 +325,7 @@ const manualLawsuitSections: readonly ManualLawsuitSection[] = [
   },
   {
     description: 'Como o processo é acompanhado no tribunal.',
-    icon: SettingsIcon,
+    icon: GearIcon,
     id: 'settings',
     rows: [{ icon: BellIcon, id: 'monitor', label: 'Monitorar', toggle: true }],
     title: 'Configurações',

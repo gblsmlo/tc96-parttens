@@ -12,7 +12,7 @@ import {
 const stories = `import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
-import { StarIcon } from 'lucide-react'
+import { StarIcon } from '@phosphor-icons/react'
 import { fn } from 'storybook/test'
 
 const meta = {
@@ -75,7 +75,7 @@ test('keeps the render body with its local helpers and drops decorators', () => 
 
   expect(code).toContain('function Starred()')
   expect(code).toContain("const label = 'Save'")
-  expect(code).toContain("import { StarIcon } from 'lucide-react'")
+  expect(code).toContain("import { StarIcon } from '@phosphor-icons/react'")
   expect(code).toContain(
     'export default function Custom() {\nreturn (<Starred />)\n}',
   )

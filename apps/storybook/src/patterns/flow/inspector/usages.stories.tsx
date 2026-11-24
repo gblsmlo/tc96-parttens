@@ -1,3 +1,4 @@
+import { EnvelopeSimpleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FlowInspectorDetails, FlowInspectorStatus } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
@@ -11,7 +12,6 @@ import {
   SelectValue,
 } from '@tc96/ui/select'
 import { Textarea } from '@tc96/ui/textarea'
-import { MailIcon } from 'lucide-react'
 import { expect, screen, within } from 'storybook/test'
 import {
   lastRun,
@@ -120,7 +120,7 @@ export const ViewStep: Story = {
       badge="Visualizando"
       build={<FlowInspectorDetails items={stepDetails} />}
       headerActions={<DeleteStepButton />}
-      icon={<MailIcon />}
+      icon={<EnvelopeSimpleIcon aria-hidden="true" />}
       logs={logs}
       status={status}
       title="Enviar cobrança"
@@ -143,7 +143,7 @@ export const EditStep: Story = {
       badge="Enviar e-mail · send-email"
       build={<StepForm autoFocus name="Enviar cobrança" />}
       headerActions={<DeleteStepButton />}
-      icon={<MailIcon />}
+      icon={<EnvelopeSimpleIcon aria-hidden="true" />}
       logs={logs}
       status={status}
       title="Enviar cobrança"
@@ -164,7 +164,7 @@ export const CreateStep: Story = {
       badge="Ainda não adicionado"
       build={<StepForm autoFocus />}
       disabledTabs={['status', 'logs']}
-      icon={<MailIcon />}
+      icon={<EnvelopeSimpleIcon aria-hidden="true" />}
       title="Novo passo"
     >
       {formFooter('Adicionar passo')}
@@ -184,7 +184,7 @@ export const EditOnMobile: Story = {
     <StatefulInspector
       badge="Enviar e-mail · send-email"
       build={<StepForm name="Enviar cobrança" />}
-      icon={<MailIcon />}
+      icon={<EnvelopeSimpleIcon aria-hidden="true" />}
       logs={logs}
       status={status}
       title="Enviar cobrança"

@@ -1,10 +1,10 @@
 'use client'
 
 import type { DayPickerLocale } from '@daypicker/react'
+import { CalendarDotsIcon } from '@phosphor-icons/react'
 import { formatDateTime } from '@tc96/helpers/date'
 import { Calendar } from '@tc96/ui/calendar'
 import { cn } from '@tc96/utils'
-import { CalendarDaysIcon } from 'lucide-react'
 import { useState } from 'react'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import {
@@ -129,7 +129,7 @@ export function DateProperty({
       }
       disabled={disabled}
       dropdownPlacement={dropdownPlacement}
-      icon={CalendarDaysIcon}
+      icon={CalendarDotsIcon}
       label={label}
       onOpenChange={setOpen}
       open={open}
@@ -189,9 +189,9 @@ export function DatePropertyBadge({
       tabIndex={fullDate ? 0 : undefined}
       variant={variant}
     >
-      <CalendarDaysIcon
+      <CalendarDotsIcon
         aria-hidden
-        className="size-3"
+        className="size-4"
         data-slot="property-icon"
       />
       <span className="truncate">{label}</span>

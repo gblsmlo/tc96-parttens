@@ -1,11 +1,11 @@
 import { ptBR } from '@daypicker/react/locale'
+import { CalendarDotsIcon } from '@phosphor-icons/react'
 import { DateProperty, type DatePropertyProps } from '@tc96/parttens'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { Calendar } from '@tc96/ui/calendar'
 import { Input } from '@tc96/ui/input'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
-import { CalendarDaysIcon } from 'lucide-react'
 import { useState } from 'react'
 import type { DateControls } from './date-controls.ts'
 
@@ -92,7 +92,7 @@ export function DateAndTimeBadge({
           />
         }
       >
-        <CalendarDaysIcon aria-hidden className="size-3" />
+        <CalendarDotsIcon aria-hidden className="size-3" />
         <span className="truncate">{label}</span>
       </PopoverTrigger>
       <PopoverPopup

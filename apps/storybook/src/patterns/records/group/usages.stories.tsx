@@ -1,3 +1,22 @@
+import {
+  BuildingsIcon,
+  CalendarDotIcon,
+  CalendarPlusIcon,
+  ClipboardTextIcon,
+  ClockCounterClockwiseIcon,
+  EnvelopeSimpleIcon,
+  FileTextIcon,
+  HandshakeIcon,
+  PercentIcon,
+  type Icon as PhosphorIcon,
+  PlusIcon,
+  ReceiptIcon,
+  SealCheckIcon,
+  SignatureIcon,
+  TargetIcon,
+  UserPlusIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Checklist,
@@ -21,25 +40,6 @@ import {
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
-import {
-  BadgeCheckIcon,
-  Building2Icon,
-  CalendarClockIcon,
-  CalendarPlusIcon,
-  ClipboardListIcon,
-  FileSignatureIcon,
-  FileTextIcon,
-  HandshakeIcon,
-  HistoryIcon,
-  type LucideIcon,
-  MailIcon,
-  PercentIcon,
-  PlusIcon,
-  ReceiptTextIcon,
-  TargetIcon,
-  UserPlusIcon,
-  UsersIcon,
-} from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 
 import { expect, within } from 'storybook/test'
@@ -191,7 +191,7 @@ const urgencyOptions: readonly SelectPropertyOption[] = [
 ]
 
 interface RecordTrigger {
-  icon: LucideIcon
+  icon: PhosphorIcon
   id: string
   label: string
   meta: ReactNode
@@ -199,13 +199,13 @@ interface RecordTrigger {
 
 const initialTriggers: readonly RecordTrigger[] = [
   {
-    icon: FileSignatureIcon,
+    icon: SignatureIcon,
     id: 'contract',
     label: 'Gerar contrato',
     meta: null,
   },
   {
-    icon: MailIcon,
+    icon: EnvelopeSimpleIcon,
     id: 'documents',
     label: 'Solicitar documentos',
     meta: null,
@@ -468,7 +468,7 @@ export const Briefing: Story = {
       <>
         <RecordGroup title="Briefing" variant="plain">
           <RecordGroupLink
-            leading={<ClipboardListIcon aria-hidden />}
+            leading={<ClipboardTextIcon aria-hidden />}
             meta={statusBadges[latest.status]}
             onClick={() => setOpen(true)}
             render={<button type="button" />}
@@ -550,7 +550,7 @@ export const Versions: Story = {
           {initialVersions.map((version) => (
             <RecordGroupLink
               key={version.number}
-              leading={<HistoryIcon aria-hidden />}
+              leading={<ClockCounterClockwiseIcon aria-hidden />}
               meta={statusBadges[version.status]}
               onClick={() => {
                 setPreviewNumber(version.number)
@@ -612,7 +612,7 @@ export const LinkedRecords: Story = {
           <RecordGroupLink
             href={`#/lancamentos/${installment.id}`}
             key={installment.id}
-            leading={<ReceiptTextIcon aria-hidden />}
+            leading={<ReceiptIcon aria-hidden />}
             meta={installment.status}
           >
             {installment.name}
@@ -842,7 +842,7 @@ export const Stage: Story = {
         </RecordGroupRow>
         <RecordGroupLink
           href="#/agenda/consulta-inicial"
-          leading={<CalendarClockIcon aria-hidden />}
+          leading={<CalendarDotIcon aria-hidden />}
           meta="Agendada · 14/10 às 10:00"
         >
           Consulta inicial
@@ -897,7 +897,7 @@ export const Indicators: Story = {
             value="18,5%"
           />
           <RecordGroupMetric
-            icon={<BadgeCheckIcon aria-hidden />}
+            icon={<SealCheckIcon aria-hidden />}
             label="Sucesso"
             target="vendas"
             value={12}
@@ -934,7 +934,7 @@ const activityEntries: readonly ActivityEntry[] = [
         <span className="text-muted-foreground">alterou</span> Empresa{' '}
         <span className="text-muted-foreground">para</span>{' '}
         <span className="inline-flex items-center gap-1 align-bottom">
-          <Building2Icon aria-hidden className="size-4 text-muted-foreground" />
+          <BuildingsIcon aria-hidden className="size-4 text-muted-foreground" />
           PayPal
         </span>
       </>

@@ -257,6 +257,6 @@ The button that creates a view. Renders a ghost button at the full width of the 
 - Name the toolbar with `aria-label` so it says which collection it controls; the default is in Portuguese, so pass a name in the language of the screen.
 - The labels the view switcher writes itself (`"Buscar views"`, `"Buscar views..."`, `"Views"`, `"Opções de {label}"` and `"Criar nova view"`) are in Portuguese too: pass `label`, `placeholder` and `optionsLabel` in the language of the screen.
 - Give `ViewSwitcherItems` a `label` that names its group, such as `"Favoritos"` for a favorites group; the popover is named by the `label` of `ViewSwitcherMenu`.
-- Pass icons that hide themselves (`aria-hidden="true"`; the `lucide-react` icons do by default), since the label already names the control.
+- Pass icons that hide themselves (`aria-hidden="true"`; the `@phosphor-icons/react` icons do not set it, so pass it), since the label already names the control.
 - Escape closes the popover and returns focus to the trigger, and the options menu closes before the popover does.
 - The framed bar reads `--card`, `--card-foreground`, `--border` and `--radius-xl`; the popover reads `--popover`, `--popover-foreground` and `--border`, the current row `--accent`, and the placeholder and the description `--muted-foreground`. The trigger and the buttons read the tokens of `Button`.

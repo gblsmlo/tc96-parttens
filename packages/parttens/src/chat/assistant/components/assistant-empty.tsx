@@ -1,4 +1,4 @@
-import { SparklesIcon } from 'lucide-react'
+import { SparkleIcon } from '@phosphor-icons/react'
 import type { ReactElement, ReactNode } from 'react'
 import { AssistantSuggestions } from '../composition/assistant-suggestions/assistant-suggestions'
 import type { AssistantSuggestion } from '../core'
@@ -20,7 +20,7 @@ export function AssistantEmpty({
   return (
     <div className={assistantEmptyClassName} data-slot="assistant-empty">
       <div className="flex flex-col gap-2">
-        <SparklesIcon
+        <SparkleIcon
           aria-hidden="true"
           className="size-6 text-muted-foreground"
         />

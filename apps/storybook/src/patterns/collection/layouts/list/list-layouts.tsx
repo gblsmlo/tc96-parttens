@@ -1,3 +1,4 @@
+import { DotsThreeIcon, FileTextIcon } from '@phosphor-icons/react'
 import {
   type CollectionDefinition,
   DateProperty,
@@ -18,7 +19,6 @@ import {
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { Text } from '@tc96/ui/text'
-import { EllipsisIcon, FileTextIcon } from 'lucide-react'
 import { renderTaskListRow, useTasks } from '../../fixtures/task-renderers'
 import { createCollection, initialTasks, type Task } from '../../fixtures/tasks'
 import type { ListControls } from './list-controls.ts'
@@ -90,7 +90,7 @@ export function SampleListRow({
                 size="icon-sm"
                 variant="ghost"
               >
-                <EllipsisIcon aria-hidden="true" />
+                <DotsThreeIcon aria-hidden="true" />
               </Button>
             </ListRowAction>
           ) : null}
@@ -276,7 +276,7 @@ export function DocumentRow({
                 size="icon-sm"
                 variant="ghost"
               >
-                <EllipsisIcon aria-hidden="true" />
+                <DotsThreeIcon aria-hidden="true" />
               </Button>
             </ListRowAction>
           </ListRowTrailing>

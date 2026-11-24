@@ -1,3 +1,11 @@
+import {
+  CalendarBlankIcon,
+  DotsThreeIcon,
+  EnvelopeSimpleIcon,
+  FileTextIcon,
+  PhoneIcon,
+  RepeatIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   SettingsCollapsed,
@@ -12,14 +20,6 @@ import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Switch } from '@tc96/ui/switch'
 import { Text } from '@tc96/ui/text'
-import {
-  CalendarIcon,
-  EllipsisIcon,
-  FileTextIcon,
-  MailIcon,
-  PhoneIcon,
-  RepeatIcon,
-} from 'lucide-react'
 import type { ReactNode } from 'react'
 import { expect, fn, within } from 'storybook/test'
 
@@ -38,9 +38,9 @@ interface Stage {
 
 const actionTypes = {
   call: { icon: PhoneIcon, label: 'Call' },
-  email: { icon: MailIcon, label: 'Email' },
+  email: { icon: EnvelopeSimpleIcon, label: 'Email' },
   'follow-up': { icon: RepeatIcon, label: 'Follow-up' },
-  meeting: { icon: CalendarIcon, label: 'Meeting' },
+  meeting: { icon: CalendarBlankIcon, label: 'Meeting' },
   proposal: { icon: FileTextIcon, label: 'Proposal' },
 } as const
 
@@ -103,7 +103,7 @@ function ActionRow({ action }: { action: NextAction }) {
               aria-label={`Actions for ${title}`}
               render={<Button size="icon-xs" variant="ghost" />}
             >
-              <EllipsisIcon aria-hidden="true" />
+              <DotsThreeIcon aria-hidden="true" />
             </MenuTrigger>
             <MenuPopup align="end">
               <MenuItem>Edit</MenuItem>

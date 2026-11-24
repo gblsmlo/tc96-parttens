@@ -1,3 +1,4 @@
+import { KanbanIcon, ListBulletsIcon, TableIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { RadioGroupPrimitive, RadioPrimitive } from '@tc96/ui/radio-group'
 import {
@@ -6,7 +7,6 @@ import {
 } from '@tc96/ui/segmented-control'
 import { TogglePrimitive } from '@tc96/ui/toggle'
 import { ToggleGroupPrimitive } from '@tc96/ui/toggle-group'
-import { KanbanIcon, ListIcon, TableIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 
@@ -181,7 +181,7 @@ export const ChartRange: Story = {
 }
 
 const views = [
-  { icon: ListIcon, label: 'List', value: 'list' },
+  { icon: ListBulletsIcon, label: 'List', value: 'list' },
   { icon: KanbanIcon, label: 'Board', value: 'board' },
   { icon: TableIcon, label: 'Table', value: 'table' },
 ]

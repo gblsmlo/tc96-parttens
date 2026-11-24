@@ -1,3 +1,4 @@
+import { CaretUpDownIcon, MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Combobox,
@@ -17,7 +18,6 @@ import {
   ComboboxValue,
 } from '@tc96/ui/combobox'
 import { Field, FieldDescription, FieldLabel } from '@tc96/ui/field'
-import { ChevronsUpDownIcon, SearchIcon } from 'lucide-react'
 import { Fragment } from 'react'
 import {
   type ComboboxControls,
@@ -81,7 +81,9 @@ export const ComposedCombobox = ({
   size,
   startAddon,
 }: Readonly<ComposedComboboxProps>) => {
-  const addon = startAddon ? <SearchIcon /> : undefined
+  const addon = startAddon ? (
+    <MagnifyingGlassIcon aria-hidden="true" />
+  ) : undefined
   const selected = selectedOptions(defaultValue)
 
   if (multiple) {
@@ -184,7 +186,7 @@ export const InputInsidePopupCombobox = ({
       render={<Button className="w-full justify-between" variant="outline" />}
     >
       <ComboboxValue placeholder={placeholder} />
-      <ChevronsUpDownIcon aria-hidden="true" />
+      <CaretUpDownIcon aria-hidden="true" />
     </ComboboxTrigger>
     <ComboboxPopup aria-label={label}>
       <div className="border-b p-2">
@@ -192,7 +194,7 @@ export const InputInsidePopupCombobox = ({
           aria-label={`Search ${label.toLowerCase()}`}
           placeholder="Search…"
           showTrigger={false}
-          startAddon={<SearchIcon />}
+          startAddon={<MagnifyingGlassIcon aria-hidden="true" />}
         />
       </div>
       <ComboboxEmpty>{empty}</ComboboxEmpty>

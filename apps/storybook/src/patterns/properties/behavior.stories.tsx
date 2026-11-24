@@ -1,3 +1,4 @@
+import { PaperclipIcon, TagIcon, UserPlusIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   AttachmentsProperty,
@@ -9,9 +10,9 @@ import {
   type PropertyCollectionItem,
   TagsProperty,
 } from '@tc96/parttens'
-import { PaperclipIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { isIcon } from '../../test-utils/is-icon'
 import { PlainPropertyColumn } from './properties-layouts'
 
 interface BehaviorArgs {
@@ -664,9 +665,9 @@ export const AddTriggerEmptyGlyphMatchesEmptyChips: Story = {
       .getByRole('button', { name: 'Adicionar e-mail' })
       .querySelector('svg')
 
-    await expect(glyph?.classList.contains('size-3')).toBe(true)
+    await expect(glyph?.classList.contains('size-4')).toBe(true)
     await expect(glyph?.classList.contains('size-3.5')).toBe(false)
-    await expect(glyphSize(glyph)).toEqual({ height: 12, width: 12 })
+    await expect(glyphSize(glyph)).toEqual({ height: 16, width: 16 })
   },
 }
 
@@ -683,8 +684,8 @@ export const AddTriggerWithValueCollapsesToSign: Story = {
     await expect(trigger.getAttribute('data-empty')).toBeNull()
     await expect(trigger.querySelectorAll('svg')).toHaveLength(1)
     await expect(glyphSize(trigger.querySelector('svg'))).toEqual({
-      height: 14,
-      width: 14,
+      height: 16,
+      width: 16,
     })
   },
 }
@@ -801,8 +802,8 @@ export const CalendarPopoverNamesTriggerAfterPropertyAndLabel: Story = {
     const icon = trigger.querySelector('svg')
 
     await expect(trigger.textContent).toBe('Jun 19')
-    await expect(icon?.classList.contains('size-3')).toBe(true)
-    await expect(icon?.getBoundingClientRect().width).toBe(12)
+    await expect(icon?.classList.contains('size-4')).toBe(true)
+    await expect(icon?.getBoundingClientRect().width).toBe(16)
     await expect(trigger.querySelector('.truncate')?.textContent).toBe('Jun 19')
     await expect(trigger.hasAttribute('data-empty')).toBe(false)
   },
@@ -1199,11 +1200,11 @@ export const MultiSelectEmptyAddChipNamesItselfWithPlaceholder: Story = {
     const icon = trigger.querySelector('svg')
 
     await expect(trigger.textContent).toBe('Adicionar responsável')
-    await expect(icon?.classList.contains('lucide-user-plus')).toBe(true)
+    await expect(isIcon(icon, UserPlusIcon)).toBe(true)
     await expect(trigger.getAttribute('data-slot')).toBe('property-surface')
     await expect(trigger.getAttribute('data-empty')).toBe('true')
-    await expect(icon?.classList.contains('size-3')).toBe(true)
-    await expect(icon?.getBoundingClientRect().width).toBe(12)
+    await expect(icon?.classList.contains('size-4')).toBe(true)
+    await expect(icon?.getBoundingClientRect().width).toBe(16)
     await expect(
       canvasElement
         .querySelector('[data-slot="combobox-chips"]')
@@ -1222,9 +1223,7 @@ export const MultiSelectEmptyAddChipShowsAddIcon: Story = {
     })
 
     await expect(trigger.textContent).toBe('Adicionar tag')
-    await expect(
-      trigger.querySelector('svg')?.classList.contains('lucide-tag'),
-    ).toBe(true)
+    await expect(isIcon(trigger.querySelector('svg'), TagIcon)).toBe(true)
   },
 }
 

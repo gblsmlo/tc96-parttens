@@ -1,3 +1,4 @@
+import { ArrowsOutSimpleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   DateProperty,
@@ -18,7 +19,6 @@ import {
   TextProperty,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { Maximize2Icon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, screen, waitFor, within } from 'storybook/test'
 import {
@@ -152,7 +152,7 @@ export const Tasks: Story = {
         <RecordPreview
           actions={
             <RecordPreviewAction label="Ampliar" onClick={openPage}>
-              <Maximize2Icon aria-hidden />
+              <ArrowsOutSimpleIcon aria-hidden />
             </RecordPreviewAction>
           }
           closeLabel="Fechar"

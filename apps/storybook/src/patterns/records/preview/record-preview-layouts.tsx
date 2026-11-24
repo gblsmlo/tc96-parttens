@@ -1,10 +1,10 @@
+import { ArrowsOutSimpleIcon } from '@phosphor-icons/react'
 import {
   RecordPreview,
   RecordPreviewAction,
   RecordPreviewBody,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { Maximize2Icon } from 'lucide-react'
 import { useState } from 'react'
 import type { RecordPreviewControls } from './record-preview-controls.ts'
 
@@ -54,7 +54,7 @@ export const ComposedRecordPreview = ({
         actions={
           actions ? (
             <RecordPreviewAction label={actionLabel}>
-              <Maximize2Icon aria-hidden />
+              <ArrowsOutSimpleIcon aria-hidden />
             </RecordPreviewAction>
           ) : undefined
         }

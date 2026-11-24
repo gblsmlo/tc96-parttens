@@ -1,3 +1,9 @@
+import {
+  CalendarDotsIcon,
+  HashIcon,
+  ShapesIcon,
+  UserIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   DateProperty,
@@ -6,7 +12,6 @@ import {
   SelectProperty,
   TextProperty,
 } from '@tc96/parttens'
-import { CalendarDaysIcon, HashIcon, ShapesIcon, UserIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { part, rowsOf } from '../fixtures/group-dom'
@@ -48,12 +53,12 @@ function RequestGroup() {
           value={status}
         />
       </RecordGroupRow>
-      <RecordGroupRow label="Due" leading={<CalendarDaysIcon aria-hidden />}>
+      <RecordGroupRow label="Due" leading={<CalendarDotsIcon aria-hidden />}>
         <DateProperty readOnly value="2026-10-21" variant="plain" />
       </RecordGroupRow>
       <RecordGroupRow
         label={longLabel}
-        leading={<CalendarDaysIcon aria-hidden />}
+        leading={<CalendarDotsIcon aria-hidden />}
       >
         <DateProperty readOnly value="2026-10-21" variant="plain" />
       </RecordGroupRow>
@@ -74,7 +79,7 @@ function CustomerGroup() {
       <RecordGroupRow
         align="between"
         label={longLabel}
-        leading={<CalendarDaysIcon aria-hidden />}
+        leading={<CalendarDotsIcon aria-hidden />}
       >
         <DateProperty readOnly value="2026-10-21" variant="plain" />
       </RecordGroupRow>

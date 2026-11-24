@@ -1,3 +1,4 @@
+import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Field, FieldDescription, FieldLabel } from '@tc96/ui/field'
 import {
@@ -6,7 +7,6 @@ import {
   InputGroupInput,
   InputGroupText,
 } from '@tc96/ui/input-group'
-import { SearchIcon } from 'lucide-react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { inputGroupControlArgs } from './input-group-controls.ts'
 import { InputGroupCanvas } from './input-group-frame.tsx'
@@ -80,7 +80,7 @@ export const NamedGroup: Story = {
     <InputGroup aria-label="Search the docs">
       <InputGroupInput aria-label="Query" type="search" />
       <InputGroupAddon>
-        <SearchIcon aria-hidden="true" />
+        <MagnifyingGlassIcon aria-hidden="true" />
       </InputGroupAddon>
     </InputGroup>
   ),

@@ -1,5 +1,6 @@
 'use client'
 
+import { CaretUpDownIcon } from '@phosphor-icons/react'
 import { getInitials } from '@tc96/helpers/initials'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import {
@@ -17,7 +18,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@tc96/ui/sidebar'
-import { ChevronsUpDownIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { ShellLabels, ShellWorkspace } from './types'
 
@@ -84,7 +84,7 @@ export function WorkspaceSwitcher({
                 <span className="truncate text-xs">{active.description}</span>
               ) : null}
             </span>
-            <ChevronsUpDownIcon className="ms-auto" />
+            <CaretUpDownIcon aria-hidden="true" className="ms-auto" />
           </MenuTrigger>
           <MenuPopup
             align="start"

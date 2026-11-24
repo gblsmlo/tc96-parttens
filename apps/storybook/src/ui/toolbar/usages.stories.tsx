@@ -1,3 +1,19 @@
+import {
+  ArrowLeftIcon,
+  ArrowUUpLeftIcon,
+  ArrowUUpRightIcon,
+  CurrencyDollarIcon,
+  CursorIcon,
+  DotsThreeIcon,
+  HandIcon,
+  PencilSimpleIcon,
+  PercentIcon,
+  SquareIcon,
+  TextAlignCenterIcon,
+  TextAlignLeftIcon,
+  TextAlignRightIcon,
+  TextTIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button, buttonVariants } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
@@ -19,22 +35,6 @@ import {
   ToolbarLink,
   ToolbarSeparator,
 } from '@tc96/ui/toolbar'
-import {
-  AlignCenterIcon,
-  AlignLeftIcon,
-  AlignRightIcon,
-  ArrowLeftIcon,
-  DollarSignIcon,
-  EllipsisIcon,
-  HandIcon,
-  MousePointer2Icon,
-  PencilIcon,
-  PercentIcon,
-  Redo2Icon,
-  SquareIcon,
-  TypeIcon,
-  Undo2Icon,
-} from 'lucide-react'
 import { expect, within } from 'storybook/test'
 
 const meta = {
@@ -54,19 +54,19 @@ const fonts = [
 ]
 
 const alignments = [
-  { icon: AlignLeftIcon, label: 'Align left', value: 'left' },
-  { icon: AlignCenterIcon, label: 'Align center', value: 'center' },
-  { icon: AlignRightIcon, label: 'Align right', value: 'right' },
+  { icon: TextAlignLeftIcon, label: 'Align left', value: 'left' },
+  { icon: TextAlignCenterIcon, label: 'Align center', value: 'center' },
+  { icon: TextAlignRightIcon, label: 'Align right', value: 'right' },
 ]
 
 const filters = ['Unread', 'Starred', 'Attachments']
 
 const tools = [
-  { icon: MousePointer2Icon, label: 'Select', value: 'select' },
+  { icon: CursorIcon, label: 'Select', value: 'select' },
   { icon: HandIcon, label: 'Hand', value: 'hand' },
-  { icon: PencilIcon, label: 'Pen', value: 'pen' },
+  { icon: PencilSimpleIcon, label: 'Pen', value: 'pen' },
   { icon: SquareIcon, label: 'Rectangle', value: 'rectangle' },
-  { icon: TypeIcon, label: 'Text', value: 'text' },
+  { icon: TextTIcon, label: 'Text', value: 'text' },
 ]
 
 export const SpreadsheetFormatting: Story = {
@@ -89,7 +89,7 @@ export const SpreadsheetFormatting: Story = {
           aria-label="Format as currency"
           render={<Button size="icon" variant="ghost" />}
         >
-          <DollarSignIcon aria-hidden="true" />
+          <CurrencyDollarIcon aria-hidden="true" />
         </ToolbarButton>
         <ToolbarButton
           aria-label="Format as percent"
@@ -148,7 +148,7 @@ export const DocumentHeader: Story = {
           aria-label="Undo"
           render={<Button size="icon" variant="ghost" />}
         >
-          <Undo2Icon aria-hidden="true" />
+          <ArrowUUpLeftIcon aria-hidden="true" />
         </ToolbarButton>
         <ToolbarButton
           aria-label="Redo"
@@ -156,7 +156,7 @@ export const DocumentHeader: Story = {
           focusableWhenDisabled={false}
           render={<Button size="icon" variant="ghost" />}
         >
-          <Redo2Icon aria-hidden="true" />
+          <ArrowUUpRightIcon aria-hidden="true" />
         </ToolbarButton>
       </ToolbarGroup>
       <ToolbarSeparator />
@@ -168,7 +168,7 @@ export const DocumentHeader: Story = {
             <MenuTrigger render={<Button size="icon" variant="ghost" />} />
           }
         >
-          <EllipsisIcon aria-hidden="true" />
+          <DotsThreeIcon aria-hidden="true" />
         </ToolbarButton>
         <MenuPopup align="end">
           <MenuItem>Rename</MenuItem>
@@ -266,13 +266,13 @@ export const DrawingTools: Story = {
           aria-label="Undo"
           render={<Button size="icon" variant="ghost" />}
         >
-          <Undo2Icon aria-hidden="true" />
+          <ArrowUUpLeftIcon aria-hidden="true" />
         </ToolbarButton>
         <ToolbarButton
           aria-label="Redo"
           render={<Button size="icon" variant="ghost" />}
         >
-          <Redo2Icon aria-hidden="true" />
+          <ArrowUUpRightIcon aria-hidden="true" />
         </ToolbarButton>
       </ToolbarGroup>
     </Toolbar>

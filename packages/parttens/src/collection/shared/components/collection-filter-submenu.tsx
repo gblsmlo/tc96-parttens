@@ -1,5 +1,6 @@
 'use client'
 
+import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
 import {
   MenuRadioGroup,
   MenuRadioItem,
@@ -8,7 +9,6 @@ import {
   MenuSubTrigger,
 } from '@tc96/ui/menu'
 import { Skeleton } from '@tc96/ui/skeleton'
-import type { LucideIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import { skeletonKeys } from '../lib/skeleton-keys'
 
@@ -21,7 +21,7 @@ const CLEAR_VALUE = '__all__'
 
 export interface FilterRadioSubmenuProps {
   clearLabel?: string
-  icon: LucideIcon
+  icon: PhosphorIcon
   label: string
   loading?: boolean
   loadingOptionCount?: number
