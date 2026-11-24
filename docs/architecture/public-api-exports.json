@@ -408,6 +408,14 @@
     "RecordStatusBadge",
     "RecordStatusBadgeProps"
   ],
+  "record-status-list": [
+    "RecordStatus",
+    "RecordStatusItem",
+    "RecordStatusItemProps",
+    "RecordStatusList",
+    "RecordStatusListProps",
+    "recordStatuses"
+  ],
   "widgets": [
     "Achievement",
     "AchievementsWidget",
@@ -1197,8 +1205,13 @@
     "RecordPreviewBody",
     "RecordPreviewBodyProps",
     "RecordPreviewProps",
+    "RecordStatus",
     "RecordStatusBadge",
     "RecordStatusBadgeProps",
+    "RecordStatusItem",
+    "RecordStatusItemProps",
+    "RecordStatusList",
+    "RecordStatusListProps",
     "ReferenceProperty",
     "ReferencePropertyKind",
     "ReferencePropertyProps",
@@ -1372,6 +1385,7 @@
     "projectCollection",
     "propertyBadgeClassName",
     "propertyToneClassName",
+    "recordStatuses",
     "scheduleRecurrenceLabel",
     "serializeDatePropertyValue",
     "serializeStepTransfer",
@@ -1591,5 +1605,31 @@
     "FlowStepStats",
     "FlowStepType",
     "FlowStepValues"
+  ],
+  "block:lookup-create-1": [
+    "LookupAlternative",
+    "LookupCreate1",
+    "LookupCreate1Labels",
+    "LookupCreate1Props",
+    "LookupCreate1Step",
+    "LookupExisting",
+    "LookupIdentifierState",
+    "RecordsRenderLink",
+    "RecordsStatusRow"
+  ],
+  "block:bulk-import-1": [
+    "BulkImport1",
+    "BulkImport1Labels",
+    "BulkImport1Props",
+    "BulkImport1Step",
+    "BulkImportRow",
+    "RecordsStatusRow"
+  ],
+  "block:next-steps-1": [
+    "NextStepTask",
+    "NextSteps1",
+    "NextSteps1Labels",
+    "NextSteps1Props",
+    "RecordsStatusRow"
   ]
 }

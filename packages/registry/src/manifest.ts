@@ -9,6 +9,7 @@ export const patternNames = [
   'record-dialog',
   'record-preview',
   'record-group',
+  'record-status-list',
   'widgets',
   'rich-text-editor',
   'state-surface',
@@ -30,6 +31,7 @@ export const patternSources: Record<PatternName, string> = {
   'record-dialog': 'records/dialog',
   'record-preview': 'records/preview',
   'record-group': 'records/group',
+  'record-status-list': 'status-list',
   widgets: 'widgets',
   'rich-text-editor': 'rich-text-editor',
   'state-surface': 'surfaces/state',
@@ -57,6 +59,9 @@ export const blockNames = [
   'forgot-password-2',
   'workflow-editor',
   'agent-builder',
+  'lookup-create-1',
+  'bulk-import-1',
+  'next-steps-1',
 ] as const
 export type BlockName = (typeof blockNames)[number]
 /** Folder under packages/blocks/src, kept as the path in the consumer. */
@@ -76,6 +81,9 @@ export const blockSources: Record<BlockName, string> = {
   'forgot-password-2': 'auth/forgot-password-2',
   'workflow-editor': 'ai-agents/flow/workflow-editor',
   'agent-builder': 'ai-agents/flow/agent-builder',
+  'lookup-create-1': 'records/lookup-create-1',
+  'bulk-import-1': 'records/bulk-import-1',
+  'next-steps-1': 'records/next-steps-1',
 }
 export type ItemName = PatternName | BlockName
 /** Areas under packages/parttens/src that ship with an item no file of it imports. */
