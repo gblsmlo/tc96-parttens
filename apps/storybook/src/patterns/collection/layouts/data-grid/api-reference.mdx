@@ -19,6 +19,7 @@ import {
   DataGrid,
   type DataGridColumnDef,
   DataGridColumnsSubmenu,
+  DataGridConditionFilters,
   DataGridDensitySubmenu,
   DataGridFilterMenu,
   DataGridPagination,
@@ -204,7 +205,9 @@ The `meta` of a column, read by the header, the menus and `DataGridCell`.
 | `variant` | `DataGridCellVariant` | `"text"` | Sets how `DataGridCell` renders the value. |
 | `align` | `"start"`, `"center"` or `"end"` | `"start"` | Aligns the header and the default cell. |
 | `options` | `DataGridSelectOption[]` | - | Lists `{ label, value }` for `select` and `badge` cells. |
-| `editable` | `boolean` | - | When true, a `select` cell becomes a select, if `onCellValueChange` is set. |
+| `editable` | `boolean` | - | When true, a `select`, `text` or `number` cell becomes editable, if `onCellValueChange` is set. |
+| `validate` | `(value: string, row: DataGridCellRow) => string \| undefined` | - | Checks the typed value of an editable `text` or `number` cell and returns the message to show, or nothing when valid. |
+| `getCellError` | `(row: DataGridCellRow, columnId: string) => string \| undefined` | - | Marks an editable `text` or `number` cell invalid from outside, with the message to show, as a server error does. |
 | `placeholder` | `string` | - | Sets the text of an empty `select` or `badge` cell. |
 | `badgeVariant` | `string union` | `"secondary"` | Sets the `Badge` variant of `select` and `badge` cells. |
 
@@ -218,11 +221,14 @@ The default cell renderer, chosen by `meta.variant`:
 - `date` shows the date only, in the browser's locale; a `"YYYY-MM-DD"` string reads as that local day.
 - `checkbox` shows a check or a dash, read as `Marcado` or `Desmarcado`.
 - `badge` shows the option label in a `Badge`, or `placeholder` when empty.
+- `text` and `number` with `editable` and `onCellValueChange` show the value in a button named `<label>: <value>` (`Sem valor` when empty); it opens an input in the cell. Enter commits, Escape restores the stored value, blur commits, and each commit calls `onCellValueChange` once with the typed string. While `validate` returns a message the input has `aria-invalid` and `aria-describedby` to the message under it, Enter and blur do not commit, and the cell gets `data-invalid`. `getCellError` shows the same state without editing; as the grid memoizes rows, a new answer reaches the cell only when `columns` change.
 - `select` shows the option label; when `editable` with `onCellValueChange` and `options`, it is a select in a `Badge` named `<label>: <value>` (`Sem valor` when empty), and picking an option calls `onCellValueChange`.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-grid-select-trigger` | present | Marks the trigger of an editable select |
+| `data-grid-input-trigger` | present | Marks the button of an editable text or number cell |
+| `data-invalid` | present | Set on the cell and on its content while the value is invalid |
 
 A custom `cell` must derive from the row, the column, the cell and `table.options.meta` only: a cell renders again only when those change, so one that reads sorting, filters or pagination shows stale content. A new control inside a cell that should not start a drag-scroll needs a role or element the grid treats as a control (`button`, `input`, `[role="checkbox"]` and the like).
 
@@ -287,8 +293,43 @@ The pagination of a table that paginates, for `DataGrid`, which renders it in it
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `table` | `PaginatedTable` | required | Supplies the page, the page count and the row count; any table from `useDataGrid` or `useDataTable`. |
+| `pageSizeOptions` | `readonly number[]` | - | Lists the page sizes of the rows-per-page selector; the selector shows only with `pageSizeLabel` and a table that has `setPageSize`. |
+| `pageSizeLabel` | `string` | - | The visible text and the accessible name of the selector, in the consumer's language. |
+
+A change of page size calls `table.setPageSize` and returns to page one. `DataGrid` renders this component without those props, so a grid with the selector passes it as `footer`, with `data` stable.
 
 Also takes every prop of a `div` except `children`. Carries `data-slot="data-grid-pagination"`.
+
+## DataGridConditionFilters
+
+The filter builder of a grid: each active condition is a chip `[Field | operator | value | actions]`, a `Filters` button opens a searchable menu of the fields to add one, and a clear button removes them all. It is controlled and keeps no copy of the conditions; the consumer declares the fields and every text. A condition with no value filters nothing yet.
+
+```tsx
+const filterFn = createDataGridConditionFilterFn<Renewal>(fields)
+const { table } = useDataGrid<Renewal>({ columns, data, tableOptions: { globalFilterFn: filterFn } })
+
+<DataGridConditionFilters
+  conditions={conditions}
+  fields={fields}
+  labels={labels}
+  onConditionsChange={(next) => {
+    setConditions(next)
+    table.setGlobalFilter(next.length ? next : '')
+  }}
+  operatorLabels={operatorLabels}
+/>
+```
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `conditions` | `readonly DataGridCondition[]` | required | The active conditions, `{ id, columnId, operator, value }`; `value` is a list of strings. |
+| `onConditionsChange` | `(conditions: DataGridCondition[]) => void` | required | Receives the next list on add, edit, remove and clear. |
+| `fields` | `DataGridConditionFilterField[]` | required | `{ columnId, label, kind, options?, icon? }`; `kind` is `text`, `option`, `number` or `date`. |
+| `operatorLabels` | `Record<DataGridConditionOperator, string>` | required | The text of each operator. |
+| `labels` | `DataGridConditionFilterLabels` | required | Every other text: the buttons, the empty states, the accessible names and the range words. |
+| `formatValue` | `(field, value) => string` | option label or raw value | Formats a value shown in a chip, such as a date. |
+
+Operators by kind: `text` has `contains`, `is`, `is-not`; `option` has `is`, `is-not`, `is-any-of`; `number` has `eq`, `gt`, `lt`, `between`; `date` has `before`, `after`, `between`. `createDataGridConditionFilterFn(fields, join = "and")` returns a TanStack filter function for `globalFilterFn` or one column's `filterFn`; `join: "or"` keeps rows that match any condition. `matchesConditions`, `matchesCondition`, `createCondition`, `changeConditionOperator`, `normalizeConditionValue`, `isConditionComplete` and `getConditionOperators` are the pure parts. Carries `data-slot="data-grid-condition-filters"`; each chip is a group with `data-slot="data-grid-condition"`.
 
 ## Exports
 
@@ -299,7 +340,9 @@ Also takes every prop of a `div` except `children`. Carries `data-slot="data-gri
 | `DATA_GRID_COLUMN_TYPE_ICONS`, `DataGridColumnTypeIcon` | `constant`, `component` | The icon of each column type, and the component that renders it hidden from assistive technology. |
 | `DataGridProps`, `DataGridRowSkeletonAnatomy`, `DataGridPaginationProps`, `PaginatedTable` and the `Props` of each toolbar part | `type` | The props of the parts. |
 | `DataGridColumnDef`, `DataGridColumn`, `DataGridHeader`, `DataGridTable`, `DataGridTableMeta`, `DataGridFeatures`, `UseDataGridOptions`, `UseDataGridReturn` | `type` | The column, table and hook types. |
-| `DataGridColumnMeta`, `DataGridCellVariant`, `DataGridColumnType`, `DataGridAlign`, `DataGridDensity`, `DataGridSelectOption`, `DataGridCellValueChange` | `type` | The column meta and its unions. |
+| `DataGridCondition`, `DataGridConditionField`, `DataGridConditionFilterField`, `DataGridConditionFilterLabels`, `DataGridConditionFiltersProps`, `DataGridConditionJoin`, `DataGridConditionKind`, `DataGridConditionOperator`, `MatchConditionsOptions` | `type` | The condition model and the props of the filter builder. |
+| `DATA_GRID_CONDITION_OPERATORS`, `createDataGridConditionFilterFn`, `matchesConditions`, `matchesCondition`, `createCondition`, `changeConditionOperator`, `normalizeConditionValue`, `isConditionComplete`, `getConditionOperators` | `constant`, `function` | The pure condition model and its filter function. |
+| `DataGridColumnMeta`, `DataGridCellRow`, `DataGridCellVariant`, `DataGridColumnType`, `DataGridAlign`, `DataGridDensity`, `DataGridSelectOption`, `DataGridCellValueChange` | `type` | The column meta and its unions. |
 
 ## Accessibility and theme
 

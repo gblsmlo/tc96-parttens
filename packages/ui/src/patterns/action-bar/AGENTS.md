@@ -20,6 +20,7 @@ Imported by path, not through `index.ts`, so moving `components/action-bar.tsx` 
 ## Invariants
 
 - Renders nothing while `selectedCount` is below 1.
+- Its texts default to pt-BR and come from props: `label` (the toolbar name), `formatSelection(count)` (the count text, never joined from words in the bar) and `clearSelectionLabel`.
 - An item with `submenu` opens a non-modal `Menu` above the bar (`side="top"`) and never calls its own `onSelect`; each submenu item calls its `onSelect` with the same `{ selectedCount, selectedRows }` context.
 - The bar is `role="toolbar"` named "Ações dos itens selecionados"; the clear button exists only with `onClearSelection`, named "Limpar seleção".
 - Floating placement belongs to the caller: `DataGridSelectionActions` and `CollectionFrameOverlay` position the bar, the bar itself does not.

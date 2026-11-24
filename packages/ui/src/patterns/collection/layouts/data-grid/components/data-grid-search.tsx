@@ -4,14 +4,19 @@ import type { RowData } from '@tanstack/react-table'
 import { Input } from '@tc96/ui/input'
 import { cn } from '@tc96/utils'
 import type React from 'react'
-import type { DataGridTable } from '../lib/data-grid-features'
 
-export interface DataGridSearchProps<TData extends RowData>
+export interface DataGridSearchTable {
+  readonly store: { readonly state: { globalFilter?: unknown } }
+  setGlobalFilter: (value: string) => void
+  setPageIndex: (pageIndex: number) => void
+}
+
+export interface DataGridSearchProps<_TData extends RowData = RowData>
   extends Omit<
     React.ComponentProps<typeof Input>,
     'onChange' | 'value' | 'type'
   > {
-  table: DataGridTable<TData>
+  table: DataGridSearchTable
 }
 
 export function DataGridSearch<TData extends RowData>({

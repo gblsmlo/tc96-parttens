@@ -1,0 +1,117 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Table5
+
+A task queue on the collection Data Table (a semantic `<table>`, the `table` layout) where a task carries its sub-tasks: a toolbar with the title, the count and the sub-tasks state, the search, a Configurações menu and Nova tarefa, then Todas, Ativas and Backlog tabs with their counts and a table with the task, its status, the assignee, the priority and the project. Reach for it on a delivery or backlog screen where work splits into smaller steps that ride with their parent. It is the same screen as `DataGrid5`; pick it when the page needs table semantics instead of the WAI-ARIA tree grid. Install it with `npx @tc96/cli add table-5`.
+
+It is a section, not a page: it renders no `main` landmark. The tabs, the expanded rows, the sub-tasks switch and the sort are the consumer's, so they are controlled (`view`, `expanded`, `showSubtasks`, `sort`) and reported (`onViewChange`, `onExpandedChange`, `onShowSubtasksChange`, `onSortChange`). The block never filters `tasks` by tab: the consumer passes the tasks of the current view and the counts of every view. The Data Table keeps the search, the priority and project filters, the page and the page size locally. The heading is the toolbar's: one `CollectionToolbar` with `variant="text"` above the tabs carries `labels.title` as the only `h2` and `labels.summary` as its description. Loading and error are the block's: the toolbar keeps the heading and hides its controls, `pending` renders its skeleton in place of the tabs and the table, and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
+
+The other pages of `Blocks/Data/Table/Table5`: [Playground](?path=/story/blocks-data-table-table5-playground--playground) to try the controls, [Behavior](?path=/story/blocks-data-table-table5-behavior--header-shows-title-summary-and-create) for the tests, [States](?path=/story/blocks-data-table-table5-states--default) for the loaded, loading, error and empty states and [Usages](?path=/story/blocks-data-table-table5-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Table5 } from '@tc96/ui/blocks/data/table/table-5'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The toolbar with the heading, the search, Configurações and Nova tarefa, the tabs, the table with one parent expanded, and the pagination with the rows per page selector under it.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Table5
+  expanded={expanded}
+  onExpandedChange={setExpanded}
+  onViewChange={setView}
+  tasks={tasksOfView}
+  view={view}
+  viewCounts={counts}
+/>
+```
+
+## Table5
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `tasks` | `Table5Task[]` | required | The top-level tasks of the current view, each with its `subtasks`. Keep the array stable between renders, or the page resets. |
+| `view` | `'all' \| 'active' \| 'backlog'` | `'all'` | The selected tab. |
+| `onViewChange` | `(view: Table5View) => void` | - | The tabs render only with this callback. The block does not filter `tasks`. |
+| `viewCounts` | `Record<Table5View, number>` | - | The count badge of each tab; without it the tabs show only their names. |
+| `expanded` | `true \| Record<string, boolean>` | - | Controls which parents show their sub-tasks, keyed by task id; without it the table keeps it locally. |
+| `onExpandedChange` | `(expanded: Table5Expanded) => void` | - | Called with the resolved state on every toggle. |
+| `showSubtasks` | `boolean` | `true` | Off, the table shows only the top-level tasks and the summary says the sub-tasks are hidden. |
+| `onShowSubtasksChange` | `(showSubtasks: boolean) => void` | - | The Mostrar subtarefas switch of Configurações renders only with this callback. |
+| `sort` | `Table5Sort \| null` | - | Controls the sort; status and priority sort by their workflow order, not alphabetically. |
+| `onSortChange` | `(sort: Table5Sort \| null) => void` | - | Called once per sort change, from Ordenar por or from a column menu. |
+| `pageSize` | `number` | `5` | Initial rows per page. Pages count top-level tasks; sub-tasks ride with their parent. |
+| `pageSizeOptions` | `readonly number[]` | `[5, 10, 20]` | The options of the rows per page selector. |
+| `rowActions` | `Table5RowAction[]` | - | The items of the row menu (`{ id, label, destructive? }`). |
+| `onRowAction` | `(actionId: string, taskId: string) => void` | - | The menu column renders only with this callback and `rowActions`. |
+| `onCreate` | `() => void` | - | The Nova tarefa button renders only with this callback. |
+| `pending` | `boolean` | `false` | Renders the skeleton below the heading; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `labels` | `Table5LabelsOverride` | pt-BR texts | Overrides the texts; `columns`, `statuses`, `priorities` and `views` merge key by key. Keep the object stable, because the columns are rebuilt when it changes. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Table5Task
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row and the key of `expanded`; unique across parents and sub-tasks. |
+| `title` | `string` | The task cell, struck through when the status is `done`. |
+| `status` | `'backlog' \| 'todo' \| 'inProgress' \| 'review' \| 'done'` | The status badge with its dot, and the check icon of the task cell. |
+| `assignee` | `{ id; label; imageUrl? }` | The avatar and the name. |
+| `priority` | `'urgent' \| 'high' \| 'medium' \| 'low'` | The priority badge and the Prioridade filter. |
+| `project` | `string` | The project badge and the Projeto filter, whose options come from every task and sub-task. |
+| `subtasks` | `Table5Task[]` | Optional; a task with sub-tasks gets the expand button. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Entrega de tarefas"`; the toolbar heading and the name of the section and of the table |
+| `summary` | `(total: number, showSubtasks: boolean) => string` | `"16 tarefas / Subtarefas ativas"`; the toolbar description under the heading |
+| `create` | `string` | `"Nova tarefa"` |
+| `views`, `viewsLabel` | `Record<Table5View, string>`, `string` | `"Todas"`, `"Ativas"`, `"Backlog"`; `"Visões das tarefas"` names the tab list |
+| `toolbar`, `search` | `string` | `"Controles das tarefas"`, `"Buscar tarefas"` |
+| `settings`, `display`, `filters` | `string` | `"Configurações"`, `"Exibição"`, `"Filtros"` |
+| `showSubtasks`, `sortBy`, `columnsMenu` | `string` | `"Mostrar subtarefas"`, `"Ordenar por"`, `"Colunas"` |
+| `sortOption`, `clearSort` | `(column: string, direction: 'asc' \| 'desc') => string`, `string` | `"Prioridade: crescente"`; `"Limpar ordenação"`; the items of Ordenar por |
+| `filtersTrigger` | `(label: string, activeFilters: number) => string` | `"Configurações (1)"`; the Configurações trigger while a filter is on |
+| `allOptions`, `clearFilters` | `string` | `"Todas"`, `"Limpar filtros"` |
+| `expand`, `collapse` | `(task: string) => string` | `"Expandir subtarefas de …"`, `"Recolher subtarefas de …"`; the name of the expand button |
+| `columns` | `Record<Table5ColumnId, string>` | `"Tarefa"`, `"Status"`, `"Responsável"`, `"Prioridade"`, `"Projeto"`, `"Ações"` |
+| `statuses` | `Record<Table5Status, string>` | `"Backlog"`, `"A fazer"`, `"Em andamento"`, `"Em revisão"`, `"Concluída"` |
+| `priorities` | `Record<Table5Priority, string>` | `"Urgente"`, `"Alta"`, `"Média"`, `"Baixa"` |
+| `rowActionsFor` | `(task: string) => string` | `"Ações de …"`; the name of the row menu button |
+| `rowsPerPage` | `string` | `"Linhas por página"` |
+| `empty` | `string` | `"Nenhuma tarefa para exibir."` |
+| `loading` | `string` | `"Carregando tarefas"`; the accessible name of the skeleton |
+| `errorTitle`, `errorDescription`, `retry` | `string` | `"Não foi possível carregar as tarefas"`, `"Verifique sua conexão e tente novamente."`, `"Tentar novamente"` |
+
+The pattern parts have their own texts, which `labels` does not reach: the pager buttons.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Table5` | `component` | The task queue. |
+| `Table5Props`, `Table5Task`, `Table5Person`, `Table5Status`, `Table5Priority`, `Table5RowAction` | `type` | The props and the data. |
+| `Table5View`, `Table5ViewCounts`, `Table5Expanded`, `Table5Sort`, `Table5SortKey`, `Table5ColumnId` | `type` | The tabs, the tree, the sort and the columns. |
+| `Table5Labels`, `Table5LabelsOverride` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The table keeps the `table` role with or without sub-tasks: `aria-level` and `aria-expanded` are valid on a row only inside a `treegrid`, and this view has no grid keyboard model. A sub-task is indented by its depth, and the expanded state lives on the expand button (`aria-expanded`), named by `labels.expand` or `labels.collapse` and reached with Tab.
+- The tabs are a `tablist` named by `labels.viewsLabel`; the table sits in the selected `tabpanel`, and the toolbar sits above the tabs.
+- The status dot and the check icon are decorative: the status badge carries the text, so a done task never depends on the strike-through alone.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- The block carries no color, radius or shadow of its own beyond token classes: the theme belongs to the app.

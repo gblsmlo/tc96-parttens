@@ -32,11 +32,12 @@ export interface ViewSettingsMenuProps<TMode extends string = string> {
   children: ReactNode
   className?: string
   clearLabel?: string
+  formatTriggerLabel?: (label: string, activeFilterCount: number) => string
   label?: string
   mode?: TMode
   /** Na ordem da coleção; com menos de dois modos, as tabs não aparecem. */
   modes?: readonly ViewSettingsMode<TMode>[]
-  onClearFilters: () => void
+  onClearFilters?: () => void
   onModeChange?: (mode: TMode) => void
   /** Sem handler o rodapé não compõe o item: guardar preferência é opcional. */
   onSavePreference?: () => void
@@ -48,6 +49,9 @@ export interface ViewSettingsSectionProps {
   children: ReactNode
   label: ReactNode
 }
+
+const defaultTriggerLabel = (label: string, count: number) =>
+  `${label} (${count})`
 
 const popupWidth = (modeCount: number) => {
   if (modeCount < 2) return 'w-56'
@@ -69,6 +73,7 @@ export function ViewSettingsMenu<TMode extends string = string>({
   children,
   className,
   clearLabel = 'Limpar filtros',
+  formatTriggerLabel = defaultTriggerLabel,
   label = 'Exibição',
   mode,
   modes = [],
@@ -80,7 +85,7 @@ export function ViewSettingsMenu<TMode extends string = string>({
 }: Readonly<ViewSettingsMenuProps<TMode>>): ReactElement {
   const normalizedActiveCount = Math.max(0, activeFilterCount)
   const triggerLabel = normalizedActiveCount
-    ? `${label} (${normalizedActiveCount})`
+    ? formatTriggerLabel(label, normalizedActiveCount)
     : label
   const hasModeTabs = modes.length > 1
 
@@ -102,10 +107,12 @@ export function ViewSettingsMenu<TMode extends string = string>({
         <MenuSeparator />
         {/* Limpar antes de guardar: descartar volta ao ponto de partida, guardar
             avança a partir dele — a ordem é a mesma sequência de decisão. */}
-        <MenuItem disabled={!normalizedActiveCount} onClick={onClearFilters}>
-          <ArrowCounterClockwiseIcon aria-hidden="true" />
-          {clearLabel}
-        </MenuItem>
+        {onClearFilters ? (
+          <MenuItem disabled={!normalizedActiveCount} onClick={onClearFilters}>
+            <ArrowCounterClockwiseIcon aria-hidden="true" />
+            {clearLabel}
+          </MenuItem>
+        ) : null}
         {onSavePreference ? (
           <MenuItem
             disabled={savePreferenceDisabled}

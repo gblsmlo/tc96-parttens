@@ -1,0 +1,22 @@
+export { defaultTable1PageSizeOptions, Table1 } from './table-1'
+export type {
+  Table1ColumnId,
+  Table1ColumnVisibility,
+  Table1Density,
+  Table1Labels,
+  Table1LabelsOverride,
+  Table1Person,
+  Table1Priority,
+  Table1Props,
+  Table1Queue,
+  Table1Requester,
+  Table1RowAction,
+  Table1Sla,
+  Table1SlaTone,
+  Table1Sort,
+  Table1SortKey,
+  Table1Status,
+  Table1Ticket,
+  Table1ToggleColumnId,
+  Table1View,
+} from './types'

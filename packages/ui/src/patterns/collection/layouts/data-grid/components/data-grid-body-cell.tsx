@@ -22,6 +22,7 @@ export interface DataGridBodyCellProps<TData extends RowData> {
   isFocused: boolean
   isSelected: boolean
   layout: ColumnLayout | undefined
+  rowExpanded?: boolean
   rowSelected: boolean
   showFocus: boolean
   canSelect: boolean

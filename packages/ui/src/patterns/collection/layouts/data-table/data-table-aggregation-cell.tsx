@@ -25,7 +25,7 @@ export function DataTableAggregationCell({
   result,
   value,
 }: Readonly<{
-  align?: 'end' | 'start'
+  align?: 'center' | 'end' | 'start'
   labels: DataTableAggregationLabels
   onValueChange: (value: DataTableAggregation | null) => void
   options: readonly DataTableAggregation[]
@@ -34,7 +34,11 @@ export function DataTableAggregationCell({
 }>): ReactElement {
   return (
     <div
-      className={cn('flex', align === 'end' && 'justify-end')}
+      className={cn(
+        'flex',
+        align === 'end' && 'justify-end',
+        align === 'center' && 'justify-center',
+      )}
       data-aggregation={value ?? undefined}
       data-slot="data-table-aggregation"
     >

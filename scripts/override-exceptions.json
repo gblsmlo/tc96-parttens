@@ -42,6 +42,12 @@
     "reason": "O thead da tabela usa a mesma cor do `TableFooter` do COSS (`color-mix` de `var(--card)` com 2% de preto, ou de branco no escuro), para que cabeçalho e rodapé enquadrem as linhas, que ficam na cor do fundo."
   },
   {
+    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table-row.tsx",
+    "component": "TableRow",
+    "className": "data-dnd-dragging:bg-background",
+    "reason": "Ao reordenar, o dnd-kit leva a linha arrastada para a camada de topo, sobre as outras linhas; o `TableRow` do COSS é transparente e deixaria o conteúdo de baixo aparecer através dela. `bg-background` é o fundo do tema, o mesmo das linhas em repouso, e só vale enquanto `onRowMove` está ativo e a linha carrega `data-dnd-dragging`."
+  },
+  {
     "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "hover:bg-card/60",

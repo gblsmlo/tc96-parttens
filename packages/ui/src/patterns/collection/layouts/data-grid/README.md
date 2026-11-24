@@ -41,6 +41,12 @@ function Invoices({ invoices }: { invoices: Invoice[] }) {
 
 `useDataGrid` creates the TanStack table with every feature the grid reads (sorting, filtering, pagination, selection, visibility, ordering, pinning, sizing, resizing) and keeps the state locally. `tableOptions` is the escape hatch for anything else. Toolbar parts take the same `table`: `DataGridSearch`, `DataGridFilterMenu`, `DataGridSelectionSummary`, and the sections `DataGridSortSubmenu`, `DataGridColumnsSubmenu`, `DataGridDensitySubmenu` for `ViewSettingsMenu`.
 
+## Rows per page, condition filters and cell validation
+
+- Rows per page: render `<DataGridPagination table={table} pageSizeOptions={[10, 25, 50]} pageSizeLabel="Rows per page" />` as the `footer` of `DataGrid`. The selector shows only with the options, the label and a table that has `setPageSize`, and a change returns to page one. Keep `data` referentially stable, or the page index resets on every render.
+- Condition filters: `DataGridConditionFilters` renders the chips, the searchable fields menu and the clear button from `conditions`, `fields`, `labels` and `operatorLabels`, all the consumer's. Feed the table with `createDataGridConditionFilterFn(fields, join)` as `tableOptions.globalFilterFn` and `table.setGlobalFilter(conditions)` (`''` to clear). It takes the global filter slot, so it replaces `DataGridSearch`.
+- Cell validation: an editable `text` or `number` column (`meta.editable`, with `onCellValueChange`) opens an input on click. `meta.validate(value, row)` returns the message to show; while it does, the input is `aria-invalid`, the cell has `data-invalid` and nothing is committed. Escape restores the stored value. `meta.getCellError(row, columnId)` flags a cell from outside, such as a server error; it reaches the cell when `columns` change.
+
 ## `DataGrid` props
 
 | Prop | Meaning |
@@ -55,11 +61,53 @@ function Invoices({ invoices }: { invoices: Invoice[] }) {
 | `maxHeight` | viewport max height |
 | `getRowGroup` | group value per row; one group row per run of equal values |
 | `collapsedGroupIds`, `defaultCollapsedGroupIds`, `onCollapsedGroupIdsChange` | group collapse, controlled or not |
+| `renderGroupCell` | `({ group, count, collapsed, column, rows }) => ReactNode`; with it the group row renders a cell per column (label and count in the first data column) so subtotals align under their columns; `rows` are the group's rows on the page |
 | `getRowSelected` | marks extra rows as selected |
+| `onRowMove`, `rowDragAnnouncements` | drag reorder through a `createRowDragColumn` handle: `onRowMove({ rowId, fromIndex, toIndex, overRowId })` fires on drop and the consumer reorders `data`; off while grouped, sorted, loading or virtualized; `rowDragAnnouncements` carries the spoken texts |
+| `onEndReached`, `endReachedThreshold` | fires once per `data.length` when the last `endReachedThreshold` rows (default 5) are near the viewport end; works with or without `virtualize` |
+| `loadingMore`, `loadingMoreRowCount` | skeleton rows after the last row (3 by default) and no further `onEndReached` while true |
 | `onRowAdd`, `addRowLabel` | trailing add row |
 | `virtualize`, `overscan` | row virtualization; ignored with `getRowGroup` or while loading |
 | `selectionActions` | node or render function shown while rows are selected |
 | `className`, `aria-label` | root class and grid name |
+
+## Rows that expand, reorder and load more
+
+```tsx
+const { table } = useDataGrid<Task>({
+  columns,
+  data: tasks,
+  enableExpanding: true,
+  enablePagination: true,
+  getRowId: (task) => task.id,
+  getSubRows: (task) => task.subtasks,
+})
+
+const columns: DataGridColumnDef<Task>[] = [
+  createRowDragColumn<Task>({
+    getHandleLabel: (task) => `Reordenar ${task.title}`,
+    headerLabel: 'Reordenar',
+  }),
+  {
+    accessorKey: 'title',
+    cell: ({ row }) => (
+      <DataGridExpandToggle
+        getLabel={(current, expanded) =>
+          `${expanded ? 'Recolher' : 'Expandir'} ${current.original.title}`
+        }
+        row={row}
+      >
+        {row.original.title}
+      </DataGridExpandToggle>
+    ),
+    header: 'Tarefa',
+  },
+]
+```
+
+- `enableExpanding`, `getSubRows`, `expanded` and `onExpandedChange` (controlled) or `tableOptions.initialState.expanded` (initial) come from `useDataGrid`. The grid becomes `role="treegrid"`, rows get `aria-level` and `aria-expanded`, and pagination counts top-level rows only. The toggle button is the keyboard path: ArrowLeft and ArrowRight keep moving the cell focus.
+- `createRowDragColumn` and `DataGridExpandToggle` take every accessible name from the consumer. Keyboard drag: Space picks, arrows move, Space drops, Escape cancels. Combine `onRowMove` with neither `virtualize`, sorting nor `getRowGroup`.
+- Collapse all and expand all: control `collapsedGroupIds` and pass every group id or `[]`.
 
 ## Performance notes
 

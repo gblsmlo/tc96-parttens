@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
+import { useLatestCallback } from '../../../shared/hooks/use-latest-callback'
 import type { CellIdentity, CellRegistry } from '../lib/cell-registry'
 import {
   PENDING_SELECT_CLICK_WINDOW_MS,
@@ -17,7 +18,6 @@ import type {
 } from '../lib/data-grid-features'
 import { hasSelectTrigger } from '../lib/dom'
 import { type CellSelection, isCellSelected } from '../lib/selection'
-import { useLatestCallback } from './use-latest-callback'
 
 export interface CellInteractions {
   onClick: (event: MouseEvent<HTMLDivElement>) => void

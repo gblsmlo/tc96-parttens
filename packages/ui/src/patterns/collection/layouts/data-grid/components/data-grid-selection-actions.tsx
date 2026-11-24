@@ -1,17 +1,14 @@
 'use client'
 
 import type { RowData } from '@tanstack/react-table'
-import type { ReactNode } from 'react'
-import type { ActionBarContext } from '../../../../action-bar/components/action-bar'
+import {
+  SelectionActions,
+  type SelectionActionsProp,
+} from '../../../shared/components/selection-actions'
 import type { DataGridTable } from '../lib/data-grid-features'
 
 export type DataGridSelectionActionsProp<TData extends RowData> =
-  | ReactNode
-  | ((
-      context: ActionBarContext<TData> & {
-        clearSelection: () => void
-      },
-    ) => ReactNode)
+  SelectionActionsProp<TData>
 
 export interface DataGridSelectionActionsProps<TData extends RowData> {
   selectionActions?: DataGridSelectionActionsProp<TData>
@@ -22,28 +19,11 @@ export function DataGridSelectionActions<TData extends RowData>({
   selectionActions,
   table,
 }: DataGridSelectionActionsProps<TData>) {
-  if (!selectionActions) return null
-  const selectedRows = table
-    .getSelectedRowModel()
-    .rows.map((row) => row.original)
-  if (selectedRows.length === 0) return null
-
-  const content =
-    typeof selectionActions === 'function'
-      ? selectionActions({
-          clearSelection: () => table.resetRowSelection(),
-          selectedCount: selectedRows.length,
-          selectedRows,
-        })
-      : selectionActions
-  if (!content) return null
-
   return (
-    <div
-      className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex justify-center px-3"
-      data-slot="data-grid-selection-actions"
-    >
-      <div className="pointer-events-auto">{content}</div>
-    </div>
+    <SelectionActions
+      selectionActions={selectionActions}
+      slot="data-grid-selection-actions"
+      table={table}
+    />
   )
 }

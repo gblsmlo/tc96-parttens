@@ -6,32 +6,42 @@ import type { RowData } from '@tanstack/react-table'
 import { ScrollAreaPrimitive, ScrollBar } from '@tc96/ui/scroll-area'
 import { cn } from '@tc96/utils'
 import { type ReactNode, useMemo, useRef } from 'react'
+import { useCollapsedGroups } from '../../../shared/hooks/use-collapsed-groups'
+import { useLatestCallback } from '../../../shared/hooks/use-latest-callback'
 import {
   scrollbarInsetStyle,
   useScrollbarInsets,
 } from '../../../shared/hooks/use-scrollbar-insets'
-import { useCollapsedGroups } from '../hooks/use-collapsed-groups'
+import { DEFAULT_END_REACHED_THRESHOLD } from '../../../shared/lib/end-reached'
+import { isRowReorderActive } from '../../../shared/lib/row-reorder'
 import { useColumnLayouts } from '../hooks/use-column-layouts'
 import { useDataGridCellEvents } from '../hooks/use-data-grid-cell-events'
 import { useDataGridCellSelection } from '../hooks/use-data-grid-cell-selection'
 import { useDataGridDragScroll } from '../hooks/use-data-grid-drag-scroll'
+import { useDataGridEndReached } from '../hooks/use-data-grid-end-reached'
 import { useDataGridFocus } from '../hooks/use-data-grid-focus'
 import { DataGridRowContext } from '../hooks/use-data-grid-row-context'
 import { useDataGridRows } from '../hooks/use-data-grid-rows'
 import { useDataGridVirtualizer } from '../hooks/use-data-grid-virtualizer'
-import { useLatestCallback } from '../hooks/use-latest-callback'
 import {
   findFirstNavigableColumnIndex,
   indexColumns,
   resolveFillColumnId,
 } from '../lib/columns'
+import { ROW_HEIGHT } from '../lib/constants'
 import type { DataGridTable } from '../lib/data-grid-features'
-import type { DataGridDensity } from '../types'
+import type {
+  DataGridDensity,
+  DataGridRowDragAnnouncements,
+  DataGridRowMove,
+} from '../types'
 import { DataGridAddRow } from './data-grid-add-row'
 import { DataGridBody } from './data-grid-body'
 import { DataGridFooter } from './data-grid-footer'
+import type { DataGridGroupCellContext } from './data-grid-group-row'
 import { DataGridHeaderRows } from './data-grid-header-rows'
 import { DataGridPagination } from './data-grid-pagination'
+import { DataGridRowReorder } from './data-grid-row-reorder'
 import {
   DataGridSelectionActions,
   type DataGridSelectionActionsProp,
@@ -47,12 +57,20 @@ export interface DataGridProps<TData extends RowData> {
   isLoading?: boolean
   loadingRowAnatomy?: DataGridRowSkeletonAnatomy
   loadingRowCount?: number
+  loadingMore?: boolean
+  loadingMoreRowCount?: number
+  onEndReached?: () => void
+  endReachedThreshold?: number
   emptyMessage?: string
   maxHeight?: number | string
   getRowGroup?: (row: TData) => string | null
   collapsedGroupIds?: readonly string[]
   defaultCollapsedGroupIds?: readonly string[]
   onCollapsedGroupIdsChange?: (groupIds: readonly string[]) => void
+  renderGroupCell?: (context: DataGridGroupCellContext<TData>) => ReactNode
+  getGroupToggleLabel?: (group: string, collapsed: boolean) => string
+  onRowMove?: (move: DataGridRowMove) => void
+  rowDragAnnouncements?: DataGridRowDragAnnouncements
   getRowSelected?: (row: TData) => boolean
   onRowAdd?: () => void | Promise<void>
   addRowLabel?: string
@@ -74,12 +92,20 @@ export function DataGrid<TData extends RowData>({
   isLoading = false,
   loadingRowAnatomy,
   loadingRowCount = 5,
+  loadingMore = false,
+  loadingMoreRowCount = 3,
+  onEndReached,
+  endReachedThreshold = DEFAULT_END_REACHED_THRESHOLD,
   emptyMessage = 'Nenhum registro para exibir.',
   maxHeight,
   getRowGroup,
   collapsedGroupIds: controlledCollapsedGroupIds,
   defaultCollapsedGroupIds = NO_GROUPS,
   onCollapsedGroupIdsChange,
+  renderGroupCell,
+  getGroupToggleLabel,
+  onRowMove,
+  rowDragAnnouncements,
   getRowSelected,
   onRowAdd,
   addRowLabel = 'Adicionar linha',
@@ -110,7 +136,12 @@ export function DataGrid<TData extends RowData>({
     onChange: onCollapsedGroupIdsChange,
   })
   const onToggleGroup = useLatestCallback(setGroupCollapsed)
-  const model = useDataGridRows({ collapsedGroupIds, getRowGroup, table })
+  const model = useDataGridRows({
+    collapsedGroupIds,
+    getRowGroup,
+    table,
+    withGroupRows: Boolean(renderGroupCell),
+  })
   const { rows } = model
 
   const cellSelection = useDataGridCellSelection({
@@ -138,6 +169,29 @@ export function DataGrid<TData extends RowData>({
     overscan,
     rows,
     table,
+  })
+  const sorting = table.options.state?.sorting ?? table.atoms.sorting.get()
+  const reorderActive = isRowReorderActive({
+    enabled: Boolean(onRowMove),
+    grouped: Boolean(getRowGroup),
+    loading: isLoading,
+    sorted: sorting.length > 0,
+    virtualized: shouldVirtualize,
+  })
+  const expandable = Boolean(table.options.enableExpanding)
+  const loadingMoreCount =
+    loadingMore && !isLoading && model.pageRows.length > 0
+      ? loadingMoreRowCount
+      : 0
+  useDataGridEndReached({
+    density,
+    enabled: Boolean(onEndReached) && !isLoading,
+    gridRef,
+    hasBottomBar: Boolean(onRowAdd || footerContent),
+    loadingMore: loadingMoreCount > 0,
+    onEndReached,
+    rowCount: table.options.data.length,
+    threshold: endReachedThreshold,
   })
   const interactions = useDataGridCellEvents({
     columnIndexById,
@@ -167,6 +221,7 @@ export function DataGrid<TData extends RowData>({
       enableRowSelection,
       interactions,
       meta,
+      rowReorder: reorderActive,
       rowSelectable,
     }),
     [
@@ -176,6 +231,7 @@ export function DataGrid<TData extends RowData>({
       interactions,
       leafColumns,
       meta,
+      reorderActive,
       rowSelectable,
     ],
   )
@@ -196,6 +252,7 @@ export function DataGrid<TData extends RowData>({
   const ariaRowCount =
     model.headerRowCount +
     bodyRowCount +
+    loadingMoreCount +
     (onRowAdd ? 1 : 0) +
     (footerContent ? 1 : 0)
   const totalSize = table.getTotalSize()
@@ -217,7 +274,7 @@ export function DataGrid<TData extends RowData>({
         ref={scrollAreaRef}
       >
         <ScrollAreaPrimitive.Viewport
-          aria-busy={isLoading || undefined}
+          aria-busy={isLoading || loadingMoreCount > 0 || undefined}
           aria-colcount={leafColumns.length}
           aria-label={ariaLabel}
           aria-multiselectable
@@ -233,7 +290,7 @@ export function DataGrid<TData extends RowData>({
           onPointerMove={dragScroll.onPointerMove}
           onPointerUp={dragScroll.onPointerUp}
           ref={gridRef}
-          role="grid"
+          role={expandable ? 'treegrid' : 'grid'}
           style={{ maxHeight }}
           tabIndex={rows.length > 0 && !isLoading ? -1 : 0}
         >
@@ -247,32 +304,54 @@ export function DataGrid<TData extends RowData>({
               table={table}
             />
             <DataGridRowContext value={rowContext}>
-              <DataGridBody
-                columnIds={leafColumns.map((column) => column.id)}
-                columnLayouts={columnLayouts}
-                density={density}
-                emptyMessage={emptyMessage}
-                entries={model.entries}
-                focusedColumnId={cellSelection.focusedColumnId}
-                focusedRowId={cellSelection.focusedRowId}
-                getRowSelected={getRowSelected}
-                hasInteracted={cellSelection.hasInteracted}
-                headerRowCount={model.headerRowCount}
-                isLoading={isLoading}
-                {...(loadingRowAnatomy ? { loadingRowAnatomy } : {})}
-                loadingRowCount={loadingRowCount}
-                minWidth={totalSize}
-                onToggleGroup={onToggleGroup}
-                pageRowCount={model.pageRows.length}
-                selection={cellSelection.selection}
-                totalSize={virtualizer.totalSize}
-                virtualItems={virtualizer.virtualItems}
-                virtualized={shouldVirtualize}
-              />
+              <DataGridRowReorder
+                active={reorderActive}
+                announcements={rowDragAnnouncements}
+                indexByRowId={model.rowIndexById}
+                onRowMove={onRowMove}
+                paginationRowOffset={model.paginationRowOffset}
+                positions={model.positions}
+                rows={rows}
+              >
+                <DataGridBody
+                  columnIds={leafColumns.map((column) => column.id)}
+                  columnLayouts={columnLayouts}
+                  columns={leafColumns}
+                  density={density}
+                  emptyMessage={emptyMessage}
+                  entries={model.entries}
+                  expandable={expandable}
+                  focusedColumnId={cellSelection.focusedColumnId}
+                  focusedRowId={cellSelection.focusedRowId}
+                  getRowSelected={getRowSelected}
+                  hasInteracted={cellSelection.hasInteracted}
+                  headerRowCount={model.headerRowCount}
+                  isLoading={isLoading}
+                  labelColumnId={leafColumns[firstNavigableColumn]?.id}
+                  loadingMoreRowCount={loadingMoreCount}
+                  loadingMoreRowIndexOffset={bodyRowCount}
+                  {...(loadingRowAnatomy ? { loadingRowAnatomy } : {})}
+                  loadingRowCount={loadingRowCount}
+                  minWidth={totalSize}
+                  onToggleGroup={onToggleGroup}
+                  pageRowCount={model.pageRows.length}
+                  renderGroupCell={renderGroupCell}
+                  getGroupToggleLabel={getGroupToggleLabel}
+                  selection={cellSelection.selection}
+                  totalSize={
+                    virtualizer.totalSize +
+                    loadingMoreCount * ROW_HEIGHT[density]
+                  }
+                  virtualItems={virtualizer.virtualItems}
+                  virtualized={shouldVirtualize}
+                />
+              </DataGridRowReorder>
             </DataGridRowContext>
             {onRowAdd ? (
               <DataGridAddRow
-                ariaRowIndex={model.headerRowCount + bodyRowCount + 1}
+                ariaRowIndex={
+                  model.headerRowCount + bodyRowCount + loadingMoreCount + 1
+                }
                 label={addRowLabel}
                 minWidth={totalSize}
                 onAdd={onRowAdd}

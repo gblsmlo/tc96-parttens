@@ -178,7 +178,7 @@ The `meta` of a column.
 | `aggregations` | `readonly ("count" \| "sum")[]` | - | Lists the aggregations the footer menu offers. |
 | `formatAggregation` | `(value: number, aggregation: "count" \| "sum") => ReactNode` | - | Formats the result; without it the number shows as is. |
 | `getAggregationValue` | `(row: TData) => number \| null \| undefined` | - | Reads the value to sum; without it the column's value. |
-| `align` | `"start"` or `"end"` | `"start"` | Aligns the aggregation menu. |
+| `align` | `"start"`, `"center"` or `"end"` | - | Aligns the header, the body cells, the group cells and the aggregation menu; a `flex` child of the cell is justified the same way. Without it the cells keep the table default. |
 | `label` | `string` | - | Names the column in `DataTableColumnsSubmenu`; without it the column id. |
 
 ## DataTableColumnsSubmenu

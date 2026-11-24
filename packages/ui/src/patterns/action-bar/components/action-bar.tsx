@@ -39,6 +39,9 @@ export interface ActionBarGroup<TData = unknown> {
 export interface ActionBarProps<TData = unknown> {
   actions: ActionBarGroup<TData>[]
   className?: string
+  clearSelectionLabel?: string
+  formatSelection?: (count: number) => string
+  label?: string
   onClearSelection?: () => void
   selectedCount: number
   selectedRows?: readonly TData[]
@@ -152,6 +155,9 @@ function ActionItem<TData>({
 export function ActionBar<TData = unknown>({
   actions,
   className,
+  clearSelectionLabel = 'Limpar seleção',
+  formatSelection = selectionLabel,
+  label = 'Ações dos itens selecionados',
   onClearSelection,
   selectedCount,
   selectedRows = [],
@@ -165,7 +171,7 @@ export function ActionBar<TData = unknown>({
 
   return (
     <div
-      aria-label="Ações dos itens selecionados"
+      aria-label={label}
       className={cn(
         'flex min-h-11 w-fit max-w-full items-center gap-1 overflow-x-auto rounded-xl border bg-popover px-2 py-1 text-popover-foreground shadow-lg',
         className,
@@ -178,7 +184,7 @@ export function ActionBar<TData = unknown>({
         className="size-4 shrink-0 text-muted-foreground"
       />
       <span className="px-1 font-medium text-sm">
-        {selectionLabel(selectedCount)}
+        {formatSelection(selectedCount)}
       </span>
       {actions.map((group, groupIndex) => (
         <div className="flex items-center gap-0.5" key={groupKey(group)}>
@@ -199,10 +205,10 @@ export function ActionBar<TData = unknown>({
       ))}
       {onClearSelection ? (
         <Button
-          aria-label="Limpar seleção"
+          aria-label={clearSelectionLabel}
           onClick={onClearSelection}
           size="sm"
-          title="Limpar seleção"
+          title={clearSelectionLabel}
           variant="ghost"
         >
           <XIcon aria-hidden="true" />

@@ -5,7 +5,7 @@
 import { Skeleton } from '@tc96/ui/skeleton'
 import { cn } from '@tc96/utils'
 import type { ColumnLayouts } from '../lib/column-layout'
-import { CELL_DENSITY, ROW_DENSITY } from '../lib/constants'
+import { CELL_DENSITY, ROW_DENSITY, ROW_HEIGHT } from '../lib/constants'
 import type { DataGridDensity } from '../types'
 
 export interface DataGridRowSkeletonAnatomy {
@@ -18,7 +18,10 @@ export interface DataGridSkeletonRowsProps {
   columnLayouts: ColumnLayouts
   density: DataGridDensity
   headerRowCount: number
+  loadingMore?: boolean
   rowIds: readonly string[]
+  rowIndexOffset?: number
+  virtualStart?: number
 }
 
 export function DataGridSkeletonRows({
@@ -27,18 +30,31 @@ export function DataGridSkeletonRows({
   columnLayouts,
   density,
   headerRowCount,
+  loadingMore,
   rowIds,
+  rowIndexOffset = 0,
+  virtualStart,
 }: DataGridSkeletonRowsProps) {
   return rowIds.map((rowId, rowIndex) => (
     <div
-      aria-rowindex={headerRowCount + rowIndex + 1}
+      aria-rowindex={headerRowCount + rowIndexOffset + rowIndex + 1}
       className={cn(
         'flex w-full border-b last:border-b-0',
         ROW_DENSITY[density],
+        virtualStart !== undefined && 'absolute start-0 top-0',
       )}
       data-cell={anatomy.cell ?? 'text'}
+      data-loading-more={loadingMore ? 'true' : undefined}
       key={rowId}
       role="row"
+      style={
+        virtualStart === undefined
+          ? undefined
+          : {
+              height: ROW_HEIGHT[density],
+              transform: `translateY(${virtualStart + rowIndex * ROW_HEIGHT[density]}px)`,
+            }
+      }
       tabIndex={-1}
     >
       {columnIds.map((columnId, columnIndex) => {

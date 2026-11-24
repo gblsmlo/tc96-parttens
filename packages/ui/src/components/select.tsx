@@ -109,9 +109,11 @@ export function SelectPopup({
   alignOffset = 0,
   alignItemWithTrigger = false,
   anchor,
+  listProps,
   portalProps,
   ...props
 }: SelectPrimitive.Popup.Props & {
+  listProps?: Omit<SelectPrimitive.List.Props, "children" | "className">;
   portalProps?: SelectPrimitive.Portal.Props;
   side?: SelectPrimitive.Positioner.Props["side"];
   sideOffset?: SelectPrimitive.Positioner.Props["sideOffset"];
@@ -150,6 +152,7 @@ export function SelectPopup({
                 className,
               )}
               data-slot="select-list"
+              {...listProps}
             >
               {children}
             </SelectPrimitive.List>

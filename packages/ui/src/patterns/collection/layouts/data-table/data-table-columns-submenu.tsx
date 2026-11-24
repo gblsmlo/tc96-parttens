@@ -10,7 +10,7 @@ import {
 } from '@tc96/ui/menu'
 import type React from 'react'
 import type { DataTableColumnMeta } from './data-table-aggregation'
-import type { DataTableTable } from './use-data-table'
+import type { DataTableTable } from './data-table-features'
 
 export interface DataTableColumnsSubmenuProps<TData extends RowData> {
   label?: string

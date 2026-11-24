@@ -1,10 +1,42 @@
 # Data Table
 
-A semantic `<table>` on COSS `Table` and TanStack Table v9, with optional row selection, sorting and client-side pagination. Unlike `DataGrid`, it is not a WAI-ARIA grid: there is no roving focus, cell selection, column menu, pinning, grouping or virtualization, and column resizing is opt-in through `enableColumnResizing`, and the header is plain content. The consumer owns the cells (a checkbox, a sort button, a pagination control) and drives the instance from `useDataTable`. `DataGridPagination` also accepts this table.
+A semantic `<table>` on COSS `Table` and TanStack Table v9. Unlike `DataGrid`, it is not a WAI-ARIA grid: there is no roving focus, cell selection, column menu, sticky pinning or virtualization, and the header is plain content. The consumer owns the cells (a checkbox, a sort button, a pagination control) and drives the instance from `useDataTable`. Everything below the basics is opt-in and leaves the markup unchanged when unused: selection actions, sub-rows, group rows, row reorder, load more, inline editing and density. The names mirror `DataGrid`, so a screen moves between the two views by swapping the hook, the component and the column factories. `DataGridPagination`, `DataGridSortSubmenu`, `DataGridDensitySubmenu`, `DataGridConditionFilters` and `createDataGridConditionFilterFn` also accept this table.
+
+## State
+
+`useDataTable` takes a value and `on*Change(value)` pair for `sorting`, `globalFilter`, `columnFilters`, `columnVisibility`, `columnOrder`, `columnPinning`, `columnSizing`, `rowSelection`, `pagination` and `expanded`. A value makes that state controlled; without it the hook keeps the state, seeded from `tableOptions.initialState`, and still reports each change as the resolved value, never an updater. `globalFilterFn` defaults to `includesString`; pass `createDataGridConditionFilterFn<TData, DataTableFeatures>(fields)` as `tableOptions.globalFilterFn` and feed it with `table.setGlobalFilter(conditions)` for condition filters.
+
+## Selection
+
+`createDataTableSelectColumn({ selectAllLabel, getRowLabel })` adds the `select` column with the page select-all and row checkboxes. `selectionActions` on `DataTable` renders the pattern `ActionBar` (or a function of `{ selectedRows, selectedCount, clearSelection }`) floating at the bottom of the table while rows are selected.
+
+## Sub-rows
+
+`enableExpanding` with `getSubRows` renders sub-rows under their parent; a page counts top-level rows. Put `DataTableExpandToggle` in the first column cell: it indents by `row.depth * indent` px and renders a button with `aria-expanded`, named by `getLabel(row, expanded)`. The table keeps its `table` role: `aria-level` and `aria-expanded` are valid on a row only inside a `treegrid`, and this view has no grid keyboard model, so the expanded state lives on the toggle button.
+
+## Group rows
+
+`getRowGroup(row)` opens a group at every run of equal consecutive values on the page; each run is its own `tbody`, opened by a row whose label cell is a `th scope="rowgroup"` with a chevron, the group and its count. `renderGroupCell({ group, count, collapsed, column, rows })` gives the group row one cell per column for subtotals. Collapse is uncontrolled (`defaultCollapsedGroupIds`) or controlled (`collapsedGroupIds`, `onCollapsedGroupIdsChange`); pass every id to collapse all. `getGroupToggleLabel(group, collapsed)` names the chevron.
+
+## Row reorder
+
+`onRowMove({ rowId, fromIndex, toIndex, overRowId })` with a `createDataTableRowDragColumn({ getHandleLabel, headerLabel })` column lets a row be dragged by its handle with the pointer or the keyboard (Space picks, arrows move, Space drops, Escape cancels). The table never reorders `data`; the consumer does. `rowDragAnnouncements` supply what screen readers hear. Reorder is off while the table is sorted, grouped or loading, and the handles render disabled.
+
+## Load more
+
+`onEndReached` fires when the scroll viewport is within `endReachedThreshold` rows (default 5) of the end, once per data length; `loadingMore` appends `loadingMoreRowCount` skeleton rows and holds further calls. The table must sit in a bounded flex column to scroll.
+
+## Inline editing
+
+With `onCellValueChange` on `useDataTable`, a column with `meta.editable` (text, or `meta.variant: 'number'`) renders an editable cell in the default `DataTableCell`, with the DataGrid column meta: `validate`, `getCellError`, `formatValue`, `getCellLabel`, `emptyLabel`, `placeholder`. Enter or blur commits once as a string, Escape restores. A column with its own `cell` renders `<DataTableCell context={context} />` to stay editable. Type the meta with `satisfies DataTableColumnMeta<TData>`, since the table's column meta is open.
+
+## Density
+
+`density` (`short`, `medium`, `tall`, `extra-tall`) on `useDataTable` or `DataTable` sets the body row height; `onDensityChange` makes it controlled. `DataGridDensitySubmenu` inside a `ViewSettingsMenu` changes it. Without a density the rows keep the COSS height.
 
 ## Cell renderers
 
-Rows are memoized below the component that calls `useDataTable`. A row re-renders when its `row`, its `selected` and `canSelect` state, the visible columns or `table.options.meta` change. A cell renderer must derive from its `row`, `column`, `cell` and `table.options.meta`. A custom cell that reads other table state (sorting, pagination, filters) during render is not re-rendered when that state changes, because the row is memoized. Pass what the cell needs through `meta`, or read it from the row. `onRowClick` also reaches the memoized row by identity, so keep it stable (`useCallback`) like `columns`; an inline handler re-renders every row on each parent render.
+Rows are memoized below the component that calls `useDataTable`. A row re-renders when its `row`, its `selected`, `canSelect` and `expanded` state, whether reorder is active, the visible columns or `table.options.meta` change. A cell renderer must derive from its `row`, `column`, `cell` and `table.options.meta`. A custom cell that reads other table state (sorting, pagination, filters) during render is not re-rendered when that state changes, because the row is memoized. Pass what the cell needs through `meta`, or read it from the row. `onRowClick` also reaches the memoized row by identity, so keep it stable (`useCallback`) like `columns`; an inline handler re-renders every row on each parent render.
 
 ## Row click
 
