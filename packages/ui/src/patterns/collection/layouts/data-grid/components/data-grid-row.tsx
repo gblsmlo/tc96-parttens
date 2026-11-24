@@ -11,7 +11,9 @@ import type { DataGridFeatures } from '../lib/data-grid-features'
 import { DataGridBodyCell } from './data-grid-body-cell'
 
 export interface DataGridRowProps<TData extends RowData> {
+  ariaLevel?: number
   ariaRowIndex: number
+  expanded?: boolean
   focusedColumnId?: string
   interacted: boolean
   row: Row<DataGridFeatures, TData>
@@ -22,7 +24,9 @@ export interface DataGridRowProps<TData extends RowData> {
 }
 
 function DataGridRowView<TData extends RowData>({
+  ariaLevel,
   ariaRowIndex,
+  expanded,
   focusedColumnId,
   interacted,
   row,
@@ -31,8 +35,14 @@ function DataGridRowView<TData extends RowData>({
   virtualSize,
   virtualStart,
 }: DataGridRowProps<TData>) {
-  const { columnLayouts, density, interactions, rowSelectable, meta } =
-    useDataGridRowContext()
+  const {
+    columnLayouts,
+    density,
+    interactions,
+    meta,
+    rowReorder,
+    rowSelectable,
+  } = useDataGridRowContext()
   const rowId = row.id
   const registerRef = useCallback(
     (node: HTMLDivElement | null) => interactions.registerRow(rowId, node),
@@ -51,12 +61,16 @@ function DataGridRowView<TData extends RowData>({
 
   return (
     <div
+      aria-expanded={expanded}
+      aria-level={ariaLevel}
       aria-rowindex={ariaRowIndex}
       aria-selected={rowSelectable ? selected : undefined}
       className={cn(
         'group flex w-full border-b transition-colors last:border-b-0 hover:bg-accent/40 data-[state=selected]:bg-primary/10',
         ROW_DENSITY[density],
         virtualStyle && 'absolute start-0 top-0',
+        rowReorder &&
+          'data-dnd-dragging:bg-background data-dnd-dragging:shadow-md',
       )}
       data-slot="data-grid-row"
       data-state={selected ? 'selected' : undefined}
@@ -78,6 +92,7 @@ function DataGridRowView<TData extends RowData>({
             isSelected={selectedColumnIds?.has(cell.column.id) ?? false}
             key={cell.id}
             layout={columnLayouts.get(cell.column.id)}
+            rowExpanded={expanded}
             rowSelected={selected}
             showFocus={isFocused && interacted}
             meta={meta}

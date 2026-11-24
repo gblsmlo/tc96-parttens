@@ -1,17 +1,18 @@
 import type { Row, RowData } from '@tanstack/react-table'
+import type { GroupRuns } from '../../../shared/lib/group-runs'
 import type { DataGridFeatures } from './data-grid-features'
-import type { GroupRuns } from './group-runs'
 import { resolveCollectionRowIndex } from './row-index'
 
 type GridRow<TData extends RowData> = Row<DataGridFeatures, TData>
 
-export interface GroupBodyEntry {
+export interface GroupBodyEntry<TData extends RowData> {
   ariaRowIndex: number
   collapsed: boolean
   count: number
   group: string
   key: string
   kind: 'group'
+  rows: readonly GridRow<TData>[]
 }
 
 export interface RowBodyEntry<TData extends RowData> {
@@ -22,13 +23,14 @@ export interface RowBodyEntry<TData extends RowData> {
 }
 
 export type BodyEntry<TData extends RowData> =
-  | GroupBodyEntry
+  | GroupBodyEntry<TData>
   | RowBodyEntry<TData>
 
 interface BodyEntriesInput<TData extends RowData> {
   collapsedGroups: ReadonlySet<string>
   groupByRowId: ReadonlyMap<string, string | null>
   groupCounts: ReadonlyMap<string, number>
+  groupRows: ReadonlyMap<string, readonly GridRow<TData>[]>
   groupRuns: GroupRuns
   headerRowCount: number
   pageRows: readonly GridRow<TData>[]
@@ -36,10 +38,13 @@ interface BodyEntriesInput<TData extends RowData> {
   positions: ReadonlyMap<string, number>
 }
 
+const NO_GROUP_ROWS: readonly never[] = []
+
 export function buildBodyEntries<TData extends RowData>({
   collapsedGroups,
   groupByRowId,
   groupCounts,
+  groupRows,
   groupRuns,
   headerRowCount,
   pageRows,
@@ -70,6 +75,7 @@ export function buildBodyEntries<TData extends RowData>({
         group,
         key: `group-${group}-${row.id}`,
         kind: 'group',
+        rows: groupRows.get(group) ?? NO_GROUP_ROWS,
       })
     }
     if (!collapsed) {

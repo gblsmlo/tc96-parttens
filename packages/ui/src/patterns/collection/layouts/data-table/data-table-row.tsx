@@ -5,13 +5,16 @@ import { TableCell, TableRow } from '@tc96/ui/table'
 import { cn } from '@tc96/utils'
 import { memo } from 'react'
 import { interactiveDescendants } from '../../shared/lib/interactive-descendants'
-import type { DataTableFeatures, DataTableTable } from './use-data-table'
+import { columnAlignClass } from './data-table-align'
+import type { DataTableFeatures, DataTableTable } from './data-table-features'
 
 export interface DataTableRowProps<TData extends RowData> {
   canSelect: boolean
+  expanded: boolean
   meta: DataTableTable<TData>['options']['meta']
   onRowClick?: (row: Row<DataTableFeatures, TData>) => void
   openLabel?: string
+  reorderable: boolean
   row: Row<DataTableFeatures, TData>
   selected: boolean
   visibleColumns: ReturnType<DataTableTable<TData>['getVisibleLeafColumns']>
@@ -20,21 +23,30 @@ export interface DataTableRowProps<TData extends RowData> {
 function DataTableRowView<TData extends RowData>({
   onRowClick,
   openLabel,
+  reorderable,
   row,
   selected,
 }: DataTableRowProps<TData>) {
   return (
     <TableRow
-      className={onRowClick ? 'isolate' : undefined}
+      className={
+        onRowClick || reorderable
+          ? cn(
+              onRowClick && 'isolate',
+              reorderable && 'data-dnd-dragging:bg-background',
+            )
+          : undefined
+      }
       data-interactive={onRowClick ? '' : undefined}
       data-state={selected ? 'selected' : undefined}
     >
       {row.getVisibleCells().map((cell, position) => (
         <TableCell
           className={
-            onRowClick
-              ? cn('pointer-events-none', interactiveDescendants)
-              : undefined
+            cn(
+              onRowClick && ['pointer-events-none', interactiveDescendants],
+              columnAlignClass(cell.column),
+            ) || undefined
           }
           key={cell.id}
         >

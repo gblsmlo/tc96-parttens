@@ -1,0 +1,123 @@
+import { FlagIcon, FolderIcon, PlusIcon } from '@phosphor-icons/react'
+import { MenuCheckboxItem, MenuSeparator } from '@tc96/ui/menu'
+import { DataGridColumnsSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-columns-submenu'
+import { DataGridSearch } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-search'
+import { DataGridSortSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-sort-submenu'
+import type { UseDataGridReturn } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
+import {
+  ViewSettingsMenu,
+  ViewSettingsSection,
+} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+import { GridToolbar, GridToolbarButton } from '../shared/grid-toolbar'
+import { dataGrid5PriorityOrder } from './data-grid-5-columns'
+import type { DataGrid5Labels, DataGrid5Task } from './types'
+
+export interface DataGrid5ToolbarProps {
+  description: string
+  labels: DataGrid5Labels
+  onCreate?: () => void
+  onShowSubtasksChange?: (showSubtasks: boolean) => void
+  projects: readonly string[]
+  showSubtasks: boolean
+  table: UseDataGridReturn<DataGrid5Task>['table']
+}
+
+export function DataGrid5Toolbar({
+  description,
+  labels,
+  onCreate,
+  onShowSubtasksChange,
+  projects,
+  showSubtasks,
+  table,
+}: Readonly<DataGrid5ToolbarProps>) {
+  const filters = table.store.state.columnFilters
+  const filterValue = (id: string) =>
+    (filters.find((filter) => filter.id === id)?.value as string | undefined) ??
+    ''
+  const setFilter = (id: string, value: string) => {
+    table.getColumn(id)?.setFilterValue(value || undefined)
+    table.setPageIndex(0)
+  }
+
+  return (
+    <GridToolbar
+      aria-label={labels.toolbar}
+      description={description}
+      endSlot={
+        <>
+          <DataGridSearch
+            aria-label={labels.search}
+            className="w-40 sm:w-64 sm:max-w-none"
+            placeholder={labels.search}
+            table={table}
+          />
+          <ViewSettingsMenu
+            activeFilterCount={filters.length}
+            clearLabel={labels.clearFilters}
+            formatTriggerLabel={labels.filtersTrigger}
+            label={labels.settings}
+            onClearFilters={() => {
+              table.resetColumnFilters()
+              table.setPageIndex(0)
+            }}
+          >
+            <ViewSettingsSection label={labels.display}>
+              {onShowSubtasksChange ? (
+                <MenuCheckboxItem
+                  checked={showSubtasks}
+                  closeOnClick={false}
+                  onCheckedChange={(checked) =>
+                    onShowSubtasksChange(Boolean(checked))
+                  }
+                  variant="switch"
+                >
+                  {labels.showSubtasks}
+                </MenuCheckboxItem>
+              ) : null}
+              <DataGridSortSubmenu
+                clearLabel={labels.clearSort}
+                getOptionLabel={labels.sortOption}
+                label={labels.sortBy}
+                table={table}
+              />
+              <DataGridColumnsSubmenu
+                label={labels.columnsMenu}
+                table={table}
+              />
+            </ViewSettingsSection>
+            <MenuSeparator />
+            <ViewSettingsSection label={labels.filters}>
+              <FilterRadioSubmenu
+                clearLabel={labels.allOptions}
+                icon={FlagIcon}
+                label={labels.columns.priority}
+                onValueChange={(value) => setFilter('priority', value)}
+                options={[...dataGrid5PriorityOrder]
+                  .reverse()
+                  .map((priority) => [priority, labels.priorities[priority]])}
+                value={filterValue('priority')}
+              />
+              <FilterRadioSubmenu
+                clearLabel={labels.allOptions}
+                icon={FolderIcon}
+                label={labels.columns.project}
+                onValueChange={(value) => setFilter('project', value)}
+                options={projects.map((project) => [project, project])}
+                value={filterValue('project')}
+              />
+            </ViewSettingsSection>
+          </ViewSettingsMenu>
+          {onCreate ? (
+            <GridToolbarButton onClick={onCreate} variant="default">
+              <PlusIcon aria-hidden="true" />
+              {labels.create}
+            </GridToolbarButton>
+          ) : null}
+        </>
+      }
+      title={labels.title}
+    />
+  )
+}

@@ -1,7 +1,9 @@
-import type { Row, RowData } from '@tanstack/react-table'
-import type { DataGridFeatures } from './data-grid-features'
+import type { RowData } from '@tanstack/react-table'
 
-type GridRow<TData extends RowData> = Row<DataGridFeatures, TData>
+interface GridRow<TData extends RowData> {
+  readonly id: string
+  readonly original: TData
+}
 
 export interface GroupRuns {
   groupRowCount: number
@@ -61,4 +63,41 @@ export function countGroupRows<TData extends RowData>(
     if (group) counts.set(group, (counts.get(group) ?? 0) + 1)
   }
   return counts
+}
+
+export function collectGroupRows<TRow extends GridRow<RowData>>(
+  pageRows: readonly TRow[],
+  groupByRowId: ReadonlyMap<string, string | null>,
+) {
+  const rowsByGroup = new Map<string, TRow[]>()
+  for (const row of pageRows) {
+    const group = groupByRowId.get(row.id)
+    if (!group) continue
+    const rows = rowsByGroup.get(group)
+    if (rows) rows.push(row)
+    else rowsByGroup.set(group, [row])
+  }
+  return rowsByGroup
+}
+
+export interface GroupSection<TRow> {
+  group: string | null
+  rows: TRow[]
+}
+
+export function splitGroupSections<TRow extends GridRow<RowData>>(
+  pageRows: readonly TRow[],
+  groupByRowId: ReadonlyMap<string, string | null>,
+) {
+  const sections: GroupSection<TRow>[] = []
+  let current: GroupSection<TRow> | undefined
+  for (const row of pageRows) {
+    const group = groupByRowId.get(row.id) ?? null
+    if (!current || (group && group !== current.group)) {
+      current = { group, rows: [] }
+      sections.push(current)
+    }
+    current.rows.push(row)
+  }
+  return sections
 }

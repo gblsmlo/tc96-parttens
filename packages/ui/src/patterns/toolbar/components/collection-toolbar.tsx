@@ -18,7 +18,7 @@ export type CollectionToolbarProps = CollectionToolbarBaseProps &
         /** Texto visível à esquerda dos controles, sobre a superfície plain. */
         variant: 'text'
         title: string
-        description: string
+        description?: string
       }
     | {
         /** `default` é a moldura do COSS; `plain` senta direto na página. */
@@ -72,12 +72,14 @@ export function CollectionToolbar({
               size="base"
               weight="semibold"
             />
-            <Text
-              className="truncate leading-tight"
-              foreground="muted"
-              render={<p>{description}</p>}
-              size="sm"
-            />
+            {description ? (
+              <Text
+                className="truncate leading-tight"
+                foreground="muted"
+                render={<p>{description}</p>}
+                size="sm"
+              />
+            ) : null}
           </div>
         </ToolbarGroup>
       ) : null}

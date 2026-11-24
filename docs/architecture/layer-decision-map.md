@@ -105,7 +105,7 @@ Caminho: `packages/ui/src/blocks/<categoria>/<grupo>/<block>/`. Story: `Blocks/<
 | Categoria | Pasta | Escolha quando a tela serve para… | Grupos atuais e previstos | Patterns que costuma consumir |
 | --- | --- | --- | --- | --- |
 | Application | `application/` | dar moldura ou acesso ao app | `shell` (`app-shell-1..4`), `auth` (`login-1`, `signup-1`, `forgot-password-1`, `reset-password-1`, `otp-1`), `settings` (`settings-1..23`), `stats` (`stats-1..6`), `card` (`card-1..6`), `list` (`list-1..6`), `empty-state` (`empty-state-1..6`), `timeline` (`timeline-1..4`), `dashboard` (`dashboard-1..3`), `navbar` (`navbar-1..5`), `onboarding` (`onboarding-1..3`), `errors` | `surfaces/settings`, `surfaces/state`, `widgets` |
-| Data | `data/` | ver e editar registros de qualquer domínio | `table`, `board`, `record` | `collection`, `records/*`, `properties`, `editable` |
+| Data | `data/` | ver e editar registros de qualquer domínio | `data-grid` (`data-grid-1..9`), `table` (`table-1..9`), `board`, `record` | `collection`, `records/*`, `properties`, `editable` |
 | Charts | `charts/` | ler métricas | `dashboard`, `report` | `widgets` |
 | Solutions | `solutions/` | uma vertical sem categoria própria (CRM, helpdesk) | `crm` (candidatos: `Templates/Contacts`, `DealBoard`, `ContactDetail`) | vários |
 | AI & Agents | `ai-agents/` | conversar com IA ou configurar agentes e fluxos | `flow` (`workflow-editor`, `agent-builder`), `chat` | `flow/*`, `chat/*` |

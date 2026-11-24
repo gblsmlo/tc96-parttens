@@ -1,4 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import {
+  DataTable,
+  type DataTableColumnDef,
+  useDataTable,
+} from '@tc96/ui/patterns'
 import { useEffect, useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { sleep } from '../../../../test-utils/sleep'
@@ -241,5 +246,100 @@ export const EmptyShowsTheMessageRow: Story = {
       table.querySelector('[data-slot="data-table-row-trigger"]'),
     ).toBeNull()
     await expect(table.querySelector('[data-slot="table-footer"]')).toBeNull()
+  },
+}
+
+export const UnusedOptionsKeepTheMarkup: Story = {
+  render: () => <ComposedDataTable {...dataTableControlArgs} />,
+  play: async ({ canvasElement }) => {
+    const table = within(canvasElement).getByRole('table', {
+      name: 'Projetos do trimestre',
+    })
+
+    await expect(table).not.toHaveAttribute('data-density')
+    await expect(table).not.toHaveAttribute('aria-busy')
+    await expect(table.querySelectorAll('tbody')).toHaveLength(1)
+    await expect(
+      table.querySelector(
+        '[data-slot="data-table-group-row"], [data-loading-more], [data-slot="data-table-input-cell"], [data-slot="data-table-row-drag-handle"]',
+      ),
+    ).toBeNull()
+    for (const row of table.querySelectorAll('tbody tr')) {
+      await expect(row.className).not.toContain('data-dnd-dragging')
+    }
+    await expect(
+      canvasElement.querySelector('[data-slot="data-table-selection-actions"]'),
+    ).toBeNull()
+  },
+}
+
+interface Invoice {
+  amount: number
+  id: string
+  customer: string
+}
+
+const invoices: Invoice[] = [
+  { amount: 1200, customer: 'Acme', id: 'i1' },
+  { amount: 80, customer: 'Globex', id: 'i2' },
+]
+
+const invoiceColumns: DataTableColumnDef<Invoice>[] = [
+  { accessorKey: 'customer', header: 'Cliente', meta: { label: 'Cliente' } },
+  {
+    accessorKey: 'amount',
+    cell: ({ row }) => (
+      <div className="flex gap-1">
+        <span>R$</span>
+        <span data-testid="amount">{row.original.amount}</span>
+      </div>
+    ),
+    header: 'Valor',
+    meta: { align: 'end', label: 'Valor' },
+  },
+]
+
+function InvoicesTable() {
+  const { table } = useDataTable<Invoice>({
+    columns: invoiceColumns,
+    data: invoices,
+    getRowId: (invoice) => invoice.id,
+  })
+
+  return <DataTable aria-label="Faturas" table={table} />
+}
+
+const contentEndOf = (cell: HTMLElement) => {
+  const range = document.createRange()
+  range.selectNodeContents(cell)
+  return range.getBoundingClientRect().right
+}
+
+const innerEndOf = (cell: HTMLElement) =>
+  cell.getBoundingClientRect().right -
+  Number.parseFloat(getComputedStyle(cell).paddingInlineEnd)
+
+export const EndColumnAlignsHeaderAndBody: Story = {
+  render: () => <InvoicesTable />,
+  play: async ({ canvasElement }) => {
+    const table = within(canvasElement).getByRole('table', { name: 'Faturas' })
+    const header = within(table).getByRole('columnheader', { name: 'Valor' })
+    const [amount] = within(table).getAllByTestId('amount')
+    const cell = amount?.closest('td')
+    if (!(amount && cell)) throw new Error('The amount cell is missing.')
+
+    await expect(getComputedStyle(header).textAlign).toBe('end')
+    await expect(getComputedStyle(cell).textAlign).toBe('end')
+    await expect(contentEndOf(header)).toBeCloseTo(innerEndOf(header), 0)
+    await expect(amount.getBoundingClientRect().right).toBeCloseTo(
+      innerEndOf(cell),
+      0,
+    )
+    await expect(
+      within(table).getByRole('columnheader', { name: 'Cliente' }).className,
+    ).not.toMatch(/text-(start|center|end)/)
+    for (const startCell of table.querySelectorAll('tbody td:first-child')) {
+      await expect(startCell.className).not.toMatch(/text-(start|center|end)/)
+    }
   },
 }

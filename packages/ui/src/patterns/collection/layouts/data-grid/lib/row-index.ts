@@ -27,3 +27,17 @@ export function resolveCollectionRowIndex<TData extends RowData>({
   if (paginationRowOffset > 0) return paginationRowOffset + fallbackIndex
   return positions.get(row.id) ?? row.index ?? fallbackIndex
 }
+
+interface PaginationRowOffsetInput {
+  expandable: boolean
+  manualPagination: boolean
+  offset: number
+}
+
+export function resolvePaginationRowOffset({
+  expandable,
+  manualPagination,
+  offset,
+}: PaginationRowOffsetInput) {
+  return expandable && !manualPagination ? 0 : offset
+}

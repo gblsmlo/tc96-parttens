@@ -15,7 +15,7 @@ import {
   MenuSubTrigger,
 } from '@tc96/ui/menu'
 import type React from 'react'
-import type { DataGridTable } from '../lib/data-grid-features'
+import type { DataGridTableMeta } from '../lib/data-grid-features'
 import type { DataGridDensity } from '../types'
 
 interface DensityOption {
@@ -31,13 +31,24 @@ const DENSITIES: [DensityOption, ...DensityOption[]] = [
   { icon: ArrowsInLineVerticalIcon, label: 'Extra alta', value: 'extra-tall' },
 ]
 
-export interface DataGridDensitySubmenuProps<TData extends RowData> {
+export interface DataGridDensityTable {
+  readonly options: {
+    readonly meta?: Pick<
+      DataGridTableMeta,
+      'dataGridDensity' | 'onDataGridDensityChange'
+    >
+  }
+}
+
+export interface DataGridDensitySubmenuProps<_TData extends RowData = RowData> {
   label?: string
-  table: DataGridTable<TData>
+  densityLabels?: Partial<Record<DataGridDensity, string>>
+  table: DataGridDensityTable
 }
 
 export function DataGridDensitySubmenu<TData extends RowData>({
   label = 'Altura das linhas',
+  densityLabels,
   table,
 }: DataGridDensitySubmenuProps<TData>): React.ReactElement {
   const density = table.options.meta?.dataGridDensity ?? 'short'
@@ -63,7 +74,7 @@ export function DataGridDensitySubmenu<TData extends RowData>({
           {DENSITIES.map((option) => (
             <MenuRadioItem key={option.value} value={option.value}>
               <option.icon aria-hidden="true" />
-              {option.label}
+              {densityLabels?.[option.value] ?? option.label}
             </MenuRadioItem>
           ))}
         </MenuRadioGroup>

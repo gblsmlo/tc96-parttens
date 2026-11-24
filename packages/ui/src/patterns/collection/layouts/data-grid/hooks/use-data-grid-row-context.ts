@@ -16,6 +16,7 @@ export interface DataGridRowContextValue {
   meta: DataGridTableMeta | undefined
   density: DataGridDensity
   interactions: CellInteractions
+  rowReorder: boolean
   rowSelectable: boolean
 }
 

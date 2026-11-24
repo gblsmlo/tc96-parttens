@@ -10,16 +10,35 @@ import {
   MenuSubTrigger,
 } from '@tc96/ui/menu'
 import type React from 'react'
-import type { DataGridTable } from '../lib/data-grid-features'
 import type { DataGridColumnMeta } from '../types'
 
-export interface DataGridSortSubmenuProps<TData extends RowData> {
-  label?: string
-  table: DataGridTable<TData>
+export interface DataGridSortColumn {
+  readonly id: string
+  readonly columnDef: { readonly meta?: unknown }
+  getCanSort: () => boolean
+  toggleSorting: (desc?: boolean) => void
 }
+
+export interface DataGridSortTable {
+  getAllLeafColumns: () => readonly DataGridSortColumn[]
+  resetSorting: () => void
+  readonly store: { readonly state: { readonly sorting: readonly unknown[] } }
+}
+
+export interface DataGridSortSubmenuProps<_TData extends RowData = RowData> {
+  label?: string
+  clearLabel?: string
+  getOptionLabel?: (columnLabel: string, direction: 'asc' | 'desc') => string
+  table: DataGridSortTable
+}
+
+const defaultOptionLabel = (columnLabel: string, direction: 'asc' | 'desc') =>
+  `${columnLabel}: ${direction === 'asc' ? 'crescente' : 'decrescente'}`
 
 export function DataGridSortSubmenu<TData extends RowData>({
   label = 'Ordenar por',
+  clearLabel = 'Limpar ordenação',
+  getOptionLabel = defaultOptionLabel,
   table,
 }: DataGridSortSubmenuProps<TData>): React.ReactElement | null {
   const columns = table
@@ -42,13 +61,13 @@ export function DataGridSortSubmenu<TData extends RowData>({
               key={`${column.id}-asc`}
               onClick={() => column.toggleSorting(false)}
             >
-              {columnLabel}: crescente
+              {getOptionLabel(columnLabel, 'asc')}
             </MenuItem>,
             <MenuItem
               key={`${column.id}-desc`}
               onClick={() => column.toggleSorting(true)}
             >
-              {columnLabel}: decrescente
+              {getOptionLabel(columnLabel, 'desc')}
             </MenuItem>,
           ]
         })}
@@ -56,7 +75,7 @@ export function DataGridSortSubmenu<TData extends RowData>({
           <>
             <MenuSeparator />
             <MenuItem onClick={() => table.resetSorting()}>
-              Limpar ordenação
+              {clearLabel}
             </MenuItem>
           </>
         ) : null}

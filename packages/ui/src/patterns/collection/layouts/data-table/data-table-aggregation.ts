@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import type { EditableCellMeta } from '../../shared/lib/editable-cell'
+import type { DataTableAlign } from './data-table-types'
 
 export type DataTableAggregation = 'count' | 'sum'
 
@@ -13,9 +15,11 @@ export interface DataTableAggregationLabels {
   trigger: string
 }
 
-export interface DataTableColumnMeta<TData> {
+export interface DataTableColumnMeta<TData> extends EditableCellMeta {
   aggregations?: readonly DataTableAggregation[]
-  align?: 'end' | 'start'
+  align?: DataTableAlign
+  editable?: boolean
+  variant?: 'text' | 'number'
   formatAggregation?: (
     value: number,
     aggregation: DataTableAggregation,

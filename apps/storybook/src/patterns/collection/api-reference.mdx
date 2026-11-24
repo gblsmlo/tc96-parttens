@@ -310,6 +310,11 @@ The page bar of a paginated collection, for `CollectionFrameFooter`: the range o
 | `onPageChange` | `(page: number) => void` | required | Called when a button is clicked, with the page it leads to, never a step. |
 | `pageSize` | `number` | - | Sets the number of records per page; with `total`, shows the range. |
 | `total` | `number` | - | Sets the number of records; with `pageSize`, shows the range. |
+| `pageSizeOptions` | `readonly number[]` | - | Lists the page sizes of the rows-per-page selector. |
+| `onPageSizeChange` | `(size: number) => void` | - | Called with the chosen size; the consumer keeps the size, as it keeps the page. |
+| `pageSizeLabel` | `string` | - | The text of the selector, which also names it; in the consumer's language, since the other labels are fixed. |
+
+The selector, a `Select` in a `div` with `data-slot="collection-pagination-page-size"`, shows only when `pageSizeOptions`, `onPageSizeChange` and `pageSizeLabel` are all set; the range then sits beside the page buttons.
 
 Also takes every prop of a `div` except `children` and `onChange`; they reach the outer `div`.
 

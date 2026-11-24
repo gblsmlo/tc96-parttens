@@ -11,10 +11,11 @@ import {
   SelectValue,
 } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
+import { formatDate, toStringValue } from '../../../shared/lib/format-value'
 import { CELL_ALIGN } from '../lib/constants'
 import type { DataGridFeatures } from '../lib/data-grid-features'
-import { formatDate, toStringValue } from '../lib/format-value'
 import type { DataGridColumnMeta, DataGridSelectOption } from '../types'
+import { DataGridInputCell } from './data-grid-input-cell'
 
 const optionToLabel = (option: DataGridSelectOption) => option.label
 const optionToValue = (option: DataGridSelectOption) => option.value
@@ -29,6 +30,9 @@ export function DataGridCell<TData extends RowData>({
   const variant = meta.variant ?? 'text'
   const align = CELL_ALIGN[meta.align ?? 'start']
   const value = getValue()
+  const canEdit =
+    Boolean(meta.editable) &&
+    Boolean(table.options.meta?.onDataGridCellValueChange)
 
   switch (variant) {
     case 'checkbox': {
@@ -54,7 +58,10 @@ export function DataGridCell<TData extends RowData>({
 
       if (meta.editable && onValueChange && options.length > 0) {
         const accessibleValue =
-          selectedOption?.label ?? meta.placeholder ?? 'Sem valor'
+          selectedOption?.label ??
+          meta.placeholder ??
+          meta.emptyLabel ??
+          'Sem valor'
         return (
           <Select
             itemToStringLabel={optionToLabel}
@@ -71,7 +78,11 @@ export function DataGridCell<TData extends RowData>({
             value={selectedOption ?? null}
           >
             <SelectPrimitive.Trigger
-              aria-label={`${meta.label ?? column.id}: ${accessibleValue}`}
+              aria-label={
+                meta.getCellLabel
+                  ? meta.getCellLabel(meta.label ?? column.id, accessibleValue)
+                  : `${meta.label ?? column.id}: ${accessibleValue}`
+              }
               data-grid-select-trigger
               render={
                 <Badge
@@ -131,6 +142,7 @@ export function DataGridCell<TData extends RowData>({
     }
 
     case 'number': {
+      if (canEdit) return <DataGridInputCell context={context} numeric />
       return (
         <span className={cn('block truncate px-1 tabular-nums', align)}>
           {toStringValue(value)}
@@ -139,6 +151,9 @@ export function DataGridCell<TData extends RowData>({
     }
 
     default: {
+      if (canEdit && variant === 'text') {
+        return <DataGridInputCell context={context} numeric={false} />
+      }
       return (
         <span className={cn('block truncate px-1', align)}>
           {toStringValue(value)}

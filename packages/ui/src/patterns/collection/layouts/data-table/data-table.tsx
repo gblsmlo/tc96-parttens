@@ -2,7 +2,6 @@
 
 import { flexRender, type Row, type RowData } from '@tanstack/react-table'
 import { ScrollAreaPrimitive, ScrollBar } from '@tc96/ui/scroll-area'
-import { Skeleton } from '@tc96/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -13,12 +12,26 @@ import {
   TableRow,
 } from '@tc96/ui/table'
 import { cn } from '@tc96/utils'
-import { type ComponentProps, type ReactElement, useRef, useState } from 'react'
+import {
+  type ComponentProps,
+  type ReactElement,
+  type ReactNode,
+  useRef,
+  useState,
+} from 'react'
+import {
+  SelectionActions,
+  type SelectionActionsProp,
+} from '../../shared/components/selection-actions'
+import { useCollapsedGroups } from '../../shared/hooks/use-collapsed-groups'
+import { useEndReached } from '../../shared/hooks/use-end-reached'
+import { useLatestCallback } from '../../shared/hooks/use-latest-callback'
 import {
   scrollbarInsetStyle,
   useScrollbarInsets,
 } from '../../shared/hooks/use-scrollbar-insets'
-import { skeletonKeys } from '../../shared/lib/skeleton-keys'
+import { DEFAULT_END_REACHED_THRESHOLD } from '../../shared/lib/end-reached'
+import { isRowReorderActive } from '../../shared/lib/row-reorder'
 import {
   aggregate,
   type DataTableAggregation,
@@ -28,15 +41,27 @@ import {
   defaultAggregationLabels,
 } from './data-table-aggregation'
 import { DataTableAggregationCell } from './data-table-aggregation-cell'
+import { columnAlignClass } from './data-table-align'
+import { DataTableBody } from './data-table-body'
+import type { DataTableFeatures, DataTableTable } from './data-table-features'
+import type { DataTableGroupCellContext } from './data-table-group-row'
 import { DataTableResizeHandle } from './data-table-resize-handle'
-import { DataTableRow } from './data-table-row'
-import type { DataTableFeatures, DataTableTable } from './use-data-table'
+import {
+  type DataTableRowSkeletonAnatomy,
+  DataTableSkeletonRows,
+} from './data-table-skeleton-rows'
+import type {
+  DataTableDensity,
+  DataTableRowDragAnnouncements,
+  DataTableRowMove,
+  DataTableTableMeta,
+} from './data-table-types'
 import { useHorizontalOverflow } from './use-horizontal-overflow'
 
-export interface DataTableRowSkeletonAnatomy {
-  cell?: 'control' | 'text'
-  lines?: 1 | 2
-}
+export type { DataTableRowSkeletonAnatomy } from './data-table-skeleton-rows'
+
+export type DataTableSelectionActionsProp<TData extends RowData> =
+  SelectionActionsProp<TData>
 
 export interface DataTableProps<TData extends RowData>
   extends Omit<ComponentProps<'table'>, 'children'> {
@@ -53,9 +78,31 @@ export interface DataTableProps<TData extends RowData>
   aggregationLabels?: Partial<DataTableAggregationLabels>
   onRowClick?: (row: Row<DataTableFeatures, TData>) => void
   getRowOpenLabel?: (row: Row<DataTableFeatures, TData>) => string
+  density?: DataTableDensity
+  selectionActions?: DataTableSelectionActionsProp<TData>
+  getRowGroup?: (row: TData) => string | null
+  collapsedGroupIds?: readonly string[]
+  defaultCollapsedGroupIds?: readonly string[]
+  onCollapsedGroupIdsChange?: (groupIds: readonly string[]) => void
+  renderGroupCell?: (context: DataTableGroupCellContext<TData>) => ReactNode
+  getGroupToggleLabel?: (group: string, collapsed: boolean) => string
+  onRowMove?: (move: DataTableRowMove) => void
+  rowDragAnnouncements?: DataTableRowDragAnnouncements
+  onEndReached?: () => void
+  endReachedThreshold?: number
+  loadingMore?: boolean
+  loadingMoreRowCount?: number
 }
 
-const defaultRowOpenLabel = 'Abrir registro'
+const NO_GROUPS: readonly string[] = []
+const FALLBACK_ROW_HEIGHT_PX = 40
+
+const DENSITY_CLASS: Record<DataTableDensity, string | undefined> = {
+  'extra-tall': '[&_tbody_td]:py-7',
+  medium: '[&_tbody_td]:py-3.5',
+  short: undefined,
+  tall: '[&_tbody_td]:py-5',
+}
 
 const columnMetaOf = <TData,>(column: {
   columnDef: { meta?: unknown }
@@ -75,6 +122,20 @@ export function DataTable<TData extends RowData>({
   aggregationLabels,
   onRowClick,
   getRowOpenLabel,
+  density: densityProp,
+  selectionActions,
+  getRowGroup,
+  collapsedGroupIds: controlledCollapsedGroupIds,
+  defaultCollapsedGroupIds = NO_GROUPS,
+  onCollapsedGroupIdsChange,
+  renderGroupCell,
+  getGroupToggleLabel,
+  onRowMove,
+  rowDragAnnouncements,
+  onEndReached,
+  endReachedThreshold = DEFAULT_END_REACHED_THRESHOLD,
+  loadingMore = false,
+  loadingMoreRowCount = 3,
   className,
   style,
   ...props
@@ -110,7 +171,41 @@ export function DataTable<TData extends RowData>({
         column.columnDef.footer ||
         (showAggregations && columnMetaOf<TData>(column).aggregations?.length),
     )
+  const density =
+    densityProp ?? (meta as DataTableTableMeta | undefined)?.dataGridDensity
+  const { collapsedGroupIds, setGroupCollapsed } = useCollapsedGroups({
+    controlled: controlledCollapsedGroupIds,
+    defaultValue: defaultCollapsedGroupIds,
+    onChange: onCollapsedGroupIdsChange,
+  })
+  const onToggleGroup = useLatestCallback(setGroupCollapsed)
+  const reorderActive = isRowReorderActive({
+    enabled: Boolean(onRowMove),
+    grouped: Boolean(getRowGroup),
+    loading: isLoading,
+    sorted: table.store.state.sorting.length > 0,
+    virtualized: false,
+  })
+  const loadingMoreCount =
+    loadingMore && !isLoading && rows.length > 0 ? loadingMoreRowCount : 0
   const [scrollContainerRef, overflow] = useHorizontalOverflow<HTMLDivElement>()
+  useEndReached({
+    enabled: Boolean(onEndReached) && !isLoading,
+    loadingMore: loadingMoreCount > 0,
+    measure: (viewport) => ({
+      bottomInset:
+        viewport
+          .querySelector('[data-slot="table-footer"]')
+          ?.getBoundingClientRect().height ?? 0,
+      rowHeight:
+        viewport.querySelector('tbody tr')?.getBoundingClientRect().height ||
+        FALLBACK_ROW_HEIGHT_PX,
+    }),
+    onEndReached,
+    rowCount: table.options.data.length,
+    scrollRef: scrollContainerRef,
+    threshold: endReachedThreshold,
+  })
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   useScrollbarInsets(
     scrollAreaRef,
@@ -140,7 +235,8 @@ export function DataTable<TData extends RowData>({
         >
           <ScrollAreaPrimitive.Content>
             <Table
-              aria-busy={isLoading || undefined}
+              aria-busy={isLoading || loadingMoreCount > 0 || undefined}
+              data-density={density}
               render={
                 <div
                   className="overflow-x-visible!"
@@ -150,6 +246,7 @@ export function DataTable<TData extends RowData>({
               className={cn(
                 resizable &&
                   'table-fixed [&_td]:overflow-hidden [&_td]:text-ellipsis [&_th]:overflow-hidden',
+                density && DENSITY_CLASS[density],
                 className,
               )}
               style={
@@ -176,7 +273,12 @@ export function DataTable<TData extends RowData>({
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
                       <TableHead
-                        className={resizable ? 'relative' : undefined}
+                        className={
+                          cn(
+                            resizable && 'relative',
+                            columnAlignClass(header.column),
+                          ) || undefined
+                        }
                         key={header.id}
                       >
                         {header.isPlaceholder
@@ -200,56 +302,47 @@ export function DataTable<TData extends RowData>({
                   </TableRow>
                 ))}
               </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  skeletonKeys('loading', loadingRowCount).map((rowKey) => (
-                    <TableRow
-                      data-cell={loadingRowAnatomy.cell ?? 'text'}
-                      data-lines={loadingRowAnatomy.lines ?? 1}
-                      key={rowKey}
-                    >
-                      {skeletonKeys(rowKey, columnCount).map(
-                        (cellKey, index) => (
-                          <TableCell key={cellKey}>
-                            {index === linesColumnIndex &&
-                            loadingRowAnatomy.lines === 2 ? (
-                              <div className="flex min-w-4 flex-col">
-                                <Skeleton className="my-0.5 h-4 w-full" />
-                                <Skeleton className="h-3 w-1/2" />
-                              </div>
-                            ) : (
-                              <Skeleton
-                                className={cn(
-                                  'min-w-4 w-full',
-                                  loadingRowAnatomy.cell === 'control'
-                                    ? 'h-6'
-                                    : 'my-0.5 h-4',
-                                )}
-                              />
-                            )}
-                          </TableCell>
-                        ),
-                      )}
-                    </TableRow>
-                  ))
-                ) : rows.length ? (
-                  rows.map((row) => (
-                    <DataTableRow
-                      canSelect={row.getCanSelect()}
-                      key={row.id}
-                      meta={meta}
-                      onRowClick={onRowClick}
-                      openLabel={
-                        onRowClick
-                          ? (getRowOpenLabel?.(row) ?? defaultRowOpenLabel)
-                          : undefined
-                      }
-                      row={row}
-                      selected={row.getIsSelected()}
-                      visibleColumns={visibleColumns}
-                    />
-                  ))
-                ) : (
+              {isLoading ? (
+                <TableBody>
+                  <DataTableSkeletonRows
+                    anatomy={loadingRowAnatomy}
+                    columnCount={columnCount}
+                    linesColumnIndex={linesColumnIndex}
+                    rowCount={loadingRowCount}
+                    scope="loading"
+                  />
+                </TableBody>
+              ) : rows.length ? (
+                <DataTableBody
+                  collapsedGroupIds={collapsedGroupIds}
+                  getGroupToggleLabel={getGroupToggleLabel}
+                  getRowGroup={getRowGroup}
+                  getRowOpenLabel={getRowOpenLabel}
+                  loadingMore={
+                    loadingMoreCount > 0 ? (
+                      <DataTableSkeletonRows
+                        anatomy={loadingRowAnatomy}
+                        columnCount={columnCount}
+                        linesColumnIndex={linesColumnIndex}
+                        loadingMore
+                        rowCount={loadingMoreCount}
+                        scope="loading-more"
+                      />
+                    ) : null
+                  }
+                  meta={meta}
+                  onRowClick={onRowClick}
+                  onRowMove={onRowMove}
+                  onToggleGroup={onToggleGroup}
+                  renderGroupCell={renderGroupCell}
+                  reorderActive={reorderActive}
+                  rowDragAnnouncements={rowDragAnnouncements}
+                  rows={rows}
+                  table={table}
+                  visibleColumns={visibleColumns}
+                />
+              ) : (
+                <TableBody>
                   <TableRow>
                     <TableCell
                       className="h-24 text-center"
@@ -258,8 +351,8 @@ export function DataTable<TData extends RowData>({
                       {emptyMessage}
                     </TableCell>
                   </TableRow>
-                )}
-              </TableBody>
+                </TableBody>
+              )}
               {hasFooter ? (
                 <TableFooter className="sticky bottom-0 z-10">
                   {table.getFooterGroups().map((footerGroup) => (
@@ -330,6 +423,11 @@ export function DataTable<TData extends RowData>({
         aria-hidden="true"
         className="pointer-events-none absolute inset-y-px end-px w-10 rounded-e-md bg-linear-to-l from-background to-transparent opacity-0 transition-opacity group-data-overflow-end/data-table:opacity-100 rtl:bg-linear-to-r"
         data-slot="data-table-overflow-end"
+      />
+      <SelectionActions
+        selectionActions={selectionActions}
+        slot="data-table-selection-actions"
+        table={table}
       />
     </div>
   )

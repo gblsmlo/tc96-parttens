@@ -1,0 +1,56 @@
+'use client'
+
+import { CaretDownIcon, CaretRightIcon } from '@phosphor-icons/react'
+import type { Row, RowData } from '@tanstack/react-table'
+import { Button } from '@tc96/ui/button'
+import type { ReactNode } from 'react'
+import type { DataTableFeatures } from './data-table-features'
+
+const DEFAULT_INDENT_PX = 20
+
+export interface DataTableExpandToggleProps<TData extends RowData> {
+  children?: ReactNode
+  getLabel: (row: Row<DataTableFeatures, TData>, expanded: boolean) => string
+  indent?: number
+  row: Row<DataTableFeatures, TData>
+}
+
+export function DataTableExpandToggle<TData extends RowData>({
+  children,
+  getLabel,
+  indent = DEFAULT_INDENT_PX,
+  row,
+}: DataTableExpandToggleProps<TData>) {
+  const canExpand = row.getCanExpand()
+  const expanded = row.getIsExpanded()
+
+  return (
+    <div
+      className="flex min-w-0 items-center gap-1"
+      data-depth={row.depth}
+      data-slot="data-table-expand"
+      style={{ paddingInlineStart: row.depth * indent }}
+    >
+      {canExpand ? (
+        <Button
+          aria-expanded={expanded}
+          aria-label={getLabel(row, expanded)}
+          data-slot="data-table-expand-toggle"
+          onClick={() => row.toggleExpanded()}
+          size="icon-xs"
+          type="button"
+          variant="ghost"
+        >
+          {expanded ? (
+            <CaretDownIcon aria-hidden="true" />
+          ) : (
+            <CaretRightIcon aria-hidden="true" />
+          )}
+        </Button>
+      ) : (
+        <span aria-hidden="true" className="size-7 shrink-0 sm:size-6" />
+      )}
+      {children}
+    </div>
+  )
+}

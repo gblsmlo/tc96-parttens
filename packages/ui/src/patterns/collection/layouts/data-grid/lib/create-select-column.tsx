@@ -5,7 +5,12 @@ import { Checkbox } from '@tc96/ui/checkbox'
 import type { DataGridColumnDef } from './data-grid-features'
 
 export function createSelectColumn<TData extends RowData>(
-  options: { showRowNumbers?: boolean; size?: number } = {},
+  options: {
+    showRowNumbers?: boolean
+    size?: number
+    selectAllLabel?: string
+    getRowLabel?: (row: TData) => string
+  } = {},
 ): DataGridColumnDef<TData> {
   const showRowNumbers = options.showRowNumbers ?? true
 
@@ -20,7 +25,7 @@ export function createSelectColumn<TData extends RowData>(
     header: ({ table }) => (
       <div className="flex items-center justify-center">
         <Checkbox
-          aria-label="Selecionar todos os registros"
+          aria-label={options.selectAllLabel ?? 'Selecionar todos os registros'}
           checked={table.getIsAllPageRowsSelected()}
           indeterminate={
             table.getIsSomePageRowsSelected() &&
@@ -44,7 +49,9 @@ export function createSelectColumn<TData extends RowData>(
           </span>
         ) : null}
         <Checkbox
-          aria-label="Selecionar registro"
+          aria-label={
+            options.getRowLabel?.(row.original) ?? 'Selecionar registro'
+          }
           checked={row.getIsSelected()}
           className={
             showRowNumbers

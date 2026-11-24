@@ -3,7 +3,7 @@
 import type { Header, RowData } from '@tanstack/react-table'
 import { cn } from '@tc96/utils'
 import type { KeyboardEvent, ReactElement } from 'react'
-import type { DataTableFeatures, DataTableTable } from './use-data-table'
+import type { DataTableFeatures, DataTableTable } from './data-table-features'
 
 const RESIZE_STEP_PX = 8
 const DEFAULT_MIN_COLUMN_SIZE = 20

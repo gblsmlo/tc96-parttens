@@ -66,4 +66,8 @@ export const RESIZE_STEP_PX = 8
 export const DEFAULT_MIN_COLUMN_SIZE = 20
 export const DEFAULT_MAX_COLUMN_SIZE = Number.MAX_SAFE_INTEGER
 
-export const NON_NAVIGABLE_COLUMN_IDS: readonly string[] = ['select', 'actions']
+export const NON_NAVIGABLE_COLUMN_IDS: readonly string[] = [
+  'select',
+  'actions',
+  'drag',
+]
