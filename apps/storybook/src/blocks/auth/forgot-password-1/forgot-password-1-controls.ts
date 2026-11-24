@@ -62,7 +62,8 @@ export const forgotPassword1ControlArgTypes: Partial<
   },
   logo: {
     control: 'boolean',
-    description: 'Passes a `logo`, which renders inside the card, above the title.',
+    description:
+      'Passes a `logo`, which renders inside the card, above the title.',
   },
   pending: {
     control: 'boolean',
