@@ -1829,5 +1829,45 @@
     "Stats6Period",
     "Stats6Props",
     "Stats6Sleeve"
+  ],
+  "block:card-1": [
+    "Card1",
+    "Card1Accent",
+    "Card1Fact",
+    "Card1Labels",
+    "Card1Props"
+  ],
+  "block:card-2": [
+    "Card2",
+    "Card2Integration",
+    "Card2Labels",
+    "Card2Props"
+  ],
+  "block:card-3": [
+    "Card3",
+    "Card3Labels",
+    "Card3Profile",
+    "Card3Props",
+    "Card3Stat"
+  ],
+  "block:card-4": [
+    "Card4",
+    "Card4Labels",
+    "Card4Meeting",
+    "Card4Props"
+  ],
+  "block:card-5": [
+    "Card5",
+    "Card5Labels",
+    "Card5Props",
+    "Card5Shortcut"
+  ],
+  "block:card-6": [
+    "Card6",
+    "Card6Job",
+    "Card6Labels",
+    "Card6Props",
+    "Card6Salary",
+    "Card6WorkMode"
   ]
 }
