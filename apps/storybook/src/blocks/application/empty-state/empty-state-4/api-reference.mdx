@@ -1,0 +1,64 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# EmptyState4
+
+An empty state that invites the first member: a circular icon, a title, a description and two optional actions, invite and copy link. Reach for it on a team or project screen that has no one but its owner. Install it with `npx @tc96/parttens add empty-state-4`.
+
+It is a region, not a page: it renders no `main` landmark. The block keeps no state and never touches the clipboard; the app copies the link and passes `copied` back.
+
+The other pages of `Blocks/Application/Empty State/EmptyState4`: [Playground](?path=/story/blocks-application-empty-state-emptystate4-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-empty-state-emptystate4-behavior--shows-title-description-and-both-actions) for the tests and [Usages](?path=/story/blocks-application-empty-state-emptystate4-usages--invite-first-member) for a wired screen.
+
+## Import
+
+```tsx
+import { EmptyState4 } from '@tc96/blocks/application/empty-state/empty-state-4'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Icon frame, title, description and the action row.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<EmptyState4 copied={copied} onCopyLink={copyLink} onInvite={openInvite} />
+```
+
+## EmptyState4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onInvite` | `() => void` | - | Called by the invite button. Without it the button is not rendered. |
+| `onCopyLink` | `() => void` | - | Called by the copy link button. Without it the button is not rendered. The app does the copying. |
+| `copied` | `boolean` | `false` | Switches the copy button to the `copied` label and a check icon. |
+| `labels` | `Partial<EmptyState4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Você ainda está sozinho por aqui"` |
+| `description` | `string` | `"Convide colegas para planejar, comentar e acompanhar o trabalho junto com você."` |
+| `invite` | `string` | `"Convidar"` |
+| `copyLink` | `string` | `"Copiar link"` |
+| `copied` | `string` | `"Link copiado"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `EmptyState4` | `component` | The empty state. |
+| `EmptyState4Props` | `type` | The props of the block. |
+| `EmptyState4Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Both actions are buttons named by their visible text; the icons are `aria-hidden`.
+- The copy button carries `data-copied` so the app and the tests read the state without parsing text.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

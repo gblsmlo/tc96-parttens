@@ -1,0 +1,81 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# EmptyState3
+
+A first project start: a hero icon, a title, a description, two actions and a list of quick-start templates. Reach for it on the home of a workspace that has no project yet, where a template gets the person to a filled screen faster than a blank form. Install it with `npx @tc96/parttens add empty-state-3`.
+
+It is a section, not a page: it renders no `main` landmark. The block keeps no state and never fetches: the templates come from the app and picking one is a callback. Each action renders only when its callback is passed. The templates are rows of the `List` pattern rendered as buttons.
+
+The other pages of `Blocks/Application/Empty State/EmptyState3`: [Playground](?path=/story/blocks-application-empty-state-emptystate3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-empty-state-emptystate3-behavior--shows-title-and-description) for the tests and [Usages](?path=/story/blocks-application-empty-state-emptystate3-usages--loaded) for templates read over the network.
+
+## Import
+
+```tsx
+import { EmptyState3 } from '@tc96/blocks/application/empty-state/empty-state-3'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Two actions and three templates.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<EmptyState3
+  onCreate={createProject}
+  onImport={importProject}
+  onTemplate={createFromTemplate}
+  templates={templates}
+/>
+```
+
+## EmptyState3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onCreate` | `() => void` | - | Called by the primary action. Without it the action is not rendered. |
+| `onImport` | `() => void` | - | Called by the secondary action. Without it the action is not rendered. |
+| `templates` | `EmptyState3Template[]` | `[]` | The rows, in order. An empty array renders no list. |
+| `onTemplate` | `(id: string) => void` | - | Called with the `id` of the clicked template. |
+| `icon` | `ReactNode` | rocket icon | Replaces the icon of the hero media. It is decorative. |
+| `labels` | `Partial<EmptyState3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## EmptyState3Template
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the template and is passed to `onTemplate`. |
+| `title` | `string` | The row title. |
+| `description` | `string` | Optional line under the title. |
+| `icon` | `ReactNode` | Optional row icon; without it a squares icon is used. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Crie seu primeiro projeto"`; the heading and the accessible name of the section |
+| `description` | `string` | `"Organize tarefas, prazos e pessoas em um só lugar. Comece do zero ou use um modelo pronto."` |
+| `create` | `string` | `"Criar projeto"` |
+| `import` | `string` | `"Importar projeto"` |
+| `templates` | `string` | `"Comece por um modelo"`; the caption and the accessible name of the list |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `EmptyState3` | `component` | The first project start. |
+| `EmptyState3Props` | `type` | The props of the block. |
+| `EmptyState3Template` | `type` | A quick-start template. |
+| `EmptyState3Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The section is named by `labels.title`; the hero icon is `aria-hidden`.
+- Each template is a native `button` inside a list named by `labels.templates`.
+- The block carries no raw color, radius or shadow: it uses COSS `Empty`, `Button` and the `List` pattern.

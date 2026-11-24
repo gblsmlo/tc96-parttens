@@ -1,0 +1,78 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# EmptyState6
+
+Line tabs on a settings screen where each tab shows its own setup prompt: icon, title, description and one action. Reach for it when several settings areas start out unconfigured. Install it with `npx @tc96/parttens add empty-state-6`.
+
+It is a region, not a page: it renders no `main` landmark. The tab is controlled and the block never starts the setup; it calls `onSetup` with the tab id.
+
+The other pages of `Blocks/Application/Empty State/EmptyState6`: [Playground](?path=/story/blocks-application-empty-state-emptystate6-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-empty-state-emptystate6-behavior--each-tab-is-in-the-tab-list) for the tests and [Usages](?path=/story/blocks-application-empty-state-emptystate6-usages--new-account-settings) for a wired screen.
+
+## Import
+
+```tsx
+import { EmptyState6 } from '@tc96/blocks/application/empty-state/empty-state-6'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Tab list on top and the prompt of the selected tab below.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<EmptyState6
+  onSetup={startSetup}
+  onTabChange={setTab}
+  tab={tab}
+  tabs={tabs}
+/>
+```
+
+## EmptyState6
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `tabs` | `EmptyState6Tab[]` | required | The tabs and their prompts. |
+| `tab` | `string` | required | The `id` of the selected tab. |
+| `onTabChange` | `(tab: string) => void` | required | Called with the `id` of the chosen tab. |
+| `onSetup` | `(tabId: string) => void` | required | Called by the action of the selected prompt. |
+| `labels` | `Partial<EmptyState6Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## EmptyState6Tab
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the tab and is passed to `onSetup`. |
+| `label` | `string` | Text of the tab. |
+| `icon` | `ElementType` | Icon component shown in the frame. |
+| `title` | `string` | Title of the prompt. |
+| `description` | `string` | Description of the prompt. |
+| `actionLabel` | `string` | Text of the action button. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `tabs` | `string` | `"Configurações"`; the accessible name of the tab list |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `EmptyState6` | `component` | The tabs with their prompts. |
+| `EmptyState6Props` | `type` | The props of the block. |
+| `EmptyState6Tab` | `type` | A tab and its prompt. |
+| `EmptyState6Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The tabs follow the WAI-ARIA tabs pattern through the COSS `Tabs`: arrow keys move between tabs and only the selected panel is shown.
+- The icon frame is decorative and `aria-hidden`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

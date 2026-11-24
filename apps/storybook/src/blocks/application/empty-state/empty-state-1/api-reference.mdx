@@ -1,0 +1,79 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# EmptyState1
+
+A data import start: a stacked icon, a title, a description, up to two actions and a short list of guide links. Reach for it on a list or table screen that has no records yet and where the fastest way to fill it is an import. Install it with `npx @tc96/parttens add empty-state-1`.
+
+It is a section, not a page: it renders no `main` landmark. The block keeps no state and never fetches: the actions are callbacks, and the guides come from the app. Each action renders only when its callback is passed.
+
+The other pages of `Blocks/Application/Empty State/EmptyState1`: [Playground](?path=/story/blocks-application-empty-state-emptystate1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-empty-state-emptystate1-behavior--shows-title-and-description) for the tests and [Usages](?path=/story/blocks-application-empty-state-emptystate1-usages--customers) for a real screen.
+
+## Import
+
+```tsx
+import { EmptyState1 } from '@tc96/blocks/application/empty-state/empty-state-1'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Two actions and three guides.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<EmptyState1
+  guides={guides}
+  onCreate={openForm}
+  onImport={openImport}
+/>
+```
+
+## EmptyState1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onImport` | `() => void` | - | Called by the primary action. Without it the action is not rendered. |
+| `onCreate` | `() => void` | - | Called by the secondary action. Without it the action is not rendered. |
+| `guides` | `EmptyState1Guide[]` | `[]` | Links under the actions. An empty array renders no list. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Builds the element of each guide, so the app's router link takes the place of the `a`. |
+| `icon` | `ReactNode` | upload icon | Replaces the icon of the stacked media. It is decorative. |
+| `labels` | `Partial<EmptyState1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## EmptyState1Guide
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the link. |
+| `title` | `string` | The link text. |
+| `href` | `string` | Passed to `renderLink`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Nenhum dado por aqui ainda"`; the heading and the accessible name of the section |
+| `description` | `string` | `"Importe uma planilha para começar com seus dados ou cadastre o primeiro registro à mão."` |
+| `import` | `string` | `"Importar"` |
+| `create` | `string` | `"Criar manualmente"` |
+| `guides` | `string` | `"Guias para começar"`; the caption and the accessible name of the guides navigation |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `EmptyState1` | `component` | The data import start. |
+| `EmptyState1Props` | `type` | The props of the block. |
+| `EmptyState1Guide` | `type` | A guide link. |
+| `EmptyState1Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The section is named by `labels.title`; the stacked icon is `aria-hidden`.
+- The guides sit in a `nav` named by `labels.guides`.
+- The block carries no raw color, radius or shadow: it uses COSS `Empty` and `Button`.

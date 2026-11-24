@@ -1,0 +1,70 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# EmptyState2
+
+A no search results state: a title that names the query, a hint, suggestion chips and a button to clear the search. Reach for it under a search field when a query matched nothing and the app can offer other terms. Install it with `npx @tc96/parttens add empty-state-2`.
+
+It is a section, not a page: it renders no `main` landmark, and the root is an `output`, so a screen reader announces it when it appears. The block keeps no state and never fetches: the query, the suggestions and what a click does come from the app. The chips render only with `onSuggestion` and the clear button only with `onClear`.
+
+The other pages of `Blocks/Application/Empty State/EmptyState2`: [Playground](?path=/story/blocks-application-empty-state-emptystate2-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-empty-state-emptystate2-behavior--title-names-the-query) for the tests and [Usages](?path=/story/blocks-application-empty-state-emptystate2-usages--loaded) for suggestions read over the network.
+
+## Import
+
+```tsx
+import { EmptyState2 } from '@tc96/blocks/application/empty-state/empty-state-2'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+A query with three suggestions and the clear button.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<EmptyState2
+  onClear={() => setQuery('')}
+  onSuggestion={setQuery}
+  query={query}
+  suggestions={suggestions}
+/>
+```
+
+## EmptyState2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `query` | `string` | required | The text that matched nothing; passed to `labels.title`. |
+| `suggestions` | `string[]` | `[]` | The chips, in order. |
+| `onSuggestion` | `(suggestion: string) => void` | - | Called with the text of the chip that was clicked. Without it no chip is rendered. |
+| `onClear` | `() => void` | - | Called by Limpar busca. Without it the button is not rendered. |
+| `icon` | `ReactNode` | search icon | Replaces the icon of the stacked media. It is decorative. |
+| `labels` | `Partial<EmptyState2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `(query: string) => string` | `Nenhum resultado para “{query}”` |
+| `description` | `string` | `"Confira a ortografia ou tente termos mais curtos e gerais."` |
+| `suggestions` | `string` | `"Tente buscar por"`; the caption and the accessible name of the chips |
+| `clear` | `string` | `"Limpar busca"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `EmptyState2` | `component` | The no search results state. |
+| `EmptyState2Props` | `type` | The props of the block. |
+| `EmptyState2Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The root is an `output`, which has the implicit `status` role, so the message is announced when the state appears.
+- The chips are buttons inside a list named by `labels.suggestions`.
+- The block carries no raw color, radius or shadow: it uses COSS `Empty` and `Button`.
