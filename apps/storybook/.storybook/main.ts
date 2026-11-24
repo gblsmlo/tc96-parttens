@@ -14,7 +14,9 @@ const config: StorybookConfig = {
     '@storybook/addon-a11y',
     '@storybook/addon-vitest',
     '@storybook/addon-mcp',
+    'msw-storybook-addon',
   ],
+  staticDirs: ['../public'],
   features: {
     componentsManifest: true,
   },
