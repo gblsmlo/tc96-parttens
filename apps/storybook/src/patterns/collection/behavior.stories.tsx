@@ -7,6 +7,8 @@ import {
   TableIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
+import { MenuItem } from '@tc96/ui/menu'
 import {
   type CollectionDataTableViewProps,
   type CollectionDefinition,
@@ -36,9 +38,7 @@ import {
   type ViewSettingsMenuProps,
   type ViewSettingsMode,
   ViewSettingsSection,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { MenuItem } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 

@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # EmptyState2
 
-A no search results state: a title that names the query, a hint, suggestion chips and a button to clear the search. Reach for it under a search field when a query matched nothing and the app can offer other terms. Install it with `npx @tc96/parttens add empty-state-2`.
+A no search results state: a title that names the query, a hint, suggestion chips and a button to clear the search. Reach for it under a search field when a query matched nothing and the app can offer other terms. Install it with `npx @tc96/cli add empty-state-2`.
 
 It is a section, not a page: it renders no `main` landmark, and the root is an `output`, so a screen reader announces it when it appears. The block keeps no state and never fetches: the query, the suggestions and what a click does come from the app. The chips render only with `onSuggestion` and the clear button only with `onClear`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Empty State/EmptyState2`: [Playground](?p
 ## Import
 
 ```tsx
-import { EmptyState2 } from '@tc96/blocks/application/empty-state/empty-state-2'
+import { EmptyState2 } from '@tc96/ui/blocks/application/empty-state/empty-state-2'
 ```
 
 The same path exports the types listed under Exports.

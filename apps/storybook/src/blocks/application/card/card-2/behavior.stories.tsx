@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Card2, type Card2Props } from '@tc96/blocks/application/card/card-2'
+import { Card2, type Card2Props } from '@tc96/ui/blocks/application/card/card-2'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { integrations } from '../fixtures/card-2.ts'
 import { type Card2Controls, card2ControlArgs } from './card-2-controls.ts'

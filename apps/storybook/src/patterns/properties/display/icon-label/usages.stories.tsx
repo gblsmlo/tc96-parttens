@@ -4,7 +4,7 @@ import {
   XIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { IconLabelProperty } from '@tc96/parttens'
+import { IconLabelProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { IconLabelCanvas } from './icon-label-canvas.tsx'
 

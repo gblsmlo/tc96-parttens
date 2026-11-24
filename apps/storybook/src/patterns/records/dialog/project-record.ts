@@ -10,7 +10,7 @@ import {
   WarningIcon,
   XCircleIcon,
 } from '@phosphor-icons/react'
-import type { SelectPropertyOption } from '@tc96/parttens'
+import type { SelectPropertyOption } from '@tc96/ui/patterns'
 import { z } from 'zod'
 
 export const statusOptions: SelectPropertyOption[] = [

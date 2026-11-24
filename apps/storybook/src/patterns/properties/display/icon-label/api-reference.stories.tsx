@@ -1,6 +1,6 @@
 import { TagIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { IconLabelProperty } from '@tc96/parttens'
+import { IconLabelProperty } from '@tc96/ui/patterns'
 import { expect } from 'storybook/test'
 import { IconSlot, Slot } from '../../../../test-utils/anatomy-slot'
 import { IconLabelCanvas } from './icon-label-canvas.tsx'

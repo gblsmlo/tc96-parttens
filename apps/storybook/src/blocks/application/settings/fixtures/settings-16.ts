@@ -1,4 +1,4 @@
-import type { Settings16CostCenter } from '@tc96/blocks/application/settings/settings-16'
+import type { Settings16CostCenter } from '@tc96/ui/blocks/application/settings/settings-16'
 
 export const settings16CostCenters: Settings16CostCenter[] = [
   {

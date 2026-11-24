@@ -5,7 +5,7 @@ import {
   PhoneIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { TextProperty } from '@tc96/parttens'
+import { TextProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { TextCanvas } from './text-canvas.tsx'
 import { StatefulText } from './text-layouts.tsx'

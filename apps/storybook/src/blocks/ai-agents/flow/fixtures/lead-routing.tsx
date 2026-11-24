@@ -15,7 +15,7 @@ import type {
   FlowStep,
   FlowStepStats,
   FlowStepType,
-} from '@tc96/blocks/ai-agents/flow/workflow-editor'
+} from '@tc96/ui/blocks/ai-agents/flow/workflow-editor'
 import type { ReactNode } from 'react'
 
 export const leadRoutingStepTypes: FlowStepType[] = [

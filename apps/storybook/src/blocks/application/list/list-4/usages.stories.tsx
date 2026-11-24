@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import {
   List4,
   type List4Integration,
-} from '@tc96/blocks/application/list/list-4'
+} from '@tc96/ui/blocks/application/list/list-4'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { list4Handlers } from '../../../../mocks/list-4.ts'

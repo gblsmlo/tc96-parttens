@@ -7,7 +7,7 @@ import {
   type Dashboard2Order,
   type Dashboard2SalesPoint,
   type Dashboard2Sort,
-} from '@tc96/blocks/application/dashboard/dashboard-2'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-2'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

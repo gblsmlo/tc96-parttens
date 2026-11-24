@@ -1,7 +1,7 @@
 import {
   Settings19,
   type Settings19Props,
-} from '@tc96/blocks/application/settings/settings-19'
+} from '@tc96/ui/blocks/application/settings/settings-19'
 import { useState } from 'react'
 import { endpoints as fixture } from '../fixtures/settings-19.ts'
 import type { Settings19Controls } from './settings-19-controls.ts'

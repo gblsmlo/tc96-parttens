@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login7 } from '@tc96/blocks/application/auth/login-7'
+import { Login7 } from '@tc96/ui/blocks/application/auth/login-7'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import { footerLinks } from './login-7-layouts.tsx'
 

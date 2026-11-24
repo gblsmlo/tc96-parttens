@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Stats5 } from '@tc96/blocks/application/stats/stats-5'
+import { Stats5 } from '@tc96/ui/blocks/application/stats/stats-5'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { salesAndChurn } from '../fixtures/stats-5.ts'
 import { type Stats5Controls, stats5ControlArgs } from './stats-5-controls.ts'

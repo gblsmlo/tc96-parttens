@@ -3,6 +3,9 @@ import {
   EnvelopeSimpleOpenIcon,
   MagnifyingGlassIcon,
 } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
+import { ChatEmptyState } from '@tc96/ui/chat/chat-states'
+import { MenuRadioGroup, MenuRadioItem, MenuSeparator } from '@tc96/ui/menu'
 import {
   ChatsPanel,
   ChatsPanelItem,
@@ -13,10 +16,7 @@ import {
   FilterRadioSubmenu,
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { ChatEmptyState } from '@tc96/ui/chat/chat-states'
-import { MenuRadioGroup, MenuRadioItem, MenuSeparator } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { NoChatsState } from './chats-panel-layouts.tsx'
 import {

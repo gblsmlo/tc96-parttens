@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AreaMetricWidget, MetricWidget } from '@tc96/parttens'
+import { AreaMetricWidget, MetricWidget } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { initialCampaigns } from '../collection/fixtures/campaigns'
 import {

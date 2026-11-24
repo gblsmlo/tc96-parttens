@@ -27,7 +27,7 @@ const { flushSync } = await import('react-dom')
 const { createRoot } = await import('react-dom/client')
 type Root = ReturnType<typeof createRoot>
 const { KanbanView } = await import(
-  '../../packages/parttens/src/collection/layouts/kanban/index'
+  '../../packages/ui/src/patterns/collection/layouts/kanban/index'
 )
 
 interface Card {

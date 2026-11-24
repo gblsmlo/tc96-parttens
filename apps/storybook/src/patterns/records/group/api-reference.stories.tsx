@@ -7,7 +7,7 @@ import {
   RecordGroupMetrics,
   RecordGroupRow,
   RecordGroupSubgroup,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect } from 'storybook/test'
 import { IconSlot, Slot } from '../../../test-utils/anatomy-slot'
 import { rowsOf } from './fixtures/group-dom'

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PhoneProperty } from '@tc96/parttens'
+import { PhoneProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { PhoneCanvas } from './phone-canvas.tsx'
 import { PrimaryNumberPhone, StatefulPhone } from './phone-layouts.tsx'

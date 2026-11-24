@@ -1,6 +1,6 @@
 import { ptBR } from '@daypicker/react/locale'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DateProperty } from '@tc96/parttens'
+import { DateProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { DateCanvas } from './date-canvas.tsx'
 import { DateAndTimeBadge, StatefulDate } from './date-layouts.tsx'

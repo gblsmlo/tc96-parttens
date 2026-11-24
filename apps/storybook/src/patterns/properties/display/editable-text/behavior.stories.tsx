@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EditableText } from '@tc96/parttens'
+import { EditableText } from '@tc96/ui/patterns'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { EditableTextCanvas } from './editable-text-canvas.tsx'
 import { StatefulEditableText } from './editable-text-layouts.tsx'

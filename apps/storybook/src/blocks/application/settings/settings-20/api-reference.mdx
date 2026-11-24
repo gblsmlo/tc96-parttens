@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings20
 
-A settings section that sets which channels notify each event. Categories are tabs; inside a tab, a table lists the events as rows and the channels as columns, with one checkbox per cell. Reach for it when people choose how to be notified about leads, tasks or finance. Install it with `npx @tc96/parttens add settings-20`.
+A settings section that sets which channels notify each event. Categories are tabs; inside a tab, a table lists the events as rows and the channels as columns, with one checkbox per cell. Reach for it when people choose how to be notified about leads, tasks or finance. Install it with `npx @tc96/cli add settings-20`.
 
 It is a section, not a page: it renders no `main` landmark. The block keeps no matrix of its own: every checkbox reads `matrix` and every click calls `onChange`; only the selected tab is block state.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings20`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings20 } from '@tc96/blocks/application/settings/settings-20'
+import { Settings20 } from '@tc96/ui/blocks/application/settings/settings-20'
 ```
 
 The same path exports the types `Settings20Props`, `Settings20Category`, `Settings20Event`, `Settings20Channel`, `Settings20Matrix` and `Settings20Labels`.

@@ -1,4 +1,4 @@
-import { PhoneProperty, type PhonePropertyProps } from '@tc96/parttens'
+import { PhoneProperty, type PhonePropertyProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { PhoneControls } from './phone-controls.ts'
 

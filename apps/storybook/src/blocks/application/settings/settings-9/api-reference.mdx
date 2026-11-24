@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings9
 
-A settings section that lists automation rules. Each rule reads in two lines: the condition, a field, an operator and a value, and the action it applies. Each row has a menu to edit or delete the rule when the app handles actions. Reach for it when the app lets people add or remove SLAs automatically from filters. Install it with `npx @tc96/parttens add settings-9`.
+A settings section that lists automation rules. Each rule reads in two lines: the condition, a field, an operator and a value, and the action it applies. Each row has a menu to edit or delete the rule when the app handles actions. Reach for it when the app lets people add or remove SLAs automatically from filters. Install it with `npx @tc96/cli add settings-9`.
 
 It is a section, not a page: it renders no `main` landmark. Creating, editing and deleting stay in the app; the block only calls `onCreate` and `onRuleAction`, keeps no list of its own and never fetches or stores anything.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings9`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Settings9 } from '@tc96/blocks/application/settings/settings-9'
+import { Settings9 } from '@tc96/ui/blocks/application/settings/settings-9'
 ```
 
 The same path exports the types `Settings9Props`, `Settings9Rule`, `Settings9RuleIcon`, `Settings9Action` and `Settings9Labels`.

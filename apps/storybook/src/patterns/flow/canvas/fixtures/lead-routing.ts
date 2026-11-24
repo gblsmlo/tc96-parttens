@@ -1,4 +1,4 @@
-import type { FlowConnection, FlowStep, FlowStepType } from '@tc96/parttens'
+import type { FlowConnection, FlowStep, FlowStepType } from '@tc96/ui/patterns'
 
 export const leadRoutingStepTypes: FlowStepType[] = [
   {

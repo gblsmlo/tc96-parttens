@@ -1,4 +1,4 @@
-import type { Settings22Key } from '@tc96/blocks/application/settings/settings-22'
+import type { Settings22Key } from '@tc96/ui/blocks/application/settings/settings-22'
 
 export const settings22Keys: Settings22Key[] = [
   {

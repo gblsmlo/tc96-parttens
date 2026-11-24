@@ -1,4 +1,7 @@
-import { Login6, type Login6Props } from '@tc96/blocks/application/auth/login-6'
+import {
+  Login6,
+  type Login6Props,
+} from '@tc96/ui/blocks/application/auth/login-6'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import type { Login6Controls } from './login-6-controls.ts'
 

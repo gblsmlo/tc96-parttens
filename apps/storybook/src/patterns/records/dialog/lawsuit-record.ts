@@ -1,4 +1,4 @@
-import type { RecordStatus, SelectPropertyOption } from '@tc96/parttens'
+import type { RecordStatus, SelectPropertyOption } from '@tc96/ui/patterns'
 
 export type LawsuitLookup = 'fast' | 'slow' | 'failing' | 'duplicate'
 

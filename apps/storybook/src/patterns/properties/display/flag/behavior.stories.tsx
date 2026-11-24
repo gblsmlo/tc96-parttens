@@ -1,6 +1,6 @@
 import { CircleIcon, RobotIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FlagProperty } from '@tc96/parttens'
+import { FlagProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
 import {

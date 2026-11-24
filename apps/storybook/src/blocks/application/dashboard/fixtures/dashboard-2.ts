@@ -5,7 +5,7 @@ import type {
   Dashboard2RowAction,
   Dashboard2SalesPoint,
   Dashboard2Sort,
-} from '@tc96/blocks/application/dashboard/dashboard-2'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-2'
 
 export const kpis: Dashboard2Kpi[] = [
   {

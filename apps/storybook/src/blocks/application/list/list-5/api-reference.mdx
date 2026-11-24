@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # List5
 
-A list of capability modules: one row per module with its icon, name, description and an add button, plus an optional Ver mais footer button. Reach for it on a screen where the user picks what to enable. Install it with `npx @tc96/parttens add list-5`.
+A list of capability modules: one row per module with its icon, name, description and an add button, plus an optional Ver mais footer button. Reach for it on a screen where the user picks what to enable. Install it with `npx @tc96/cli add list-5`.
 
 It is a list, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/List/List5`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { List5 } from '@tc96/blocks/application/list/list-5'
+import { List5 } from '@tc96/ui/blocks/application/list/list-5'
 ```
 
 The same path exports the types listed under Exports.

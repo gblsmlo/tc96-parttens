@@ -1,4 +1,4 @@
-import type { DataGridSelectOption } from '@tc96/parttens'
+import type { DataGridSelectOption } from '@tc96/ui/patterns'
 
 export interface GridProject {
   billable: boolean

@@ -1,4 +1,4 @@
-import type { Settings21App } from '@tc96/blocks/application/settings/settings-21'
+import type { Settings21App } from '@tc96/ui/blocks/application/settings/settings-21'
 
 export const settings21Apps: Settings21App[] = [
   {

@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { ChecklistDensity, ChecklistVariant } from '@tc96/parttens'
+import type { ChecklistDensity, ChecklistVariant } from '@tc96/ui/patterns'
 import { checklistDensities, checklistVariants } from './checklist-variants.ts'
 
 export interface ChecklistControls {

@@ -1,4 +1,4 @@
-import { Card3 } from '@tc96/blocks/application/card/card-3'
+import { Card3 } from '@tc96/ui/blocks/application/card/card-3'
 import { profile } from '../fixtures/card-3.ts'
 import type { Card3Controls } from './card-3-controls.ts'
 

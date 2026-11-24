@@ -1,7 +1,7 @@
 import { ptBR } from '@daypicker/react/locale'
 import { RepeatIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ScheduleProperty } from '@tc96/parttens'
+import { ScheduleProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
 import { ScheduleCanvas } from './schedule-canvas.tsx'

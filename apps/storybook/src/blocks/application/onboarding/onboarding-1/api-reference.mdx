@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Onboarding1
 
-A sidebar stepper: a vertical list of the steps (done, current, upcoming) beside the content of the current step, ending in a success state. Reach for it on a first-run setup with three to six steps that the person may want to revisit. Install it with `npx @tc96/parttens add onboarding-1`.
+A sidebar stepper: a vertical list of the steps (done, current, upcoming) beside the content of the current step, ending in a success state. Reach for it on a first-run setup with three to six steps that the person may want to revisit. Install it with `npx @tc96/cli add onboarding-1`.
 
 The block keeps no state and never fetches: the current step is controlled with `step` and `onStepChange`, the step forms are the consumer's `content`, and moving on, finishing and skipping are callbacks. The success state is also controlled with `completed`. The stepper and the content card are the `Wizard` pattern, imported by file path.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Onboarding/Onboarding1`: [Playground](?pa
 ## Import
 
 ```tsx
-import { Onboarding1 } from '@tc96/blocks/application/onboarding/onboarding-1'
+import { Onboarding1 } from '@tc96/ui/blocks/application/onboarding/onboarding-1'
 ```
 
 The same path exports the types listed under Exports.

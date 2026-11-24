@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings19
 
-A settings section that lists webhook endpoints. Each row shows the URL, how many events it receives and when the last delivery happened, with an enable switch and, when the app handles actions, a menu. When any endpoint is failing, an alert above the section tells it. Reach for it when the app delivers events to URLs the customer controls. Install it with `npx @tc96/parttens add settings-19`.
+A settings section that lists webhook endpoints. Each row shows the URL, how many events it receives and when the last delivery happened, with an enable switch and, when the app handles actions, a menu. When any endpoint is failing, an alert above the section tells it. Reach for it when the app delivers events to URLs the customer controls. Install it with `npx @tc96/cli add settings-19`.
 
 It is a section, not a page: it renders no `main` landmark. Creating, testing, editing and deleting stay in the app; the block keeps no list of its own and never fetches or stores anything.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings19`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings19 } from '@tc96/blocks/application/settings/settings-19'
+import { Settings19 } from '@tc96/ui/blocks/application/settings/settings-19'
 ```
 
 The same path exports the types `Settings19Props`, `Settings19Endpoint`, `Settings19Action` and `Settings19Labels`.

@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login8, type Login8Props } from '@tc96/blocks/application/auth/login-8'
+import {
+  Login8,
+  type Login8Props,
+} from '@tc96/ui/blocks/application/auth/login-8'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { authLogo, authProviders } from '../fixtures/auth-data'

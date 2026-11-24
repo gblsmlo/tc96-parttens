@@ -1,4 +1,4 @@
-import type { SelectPropertyOption } from '@tc96/parttens'
+import type { SelectPropertyOption } from '@tc96/ui/patterns'
 
 export type LeadStage = 'new' | 'contacted' | 'qualified'
 

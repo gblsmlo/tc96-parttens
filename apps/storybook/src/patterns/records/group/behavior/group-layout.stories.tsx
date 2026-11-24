@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RecordGroup, RecordGroupRow } from '@tc96/parttens'
+import { RecordGroup, RecordGroupRow } from '@tc96/ui/patterns'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 
 const variants = ['card', 'inset', 'plain'] as const

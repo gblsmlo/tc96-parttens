@@ -4,15 +4,6 @@ import {
   GitBranchIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  DateProperty,
-  PersonProperty,
-  PropertySurface,
-  RecordDialog,
-  RecordDialogCreateMore,
-  RecordDialogHeadline,
-  SelectProperty,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
   Menu,
@@ -21,6 +12,15 @@ import {
   MenuPopup,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  DateProperty,
+  PersonProperty,
+  PropertySurface,
+  RecordDialog,
+  RecordDialogCreateMore,
+  RecordDialogHeadline,
+  SelectProperty,
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, fn, screen, within } from 'storybook/test'
 import {

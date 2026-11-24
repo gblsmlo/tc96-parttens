@@ -1,4 +1,4 @@
-import type { Card1Fact } from '@tc96/blocks/application/card/card-1'
+import type { Card1Fact } from '@tc96/ui/blocks/application/card/card-1'
 
 export const facts: Card1Fact[] = [
   { id: 'owner', label: 'Responsável', value: 'Marina Costa' },

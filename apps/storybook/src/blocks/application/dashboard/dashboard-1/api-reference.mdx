@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Dashboard1
 
-A fulfillment exceptions dashboard in four layers: a header with breadcrumb, title, description, period select and Exportar; a row of four KPI cards; a bar chart of capacity used against capacity per distribution center beside a donut of exceptions by reason; and a table of open exceptions with a status filter that shows a count per option, a search, pagination and a menu per row. Reach for it on an operations home page that shows what is stuck and where. Install it with `npx @tc96/parttens add dashboard-1`.
+A fulfillment exceptions dashboard in four layers: a header with breadcrumb, title, description, period select and Exportar; a row of four KPI cards; a bar chart of capacity used against capacity per distribution center beside a donut of exceptions by reason; and a table of open exceptions with a status filter that shows a count per option, a search, pagination and a menu per row. Reach for it on an operations home page that shows what is stuck and where. Install it with `npx @tc96/cli add dashboard-1`.
 
 It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The filter is controlled: the app passes `filter` and `filterOptions` (with an optional `count` each), handles `onFilterChange` and passes the rows it already filtered. The period select, Exportar, the search, the pagination and the row menu render only when their callbacks are passed, and the app searches and pages the rows. The donut renders only with `reasons`. Numbers arrive raw and the block formats them with `locale` and `currency` (`pt-BR` and `BRL` by default). Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `kpis`, `capacity`, `reasons` and `exceptions` the empty state. The precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Dashboard/Dashboard1`: [Playground](?path
 ## Import
 
 ```tsx
-import { Dashboard1 } from '@tc96/blocks/application/dashboard/dashboard-1'
+import { Dashboard1 } from '@tc96/ui/blocks/application/dashboard/dashboard-1'
 ```
 
 The same path exports the types listed under Exports.

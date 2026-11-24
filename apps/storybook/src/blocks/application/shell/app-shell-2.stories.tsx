@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AppShell2 } from '@tc96/blocks/application/shell/app-shell-2'
+import { AppShell2 } from '@tc96/ui/blocks/application/shell/app-shell-2'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
 import { expectSettingsLevel } from './fixtures/settings-play'
@@ -17,7 +17,7 @@ import {
 } from './fixtures/shell-data'
 
 const usage = `
-// npx @tc96/parttens add app-shell-2
+// npx @tc96/cli add app-shell-2
 import { AppShell2 } from '@acme/blocks/application/shell/app-shell-2'
 import { Link, useNavigate } from '@tanstack/react-router'
 
@@ -67,7 +67,7 @@ const docs = {
   ],
   description: {
     component:
-      'An application shell with a floating sidebar and a ⌘K page search: workspace switcher and search at the top, grouped navigation, account menu at the foot, and a header with the breadcrumb. Install it with `npx @tc96/parttens add app-shell-2`.',
+      'An application shell with a floating sidebar and a ⌘K page search: workspace switcher and search at the top, grouped navigation, account menu at the foot, and a header with the breadcrumb. Install it with `npx @tc96/cli add app-shell-2`.',
   },
   story: { height: '42rem', inline: false },
   usage,

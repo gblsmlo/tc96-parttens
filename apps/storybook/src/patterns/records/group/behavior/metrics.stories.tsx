@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RecordGroupMetrics } from '@tc96/parttens'
+import { RecordGroupMetrics } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { IndicatorsGroup } from '../layouts/metrics'
 import { RecordGroupCanvas } from '../record-group-canvas'

@@ -1,4 +1,4 @@
-import type { Timeline3Step } from '@tc96/blocks/application/timeline/timeline-3'
+import type { Timeline3Step } from '@tc96/ui/blocks/application/timeline/timeline-3'
 
 export const approvalSteps: Timeline3Step[] = [
   {

@@ -1,7 +1,7 @@
 import {
   Settings6,
   type Settings6Props,
-} from '@tc96/blocks/application/settings/settings-6'
+} from '@tc96/ui/blocks/application/settings/settings-6'
 import { roles, seats, team } from '../fixtures/settings-6.ts'
 import type { Settings6Controls } from './settings-6-controls.ts'
 

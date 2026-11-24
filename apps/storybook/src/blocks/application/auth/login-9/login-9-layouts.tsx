@@ -2,7 +2,7 @@ import {
   Login9,
   type Login9Props,
   type Login9Testimonial,
-} from '@tc96/blocks/application/auth/login-9'
+} from '@tc96/ui/blocks/application/auth/login-9'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import type { Login9Controls } from './login-9-controls.ts'
 

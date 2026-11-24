@@ -1,4 +1,4 @@
-import { TagsProperty, type TagsPropertyProps } from '@tc96/parttens'
+import { TagsProperty, type TagsPropertyProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { TagsControls } from './tags-controls.ts'
 import { tagOptions } from './tags-data.ts'

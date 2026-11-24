@@ -2,7 +2,7 @@ import {
   Dashboard2,
   type Dashboard2Props,
   type Dashboard2Sort,
-} from '@tc96/blocks/application/dashboard/dashboard-2'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-2'
 import { renderAnchor } from '@tc96/ui/render-anchor'
 import { useState } from 'react'
 import {

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Otp1, type OtpProps } from '@tc96/blocks/application/auth/otp-1'
+import { Otp1, type OtpProps } from '@tc96/ui/blocks/application/auth/otp-1'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { authLogo } from '../fixtures/auth-data'

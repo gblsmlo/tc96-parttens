@@ -1,7 +1,7 @@
 import {
   Settings7,
   type Settings7Props,
-} from '@tc96/blocks/application/settings/settings-7'
+} from '@tc96/ui/blocks/application/settings/settings-7'
 import { tags } from '../fixtures/tags.ts'
 import type { Settings7Controls } from './settings-7-controls.ts'
 

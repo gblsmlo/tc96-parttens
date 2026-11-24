@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { TagsProperty } from '@tc96/parttens'
+import { TagsProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { TagsCanvas } from './tags-canvas.tsx'
 import {

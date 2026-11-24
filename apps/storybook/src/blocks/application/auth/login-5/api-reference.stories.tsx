@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login5 } from '@tc96/blocks/application/auth/login-5'
+import { Login5 } from '@tc96/ui/blocks/application/auth/login-5'
 import { loginMethods } from './login-5-layouts.tsx'
 
 const ignore = () => undefined

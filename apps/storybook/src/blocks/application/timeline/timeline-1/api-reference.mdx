@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Timeline1
 
-An activity timeline: a vertical list of events, each with the actor's avatar as the marker, the actor and the action side by side, the time, an optional status badge and optional attachment chips. Reach for it on a record page (a deal, a ticket, an order) that shows what happened and who did it. Install it with `npx @tc96/parttens add timeline-1`.
+An activity timeline: a vertical list of events, each with the actor's avatar as the marker, the actor and the action side by side, the time, an optional status badge and optional attachment chips. Reach for it on a record page (a deal, a ticket, an order) that shows what happened and who did it. Install it with `npx @tc96/cli add timeline-1`.
 
 It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state: the app passes the events already written. `actor` and `action` are separate fields, and `time` is a string the app formats, so the block composes no text. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, an empty `events` the empty state. The precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Timeline/Timeline1`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Timeline1 } from '@tc96/blocks/application/timeline/timeline-1'
+import { Timeline1 } from '@tc96/ui/blocks/application/timeline/timeline-1'
 ```
 
 The same path exports the types listed under Exports.

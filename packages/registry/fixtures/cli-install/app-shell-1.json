@@ -5,7 +5,7 @@
   "registryDependencies": ["@ui/sidebar"],
   "files": [
     {
-      "path": "blocks/src/application/shell/app-shell-1/index.ts",
+      "path": "blocks/application/shell/app-shell-1/index.ts",
       "type": "registry:file",
       "content": "import { sidebar } from \"@tc96/ui/sidebar\"\nexport const AppShell1 = sidebar\n"
     }

@@ -7,6 +7,9 @@ import {
   XCircleIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
+import { IconFrame } from '@tc96/ui/icon-frame'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   SettingsCollapsed,
   SettingsRow,
@@ -14,10 +17,7 @@ import {
   SettingsSectionDescription,
   SettingsSectionHeader,
   SettingsSectionTitle,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { IconFrame } from '@tc96/ui/icon-frame'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 
 const groups = [

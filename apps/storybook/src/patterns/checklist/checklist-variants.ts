@@ -1,4 +1,4 @@
-import type { ChecklistDensity, ChecklistVariant } from '@tc96/parttens'
+import type { ChecklistDensity, ChecklistVariant } from '@tc96/ui/patterns'
 
 export const checklistDensities: ChecklistDensity[] = ['md', 'sm']
 

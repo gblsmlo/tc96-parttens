@@ -1,6 +1,6 @@
 import { CircleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { IconLabelProperty } from '@tc96/parttens'
+import { IconLabelProperty } from '@tc96/ui/patterns'
 import {
   expect,
   isInaccessible,

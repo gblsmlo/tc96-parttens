@@ -32,6 +32,7 @@ import {
   targetPath,
   writeFiles,
 } from './files'
+import { init } from './init'
 import {
   blockNames,
   combineItems,
@@ -42,15 +43,41 @@ import {
   type RegistryItem,
   selectItems,
 } from './manifest'
+import { addFolderExports } from './workspace'
 
-const help = `tc96-parttens add <patterns or blocks...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nBlocks: ${blockNames.join(' ')}\nReads aliases ui and utils from the nearest components.json, searching from --cwd up to the filesystem root. helpers, patterns and blocks replace the last segment of the ui alias (@acme/ui/components gives @acme/ui/patterns, @acme/ui gives @acme/patterns) unless set; the blocks path is needed only to install a block.\nInstalls only the ui components missing from the ui alias, from this package. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile, into the workspace package that holds the patterns path.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
+const help = `tc96 init [--cwd path]\nWrites components.json with the tc96-mono layout when it is missing: ui, hooks, lib, helpers, patterns and blocks in packages/ui (@tc96/ui), cn in packages/utils (@tc96/utils). Edit its aliases to install elsewhere. Adds the layer exports packages/ui/package.json lacks.\n\ntc96 add <patterns or blocks...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nBlocks: ${blockNames.join(' ')}\nReads the aliases from the nearest components.json, searching from --cwd up to the filesystem root. Each alias resolves through tsconfig paths or, without them, through the exports of the workspace package that owns it. hooks and lib default to children of ui; helpers, patterns and blocks replace the last segment of the ui alias (@acme/ui/components gives @acme/ui/patterns) unless set; the blocks path is needed only to install a block.\nInstalls only the ui components missing from the ui alias, from this package. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile, into the workspace package that holds the patterns path.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
 async function main() {
   const args = process.argv.slice(2)
   if (!args.length || args.includes('--help') || args.includes('-h')) {
     console.log(help)
     return
   }
-  if (args.shift() !== 'add') throw new Error(help)
+  const command = args.shift()
+  if (command === 'init') {
+    const cwdIndex = args.indexOf('--cwd')
+    const unknown = args.filter(
+      (argument, index) =>
+        argument !== '--cwd' && !(cwdIndex !== -1 && index === cwdIndex + 1),
+    )
+    if (unknown.length) throw new Error(`Unsupported option: ${unknown[0]}`)
+    const value = cwdIndex === -1 ? undefined : args[cwdIndex + 1]
+    if (cwdIndex !== -1 && (!value || value.startsWith('--')))
+      throw new Error('Missing value for --cwd')
+    const result = await init(resolve(value ?? process.cwd()))
+    for (const warning of result.warnings) console.warn(warning)
+    console.log(
+      result.components === 'created'
+        ? 'Wrote components.json with the tc96-mono layout; edit its aliases to install elsewhere.'
+        : 'Kept the existing components.json.',
+    )
+    console.log(
+      result.exportsAdded.length
+        ? `Added to packages/ui/package.json exports: ${result.exportsAdded.join(', ')}.`
+        : 'packages/ui/package.json already exports every layer.',
+    )
+    return
+  }
+  if (command !== 'add') throw new Error(help)
   let cwd = process.cwd()
   let registryDirectory = join(
     dirname(fileURLToPath(import.meta.url)),
@@ -103,8 +130,8 @@ async function main() {
   // COSS utils is the consumer's cn, reached through aliases.utils.
   const installed = (component: string) =>
     component === 'utils' ||
-    cossInstalledPaths(component).some((path) =>
-      existsSync(join(workspace, configuration.paths.ui, path)),
+    cossInstalledPaths(component, configuration.paths).some((path) =>
+      existsSync(join(workspace, path)),
     )
   const patterns = omitInstalled(
     prepareItem(combineItems(items), configuration),
@@ -119,11 +146,7 @@ async function main() {
     ...patterns,
     files: [
       ...components.flatMap((component) =>
-        componentFiles(
-          component,
-          configuration.aliases,
-          configuration.paths.ui,
-        ),
+        componentFiles(component, configuration.aliases, configuration.paths),
       ),
       ...patterns.files,
     ],
@@ -147,7 +170,7 @@ async function main() {
   const barrelPath = join(workspace, configuration.paths.patterns, 'index.ts')
   // A block that uses no pattern leaves the patterns barrel alone.
   const withPatterns = item.files.some(({ path }) =>
-    path.startsWith('parttens/'),
+    path.startsWith('patterns/'),
   )
   const targets = new Set(
     item.files.map((file) => targetPath(workspace, file.target)),
@@ -172,7 +195,8 @@ async function main() {
         (file) => !targets.has(file),
       )
     : []
-  const known = diagnoseDependents(workspace, dependents)
+  const project = configuration.paths.patterns
+  const known = diagnoseDependents(workspace, dependents, project)
   if (dependents.length)
     console.log(
       `Checking ${dependents.length} installed block files against the updated patterns.`,
@@ -180,6 +204,7 @@ async function main() {
   const before = await checkCompatibility(workspace, item, false, {
     dependents,
     known,
+    project,
   })
   console.log(
     `Compatibility: ${before.status}. ${before.existingFiles.length} existing files; no automatic overwrite.`,
@@ -277,10 +302,18 @@ async function main() {
     console.log(
       `Preserved ${result.preserved.length} existing files that differ from the registry:\n${result.preserved.map((path) => `  ${show(path)}`).join('\n')}`,
     )
+  const exported = addFolderExports(
+    workspace,
+    configuration.aliases.ui,
+    components.map((component) => component.name),
+  )
+  if (exported.length)
+    console.log(`Added to the ui package exports: ${exported.join(', ')}.`)
   if (dependencies.length) installDependencies(workspace, dependencies, target)
   const after = await checkCompatibility(workspace, item, true, {
     dependents,
     known,
+    project,
   })
   console.log(`Installed TypeScript compatibility: ${after.status}.`)
   if (after.status !== 'compatible') {
@@ -293,7 +326,7 @@ async function main() {
   if (withPatterns)
     console.log(
       (await writeBarrel(barrelPath, barrel)) === 'preserved'
-        ? `${show(barrelPath)} was not generated by tc96-parttens and was preserved; export the installed patterns from it yourself.`
+        ? `${show(barrelPath)} was not generated by tc96 and was preserved; export the installed patterns from it yourself.`
         : `${show(barrelPath)} exports the installed patterns.`,
     )
   console.log(

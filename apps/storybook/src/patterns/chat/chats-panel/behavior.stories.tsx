@@ -6,7 +6,7 @@ import {
   ChatsPanelList,
   ChatsPanelSkeleton,
   chatsPanelSkeletonWidths,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect, fn, isInaccessible, userEvent, within } from 'storybook/test'
 import { chatsPanelControlArgs } from './chats-panel-controls.ts'
 import { ItemCanvas, SkeletonCanvas } from './chats-panel-frame.tsx'

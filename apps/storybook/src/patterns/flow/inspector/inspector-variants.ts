@@ -1,4 +1,4 @@
-import type { FlowInspectorTab, FlowRunStatus } from '@tc96/parttens'
+import type { FlowInspectorTab, FlowRunStatus } from '@tc96/ui/patterns'
 
 export const inspectorTabNames = [
   'build',

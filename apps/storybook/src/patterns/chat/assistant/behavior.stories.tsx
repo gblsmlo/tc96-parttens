@@ -4,7 +4,7 @@ import {
   type AssistantMessage,
   AssistantPanel,
   type AssistantSuggestion,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { assistantControlArgs } from './assistant-controls.ts'

@@ -9,7 +9,7 @@ import {
   type FlowStepAction,
   type FlowStepType,
   serializeStepTransfer,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { CanvasFrame } from './canvas-frame.tsx'

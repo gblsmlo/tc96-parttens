@@ -1,4 +1,4 @@
-import type { Settings7Tag } from '@tc96/blocks/application/settings/settings-7'
+import type { Settings7Tag } from '@tc96/ui/blocks/application/settings/settings-7'
 
 export const tags: Settings7Tag[] = [
   {

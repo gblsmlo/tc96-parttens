@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Dashboard2 } from '@tc96/blocks/application/dashboard/dashboard-2'
+import { Dashboard2 } from '@tc96/ui/blocks/application/dashboard/dashboard-2'
 import { fn } from 'storybook/test'
 import {
   channels,

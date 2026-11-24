@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ProjectCardWidget } from '@tc96/parttens'
+import { ProjectCardWidget } from '@tc96/ui/patterns'
 import { Slot } from '../../../test-utils/anatomy-slot.tsx'
 import { initialSubtasks, projectPeople } from './productivity-data.ts'
 

@@ -1,7 +1,7 @@
 import type {
   Navbar2Environment,
   Navbar2Option,
-} from '@tc96/blocks/application/navbar/navbar-2'
+} from '@tc96/ui/blocks/application/navbar/navbar-2'
 
 export const organizations: Navbar2Option[] = [
   { id: 'acme', name: 'Acme Logística' },

@@ -5,7 +5,7 @@ import {
   type Settings20Category,
   type Settings20Channel,
   type Settings20Matrix,
-} from '@tc96/blocks/application/settings/settings-20'
+} from '@tc96/ui/blocks/application/settings/settings-20'
 import { useEffect, useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

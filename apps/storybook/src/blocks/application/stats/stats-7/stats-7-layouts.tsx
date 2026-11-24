@@ -1,4 +1,4 @@
-import { Stats7 } from '@tc96/blocks/application/stats/stats-7'
+import { Stats7 } from '@tc96/ui/blocks/application/stats/stats-7'
 import { stats7Metrics } from '../fixtures/stats-7.ts'
 import type { Stats7Controls } from './stats-7-controls.ts'
 

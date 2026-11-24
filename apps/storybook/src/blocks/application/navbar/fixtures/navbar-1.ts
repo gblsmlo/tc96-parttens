@@ -1,4 +1,4 @@
-import type { Navbar1Tab } from '@tc96/blocks/application/navbar/navbar-1'
+import type { Navbar1Tab } from '@tc96/ui/blocks/application/navbar/navbar-1'
 
 export const breadcrumbs = [
   { href: '/projetos', label: 'Projetos' },

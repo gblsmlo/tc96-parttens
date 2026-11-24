@@ -1,7 +1,7 @@
 import {
   Onboarding3,
   type Onboarding3Props,
-} from '@tc96/blocks/application/onboarding/onboarding-3'
+} from '@tc96/ui/blocks/application/onboarding/onboarding-3'
 import { useState } from 'react'
 import { simpleSteps } from './onboarding-demo.tsx'
 

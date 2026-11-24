@@ -3,7 +3,7 @@ import {
   AttachmentProperty,
   AttachmentsProperty,
   type AttachmentsPropertyAction,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { AttachmentsControls } from './attachments-controls.ts'
 import {

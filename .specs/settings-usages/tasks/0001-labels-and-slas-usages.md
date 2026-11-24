@@ -31,7 +31,7 @@ Open gaps (a) and (c) below are not closed. Both are flagged `fecha-em: planejam
   - **Inputs:** none (no spec files). Sources:
     - `packages/parttens/src/surfaces/settings/core.ts:3-25` (SettingsSection, SettingsRow title/description/startSlot/endSlot, SettingsCollapsed title/actions/open).
     - `packages/parttens/src/surfaces/settings/AGENTS.md:24-30` (no domain screens in the pattern).
-    - `docs/architecture/tc96-parttens.md:89,99` (ProjectStatuses moved to a usage story).
+    - `docs/architecture/tc96-ui.md:89,99` (ProjectStatuses moved to a usage story).
   - **Scope:**
     - New file `apps/storybook/src/patterns/surfaces/settings/usages/labels.stories.tsx`, title `Patterns/Surfaces/Settings/Usages/Labels`.
     - Domain data and types live in the story file.
@@ -71,7 +71,7 @@ Open gaps (a) and (c) below are not closed. Both are flagged `fecha-em: planejam
     | --- | --- | --- |
     | static | cheapest | biome, `storybook:typecheck`, `storybook:lint`, `verify:public-api`, grep for border/radius/color/shadow classes on COSS parts (`overrides:check` skips `apps/`) |
     | component | next | play in the `!dev` twin; only it catches rendered roles, accessible names and axe violations |
-    | manual | highest | swatch contrast ratios (3:1 for graphics) in both themes, recorded in `docs/architecture/tc96-parttens.md` per the AGENTS.md visual-work rule |
+    | manual | highest | swatch contrast ratios (3:1 for graphics) in both themes, recorded in `docs/architecture/tc96-ui.md` per the AGENTS.md visual-work rule |
 
     No E2E: nothing outside the rendered story can fail.
   - **Out of this Task:** loading and failure states, label drag-reorder, more than two label levels, any change to `packages/parttens`.
@@ -127,7 +127,7 @@ Open gaps (a) and (c) below are not closed. Both are flagged `fecha-em: planejam
     | --- | --- | --- |
     | static | cheapest | biome, `storybook:typecheck`, `storybook:lint`, `verify:public-api`, grep for border/radius/color/shadow classes on `Badge`, `Group`, `GroupSeparator` (`overrides:check` skips `apps/`) |
     | component | next | play in the `!dev` twin; only it catches the `group` role and name, the disabled states and axe violations |
-    | manual | highest | contrast ratios of the Urgent icon and badge in both themes (3:1 graphics, 4.5:1 text), recorded in `docs/architecture/tc96-parttens.md`; `GroupSeparator` height at `Badge` size checked in the screenshot (gap b) |
+    | manual | highest | contrast ratios of the Urgent icon and badge in both themes (3:1 graphics, 4.5:1 text), recorded in `docs/architecture/tc96-ui.md`; `GroupSeparator` height at `Badge` size checked in the screenshot (gap b) |
 
     No E2E: nothing outside the rendered story can fail.
   - **Out of this Task:** rule editing flow, loading and failure states, any change to `packages/parttens`.

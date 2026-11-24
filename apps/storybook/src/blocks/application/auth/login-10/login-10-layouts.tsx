@@ -1,11 +1,11 @@
 import { StarIcon } from '@phosphor-icons/react'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import {
   Login10,
   type Login10FooterLink,
   type Login10Props,
   type Login10Testimonial,
-} from '@tc96/blocks/application/auth/login-10'
-import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
+} from '@tc96/ui/blocks/application/auth/login-10'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import type { Login10Controls } from './login-10-controls.ts'
 

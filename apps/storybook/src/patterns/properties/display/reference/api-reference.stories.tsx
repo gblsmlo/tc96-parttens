@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ReferenceProperty } from '@tc96/parttens'
+import { ReferenceProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { ReferenceCanvas } from './reference-canvas.tsx'
 

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Dashboard3 } from '@tc96/blocks/application/dashboard/dashboard-3'
+import { Dashboard3 } from '@tc96/ui/blocks/application/dashboard/dashboard-3'
 import { expect, fn, screen, userEvent, within } from 'storybook/test'
 import { crew, forecast, queue } from '../fixtures/dashboard-3.ts'
 import {

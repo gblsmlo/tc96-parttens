@@ -1,7 +1,7 @@
 import {
   Timeline2,
   type Timeline2Props,
-} from '@tc96/blocks/application/timeline/timeline-2'
+} from '@tc96/ui/blocks/application/timeline/timeline-2'
 import { releases } from '../fixtures/timeline-2.ts'
 import type { Timeline2Controls } from './timeline-2-controls.ts'
 

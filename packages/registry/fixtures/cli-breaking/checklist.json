@@ -4,7 +4,7 @@
   "dependencies": [],
   "files": [
     {
-      "path": "parttens/src/checklist/proof.ts",
+      "path": "patterns/checklist/proof.ts",
       "type": "registry:file",
       "content": "export const renamed = 1\n"
     }

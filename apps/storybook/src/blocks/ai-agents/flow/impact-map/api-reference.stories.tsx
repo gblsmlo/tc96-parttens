@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ImpactMap } from '@tc96/blocks/ai-agents/flow/impact-map'
+import { ImpactMap } from '@tc96/ui/blocks/ai-agents/flow/impact-map'
 import { fn } from 'storybook/test'
 import { links, nodes } from '../fixtures/impact-map.ts'
 

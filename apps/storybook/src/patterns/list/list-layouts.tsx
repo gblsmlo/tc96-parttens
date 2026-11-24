@@ -15,11 +15,11 @@ import {
   TrashIcon,
   UsersIcon,
 } from '@phosphor-icons/react'
-import { List, type ListVariant } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { CheckboxGroup } from '@tc96/ui/checkbox-group'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+import { List, type ListVariant } from '@tc96/ui/patterns'
 import { Radio, RadioGroup } from '@tc96/ui/radio-group'
 import type { ListControls } from './list-controls.ts'
 

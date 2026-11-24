@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { List2Range } from '@tc96/blocks/application/list/list-2'
+import type { List2Range } from '@tc96/ui/blocks/application/list/list-2'
 
 export interface List2Controls {
   currency: 'BRL' | 'USD'

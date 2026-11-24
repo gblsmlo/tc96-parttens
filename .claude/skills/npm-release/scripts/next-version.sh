@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prints the last tag, the commits since it and the next @tc96/parttens version.
+# Prints the last tag, the commits since it and the next @tc96/cli version.
 # feat or a breaking change bumps the minor (the package is pre-1.0), fix and
 # anything else bump the patch. Usage: next-version.sh [ref], default origin/main.
 set -euo pipefail

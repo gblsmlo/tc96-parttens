@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   ForgotPassword1,
   type ForgotPasswordProps,
-} from '@tc96/blocks/application/auth/forgot-password-1'
+} from '@tc96/ui/blocks/application/auth/forgot-password-1'
 import { renderAnchor } from '@tc96/ui/render-anchor'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'

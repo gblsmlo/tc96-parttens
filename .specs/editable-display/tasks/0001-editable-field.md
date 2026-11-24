@@ -14,7 +14,7 @@ inputs: none accepted; implementation detail inside two patterns, no requirement
 | File | Status |
 | --- | --- |
 | `../requirements.md` | not needed: no product behavior change; `EditableText` keeps its props and tests |
-| `../design.md` | not needed: the API choice is delegated to the PR by the issue and recorded in `fields/editable/AGENTS.md` and `docs/architecture/tc96-parttens.md` |
+| `../design.md` | not needed: the API choice is delegated to the PR by the issue and recorded in `fields/editable/AGENTS.md` and `docs/architecture/tc96-ui.md` |
 | `../user-experience.md` | not needed: keyboard and focus contract copied from `EditableText` as it is today |
 | `../../adr/NNNN-<slug>.md` | none |
 
@@ -86,14 +86,14 @@ Root changes are internal to `store/` and `editable.tsx` (not public): a latest-
   - **Scope:**
     - `checklist/components/checklist-item-card.tsx:5` and `checklist/lib/variants.ts:2` per gap (a).
     - `checklist/AGENTS.md` (outgoing imports) and `fields/properties/AGENTS.md:21` (Dependents).
-    - `docs/architecture/tc96-parttens.md`: the `EditableField` decision, dated 2026-10-11, in Portuguese.
+    - `docs/architecture/tc96-ui.md`: the `EditableField` decision, dated 2026-10-11, in Portuguese.
   - **Acceptance:**
     - `dist/registry/properties.json` lists `parttens/src/fields/editable/**` files (the build follows every import, `packages/registry/src/build-registry.ts:71-86`).
     - `bun run build`, `bun run verify:public-api`, `bun run test` and the three check scripts pass.
 
 ### Progress (2026-10-11)
 
-T1, T2 and T3 are implemented on `feat/editable-display-field`, rebased on `origin/main` (`e489a36`). T3 keeps the `checklist` imports by path (gap (a), option 2) and records the decision in `docs/architecture/tc96-parttens.md` and both `AGENTS.md` files. Readings: `fields/editable` 16 pass (7 existing unchanged, 1 trigger regression, 8 display); `fields/properties` + `checklist` 239 pass with no diff in `editable-text.test.tsx`; Storybook `editable-text`, `text-property`, `email-property`, `checklist` and `campaign-brief` 30 pass with axe; typecheck, Biome and the three check scripts pass; public API baseline gains only `EditableField` and `EditableFieldProps`; registry `properties` 76 → 80 files and `checklist` 31 → 35 (the four `editable` files). `bun run test` exits 1 on `records/dialog` › `ignores a second submit while pending`, which fails the same way on `main` without these changes and imports nothing from `fields/`; it is outside this plan. Found in passing and fixed in T1: `EditableTrigger` handed its click event to `beginEditing`, which would have become the initial draft.
+T1, T2 and T3 are implemented on `feat/editable-display-field`, rebased on `origin/main` (`e489a36`). T3 keeps the `checklist` imports by path (gap (a), option 2) and records the decision in `docs/architecture/tc96-ui.md` and both `AGENTS.md` files. Readings: `fields/editable` 16 pass (7 existing unchanged, 1 trigger regression, 8 display); `fields/properties` + `checklist` 239 pass with no diff in `editable-text.test.tsx`; Storybook `editable-text`, `text-property`, `email-property`, `checklist` and `campaign-brief` 30 pass with axe; typecheck, Biome and the three check scripts pass; public API baseline gains only `EditableField` and `EditableFieldProps`; registry `properties` 76 → 80 files and `checklist` 31 → 35 (the four `editable` files). `bun run test` exits 1 on `records/dialog` › `ignores a second submit while pending`, which fails the same way on `main` without these changes and imports nothing from `fields/`; it is outside this plan. Found in passing and fixed in T1: `EditableTrigger` handed its click event to `beginEditing`, which would have become the initial draft.
 
 ### Open gaps
 

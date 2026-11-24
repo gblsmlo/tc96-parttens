@@ -9,7 +9,7 @@ import {
   SelectProperty,
   TextProperty,
   useRecordDraft,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
 import {

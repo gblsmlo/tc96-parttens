@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Timeline1,
   type Timeline1Event,
-} from '@tc96/blocks/application/timeline/timeline-1'
+} from '@tc96/ui/blocks/application/timeline/timeline-1'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { timeline1Handlers } from '../../../../mocks/timeline-1.ts'

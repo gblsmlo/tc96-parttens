@@ -3,7 +3,7 @@ import {
   FlowStepLibrary,
   type FlowStepType,
   groupStepTypes,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { workflowStepTypes } from './fixtures/workflow'
 import type { StepLibraryControls } from './step-library-controls.ts'
 import { stepLibraryRuns } from './step-library-variants.ts'

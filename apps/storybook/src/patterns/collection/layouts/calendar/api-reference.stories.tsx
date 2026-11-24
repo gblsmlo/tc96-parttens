@@ -6,7 +6,7 @@ import {
   CalendarEventChipTitle,
   CalendarItemSkeleton,
   CalendarView,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect } from 'storybook/test'
 import {
   ANCHOR,

@@ -19,7 +19,7 @@ import {
   TagsProperty,
   type TagsPropertyOption,
   TextProperty,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 
 export const statusOptions: SelectPropertyOption[] = [

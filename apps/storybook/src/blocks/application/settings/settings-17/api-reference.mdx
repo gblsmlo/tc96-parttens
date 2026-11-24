@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings17
 
-A settings section of privacy controls. Each row has a title, a description and either a switch or, when the control carries an `actionLabel`, a button. A row may also carry a plan badge, Pro or Beta. Reach for it when the app lets people choose what is collected and shared about their account. Install it with `npx @tc96/parttens add settings-17`.
+A settings section of privacy controls. Each row has a title, a description and either a switch or, when the control carries an `actionLabel`, a button. A row may also carry a plan badge, Pro or Beta. Reach for it when the app lets people choose what is collected and shared about their account. Install it with `npx @tc96/cli add settings-17`.
 
 It is a section, not a page: it renders no `main` landmark. The block holds no value: every switch shows `checked` and every change is reported through a callback.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings17`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings17 } from '@tc96/blocks/application/settings/settings-17'
+import { Settings17 } from '@tc96/ui/blocks/application/settings/settings-17'
 ```
 
 The same path exports the types `Settings17Props`, `Settings17Control`, `Settings17Plan` and `Settings17Labels`.

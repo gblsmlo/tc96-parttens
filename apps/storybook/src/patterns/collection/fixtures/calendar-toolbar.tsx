@@ -3,6 +3,15 @@ import {
   CaretRightIcon,
   type Icon as PhosphorIcon,
 } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
+import {
+  MenuCheckboxItem,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+} from '@tc96/ui/menu'
 import {
   Action,
   addCalendarDays,
@@ -13,16 +22,7 @@ import {
   fromZonedDateTime,
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import {
-  MenuCheckboxItem,
-  MenuGroup,
-  MenuGroupLabel,
-  MenuSub,
-  MenuSubPopup,
-  MenuSubTrigger,
-} from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
 import type { ReactNode } from 'react'
 import { TIME_ZONE } from './tasks'

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DateProperty, DatePropertyBadge } from '@tc96/parttens'
+import { DateProperty, DatePropertyBadge } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { DateCanvas } from './date-canvas.tsx'
 

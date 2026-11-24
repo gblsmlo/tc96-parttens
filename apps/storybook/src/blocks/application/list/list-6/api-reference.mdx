@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # List6
 
-A searchable table of top movers: logo initials, name, status badge, price and the change with a trend tone. Reach for it on a market or ranking screen. Install it with `npx @tc96/parttens add list-6`.
+A searchable table of top movers: logo initials, name, status badge, price and the change with a trend tone. Reach for it on a market or ranking screen. Install it with `npx @tc96/cli add list-6`.
 
 It is a table, not a page: it renders no `main` landmark. The block keeps no state and never fetches or filters; the app owns the `query` and passes only the rows that match it. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/List/List6`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { List6 } from '@tc96/blocks/application/list/list-6'
+import { List6 } from '@tc96/ui/blocks/application/list/list-6'
 ```
 
 The same path exports the types listed under Exports.

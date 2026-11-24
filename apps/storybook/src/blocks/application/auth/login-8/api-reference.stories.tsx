@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login8 } from '@tc96/blocks/application/auth/login-8'
+import { Login8 } from '@tc96/ui/blocks/application/auth/login-8'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import { login8Media } from './login-8-layouts.tsx'
 

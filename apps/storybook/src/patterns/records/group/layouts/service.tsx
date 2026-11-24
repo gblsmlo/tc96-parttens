@@ -16,15 +16,6 @@ import {
   TrashIcon,
   VideoCameraIcon,
 } from '@phosphor-icons/react'
-import {
-  RecordGroup,
-  RecordGroupDivider,
-  RecordGroupFilter,
-  RecordGroupItem,
-  RecordGroupSubgroup,
-  type RecordGroupVariant,
-  RecordStatusBadge,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import {
@@ -34,6 +25,15 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  RecordGroup,
+  RecordGroupDivider,
+  RecordGroupFilter,
+  RecordGroupItem,
+  RecordGroupSubgroup,
+  type RecordGroupVariant,
+  RecordStatusBadge,
+} from '@tc96/ui/patterns'
 import { Fragment, type ReactNode, useState } from 'react'
 
 type Channel = 'in_person' | 'phone' | 'whatsapp' | 'email' | 'video'

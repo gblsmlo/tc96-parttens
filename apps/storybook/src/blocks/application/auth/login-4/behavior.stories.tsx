@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login4, type Login4Props } from '@tc96/blocks/application/auth/login-4'
+import {
+  Login4,
+  type Login4Props,
+} from '@tc96/ui/blocks/application/auth/login-4'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { SendingLogin4 } from './login-4-layouts.tsx'

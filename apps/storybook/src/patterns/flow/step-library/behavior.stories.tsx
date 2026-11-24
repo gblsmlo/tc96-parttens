@@ -7,7 +7,7 @@ import {
   FlowStepLibraryItem,
   type FlowStepType,
   parseStepTransfer,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { EditorFrame, PartFrame } from './step-library-frame.tsx'
 

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { addDays } from '@tc96/helpers/date'
+import { addDays } from '@tc96/ui/helpers/date'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { calendarControlArgs } from './calendar-controls.ts'
 import { PickerCanvas } from './calendar-frame.tsx'

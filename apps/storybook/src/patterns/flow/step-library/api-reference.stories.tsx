@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FlowRunCard, FlowStepLibrary } from '@tc96/parttens'
+import { FlowRunCard, FlowStepLibrary } from '@tc96/ui/patterns'
 import { EditorFrame } from './step-library-frame.tsx'
 
 const noop = () => {}

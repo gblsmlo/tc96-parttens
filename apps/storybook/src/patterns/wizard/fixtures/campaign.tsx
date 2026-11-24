@@ -5,7 +5,7 @@ import {
   TargetIcon,
   WalletIcon,
 } from '@phosphor-icons/react'
-import type { WizardStep } from '@tc96/parttens'
+import type { WizardStep } from '@tc96/ui/patterns'
 import type { SelectOption } from './fields'
 
 export const campaignSteps = [

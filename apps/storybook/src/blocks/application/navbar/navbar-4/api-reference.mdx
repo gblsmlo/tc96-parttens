@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Navbar4
 
-The action bar at the top of an editor: a close button, the document title with its saved state, an optional Active switch, a Testar button, a version history button and the primary submit button. Reach for it on a full-screen editor of flows, automations or documents. Install it with `npx @tc96/parttens add navbar-4`.
+The action bar at the top of an editor: a close button, the document title with its saved state, an optional Active switch, a Testar button, a version history button and the primary submit button. Reach for it on a full-screen editor of flows, automations or documents. Install it with `npx @tc96/cli add navbar-4`.
 
 It renders a `header` that is full width with a bottom border. The block keeps no state and never fetches: the app owns `active`, `pending` and the saved text, and every action is a callback. Each control renders only when its callback is passed.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Navbar/Navbar4`: [Playground](?path=/stor
 ## Import
 
 ```tsx
-import { Navbar4 } from '@tc96/blocks/application/navbar/navbar-4'
+import { Navbar4 } from '@tc96/ui/blocks/application/navbar/navbar-4'
 ```
 
 The same path exports the types listed under Exports.

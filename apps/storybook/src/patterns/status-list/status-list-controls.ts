@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import { type RecordStatus, recordStatuses } from '@tc96/parttens'
+import { type RecordStatus, recordStatuses } from '@tc96/ui/patterns'
 
 export interface RecordStatusListControls {
   action: boolean

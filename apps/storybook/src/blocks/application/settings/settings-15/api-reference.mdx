@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings15
 
-A settings section that lists the categories of the entries, receipts and expenses, each with its subcategories. Each row shows its name, how many entries use it and, for a top-level category, its direction as a dot and a label. The actions menu edits, adds a subcategory, archives or restores. Reach for it when the app classifies entries by category and lets people organize them one level deep. Install it with `npx @tc96/parttens add settings-15`.
+A settings section that lists the categories of the entries, receipts and expenses, each with its subcategories. Each row shows its name, how many entries use it and, for a top-level category, its direction as a dot and a label. The actions menu edits, adds a subcategory, archives or restores. Reach for it when the app classifies entries by category and lets people organize them one level deep. Install it with `npx @tc96/cli add settings-15`.
 
 It is a section, not a page: it renders no `main` landmark. Creating, editing and archiving stay in the app; the block only calls `onCreate` and `onCategoryAction`, keeps no list of its own and never fetches or stores anything. A subcategory has no Add subcategory action and no direction, so nesting stops at one level.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings15`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings15 } from '@tc96/blocks/application/settings/settings-15'
+import { Settings15 } from '@tc96/ui/blocks/application/settings/settings-15'
 ```
 
 The same path exports the types `Settings15Props`, `Settings15Category`, `Settings15Direction`, `Settings15Action` and `Settings15Labels`.

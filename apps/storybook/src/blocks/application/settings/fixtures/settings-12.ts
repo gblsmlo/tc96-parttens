@@ -1,4 +1,4 @@
-import type { Settings12Stage } from '@tc96/blocks/application/settings/settings-12'
+import type { Settings12Stage } from '@tc96/ui/blocks/application/settings/settings-12'
 
 export interface Settings12Data {
   blockStageChanges: boolean

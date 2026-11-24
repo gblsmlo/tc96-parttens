@@ -1,4 +1,6 @@
 import { DotsThreeIcon, FileTextIcon } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import {
   type CollectionDefinition,
   DateProperty,
@@ -15,9 +17,7 @@ import {
   ListRowTitleTrigger,
   ListRowTrailing,
   ListView,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { IconFrame } from '@tc96/ui/icon-frame'
+} from '@tc96/ui/patterns'
 import { Text } from '@tc96/ui/text'
 import { renderTaskListRow, useTasks } from '../../fixtures/task-renderers'
 import { createCollection, initialTasks, type Task } from '../../fixtures/tasks'

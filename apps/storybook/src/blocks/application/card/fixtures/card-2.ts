@@ -1,4 +1,4 @@
-import type { Card2Integration } from '@tc96/blocks/application/card/card-2'
+import type { Card2Integration } from '@tc96/ui/blocks/application/card/card-2'
 
 export const integrations: Card2Integration[] = [
   {

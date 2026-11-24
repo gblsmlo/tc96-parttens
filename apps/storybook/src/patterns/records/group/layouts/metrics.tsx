@@ -9,7 +9,7 @@ import {
   RecordGroupMetric,
   RecordGroupMetrics,
   type RecordGroupMetricsColumns,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export function IndicatorsGroup({
   columns = 2,

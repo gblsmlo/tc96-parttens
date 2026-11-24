@@ -4,7 +4,7 @@ import {
   Settings2,
   type Settings2Options,
   type Settings2Values,
-} from '@tc96/blocks/application/settings/settings-2'
+} from '@tc96/ui/blocks/application/settings/settings-2'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settings2Handlers } from '../../../../mocks/settings-2.ts'

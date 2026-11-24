@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Timeline3
 
-An approval track: a horizontal, scrollable row of steps joined by connectors. Each step shows its owner, name, status badge and date; the current step is highlighted and is the only one with Aprovar and Recusar buttons. Reach for it to show where a request stands in an approval flow and to let the current approver decide. Install it with `npx @tc96/parttens add timeline-3`.
+An approval track: a horizontal, scrollable row of steps joined by connectors. Each step shows its owner, name, status badge and date; the current step is highlighted and is the only one with Aprovar and Recusar buttons. Reach for it to show where a request stands in an approval flow and to let the current approver decide. Install it with `npx @tc96/cli add timeline-3`.
 
 It is a section, not a page: it renders no `main` landmark. The block keeps no state and never fetches: the app owns the statuses, passes `currentStepId` and updates the steps when `onApprove` or `onReject` fires. Loading and error are the block's own states.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Timeline/Timeline3`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Timeline3 } from '@tc96/blocks/application/timeline/timeline-3'
+import { Timeline3 } from '@tc96/ui/blocks/application/timeline/timeline-3'
 ```
 
 The same path exports the types listed under Exports.

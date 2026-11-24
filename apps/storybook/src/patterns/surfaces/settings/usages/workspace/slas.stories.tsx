@@ -4,7 +4,7 @@ import {
   SettingsSection,
   SettingsSectionHeader,
   SettingsSectionTitle,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { Switch } from '@tc96/ui/switch'
 import { expect, fn, within } from 'storybook/test'
 

@@ -1,7 +1,7 @@
 import {
   Settings4,
   type Settings4Props,
-} from '@tc96/blocks/application/settings/settings-4'
+} from '@tc96/ui/blocks/application/settings/settings-4'
 import { settings4Data } from '../fixtures/settings-4.ts'
 import type { Settings4Controls } from './settings-4-controls.ts'
 

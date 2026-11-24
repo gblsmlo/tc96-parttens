@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Settings16,
   type Settings16CostCenter,
-} from '@tc96/blocks/application/settings/settings-16'
+} from '@tc96/ui/blocks/application/settings/settings-16'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settings16Handlers } from '../../../../mocks/settings-16.ts'

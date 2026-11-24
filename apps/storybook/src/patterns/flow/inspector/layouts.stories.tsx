@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FlowInspectorDetails, FlowInspectorStatus } from '@tc96/parttens'
+import { FlowInspectorDetails, FlowInspectorStatus } from '@tc96/ui/patterns'
 import { inspectorControlArgs } from './inspector-controls.ts'
 import {
   lastRun,

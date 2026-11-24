@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List6 } from '@tc96/blocks/application/list/list-6'
+import { List6 } from '@tc96/ui/blocks/application/list/list-6'
 import { movers } from '../fixtures/list-6.ts'
 
 const meta = {

@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings1
 
-A profile and account section: an avatar, the editable fields, the e-mail with its own save button, the sessions count and the account actions. Reach for it when the app lets people edit their own profile and account. Install it with `npx @tc96/parttens add settings-1`.
+A profile and account section: an avatar, the editable fields, the e-mail with its own save button, the sessions count and the account actions. Reach for it when the app lets people edit their own profile and account. Install it with `npx @tc96/cli add settings-1`.
 
 It is a section, not a page: it renders no `main` landmark. Saving the fields, uploading the avatar, signing out and deleting the account stay in the app; the block only calls the handlers and never fetches or stores anything. The e-mail form validates the address itself and clears its error on the next valid submit.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings1`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Settings1 } from '@tc96/blocks/application/settings/settings-1'
+import { Settings1 } from '@tc96/ui/blocks/application/settings/settings-1'
 ```
 
 The same path exports the types `Settings1Field`, `Settings1Labels` and `Settings1Props`.

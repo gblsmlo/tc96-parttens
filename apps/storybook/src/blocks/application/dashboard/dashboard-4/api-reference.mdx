@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Dashboard4
 
-A module tracker in three layers, after the ReUI Module Tracker dashboard: a sticky navbar with the breadcrumb, the team avatars and Convidar; a row of three metric cards, each with a caption, a compact value and an area chart of the period; and a table of modules with a progress ring, the module with its kind, owner and domain, the delivery window, a status badge and the row actions (open, favorite and a menu), with sortable columns, a status filter with counts, a search, Adicionar módulo and a pagination that shows the range. Reach for it on the home page of a product or platform team that follows the delivery of its modules. Install it with `npx @tc96/parttens add dashboard-4`.
+A module tracker in three layers, after the ReUI Module Tracker dashboard: a sticky navbar with the breadcrumb, the team avatars and Convidar; a row of three metric cards, each with a caption, a compact value and an area chart of the period; and a table of modules with a progress ring, the module with its kind, owner and domain, the delivery window, a status badge and the row actions (open, favorite and a menu), with sortable columns, a status filter with counts, a search, Adicionar módulo and a pagination that shows the range. Reach for it on the home page of a product or platform team that follows the delivery of its modules. Install it with `npx @tc96/cli add dashboard-4`.
 
 It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The sort, the filter, the search and the page are controlled: the app passes the rows already sorted, filtered and paged, and the block never reorders them. Each tool renders only with its callback. The metric cards are the `AreaMetricWidget` of the widgets pattern, the same card `Stats7` lays out; the value is a raw number the block formats with `locale` and `currency`, compact for `format: 'currency'`. The ready percentage comes from `tasksDone` over `tasksTotal`; `window` is a string the app formats. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `metrics` and `modules` the empty state, with Adicionar módulo when `onAddModule` is passed. The precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Dashboard/Dashboard4`: [Playground](?path
 ## Import
 
 ```tsx
-import { Dashboard4 } from '@tc96/blocks/application/dashboard/dashboard-4'
+import { Dashboard4 } from '@tc96/ui/blocks/application/dashboard/dashboard-4'
 ```
 
 The same path exports the types listed under Exports.

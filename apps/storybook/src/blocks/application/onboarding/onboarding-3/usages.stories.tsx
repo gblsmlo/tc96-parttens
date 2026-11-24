@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Onboarding3 } from '@tc96/blocks/application/onboarding/onboarding-3'
+import { Onboarding3 } from '@tc96/ui/blocks/application/onboarding/onboarding-3'
 import { Button } from '@tc96/ui/button'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor } from 'storybook/test'

@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Timeline4
 
-An activity sheet: a trigger button that opens a right-side sheet with a scrollable vertical feed. Each entry has a marker avatar, a title, a time and an optional badge. Reach for it when the history of a record should be one click away without taking space in the page. Install it with `npx @tc96/parttens add timeline-4`.
+An activity sheet: a trigger button that opens a right-side sheet with a scrollable vertical feed. Each entry has a marker avatar, a title, a time and an optional badge. Reach for it when the history of a record should be one click away without taking space in the page. Install it with `npx @tc96/cli add timeline-4`.
 
 It renders the trigger and the sheet, no landmark of its own. The block keeps no state and never fetches: `open` is controlled, so the app owns it and passes the entries already ordered. Loading, error and empty are the block's own states and render inside the sheet.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Timeline/Timeline4`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Timeline4 } from '@tc96/blocks/application/timeline/timeline-4'
+import { Timeline4 } from '@tc96/ui/blocks/application/timeline/timeline-4'
 ```
 
 The same path exports the types listed under Exports.

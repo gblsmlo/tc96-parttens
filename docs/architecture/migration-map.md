@@ -103,4 +103,4 @@ A base permanece intacta. Modules normalizados iguais são unificados. Diferenç
 | `src/features/detail-sheet/components/ui/toolbar.tsx` | `ui/src/toolbar.tsx` | Compartilhado |
 | `src/features/detail-sheet/components/ui/tooltip.tsx` | `ui/src/tooltip.tsx` | Contrato preservado |
 
-Features: `src/features/<pattern>` → `packages/parttens/src/<pattern>`. Registry e scripts migram para `packages/registry`. Filter Builder excluído.
+Features: `src/features/<pattern>` → `packages/ui/src/patterns/<pattern>`. Registry e scripts migram para `packages/registry`. Filter Builder excluído.

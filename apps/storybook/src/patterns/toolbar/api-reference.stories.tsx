@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { CollectionToolbar, ViewSwitcherMenu } from '@tc96/parttens'
+import { CollectionToolbar, ViewSwitcherMenu } from '@tc96/ui/patterns'
 import { IconSlot, Slot } from '../../test-utils/anatomy-slot'
 import { ToolbarCanvas } from './toolbar-canvas.tsx'
 

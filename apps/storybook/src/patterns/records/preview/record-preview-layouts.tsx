@@ -1,10 +1,10 @@
 import { ArrowsOutSimpleIcon } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
 import {
   RecordPreview,
   RecordPreviewAction,
   RecordPreviewBody,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { RecordPreviewControls } from './record-preview-controls.ts'
 

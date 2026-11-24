@@ -1,16 +1,16 @@
 import { DotsThreeIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
+import { Badge } from '@tc96/ui/badge'
+import { Button } from '@tc96/ui/button'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   SettingsRow,
   SettingsSection,
   SettingsSectionDescription,
   SettingsSectionHeader,
   SettingsSectionTitle,
-} from '@tc96/parttens'
-import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
-import { Badge } from '@tc96/ui/badge'
-import { Button } from '@tc96/ui/button'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import {
   Select,
   SelectItem,

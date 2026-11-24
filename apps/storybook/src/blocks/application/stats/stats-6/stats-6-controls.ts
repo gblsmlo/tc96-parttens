@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { Stats6Period } from '@tc96/blocks/application/stats/stats-6'
+import type { Stats6Period } from '@tc96/ui/blocks/application/stats/stats-6'
 
 export interface Stats6Controls {
   currency: 'BRL' | 'USD'

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RecordGroupLink } from '@tc96/parttens'
+import { RecordGroupLink } from '@tc96/ui/patterns'
 import { expect, fn, userEvent, within } from 'storybook/test'
 
 import { LinkedRecordsGroup } from '../layouts/links'

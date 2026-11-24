@@ -1,15 +1,15 @@
 import { CameraIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
+import { Button } from '@tc96/ui/button'
+import { Input } from '@tc96/ui/input'
 import {
   SettingsRow,
   SettingsSection,
   SettingsSectionDescription,
   SettingsSectionHeader,
   SettingsSectionTitle,
-} from '@tc96/parttens'
-import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
-import { Button } from '@tc96/ui/button'
-import { Input } from '@tc96/ui/input'
+} from '@tc96/ui/patterns'
 import { type FormEvent, useState } from 'react'
 import { expect, fn, within } from 'storybook/test'
 

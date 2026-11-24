@@ -1,6 +1,6 @@
 import { ptBR } from '@daypicker/react/locale'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { emptyScheduleValue, ScheduleProperty } from '@tc96/parttens'
+import { emptyScheduleValue, ScheduleProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { ScheduleCanvas } from './schedule-canvas.tsx'
 import { scheduleToday } from './schedule-data.ts'

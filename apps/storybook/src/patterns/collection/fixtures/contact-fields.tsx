@@ -1,3 +1,4 @@
+import { Checkbox } from '@tc96/ui/checkbox'
 import {
   createSelectColumn,
   type DataGridColumnDef,
@@ -13,8 +14,7 @@ import {
   PhoneProperty,
   SelectProperty,
   TagsProperty,
-} from '@tc96/parttens'
-import { Checkbox } from '@tc96/ui/checkbox'
+} from '@tc96/ui/patterns'
 import {
   type Contact,
   type ContactTag,

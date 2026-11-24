@@ -3,7 +3,7 @@ import type {
   Dashboard3Kpi,
   Dashboard3Member,
   Dashboard3QueueItem,
-} from '@tc96/blocks/application/dashboard/dashboard-3'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-3'
 
 export const kpis: Dashboard3Kpi[] = [
   {

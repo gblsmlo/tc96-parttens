@@ -15,32 +15,32 @@ Screens that only live in Storybook, with example data and no install, are under
 Install a block by name:
 
 ```bash
-npx @tc96/parttens add app-shell-1
+npx @tc96/cli add app-shell-1
 ```
 
 Install several at once, or a block next to patterns:
 
 ```bash
-npx @tc96/parttens add app-shell-1 app-shell-3
-npx @tc96/parttens add app-shell-4 collection
+npx @tc96/cli add app-shell-1 app-shell-3
+npx @tc96/cli add app-shell-4 collection
 ```
 
 Preview what would change before writing anything, print the new files, or compare installed files with the current version:
 
 ```bash
-npx @tc96/parttens add app-shell-1 --dry-run
-npx @tc96/parttens add app-shell-1 --view
-npx @tc96/parttens add app-shell-1 --diff
+npx @tc96/cli add app-shell-1 --dry-run
+npx @tc96/cli add app-shell-1 --view
+npx @tc96/cli add app-shell-1 --diff
 ```
 
-If the repo blocks `npx`, use `bunx @tc96/parttens add ...` or `pnpm dlx @tc96/parttens add ...`. Run `npx @tc96/parttens --help` for the list of patterns and blocks.
+If the repo blocks `npx`, use `bunx @tc96/cli add ...` or `pnpm dlx @tc96/cli add ...`. Run `npx @tc96/cli --help` for the list of patterns and blocks.
 
 ## Configure the alias
 
 The CLI writes blocks where the `blocks` alias resolves. It is optional in `components.json`: without it the CLI derives it from `ui`, so `@acme/ui` gives `@acme/blocks`. Your `tsconfig.json` needs a `paths` entry for it, and only when you install a block; installing patterns alone does not ask for it. A `components.json` that still uses `aliases.templates`, or a `tsconfig.json` that still has the `@acme/templates/*` entry, keeps working: the CLI warns and writes the blocks there until you rename it.
 
 ```json
-"@acme/blocks/*": ["./packages/blocks/src/*"]
+"@acme/blocks/*": ["./packages/ui/src/blocks/*"]
 ```
 
 To keep blocks inside the app instead of a package, set the alias and point it there:
@@ -102,10 +102,10 @@ export function AppLayout() {
 
 ### Application / Shell
 
-- **[AppShell1](?path=/docs/blocks-application-shell-appshell1--doc)**, `npx @tc96/parttens add app-shell-1`: sidebar that collapses to an icon rail, with workspace switcher, grouped navigation with nested items, counters and pinned items with their own menu, account menu and a breadcrumb header.
-- **[AppShell2](?path=/docs/blocks-application-shell-appshell2--doc)**, `npx @tc96/parttens add app-shell-2`: floating sidebar with a ⌘K page search under the workspace switcher.
-- **[AppShell3](?path=/docs/blocks-application-shell-appshell3--doc)**, `npx @tc96/parttens add app-shell-3`: inset sidebar with projects and progress rings, a usage panel, and a notifications popover in the header.
-- **[AppShell4](?path=/docs/blocks-application-shell-appshell4--doc)**, `npx @tc96/parttens add app-shell-4`: icon rail of sections beside the navigation of the active section, with ⌘K search, notifications and a Create action in the header.
+- **[AppShell1](?path=/docs/blocks-application-shell-appshell1--doc)**, `npx @tc96/cli add app-shell-1`: sidebar that collapses to an icon rail, with workspace switcher, grouped navigation with nested items, counters and pinned items with their own menu, account menu and a breadcrumb header.
+- **[AppShell2](?path=/docs/blocks-application-shell-appshell2--doc)**, `npx @tc96/cli add app-shell-2`: floating sidebar with a ⌘K page search under the workspace switcher.
+- **[AppShell3](?path=/docs/blocks-application-shell-appshell3--doc)**, `npx @tc96/cli add app-shell-3`: inset sidebar with projects and progress rings, a usage panel, and a notifications popover in the header.
+- **[AppShell4](?path=/docs/blocks-application-shell-appshell4--doc)**, `npx @tc96/cli add app-shell-4`: icon rail of sections beside the navigation of the active section, with ⌘K search, notifications and a Create action in the header.
 
 ### Auth
 
@@ -113,15 +113,15 @@ Nine pages of the sign in flow, in `Blocks/Application/Auth`, installed under `a
 
 | Block | Install | What it is |
 | --- | --- | --- |
-| **[Login1](?path=/docs/blocks-application-auth-login-login1-api-reference--api-reference)** | `npx @tc96/parttens add login-1` | e-mail and password with a show and hide toggle, "remember me", links to recover the password and to sign up, optional providers |
-| **[Login2](?path=/docs/blocks-application-auth-login-login2-api-reference--api-reference)** | `npx @tc96/parttens add login-2` | the minimal sign in: e-mail, password with a show and hide toggle and the submit button, with no "remember me", links, providers or logo |
-| **[Otp1](?path=/docs/blocks-application-auth-otp1-api-reference--api-reference)** | `npx @tc96/parttens add otp-1` | one input per digit and a Verificar button that is the only way to send the code, with an optional resend whose countdown is yours |
-| **[Signup1](?path=/docs/blocks-application-auth-register-register1-api-reference--api-reference)** | `npx @tc96/parttens add signup-1` | name, e-mail, new password with live feedback and a confirmation, optional providers, and a terms notice that is only links |
-| **[Signup2](?path=/docs/blocks-application-auth-register-register2-api-reference--api-reference)** | `npx @tc96/parttens add signup-2` | the minimal sign up: name, e-mail, new password with live feedback and a confirmation, and the submit button, with no providers, terms notice, links or logo |
-| **[ResetPassword1](?path=/docs/blocks-application-auth-resetpassword-resetpassword1-api-reference--api-reference)** | `npx @tc96/parttens add reset-password-1` | new password with live feedback and a confirmation, and the way back to sign in; the reset token stays in your app |
-| **[ResetPassword2](?path=/docs/blocks-application-auth-resetpassword-resetpassword2-api-reference--api-reference)** | `npx @tc96/parttens add reset-password-2` | `ResetPassword1` with a validity timer you control: the time left above the form, and an expired state with a request for a new link |
-| **[ForgotPassword1](?path=/docs/blocks-application-auth-forgotpassword-forgotpassword1-api-reference--api-reference)** | `npx @tc96/parttens add forgot-password-1` | an e-mail field that asks for the reset link, and a confirmation that replaces the form when you pass `sent`, with a resend and the way back to sign in |
-| **[ForgotPassword2](?path=/docs/blocks-application-auth-forgotpassword-forgotpassword2-api-reference--api-reference)** | `npx @tc96/parttens add forgot-password-2` | the minimal forgot password: the e-mail field and a confirmation that replaces the form when you pass `sent`, with no resend, link back or logo |
+| **[Login1](?path=/docs/blocks-application-auth-login-login1-api-reference--api-reference)** | `npx @tc96/cli add login-1` | e-mail and password with a show and hide toggle, "remember me", links to recover the password and to sign up, optional providers |
+| **[Login2](?path=/docs/blocks-application-auth-login-login2-api-reference--api-reference)** | `npx @tc96/cli add login-2` | the minimal sign in: e-mail, password with a show and hide toggle and the submit button, with no "remember me", links, providers or logo |
+| **[Otp1](?path=/docs/blocks-application-auth-otp1-api-reference--api-reference)** | `npx @tc96/cli add otp-1` | one input per digit and a Verificar button that is the only way to send the code, with an optional resend whose countdown is yours |
+| **[Signup1](?path=/docs/blocks-application-auth-register-register1-api-reference--api-reference)** | `npx @tc96/cli add signup-1` | name, e-mail, new password with live feedback and a confirmation, optional providers, and a terms notice that is only links |
+| **[Signup2](?path=/docs/blocks-application-auth-register-register2-api-reference--api-reference)** | `npx @tc96/cli add signup-2` | the minimal sign up: name, e-mail, new password with live feedback and a confirmation, and the submit button, with no providers, terms notice, links or logo |
+| **[ResetPassword1](?path=/docs/blocks-application-auth-resetpassword-resetpassword1-api-reference--api-reference)** | `npx @tc96/cli add reset-password-1` | new password with live feedback and a confirmation, and the way back to sign in; the reset token stays in your app |
+| **[ResetPassword2](?path=/docs/blocks-application-auth-resetpassword-resetpassword2-api-reference--api-reference)** | `npx @tc96/cli add reset-password-2` | `ResetPassword1` with a validity timer you control: the time left above the form, and an expired state with a request for a new link |
+| **[ForgotPassword1](?path=/docs/blocks-application-auth-forgotpassword-forgotpassword1-api-reference--api-reference)** | `npx @tc96/cli add forgot-password-1` | an e-mail field that asks for the reset link, and a confirmation that replaces the form when you pass `sent`, with a resend and the way back to sign in |
+| **[ForgotPassword2](?path=/docs/blocks-application-auth-forgotpassword-forgotpassword2-api-reference--api-reference)** | `npx @tc96/cli add forgot-password-2` | the minimal forgot password: the e-mail field and a confirmation that replaces the form when you pass `sent`, with no resend, link back or logo |
 
 All nine share one contract:
 
@@ -138,8 +138,8 @@ Two editor pages on React Flow, in `Blocks/AI & Agents/Flow`, installed under `a
 
 | Block | Install | What it is |
 | --- | --- | --- |
-| **[WorkflowEditor](?path=/docs/blocks-ai-agents-flow-workfloweditor--doc)** | `npx @tc96/parttens add workflow-editor` | step library, horizontal canvas with undo, redo, lock and minimap, inspector with a Responsável form, assistant |
-| **[AgentBuilder](?path=/docs/blocks-ai-agents-flow-agentbuilder--doc)** | `npx @tc96/parttens add agent-builder` | step library, vertical canvas with edge controls and Organizar árvore, inspector with a Caminho form, assistant |
+| **[WorkflowEditor](?path=/docs/blocks-ai-agents-flow-workfloweditor--doc)** | `npx @tc96/cli add workflow-editor` | step library, horizontal canvas with undo, redo, lock and minimap, inspector with a Responsável form, assistant |
+| **[AgentBuilder](?path=/docs/blocks-ai-agents-flow-agentbuilder--doc)** | `npx @tc96/cli add agent-builder` | step library, vertical canvas with edge controls and Organizar árvore, inspector with a Caminho form, assistant |
 
 React Flow ships its own stylesheet, which you import once in your global CSS next to your theme; without it the canvas does not place nodes or edges. The blocks read no `--xy-*` variable from your theme: the colors come from tokens by class.
 

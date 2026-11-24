@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RichTextEditor, type RichTextEditorHandle } from '@tc96/parttens'
+import { RichTextEditor, type RichTextEditorHandle } from '@tc96/ui/patterns'
 import { useRef } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import {

@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # List2
 
-A ranked leaderboard: a header with a title and a range select, then numbered rows with initials or an icon, the name, the amount and its share of the total. Reach for it to rank people, products or accounts over a period the reader can change. Install it with `npx @tc96/parttens add list-2`.
+A ranked leaderboard: a header with a title and a range select, then numbered rows with initials or an icon, the name, the amount and its share of the total. Reach for it to rank people, products or accounts over a period the reader can change. Install it with `npx @tc96/cli add list-2`.
 
 It is a section, not a page: it renders no `main` landmark. The block keeps no state and never fetches: `range` is controlled, so the app reads the entries of the chosen range and passes them back, already ordered. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/List/List2`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { List2 } from '@tc96/blocks/application/list/list-2'
+import { List2 } from '@tc96/ui/blocks/application/list/list-2'
 ```
 
 The same path exports the types listed under Exports.

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AreaMetricWidget } from '@tc96/parttens'
+import { AreaMetricWidget } from '@tc96/ui/patterns'
 import { StatsCanvas } from './stats-canvas.tsx'
 import { statsControlArgs } from './stats-controls.ts'
 import {

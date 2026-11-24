@@ -1,7 +1,7 @@
 import {
   Timeline3,
   type Timeline3Step,
-} from '@tc96/blocks/application/timeline/timeline-3'
+} from '@tc96/ui/blocks/application/timeline/timeline-3'
 import { useState } from 'react'
 import { approvalSteps } from '../fixtures/timeline-3.ts'
 import type { Timeline3Controls } from './timeline-3-controls.ts'

@@ -4,6 +4,7 @@ import {
   DotsThreeIcon,
   FileTextIcon,
 } from '@phosphor-icons/react'
+import { Menu, MenuCheckboxItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   EmailProperty,
   PhoneProperty,
@@ -14,8 +15,7 @@ import {
   SelectProperty,
   TagsProperty,
   TextProperty,
-} from '@tc96/parttens'
-import { Menu, MenuCheckboxItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
 import {

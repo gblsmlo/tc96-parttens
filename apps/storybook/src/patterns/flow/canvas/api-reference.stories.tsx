@@ -7,7 +7,7 @@ import {
   FlowShortcutsPopover,
   type FlowStep,
   type FlowStepType,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { Slot } from '../../../test-utils/anatomy-slot'
 import { CanvasFrame } from './canvas-frame.tsx'
 

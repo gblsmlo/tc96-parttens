@@ -1,7 +1,7 @@
 import {
   Settings22,
   type Settings22Props,
-} from '@tc96/blocks/application/settings/settings-22'
+} from '@tc96/ui/blocks/application/settings/settings-22'
 import { settings22Keys } from '../fixtures/settings-22.ts'
 import type { Settings22Controls } from './settings-22-controls.ts'
 

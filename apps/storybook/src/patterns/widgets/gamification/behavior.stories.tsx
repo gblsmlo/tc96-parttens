@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
 import {
   AchievementsWidget,
   LevelWidget,
@@ -6,8 +7,7 @@ import {
   ProgressHud,
   QuestsWidget,
   StreakWidget,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { GamificationCanvas } from './gamification-canvas.tsx'
 import { week, xp } from './gamification-data.tsx'

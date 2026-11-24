@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings16
 
-A settings section that lists the cost centers, the places where a cost is booked, such as a practice area, an office or a project. Each row shows its name, how many entries use it and a menu to edit or archive. Archived cost centers wait in a collapsed section and can be restored. Reach for it when the app tracks where money is spent and lets people manage those places. Install it with `npx @tc96/parttens add settings-16`.
+A settings section that lists the cost centers, the places where a cost is booked, such as a practice area, an office or a project. Each row shows its name, how many entries use it and a menu to edit or archive. Archived cost centers wait in a collapsed section and can be restored. Reach for it when the app tracks where money is spent and lets people manage those places. Install it with `npx @tc96/cli add settings-16`.
 
 It is a section, not a page: it renders no `main` landmark. Creating, editing and archiving stay in the app; the block only calls `onCreate` and `onCostCenterAction`, keeps no list of its own and never fetches or stores anything.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings16`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings16 } from '@tc96/blocks/application/settings/settings-16'
+import { Settings16 } from '@tc96/ui/blocks/application/settings/settings-16'
 ```
 
 The same path exports the types `Settings16Props`, `Settings16CostCenter`, `Settings16Action` and `Settings16Labels`.

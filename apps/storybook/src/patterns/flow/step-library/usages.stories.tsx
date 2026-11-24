@@ -5,7 +5,7 @@ import {
   WrenchIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FlowRunCard, FlowStepLibrary, groupStepTypes } from '@tc96/parttens'
+import { FlowRunCard, FlowStepLibrary, groupStepTypes } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { agentStepTypes } from './fixtures/agent'
 import { failedRun, notRunRun } from './fixtures/runs'

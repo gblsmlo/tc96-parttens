@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Settings16 } from '@tc96/blocks/application/settings/settings-16'
+import { Settings16 } from '@tc96/ui/blocks/application/settings/settings-16'
 import { fn } from 'storybook/test'
 import {
   settings16ArchivedCostCenters,

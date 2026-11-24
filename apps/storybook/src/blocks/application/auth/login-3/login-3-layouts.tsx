@@ -1,4 +1,7 @@
-import { Login3, type Login3Props } from '@tc96/blocks/application/auth/login-3'
+import {
+  Login3,
+  type Login3Props,
+} from '@tc96/ui/blocks/application/auth/login-3'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import type { Login3Controls } from './login-3-controls.ts'
 

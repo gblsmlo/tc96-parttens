@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List2, type List2Props } from '@tc96/blocks/application/list/list-2'
+import { List2, type List2Props } from '@tc96/ui/blocks/application/list/list-2'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { entries } from '../fixtures/list-2.ts'
 import { type List2Controls, list2ControlArgs } from './list-2-controls.ts'

@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login2, type Login2Props } from '@tc96/blocks/application/auth/login-2'
+import {
+  Login2,
+  type Login2Props,
+} from '@tc96/ui/blocks/application/auth/login-2'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 

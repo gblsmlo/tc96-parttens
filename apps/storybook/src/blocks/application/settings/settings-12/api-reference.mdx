@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings12
 
-A settings section for the next actions a lead must complete before leaving each open stage. It has a gate switch that decides whether a stage change waits for the required actions, and under it one collapsible group per stage with its actions. Each action row shows its type, a switch that marks it required and, when the app handles actions, a menu to edit or delete. Reach for it when the app lets people set the steps a lead must go through. Install it with `npx @tc96/parttens add settings-12`.
+A settings section for the next actions a lead must complete before leaving each open stage. It has a gate switch that decides whether a stage change waits for the required actions, and under it one collapsible group per stage with its actions. Each action row shows its type, a switch that marks it required and, when the app handles actions, a menu to edit or delete. Reach for it when the app lets people set the steps a lead must go through. Install it with `npx @tc96/cli add settings-12`.
 
 It is a section, not a page: it renders no `main` landmark. Creating, editing and deleting stay in the app; the block only calls its callbacks, keeps no list of its own and never fetches or stores anything.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings12`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings12 } from '@tc96/blocks/application/settings/settings-12'
+import { Settings12 } from '@tc96/ui/blocks/application/settings/settings-12'
 ```
 
 The same path exports the types `Settings12Props`, `Settings12Stage`, `Settings12NextAction`, `Settings12ActionType`, `Settings12Action` and `Settings12Labels`.

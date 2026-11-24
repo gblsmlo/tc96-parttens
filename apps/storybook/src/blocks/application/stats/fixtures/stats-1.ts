@@ -1,4 +1,4 @@
-import type { Stats1Stat } from '@tc96/blocks/application/stats/stats-1'
+import type { Stats1Stat } from '@tc96/ui/blocks/application/stats/stats-1'
 
 export const stats: Stats1Stat[] = [
   {

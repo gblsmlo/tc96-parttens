@@ -9,15 +9,6 @@ import {
   ProhibitIcon,
   VideoCameraIcon,
 } from '@phosphor-icons/react'
-import {
-  RecordGroup,
-  RecordGroupAction,
-  RecordGroupFilter,
-  RecordGroupItem,
-  RecordGroupLink,
-  type RecordGroupVariant,
-  RecordStatusBadge,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import {
@@ -28,6 +19,15 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  RecordGroup,
+  RecordGroupAction,
+  RecordGroupFilter,
+  RecordGroupItem,
+  RecordGroupLink,
+  type RecordGroupVariant,
+  RecordStatusBadge,
+} from '@tc96/ui/patterns'
 import { type ReactNode, useState } from 'react'
 
 type Modality = 'in_person' | 'video' | 'phone'

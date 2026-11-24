@@ -14,6 +14,17 @@ import {
   UsersIcon,
 } from '@phosphor-icons/react'
 import {
+  MenuCheckboxItem,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+} from '@tc96/ui/menu'
+import {
   Action,
   type CalendarViewMode,
   CollectionFrame,
@@ -42,18 +53,7 @@ import {
   ViewSwitcherItems,
   ViewSwitcherMenu,
   ViewSwitcherSearch,
-} from '@tc96/parttens'
-import {
-  MenuCheckboxItem,
-  MenuGroup,
-  MenuGroupLabel,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuSeparator,
-  MenuSub,
-  MenuSubPopup,
-  MenuSubTrigger,
-} from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { Separator } from '@tc96/ui/separator'
 import {
   type ComponentType,

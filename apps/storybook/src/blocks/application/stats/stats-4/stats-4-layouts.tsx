@@ -2,7 +2,7 @@ import {
   Stats4,
   type Stats4Props,
   type Stats4Range,
-} from '@tc96/blocks/application/stats/stats-4'
+} from '@tc96/ui/blocks/application/stats/stats-4'
 import { useEffect, useState } from 'react'
 import { leadsOverview } from '../fixtures/stats-4.ts'
 import type { Stats4Controls } from './stats-4-controls.ts'

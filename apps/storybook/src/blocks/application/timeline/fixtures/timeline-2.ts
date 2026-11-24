@@ -1,4 +1,4 @@
-import type { Timeline2Release } from '@tc96/blocks/application/timeline/timeline-2'
+import type { Timeline2Release } from '@tc96/ui/blocks/application/timeline/timeline-2'
 
 export const releases: Timeline2Release[] = [
   {

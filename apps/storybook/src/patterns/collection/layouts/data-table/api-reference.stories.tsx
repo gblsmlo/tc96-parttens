@@ -4,7 +4,7 @@ import {
   DataTable,
   type DataTableColumnDef,
   useDataTable,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { Slot } from '../../../../test-utils/anatomy-slot'
 import { DataTableCanvas } from './data-table-canvas.tsx'

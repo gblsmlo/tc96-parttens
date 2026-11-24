@@ -1,4 +1,4 @@
-import type { TagsPropertyOption } from '@tc96/parttens'
+import type { TagsPropertyOption } from '@tc96/ui/patterns'
 
 export const tagOptions: TagsPropertyOption[] = [
   { label: 'Documentos', value: 'documents' },

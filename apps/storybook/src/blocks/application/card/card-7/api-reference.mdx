@@ -5,14 +5,14 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Card7
 
-A contact profile card: avatar, name, status badge and email, a summary strip of stats, a list of amounts and one action button. Reach for it when a CRM page shows who a contact is and what they are worth. Install it with `npx @tc96/parttens add card-7`.
+A contact profile card: avatar, name, status badge and email, a summary strip of stats, a list of amounts and one action button. Reach for it when a CRM page shows who a contact is and what they are worth. Install it with `npx @tc96/cli add card-7`.
 
 The block keeps no state and fetches nothing. Every value of `stats` is a final string from the app; item amounts are numbers formatted with `formatAmount`. Without `contact` the block shows its skeleton.
 
 ## Import
 
 ```tsx
-import { Card7 } from '@tc96/blocks/application/card/card-7'
+import { Card7 } from '@tc96/ui/blocks/application/card/card-7'
 ```
 
 The same path exports the types `Card7Props`, `Card7Contact`, `Card7Stat`, `Card7Item` and `Card7Labels`.

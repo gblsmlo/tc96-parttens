@@ -32,22 +32,22 @@ import type {
   ShellSettings,
   ShellUser,
   ShellWorkspace,
-} from '@tc96/blocks/application/shell/app-shell-1'
+} from '@tc96/ui/blocks/application/shell/app-shell-1'
 import type {
   ShellNotification,
   ShellProject,
   ShellUsage,
-} from '@tc96/blocks/application/shell/app-shell-3'
-import type { ShellSection } from '@tc96/blocks/application/shell/app-shell-4'
+} from '@tc96/ui/blocks/application/shell/app-shell-3'
+import type { ShellSection } from '@tc96/ui/blocks/application/shell/app-shell-4'
+import { Button } from '@tc96/ui/button'
+import { Input } from '@tc96/ui/input'
 import {
   SettingsRow,
   SettingsSection,
   SettingsSectionDescription,
   SettingsSectionHeader,
   SettingsSectionTitle,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { Input } from '@tc96/ui/input'
+} from '@tc96/ui/patterns'
 import { Switch } from '@tc96/ui/switch'
 import type { ReactElement } from 'react'
 

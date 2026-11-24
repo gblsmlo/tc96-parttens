@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { PropertyVariant } from '@tc96/parttens'
+import type { PropertyVariant } from '@tc96/ui/patterns'
 import { tagOptionLabels, tagOptions } from './tags-data.ts'
 
 export const tagsDisplays = ['chips', 'count'] as const

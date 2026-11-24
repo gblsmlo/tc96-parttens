@@ -2,7 +2,7 @@ import type {
   Settings20Category,
   Settings20Channel,
   Settings20Matrix,
-} from '@tc96/blocks/application/settings/settings-20'
+} from '@tc96/ui/blocks/application/settings/settings-20'
 
 export const settings20Channels: Settings20Channel[] = [
   { id: 'email', name: 'E-mail' },

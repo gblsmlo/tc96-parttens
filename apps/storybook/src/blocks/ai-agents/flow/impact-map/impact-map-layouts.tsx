@@ -1,7 +1,7 @@
 import {
   ImpactMap,
   type ImpactMapProps,
-} from '@tc96/blocks/ai-agents/flow/impact-map'
+} from '@tc96/ui/blocks/ai-agents/flow/impact-map'
 import { links, nodes } from '../fixtures/impact-map.ts'
 import type { ImpactMapControls } from './impact-map-controls.ts'
 

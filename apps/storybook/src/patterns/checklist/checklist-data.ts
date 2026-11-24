@@ -1,4 +1,4 @@
-import type { ChecklistItem } from '@tc96/parttens'
+import type { ChecklistItem } from '@tc96/ui/patterns'
 
 export const authorOptions = [
   { fallback: 'GM', label: 'Gabriel Melo', value: 'gabriel' },

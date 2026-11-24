@@ -4,7 +4,7 @@ import {
   RunMonitor,
   type RunMonitorConnection,
   type RunMonitorStep,
-} from '@tc96/blocks/ai-agents/flow/run-monitor'
+} from '@tc96/ui/blocks/ai-agents/flow/run-monitor'
 import { expect, fn, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { runMonitorHandlers } from '../../../../mocks/run-monitor.ts'

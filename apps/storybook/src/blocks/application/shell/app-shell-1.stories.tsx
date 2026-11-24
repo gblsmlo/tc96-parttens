@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AppShell1 } from '@tc96/blocks/application/shell/app-shell-1'
+import { AppShell1 } from '@tc96/ui/blocks/application/shell/app-shell-1'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
 import { expectSettingsLevel } from './fixtures/settings-play'
@@ -18,7 +18,7 @@ import {
 } from './fixtures/shell-data'
 
 const usage = `
-// npx @tc96/parttens add app-shell-1
+// npx @tc96/cli add app-shell-1
 import { AppShell1 } from '@acme/blocks/application/shell/app-shell-1'
 import { Link } from '@tanstack/react-router'
 
@@ -84,7 +84,7 @@ const docs = {
   ],
   description: {
     component:
-      'An application shell whose sidebar collapses to an icon rail: workspace switcher, grouped navigation with nested items, counters and pinned items with their own menu, an account menu, and a header with the sidebar trigger and the breadcrumb. Install it with `npx @tc96/parttens add app-shell-1`.',
+      'An application shell whose sidebar collapses to an icon rail: workspace switcher, grouped navigation with nested items, counters and pinned items with their own menu, an account menu, and a header with the sidebar trigger and the breadcrumb. Install it with `npx @tc96/cli add app-shell-1`.',
   },
   story: { height: '42rem', inline: false },
   usage,

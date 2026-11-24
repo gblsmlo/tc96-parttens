@@ -18,16 +18,6 @@ import {
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
-  PersonProperty,
-  type PersonPropertyOption,
-  RecordDialog,
-  RecordGroup,
-  RecordGroupRow,
-  SelectProperty,
-  type SelectPropertyOption,
-  TextProperty,
-} from '@tc96/parttens'
-import {
   Accordion,
   AccordionItem,
   AccordionPanel,
@@ -36,6 +26,16 @@ import {
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
+import {
+  PersonProperty,
+  type PersonPropertyOption,
+  RecordDialog,
+  RecordGroup,
+  RecordGroupRow,
+  SelectProperty,
+  type SelectPropertyOption,
+  TextProperty,
+} from '@tc96/ui/patterns'
 import { Switch } from '@tc96/ui/switch'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, within } from 'storybook/test'

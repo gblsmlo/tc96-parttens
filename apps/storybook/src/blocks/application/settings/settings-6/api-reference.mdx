@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings6
 
-A members section that lists the team with each member's role and, when the app handles actions, a menu to remove a member. Pending invitations are listed in a second section with a menu to resend or revoke them. Reach for it when the app lets admins manage who has access to the workspace. Install it with `npx @tc96/parttens add settings-6`.
+A members section that lists the team with each member's role and, when the app handles actions, a menu to remove a member. Pending invitations are listed in a second section with a menu to resend or revoke them. Reach for it when the app lets admins manage who has access to the workspace. Install it with `npx @tc96/cli add settings-6`.
 
 It is a section, not a page: it renders no `main` landmark. Inviting, changing roles and revoking stay in the app: the block only calls the `on...` callbacks, keeps no list of its own and never fetches or stores anything. The role select keeps the chosen value in local state so it shows the new role at once.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings6`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Settings6 } from '@tc96/blocks/application/settings/settings-6'
+import { Settings6 } from '@tc96/ui/blocks/application/settings/settings-6'
 ```
 
 The same path exports the types `Settings6Props`, `Settings6Labels`, `Settings6Member`, `Settings6Invitation`, `Settings6Role`, `Settings6Seats`, `Settings6MemberAction` and `Settings6InvitationAction`.

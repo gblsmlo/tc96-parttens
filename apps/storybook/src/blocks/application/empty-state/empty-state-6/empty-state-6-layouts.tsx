@@ -1,4 +1,4 @@
-import { EmptyState6 } from '@tc96/blocks/application/empty-state/empty-state-6'
+import { EmptyState6 } from '@tc96/ui/blocks/application/empty-state/empty-state-6'
 import { useState } from 'react'
 import { tabs } from '../fixtures/empty-state-6.ts'
 import type { EmptyState6Controls } from './empty-state-6-controls.ts'

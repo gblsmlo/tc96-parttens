@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { ButtonProps } from '@tc96/ui/button'
+import { MenuItem } from '@tc96/ui/menu'
 import {
   CollectionToolbar,
   ViewSwitcherCreate,
@@ -6,9 +8,7 @@ import {
   ViewSwitcherItems,
   ViewSwitcherMenu,
   ViewSwitcherSearch,
-} from '@tc96/parttens'
-import type { ButtonProps } from '@tc96/ui/button'
-import { MenuItem } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import type { ReactNode } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 

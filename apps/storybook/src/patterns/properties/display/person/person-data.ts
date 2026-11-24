@@ -1,4 +1,4 @@
-import type { PersonPropertyOption } from '@tc96/parttens'
+import type { PersonPropertyOption } from '@tc96/ui/patterns'
 
 export type ExamplePerson = 'ana' | 'gabriel' | 'marina'
 

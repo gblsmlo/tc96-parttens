@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings5
 
-A workspace settings section with the logo, the name, the URL, the time zone and a danger zone that deletes the workspace. Reach for it when the app lets an admin edit the workspace itself. Install it with `npx @tc96/parttens add settings-5`.
+A workspace settings section with the logo, the name, the URL, the time zone and a danger zone that deletes the workspace. Reach for it when the app lets an admin edit the workspace itself. Install it with `npx @tc96/cli add settings-5`.
 
 It is a section, not a page: it renders no `main` landmark. Saving stays in the app: the block calls the `on...` callbacks, keeps no list and never fetches or stores anything. The name and the URL are read when their field loses focus, and the time zone is kept in local state so the select shows the new value at once.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings5`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Settings5 } from '@tc96/blocks/application/settings/settings-5'
+import { Settings5 } from '@tc96/ui/blocks/application/settings/settings-5'
 ```
 
 The same path exports the types `Settings5Props`, `Settings5Labels` and `Settings5TimeZone`.

@@ -1,7 +1,7 @@
 import {
   Settings15,
   type Settings15Props,
-} from '@tc96/blocks/application/settings/settings-15'
+} from '@tc96/ui/blocks/application/settings/settings-15'
 import {
   settings15ArchivedCategories,
   settings15Categories,

@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings13
 
-A settings section for the reasons a seller picks when a lead is lost. It has a switch that requires a reason, a switch that allows a custom reason, and a list of reasons with how many leads each one lost. Each reason row has a menu to edit, archive or delete when the app handles actions, and archived reasons sit in a collapsible that starts closed. Reach for it when the app asks people why they lost a lead. Install it with `npx @tc96/parttens add settings-13`.
+A settings section for the reasons a seller picks when a lead is lost. It has a switch that requires a reason, a switch that allows a custom reason, and a list of reasons with how many leads each one lost. Each reason row has a menu to edit, archive or delete when the app handles actions, and archived reasons sit in a collapsible that starts closed. Reach for it when the app asks people why they lost a lead. Install it with `npx @tc96/cli add settings-13`.
 
 It is a section, not a page: it renders no `main` landmark. Creating, editing, archiving and deleting stay in the app; the block only calls its callbacks, keeps no list of its own and never fetches or stores anything.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings13`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings13 } from '@tc96/blocks/application/settings/settings-13'
+import { Settings13 } from '@tc96/ui/blocks/application/settings/settings-13'
 ```
 
 The same path exports the types `Settings13Props`, `Settings13Reason`, `Settings13Action` and `Settings13Labels`.

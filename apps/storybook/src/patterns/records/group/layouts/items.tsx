@@ -5,13 +5,6 @@ import {
   ReceiptIcon,
   TrashIcon,
 } from '@phosphor-icons/react'
-import {
-  RecordGroup,
-  RecordGroupItem,
-  RecordStatusBadge,
-  SelectProperty,
-  type SelectPropertyOption,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
   Menu,
@@ -20,6 +13,13 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  RecordGroup,
+  RecordGroupItem,
+  RecordStatusBadge,
+  SelectProperty,
+  type SelectPropertyOption,
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 
 const ignore = (_id: string) => undefined

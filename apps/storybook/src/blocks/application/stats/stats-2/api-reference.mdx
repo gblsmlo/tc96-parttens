@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Stats2
 
-A card with the API quota usage: a meter of used over limit, the cost billed in the cycle, the renewal date and, when the app handles it, an Upgrade button. Reach for it in billing, usage or developer settings. Install it with `npx @tc96/parttens add stats-2`.
+A card with the API quota usage: a meter of used over limit, the cost billed in the cycle, the renewal date and, when the app handles it, an Upgrade button. Reach for it in billing, usage or developer settings. Install it with `npx @tc96/cli add stats-2`.
 
 It is a card, not a page: it renders no `main` landmark. The block keeps no state, never fetches and never converts a plan; upgrading is the app's, through `onUpgrade`. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Stats/Stats2`: [Playground](?path=/story/
 ## Import
 
 ```tsx
-import { Stats2 } from '@tc96/blocks/application/stats/stats-2'
+import { Stats2 } from '@tc96/ui/blocks/application/stats/stats-2'
 ```
 
 The same path exports the types `Stats2Props` and `Stats2Labels`.

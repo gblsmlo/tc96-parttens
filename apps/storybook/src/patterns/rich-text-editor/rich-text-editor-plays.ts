@@ -1,12 +1,12 @@
 import {
   richTextElementTypes,
   richTextHasNodeId,
-} from '@tc96/helpers/rich-text'
+} from '@tc96/ui/helpers/rich-text'
 import {
   RICH_TEXT_ELEMENTS,
   type RichTextMark,
   type RichTextValue,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import {
   expect,
   type fn,

@@ -1,7 +1,7 @@
 import {
   Stats2,
   type Stats2Props,
-} from '@tc96/blocks/application/stats/stats-2'
+} from '@tc96/ui/blocks/application/stats/stats-2'
 import { quotaUsage } from '../fixtures/stats-2.ts'
 import type { Stats2Controls } from './stats-2-controls.ts'
 

@@ -11,7 +11,7 @@ import {
   PropertyCollection,
   SelectProperty,
   TagsProperty,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { PropertiesControls } from './properties-controls'
 import {

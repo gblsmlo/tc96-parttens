@@ -1,4 +1,4 @@
-import type { List4Integration } from '@tc96/blocks/application/list/list-4'
+import type { List4Integration } from '@tc96/ui/blocks/application/list/list-4'
 
 export const integrations: List4Integration[] = [
   {

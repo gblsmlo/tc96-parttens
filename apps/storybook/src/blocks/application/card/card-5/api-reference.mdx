@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Card5
 
-A grid of shortcut tiles. Each tile has an icon, a title and a description, and is a button or a link: a shortcut with an `href` renders as a link, any other renders as a button that calls `onSelect`. Reach for it when a dashboard needs the actions people use most one click away. Install it with `npx @tc96/parttens add card-5`.
+A grid of shortcut tiles. Each tile has an icon, a title and a description, and is a button or a link: a shortcut with an `href` renders as a link, any other renders as a button that calls `onSelect`. Reach for it when a dashboard needs the actions people use most one click away. Install it with `npx @tc96/cli add card-5`.
 
 It is a list of tiles, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing, and it never navigates: links go through `renderLink`, so the app's router owns them. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Card/Card5`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { Card5 } from '@tc96/blocks/application/card/card-5'
+import { Card5 } from '@tc96/ui/blocks/application/card/card-5'
 ```
 
 The same path exports the types `Card5Props`, `Card5Shortcut` and `Card5Labels`.

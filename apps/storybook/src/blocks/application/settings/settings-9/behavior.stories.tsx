@@ -1,6 +1,6 @@
 import { BellIcon, TagIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Settings9 } from '@tc96/blocks/application/settings/settings-9'
+import { Settings9 } from '@tc96/ui/blocks/application/settings/settings-9'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { rules } from '../fixtures/settings-9.ts'
 import {

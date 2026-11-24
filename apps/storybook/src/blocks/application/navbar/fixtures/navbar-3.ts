@@ -3,7 +3,7 @@ import type {
   Navbar3RouteGroup,
   Navbar3User,
   Navbar3UserAction,
-} from '@tc96/blocks/application/navbar/navbar-3'
+} from '@tc96/ui/blocks/application/navbar/navbar-3'
 
 export const routes: Navbar3RouteGroup[] = [
   {

@@ -1,5 +1,6 @@
 import { ArrowsOutSimpleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
 import {
   DateProperty,
   IconLabelProperty,
@@ -17,8 +18,7 @@ import {
   TagsProperty,
   type TagsPropertyOption,
   TextProperty,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, screen, waitFor, within } from 'storybook/test'
 import {

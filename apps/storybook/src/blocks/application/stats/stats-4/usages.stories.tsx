@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Stats4,
   type Stats4Range,
-} from '@tc96/blocks/application/stats/stats-4'
+} from '@tc96/ui/blocks/application/stats/stats-4'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

@@ -1,7 +1,7 @@
 import {
   Signup3,
   type Signup3Props,
-} from '@tc96/blocks/application/auth/signup-3'
+} from '@tc96/ui/blocks/application/auth/signup-3'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import type { Signup3Controls } from './signup-3-controls.ts'
 

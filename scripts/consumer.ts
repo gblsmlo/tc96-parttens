@@ -4,7 +4,7 @@ import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import ts from 'typescript'
 import { readAliases, resolveAliasPath } from '../packages/registry/src/config'
-import { manifestPaths, readManifest, sourceDirectory } from './coss'
+import { manifestPaths, readManifest, uiSourcePath } from './coss'
 import { files } from './files'
 
 export const npmCache = resolve('.test-output/npm-cache')
@@ -70,7 +70,7 @@ export async function createConsumer(name: string): Promise<Consumer> {
   const uiManifest = await readManifest()
   for (const [item, entry] of Object.entries(uiManifest.items))
     for (const path of manifestPaths(item, entry)) {
-      let content = (await readFile(`${sourceDirectory}/${path}`, 'utf8'))
+      let content = (await readFile(uiSourcePath(path), 'utf8'))
         .replace(/(["'])@tc96\/ui\//g, `$1${aliases.ui}/`)
         .replace(/(["'])@tc96\/utils\1/g, `$1${aliases.utils}$1`)
       if (item === 'button') {
@@ -89,7 +89,7 @@ export async function createConsumer(name: string): Promise<Consumer> {
     await readFile(join(root, 'package.json'), 'utf8'),
   )
   manifest.name = `tc96-${name}`
-  manifest.dependencies['@tc96/parttens'] =
+  manifest.dependencies['@tc96/cli'] =
     `file:${await pack(resolve('dist/cli'))}`
   await json(join(root, 'package.json'), manifest)
   run(['npm', 'install', '--no-audit', '--no-fund'], root)
@@ -115,7 +115,7 @@ export async function installPatterns(consumer: Consumer, patterns: string[]) {
   run(
     [
       'node',
-      join(consumer.root, 'node_modules/@tc96/parttens/cli.js'),
+      join(consumer.root, 'node_modules/@tc96/cli/cli.js'),
       'add',
       ...patterns,
       '--cwd',

@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # List1
 
-A list of metric rows: an icon or initials, the metric name, an optional description, the value and a trend badge that points up, down or sideways. Reach for it on a dashboard that tracks a few indicators and compares each with the previous period. Install it with `npx @tc96/parttens add list-1`.
+A list of metric rows: an icon or initials, the metric name, an optional description, the value and a trend badge that points up, down or sideways. Reach for it on a dashboard that tracks a few indicators and compares each with the previous period. Install it with `npx @tc96/cli add list-1`.
 
 It is a list, not a page: it renders a `ul` and no `main` landmark. The block keeps no state and never fetches; the app passes raw numbers and the block formats them with the `locale` and `currency` props. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/List/List1`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { List1 } from '@tc96/blocks/application/list/list-1'
+import { List1 } from '@tc96/ui/blocks/application/list/list-1'
 ```
 
 The same path exports the types listed under Exports.

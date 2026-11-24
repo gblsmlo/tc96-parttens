@@ -5,7 +5,7 @@ import {
   ReceiptIcon,
   UsersThreeIcon,
 } from '@phosphor-icons/react'
-import type { List5Module } from '@tc96/blocks/application/list/list-5'
+import type { List5Module } from '@tc96/ui/blocks/application/list/list-5'
 
 export type ModuleIconName = 'chart' | 'chat' | 'receipt' | 'team'
 

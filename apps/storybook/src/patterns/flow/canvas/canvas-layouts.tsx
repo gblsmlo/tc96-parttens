@@ -4,7 +4,7 @@ import {
   FlowCanvasControls,
   FlowCanvasMinimap,
   FlowShortcutsPopover,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { Toggle } from '@tc96/ui/toggle'
 import { useState } from 'react'
 import type { CanvasControls } from './canvas-controls.ts'

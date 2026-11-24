@@ -5,7 +5,7 @@ import type {
   Dashboard4Person,
   Dashboard4RowAction,
   Dashboard4Sort,
-} from '@tc96/blocks/application/dashboard/dashboard-4'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-4'
 
 const wave = (base: number, swing: number, days = 28) =>
   Array.from({ length: days }, (_, day) =>

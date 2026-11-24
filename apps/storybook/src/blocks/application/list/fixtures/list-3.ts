@@ -1,7 +1,7 @@
 import type {
   List3Period,
   List3Transaction,
-} from '@tc96/blocks/application/list/list-3'
+} from '@tc96/ui/blocks/application/list/list-3'
 
 export const transactionsByPeriod: Record<List3Period, List3Transaction[]> = {
   month: [

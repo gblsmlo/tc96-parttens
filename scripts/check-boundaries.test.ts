@@ -6,7 +6,14 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 const script = join(import.meta.dir, 'check-boundaries.ts')
-const owners = ['utils', 'helpers', 'ui', 'parttens', 'blocks', 'registry']
+const owners = [
+  'packages/utils/src',
+  'packages/registry/src',
+  'packages/ui/src/components',
+  'packages/ui/src/helpers',
+  'packages/ui/src/patterns',
+  'packages/ui/src/blocks',
+]
 let root = ''
 
 async function workspace(sources: Record<string, string>) {
@@ -18,7 +25,7 @@ async function workspace(sources: Record<string, string>) {
     JSON.stringify({ items: { button: {} } }),
   )
   for (const owner of owners)
-    await mkdir(join(root, 'packages', owner, 'src'), { recursive: true })
+    await mkdir(join(root, owner), { recursive: true })
   for (const [path, content] of Object.entries(sources)) {
     await mkdir(dirname(join(root, path)), { recursive: true })
     await writeFile(join(root, path), content)
@@ -30,23 +37,24 @@ afterEach(() => rm(root, { recursive: true, force: true }))
 
 test('lets patterns depend on ui', async () => {
   const result = await workspace({
-    'packages/parttens/src/a.ts': "import { Button } from '@tc96/ui/button'\n",
+    'packages/ui/src/patterns/a.ts':
+      "import { Button } from '@tc96/ui/button'\n",
   })
   expect(result.status).toBe(0)
 })
 
 test('lets patterns depend on helpers', async () => {
   const result = await workspace({
-    'packages/parttens/src/a.ts':
-      "import { formatAmount } from '@tc96/helpers/format'\n",
-    'packages/helpers/src/format.ts': 'export const formatAmount = 1\n',
+    'packages/ui/src/patterns/a.ts':
+      "import { formatAmount } from '@tc96/ui/helpers/format'\n",
+    'packages/ui/src/helpers/format.ts': 'export const formatAmount = 1\n',
   })
   expect(result.status).toBe(0)
 })
 
 test('rejects helpers depending on React or on another layer', async () => {
   const result = await workspace({
-    'packages/helpers/src/format.ts':
+    'packages/ui/src/helpers/format.ts':
       "import { useState } from 'react'\nimport { cn } from '@tc96/utils'\n",
   })
   expect(result.status).not.toBe(0)
@@ -56,41 +64,42 @@ test('rejects helpers depending on React or on another layer', async () => {
 
 test('rejects ui depending on patterns', async () => {
   const result = await workspace({
-    'packages/ui/src/button.tsx': "import { Kanban } from '@tc96/parttens'\n",
+    'packages/ui/src/components/button.tsx':
+      "import { Kanban } from '@tc96/ui/patterns'\n",
   })
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('ui cannot depend on parttens')
+  expect(result.stderr).toContain('ui cannot depend on patterns')
 })
 
 test('rejects imports of the removed elements layer', async () => {
   const result = await workspace({
-    'packages/parttens/src/a.ts':
+    'packages/ui/src/patterns/a.ts':
       "import { Text } from '@tc96/elements/text'\n",
   })
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('parttens cannot depend on elements')
+  expect(result.stderr).toContain('patterns cannot depend on elements')
 })
 
 test('lets blocks depend on patterns and ui', async () => {
   const result = await workspace({
-    'packages/blocks/src/a.tsx':
-      "import { WidgetShell } from '@tc96/parttens'\nimport { Button } from '@tc96/ui/button'\n",
+    'packages/ui/src/blocks/a.tsx':
+      "import { WidgetShell } from '@tc96/ui/patterns'\nimport { Button } from '@tc96/ui/button'\n",
   })
   expect(result.status).toBe(0)
 })
 
 test('rejects patterns depending on blocks', async () => {
   const result = await workspace({
-    'packages/parttens/src/a.ts':
-      "import { AppShell1 } from '@tc96/blocks/application/shell/app-shell-1'\n",
+    'packages/ui/src/patterns/a.ts':
+      "import { AppShell1 } from '@tc96/ui/blocks/application/shell/app-shell-1'\n",
   })
   expect(result.status).not.toBe(0)
-  expect(result.stderr).toContain('parttens cannot depend on blocks')
+  expect(result.stderr).toContain('patterns cannot depend on blocks')
 })
 
 test('rejects blocks depending on the registry', async () => {
   const result = await workspace({
-    'packages/blocks/src/a.ts':
+    'packages/ui/src/blocks/a.ts':
       "import { patternNames } from '@tc96/registry'\n",
   })
   expect(result.status).not.toBe(0)
@@ -99,11 +108,11 @@ test('rejects blocks depending on the registry', async () => {
 
 test("lets a block depend on its own folder and its group's shared", async () => {
   const result = await workspace({
-    'packages/blocks/src/application/shell/app-shell-1/app-shell-1.tsx':
+    'packages/ui/src/blocks/application/shell/app-shell-1/app-shell-1.tsx':
       "import { nav } from './nav'\nimport { labels } from '../shared/labels'\nexport const page = [nav, labels]\n",
-    'packages/blocks/src/application/shell/app-shell-1/nav.ts':
+    'packages/ui/src/blocks/application/shell/app-shell-1/nav.ts':
       'export const nav = []\n',
-    'packages/blocks/src/application/shell/shared/labels.ts':
+    'packages/ui/src/blocks/application/shell/shared/labels.ts':
       'export const labels = {}\n',
   })
   expect(result.status).toBe(0)
@@ -111,37 +120,37 @@ test("lets a block depend on its own folder and its group's shared", async () =>
 
 test('rejects a block depending on another block of its group', async () => {
   const result = await workspace({
-    'packages/blocks/src/application/shell/app-shell-2/app-shell-2.tsx':
+    'packages/ui/src/blocks/application/shell/app-shell-2/app-shell-2.tsx':
       "import { page } from '../app-shell-1/app-shell-1'\nexport const next = page\n",
-    'packages/blocks/src/application/shell/app-shell-1/app-shell-1.tsx':
+    'packages/ui/src/blocks/application/shell/app-shell-1/app-shell-1.tsx':
       'export const page = 1\n',
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain(
-    'a block cannot depend on packages/blocks/src/application/shell/app-shell-1/app-shell-1.tsx',
+    'a block cannot depend on packages/ui/src/blocks/application/shell/app-shell-1/app-shell-1.tsx',
   )
 })
 
 test("rejects a block depending on another group's shared", async () => {
   const result = await workspace({
-    'packages/blocks/src/application/shell/app-shell-1/app-shell-1.tsx':
+    'packages/ui/src/blocks/application/shell/app-shell-1/app-shell-1.tsx':
       "import { labels } from '../../settings/shared/labels'\nexport const page = labels\n",
-    'packages/blocks/src/application/settings/shared/labels.ts':
+    'packages/ui/src/blocks/application/settings/shared/labels.ts':
       'export const labels = {}\n',
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain(
-    'a block cannot depend on packages/blocks/src/application/settings/shared/labels.ts',
+    'a block cannot depend on packages/ui/src/blocks/application/settings/shared/labels.ts',
   )
 })
 
 test("lets a block of a category without groups depend on its own folder and the category's shared", async () => {
   const result = await workspace({
-    'packages/blocks/src/auth/login-1/login-1.tsx':
+    'packages/ui/src/blocks/auth/login-1/login-1.tsx':
       "import { fields } from './components/fields'\nimport { labels } from '../shared/lib/labels'\nexport const page = [fields, labels]\n",
-    'packages/blocks/src/auth/login-1/components/fields.ts':
+    'packages/ui/src/blocks/auth/login-1/components/fields.ts':
       "import { labels } from '../../shared/lib/labels'\nexport const fields = [labels]\n",
-    'packages/blocks/src/auth/shared/lib/labels.ts':
+    'packages/ui/src/blocks/auth/shared/lib/labels.ts':
       'export const labels = {}\n',
   })
   expect(result.status).toBe(0)
@@ -149,57 +158,59 @@ test("lets a block of a category without groups depend on its own folder and the
 
 test('rejects a block of a category without groups depending on another block of it', async () => {
   const result = await workspace({
-    'packages/blocks/src/auth/login-2/login-2.tsx':
+    'packages/ui/src/blocks/auth/login-2/login-2.tsx':
       "import { page } from '../login-1/login-1'\nexport const next = page\n",
-    'packages/blocks/src/auth/login-1/login-1.tsx': 'export const page = 1\n',
+    'packages/ui/src/blocks/auth/login-1/login-1.tsx':
+      'export const page = 1\n',
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain(
-    'a block cannot depend on packages/blocks/src/auth/login-1/login-1.tsx',
+    'a block cannot depend on packages/ui/src/blocks/auth/login-1/login-1.tsx',
   )
 })
 
 test('rejects a block of a category without groups depending on a nested file of another block', async () => {
   const result = await workspace({
-    'packages/blocks/src/auth/login-2/components/form.tsx':
+    'packages/ui/src/blocks/auth/login-2/components/form.tsx':
       "import { fields } from '../../login-1/components/fields'\nexport const form = fields\n",
-    'packages/blocks/src/auth/login-1/components/fields.ts':
+    'packages/ui/src/blocks/auth/login-1/components/fields.ts':
       'export const fields = []\n',
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain(
-    'a block cannot depend on packages/blocks/src/auth/login-1/components/fields.ts',
+    'a block cannot depend on packages/ui/src/blocks/auth/login-1/components/fields.ts',
   )
 })
 
 test("rejects a block of a category without groups depending on another category's shared", async () => {
   const result = await workspace({
-    'packages/blocks/src/auth/login-1/login-1.tsx':
+    'packages/ui/src/blocks/auth/login-1/login-1.tsx':
       "import { labels } from '../../application/shell/shared/labels'\nexport const page = labels\n",
-    'packages/blocks/src/application/shell/shared/labels.ts':
+    'packages/ui/src/blocks/application/shell/shared/labels.ts':
       'export const labels = {}\n',
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain(
-    'a block cannot depend on packages/blocks/src/application/shell/shared/labels.ts',
+    'a block cannot depend on packages/ui/src/blocks/application/shell/shared/labels.ts',
   )
 })
 
 test("rejects a grouped block depending on a category's shared without groups", async () => {
   const result = await workspace({
-    'packages/blocks/src/application/shell/app-shell-1/app-shell-1.tsx':
+    'packages/ui/src/blocks/application/shell/app-shell-1/app-shell-1.tsx':
       "import { labels } from '../../../auth/shared/labels'\nexport const page = labels\n",
-    'packages/blocks/src/auth/shared/labels.ts': 'export const labels = {}\n',
+    'packages/ui/src/blocks/auth/shared/labels.ts':
+      'export const labels = {}\n',
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain(
-    'a block cannot depend on packages/blocks/src/auth/shared/labels.ts',
+    'a block cannot depend on packages/ui/src/blocks/auth/shared/labels.ts',
   )
 })
 
 test('rejects a ui import that is not in the ui manifest', async () => {
   const result = await workspace({
-    'packages/parttens/src/a.ts': "import { Text } from '@tc96/ui/text'\n",
+    'packages/ui/src/patterns/a.ts': "import { Text } from '@tc96/ui/text'\n",
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain('@tc96/ui/text is not in the ui manifest')
@@ -207,7 +218,7 @@ test('rejects a ui import that is not in the ui manifest', async () => {
 
 test('rejects the removed ui barrel', async () => {
   const result = await workspace({
-    'packages/parttens/src/a.ts': "import { Button } from '@tc96/ui'\n",
+    'packages/ui/src/patterns/a.ts': "import { Button } from '@tc96/ui'\n",
   })
   expect(result.status).not.toBe(0)
   expect(result.stderr).toContain('@tc96/ui is not in the ui manifest')
@@ -215,7 +226,7 @@ test('rejects the removed ui barrel', async () => {
 
 test('keeps @xyflow/react inside the flow canvas pattern', () => {
   const repository = join(import.meta.dir, '..')
-  const offenders = ['packages/parttens/src', 'packages/blocks/src']
+  const offenders = ['packages/ui/src/patterns', 'packages/ui/src/blocks']
     .flatMap((folder) =>
       readdirSync(join(repository, folder), { recursive: true }).map((path) =>
         join(folder, String(path)),
@@ -225,6 +236,6 @@ test('keeps @xyflow/react inside the flow canvas pattern', () => {
     .filter((path) =>
       /['"]@xyflow\/react/.test(readFileSync(join(repository, path), 'utf8')),
     )
-    .filter((path) => !path.startsWith('packages/parttens/src/flow/canvas/'))
+    .filter((path) => !path.startsWith('packages/ui/src/patterns/flow/canvas/'))
   expect(offenders).toEqual([])
 })

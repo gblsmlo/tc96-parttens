@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List4 } from '@tc96/blocks/application/list/list-4'
+import { List4 } from '@tc96/ui/blocks/application/list/list-4'
 import { expect, fn, within } from 'storybook/test'
 import { integrations } from '../fixtures/list-4.ts'
 

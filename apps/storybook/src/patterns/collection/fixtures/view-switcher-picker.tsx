@@ -5,14 +5,14 @@ import {
   StarIcon,
   TrashIcon,
 } from '@phosphor-icons/react'
+import { MenuItem, MenuSeparator } from '@tc96/ui/menu'
 import {
   ViewSwitcherCreate,
   ViewSwitcherItem,
   ViewSwitcherItems,
   ViewSwitcherMenu,
   ViewSwitcherSearch,
-} from '@tc96/parttens'
-import { MenuItem, MenuSeparator } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { Separator } from '@tc96/ui/separator'
 import { type ReactNode, useState } from 'react'
 

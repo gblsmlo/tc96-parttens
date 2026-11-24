@@ -3,7 +3,7 @@
 - **Status:** Accepted (dono, na conversa de 2026-10-11)
 - **Date:** 2026-10-11
 - **Origin:** none (decisão do dono na conversa de 2026-10-11, "caminho A")
-- **Supersedes:** none (nenhum ADR anterior); substitui a decisão em `docs/architecture/tc96-parttens.md:259` e a linha da tabela em `docs/architecture/tc96-parttens.md:333`
+- **Supersedes:** none (nenhum ADR anterior); substitui a decisão em `docs/architecture/tc96-ui.md:259` e a linha da tabela em `docs/architecture/tc96-ui.md:333`
 
 ## Context
 
@@ -16,13 +16,13 @@
 | O tc96 já checa tipos antes e depois da instalação | `packages/registry/src/check-compatibility.ts` |
 | O tc96 já gera o barrel | `packages/registry/src/barrel.ts` |
 | O repositório já busca itens COSS e normaliza imports para `packages/ui` | `scripts/coss.ts:33-69`, `scripts/sync-coss.ts:19-30` |
-| O que o shadcn fazia: gravar nos targets `~/...`, perguntar antes de sobrescrever, `--dry-run`/`--diff`/`--view`, instalar dependências npm, buscar `@coss/<item>` recursivamente, reescrever imports COSS, gravar `registries.@coss` | `docs/architecture/tc96-parttens.md:247-249` |
-| Contornos documentados: pergunta antes de sobrescrever mesmo com `--yes`; sem terminal sai com status 0 sem gravar; `shadcn init --force` apaga as chaves `elements`/`helpers`/`patterns` | `docs/architecture/tc96-parttens.md:248-249` |
+| O que o shadcn fazia: gravar nos targets `~/...`, perguntar antes de sobrescrever, `--dry-run`/`--diff`/`--view`, instalar dependências npm, buscar `@coss/<item>` recursivamente, reescrever imports COSS, gravar `registries.@coss` | `docs/architecture/tc96-ui.md:247-249` |
+| Contornos documentados: pergunta antes de sobrescrever mesmo com `--yes`; sem terminal sai com status 0 sem gravar; `shadcn init --force` apaga as chaves `elements`/`helpers`/`patterns` | `docs/architecture/tc96-ui.md:248-249` |
 | `shadcn@4.21.0` traz `@babel/core`, `ts-morph`, `recast`, `postcss`, `@modelcontextprotocol/sdk`, `undici` e zod 3, entre outras | `bun.lock:1713` |
 | O pacote publicado declara `shadcn` como dependência | `packages/registry/src/build-registry.ts:163` |
 | O workspace declara `shadcn` em `packages/registry` e no `devDependencies` da raiz | `packages/registry/package.json:9`, `package.json:55` |
 | O zod 3 do shadcn exigiu contorno na checagem de dependências pendentes | `packages/registry/src/check-compatibility.ts:30-33`, `packages/registry/src/check-compatibility.test.ts:120` |
-| Princípio mantido: o tc96 não distribui UI; o consumidor é dono dos componentes COSS | `docs/architecture/tc96-parttens.md:177` |
+| Princípio mantido: o tc96 não distribui UI; o consumidor é dono dos componentes COSS | `docs/architecture/tc96-ui.md:177` |
 | Temas e tokens pertencem ao consumidor | `AGENTS.md:70` |
 | 5 dos 34 itens de `packages/ui/coss.lock.json` declaram tokens: `badge`, `button`, `field`, `menu` com `cssVars.light`/`cssVars.dark` (ex.: `destructive-foreground`; `badge` também `info`, `success`, `warning` e seus `-foreground`); `skeleton` com `cssVars.theme` (`--animate-skeleton`) e `css` (`@keyframes skeleton`) | medição de 2026-10-11, busca de cada item em `https://coss.com/ui/r/<item>.json` |
 | Nenhum dos 34 itens declara `envVars`, `devDependencies` ou `tailwind` | mesma medição |
@@ -44,7 +44,7 @@ Vamos gravar arquivos, buscar componentes COSS e instalar dependências npm com 
 | Configuração | `components.json` do consumidor, lido só como JSON; aliases `ui`/`utils` obrigatórios, `elements`/`helpers`/`patterns` opcionais como hoje (`packages/registry/src/config.ts:19-106`) |
 | Origem do COSS | `registries['@coss']` quando for string (modelo com `{name}`, URL http(s) ou caminho local); padrão `https://coss.com/ui/r/{name}.json`; forma objeto (`url` + `headers`) recusada com erro |
 | Itens COSS | resolução recursiva de `registryDependencies`, pulando os que têm `<ui>/<item>.tsx`; a instalação falha para item com mais de um arquivo, arquivo fora de `registry/default/ui/<item>.tsx`, `envVars`, `devDependencies` ou `tailwind` não vazios, `registryDependency` fora de `@coss/`, ou import `@/` restante após a normalização |
-| Tokens e CSS do COSS | o CLI nunca edita o CSS do consumidor (`docs/architecture/tc96-parttens.md:177`, `AGENTS.md:70`); para cada item COSS instalado, lê o arquivo de `tailwind.css` do `components.json` e avisa os tokens e regras `css` cujo nome não aparece nele (`--<nome>:` para light/dark, a chave para theme, o seletor para css), com os valores agrupados em `:root`, `.dark`, `@theme` e regras css, prontos para copiar; sem `tailwind.css` ou com arquivo ilegível, lista todos; não falha a instalação |
+| Tokens e CSS do COSS | o CLI nunca edita o CSS do consumidor (`docs/architecture/tc96-ui.md:177`, `AGENTS.md:70`); para cada item COSS instalado, lê o arquivo de `tailwind.css` do `components.json` e avisa os tokens e regras `css` cujo nome não aparece nele (`--<nome>:` para light/dark, a chave para theme, o seletor para css), com os valores agrupados em `:root`, `.dark`, `@theme` e regras css, prontos para copiar; sem `tailwind.css` ou com arquivo ilegível, lista todos; não falha a instalação |
 | Detecção de tokens | textual, só nesse arquivo; token definido em arquivo importado aparece como ausente (falso positivo, só aviso) |
 | Módulo COSS | um módulo único de busca e normalização, usado pelo CLI, por `scripts/sync-coss.ts` e por `scripts/check-coss.ts`; os scripts continuam ignorando `cssVars` (`scripts/coss.ts:21-26`), porque o tema de `packages/ui` vive em `apps/example` (`AGENTS.md:108-110`) |
 | Checagem de tipos | os componentes COSS ausentes entram como arquivos virtuais na checagem anterior à instalação |
@@ -58,8 +58,8 @@ Vamos gravar arquivos, buscar componentes COSS e instalar dependências npm com 
 
 | Alternative | Why it was discarded |
 | --- | --- |
-| Manter o shadcn como instalador (`docs/architecture/tc96-parttens.md:259`) | mantém os contornos de `docs/architecture/tc96-parttens.md:248-249` e o peso de `bun.lock:1713` no pacote publicado |
-| Mesclar `cssVars` e `css` dos itens COSS no CSS do consumidor, como o shadcn | edita tema e tokens, que pertencem ao consumidor (`docs/architecture/tc96-parttens.md:177`, `AGENTS.md:70`) |
+| Manter o shadcn como instalador (`docs/architecture/tc96-ui.md:259`) | mantém os contornos de `docs/architecture/tc96-ui.md:248-249` e o peso de `bun.lock:1713` no pacote publicado |
+| Mesclar `cssVars` e `css` dos itens COSS no CSS do consumidor, como o shadcn | edita tema e tokens, que pertencem ao consumidor (`docs/architecture/tc96-ui.md:177`, `AGENTS.md:70`) |
 | Falhar a instalação para item COSS com `cssVars` ou `css` | bloquearia `badge`, `button`, `field`, `menu` e `skeleton`, 5 dos 34 itens travados (medição de 2026-10-11) |
 | Caminho B: o CLI grava só os próprios arquivos e imprime `npx shadcn add @coss/...` e o comando de dependências npm | instalação em vários passos, e o shadcn continua no fluxo do consumidor |
 
@@ -67,7 +67,7 @@ Vamos gravar arquivos, buscar componentes COSS e instalar dependências npm com 
 
 - **Gains:**
   - o pacote publicado deixa de declarar `shadcn` (`packages/registry/src/build-registry.ts:163`) e a árvore de `bun.lock:1713`;
-  - somem os contornos de `docs/architecture/tc96-parttens.md:248-249` e de `packages/registry/src/check-compatibility.ts:30-33`;
+  - somem os contornos de `docs/architecture/tc96-ui.md:248-249` e de `packages/registry/src/check-compatibility.ts:30-33`;
   - CLI e scripts de sincronização passam a usar o mesmo código de busca e normalização COSS.
 - **Costs:**
   - o tc96 passa a acompanhar o formato do registry do COSS; a validação estrita transforma mudança de formato em erro;
@@ -76,7 +76,7 @@ Vamos gravar arquivos, buscar componentes COSS e instalar dependências npm com 
   - registries com autenticação por `headers` deixam de ser suportados;
   - código próprio de gravação, prompt, diff, detecção de gerenciador e instalação npm em `packages/registry/src`;
   - `scripts/test-consumer-registry.ts` continua dependendo de coss.com;
-  - docs a atualizar: `apps/docs/content/docs/installation.mdx`, `docs/architecture/installation-contract.md`, `docs/architecture/tc96-parttens.md`;
+  - docs a atualizar: `apps/docs/content/docs/installation.mdx`, `docs/architecture/installation-contract.md`, `docs/architecture/tc96-ui.md`;
   - removidas as fixtures sem uso da prova antiga com o shadcn, `packages/registry/fixtures/consumer-monorepo/` e `packages/registry/fixtures/items/`: nenhum teste as referenciava e elas guardavam caminhos absolutos de macOS;
   - custo de teste: as invariantes abaixo são estáticas ou unitárias, exceto uma de integração com rede.
 - **Verifiable invariants:**

@@ -20,11 +20,11 @@ import {
   UsersIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { CheckboxGroup } from '@tc96/ui/checkbox-group'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+import { List } from '@tc96/ui/patterns'
 import { Radio, RadioGroup } from '@tc96/ui/radio-group'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'

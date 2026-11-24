@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   richTextElementTypes,
   richTextHasNodeId,
-} from '@tc96/helpers/rich-text'
-import { RICH_TEXT_ELEMENTS, RichTextEditor } from '@tc96/parttens'
+} from '@tc96/ui/helpers/rich-text'
+import { RICH_TEXT_ELEMENTS, RichTextEditor } from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   extendSelectionBackward,

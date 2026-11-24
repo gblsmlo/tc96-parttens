@@ -5,7 +5,7 @@ import {
   emptyScheduleValue,
   ScheduleProperty,
   type ScheduleValue,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
 import { esperarSuperficieDeBadge } from '../../../../test-utils/property-surface'

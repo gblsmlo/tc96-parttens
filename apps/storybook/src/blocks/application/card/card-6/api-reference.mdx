@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Card6
 
-A grid of job recommendation cards. Each card shows the company initials, the title, the company, the location, a work mode badge and the salary range, with an apply button and a save toggle when the app handles them. Reach for it when a page recommends jobs to a candidate. Install it with `npx @tc96/parttens add card-6`.
+A grid of job recommendation cards. Each card shows the company initials, the title, the company, the location, a work mode badge and the salary range, with an apply button and a save toggle when the app handles them. Reach for it when a page recommends jobs to a candidate. Install it with `npx @tc96/cli add card-6`.
 
 It is a list of cards, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing: the saved jobs are controlled through `saved`, and the app updates them in `onSaveChange`. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Card/Card6`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { Card6 } from '@tc96/blocks/application/card/card-6'
+import { Card6 } from '@tc96/ui/blocks/application/card/card-6'
 ```
 
 The same path exports the types `Card6Props`, `Card6Job`, `Card6Salary`, `Card6WorkMode` and `Card6Labels`.

@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { List3Period } from '@tc96/blocks/application/list/list-3'
+import type { List3Period } from '@tc96/ui/blocks/application/list/list-3'
 
 export interface List3Controls {
   currency: 'BRL' | 'USD'

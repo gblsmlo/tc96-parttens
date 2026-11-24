@@ -1,5 +1,5 @@
 import { type AnyFieldApi, useForm } from '@tanstack/react-form'
-import type { OnboardingStep } from '@tc96/blocks/application/onboarding/onboarding-1'
+import type { OnboardingStep } from '@tc96/ui/blocks/application/onboarding/onboarding-1'
 import { Field, FieldError, FieldLabel } from '@tc96/ui/field'
 import { Input } from '@tc96/ui/input'
 

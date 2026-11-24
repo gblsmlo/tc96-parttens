@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { AssignedPropertyOption, PropertyVariant } from '@tc96/parttens'
+import type { AssignedPropertyOption, PropertyVariant } from '@tc96/ui/patterns'
 
 export type Assignee = 'ana' | 'gabriel' | 'marina'
 

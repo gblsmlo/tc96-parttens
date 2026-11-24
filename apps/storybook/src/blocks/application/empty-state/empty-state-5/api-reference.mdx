@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # EmptyState5
 
-An empty state that asks for a storage connection: a title, a description and a grid of connector tiles, each with initials, name and a connect button or a connected badge. Reach for it on a files or import screen with nothing linked yet. Install it with `npx @tc96/parttens add empty-state-5`.
+An empty state that asks for a storage connection: a title, a description and a grid of connector tiles, each with initials, name and a connect button or a connected badge. Reach for it on a files or import screen with nothing linked yet. Install it with `npx @tc96/cli add empty-state-5`.
 
 It is a region, not a page: it renders no `main` landmark. The block keeps no state and never fetches or connects; the app owns which connectors are connected and updates `connected` after `onConnect`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Empty State/EmptyState5`: [Playground](?p
 ## Import
 
 ```tsx
-import { EmptyState5 } from '@tc96/blocks/application/empty-state/empty-state-5'
+import { EmptyState5 } from '@tc96/ui/blocks/application/empty-state/empty-state-5'
 ```
 
 The same path exports the types listed under Exports.

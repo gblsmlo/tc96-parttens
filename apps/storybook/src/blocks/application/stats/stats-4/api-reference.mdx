@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Stats4
 
-A card with the leads of a period: a headline total, a progress bar toward a goal and a stacked bar that splits the total by source, with a legend. A select in the header switches the period. Reach for it when a dashboard needs one glance at how many leads came in, how close the team is to the goal and where they came from. Install it with `npx @tc96/parttens add stats-4`.
+A card with the leads of a period: a headline total, a progress bar toward a goal and a stacked bar that splits the total by source, with a legend. A select in the header switches the period. Reach for it when a dashboard needs one glance at how many leads came in, how close the team is to the goal and where they came from. Install it with `npx @tc96/cli add stats-4`.
 
 It is a card, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing: `range` is controlled, so the app reads the numbers of the chosen period and passes them back. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Stats/Stats4`: [Playground](?path=/story/
 ## Import
 
 ```tsx
-import { Stats4 } from '@tc96/blocks/application/stats/stats-4'
+import { Stats4 } from '@tc96/ui/blocks/application/stats/stats-4'
 ```
 
 The same path exports the types `Stats4Props`, `Stats4Source`, `Stats4Range` and `Stats4Labels`.

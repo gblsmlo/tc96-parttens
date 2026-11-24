@@ -1,4 +1,4 @@
-import { EmptyState4 } from '@tc96/blocks/application/empty-state/empty-state-4'
+import { EmptyState4 } from '@tc96/ui/blocks/application/empty-state/empty-state-4'
 import type { EmptyState4Controls } from './empty-state-4-controls.ts'
 
 export const ComposedEmptyState4 = ({

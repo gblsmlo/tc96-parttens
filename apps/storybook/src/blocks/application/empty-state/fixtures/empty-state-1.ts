@@ -1,4 +1,4 @@
-import type { EmptyState1Guide } from '@tc96/blocks/application/empty-state/empty-state-1'
+import type { EmptyState1Guide } from '@tc96/ui/blocks/application/empty-state/empty-state-1'
 
 export const guides: EmptyState1Guide[] = [
   {

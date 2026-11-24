@@ -1,5 +1,8 @@
-import type { PersonPropertyOption, SelectPropertyOption } from '@tc96/parttens'
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
+import type {
+  PersonPropertyOption,
+  SelectPropertyOption,
+} from '@tc96/ui/patterns'
 import type { IconModule } from '@thesvg/icons'
 import googleAds from '@thesvg/icons/google-ads'
 import meta from '@thesvg/icons/meta'

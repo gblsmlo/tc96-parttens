@@ -1,7 +1,7 @@
 import type {
   Card8Action,
   Card8Meeting,
-} from '@tc96/blocks/application/card/card-8'
+} from '@tc96/ui/blocks/application/card/card-8'
 import { avatarUrl } from './avatar.ts'
 
 const people = [

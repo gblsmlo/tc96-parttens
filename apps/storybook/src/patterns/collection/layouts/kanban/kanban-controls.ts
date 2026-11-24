@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { KanbanCardDisplay } from '@tc96/parttens'
+import type { KanbanCardDisplay } from '@tc96/ui/patterns'
 
 export interface KanbanControls {
   addAction: boolean

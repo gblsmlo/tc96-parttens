@@ -4,7 +4,7 @@ import {
   CalendarView,
   type CalendarViewMode,
   type CalendarViewProps,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import type { ReactNode } from 'react'
 import { useSyncExternalStore } from 'react'
 

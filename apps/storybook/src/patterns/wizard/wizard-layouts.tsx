@@ -1,4 +1,5 @@
 import { ArrowLeftIcon, ArrowRightIcon } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
 import {
   Wizard,
   WizardFooter,
@@ -7,8 +8,7 @@ import {
   WizardPrevious,
   type WizardProps,
   type WizardStep,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { type ReactNode, useState } from 'react'
 import { dealSteps } from './fixtures/deal.tsx'
 import type { WizardControls } from './wizard-controls.ts'

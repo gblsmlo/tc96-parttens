@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { AuthPasswordSuggestion } from '@tc96/blocks/application/auth/reset-password-1'
+import type { AuthPasswordSuggestion } from '@tc96/ui/blocks/application/auth/reset-password-1'
 
 export const passwordSuggestionNames: AuthPasswordSuggestion[] = [
   'lowercase',

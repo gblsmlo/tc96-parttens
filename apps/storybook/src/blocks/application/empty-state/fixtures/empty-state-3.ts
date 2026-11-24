@@ -1,4 +1,4 @@
-import type { EmptyState3Template } from '@tc96/blocks/application/empty-state/empty-state-3'
+import type { EmptyState3Template } from '@tc96/ui/blocks/application/empty-state/empty-state-3'
 
 export const templates: EmptyState3Template[] = [
   {

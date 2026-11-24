@@ -1,4 +1,4 @@
-import type { Timeline1Event } from '@tc96/blocks/application/timeline/timeline-1'
+import type { Timeline1Event } from '@tc96/ui/blocks/application/timeline/timeline-1'
 
 export const events: Timeline1Event[] = [
   {

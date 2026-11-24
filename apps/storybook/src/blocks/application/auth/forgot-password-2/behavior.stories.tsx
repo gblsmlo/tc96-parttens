@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   ForgotPassword2,
   type ForgotPassword2Props,
-} from '@tc96/blocks/application/auth/forgot-password-2'
+} from '@tc96/ui/blocks/application/auth/forgot-password-2'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { email, emailField, submitButton } from './forgot-password-2-play.ts'

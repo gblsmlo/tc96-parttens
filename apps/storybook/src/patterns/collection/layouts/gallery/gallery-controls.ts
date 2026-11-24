@@ -1,5 +1,8 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { GalleryPageSize, GalleryRowSkeletonDensity } from '@tc96/parttens'
+import type {
+  GalleryPageSize,
+  GalleryRowSkeletonDensity,
+} from '@tc96/ui/patterns'
 import { galleryPageSizes } from './gallery-data.ts'
 
 export interface GalleryControls {

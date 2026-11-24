@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PeopleProperty } from '@tc96/parttens'
+import { PeopleProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { PeopleCanvas } from './people-canvas.tsx'
 import { teamOptions } from './people-data.ts'

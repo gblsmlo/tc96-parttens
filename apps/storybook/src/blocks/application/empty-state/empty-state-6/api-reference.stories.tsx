@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EmptyState6 } from '@tc96/blocks/application/empty-state/empty-state-6'
+import { EmptyState6 } from '@tc96/ui/blocks/application/empty-state/empty-state-6'
 import { tabs } from '../fixtures/empty-state-6.ts'
 
 const meta = {

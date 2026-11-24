@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ForgotPassword1 } from '@tc96/blocks/application/auth/forgot-password-1'
+import { ForgotPassword1 } from '@tc96/ui/blocks/application/auth/forgot-password-1'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { authLogo } from '../../fixtures/auth-data'
 import { resendButton, sentTitle } from '../forgot-password-1-play.ts'

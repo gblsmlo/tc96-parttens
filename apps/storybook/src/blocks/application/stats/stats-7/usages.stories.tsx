@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Stats7,
   type Stats7Metric,
-} from '@tc96/blocks/application/stats/stats-7'
+} from '@tc96/ui/blocks/application/stats/stats-7'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { stats7Handlers } from '../../../../mocks/stats-7.ts'

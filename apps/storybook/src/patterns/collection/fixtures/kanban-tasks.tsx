@@ -1,4 +1,4 @@
-import { type KanbanColumnData, projectCollection } from '@tc96/parttens'
+import { type KanbanColumnData, projectCollection } from '@tc96/ui/patterns'
 import { createCollection, type Task, type TaskStatus } from './tasks'
 
 const STATUS_COLOR: Record<TaskStatus, string> = {

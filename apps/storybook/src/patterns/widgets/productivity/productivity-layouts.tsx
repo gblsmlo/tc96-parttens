@@ -5,14 +5,14 @@ import {
   PlusIcon,
   VideoCameraIcon,
 } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
 import {
   AgendaWidget,
   ProjectCardWidget,
   TaskProgressWidget,
   UpcomingEventWidget,
   WorldClockWidget,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { type ReactElement, useState } from 'react'
 import type {
   ProductivityControls,

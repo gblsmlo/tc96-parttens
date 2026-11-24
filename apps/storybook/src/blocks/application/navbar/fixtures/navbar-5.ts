@@ -2,7 +2,7 @@ import type {
   Navbar5Action,
   Navbar5Crumb,
   Navbar5Person,
-} from '@tc96/blocks/application/navbar/navbar-5'
+} from '@tc96/ui/blocks/application/navbar/navbar-5'
 
 export const breadcrumb: Navbar5Crumb[] = [
   { href: '/projetos', id: 'projects', label: 'Projetos' },

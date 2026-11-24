@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
-import { Settings3 } from '@tc96/blocks/application/settings/settings-3'
+import { Settings3 } from '@tc96/ui/blocks/application/settings/settings-3'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settings3Handlers } from '../../../../mocks/settings-3.ts'

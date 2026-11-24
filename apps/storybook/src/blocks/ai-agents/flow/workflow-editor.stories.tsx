@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   WorkflowEditor,
   type WorkflowEditorProps,
-} from '@tc96/blocks/ai-agents/flow/workflow-editor'
+} from '@tc96/ui/blocks/ai-agents/flow/workflow-editor'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
 import { withAppShell } from '../../../templates/fixtures/app-shell'
@@ -24,7 +24,7 @@ import {
 } from './fixtures/use-flow-editor-state'
 
 const usage = `
-// npx @tc96/parttens add workflow-editor
+// npx @tc96/cli add workflow-editor
 // import '@xyflow/react/dist/base.css' in your global CSS
 import { WorkflowEditor } from '@acme/blocks/ai-agents/flow/workflow-editor'
 
@@ -81,7 +81,7 @@ const docs = {
   ],
   description: {
     component:
-      'An editor for automation workflows with the anatomy of the Flowly screens: step library, horizontal canvas, inspector with Build, Status and Logs, and an AI assistant. Install it with `npx @tc96/parttens add workflow-editor` and import `@xyflow/react/dist/base.css` once in your global CSS.',
+      'An editor for automation workflows with the anatomy of the Flowly screens: step library, horizontal canvas, inspector with Build, Status and Logs, and an AI assistant. Install it with `npx @tc96/cli add workflow-editor` and import `@xyflow/react/dist/base.css` once in your global CSS.',
   },
   story: { height: '48rem', inline: false },
   usage,

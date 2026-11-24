@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List } from '@tc96/parttens'
+import { List } from '@tc96/ui/patterns'
 import { IconSlot, Slot } from '../../test-utils/anatomy-slot'
 import { ListCanvas } from './list-canvas.tsx'
 

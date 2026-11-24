@@ -1,6 +1,6 @@
 import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EmptyState2 } from '@tc96/blocks/application/empty-state/empty-state-2'
+import { EmptyState2 } from '@tc96/ui/blocks/application/empty-state/empty-state-2'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { suggestions } from '../fixtures/empty-state-2.ts'
 

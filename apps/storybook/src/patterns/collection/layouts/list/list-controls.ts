@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { ListRowDensity } from '@tc96/parttens'
+import type { ListRowDensity } from '@tc96/ui/patterns'
 
 export interface ListControls {
   action: boolean

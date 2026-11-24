@@ -1,4 +1,4 @@
-import type { StateGuardState, StateSurfaceKind } from '@tc96/parttens'
+import type { StateGuardState, StateSurfaceKind } from '@tc96/ui/patterns'
 
 export const stateSurfaceKinds: readonly StateSurfaceKind[] = [
   'empty',

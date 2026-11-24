@@ -4,14 +4,6 @@ import {
   PlusIcon,
   UserIcon,
 } from '@phosphor-icons/react'
-import {
-  RecordGroup,
-  RecordGroupFilter,
-  RecordGroupItem,
-  RecordGroupLink,
-  type RecordGroupVariant,
-  RecordStatusBadge,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import {
@@ -22,6 +14,14 @@ import {
   MenuPopup,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  RecordGroup,
+  RecordGroupFilter,
+  RecordGroupItem,
+  RecordGroupLink,
+  type RecordGroupVariant,
+  RecordStatusBadge,
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 
 interface Representative {

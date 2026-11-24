@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Onboarding2
 
-A centered setup flow: a progress bar on top and one step at a time on a centered card, ending in a success screen. Reach for it on a short first-run setup that should feel light. Install it with `npx @tc96/parttens add onboarding-2`.
+A centered setup flow: a progress bar on top and one step at a time on a centered card, ending in a success screen. Reach for it on a short first-run setup that should feel light. Install it with `npx @tc96/cli add onboarding-2`.
 
 The block keeps no state and never fetches: the current step is controlled with `step` and `onStepChange`, the step forms are the consumer's `content`, and moving on, finishing and skipping are callbacks. The success state is also controlled with `completed`. The step list and moves are plain props and callbacks; no pattern is imported.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Onboarding/Onboarding2`: [Playground](?pa
 ## Import
 
 ```tsx
-import { Onboarding2 } from '@tc96/blocks/application/onboarding/onboarding-2'
+import { Onboarding2 } from '@tc96/ui/blocks/application/onboarding/onboarding-2'
 ```
 
 The same path exports the types listed under Exports.

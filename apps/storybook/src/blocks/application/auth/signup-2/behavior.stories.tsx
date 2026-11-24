@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Signup2,
   type Signup2Props,
-} from '@tc96/blocks/application/auth/signup-2'
+} from '@tc96/ui/blocks/application/auth/signup-2'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import {

@@ -2,7 +2,7 @@ import type {
   KanbanCardMove,
   KanbanCardSkeletonAnatomy,
   KanbanColumnData,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export interface SampleCard {
   id: string

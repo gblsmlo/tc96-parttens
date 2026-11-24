@@ -1,5 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { addDays, formatLongDate, formatMediumDate } from '@tc96/helpers/date'
+import {
+  addDays,
+  formatLongDate,
+  formatMediumDate,
+} from '@tc96/ui/helpers/date'
 import {
   expect,
   fireEvent,

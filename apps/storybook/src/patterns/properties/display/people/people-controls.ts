@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { PropertyVariant } from '@tc96/parttens'
+import type { PropertyVariant } from '@tc96/ui/patterns'
 import { peopleOptionLabels, peopleOptions } from './people-data.ts'
 
 export const peopleVariants = ['badge', 'plain'] as const

@@ -46,7 +46,7 @@ function patternItem(content: string): RegistryItem {
     dependencies: [],
     files: [
       {
-        path: 'parttens/src/checklist/proof.ts',
+        path: 'patterns/checklist/proof.ts',
         type: 'registry:file',
         target: '~/src/patterns/checklist/proof.ts',
         content,

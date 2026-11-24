@@ -1,7 +1,7 @@
 import {
   Settings21,
   type Settings21Props,
-} from '@tc96/blocks/application/settings/settings-21'
+} from '@tc96/ui/blocks/application/settings/settings-21'
 import { settings21Apps } from '../fixtures/settings-21.ts'
 import type { Settings21Controls } from './settings-21-controls.ts'
 

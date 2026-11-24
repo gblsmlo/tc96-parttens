@@ -4,26 +4,26 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 # Get Started
 
-`@tc96/parttens` copies React patterns as source into your workspace, on top of your own COSS components. Install one or more patterns by name:
+`@tc96/ui/patterns` copies React patterns as source into your workspace, on top of your own COSS components. Install one or more patterns by name:
 
 ```bash
-npx @tc96/parttens add collection properties
+npx @tc96/cli add collection properties
 ```
 
 The Record family has three items: `record-dialog`, `record-preview` and `record-group`.
 
 ```bash
-npx @tc96/parttens add record-dialog record-preview record-group
+npx @tc96/cli add record-dialog record-preview record-group
 ```
 
 Preview what would change before writing anything, or compare installed files with the current version:
 
 ```bash
-npx @tc96/parttens add record-dialog --dry-run
-npx @tc96/parttens add record-dialog --diff
+npx @tc96/cli add record-dialog --dry-run
+npx @tc96/cli add record-dialog --diff
 ```
 
-If the repo blocks `npx`, use `bunx @tc96/parttens add ...` or `pnpm dlx @tc96/parttens add ...`.
+If the repo blocks `npx`, use `bunx @tc96/cli add ...` or `pnpm dlx @tc96/cli add ...`.
 
 Before copying anything, the CLI type-checks the patterns against your own `ui` components. If they do not type-check, it stops with exit code 1, in a `--dry-run` too. Fix the diagnostics it prints, or pass `--force` to install anyway.
 
@@ -44,7 +44,7 @@ import { CollectionLayoutOutlet, TextProperty } from '@acme/patterns'
 Blocks, such as application shells, install the same way; see [Blocks](?path=/docs/blocks-doc--doc):
 
 ```bash
-npx @tc96/parttens add app-shell-1
+npx @tc96/cli add app-shell-1
 ```
 
 The consumer layout and the aliases the CLI reads are in the root `README.md`.

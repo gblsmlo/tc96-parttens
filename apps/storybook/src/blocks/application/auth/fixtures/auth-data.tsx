@@ -1,5 +1,5 @@
 import { CardsIcon } from '@phosphor-icons/react'
-import type { AuthProvider } from '@tc96/blocks/application/auth/login-1'
+import type { AuthProvider } from '@tc96/ui/blocks/application/auth/login-1'
 import type { IconModule } from '@thesvg/icons'
 import github from '@thesvg/icons/github'
 import google from '@thesvg/icons/google'

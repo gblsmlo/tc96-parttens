@@ -1,4 +1,4 @@
-import { Navbar1 } from '@tc96/blocks/application/navbar/navbar-1'
+import { Navbar1 } from '@tc96/ui/blocks/application/navbar/navbar-1'
 import { useEffect, useState } from 'react'
 import { breadcrumbs, collaborators, tabs } from '../fixtures/navbar-1.ts'
 import type { Navbar1Controls } from './navbar-1-controls.ts'

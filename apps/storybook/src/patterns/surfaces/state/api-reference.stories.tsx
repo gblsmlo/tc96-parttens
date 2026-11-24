@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { StateGuard, StateSurface } from '@tc96/parttens'
+import { StateGuard, StateSurface } from '@tc96/ui/patterns'
 import { Slot } from '../../../test-utils/anatomy-slot'
 import { StateCanvas } from './state-canvas.tsx'
 

@@ -1,4 +1,4 @@
-import { PersonProperty, type PersonPropertyProps } from '@tc96/parttens'
+import { PersonProperty, type PersonPropertyProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { PersonControls } from './person-controls.ts'
 import { personOptions } from './person-data.ts'

@@ -2,7 +2,7 @@ import {
   Settings20,
   type Settings20Matrix,
   type Settings20Props,
-} from '@tc96/blocks/application/settings/settings-20'
+} from '@tc96/ui/blocks/application/settings/settings-20'
 import { useState } from 'react'
 import {
   settings20Categories,

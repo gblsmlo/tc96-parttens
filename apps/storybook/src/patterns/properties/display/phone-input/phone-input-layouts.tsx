@@ -1,7 +1,7 @@
 import {
   PhoneInput,
   type PhoneInputProps,
-} from '@tc96/parttens/properties/display/phone-input/phone-input'
+} from '@tc96/ui/patterns/properties/display/phone-input/phone-input'
 import { useState } from 'react'
 import type { PhoneInputControls } from './phone-input-controls.ts'
 

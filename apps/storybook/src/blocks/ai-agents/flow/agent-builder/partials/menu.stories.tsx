@@ -1,6 +1,6 @@
 import { DotsThreeIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AgentBuilderMenu } from '@tc96/blocks/ai-agents/flow/agent-builder/partials'
+import { AgentBuilderMenu } from '@tc96/ui/blocks/ai-agents/flow/agent-builder/partials'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { expect, fn, userEvent, within } from 'storybook/test'

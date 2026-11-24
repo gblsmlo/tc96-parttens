@@ -1,4 +1,4 @@
-import type { Timeline4Entry } from '@tc96/blocks/application/timeline/timeline-4'
+import type { Timeline4Entry } from '@tc96/ui/blocks/application/timeline/timeline-4'
 
 export const activityEntries: Timeline4Entry[] = [
   {

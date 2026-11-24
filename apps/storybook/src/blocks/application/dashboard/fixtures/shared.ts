@@ -1,7 +1,7 @@
 import type {
   Dashboard1Pagination,
   Dashboard1RowAction,
-} from '@tc96/blocks/application/dashboard/dashboard-1'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-1'
 
 export const periodOptions = [
   { label: 'Últimos 7 dias', value: '7d' },

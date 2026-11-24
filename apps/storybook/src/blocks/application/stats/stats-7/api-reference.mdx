@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Stats7
 
-A row of three metric cards with an area chart, after the metric cards of the ReUI Module Tracker dashboard. Each card shows its label, a caption with the source and the period, the value and an area chart of the period's points. Reach for it above a list or a table when each number needs its recent trend beside it. Install it with `npx @tc96/parttens add stats-7`.
+A row of three metric cards with an area chart, after the metric cards of the ReUI Module Tracker dashboard. Each card shows its label, a caption with the source and the period, the value and an area chart of the period's points. Reach for it above a list or a table when each number needs its recent trend beside it. Install it with `npx @tc96/cli add stats-7`.
 
 It is a section, not a page: it renders no `main` landmark. The cards sit side by side from `md` and stack below. The block keeps no state and fetches nothing: the app passes the value already aggregated, a sum for a flow such as revenue or the latest point for a running total such as active licenses. Each card is the `AreaMetricWidget` of the widgets pattern, the same card `Dashboard4` uses in its metric row. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `metrics` the empty state; the precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Stats/Stats7`: [Playground](?path=/story/
 ## Import
 
 ```tsx
-import { Stats7 } from '@tc96/blocks/application/stats/stats-7'
+import { Stats7 } from '@tc96/ui/blocks/application/stats/stats-7'
 ```
 
 The same path exports the types `Stats7Props`, `Stats7Metric`, `Stats7ValueKind` and `Stats7Labels`.

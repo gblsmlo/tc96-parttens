@@ -1,4 +1,4 @@
-import { Stats5 } from '@tc96/blocks/application/stats/stats-5'
+import { Stats5 } from '@tc96/ui/blocks/application/stats/stats-5'
 import { salesAndChurn } from '../fixtures/stats-5.ts'
 import type { Stats5Controls } from './stats-5-controls.ts'
 

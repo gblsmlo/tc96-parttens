@@ -8,7 +8,7 @@ import {
   type CalendarRecordReschedule,
   CalendarView,
   type CalendarViewProps,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { type ReactNode, useCallback, useMemo, useState } from 'react'
 import { ANCHOR, NOW, TIME_ZONE } from '../../fixtures/calendar-view-harness'
 import type { CalendarControls, CalendarToneName } from './calendar-controls.ts'

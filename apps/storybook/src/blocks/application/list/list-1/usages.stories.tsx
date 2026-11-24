@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
-import { List1, type List1Metric } from '@tc96/blocks/application/list/list-1'
+import {
+  List1,
+  type List1Metric,
+} from '@tc96/ui/blocks/application/list/list-1'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { list1Handlers } from '../../../../mocks/list-1.ts'

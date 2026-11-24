@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   ResetPassword2,
   type ResetPassword2Props,
-} from '@tc96/blocks/application/auth/reset-password-2'
+} from '@tc96/ui/blocks/application/auth/reset-password-2'
 import { useEffect, useState } from 'react'
 import { expect, fn, within } from 'storybook/test'
 import { authLogo } from '../fixtures/auth-data'

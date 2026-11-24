@@ -1,4 +1,4 @@
-import { resolve } from 'node:path'
+import { dirname, relative, resolve } from 'node:path'
 import ts from 'typescript'
 import {
   compatibleVersion,
@@ -43,15 +43,20 @@ const describe = (diagnostic: ts.Diagnostic) => {
   return `${diagnostic.file?.fileName ?? 'TypeScript'}${position ? `:${position.line + 1}` : ''} TS${diagnostic.code}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, ' ')}`
 }
 
+// The nearest tsconfig.json from the installed directory up to the root: a
+// package's own, as in tc96-mono, or the root one.
 function readCompilerOptions(
   root: string,
+  directory = '.',
 ): { options: ts.CompilerOptions } | { failure: string } {
-  const config = ts.findConfigFile(root, ts.sys.fileExists)
-  if (!config) return { failure: 'No tsconfig.json was found.' }
+  const config = ts.findConfigFile(resolve(root, directory), ts.sys.fileExists)
+  if (!config || relative(root, config).startsWith('..'))
+    return { failure: 'No tsconfig.json was found.' }
   const read = ts.readConfigFile(config, ts.sys.readFile)
-  if (read.error) return { failure: 'Cannot read the consumer tsconfig.json.' }
+  if (read.error) return { failure: `Cannot read ${relative(root, config)}.` }
   return {
-    options: ts.parseJsonConfigFileContent(read.config, ts.sys, root).options,
+    options: ts.parseJsonConfigFileContent(read.config, ts.sys, dirname(config))
+      .options,
   }
 }
 
@@ -125,8 +130,9 @@ function createConsumerProgram(
 export function diagnoseDependents(
   root: string,
   dependents: string[],
+  project?: string,
 ): Set<string> {
-  const loaded = readCompilerOptions(root)
+  const loaded = readCompilerOptions(root, project)
   if ('failure' in loaded || !dependents.length) return new Set()
   const options: ts.CompilerOptions = {
     ...loaded.options,
@@ -150,9 +156,10 @@ export async function checkCompatibility(
   {
     dependents = [],
     known = new Set<string>(),
-  }: { dependents?: string[]; known?: Set<string> } = {},
+    project,
+  }: { dependents?: string[]; known?: Set<string>; project?: string } = {},
 ): Promise<CompatibilityReport> {
-  const loaded = readCompilerOptions(root)
+  const loaded = readCompilerOptions(root, project)
   if ('failure' in loaded)
     return {
       status: 'inconclusive',
@@ -179,7 +186,7 @@ export async function checkCompatibility(
     if (ts.sys.fileExists(path)) existingFiles.push(path)
     if (/\.tsx?$/.test(path)) {
       const existingUI =
-        !/^(parttens|blocks)\//.test(file.path) && ts.sys.fileExists(path)
+        !/^(patterns|blocks)\//.test(file.path) && ts.sys.fileExists(path)
       if (!installed && !existingUI) virtual.set(path, file.content)
     }
   }

@@ -11,7 +11,7 @@ import {
   RecordGroupRow,
   SelectProperty,
   TextProperty,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { part, rowsOf } from '../fixtures/group-dom'

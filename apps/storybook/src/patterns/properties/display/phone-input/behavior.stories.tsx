@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PhoneInput } from '@tc96/parttens/properties/display/phone-input/phone-input'
+import { PhoneInput } from '@tc96/ui/patterns/properties/display/phone-input/phone-input'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { PhoneInputCanvas } from './phone-input-canvas.tsx'
 import { StatefulPhoneInput } from './phone-input-layouts.tsx'

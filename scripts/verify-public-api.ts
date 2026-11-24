@@ -15,14 +15,14 @@ const modules: Record<string, string> = {
   ...Object.fromEntries(
     patternNames.map((name) => [
       name,
-      `packages/parttens/src/${patternSources[name]}/index.ts`,
+      `packages/ui/src/patterns/${patternSources[name]}/index.ts`,
     ]),
   ),
-  parttens: 'packages/parttens/src/index.ts',
+  patterns: 'packages/ui/src/patterns/index.ts',
   ...Object.fromEntries(
     blockNames.map((name) => [
       `block:${name}`,
-      `packages/blocks/src/${blockSources[name]}/index.ts`,
+      `packages/ui/src/blocks/${blockSources[name]}/index.ts`,
     ]),
   ),
 }

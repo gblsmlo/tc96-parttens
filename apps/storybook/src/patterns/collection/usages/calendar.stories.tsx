@@ -15,7 +15,7 @@ import {
   CollectionFrameBody,
   CollectionFrameHeader,
   toZonedDateTime,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useCallback, useMemo, useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { CreateEventDialog } from '../../records/dialog/create-event-dialog'

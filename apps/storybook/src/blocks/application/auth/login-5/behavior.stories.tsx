@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login5, type Login5Props } from '@tc96/blocks/application/auth/login-5'
+import {
+  Login5,
+  type Login5Props,
+} from '@tc96/ui/blocks/application/auth/login-5'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { loginMethods, PickingLogin5 } from './login-5-layouts.tsx'

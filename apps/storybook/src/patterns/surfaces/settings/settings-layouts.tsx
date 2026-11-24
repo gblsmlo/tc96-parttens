@@ -1,4 +1,7 @@
 import { BellIcon, DotsThreeIcon } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
+import { Input } from '@tc96/ui/input'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   SettingsCollapsed,
   SettingsRow,
@@ -6,10 +9,7 @@ import {
   SettingsSectionDescription,
   SettingsSectionHeader,
   SettingsSectionTitle,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { Input } from '@tc96/ui/input'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import {
   Select,
   SelectItem,

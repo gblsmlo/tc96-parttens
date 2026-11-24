@@ -1,7 +1,7 @@
 import type { DateRange } from '@daypicker/react'
 import { ptBR } from '@daypicker/react/locale'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DateRangeProperty } from '@tc96/parttens'
+import { DateRangeProperty } from '@tc96/ui/patterns'
 import {
   expect,
   fn,

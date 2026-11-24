@@ -1,4 +1,4 @@
-import { Card7, type Card7Props } from '@tc96/blocks/application/card/card-7'
+import { Card7, type Card7Props } from '@tc96/ui/blocks/application/card/card-7'
 import { contact, items, stats } from '../fixtures/card-7.tsx'
 import type { Card7Controls } from './card-7-controls.ts'
 

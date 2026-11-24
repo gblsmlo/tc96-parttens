@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ForgotPassword1 } from '@tc96/blocks/application/auth/forgot-password-1'
+import { ForgotPassword1 } from '@tc96/ui/blocks/application/auth/forgot-password-1'
 import { renderAnchor } from '@tc96/ui/render-anchor'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { authLogo } from '../../fixtures/auth-data'

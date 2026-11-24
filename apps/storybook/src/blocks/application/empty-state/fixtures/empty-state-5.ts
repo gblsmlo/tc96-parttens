@@ -1,4 +1,4 @@
-import type { EmptyState5Connector } from '@tc96/blocks/application/empty-state/empty-state-5'
+import type { EmptyState5Connector } from '@tc96/ui/blocks/application/empty-state/empty-state-5'
 
 export const connectors: EmptyState5Connector[] = [
   { id: 'nuvem-drive', name: 'Nuvem Drive' },

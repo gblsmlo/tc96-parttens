@@ -4,17 +4,17 @@ import {
   CheckCircleIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  Wizard,
-  WizardFooter,
-  WizardNext,
-  WizardPrevious,
-} from '@tc96/parttens'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { Field, FieldDescription, FieldError, FieldLabel } from '@tc96/ui/field'
 import { Input } from '@tc96/ui/input'
+import {
+  Wizard,
+  WizardFooter,
+  WizardNext,
+  WizardPrevious,
+} from '@tc96/ui/patterns'
 import { Radio, RadioGroup } from '@tc96/ui/radio-group'
 import { Switch } from '@tc96/ui/switch'
 import { Textarea } from '@tc96/ui/textarea'

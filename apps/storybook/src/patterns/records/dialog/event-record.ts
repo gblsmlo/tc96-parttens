@@ -15,7 +15,7 @@ import {
   type ScheduleValue,
   type SelectPropertyOption,
   toZonedDateTime,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { z } from 'zod'
 
 export const TIME_ZONE = 'America/Sao_Paulo'

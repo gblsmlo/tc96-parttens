@@ -1,5 +1,5 @@
 import { ShapesIcon } from '@phosphor-icons/react'
-import { TextProperty, type TextPropertyProps } from '@tc96/parttens'
+import { TextProperty, type TextPropertyProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { TextControls } from './text-controls.ts'
 

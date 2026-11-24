@@ -1,4 +1,4 @@
-import type { Settings14Account } from '@tc96/blocks/application/settings/settings-14'
+import type { Settings14Account } from '@tc96/ui/blocks/application/settings/settings-14'
 
 export const settings14Accounts: Settings14Account[] = [
   {

@@ -1,7 +1,7 @@
 import {
   ResetPassword2,
   type ResetPassword2Props,
-} from '@tc96/blocks/application/auth/reset-password-2'
+} from '@tc96/ui/blocks/application/auth/reset-password-2'
 import { authLogo } from '../fixtures/auth-data'
 import type { ResetPassword2Controls } from './reset-password-2-controls.ts'
 

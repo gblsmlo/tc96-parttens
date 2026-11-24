@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FlowShortcutsPopover } from '@tc96/parttens'
+import { FlowShortcutsPopover } from '@tc96/ui/patterns'
 import { canvasControlArgs } from './canvas-controls.ts'
 import { CanvasFrame } from './canvas-frame.tsx'
 import { ComposedFlowCanvas } from './canvas-layouts.tsx'

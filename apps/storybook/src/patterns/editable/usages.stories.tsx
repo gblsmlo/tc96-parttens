@@ -9,7 +9,7 @@ import {
   EditableSubmit,
   EditableToolbar,
   EditableTrigger,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { EditableCanvas } from './editable-canvas.tsx'
 import { StatefulEditable } from './editable-layouts.tsx'

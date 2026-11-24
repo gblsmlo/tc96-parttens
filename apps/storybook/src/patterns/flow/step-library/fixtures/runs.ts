@@ -1,4 +1,4 @@
-import type { FlowRunSummary } from '@tc96/parttens'
+import type { FlowRunSummary } from '@tc96/ui/patterns'
 
 export const failedRun: FlowRunSummary = {
   completed: 2,

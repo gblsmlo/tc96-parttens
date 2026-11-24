@@ -1,4 +1,4 @@
-import { List6, type List6Mover } from '@tc96/blocks/application/list/list-6'
+import { List6, type List6Mover } from '@tc96/ui/blocks/application/list/list-6'
 import { useState } from 'react'
 import { movers } from '../fixtures/list-6.ts'
 import type { List6Controls } from './list-6-controls.ts'

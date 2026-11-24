@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Card2
 
-A grid of integration cards: icon or initials, name, description, tier badge and a Connect button or a Connected status. Reach for it on an integrations catalog. Install it with `npx @tc96/parttens add card-2`.
+A grid of integration cards: icon or initials, name, description, tier badge and a Connect button or a Connected status. Reach for it on an integrations catalog. Install it with `npx @tc96/cli add card-2`.
 
 It is a card, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Card/Card2`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { Card2 } from '@tc96/blocks/application/card/card-2'
+import { Card2 } from '@tc96/ui/blocks/application/card/card-2'
 ```
 
 The same path exports the types listed under Exports.

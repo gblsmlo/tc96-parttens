@@ -16,7 +16,7 @@
 | O CLI deriva `elements`, `helpers` e `patterns` do alias `ui` e exige o `paths` de cada um no tsconfig, mesmo sem uso | `packages/registry/src/config.ts:21-44`, `config.ts:85-110` |
 | O instalador de COSS aceita só itens de um arquivo em `registry/default/ui/<item>.tsx`; o `sidebar` do COSS depende de `@coss/use-media-query`, que é um hook em `registry/default/hooks/` | `packages/registry/src/coss.ts:55-66`, `https://coss.com/ui/r/sidebar.json` |
 | `installed()` procura `<ui>/<item>.tsx`, então um hook nunca conta como instalado | `packages/registry/src/cli.ts:75-76` |
-| Um shell é layout da aplicação: barra lateral, cabeçalho e área de conteúdo, sem regra de negócio | `docs/architecture/tc96-parttens.md:281` (`apps/web/` guarda templates e páginas) |
+| Um shell é layout da aplicação: barra lateral, cabeçalho e área de conteúdo, sem regra de negócio | `docs/architecture/tc96-ui.md:281` (`apps/web/` guarda templates e páginas) |
 | Os blocos App Shell do ReUI são Pro, com licença; servem só de referência de anatomia, sem copiar código nem buscar o JSON do registry deles | `https://reui.io/blocks/application/app-shell`, `https://reui.io/docs/registry` |
 
 ## Decision
@@ -74,7 +74,7 @@ Um template instalável é um componente de página ou de layout que compõe COS
 Os dois pontos abertos no rascunho foram medidos em 2026-10-21:
 
 - o `SidebarProvider` em modo móvel roda no `storybook:test` com o viewport `mobile2` (414px), e a story `AppShell1/Mobile` confere a navegação dentro do `Sheet`;
-- os tokens `--sidebar-*` do tema de exemplo passam no axe no claro e no escuro, depois de a regra `a { color: inherit }` do tema ir para `@layer base` e de o `AvatarFallback` do menu da conta receber `text-foreground` (razões em `docs/architecture/tc96-parttens.md`, Templates: App Shells).
+- os tokens `--sidebar-*` do tema de exemplo passam no axe no claro e no escuro, depois de a regra `a { color: inherit }` do tema ir para `@layer base` e de o `AvatarFallback` do menu da conta receber `text-foreground` (razões em `docs/architecture/tc96-ui.md`, Templates: App Shells).
 
 A instalação dos templates junto com todos os patterns num consumidor passa no `test:consumer:registry` desde 2026-10-21, depois da correção do tipo do `renderPlaceholder` do `rich-text-editor` (TS2322 com os tipos mais novos do Slate que o npm resolve no consumidor), que reprovava a etapa dos patterns já em `HEAD`.
 

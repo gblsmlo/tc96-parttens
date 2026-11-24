@@ -13,6 +13,7 @@ import {
   patternSources,
   prepareItem,
   type RegistryItem,
+  repoImportAlias,
   uiDependency,
 } from './manifest'
 
@@ -23,17 +24,34 @@ await mkdir(output, { recursive: true })
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)
 const parsed = ts.parseJsonConfigFileContent(configuration.config, ts.sys, root)
 const versions: Record<string, string> = {}
-for (const pkg of ['helpers', 'parttens', 'blocks']) {
+{
   const manifest = JSON.parse(
-    await readFile(`packages/${pkg}/package.json`, 'utf8'),
+    await readFile('packages/ui/package.json', 'utf8'),
   )
   Object.assign(versions, manifest.peerDependencies, manifest.dependencies)
 }
-// ui and utils are the consumer's: their imports are rewritten to its
-// aliases, never followed into the distributed files. Each ui module a
-// pattern imports becomes a ui registry dependency on the item that owns it.
-const consumerOwned = /^@tc96\/(ui|utils)(\/|$)/
-const uiMatch = /^@tc96\/ui\/(.+)$/
+const uiSource = resolve('packages/ui/src')
+// ui components, hooks, lib and utils are the consumer's: their imports are
+// rewritten to its aliases, never followed into the distributed files. Each
+// ui module a pattern imports becomes a ui registry dependency on the item
+// that owns it.
+const consumerOwned = (specifier: string) => {
+  const alias = repoImportAlias(specifier)?.alias
+  return (
+    alias === 'ui' || alias === 'utils' || alias === 'hooks' || alias === 'lib'
+  )
+}
+const uiModule = (specifier: string) => {
+  const match = repoImportAlias(specifier)
+  if (match?.alias === 'ui') return match.rest.slice(1)
+  if (match?.alias === 'hooks' || match?.alias === 'lib')
+    return `${match.alias}${match.rest}`
+  return undefined
+}
+const uiSourcePath = (path: string) =>
+  /^(hooks|lib)\//.test(path)
+    ? `packages/ui/src/${path}`
+    : `packages/ui/src/components/${path}`
 interface UiManifestEntry {
   paths?: string[]
   cssVars?: unknown
@@ -60,7 +78,7 @@ const uiOwner = (module: string, importer: string) => {
 // The aggregate re-exports the pattern barrels and shared areas such as
 // shared/. An area's barrel ships with every pattern that uses the area, so
 // the consumer's generated barrel can export it.
-const aggregate = await readFile('packages/parttens/src/index.ts', 'utf8')
+const aggregate = await readFile('packages/ui/src/patterns/index.ts', 'utf8')
 const areas = ts
   .preProcessFile(aggregate)
   .importedFiles.map(({ fileName }) => fileName.match(/^\.\/([^/]+)\/index$/))
@@ -74,11 +92,11 @@ const areas = ts
 const entries: [ItemName, string][] = [
   ...patternNames.map((name): [ItemName, string] => [
     name,
-    `packages/parttens/src/${patternSources[name]}/index.ts`,
+    `packages/ui/src/patterns/${patternSources[name]}/index.ts`,
   ]),
   ...blockNames.map((name): [ItemName, string] => [
     name,
-    `packages/blocks/src/${blockSources[name]}/index.ts`,
+    `packages/ui/src/blocks/${blockSources[name]}/index.ts`,
   ]),
 ]
 for (const area of Object.values(itemAreas).flat())
@@ -91,7 +109,7 @@ for (const [name, entry] of entries) {
   const pending = [
     resolve(entry),
     ...(itemAreas[name] ?? []).map((area) =>
-      resolve(`packages/parttens/src/${area}/index.ts`),
+      resolve(`packages/ui/src/patterns/${area}/index.ts`),
     ),
   ]
   const seen = new Set<string>()
@@ -101,9 +119,9 @@ for (const [name, entry] of entries) {
   const usedAreaBarrel = () =>
     areas
       .filter((area) =>
-        sources.some(({ path }) => path.startsWith(`parttens/src/${area}/`)),
+        sources.some(({ path }) => path.startsWith(`patterns/${area}/`)),
       )
-      .map((area) => resolve(`packages/parttens/src/${area}/index.ts`))
+      .map((area) => resolve(`packages/ui/src/patterns/${area}/index.ts`))
       .find((barrel) => !seen.has(barrel))
   for (;;) {
     const file = pending.pop() ?? usedAreaBarrel()
@@ -112,15 +130,15 @@ for (const [name, entry] of entries) {
     seen.add(file)
     const content = await readFile(file, 'utf8')
     sources.push({
-      path: relative(resolve('packages'), file).replaceAll('\\', '/'),
+      path: relative(uiSource, file).replaceAll('\\', '/'),
       type: 'registry:file',
       content,
     })
     for (const imported of ts.preProcessFile(content).importedFiles) {
       const specifier = imported.fileName
-      const module = specifier.match(uiMatch)?.[1]
+      const module = uiModule(specifier)
       if (module) components.add(uiDependency(uiOwner(module, file)))
-      if (consumerOwned.test(specifier)) continue
+      if (consumerOwned(specifier)) continue
       if (specifier.startsWith('.') || specifier.startsWith('@tc96/')) {
         const result = ts.resolveModuleName(
           specifier,
@@ -130,7 +148,9 @@ for (const [name, entry] of entries) {
         ).resolvedModule
         if (
           !result ||
-          !result.resolvedFileName.startsWith(join(root, 'packages/'))
+          !/^(patterns|helpers|blocks)\//.test(
+            relative(uiSource, result.resolvedFileName),
+          )
         )
           throw new Error(`Unresolved local dependency ${file}: ${specifier}`)
         pending.push(result.resolvedFileName)
@@ -144,7 +164,7 @@ for (const [name, entry] of entries) {
     }
   }
   for (const area of areas)
-    if (sources.some(({ path }) => path.startsWith(`parttens/src/${area}/`)))
+    if (sources.some(({ path }) => path.startsWith(`patterns/${area}/`)))
       shippedAreas.add(area)
   const item: RegistryItem = {
     name,
@@ -181,11 +201,11 @@ for (const [name, entry] of Object.entries(uiManifest.items)) {
   const related = new Set<string>()
   const files = []
   for (const path of uiPaths(name)) {
-    const content = await readFile(`packages/ui/src/${path}`, 'utf8')
+    const content = await readFile(uiSourcePath(path), 'utf8')
     files.push({ path: `registry/default/ui/${path}`, content })
     for (const { fileName } of ts.preProcessFile(content).importedFiles) {
       if (fileName === '@tc96/utils') continue
-      const module = fileName.match(uiMatch)?.[1]
+      const module = uiModule(fileName)
       if (fileName.startsWith('.')) {
         const resolved = join(dirname(path), fileName).replaceAll('\\', '/')
         const owner = uiOwners.get(resolved)
@@ -234,7 +254,7 @@ if (unshipped.length)
   )
 await writeFile(
   join(output, 'aggregate.json'),
-  `${JSON.stringify({ path: 'parttens/src/index.ts', content: aggregate }, null, 2)}\n`,
+  `${JSON.stringify({ path: 'patterns/index.ts', content: aggregate }, null, 2)}\n`,
 )
 await writeFile(
   join(output, 'view.json'),
@@ -266,11 +286,11 @@ await writeFile(
   join(cliOutput, 'package.json'),
   `${JSON.stringify(
     {
-      name: '@tc96/parttens',
+      name: '@tc96/cli',
       version: '0.26.0',
       description:
-        'React patterns without business rules, installed as source on top of your COSS components.',
-      keywords: ['coss', 'react', 'patterns', 'registry', 'cli'],
+        'Installs the tc96 ui, patterns and blocks as source into a tc96 monorepo.',
+      keywords: ['tc96', 'coss', 'react', 'patterns', 'registry', 'cli'],
       type: 'module',
       license: 'MIT',
       repository: {
@@ -278,7 +298,7 @@ await writeFile(
         url: 'git+https://github.com/gblsmlo/tc96-parttens.git',
       },
       engines: { node: '>=22' },
-      bin: { 'tc96-parttens': 'cli.js' },
+      bin: { tc96: 'cli.js' },
       // Pacote com escopo nasce restrito no npm; o CLI e publico.
       publishConfig: { access: 'public' },
       files: ['cli.js', 'registry', 'README.md', 'LICENSE'],

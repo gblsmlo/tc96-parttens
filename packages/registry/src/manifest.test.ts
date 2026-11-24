@@ -21,12 +21,16 @@ const config: InstallConfig = {
   aliases: {
     ui: '@consumer/visual',
     utils: '@consumer/helpers/cn',
+    hooks: '@consumer/visual/hooks',
+    lib: '@consumer/visual/lib',
     helpers: '@consumer/toolkit',
     patterns: '@consumer/patterns',
     blocks: '@consumer/blocks',
   },
   paths: {
     ui: 'packages/visual/src',
+    hooks: 'packages/visual/src/hooks',
+    lib: 'packages/visual/src/lib',
     helpers: 'packages/toolkit/src',
     patterns: 'packages/patterns/src',
     blocks: 'apps/web/src/blocks',
@@ -74,8 +78,8 @@ test('accepts blocks next to patterns', () => {
 test('maps block files and imports to the blocks destination', () => {
   const result = prepareItem(
     item(
-      'blocks/src/application/shell/app-shell-1/app-shell-1.tsx',
-      'import { Sidebar } from "@tc96/ui/sidebar"\nimport { ProgressRing } from "@tc96/parttens/widgets/shared/progress-ring"\nimport { NavMain } from "@tc96/blocks/application/shell/shared/nav-main"\n',
+      'blocks/application/shell/app-shell-1/app-shell-1.tsx',
+      'import { Sidebar } from "@tc96/ui/sidebar"\nimport { ProgressRing } from "@tc96/ui/patterns/widgets/shared/progress-ring"\nimport { NavMain } from "@tc96/ui/blocks/application/shell/shared/nav-main"\n',
     ),
     config,
   )
@@ -87,8 +91,8 @@ test('maps block files and imports to the blocks destination', () => {
   })
   const built = prepareItem(
     item(
-      'blocks/src/application/shell/app-shell-1/app-shell-1.tsx',
-      'import { ProgressRing } from "@tc96/parttens/widgets/shared/progress-ring"\n',
+      'blocks/application/shell/app-shell-1/app-shell-1.tsx',
+      'import { ProgressRing } from "@tc96/ui/patterns/widgets/shared/progress-ring"\n',
     ),
     defaultConfig,
   )
@@ -96,7 +100,7 @@ test('maps block files and imports to the blocks destination', () => {
     'import { ProgressRing } from "@consumer/patterns/widgets/shared/progress-ring"\n',
   )
   expect(() =>
-    prepareItem(item('blocks/src/application/shell/app-shell-1/index.ts', ''), {
+    prepareItem(item('blocks/application/shell/app-shell-1/index.ts', ''), {
       ...config,
       paths: { ...config.paths, blocks: undefined },
     }),
@@ -116,7 +120,7 @@ test('maps destinations and imports without corrupting arbitrary string contents
       type: 'registry:block',
       files: [
         {
-          path: 'parttens/src/collection/proof.ts',
+          path: 'patterns/collection/proof.ts',
           type: 'registry:file',
           content:
             'import { Button } from "@tc96/ui/button"\nconst text = "@tc96/ui/button"\n',
@@ -138,12 +142,12 @@ test('rejects files of the removed elements package', () => {
       item('elements/src/text.tsx', 'export const text = 1\n'),
       config,
     ),
-  ).toThrow('Invalid registry path')
+  ).toThrow('belongs to the consumer and is not distributed')
 })
 test('maps the text import to the consumer ui alias', () => {
   const result = prepareItem(
     item(
-      'parttens/src/shared/toolbar.tsx',
+      'patterns/shared/toolbar.tsx',
       'import { Text } from "@tc96/ui/text"\n',
     ),
     config,
@@ -157,14 +161,14 @@ test('maps helpers files and imports to the helpers destination', () => {
       type: 'registry:block',
       files: [
         {
-          path: 'helpers/src/format.ts',
+          path: 'helpers/format.ts',
           type: 'registry:file',
           content: 'export const formatAmount = 1\n',
         },
         {
-          path: 'parttens/src/widgets/index.ts',
+          path: 'patterns/widgets/index.ts',
           type: 'registry:file',
-          content: 'export { formatAmount } from "@tc96/helpers/format"\n',
+          content: 'export { formatAmount } from "@tc96/ui/helpers/format"\n',
         },
       ],
       dependencies: [],
@@ -177,7 +181,7 @@ test('maps helpers files and imports to the helpers destination', () => {
 test('rewrites ui and utils imports to the consumer aliases', () => {
   const result = prepareItem(
     item(
-      'parttens/src/shared/toolbar.tsx',
+      'patterns/shared/toolbar.tsx',
       'import { Button } from "@tc96/ui/button"\nimport { cn } from "@tc96/utils"\n',
     ),
     config,
@@ -187,7 +191,11 @@ test('rewrites ui and utils imports to the consumer aliases', () => {
   )
 })
 test('refuses to distribute ui or utils files', () => {
-  for (const path of ['ui/src/button.tsx', 'utils/src/index.ts'])
+  for (const path of [
+    'components/button.tsx',
+    'hooks/use-x.ts',
+    'utils/src/index.ts',
+  ])
     expect(() => prepareItem(item(path, 'export {}\n'), config)).toThrow(
       'belongs to the consumer and is not distributed',
     )
@@ -200,11 +208,11 @@ test('refuses to distribute a theme', () => {
     '@utility x {}',
   ])
     expect(() =>
-      assertDistributable(item('parttens/src/views/global.css', token)),
+      assertDistributable(item('patterns/views/global.css', token)),
     ).toThrow('redefines the theme')
   expect(() =>
     assertDistributable(
-      item('parttens/src/views/list.tsx', 'const c = "dark:bg-muted"\n'),
+      item('patterns/views/list.tsx', 'const c = "dark:bg-muted"\n'),
     ),
   ).not.toThrow()
 })
@@ -233,11 +241,11 @@ test('ignores an elements alias or path left over in the config', () => {
 test('combines COSS dependencies and leaves out the installed ones', () => {
   const combined = combineItems([
     {
-      ...item('parttens/src/a.ts', ''),
+      ...item('patterns/a.ts', ''),
       registryDependencies: ['@ui/menu', '@ui/button'],
     },
     {
-      ...item('parttens/src/b.ts', ''),
+      ...item('patterns/b.ts', ''),
       registryDependencies: ['@ui/button', '@ui/empty'],
     },
   ])
@@ -290,7 +298,7 @@ test('builds the record-group item shipping the properties catalog it imports by
   const paths = item.files.map((file) => file.path)
 
   expect(item.name).toBe('record-group')
-  expect(paths).toContain('parttens/src/properties/shared/property-catalog.ts')
+  expect(paths).toContain('patterns/properties/shared/property-catalog.ts')
   expect(item.registryDependencies).toContain('@ui/card')
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
   expect(
@@ -314,10 +322,10 @@ test('builds the record-dialog item shipping the headline and create-more parts'
   const paths = item.files.map((file) => file.path)
 
   expect(paths).toContain(
-    'parttens/src/records/dialog/composition/record-dialog/record-dialog-headline.tsx',
+    'patterns/records/dialog/composition/record-dialog/record-dialog-headline.tsx',
   )
   expect(paths).toContain(
-    'parttens/src/records/dialog/composition/record-dialog/record-dialog-create-more.tsx',
+    'patterns/records/dialog/composition/record-dialog/record-dialog-create-more.tsx',
   )
   expect(item.registryDependencies).toEqual(
     expect.arrayContaining([
@@ -374,7 +382,7 @@ test('builds the settings item depending on the ui Text and shipping no test fil
     '@ui/text',
   ])
   expect(paths.some((path) => path.startsWith('elements/'))).toBe(false)
-  expect(paths).toContain('parttens/src/surfaces/settings/index.ts')
+  expect(paths).toContain('patterns/surfaces/settings/index.ts')
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
@@ -399,10 +407,8 @@ test('builds the chats-panel item from the chat folder with COSS-only dependenci
     '@ui/skeleton',
   ])
   expect(item.dependencies).toContain('@thesvg/icons@3.4.1')
-  expect(paths).toContain('parttens/src/chat/chats-panel/index.ts')
-  expect(paths.every((path) => path.startsWith('parttens/src/chat/'))).toBe(
-    true,
-  )
+  expect(paths).toContain('patterns/chat/chats-panel/index.ts')
+  expect(paths.every((path) => path.startsWith('patterns/chat/'))).toBe(true)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
@@ -428,10 +434,8 @@ test('builds the chat-assistant item with the COSS chat and composer dependencie
     '@ui/composer',
     '@ui/tooltip',
   ])
-  expect(paths).toContain('parttens/src/chat/assistant/index.ts')
-  expect(paths.every((path) => path.startsWith('parttens/src/chat/'))).toBe(
-    true,
-  )
+  expect(paths).toContain('patterns/chat/assistant/index.ts')
+  expect(paths.every((path) => path.startsWith('patterns/chat/'))).toBe(true)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
@@ -454,10 +458,8 @@ test('builds the wizard item from its folder with IconFrame and COSS as ui depen
     '@ui/card',
     '@ui/icon-frame',
   ])
-  expect(paths).toContain('parttens/src/wizard/index.ts')
-  expect(paths.every((path) => path.startsWith('parttens/src/wizard/'))).toBe(
-    true,
-  )
+  expect(paths).toContain('patterns/wizard/index.ts')
+  expect(paths.every((path) => path.startsWith('patterns/wizard/'))).toBe(true)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
@@ -465,7 +467,7 @@ test('lists every block folder in blockSources', () => {
   const root = resolve(import.meta.dir, '../../..')
   const folders = ['*/*/*/index.ts']
     .flatMap((pattern) => [
-      ...new Bun.Glob(pattern).scanSync(join(root, 'packages/blocks/src')),
+      ...new Bun.Glob(pattern).scanSync(join(root, 'packages/ui/src/blocks')),
     ])
     .map((path) => path.replace(/\/index\.ts$/, ''))
     .sort()
@@ -473,7 +475,7 @@ test('lists every block folder in blockSources', () => {
   expect(Object.keys(blockSources).sort()).toEqual([...blockNames].sort())
 })
 
-test('builds flow-canvas with the d3-hierarchy version of parttens and no React Flow in the other flow items', () => {
+test('builds flow-canvas with the d3-hierarchy version of the patterns and no React Flow in the other flow items', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(
     process.execPath,
@@ -519,13 +521,13 @@ test('resolves the core entry of a pattern from a block import', () => {
     root,
   )
   const resolved = ts.resolveModuleName(
-    '@tc96/parttens/flow/canvas/core',
-    join(root, 'packages/blocks/src/ai-agents/flow/shared/types.ts'),
+    '@tc96/ui/patterns/flow/canvas/core',
+    join(root, 'packages/ui/src/blocks/ai-agents/flow/shared/types.ts'),
     parsed.options,
     ts.sys,
   ).resolvedModule
   expect(resolved?.resolvedFileName).toBe(
-    join(root, 'packages/parttens/src/flow/canvas/core.ts'),
+    join(root, 'packages/ui/src/patterns/flow/canvas/core.ts'),
   )
 })
 
@@ -545,16 +547,16 @@ test('builds the app-shell-1 item with the shell shared files and the sidebar fr
   expect(item.name).toBe('app-shell-1')
   expect(item.registryDependencies).toContain('@ui/sidebar')
   expect(item.registryDependencies).toContain('@ui/breadcrumb')
-  expect(paths).toContain('blocks/src/application/shell/app-shell-1/index.ts')
-  expect(paths).toContain('blocks/src/application/shell/shared/shell-nav.tsx')
+  expect(paths).toContain('blocks/application/shell/app-shell-1/index.ts')
+  expect(paths).toContain('blocks/application/shell/shared/shell-nav.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/application/shell/') ||
-        path.startsWith('helpers/src/'),
+        path.startsWith('blocks/application/shell/') ||
+        path.startsWith('helpers/'),
     ),
   ).toBe(true)
-  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
@@ -586,18 +588,18 @@ test('builds the login-1 item with the auth shared files and the form parts from
       '@ui/separator',
     ]),
   )
-  expect(paths).toContain('blocks/src/application/auth/login-1/index.ts')
-  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/application/auth/login-1/index.ts')
+  expect(paths).toContain('blocks/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/application/auth/') ||
-        path.startsWith('helpers/src/'),
+        path.startsWith('blocks/application/auth/') ||
+        path.startsWith('helpers/'),
     ),
   ).toBe(true)
-  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(
-    paths.some((path) => path.startsWith('blocks/src/application/shell/')),
+    paths.some((path) => path.startsWith('blocks/application/shell/')),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
@@ -627,20 +629,18 @@ test('builds the login-2 item with the auth shared files and only the form parts
       '@ui/input-group',
     ]),
   )
-  expect(paths).toContain('blocks/src/application/auth/login-2/index.ts')
-  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/application/auth/login-2/index.ts')
+  expect(paths).toContain('blocks/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/application/auth/') ||
-        path.startsWith('helpers/src/'),
+        path.startsWith('blocks/application/auth/') ||
+        path.startsWith('helpers/'),
     ),
   ).toBe(true)
-  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(
-    paths.some((path) =>
-      path.startsWith('blocks/src/application/auth/login-1/'),
-    ),
+    paths.some((path) => path.startsWith('blocks/application/auth/login-1/')),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
@@ -669,23 +669,21 @@ test('builds the otp-1 item with the auth shared files and the otp field from CO
       '@ui/otp-field',
     ]),
   )
-  expect(paths).toContain('blocks/src/application/auth/otp-1/index.ts')
-  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/application/auth/otp-1/index.ts')
+  expect(paths).toContain('blocks/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/application/auth/') ||
-        path.startsWith('helpers/src/'),
+        path.startsWith('blocks/application/auth/') ||
+        path.startsWith('helpers/'),
     ),
   ).toBe(true)
-  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(
-    paths.some((path) => path.startsWith('blocks/src/application/shell/')),
+    paths.some((path) => path.startsWith('blocks/application/shell/')),
   ).toBe(false)
   expect(
-    paths.some((path) =>
-      path.startsWith('blocks/src/application/auth/login-1/'),
-    ),
+    paths.some((path) => path.startsWith('blocks/application/auth/login-1/')),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
@@ -717,27 +715,27 @@ test('builds the signup-1 item with the auth shared files and the form parts fro
       '@ui/separator',
     ]),
   )
-  expect(paths).toContain('blocks/src/application/auth/signup-1/index.ts')
-  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/application/auth/signup-1/index.ts')
+  expect(paths).toContain('blocks/application/auth/shared/auth-card.tsx')
   expect(paths).toContain(
-    'blocks/src/application/auth/shared/auth-password-feedback.tsx',
+    'blocks/application/auth/shared/auth-password-feedback.tsx',
   )
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/application/auth/') ||
-        path.startsWith('helpers/src/'),
+        path.startsWith('blocks/application/auth/') ||
+        path.startsWith('helpers/'),
     ),
   ).toBe(true)
-  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(
-    paths.some((path) => path.startsWith('blocks/src/application/shell/')),
+    paths.some((path) => path.startsWith('blocks/application/shell/')),
   ).toBe(false)
   expect(
     paths.some(
       (path) =>
-        path.startsWith('blocks/src/application/auth/login-1/') ||
-        path.startsWith('blocks/src/application/auth/otp-1/'),
+        path.startsWith('blocks/application/auth/login-1/') ||
+        path.startsWith('blocks/application/auth/otp-1/'),
     ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
@@ -768,33 +766,31 @@ test('builds the reset-password-1 item with the auth shared files and the form p
       '@ui/render-anchor',
     ]),
   )
+  expect(paths).toContain('blocks/application/auth/reset-password-1/index.ts')
+  expect(paths).toContain('blocks/application/auth/shared/auth-card.tsx')
   expect(paths).toContain(
-    'blocks/src/application/auth/reset-password-1/index.ts',
-  )
-  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
-  expect(paths).toContain(
-    'blocks/src/application/auth/shared/auth-password-field.tsx',
+    'blocks/application/auth/shared/auth-password-field.tsx',
   )
   expect(paths).toContain(
-    'blocks/src/application/auth/shared/auth-password-feedback.tsx',
+    'blocks/application/auth/shared/auth-password-feedback.tsx',
   )
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/application/auth/') ||
-        path.startsWith('helpers/src/'),
+        path.startsWith('blocks/application/auth/') ||
+        path.startsWith('helpers/'),
     ),
   ).toBe(true)
-  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(
-    paths.some((path) => path.startsWith('blocks/src/application/shell/')),
+    paths.some((path) => path.startsWith('blocks/application/shell/')),
   ).toBe(false)
   expect(
     paths.some(
       (path) =>
-        path.startsWith('blocks/src/application/auth/login-1/') ||
-        path.startsWith('blocks/src/application/auth/otp-1/') ||
-        path.startsWith('blocks/src/application/auth/signup-1/'),
+        path.startsWith('blocks/application/auth/login-1/') ||
+        path.startsWith('blocks/application/auth/otp-1/') ||
+        path.startsWith('blocks/application/auth/signup-1/'),
     ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
@@ -825,37 +821,35 @@ test('builds the reset-password-2 item with the auth shared files and its own co
       '@ui/render-anchor',
     ]),
   )
+  expect(paths).toContain('blocks/application/auth/reset-password-2/index.ts')
   expect(paths).toContain(
-    'blocks/src/application/auth/reset-password-2/index.ts',
+    'blocks/application/auth/reset-password-2/format-countdown.ts',
+  )
+  expect(paths).toContain('blocks/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain(
+    'blocks/application/auth/shared/auth-password-field.tsx',
   )
   expect(paths).toContain(
-    'blocks/src/application/auth/reset-password-2/format-countdown.ts',
-  )
-  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
-  expect(paths).toContain(
-    'blocks/src/application/auth/shared/auth-password-field.tsx',
-  )
-  expect(paths).toContain(
-    'blocks/src/application/auth/shared/auth-password-feedback.tsx',
+    'blocks/application/auth/shared/auth-password-feedback.tsx',
   )
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/application/auth/') ||
-        path.startsWith('helpers/src/'),
+        path.startsWith('blocks/application/auth/') ||
+        path.startsWith('helpers/'),
     ),
   ).toBe(true)
-  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(
-    paths.some((path) => path.startsWith('blocks/src/application/shell/')),
+    paths.some((path) => path.startsWith('blocks/application/shell/')),
   ).toBe(false)
   expect(
     paths.some(
       (path) =>
-        path.startsWith('blocks/src/application/auth/login-1/') ||
-        path.startsWith('blocks/src/application/auth/otp-1/') ||
-        path.startsWith('blocks/src/application/auth/signup-1/') ||
-        path.startsWith('blocks/src/application/auth/reset-password-1/'),
+        path.startsWith('blocks/application/auth/login-1/') ||
+        path.startsWith('blocks/application/auth/otp-1/') ||
+        path.startsWith('blocks/application/auth/signup-1/') ||
+        path.startsWith('blocks/application/auth/reset-password-1/'),
     ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
@@ -886,29 +880,27 @@ test('builds the forgot-password-1 item with the auth shared files and the form 
       '@ui/render-anchor',
     ]),
   )
-  expect(paths).toContain(
-    'blocks/src/application/auth/forgot-password-1/index.ts',
-  )
-  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/application/auth/forgot-password-1/index.ts')
+  expect(paths).toContain('blocks/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/application/auth/') ||
-        path.startsWith('helpers/src/'),
+        path.startsWith('blocks/application/auth/') ||
+        path.startsWith('helpers/'),
     ),
   ).toBe(true)
-  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(
-    paths.some((path) => path.startsWith('blocks/src/application/shell/')),
+    paths.some((path) => path.startsWith('blocks/application/shell/')),
   ).toBe(false)
   expect(
     paths.some(
       (path) =>
-        path.startsWith('blocks/src/application/auth/login-1/') ||
-        path.startsWith('blocks/src/application/auth/otp-1/') ||
-        path.startsWith('blocks/src/application/auth/signup-1/') ||
-        path.startsWith('blocks/src/application/auth/reset-password-1/') ||
-        path.startsWith('blocks/src/application/auth/reset-password-2/'),
+        path.startsWith('blocks/application/auth/login-1/') ||
+        path.startsWith('blocks/application/auth/otp-1/') ||
+        path.startsWith('blocks/application/auth/signup-1/') ||
+        path.startsWith('blocks/application/auth/reset-password-1/') ||
+        path.startsWith('blocks/application/auth/reset-password-2/'),
     ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
@@ -939,20 +931,18 @@ test('builds the signup-2 item with the auth shared files and only the form part
       '@ui/input-group',
     ]),
   )
-  expect(paths).toContain('blocks/src/application/auth/signup-2/index.ts')
-  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/application/auth/signup-2/index.ts')
+  expect(paths).toContain('blocks/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/application/auth/') ||
-        path.startsWith('helpers/src/'),
+        path.startsWith('blocks/application/auth/') ||
+        path.startsWith('helpers/'),
     ),
   ).toBe(true)
-  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(
-    paths.some((path) =>
-      path.startsWith('blocks/src/application/auth/signup-1/'),
-    ),
+    paths.some((path) => path.startsWith('blocks/application/auth/signup-1/')),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
@@ -981,21 +971,19 @@ test('builds the forgot-password-2 item with the auth shared files and only the 
       '@ui/input',
     ]),
   )
-  expect(paths).toContain(
-    'blocks/src/application/auth/forgot-password-2/index.ts',
-  )
-  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/application/auth/forgot-password-2/index.ts')
+  expect(paths).toContain('blocks/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/application/auth/') ||
-        path.startsWith('helpers/src/'),
+        path.startsWith('blocks/application/auth/') ||
+        path.startsWith('helpers/'),
     ),
   ).toBe(true)
-  expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
+  expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(
     paths.some((path) =>
-      path.startsWith('blocks/src/application/auth/forgot-password-1/'),
+      path.startsWith('blocks/application/auth/forgot-password-1/'),
     ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
@@ -1018,14 +1006,14 @@ test('builds the flow blocks from ai-agents/flow, the flow patterns, the assista
     expect(item.name).toBe(name)
     expect(item.dependencies).toContain('@xyflow/react@12.12.0')
     expect(item.dependencies).toContain('d3-hierarchy@3.1.2')
-    expect(paths).toContain(`blocks/src/ai-agents/flow/${name}/index.ts`)
+    expect(paths).toContain(`blocks/ai-agents/flow/${name}/index.ts`)
     expect(
       paths.every(
         (path) =>
-          path.startsWith('blocks/src/ai-agents/flow/') ||
-          path.startsWith('parttens/src/flow/') ||
-          path.startsWith('parttens/src/chat/assistant/') ||
-          path.startsWith('helpers/src/'),
+          path.startsWith('blocks/ai-agents/flow/') ||
+          path.startsWith('patterns/flow/') ||
+          path.startsWith('patterns/chat/assistant/') ||
+          path.startsWith('helpers/'),
       ),
     ).toBe(true)
     expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
@@ -1044,34 +1032,30 @@ test('builds run-monitor with the flow canvas and impact-map with the flow core 
   const read = (name: string): RegistryItem =>
     JSON.parse(readFileSync(join(root, `dist/registry/${name}.json`), 'utf8'))
   const allowed = (path: string) =>
-    path.startsWith('blocks/src/ai-agents/flow/') ||
-    path.startsWith('parttens/src/flow/canvas/') ||
-    path.startsWith('parttens/src/surfaces/state/') ||
-    path.startsWith('helpers/src/')
+    path.startsWith('blocks/ai-agents/flow/') ||
+    path.startsWith('patterns/flow/canvas/') ||
+    path.startsWith('patterns/surfaces/state/') ||
+    path.startsWith('helpers/')
 
   const monitor = read('run-monitor')
   const monitorPaths = monitor.files.map((file) => file.path)
   expect(monitor.dependencies).toContain('@xyflow/react@12.12.0')
   expect(monitor.dependencies).toContain('d3-hierarchy@3.1.2')
-  expect(monitorPaths).toContain(
-    'blocks/src/ai-agents/flow/run-monitor/index.ts',
-  )
+  expect(monitorPaths).toContain('blocks/ai-agents/flow/run-monitor/index.ts')
   expect(monitorPaths.every(allowed)).toBe(true)
 
   const map = read('impact-map')
   const mapPaths = map.files.map((file) => file.path)
   expect(map.dependencies).toContain('d3-hierarchy@3.1.2')
   expect(map.dependencies).not.toContain('@xyflow/react@12.12.0')
-  expect(mapPaths).toContain('blocks/src/ai-agents/flow/impact-map/index.ts')
+  expect(mapPaths).toContain('blocks/ai-agents/flow/impact-map/index.ts')
   expect(mapPaths.every(allowed)).toBe(true)
   expect(
-    mapPaths.some((path) =>
-      path.startsWith('blocks/src/ai-agents/flow/shared/'),
-    ),
+    mapPaths.some((path) => path.startsWith('blocks/ai-agents/flow/shared/')),
   ).toBe(false)
   expect(
     mapPaths.some((path) =>
-      path.startsWith('parttens/src/flow/canvas/composition/'),
+      path.startsWith('patterns/flow/canvas/composition/'),
     ),
   ).toBe(false)
   for (const path of [...monitorPaths, ...mapPaths])

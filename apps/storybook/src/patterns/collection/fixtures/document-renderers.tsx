@@ -5,19 +5,6 @@ import {
   PushPinIcon,
   PushPinSlashIcon,
 } from '@phosphor-icons/react'
-import {
-  DateProperty,
-  ListRow,
-  ListRowAction,
-  ListRowBody,
-  ListRowDescription,
-  ListRowField,
-  ListRowLeading,
-  ListRowTitle,
-  ListRowTrailing,
-  PersonProperty,
-  type PersonPropertyOption,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
   Card,
@@ -35,6 +22,19 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  DateProperty,
+  ListRow,
+  ListRowAction,
+  ListRowBody,
+  ListRowDescription,
+  ListRowField,
+  ListRowLeading,
+  ListRowTitle,
+  ListRowTrailing,
+  PersonProperty,
+  type PersonPropertyOption,
+} from '@tc96/ui/patterns'
 import { Separator } from '@tc96/ui/separator'
 import { Text } from '@tc96/ui/text'
 import {

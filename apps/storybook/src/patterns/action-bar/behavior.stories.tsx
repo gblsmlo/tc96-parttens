@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ActionBar, type ActionBarContext } from '@tc96/parttens'
+import { ActionBar, type ActionBarContext } from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { actionBarControlArgs } from './action-bar-controls.ts'
 import {

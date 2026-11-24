@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { performance } from 'node:perf_hooks'
-import { projectCollection } from '../packages/parttens/src/collection/shared/lib/project-collection'
+import { projectCollection } from '../packages/ui/src/patterns/collection/shared/lib/project-collection'
 
 const records = Array.from({ length: 10_000 }, (_, index) => ({
   id: `item-${index}`,

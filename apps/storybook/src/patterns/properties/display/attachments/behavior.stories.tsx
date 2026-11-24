@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AttachmentProperty, AttachmentsProperty } from '@tc96/parttens'
+import { AttachmentProperty, AttachmentsProperty } from '@tc96/ui/patterns'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { AttachmentsCanvas } from './attachments-canvas.tsx'
 import { meetingMaterial } from './attachments-data.ts'

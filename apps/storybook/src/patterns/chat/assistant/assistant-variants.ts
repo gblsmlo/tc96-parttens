@@ -1,4 +1,4 @@
-import type { AssistantMessage } from '@tc96/parttens'
+import type { AssistantMessage } from '@tc96/ui/patterns'
 import { failedMessages, messages } from './fixtures/assistant'
 
 export const assistantPlacementNames = ['docked', 'floating'] as const

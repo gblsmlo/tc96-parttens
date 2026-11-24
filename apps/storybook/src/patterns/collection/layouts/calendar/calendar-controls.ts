@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { CalendarEventChipTone, CalendarViewMode } from '@tc96/parttens'
+import type { CalendarEventChipTone, CalendarViewMode } from '@tc96/ui/patterns'
 
 export const calendarModes: CalendarViewMode[] = ['day', 'week', 'month']
 

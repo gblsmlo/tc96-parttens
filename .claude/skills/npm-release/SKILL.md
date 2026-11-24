@@ -1,9 +1,9 @@
 ---
 name: npm-release
-description: Release @tc96/parttens to npm end to end in this repository. Picks the next version from the commits since the last tag (feat bumps the minor, fix the patch), prepares the chore/release-X.Y.Z branch and PR, runs the release gate, creates the GitHub release that triggers the Publish workflow, then waits for the run and confirms the version on npm. Use when asked to release, publish, cut or ship a new version of the package, bump its version, or check whether a publish finished. Do not use for publishing another package, for npm login or token setup, or to change the release workflows themselves.
+description: Release @tc96/cli to npm end to end in this repository. Picks the next version from the commits since the last tag (feat bumps the minor, fix the patch), prepares the chore/release-X.Y.Z branch and PR, runs the release gate, creates the GitHub release that triggers the Publish workflow, then waits for the run and confirms the version on npm. Use when asked to release, publish, cut or ship a new version of the package, bump its version, or check whether a publish finished. Do not use for publishing another package, for npm login or token setup, or to change the release workflows themselves.
 ---
 
-# npm release of @tc96/parttens
+# npm release of @tc96/cli
 
 The package is never published from a laptop. `bun run release` creates the GitHub release `vX.Y.Z`, and `.github/workflows/publish.yml` publishes `dist/cli` to npm with provenance when that release is published. No `npm login` is needed.
 
@@ -11,7 +11,7 @@ The package is never published from a laptop. `bun run release` creates the GitH
 
 | What | Where |
 | --- | --- |
-| The version, the only line a release changes | `packages/registry/src/build-registry.ts`, `version: 'X.Y.Z'` inside the `@tc96/parttens` package.json it writes |
+| The version, the only line a release changes | `packages/registry/src/build-registry.ts`, `version: 'X.Y.Z'` inside the `@tc96/cli` package.json it writes |
 | Local release gate | `bun run release:check` (full `check`, consumer registry and SSR tests, view benchmarks, `pack:check`) |
 | CI release gate | `.github/workflows/release-check.yml`, runs `release:check` on PRs whose branch starts with `chore/release-` |
 | Release command | `scripts/release.ts`: requires `main`, a clean tree, `main` equal to `origin/main`, no `vX.Y.Z` tag on origin and no `X.Y.Z` on npm; `--dry-run` prints the `gh release create` command without running it |
@@ -43,7 +43,7 @@ git switch -c chore/release-X.Y.Z
 Change only the `version` line in `packages/registry/src/build-registry.ts`, then commit:
 
 ```
-chore(release): Prepare @tc96/parttens X.Y.Z
+chore(release): Prepare @tc96/cli X.Y.Z
 ```
 
 The `chore/release-` prefix matters: it is what makes the `Release check` workflow run on the PR.
@@ -52,7 +52,7 @@ The `chore/release-` prefix matters: it is what makes the `Release check` workfl
 
 1. Run `bun run release:check` locally. It takes several minutes; run it in the background and read the log when it ends.
 2. If a step fails, quote the failing lines. A failure caused by the release itself (version, pack) is fixed on this branch. A failure that already exists on `main` is not fixed here: link or file its issue and let the owner decide whether to release anyway, because `publish.yml` runs only typecheck, test, build and `pack:check`.
-3. After the owner's go-ahead, push and open the PR (title `chore(release): Prepare @tc96/parttens X.Y.Z`, `Closes: none`), then wait for the checks with `gh pr checks <number> --watch`.
+3. After the owner's go-ahead, push and open the PR (title `chore(release): Prepare @tc96/cli X.Y.Z`, `Closes: none`), then wait for the checks with `gh pr checks <number> --watch`.
 
 ## Step 4: Release
 
@@ -78,8 +78,8 @@ Show the printed `gh release create vX.Y.Z --target main --generate-notes --late
 2. Confirm npm serves the version; the registry can lag a minute behind the workflow:
 
    ```bash
-   npm view @tc96/parttens@X.Y.Z version
-   npm view @tc96/parttens dist-tags
+   npm view @tc96/cli@X.Y.Z version
+   npm view @tc96/cli dist-tags
    ```
 
    `latest` must be `X.Y.Z`.
@@ -94,7 +94,7 @@ Show the printed `gh release create vX.Y.Z --target main --generate-notes --late
 ## Output
 
 ```
-Release: @tc96/parttens X.Y.Z (minor|patch, from <last tag>)
+Release: @tc96/cli X.Y.Z (minor|patch, from <last tag>)
 Gate: release:check <passed|failed at step>, PR #N checks <state>
 Release: <release URL>
 Publish run: <run URL> <conclusion>

@@ -17,7 +17,7 @@ import {
   type KanbanColumnData,
   KanbanView,
   PersonProperty,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useEffect, useState } from 'react'
 import { sleep } from '../../../../test-utils/sleep'
 import { type Deal, type DealStage, initialDeals } from '../../fixtures/deals'

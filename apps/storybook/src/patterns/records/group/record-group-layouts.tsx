@@ -5,14 +5,14 @@ import {
   ShapesIcon,
   UserIcon,
 } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
 import {
   DateProperty,
   RecordGroup,
   RecordGroupAction,
   RecordGroupRow,
   TextProperty,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import type { RecordGroupControls } from './record-group-controls.ts'
 
 interface ComposedRecordGroupProps extends RecordGroupControls {

@@ -3,7 +3,7 @@ import {
   FileTextIcon,
   NotebookIcon,
 } from '@phosphor-icons/react'
-import type { CollectionDefinition } from '@tc96/parttens'
+import type { CollectionDefinition } from '@tc96/ui/patterns'
 import { NOW, peopleById } from './tasks'
 
 export type DocumentKind = 'note' | 'document' | 'bookmark'

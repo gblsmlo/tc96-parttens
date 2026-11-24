@@ -7,6 +7,17 @@ import {
   TrashIcon,
 } from '@phosphor-icons/react'
 import {
+  MenuCheckboxItem,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+} from '@tc96/ui/menu'
+import {
   Action,
   ActionBar,
   type ActionBarGroup,
@@ -30,18 +41,7 @@ import {
   ViewSettingsMenu,
   type ViewSettingsMode,
   ViewSettingsSection,
-} from '@tc96/parttens'
-import {
-  MenuCheckboxItem,
-  MenuGroup,
-  MenuGroupLabel,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuSeparator,
-  MenuSub,
-  MenuSubPopup,
-  MenuSubTrigger,
-} from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import { CreateContactDialog } from '../../records/dialog/create-contact-dialog'
 import {

@@ -1,4 +1,4 @@
-import type { Settings17Control } from '@tc96/blocks/application/settings/settings-17'
+import type { Settings17Control } from '@tc96/ui/blocks/application/settings/settings-17'
 
 export const privacyControls: Settings17Control[] = [
   {

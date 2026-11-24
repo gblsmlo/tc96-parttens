@@ -26,14 +26,14 @@ for (const path of [
   'wizard',
 ]) {
   if (
-    !(await files(`packages/parttens/src/${path}`)).some((file) =>
+    !(await files(`packages/ui/src/patterns/${path}`)).some((file) =>
       /\.test\.(ts|tsx)$/.test(file),
     )
   )
     continue
   const result = spawnSync(
     process.execPath,
-    ['test', '--isolate', `packages/parttens/src/${path}`],
+    ['test', '--isolate', `packages/ui/src/patterns/${path}`],
     { stdio: 'inherit' },
   )
   if (result.status !== 0) process.exit(result.status ?? 1)

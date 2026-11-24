@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings8
 
-A settings section with one switch that turns SLAs on or off. Reach for it when the app lets admins set deadlines for issues that match automation rules. Install it with `npx @tc96/parttens add settings-8`.
+A settings section with one switch that turns SLAs on or off. Reach for it when the app lets admins set deadlines for issues that match automation rules. Install it with `npx @tc96/cli add settings-8`.
 
 It is a section, not a page: it renders no `main` landmark. The block keeps the switch state itself and only calls `onEnabledChange`; it never fetches or stores the setting. Saving stays in the app.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings8`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Settings8 } from '@tc96/blocks/application/settings/settings-8'
+import { Settings8 } from '@tc96/ui/blocks/application/settings/settings-8'
 ```
 
 The same path exports the types `Settings8Props` and `Settings8Labels`.

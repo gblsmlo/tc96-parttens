@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Login5
 
-The method picker sign-in page: a list of sign-in methods as buttons (a passkey, SSO, any method the app offers) plus an e-mail and password method that reveals its form in place. Reach for it when the app offers more than one way in and the user should choose first. Install it with `npx @tc96/parttens add login-5`.
+The method picker sign-in page: a list of sign-in methods as buttons (a passkey, SSO, any method the app offers) plus an e-mail and password method that reveals its form in place. Reach for it when the app offers more than one way in and the user should choose first. Install it with `npx @tc96/cli add login-5`.
 
 It is a whole page: it renders its own `main` landmark. Passkeys, SSO redirects, the session and cookies stay in the app; the block only calls `onMethod`, `onMethodChange` and `onSubmit`. Which view shows is the app's: `method` and `onMethodChange` are controlled.
 

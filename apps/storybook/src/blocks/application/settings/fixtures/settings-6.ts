@@ -3,7 +3,7 @@ import type {
   Settings6Member,
   Settings6Role,
   Settings6Seats,
-} from '@tc96/blocks/application/settings/settings-6'
+} from '@tc96/ui/blocks/application/settings/settings-6'
 
 export interface Settings6Team {
   invitations: Settings6Invitation[]

@@ -16,13 +16,6 @@ import {
   PresentationIcon,
   TrashIcon,
 } from '@phosphor-icons/react'
-import {
-  RecordGroup,
-  RecordGroupAction,
-  RecordGroupItem,
-  RecordGroupLink,
-  type RecordGroupVariant,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import {
@@ -32,6 +25,13 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  RecordGroup,
+  RecordGroupAction,
+  RecordGroupItem,
+  RecordGroupLink,
+  type RecordGroupVariant,
+} from '@tc96/ui/patterns'
 
 interface DocumentEntry {
   color: string

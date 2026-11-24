@@ -1,13 +1,13 @@
 import { ArrowRightIcon, RobotIcon } from '@phosphor-icons/react'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
+import { Button } from '@tc96/ui/button'
+import { IconFrame } from '@tc96/ui/icon-frame'
 import {
   RecordGroup,
   RecordGroupFilter,
   RecordGroupItem,
   type RecordGroupVariant,
-} from '@tc96/parttens'
-import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
-import { Button } from '@tc96/ui/button'
-import { IconFrame } from '@tc96/ui/icon-frame'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 
 interface Person {

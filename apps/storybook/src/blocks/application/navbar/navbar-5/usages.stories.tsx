@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Navbar5,
   type Navbar5Status,
-} from '@tc96/blocks/application/navbar/navbar-5'
+} from '@tc96/ui/blocks/application/navbar/navbar-5'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { actions, breadcrumb, people } from '../fixtures/navbar-5.ts'

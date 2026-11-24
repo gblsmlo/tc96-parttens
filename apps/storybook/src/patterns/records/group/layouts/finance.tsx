@@ -16,18 +16,6 @@ import {
   QrCodeIcon,
   ReceiptIcon,
 } from '@phosphor-icons/react'
-import {
-  RecordGroup,
-  RecordGroupAction,
-  RecordGroupDivider,
-  RecordGroupFilter,
-  RecordGroupItem,
-  RecordGroupLink,
-  RecordGroupRow,
-  RecordGroupSubgroup,
-  type RecordGroupVariant,
-  RecordStatusBadge,
-} from '@tc96/parttens'
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
@@ -40,6 +28,18 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  RecordGroup,
+  RecordGroupAction,
+  RecordGroupDivider,
+  RecordGroupFilter,
+  RecordGroupItem,
+  RecordGroupLink,
+  RecordGroupRow,
+  RecordGroupSubgroup,
+  type RecordGroupVariant,
+  RecordStatusBadge,
+} from '@tc96/ui/patterns'
 import { Fragment, type ReactNode, useState } from 'react'
 
 type Direction = 'in' | 'out' | 'transfer'

@@ -1,4 +1,4 @@
-import type { CollectionDefinition } from '@tc96/parttens'
+import type { CollectionDefinition } from '@tc96/ui/patterns'
 import { initialTasks } from '../../fixtures/tasks'
 
 export interface SampleRecord {

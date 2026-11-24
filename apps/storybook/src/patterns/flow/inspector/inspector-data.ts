@@ -2,7 +2,7 @@ import type {
   FlowInspectorDetail,
   FlowLogEntry,
   FlowStepStats,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export const stepDetails: FlowInspectorDetail[] = [
   { id: 'type', label: 'Tipo', value: 'Enviar e-mail' },

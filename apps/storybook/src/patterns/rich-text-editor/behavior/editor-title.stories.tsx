@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EditorTitle } from '@tc96/parttens'
+import { EditorTitle } from '@tc96/ui/patterns'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { RichTextEditorCanvas } from '../rich-text-editor-canvas.tsx'
 

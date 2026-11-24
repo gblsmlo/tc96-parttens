@@ -2,7 +2,7 @@ import type { ArgTypes } from '@storybook/react-vite'
 import type {
   RecordGroupActionsAlign,
   RecordGroupVariant,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export const recordGroupVariants: readonly RecordGroupVariant[] = [
   'plain',

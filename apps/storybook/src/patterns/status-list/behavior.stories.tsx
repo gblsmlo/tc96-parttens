@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
 import {
   type RecordStatus,
   RecordStatusItem,
   RecordStatusList,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { RecordStatusListCanvas } from './status-list-canvas.tsx'

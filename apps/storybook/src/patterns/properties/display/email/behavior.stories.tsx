@@ -1,6 +1,6 @@
 import { PlusIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EmailProperty } from '@tc96/parttens'
+import { EmailProperty } from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
 import { EmailCanvas } from './email-canvas.tsx'

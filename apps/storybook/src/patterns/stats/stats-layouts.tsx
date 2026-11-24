@@ -9,6 +9,12 @@ import {
   WarningIcon,
   XCircleIcon,
 } from '@phosphor-icons/react'
+import { Badge } from '@tc96/ui/badge'
+import { Button } from '@tc96/ui/button'
+import { CardPanel } from '@tc96/ui/card'
+import { Gauge } from '@tc96/ui/gauge'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+import { MeterPrimitive } from '@tc96/ui/meter'
 import {
   type AmountFormatOptions,
   clampRatio,
@@ -20,13 +26,7 @@ import {
   TrendIndicator,
   WidgetPeriodToggle,
   WidgetShell,
-} from '@tc96/parttens'
-import { Badge } from '@tc96/ui/badge'
-import { Button } from '@tc96/ui/button'
-import { CardPanel } from '@tc96/ui/card'
-import { Gauge } from '@tc96/ui/gauge'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import { MeterPrimitive } from '@tc96/ui/meter'
+} from '@tc96/ui/patterns'
 import {
   Select,
   SelectItem,

@@ -1,4 +1,4 @@
-import { EditableText, type EditableTextProps } from '@tc96/parttens'
+import { EditableText, type EditableTextProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { EditableTextControls } from './editable-text-controls.ts'
 

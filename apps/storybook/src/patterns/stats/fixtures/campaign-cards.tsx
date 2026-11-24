@@ -1,4 +1,6 @@
 import { PlantIcon, UsersIcon, WalletIcon } from '@phosphor-icons/react'
+import { CardPanel } from '@tc96/ui/card'
+import { MeterPrimitive } from '@tc96/ui/meter'
 import {
   Amount,
   type AmountFormatOptions,
@@ -7,9 +9,7 @@ import {
   IconFrame,
   ProgressRing,
   WidgetShell,
-} from '@tc96/parttens'
-import { CardPanel } from '@tc96/ui/card'
-import { MeterPrimitive } from '@tc96/ui/meter'
+} from '@tc96/ui/patterns'
 import { type ReactElement, type ReactNode, useId } from 'react'
 import {
   type Campaign,

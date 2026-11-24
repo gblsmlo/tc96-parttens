@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login1 } from '@tc96/blocks/application/auth/login-1'
+import { Login1 } from '@tc96/ui/blocks/application/auth/login-1'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 
 const ignore = () => undefined

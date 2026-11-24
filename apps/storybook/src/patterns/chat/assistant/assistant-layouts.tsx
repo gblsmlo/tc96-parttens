@@ -1,4 +1,4 @@
-import { AssistantPanel, type AssistantSuggestion } from '@tc96/parttens'
+import { AssistantPanel, type AssistantSuggestion } from '@tc96/ui/patterns'
 import type { AssistantControls } from './assistant-controls.ts'
 import { assistantMessageSets } from './assistant-variants.ts'
 import { suggestions as sampleSuggestions } from './fixtures/assistant'

@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings3
 
-A settings section for the interface: a font size select, a language select and an email notifications switch. Reach for it when the app lets people choose the text size, the language and whether they get email notifications. Install it with `npx @tc96/parttens add settings-3`.
+A settings section for the interface: a font size select, a language select and an email notifications switch. Reach for it when the app lets people choose the text size, the language and whether they get email notifications. Install it with `npx @tc96/cli add settings-3`.
 
 It is a section, not a page: it renders no `main` landmark. The block keeps no state of its own: it shows the `values` it receives and calls `onValueChange` with the key and the new value, so the app saves the change and passes the new `values` back.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings3`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Settings3 } from '@tc96/blocks/application/settings/settings-3'
+import { Settings3 } from '@tc96/ui/blocks/application/settings/settings-3'
 ```
 
 The same path exports the types `Settings3Props`, `Settings3Values`, `Settings3Options`, `Settings3SettingOption` and `Settings3Labels`.

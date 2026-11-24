@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Onboarding1 } from '@tc96/blocks/application/onboarding/onboarding-1'
+import { Onboarding1 } from '@tc96/ui/blocks/application/onboarding/onboarding-1'
 import { useState } from 'react'
 import { expect, screen, userEvent } from 'storybook/test'
 import { useOnboardingForm } from '../fixtures/onboarding-demo.tsx'

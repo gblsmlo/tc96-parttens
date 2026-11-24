@@ -11,7 +11,7 @@ import {
   IconFrame,
   type MarketShareSegment,
   type PipelineStage,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export type PipelinePeriod = 'month' | 'quarter'
 

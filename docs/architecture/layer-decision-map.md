@@ -16,7 +16,7 @@ blocks  →  patterns  →  ui  →  utils          helpers: sem React; patterns
 | Camada | Pacote | Alias no consumidor | Item do registry | Raiz do Storybook |
 | --- | --- | --- | --- | --- |
 | `ui` | `@tc96/ui` | `ui` | `registry:ui` | `UI` |
-| `patterns` | `@tc96/parttens` | `patterns` | `registry:block` (só transporte) | `Patterns` |
+| `patterns` | `@tc96/ui/patterns` | `patterns` | `registry:block` (só transporte) | `Patterns` |
 | `blocks` | `@tc96/blocks` | `blocks` | `registry:block` | `Blocks` |
 | templates | nenhum (só Storybook, ADR 0004) | nenhum | nenhum | `Templates` |
 
@@ -100,7 +100,7 @@ Regras de desempate, na ordem:
 
 ## Categorias de block
 
-Caminho: `packages/blocks/src/<categoria>/<grupo>/<block>/`. Story: `Blocks/<Categoria>/<Grupo>/<Nome>`. O nome no registry não leva a categoria e é único em todo o registry (`login-1`, não `application-login-1`).
+Caminho: `packages/ui/src/blocks/<categoria>/<grupo>/<block>/`. Story: `Blocks/<Categoria>/<Grupo>/<Nome>`. O nome no registry não leva a categoria e é único em todo o registry (`login-1`, não `application-login-1`).
 
 | Categoria | Pasta | Escolha quando a tela serve para… | Grupos atuais e previstos | Patterns que costuma consumir |
 | --- | --- | --- | --- | --- |

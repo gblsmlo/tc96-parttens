@@ -1,7 +1,7 @@
 import type {
   Stats4Range,
   Stats4Source,
-} from '@tc96/blocks/application/stats/stats-4'
+} from '@tc96/ui/blocks/application/stats/stats-4'
 
 export interface LeadsOverview {
   goal: number

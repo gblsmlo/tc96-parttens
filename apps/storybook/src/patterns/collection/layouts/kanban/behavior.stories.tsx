@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import type { KanbanCardMove } from '@tc96/parttens'
+import type { KanbanCardMove } from '@tc96/ui/patterns'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { type Deal, initialDeals } from '../../fixtures/deals'
 import { initialTasks } from '../../fixtures/tasks'

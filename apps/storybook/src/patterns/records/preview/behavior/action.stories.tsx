@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   RecordPreviewAction,
   type RecordPreviewActionProps,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import {
   expect,
   fireEvent,

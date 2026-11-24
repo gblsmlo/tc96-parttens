@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import { type ListVariant, listVariants } from '@tc96/parttens'
+import { type ListVariant, listVariants } from '@tc96/ui/patterns'
 
 export const listElements = ['div', 'a', 'button'] as const
 

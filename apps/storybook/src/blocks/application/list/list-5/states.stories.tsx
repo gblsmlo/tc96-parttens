@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List5 } from '@tc96/blocks/application/list/list-5'
+import { List5 } from '@tc96/ui/blocks/application/list/list-5'
 import { expect, fn, within } from 'storybook/test'
 import { modules } from '../fixtures/list-5.ts'
 

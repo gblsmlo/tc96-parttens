@@ -1,4 +1,4 @@
-import type { Stats3Item } from '@tc96/blocks/application/stats/stats-3'
+import type { Stats3Item } from '@tc96/ui/blocks/application/stats/stats-3'
 
 export const capacity: Stats3Item[] = [
   { id: 'seats', label: 'Assentos', total: 25, value: 18 },

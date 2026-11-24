@@ -3,7 +3,7 @@ import {
   FlowRunCard,
   type FlowStepGroup,
   FlowStepLibraryGroup,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { failedRun } from './fixtures/runs'
 import { workflowStepTypes } from './fixtures/workflow'
 import { stepLibraryControlArgs } from './step-library-controls.ts'

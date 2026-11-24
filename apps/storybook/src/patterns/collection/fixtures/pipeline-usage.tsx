@@ -7,8 +7,16 @@ import {
   RadioButtonIcon,
   UsersIcon,
 } from '@phosphor-icons/react'
-import { formatShortDate } from '@tc96/helpers/date'
-import { formatAmount } from '@tc96/helpers/format'
+import { formatShortDate } from '@tc96/ui/helpers/date'
+import { formatAmount } from '@tc96/ui/helpers/format'
+import {
+  MenuCheckboxItem,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+} from '@tc96/ui/menu'
 import {
   Action,
   CollectionFrame,
@@ -32,15 +40,7 @@ import {
   SelectProperty,
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/parttens'
-import {
-  MenuCheckboxItem,
-  MenuGroup,
-  MenuGroupLabel,
-  MenuSub,
-  MenuSubPopup,
-  MenuSubTrigger,
-} from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { useCallback, useMemo, useState } from 'react'
 import {
   createDealCollection,

@@ -1,9 +1,3 @@
-import {
-  RecordGroup,
-  RecordGroupFilter,
-  RecordGroupLink,
-  type RecordGroupVariant,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
   Dialog,
@@ -15,6 +9,12 @@ import {
   DialogPopup,
   DialogTitle,
 } from '@tc96/ui/dialog'
+import {
+  RecordGroup,
+  RecordGroupFilter,
+  RecordGroupLink,
+  type RecordGroupVariant,
+} from '@tc96/ui/patterns'
 import { type RefObject, useRef, useState } from 'react'
 
 type FeedKind = 'publication' | 'movement'

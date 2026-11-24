@@ -5,22 +5,6 @@ import {
   MegaphoneIcon,
   PhoneIcon,
 } from '@phosphor-icons/react'
-import {
-  Action,
-  ChatsPanel,
-  ChatsPanelItem,
-  ChatsPanelList,
-  CollectionToolbar,
-  FilterRadioSubmenu,
-  PersonProperty,
-  RecordGroup,
-  RecordGroupRow,
-  type RecordGroupVariant,
-  SelectProperty,
-  TextProperty,
-  ViewSettingsMenu,
-  ViewSettingsSection,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { ChatConversation } from '@tc96/ui/chat/chat-conversation'
 import { ChatDatePill } from '@tc96/ui/chat/chat-date-pill'
@@ -38,6 +22,22 @@ import {
   getComposerText,
 } from '@tc96/ui/composer'
 import { useMediaQuery } from '@tc96/ui/hooks/use-media-query'
+import {
+  Action,
+  ChatsPanel,
+  ChatsPanelItem,
+  ChatsPanelList,
+  CollectionToolbar,
+  FilterRadioSubmenu,
+  PersonProperty,
+  RecordGroup,
+  RecordGroupRow,
+  type RecordGroupVariant,
+  SelectProperty,
+  TextProperty,
+  ViewSettingsMenu,
+  ViewSettingsSection,
+} from '@tc96/ui/patterns'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { useId, useState } from 'react'
 import {

@@ -5,7 +5,7 @@
   "registryDependencies": ["@ui/badge"],
   "files": [
     {
-      "path": "parttens/src/checklist/proof.ts",
+      "path": "patterns/checklist/proof.ts",
       "type": "registry:file",
       "content": "import { badge } from \"@tc96/ui/badge\"\nexport const proof = badge\n"
     }

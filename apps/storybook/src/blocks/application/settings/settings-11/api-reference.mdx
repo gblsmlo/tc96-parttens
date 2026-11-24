@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings11
 
-A settings section that lists the statuses of projects, grouped under collapsible titles. Each row shows an icon, the status name, how many projects use it and, when the app handles actions, a menu to edit or delete. Reach for it when the app lets people set the stages a project goes through. Install it with `npx @tc96/parttens add settings-11`.
+A settings section that lists the statuses of projects, grouped under collapsible titles. Each row shows an icon, the status name, how many projects use it and, when the app handles actions, a menu to edit or delete. Reach for it when the app lets people set the stages a project goes through. Install it with `npx @tc96/cli add settings-11`.
 
 It is a section, not a page: it renders no `main` landmark. Creating, editing and deleting stay in the app; the block only calls `onCreate` and `onStatusAction`, keeps no list of its own and never fetches or stores anything.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings11`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings11 } from '@tc96/blocks/application/settings/settings-11'
+import { Settings11 } from '@tc96/ui/blocks/application/settings/settings-11'
 ```
 
 The same path exports the types `Settings11Props`, `Settings11Group`, `Settings11Status`, `Settings11Action` and `Settings11Labels`.

@@ -1,4 +1,4 @@
-import { Card8, type Card8Props } from '@tc96/blocks/application/card/card-8'
+import { Card8, type Card8Props } from '@tc96/ui/blocks/application/card/card-8'
 import { meetingActions, meetings } from '../fixtures/card-8.tsx'
 import type { Card8Controls } from './card-8-controls.ts'
 

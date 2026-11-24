@@ -1,4 +1,4 @@
-import type { Card6Job } from '@tc96/blocks/application/card/card-6'
+import type { Card6Job } from '@tc96/ui/blocks/application/card/card-6'
 
 export const jobs: Card6Job[] = [
   {

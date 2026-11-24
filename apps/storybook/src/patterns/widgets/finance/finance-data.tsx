@@ -6,6 +6,7 @@ import {
   HouseIcon,
   ShoppingCartIcon,
 } from '@phosphor-icons/react'
+import { Badge } from '@tc96/ui/badge'
 import {
   type BalancePoint,
   type BudgetCategory,
@@ -14,8 +15,7 @@ import {
   type InvoiceStatus,
   type MarketShareSegment,
   type Transaction,
-} from '@tc96/parttens'
-import { Badge } from '@tc96/ui/badge'
+} from '@tc96/ui/patterns'
 
 export type MarketPeriod = 'month' | 'week'
 export type BalancePeriod = '1m' | '6m' | '1y'

@@ -5,6 +5,8 @@ import {
   PlusIcon,
   ScalesIcon,
 } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   RecordGroup,
   RecordGroupDivider,
@@ -14,9 +16,7 @@ import {
   type RecordGroupVariant,
   SelectProperty,
   type SelectPropertyOption,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { Fragment, useState } from 'react'
 
 type ProceedingRole =

@@ -5,7 +5,7 @@ import {
   Settings10,
   type Settings10Action,
   type Settings10Stage,
-} from '@tc96/blocks/application/settings/settings-10'
+} from '@tc96/ui/blocks/application/settings/settings-10'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

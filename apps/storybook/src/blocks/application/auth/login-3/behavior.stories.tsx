@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login3, type Login3Props } from '@tc96/blocks/application/auth/login-3'
+import {
+  Login3,
+  type Login3Props,
+} from '@tc96/ui/blocks/application/auth/login-3'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { testimonial } from './login-3-layouts.tsx'

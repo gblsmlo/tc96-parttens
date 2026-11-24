@@ -1,5 +1,5 @@
-import { RecordStatusItem, RecordStatusList } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
+import { RecordStatusItem, RecordStatusList } from '@tc96/ui/patterns'
 import type { RecordStatusListControls } from './status-list-controls.ts'
 
 interface ComposedRecordStatusListProps extends RecordStatusListControls {
