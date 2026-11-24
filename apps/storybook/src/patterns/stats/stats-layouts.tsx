@@ -1,8 +1,10 @@
 import {
+  ChartLineIcon,
   CheckCircleIcon,
   CurrencyDollarIcon,
   DotsThreeIcon,
   DownloadSimpleIcon,
+  InfoIcon,
   PushPinIcon,
   WarningIcon,
   XCircleIcon,
@@ -22,13 +24,25 @@ import {
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { CardPanel } from '@tc96/ui/card'
+import { Gauge } from '@tc96/ui/gauge'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { MeterPrimitive } from '@tc96/ui/meter'
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@tc96/ui/select'
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@tc96/ui/tooltip'
 import { type ReactElement, useId, useState } from 'react'
 import type { StatsControls, StatsFormatName } from './stats-controls.ts'
 import {
   activeUsers,
   deviceRevenue,
+  type LeadsPeriod,
+  leadsByPeriod,
+  leadsPeriods,
   type RecurringPeriod,
   recurringLabels,
   recurringPeriods,
@@ -330,6 +344,10 @@ export function ActionsCard(): ReactElement {
           </MenuTrigger>
           <MenuPopup align="end">
             <MenuItem>
+              <ChartLineIcon aria-hidden="true" />
+              View report
+            </MenuItem>
+            <MenuItem>
               <DownloadSimpleIcon aria-hidden="true" />
               Export CSV
             </MenuItem>
@@ -342,10 +360,165 @@ export function ActionsCard(): ReactElement {
       }
       label="Total revenue"
       value={48250}
+    />
+  )
+}
+
+export function PreviousPeriodCard({
+  change = 0.151,
+  label = 'All orders',
+  previous = 105922,
+  value = 122380,
+}: Readonly<{
+  change?: number
+  label?: string
+  previous?: number
+  value?: number
+}>): ReactElement {
+  const count: AmountFormatOptions = { style: 'decimal' }
+  return (
+    <MetricWidget
+      icon={
+        <Menu>
+          <MenuTrigger
+            aria-label={`${label} actions`}
+            render={<Button size="icon-sm" variant="ghost" />}
+          >
+            <DotsThreeIcon aria-hidden="true" />
+          </MenuTrigger>
+          <MenuPopup align="end">
+            <MenuItem>
+              <ChartLineIcon aria-hidden="true" />
+              View report
+            </MenuItem>
+            <MenuItem>
+              <DownloadSimpleIcon aria-hidden="true" />
+              Export CSV
+            </MenuItem>
+          </MenuPopup>
+        </Menu>
+      }
+      label={label}
+      value={
+        <span className="flex flex-wrap items-center gap-2.5">
+          {formatAmount(value, count)}
+          <TrendIndicator value={change} />
+        </span>
+      }
     >
-      <Button className="justify-self-start" size="sm" variant="outline">
-        View report
-      </Button>
+      <p className="border-t pt-3 text-muted-foreground text-sm">
+        Vs last month:{' '}
+        <span className="font-medium text-foreground tabular-nums">
+          {formatAmount(previous, count)}
+        </span>
+      </p>
     </MetricWidget>
+  )
+}
+
+const LEAD_SEGMENTS = 30
+
+export function LeadsOverviewCard(): ReactElement {
+  const titleId = useId()
+  const [period, setPeriod] = useState<LeadsPeriod>('month')
+  const { conversion, newLeads, returning, source } = leadsByPeriod[period]
+  const total = newLeads + returning
+  const newShare = clampRatio(newLeads, total)
+  const share: AmountFormatOptions = {
+    maximumFractionDigits: 2,
+    style: 'percent',
+  }
+
+  return (
+    <WidgetShell aria-labelledby={titleId} data-widget="leads-overview">
+      <CardPanel className="grid gap-5 p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="font-semibold text-base" id={titleId}>
+            Leads overview
+          </h3>
+          <Select
+            items={leadsPeriods}
+            onValueChange={(value) => {
+              if (value) setPeriod(value)
+            }}
+            value={period}
+          >
+            <SelectTrigger aria-label="Leads period" className="w-36" size="sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectPopup>
+              {leadsPeriods.map(({ label, value }) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectPopup>
+          </Select>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 sm:divide-x">
+          <div className="grid content-start gap-3 sm:pe-5">
+            <div className="grid gap-1">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-3xl tabular-nums">
+                  {formatAmount(newLeads, { style: 'decimal' })}
+                </span>
+                <Badge variant="info">{formatAmount(newShare, share)}</Badge>
+              </div>
+              <span className="text-muted-foreground text-sm">New leads</span>
+            </div>
+            <Gauge
+              aria-label="Share of new leads"
+              max={total}
+              tone="foreground"
+              value={newLeads}
+            />
+            <dl className="grid gap-0.5 text-sm">
+              <dt className="text-muted-foreground">Top source</dt>
+              <dd className="font-medium">{source}</dd>
+            </dl>
+          </div>
+          <div className="grid content-start gap-3">
+            <div className="grid gap-1">
+              <span className="font-semibold text-3xl tabular-nums">
+                {formatAmount(returning, { style: 'decimal' })}
+              </span>
+              <span className="text-muted-foreground text-sm">
+                Returning leads
+              </span>
+            </div>
+            <Gauge
+              aria-label="Share of returning leads"
+              max={total}
+              segments={LEAD_SEGMENTS}
+              tone="success"
+              value={returning}
+              variant="segmented"
+            />
+            <dl className="grid gap-0.5 text-sm">
+              <dt className="flex items-center gap-1 text-muted-foreground">
+                Conversion rate
+                <Tooltip>
+                  <TooltipTrigger
+                    aria-label="About conversion rate"
+                    render={<Button size="icon-sm" variant="ghost" />}
+                  >
+                    <InfoIcon aria-hidden="true" />
+                  </TooltipTrigger>
+                  <TooltipPopup>
+                    Leads that became customers in the period
+                  </TooltipPopup>
+                </Tooltip>
+              </dt>
+              <dd className="font-medium tabular-nums">
+                {formatAmount(conversion, {
+                  maximumFractionDigits: 1,
+                  style: 'percent',
+                })}
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </CardPanel>
+    </WidgetShell>
   )
 }

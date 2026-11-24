@@ -3,8 +3,8 @@ import { CardPanel } from '@tc96/ui/card'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { Area, AreaChart, ResponsiveContainer, YAxis } from 'recharts'
-import { Amount } from '../shared/amount'
-import { WidgetShell } from '../shared/widget-shell'
+import { Amount } from '../widgets/shared/amount'
+import { WidgetShell } from '../widgets/shared/widget-shell'
 
 export interface AreaMetricWidgetProps
   extends Omit<ComponentProps<'div'>, 'children' | 'title'> {

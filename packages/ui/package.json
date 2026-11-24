@@ -5,6 +5,7 @@
   "exports": {
     "./alert": "./src/alert/index.ts",
     "./badge": "./src/badge/index.ts",
+    "./gauge": "./src/gauge/index.ts",
     "./icon-frame": "./src/icon-frame/index.ts",
     "./menu": "./src/menu/index.ts",
     "./text": "./src/text/index.ts",

@@ -1,4 +1,3 @@
-export * from './analytics/index'
 export * from './crm/index'
 export * from './finance/index'
 export * from './gamification/index'

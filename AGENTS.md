@@ -16,7 +16,7 @@ packages/
   helpers/     React-free functions (amount formatting, dates, rich text)
   blocks/      installable blocks by category (<category>/<group>/<block>), above parttens; see packages/blocks/AGENTS.md
   ui/          COSS-origin and own components (Text, IconFrame) owned by this repo, listed in ui.manifest.json
-               a component may be a folder with index.ts, AGENTS.md, TOKENS.md and ACCESSIBILITY.md (menu/, badge/, alert/, text/, icon-frame/); read its AGENTS.md before changing it
+               a component may be a folder with index.ts, AGENTS.md, TOKENS.md and ACCESSIBILITY.md (menu/, badge/, alert/, text/, icon-frame/, gauge/); read its AGENTS.md before changing it
   utils/       shared helpers (cn)
   registry/    registry build and the CLI published as @tc96/parttens
 apps/
@@ -36,7 +36,7 @@ packages/parttens/src/
   records/      dialog/ preview/ group/
   surfaces/     state/ settings/
   chat/         chats-panel/
-  checklist/ collection/ editable/ properties/ rich-text-editor/ widgets/ wizard/
+  checklist/ collection/ editable/ properties/ rich-text-editor/ stats/ widgets/ wizard/
   action-bar/ toolbar/   not patterns: one folder per component with its own Patterns page
 ```
 
@@ -111,7 +111,7 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 
 ## Visual work (widgets, stories, theme)
 
-- The sidebar follows the layers, from the base to whole screens: `Get Started`, `UI` (COSS and own components, alias `ui`), `Patterns`, `Blocks` (installable blocks as `Blocks/<Category>/<Group>/<Name>`, with `Blocks/Doc`, alias `blocks`) and `Templates` (the Storybook-only screens, never installed). The order is fixed in `storySort` (`.storybook/preview.ts`), which Storybook evaluates as plain JavaScript, so it takes no type annotations; a new root goes into its list. A story sits under the layer of what it renders: one that imports only `@tc96/ui` is `UI/...` even when it composes several COSS parts, `Patterns/...` needs a pattern, and a component with its own folder outside a pattern sits at the root of `Patterns` (`Patterns/ActionBar` and `Patterns/Toolbar`; the view switcher renders inside the toolbar, so it is a part of the `Patterns/Toolbar` node, in its API Reference, Stories, Layouts and Behavior, and has no node of its own); the decision of 2026-10-31 gives each such page its own folder in `packages/parttens/src/` instead of `shared/`. `Patterns/Pagination` and its `pagination/` folder folded into the collection on 2026-11-21, because `UI/Pagination` covers pagination: `CollectionPagination` lives in `collection/shared/components/` and is documented on the `Patterns/Collection` pages. Story files mirror the title (`apps/storybook/src/ui/chat/`, `patterns/widgets/stats/`, `blocks/application/shell/`).
+- The sidebar follows the layers, from the base to whole screens: `Get Started`, `UI` (COSS and own components, alias `ui`), `Patterns`, `Blocks` (installable blocks as `Blocks/<Category>/<Group>/<Name>`, with `Blocks/Doc`, alias `blocks`) and `Templates` (the Storybook-only screens, never installed). The order is fixed in `storySort` (`.storybook/preview.ts`), which Storybook evaluates as plain JavaScript, so it takes no type annotations; a new root goes into its list. A story sits under the layer of what it renders: one that imports only `@tc96/ui` is `UI/...` even when it composes several COSS parts, `Patterns/...` needs a pattern, and a component with its own folder outside a pattern sits at the root of `Patterns` (`Patterns/ActionBar` and `Patterns/Toolbar`; the view switcher renders inside the toolbar, so it is a part of the `Patterns/Toolbar` node, in its API Reference, Stories, Layouts and Behavior, and has no node of its own); the decision of 2026-10-31 gives each such page its own folder in `packages/parttens/src/` instead of `shared/`. `Patterns/Pagination` and its `pagination/` folder folded into the collection on 2026-11-21, because `UI/Pagination` covers pagination: `CollectionPagination` lives in `collection/shared/components/` and is documented on the `Patterns/Collection` pages. Story files mirror the title (`apps/storybook/src/ui/chat/`, `patterns/widgets/crm/`, `blocks/application/shell/`).
 - Pattern stories live in `apps/storybook/src/patterns/`. The Storybook theme is the example app's `styles.css`, imported by `.storybook/preview.ts`; do not add a separate theme file or CSS rule in Storybook.
 - Network data in stories goes through MSW handlers in `apps/storybook/src/mocks/` and TanStack Query, only in `Usages` and `Templates`; components, patterns and blocks still take prepared data through props. The rules are in `Get Started/Component Docs` (`Mocked data`).
 - Accessibility and usability live in `docs/accessibility.md`, the single source of truth: the validation layers, the contrast rules (WCAG thresholds, fixes that never change token values), the story rules, the axe exceptions and every measured ratio. Read it before visual work and record new ratios and decisions there; scale decisions stay in the architecture doc.

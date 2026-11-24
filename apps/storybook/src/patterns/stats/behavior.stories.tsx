@@ -8,7 +8,7 @@ const meta = {
   decorators: [StatsCanvas],
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Widgets/Stats/Behavior',
+  title: 'Patterns/Stats/Behavior',
 } satisfies Meta
 
 export default meta

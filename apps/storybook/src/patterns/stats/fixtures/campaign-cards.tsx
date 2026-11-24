@@ -16,7 +16,7 @@ import {
   isLearning,
   LEARNING_PHASE_RESULTS,
   objectiveOptions,
-} from '../../../collection/fixtures/campaigns'
+} from '../../collection/fixtures/campaigns'
 
 const LOCALE = 'pt-BR'
 const VISIBLE_OBJECTIVES = 3
@@ -53,7 +53,7 @@ function SummaryCard({
 }>): ReactElement {
   const titleId = useId()
   return (
-    <WidgetShell aria-labelledby={titleId} data-widget="campaign-summary">
+    <WidgetShell aria-labelledby={titleId} data-widget="campaign-metric">
       <CardPanel className="grid content-start gap-4 p-5">
         <div className="flex h-9 items-center justify-between gap-3">
           <h3 className="truncate text-muted-foreground text-sm" id={titleId}>
@@ -75,7 +75,7 @@ const sumOf = <TItem,>(
   pick: (item: TItem) => number,
 ) => items.reduce((total, item) => total + pick(item), 0)
 
-function SpendCard({ campaigns }: CampaignsProps): ReactElement {
+export function SpendCard({ campaigns }: CampaignsProps): ReactElement {
   const spend = sumOf(campaigns, (campaign) => campaign.spend)
   const segments = objectiveOptions
     .map((option) => ({
@@ -162,7 +162,7 @@ function SpendCard({ campaigns }: CampaignsProps): ReactElement {
   )
 }
 
-function ReachCard({ campaigns }: CampaignsProps): ReactElement {
+export function ReachCard({ campaigns }: CampaignsProps): ReactElement {
   const reach = sumOf(campaigns, (campaign) => campaign.reach)
   const impressions = sumOf(campaigns, (campaign) => campaign.impressions)
   const frequency = formatAmount(reach > 0 ? impressions / reach : 0, {
@@ -188,7 +188,7 @@ function ReachCard({ campaigns }: CampaignsProps): ReactElement {
   )
 }
 
-function DeliveryCard({ campaigns }: CampaignsProps): ReactElement {
+export function DeliveryCard({ campaigns }: CampaignsProps): ReactElement {
   const total = campaigns.length
   const active = campaigns.filter(({ status }) => status === 'active').length
   const ratio = clampRatio(active, total)
@@ -209,7 +209,7 @@ function DeliveryCard({ campaigns }: CampaignsProps): ReactElement {
   )
 }
 
-function LearningCard({ campaigns }: CampaignsProps): ReactElement {
+export function LearningCard({ campaigns }: CampaignsProps): ReactElement {
   const learning = campaigns.filter(isLearning)
   const results = sumOf(learning, (campaign) => campaign.results)
   const target = learning.length * LEARNING_PHASE_RESULTS
@@ -249,22 +249,5 @@ function LearningCard({ campaigns }: CampaignsProps): ReactElement {
         <p className={detailText}>Nenhuma campanha em aprendizado</p>
       )}
     </SummaryCard>
-  )
-}
-
-export function CampaignSummary({ campaigns }: CampaignsProps): ReactElement {
-  const titleId = useId()
-  return (
-    <section aria-labelledby={titleId}>
-      <h2 className="sr-only" id={titleId}>
-        Resumo das campanhas
-      </h2>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <SpendCard campaigns={campaigns} />
-        <ReachCard campaigns={campaigns} />
-        <DeliveryCard campaigns={campaigns} />
-        <LearningCard campaigns={campaigns} />
-      </div>
-    </section>
   )
 }

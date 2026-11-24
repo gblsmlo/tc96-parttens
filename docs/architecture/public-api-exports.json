@@ -431,8 +431,6 @@
     "Amount",
     "AmountFormatOptions",
     "AmountProps",
-    "AreaMetricWidget",
-    "AreaMetricWidgetProps",
     "AssetList",
     "AssetListItem",
     "AssetListItemProps",
@@ -481,8 +479,6 @@
     "MetricPill",
     "MetricPillProps",
     "MetricPillTone",
-    "MetricWidget",
-    "MetricWidgetProps",
     "PipelineStage",
     "PipelineWidget",
     "PipelineWidgetProps",
@@ -547,6 +543,12 @@
     "orderQuests",
     "transactionKind",
     "whatsappHref"
+  ],
+  "stats": [
+    "AreaMetricWidget",
+    "AreaMetricWidgetProps",
+    "MetricWidget",
+    "MetricWidgetProps"
   ],
   "rich-text-editor": [
     "EditorTitle",

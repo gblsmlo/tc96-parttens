@@ -16,6 +16,7 @@ for (const path of [
   'records/group',
   'records/preview',
   'rich-text-editor',
+  'stats',
   'status-list',
   'surfaces/settings',
   'surfaces/state',

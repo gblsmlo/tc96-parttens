@@ -22,3 +22,30 @@ export const recurringLabels: Record<RecurringPeriod, string> = {
   arr: 'Annual recurring',
   mrr: 'Monthly recurring',
 }
+
+export type LeadsPeriod = 'month' | 'quarter' | 'week'
+
+export const leadsPeriods = [
+  { label: 'This week', value: 'week' },
+  { label: 'This month', value: 'month' },
+  { label: 'This quarter', value: 'quarter' },
+] as const
+
+export const leadsByPeriod: Record<
+  LeadsPeriod,
+  { conversion: number; newLeads: number; returning: number; source: string }
+> = {
+  month: {
+    conversion: 0.128,
+    newLeads: 54,
+    returning: 198,
+    source: 'LinkedIn',
+  },
+  quarter: {
+    conversion: 0.114,
+    newLeads: 171,
+    returning: 562,
+    source: 'Google Ads',
+  },
+  week: { conversion: 0.142, newLeads: 13, returning: 49, source: 'Referral' },
+}

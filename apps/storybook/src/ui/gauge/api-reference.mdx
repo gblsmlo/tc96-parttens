@@ -1,0 +1,121 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Gauge
+
+How much of a range one value fills, drawn as a bar, a row of segments or a ring, and how a total splits into parts, drawn as a stacked bar. `Gauge` is the Base UI `Meter`, so the value is announced to assistive technology; `GaugeStack` is a list whose parts carry their own text. Neither interprets the number: the app passes the value, the range, the tone and the name.
+
+The other pages of `UI/Gauge`: [Playground](?path=/story/ui-gauge-playground--playground) to try the variant, the size, the tone, the segments, the value, the content of the ring and the empty state, [Layouts](?path=/story/ui-gauge-layouts--bar) for the bar, the segments, the ring with its value and the stack, [Behavior](?path=/story/ui-gauge-behavior--announces-the-value-as-a-meter) for the tests, and [Usages](?path=/story/ui-gauge-usages--storage-quota-bar) for a storage quota, compliance checks, a course progress ring and subscribers by plan.
+
+Used in: `ProgressRing` of `Patterns/Widgets` is a `GaugeRing`, and the leads overview layout of `Patterns/Stats` draws its two meters with it.
+
+## Import
+
+```tsx
+import {
+  Gauge,
+  GaugeRing,
+  GaugeStack,
+  type GaugeProps,
+  type GaugeStackPart,
+  gaugeRatio,
+  filledSegments,
+} from '@acme/ui/gauge'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Gauge aria-label="Storage used" value={64} />
+<Gauge aria-label="Returning leads" variant="segmented" segments={30} value={198} max={252} />
+<Gauge aria-label="Course progress" variant="ring" value={72}>
+  <span>72%</span>
+</Gauge>
+<GaugeStack aria-label="Subscribers by plan" parts={parts} />
+```
+
+## Gauge
+
+Renders the Base UI `Meter` root, a `div` with `role="meter"`. The `bar` draws one track and one indicator, `segmented` draws `segments` equal pieces and fills a share of them, and `ring` draws a circle with the value as an arc and centers its children. The value is clamped to `[min, max]`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `number` | required | The value, clamped to `[min, max]`. |
+| `max` | `number` | `100` | The top of the range. |
+| `min` | `number` | `0` | The bottom of the range. |
+| `variant` | `"bar"`, `"segmented"` or `"ring"` | `"bar"` | Picks the drawing. |
+| `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | Sets the bar thickness (4, 8 or 12px) or the ring diameter (40, 56 or 80px). A `size-*` class on a ring wins. |
+| `tone` | `"primary"`, `"foreground"`, `"success"`, `"warning"`, `"destructive"` or `"info"` | `"primary"` | Paints the filled part with the theme color of the same name. |
+| `segments` | `number` | `10` | How many pieces `segmented` draws; `Math.round(ratio * segments)` of them are filled. |
+| `empty` | `boolean` | `false` | Marks that there is no value yet: no fill, a dashed ring track and `data-empty`. Zero still draws the empty track without it. |
+| `strokeWidth` | `number` | `10` | The ring line width, in a 100-unit viewBox. |
+| `children` | `React.ReactNode` | - | Content centered over a ring, such as the percentage. Ignored by the bar and the segments. |
+| `aria-label`, `aria-labelledby` | `string` | - | Names the meter. One of them is required unless the gauge is `aria-hidden`. |
+| `getAriaValueText` | `(formattedValue, value) => string` | - | Replaces the read value, such as `17 of 20 passing`. |
+| `className` | `string` | - | Adds classes to the root after the variant classes. |
+
+Also takes the other props of the Base UI `Meter` root, such as `format` and `locale`. Props spread last, so `data-slot` and `aria-hidden` can be replaced.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"gauge"` | The root; inside it `gauge-track`, `gauge-indicator` and `gauge-segment` |
+| `data-variant` | `"bar"`, `"segmented"` or `"ring"` | Mirrors `variant` |
+| `data-size` | `"sm"`, `"default"` or `"lg"` | Mirrors `size` |
+| `data-tone` | one of the six tones | Mirrors `tone` |
+| `data-empty` | `"true"` | Present only with `empty` |
+| `data-filled` | `"true"` | On each filled `gauge-segment` |
+
+## GaugeRing
+
+The ring drawing alone, for a ring that only repeats a number already written next to it. Renders a `div` with `aria-hidden="true"` and no `meter` role, so nothing in it is read; a ring that carries the value is `Gauge` with `variant="ring"`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `ratio` | `number` | required | The share drawn as the arc, clamped to `[0, 1]`. |
+| `empty` | `boolean` | `false` | No value yet: a dashed track and no arc. |
+| `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | 40, 56 or 80px; a `size-*` class wins. |
+| `tone` | one of the six tones | `"primary"` | The arc color. |
+| `strokeWidth` | `number` | `10` | The line width, in a 100-unit viewBox. |
+| `children` | `React.ReactNode` | - | Content centered over the ring. |
+
+Also takes every prop of a `div`. It carries `data-slot="gauge-ring"`, `data-size`, `data-tone` and `data-empty`.
+
+## GaugeStack
+
+A total split into parts, drawn as one bar. Renders a `ul`; each part is an `li` whose width follows its `value` and whose `label` is read by screen readers only.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `parts` | `readonly GaugeStackPart[]` | required | Each `{ id: string, value: number, label: React.ReactNode, color?: string }`. A negative value counts as zero. Without `color`, part `n` takes `--chart-1` to `--chart-5` in turn. |
+| `size` | `"sm"`, `"default"` or `"lg"` | `"default"` | Sets the thickness, as on `Gauge`. |
+| `aria-label` | `string` | - | Names the list. |
+| `className` | `string` | - | Adds classes to the `ul`. |
+
+Also takes every prop of a `ul`. `label` is the whole text of a part: pass it already formatted with the share (`Pro 31%`), since the component composes no words. A visible legend is the app's.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"gauge-stack"` and `"gauge-stack-part"` | The list and each part |
+| `data-size` | `"sm"`, `"default"` or `"lg"` | Mirrors `size` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `gaugeRatio` | `function` | `(value, min, max)` returns the share of the range, clamped to `[0, 1]`; `0` when `max <= min`. |
+| `filledSegments` | `function` | `(ratio, segments)` returns how many segments a ratio fills. |
+| `gaugeVariants` | `function` | The class function of the root per `variant`. |
+| `gaugeVariantNames`, `gaugeSizes`, `gaugeTones` | `constant` | The values of `variant`, `size` and `tone`. |
+| `GaugeVariant`, `GaugeSize`, `GaugeTone` | `type` | The unions of the three constants. |
+| `GaugeProps`, `GaugeRingProps`, `GaugeStackProps`, `GaugeStackPart` | `type` | The props of the three components and the shape of a part. |
+
+## Accessibility and theme
+
+- Name every meter. A ring that repeats a number already written next to it is decorative: use `GaugeRing`. The Base UI `Meter` adds a hidden text node inside its root, so an `aria-hidden` `Gauge` still adds text to its container.
+- The filled part needs 3:1 against `--muted` and the card. Measure the `success`, `warning` and `info` tones in your theme before they carry a value alone, and keep the value in text.
+- The fill reads `--primary`, `--foreground`, `--success`, `--warning`, `--destructive` or `--info`; the rest reads `--muted`, and an empty ring `--input`. No theme rule targets the gauge.
+- Decisions: `packages/ui/src/gauge/ACCESSIBILITY.md`. Classes of every part, size and tone: `packages/ui/src/gauge/TOKENS.md`.

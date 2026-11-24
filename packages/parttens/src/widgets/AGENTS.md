@@ -7,10 +7,10 @@ Dashboard cards that show prepared numbers, lists, charts and progress, grouped 
 | Folder | Holds |
 | --- | --- |
 | `shared/` | the frame and every piece more than one domain uses; `shared/index.ts` also re-exports `IconFrame` and `formatAmount`, so a copied pattern gets both from the widgets barrel |
-| `analytics/`, `crm/`, `finance/`, `gamification/`, `productivity/` | one domain each, with its own `index.ts` barrel |
+| `crm/`, `finance/`, `gamification/`, `productivity/` | one domain each, with its own `index.ts` barrel |
 | `types/` | `TrendDirection`, `WidgetPeriodOption`, `WidgetTone`, shared by `shared/` and the domains |
 
-Import direction: `<domain>/` → `shared/`, `types/`, and files of the same domain only (`ShareBar` from `finance/market-share-widget.tsx`, `ActivityTimeline`, `XpMeter`); `shared/` → `types/`, never a domain; no domain imports another. Recharts is used only by the three chart widgets and `AreaMetricWidget`.
+Import direction: `<domain>/` → `shared/`, `types/`, and files of the same domain only (`ShareBar` from `finance/market-share-widget.tsx`, `ActivityTimeline`, `XpMeter`); `shared/` → `types/`, never a domain; no domain imports another. Recharts is used only by the three chart widgets.
 
 The pattern has no bun tests and no `test/dom.ts`; its interface tests are Storybook plays (see Verify). The folder is not split into `composition/` and `components/`; grouping by domain is the layout.
 
@@ -19,8 +19,9 @@ Six files still carry Portuguese JSDoc from before the no-comments rule (`shared
 ## Dependents
 
 - `packages/parttens/src/index.ts` re-exports `widgets/index`; the stories import from `@tc96/parttens`, not by path.
+- `stats/metric-widget.tsx` and `stats/area-metric-widget.tsx` import `shared/amount`, `shared/trend-indicator` and `shared/widget-shell` by relative path; moving or renaming those files breaks the `stats` pattern.
 - `packages/registry/src/manifest.ts` and `scripts/test-patterns.ts` list `widgets`; `packages/registry/src/manifest.test.ts` asserts the path `parttens/src/widgets/index.ts`. Renaming the folder or the barrel breaks both.
-- `WidgetShell` (`shared/widget-shell.tsx`) renders `Card` from `@tc96/ui/card`; the registry item for `widgets` depends on that COSS component. `AvatarStack`, `ActivityTimeline` and `ContactWidget` import `@tc96/ui/avatar` the same way.
+- `WidgetShell` (`shared/widget-shell.tsx`) renders `Card` from `@tc96/ui/card`; the registry item for `widgets` depends on that COSS component. `AvatarStack`, `ActivityTimeline` and `ContactWidget` import `@tc96/ui/avatar` the same way, and `ProgressRing` renders `GaugeRing` from `@tc96/ui/gauge`.
 
 ## Invariants
 
@@ -28,7 +29,7 @@ Frame and regions:
 
 - Every card widget renders `WidgetShell` with `aria-labelledby` pointing at a `useId()` title, so it is a `region` named by its title; plays query `getByRole('region', { name })`. Exceptions: `AssetStatWidget` is named by `name` plus `symbol` (Chromium computes `ZcashZEC`, with no space, so its play matches `/^Zcash ?ZEC$/`), `ContactWidget` by `person.label`, `WorldClockWidget` by `aria-label={label}`. `ProgressHud` (a `section` with a required `aria-label`) and `ProgressFooter` (a plain `div`) do not use the shell.
 - `Patterns/Widgets/Behavior` (`Keeps Transparent Border And Card Shadow`, `Mounts A Region Named By The Consumer`) asserts the shell is a `section[data-slot="card"]` with `border` and `border-transparent` and neither `border-border/80` nor `border-0`, keeps `shadow-xs/5` and the consumer's `className`.
-- `tone="inverted"` on `MetricWidget`, `AssetStatWidget` and `TaskProgressWidget` wraps the card in `<div className="dark contents">` and sets `data-tone` on the shell; the dark palette comes from the consumer's theme, not from the pattern.
+- `tone="inverted"` on `AssetStatWidget` and `TaskProgressWidget` wraps the card in `<div className="dark contents">` and sets `data-tone` on the shell; the dark palette comes from the consumer's theme, not from the pattern.
 
 Numbers:
 
@@ -46,7 +47,6 @@ Periods and expansion:
 Charts, time and markup:
 
 - `BalanceWidget`, `CashFlowWidget` and `TaskProgressWidget` render recharts with `accessibilityLayer={false}` and `isAnimationActive={false}` inside a `div role="img"` named by `chartLabel`, the string title or `Gráfico`. The plays run in Chromium, whose `ResizeObserver` feeds `ResponsiveContainer`; no stub is needed.
-- `AreaMetricWidget` (`analytics/`) draws its area chart inside a `div aria-hidden="true"` with `data-slot="area-metric-chart"`, because the card already shows the value; it drops the chart below two points. `blocks/application/stats/stats-7` and `blocks/application/dashboard/dashboard-4` import it by path.
 - `WorldClockWidget` renders every clock from one instant; without `now` it ticks every second, with `now` it never ticks. `AgendaWidget` keys events by `calendarDateKey` and `calendarProps` cannot override `mode`, `modifiers`, `onSelect` or `selected`.
 - `UpcomingEventWidget` defaults the window to 30 minutes on each side and calls `copyToClipboard(joinHref)` before `onCopy(joinHref)`.
 - `ContactWidget` builds a channel link only for a value it receives and renders it as a COSS `Button` through `render={<a />}`; WhatsApp opens with `target="_blank" rel="noreferrer"`.
@@ -61,7 +61,7 @@ No class is keyed on a `data-*` attribute (no `data-*:` or `group-data-*:` varia
 | Attribute | Where |
 | --- | --- |
 | `data-widget="<name>"` | the shell of every card widget, `ProgressHud`, `ProgressFooter` |
-| `data-tone="default\|inverted"` | the shell of `MetricWidget`, `AssetStatWidget`, `TaskProgressWidget` |
+| `data-tone="default\|inverted"` | the shell of `AssetStatWidget`, `TaskProgressWidget` |
 | `data-tone="muted\|primary\|success\|warning"` | `[data-slot=metric-pill]` |
 | `data-tone="destructive\|info\|success\|warning"` | `[data-slot=deal-stage]`, `[data-slot=invoice-status-item]`, the indicator of `[data-slot=risk-score-meter]` |
 | `data-direction="up\|down\|flat"` | `[data-slot=trend-indicator]` |
@@ -80,7 +80,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/widgets
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/widgets/`: `behavior.stories.tsx` at the root (`Patterns/Widgets/Behavior`: amount, trend indicator, period toggle, shell, expandable list, stat list, progress ring, avatar stack) and `<domain>/behavior.stories.tsx` (`Patterns/Widgets/<Domain>/Behavior`), next to the other five pages of each node; `stats/` documents `MetricWidget`, which lives in `shared/`. There are no bun tests in this folder. Stories run axe with `test: 'error'`; `crm`, `finance` and `productivity` declare `color-contrast` exceptions on specific stories, and `productivity/behavior.stories.tsx` repeats the calendar one for the agenda play.
+Interface tests are `play` functions in `apps/storybook/src/patterns/widgets/`: `behavior.stories.tsx` at the root (`Patterns/Widgets/Behavior`: amount, trend indicator, period toggle, shell, expandable list, stat list, progress ring, avatar stack) and `<domain>/behavior.stories.tsx` (`Patterns/Widgets/<Domain>/Behavior`), next to the other five pages of each node. `MetricWidget` and `AreaMetricWidget` moved to the `stats` pattern on 2026-11-24 (`packages/parttens/src/stats/AGENTS.md`). There are no bun tests in this folder. Stories run axe with `test: 'error'`; `crm`, `finance` and `productivity` declare `color-contrast` exceptions on specific stories, and `productivity/behavior.stories.tsx` repeats the calendar one for the agenda play.
 
 ## Pointers
 
