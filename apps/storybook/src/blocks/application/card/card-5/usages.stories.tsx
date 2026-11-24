@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { Card5 } from '@tc96/blocks/application/card/card-5'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card5Handlers } from '../../../../mocks/card-5.ts'
@@ -11,21 +9,20 @@ import { type ShortcutRecord, toShortcuts } from '../fixtures/card-5.ts'
 const onSelect = fn()
 
 const ShortcutsCard = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<ShortcutRecord[]>('/cards/shortcuts'),
     queryKey: ['cards', 'shortcuts'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando atalhos" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar os atalhos</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
-  return <Card5 onSelect={onSelect} shortcuts={toShortcuts(data)} />
+  return (
+    <Card5
+      error={isError}
+      onRetry={() => refetch()}
+      onSelect={onSelect}
+      pending={isPending}
+      shortcuts={toShortcuts(data ?? [])}
+    />
+  )
 }
 
 const meta = {

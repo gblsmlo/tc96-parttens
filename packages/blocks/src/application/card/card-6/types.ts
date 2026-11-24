@@ -1,3 +1,4 @@
+import type { CardLoadLabels, CardLoadProps } from '../shared/types'
 export type Card6WorkMode = 'hybrid' | 'onsite' | 'remote'
 
 export interface Card6Salary {
@@ -15,7 +16,7 @@ export interface Card6Job {
   workMode: Card6WorkMode
 }
 
-export interface Card6Labels {
+export interface Card6Labels extends CardLoadLabels {
   apply: string
   applyTo: (title: string, company: string) => string
   emptyDescription: string
@@ -27,7 +28,7 @@ export interface Card6Labels {
   workModes: Record<Card6WorkMode, string>
 }
 
-export interface Card6Props {
+export interface Card6Props extends CardLoadProps {
   className?: string
   currency?: string
   jobs: readonly Card6Job[]

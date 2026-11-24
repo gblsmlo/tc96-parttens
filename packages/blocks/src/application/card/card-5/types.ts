@@ -1,5 +1,6 @@
 import type { Icon } from '@phosphor-icons/react'
 import type { RenderLink } from '@tc96/ui/render-anchor'
+import type { CardLoadLabels, CardLoadProps } from '../shared/types'
 
 export interface Card5Shortcut {
   description: string
@@ -9,13 +10,13 @@ export interface Card5Shortcut {
   title: string
 }
 
-export interface Card5Labels {
+export interface Card5Labels extends CardLoadLabels {
   emptyDescription: string
   emptyTitle: string
   title: string
 }
 
-export interface Card5Props {
+export interface Card5Props extends CardLoadProps {
   className?: string
   labels?: Partial<Card5Labels>
   onSelect?: (shortcutId: string) => void

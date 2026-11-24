@@ -1,6 +1,10 @@
 import type { AvatarStackPerson } from '@tc96/parttens/widgets/shared/avatar-stack'
 import type { ReactNode } from 'react'
-import type { CardBadgeData } from '../shared/types'
+import type {
+  CardBadgeData,
+  CardLoadLabels,
+  CardLoadProps,
+} from '../shared/types'
 
 export type Card1Accent =
   | { badge: CardBadgeData; kind: 'badge' }
@@ -14,11 +18,11 @@ export interface Card1Fact {
   value: string
 }
 
-export interface Card1Labels {
+export interface Card1Labels extends CardLoadLabels {
   title: string
 }
 
-export interface Card1Props {
+export interface Card1Props extends CardLoadProps {
   className?: string
   facts: Card1Fact[]
   labels?: Partial<Card1Labels>

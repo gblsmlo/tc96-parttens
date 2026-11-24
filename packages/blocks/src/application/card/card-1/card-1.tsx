@@ -3,6 +3,8 @@ import { WidgetShell } from '@tc96/parttens/widgets/shared/widget-shell'
 import { CardPanel } from '@tc96/ui/card'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { CardBadge } from '../shared/card-badge'
+import { cardLoadState } from '../shared/card-load-state'
+import { Card1Skeleton } from './card-1-skeleton'
 import { defaultCard1Labels } from './labels'
 import type { Card1Accent, Card1Fact, Card1Props } from './types'
 
@@ -40,11 +42,28 @@ function FactTile({ fact }: Readonly<{ fact: Card1Fact }>) {
 }
 
 export function Card1({
+  error,
+  onRetry,
+  pending,
   className,
   facts,
   labels: labelsProp,
 }: Readonly<Card1Props>) {
   const labels = { ...defaultCard1Labels, ...labelsProp }
+  const loadState = cardLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Card1Skeleton label={labels.loading} />,
+  })
+
+  if (loadState)
+    return (
+      <WidgetShell aria-label={labels.title} className={className}>
+        {loadState}
+      </WidgetShell>
+    )
 
   return (
     <WidgetShell aria-label={labels.title} className={className}>

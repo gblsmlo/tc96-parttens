@@ -1,4 +1,5 @@
 import type { AvatarStackPerson } from '@tc96/parttens/widgets/shared/avatar-stack'
+import type { CardLoadLabels, CardLoadProps } from '../shared/types'
 
 export interface Card4Meeting {
   attendees: readonly AvatarStackPerson[]
@@ -8,7 +9,7 @@ export interface Card4Meeting {
   title: string
 }
 
-export interface Card4Labels {
+export interface Card4Labels extends CardLoadLabels {
   attendees: (title: string) => string
   emptyDescription: string
   emptyTitle: string
@@ -17,7 +18,7 @@ export interface Card4Labels {
   title: string
 }
 
-export interface Card4Props {
+export interface Card4Props extends CardLoadProps {
   className?: string
   labels?: Partial<Card4Labels>
   maxAttendees?: number

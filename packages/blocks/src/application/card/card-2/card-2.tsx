@@ -6,6 +6,8 @@ import { CardPanel } from '@tc96/ui/card'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
 import { CardBadge } from '../shared/card-badge'
+import { cardLoadState } from '../shared/card-load-state'
+import { Card2Skeleton } from './card-2-skeleton'
 import { defaultCard2Labels } from './labels'
 import type { Card2Integration, Card2Labels, Card2Props } from './types'
 
@@ -65,12 +67,29 @@ function IntegrationCard({
 }
 
 export function Card2({
+  error,
+  onRetry,
+  pending,
   className,
   integrations,
   labels: labelsProp,
   onConnect,
 }: Readonly<Card2Props>) {
   const labels = { ...defaultCard2Labels, ...labelsProp }
+  const loadState = cardLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Card2Skeleton label={labels.loading} />,
+  })
+
+  if (loadState)
+    return (
+      <section aria-label={labels.title} className={className}>
+        {loadState}
+      </section>
+    )
 
   return (
     <ul

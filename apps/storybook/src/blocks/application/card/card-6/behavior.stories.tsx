@@ -1,9 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Card6 } from '@tc96/blocks/application/card/card-6'
+import { Card6, type Card6Props } from '@tc96/blocks/application/card/card-6'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { jobs } from '../fixtures/card-6.ts'
 import { type Card6Controls, card6ControlArgs } from './card-6-controls.ts'
 import { ComposedCard6 } from './card-6-layouts.tsx'
+
+const loaded: Card6Props = {
+  jobs,
+  saved: ['data'],
+}
+
+const retry = fn()
 
 const meta = {
   args: { ...card6ControlArgs, onApply: fn(), onSaveChange: fn() },
@@ -145,5 +152,63 @@ export const LabelsOverrideTexts: Story = {
     await expect(canvas.getAllByText('Enviar currículo')).toHaveLength(
       jobs.length,
     )
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Card6 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando vagas')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Card6 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar as vagas'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Card6 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Card6 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando vagas')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar as vagas'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorWinsOverEmpty: Story = {
+  render: () => <Card6 {...loaded} jobs={[]} error />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar as vagas'),
+    ).toBeVisible()
+    await expect(canvas.queryByText('Nenhuma vaga recomendada')).toBeNull()
   },
 }

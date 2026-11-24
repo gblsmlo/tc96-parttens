@@ -6,10 +6,15 @@ import { Button } from '@tc96/ui/button'
 import { CardPanel } from '@tc96/ui/card'
 import { useId } from 'react'
 import { CardBadge } from '../shared/card-badge'
+import { cardLoadState } from '../shared/card-load-state'
+import { Card3Skeleton } from './card-3-skeleton'
 import { defaultCard3Labels } from './labels'
 import type { Card3Props } from './types'
 
 export function Card3({
+  error,
+  onRetry,
+  pending,
   className,
   labels: labelsProp,
   locale = 'pt-BR',
@@ -18,7 +23,25 @@ export function Card3({
   profile,
 }: Readonly<Card3Props>) {
   const labels = { ...defaultCard3Labels, ...labelsProp }
+  const loadState = cardLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Card3Skeleton label={labels.loading} />,
+  })
+
   const nameId = useId()
+
+  if (loadState)
+    return (
+      <WidgetShell aria-label={labels.title} className={className}>
+        {loadState}
+      </WidgetShell>
+    )
+
+  if (!profile) return null
+
   const stats = profile.stats.slice(0, 3)
 
   return (

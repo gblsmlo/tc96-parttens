@@ -4,28 +4,25 @@ import {
   Card2,
   type Card2Integration,
 } from '@tc96/blocks/application/card/card-2'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card2Handlers } from '../../../../mocks/card-2.ts'
 
 const IntegrationCatalog = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Card2Integration[]>('/card/integrations'),
     queryKey: ['card', 'integrations'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando integrações" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar as integrações</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
-  return <Card2 integrations={data} onConnect={() => {}} />
+  return (
+    <Card2
+      error={isError}
+      integrations={data ?? []}
+      onConnect={() => {}}
+      onRetry={() => refetch()}
+      pending={isPending}
+    />
+  )
 }
 
 const meta = {

@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Card5 } from '@tc96/blocks/application/card/card-5'
+import { Card5, type Card5Props } from '@tc96/blocks/application/card/card-5'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { shortcuts } from '../fixtures/card-5.ts'
 import { type Card5Controls, card5ControlArgs } from './card-5-controls.ts'
 import { ComposedCard5 } from './card-5-layouts.tsx'
+
+const loaded: Card5Props = { shortcuts }
+
+const retry = fn()
 
 const meta = {
   args: { ...card5ControlArgs, onSelect: fn() },
@@ -94,5 +98,63 @@ export const LabelsOverrideTexts: Story = {
     await expect(
       within(canvasElement).getByRole('region', { name: 'Ações frequentes' }),
     ).toBeVisible()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Card5 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando atalhos')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Card5 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar os atalhos'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Card5 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Card5 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando atalhos')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar os atalhos'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorWinsOverEmpty: Story = {
+  render: () => <Card5 {...loaded} shortcuts={[]} error />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar os atalhos'),
+    ).toBeVisible()
+    await expect(canvas.queryByText('Nenhum atalho disponível')).toBeNull()
   },
 }

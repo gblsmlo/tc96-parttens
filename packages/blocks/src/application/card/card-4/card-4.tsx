@@ -5,6 +5,8 @@ import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { CardPanel } from '@tc96/ui/card'
 import { useId } from 'react'
+import { cardLoadState } from '../shared/card-load-state'
+import { Card4Skeleton } from './card-4-skeleton'
 import { defaultCard4Labels } from './labels'
 import type { Card4Labels, Card4Meeting, Card4Props } from './types'
 
@@ -66,6 +68,9 @@ function MeetingCard({
 }
 
 export function Card4({
+  error,
+  onRetry,
+  pending,
   className,
   labels: labelsProp,
   maxAttendees = 4,
@@ -73,6 +78,20 @@ export function Card4({
   onJoin,
 }: Readonly<Card4Props>) {
   const labels = { ...defaultCard4Labels, ...labelsProp }
+  const loadState = cardLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Card4Skeleton label={labels.loading} />,
+  })
+
+  if (loadState)
+    return (
+      <section aria-label={labels.title} className={className}>
+        {loadState}
+      </section>
+    )
 
   if (meetings.length === 0) {
     return (

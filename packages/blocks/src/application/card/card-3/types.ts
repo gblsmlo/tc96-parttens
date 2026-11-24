@@ -1,4 +1,8 @@
-import type { CardBadgeData } from '../shared/types'
+import type {
+  CardBadgeData,
+  CardLoadLabels,
+  CardLoadProps,
+} from '../shared/types'
 
 export interface Card3Stat {
   id: string
@@ -15,17 +19,18 @@ export interface Card3Profile {
   stats: Card3Stat[]
 }
 
-export interface Card3Labels {
+export interface Card3Labels extends CardLoadLabels {
   follow: string
   message: string
   stats: string
+  title: string
 }
 
-export interface Card3Props {
+export interface Card3Props extends CardLoadProps {
   className?: string
   labels?: Partial<Card3Labels>
   locale?: string
   onFollow?: (id: string) => void
   onMessage?: (id: string) => void
-  profile: Card3Profile
+  profile?: Card3Profile
 }

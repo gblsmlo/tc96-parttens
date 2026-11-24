@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Card2 } from '@tc96/blocks/application/card/card-2'
+import { Card2, type Card2Props } from '@tc96/blocks/application/card/card-2'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { integrations } from '../fixtures/card-2.ts'
 import { type Card2Controls, card2ControlArgs } from './card-2-controls.ts'
 import { ComposedCard2 } from './card-2-layouts.tsx'
+
+const loaded: Card2Props = { integrations }
+
+const retry = fn()
 
 const meta = {
   args: card2ControlArgs,
@@ -78,5 +82,51 @@ export const LabelsOverrideTexts: Story = {
     await expect(canvas.getByRole('list', { name: 'Apps' })).toBeVisible()
     await expect(canvas.getByText('Ativo')).toBeVisible()
     await expect(canvas.getAllByText('Ativar')).toHaveLength(3)
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <Card2 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByLabelText('Carregando integrações'),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <Card2 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar as integrações'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <Card2 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <Card2 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando integrações')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar as integrações'),
+    ).toBeNull()
   },
 }

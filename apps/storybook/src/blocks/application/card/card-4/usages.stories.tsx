@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { Card4, type Card4Meeting } from '@tc96/blocks/application/card/card-4'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card4Handlers } from '../../../../mocks/card-4.ts'
@@ -10,21 +8,20 @@ import { card4Handlers } from '../../../../mocks/card-4.ts'
 const onJoin = fn()
 
 const MeetingsCard = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Card4Meeting[]>('/cards/meetings'),
     queryKey: ['cards', 'meetings'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando reuniões" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar as reuniões</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
-  return <Card4 meetings={data} onJoin={onJoin} />
+  return (
+    <Card4
+      error={isError}
+      meetings={data ?? []}
+      onJoin={onJoin}
+      onRetry={() => refetch()}
+      pending={isPending}
+    />
+  )
 }
 
 const meta = {
