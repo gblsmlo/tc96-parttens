@@ -1,0 +1,93 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar5
+
+The publish bar at the top of a page editor: a breadcrumb, the people working on the page, a status badge and a split Publish control. Reach for it on a site, document or form builder where several people edit and one action puts the page live. Install it with `npx @tc96/parttens add navbar-5`.
+
+It renders a `header` that is full width with a bottom border. The block keeps no state and never fetches: the app passes the `status`, the people and the secondary actions, and every action is a callback.
+
+The other pages of `Blocks/Application/Navbar/Navbar5`: [Playground](?path=/story/blocks-application-navbar-navbar5-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar5-behavior--breadcrumb-ends-on-the-current-page) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar5-usages--publishing-a-page) for a page with controlled status.
+
+## Import
+
+```tsx
+import { Navbar5 } from '@tc96/blocks/application/navbar/navbar-5'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+A breadcrumb, five people with a limit of three, the "unpublished changes" status and the split control with three secondary actions.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar5
+  actions={actions}
+  breadcrumb={breadcrumb}
+  onPublish={publish}
+  onPublishAction={(id) => runAction(id)}
+  people={people}
+  status="changed"
+/>
+```
+
+## Navbar5
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `breadcrumb` | `Navbar5Crumb[]` | required | The path; the last item is the current page and never a link. |
+| `status` | `'draft' \| 'published' \| 'changed'` | required | Sets the text and the tone of the badge. |
+| `people` | `Navbar5Person[]` | `[]` | People on the page, in order. |
+| `maxPeople` | `number` | `3` | How many avatars show; the rest becomes the `+K` counter. |
+| `actions` | `Navbar5Action[]` | `[]` | Secondary publish actions listed in the menu. |
+| `onPublish` | `() => void` | - | Renders the split control; the primary button calls it. |
+| `onPublishAction` | `(id: string) => void` | - | Called with the `id` of the chosen action; with `actions` it renders the menu trigger. |
+| `pending` | `boolean` | `false` | Disables the Publicar button and the menu trigger. |
+| `renderLink` | `RenderLink` | plain anchor | Builds the element of each breadcrumb link, for the app's router. |
+| `labels` | `Partial<Navbar5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Navbar5Crumb, Navbar5Person and Navbar5Action
+
+| Type | Field | Description |
+| --- | --- | --- |
+| `Navbar5Crumb` | `id`, `label`, `href?` | An item without `href` renders as text. |
+| `Navbar5Person` | `id`, `name`, `image?` | The initials of `name` fill the avatar when there is no `image`. |
+| `Navbar5Action` | `id`, `label`, `destructive?` | A menu item; `destructive` paints it as a destructive action. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `breadcrumb` | `string` | `"Caminho da página"`; the name of the navigation |
+| `people` | `string` | `"Pessoas nesta página"`; the name of the avatar group |
+| `overflow` | `(count: number) => string` | `"Mais N pessoas"`; the name of the counter |
+| `publish` | `string` | `"Publicar"` |
+| `publishActions` | `string` | `"Mais opções de publicação"`; the name of the menu trigger |
+| `status` | `Record<Navbar5Status, string>` | `"Rascunho"`, `"Publicado"`, `"Alterações não publicadas"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar5` | `component` | The publish bar. |
+| `Navbar5Props` | `type` | The props of the bar. |
+| `Navbar5Crumb` | `type` | A breadcrumb item. |
+| `Navbar5Person` | `type` | A person in the avatar group. |
+| `Navbar5Action` | `type` | A secondary action. |
+| `Navbar5Status` | `type` | The three statuses. |
+| `Navbar5Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The breadcrumb is a named `nav`; the current page carries `aria-current="page"`.
+- Each avatar is an image named by the person; the counter is named by `labels.overflow`.
+- The status is text in the badge, not only a color.
+- The menu trigger is named by `labels.publishActions`; the menu is a portal and closes with Escape.
+- Buttons use the `sm` and `icon-sm` sizes.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

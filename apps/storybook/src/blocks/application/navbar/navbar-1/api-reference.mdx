@@ -1,0 +1,84 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar1
+
+A page-top bar for a project workspace: a breadcrumb, line tabs below it, the collaborators on the right and an optional Share button. Reach for it above the content of a project, board or document page. Install it with `npx @tc96/parttens add navbar-1`.
+
+It renders a `header`, not a page: it carries no `main` landmark. The block keeps no state: the selected tab is a prop and every change is a callback.
+
+The other pages of `Blocks/Application/Navbar/Navbar1`: [Playground](?path=/story/blocks-application-navbar-navbar1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar1-behavior--breadcrumb-links-all-but-the-current-page) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar1-usages--switching-sections-of-a-project) for a project page.
+
+## Import
+
+```tsx
+import { Navbar1 } from '@tc96/blocks/application/navbar/navbar-1'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The breadcrumb, the collaborators and the Share button on the first row, the tabs below.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar1
+  breadcrumbs={breadcrumbs}
+  collaborators={collaborators}
+  onShare={share}
+  onTabChange={setTab}
+  tab={tab}
+  tabs={tabs}
+/>
+```
+
+## Navbar1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `breadcrumbs` | `NavbarBreadcrumbItem[]` | required | The path, in order. The last item is the current page; the others link when they have an `href`. |
+| `tabs` | `Navbar1Tab[]` | required | The tabs, in order. |
+| `tab` | `string` | required | The `id` of the selected tab. |
+| `onTabChange` | `(tab: string) => void` | required | Called with the `id` of the tab the user picked. The block does not change `tab` by itself. |
+| `collaborators` | `NavbarPerson[]` | - | The people on the project. Four show; the rest become a count. Empty or missing renders no group. |
+| `onShare` | `() => void` | - | Called when Share is clicked. Without it no button renders. |
+| `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders the breadcrumb links, so the app can pass its router link. |
+| `labels` | `Partial<Navbar1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Navbar1Tab and NavbarPerson
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the tab or the person. |
+| `label` | `string` | Text of the tab. |
+| `name` | `string` | Name of the person; its initials fill the avatar and it is the tooltip. |
+| `avatarUrl` | `string` | Photo of the person. Without it the initials show. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `breadcrumb` | `string` | `"Caminho da página"`; the accessible name of the breadcrumb |
+| `tabs` | `string` | `"Seções do projeto"`; the accessible name of the tab list |
+| `collaborators` | `(count: number) => string` | `"6 colaboradores"`; the accessible name of the avatar group |
+| `share` | `string` | `"Compartilhar"`; the visible text of the button |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar1` | `component` | The project workspace bar. |
+| `Navbar1Props` | `type` | The props of the bar. |
+| `Navbar1Tab` | `type` | A tab. |
+| `Navbar1Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The header holds a breadcrumb navigation, the avatar group (named by `labels.collaborators`) and a tab list named by `labels.tabs`; the current page is marked with `aria-current`.
+- Tabs move with the arrow keys and the selected one has `aria-selected`.
+- The block carries no color, radius or shadow of its own beyond the bottom border: the theme belongs to the app.

@@ -1973,5 +1973,42 @@
     "Timeline4Entry",
     "Timeline4Labels",
     "Timeline4Props"
+  ],
+  "block:navbar-1": [
+    "Navbar1",
+    "Navbar1Labels",
+    "Navbar1Props",
+    "Navbar1Tab"
+  ],
+  "block:navbar-2": [
+    "Navbar2",
+    "Navbar2Environment",
+    "Navbar2Labels",
+    "Navbar2Option",
+    "Navbar2Props"
+  ],
+  "block:navbar-3": [
+    "Navbar3",
+    "Navbar3Labels",
+    "Navbar3Notification",
+    "Navbar3Props",
+    "Navbar3Route",
+    "Navbar3RouteGroup",
+    "Navbar3User",
+    "Navbar3UserAction"
+  ],
+  "block:navbar-4": [
+    "Navbar4",
+    "Navbar4Labels",
+    "Navbar4Props"
+  ],
+  "block:navbar-5": [
+    "Navbar5",
+    "Navbar5Action",
+    "Navbar5Crumb",
+    "Navbar5Labels",
+    "Navbar5Person",
+    "Navbar5Props",
+    "Navbar5Status"
   ]
 }

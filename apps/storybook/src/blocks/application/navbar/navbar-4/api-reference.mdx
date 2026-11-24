@@ -1,0 +1,81 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar4
+
+The action bar at the top of an editor: a close button, the document title with its saved state, an optional Active switch, a Testar button, a version history button and the primary submit button. Reach for it on a full-screen editor of flows, automations or documents. Install it with `npx @tc96/parttens add navbar-4`.
+
+It renders a `header` that is full width with a bottom border. The block keeps no state and never fetches: the app owns `active`, `pending` and the saved text, and every action is a callback. Each control renders only when its callback is passed.
+
+The other pages of `Blocks/Application/Navbar/Navbar4`: [Playground](?path=/story/blocks-application-navbar-navbar4-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar4-behavior--title-and-saved-text-show) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar4-usages--automation-editing) for an editor with controlled values.
+
+## Import
+
+```tsx
+import { Navbar4 } from '@tc96/blocks/application/navbar/navbar-4'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+All the controls present.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar4
+  active={active}
+  onActiveChange={setActive}
+  onClose={close}
+  onHistory={openHistory}
+  onSubmit={save}
+  onTest={test}
+  pending={pending}
+  savedText="Salvo há 2 minutos"
+  title="Fluxo de boas-vindas"
+/>
+```
+
+## Navbar4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `string` | required | The document name, the heading of the bar. |
+| `savedText` | `string` | - | Saved state shown under the title; without it the line does not render. |
+| `active` | `boolean` | `false` | Checked state of the Active switch. |
+| `onActiveChange` | `(active: boolean) => void` | - | Renders the switch; the app stores the value. |
+| `onClose` | `() => void` | - | Renders the close icon button. |
+| `onTest` | `() => void` | - | Renders the Testar button. |
+| `onHistory` | `() => void` | - | Renders the history icon button. |
+| `onSubmit` | `() => void` | - | Renders the primary submit button. |
+| `pending` | `boolean` | `false` | Disables Testar and the submit button. |
+| `labels` | `Partial<Navbar4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `close` | `string` | `"Fechar editor"`; the accessible name of the close button |
+| `active` | `string` | `"Ativo"`; the name of the switch |
+| `test` | `string` | `"Testar"` |
+| `history` | `string` | `"Histórico de versões"`; the accessible name of the history button |
+| `submit` | `string` | `"Salvar"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar4` | `component` | The editor action bar. |
+| `Navbar4Props` | `type` | The props of the bar. |
+| `Navbar4Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The icon buttons are named by `labels`; the icons are hidden from assistive technology.
+- The switch is named by the visible `labels.active` text.
+- Buttons use the `sm` and `icon-sm` sizes.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.
