@@ -408,6 +408,14 @@
     "RecordStatusBadge",
     "RecordStatusBadgeProps"
   ],
+  "record-status-list": [
+    "RecordStatus",
+    "RecordStatusItem",
+    "RecordStatusItemProps",
+    "RecordStatusList",
+    "RecordStatusListProps",
+    "recordStatuses"
+  ],
   "widgets": [
     "Achievement",
     "AchievementsWidget",
@@ -1206,8 +1214,13 @@
     "RecordPreviewBody",
     "RecordPreviewBodyProps",
     "RecordPreviewProps",
+    "RecordStatus",
     "RecordStatusBadge",
     "RecordStatusBadgeProps",
+    "RecordStatusItem",
+    "RecordStatusItemProps",
+    "RecordStatusList",
+    "RecordStatusListProps",
     "ReferenceProperty",
     "ReferencePropertyKind",
     "ReferencePropertyProps",
@@ -1382,6 +1395,7 @@
     "projectCollection",
     "propertyBadgeClassName",
     "propertyToneClassName",
+    "recordStatuses",
     "scheduleRecurrenceLabel",
     "serializeDatePropertyValue",
     "serializeStepTransfer",

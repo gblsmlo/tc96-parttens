@@ -1,0 +1,85 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Record Status List
+
+A list of work that runs in the background of a record: the sources a create dialog queries, the rows of a batch import, the steps still pending on a record that was just created. Reach for it when the user keeps working while several things answer at different times, and needs to see which one is still running, which one answered and which one failed. The consumer passes the status, the texts and the actions; the list never times, retries or polls.
+
+The other pages of `Patterns/StatusList`: [Playground](?path=/story/patterns-statuslist-playground--playground) to try the texts, the status and the action, [Behavior](?path=/story/patterns-statuslist-behavior--reads-only-status-changes) for the guarantees, including each status on its row, and [Usages](?path=/story/patterns-statuslist-usages--next-steps) for the next steps of a new lawsuit and the progress of a batch import.
+
+Used in: [Patterns/Records/RecordDialog/Usages, Lawsuits](?path=/story/patterns-records-recorddialog-usages--lawsuits) lists the DJEN, DataJud and court lookups while the fields stay editable.
+
+## Import
+
+```tsx
+import { RecordStatusItem, RecordStatusList } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RecordStatusList label={label}>
+  <RecordStatusItem
+    action={action}
+    announcement={announcement}
+    detail={detail}
+    status={status}
+    title={title}
+  />
+</RecordStatusList>
+```
+
+The tree it renders:
+
+```tsx
+<div data-slot="record-status-list">
+  <ul aria-label>
+    <li data-slot="record-status-item" data-status>
+      <span data-slot="record-status-item-icon" aria-hidden><svg /></span>
+      <span>
+        <span data-slot="record-status-item-title">{title}</span>
+        <span data-slot="record-status-item-detail">{detail}</span>
+      </span>
+      <span data-slot="record-status-item-action">{action}</span>
+    </li>
+  </ul>
+  <p data-slot="record-status-list-announcer" aria-live="polite" />
+</div>
+```
+
+## RecordStatusList
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | - | Names the list for assistive technology. |
+| `children` | `ReactNode` | - | The `RecordStatusItem`s. |
+| `className` | `string` | - | Forwarded to the wrapper. |
+
+## RecordStatusItem
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `status` | `"pending"`, `"running"`, `"done"`, `"skipped"` or `"failed"` | - | Sets the icon and the tone: a dashed circle, a spinner, a check, a dash or an alert on a tinted row. |
+| `title` | `ReactNode` | - | Names the work: a source, a record number, a step. |
+| `detail` | `ReactNode` | - | Says what the status means now: what is being searched, what came back, how long it has waited. Never read on change. |
+| `announcement` | `string` | - | Read once by the list region when `status` changes. Without it the change is silent. |
+| `action` | `ReactNode` | - | Renders at the end of the row, such as "Tentar de novo", "Abrir" or "Aplicar". |
+| `className` | `string` | - | Forwarded to the `li`. |
+
+Rendering an item outside a `RecordStatusList` throws.
+
+## Exports
+
+| Export | Kind |
+| --- | --- |
+| `RecordStatusList`, `RecordStatusItem` | components |
+| `RecordStatusListProps`, `RecordStatusItemProps`, `RecordStatus` | types |
+| `recordStatuses` | the five statuses, in order |
+
+## Accessibility and theme
+
+The status icon is `aria-hidden`, so the `detail` carries the meaning of a status in words. The region reads only status changes: put an elapsed time or a counter in `detail`, never in `announcement`. A `failed` row uses `destructive-foreground` over `destructive/8`, the pair of the COSS error badge.
