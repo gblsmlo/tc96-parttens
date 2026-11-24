@@ -1,8 +1,8 @@
 'use client'
 
+import { ChatCircleDotsIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { cn } from '@tc96/utils'
-import { MessageCircleQuestionIcon } from 'lucide-react'
 import { type ReactElement, useId } from 'react'
 import {
   assistantSuggestionClassName,
@@ -40,7 +40,7 @@ export function AssistantSuggestions({
               type="button"
               variant="outline"
             >
-              <MessageCircleQuestionIcon aria-hidden="true" />
+              <ChatCircleDotsIcon aria-hidden="true" />
               {suggestion.label}
             </Button>
           </li>

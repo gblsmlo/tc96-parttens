@@ -1,6 +1,6 @@
+import { EnvelopeSimpleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TextProperty } from '@tc96/parttens'
-import { MailIcon } from 'lucide-react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import {
   esperarSuperficieDeBadge,
@@ -26,7 +26,7 @@ const surface = (canvasElement: HTMLElement) =>
 const copyArgs = {
   ariaLabel: 'E-mail',
   copyLabel: 'Copiar e-mail do contato',
-  icon: MailIcon,
+  icon: EnvelopeSimpleIcon,
   value: 'mariana@exemplo.com',
 }
 

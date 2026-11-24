@@ -61,7 +61,7 @@ export function IconLabelProperty({
       {Icon ? (
         <Icon
           aria-hidden
-          className={cn('size-3', iconClassName)}
+          className={cn('size-4', iconClassName)}
           data-slot="property-icon"
         />
       ) : null}

@@ -6,8 +6,8 @@ import {
   PointerSensor,
 } from '@dnd-kit/dom'
 import { useDraggable } from '@dnd-kit/react'
+import { DotsSixVerticalIcon } from '@phosphor-icons/react'
 import { cn } from '@tc96/utils'
-import { GripVerticalIcon } from 'lucide-react'
 import type { CSSProperties, KeyboardEvent, ReactNode } from 'react'
 
 import type { CalendarItemDragData } from '../lib/drag-and-drop'
@@ -131,7 +131,7 @@ export function DraggableCalendarItem({
           ref={handleRef}
           type="button"
         >
-          <GripVerticalIcon aria-hidden="true" className="size-3" />
+          <DotsSixVerticalIcon aria-hidden="true" className="size-3" />
         </button>
       )}
       {children}

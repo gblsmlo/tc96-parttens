@@ -1,9 +1,9 @@
 'use client'
 
+import { EnvelopeSimpleIcon, XIcon } from '@phosphor-icons/react'
 import { Input } from '@tc96/ui/input'
 import { Popover, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
-import { MailIcon, XIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useEntryListEditor } from '../../hooks/use-entry-list-editor'
 import { createEntryParser } from '../../shared/lib/entry-parser'
@@ -124,7 +124,7 @@ export function EmailProperty({
         {value.length > 0 ? (
           value.map((email) => (
             <IconLabelProperty
-              icon={MailIcon}
+              icon={EnvelopeSimpleIcon}
               key={email}
               label={email}
               variant={variant}
@@ -186,9 +186,9 @@ export function EmailProperty({
               render={<button disabled={disabled} type="button" />}
               variant={variant === 'plain' ? 'plain' : 'badge'}
             >
-              <MailIcon
+              <EnvelopeSimpleIcon
                 aria-hidden="true"
-                className="size-3"
+                className="size-4"
                 data-slot="property-icon"
               />
               <span className="truncate">{summary}</span>
@@ -211,7 +211,7 @@ export function EmailProperty({
       {value.map((email) => (
         <IconLabelProperty
           className="pe-0"
-          icon={MailIcon}
+          icon={EnvelopeSimpleIcon}
           key={email}
           label={email}
           trailing={
@@ -222,7 +222,7 @@ export function EmailProperty({
               onClick={() => removeEmail(email)}
               type="button"
             >
-              <XIcon aria-hidden="true" className="size-3" />
+              <XIcon aria-hidden="true" className="size-4" />
             </button>
           }
         />
@@ -270,7 +270,7 @@ export function EmailProperty({
             addLabel={addLabel}
             disabled={disabled}
             hasValue={value.length > 0}
-            icon={MailIcon}
+            icon={EnvelopeSimpleIcon}
             onClick={() => {
               setFormatError(null)
               setEditingInline(true)
@@ -286,7 +286,7 @@ export function EmailProperty({
                 addLabel={addLabel}
                 disabled={disabled}
                 hasValue={value.length > 0}
-                icon={MailIcon}
+                icon={EnvelopeSimpleIcon}
                 placeholder={placeholder}
               />
             }

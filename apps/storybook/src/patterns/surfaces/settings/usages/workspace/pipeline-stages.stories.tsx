@@ -1,3 +1,14 @@
+import {
+  DotsThreeIcon,
+  FileTextIcon,
+  HandshakeIcon,
+  type Icon as PhosphorIcon,
+  RadioButtonIcon,
+  SparkleIcon,
+  TrophyIcon,
+  UserCheckIcon,
+  XCircleIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   RecordDialog,
@@ -15,17 +26,6 @@ import {
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Text } from '@tc96/ui/text'
-import {
-  CircleDotIcon,
-  CircleXIcon,
-  EllipsisIcon,
-  FileTextIcon,
-  HandshakeIcon,
-  type LucideIcon,
-  SparklesIcon,
-  TrophyIcon,
-  UserCheckIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, within } from 'storybook/test'
 
@@ -33,7 +33,7 @@ type PhaseId = 'Open' | 'Won' | 'Lost'
 type Direction = 'up' | 'down'
 
 interface Stage {
-  icon: LucideIcon
+  icon: PhosphorIcon
   leads: number
   locked?: boolean
   name: string
@@ -49,14 +49,14 @@ const phaseOptions: SelectPropertyOption[] = phases.map((phase) => ({
 }))
 
 const phaseLooks: Record<PhaseId, Pick<Stage, 'icon' | 'tone'>> = {
-  Lost: { icon: CircleXIcon, tone: 'text-destructive-foreground' },
-  Open: { icon: CircleDotIcon, tone: 'text-muted-foreground' },
+  Lost: { icon: XCircleIcon, tone: 'text-destructive-foreground' },
+  Open: { icon: RadioButtonIcon, tone: 'text-muted-foreground' },
   Won: { icon: TrophyIcon, tone: 'text-green-700 dark:text-green-500' },
 }
 
 const initialStages: Stage[] = [
   {
-    icon: SparklesIcon,
+    icon: SparkleIcon,
     leads: 4,
     name: 'New',
     phase: 'Open',
@@ -118,7 +118,7 @@ function StageActions({
         aria-label={`Actions for ${name}`}
         render={<Button size="icon-xs" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem onClick={() => onEditStage(name)}>Edit</MenuItem>
@@ -155,7 +155,10 @@ function StageItem({
   const description = describeStage(stage)
 
   return (
-    <RecordGroupItem leading={<Icon className={tone} />} title={name}>
+    <RecordGroupItem
+      leading={<Icon aria-hidden="true" className={tone} />}
+      title={name}
+    >
       <div className="flex min-w-0 items-center gap-3">
         {description ? (
           <Text

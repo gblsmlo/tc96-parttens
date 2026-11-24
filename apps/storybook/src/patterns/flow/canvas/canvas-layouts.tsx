@@ -1,3 +1,4 @@
+import { LockIcon } from '@phosphor-icons/react'
 import {
   FlowCanvas,
   FlowCanvasControls,
@@ -5,7 +6,6 @@ import {
   FlowShortcutsPopover,
 } from '@tc96/parttens'
 import { Toggle } from '@tc96/ui/toggle'
-import { LockIcon } from 'lucide-react'
 import { useState } from 'react'
 import type { CanvasControls } from './canvas-controls.ts'
 import { sampleSelectedStepId, sampleSteps } from './canvas-data.ts'

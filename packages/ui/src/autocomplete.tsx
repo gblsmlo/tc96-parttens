@@ -1,7 +1,7 @@
 "use client";
 
 import { Autocomplete as AutocompletePrimitive } from "@base-ui/react/autocomplete";
-import { ChevronsUpDownIcon, XIcon } from "lucide-react";
+import { CaretUpDownIcon, XIcon } from "@phosphor-icons/react";
 import type React from "react";
 import { cn } from "@tc96/utils";
 import { Input } from "@tc96/ui/input";
@@ -65,8 +65,8 @@ export function AutocompleteInput({
           )}
           {...triggerProps}
         >
-          <AutocompletePrimitive.Icon data-slot="autocomplete-icon">
-            <ChevronsUpDownIcon />
+          <AutocompletePrimitive.Icon aria-hidden="true" data-slot="autocomplete-icon">
+            <CaretUpDownIcon aria-hidden="true" />
           </AutocompletePrimitive.Icon>
         </AutocompleteTrigger>
       )}
@@ -78,7 +78,7 @@ export function AutocompleteInput({
           )}
           {...clearProps}
         >
-          <XIcon />
+          <XIcon aria-hidden="true" />
         </AutocompleteClear>
       )}
     </AutocompletePrimitive.InputGroup>
@@ -257,7 +257,7 @@ export function AutocompleteClear({
       data-slot="autocomplete-clear"
       {...props}
     >
-      <XIcon />
+      <XIcon aria-hidden="true" />
     </AutocompletePrimitive.Clear>
   );
 }

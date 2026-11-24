@@ -1,3 +1,12 @@
+import {
+  CellSignalHighIcon,
+  CellSignalLowIcon,
+  CellSignalMediumIcon,
+  MagnifyingGlassIcon,
+  type Icon as PhosphorIcon,
+  SortDescendingIcon,
+  WarningOctagonIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Combobox,
@@ -22,22 +31,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@tc96/ui/select'
-import {
-  ArrowDownWideNarrowIcon,
-  type LucideIcon,
-  OctagonAlertIcon,
-  SearchIcon,
-  SignalHighIcon,
-  SignalLowIcon,
-  SignalMediumIcon,
-} from 'lucide-react'
 import { Fragment } from 'react'
 import { expect, within } from 'storybook/test'
 import { SelectCanvas } from './select-frame.tsx'
 import { ProjectForm } from './select-layouts.tsx'
 
 interface Priority {
-  icon: LucideIcon
+  icon: PhosphorIcon
   label: string
   value: string
 }
@@ -64,10 +64,10 @@ interface Member {
 }
 
 const priorities: Priority[] = [
-  { icon: OctagonAlertIcon, label: 'Urgent', value: 'urgent' },
-  { icon: SignalHighIcon, label: 'High', value: 'high' },
-  { icon: SignalMediumIcon, label: 'Medium', value: 'medium' },
-  { icon: SignalLowIcon, label: 'Low', value: 'low' },
+  { icon: WarningOctagonIcon, label: 'Urgent', value: 'urgent' },
+  { icon: CellSignalHighIcon, label: 'High', value: 'high' },
+  { icon: CellSignalMediumIcon, label: 'Medium', value: 'medium' },
+  { icon: CellSignalLowIcon, label: 'Low', value: 'low' },
 ]
 
 const templates: Template[] = [
@@ -232,7 +232,7 @@ export const SortIssues: Story = {
   render: () => (
     <Select defaultValue="newest" items={sortOrders}>
       <SelectTrigger aria-label="Sort issues" size="sm">
-        <ArrowDownWideNarrowIcon aria-hidden="true" />
+        <SortDescendingIcon aria-hidden="true" />
         <SelectValue />
       </SelectTrigger>
       <SelectPopup>
@@ -338,7 +338,7 @@ export const AssignReviewer: Story = {
             aria-label="Search members"
             placeholder="Search members…"
             showTrigger={false}
-            startAddon={<SearchIcon />}
+            startAddon={<MagnifyingGlassIcon aria-hidden="true" />}
           />
         </div>
         <ComboboxEmpty>No member found.</ComboboxEmpty>

@@ -1,15 +1,15 @@
 import {
+  HandshakeIcon,
+  PercentIcon,
+  SealCheckIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupMetric,
   RecordGroupMetrics,
   type RecordGroupMetricsColumns,
 } from '@tc96/parttens'
-import {
-  BadgeCheckIcon,
-  HandshakeIcon,
-  PercentIcon,
-  UsersIcon,
-} from 'lucide-react'
 
 export function IndicatorsGroup({
   columns = 2,
@@ -33,7 +33,7 @@ export function IndicatorsGroup({
           value="18,5%"
         />
         <RecordGroupMetric
-          icon={<BadgeCheckIcon aria-hidden />}
+          icon={<SealCheckIcon aria-hidden />}
           label="Sucesso"
           target="vendas"
           value={12}

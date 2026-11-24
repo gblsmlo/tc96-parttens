@@ -1,4 +1,11 @@
 import {
+  ArrowSquareOutIcon,
+  CheckCircleIcon,
+  DotsThreeIcon,
+  ReceiptIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupItem,
   RecordStatusBadge,
@@ -13,13 +20,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  CircleCheckIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  ReceiptTextIcon,
-  Trash2Icon,
-} from 'lucide-react'
 import { useState } from 'react'
 
 const ignore = (_id: string) => undefined
@@ -53,7 +53,7 @@ export function InstallmentsGroup({
       {installments.map((installment) => (
         <RecordGroupItem
           key={installment.id}
-          leading={<ReceiptTextIcon aria-hidden />}
+          leading={<ReceiptIcon aria-hidden />}
           title={installment.title}
         >
           <SelectProperty
@@ -78,7 +78,7 @@ export function InstallmentsMenuGroup() {
       {installments.map((installment) => (
         <RecordGroupItem
           key={installment.id}
-          leading={<ReceiptTextIcon aria-hidden />}
+          leading={<ReceiptIcon aria-hidden />}
           title={installment.title}
         >
           <Menu>
@@ -86,20 +86,20 @@ export function InstallmentsMenuGroup() {
               aria-label={`Ações da ${installment.title}`}
               render={<Button size="icon-sm" variant="ghost" />}
             >
-              <EllipsisIcon aria-hidden="true" />
+              <DotsThreeIcon aria-hidden="true" />
             </MenuTrigger>
             <MenuPopup align="end">
               <MenuItem>
-                <ExternalLinkIcon aria-hidden="true" />
+                <ArrowSquareOutIcon aria-hidden="true" />
                 Abrir
               </MenuItem>
               <MenuItem>
-                <CircleCheckIcon aria-hidden="true" />
+                <CheckCircleIcon aria-hidden="true" />
                 Marcar como paga
               </MenuItem>
               <MenuSeparator />
               <MenuItem variant="destructive">
-                <Trash2Icon aria-hidden="true" />
+                <TrashIcon aria-hidden="true" />
                 Excluir
               </MenuItem>
             </MenuPopup>
@@ -127,7 +127,7 @@ export function InstallmentsLinkGroup({
           <RecordGroupItem
             interactive
             key={installment.id}
-            leading={<ReceiptTextIcon aria-hidden />}
+            leading={<ReceiptIcon aria-hidden />}
             title={
               <a
                 className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"

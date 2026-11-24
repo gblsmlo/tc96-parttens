@@ -1,3 +1,4 @@
+import { MapPinIcon } from '@phosphor-icons/react'
 import {
   PeopleProperty,
   RecordDialog,
@@ -9,7 +10,6 @@ import {
   TextProperty,
   useRecordDraft,
 } from '@tc96/parttens'
-import { MapPinIcon } from 'lucide-react'
 import { useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
 import {

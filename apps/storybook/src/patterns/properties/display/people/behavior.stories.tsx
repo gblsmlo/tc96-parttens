@@ -1,7 +1,9 @@
+import { PlusIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PeopleProperty, type PeoplePropertyOption } from '@tc96/parttens'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { isIcon } from '../../../../test-utils/is-icon'
 import { esperarAvatarComAresta } from '../../../../test-utils/property-surface'
 import { PeopleCanvas } from './people-canvas.tsx'
 
@@ -71,7 +73,7 @@ export const TriggerShrinksToPlus: Story = {
     const trigger = addChip(canvasElement)
 
     await expect(trigger.textContent).toBe('')
-    await expect(trigger.querySelector('svg')).toHaveClass('lucide-plus')
+    await expect(isIcon(trigger.querySelector('svg'), PlusIcon)).toBe(true)
   },
 }
 

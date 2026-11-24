@@ -1,3 +1,16 @@
+import {
+  ArchiveIcon,
+  CalendarDotsIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  FlagIcon,
+  GridFourIcon,
+  ListBulletsIcon,
+  RowsIcon,
+  TableIcon,
+  TrashIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Action,
@@ -37,20 +50,6 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
-import {
-  ArchiveIcon,
-  CalendarDaysIcon,
-  CalendarRangeIcon,
-  CircleCheckIcon,
-  FlagIcon,
-  LayoutGridIcon,
-  ListIcon,
-  Rows3Icon,
-  Table2Icon,
-  TableIcon,
-  Trash2Icon,
-  UsersIcon,
-} from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import { expect, within } from 'storybook/test'
 import {
@@ -86,10 +85,10 @@ interface TasksArgs {
 }
 
 const layoutModes: readonly ViewSettingsMode<CollectionLayout>[] = [
-  { icon: Rows3Icon, label: 'Lista', value: 'list' },
-  { icon: LayoutGridIcon, label: 'Kanban', value: 'kanban' },
-  { icon: CalendarDaysIcon, label: 'Calendário', value: 'calendar' },
-  { icon: Table2Icon, label: 'Planilha', value: 'datagrid' },
+  { icon: RowsIcon, label: 'Lista', value: 'list' },
+  { icon: GridFourIcon, label: 'Kanban', value: 'kanban' },
+  { icon: CalendarDotsIcon, label: 'Calendário', value: 'calendar' },
+  { icon: TableIcon, label: 'Planilha', value: 'datagrid' },
   { icon: TableIcon, label: 'Tabela', value: 'datatable' },
 ]
 
@@ -319,7 +318,7 @@ function TasksWorkspace({
     {
       items: [
         {
-          icon: <CircleCheckIcon />,
+          icon: <CheckCircleIcon aria-hidden="true" />,
           label: 'Concluir',
           onSelect: () => {
             onTasksChange((current) =>
@@ -334,7 +333,7 @@ function TasksWorkspace({
           variant: 'primary' as const,
         },
         {
-          icon: <ArchiveIcon />,
+          icon: <ArchiveIcon aria-hidden="true" />,
           label: 'Arquivar',
           onSelect: () => {
             removeTasks(selectedIds)
@@ -346,7 +345,7 @@ function TasksWorkspace({
     {
       items: [
         {
-          icon: <Trash2Icon />,
+          icon: <TrashIcon aria-hidden="true" />,
           label: 'Excluir',
           onSelect: () => {
             removeTasks(selectedIds)
@@ -407,7 +406,7 @@ function TasksWorkspace({
                     {usesGrouping ? (
                       <MenuSub>
                         <MenuSubTrigger>
-                          <ListIcon aria-hidden="true" />
+                          <ListBulletsIcon aria-hidden="true" />
                           Agrupar por
                         </MenuSubTrigger>
                         <MenuSubPopup>
@@ -443,7 +442,7 @@ function TasksWorkspace({
                     {layout === 'calendar' ? (
                       <MenuSub>
                         <MenuSubTrigger>
-                          <CalendarRangeIcon aria-hidden="true" />
+                          <CalendarIcon aria-hidden="true" />
                           Período
                         </MenuSubTrigger>
                         <MenuSubPopup>
@@ -475,7 +474,7 @@ function TasksWorkspace({
                     {layout === 'datatable' ? (
                       <MenuSub>
                         <MenuSubTrigger>
-                          <Table2Icon aria-hidden="true" />
+                          <TableIcon aria-hidden="true" />
                           Colunas
                         </MenuSubTrigger>
                         <MenuSubPopup>

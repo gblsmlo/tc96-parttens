@@ -1,17 +1,17 @@
 import {
+  CalendarDotsIcon,
+  CellSignalHighIcon,
+  RadioButtonIcon,
+  TagIcon,
+  UserCircleIcon,
+} from '@phosphor-icons/react'
+import {
   DateProperty,
   PersonProperty,
   PropertyCollection,
   SelectProperty,
   TagsProperty,
 } from '@tc96/parttens'
-import {
-  CalendarDaysIcon,
-  CircleDotIcon,
-  SignalHighIcon,
-  TagIcon,
-  UserCircleIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 import type { PropertiesControls } from './properties-controls'
 import {
@@ -50,7 +50,7 @@ function TaskProperties({
       items={[
         {
           defaultVisible: defaultVisible.includes('status'),
-          icon: icons ? CircleDotIcon : undefined,
+          icon: icons ? RadioButtonIcon : undefined,
           id: 'status',
           label: 'Status',
           render: () => (
@@ -66,7 +66,7 @@ function TaskProperties({
         },
         {
           defaultVisible: defaultVisible.includes('priority'),
-          icon: icons ? SignalHighIcon : undefined,
+          icon: icons ? CellSignalHighIcon : undefined,
           id: 'priority',
           label: 'Priority',
           render: () => (
@@ -98,7 +98,7 @@ function TaskProperties({
         },
         {
           defaultVisible: defaultVisible.includes('dueDate'),
-          icon: icons ? CalendarDaysIcon : undefined,
+          icon: icons ? CalendarDotsIcon : undefined,
           id: 'dueDate',
           label: 'Due date',
           render: () => (
@@ -160,7 +160,7 @@ export function TaskHeader() {
         items={[
           {
             defaultVisible: true,
-            icon: CircleDotIcon,
+            icon: RadioButtonIcon,
             id: 'status',
             label: 'Status',
             render: () => (
@@ -174,7 +174,7 @@ export function TaskHeader() {
           },
           {
             defaultVisible: true,
-            icon: SignalHighIcon,
+            icon: CellSignalHighIcon,
             id: 'priority',
             label: 'Priority',
             render: () => (
@@ -203,7 +203,7 @@ export function TaskHeader() {
           },
           {
             defaultVisible: true,
-            icon: CalendarDaysIcon,
+            icon: CalendarDotsIcon,
             id: 'dueDate',
             label: 'Due date',
             render: () => (
@@ -249,7 +249,7 @@ export function LeadHeader() {
         items={[
           {
             defaultVisible: true,
-            icon: CircleDotIcon,
+            icon: RadioButtonIcon,
             id: 'status',
             label: 'Status',
             render: () => (
@@ -291,7 +291,7 @@ export function LeadHeader() {
             ),
           },
           {
-            icon: CalendarDaysIcon,
+            icon: CalendarDotsIcon,
             id: 'nextContact',
             label: 'Next contact',
             render: () => (

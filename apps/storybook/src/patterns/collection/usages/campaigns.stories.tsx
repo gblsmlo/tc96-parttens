@@ -1,3 +1,13 @@
+import {
+  ListBulletsIcon,
+  PauseCircleIcon,
+  PlayCircleIcon,
+  RadioButtonIcon,
+  RowsIcon,
+  TableIcon,
+  TargetIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   ActionBar,
@@ -35,17 +45,6 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
-import {
-  CircleDotIcon,
-  CirclePauseIcon,
-  CirclePlayIcon,
-  ListIcon,
-  Rows3Icon,
-  Table2Icon,
-  TableIcon,
-  TargetIcon,
-  Trash2Icon,
-} from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import { expect, within } from 'storybook/test'
 import {
@@ -75,8 +74,8 @@ type CampaignLayout = Extract<
 
 const campaignLayouts: readonly ViewSettingsMode<CampaignLayout>[] = [
   { icon: TableIcon, label: 'Tabela', value: 'datatable' },
-  { icon: Table2Icon, label: 'Planilha', value: 'datagrid' },
-  { icon: Rows3Icon, label: 'Lista', value: 'list' },
+  { icon: TableIcon, label: 'Planilha', value: 'datagrid' },
+  { icon: RowsIcon, label: 'Lista', value: 'list' },
 ]
 
 const isCampaignLayout = (value: CollectionLayout): value is CampaignLayout =>
@@ -298,7 +297,7 @@ function CampaignsWorkspace({
     {
       items: [
         {
-          icon: <CirclePauseIcon />,
+          icon: <PauseCircleIcon aria-hidden="true" />,
           label: 'Pausar',
           onSelect: () => {
             setStatuses(selectedIds, 'active', 'paused')
@@ -306,7 +305,7 @@ function CampaignsWorkspace({
           },
         },
         {
-          icon: <CirclePlayIcon />,
+          icon: <PlayCircleIcon aria-hidden="true" />,
           label: 'Ativar',
           onSelect: () => {
             setStatuses(selectedIds, 'paused', 'active')
@@ -318,7 +317,7 @@ function CampaignsWorkspace({
     {
       items: [
         {
-          icon: <Trash2Icon />,
+          icon: <TrashIcon aria-hidden="true" />,
           label: 'Excluir',
           onSelect: () => {
             onCampaignsChange((current) =>
@@ -371,7 +370,7 @@ function CampaignsWorkspace({
                   {layout === 'datatable' ? null : (
                     <MenuSub>
                       <MenuSubTrigger>
-                        <ListIcon aria-hidden="true" />
+                        <ListBulletsIcon aria-hidden="true" />
                         Agrupar por
                       </MenuSubTrigger>
                       <MenuSubPopup>
@@ -417,7 +416,7 @@ function CampaignsWorkspace({
                 <ViewSettingsSection label="Filtros">
                   <MenuSub>
                     <MenuSubTrigger>
-                      <CircleDotIcon aria-hidden="true" />
+                      <RadioButtonIcon aria-hidden="true" />
                       Status
                     </MenuSubTrigger>
                     <MenuSubPopup>

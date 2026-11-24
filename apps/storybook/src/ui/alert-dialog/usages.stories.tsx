@@ -1,3 +1,4 @@
+import { CaretDownIcon, TrashIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   AlertDialog,
@@ -28,7 +29,6 @@ import {
   MenuTrigger,
 } from '@tc96/ui/menu'
 import { Textarea } from '@tc96/ui/textarea'
-import { ChevronDownIcon, Trash2Icon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 
@@ -88,7 +88,7 @@ export const DiscardCampaign: Story = {
           />
         }
       >
-        <Trash2Icon aria-hidden="true" />
+        <TrashIcon aria-hidden="true" />
       </AlertDialogTrigger>
       <AlertDialogPopup>
         <AlertDialogHeader>
@@ -152,7 +152,7 @@ function PlaylistMenu() {
       <Menu>
         <MenuTrigger render={<Button variant="outline" />}>
           Road trip
-          <ChevronDownIcon aria-hidden="true" />
+          <CaretDownIcon aria-hidden="true" />
         </MenuTrigger>
         <MenuPopup align="start">
           <MenuItem>Play</MenuItem>

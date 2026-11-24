@@ -1,16 +1,16 @@
+import {
+  CaretLeftIcon,
+  CaretRightIcon,
+  CopyIcon,
+  DotsThreeIcon,
+  MagnifyingGlassMinusIcon,
+  MagnifyingGlassPlusIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import { Group, GroupSeparator, GroupText } from '@tc96/ui/group'
 import { Input } from '@tc96/ui/input'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CopyIcon,
-  EllipsisIcon,
-  ZoomInIcon,
-  ZoomOutIcon,
-} from 'lucide-react'
 import { Fragment } from 'react'
 import { expect, within } from 'storybook/test'
 import { AddItemInput, PriceInput } from './group-layouts.tsx'
@@ -40,7 +40,7 @@ export const FileActions: Story = {
             <Button aria-label="More actions" size="icon" variant="outline" />
           }
         >
-          <EllipsisIcon aria-hidden="true" />
+          <DotsThreeIcon aria-hidden="true" />
         </MenuTrigger>
         <MenuPopup align="end">
           <MenuItem>Edit</MenuItem>
@@ -149,11 +149,11 @@ export const Pagination: Story = {
       </Group>
       <Group aria-label="Navigation">
         <Button aria-label="Previous page" size="icon" variant="outline">
-          <ChevronLeftIcon aria-hidden="true" />
+          <CaretLeftIcon aria-hidden="true" />
         </Button>
         <GroupSeparator />
         <Button aria-label="Next page" size="icon" variant="outline">
-          <ChevronRightIcon aria-hidden="true" />
+          <CaretRightIcon aria-hidden="true" />
         </Button>
       </Group>
     </Group>
@@ -175,11 +175,11 @@ export const ZoomControls: Story = {
   render: () => (
     <Group aria-label="Zoom" orientation="vertical">
       <Button aria-label="Zoom in" size="icon" variant="outline">
-        <ZoomInIcon aria-hidden="true" />
+        <MagnifyingGlassPlusIcon aria-hidden="true" />
       </Button>
       <GroupSeparator orientation="horizontal" />
       <Button aria-label="Zoom out" size="icon" variant="outline">
-        <ZoomOutIcon aria-hidden="true" />
+        <MagnifyingGlassMinusIcon aria-hidden="true" />
       </Button>
     </Group>
   ),

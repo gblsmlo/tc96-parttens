@@ -1,10 +1,10 @@
+import { BuildingIcon, PlusIcon } from '@phosphor-icons/react'
 import { formatAmount } from '@tc96/helpers/format'
 import { AvatarStack, GalleryView, IconFrame } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Card } from '@tc96/ui/card'
 import { Separator } from '@tc96/ui/separator'
 import { Text } from '@tc96/ui/text'
-import { BuildingIcon, PlusIcon } from 'lucide-react'
 import {
   type Contact,
   initialContacts,
@@ -73,7 +73,7 @@ function CompanyCard({ company }: Readonly<{ company: Company }>) {
       <div className="flex flex-1 flex-col p-4">
         <div className="flex min-w-0 items-center gap-3">
           <IconFrame>
-            <BuildingIcon />
+            <BuildingIcon aria-hidden="true" />
           </IconFrame>
           <div className="grid min-w-0">
             <Text

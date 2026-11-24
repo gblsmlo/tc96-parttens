@@ -1,4 +1,12 @@
 import {
+  ArrowSquareOutIcon,
+  CheckCircleIcon,
+  DotsThreeIcon,
+  PencilSimpleIcon,
+  PlusIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupAction,
   RecordGroupFilter,
@@ -16,14 +24,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  CircleCheckIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  PencilIcon,
-  PlusIcon,
-  Trash2Icon,
-} from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 
 interface Person {
@@ -228,26 +228,26 @@ export function EntryMenu({ entry }: Readonly<{ entry: TimeEntry }>) {
         aria-label={`Ações de ${entry.description}`}
         render={<Button size="icon-sm" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem onClick={() => onOpenEntry(entry.id)}>
-          <ExternalLinkIcon aria-hidden="true" />
+          <ArrowSquareOutIcon aria-hidden="true" />
           Abrir
         </MenuItem>
         <MenuItem onClick={() => onEditEntry(entry.id)}>
-          <PencilIcon aria-hidden="true" />
+          <PencilSimpleIcon aria-hidden="true" />
           Editar
         </MenuItem>
         {entry.billing === 'to-bill' ? (
           <MenuItem onClick={() => onMarkBilled(entry.id)}>
-            <CircleCheckIcon aria-hidden="true" />
+            <CheckCircleIcon aria-hidden="true" />
             Marcar como faturado
           </MenuItem>
         ) : null}
         <MenuSeparator />
         <MenuItem onClick={() => onDeleteEntry(entry.id)} variant="destructive">
-          <Trash2Icon aria-hidden="true" />
+          <TrashIcon aria-hidden="true" />
           Excluir
         </MenuItem>
       </MenuPopup>

@@ -1,3 +1,4 @@
+import { FloppyDiskIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   AnchoredToastProvider,
@@ -7,7 +8,6 @@ import {
   toastManager,
 } from '@tc96/ui/toast'
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@tc96/ui/tooltip'
-import { SaveIcon } from 'lucide-react'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import type { ToastControls } from './toast-controls.ts'
 
@@ -300,7 +300,7 @@ export const SaveDraft = ({
             />
           }
         >
-          <SaveIcon aria-hidden="true" />
+          <FloppyDiskIcon aria-hidden="true" />
         </TooltipTrigger>
         <TooltipPopup>Save draft</TooltipPopup>
       </Tooltip>

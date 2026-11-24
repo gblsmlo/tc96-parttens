@@ -1,7 +1,7 @@
+import { CheckIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import { Spinner } from '@tc96/ui/spinner'
-import { CheckIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { spinnerControlArgs } from './spinner-controls.ts'
 import { ComposedSpinner } from './spinner-layouts.tsx'
@@ -119,6 +119,6 @@ export const FollowsTextColor: Story = {
       throw new Error('The wrapper did not render.')
     const textColor = getComputedStyle(text).color
     await expect(textColor).not.toBe(getComputedStyle(canvasElement).color)
-    await expect(getComputedStyle(getSvg(canvasElement)).stroke).toBe(textColor)
+    await expect(getComputedStyle(getSvg(canvasElement)).fill).toBe(textColor)
   },
 }

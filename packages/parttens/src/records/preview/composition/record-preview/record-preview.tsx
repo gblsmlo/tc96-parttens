@@ -1,5 +1,6 @@
 'use client'
 
+import { XIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Sheet,
@@ -11,7 +12,6 @@ import {
   SheetPopup,
   SheetTitle,
 } from '@tc96/ui/sheet'
-import { XIcon } from 'lucide-react'
 import type * as React from 'react'
 import { useRef } from 'react'
 import type { RecordPreviewProps } from '../../core'

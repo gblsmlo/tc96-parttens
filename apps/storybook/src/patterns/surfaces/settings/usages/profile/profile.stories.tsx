@@ -1,3 +1,4 @@
+import { CameraIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   SettingsRow,
@@ -9,7 +10,6 @@ import {
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
-import { CameraIcon } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { expect, fn, within } from 'storybook/test'
 
@@ -48,7 +48,7 @@ function AvatarUploadTrigger({
         aria-hidden="true"
         className="absolute inset-0 flex items-center justify-center bg-foreground/64 text-background opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
       >
-        <CameraIcon className="size-4" />
+        <CameraIcon aria-hidden="true" className="size-4" />
       </span>
     </Avatar>
   )

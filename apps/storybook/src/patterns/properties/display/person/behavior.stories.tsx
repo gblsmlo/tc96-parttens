@@ -1,6 +1,8 @@
+import { UserIcon, UserPlusIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PersonProperty, type PersonPropertyOption } from '@tc96/parttens'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { isIcon } from '../../../../test-utils/is-icon'
 import {
   esperarAvatarComAresta,
   esperarSuperficieDeBadge,
@@ -109,7 +111,7 @@ export const EmptyShowsPlaceholder: Story = {
 
     await expect(value.textContent).toBe('Sem responsável')
     await expect(value).toHaveAttribute('data-empty', 'true')
-    await expect(value.querySelector('svg')).toHaveClass('lucide-user-plus')
+    await expect(isIcon(value.querySelector('svg'), UserPlusIcon)).toBe(true)
   },
 }
 
@@ -123,8 +125,11 @@ export const EmptyAvatarStaysIdentifiable: Story = {
     ).toBeInTheDocument()
     await expect(fallbacks(canvasElement)).toEqual([''])
     await expect(
-      canvasElement.querySelector('[data-slot="avatar-fallback"] svg'),
-    ).toHaveClass('lucide-user')
+      isIcon(
+        canvasElement.querySelector('[data-slot="avatar-fallback"] svg'),
+        UserIcon,
+      ),
+    ).toBe(true)
   },
 }
 

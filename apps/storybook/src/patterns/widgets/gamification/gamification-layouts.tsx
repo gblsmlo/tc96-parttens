@@ -1,3 +1,4 @@
+import { ClockIcon, StackIcon } from '@phosphor-icons/react'
 import {
   AchievementsWidget,
   LevelWidget,
@@ -7,7 +8,6 @@ import {
   StreakWidget,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { ClockIcon, LayersIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { GamificationControls } from './gamification-controls.ts'
 import {
@@ -125,8 +125,16 @@ export function DeckFooter({
     <div className="rounded-lg border bg-card px-5 py-3">
       <ProgressFooter
         metrics={[
-          { icon: <LayersIcon />, id: 'cards', value: '24 cartões' },
-          { icon: <ClockIcon />, id: 'last-studied', value: 'anteontem' },
+          {
+            icon: <StackIcon aria-hidden="true" />,
+            id: 'cards',
+            value: '24 cartões',
+          },
+          {
+            icon: <ClockIcon aria-hidden="true" />,
+            id: 'last-studied',
+            value: 'anteontem',
+          },
         ]}
         score={
           firstDay

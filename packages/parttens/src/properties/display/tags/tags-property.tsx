@@ -1,7 +1,7 @@
 'use client'
 
+import { TagIcon } from '@phosphor-icons/react'
 import { cn } from '@tc96/utils'
-import { TagIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import { resolveOptions } from '../../shared/lib/property-options'
@@ -90,7 +90,7 @@ export function TagsProperty<TValue extends string = string>({
             muted={selectedOptions.length === 0}
             variant={variant}
           >
-            <TagIcon aria-hidden="true" className="size-3 shrink-0" />
+            <TagIcon aria-hidden="true" className="size-4 shrink-0" />
             <span className="tabular-nums">{countText}</span>
           </PropertySurface>
         ) : selectedOptions.length > 0 ? (
@@ -150,7 +150,7 @@ export function TagsProperty<TValue extends string = string>({
                   }
                   variant={variant}
                 >
-                  <TagIcon aria-hidden="true" className="size-3 shrink-0" />
+                  <TagIcon aria-hidden="true" className="size-4 shrink-0" />
                   <span className="tabular-nums">{countText}</span>
                 </PropertySurface>
               )

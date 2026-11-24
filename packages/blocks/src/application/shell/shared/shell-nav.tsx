@@ -1,5 +1,6 @@
 'use client'
 
+import { CaretRightIcon, DotsThreeIcon } from '@phosphor-icons/react'
 import {
   Collapsible,
   CollapsiblePanel,
@@ -18,7 +19,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@tc96/ui/sidebar'
-import { ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react'
 import { type ReactElement, useId } from 'react'
 import type {
   ShellLabels,
@@ -61,7 +61,7 @@ function ShellNavLeaf({
               />
             }
           >
-            <MoreHorizontalIcon />
+            <DotsThreeIcon aria-hidden="true" />
           </MenuTrigger>
           <MenuPopup align="start" side="right">
             {item.actions?.map((action) => (
@@ -100,7 +100,10 @@ function ShellNavBranch({
         >
           {item.icon}
           <span>{item.title}</span>
-          <ChevronRightIcon className="ms-auto transition-transform in-data-panel-open:rotate-90" />
+          <CaretRightIcon
+            aria-hidden="true"
+            className="ms-auto transition-transform in-data-panel-open:rotate-90"
+          />
         </CollapsibleTrigger>
         <CollapsiblePanel>
           <SidebarMenuSub>

@@ -1,4 +1,9 @@
 import {
+  CaretLeftIcon,
+  CaretRightIcon,
+  type Icon as PhosphorIcon,
+} from '@phosphor-icons/react'
+import {
   Action,
   addCalendarDays,
   type CalendarDate,
@@ -19,11 +24,6 @@ import {
   MenuSubTrigger,
 } from '@tc96/ui/menu'
 import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  type LucideIcon,
-} from 'lucide-react'
 import type { ReactNode } from 'react'
 import { TIME_ZONE } from './tasks'
 
@@ -90,7 +90,7 @@ export const toggleValue = <TValue,>(
     : [...values, value]
 
 export interface FilterCheckboxSubmenuProps<TValue extends string> {
-  icon: LucideIcon
+  icon: PhosphorIcon
   label: string
   onToggle: (value: TValue) => void
   options: readonly { label: string; value: TValue }[]
@@ -214,7 +214,7 @@ export function CalendarToolbar({
             size="icon-sm"
             variant="ghost"
           >
-            <ChevronLeftIcon aria-hidden="true" />
+            <CaretLeftIcon aria-hidden="true" />
           </Button>
           <Button
             aria-label="Próximo período"
@@ -224,7 +224,7 @@ export function CalendarToolbar({
             size="icon-sm"
             variant="ghost"
           >
-            <ChevronRightIcon aria-hidden="true" />
+            <CaretRightIcon aria-hidden="true" />
           </Button>
           <p
             aria-live="polite"

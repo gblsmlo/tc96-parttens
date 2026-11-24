@@ -1,5 +1,19 @@
 'use client'
 
+import {
+  CodeSimpleIcon,
+  HighlighterIcon,
+  ListBulletsIcon,
+  ListNumbersIcon,
+  type Icon as PhosphorIcon,
+  QuotesIcon,
+  TextBIcon,
+  TextHThreeIcon,
+  TextHTwoIcon,
+  TextItalicIcon,
+  TextStrikethroughIcon,
+  TextUnderlineIcon,
+} from '@phosphor-icons/react'
 import { unwrapList } from '@platejs/list-classic'
 import { Popover, PopoverPopup } from '@tc96/ui/popover'
 import {
@@ -16,20 +30,6 @@ import {
   ToolbarPrimitive,
   ToolbarSeparator,
 } from '@tc96/ui/toolbar'
-import {
-  BoldIcon,
-  CodeIcon,
-  Heading2Icon,
-  Heading3Icon,
-  HighlighterIcon,
-  ItalicIcon,
-  ListIcon,
-  ListOrderedIcon,
-  type LucideIcon,
-  StrikethroughIcon,
-  TextQuoteIcon,
-  UnderlineIcon,
-} from 'lucide-react'
 import { RangeApi, type SlateEditor, type TRange } from 'platejs'
 import {
   useEditorRef,
@@ -49,21 +49,21 @@ import {
 } from './plugins'
 
 const markIcon = {
-  bold: BoldIcon,
-  code: CodeIcon,
+  bold: TextBIcon,
+  code: CodeSimpleIcon,
   highlight: HighlighterIcon,
-  italic: ItalicIcon,
-  strikethrough: StrikethroughIcon,
-  underline: UnderlineIcon,
-} as const satisfies Record<RichTextMark, LucideIcon>
+  italic: TextItalicIcon,
+  strikethrough: TextStrikethroughIcon,
+  underline: TextUnderlineIcon,
+} as const satisfies Record<RichTextMark, PhosphorIcon>
 
 export const blockIcon = {
-  blockquote: TextQuoteIcon,
-  h2: Heading2Icon,
-  h3: Heading3Icon,
-  ol: ListOrderedIcon,
-  ul: ListIcon,
-} as const satisfies Record<RichTextBlock, LucideIcon>
+  blockquote: QuotesIcon,
+  h2: TextHTwoIcon,
+  h3: TextHThreeIcon,
+  ol: ListNumbersIcon,
+  ul: ListBulletsIcon,
+} as const satisfies Record<RichTextBlock, PhosphorIcon>
 
 function ToolbarToggle({
   icon: Icon,
@@ -71,7 +71,7 @@ function ToolbarToggle({
   onToggle,
   pressed,
 }: Readonly<{
-  icon: LucideIcon
+  icon: PhosphorIcon
   label: string
   onToggle: () => void
   pressed: boolean

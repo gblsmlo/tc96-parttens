@@ -1,5 +1,6 @@
 'use client'
 
+import { CaretDownIcon } from '@phosphor-icons/react'
 import {
   Collapsible,
   CollapsiblePanel,
@@ -7,7 +8,6 @@ import {
 } from '@tc96/ui/collapsible'
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
-import { ChevronDownIcon } from 'lucide-react'
 import { type ReactElement, useId } from 'react'
 import type { SettingsCollapsedProps } from '../../core'
 
@@ -39,7 +39,7 @@ export function SettingsCollapsed({
           render={
             <h2 data-slot="settings-collapsed-title" id={titleId}>
               <CollapsibleTrigger className="group/trigger flex min-h-10 w-full min-w-0 items-center gap-2 rounded-lg text-start outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background">
-                <ChevronDownIcon
+                <CaretDownIcon
                   aria-hidden="true"
                   className="size-4 shrink-0 -rotate-90 transition-transform group-data-panel-open/trigger:rotate-0"
                 />

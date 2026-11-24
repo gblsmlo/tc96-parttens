@@ -1,3 +1,30 @@
+import {
+  ArrowSquareOutIcon,
+  BellIcon,
+  BookOpenIcon,
+  BriefcaseIcon,
+  BuildingIcon,
+  CardsIcon,
+  ChartBarIcon,
+  CreditCardIcon,
+  EnvelopeSimpleIcon,
+  GearIcon,
+  KanbanIcon,
+  LifebuoyIcon,
+  MegaphoneIcon,
+  PlugIcon,
+  PlusIcon,
+  PushPinSlashIcon,
+  ShieldIcon,
+  SlidersHorizontalIcon,
+  SquaresFourIcon,
+  StarIcon,
+  TicketIcon,
+  TrayIcon,
+  UserIcon,
+  UsersIcon,
+  WaveformIcon,
+} from '@phosphor-icons/react'
 import type {
   ShellAction,
   ShellBreadcrumbItem,
@@ -22,45 +49,18 @@ import {
 import { Button } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
 import { Switch } from '@tc96/ui/switch'
-import {
-  AudioWaveformIcon,
-  BellIcon,
-  BookOpenIcon,
-  BriefcaseIcon,
-  BuildingIcon,
-  ChartColumnIcon,
-  CreditCardIcon,
-  ExternalLinkIcon,
-  GalleryVerticalEndIcon,
-  InboxIcon,
-  KanbanIcon,
-  LayoutDashboardIcon,
-  LifeBuoyIcon,
-  MailIcon,
-  MegaphoneIcon,
-  PinOffIcon,
-  PlugIcon,
-  PlusIcon,
-  SettingsIcon,
-  ShieldIcon,
-  SlidersHorizontalIcon,
-  StarIcon,
-  TicketIcon,
-  UserIcon,
-  UsersIcon,
-} from 'lucide-react'
 import type { ReactElement } from 'react'
 
 const noop = () => {}
 
 const pinnedActions = (title: string): ShellAction[] => [
   {
-    icon: <ExternalLinkIcon />,
+    icon: <ArrowSquareOutIcon aria-hidden="true" />,
     label: `Abrir ${title} em nova aba`,
     onSelect: noop,
   },
   {
-    icon: <PinOffIcon />,
+    icon: <PushPinSlashIcon aria-hidden="true" />,
     label: 'Remover dos fixados',
     onSelect: noop,
     variant: 'destructive',
@@ -71,13 +71,13 @@ export const shellWorkspaces: ShellWorkspace[] = [
   {
     description: 'Plano Empresa',
     id: 'risine',
-    logo: <GalleryVerticalEndIcon />,
+    logo: <CardsIcon aria-hidden="true" />,
     name: 'Risine CRM',
   },
   {
     description: 'Plano Time',
     id: 'acme',
-    logo: <AudioWaveformIcon />,
+    logo: <WaveformIcon aria-hidden="true" />,
     name: 'Acme Vendas',
   },
   { description: 'Plano Grátis', id: 'tc96', name: 'TC96 Labs' },
@@ -89,17 +89,17 @@ export const shellNavigation: ShellNavGroup[] = [
       {
         active: true,
         href: '/',
-        icon: <LayoutDashboardIcon />,
+        icon: <SquaresFourIcon aria-hidden="true" />,
         title: 'Painel',
       },
       {
         badge: 12,
         href: '/inbox',
-        icon: <InboxIcon />,
+        icon: <TrayIcon aria-hidden="true" />,
         title: 'Caixa de entrada',
       },
       {
-        icon: <KanbanIcon />,
+        icon: <KanbanIcon aria-hidden="true" />,
         items: [
           { href: '/pipeline', title: 'Negócios' },
           { href: '/forecast', title: 'Previsão' },
@@ -108,14 +108,18 @@ export const shellNavigation: ShellNavGroup[] = [
         title: 'Pipeline',
       },
       {
-        icon: <UsersIcon />,
+        icon: <UsersIcon aria-hidden="true" />,
         items: [
           { href: '/contacts', title: 'Pessoas' },
           { href: '/companies', title: 'Empresas' },
         ],
         title: 'Contatos',
       },
-      { href: '/reports', icon: <ChartColumnIcon />, title: 'Relatórios' },
+      {
+        href: '/reports',
+        icon: <ChartBarIcon aria-hidden="true" />,
+        title: 'Relatórios',
+      },
     ],
     label: 'Plataforma',
   },
@@ -124,13 +128,13 @@ export const shellNavigation: ShellNavGroup[] = [
       {
         actions: pinnedActions('Renovações do trimestre'),
         href: '/views/renewals',
-        icon: <StarIcon />,
+        icon: <StarIcon aria-hidden="true" />,
         title: 'Renovações do trimestre',
       },
       {
         actions: pinnedActions('Leads quentes'),
         href: '/views/hot-leads',
-        icon: <StarIcon />,
+        icon: <StarIcon aria-hidden="true" />,
         title: 'Leads quentes',
       },
     ],
@@ -138,8 +142,16 @@ export const shellNavigation: ShellNavGroup[] = [
   },
   {
     items: [
-      { href: '/settings', icon: <SettingsIcon />, title: 'Configurações' },
-      { href: '/help', icon: <LifeBuoyIcon />, title: 'Ajuda' },
+      {
+        href: '/settings',
+        icon: <GearIcon aria-hidden="true" />,
+        title: 'Configurações',
+      },
+      {
+        href: '/help',
+        icon: <LifebuoyIcon aria-hidden="true" />,
+        title: 'Ajuda',
+      },
     ],
     label: 'Workspace',
   },
@@ -148,15 +160,19 @@ export const shellNavigation: ShellNavGroup[] = [
 export const shellNavigationWithSubItemBadges: ShellNavGroup[] = [
   {
     items: [
-      { href: '/', icon: <LayoutDashboardIcon />, title: 'Painel' },
+      {
+        href: '/',
+        icon: <SquaresFourIcon aria-hidden="true" />,
+        title: 'Painel',
+      },
       {
         badge: 12,
         href: '/inbox',
-        icon: <InboxIcon />,
+        icon: <TrayIcon aria-hidden="true" />,
         title: 'Caixa de entrada',
       },
       {
-        icon: <KanbanIcon />,
+        icon: <KanbanIcon aria-hidden="true" />,
         items: [
           { active: true, badge: 3, href: '/pipeline', title: 'Negócios' },
           { badge: 8, href: '/forecast', title: 'Previsão' },
@@ -164,7 +180,11 @@ export const shellNavigationWithSubItemBadges: ShellNavGroup[] = [
         ],
         title: 'Pipeline',
       },
-      { href: '/reports', icon: <ChartColumnIcon />, title: 'Relatórios' },
+      {
+        href: '/reports',
+        icon: <ChartBarIcon aria-hidden="true" />,
+        title: 'Relatórios',
+      },
     ],
     label: 'Plataforma',
   },
@@ -176,9 +196,17 @@ export const shellUser: ShellUser = {
 }
 
 export const shellUserActions: ShellAction[] = [
-  { icon: <UserIcon />, label: 'Perfil', onSelect: noop },
-  { icon: <CreditCardIcon />, label: 'Faturamento', onSelect: noop },
-  { icon: <BellIcon />, label: 'Notificações', onSelect: noop },
+  { icon: <UserIcon aria-hidden="true" />, label: 'Perfil', onSelect: noop },
+  {
+    icon: <CreditCardIcon aria-hidden="true" />,
+    label: 'Faturamento',
+    onSelect: noop,
+  },
+  {
+    icon: <BellIcon aria-hidden="true" />,
+    label: 'Notificações',
+    onSelect: noop,
+  },
 ]
 
 export const shellBreadcrumbs: ShellBreadcrumbItem[] = [
@@ -189,7 +217,7 @@ export const shellBreadcrumbs: ShellBreadcrumbItem[] = [
 export function ShellHeaderActions(): ReactElement {
   return (
     <Button size="sm">
-      <PlusIcon />
+      <PlusIcon aria-hidden="true" />
       Novo negócio
     </Button>
   )
@@ -248,13 +276,13 @@ export const shellNotifications: ShellNotification[] = [
 
 export const shellSections: ShellSection[] = [
   {
-    icon: <BriefcaseIcon />,
+    icon: <BriefcaseIcon aria-hidden="true" />,
     id: 'sales',
     navigation: shellNavigation.slice(0, 2),
     title: 'Vendas',
   },
   {
-    icon: <MegaphoneIcon />,
+    icon: <MegaphoneIcon aria-hidden="true" />,
     id: 'marketing',
     navigation: [
       {
@@ -262,11 +290,19 @@ export const shellSections: ShellSection[] = [
           {
             active: true,
             href: '/campaigns',
-            icon: <MegaphoneIcon />,
+            icon: <MegaphoneIcon aria-hidden="true" />,
             title: 'Campanhas',
           },
-          { href: '/emails', icon: <MailIcon />, title: 'E-mails' },
-          { href: '/audiences', icon: <UsersIcon />, title: 'Públicos' },
+          {
+            href: '/emails',
+            icon: <EnvelopeSimpleIcon aria-hidden="true" />,
+            title: 'E-mails',
+          },
+          {
+            href: '/audiences',
+            icon: <UsersIcon aria-hidden="true" />,
+            title: 'Públicos',
+          },
         ],
         label: 'Marketing',
       },
@@ -274,7 +310,7 @@ export const shellSections: ShellSection[] = [
     title: 'Marketing',
   },
   {
-    icon: <LifeBuoyIcon />,
+    icon: <LifebuoyIcon aria-hidden="true" />,
     id: 'support',
     navigation: [
       {
@@ -282,12 +318,12 @@ export const shellSections: ShellSection[] = [
           {
             badge: 4,
             href: '/tickets',
-            icon: <TicketIcon />,
+            icon: <TicketIcon aria-hidden="true" />,
             title: 'Tickets',
           },
           {
             href: '/knowledge-base',
-            icon: <BookOpenIcon />,
+            icon: <BookOpenIcon aria-hidden="true" />,
             title: 'Base de conhecimento',
           },
         ],
@@ -304,40 +340,48 @@ export const settingsNavigation: ShellNavGroup[] = [
       {
         active: true,
         href: '/settings/profile',
-        icon: <UserIcon />,
+        icon: <UserIcon aria-hidden="true" />,
         title: 'Perfil',
       },
       {
         href: '/settings/preferences',
-        icon: <SlidersHorizontalIcon />,
+        icon: <SlidersHorizontalIcon aria-hidden="true" />,
         title: 'Preferências',
       },
       {
         href: '/settings/notifications',
-        icon: <BellIcon />,
+        icon: <BellIcon aria-hidden="true" />,
         title: 'Notificações',
       },
-      { href: '/settings/security', icon: <ShieldIcon />, title: 'Segurança' },
+      {
+        href: '/settings/security',
+        icon: <ShieldIcon aria-hidden="true" />,
+        title: 'Segurança',
+      },
     ],
     label: 'Conta',
   },
   {
     items: [
-      { href: '/settings/workspace', icon: <BuildingIcon />, title: 'Geral' },
+      {
+        href: '/settings/workspace',
+        icon: <BuildingIcon aria-hidden="true" />,
+        title: 'Geral',
+      },
       {
         badge: 12,
         href: '/settings/members',
-        icon: <UsersIcon />,
+        icon: <UsersIcon aria-hidden="true" />,
         title: 'Membros',
       },
       {
         href: '/settings/billing',
-        icon: <CreditCardIcon />,
+        icon: <CreditCardIcon aria-hidden="true" />,
         title: 'Faturamento',
       },
       {
         href: '/settings/integrations',
-        icon: <PlugIcon />,
+        icon: <PlugIcon aria-hidden="true" />,
         title: 'Integrações',
       },
     ],

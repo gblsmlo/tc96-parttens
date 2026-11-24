@@ -1,4 +1,11 @@
 import {
+  CalendarDotsIcon,
+  HashIcon,
+  PlusIcon,
+  ShapesIcon,
+  UserIcon,
+} from '@phosphor-icons/react'
+import {
   DateProperty,
   RecordGroup,
   RecordGroupAction,
@@ -6,13 +13,6 @@ import {
   TextProperty,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import {
-  CalendarDaysIcon,
-  HashIcon,
-  PlusIcon,
-  ShapesIcon,
-  UserIcon,
-} from 'lucide-react'
 import type { RecordGroupControls } from './record-group-controls.ts'
 
 interface ComposedRecordGroupProps extends RecordGroupControls {
@@ -71,7 +71,7 @@ export function ComposedRecordGroup({
           <RecordGroupRow label="Reference" leading={icon(HashIcon)}>
             <TextProperty value="REQ-1042" variant="plain" />
           </RecordGroupRow>
-          <RecordGroupRow label="Due" leading={icon(CalendarDaysIcon)}>
+          <RecordGroupRow label="Due" leading={icon(CalendarDotsIcon)}>
             <DateProperty readOnly value="2026-10-21" variant="plain" />
           </RecordGroupRow>
         </>

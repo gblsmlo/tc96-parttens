@@ -1,3 +1,4 @@
+import { ArrowsOutSimpleIcon, GitBranchIcon } from '@phosphor-icons/react'
 import {
   PersonProperty,
   RecordDialog,
@@ -10,7 +11,6 @@ import {
   TextProperty,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { GitBranchIcon, Maximize2Icon } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
 import { people, priorityOptions, statusOptions } from './project-record'
@@ -138,7 +138,7 @@ export const ComposedRecordDialog = ({
               size="icon"
               variant="ghost"
             >
-              <Maximize2Icon aria-hidden />
+              <ArrowsOutSimpleIcon aria-hidden />
             </Button>
           ) : undefined
         }

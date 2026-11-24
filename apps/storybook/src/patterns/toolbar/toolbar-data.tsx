@@ -1,14 +1,14 @@
-import type { ViewSettingsMode } from '@tc96/parttens'
 import {
-  CalendarDaysIcon,
-  CircleDotIcon,
-  LayoutGridIcon,
-  Rows3Icon,
-  SignalHighIcon,
-  Table2Icon,
-  TagsIcon,
-  UserRoundIcon,
-} from 'lucide-react'
+  CalendarDotsIcon,
+  CellSignalHighIcon,
+  GridFourIcon,
+  RadioButtonIcon,
+  RowsIcon,
+  TableIcon,
+  TagSimpleIcon,
+  UserIcon,
+} from '@phosphor-icons/react'
+import type { ViewSettingsMode } from '@tc96/parttens'
 
 export interface SavedView {
   id: string
@@ -35,31 +35,31 @@ export const noFilters: Filters = {
 
 export const filterDefinitions = [
   {
-    icon: CircleDotIcon,
+    icon: RadioButtonIcon,
     id: 'status',
     label: 'Status',
     options: ['A fazer', 'Em andamento', 'Em revisão', 'Concluído'],
   },
   {
-    icon: UserRoundIcon,
+    icon: UserIcon,
     id: 'assignee',
     label: 'Responsável',
     options: ['Sem responsável', 'Ana Souza', 'Bruno Lima'],
   },
   {
-    icon: SignalHighIcon,
+    icon: CellSignalHighIcon,
     id: 'priority',
     label: 'Prioridade',
     options: ['Sem prioridade', 'Urgente', 'Alta', 'Média', 'Baixa'],
   },
   {
-    icon: TagsIcon,
+    icon: TagSimpleIcon,
     id: 'tags',
     label: 'Tags',
     options: ['Documento', 'Retorno', 'Prazo'],
   },
   {
-    icon: CalendarDaysIcon,
+    icon: CalendarDotsIcon,
     id: 'date',
     label: 'Prazo',
     options: ['Hoje', 'Esta semana', 'Atrasado', 'Sem prazo'],
@@ -69,31 +69,31 @@ export const filterDefinitions = [
 export type ViewLayout = 'datagrid' | 'kanban' | 'list'
 
 export const viewModes: readonly ViewSettingsMode<ViewLayout>[] = [
-  { icon: LayoutGridIcon, label: 'Kanban', value: 'kanban' },
-  { icon: Rows3Icon, label: 'Lista', value: 'list' },
-  { icon: Table2Icon, label: 'Tabela', value: 'datagrid' },
+  { icon: GridFourIcon, label: 'Kanban', value: 'kanban' },
+  { icon: RowsIcon, label: 'Lista', value: 'list' },
+  { icon: TableIcon, label: 'Tabela', value: 'datagrid' },
 ]
 
 export type SpreadsheetLayout = 'datagrid' | 'datatable' | 'kanban'
 
 export const spreadsheetModes: readonly ViewSettingsMode<SpreadsheetLayout>[] =
   [
-    { icon: Table2Icon, label: 'Tabela', value: 'datatable' },
-    { icon: LayoutGridIcon, label: 'Kanban', value: 'kanban' },
-    { icon: Table2Icon, label: 'Planilha', value: 'datagrid' },
+    { icon: TableIcon, label: 'Tabela', value: 'datatable' },
+    { icon: GridFourIcon, label: 'Kanban', value: 'kanban' },
+    { icon: TableIcon, label: 'Planilha', value: 'datagrid' },
   ]
 
 export type AgendaLayout = 'calendar' | 'datagrid' | 'kanban' | 'list'
 
 export const agendaModes: readonly ViewSettingsMode<AgendaLayout>[] = [
-  { icon: LayoutGridIcon, label: 'Kanban', value: 'kanban' },
-  { icon: Rows3Icon, label: 'Lista', value: 'list' },
-  { icon: Table2Icon, label: 'Tabela', value: 'datagrid' },
-  { icon: CalendarDaysIcon, label: 'Agenda', value: 'calendar' },
+  { icon: GridFourIcon, label: 'Kanban', value: 'kanban' },
+  { icon: RowsIcon, label: 'Lista', value: 'list' },
+  { icon: TableIcon, label: 'Tabela', value: 'datagrid' },
+  { icon: CalendarDotsIcon, label: 'Agenda', value: 'calendar' },
 ]
 
 export const ViewIcon = () => (
   <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
-    <LayoutGridIcon aria-hidden="true" className="size-3" />
+    <GridFourIcon aria-hidden="true" className="size-3" />
   </span>
 )

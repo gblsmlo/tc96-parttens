@@ -1,17 +1,17 @@
 'use client'
 
-import type { RowData } from '@tanstack/react-table'
-import { MenuItem, MenuPopup, MenuSeparator } from '@tc96/ui/menu'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  ChevronDownIcon,
-  ChevronsUpDownIcon,
-  ChevronUpIcon,
-  EyeOffIcon,
-  PinIcon,
-  PinOffIcon,
-} from 'lucide-react'
+  CaretDownIcon,
+  CaretUpDownIcon,
+  CaretUpIcon,
+  EyeSlashIcon,
+  PushPinIcon,
+  PushPinSlashIcon,
+} from '@phosphor-icons/react'
+import type { RowData } from '@tanstack/react-table'
+import { MenuItem, MenuPopup, MenuSeparator } from '@tc96/ui/menu'
 import type { DataGridColumn, DataGridTable } from '../lib/data-grid-features'
 import { moveColumn } from '../lib/move-column'
 
@@ -34,16 +34,16 @@ export function DataGridColumnMenu<TData extends RowData>({
       {canSort ? (
         <>
           <MenuItem onClick={() => column.toggleSorting(false)}>
-            <ChevronUpIcon />
+            <CaretUpIcon aria-hidden="true" />
             Ordem crescente
           </MenuItem>
           <MenuItem onClick={() => column.toggleSorting(true)}>
-            <ChevronDownIcon />
+            <CaretDownIcon aria-hidden="true" />
             Ordem decrescente
           </MenuItem>
           {sorted ? (
             <MenuItem onClick={() => column.clearSorting()}>
-              <ChevronsUpDownIcon />
+              <CaretUpDownIcon aria-hidden="true" />
               Limpar ordenação
             </MenuItem>
           ) : null}
@@ -51,11 +51,11 @@ export function DataGridColumnMenu<TData extends RowData>({
         </>
       ) : null}
       <MenuItem onClick={() => moveColumn(table, column.id, -1)}>
-        <ArrowLeftIcon />
+        <ArrowLeftIcon aria-hidden="true" />
         Mover para esquerda
       </MenuItem>
       <MenuItem onClick={() => moveColumn(table, column.id, 1)}>
-        <ArrowRightIcon />
+        <ArrowRightIcon aria-hidden="true" />
         Mover para direita
       </MenuItem>
       {canPin ? (
@@ -63,17 +63,17 @@ export function DataGridColumnMenu<TData extends RowData>({
           <MenuSeparator />
           {column.getIsPinned() ? (
             <MenuItem onClick={() => column.pin(false)}>
-              <PinOffIcon />
+              <PushPinSlashIcon aria-hidden="true" />
               Desafixar coluna
             </MenuItem>
           ) : (
             <>
               <MenuItem onClick={() => column.pin('start')}>
-                <PinIcon />
+                <PushPinIcon aria-hidden="true" />
                 Fixar à esquerda
               </MenuItem>
               <MenuItem onClick={() => column.pin('end')}>
-                <PinIcon />
+                <PushPinIcon aria-hidden="true" />
                 Fixar à direita
               </MenuItem>
             </>
@@ -84,7 +84,7 @@ export function DataGridColumnMenu<TData extends RowData>({
         <>
           <MenuSeparator />
           <MenuItem onClick={() => column.toggleVisibility(false)}>
-            <EyeOffIcon />
+            <EyeSlashIcon aria-hidden="true" />
             Ocultar coluna
           </MenuItem>
         </>

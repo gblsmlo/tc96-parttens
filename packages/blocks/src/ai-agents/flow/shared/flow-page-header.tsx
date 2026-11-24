@@ -1,5 +1,11 @@
 'use client'
 
+import {
+  DotsThreeIcon,
+  PlayIcon,
+  PlusIcon,
+  SparkleIcon,
+} from '@phosphor-icons/react'
 import { FlowShortcutsPopover } from '@tc96/parttens/flow/canvas/components/flow-shortcuts-popover'
 import {
   Breadcrumb,
@@ -12,7 +18,6 @@ import {
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Spinner } from '@tc96/ui/spinner'
-import { EllipsisIcon, PlayIcon, PlusIcon, SparklesIcon } from 'lucide-react'
 import { Fragment, type ReactElement, type ReactNode } from 'react'
 import type {
   FlowBreadcrumbItem,
@@ -102,7 +107,7 @@ export function FlowPageActions({
       <FlowShortcutsPopover labels={labels.shortcuts} />
       {onAskAi ? (
         <Button aria-label={labels.askAi} onClick={onAskAi} variant="outline">
-          <SparklesIcon aria-hidden="true" />
+          <SparkleIcon aria-hidden="true" />
           <span className="max-sm:sr-only">{labels.askAi}</span>
         </Button>
       ) : null}
@@ -138,7 +143,7 @@ export function FlowPageActions({
               />
             }
           >
-            <EllipsisIcon aria-hidden="true" />
+            <DotsThreeIcon aria-hidden="true" />
           </MenuTrigger>
           <MenuPopup align="end">{children}</MenuPopup>
         </Menu>

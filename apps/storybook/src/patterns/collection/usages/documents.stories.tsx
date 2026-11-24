@@ -1,3 +1,4 @@
+import { FileTextIcon, GridFourIcon, RowsIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Action,
@@ -24,7 +25,6 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
-import { FileTextIcon, LayoutGridIcon, Rows3Icon } from 'lucide-react'
 import { type ReactElement, type ReactNode, useMemo, useState } from 'react'
 import { expect, fn, within } from 'storybook/test'
 import {
@@ -46,8 +46,8 @@ import { ViewSwitcherPicker } from '../fixtures/view-switcher-picker'
 type DocumentLayout = Extract<CollectionLayout, 'gallery' | 'list'>
 
 const documentLayouts: readonly ViewSettingsMode<DocumentLayout>[] = [
-  { icon: Rows3Icon, label: 'Lista', value: 'list' },
-  { icon: LayoutGridIcon, label: 'Galeria', value: 'gallery' },
+  { icon: RowsIcon, label: 'Lista', value: 'list' },
+  { icon: GridFourIcon, label: 'Galeria', value: 'gallery' },
 ]
 
 const isDocumentLayout = (value: CollectionLayout): value is DocumentLayout =>

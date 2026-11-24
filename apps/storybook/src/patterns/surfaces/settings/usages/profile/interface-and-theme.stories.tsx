@@ -1,3 +1,4 @@
+import { BellIcon, TextTIcon, TranslateIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   SettingsRow,
@@ -13,7 +14,6 @@ import {
   SelectValue,
 } from '@tc96/ui/select'
 import { Switch } from '@tc96/ui/switch'
-import { BellIcon, LanguagesIcon, TypeIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 
 interface SettingOption {
@@ -112,7 +112,7 @@ export const InterfaceAndTheme: Story = {
             items={fontSizeOptions}
           />
         }
-        startSlot={<TypeIcon aria-hidden="true" />}
+        startSlot={<TextTIcon aria-hidden="true" />}
       />
       <SettingsRow
         description="The language of menus and messages"
@@ -123,7 +123,7 @@ export const InterfaceAndTheme: Story = {
             items={languageOptions}
           />
         }
-        startSlot={<LanguagesIcon aria-hidden="true" />}
+        startSlot={<TranslateIcon aria-hidden="true" />}
         title="Language"
       />
       <SettingsRow

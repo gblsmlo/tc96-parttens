@@ -10,7 +10,7 @@
     "@tc96/parttens": "workspace:*",
     "@tc96/ui": "workspace:*",
     "@tc96/utils": "workspace:*",
-    "lucide-react": "1.28.0"
+    "@phosphor-icons/react": "2.1.10"
   },
   "peerDependencies": {
     "react": "19.1.1",

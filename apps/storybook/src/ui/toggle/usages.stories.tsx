@@ -1,6 +1,11 @@
+import {
+  StarIcon,
+  TextBIcon,
+  TextItalicIcon,
+  TextUnderlineIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Toggle } from '@tc96/ui/toggle'
-import { BoldIcon, ItalicIcon, StarIcon, UnderlineIcon } from 'lucide-react'
 import { useId, useState } from 'react'
 import { expect, within } from 'storybook/test'
 
@@ -50,13 +55,13 @@ const projects = [
 const FormattingToggles = () => (
   <div className="flex items-center gap-1">
     <Toggle aria-label="Bold" defaultPressed size="sm" variant="outline">
-      <BoldIcon aria-hidden="true" />
+      <TextBIcon aria-hidden="true" />
     </Toggle>
     <Toggle aria-label="Italic" size="sm" variant="outline">
-      <ItalicIcon aria-hidden="true" />
+      <TextItalicIcon aria-hidden="true" />
     </Toggle>
     <Toggle aria-label="Underline" size="sm" variant="outline">
-      <UnderlineIcon aria-hidden="true" />
+      <TextUnderlineIcon aria-hidden="true" />
     </Toggle>
   </div>
 )

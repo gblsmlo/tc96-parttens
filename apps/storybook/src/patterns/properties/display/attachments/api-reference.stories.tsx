@@ -1,6 +1,6 @@
+import { PaperclipIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AttachmentProperty, AttachmentsProperty } from '@tc96/parttens'
-import { PaperclipIcon } from 'lucide-react'
 import { expect } from 'storybook/test'
 import { AttachmentsCanvas } from './attachments-canvas.tsx'
 

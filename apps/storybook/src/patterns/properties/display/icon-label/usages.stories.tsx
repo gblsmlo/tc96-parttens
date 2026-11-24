@@ -1,6 +1,10 @@
+import {
+  CloudArrowDownIcon,
+  PencilLineIcon,
+  XIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { IconLabelProperty } from '@tc96/parttens'
-import { CloudDownloadIcon, PencilLineIcon, XIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { IconLabelCanvas } from './icon-label-canvas.tsx'
 
@@ -44,7 +48,7 @@ export const RecordOrigin: Story = {
       />
       <IconLabelProperty
         ariaLabel="Origem"
-        icon={CloudDownloadIcon}
+        icon={CloudArrowDownIcon}
         label="Importado do CRM"
       />
     </div>

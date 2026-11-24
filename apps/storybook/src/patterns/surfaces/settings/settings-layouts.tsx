@@ -1,3 +1,4 @@
+import { BellIcon, DotsThreeIcon } from '@phosphor-icons/react'
 import {
   SettingsCollapsed,
   SettingsRow,
@@ -17,7 +18,6 @@ import {
   SelectValue,
 } from '@tc96/ui/select'
 import { Switch } from '@tc96/ui/switch'
-import { BellIcon, EllipsisIcon } from 'lucide-react'
 import type {
   SettingsControlName,
   SettingsControls,
@@ -77,7 +77,7 @@ export const RowActions = ({ name }: Readonly<RowActionsProps>) => (
       aria-label={`Actions for ${name}`}
       render={<Button size="icon-xs" variant="ghost" />}
     >
-      <EllipsisIcon aria-hidden="true" />
+      <DotsThreeIcon aria-hidden="true" />
     </MenuTrigger>
     <MenuPopup align="end">
       <MenuItem>Edit</MenuItem>

@@ -1,3 +1,4 @@
+import { CheckIcon, EyeIcon, EyeSlashIcon, XIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Field, FieldError, FieldLabel } from '@tc96/ui/field'
 import { Form } from '@tc96/ui/form'
@@ -10,7 +11,6 @@ import {
   InputGroupText,
 } from '@tc96/ui/input-group'
 import { Label } from '@tc96/ui/label'
-import { CheckIcon, EyeIcon, EyeOffIcon, XIcon } from 'lucide-react'
 import { useId, useState } from 'react'
 import type { InputControls } from './input-controls.ts'
 
@@ -169,7 +169,7 @@ export const PasswordVisibilityInput = () => {
           type="button"
           variant="ghost"
         >
-          {visible ? <EyeOffIcon aria-hidden /> : <EyeIcon aria-hidden />}
+          {visible ? <EyeSlashIcon aria-hidden /> : <EyeIcon aria-hidden />}
         </Button>
       </InputGroupAddon>
     </InputGroup>
@@ -257,7 +257,7 @@ export const PasswordStrengthInput = () => {
               type="button"
               variant="ghost"
             >
-              {visible ? <EyeOffIcon aria-hidden /> : <EyeIcon aria-hidden />}
+              {visible ? <EyeSlashIcon aria-hidden /> : <EyeIcon aria-hidden />}
             </Button>
           </InputGroupAddon>
         </InputGroup>

@@ -1,11 +1,11 @@
+import {
+  ChatCenteredTextIcon,
+  DatabaseIcon,
+  RobotIcon,
+  WrenchIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FlowRunCard, FlowStepLibrary, groupStepTypes } from '@tc96/parttens'
-import {
-  BotIcon,
-  DatabaseIcon,
-  MessageSquareReplyIcon,
-  WrenchIcon,
-} from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { agentStepTypes } from './fixtures/agent'
 import { failedRun, notRunRun } from './fixtures/runs'
@@ -28,10 +28,10 @@ const addStep = () => {}
 const agentGroups = groupStepTypes(agentStepTypes)
 
 const agentIcons = {
-  'collection-search': <DatabaseIcon />,
-  'model-chat': <BotIcon />,
-  'reply-message': <MessageSquareReplyIcon />,
-  'tool-call': <WrenchIcon />,
+  'collection-search': <DatabaseIcon aria-hidden="true" />,
+  'model-chat': <RobotIcon aria-hidden="true" />,
+  'reply-message': <ChatCenteredTextIcon aria-hidden="true" />,
+  'tool-call': <WrenchIcon aria-hidden="true" />,
 }
 
 export const WorkflowSteps: Story = {

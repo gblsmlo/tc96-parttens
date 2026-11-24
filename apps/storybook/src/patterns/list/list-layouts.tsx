@@ -1,26 +1,26 @@
+import {
+  BellIcon,
+  CaretRightIcon,
+  ChatIcon,
+  CreditCardIcon,
+  DeviceMobileIcon,
+  DotsThreeIcon,
+  DownloadSimpleIcon,
+  EnvelopeSimpleIcon,
+  FileImageIcon,
+  FileTextIcon,
+  FileXlsIcon,
+  PencilSimpleIcon,
+  type Icon as PhosphorIcon,
+  TrashIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
 import { List, type ListVariant } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { CheckboxGroup } from '@tc96/ui/checkbox-group'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Radio, RadioGroup } from '@tc96/ui/radio-group'
-import {
-  BellIcon,
-  ChevronRightIcon,
-  CreditCardIcon,
-  DownloadIcon,
-  EllipsisIcon,
-  FileImageIcon,
-  FileSpreadsheetIcon,
-  FileTextIcon,
-  type LucideIcon,
-  MailIcon,
-  MessageSquareIcon,
-  PencilIcon,
-  SmartphoneIcon,
-  Trash2Icon,
-  UsersIcon,
-} from 'lucide-react'
 import type { ListControls } from './list-controls.ts'
 
 export interface ListActionsProps {
@@ -44,22 +44,22 @@ export function ListActions({
         size="icon-sm"
         variant="ghost"
       >
-        <DownloadIcon aria-hidden="true" />
+        <DownloadSimpleIcon aria-hidden="true" />
       </Button>
       <Menu>
         <MenuTrigger
           aria-label={`More actions for ${name}`}
           render={<Button size="icon-sm" variant="ghost" />}
         >
-          <EllipsisIcon aria-hidden="true" />
+          <DotsThreeIcon aria-hidden="true" />
         </MenuTrigger>
         <MenuPopup align="end">
           <MenuItem onClick={onRename}>
-            <PencilIcon aria-hidden="true" />
+            <PencilSimpleIcon aria-hidden="true" />
             Rename
           </MenuItem>
           <MenuItem onClick={onDelete} variant="destructive">
-            <Trash2Icon aria-hidden="true" />
+            <TrashIcon aria-hidden="true" />
             Delete
           </MenuItem>
         </MenuPopup>
@@ -69,10 +69,7 @@ export function ListActions({
 }
 
 export const ListChevron = () => (
-  <ChevronRightIcon
-    aria-hidden="true"
-    className="size-4 text-muted-foreground"
-  />
+  <CaretRightIcon aria-hidden="true" className="size-4 text-muted-foreground" />
 )
 
 export type ComposedListProps = ListControls &
@@ -111,7 +108,7 @@ export const ComposedList = ({
       actions={actions ? actionsPart : undefined}
       className={className}
       description={description || undefined}
-      icon={<FileTextIcon />}
+      icon={<FileTextIcon aria-hidden="true" />}
       iconColor={iconColor || undefined}
       render={
         element === 'a'
@@ -128,7 +125,7 @@ export const ComposedList = ({
 
 interface SampleRow {
   description: string
-  icon: LucideIcon
+  icon: PhosphorIcon
   id: string
   title: string
 }
@@ -142,7 +139,7 @@ export const sampleFiles: readonly SampleRow[] = [
   },
   {
     description: 'Updated yesterday by Ben',
-    icon: FileSpreadsheetIcon,
+    icon: FileXlsIcon,
     id: 'budget',
     title: 'Budget forecast',
   },
@@ -178,19 +175,19 @@ export const sampleLinks: readonly SampleRow[] = [
 export const sampleChannels: readonly SampleRow[] = [
   {
     description: 'A message to your inbox',
-    icon: MailIcon,
+    icon: EnvelopeSimpleIcon,
     id: 'email',
     title: 'Email',
   },
   {
     description: 'A text message to your phone',
-    icon: MessageSquareIcon,
+    icon: ChatIcon,
     id: 'sms',
     title: 'SMS',
   },
   {
     description: 'A notification on the mobile app',
-    icon: SmartphoneIcon,
+    icon: DeviceMobileIcon,
     id: 'push',
     title: 'Push',
   },
@@ -202,7 +199,7 @@ const FileRows = ({ variant }: Readonly<{ variant: ListVariant }>) =>
       <List
         actions={<ListActions name={file.title} />}
         description={file.description}
-        icon={<file.icon />}
+        icon={<file.icon aria-hidden="true" />}
         title={file.title}
         variant={variant}
       />
@@ -232,7 +229,7 @@ export const LinkRowsFormation = () => (
           <List
             actions={<ListChevron />}
             description={link.description}
-            icon={<link.icon />}
+            icon={<link.icon aria-hidden="true" />}
             render={(props) => <a {...props} href={`#${link.id}`} />}
             title={link.title}
             variant="plain"
@@ -262,7 +259,7 @@ export const SingleChoiceRowsFormation = ({
       <List
         actions={<Radio value={channel.id} />}
         description={channel.description}
-        icon={<channel.icon />}
+        icon={<channel.icon aria-hidden="true" />}
         key={channel.id}
         render={(props) => (
           // biome-ignore lint/a11y/noLabelWithoutControl: the Radio in actions is the control
@@ -293,7 +290,7 @@ export const MultipleChoiceRowsFormation = ({
       <List
         actions={<Checkbox value={channel.id} />}
         description={channel.description}
-        icon={<channel.icon />}
+        icon={<channel.icon aria-hidden="true" />}
         key={channel.id}
         render={(props) => (
           // biome-ignore lint/a11y/noLabelWithoutControl: the Checkbox in actions is the control

@@ -1,6 +1,6 @@
+import { CopyIcon, PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
-import { CopyIcon, PencilIcon, Trash2Icon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 
 const meta = {
@@ -50,7 +50,7 @@ export const DeleteProject: Story = {
     <div className="flex justify-end gap-2">
       <Button variant="ghost">Keep project</Button>
       <Button variant="destructive">
-        <Trash2Icon aria-hidden="true" />
+        <TrashIcon aria-hidden="true" />
         Delete project
       </Button>
     </div>
@@ -87,13 +87,13 @@ export const RowActions: Story = {
   render: () => (
     <div className="flex items-center gap-1">
       <Button aria-label="Edit invoice" size="icon-sm" variant="ghost">
-        <PencilIcon aria-hidden="true" />
+        <PencilSimpleIcon aria-hidden="true" />
       </Button>
       <Button aria-label="Duplicate invoice" size="icon-sm" variant="ghost">
         <CopyIcon aria-hidden="true" />
       </Button>
       <Button aria-label="Delete invoice" size="icon-sm" variant="ghost">
-        <Trash2Icon aria-hidden="true" />
+        <TrashIcon aria-hidden="true" />
       </Button>
     </div>
   ),

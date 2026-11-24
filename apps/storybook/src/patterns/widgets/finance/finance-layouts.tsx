@@ -1,4 +1,10 @@
 import {
+  CurrencyBtcIcon,
+  DiamondIcon,
+  LightningIcon,
+  SparkleIcon,
+} from '@phosphor-icons/react'
+import {
   AssetList,
   AssetListItem,
   AssetStatWidget,
@@ -15,7 +21,6 @@ import {
   type WidgetTone,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { BitcoinIcon, GemIcon, SparklesIcon, ZapIcon } from 'lucide-react'
 import { type ReactElement, useState } from 'react'
 import type { FinanceControls, FinanceTone } from './finance-controls.ts'
 import {
@@ -78,7 +83,7 @@ export function MarketLeaders({
         <AssetListItem
           icon={
             <IconFrame color={brand.bitcoin} shape="rounded">
-              <BitcoinIcon />
+              <CurrencyBtcIcon aria-hidden="true" />
             </IconFrame>
           }
           meta={`24h: ${formatAmount(500, { signDisplay: 'always' })}`}
@@ -88,7 +93,7 @@ export function MarketLeaders({
         <AssetListItem
           icon={
             <IconFrame color={brand.ethereum} shape="rounded">
-              <GemIcon />
+              <DiamondIcon aria-hidden="true" />
             </IconFrame>
           }
           meta={<TrendIndicator value={-0.0124} variant="plain" />}
@@ -228,7 +233,7 @@ export function RiskAnalysis({
       action={
         action ? (
           <Button size="sm" variant="ghost">
-            <SparklesIcon aria-hidden="true" />
+            <SparkleIcon aria-hidden="true" />
             Rebalance with AI
           </Button>
         ) : undefined
@@ -259,7 +264,7 @@ export function ZcashReward({
       format={{ minimumIntegerDigits: 2, style: 'percent' }}
       icon={
         <IconFrame color={brand.zcash} shape="rounded">
-          <ZapIcon />
+          <LightningIcon aria-hidden="true" />
         </IconFrame>
       }
       label="Reward rate"
@@ -278,7 +283,7 @@ export function StakingYield(): ReactElement {
       format={{ minimumIntegerDigits: 2, style: 'percent' }}
       icon={
         <IconFrame color={brand.ethereum} shape="rounded">
-          <GemIcon />
+          <DiamondIcon aria-hidden="true" />
         </IconFrame>
       }
       label="Staking yield"
@@ -362,7 +367,7 @@ export function AssetStatWithoutTrend(): ReactElement {
       format={{ minimumIntegerDigits: 2, style: 'percent' }}
       icon={
         <IconFrame color={brand.zcash} shape="rounded">
-          <ZapIcon />
+          <LightningIcon aria-hidden="true" />
         </IconFrame>
       }
       label="Reward rate"

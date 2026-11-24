@@ -1,8 +1,8 @@
 'use client'
 
+import { CaretLeftIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Separator } from '@tc96/ui/separator'
-import { ChevronLeftIcon } from 'lucide-react'
 import {
   type ScheduleEditorProps,
   type ScheduleSection,
@@ -31,7 +31,7 @@ export function ScheduleDetailView({
           type="button"
           variant="ghost"
         >
-          <ChevronLeftIcon aria-hidden />
+          <CaretLeftIcon aria-hidden />
           {props.labels.back}
         </Button>
         <span className="pe-2 font-medium text-sm">

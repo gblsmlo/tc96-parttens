@@ -1,5 +1,5 @@
+import { CurrencyBtcIcon } from '@phosphor-icons/react'
 import { IconFrame, type IconFrameProps } from '@tc96/ui/icon-frame'
-import { BitcoinIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { IconFrameControls } from './icon-frame-controls.ts'
 import type { IconFrameElementName } from './icon-frame-variants.ts'
@@ -10,7 +10,7 @@ const elementRenders: Record<IconFrameElementName, IconFrameProps['render']> = {
 }
 
 export const ComposedIconFrame = ({
-  children = <BitcoinIcon />,
+  children = <CurrencyBtcIcon aria-hidden="true" />,
   color,
   element,
   shape,

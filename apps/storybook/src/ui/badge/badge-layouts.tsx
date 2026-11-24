@@ -1,5 +1,5 @@
+import { CheckIcon } from '@phosphor-icons/react'
 import { Badge, type BadgeProps } from '@tc96/ui/badge'
-import { CheckIcon } from 'lucide-react'
 import type { BadgeControls } from './badge-controls.ts'
 import type { BadgeElementName } from './badge-variants.ts'
 

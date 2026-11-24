@@ -166,6 +166,6 @@ The value every `onSelect` receives, in the bar and in a submenu.
 
 - The bar takes `role="toolbar"`, but each action is its own tab stop: `Tab` moves from action to action, and the arrow keys do not move focus between them.
 - Give `label` a text that says the action alone: it is the name of the action in the bar. Inside a submenu the name comes from the content, so a `shortcut` joins the label in the name ("Duplicar" with `"D"` is named "DuplicarD").
-- Pass icons that hide themselves (`aria-hidden="true"`; the `lucide-react` icons do by default), since the label already names the action.
+- Pass icons that hide themselves (`aria-hidden="true"`; the `@phosphor-icons/react` icons do not set it, so pass it), since the label already names the action.
 - Place the bar where it should float, such as over the bottom of a list: the bar does not position itself.
 - The bar reads `--popover`, `--popover-foreground`, `--border`, `--muted-foreground` and `--radius-xl` from the theme, plus the `shadow-lg` shadow; its actions read the tokens of `Button` and `Menu`.

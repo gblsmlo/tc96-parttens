@@ -1,7 +1,7 @@
 'use client'
 
+import { XIcon } from '@phosphor-icons/react'
 import { cn } from '@tc96/utils'
-import { XIcon } from 'lucide-react'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { PropertySurface } from '../../shared/property-surface'
 import { IconLabelProperty } from '../icon-label/icon-label-property'
@@ -32,7 +32,9 @@ export function AttachmentProperty({
     >
       <IconLabelProperty
         label={label}
-        leading={type ? <AttachmentTypeIcon type={type} /> : null}
+        leading={
+          type ? <AttachmentTypeIcon aria-hidden="true" type={type} /> : null
+        }
         render={
           <a
             data-slot="attachment-property-link"

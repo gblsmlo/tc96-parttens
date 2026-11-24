@@ -1,3 +1,8 @@
+import {
+  MagnifyingGlassIcon,
+  type Icon as PhosphorIcon,
+  PlusIcon,
+} from '@phosphor-icons/react'
 import { PropertySurface } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
@@ -11,7 +16,6 @@ import {
   ComboboxTrigger,
   useComboboxFilter,
 } from '@tc96/ui/combobox'
-import { type LucideIcon, PlusIcon, SearchIcon } from 'lucide-react'
 import { useState } from 'react'
 
 export interface CreatablePropertyLabels {
@@ -36,7 +40,7 @@ export function CreatableProperty({
   value,
 }: Readonly<{
   ariaLabel: string
-  icon: LucideIcon
+  icon: PhosphorIcon
   items: readonly string[]
   labels: CreatablePropertyLabels
   onCreate: (item: string) => void
@@ -93,7 +97,7 @@ export function CreatableProperty({
           }}
           placeholder={labels.searchPlaceholder}
           showTrigger={false}
-          startAddon={<SearchIcon />}
+          startAddon={<MagnifyingGlassIcon aria-hidden="true" />}
         />
         <ComboboxSeparator className="mx-0 my-0" />
         <ComboboxEmpty>{labels.empty}</ComboboxEmpty>

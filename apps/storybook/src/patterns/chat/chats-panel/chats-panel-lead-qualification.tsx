@@ -1,4 +1,11 @@
 import {
+  ArrowUpIcon,
+  ChatsIcon,
+  MagnifyingGlassIcon,
+  MegaphoneIcon,
+  PhoneIcon,
+} from '@phosphor-icons/react'
+import {
   Action,
   ChatsPanel,
   ChatsPanelItem,
@@ -32,13 +39,6 @@ import {
 } from '@tc96/ui/composer'
 import { useMediaQuery } from '@tc96/ui/hooks/use-media-query'
 import { ToolbarButton } from '@tc96/ui/toolbar'
-import {
-  ArrowUpIcon,
-  MegaphoneIcon,
-  MessagesSquareIcon,
-  PhoneIcon,
-  SearchXIcon,
-} from 'lucide-react'
 import { useId, useState } from 'react'
 import {
   type AdPlatform,
@@ -381,7 +381,7 @@ export function LeadQualificationScreen({
         {visibleLeads.length === 0 ? (
           <ChatEmptyState
             description="Nenhuma conversa veio desta origem."
-            icon={<SearchXIcon aria-hidden="true" />}
+            icon={<MagnifyingGlassIcon aria-hidden="true" />}
             title="Nenhuma conversa encontrada"
           >
             <Button onClick={() => setPlatform('')} size="sm" variant="outline">
@@ -476,7 +476,7 @@ export function LeadQualificationScreen({
         <div className="col-span-2 flex items-center justify-center border-s">
           <ChatEmptyState
             description="Escolha um lead na lista para ver a conversa e qualificá-lo."
-            icon={<MessagesSquareIcon aria-hidden="true" />}
+            icon={<ChatsIcon aria-hidden="true" />}
             title="Nenhuma conversa aberta"
           />
         </div>

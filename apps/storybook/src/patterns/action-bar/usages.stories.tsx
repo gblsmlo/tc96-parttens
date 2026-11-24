@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ActionBar } from '@tc96/parttens'
 import {
   ArchiveIcon,
+  EnvelopeSimpleIcon,
+  EnvelopeSimpleOpenIcon,
   FileTextIcon,
-  MailIcon,
-  MailOpenIcon,
   PrinterIcon,
   ShieldIcon,
-  Trash2Icon,
+  TrashIcon,
   UserMinusIcon,
   XCircleIcon,
-} from 'lucide-react'
+} from '@phosphor-icons/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { ActionBar } from '@tc96/parttens'
 import { expect, within } from 'storybook/test'
 
 const meta = {
@@ -51,12 +51,12 @@ export const TeamMembers: Story = {
         {
           items: [
             {
-              icon: <MailIcon />,
+              icon: <EnvelopeSimpleIcon aria-hidden="true" />,
               label: 'Reenviar convite',
               variant: 'primary',
             },
             {
-              icon: <ShieldIcon />,
+              icon: <ShieldIcon aria-hidden="true" />,
               label: 'Alterar papel',
               submenu: [
                 {
@@ -74,7 +74,7 @@ export const TeamMembers: Story = {
         {
           items: [
             {
-              icon: <UserMinusIcon />,
+              icon: <UserMinusIcon aria-hidden="true" />,
               label: 'Remover do time',
               variant: 'destructive',
             },
@@ -102,11 +102,15 @@ export const InboxMessages: Story = {
         {
           items: [
             {
-              icon: <MailOpenIcon />,
+              icon: <EnvelopeSimpleOpenIcon aria-hidden="true" />,
               label: 'Marcar como lida',
               shortcut: 'I',
             },
-            { icon: <ArchiveIcon />, label: 'Arquivar', shortcut: 'E' },
+            {
+              icon: <ArchiveIcon aria-hidden="true" />,
+              label: 'Arquivar',
+              shortcut: 'E',
+            },
           ],
         },
         {
@@ -125,7 +129,7 @@ export const InboxMessages: Story = {
               ],
             },
             {
-              icon: <Trash2Icon />,
+              icon: <TrashIcon aria-hidden="true" />,
               label: 'Excluir',
               shortcut: '#',
               variant: 'destructive',
@@ -155,17 +159,20 @@ export const OrdersAwaitingPayment: Story = {
           items: [
             {
               disabled: selectedOrders.some((order) => order.status !== 'pago'),
-              icon: <FileTextIcon />,
+              icon: <FileTextIcon aria-hidden="true" />,
               label: 'Emitir notas fiscais',
               variant: 'primary',
             },
-            { icon: <PrinterIcon />, label: 'Imprimir etiquetas' },
+            {
+              icon: <PrinterIcon aria-hidden="true" />,
+              label: 'Imprimir etiquetas',
+            },
           ],
         },
         {
           items: [
             {
-              icon: <XCircleIcon />,
+              icon: <XCircleIcon aria-hidden="true" />,
               label: 'Cancelar pedidos',
               variant: 'destructive',
             },

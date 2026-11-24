@@ -1,3 +1,4 @@
+import { ArrowRightIcon, RobotIcon } from '@phosphor-icons/react'
 import {
   RecordGroup,
   RecordGroupFilter,
@@ -7,7 +8,6 @@ import {
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
-import { ArrowRightIcon, BotIcon } from 'lucide-react'
 import { useState } from 'react'
 
 interface Person {
@@ -179,7 +179,7 @@ export function ActorMark({ actor }: Readonly<{ actor: Person | null }>) {
         shape="circle"
         size="xs"
       >
-        <BotIcon aria-hidden />
+        <RobotIcon aria-hidden />
       </IconFrame>
     )
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { CornerDownRightIcon } from "lucide-react";
+import { ArrowElbowDownRightIcon } from "@phosphor-icons/react";
 import type { ComponentProps, ReactElement } from "react";
 import { cn } from "@tc96/utils";
 
@@ -28,7 +28,7 @@ export function ChatReplyReference({
       )}
       {...props}
     >
-      <CornerDownRightIcon
+      <ArrowElbowDownRightIcon
         aria-hidden="true"
         className="mt-0.5 size-3.5 shrink-0 opacity-64 transition-opacity group-hover/reply-reference:opacity-100 group-focus-visible/reply-reference:opacity-100"
       />

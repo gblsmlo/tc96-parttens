@@ -1,6 +1,9 @@
+import {
+  ArrowCounterClockwiseIcon,
+  WarningCircleIcon,
+} from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { ChatMessage } from '@tc96/ui/chat/chat-message'
-import { CircleAlertIcon, RotateCcwIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { AssistantMessage } from '../core'
 import { useAssistantLabels } from '../store/assistant-context'
@@ -31,7 +34,7 @@ export function AssistantMessageItem({
       {failed ? (
         <div className="flex flex-col items-start gap-2">
           <p className="flex items-start gap-2 text-sm" role="alert">
-            <CircleAlertIcon
+            <WarningCircleIcon
               aria-hidden="true"
               className="mt-0.5 size-4 shrink-0 text-destructive-foreground"
             />
@@ -44,7 +47,7 @@ export function AssistantMessageItem({
               type="button"
               variant="outline"
             >
-              <RotateCcwIcon aria-hidden="true" />
+              <ArrowCounterClockwiseIcon aria-hidden="true" />
               {labels.retry}
             </Button>
           ) : null}

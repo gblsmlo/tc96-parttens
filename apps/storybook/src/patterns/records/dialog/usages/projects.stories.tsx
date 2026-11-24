@@ -1,3 +1,8 @@
+import {
+  ArrowsOutSimpleIcon,
+  DotsThreeIcon,
+  GitBranchIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   DateProperty,
@@ -16,7 +21,6 @@ import {
   MenuPopup,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import { EllipsisIcon, GitBranchIcon, Maximize2Icon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, screen, within } from 'storybook/test'
 import {
@@ -76,7 +80,7 @@ const meta = {
               size="icon"
               variant="ghost"
             >
-              <Maximize2Icon aria-hidden />
+              <ArrowsOutSimpleIcon aria-hidden />
             </Button>
           }
           footerStart={
@@ -208,7 +212,7 @@ const meta = {
                     />
                   }
                 >
-                  <EllipsisIcon aria-hidden className="size-3.5" />
+                  <DotsThreeIcon aria-hidden className="size-3.5" />
                 </MenuTrigger>
                 <MenuPopup align="start">
                   {extraProperties

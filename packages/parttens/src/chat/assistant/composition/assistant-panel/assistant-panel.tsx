@@ -1,17 +1,17 @@
 'use client'
 
+import {
+  ArrowsInSimpleIcon,
+  ArrowsOutSimpleIcon,
+  ClockCounterClockwiseIcon,
+  NotePencilIcon,
+  XIcon,
+} from '@phosphor-icons/react'
 import { Badge } from '@tc96/ui/badge'
 import { Card } from '@tc96/ui/card'
 import { ChatConversation } from '@tc96/ui/chat/chat-conversation'
 import { ChatTypingIndicator } from '@tc96/ui/chat/chat-typing-indicator'
 import { useChatScroll } from '@tc96/ui/chat/hooks/use-chat-scroll'
-import {
-  HistoryIcon,
-  Maximize2Icon,
-  Minimize2Icon,
-  SquarePenIcon,
-  XIcon,
-} from 'lucide-react'
 import { type ReactElement, useId, useMemo } from 'react'
 import { AssistantEmpty } from '../../components/assistant-empty'
 import { AssistantHeaderAction } from '../../components/assistant-header-action'
@@ -92,7 +92,7 @@ export function AssistantPanel({
                   label={labels.newChat}
                   onClick={onNewChat}
                 >
-                  <SquarePenIcon aria-hidden="true" />
+                  <NotePencilIcon aria-hidden="true" />
                 </AssistantHeaderAction>
               ) : null}
               {onHistory ? (
@@ -100,7 +100,7 @@ export function AssistantPanel({
                   label={labels.history}
                   onClick={onHistory}
                 >
-                  <HistoryIcon aria-hidden="true" />
+                  <ClockCounterClockwiseIcon aria-hidden="true" />
                 </AssistantHeaderAction>
               ) : null}
               {onExpandedChange ? (
@@ -109,9 +109,9 @@ export function AssistantPanel({
                   onClick={() => onExpandedChange(!expanded)}
                 >
                   {expanded ? (
-                    <Minimize2Icon aria-hidden="true" />
+                    <ArrowsInSimpleIcon aria-hidden="true" />
                   ) : (
-                    <Maximize2Icon aria-hidden="true" />
+                    <ArrowsOutSimpleIcon aria-hidden="true" />
                   )}
                 </AssistantHeaderAction>
               ) : null}

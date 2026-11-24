@@ -1,3 +1,11 @@
+import {
+  FolderIcon,
+  GearIcon,
+  HouseIcon,
+  ListIcon,
+  ReceiptIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import {
@@ -13,14 +21,6 @@ import {
 } from '@tc96/ui/drawer'
 import { Field, FieldLabel } from '@tc96/ui/field'
 import { Input } from '@tc96/ui/input'
-import {
-  FolderIcon,
-  HomeIcon,
-  MenuIcon,
-  ReceiptIcon,
-  SettingsIcon,
-  UsersIcon,
-} from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { expect, screen, waitFor, within } from 'storybook/test'
 import { SongActionsDrawer } from './drawer-layouts.tsx'
@@ -95,11 +95,11 @@ export const EditProfile: Story = {
 }
 
 const navigation = [
-  { href: '#dashboard', icon: HomeIcon, label: 'Dashboard' },
+  { href: '#dashboard', icon: HouseIcon, label: 'Dashboard' },
   { href: '#projects', icon: FolderIcon, label: 'Projects' },
   { href: '#team', icon: UsersIcon, label: 'Team' },
   { href: '#billing', icon: ReceiptIcon, label: 'Billing' },
-  { href: '#settings', icon: SettingsIcon, label: 'Settings' },
+  { href: '#settings', icon: GearIcon, label: 'Settings' },
 ]
 
 function NavigationDrawer() {
@@ -111,7 +111,7 @@ function NavigationDrawer() {
         aria-label="Open navigation"
         render={<Button size="icon" variant="outline" />}
       >
-        <MenuIcon aria-hidden="true" />
+        <ListIcon aria-hidden="true" />
       </DrawerTrigger>
       <DrawerPopup showCloseButton variant="straight">
         <DrawerHeader>

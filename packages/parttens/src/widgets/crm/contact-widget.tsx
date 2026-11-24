@@ -1,9 +1,13 @@
+import {
+  ChatCircleIcon,
+  EnvelopeSimpleIcon,
+  PhoneIcon,
+} from '@phosphor-icons/react'
 import { resolveInitials } from '@tc96/helpers/initials'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { CardPanel } from '@tc96/ui/card'
-import { MailIcon, MessageCircleIcon, PhoneIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import type { AvatarStackPerson } from '../shared/avatar-stack'
@@ -69,7 +73,11 @@ export function ContactWidget({
   const titleId = useId()
   const channels = [
     email
-      ? { href: `mailto:${email}`, icon: MailIcon, id: 'email' as const }
+      ? {
+          href: `mailto:${email}`,
+          icon: EnvelopeSimpleIcon,
+          id: 'email' as const,
+        }
       : null,
     phone
       ? { href: `tel:${phone}`, icon: PhoneIcon, id: 'phone' as const }
@@ -77,7 +85,7 @@ export function ContactWidget({
     whatsapp
       ? {
           href: whatsappHref(whatsapp),
-          icon: MessageCircleIcon,
+          icon: ChatCircleIcon,
           id: 'whatsapp' as const,
         }
       : null,

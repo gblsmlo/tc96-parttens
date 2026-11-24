@@ -1,3 +1,4 @@
+import { CaretDownIcon, CaretRightIcon, PlusIcon } from '@phosphor-icons/react'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import {
@@ -7,7 +8,6 @@ import {
 } from '@tc96/ui/collapsible'
 import { Empty, EmptyDescription } from '@tc96/ui/empty'
 import { Separator } from '@tc96/ui/separator'
-import { ChevronDownIcon, ChevronRightIcon, PlusIcon } from 'lucide-react'
 import { Fragment, type ReactNode, useId } from 'react'
 import type { CollectionGroup } from '../../../types/collection'
 import {
@@ -87,9 +87,9 @@ export function ListGroup<TRecord>({
               }
             >
               {collapsed ? (
-                <ChevronRightIcon aria-hidden="true" />
+                <CaretRightIcon aria-hidden="true" />
               ) : (
-                <ChevronDownIcon aria-hidden="true" />
+                <CaretDownIcon aria-hidden="true" />
               )}
             </CollapsibleTrigger>
             {renderGroupTitle ? null : (

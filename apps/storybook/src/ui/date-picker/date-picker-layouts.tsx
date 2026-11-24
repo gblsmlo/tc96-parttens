@@ -1,4 +1,5 @@
 import type { DateRange } from '@daypicker/react'
+import { CalendarBlankIcon } from '@phosphor-icons/react'
 import {
   addDays,
   formatLongDate,
@@ -14,7 +15,6 @@ import {
   InputGroupInput,
 } from '@tc96/ui/input-group'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
-import { CalendarIcon } from 'lucide-react'
 import {
   type ChangeEvent,
   type ComponentProps,
@@ -200,7 +200,7 @@ const DatePickerState = ({
       <PopoverTrigger
         render={<Button className="w-full justify-start" variant="outline" />}
       >
-        {icon ? <CalendarIcon aria-hidden="true" /> : null}
+        {icon ? <CalendarBlankIcon aria-hidden="true" /> : null}
         {value ?? placeholder}
       </PopoverTrigger>
       <PopoverPopup aria-label={popupLabels[mode]}>
@@ -299,7 +299,7 @@ export const InputDatePicker = ({
             aria-label="Open calendar"
             render={<Button size="icon-xs" variant="ghost" />}
           >
-            <CalendarIcon aria-hidden="true" />
+            <CalendarBlankIcon aria-hidden="true" />
           </PopoverTrigger>
         </InputGroupAddon>
       </InputGroup>

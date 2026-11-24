@@ -22,7 +22,7 @@ Import direction: `composition/` → `store/`, `lib/`, `core.ts`. No import into
 ## Invariants
 
 - One announcer per list, a `p` with `aria-live="polite"` after the `ul`, rendered from the start so the first change is read. An item calls `announce(announcement)` when its `status` differs from the one it last rendered; the first render and any change of `detail` or `title` are silent, so a ticking elapsed time in `detail` never reaches the screen reader. An item without `announcement` changes silently.
-- The status icon is decorative: a `span` with `aria-hidden` holds the lucide icon or, for `running`, the COSS `Spinner`. The span carries the color by status, because a color class on the `Spinner` itself is a COSS override (`overrides:check`). The meaning of a status is the consumer's `detail`.
+- The status icon is decorative: a `span` with `aria-hidden` holds the Phosphor icon or, for `running`, the COSS `Spinner`. The span carries the color by status, because a color class on the `Spinner` itself is a COSS override (`overrides:check`). The meaning of a status is the consumer's `detail`.
 - `action` renders at the end of the row, after the title and detail; the pattern does not hide it per status, so the consumer passes it only when it applies.
 - Every row is at least 40px (`min-h-10` with `py-1`), the height of a row holding a `sm` button, so rows with and without an action share one rhythm. The icon sits on the first line of the text (a 20px box, the `sm` line height), so a detail that wraps keeps the icon next to the title.
 

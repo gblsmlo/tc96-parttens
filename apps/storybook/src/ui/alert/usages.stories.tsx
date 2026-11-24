@@ -1,3 +1,9 @@
+import {
+  CheckCircleIcon,
+  InfoIcon,
+  WarningCircleIcon,
+  WarningIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Alert,
@@ -6,12 +12,6 @@ import {
   AlertTitle,
 } from '@tc96/ui/alert'
 import { Button } from '@tc96/ui/button'
-import {
-  CircleAlertIcon,
-  CircleCheckIcon,
-  InfoIcon,
-  TriangleAlertIcon,
-} from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { AlertCanvas } from './alert-frame.tsx'
 
@@ -50,7 +50,7 @@ export const NewVersion: Story = {
 export const ChangesSaved: Story = {
   render: () => (
     <Alert variant="success">
-      <CircleCheckIcon aria-label="Success" role="img" />
+      <CheckCircleIcon aria-label="Success" role="img" />
       <AlertTitle>Changes saved</AlertTitle>
       <AlertDescription>
         Everyone in the workspace sees the new settings.
@@ -67,7 +67,7 @@ export const ChangesSaved: Story = {
 export const TrialEnding: Story = {
   render: () => (
     <Alert variant="warning">
-      <TriangleAlertIcon aria-label="Warning" role="img" />
+      <WarningIcon aria-label="Warning" role="img" />
       <AlertTitle>Your trial ends in 3 days</AlertTitle>
       <AlertDescription>
         Choose a plan to keep your projects and members.
@@ -89,7 +89,7 @@ export const TrialEnding: Story = {
 export const PaymentFailed: Story = {
   render: () => (
     <Alert variant="error">
-      <CircleAlertIcon aria-label="Error" role="img" />
+      <WarningCircleIcon aria-label="Error" role="img" />
       <AlertTitle>Payment failed</AlertTitle>
       <AlertDescription>
         <p>The card on file was declined.</p>

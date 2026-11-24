@@ -1,4 +1,11 @@
 import {
+  ChatIcon,
+  DotsThreeIcon,
+  PaperclipIcon,
+  PlusIcon,
+  VideoCameraIcon,
+} from '@phosphor-icons/react'
+import {
   AgendaWidget,
   ProjectCardWidget,
   TaskProgressWidget,
@@ -6,13 +13,6 @@ import {
   WorldClockWidget,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import {
-  EllipsisIcon,
-  MessageSquareIcon,
-  PaperclipIcon,
-  PlusIcon,
-  VideoIcon,
-} from 'lucide-react'
 import { type ReactElement, useState } from 'react'
 import type {
   ProductivityControls,
@@ -80,7 +80,7 @@ export function ProductMeeting({
       joinText="meet.google.com/nax-wqkf-stu"
       live={live}
       onCopy={() => setCopied(true)}
-      provider={<VideoIcon aria-hidden="true" />}
+      provider={<VideoCameraIcon aria-hidden="true" />}
       start={meetingStart}
       timeZone="UTC"
       title={title}
@@ -102,7 +102,7 @@ export function DesignWebsite({
       action={
         action ? (
           <Button aria-label="More options" size="icon-sm" variant="ghost">
-            <EllipsisIcon aria-hidden="true" />
+            <DotsThreeIcon aria-hidden="true" />
           </Button>
         ) : undefined
       }
@@ -117,7 +117,7 @@ export function DesignWebsite({
       meta={
         <>
           <span className="inline-flex items-center gap-1">
-            <MessageSquareIcon aria-hidden="true" className="size-4" />
+            <ChatIcon aria-hidden="true" className="size-4" />
             <span className="sr-only">Comments:</span>2
           </span>
           <span className="inline-flex items-center gap-1">

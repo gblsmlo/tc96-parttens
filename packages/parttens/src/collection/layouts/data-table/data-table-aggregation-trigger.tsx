@@ -1,9 +1,9 @@
 'use client'
 
+import { CaretDownIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { MenuTrigger } from '@tc96/ui/menu'
 import { cva } from 'class-variance-authority'
-import { ChevronDownIcon } from 'lucide-react'
 import type { ReactElement, ReactNode } from 'react'
 import type {
   DataTableAggregation,
@@ -49,7 +49,7 @@ export function DataTableAggregationTrigger({
           <span className="font-medium tabular-nums">{result}</span>
         </>
       )}
-      <ChevronDownIcon aria-hidden="true" />
+      <CaretDownIcon aria-hidden="true" />
     </MenuTrigger>
   )
 }

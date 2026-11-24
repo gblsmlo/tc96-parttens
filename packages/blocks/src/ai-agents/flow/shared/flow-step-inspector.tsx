@@ -1,5 +1,6 @@
 'use client'
 
+import { TrashIcon } from '@phosphor-icons/react'
 import {
   type FlowConnection,
   type FlowRunSummary,
@@ -21,7 +22,6 @@ import type {
 } from '@tc96/parttens/flow/inspector/core'
 import { defaultFlowRunCardLabels } from '@tc96/parttens/flow/step-library/core'
 import { Button } from '@tc96/ui/button'
-import { Trash2Icon } from 'lucide-react'
 import { type ReactElement, type ReactNode, useId } from 'react'
 import { StepForm } from './step-form'
 import type { FlowOwner, FlowPageLabels, FlowStepValues } from './types'
@@ -214,7 +214,7 @@ export function FlowStepInspector({
             size="icon-sm"
             variant="ghost"
           >
-            <Trash2Icon aria-hidden="true" />
+            <TrashIcon aria-hidden="true" />
           </Button>
         ) : undefined
       }

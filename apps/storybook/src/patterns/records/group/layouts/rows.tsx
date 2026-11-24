@@ -1,4 +1,14 @@
 import {
+  CalendarDotsIcon,
+  CheckCircleIcon,
+  HashIcon,
+  PauseCircleIcon,
+  RadioButtonIcon,
+  ShapesIcon,
+  TagIcon,
+  UserIcon,
+} from '@phosphor-icons/react'
+import {
   DateProperty,
   PersonProperty,
   type PersonPropertyOption,
@@ -10,27 +20,17 @@ import {
   type TagsPropertyOption,
   TextProperty,
 } from '@tc96/parttens'
-import {
-  CalendarDaysIcon,
-  CircleCheckIcon,
-  CircleDotIcon,
-  CirclePauseIcon,
-  HashIcon,
-  ShapesIcon,
-  TagIcon,
-  UserIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 
 export const statusOptions: SelectPropertyOption[] = [
   {
-    icon: CircleDotIcon,
+    icon: RadioButtonIcon,
     label: 'In progress',
     tone: 'info',
     value: 'progress',
   },
-  { icon: CirclePauseIcon, label: 'On hold', tone: 'warning', value: 'hold' },
-  { icon: CircleCheckIcon, label: 'Done', tone: 'success', value: 'done' },
+  { icon: PauseCircleIcon, label: 'On hold', tone: 'warning', value: 'hold' },
+  { icon: CheckCircleIcon, label: 'Done', tone: 'success', value: 'done' },
 ]
 
 const assigneeOptions: PersonPropertyOption[] = [
@@ -116,7 +116,7 @@ export function PropertiesGroup({
       <RecordGroupRow
         align={align}
         label="Due"
-        leading={<CalendarDaysIcon aria-hidden />}
+        leading={<CalendarDotsIcon aria-hidden />}
       >
         <DateProperty
           ariaLabel="Due date"

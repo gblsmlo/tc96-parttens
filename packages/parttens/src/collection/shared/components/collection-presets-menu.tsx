@@ -1,8 +1,8 @@
 'use client'
 
+import { CaretDownIcon } from '@phosphor-icons/react'
 import { Badge } from '@tc96/ui/badge'
 import { Menu, MenuPopup } from '@tc96/ui/menu'
-import { ChevronDownIcon } from 'lucide-react'
 import type { ReactElement, ReactNode } from 'react'
 import { CollectionToolbarMenuTrigger } from './collection-toolbar-menu-trigger'
 
@@ -33,7 +33,7 @@ export function PresetsMenu({
         >
           {normalizedCount}
         </Badge>
-        <ChevronDownIcon aria-hidden="true" />
+        <CaretDownIcon aria-hidden="true" />
       </CollectionToolbarMenuTrigger>
       <MenuPopup align="start" className="w-56">
         {children}

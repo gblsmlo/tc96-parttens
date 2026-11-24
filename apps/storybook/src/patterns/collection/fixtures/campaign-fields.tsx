@@ -1,3 +1,4 @@
+import { ProhibitIcon, ScanIcon } from '@phosphor-icons/react'
 import { parseDateValue } from '@tc96/helpers/date'
 import { formatAmount } from '@tc96/helpers/format'
 import {
@@ -19,7 +20,6 @@ import {
   TagsProperty,
 } from '@tc96/parttens'
 import { Checkbox } from '@tc96/ui/checkbox'
-import { CircleSlashIcon, ScanEyeIcon } from 'lucide-react'
 import {
   budgetTypeLabels,
   type Campaign,
@@ -134,9 +134,9 @@ export function PixelField({ campaign }: Readonly<{ campaign: Campaign }>) {
   return (
     <FlagProperty
       active={campaign.pixel}
-      activeIcon={ScanEyeIcon}
+      activeIcon={ScanIcon}
       ariaLabel="Meta Pixel"
-      inactiveIcon={CircleSlashIcon}
+      inactiveIcon={ProhibitIcon}
       inactiveLabel="Sem pixel"
       label="Pixel ativo"
       showInactive

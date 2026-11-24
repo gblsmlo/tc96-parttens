@@ -1,3 +1,4 @@
+import { InfoIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import {
@@ -19,7 +20,6 @@ import {
   MeterTrack,
   MeterValue,
 } from '@tc96/ui/meter'
-import { InfoIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { CardCanvas } from './card-canvas.tsx'
 import { TeamMembersFrame } from './card-layouts.tsx'

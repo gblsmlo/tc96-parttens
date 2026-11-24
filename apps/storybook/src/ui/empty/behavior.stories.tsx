@@ -1,6 +1,6 @@
+import { TrayIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@tc96/ui/empty'
-import { InboxIcon } from 'lucide-react'
 import { expect, isInaccessible, userEvent, within } from 'storybook/test'
 import { emptyControlArgs } from './empty-controls.ts'
 import { EmptyCanvas } from './empty-frame.tsx'
@@ -124,7 +124,7 @@ export const MediaClassNameOnEveryLayer: Story = {
     <Empty>
       <EmptyHeader>
         <EmptyMedia className="size-12" variant="icon">
-          <InboxIcon aria-hidden="true" />
+          <TrayIcon aria-hidden="true" />
         </EmptyMedia>
         <EmptyTitle>No items yet</EmptyTitle>
       </EmptyHeader>

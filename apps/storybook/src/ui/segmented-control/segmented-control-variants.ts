@@ -1,5 +1,9 @@
+import {
+  CalendarBlankIcon,
+  CalendarDotsIcon,
+  CalendarIcon,
+} from '@phosphor-icons/react'
 import type { SegmentedControlSize } from '@tc96/ui/segmented-control'
-import { CalendarDaysIcon, CalendarIcon, CalendarRangeIcon } from 'lucide-react'
 
 export const segmentedControlSizeNames = [
   'sm',
@@ -13,9 +17,9 @@ export type SegmentedControlElementName =
   (typeof segmentedControlElementNames)[number]
 
 export const ranges = [
-  { icon: CalendarIcon, label: 'Day', value: 'day' },
-  { icon: CalendarRangeIcon, label: 'Week', value: 'week' },
-  { icon: CalendarDaysIcon, label: 'Month', value: 'month' },
+  { icon: CalendarBlankIcon, label: 'Day', value: 'day' },
+  { icon: CalendarIcon, label: 'Week', value: 'week' },
+  { icon: CalendarDotsIcon, label: 'Month', value: 'month' },
 ] as const
 
 export type RangeValue = (typeof ranges)[number]['value']

@@ -1,5 +1,5 @@
+import { FireIcon, SparkleIcon, TargetIcon } from '@phosphor-icons/react'
 import type { Achievement, Quest, StreakDay } from '@tc96/parttens'
-import { FlameIcon, SparklesIcon, TargetIcon } from 'lucide-react'
 
 export const xp = { current: 180, target: 250, total: 930 }
 
@@ -18,14 +18,14 @@ export const week: StreakDay[] = [
 export const achievements: Achievement[] = [
   {
     detail: 'Conclua sua primeira sessão',
-    icon: <SparklesIcon />,
+    icon: <SparkleIcon aria-hidden="true" />,
     id: 'first_session',
     label: 'Primeiro passo',
     unlocked: true,
   },
   {
     detail: 'Estude em 5 dias seguidos',
-    icon: <FlameIcon />,
+    icon: <FireIcon aria-hidden="true" />,
     id: 'streak_5',
     label: 'Fogo aceso',
     progress: { current: 2, target: 5 },
@@ -33,7 +33,7 @@ export const achievements: Achievement[] = [
   },
   {
     detail: '90% em 10 cartões ou mais',
-    icon: <TargetIcon />,
+    icon: <TargetIcon aria-hidden="true" />,
     id: 'accuracy_90',
     label: 'Precisão alta',
     unlocked: false,
@@ -44,7 +44,7 @@ export const quests: Quest[] = [
   {
     detail: 'Faltam 70 XP',
     done: false,
-    icon: <SparklesIcon />,
+    icon: <SparkleIcon aria-hidden="true" />,
     id: 'goal:level',
     label: 'Chegar ao nível 5',
     progress: { current: 180, target: 250 },
@@ -52,7 +52,7 @@ export const quests: Quest[] = [
   {
     detail: '2 dias de 5',
     done: false,
-    icon: <FlameIcon />,
+    icon: <FireIcon aria-hidden="true" />,
     id: 'goal:streak',
     label: 'Sequência de 5 dias',
     progress: { current: 2, target: 5 },

@@ -1,6 +1,11 @@
 'use client'
 
 import {
+  CaretDownIcon,
+  GlobeIcon,
+  MagnifyingGlassIcon,
+} from '@phosphor-icons/react'
+import {
   Combobox,
   ComboboxEmpty,
   ComboboxInput,
@@ -17,7 +22,6 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@tc96/ui/input-group'
-import { ChevronDownIcon, GlobeIcon, SearchIcon } from 'lucide-react'
 import type React from 'react'
 import type { ComponentRef } from 'react'
 import { useCallback, useRef, useState } from 'react'
@@ -111,10 +115,7 @@ export function PhoneInput({
               <span className="text-base text-muted-foreground tabular-nums sm:text-sm">
                 +{country.callingCode}
               </span>
-              <ChevronDownIcon
-                aria-hidden="true"
-                className="size-3.5 opacity-80"
-              />
+              <CaretDownIcon aria-hidden="true" className="size-4 opacity-80" />
             </ComboboxTrigger>
             <ComboboxPopup
               align="start"
@@ -127,7 +128,7 @@ export function PhoneInput({
                 className="border-transparent! bg-transparent! shadow-none before:hidden has-focus-visible:ring-0"
                 placeholder="Buscar país"
                 showTrigger={false}
-                startAddon={<SearchIcon />}
+                startAddon={<MagnifyingGlassIcon aria-hidden="true" />}
               />
               <ComboboxSeparator className="mx-0 my-0" />
               <ComboboxEmpty>Nenhum país encontrado.</ComboboxEmpty>
@@ -185,7 +186,7 @@ function PhoneCountryFlag({ country }: Readonly<{ country: PhoneCountry }>) {
       aria-hidden="true"
       className="block w-5 shrink-0 overflow-hidden rounded-xs [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
     >
-      {Flag ? <Flag title={country.name} /> : <GlobeIcon />}
+      {Flag ? <Flag title={country.name} /> : <GlobeIcon aria-hidden="true" />}
     </span>
   )
 }

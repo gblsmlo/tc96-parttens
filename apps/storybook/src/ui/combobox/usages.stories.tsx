@@ -1,3 +1,9 @@
+import {
+  CaretUpDownIcon,
+  GlobeIcon,
+  MagnifyingGlassIcon,
+  TagIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import {
@@ -19,12 +25,6 @@ import {
   createComboboxItems,
 } from '@tc96/ui/combobox'
 import { Field, FieldDescription, FieldLabel } from '@tc96/ui/field'
-import {
-  ChevronsUpDownIcon,
-  GlobeIcon,
-  SearchIcon,
-  TagIcon,
-} from 'lucide-react'
 import { Fragment } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { ComboboxCanvas } from './combobox-frame.tsx'
@@ -158,7 +158,7 @@ export const IssueLabels: Story = {
       items={issueLabels}
       multiple
     >
-      <ComboboxChips startAddon={<TagIcon />}>
+      <ComboboxChips startAddon={<TagIcon aria-hidden="true" />}>
         <ComboboxValue>
           {(value: IssueLabel[]) => (
             <>
@@ -206,7 +206,7 @@ export const TimeZonePicker: Story = {
     <Field>
       <FieldLabel>Time zone</FieldLabel>
       <Combobox autoHighlight items={timeZoneRegions}>
-        <ComboboxInput startAddon={<GlobeIcon />} />
+        <ComboboxInput startAddon={<GlobeIcon aria-hidden="true" />} />
         <ComboboxPopup>
           <ComboboxEmpty>No time zone matches that city.</ComboboxEmpty>
           <ComboboxList>
@@ -253,7 +253,7 @@ export const ShippingCountry: Story = {
         render={<Button className="w-full justify-between" variant="outline" />}
       >
         <ComboboxValue />
-        <ChevronsUpDownIcon aria-hidden="true" />
+        <CaretUpDownIcon aria-hidden="true" />
       </ComboboxTrigger>
       <ComboboxPopup aria-label="Ship to">
         <div className="border-b p-2">
@@ -261,7 +261,7 @@ export const ShippingCountry: Story = {
             aria-label="Search countries"
             placeholder="Search countries…"
             showTrigger={false}
-            startAddon={<SearchIcon />}
+            startAddon={<MagnifyingGlassIcon aria-hidden="true" />}
           />
         </div>
         <ComboboxEmpty>We do not ship to that country yet.</ComboboxEmpty>

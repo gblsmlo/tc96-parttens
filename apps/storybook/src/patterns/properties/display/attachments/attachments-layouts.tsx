@@ -1,9 +1,9 @@
+import { PaperclipIcon } from '@phosphor-icons/react'
 import {
   AttachmentProperty,
   AttachmentsProperty,
   type AttachmentsPropertyAction,
 } from '@tc96/parttens'
-import { PaperclipIcon } from 'lucide-react'
 import { useState } from 'react'
 import type { AttachmentsControls } from './attachments-controls.ts'
 import {

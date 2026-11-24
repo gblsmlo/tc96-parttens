@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  CheckCheckIcon,
-  CheckIcon,
-  CircleAlertIcon,
-  ClockIcon,
-} from "lucide-react";
+import { ChecksIcon, CheckIcon, WarningCircleIcon, ClockIcon } from "@phosphor-icons/react";
 import type { ReactElement } from "react";
 import { cn } from "@tc96/utils";
 
@@ -21,9 +16,9 @@ export function ChatDeliveryIndicator({
   const Icon = {
     sending: ClockIcon,
     sent: CheckIcon,
-    delivered: CheckCheckIcon,
-    read: CheckCheckIcon,
-    failed: CircleAlertIcon,
+    delivered: ChecksIcon,
+    read: ChecksIcon,
+    failed: WarningCircleIcon,
   }[status];
 
   return (

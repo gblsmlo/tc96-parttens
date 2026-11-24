@@ -1,5 +1,5 @@
+import { HandIcon, RobotIcon } from '@phosphor-icons/react'
 import { FlagProperty } from '@tc96/parttens'
-import { BotIcon, HandIcon } from 'lucide-react'
 import type { FlagControls } from './flag-controls.ts'
 
 export const ComposedFlag = ({
@@ -13,7 +13,7 @@ export const ComposedFlag = ({
 }: Readonly<FlagControls>) => (
   <FlagProperty
     active={active}
-    activeIcon={icon ? BotIcon : undefined}
+    activeIcon={icon ? RobotIcon : undefined}
     ariaLabel={ariaLabel || undefined}
     inactiveIcon={icon ? HandIcon : undefined}
     inactiveLabel={inactiveLabel || undefined}

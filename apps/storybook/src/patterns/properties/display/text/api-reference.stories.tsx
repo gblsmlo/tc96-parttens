@@ -1,6 +1,6 @@
+import { ShapesIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TextProperty } from '@tc96/parttens'
-import { ShapesIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { TextCanvas } from './text-canvas.tsx'
 

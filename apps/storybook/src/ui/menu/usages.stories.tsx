@@ -1,3 +1,15 @@
+import {
+  CopyIcon,
+  CreditCardIcon,
+  DotsThreeIcon,
+  FolderOpenIcon,
+  GearIcon,
+  LifebuoyIcon,
+  PencilSimpleIcon,
+  SignOutIcon,
+  TrashSimpleIcon,
+  UserIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import {
@@ -17,18 +29,6 @@ import {
   MenuSubTrigger,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  CopyIcon,
-  CreditCardIcon,
-  EllipsisIcon,
-  FolderInputIcon,
-  LifeBuoyIcon,
-  LogOutIcon,
-  PencilIcon,
-  SettingsIcon,
-  TrashIcon,
-  UserIcon,
-} from 'lucide-react'
 import { expect, screen } from 'storybook/test'
 import { DialogFromMenu } from './menu-layouts.tsx'
 
@@ -113,27 +113,27 @@ export const AccountMenu: Story = {
         <MenuGroup>
           <MenuGroupLabel>ana.lima@acme.com</MenuGroupLabel>
           <MenuItem>
-            <UserIcon />
+            <UserIcon aria-hidden="true" />
             Profile
           </MenuItem>
           <MenuItem>
-            <CreditCardIcon />
+            <CreditCardIcon aria-hidden="true" />
             Billing
           </MenuItem>
           <MenuItem aria-keyshortcuts="Meta+,">
-            <SettingsIcon />
+            <GearIcon aria-hidden="true" />
             Settings
             <MenuShortcut>⌘,</MenuShortcut>
           </MenuItem>
         </MenuGroup>
         <MenuSeparator />
         <MenuLinkItem href="#help-center">
-          <LifeBuoyIcon />
+          <LifebuoyIcon aria-hidden="true" />
           Help center
         </MenuLinkItem>
         <MenuSeparator />
         <MenuItem>
-          <LogOutIcon />
+          <SignOutIcon aria-hidden="true" />
           Log out
         </MenuItem>
       </MenuPopup>
@@ -157,20 +157,20 @@ export const RowActions: Story = {
         aria-label="More actions for Q3 roadmap"
         render={<Button size="icon" variant="ghost" />}
       >
-        <EllipsisIcon />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem>
-          <PencilIcon />
+          <PencilSimpleIcon aria-hidden="true" />
           Rename
         </MenuItem>
         <MenuItem>
-          <CopyIcon />
+          <CopyIcon aria-hidden="true" />
           Duplicate
         </MenuItem>
         <MenuSub>
           <MenuSubTrigger>
-            <FolderInputIcon />
+            <FolderOpenIcon aria-hidden="true" />
             Move to
           </MenuSubTrigger>
           <MenuSubPopup>
@@ -181,7 +181,7 @@ export const RowActions: Story = {
         </MenuSub>
         <MenuSeparator />
         <MenuItem variant="destructive">
-          <TrashIcon />
+          <TrashSimpleIcon aria-hidden="true" />
           Delete document
         </MenuItem>
       </MenuPopup>

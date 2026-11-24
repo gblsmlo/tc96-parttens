@@ -1,3 +1,4 @@
+import { DotsThreeIcon } from '@phosphor-icons/react'
 import {
   KanbanCardAction,
   KanbanCardActionButton,
@@ -7,7 +8,6 @@ import {
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import { EllipsisIcon } from 'lucide-react'
 import type { ReactElement, ReactNode } from 'react'
 
 export interface CardMenuItem {
@@ -35,7 +35,7 @@ export function CardMenu({
         <MenuTrigger
           render={<KanbanCardActionButton aria-label={label} size="icon" />}
         >
-          <EllipsisIcon aria-hidden className="size-4" />
+          <DotsThreeIcon aria-hidden className="size-4" />
         </MenuTrigger>
         <MenuPopup align="end">
           <CardMenuItems items={items} />

@@ -1,5 +1,5 @@
+import { DiamondIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { GemIcon } from 'lucide-react'
 import { iconFrameControlArgs } from './icon-frame-controls.ts'
 import { ComposedIconFrame } from './icon-frame-layouts.tsx'
 
@@ -20,7 +20,7 @@ export const AsDiv: Story = {
 export const ExplicitIconSize: Story = {
   render: () => (
     <ComposedIconFrame {...iconFrameControlArgs} size="xl">
-      <GemIcon className="size-8" />
+      <DiamondIcon aria-hidden="true" className="size-8" />
     </ComposedIconFrame>
   ),
 }

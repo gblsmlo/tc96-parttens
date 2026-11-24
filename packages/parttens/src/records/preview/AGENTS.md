@@ -11,7 +11,7 @@ A controlled, modal right-side sheet that previews a record (`RecordPreview`), a
 | `composition/record-preview-action/` | `RecordPreviewAction` on the COSS `Button` and `Tooltip` and its barrel |
 | `composition/record-preview-body/` | `RecordPreviewBody` and its barrel |
 
-Import direction: `composition/` → `core.ts`. Composition imports only COSS (`button`, `sheet`, `tooltip`), `@tc96/utils` (`cn`, in `RecordPreviewBody`) and `lucide-react`.
+Import direction: `composition/` → `core.ts`. Composition imports only COSS (`button`, `sheet`, `tooltip`), `@tc96/utils` (`cn`, in `RecordPreviewBody`) and `@phosphor-icons/react`.
 
 ## Dependents
 

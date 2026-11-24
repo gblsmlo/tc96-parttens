@@ -1,7 +1,7 @@
+import { BellIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
-import { BellIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 
 const meta = {

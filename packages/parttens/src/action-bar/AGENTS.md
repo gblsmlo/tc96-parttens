@@ -9,7 +9,7 @@ Not a pattern: the controlled bar a consumer shows over selected records, with t
 | `components/` | `action-bar.tsx`, the bar and its types |
 | `index.ts` | the barrel |
 
-Import direction: `components/` → `@tc96/ui/button`, `@tc96/ui/menu`, `@tc96/utils`, `lucide-react` and React only. It never imports a pattern.
+Import direction: `components/` → `@tc96/ui/button`, `@tc96/ui/menu`, `@tc96/utils`, `@phosphor-icons/react` and React only. It never imports a pattern.
 
 ## Dependents
 

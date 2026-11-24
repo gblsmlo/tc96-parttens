@@ -1,10 +1,10 @@
 import {
+  CalendarBlankIcon,
   CalendarIcon,
-  CalendarOffIcon,
-  CalendarRangeIcon,
+  CalendarSlashIcon,
+  SunHorizonIcon,
   SunIcon,
-  SunriseIcon,
-} from 'lucide-react'
+} from '@phosphor-icons/react'
 import type { PropertyIcon } from '../../shared/property-catalog'
 import type { SchedulePropertyLabels } from './schedule-labels'
 import { addLocalDays } from './schedule-value'
@@ -49,7 +49,7 @@ export function buildSchedulePresets(
     {
       day: today,
       hint: hint(weekday, today),
-      icon: CalendarIcon,
+      icon: CalendarBlankIcon,
       label: labels.today,
     },
     {
@@ -61,15 +61,15 @@ export function buildSchedulePresets(
     {
       day: weekend,
       hint: hint(weekday, weekend),
-      icon: SunriseIcon,
+      icon: SunHorizonIcon,
       label: labels.thisWeekend,
     },
     {
       day: nextWeek,
       hint: hint(weekdayAndDay, nextWeek),
-      icon: CalendarRangeIcon,
+      icon: CalendarIcon,
       label: labels.nextWeek,
     },
-    { day: null, hint: '', icon: CalendarOffIcon, label: labels.noDate },
+    { day: null, hint: '', icon: CalendarSlashIcon, label: labels.noDate },
   ]
 }

@@ -1,7 +1,7 @@
 'use client'
 
+import { PlusIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
-import { PlusIcon } from 'lucide-react'
 import type { ReactElement, Ref } from 'react'
 
 export function ChecklistTrigger({

@@ -1,7 +1,7 @@
+import { FireIcon } from '@phosphor-icons/react'
 import { CardPanel } from '@tc96/ui/card'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
-import { FlameIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import { WidgetHeader } from '../shared/widget-header'
@@ -51,7 +51,7 @@ export function StreakWidget({
       <CardPanel className="grid gap-5 px-5 pb-5">
         <div className="flex items-center gap-3">
           <IconFrame color={color} size="lg">
-            <FlameIcon />
+            <FireIcon aria-hidden="true" />
           </IconFrame>
           <div className="grid gap-0.5">
             <span className="font-medium text-4xl leading-tight tabular-nums tracking-tight">
@@ -84,7 +84,7 @@ export function StreakWidget({
                     )}
                     color={color}
                   >
-                    <FlameIcon />
+                    <FireIcon aria-hidden="true" />
                   </IconFrame>
                 ) : (
                   <IconFrame
@@ -95,7 +95,7 @@ export function StreakWidget({
                     )}
                     variant="plain"
                   >
-                    <FlameIcon className="opacity-40" />
+                    <FireIcon aria-hidden="true" className="opacity-40" />
                   </IconFrame>
                 )}
                 <span className="text-muted-foreground text-xs">

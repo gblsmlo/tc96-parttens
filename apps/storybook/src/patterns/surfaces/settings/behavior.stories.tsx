@@ -1,3 +1,4 @@
+import { DotsThreeIcon, TextTIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   RecordGroup,
@@ -12,7 +13,6 @@ import {
 import { Button } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
 import { Switch } from '@tc96/ui/switch'
-import { EllipsisIcon, TypeIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { SettingsCanvas } from './settings-canvas.tsx'
@@ -151,7 +151,7 @@ export const StartSlotSizesItsIcon: Story = {
     <SettingsSection>
       <SettingsRow
         description="Adjusts the text size across the whole app"
-        startSlot={<TypeIcon aria-hidden="true" />}
+        startSlot={<TextTIcon aria-hidden="true" />}
         title="Font size"
       />
     </SettingsSection>
@@ -219,7 +219,7 @@ export const EndSlotKeepsSeveralControlsInOrder: Story = {
               size="icon-xs"
               variant="ghost"
             >
-              <EllipsisIcon aria-hidden="true" />
+              <DotsThreeIcon aria-hidden="true" />
             </Button>
           </>
         }

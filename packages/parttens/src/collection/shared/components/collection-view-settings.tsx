@@ -1,6 +1,12 @@
 'use client'
 
 import {
+  ArrowCounterClockwiseIcon,
+  FloppyDiskIcon,
+  type Icon as PhosphorIcon,
+  SlidersHorizontalIcon,
+} from '@phosphor-icons/react'
+import {
   MenuGroup,
   MenuGroupLabel,
   MenuItem,
@@ -11,17 +17,11 @@ import {
   MenuSeparator,
 } from '@tc96/ui/menu'
 import { cn } from '@tc96/utils'
-import {
-  type LucideIcon,
-  RotateCcwIcon,
-  SaveIcon,
-  SlidersHorizontalIcon,
-} from 'lucide-react'
 import type { ReactElement, ReactNode } from 'react'
 import { CollectionToolbarMenuTrigger } from './collection-toolbar-menu-trigger'
 
 export interface ViewSettingsMode<TMode extends string = string> {
-  icon: LucideIcon
+  icon: PhosphorIcon
   label: string
   value: TMode
 }
@@ -103,7 +103,7 @@ export function ViewSettingsMenu<TMode extends string = string>({
         {/* Limpar antes de guardar: descartar volta ao ponto de partida, guardar
             avança a partir dele — a ordem é a mesma sequência de decisão. */}
         <MenuItem disabled={!normalizedActiveCount} onClick={onClearFilters}>
-          <RotateCcwIcon aria-hidden="true" />
+          <ArrowCounterClockwiseIcon aria-hidden="true" />
           {clearLabel}
         </MenuItem>
         {onSavePreference ? (
@@ -111,7 +111,7 @@ export function ViewSettingsMenu<TMode extends string = string>({
             disabled={savePreferenceDisabled}
             onClick={onSavePreference}
           >
-            <SaveIcon aria-hidden="true" />
+            <FloppyDiskIcon aria-hidden="true" />
             {savePreferenceLabel}
           </MenuItem>
         ) : null}

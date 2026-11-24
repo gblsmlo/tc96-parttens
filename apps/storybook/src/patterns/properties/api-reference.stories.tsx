@@ -1,3 +1,4 @@
+import { RadioButtonIcon, TagIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   DateProperty,
@@ -7,7 +8,6 @@ import {
   PropertySurface,
   TagsProperty,
 } from '@tc96/parttens'
-import { CircleDotIcon, TagIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { Slot } from '../../test-utils/anatomy-slot'
 
@@ -46,7 +46,7 @@ export const Anatomy: Story = {
       items={[
         {
           defaultVisible: true,
-          icon: CircleDotIcon,
+          icon: RadioButtonIcon,
           id: 'first',
           label: 'First',
           render: () => <Slot name="item.render()" />,

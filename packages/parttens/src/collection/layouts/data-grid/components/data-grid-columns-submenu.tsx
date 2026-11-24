@@ -1,5 +1,6 @@
 'use client'
 
+import { ColumnsIcon } from '@phosphor-icons/react'
 import type { RowData } from '@tanstack/react-table'
 import {
   MenuCheckboxItem,
@@ -7,7 +8,6 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
-import { Columns3Icon } from 'lucide-react'
 import type React from 'react'
 import type { DataGridTable } from '../lib/data-grid-features'
 import type { DataGridColumnMeta } from '../types'
@@ -29,7 +29,7 @@ export function DataGridColumnsSubmenu<TData extends RowData>({
   return (
     <MenuSub>
       <MenuSubTrigger>
-        <Columns3Icon aria-hidden="true" />
+        <ColumnsIcon aria-hidden="true" />
         {label}
       </MenuSubTrigger>
       <MenuSubPopup>

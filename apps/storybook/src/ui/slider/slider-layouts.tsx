@@ -1,3 +1,4 @@
+import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
 import { Field, FieldLabel } from '@tc96/ui/field'
 import {
   NumberField,
@@ -5,7 +6,6 @@ import {
   NumberFieldInput,
 } from '@tc96/ui/number-field'
 import { Slider, SliderValue } from '@tc96/ui/slider'
-import type { LucideIcon } from 'lucide-react'
 import { type ComponentProps, useId, useState } from 'react'
 import type { SliderControls } from './slider-controls.ts'
 import { rangeDefaultValue, singleDefaultValue } from './slider-variants.ts'
@@ -61,9 +61,9 @@ export const ComposedSlider = ({
 
 interface IconSliderProps {
   defaultValue: number
-  endIcon: LucideIcon
+  endIcon: PhosphorIcon
   label: string
-  startIcon: LucideIcon
+  startIcon: PhosphorIcon
 }
 
 export const IconSlider = ({

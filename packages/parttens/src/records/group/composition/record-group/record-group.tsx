@@ -1,5 +1,6 @@
 'use client'
 
+import { CaretDownIcon } from '@phosphor-icons/react'
 import { Card } from '@tc96/ui/card'
 import {
   Collapsible,
@@ -7,7 +8,6 @@ import {
   CollapsibleTrigger,
 } from '@tc96/ui/collapsible'
 import { cn } from '@tc96/utils'
-import { ChevronDownIcon } from 'lucide-react'
 import { type ReactElement, type ReactNode, useId, useState } from 'react'
 import type { RecordGroupProps } from '../../core'
 import {
@@ -21,7 +21,7 @@ import {
 } from '../../lib/variants'
 
 const chevronIcon = (
-  <ChevronDownIcon
+  <CaretDownIcon
     aria-hidden="true"
     className="size-4 shrink-0 -rotate-90 transition-transform group-data-panel-open/trigger:rotate-0"
   />

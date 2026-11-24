@@ -1,4 +1,19 @@
 import {
+  ArrowsDownUpIcon,
+  CalendarDotIcon,
+  CalendarDotsIcon,
+  CalendarIcon,
+  CardsIcon,
+  ClockIcon,
+  FlagIcon,
+  GridFourIcon,
+  ListBulletsIcon,
+  RadioButtonIcon,
+  RowsIcon,
+  TableIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
+import {
   Action,
   type CalendarViewMode,
   CollectionFrame,
@@ -40,22 +55,6 @@ import {
   MenuSubTrigger,
 } from '@tc96/ui/menu'
 import { Separator } from '@tc96/ui/separator'
-import {
-  ArrowDownUpIcon,
-  CalendarClockIcon,
-  CalendarDaysIcon,
-  CalendarRangeIcon,
-  CircleDotIcon,
-  Clock3Icon,
-  FlagIcon,
-  GalleryVerticalEndIcon,
-  LayoutGridIcon,
-  ListIcon,
-  Rows3Icon,
-  Table2Icon,
-  TableIcon,
-  UsersIcon,
-} from 'lucide-react'
 import {
   type ComponentType,
   type ReactElement,
@@ -105,11 +104,11 @@ const sampleTasks = collectionTasks.slice(0, 18)
 
 const layoutModes: readonly ViewSettingsMode<CollectionLayout>[] = [
   { icon: TableIcon, label: 'Tabela', value: 'datatable' },
-  { icon: Rows3Icon, label: 'Lista', value: 'list' },
-  { icon: Table2Icon, label: 'Planilha', value: 'datagrid' },
-  { icon: GalleryVerticalEndIcon, label: 'Galeria', value: 'gallery' },
-  { icon: LayoutGridIcon, label: 'Kanban', value: 'kanban' },
-  { icon: CalendarDaysIcon, label: 'Calendário', value: 'calendar' },
+  { icon: RowsIcon, label: 'Lista', value: 'list' },
+  { icon: TableIcon, label: 'Planilha', value: 'datagrid' },
+  { icon: CardsIcon, label: 'Galeria', value: 'gallery' },
+  { icon: GridFourIcon, label: 'Kanban', value: 'kanban' },
+  { icon: CalendarDotsIcon, label: 'Calendário', value: 'calendar' },
 ]
 
 const calendarModes: readonly { label: string; value: CalendarViewMode }[] = [
@@ -176,7 +175,7 @@ const toggle = <TValue,>(values: readonly TValue[], value: TValue) =>
 
 const viewIcon = (
   <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
-    <LayoutGridIcon aria-hidden="true" className="size-3" />
+    <GridFourIcon aria-hidden="true" className="size-3" />
   </span>
 )
 
@@ -433,7 +432,7 @@ export function CollectionScreen({
                         {usesGrouping ? (
                           <MenuSub>
                             <MenuSubTrigger>
-                              <ListIcon aria-hidden="true" />
+                              <ListBulletsIcon aria-hidden="true" />
                               Agrupar por
                             </MenuSubTrigger>
                             <MenuSubPopup>
@@ -466,7 +465,7 @@ export function CollectionScreen({
                         {layout === 'calendar' ? (
                           <MenuSub>
                             <MenuSubTrigger>
-                              <CalendarRangeIcon aria-hidden="true" />
+                              <CalendarIcon aria-hidden="true" />
                               Período
                             </MenuSubTrigger>
                             <MenuSubPopup>
@@ -491,7 +490,7 @@ export function CollectionScreen({
                         ) : (
                           <MenuSub>
                             <MenuSubTrigger>
-                              <ArrowDownUpIcon aria-hidden="true" />
+                              <ArrowsDownUpIcon aria-hidden="true" />
                               Ordenar por
                             </MenuSubTrigger>
                             <MenuSubPopup>
@@ -565,7 +564,7 @@ export function CollectionScreen({
                       <MenuSeparator />
                       <ViewSettingsSection label="Filtros">
                         <CheckboxFilterSubmenu
-                          icon={CircleDotIcon}
+                          icon={RadioButtonIcon}
                           label="Status"
                           onToggle={(status) =>
                             updateQuery({
@@ -605,7 +604,7 @@ export function CollectionScreen({
                         />
                         <FilterRadioSubmenu
                           clearLabel="Qualquer prazo"
-                          icon={CalendarClockIcon}
+                          icon={CalendarDotIcon}
                           label="Prazo"
                           onValueChange={(due) =>
                             updateQuery({
@@ -616,7 +615,7 @@ export function CollectionScreen({
                           value={query.due ?? ''}
                         />
                         <CheckboxFilterSubmenu
-                          icon={Clock3Icon}
+                          icon={ClockIcon}
                           label="Estimativa"
                           onToggle={(range) =>
                             updateQuery({

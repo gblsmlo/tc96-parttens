@@ -1,37 +1,37 @@
-import type { WizardStep } from '@tc96/parttens'
 import {
-  CircleDollarSignIcon,
   CreditCardIcon,
   CrownIcon,
+  CurrencyCircleDollarIcon,
   FileTextIcon,
-  type LucideIcon,
   PercentIcon,
+  type Icon as PhosphorIcon,
   RocketIcon,
   TagIcon,
-} from 'lucide-react'
+} from '@phosphor-icons/react'
+import type { WizardStep } from '@tc96/parttens'
 
 export const dealSteps = [
   {
     description: 'Escolha o tipo de cupom',
-    icon: <TagIcon />,
+    icon: <TagIcon aria-hidden="true" />,
     title: 'Tipo do cupom',
     value: 'type',
   },
   {
     description: 'Informe os dados do cupom',
-    icon: <FileTextIcon />,
+    icon: <FileTextIcon aria-hidden="true" />,
     title: 'Detalhes',
     value: 'details',
   },
   {
     description: 'Limites e ofertas',
-    icon: <CreditCardIcon />,
+    icon: <CreditCardIcon aria-hidden="true" />,
     title: 'Uso',
     value: 'usage',
   },
   {
     description: 'Lance o cupom',
-    icon: <RocketIcon />,
+    icon: <RocketIcon aria-hidden="true" />,
     title: 'Revisão',
     value: 'review',
   },
@@ -46,7 +46,7 @@ export interface Option {
 
 export interface DealTypeOption extends Option {
   description: string
-  icon: LucideIcon
+  icon: PhosphorIcon
 }
 
 export const dealTypes: DealTypeOption[] = [
@@ -58,7 +58,7 @@ export const dealTypes: DealTypeOption[] = [
   },
   {
     description: 'Desconto de um valor fixo sobre o total, como R$ 5 OFF.',
-    icon: CircleDollarSignIcon,
+    icon: CurrencyCircleDollarIcon,
     label: 'Valor fixo',
     value: 'flat',
   },

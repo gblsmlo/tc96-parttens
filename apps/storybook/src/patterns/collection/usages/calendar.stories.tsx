@@ -1,3 +1,4 @@
+import { FlagIcon, TagIcon, UsersIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   type CalendarDate,
@@ -15,7 +16,6 @@ import {
   CollectionFrameHeader,
   toZonedDateTime,
 } from '@tc96/parttens'
-import { FlagIcon, TagIcon, UsersIcon } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { CreateEventDialog } from '../../records/dialog/create-event-dialog'

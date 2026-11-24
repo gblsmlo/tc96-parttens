@@ -1,5 +1,5 @@
+import { TextBIcon } from '@phosphor-icons/react'
 import { Toggle, type TogglePrimitive } from '@tc96/ui/toggle'
-import { BoldIcon } from 'lucide-react'
 import type { ToggleControls } from './toggle-controls.ts'
 
 interface ComposedToggleProps extends ToggleControls {
@@ -28,7 +28,7 @@ export const ComposedToggle = ({
     size={size}
     variant={variant}
   >
-    {icon || iconOnly ? <BoldIcon aria-hidden="true" /> : null}
+    {icon || iconOnly ? <TextBIcon aria-hidden="true" /> : null}
     {iconOnly ? null : label}
   </Toggle>
 )

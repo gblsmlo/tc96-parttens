@@ -1,3 +1,4 @@
+import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   InputGroup,
@@ -6,7 +7,6 @@ import {
   InputGroupText,
   InputGroupTextarea,
 } from '@tc96/ui/input-group'
-import { SearchIcon } from 'lucide-react'
 import type { InputGroupControls } from './input-group-controls.ts'
 
 interface ComposedInputGroupProps extends InputGroupControls {
@@ -50,7 +50,7 @@ export const ComposedInputGroup = ({
       )}
       {icon || text ? (
         <InputGroupAddon align={align}>
-          {icon ? <SearchIcon aria-hidden="true" /> : null}
+          {icon ? <MagnifyingGlassIcon aria-hidden="true" /> : null}
           {text ? <InputGroupText>{text}</InputGroupText> : null}
         </InputGroupAddon>
       ) : null}

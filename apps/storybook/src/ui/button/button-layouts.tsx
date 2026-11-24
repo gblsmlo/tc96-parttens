@@ -1,5 +1,5 @@
+import { CaretDownIcon, PlusIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
-import { ChevronDownIcon, PlusIcon } from 'lucide-react'
 import type { ButtonControls } from './button-controls.ts'
 import { isIconSize } from './button-variants.ts'
 
@@ -36,7 +36,7 @@ export const LeadingIconButton = () => (
 export const TrailingIconButton = () => (
   <Button>
     Create
-    <ChevronDownIcon aria-hidden="true" />
+    <CaretDownIcon aria-hidden="true" />
   </Button>
 )
 

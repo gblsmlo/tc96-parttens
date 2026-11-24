@@ -1,4 +1,11 @@
 import {
+  BriefcaseIcon,
+  CalendarBlankIcon,
+  CircleIcon,
+  CoffeeIcon,
+  HandshakeIcon,
+} from '@phosphor-icons/react'
+import {
   addCalendarDays,
   type CalendarDate,
   fromZonedDateTime,
@@ -9,13 +16,6 @@ import {
   type SelectPropertyOption,
   toZonedDateTime,
 } from '@tc96/parttens'
-import {
-  BriefcaseIcon,
-  CalendarIcon,
-  CircleIcon,
-  CoffeeIcon,
-  HandshakeIcon,
-} from 'lucide-react'
 import { z } from 'zod'
 
 export const TIME_ZONE = 'America/Sao_Paulo'
@@ -52,7 +52,7 @@ export const slotFromCalendar = ({
 })
 
 export const typeOptions: SelectPropertyOption[] = [
-  { icon: CalendarIcon, label: 'Event', tone: 'neutral', value: 'event' },
+  { icon: CalendarBlankIcon, label: 'Event', tone: 'neutral', value: 'event' },
   {
     icon: HandshakeIcon,
     label: 'Appointment',

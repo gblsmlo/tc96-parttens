@@ -1,3 +1,4 @@
+import { UserPlusIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
@@ -18,7 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from '@tc96/ui/table'
-import { UserRoundPlusIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { ProfileRowSkeleton } from './skeleton-layouts.tsx'
 
@@ -57,7 +57,7 @@ export const PeopleToFollow: Story = {
             </span>
           </div>
           <Button size="xs" variant="outline">
-            <UserRoundPlusIcon aria-hidden="true" />
+            <UserPlusIcon aria-hidden="true" />
             Follow
           </Button>
         </li>

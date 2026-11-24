@@ -1,19 +1,19 @@
+import {
+  CellSignalHighIcon,
+  CellSignalLowIcon,
+  CellSignalMediumIcon,
+  CheckCircleIcon,
+  CircleDashedIcon,
+  CircleIcon,
+  EyeIcon,
+  RadioButtonIcon,
+  WarningIcon,
+} from '@phosphor-icons/react'
 import type {
   CalendarEventChipTone,
   CollectionDefinition,
   SelectPropertyOption,
 } from '@tc96/parttens'
-import {
-  CircleCheckIcon,
-  CircleDashedIcon,
-  CircleDotIcon,
-  CircleIcon,
-  EyeIcon,
-  SignalHighIcon,
-  SignalLowIcon,
-  SignalMediumIcon,
-  TriangleAlertIcon,
-} from 'lucide-react'
 
 export type TaskStatus = 'backlog' | 'todo' | 'in-progress' | 'review' | 'done'
 export type TaskPriority = 'urgent' | 'high' | 'medium' | 'low'
@@ -59,25 +59,25 @@ export const statusOptions = [
   },
   { icon: CircleIcon, label: 'A fazer', tone: 'neutral', value: 'todo' },
   {
-    icon: CircleDotIcon,
+    icon: RadioButtonIcon,
     label: 'Em andamento',
     tone: 'info',
     value: 'in-progress',
   },
   { icon: EyeIcon, label: 'Em revisão', tone: 'warning', value: 'review' },
-  { icon: CircleCheckIcon, label: 'Concluída', tone: 'success', value: 'done' },
+  { icon: CheckCircleIcon, label: 'Concluída', tone: 'success', value: 'done' },
 ] as const satisfies readonly (SelectPropertyOption & { value: TaskStatus })[]
 
 export const priorityOptions = [
   {
-    icon: TriangleAlertIcon,
+    icon: WarningIcon,
     label: 'Urgente',
     tone: 'danger',
     value: 'urgent',
   },
-  { icon: SignalHighIcon, label: 'Alta', tone: 'warning', value: 'high' },
-  { icon: SignalMediumIcon, label: 'Média', tone: 'info', value: 'medium' },
-  { icon: SignalLowIcon, label: 'Baixa', tone: 'neutral', value: 'low' },
+  { icon: CellSignalHighIcon, label: 'Alta', tone: 'warning', value: 'high' },
+  { icon: CellSignalMediumIcon, label: 'Média', tone: 'info', value: 'medium' },
+  { icon: CellSignalLowIcon, label: 'Baixa', tone: 'neutral', value: 'low' },
 ] as const satisfies readonly (SelectPropertyOption & {
   value: TaskPriority
 })[]

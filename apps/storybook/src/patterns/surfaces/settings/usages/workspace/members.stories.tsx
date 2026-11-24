@@ -1,3 +1,4 @@
+import { DotsThreeIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   SettingsRow,
@@ -18,7 +19,6 @@ import {
   SelectValue,
 } from '@tc96/ui/select'
 import { Text } from '@tc96/ui/text'
-import { EllipsisIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, within } from 'storybook/test'
 
@@ -75,7 +75,7 @@ function ActionsMenu({ items, label }: { items: string[]; label: string }) {
         aria-label={label}
         render={<Button size="icon-xs" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         {items.map((item, index) => (

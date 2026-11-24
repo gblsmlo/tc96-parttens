@@ -1,4 +1,4 @@
-import { PlusIcon, XIcon } from 'lucide-react'
+import { PlusIcon, XIcon } from '@phosphor-icons/react'
 import type { ReactElement } from 'react'
 import type { FlowConnection } from '../core'
 import { flowEdgeControlsClassName } from '../lib/variants'

@@ -28,12 +28,12 @@ import {
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
-import { CircleDotIcon, TagIcon } from 'lucide-react'
+import { RadioButtonIcon, TagIcon } from '@phosphor-icons/react'
 
 <PropertyCollection
   ariaLabel="Task properties"
   items={[
-    { defaultVisible: true, icon: CircleDotIcon, id: 'status', label: 'Status', render: () => <SelectProperty {...status} /> },
+    { defaultVisible: true, icon: RadioButtonIcon, id: 'status', label: 'Status', render: () => <SelectProperty {...status} /> },
     { icon: TagIcon, id: 'tags', label: 'Tags', render: () => <TagsProperty {...tags} /> },
   ]}
 />
@@ -187,7 +187,7 @@ The date picker of `DateProperty` and `DateRangeProperty`. Renders the surface a
 | `PropertyCollectionProps` | `type` | The props of `PropertyCollection`. |
 | `PropertySurfaceProps` | `type` | The props of `PropertySurface`. |
 | `PropertyVariant` | `type` | `"badge"` or `"plain"`. |
-| `PropertyIcon` | `type` | An icon component that takes SVG props, as the `lucide-react` icons. |
+| `PropertyIcon` | `type` | An icon component that takes SVG props, as the `@phosphor-icons/react` icons. |
 | `PropertyTone` | `type` | `"danger"`, `"info"`, `"neutral"`, `"success"` or `"warning"`. |
 | `PropertyPreset` | `type` | A preset option, `{ icon, label, tone, value }`. |
 | `propertyBadgeClassName` | `constant` | The classes the badge surface adds to `Badge`. |

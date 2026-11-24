@@ -1,5 +1,6 @@
 'use client'
 
+import { FunnelSimpleIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Menu,
@@ -12,7 +13,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import { ListFilterIcon } from 'lucide-react'
 import { Fragment, type ReactElement } from 'react'
 import type {
   RecordGroupFilterProps,
@@ -79,7 +79,7 @@ export function RecordGroupFilter({
         aria-label={label}
         render={<Button size="icon-sm" variant="ghost" />}
       >
-        <ListFilterIcon aria-hidden="true" />
+        <FunnelSimpleIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup
         align="end"
