@@ -295,7 +295,7 @@ await writeFile(
       license: 'MIT',
       repository: {
         type: 'git',
-        url: 'git+https://github.com/gblsmlo/tc96-parttens.git',
+        url: 'git+https://github.com/gblsmlo/tc96-ui.git',
       },
       engines: { node: '>=22' },
       bin: { tc96: 'cli.js' },

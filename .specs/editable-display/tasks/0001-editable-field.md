@@ -3,7 +3,7 @@ capability: editable-display
 plan: 0001
 owner: project-manager
 status: Draft
-issue: https://github.com/gblsmlo/tc96-parttens/issues/133
+issue: https://github.com/gblsmlo/tc96-ui/issues/133
 branch: feat/editable-display-field
 appetite: small, three units; T1 and T2 in one session, T3 after gap (a) closes
 inputs: none accepted; implementation detail inside two patterns, no requirements.md, design.md, user-experience.md or ADR

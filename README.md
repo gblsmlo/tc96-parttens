@@ -6,7 +6,7 @@ COSS components, React patterns and blocks without business rules, installed as 
 
 [![npm version](https://img.shields.io/npm/v/@tc96/cli?style=flat&colorA=18181B&colorB=0EA5E9)](https://www.npmjs.com/package/@tc96/cli)
 [![npm downloads](https://img.shields.io/npm/dm/@tc96/cli?style=flat&colorA=18181B&colorB=0EA5E9)](https://www.npmjs.com/package/@tc96/cli)
-[![License](https://img.shields.io/github/license/gblsmlo/tc96-parttens?style=flat&colorA=18181B&colorB=0EA5E9)](https://github.com/gblsmlo/tc96-parttens/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/gblsmlo/tc96-ui?style=flat&colorA=18181B&colorB=0EA5E9)](https://github.com/gblsmlo/tc96-ui/blob/main/LICENSE)
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=white&labelColor=18181B)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white&labelColor=18181B)
@@ -266,7 +266,7 @@ The [architecture document](docs/architecture/tc96-ui.md) records the boundaries
 
 Contributions are welcome! Please:
 
-1. Check existing [issues](https://github.com/gblsmlo/tc96-parttens/issues) or create a new one
+1. Check existing [issues](https://github.com/gblsmlo/tc96-ui/issues) or create a new one
 2. Fork the repository and create a feature branch
 3. Run `bun run check` before submitting
 4. Submit a Pull Request with a clear description

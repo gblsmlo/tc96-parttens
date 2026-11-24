@@ -89,8 +89,7 @@ export async function createConsumer(name: string): Promise<Consumer> {
     await readFile(join(root, 'package.json'), 'utf8'),
   )
   manifest.name = `tc96-${name}`
-  manifest.dependencies['@tc96/cli'] =
-    `file:${await pack(resolve('dist/cli'))}`
+  manifest.dependencies['@tc96/cli'] = `file:${await pack(resolve('dist/cli'))}`
   await json(join(root, 'package.json'), manifest)
   run(['npm', 'install', '--no-audit', '--no-fund'], root)
   return { root, ui, patterns }
