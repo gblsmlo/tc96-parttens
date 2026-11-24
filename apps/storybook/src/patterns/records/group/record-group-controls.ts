@@ -21,6 +21,7 @@ export interface RecordGroupControls {
   actions: boolean
   actionsAlign: RecordGroupActionsAlign
   chevron: (typeof recordGroupChevrons)[number]
+  collapsible: boolean
   defaultOpen: boolean
   empty: boolean
   footer: boolean
@@ -33,6 +34,7 @@ export const recordGroupControlArgs: RecordGroupControls = {
   actions: true,
   actionsAlign: 'between',
   chevron: 'start',
+  collapsible: true,
   defaultOpen: true,
   empty: false,
   footer: true,
@@ -58,6 +60,10 @@ export const recordGroupControlArgTypes: Partial<
     control: 'inline-radio',
     description: 'The `chevron` of `RecordGroup`.',
     options: recordGroupChevrons,
+  },
+  collapsible: {
+    control: 'boolean',
+    description: 'The `collapsible` of `RecordGroup`.',
   },
   defaultOpen: {
     control: 'boolean',

@@ -14,12 +14,13 @@ export interface RecordGroupProps {
   chevron?: 'start' | 'end'
   children?: ReactNode
   className?: string
+  collapsible?: boolean
   defaultOpen?: boolean
   empty?: boolean
   footer?: ReactNode
   onOpenChange?: (open: boolean) => void
   open?: boolean
-  title: ReactNode
+  title?: ReactNode
   variant?: RecordGroupVariant
 }
 

@@ -23,6 +23,7 @@ export function ComposedRecordGroup({
   actions,
   actionsAlign,
   chevron,
+  collapsible,
   defaultOpen,
   empty,
   footer,
@@ -47,6 +48,7 @@ export function ComposedRecordGroup({
       }
       actionsAlign={actionsAlign}
       chevron={chevron}
+      collapsible={collapsible}
       defaultOpen={defaultOpen}
       empty={empty}
       footer={
