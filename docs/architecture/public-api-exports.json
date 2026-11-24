@@ -1909,5 +1909,39 @@
     "List6Mover",
     "List6MoverStatus",
     "List6Props"
+  ],
+  "block:empty-state-1": [
+    "EmptyState1",
+    "EmptyState1Guide",
+    "EmptyState1Labels",
+    "EmptyState1Props"
+  ],
+  "block:empty-state-2": [
+    "EmptyState2",
+    "EmptyState2Labels",
+    "EmptyState2Props"
+  ],
+  "block:empty-state-3": [
+    "EmptyState3",
+    "EmptyState3Labels",
+    "EmptyState3Props",
+    "EmptyState3Template"
+  ],
+  "block:empty-state-4": [
+    "EmptyState4",
+    "EmptyState4Labels",
+    "EmptyState4Props"
+  ],
+  "block:empty-state-5": [
+    "EmptyState5",
+    "EmptyState5Connector",
+    "EmptyState5Labels",
+    "EmptyState5Props"
+  ],
+  "block:empty-state-6": [
+    "EmptyState6",
+    "EmptyState6Labels",
+    "EmptyState6Props",
+    "EmptyState6Tab"
   ]
 }

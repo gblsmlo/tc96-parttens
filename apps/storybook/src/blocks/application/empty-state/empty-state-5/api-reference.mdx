@@ -1,0 +1,72 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# EmptyState5
+
+An empty state that asks for a storage connection: a title, a description and a grid of connector tiles, each with initials, name and a connect button or a connected badge. Reach for it on a files or import screen with nothing linked yet. Install it with `npx @tc96/parttens add empty-state-5`.
+
+It is a region, not a page: it renders no `main` landmark. The block keeps no state and never fetches or connects; the app owns which connectors are connected and updates `connected` after `onConnect`.
+
+The other pages of `Blocks/Application/Empty State/EmptyState5`: [Playground](?path=/story/blocks-application-empty-state-emptystate5-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-empty-state-emptystate5-behavior--each-connector-is-a-tile) for the tests and [Usages](?path=/story/blocks-application-empty-state-emptystate5-usages--loaded) for the connectors read over the network.
+
+## Import
+
+```tsx
+import { EmptyState5 } from '@tc96/blocks/application/empty-state/empty-state-5'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Header above a two column grid of tiles.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<EmptyState5 connectors={connectors} onConnect={connect} />
+```
+
+## EmptyState5
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `connectors` | `EmptyState5Connector[]` | required | The tiles to show. |
+| `onConnect` | `(id: string) => void` | - | Called with the connector `id`. Without it no connect button is rendered. |
+| `labels` | `Partial<EmptyState5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## EmptyState5Connector
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the tile and is passed to `onConnect`. |
+| `name` | `string` | Name of the service; its initials fill the frame. |
+| `connected` | `boolean` | Shows the connected badge in place of the button. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Nenhum armazenamento conectado"` |
+| `description` | `string` | `"Conecte um serviço de armazenamento para importar e sincronizar seus arquivos."` |
+| `connectors` | `string` | `"Serviços de armazenamento"`; the accessible name of the list |
+| `connect` | `string` | `"Conectar"` |
+| `connected` | `string` | `"Conectado"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `EmptyState5` | `component` | The empty state with its connector grid. |
+| `EmptyState5Props` | `type` | The props of the block. |
+| `EmptyState5Connector` | `type` | A tile. |
+| `EmptyState5Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The tiles are a named list. Each connect button is named by its own text plus the connector name (`aria-labelledby`), so the buttons are distinct without the block joining strings.
+- The connected state is text in a badge, never color alone.
+- The block carries no color, radius or shadow of its own beyond tokens on the tile: the theme belongs to the app.
