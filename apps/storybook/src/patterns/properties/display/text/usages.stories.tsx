@@ -1,6 +1,11 @@
+import {
+  EnvelopeSimpleIcon,
+  HashIcon,
+  MapPinIcon,
+  PhoneIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TextProperty } from '@tc96/parttens'
-import { HashIcon, MailIcon, MapPinIcon, PhoneIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { TextCanvas } from './text-canvas.tsx'
 import { StatefulText } from './text-layouts.tsx'
@@ -23,7 +28,7 @@ export const ContactDetails: Story = {
         <TextProperty
           ariaLabel="E-mail"
           copyLabel="Copiar e-mail"
-          icon={MailIcon}
+          icon={EnvelopeSimpleIcon}
           trailingVisibility="hover"
           value="mariana.rocha@exemplo.com"
           variant="plain"

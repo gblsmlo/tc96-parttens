@@ -1,4 +1,17 @@
 import {
+  ArrowSquareOutIcon,
+  BriefcaseIcon,
+  CheckSquareIcon,
+  DotsThreeIcon,
+  LinkBreakIcon,
+  LinkIcon,
+  type Icon as PhosphorIcon,
+  PlusIcon,
+  ScalesIcon,
+  UserIcon,
+  XIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupFilter,
   RecordGroupItem,
@@ -16,19 +29,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  BriefcaseIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  LinkIcon,
-  type LucideIcon,
-  PlusIcon,
-  ScaleIcon,
-  SquareCheckIcon,
-  UnlinkIcon,
-  UserRoundIcon,
-  XIcon,
-} from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 
 type RecordType = 'lawsuit' | 'case' | 'lead' | 'task'
@@ -65,23 +65,26 @@ const onOpenRecord = ignore
 const onLinkRecord = ignore
 const onAddProceeding = ignore
 
-const linkTypes: readonly { icon: LucideIcon; label: string; value: string }[] =
-  [
-    { icon: ScaleIcon, label: 'Processo', value: 'lawsuit' },
-    { icon: BriefcaseIcon, label: 'Caso', value: 'case' },
-    { icon: UserRoundIcon, label: 'Lead', value: 'lead' },
-    { icon: SquareCheckIcon, label: 'Tarefa', value: 'task' },
-  ]
-
-const proceedingTypes: readonly {
-  icon: LucideIcon
+const linkTypes: readonly {
+  icon: PhosphorIcon
   label: string
   value: string
 }[] = [
-  { icon: ScaleIcon, label: 'Recurso', value: 'appeal' },
-  { icon: ScaleIcon, label: 'Cumprimento', value: 'enforcement' },
-  { icon: ScaleIcon, label: 'Cautelar', value: 'precautionary' },
-  { icon: ScaleIcon, label: 'Incidental', value: 'incidental' },
+  { icon: ScalesIcon, label: 'Processo', value: 'lawsuit' },
+  { icon: BriefcaseIcon, label: 'Caso', value: 'case' },
+  { icon: UserIcon, label: 'Lead', value: 'lead' },
+  { icon: CheckSquareIcon, label: 'Tarefa', value: 'task' },
+]
+
+const proceedingTypes: readonly {
+  icon: PhosphorIcon
+  label: string
+  value: string
+}[] = [
+  { icon: ScalesIcon, label: 'Recurso', value: 'appeal' },
+  { icon: ScalesIcon, label: 'Cumprimento', value: 'enforcement' },
+  { icon: ScalesIcon, label: 'Cautelar', value: 'precautionary' },
+  { icon: ScalesIcon, label: 'Incidental', value: 'incidental' },
   { icon: LinkIcon, label: 'Apenso', value: 'attachment' },
 ]
 
@@ -90,7 +93,7 @@ export function AddMenu({
   label,
   onSelect,
 }: Readonly<{
-  items: readonly { icon: LucideIcon; label: string; value: string }[]
+  items: readonly { icon: PhosphorIcon; label: string; value: string }[]
   label: string
   onSelect: (value: string) => void
 }>) {
@@ -115,14 +118,14 @@ export function AddMenu({
 }
 
 const recordTypes: readonly {
-  icon: LucideIcon
+  icon: PhosphorIcon
   label: string
   value: RecordType
 }[] = [
-  { icon: ScaleIcon, label: 'Processos', value: 'lawsuit' },
+  { icon: ScalesIcon, label: 'Processos', value: 'lawsuit' },
   { icon: BriefcaseIcon, label: 'Casos', value: 'case' },
-  { icon: UserRoundIcon, label: 'Leads', value: 'lead' },
-  { icon: SquareCheckIcon, label: 'Tarefas', value: 'task' },
+  { icon: UserIcon, label: 'Leads', value: 'lead' },
+  { icon: CheckSquareIcon, label: 'Tarefas', value: 'task' },
 ]
 
 const typeOptions = recordTypes.map(({ label, value }) => ({ label, value }))
@@ -247,7 +250,7 @@ const recordStatus: Record<RecordStatus, { color: string; label: string }> = {
 export function TypeFrame({
   color,
   icon: Icon,
-}: Readonly<{ color?: string; icon: LucideIcon }>) {
+}: Readonly<{ color?: string; icon: PhosphorIcon }>) {
   return (
     <IconFrame color={color} shape="rounded" size="xs">
       <Icon aria-hidden />
@@ -364,7 +367,7 @@ export function ProceedingsGroup({
           <RecordGroupLink
             href={proceeding.href}
             key={proceeding.id}
-            leading={<TypeFrame icon={ScaleIcon} />}
+            leading={<TypeFrame icon={ScalesIcon} />}
             meta={proceeding.role}
           >
             <span className="tabular-nums">{proceeding.caseNumber}</span>
@@ -381,7 +384,7 @@ export function ProceedingsGroup({
             <RecordGroupItem
               interactive
               key={attachment.id}
-              leading={<TypeFrame icon={ScaleIcon} />}
+              leading={<TypeFrame icon={ScalesIcon} />}
               title={
                 <TitleLink href={attachment.href}>{attachment.title}</TitleLink>
               }
@@ -416,16 +419,16 @@ export function RowMenu({
         aria-label={`Ações de ${record.name}`}
         render={<Button size="icon-sm" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem onClick={() => onOpenRecord(record.id)}>
-          <ExternalLinkIcon aria-hidden="true" />
+          <ArrowSquareOutIcon aria-hidden="true" />
           Abrir
         </MenuItem>
         <MenuSeparator />
         <MenuItem onClick={onUnlink} variant="destructive">
-          <UnlinkIcon aria-hidden="true" />
+          <LinkBreakIcon aria-hidden="true" />
           Desvincular
         </MenuItem>
       </MenuPopup>

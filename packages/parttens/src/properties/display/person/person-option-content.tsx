@@ -1,8 +1,8 @@
 'use client'
 
+import { UserIcon } from '@phosphor-icons/react'
 import { resolveInitials } from '@tc96/helpers/initials'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
-import { UserIcon } from 'lucide-react'
 
 export type PersonAvatarSize = 'xs' | 'sm' | 'default' | 'lg' | 'xl'
 
@@ -39,7 +39,7 @@ export function PersonAvatar({
     <Avatar className={personAvatarSizeClassNames[size]} data-size={size}>
       {option?.imageUrl ? <AvatarImage alt="" src={option.imageUrl} /> : null}
       <AvatarFallback className="border border-input">
-        {fallback ?? <UserIcon aria-hidden className="size-3" />}
+        {fallback ?? <UserIcon aria-hidden className="size-4" />}
       </AvatarFallback>
     </Avatar>
   )

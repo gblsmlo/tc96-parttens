@@ -1,3 +1,11 @@
+import {
+  ArchiveIcon,
+  BookOpenIcon,
+  CopyIcon,
+  PencilSimpleIcon,
+  ShareNetworkIcon,
+  TrashSimpleIcon,
+} from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Dialog,
@@ -25,14 +33,6 @@ import {
   MenuSubTrigger,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  ArchiveIcon,
-  BookOpenIcon,
-  CopyIcon,
-  PencilIcon,
-  Share2Icon,
-  TrashIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 import type { MenuControls } from './menu-controls.ts'
 
@@ -76,7 +76,7 @@ export const ComposedMenu = ({
         closeOnClick={closeOnClick}
         onClick={() => onAction?.('edit')}
       >
-        {icons ? <PencilIcon /> : null}
+        {icons ? <PencilSimpleIcon aria-hidden="true" /> : null}
         Edit
         {shortcuts ? <MenuShortcut>⌘E</MenuShortcut> : null}
       </MenuItem>
@@ -85,7 +85,7 @@ export const ComposedMenu = ({
         closeOnClick={closeOnClick}
         onClick={() => onAction?.('duplicate')}
       >
-        {icons ? <CopyIcon /> : null}
+        {icons ? <CopyIcon aria-hidden="true" /> : null}
         Duplicate
         {shortcuts ? <MenuShortcut>⌘D</MenuShortcut> : null}
       </MenuItem>
@@ -94,7 +94,7 @@ export const ComposedMenu = ({
         inset={inset || undefined}
         onClick={() => onAction?.('archive')}
       >
-        {icons && !inset ? <ArchiveIcon /> : null}
+        {icons && !inset ? <ArchiveIcon aria-hidden="true" /> : null}
         Archive
         {disabledItem ? (
           <span className="ms-auto text-muted-foreground text-xs">
@@ -105,7 +105,7 @@ export const ComposedMenu = ({
       {submenu ? (
         <MenuSub>
           <MenuSubTrigger>
-            {icons ? <Share2Icon /> : null}
+            {icons ? <ShareNetworkIcon aria-hidden="true" /> : null}
             Share
           </MenuSubTrigger>
           <MenuSubPopup>
@@ -180,7 +180,7 @@ export const ComposedMenu = ({
           <>
             <MenuSeparator />
             <MenuLinkItem href="#documentation">
-              {icons ? <BookOpenIcon /> : null}
+              {icons ? <BookOpenIcon aria-hidden="true" /> : null}
               Documentation
             </MenuLinkItem>
           </>
@@ -190,7 +190,7 @@ export const ComposedMenu = ({
           onClick={() => onAction?.('delete')}
           variant={destructiveItem ? 'destructive' : 'default'}
         >
-          {icons ? <TrashIcon /> : null}
+          {icons ? <TrashSimpleIcon aria-hidden="true" /> : null}
           Delete
         </MenuItem>
       </MenuPopup>

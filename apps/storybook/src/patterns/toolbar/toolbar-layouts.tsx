@@ -1,4 +1,13 @@
 import {
+  ArrowsDownUpIcon,
+  CalendarDotsIcon,
+  CopySimpleIcon,
+  RowsIcon,
+  ShapesIcon,
+  StarIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
+import {
   Action,
   CollectionSearchField,
   CollectionToolbar,
@@ -28,15 +37,6 @@ import {
 import { Separator } from '@tc96/ui/separator'
 import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
 import { ToolbarButton } from '@tc96/ui/toolbar'
-import {
-  ArrowDownUpIcon,
-  CalendarDaysIcon,
-  CopyPlusIcon,
-  Rows3Icon,
-  ShapesIcon,
-  StarIcon,
-  Trash2Icon,
-} from 'lucide-react'
 import { useState } from 'react'
 import type { ToolbarControls } from './toolbar-controls.ts'
 import {
@@ -71,7 +71,7 @@ const DensitySubmenu = ({
 }: Readonly<DensitySubmenuProps>) => (
   <MenuSub>
     <MenuSubTrigger>
-      <Rows3Icon aria-hidden="true" />
+      <RowsIcon aria-hidden="true" />
       Densidade
     </MenuSubTrigger>
     <MenuSubPopup>
@@ -170,7 +170,7 @@ export function ComposedToolbar({
 
     return (
       <ViewSwitcherItem
-        icon={switcherIcon ? <ViewIcon /> : undefined}
+        icon={switcherIcon ? <ViewIcon aria-hidden="true" /> : undefined}
         key={view.id}
         label={view.label}
         onSelect={() => setSelectedId(view.id)}
@@ -194,7 +194,7 @@ export function ComposedToolbar({
                 {favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
               </MenuItem>
               <MenuItem onClick={() => addView(`${view.label} (cópia)`)}>
-                <CopyPlusIcon aria-hidden="true" />
+                <CopySimpleIcon aria-hidden="true" />
                 Duplicar
               </MenuItem>
               <MenuSeparator />
@@ -203,7 +203,7 @@ export function ComposedToolbar({
                 onClick={() => deleteView(view.id)}
                 variant="destructive"
               >
-                <Trash2Icon aria-hidden="true" />
+                <TrashIcon aria-hidden="true" />
                 Excluir
               </MenuItem>
               <div className="mt-1 border-t px-2 pt-2 pb-1 text-muted-foreground text-xs">
@@ -219,7 +219,7 @@ export function ComposedToolbar({
 
   const switcherMenu = (
     <ViewSwitcherMenu
-      icon={switcherIcon ? <ViewIcon /> : undefined}
+      icon={switcherIcon ? <ViewIcon aria-hidden="true" /> : undefined}
       label={selected?.label ?? 'Selecionar view'}
       variant={switcherVariant}
     >
@@ -277,7 +277,7 @@ export function ComposedToolbar({
         <DensitySubmenu density={density} onDensityChange={setDensity} />
         <MenuSub>
           <MenuSubTrigger>
-            <CalendarDaysIcon aria-hidden="true" />
+            <CalendarDotsIcon aria-hidden="true" />
             Ordenar por
           </MenuSubTrigger>
           <MenuSubPopup>
@@ -374,7 +374,7 @@ export function SearchFieldToolbar() {
             <ViewSettingsSection label="Exibição">
               <FilterRadioSubmenu
                 clearLabel="Nome (A–Z)"
-                icon={ArrowDownUpIcon}
+                icon={ArrowsDownUpIcon}
                 label="Ordenar por"
                 onValueChange={(value) => setSort(value || 'name_asc')}
                 options={[

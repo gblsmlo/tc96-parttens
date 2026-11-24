@@ -1,8 +1,8 @@
 'use client'
 
+import { TreeStructureIcon } from '@phosphor-icons/react'
 import { FlowCanvas } from '@tc96/parttens/flow/canvas/composition/flow-canvas/flow-canvas'
 import { FlowCanvasControls } from '@tc96/parttens/flow/canvas/composition/flow-canvas-controls/flow-canvas-controls'
-import { NetworkIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement } from 'react'
 import { FlowToolButton } from '../../shared/flow-tool-button'
 import type { FlowPageLabels } from '../../shared/types'
@@ -33,7 +33,7 @@ export function AgentBuilderCanvas({
           onClick={onTidy}
           size="sm"
         >
-          <NetworkIcon aria-hidden="true" />
+          <TreeStructureIcon aria-hidden="true" />
           {labels.organizeTree}
         </FlowToolButton>
       </FlowCanvasControls>

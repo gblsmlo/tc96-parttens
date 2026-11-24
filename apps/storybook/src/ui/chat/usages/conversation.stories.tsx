@@ -1,3 +1,4 @@
+import { ArrowUpIcon, ChatsIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
@@ -19,7 +20,6 @@ import {
   getComposerText,
 } from '@tc96/ui/composer'
 import { useMediaQuery } from '@tc96/ui/hooks/use-media-query'
-import { ArrowUpIcon, MessagesSquareIcon } from 'lucide-react'
 import { useId, useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 
@@ -91,7 +91,7 @@ const meta = {
           ) : messages.length === 0 ? (
             <ChatEmptyState
               description="Send the first message to start the conversation."
-              icon={<MessagesSquareIcon aria-hidden="true" />}
+              icon={<ChatsIcon aria-hidden="true" />}
               title="No messages yet"
             />
           ) : (

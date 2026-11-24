@@ -1,3 +1,4 @@
+import { DotsThreeIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   SettingsCollapsed,
@@ -11,7 +12,6 @@ import {
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Text } from '@tc96/ui/text'
-import { EllipsisIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { expect, within } from 'storybook/test'
 
@@ -58,7 +58,7 @@ function CostCenterRow({
               aria-label={`Actions for ${name}`}
               render={<Button size="icon-xs" variant="ghost" />}
             >
-              <EllipsisIcon aria-hidden="true" />
+              <DotsThreeIcon aria-hidden="true" />
             </MenuTrigger>
             <MenuPopup align="end">
               {archived ? (

@@ -1,29 +1,29 @@
 import {
   BellIcon,
+  ChatIcon,
   DatabaseIcon,
+  EnvelopeSimpleIcon,
   FileTextIcon,
   ListPlusIcon,
-  MailIcon,
-  MessageSquareIcon,
-  SparklesIcon,
+  SparkleIcon,
   UserPlusIcon,
   WrenchIcon,
-} from 'lucide-react'
+} from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 
 export const leadRoutingIcons: Record<string, ReactNode> = {
-  crm: <UserPlusIcon />,
-  email: <MailIcon />,
-  form: <FileTextIcon />,
-  list: <ListPlusIcon />,
-  slack: <MessageSquareIcon />,
+  crm: <UserPlusIcon aria-hidden="true" />,
+  email: <EnvelopeSimpleIcon aria-hidden="true" />,
+  form: <FileTextIcon aria-hidden="true" />,
+  list: <ListPlusIcon aria-hidden="true" />,
+  slack: <ChatIcon aria-hidden="true" />,
 }
 
 export const collectionsIcons: Record<string, ReactNode> = {
-  customer: <DatabaseIcon />,
-  decide: <SparklesIcon />,
-  email: <MailIcon />,
-  escalate: <BellIcon />,
-  invoice: <FileTextIcon />,
-  schedule: <WrenchIcon />,
+  customer: <DatabaseIcon aria-hidden="true" />,
+  decide: <SparkleIcon aria-hidden="true" />,
+  email: <EnvelopeSimpleIcon aria-hidden="true" />,
+  escalate: <BellIcon aria-hidden="true" />,
+  invoice: <FileTextIcon aria-hidden="true" />,
+  schedule: <WrenchIcon aria-hidden="true" />,
 }

@@ -1,9 +1,9 @@
 'use client'
 
+import { CaretDownIcon, CaretUpIcon } from '@phosphor-icons/react'
 import { flexRender, type RowData } from '@tanstack/react-table'
 import { Menu, MenuTrigger } from '@tc96/ui/menu'
 import { cn } from '@tc96/utils'
-import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 import { HEADER_ALIGN } from '../lib/constants'
 import type { DataGridHeader } from '../lib/data-grid-features'
 import type { DataGridColumnMeta } from '../types'
@@ -39,14 +39,25 @@ export function DataGridColumnHeader<TData extends RowData>({
               align,
             )}
           >
-            {meta.type ? <DataGridColumnTypeIcon type={meta.type} /> : null}
+            {meta.type ? (
+              <DataGridColumnTypeIcon aria-hidden="true" type={meta.type} />
+            ) : null}
             <span className="truncate">{label}</span>
             {sorted === 'asc' ? (
-              <ChevronUpIcon className="size-3.5 shrink-0 text-muted-foreground" />
+              <CaretUpIcon
+                aria-hidden="true"
+                className="size-3.5 shrink-0 text-muted-foreground"
+              />
             ) : sorted === 'desc' ? (
-              <ChevronDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
+              <CaretDownIcon
+                aria-hidden="true"
+                className="size-3.5 shrink-0 text-muted-foreground"
+              />
             ) : null}
-            <ChevronDownIcon className="ms-auto size-3.5 shrink-0 text-muted-foreground" />
+            <CaretDownIcon
+              aria-hidden="true"
+              className="ms-auto size-3.5 shrink-0 text-muted-foreground"
+            />
           </MenuTrigger>
           <DataGridColumnMenu column={column} table={table} />
         </Menu>
@@ -57,7 +68,9 @@ export function DataGridColumnHeader<TData extends RowData>({
             align,
           )}
         >
-          {meta.type ? <DataGridColumnTypeIcon type={meta.type} /> : null}
+          {meta.type ? (
+            <DataGridColumnTypeIcon aria-hidden="true" type={meta.type} />
+          ) : null}
           <span className="truncate">{label}</span>
         </div>
       )}

@@ -1,6 +1,6 @@
+import { InfoIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { InfoIcon } from 'lucide-react'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { AlertCanvas } from './alert-frame.tsx'
 import {
@@ -63,7 +63,7 @@ export const StatusIcons: Story = {
     <div className="flex flex-col gap-3">
       {alertVariantNames.map((variant) => (
         <Alert key={variant} variant={variant}>
-          <StatusIcon variant={variant} />
+          <StatusIcon aria-hidden="true" variant={variant} />
           <AlertTitle>{variant}</AlertTitle>
         </Alert>
       ))}

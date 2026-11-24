@@ -1,16 +1,16 @@
-import type { SelectPropertyOption } from '@tc96/parttens'
 import {
-  CircleCheckIcon,
+  CellSignalHighIcon,
+  CellSignalLowIcon,
+  CellSignalMediumIcon,
+  CheckCircleIcon,
   CircleDashedIcon,
-  CircleDotIcon,
   CircleIcon,
-  CircleXIcon,
   MinusIcon,
-  SignalHighIcon,
-  SignalLowIcon,
-  SignalMediumIcon,
-  TriangleAlertIcon,
-} from 'lucide-react'
+  RadioButtonIcon,
+  WarningIcon,
+  XCircleIcon,
+} from '@phosphor-icons/react'
+import type { SelectPropertyOption } from '@tc96/parttens'
 import { z } from 'zod'
 
 export const statusOptions: SelectPropertyOption[] = [
@@ -22,26 +22,31 @@ export const statusOptions: SelectPropertyOption[] = [
     value: 'planned',
   },
   {
-    icon: CircleDotIcon,
+    icon: RadioButtonIcon,
     label: 'In progress',
     tone: 'warning',
     value: 'in-progress',
   },
   {
-    icon: CircleCheckIcon,
+    icon: CheckCircleIcon,
     label: 'Completed',
     tone: 'success',
     value: 'completed',
   },
-  { icon: CircleXIcon, label: 'Canceled', tone: 'danger', value: 'canceled' },
+  { icon: XCircleIcon, label: 'Canceled', tone: 'danger', value: 'canceled' },
 ]
 
 export const priorityOptions: SelectPropertyOption[] = [
   { icon: MinusIcon, label: 'No priority', tone: 'neutral', value: 'none' },
-  { icon: TriangleAlertIcon, label: 'Urgent', tone: 'danger', value: 'urgent' },
-  { icon: SignalHighIcon, label: 'High', tone: 'warning', value: 'high' },
-  { icon: SignalMediumIcon, label: 'Medium', tone: 'info', value: 'medium' },
-  { icon: SignalLowIcon, label: 'Low', tone: 'neutral', value: 'low' },
+  { icon: WarningIcon, label: 'Urgent', tone: 'danger', value: 'urgent' },
+  { icon: CellSignalHighIcon, label: 'High', tone: 'warning', value: 'high' },
+  {
+    icon: CellSignalMediumIcon,
+    label: 'Medium',
+    tone: 'info',
+    value: 'medium',
+  },
+  { icon: CellSignalLowIcon, label: 'Low', tone: 'neutral', value: 'low' },
 ]
 
 export const people = [

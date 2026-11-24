@@ -1,3 +1,8 @@
+import {
+  ArrowDownIcon,
+  ArrowElbowDownLeftIcon,
+  ArrowUpIcon,
+} from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Command,
@@ -18,7 +23,6 @@ import {
   CommandShortcut,
 } from '@tc96/ui/command'
 import { Kbd, KbdGroup } from '@tc96/ui/kbd'
-import { ArrowDownIcon, ArrowUpIcon, CornerDownLeftIcon } from 'lucide-react'
 import { Fragment, type ReactNode, useEffect, useState } from 'react'
 import { type CommandControls, commandControlArgs } from './command-controls.ts'
 import {
@@ -55,7 +59,7 @@ export const CommandFooterHints = () => (
       </span>
       <span className="flex items-center gap-2">
         <Kbd>
-          <CornerDownLeftIcon aria-hidden="true" />
+          <ArrowElbowDownLeftIcon aria-hidden="true" />
         </Kbd>
         Open
       </span>

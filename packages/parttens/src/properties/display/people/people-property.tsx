@@ -1,7 +1,7 @@
 'use client'
 
+import { UserPlusIcon } from '@phosphor-icons/react'
 import { cn } from '@tc96/utils'
-import { UserPlusIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import { resolveOptions } from '../../shared/lib/property-options'

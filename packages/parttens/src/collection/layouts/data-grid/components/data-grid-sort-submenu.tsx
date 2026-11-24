@@ -1,5 +1,6 @@
 'use client'
 
+import { ArrowsDownUpIcon } from '@phosphor-icons/react'
 import type { RowData } from '@tanstack/react-table'
 import {
   MenuItem,
@@ -8,7 +9,6 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
-import { ArrowDownUpIcon } from 'lucide-react'
 import type React from 'react'
 import type { DataGridTable } from '../lib/data-grid-features'
 import type { DataGridColumnMeta } from '../types'
@@ -30,7 +30,7 @@ export function DataGridSortSubmenu<TData extends RowData>({
   return (
     <MenuSub>
       <MenuSubTrigger>
-        <ArrowDownUpIcon aria-hidden="true" />
+        <ArrowsDownUpIcon aria-hidden="true" />
         {label}
       </MenuSubTrigger>
       <MenuSubPopup>

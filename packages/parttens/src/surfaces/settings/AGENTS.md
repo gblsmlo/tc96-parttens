@@ -11,7 +11,7 @@ Controlled frames for a settings screen: `SettingsSection` (a divided card of ro
 | `composition/settings-collapsed/` | `SettingsCollapsed`, a titled collapsible row with a separate actions slot |
 | `core.ts` | React-free surface: the prop types, reached from the barrel only as types |
 
-Import direction: `composition/` → `core.ts`. Outgoing: `@tc96/ui/text`, `@tc96/ui/card`, `@tc96/ui/collapsible`, `@tc96/utils`, `lucide-react` and React. The registry item depends on the COSS card and collapsible.
+Import direction: `composition/` → `core.ts`. Outgoing: `@tc96/ui/text`, `@tc96/ui/card`, `@tc96/ui/collapsible`, `@tc96/utils`, `@phosphor-icons/react` and React. The registry item depends on the COSS card and collapsible.
 
 ## Dependents
 

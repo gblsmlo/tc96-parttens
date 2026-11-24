@@ -1,3 +1,4 @@
+import { ArrowLeftIcon, ArrowRightIcon } from '@phosphor-icons/react'
 import {
   Wizard,
   WizardFooter,
@@ -8,7 +9,6 @@ import {
   type WizardStep,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { dealSteps } from './fixtures/deal.tsx'
 import type { WizardControls } from './wizard-controls.ts'

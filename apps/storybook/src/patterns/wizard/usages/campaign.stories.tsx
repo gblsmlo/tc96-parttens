@@ -1,3 +1,11 @@
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CaretRightIcon,
+  CheckCircleIcon,
+  PencilSimpleIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   RecordGroup,
@@ -31,14 +39,6 @@ import {
   SelectValue,
 } from '@tc96/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ChevronRightIcon,
-  CircleCheckIcon,
-  PencilIcon,
-  Trash2Icon,
-} from 'lucide-react'
 import {
   type FormEvent,
   type KeyboardEvent,
@@ -435,7 +435,7 @@ function ReviewStep({
         <RecordGroup
           actions={
             <RecordGroupAction
-              icon={PencilIcon}
+              icon={PencilSimpleIcon}
               label={`Editar ${section.title}`}
               onClick={() => onEdit(section.step)}
             />
@@ -467,7 +467,7 @@ function DiscardButton({ onDiscard }: Readonly<{ onDiscard: () => void }>) {
           />
         }
       >
-        <Trash2Icon aria-hidden="true" />
+        <TrashIcon aria-hidden="true" />
       </AlertDialogTrigger>
       <AlertDialogPopup>
         <AlertDialogHeader>
@@ -577,7 +577,7 @@ function CampaignWizard({
           <ol className="m-0 flex list-none items-center gap-1.5 p-0 text-sm">
             <li className="text-muted-foreground">Campanhas</li>
             <li aria-hidden="true" className="text-muted-foreground">
-              <ChevronRightIcon className="size-4" />
+              <CaretRightIcon aria-hidden="true" className="size-4" />
             </li>
             <li aria-current="page" className="font-medium">
               Nova campanha
@@ -638,7 +638,7 @@ function CampaignWizard({
           <output className="flex items-center gap-2 text-sm empty:hidden">
             {created ? (
               <>
-                <CircleCheckIcon aria-hidden="true" className="size-4" />
+                <CheckCircleIcon aria-hidden="true" className="size-4" />
                 Campanha {draft.title} criada.
               </>
             ) : null}

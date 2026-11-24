@@ -1,8 +1,8 @@
 'use client'
 
+import { PlusIcon } from '@phosphor-icons/react'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { InputPrimitive } from '@tc96/ui/input'
-import { PlusIcon } from 'lucide-react'
 import type { ReactElement, Ref } from 'react'
 import {
   type ChecklistDensity,

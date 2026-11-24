@@ -1,5 +1,6 @@
 'use client'
 
+import { DotsSixVerticalIcon } from '@phosphor-icons/react'
 import { DndPlugin, useDraggable, useDropLine } from '@platejs/dnd'
 import {
   BlockSelectionAfterEditable,
@@ -8,7 +9,6 @@ import {
 } from '@platejs/selection/react'
 import { Button } from '@tc96/ui/button'
 import { cn } from '@tc96/utils'
-import { GripVerticalIcon } from 'lucide-react'
 import type { SlateEditor, TElement } from 'platejs'
 import type { RenderNodeWrapper } from 'platejs/react'
 import { useEditorRef, usePluginOption } from 'platejs/react'
@@ -78,7 +78,7 @@ function DraggableBlock({
           type="button"
           variant="ghost"
         >
-          <GripVerticalIcon aria-hidden="true" />
+          <DotsSixVerticalIcon aria-hidden="true" />
         </Button>
       </div>
       {children}

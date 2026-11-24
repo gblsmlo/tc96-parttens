@@ -1,3 +1,4 @@
+import { LinkIcon } from '@phosphor-icons/react'
 import {
   PersonProperty,
   RecordDialog,
@@ -7,7 +8,6 @@ import {
   SelectProperty,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { LinkIcon } from 'lucide-react'
 import { useState } from 'react'
 import {
   isNoteEmpty,

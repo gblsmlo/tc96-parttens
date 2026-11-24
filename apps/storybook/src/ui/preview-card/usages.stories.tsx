@@ -1,3 +1,4 @@
+import { ChatIcon, GitForkIcon, StarIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Badge } from '@tc96/ui/badge'
@@ -6,7 +7,6 @@ import {
   PreviewCardPopup,
   PreviewCardTrigger,
 } from '@tc96/ui/preview-card'
-import { GitForkIcon, MessageSquareIcon, StarIcon } from 'lucide-react'
 import { expect, screen, within } from 'storybook/test'
 import { previewCardLinkClassName } from './preview-card-layouts.tsx'
 
@@ -133,8 +133,7 @@ export const IssueReference: Story = {
             </p>
             <p className="flex items-center gap-1 text-muted-foreground text-xs">
               Opened by Rui Costa 3 days ago ·
-              <MessageSquareIcon aria-hidden="true" className="size-3.5" />4
-              comments
+              <ChatIcon aria-hidden="true" className="size-3.5" />4 comments
             </p>
           </div>
         </PreviewCardPopup>

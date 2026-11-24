@@ -1,3 +1,8 @@
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Wizard,
@@ -13,7 +18,6 @@ import { Input } from '@tc96/ui/input'
 import { Radio, RadioGroup } from '@tc96/ui/radio-group'
 import { Switch } from '@tc96/ui/switch'
 import { Textarea } from '@tc96/ui/textarea'
-import { ArrowLeftIcon, ArrowRightIcon, CircleCheckIcon } from 'lucide-react'
 import { type ReactNode, type RefObject, useId, useRef, useState } from 'react'
 import { expect, fn } from 'storybook/test'
 import {
@@ -377,7 +381,7 @@ function DealWizard({
       <output className="flex items-center gap-2 text-sm empty:hidden">
         {submitted ? (
           <>
-            <CircleCheckIcon aria-hidden="true" className="size-4" />
+            <CheckCircleIcon aria-hidden="true" className="size-4" />
             Cupom {deal.code} criado.
           </>
         ) : null}

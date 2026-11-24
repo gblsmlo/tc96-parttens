@@ -1,8 +1,8 @@
 'use client'
 
 import type { DateRange, DayPickerLocale } from '@daypicker/react'
+import { CalendarIcon } from '@phosphor-icons/react'
 import { Calendar } from '@tc96/ui/calendar'
-import { CalendarRangeIcon } from 'lucide-react'
 import { useState } from 'react'
 import {
   PropertyCalendarPopover,
@@ -68,7 +68,7 @@ export function DateRangeProperty({
     return (
       <IconLabelProperty
         className={className}
-        icon={CalendarRangeIcon}
+        icon={CalendarIcon}
         label={label}
         muted={isEmpty}
         variant={variant}
@@ -94,7 +94,7 @@ export function DateRangeProperty({
       }
       disabled={disabled}
       dropdownPlacement={dropdownPlacement}
-      icon={CalendarRangeIcon}
+      icon={CalendarIcon}
       label={label}
       muted={isEmpty}
       onOpenChange={setOpen}

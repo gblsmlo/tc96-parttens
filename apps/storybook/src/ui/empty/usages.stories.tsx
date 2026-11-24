@@ -1,3 +1,11 @@
+import {
+  BookIcon,
+  CalendarBlankIcon,
+  KeyIcon,
+  MagnifyingGlassIcon,
+  TrayIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import {
@@ -9,14 +17,6 @@ import {
   EmptyTitle,
 } from '@tc96/ui/empty'
 import { Input } from '@tc96/ui/input'
-import {
-  BookIcon,
-  CalendarIcon,
-  InboxIcon,
-  KeyRoundIcon,
-  SearchXIcon,
-  UsersIcon,
-} from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { EmptyCanvas } from './empty-frame.tsx'
 
@@ -36,7 +36,7 @@ export const NoMeetings: Story = {
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <CalendarIcon aria-hidden="true" />
+          <CalendarBlankIcon aria-hidden="true" />
         </EmptyMedia>
         <EmptyTitle>No upcoming meetings</EmptyTitle>
         <EmptyDescription>Create a meeting to get started.</EmptyDescription>
@@ -66,7 +66,7 @@ export const NoSearchResults: Story = {
     <Empty role="status">
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <SearchXIcon aria-hidden="true" />
+          <MagnifyingGlassIcon aria-hidden="true" />
         </EmptyMedia>
         <EmptyTitle>No results for “quarterly report”</EmptyTitle>
         <EmptyDescription>
@@ -91,7 +91,7 @@ export const NoApiKeys: Story = {
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <KeyRoundIcon aria-hidden="true" />
+          <KeyIcon aria-hidden="true" />
         </EmptyMedia>
         <EmptyTitle>No API keys</EmptyTitle>
         <EmptyDescription>
@@ -151,7 +151,7 @@ export const AllCaughtUp: Story = {
     <Empty>
       <EmptyHeader>
         <EmptyMedia>
-          <InboxIcon
+          <TrayIcon
             aria-hidden="true"
             className="size-10 text-muted-foreground"
           />

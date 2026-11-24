@@ -1,3 +1,16 @@
+import {
+  CalendarCheckIcon,
+  CalendarPlusIcon,
+  ChatCircleIcon,
+  ClipboardIcon,
+  CrosshairIcon,
+  FlagCheckeredIcon,
+  HandshakeIcon,
+  MegaphoneIcon,
+  PhoneIcon,
+  TargetIcon,
+  UserCheckIcon,
+} from '@phosphor-icons/react'
 import { richTextToPlainText } from '@tc96/helpers/rich-text'
 import {
   EditableText,
@@ -11,19 +24,6 @@ import {
   SelectProperty,
   type SelectPropertyOption,
 } from '@tc96/parttens'
-import {
-  CalendarCheckIcon,
-  CalendarPlusIcon,
-  ClipboardCheckIcon,
-  CrosshairIcon,
-  GoalIcon,
-  HandshakeIcon,
-  MegaphoneIcon,
-  MessageCircleIcon,
-  PhoneIcon,
-  TargetIcon,
-  UserRoundCheckIcon,
-} from 'lucide-react'
 import { useRef, useState } from 'react'
 import { readStored, writeStored } from '../../../test-utils/usage-kit'
 
@@ -48,7 +48,7 @@ const objectiveOptions: readonly SelectPropertyOption[] = [
     value: 'practice-area-awareness',
   },
   {
-    icon: UserRoundCheckIcon,
+    icon: UserCheckIcon,
     label: 'Reativar contato antigo',
     value: 'reactivate-contact',
   },
@@ -62,13 +62,13 @@ const targetOptions: readonly SelectPropertyOption[] = [
     value: 'booked-appointment',
   },
   {
-    icon: MessageCircleIcon,
+    icon: ChatCircleIcon,
     label: 'Conversa no WhatsApp',
     value: 'whatsapp-conversation',
   },
   { icon: PhoneIcon, label: 'Ligação recebida', value: 'phone-call' },
   {
-    icon: ClipboardCheckIcon,
+    icon: ClipboardIcon,
     label: 'Formulário enviado',
     value: 'form-submission',
   },
@@ -150,7 +150,7 @@ export function CampaignBriefEditor({
     },
     {
       defaultVisible: true,
-      icon: GoalIcon,
+      icon: FlagCheckeredIcon,
       id: 'expected-target',
       label: 'Target esperado',
       render: () => (

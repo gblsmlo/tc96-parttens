@@ -1,10 +1,10 @@
 'use client'
 
+import { FunnelSimpleIcon } from '@phosphor-icons/react'
 import type { RowData } from '@tanstack/react-table'
 import { Button } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
-import { ListFilterIcon } from 'lucide-react'
 import type React from 'react'
 import type { DataGridTable } from '../lib/data-grid-features'
 import type { DataGridColumnMeta } from '../types'
@@ -37,7 +37,7 @@ export function DataGridFilterMenu<TData extends RowData>({
           />
         }
       >
-        <ListFilterIcon />
+        <FunnelSimpleIcon aria-hidden="true" />
         {label}
       </PopoverTrigger>
       <PopoverPopup align="end" aria-label={label} className="w-72">

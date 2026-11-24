@@ -1,21 +1,21 @@
+import {
+  ChatCircleIcon,
+  CheckCircleIcon,
+  CircleDashedIcon,
+  CursorClickIcon,
+  DeviceMobileIcon,
+  HourglassIcon,
+  MegaphoneIcon,
+  PauseCircleIcon,
+  PlayCircleIcon,
+  ShoppingBagIcon,
+  UserPlusIcon,
+} from '@phosphor-icons/react'
 import type {
   CollectionDefinition,
   SelectPropertyOption,
   TagsPropertyOption,
 } from '@tc96/parttens'
-import {
-  CircleCheckIcon,
-  CircleDashedIcon,
-  CirclePauseIcon,
-  CirclePlayIcon,
-  HourglassIcon,
-  MegaphoneIcon,
-  MessageCircleIcon,
-  MousePointerClickIcon,
-  ShoppingBagIcon,
-  SmartphoneIcon,
-  UserPlusIcon,
-} from 'lucide-react'
 
 export type CampaignObjective =
   | 'awareness'
@@ -70,20 +70,20 @@ export const objectiveOptions = [
     value: 'awareness',
   },
   {
-    icon: MousePointerClickIcon,
+    icon: CursorClickIcon,
     label: 'Tráfego',
     tone: 'info',
     value: 'traffic',
   },
   {
-    icon: MessageCircleIcon,
+    icon: ChatCircleIcon,
     label: 'Engajamento',
     tone: 'info',
     value: 'engagement',
   },
   { icon: UserPlusIcon, label: 'Cadastros', tone: 'warning', value: 'leads' },
   {
-    icon: SmartphoneIcon,
+    icon: DeviceMobileIcon,
     label: 'Promoção do app',
     tone: 'neutral',
     value: 'app-promotion',
@@ -94,7 +94,7 @@ export const objectiveOptions = [
 })[]
 
 export const statusOptions = [
-  { icon: CirclePlayIcon, label: 'Ativa', tone: 'success', value: 'active' },
+  { icon: PlayCircleIcon, label: 'Ativa', tone: 'success', value: 'active' },
   {
     icon: HourglassIcon,
     label: 'Em análise',
@@ -102,7 +102,7 @@ export const statusOptions = [
     value: 'in-review',
   },
   {
-    icon: CirclePauseIcon,
+    icon: PauseCircleIcon,
     label: 'Pausada',
     tone: 'neutral',
     value: 'paused',
@@ -114,7 +114,7 @@ export const statusOptions = [
     value: 'draft',
   },
   {
-    icon: CircleCheckIcon,
+    icon: CheckCircleIcon,
     label: 'Concluída',
     tone: 'info',
     value: 'completed',

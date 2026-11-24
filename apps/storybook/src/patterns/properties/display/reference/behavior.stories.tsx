@@ -1,6 +1,8 @@
+import { BuildingsIcon, CubeIcon, PackageIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ReferenceProperty } from '@tc96/parttens'
 import { expect, within } from 'storybook/test'
+import { isIcon } from '../../../../test-utils/is-icon'
 import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
@@ -36,10 +38,10 @@ export const KindPicksIcon: Story = {
     const icon = (name: string) =>
       iconOf(canvas.getByRole('img', { name: new RegExp(`^${name}:`) }))
 
-    await expect(icon('Account')).toHaveClass('lucide-building-2')
-    await expect(icon('Product')).toHaveClass('lucide-package')
-    await expect(icon('Record')).toHaveClass('lucide-box')
-    await expect(icon('Default')).toHaveClass('lucide-box')
+    await expect(isIcon(icon('Account'), BuildingsIcon)).toBe(true)
+    await expect(isIcon(icon('Product'), PackageIcon)).toBe(true)
+    await expect(isIcon(icon('Record'), CubeIcon)).toBe(true)
+    await expect(isIcon(icon('Default'), CubeIcon)).toBe(true)
   },
 }
 

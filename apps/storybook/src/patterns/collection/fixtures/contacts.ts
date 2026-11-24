@@ -1,15 +1,15 @@
+import {
+  CircleDashedIcon,
+  CircleIcon,
+  HandshakeIcon,
+  ProhibitInsetIcon,
+  RadioButtonIcon,
+} from '@phosphor-icons/react'
 import type {
   CollectionDefinition,
   SelectPropertyOption,
   TagsPropertyOption,
 } from '@tc96/parttens'
-import {
-  CircleDashedIcon,
-  CircleDotIcon,
-  CircleIcon,
-  CircleOffIcon,
-  HandshakeIcon,
-} from 'lucide-react'
 
 export type ContactStage =
   | 'none'
@@ -46,13 +46,18 @@ export const stageOptions = [
   { icon: CircleIcon, label: 'Sem etapa', tone: 'neutral', value: 'none' },
   { icon: CircleDashedIcon, label: 'Lead', tone: 'neutral', value: 'lead' },
   {
-    icon: CircleDotIcon,
+    icon: RadioButtonIcon,
     label: 'Qualificado',
     tone: 'info',
     value: 'qualified',
   },
   { icon: HandshakeIcon, label: 'Cliente', tone: 'success', value: 'customer' },
-  { icon: CircleOffIcon, label: 'Inativo', tone: 'warning', value: 'inactive' },
+  {
+    icon: ProhibitInsetIcon,
+    label: 'Inativo',
+    tone: 'warning',
+    value: 'inactive',
+  },
 ] as const satisfies readonly (SelectPropertyOption & {
   value: ContactStage
 })[]

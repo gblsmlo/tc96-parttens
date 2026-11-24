@@ -1,7 +1,7 @@
+import { ArrowDownIcon, ArrowUpIcon, MinusIcon } from '@phosphor-icons/react'
 import { type AmountFormatOptions, formatAmount } from '@tc96/helpers/format'
 import { Badge } from '@tc96/ui/badge'
 import { cn } from '@tc96/utils'
-import { ArrowDownIcon, ArrowUpIcon, MinusIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { TrendDirection } from '../types'
 

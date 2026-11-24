@@ -1,4 +1,9 @@
 import {
+  ChatsIcon,
+  EnvelopeSimpleOpenIcon,
+  MagnifyingGlassIcon,
+} from '@phosphor-icons/react'
+import {
   ChatsPanel,
   ChatsPanelItem,
   ChatsPanelList,
@@ -12,7 +17,6 @@ import {
 import { Button } from '@tc96/ui/button'
 import { ChatEmptyState } from '@tc96/ui/chat/chat-states'
 import { MenuRadioGroup, MenuRadioItem, MenuSeparator } from '@tc96/ui/menu'
-import { MailOpenIcon, MessagesSquareIcon, SearchXIcon } from 'lucide-react'
 import { useState } from 'react'
 import { NoChatsState } from './chats-panel-layouts.tsx'
 import {
@@ -118,14 +122,14 @@ export function ChatInbox({
               <MenuSeparator />
               <ViewSettingsSection label="Filtros">
                 <FilterRadioSubmenu
-                  icon={MessagesSquareIcon}
+                  icon={ChatsIcon}
                   label="Canal"
                   onValueChange={setChannel}
                   options={channelOptions}
                   value={channel}
                 />
                 <FilterRadioSubmenu
-                  icon={MailOpenIcon}
+                  icon={EnvelopeSimpleOpenIcon}
                   label="Leitura"
                   onValueChange={setReadStatus}
                   options={readStatusOptions}
@@ -147,7 +151,7 @@ export function ChatInbox({
       ) : visibleChats.length === 0 ? (
         <ChatEmptyState
           description="Nenhuma conversa corresponde aos filtros."
-          icon={<SearchXIcon aria-hidden="true" />}
+          icon={<MagnifyingGlassIcon aria-hidden="true" />}
           title="Nenhuma conversa encontrada"
         >
           <Button onClick={clearFilters} size="sm" variant="outline">

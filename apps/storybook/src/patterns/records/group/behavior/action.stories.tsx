@@ -1,6 +1,6 @@
+import { PlusIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { RecordGroupAction } from '@tc96/parttens'
-import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, fireEvent, fn, userEvent, within } from 'storybook/test'
 

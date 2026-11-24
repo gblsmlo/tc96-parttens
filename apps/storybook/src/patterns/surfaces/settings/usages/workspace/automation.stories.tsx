@@ -1,3 +1,12 @@
+import {
+  CellSignalHighIcon,
+  CellSignalMediumIcon,
+  DotsThreeIcon,
+  FireIcon,
+  TimerIcon,
+  WarningOctagonIcon,
+  XCircleIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   SettingsSection,
@@ -11,15 +20,6 @@ import { Button } from '@tc96/ui/button'
 import { Group, GroupSeparator } from '@tc96/ui/group'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Text } from '@tc96/ui/text'
-import {
-  CircleXIcon,
-  EllipsisIcon,
-  FlameIcon,
-  OctagonAlertIcon,
-  SignalHighIcon,
-  SignalMediumIcon,
-  TimerIcon,
-} from 'lucide-react'
 import type { ComponentType, ReactNode } from 'react'
 import { expect, within } from 'storybook/test'
 
@@ -33,25 +33,25 @@ type Rule = {
 
 const rules: Rule[] = [
   {
-    action: { icon: FlameIcon, text: 'Add SLA of 24 hours from escalation' },
+    action: { icon: FireIcon, text: 'Add SLA of 24 hours from escalation' },
     field: 'Priority',
     id: 'urgent',
     operator: 'is',
-    value: { icon: OctagonAlertIcon, label: 'Urgent' },
+    value: { icon: WarningOctagonIcon, label: 'Urgent' },
   },
   {
     action: { icon: TimerIcon, text: 'Add SLA of 1 week from escalation' },
     field: 'Priority',
     id: 'high',
     operator: 'is',
-    value: { icon: SignalHighIcon, label: 'High' },
+    value: { icon: CellSignalHighIcon, label: 'High' },
   },
   {
-    action: { icon: CircleXIcon, text: 'Remove SLA' },
+    action: { icon: XCircleIcon, text: 'Remove SLA' },
     field: 'Priority',
     id: 'medium',
     operator: 'is',
-    value: { icon: SignalMediumIcon, label: 'Medium' },
+    value: { icon: CellSignalMediumIcon, label: 'Medium' },
   },
 ]
 
@@ -97,7 +97,7 @@ function RuleItem({ rule }: { rule: Rule }) {
           aria-label={`Actions for ${field} ${operator} ${value.label}`}
           render={<Button size="icon-xs" variant="ghost" />}
         >
-          <EllipsisIcon aria-hidden="true" />
+          <DotsThreeIcon aria-hidden="true" />
         </MenuTrigger>
         <MenuPopup align="end">
           <MenuItem>Edit</MenuItem>

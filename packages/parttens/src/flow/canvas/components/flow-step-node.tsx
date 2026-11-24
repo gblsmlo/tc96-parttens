@@ -1,9 +1,9 @@
+import { PlusIcon } from '@phosphor-icons/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { Badge, type BadgeProps } from '@tc96/ui/badge'
 import { Card } from '@tc96/ui/card'
 import { cn } from '@tc96/utils'
 import { Handle, type NodeProps } from '@xyflow/react'
-import { PlusIcon } from 'lucide-react'
 import { memo, type ReactElement } from 'react'
 import type { FlowRunStatus } from '../core'
 import { formatStepDuration, resolveStepKind } from '../lib/steps'
@@ -77,7 +77,7 @@ function FlowStepNodeView({
       >
         <Card className={cn(flowStepNodeVariants({ selected }))}>
           <div className={flowStepNodeHeaderClassName}>
-            <FlowStepIcon kind={kind} step={step} />
+            <FlowStepIcon aria-hidden="true" kind={kind} step={step} />
             <div className={flowStepNodeTextClassName}>
               <span className={flowStepNodeTitleClassName}>{step.name}</span>
               {step.description ? (
@@ -99,7 +99,7 @@ function FlowStepNodeView({
               {vertical ? (
                 <>
                   <span className={flowStatusTextVariants({ status })}>
-                    <FlowStatusIcon status={status} />
+                    <FlowStatusIcon aria-hidden="true" status={status} />
                     <span className="truncate">
                       {metrics ?? labels.statuses[status]}
                     </span>

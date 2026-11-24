@@ -1,4 +1,22 @@
 import {
+  ArrowDownLeftIcon,
+  ArrowSquareOutIcon,
+  ArrowsLeftRightIcon,
+  ArrowUpRightIcon,
+  ArrowUUpLeftIcon,
+  BankIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  DotsThreeIcon,
+  HandCoinsIcon,
+  PaperclipIcon,
+  type Icon as PhosphorIcon,
+  PlusIcon,
+  ProhibitIcon,
+  QrCodeIcon,
+  ReceiptIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupAction,
   RecordGroupDivider,
@@ -22,24 +40,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  ArrowDownLeftIcon,
-  ArrowLeftRightIcon,
-  ArrowUpRightIcon,
-  BanIcon,
-  CircleCheckIcon,
-  ClockIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  HandCoinsIcon,
-  LandmarkIcon,
-  type LucideIcon,
-  PaperclipIcon,
-  PlusIcon,
-  QrCodeIcon,
-  ReceiptTextIcon,
-  Undo2Icon,
-} from 'lucide-react'
 import { Fragment, type ReactNode, useState } from 'react'
 
 type Direction = 'in' | 'out' | 'transfer'
@@ -96,7 +96,7 @@ const formatCents = (cents: number) => money.format(cents / 100)
 const directionIcon = {
   in: ArrowDownLeftIcon,
   out: ArrowUpRightIcon,
-  transfer: ArrowLeftRightIcon,
+  transfer: ArrowsLeftRightIcon,
 } as const
 
 const situationStatus = {
@@ -464,7 +464,7 @@ const expenseTotals = [
 export function SituationFrame({
   icon: Icon,
   situation,
-}: Readonly<{ icon: LucideIcon; situation: Situation }>) {
+}: Readonly<{ icon: PhosphorIcon; situation: Situation }>) {
   return (
     <IconFrame
       color={situationStatus[situation].color}
@@ -507,7 +507,7 @@ export function RowMenu({
         aria-label={label}
         render={<Button size="icon-sm" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">{children}</MenuPopup>
     </Menu>
@@ -617,13 +617,13 @@ export function EntriesMenuGroup({
             <SituationBadge situation={entry.situation} />
             <RowMenu label={`Ações de ${entry.description}`}>
               <MenuItem onClick={() => onOpenEntry(entry.id)}>
-                <ExternalLinkIcon aria-hidden="true" />
+                <ArrowSquareOutIcon aria-hidden="true" />
                 Abrir
               </MenuItem>
               {open ? (
                 <>
                   <MenuItem onClick={() => onSettleEntry(entry.id)}>
-                    <CircleCheckIcon aria-hidden="true" />
+                    <CheckCircleIcon aria-hidden="true" />
                     Quitar
                   </MenuItem>
                   {entry.direction === 'in' ? (
@@ -637,7 +637,7 @@ export function EntriesMenuGroup({
                     onClick={() => onCancelEntry(entry.id)}
                     variant="destructive"
                   >
-                    <BanIcon aria-hidden="true" />
+                    <ProhibitIcon aria-hidden="true" />
                     Cancelar lançamento
                   </MenuItem>
                 </>
@@ -648,7 +648,7 @@ export function EntriesMenuGroup({
                     onClick={() => onReverseEntry(entry.id)}
                     variant="destructive"
                   >
-                    <Undo2Icon aria-hidden="true" />
+                    <ArrowUUpLeftIcon aria-hidden="true" />
                     Estornar
                   </MenuItem>
                 </>
@@ -712,7 +712,7 @@ export function ExpensesGroup({
           key={expense.id}
           leading={
             <SituationFrame
-              icon={ReceiptTextIcon}
+              icon={ReceiptIcon}
               situation={expense.settled ? 'settled' : 'open'}
             />
           }
@@ -726,7 +726,7 @@ export function ExpensesGroup({
           <SituationBadge situation={expense.settled ? 'settled' : 'open'} />
           <RowMenu label={`Ações de ${expense.description}`}>
             <MenuItem onClick={() => onOpenEntry(expense.id)}>
-              <ExternalLinkIcon aria-hidden="true" />
+              <ArrowSquareOutIcon aria-hidden="true" />
               Abrir
             </MenuItem>
             <MenuItem onClick={() => onAddReceipt(expense.id)}>
@@ -742,7 +742,7 @@ export function ExpensesGroup({
                   onClick={() => onReverseEntry(expense.id)}
                   variant="destructive"
                 >
-                  <Undo2Icon aria-hidden="true" />
+                  <ArrowUUpLeftIcon aria-hidden="true" />
                   Estornar
                 </MenuItem>
               </>
@@ -755,21 +755,21 @@ export function ExpensesGroup({
 }
 
 const addGroups: readonly {
-  items: readonly { icon: LucideIcon; label: string; value: string }[]
+  items: readonly { icon: PhosphorIcon; label: string; value: string }[]
   label: string
 }[] = [
   {
     items: [
       { icon: ArrowDownLeftIcon, label: 'Receita', value: 'income' },
       { icon: ArrowUpRightIcon, label: 'Despesa', value: 'expense' },
-      { icon: ArrowLeftRightIcon, label: 'Transferência', value: 'transfer' },
+      { icon: ArrowsLeftRightIcon, label: 'Transferência', value: 'transfer' },
       { icon: ClockIcon, label: 'Lançar horas', value: 'time-entry' },
     ],
     label: 'Lançamento',
   },
   {
     items: [
-      { icon: LandmarkIcon, label: 'Registrar alvará', value: 'court-release' },
+      { icon: BankIcon, label: 'Registrar alvará', value: 'court-release' },
     ],
     label: 'Processo',
   },
@@ -882,7 +882,7 @@ export function GroupedFinance({
               key={expense.id}
               leading={
                 <SituationFrame
-                  icon={ReceiptTextIcon}
+                  icon={ReceiptIcon}
                   situation={expense.settled ? 'settled' : 'open'}
                 />
               }

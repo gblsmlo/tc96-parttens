@@ -1,3 +1,4 @@
+import { ReceiptIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   RecordGroup,
@@ -5,7 +6,6 @@ import {
   RecordGroupLink,
   RecordStatusBadge,
 } from '@tc96/parttens'
-import { ReceiptTextIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 
 const tokens = {
@@ -116,7 +116,7 @@ export const StatusBadgeOneHeightInEveryVariant: Story = {
         >
           <RecordGroupLink
             href={`#/parcelas/${variant}-1`}
-            leading={<ReceiptTextIcon aria-hidden />}
+            leading={<ReceiptIcon aria-hidden />}
             meta={
               <RecordStatusBadge color={tokens.success}>
                 Quitado
@@ -126,7 +126,7 @@ export const StatusBadgeOneHeightInEveryVariant: Story = {
             Parcela 1
           </RecordGroupLink>
           <RecordGroupItem
-            leading={<ReceiptTextIcon aria-hidden />}
+            leading={<ReceiptIcon aria-hidden />}
             title="Parcela 2"
           >
             <span className="truncate text-muted-foreground">10/12/2026</span>

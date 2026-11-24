@@ -1,8 +1,8 @@
 'use client'
 
+import { CopyIcon, PlusIcon } from '@phosphor-icons/react'
 import { copyToClipboard } from '@tc96/helpers/clipboard'
 import { cn } from '@tc96/utils'
-import { CopyIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 import {
   PropertySurface,
@@ -71,7 +71,7 @@ export function TextProperty({
         onClick={() => setEditingInline(true)}
         render={<button type="button" />}
       >
-        <PlusIcon aria-hidden="true" className="size-3.5" />
+        <PlusIcon aria-hidden="true" className="size-4" />
         {fallback}
       </PropertySurface>
     )
@@ -86,7 +86,7 @@ export function TextProperty({
         onClick={() => void copyToClipboard(text)?.catch(() => undefined)}
         type="button"
       >
-        <CopyIcon aria-hidden="true" className="size-3" />
+        <CopyIcon aria-hidden="true" className="size-4" />
       </button>
     ) : null
 

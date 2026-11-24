@@ -1,5 +1,6 @@
 'use client'
 
+import { ArrowUpIcon, PaperclipIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Composer,
@@ -11,7 +12,6 @@ import {
   getComposerText,
 } from '@tc96/ui/composer'
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@tc96/ui/tooltip'
-import { ArrowUpIcon, PaperclipIcon } from 'lucide-react'
 import { type ReactElement, useState } from 'react'
 import { assistantDefaultPlaceholder, assistantDraftText } from '../../core'
 import { assistantPlaceholderClassName } from '../../lib/variants'

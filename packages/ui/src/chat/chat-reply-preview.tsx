@@ -1,6 +1,6 @@
 "use client";
 
-import { XIcon } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import { motion, usePresence, useReducedMotion } from "motion/react";
 import type { ReactElement, ReactNode, RefObject } from "react";
 import { useLayoutEffect, useRef, useState } from "react";

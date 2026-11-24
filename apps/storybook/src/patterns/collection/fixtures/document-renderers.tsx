@@ -1,4 +1,11 @@
 import {
+  ArchiveIcon,
+  ArrowSquareOutIcon,
+  DotsThreeIcon,
+  PushPinIcon,
+  PushPinSlashIcon,
+} from '@phosphor-icons/react'
+import {
   DateProperty,
   ListRow,
   ListRowAction,
@@ -30,13 +37,6 @@ import {
 } from '@tc96/ui/menu'
 import { Separator } from '@tc96/ui/separator'
 import { Text } from '@tc96/ui/text'
-import {
-  ArchiveIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  PinIcon,
-  PinOffIcon,
-} from 'lucide-react'
 import {
   type DocumentRecord,
   formatCreatedAt,
@@ -78,7 +78,7 @@ function DocumentMenu({
   revealOnHover?: boolean
   size?: 'icon-sm' | 'icon-xs'
 }>) {
-  const PinToggleIcon = document.pinned ? PinOffIcon : PinIcon
+  const PinToggleIcon = document.pinned ? PushPinSlashIcon : PushPinIcon
   return (
     <Menu>
       <MenuTrigger
@@ -91,11 +91,11 @@ function DocumentMenu({
           />
         }
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem onClick={() => actions.onOpen(document.id)}>
-          <ExternalLinkIcon aria-hidden="true" />
+          <ArrowSquareOutIcon aria-hidden="true" />
           Abrir
         </MenuItem>
         <MenuItem onClick={() => actions.onTogglePin(document.id)}>
@@ -131,7 +131,7 @@ export const renderPinnedDocumentCard =
     >
       <CardHeader className="flex items-center gap-3 p-4">
         <IconFrame color={kindOptionOf(document.kind).color} shape="rounded">
-          <KindIcon document={document} />
+          <KindIcon aria-hidden="true" document={document} />
         </IconFrame>
         <div className="grid min-w-0 flex-1">
           <CardTitle
@@ -180,7 +180,11 @@ export const renderDocumentCard =
       <CardHeader className="p-4">
         <div className="flex min-w-0 items-center justify-between gap-2">
           <Text className="flex min-w-0 items-center gap-1" size="xs" truncate>
-            <KindIcon className="size-3" document={document} />
+            <KindIcon
+              aria-hidden="true"
+              className="size-3"
+              document={document}
+            />
             <span className="truncate">
               {kindOptionOf(document.kind).label}
             </span>
@@ -221,7 +225,7 @@ export const renderDocumentListRow =
     <ListRow className="group" interactive={false} key={document.id}>
       <ListRowLeading>
         <IconFrame color={kindOptionOf(document.kind).color} shape="rounded">
-          <KindIcon document={document} />
+          <KindIcon aria-hidden="true" document={document} />
         </IconFrame>
       </ListRowLeading>
       <ListRowBody>

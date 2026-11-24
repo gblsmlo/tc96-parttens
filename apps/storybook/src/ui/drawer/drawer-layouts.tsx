@@ -1,3 +1,11 @@
+import {
+  CopyIcon,
+  DownloadSimpleIcon,
+  ListPlusIcon,
+  PencilSimpleIcon,
+  ShareNetworkIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Drawer,
@@ -20,14 +28,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@tc96/ui/drawer'
-import {
-  CopyIcon,
-  DownloadIcon,
-  ListPlusIcon,
-  PencilIcon,
-  Share2Icon,
-  Trash2Icon,
-} from 'lucide-react'
 import { useState } from 'react'
 import { type DrawerControls, drawerControlArgs } from './drawer-controls.ts'
 
@@ -318,7 +318,7 @@ export const SongActionsDrawer = ({
                 Harbor Lights · Nora Vale
               </DrawerMenuGroupLabel>
               <DrawerClose render={<DrawerMenuItem />}>
-                <Share2Icon aria-hidden="true" />
+                <ShareNetworkIcon aria-hidden="true" />
                 Share
               </DrawerClose>
               <DrawerClose render={<DrawerMenuItem />}>
@@ -348,7 +348,7 @@ export const SongActionsDrawer = ({
                 </DrawerPopup>
               </Drawer>
               <DrawerMenuItem disabled onClick={onDownload}>
-                <DownloadIcon aria-hidden="true" />
+                <DownloadSimpleIcon aria-hidden="true" />
                 Download for offline
               </DrawerMenuItem>
             </DrawerMenuGroup>
@@ -373,11 +373,11 @@ export const SongActionsDrawer = ({
             </DrawerMenuGroup>
             <DrawerMenuSeparator />
             <DrawerMenuItem>
-              <PencilIcon aria-hidden="true" />
+              <PencilSimpleIcon aria-hidden="true" />
               Edit song details
             </DrawerMenuItem>
             <DrawerClose render={<DrawerMenuItem variant="destructive" />}>
-              <Trash2Icon aria-hidden="true" />
+              <TrashIcon aria-hidden="true" />
               Remove from library
             </DrawerClose>
           </DrawerMenu>

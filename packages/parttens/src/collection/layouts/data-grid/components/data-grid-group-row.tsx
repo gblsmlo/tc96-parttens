@@ -2,9 +2,9 @@
 
 'use client'
 
+import { CaretDownIcon, CaretRightIcon } from '@phosphor-icons/react'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
-import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react'
 import { memo } from 'react'
 
 export interface DataGridGroupRowProps {
@@ -44,9 +44,9 @@ function DataGridGroupRowView({
           variant="ghost"
         >
           {collapsed ? (
-            <ChevronRightIcon aria-hidden="true" />
+            <CaretRightIcon aria-hidden="true" />
           ) : (
-            <ChevronDownIcon aria-hidden="true" />
+            <CaretDownIcon aria-hidden="true" />
           )}
         </Button>
         <span className="truncate" data-slot="data-grid-group-label">

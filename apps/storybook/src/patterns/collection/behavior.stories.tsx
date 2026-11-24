@@ -1,3 +1,11 @@
+import {
+  CalendarDotsIcon,
+  CardsIcon,
+  GridFourIcon,
+  RadioButtonIcon,
+  RowsIcon,
+  TableIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   type CollectionDataTableViewProps,
@@ -31,15 +39,6 @@ import {
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { MenuItem } from '@tc96/ui/menu'
-import {
-  CalendarDaysIcon,
-  CircleDotIcon,
-  GalleryVerticalEndIcon,
-  LayoutGridIcon,
-  Rows3Icon,
-  Table2Icon,
-  TableIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 
@@ -274,11 +273,11 @@ function LayoutButtons() {
 
 const layoutModes: readonly ViewSettingsMode<CollectionLayout>[] = [
   { icon: TableIcon, label: 'Tabela', value: 'datatable' },
-  { icon: Rows3Icon, label: 'Lista', value: 'list' },
-  { icon: Table2Icon, label: 'Planilha', value: 'datagrid' },
-  { icon: GalleryVerticalEndIcon, label: 'Galeria', value: 'gallery' },
-  { icon: LayoutGridIcon, label: 'Kanban', value: 'kanban' },
-  { icon: CalendarDaysIcon, label: 'Calendário', value: 'calendar' },
+  { icon: RowsIcon, label: 'Lista', value: 'list' },
+  { icon: TableIcon, label: 'Planilha', value: 'datagrid' },
+  { icon: CardsIcon, label: 'Galeria', value: 'gallery' },
+  { icon: GridFourIcon, label: 'Kanban', value: 'kanban' },
+  { icon: CalendarDotsIcon, label: 'Calendário', value: 'calendar' },
 ]
 
 function LayoutTabs() {
@@ -901,7 +900,7 @@ function FilterSubmenu({
         <ViewSettingsMenu onClearFilters={() => undefined}>
           <ViewSettingsSection label="Filtros">
             <FilterRadioSubmenu
-              icon={CircleDotIcon}
+              icon={RadioButtonIcon}
               label="Tipo"
               loading={loading}
               onValueChange={onValueChange}
@@ -1004,7 +1003,7 @@ export const FilterSubmenuLoading: Story = {
 
 const modesOf = (count: number): ViewSettingsMode[] =>
   Array.from({ length: count }, (_, index) => ({
-    icon: LayoutGridIcon,
+    icon: GridFourIcon,
     label: `Modo ${index + 1}`,
     value: `mode-${index + 1}`,
   }))

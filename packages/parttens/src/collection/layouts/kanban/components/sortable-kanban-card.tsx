@@ -5,8 +5,8 @@ import {
   PointerSensor,
 } from '@dnd-kit/dom'
 import { useSortable } from '@dnd-kit/react/sortable'
+import { DotsSixVerticalIcon } from '@phosphor-icons/react'
 import { cn } from '@tc96/utils'
-import { GripVerticalIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 const OWN_GESTURE_TARGETS = [
@@ -95,7 +95,7 @@ export function SortableKanbanCard({
         ref={handleRef}
         type="button"
       >
-        <GripVerticalIcon aria-hidden="true" className="size-4" />
+        <DotsSixVerticalIcon aria-hidden="true" className="size-4" />
       </button>
       {children}
     </div>

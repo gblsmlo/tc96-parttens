@@ -1,5 +1,6 @@
 'use client'
 
+import { PlusIcon } from '@phosphor-icons/react'
 import {
   Combobox,
   ComboboxChip,
@@ -11,7 +12,6 @@ import {
   ComboboxStatus,
 } from '@tc96/ui/combobox'
 import { cn } from '@tc96/utils'
-import { PlusIcon } from 'lucide-react'
 import type { ComponentProps, ReactNode, RefObject } from 'react'
 import { useRef, useState } from 'react'
 import {
@@ -134,10 +134,10 @@ export function PropertyMultiSelectShell<TOption extends OptionLike>({
             render={<button disabled={disabled} type="button" />}
           >
             {hasValue ? (
-              <PlusIcon aria-hidden="true" className="size-3.5" />
+              <PlusIcon aria-hidden="true" className="size-4" />
             ) : (
               <>
-                <AddIcon aria-hidden="true" className="size-3" />
+                <AddIcon aria-hidden="true" className="size-4" />
                 {placeholder}
               </>
             )}

@@ -1,6 +1,6 @@
 'use client'
 
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon } from '@phosphor-icons/react'
 import {
   type ReactElement,
   type ReactNode,

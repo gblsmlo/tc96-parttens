@@ -1,3 +1,11 @@
+import {
+  ChatIcon,
+  EnvelopeSimpleIcon,
+  FileTextIcon,
+  GitBranchIcon,
+  ListPlusIcon,
+  UserPlusIcon,
+} from '@phosphor-icons/react'
 import type {
   AssistantMessage,
   AssistantSuggestion,
@@ -8,14 +16,6 @@ import type {
   FlowStepStats,
   FlowStepType,
 } from '@tc96/blocks/ai-agents/flow/workflow-editor'
-import {
-  FileTextIcon,
-  GitBranchIcon,
-  ListPlusIcon,
-  MailIcon,
-  MessageSquareIcon,
-  UserPlusIcon,
-} from 'lucide-react'
 import type { ReactNode } from 'react'
 
 export const leadRoutingStepTypes: FlowStepType[] = [
@@ -38,12 +38,12 @@ export const leadRoutingStepTypes: FlowStepType[] = [
 ]
 
 export const leadRoutingIcons: Record<string, ReactNode> = {
-  condition: <GitBranchIcon />,
-  crm: <UserPlusIcon />,
-  email: <MailIcon />,
-  form: <FileTextIcon />,
-  list: <ListPlusIcon />,
-  slack: <MessageSquareIcon />,
+  condition: <GitBranchIcon aria-hidden="true" />,
+  crm: <UserPlusIcon aria-hidden="true" />,
+  email: <EnvelopeSimpleIcon aria-hidden="true" />,
+  form: <FileTextIcon aria-hidden="true" />,
+  list: <ListPlusIcon aria-hidden="true" />,
+  slack: <ChatIcon aria-hidden="true" />,
 }
 
 export const leadRoutingOwners: FlowOwner[] = [

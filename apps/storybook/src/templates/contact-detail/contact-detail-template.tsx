@@ -1,3 +1,18 @@
+import {
+  ArrowLeftIcon,
+  BriefcaseIcon,
+  BuildingIcon,
+  CalendarBlankIcon,
+  CalendarCheckIcon,
+  EnvelopeSimpleIcon,
+  FileTextIcon,
+  HandshakeIcon,
+  MonitorPlayIcon,
+  PhoneIcon,
+  PlusIcon,
+  RadioButtonIcon,
+  TagIcon,
+} from '@phosphor-icons/react'
 import { getInitials } from '@tc96/helpers/initials'
 import {
   type Activity,
@@ -17,21 +32,6 @@ import {
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
 import { Text } from '@tc96/ui/text'
-import {
-  ArrowLeftIcon,
-  BriefcaseIcon,
-  BuildingIcon,
-  CalendarCheckIcon,
-  CalendarIcon,
-  CircleDotIcon,
-  FileTextIcon,
-  HandshakeIcon,
-  MailIcon,
-  MonitorPlayIcon,
-  PhoneIcon,
-  PlusIcon,
-  TagIcon,
-} from 'lucide-react'
 import type { ReactNode } from 'react'
 import {
   type Contact,
@@ -55,11 +55,11 @@ import { peopleById, TIME_ZONE } from '../../patterns/collection/fixtures/tasks'
 const LOCALE = 'pt-BR'
 
 const activityIcon: Record<ActivityKind, ReactNode> = {
-  call: <PhoneIcon />,
-  closing: <CalendarCheckIcon />,
-  demo: <MonitorPlayIcon />,
-  meeting: <CalendarIcon />,
-  proposal: <FileTextIcon />,
+  call: <PhoneIcon aria-hidden="true" />,
+  closing: <CalendarCheckIcon aria-hidden="true" />,
+  demo: <MonitorPlayIcon aria-hidden="true" />,
+  meeting: <CalendarBlankIcon aria-hidden="true" />,
+  proposal: <FileTextIcon aria-hidden="true" />,
 }
 
 const dealStageTone: Partial<Record<Deal['stage'], WidgetTone>> = {
@@ -161,7 +161,7 @@ export function ContactDetailTemplate({
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline">
-              <MailIcon aria-hidden="true" />
+              <EnvelopeSimpleIcon aria-hidden="true" />
               Registrar e-mail
             </Button>
             <Button>
@@ -176,7 +176,7 @@ export function ContactDetailTemplate({
         <RecordGroup title="Detalhes do contato">
           <RecordGroupRow
             label="Etapa"
-            leading={<CircleDotIcon aria-hidden="true" />}
+            leading={<RadioButtonIcon aria-hidden="true" />}
           >
             <SelectProperty
               ariaLabel="Etapa"
@@ -208,7 +208,7 @@ export function ContactDetailTemplate({
           </RecordGroupRow>
           <RecordGroupRow
             label="E-mails"
-            leading={<MailIcon aria-hidden="true" />}
+            leading={<EnvelopeSimpleIcon aria-hidden="true" />}
           >
             <EmailProperty
               ariaLabel="E-mails"

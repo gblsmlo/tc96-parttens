@@ -1,6 +1,6 @@
+import { DotsThreeIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import { EllipsisIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { FlowStep } from '../core'
 import {
@@ -29,7 +29,7 @@ export function FlowStepMenu({
           />
         }
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         {stepActionsFor(kind, 'menu').map((action) => {

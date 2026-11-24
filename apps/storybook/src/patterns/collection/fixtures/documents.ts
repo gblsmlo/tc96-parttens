@@ -1,5 +1,9 @@
+import {
+  BookmarkSimpleIcon,
+  FileTextIcon,
+  NotebookIcon,
+} from '@phosphor-icons/react'
 import type { CollectionDefinition } from '@tc96/parttens'
-import { BookmarkIcon, FileTextIcon, NotebookPenIcon } from 'lucide-react'
 import { NOW, peopleById } from './tasks'
 
 export type DocumentKind = 'note' | 'document' | 'bookmark'
@@ -16,7 +20,7 @@ export interface DocumentRecord {
 }
 
 export const kindOptions = [
-  { color: '#d97706', icon: NotebookPenIcon, label: 'Nota', value: 'note' },
+  { color: '#d97706', icon: NotebookIcon, label: 'Nota', value: 'note' },
   {
     color: '#2563eb',
     icon: FileTextIcon,
@@ -25,7 +29,7 @@ export const kindOptions = [
   },
   {
     color: '#059669',
-    icon: BookmarkIcon,
+    icon: BookmarkSimpleIcon,
     label: 'Bookmark',
     value: 'bookmark',
   },

@@ -1,9 +1,9 @@
 'use client'
 
 import type { DayPickerLocale } from '@daypicker/react'
+import { CalendarBlankIcon, RepeatIcon } from '@phosphor-icons/react'
 import { Popover, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
-import { CalendarIcon, RepeatIcon } from 'lucide-react'
 import { useState } from 'react'
 import type { PropertyCalendarProps } from '../../shared/property-calendar-popover'
 import {
@@ -62,9 +62,13 @@ function ScheduleSurfaceContent({
 }: Readonly<{ label: string; repeats: boolean }>) {
   return (
     <>
-      <CalendarIcon aria-hidden className="size-3" data-slot="property-icon" />
+      <CalendarBlankIcon
+        aria-hidden
+        className="size-4"
+        data-slot="property-icon"
+      />
       <span className="truncate">{label}</span>
-      {repeats ? <RepeatIcon aria-hidden className="size-3" /> : null}
+      {repeats ? <RepeatIcon aria-hidden className="size-4" /> : null}
     </>
   )
 }

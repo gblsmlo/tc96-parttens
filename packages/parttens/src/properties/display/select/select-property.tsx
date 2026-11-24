@@ -1,8 +1,8 @@
 'use client'
 
+import { CircleDashedIcon } from '@phosphor-icons/react'
 import { SelectGroup, SelectGroupLabel, SelectItem } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
-import { CircleDashedIcon } from 'lucide-react'
 import { useState } from 'react'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import {
@@ -180,7 +180,7 @@ function SelectPropertyContent({
         <Icon
           aria-hidden
           className={cn(
-            'size-3',
+            'size-4',
             option?.tone ? propertyToneClassName[option.tone] : undefined,
           )}
           data-slot="property-icon"

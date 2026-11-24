@@ -1,3 +1,4 @@
+import { CopyIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import {
@@ -13,7 +14,6 @@ import {
 } from '@tc96/ui/dialog'
 import { Field, FieldLabel } from '@tc96/ui/field'
 import { Input } from '@tc96/ui/input'
-import { CopyIcon } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { expect, screen, within } from 'storybook/test'
 

@@ -1,3 +1,4 @@
+import { ArrowUpIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
@@ -20,7 +21,6 @@ import {
   type ComposerValue,
   getComposerText,
 } from '@tc96/ui/composer'
-import { ArrowUpIcon } from 'lucide-react'
 import { AnimatePresence } from 'motion/react'
 import { useRef, useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'

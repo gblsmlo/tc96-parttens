@@ -1,11 +1,11 @@
 'use client'
 
+import { ClockCounterClockwiseIcon } from '@phosphor-icons/react'
 import { Badge, type BadgeProps } from '@tc96/ui/badge'
 import { Card, CardPanel } from '@tc96/ui/card'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { Progress } from '@tc96/ui/progress'
 import { cn } from '@tc96/utils'
-import { HistoryIcon } from 'lucide-react'
 import { type ReactElement, useId } from 'react'
 import type { FlowRunStatus } from '../../../canvas/core'
 import { defaultFlowRunCardLabels } from '../../core'
@@ -52,7 +52,9 @@ export function FlowRunCard({
     >
       <CardPanel className={flowRunCardBodyClassName}>
         <div className="flex items-start gap-3">
-          <IconFrame>{icon ?? <HistoryIcon />}</IconFrame>
+          <IconFrame>
+            {icon ?? <ClockCounterClockwiseIcon aria-hidden="true" />}
+          </IconFrame>
           <div className={flowRunCardTextClassName}>
             <h3 className="font-medium text-sm" id={titleId}>
               {text.title}

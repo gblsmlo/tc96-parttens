@@ -1,4 +1,13 @@
 import {
+  CalendarBlankIcon,
+  CellSignalFullIcon,
+  ChatCircleIcon,
+  ClockIcon,
+  FileTextIcon,
+  ListChecksIcon,
+  RadioButtonIcon,
+} from '@phosphor-icons/react'
+import {
   CalendarEventChip,
   CalendarEventChipOpenTrigger,
   CalendarEventChipTime,
@@ -30,15 +39,6 @@ import {
 } from '@tc96/ui/card'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { Text } from '@tc96/ui/text'
-import {
-  CalendarIcon,
-  CircleDotIcon,
-  Clock3Icon,
-  FileTextIcon,
-  ListTodoIcon,
-  MessageCircleIcon,
-  SignalIcon,
-} from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { DescriptionSegments } from './description-segments'
 import { CardCountMenu, CardField, CardMenu } from './kanban-card-parts'
@@ -90,7 +90,7 @@ export const renderTaskListRow =
         {StatusIcon ? (
           <ListRowLeading>
             <IconFrame shape="rounded">
-              <StatusIcon />
+              <StatusIcon aria-hidden="true" />
             </IconFrame>
           </ListRowLeading>
         ) : null}
@@ -136,24 +136,24 @@ export const renderTaskKanbanCard =
         </KanbanCardHeader>
         <KanbanCardBody>
           <CardField
-            icon={<CircleDotIcon aria-hidden />}
+            icon={<RadioButtonIcon aria-hidden />}
             interactive
             label="Status"
           >
             <StatusField onChange={updateTask} task={task} variant="plain" />
           </CardField>
           <CardField
-            icon={<CalendarIcon aria-hidden />}
+            icon={<CalendarBlankIcon aria-hidden />}
             interactive
             label="Prazo"
           >
             <DueField onChange={updateTask} task={task} variant="plain" />
           </CardField>
-          <CardField icon={<Clock3Icon aria-hidden />} label="Estimativa">
+          <CardField icon={<ClockIcon aria-hidden />} label="Estimativa">
             {`${task.estimate} h`}
           </CardField>
           <CardField
-            icon={<SignalIcon aria-hidden />}
+            icon={<CellSignalFullIcon aria-hidden />}
             interactive
             label="Prioridade"
           >
@@ -170,7 +170,7 @@ export const renderTaskKanbanCard =
             />
             <CardCountMenu
               count={1}
-              icon={<ListTodoIcon aria-hidden />}
+              icon={<ListChecksIcon aria-hidden />}
               items={[
                 { label: 'Criar subtarefa' },
                 { label: 'Ver subtarefas' },
@@ -179,7 +179,7 @@ export const renderTaskKanbanCard =
             />
             <CardCountMenu
               count={1}
-              icon={<MessageCircleIcon aria-hidden />}
+              icon={<ChatCircleIcon aria-hidden />}
               items={[
                 { label: 'Criar comentário' },
                 { label: 'Ver comentários' },

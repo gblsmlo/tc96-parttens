@@ -1,3 +1,11 @@
+import {
+  CheckCircleIcon,
+  CircleDashedIcon,
+  CircleIcon,
+  DotsThreeIcon,
+  RadioButtonIcon,
+  XCircleIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   SettingsCollapsed,
@@ -10,14 +18,6 @@ import {
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import {
-  CircleCheckIcon,
-  CircleDashedIcon,
-  CircleDotIcon,
-  CircleIcon,
-  CircleXIcon,
-  EllipsisIcon,
-} from 'lucide-react'
 import { expect, within } from 'storybook/test'
 
 const groups = [
@@ -46,7 +46,7 @@ const groups = [
   {
     statuses: [
       {
-        icon: CircleDotIcon,
+        icon: RadioButtonIcon,
         label: 'In Progress',
         projects: '6 projects',
         tone: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-500',
@@ -57,7 +57,7 @@ const groups = [
   {
     statuses: [
       {
-        icon: CircleCheckIcon,
+        icon: CheckCircleIcon,
         label: 'Completed',
         projects: undefined,
         tone: 'bg-violet-500/10 text-violet-500',
@@ -68,7 +68,7 @@ const groups = [
   {
     statuses: [
       {
-        icon: CircleXIcon,
+        icon: XCircleIcon,
         label: 'Canceled',
         projects: undefined,
         tone: 'bg-destructive/8 text-destructive-foreground dark:bg-destructive/16',
@@ -106,7 +106,7 @@ function StatusesDemo() {
                         aria-label={`Actions for ${label}`}
                         render={<Button size="icon-xs" variant="ghost" />}
                       >
-                        <EllipsisIcon aria-hidden="true" />
+                        <DotsThreeIcon aria-hidden="true" />
                       </MenuTrigger>
                       <MenuPopup align="end">
                         <MenuItem>Edit</MenuItem>
@@ -117,7 +117,7 @@ function StatusesDemo() {
                   key={label}
                   startSlot={
                     <IconFrame className={tone} shape="rounded">
-                      <Icon className="size-4" />
+                      <Icon aria-hidden="true" className="size-4" />
                     </IconFrame>
                   }
                   title={label}

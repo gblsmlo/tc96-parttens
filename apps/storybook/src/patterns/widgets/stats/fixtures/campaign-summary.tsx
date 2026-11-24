@@ -1,3 +1,4 @@
+import { PlantIcon, UsersIcon, WalletIcon } from '@phosphor-icons/react'
 import {
   Amount,
   type AmountFormatOptions,
@@ -9,7 +10,6 @@ import {
 } from '@tc96/parttens'
 import { CardPanel } from '@tc96/ui/card'
 import { MeterPrimitive } from '@tc96/ui/meter'
-import { SproutIcon, UsersIcon, WalletIcon } from 'lucide-react'
 import { type ReactElement, type ReactNode, useId } from 'react'
 import {
   type Campaign,
@@ -113,7 +113,7 @@ function SpendCard({ campaigns }: CampaignsProps): ReactElement {
     <SummaryCard
       adornment={
         <IconFrame shape="rounded">
-          <WalletIcon />
+          <WalletIcon aria-hidden="true" />
         </IconFrame>
       }
       label="Investido"
@@ -175,7 +175,7 @@ function ReachCard({ campaigns }: CampaignsProps): ReactElement {
     <SummaryCard
       adornment={
         <IconFrame shape="rounded">
-          <UsersIcon />
+          <UsersIcon aria-hidden="true" />
         </IconFrame>
       }
       label="Alcance"
@@ -218,7 +218,7 @@ function LearningCard({ campaigns }: CampaignsProps): ReactElement {
     <SummaryCard
       adornment={
         <IconFrame shape="rounded">
-          <SproutIcon />
+          <PlantIcon aria-hidden="true" />
         </IconFrame>
       }
       label="Em aprendizado"

@@ -1,6 +1,8 @@
+import { PlusIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PhoneProperty } from '@tc96/parttens'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { isIcon } from '../../../../test-utils/is-icon'
 import { PhoneCanvas } from './phone-canvas.tsx'
 
 const PHONE = '+5511987654321'
@@ -67,7 +69,7 @@ export const FilledTriggerCollapsesToPlus: Story = {
     const { height, width } = trigger.getBoundingClientRect()
 
     await expect(trigger.textContent).toBe('')
-    await expect(trigger.querySelector('svg')).toHaveClass('lucide-plus')
+    await expect(isIcon(trigger.querySelector('svg'), PlusIcon)).toBe(true)
     await expect(width).toBe(24)
     await expect(height).toBe(24)
     await expect(within(canvasElement).getByText(PHONE_LABEL)).toBeVisible()

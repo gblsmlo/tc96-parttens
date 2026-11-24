@@ -1,8 +1,8 @@
 'use client'
 
+import { PhoneIcon, XIcon } from '@phosphor-icons/react'
 import { Popover, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
-import { PhoneIcon, XIcon } from 'lucide-react'
 import { useEntryListEditor } from '../../hooks/use-entry-list-editor'
 import { createEntryParser } from '../../shared/lib/entry-parser'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
@@ -191,7 +191,7 @@ export function PhoneProperty({
             >
               <PhoneIcon
                 aria-hidden="true"
-                className="size-3"
+                className="size-4"
                 data-slot="property-icon"
               />
               <span className="truncate">{summary}</span>
@@ -229,7 +229,7 @@ export function PhoneProperty({
               }
               type="button"
             >
-              <XIcon aria-hidden="true" className="size-3" />
+              <XIcon aria-hidden="true" className="size-4" />
             </button>
           }
         />

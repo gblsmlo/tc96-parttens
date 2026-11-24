@@ -1,3 +1,4 @@
+import { EnvelopeSimpleIcon, MagnifyingGlassIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Autocomplete,
@@ -12,7 +13,6 @@ import {
   AutocompleteSeparator,
 } from '@tc96/ui/autocomplete'
 import { Field, FieldDescription, FieldLabel } from '@tc96/ui/field'
-import { MailIcon, SearchIcon } from 'lucide-react'
 import { Fragment } from 'react'
 import { expect, within } from 'storybook/test'
 import { AutocompleteCanvas } from './autocomplete-frame.tsx'
@@ -120,7 +120,7 @@ export const HelpCenterSearch: Story = {
       <AutocompleteInput
         aria-label="Search the help center"
         placeholder="How do I…"
-        startAddon={<SearchIcon />}
+        startAddon={<MagnifyingGlassIcon aria-hidden="true" />}
         type="search"
       />
       <AutocompletePopup>
@@ -163,7 +163,7 @@ export const InviteByEmail: Story = {
       <Autocomplete items={teammates} mode="both" name="email">
         <AutocompleteInput
           placeholder="name@northwind.io"
-          startAddon={<MailIcon />}
+          startAddon={<EnvelopeSimpleIcon aria-hidden="true" />}
           type="email"
         />
         <AutocompletePopup>

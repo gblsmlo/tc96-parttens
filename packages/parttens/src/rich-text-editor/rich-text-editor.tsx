@@ -1,8 +1,8 @@
 'use client'
 
+import { AtIcon } from '@phosphor-icons/react'
 import { stripRichTextNodeIds } from '@tc96/helpers/rich-text'
 import { cn } from '@tc96/utils'
-import { AtSignIcon } from 'lucide-react'
 import {
   PointApi,
   RangeApi,
@@ -255,7 +255,7 @@ function EditorContent({
     () =>
       (mentions ?? []).map((mention) => ({
         block: mention.id,
-        icon: AtSignIcon,
+        icon: AtIcon,
         keywords: [],
         label: mention.label,
       })),

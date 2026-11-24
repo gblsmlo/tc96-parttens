@@ -1,8 +1,8 @@
 'use client'
 
+import { CubeIcon, GitBranchIcon, LightningIcon } from '@phosphor-icons/react'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
-import { BoxIcon, GitBranchIcon, ZapIcon } from 'lucide-react'
 import { type ReactElement, useId } from 'react'
 import {
   FLOW_STEP_TRANSFER_TYPE,
@@ -16,9 +16,9 @@ import {
 import type { FlowStepLibraryItemProps } from '../../types'
 
 const kindIcons = {
-  action: BoxIcon,
+  action: CubeIcon,
   condition: GitBranchIcon,
-  trigger: ZapIcon,
+  trigger: LightningIcon,
 } as const
 
 export function FlowStepLibraryItem({
@@ -53,7 +53,7 @@ export function FlowStepLibraryItem({
       }}
       type="button"
     >
-      <IconFrame>{icon ?? <KindIcon />}</IconFrame>
+      <IconFrame>{icon ?? <KindIcon aria-hidden="true" />}</IconFrame>
       {collapsed ? null : (
         <span className={flowStepLibraryItemTextClassName}>
           <span className="truncate font-medium">{type.label}</span>

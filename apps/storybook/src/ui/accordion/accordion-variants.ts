@@ -1,14 +1,14 @@
 import {
-  LayersIcon,
-  type LucideIcon,
-  SettingsIcon,
+  GearIcon,
+  type Icon as PhosphorIcon,
+  StackIcon,
   UserIcon,
-} from 'lucide-react'
+} from '@phosphor-icons/react'
 
 export const accordionItems = [
   {
     content: 'Describe what the first panel reveals here.',
-    icon: LayersIcon,
+    icon: StackIcon,
     value: 'first',
   },
   {
@@ -18,12 +18,12 @@ export const accordionItems = [
   },
   {
     content: 'Describe what the third panel reveals here.',
-    icon: SettingsIcon,
+    icon: GearIcon,
     value: 'third',
   },
 ] as const satisfies readonly {
   content: string
-  icon: LucideIcon
+  icon: PhosphorIcon
   value: string
 }[]
 

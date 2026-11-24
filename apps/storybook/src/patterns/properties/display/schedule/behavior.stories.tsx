@@ -1,4 +1,5 @@
 import { ptBR } from '@daypicker/react/locale'
+import { RepeatIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   emptyScheduleValue,
@@ -6,6 +7,7 @@ import {
   type ScheduleValue,
 } from '@tc96/parttens'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { isIcon } from '../../../../test-utils/is-icon'
 import { esperarSuperficieDeBadge } from '../../../../test-utils/property-surface'
 import { ScheduleCanvas } from './schedule-canvas.tsx'
 import { scheduleToday, timedWeeklySchedule } from './schedule-data.ts'
@@ -107,7 +109,11 @@ export const NameCarriesRecurrence: Story = {
     })
 
     await expect(trigger).toHaveTextContent(/^26 de out · 14:00 – 16:00$/)
-    await expect(trigger.querySelector('.lucide-repeat')).not.toBeNull()
+    await expect(
+      [...trigger.querySelectorAll('svg')].some((svg) =>
+        isIcon(svg, RepeatIcon),
+      ),
+    ).toBe(true)
     await expect(args.onValueChange).not.toHaveBeenCalled()
   },
 }

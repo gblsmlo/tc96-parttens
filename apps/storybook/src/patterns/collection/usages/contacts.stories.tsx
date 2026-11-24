@@ -1,3 +1,11 @@
+import {
+  ListBulletsIcon,
+  RadioButtonIcon,
+  RowsIcon,
+  TableIcon,
+  TagIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Action,
@@ -35,15 +43,6 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
-import {
-  CircleDotIcon,
-  ListIcon,
-  Rows3Icon,
-  Table2Icon,
-  TableIcon,
-  TagIcon,
-  Trash2Icon,
-} from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { CreateContactDialog } from '../../records/dialog/create-contact-dialog'
@@ -72,8 +71,8 @@ type ContactLayout = Extract<
 
 const contactLayouts: readonly ViewSettingsMode<ContactLayout>[] = [
   { icon: TableIcon, label: 'Tabela', value: 'datatable' },
-  { icon: Table2Icon, label: 'Planilha', value: 'datagrid' },
-  { icon: Rows3Icon, label: 'Lista', value: 'list' },
+  { icon: TableIcon, label: 'Planilha', value: 'datagrid' },
+  { icon: RowsIcon, label: 'Lista', value: 'list' },
 ]
 
 const isContactLayout = (value: CollectionLayout): value is ContactLayout =>
@@ -272,7 +271,7 @@ function ContactsWorkspace({
     {
       items: [
         {
-          icon: <Trash2Icon />,
+          icon: <TrashIcon aria-hidden="true" />,
           label: 'Excluir',
           onSelect: () => {
             onContactsChange((current) =>
@@ -323,7 +322,7 @@ function ContactsWorkspace({
                     {layout === 'datatable' ? null : (
                       <MenuSub>
                         <MenuSubTrigger>
-                          <ListIcon aria-hidden="true" />
+                          <ListBulletsIcon aria-hidden="true" />
                           Agrupar por
                         </MenuSubTrigger>
                         <MenuSubPopup>
@@ -364,7 +363,7 @@ function ContactsWorkspace({
                     {layout === 'datatable' ? (
                       <MenuSub>
                         <MenuSubTrigger>
-                          <Table2Icon aria-hidden="true" />
+                          <TableIcon aria-hidden="true" />
                           Colunas
                         </MenuSubTrigger>
                         <MenuSubPopup>
@@ -391,7 +390,7 @@ function ContactsWorkspace({
                   <ViewSettingsSection label="Filtros">
                     <MenuSub>
                       <MenuSubTrigger>
-                        <CircleDotIcon aria-hidden="true" />
+                        <RadioButtonIcon aria-hidden="true" />
                         Etapa
                       </MenuSubTrigger>
                       <MenuSubPopup>

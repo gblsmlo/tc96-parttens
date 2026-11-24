@@ -1,6 +1,8 @@
+import { PlusIcon, TagIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TagsProperty, type TagsPropertyOption } from '@tc96/parttens'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { isIcon } from '../../../../test-utils/is-icon'
 import { esperarIndicadorADireita } from '../../../../test-utils/property-surface'
 import { TagsCanvas } from './tags-canvas.tsx'
 import { placementsCountLabel } from './tags-data.ts'
@@ -91,7 +93,7 @@ export const EmptyAddChipShowsTagIconLast: Story = {
 
     await expect(trigger.textContent).toBe('Adicionar tag')
     await expect(trigger.querySelectorAll('svg')).toHaveLength(1)
-    await expect(trigger.querySelector('svg')).toHaveClass('lucide-tag')
+    await expect(isIcon(trigger.querySelector('svg'), TagIcon)).toBe(true)
     await expect(chipsOf(canvasElement).lastElementChild).toBe(trigger)
   },
 }
@@ -102,7 +104,7 @@ export const AddChipShrinksToPlusSquare: Story = {
     const size = trigger.getBoundingClientRect()
 
     await expect(trigger.textContent).toBe('')
-    await expect(trigger.querySelector('svg')).toHaveClass('lucide-plus')
+    await expect(isIcon(trigger.querySelector('svg'), PlusIcon)).toBe(true)
     await expect(size.width).toBe(24)
     await expect(size.height).toBe(24)
   },
@@ -300,8 +302,8 @@ export const CountPlainKeepsTextSizeAndIcon: Story = {
 
     await expect(trigger.dataset.variant).toBe('plain')
     await expect(getComputedStyle(trigger).fontSize).toBe('14px')
-    await expect(icon?.getBoundingClientRect().width).toBe(12)
-    await expect(icon?.getBoundingClientRect().height).toBe(12)
+    await expect(icon?.getBoundingClientRect().width).toBe(16)
+    await expect(icon?.getBoundingClientRect().height).toBe(16)
   },
 }
 

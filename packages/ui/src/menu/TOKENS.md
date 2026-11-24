@@ -265,7 +265,7 @@ A `kbd` with `aria-hidden="true"`.
 
 #### Chevron
 
-`ChevronRightIcon` from `lucide-react`.
+`CaretRightIcon` from `@phosphor-icons/react`.
 
 | Name | Selectors | Description |
 | --- | --- | --- |

@@ -1,4 +1,14 @@
 import {
+  ArrowSquareOutIcon,
+  BuildingsIcon,
+  DotsThreeIcon,
+  PlusIcon,
+  TrashIcon,
+  UserIcon,
+  UserPlusIcon,
+  XIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupAction,
   RecordGroupFilter,
@@ -16,16 +26,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  Building2Icon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  PlusIcon,
-  Trash2Icon,
-  UserRoundIcon,
-  UserRoundPlusIcon,
-  XIcon,
-} from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 
 type Role = 'client' | 'counterparty' | 'witness' | 'correspondent' | 'referrer'
@@ -156,7 +156,7 @@ const partyMeta = (party: Party) =>
     : `${roleLabel[party.role]} · ${poleLabel[party.pole]}`
 
 export function PartyFrame({ party }: Readonly<{ party: Party }>) {
-  const Icon = party.kind === 'company' ? Building2Icon : UserRoundIcon
+  const Icon = party.kind === 'company' ? BuildingsIcon : UserIcon
   return (
     <IconFrame
       color={party.role === 'client' ? clientColor : undefined}
@@ -211,7 +211,7 @@ export function RowMenu({
         aria-label={label}
         render={<Button size="icon-sm" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">{children}</MenuPopup>
     </Menu>
@@ -395,11 +395,11 @@ export function PartiesMenuGroup({
             <ClientBadge party={party} />
             <RowMenu label={`Ações de ${party.name}`}>
               <MenuItem onClick={() => onOpenContact(party.id)}>
-                <ExternalLinkIcon aria-hidden="true" />
+                <ArrowSquareOutIcon aria-hidden="true" />
                 Abrir contato
               </MenuItem>
               <MenuItem onClick={() => onAddRepresentative(party.id)}>
-                <UserRoundPlusIcon aria-hidden="true" />
+                <UserPlusIcon aria-hidden="true" />
                 Adicionar representante
               </MenuItem>
               <MenuSeparator />
@@ -407,7 +407,7 @@ export function PartiesMenuGroup({
                 onClick={() => removeParty(party.id)}
                 variant="destructive"
               >
-                <Trash2Icon aria-hidden="true" />
+                <TrashIcon aria-hidden="true" />
                 Remover
               </MenuItem>
             </RowMenu>

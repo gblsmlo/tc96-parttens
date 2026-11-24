@@ -1,9 +1,9 @@
 import { CollisionPriority } from '@dnd-kit/abstract'
 import { useDroppable } from '@dnd-kit/react'
+import { DotsThreeIcon, PlusIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { ScrollArea } from '@tc96/ui/scroll-area'
 import { cn } from '@tc96/utils'
-import { EllipsisIcon, PlusIcon } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
 import { memo, useId } from 'react'
 
@@ -129,7 +129,7 @@ function KanbanColumnHeader<TCard>({
               size="icon-sm"
               variant="ghost"
             >
-              <EllipsisIcon aria-hidden="true" />
+              <DotsThreeIcon aria-hidden="true" />
             </Button>
           ) : null}
           {renderHeaderActions?.(column)}

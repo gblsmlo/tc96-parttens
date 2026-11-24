@@ -1,5 +1,6 @@
 'use client'
 
+import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { renderAnchor } from '@tc96/ui/render-anchor'
 import {
   Sidebar,
@@ -13,7 +14,6 @@ import {
   SidebarProvider,
 } from '@tc96/ui/sidebar'
 import { cn } from '@tc96/utils'
-import { SearchIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
 import { ShellBackButton } from '../shared/shell-back-button'
@@ -87,7 +87,7 @@ export function AppShell2({
                       />
                     }
                   >
-                    <SearchIcon />
+                    <MagnifyingGlassIcon aria-hidden="true" />
                     <span>{labels.search}</span>
                     <span className="ms-auto group-data-[collapsible=icon]:hidden">
                       <ShellSearchShortcut />

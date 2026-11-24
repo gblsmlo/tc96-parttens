@@ -1,19 +1,19 @@
 'use client'
 
+import {
+  CalendarBlankIcon,
+  ChatCenteredDotsIcon,
+  CodeBlockIcon,
+  ImageIcon,
+  ListChecksIcon,
+  MinusIcon,
+  type Icon as PhosphorIcon,
+  TableIcon,
+  TextAaIcon,
+} from '@phosphor-icons/react'
 import { filterWords } from '@platejs/combobox'
 import { Popover, PopoverPopup } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
-import {
-  CalendarIcon,
-  ImageIcon,
-  ListTodoIcon,
-  type LucideIcon,
-  MessageSquareWarningIcon,
-  MinusIcon,
-  SquareCodeIcon,
-  TableIcon,
-  TextIcon,
-} from 'lucide-react'
 import {
   ElementApi,
   NodeApi,
@@ -43,7 +43,7 @@ export type SlashMenuBlock = RichTextBlock | RichTextExtraBlock | 'p'
 
 export interface SlashMenuOption {
   block: SlashMenuBlock | (string & {})
-  icon?: LucideIcon
+  icon?: PhosphorIcon
   keywords: readonly string[]
   label: string
 }
@@ -66,15 +66,15 @@ const keywords = {
 
 const optionIcon = {
   ...blockIcon,
-  callout: MessageSquareWarningIcon,
-  code: SquareCodeIcon,
-  date: CalendarIcon,
+  callout: ChatCenteredDotsIcon,
+  code: CodeBlockIcon,
+  date: CalendarBlankIcon,
   hr: MinusIcon,
   image: ImageIcon,
   table: TableIcon,
-  p: TextIcon,
-  todo: ListTodoIcon,
-} as const satisfies Record<SlashMenuBlock, LucideIcon>
+  p: TextAaIcon,
+  todo: ListChecksIcon,
+} as const satisfies Record<SlashMenuBlock, PhosphorIcon>
 
 export function slashMenuOptions(
   labels: Readonly<Record<SlashMenuBlock, string>>,
@@ -332,7 +332,7 @@ export function SlashMenu({
             const Icon =
               option.icon ??
               optionIcon[option.block as SlashMenuBlock] ??
-              TextIcon
+              TextAaIcon
             const active = index === menu.activeIndex
             return (
               <button

@@ -1,6 +1,6 @@
 'use client'
 
-import { BoxIcon, Building2Icon, PackageIcon } from 'lucide-react'
+import { BuildingsIcon, CubeIcon, PackageIcon } from '@phosphor-icons/react'
 import type { PropertyVariant } from '../../shared/property-surface'
 import { IconLabelProperty } from '../icon-label/icon-label-property'
 
@@ -15,10 +15,10 @@ export interface ReferencePropertyProps {
 }
 
 const referenceIcon = {
-  account: Building2Icon,
+  account: BuildingsIcon,
   product: PackageIcon,
-  record: BoxIcon,
-} satisfies Record<ReferencePropertyKind, typeof BoxIcon>
+  record: CubeIcon,
+} satisfies Record<ReferencePropertyKind, typeof CubeIcon>
 
 export function ReferenceProperty({
   ariaLabel,

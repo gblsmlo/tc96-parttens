@@ -1,9 +1,14 @@
+import {
+  MinusIcon,
+  PlusIcon,
+  SpeakerHighIcon,
+  SpeakerXIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import { Field, FieldDescription, FieldLabel } from '@tc96/ui/field'
 import { Fieldset, FieldsetLegend } from '@tc96/ui/fieldset'
 import { Slider, SliderValue } from '@tc96/ui/slider'
-import { MinusIcon, PlusIcon, Volume2Icon, VolumeXIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { SliderCanvas } from './slider-frame.tsx'
@@ -27,9 +32,9 @@ export const Volume: Story = {
   render: () => (
     <IconSlider
       defaultValue={35}
-      endIcon={Volume2Icon}
+      endIcon={SpeakerHighIcon}
       label="Volume"
-      startIcon={VolumeXIcon}
+      startIcon={SpeakerXIcon}
     />
   ),
   play: async ({ canvasElement }) => {

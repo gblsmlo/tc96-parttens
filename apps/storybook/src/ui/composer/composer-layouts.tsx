@@ -1,3 +1,10 @@
+import {
+  ArrowUpIcon,
+  AtIcon,
+  PaperclipIcon,
+  UserIcon,
+  UsersThreeIcon,
+} from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Composer,
@@ -17,13 +24,6 @@ import {
   type ComposerValue,
   useComposerContext,
 } from '@tc96/ui/composer'
-import {
-  ArrowUpIcon,
-  AtSignIcon,
-  PaperclipIcon,
-  UserRoundIcon,
-  UsersRoundIcon,
-} from 'lucide-react'
 import type { ComposerControls } from './composer-controls.ts'
 import { sampleTriggers, textDraft } from './composer-data.ts'
 import type { ComposerSubmitOnEnterName } from './composer-variants.ts'
@@ -59,7 +59,7 @@ export const MentionButton = () => {
       size="icon-sm"
       variant="ghost"
     >
-      <AtSignIcon aria-hidden="true" />
+      <AtIcon aria-hidden="true" />
     </Button>
   )
 }
@@ -96,9 +96,9 @@ export const renderChipToken = (token: ComposerTokenPart) => (
   <ComposerToken
     icon={
       token.kind === 'team' ? (
-        <UsersRoundIcon aria-hidden="true" />
+        <UsersThreeIcon aria-hidden="true" />
       ) : (
-        <UserRoundIcon aria-hidden="true" />
+        <UserIcon aria-hidden="true" />
       )
     }
     token={token}

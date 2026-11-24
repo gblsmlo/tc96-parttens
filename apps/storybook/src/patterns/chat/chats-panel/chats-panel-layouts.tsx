@@ -1,3 +1,4 @@
+import { TrayIcon } from '@phosphor-icons/react'
 import {
   ChatsPanel,
   ChatsPanelItem,
@@ -9,7 +10,6 @@ import {
 } from '@tc96/parttens'
 import { ChatEmptyState } from '@tc96/ui/chat/chat-states'
 import { MenuRadioGroup, MenuRadioItem } from '@tc96/ui/menu'
-import { InboxIcon } from 'lucide-react'
 import type { ChatsPanelControls } from './chats-panel-controls.ts'
 import { ChatAvatar, channels, chats, unreadLabel } from './fixtures/chats'
 
@@ -32,7 +32,7 @@ export const SortActions = () => (
 export const NoChatsState = () => (
   <ChatEmptyState
     description="As conversas dos seus canais aparecem aqui."
-    icon={<InboxIcon aria-hidden="true" />}
+    icon={<TrayIcon aria-hidden="true" />}
     title="Nenhuma conversa"
   />
 )

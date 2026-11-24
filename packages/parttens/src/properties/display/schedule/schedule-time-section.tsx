@@ -1,5 +1,6 @@
 'use client'
 
+import { ClockIcon } from '@phosphor-icons/react'
 import {
   InputGroup,
   InputGroupAddon,
@@ -13,7 +14,6 @@ import {
   SelectValue,
 } from '@tc96/ui/select'
 import { Switch } from '@tc96/ui/switch'
-import { ClockIcon } from 'lucide-react'
 import { useId } from 'react'
 import { propertySelectItemClassName } from '../../shared/property-select-shell'
 import type { SchedulePropertyLabels } from './schedule-labels'

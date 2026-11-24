@@ -1,3 +1,4 @@
+import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import {
   Autocomplete,
   AutocompleteCollection,
@@ -13,7 +14,6 @@ import {
   useAutocompleteFilter,
 } from '@tc96/ui/autocomplete'
 import { Field, FieldDescription, FieldLabel } from '@tc96/ui/field'
-import { SearchIcon } from 'lucide-react'
 import { Fragment, useState } from 'react'
 import {
   type AutocompleteControls,
@@ -110,7 +110,9 @@ export const ComposedAutocomplete = ({
       showClear={showClear}
       showTrigger={showTrigger}
       size={size}
-      startAddon={startAddon ? <SearchIcon /> : undefined}
+      startAddon={
+        startAddon ? <MagnifyingGlassIcon aria-hidden="true" /> : undefined
+      }
       triggerProps={{ 'aria-label': triggerLabel }}
     />
     <OptionsPopup empty={empty} />

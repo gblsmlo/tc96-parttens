@@ -1,6 +1,6 @@
 'use client'
 
-import { BellIcon } from 'lucide-react'
+import { BellIcon } from '@phosphor-icons/react'
 import { resolveOptions } from '../../shared/lib/property-options'
 import { PropertyMultiSelectShell } from '../../shared/property-multi-select-shell'
 import type { SchedulePropertyLabels } from './schedule-labels'

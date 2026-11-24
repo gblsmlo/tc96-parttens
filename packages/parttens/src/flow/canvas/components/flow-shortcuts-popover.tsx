@@ -1,3 +1,4 @@
+import { KeyboardIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Kbd, KbdGroup } from '@tc96/ui/kbd'
 import {
@@ -6,7 +7,6 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from '@tc96/ui/popover'
-import { KeyboardIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import { defaultFlowShortcutsLabels } from '../lib/labels'
 import { flowShortcutRowClassName } from '../lib/variants'

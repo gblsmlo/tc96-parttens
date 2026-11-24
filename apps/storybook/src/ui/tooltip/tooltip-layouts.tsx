@@ -1,3 +1,9 @@
+import {
+  InfoIcon,
+  TextAlignCenterIcon,
+  TextAlignLeftIcon,
+  TextAlignRightIcon,
+} from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Kbd } from '@tc96/ui/kbd'
 import {
@@ -8,12 +14,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@tc96/ui/tooltip'
-import {
-  AlignCenterIcon,
-  AlignLeftIcon,
-  AlignRightIcon,
-  InfoIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 import type { TooltipControls } from './tooltip-controls.ts'
 
@@ -79,9 +79,9 @@ export const ComposedTooltip = ({
 )
 
 const groupedActions = [
-  { icon: AlignLeftIcon, label: 'First action' },
-  { icon: AlignCenterIcon, label: 'Second action' },
-  { icon: AlignRightIcon, label: 'Third action' },
+  { icon: TextAlignLeftIcon, label: 'First action' },
+  { icon: TextAlignCenterIcon, label: 'Second action' },
+  { icon: TextAlignRightIcon, label: 'Third action' },
 ] as const
 
 interface GroupedTooltipsProps {

@@ -1,3 +1,4 @@
+import { FileTextIcon, FolderIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Breadcrumb,
@@ -7,7 +8,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@tc96/ui/breadcrumb'
-import { FileTextIcon, FolderIcon } from 'lucide-react'
 import { Fragment, useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { CollapsedLevelsMenu } from './breadcrumb-layouts.tsx'

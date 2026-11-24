@@ -1,12 +1,11 @@
+import {
+  ClockCountdownIcon,
+  ProhibitIcon,
+  ScanIcon,
+  StarIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FlagProperty } from '@tc96/parttens'
-import {
-  BanIcon,
-  CircleSlashIcon,
-  ClockAlertIcon,
-  ScanEyeIcon,
-  StarIcon,
-} from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { FlagCanvas } from './flag-canvas.tsx'
 
@@ -53,9 +52,9 @@ export const CampaignPixel: Story = {
     <div className="flex flex-col items-start gap-2">
       <FlagProperty
         active
-        activeIcon={ScanEyeIcon}
+        activeIcon={ScanIcon}
         ariaLabel="Meta Pixel"
-        inactiveIcon={CircleSlashIcon}
+        inactiveIcon={ProhibitIcon}
         inactiveLabel="Sem pixel"
         label="Pixel ativo"
         showInactive
@@ -63,9 +62,9 @@ export const CampaignPixel: Story = {
       />
       <FlagProperty
         active={false}
-        activeIcon={ScanEyeIcon}
+        activeIcon={ScanIcon}
         ariaLabel="Meta Pixel"
-        inactiveIcon={CircleSlashIcon}
+        inactiveIcon={ProhibitIcon}
         inactiveLabel="Sem pixel"
         label="Pixel ativo"
         showInactive
@@ -83,8 +82,8 @@ export const CampaignPixel: Story = {
 export const TaskStates: Story = {
   render: () => (
     <div className="flex flex-wrap gap-2">
-      <FlagProperty active activeIcon={ClockAlertIcon} label="Atrasada" />
-      <FlagProperty active activeIcon={BanIcon} label="Bloqueada" />
+      <FlagProperty active activeIcon={ClockCountdownIcon} label="Atrasada" />
+      <FlagProperty active activeIcon={ProhibitIcon} label="Bloqueada" />
       <FlagProperty active={false} label="Arquivada" />
     </div>
   ),

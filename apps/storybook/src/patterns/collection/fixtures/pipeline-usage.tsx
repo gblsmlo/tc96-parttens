@@ -1,3 +1,12 @@
+import {
+  CalendarBlankIcon,
+  ChatCircleIcon,
+  FileTextIcon,
+  ListChecksIcon,
+  MoneyIcon,
+  RadioButtonIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
 import { formatShortDate } from '@tc96/helpers/date'
 import { formatAmount } from '@tc96/helpers/format'
 import {
@@ -32,15 +41,6 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
-import {
-  BanknoteIcon,
-  CalendarIcon,
-  CircleDotIcon,
-  FileTextIcon,
-  ListTodoIcon,
-  MessageCircleIcon,
-  UsersIcon,
-} from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import {
   createDealCollection,
@@ -140,7 +140,7 @@ export function DealCard({
       </KanbanCardHeader>
       <KanbanCardBody>
         <CardField
-          icon={<CircleDotIcon aria-hidden />}
+          icon={<RadioButtonIcon aria-hidden />}
           interactive
           label="Etapa"
         >
@@ -154,7 +154,7 @@ export function DealCard({
             variant="plain"
           />
         </CardField>
-        <CardField icon={<CalendarIcon aria-hidden />} label="Prazo">
+        <CardField icon={<CalendarBlankIcon aria-hidden />} label="Prazo">
           <time dateTime={deal.closeDate}>
             {formatShortDate(
               new Date(`${deal.closeDate}T12:00:00Z`),
@@ -163,7 +163,7 @@ export function DealCard({
             )}
           </time>
         </CardField>
-        <CardField icon={<BanknoteIcon aria-hidden />} label="Valor">
+        <CardField icon={<MoneyIcon aria-hidden />} label="Valor">
           {formatValue(deal.value)}
         </CardField>
       </KanbanCardBody>
@@ -177,13 +177,13 @@ export function DealCard({
           />
           <CardCountMenu
             count={1}
-            icon={<ListTodoIcon aria-hidden />}
+            icon={<ListChecksIcon aria-hidden />}
             items={[{ label: 'Criar tarefa' }, { label: 'Ver tarefas' }]}
             label="Tarefas: 1"
           />
           <CardCountMenu
             count={1}
-            icon={<MessageCircleIcon aria-hidden />}
+            icon={<ChatCircleIcon aria-hidden />}
             items={[
               { label: 'Criar comentário' },
               { label: 'Ver comentários' },

@@ -1,3 +1,12 @@
+import {
+  BankIcon,
+  BuildingIcon,
+  CaretUpDownIcon,
+  CreditCardIcon,
+  PiggyBankIcon,
+  TrayIcon,
+  WalletIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
@@ -11,15 +20,6 @@ import {
 } from '@tc96/ui/empty'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { Text } from '@tc96/ui/text'
-import {
-  BuildingIcon,
-  ChevronsUpDownIcon,
-  CreditCardIcon,
-  InboxIcon,
-  LandmarkIcon,
-  PiggyBankIcon,
-  WalletIcon,
-} from 'lucide-react'
 import { expect, within } from 'storybook/test'
 
 const meta = {
@@ -36,7 +36,7 @@ const accounts = [
   {
     balance: '$ 12,480.00',
     color: '#2563eb',
-    icon: LandmarkIcon,
+    icon: BankIcon,
     name: 'Checking account',
   },
   {
@@ -65,7 +65,7 @@ export const AccountList: Story = {
       {accounts.map(({ balance, color, icon: Icon, name }) => (
         <li className="flex items-center gap-3 px-3 py-2.5" key={name}>
           <IconFrame color={color} size="sm">
-            <Icon />
+            <Icon aria-hidden="true" />
           </IconFrame>
           <Text className="flex-1" size="sm" weight="medium">
             {name}
@@ -99,7 +99,7 @@ export const WorkspaceSwitcher: Story = {
       type="button"
     >
       <IconFrame shape="rounded" size="lg">
-        <BuildingIcon />
+        <BuildingIcon aria-hidden="true" />
       </IconFrame>
       <span aria-hidden="true" className="flex flex-1 flex-col">
         <Text size="sm" weight="medium">
@@ -112,7 +112,7 @@ export const WorkspaceSwitcher: Story = {
       <Badge aria-hidden="true" variant="outline">
         Business
       </Badge>
-      <ChevronsUpDownIcon
+      <CaretUpDownIcon
         aria-hidden="true"
         className="size-4 text-muted-foreground"
       />
@@ -134,7 +134,7 @@ export const EmptyInbox: Story = {
       <EmptyHeader>
         <EmptyMedia>
           <IconFrame shape="rounded" size="xl">
-            <InboxIcon />
+            <TrayIcon aria-hidden="true" />
           </IconFrame>
         </EmptyMedia>
         <EmptyTitle>Your inbox is empty</EmptyTitle>

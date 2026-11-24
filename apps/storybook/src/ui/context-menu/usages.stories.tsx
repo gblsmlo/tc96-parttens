@@ -1,3 +1,13 @@
+import {
+  ArrowBendUpLeftIcon,
+  CopyIcon,
+  DownloadSimpleIcon,
+  FileTextIcon,
+  FolderOpenIcon,
+  PencilSimpleIcon,
+  PushPinIcon,
+  TrashSimpleIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   ContextMenu,
@@ -15,16 +25,6 @@ import {
   ContextMenuSubPopup,
   ContextMenuSubTrigger,
 } from '@tc96/ui/context-menu'
-import {
-  CopyIcon,
-  DownloadIcon,
-  FileTextIcon,
-  FolderInputIcon,
-  PencilIcon,
-  PinIcon,
-  ReplyIcon,
-  TrashIcon,
-} from 'lucide-react'
 import { expect, screen } from 'storybook/test'
 import { OpenOnMountTrigger } from './context-menu-layouts.tsx'
 
@@ -52,17 +52,17 @@ export const FileInList: Story = {
       </OpenOnMountTrigger>
       <ContextMenuPopup>
         <ContextMenuItem aria-keyshortcuts="F2">
-          <PencilIcon />
+          <PencilSimpleIcon aria-hidden="true" />
           Rename
           <ContextMenuShortcut>F2</ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuItem>
-          <CopyIcon />
+          <CopyIcon aria-hidden="true" />
           Make a copy
         </ContextMenuItem>
         <ContextMenuSub>
           <ContextMenuSubTrigger>
-            <FolderInputIcon />
+            <FolderOpenIcon aria-hidden="true" />
             Move to
           </ContextMenuSubTrigger>
           <ContextMenuSubPopup>
@@ -72,12 +72,12 @@ export const FileInList: Story = {
           </ContextMenuSubPopup>
         </ContextMenuSub>
         <ContextMenuLinkItem download href="#q3-roadmap.pdf">
-          <DownloadIcon />
+          <DownloadSimpleIcon aria-hidden="true" />
           Download
         </ContextMenuLinkItem>
         <ContextMenuSeparator />
         <ContextMenuItem variant="destructive">
-          <TrashIcon />
+          <TrashSimpleIcon aria-hidden="true" />
           Move to trash
         </ContextMenuItem>
       </ContextMenuPopup>
@@ -200,16 +200,16 @@ export const ChatMessage: Story = {
       </OpenOnMountTrigger>
       <ContextMenuPopup>
         <ContextMenuItem>
-          <ReplyIcon />
+          <ArrowBendUpLeftIcon aria-hidden="true" />
           Reply
         </ContextMenuItem>
         <ContextMenuItem aria-keyshortcuts="Meta+C">
-          <CopyIcon />
+          <CopyIcon aria-hidden="true" />
           Copy text
           <ContextMenuShortcut>⌘C</ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuItem>
-          <PinIcon />
+          <PushPinIcon aria-hidden="true" />
           Pin to channel
         </ContextMenuItem>
         <ContextMenuSub>
@@ -222,7 +222,7 @@ export const ChatMessage: Story = {
         </ContextMenuSub>
         <ContextMenuSeparator />
         <ContextMenuItem variant="destructive">
-          <TrashIcon />
+          <TrashSimpleIcon aria-hidden="true" />
           Delete message
         </ContextMenuItem>
       </ContextMenuPopup>

@@ -1,3 +1,4 @@
+import { SidebarSimpleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Breadcrumb,
@@ -9,7 +10,6 @@ import {
 } from '@tc96/ui/breadcrumb'
 import { Button } from '@tc96/ui/button'
 import { Separator } from '@tc96/ui/separator'
-import { PanelLeftIcon } from 'lucide-react'
 import { Fragment } from 'react'
 import { expect, within } from 'storybook/test'
 import { SeparatorCanvas } from './separator-frame.tsx'
@@ -77,7 +77,7 @@ const PageHeader = () => (
       size="icon-sm"
       variant="ghost"
     >
-      <PanelLeftIcon aria-hidden="true" />
+      <SidebarSimpleIcon aria-hidden="true" />
     </Button>
     <Separator className="me-2 h-4" orientation="vertical" />
     <Breadcrumb>

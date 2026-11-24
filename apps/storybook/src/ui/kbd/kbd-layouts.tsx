@@ -1,6 +1,6 @@
+import { ArrowElbowDownLeftIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Kbd, KbdGroup } from '@tc96/ui/kbd'
-import { CornerDownLeftIcon } from 'lucide-react'
 import type { KbdControls } from './kbd-controls.ts'
 
 export const ComposedKbd = ({ icon, keys }: Readonly<KbdControls>) => {
@@ -9,7 +9,7 @@ export const ComposedKbd = ({ icon, keys }: Readonly<KbdControls>) => {
   if (icon)
     items.push(
       <Kbd key="enter-icon">
-        <CornerDownLeftIcon aria-label="Enter" role="img" />
+        <ArrowElbowDownLeftIcon aria-label="Enter" role="img" />
       </Kbd>,
     )
   if (items.length > 1) return <KbdGroup>{items}</KbdGroup>

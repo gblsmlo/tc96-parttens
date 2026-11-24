@@ -1,10 +1,10 @@
+import { BellSlashIcon } from '@phosphor-icons/react'
 import {
   StateGuard,
   type StateGuardState,
   type StateSurfaceProps,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { BellOffIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { StateControls } from './state-controls.ts'
 import type { StateIconMode } from './state-variants.ts'
@@ -15,7 +15,7 @@ interface ComposedStateProps extends StateControls {
 
 const iconFor = (mode: StateIconMode): ReactNode => {
   if (mode === 'custom') {
-    return <BellOffIcon />
+    return <BellSlashIcon aria-hidden="true" />
   }
 
   return mode === 'none' ? null : undefined

@@ -1,3 +1,11 @@
+import {
+  ArrowUUpLeftIcon,
+  ArrowUUpRightIcon,
+  type Icon as PhosphorIcon,
+  TextBIcon,
+  TextItalicIcon,
+  TextUnderlineIcon,
+} from '@phosphor-icons/react'
 import { Button, buttonVariants } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
 import { Toggle } from '@tc96/ui/toggle'
@@ -9,31 +17,23 @@ import {
   ToolbarLink,
   ToolbarSeparator,
 } from '@tc96/ui/toolbar'
-import {
-  BoldIcon,
-  ItalicIcon,
-  type LucideIcon,
-  Redo2Icon,
-  UnderlineIcon,
-  Undo2Icon,
-} from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { ToolbarControls } from './toolbar-controls.ts'
 
 interface ToolbarItem {
-  icon: LucideIcon
+  icon: PhosphorIcon
   label: string
 }
 
 const historyItems: ToolbarItem[] = [
-  { icon: Undo2Icon, label: 'Undo' },
-  { icon: Redo2Icon, label: 'Redo' },
+  { icon: ArrowUUpLeftIcon, label: 'Undo' },
+  { icon: ArrowUUpRightIcon, label: 'Redo' },
 ]
 
 const formattingItems: ToolbarItem[] = [
-  { icon: BoldIcon, label: 'Bold' },
-  { icon: ItalicIcon, label: 'Italic' },
-  { icon: UnderlineIcon, label: 'Underline' },
+  { icon: TextBIcon, label: 'Bold' },
+  { icon: TextItalicIcon, label: 'Italic' },
+  { icon: TextUnderlineIcon, label: 'Underline' },
 ]
 
 interface ComposedToolbarProps extends ToolbarControls {

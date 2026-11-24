@@ -1,6 +1,6 @@
 "use client";
 
-import { CornerDownLeftIcon, EllipsisIcon } from "lucide-react";
+import { ArrowElbowDownLeftIcon, DotsThreeIcon } from "@phosphor-icons/react";
 import type { ComponentProps, ReactElement, ReactNode, RefObject } from "react";
 import { useRef, useState } from "react";
 import { Button } from "@tc96/ui/button";
@@ -79,7 +79,7 @@ export function ChatMessageActionToolbar({
               />
             }
           >
-            <CornerDownLeftIcon aria-hidden="true" />
+            <ArrowElbowDownLeftIcon aria-hidden="true" />
           </TooltipTrigger>
           <TooltipPopup>{replyTooltip}</TooltipPopup>
         </Tooltip>
@@ -116,7 +116,7 @@ export function ChatMessageActionToolbar({
                 />
               }
             >
-              <EllipsisIcon aria-hidden="true" />
+              <DotsThreeIcon aria-hidden="true" />
             </TooltipTrigger>
             <TooltipPopup>{moreTooltip}</TooltipPopup>
           </Tooltip>

@@ -1,9 +1,9 @@
 'use client'
 
+import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { Input } from '@tc96/ui/input'
 import { ToolbarInput } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
-import { SearchIcon } from 'lucide-react'
 import { type FormEvent, type ReactElement, useEffect, useState } from 'react'
 
 export interface CollectionSearchFieldProps {
@@ -46,7 +46,7 @@ export function CollectionSearchField({
 
   return (
     <form className={cn('relative', className)} onSubmit={submit}>
-      <SearchIcon
+      <MagnifyingGlassIcon
         aria-hidden="true"
         className="pointer-events-none absolute top-1/2 left-2.5 z-1 size-4 -translate-y-1/2 text-muted-foreground"
       />

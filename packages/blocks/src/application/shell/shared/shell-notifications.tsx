@@ -1,5 +1,6 @@
 'use client'
 
+import { BellIcon } from '@phosphor-icons/react'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import {
@@ -9,7 +10,6 @@ import {
   PopoverTrigger,
 } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
-import { BellIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { ShellLabels, ShellNotification } from './types'
 
@@ -42,7 +42,7 @@ export function ShellNotifications({
           />
         }
       >
-        <BellIcon />
+        <BellIcon aria-hidden="true" />
         {unread ? (
           <Badge aria-hidden className="absolute -end-1 -top-1">
             {unread}

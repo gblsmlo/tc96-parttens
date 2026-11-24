@@ -1,6 +1,6 @@
 import type { DayPickerLocale } from '@daypicker/react'
-import type { LucideIcon } from 'lucide-react'
-import { BellIcon, ClockIcon, RepeatIcon } from 'lucide-react'
+import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
+import { BellIcon, ClockIcon, RepeatIcon } from '@phosphor-icons/react'
 import type { PropertyCalendarProps } from '../../shared/property-calendar-popover'
 import type { SchedulePropertyLabels } from './schedule-labels'
 import type { ScheduleTimeControl } from './schedule-time-section'
@@ -21,7 +21,7 @@ export const scheduleSections: readonly ScheduleSection[] = [
 ]
 
 export const scheduleSectionIcons: Readonly<
-  Record<ScheduleSection, LucideIcon>
+  Record<ScheduleSection, PhosphorIcon>
 > = {
   reminders: BellIcon,
   repeat: RepeatIcon,

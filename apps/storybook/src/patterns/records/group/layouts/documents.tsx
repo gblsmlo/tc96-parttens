@@ -1,4 +1,22 @@
 import {
+  ArrowSquareOutIcon,
+  BookmarkSimpleIcon,
+  DotsThreeIcon,
+  DownloadSimpleIcon,
+  FileArchiveIcon,
+  FileImageIcon,
+  FileTextIcon,
+  FileTxtIcon,
+  FileXlsIcon,
+  LinkSimpleIcon,
+  NoteIcon,
+  PencilSimpleIcon,
+  type Icon as PhosphorIcon,
+  PlusIcon,
+  PresentationIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupAction,
   RecordGroupItem,
@@ -14,30 +32,12 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  BookmarkIcon,
-  DownloadIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  FileArchiveIcon,
-  FileImageIcon,
-  FileSpreadsheetIcon,
-  FileTextIcon,
-  FileTypeIcon,
-  Link2Icon,
-  type LucideIcon,
-  PencilIcon,
-  PlusIcon,
-  PresentationIcon,
-  StickyNoteIcon,
-  Trash2Icon,
-} from 'lucide-react'
 
 interface DocumentEntry {
   color: string
   external?: boolean
   href: string
-  icon: LucideIcon
+  icon: PhosphorIcon
   id: string
   meta: string
   name: string
@@ -61,7 +61,7 @@ export const files: readonly DocumentEntry[] = [
   {
     href: '#/documentos/planilha-de-honorarios.xlsx',
     color: '#059669',
-    icon: FileSpreadsheetIcon,
+    icon: FileXlsIcon,
     id: 'fees',
     meta: '03/09/2026',
     name: 'planilha-de-honorarios.xlsx',
@@ -69,7 +69,7 @@ export const files: readonly DocumentEntry[] = [
   {
     href: '#/documentos/peticao-inicial.docx',
     color: '#2563eb',
-    icon: FileTypeIcon,
+    icon: FileTxtIcon,
     id: 'petition',
     meta: '28/08/2026',
     name: 'peticao-inicial-acao-revisional-bancaria-versao-final-revisada.docx',
@@ -104,7 +104,7 @@ export const resources: readonly DocumentEntry[] = [
   {
     href: '#/documentos/peticao-inicial.docx',
     color: '#2563eb',
-    icon: FileTypeIcon,
+    icon: FileTxtIcon,
     id: 'petition',
     meta: 'Documento · 28/08/2026',
     name: 'peticao-inicial.docx',
@@ -113,7 +113,7 @@ export const resources: readonly DocumentEntry[] = [
     external: true,
     href: 'https://www.notion.so/escritorio/checklist-de-audiencia',
     color: '#db2777',
-    icon: BookmarkIcon,
+    icon: BookmarkSimpleIcon,
     id: 'checklist',
     meta: 'Favorito · notion.so',
     name: 'Checklist de audiência',
@@ -122,7 +122,7 @@ export const resources: readonly DocumentEntry[] = [
     external: true,
     href: 'https://www.gov.br/bcb/pt-br',
     color: '#0284c7',
-    icon: Link2Icon,
+    icon: LinkSimpleIcon,
     id: 'bcb',
     meta: 'Link · gov.br',
     name: 'Banco Central: taxas de juros',
@@ -130,7 +130,7 @@ export const resources: readonly DocumentEntry[] = [
   {
     href: '#/notas/reuniao-com-cliente',
     color: '#d97706',
-    icon: StickyNoteIcon,
+    icon: NoteIcon,
     id: 'meeting',
     meta: 'Nota · 05/09/2026',
     name: 'Reunião com o cliente',
@@ -166,7 +166,7 @@ export function DocumentsGroup({
         <RecordGroupLink
           href={entry.href}
           key={entry.id}
-          leading={<DocumentIcon entry={entry} />}
+          leading={<DocumentIcon aria-hidden="true" entry={entry} />}
           meta={entry.meta}
           {...(entry.external
             ? { rel: 'noopener noreferrer', target: '_blank' }
@@ -195,7 +195,7 @@ export function DocumentsMenuGroup({
         <RecordGroupItem
           interactive
           key={file.id}
-          leading={<DocumentIcon entry={file} />}
+          leading={<DocumentIcon aria-hidden="true" entry={file} />}
           title={
             <a
               className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -213,19 +213,19 @@ export function DocumentsMenuGroup({
               aria-label={`Ações de ${file.name}`}
               render={<Button size="icon-sm" variant="ghost" />}
             >
-              <EllipsisIcon aria-hidden="true" />
+              <DotsThreeIcon aria-hidden="true" />
             </MenuTrigger>
             <MenuPopup align="end">
               <MenuItem onClick={() => onOpenDocument(file.id)}>
-                <ExternalLinkIcon aria-hidden="true" />
+                <ArrowSquareOutIcon aria-hidden="true" />
                 Abrir
               </MenuItem>
               <MenuItem onClick={() => onDownloadDocument(file.id)}>
-                <DownloadIcon aria-hidden="true" />
+                <DownloadSimpleIcon aria-hidden="true" />
                 Baixar
               </MenuItem>
               <MenuItem onClick={() => onRenameDocument(file.id)}>
-                <PencilIcon aria-hidden="true" />
+                <PencilSimpleIcon aria-hidden="true" />
                 Renomear
               </MenuItem>
               <MenuSeparator />
@@ -233,7 +233,7 @@ export function DocumentsMenuGroup({
                 onClick={() => onDeleteDocument(file.id)}
                 variant="destructive"
               >
-                <Trash2Icon aria-hidden="true" />
+                <TrashIcon aria-hidden="true" />
                 Excluir
               </MenuItem>
             </MenuPopup>

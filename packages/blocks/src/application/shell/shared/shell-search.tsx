@@ -1,6 +1,11 @@
 'use client'
 
 import {
+  ArrowDownIcon,
+  ArrowElbowDownLeftIcon,
+  ArrowUpIcon,
+} from '@phosphor-icons/react'
+import {
   Command,
   CommandCollection,
   CommandDialog,
@@ -16,7 +21,6 @@ import {
   CommandPanel,
 } from '@tc96/ui/command'
 import { Kbd, KbdGroup } from '@tc96/ui/kbd'
-import { ArrowDownIcon, ArrowUpIcon, CornerDownLeftIcon } from 'lucide-react'
 import {
   type ReactElement,
   type ReactNode,
@@ -126,17 +130,17 @@ export function ShellSearch({
             <span className="flex items-center gap-2">
               <KbdGroup>
                 <Kbd>
-                  <ArrowUpIcon />
+                  <ArrowUpIcon aria-hidden="true" />
                 </Kbd>
                 <Kbd>
-                  <ArrowDownIcon />
+                  <ArrowDownIcon aria-hidden="true" />
                 </Kbd>
               </KbdGroup>
               {labels.searchNavigate}
             </span>
             <span className="flex items-center gap-2">
               <Kbd>
-                <CornerDownLeftIcon />
+                <ArrowElbowDownLeftIcon aria-hidden="true" />
               </Kbd>
               {labels.searchOpen}
             </span>

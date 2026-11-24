@@ -1,6 +1,6 @@
+import { FireIcon, TrophyIcon } from '@phosphor-icons/react'
 import { type AmountFormatOptions, formatAmount } from '@tc96/helpers/format'
 import { cn } from '@tc96/utils'
-import { FlameIcon, TrophyIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { MetricPill } from '../shared/metric-pill'
 import { clampRatio, ProgressRing } from '../shared/progress-ring'
@@ -73,7 +73,7 @@ export function ProgressHud({
       </div>
       {streakDays === undefined ? null : (
         <MetricPill className="shrink-0" data-slot="hud-streak" tone="warning">
-          <FlameIcon />
+          <FireIcon aria-hidden="true" />
           {streakDays}
           <span className="sr-only"> {streakLabel(streakDays)}</span>
         </MetricPill>
@@ -84,7 +84,7 @@ export function ProgressHud({
           data-slot="hud-achievements"
           tone="primary"
         >
-          <TrophyIcon />
+          <TrophyIcon aria-hidden="true" />
           {achievements.unlocked}/{achievements.total}
           <span className="sr-only"> {achievementsLabel}</span>
         </MetricPill>

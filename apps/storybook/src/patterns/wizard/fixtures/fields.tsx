@@ -1,4 +1,5 @@
 import { ptBR } from '@daypicker/react/locale'
+import { CalendarBlankIcon } from '@phosphor-icons/react'
 import {
   calendarDateFromDate,
   calendarDateKey,
@@ -23,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@tc96/ui/select'
-import { CalendarIcon } from 'lucide-react'
 import { type ReactNode, type Ref, useId, useState } from 'react'
 
 export interface SelectOption {
@@ -144,7 +144,7 @@ export function DateField({
             />
           }
         >
-          <CalendarIcon aria-hidden="true" />
+          <CalendarBlankIcon aria-hidden="true" />
           {selected ? (
             formatLongDate(selected, 'pt-BR')
           ) : (
@@ -206,7 +206,7 @@ export function DateRangeField({
             />
           }
         >
-          <CalendarIcon aria-hidden="true" />
+          <CalendarBlankIcon aria-hidden="true" />
           {from ? (
             to ? (
               `${formatMediumDate(from, 'pt-BR')} – ${formatMediumDate(to, 'pt-BR')}`

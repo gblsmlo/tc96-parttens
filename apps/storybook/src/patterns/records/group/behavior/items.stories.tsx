@@ -1,7 +1,7 @@
+import { ReceiptIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { RecordGroup, RecordGroupItem } from '@tc96/parttens'
 import { Input } from '@tc96/ui/input'
-import { ReceiptTextIcon } from 'lucide-react'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
@@ -47,7 +47,7 @@ function AmountsGroup() {
       {installments.map((installment) => (
         <RecordGroupItem
           key={installment.id}
-          leading={<ReceiptTextIcon aria-hidden />}
+          leading={<ReceiptIcon aria-hidden />}
           title={installment.title}
         >
           <Input

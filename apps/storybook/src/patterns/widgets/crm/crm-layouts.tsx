@@ -1,3 +1,4 @@
+import { DotsThreeIcon, TargetIcon, UsersIcon } from '@phosphor-icons/react'
 import {
   type Activity,
   ActivityFeedWidget,
@@ -10,7 +11,6 @@ import {
   type WidgetExpandProps,
 } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
-import { EllipsisIcon, TargetIcon, UsersIcon } from 'lucide-react'
 import { type ReactElement, useState } from 'react'
 import type { CrmControls } from './crm-controls.ts'
 import {
@@ -76,7 +76,7 @@ export function Contact({
       action={
         action ? (
           <Button aria-label="More actions" size="icon-sm" variant="ghost">
-            <EllipsisIcon aria-hidden="true" />
+            <DotsThreeIcon aria-hidden="true" />
           </Button>
         ) : undefined
       }
@@ -119,7 +119,7 @@ export function Kpis(): ReactElement {
         format={{ style: 'decimal' }}
         icon={
           <IconFrame>
-            <UsersIcon />
+            <UsersIcon aria-hidden="true" />
           </IconFrame>
         }
         label="New leads"
@@ -131,7 +131,7 @@ export function Kpis(): ReactElement {
         format={{ maximumFractionDigits: 0, style: 'percent' }}
         icon={
           <IconFrame>
-            <TargetIcon />
+            <TargetIcon aria-hidden="true" />
           </IconFrame>
         }
         label="Conversion rate"

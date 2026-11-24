@@ -1,7 +1,7 @@
 'use client'
 
+import { CheckIcon } from '@phosphor-icons/react'
 import { IconFrame } from '@tc96/ui/icon-frame'
-import { CheckIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { WizardStep, WizardStepStatus } from '../core'
 import {
@@ -24,7 +24,8 @@ export function WizardStepItem({
   step,
   titleId,
 }: Readonly<WizardStepItemProps>): ReactElement {
-  const fallbackIcon = status === 'complete' ? <CheckIcon /> : number
+  const fallbackIcon =
+    status === 'complete' ? <CheckIcon aria-hidden="true" /> : number
 
   return (
     <li data-slot="wizard-step" data-status={status}>

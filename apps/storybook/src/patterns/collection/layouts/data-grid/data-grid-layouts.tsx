@@ -1,4 +1,9 @@
 import {
+  ArchiveIcon,
+  PaperPlaneRightIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
+import {
   ActionBar,
   CollectionToolbar,
   createSelectColumn,
@@ -17,7 +22,6 @@ import {
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/parttens'
-import { ArchiveIcon, SendIcon, Trash2Icon } from 'lucide-react'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import { createDataGridColumns } from '../../fixtures/task-fields'
 import { useTasks } from '../../fixtures/task-renderers'
@@ -49,12 +53,16 @@ const selectionActionBar = <TData,>({
       {
         items: [
           {
-            icon: <SendIcon />,
+            icon: <PaperPlaneRightIcon aria-hidden="true" />,
             label: 'Enviar',
             onSelect: ignore,
             variant: 'primary',
           },
-          { icon: <ArchiveIcon />, label: 'Arquivar', onSelect: ignore },
+          {
+            icon: <ArchiveIcon aria-hidden="true" />,
+            label: 'Arquivar',
+            onSelect: ignore,
+          },
         ],
       },
       {
@@ -72,7 +80,7 @@ const selectionActionBar = <TData,>({
               {
                 items: [
                   {
-                    icon: <Trash2Icon />,
+                    icon: <TrashIcon aria-hidden="true" />,
                     label: 'Excluir',
                     onSelect: ignore,
                     variant: 'destructive',

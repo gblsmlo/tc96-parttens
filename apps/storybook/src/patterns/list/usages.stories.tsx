@@ -1,3 +1,24 @@
+import {
+  BellRingingIcon,
+  BuildingIcon,
+  CalendarDotsIcon,
+  ChatCircleIcon,
+  CreditCardIcon,
+  DeviceMobileIcon,
+  DotsThreeIcon,
+  DownloadSimpleIcon,
+  EnvelopeSimpleIcon,
+  FileImageIcon,
+  FileTextIcon,
+  PencilSimpleIcon,
+  type Icon as PhosphorIcon,
+  ShieldCheckIcon,
+  SignatureIcon,
+  SparkleIcon,
+  TrashIcon,
+  UserIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { List } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
@@ -5,27 +26,6 @@ import { Checkbox } from '@tc96/ui/checkbox'
 import { CheckboxGroup } from '@tc96/ui/checkbox-group'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Radio, RadioGroup } from '@tc96/ui/radio-group'
-import {
-  BellRingIcon,
-  BuildingIcon,
-  CalendarDaysIcon,
-  CreditCardIcon,
-  DownloadIcon,
-  EllipsisIcon,
-  FileImageIcon,
-  FileSignatureIcon,
-  FileTextIcon,
-  type LucideIcon,
-  MailIcon,
-  MessageCircleIcon,
-  PencilIcon,
-  ShieldCheckIcon,
-  SmartphoneIcon,
-  SparklesIcon,
-  Trash2Icon,
-  UserIcon,
-  UsersIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { ListCanvas } from './list-canvas.tsx'
@@ -44,7 +44,7 @@ type Story = StoryObj<typeof meta>
 interface Entry {
   color?: string
   description: string
-  icon: LucideIcon
+  icon: PhosphorIcon
   id: string
   title: string
 }
@@ -58,7 +58,7 @@ const attachments: readonly Entry[] = [
   },
   {
     description: 'Enviado em 12 de nov. por Rafael Lima · 340 KB',
-    icon: FileSignatureIcon,
+    icon: SignatureIcon,
     id: 'procuracao',
     title: 'Procuração assinada.pdf',
   },
@@ -73,22 +73,22 @@ const attachments: readonly Entry[] = [
 const AttachmentActions = ({ name }: Readonly<{ name: string }>) => (
   <>
     <Button aria-label={`Baixar ${name}`} size="icon-sm" variant="ghost">
-      <DownloadIcon aria-hidden="true" />
+      <DownloadSimpleIcon aria-hidden="true" />
     </Button>
     <Menu>
       <MenuTrigger
         aria-label={`Mais ações de ${name}`}
         render={<Button size="icon-sm" variant="ghost" />}
       >
-        <EllipsisIcon aria-hidden="true" />
+        <DotsThreeIcon aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup align="end">
         <MenuItem>
-          <PencilIcon aria-hidden="true" />
+          <PencilSimpleIcon aria-hidden="true" />
           Renomear
         </MenuItem>
         <MenuItem variant="destructive">
-          <Trash2Icon aria-hidden="true" />
+          <TrashIcon aria-hidden="true" />
           Excluir
         </MenuItem>
       </MenuPopup>
@@ -112,7 +112,7 @@ export const Attachments: Story = {
           <List
             actions={<AttachmentActions name={file.title} />}
             description={file.description}
-            icon={<file.icon />}
+            icon={<file.icon aria-hidden="true" />}
             title={file.title}
           />
         </li>
@@ -133,21 +133,21 @@ const integrations: readonly Entry[] = [
   {
     color: '#2563eb',
     description: 'Audiências e prazos na agenda do escritório',
-    icon: CalendarDaysIcon,
+    icon: CalendarDotsIcon,
     id: 'agenda',
     title: 'Agenda',
   },
   {
     color: '#16a34a',
     description: 'Avisos de andamento para o cliente',
-    icon: MessageCircleIcon,
+    icon: ChatCircleIcon,
     id: 'mensagens',
     title: 'Mensagens',
   },
   {
     color: '#9333ea',
     description: 'Contratos e procurações assinados online',
-    icon: FileSignatureIcon,
+    icon: SignatureIcon,
     id: 'assinatura',
     title: 'Assinatura eletrônica',
   },
@@ -181,7 +181,7 @@ function IntegrationsList() {
                 </Button>
               }
               description={integration.description}
-              icon={<integration.icon />}
+              icon={<integration.icon aria-hidden="true" />}
               iconColor={integration.color}
               title={integration.title}
               variant="plain"
@@ -259,7 +259,7 @@ export const AccountSettings: Story = {
             <List
               actions={<ListChevron />}
               description={section.description}
-              icon={<section.icon />}
+              icon={<section.icon aria-hidden="true" />}
               render={(props) => <a {...props} href={`#${section.id}`} />}
               title={section.title}
               variant="plain"
@@ -287,7 +287,7 @@ const plans: readonly Entry[] = [
   },
   {
     description: 'R$ 129 por mês · até 10 usuários e automações',
-    icon: SparklesIcon,
+    icon: SparkleIcon,
     id: 'profissional',
     title: 'Profissional',
   },
@@ -318,7 +318,7 @@ export const ChoosePlan: Story = {
         <List
           actions={<Radio value={plan.id} />}
           description={plan.description}
-          icon={<plan.icon />}
+          icon={<plan.icon aria-hidden="true" />}
           key={plan.id}
           render={(props) => (
             // biome-ignore lint/a11y/noLabelWithoutControl: the Radio in actions is the control
@@ -342,19 +342,19 @@ export const ChoosePlan: Story = {
 const channels: readonly Entry[] = [
   {
     description: 'Um resumo diário na sua caixa de entrada',
-    icon: MailIcon,
+    icon: EnvelopeSimpleIcon,
     id: 'email',
     title: 'E-mail',
   },
   {
     description: 'Um aviso no celular quando um prazo vence hoje',
-    icon: SmartphoneIcon,
+    icon: DeviceMobileIcon,
     id: 'push',
     title: 'Notificação no celular',
   },
   {
     description: 'Um alerta na barra do app a cada nova intimação',
-    icon: BellRingIcon,
+    icon: BellRingingIcon,
     id: 'app',
     title: 'Alerta no app',
   },
@@ -379,7 +379,7 @@ export const NotificationChannels: Story = {
         <List
           actions={<Checkbox value={channel.id} />}
           description={channel.description}
-          icon={<channel.icon />}
+          icon={<channel.icon aria-hidden="true" />}
           key={channel.id}
           render={(props) => (
             // biome-ignore lint/a11y/noLabelWithoutControl: the Checkbox in actions is the control

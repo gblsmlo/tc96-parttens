@@ -1,9 +1,9 @@
+import { CheckIcon } from '@phosphor-icons/react'
 import { Badge } from '@tc96/ui/badge'
 import { CardPanel } from '@tc96/ui/card'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { MeterPrimitive } from '@tc96/ui/meter'
 import { cn } from '@tc96/utils'
-import { CheckIcon } from 'lucide-react'
 import type { ComponentProps, ReactElement, ReactNode } from 'react'
 import { useId } from 'react'
 import {
@@ -74,7 +74,7 @@ export function QuestsWidget({
                 >
                   {quest.done ? (
                     <IconFrame color={doneColor} shape="rounded">
-                      <CheckIcon />
+                      <CheckIcon aria-hidden="true" />
                     </IconFrame>
                   ) : (
                     <IconFrame shape="rounded">{quest.icon}</IconFrame>

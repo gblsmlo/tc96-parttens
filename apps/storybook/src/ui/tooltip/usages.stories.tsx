@@ -1,3 +1,9 @@
+import {
+  CloudCheckIcon,
+  TextBIcon,
+  TextItalicIcon,
+  TextUnderlineIcon,
+} from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
@@ -10,12 +16,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@tc96/ui/tooltip'
-import {
-  BoldIcon,
-  CloudCheckIcon,
-  ItalicIcon,
-  UnderlineIcon,
-} from 'lucide-react'
 import { expect, screen, within } from 'storybook/test'
 import { TooltipFrame } from './tooltip-frame.tsx'
 
@@ -31,9 +31,9 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const formattingActions = [
-  { icon: BoldIcon, label: 'Bold', shortcut: '⌘B' },
-  { icon: ItalicIcon, label: 'Italic', shortcut: '⌘I' },
-  { icon: UnderlineIcon, label: 'Underline', shortcut: '⌘U' },
+  { icon: TextBIcon, label: 'Bold', shortcut: '⌘B' },
+  { icon: TextItalicIcon, label: 'Italic', shortcut: '⌘I' },
+  { icon: TextUnderlineIcon, label: 'Underline', shortcut: '⌘U' },
 ] as const
 
 export const FormattingToolbar: Story = {

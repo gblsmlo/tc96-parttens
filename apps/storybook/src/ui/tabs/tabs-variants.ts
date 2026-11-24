@@ -1,10 +1,10 @@
-import type { TabsSize, TabsVariant } from '@tc96/ui/tabs'
 import {
-  ActivityIcon,
-  LayoutDashboardIcon,
-  type LucideIcon,
-  SettingsIcon,
-} from 'lucide-react'
+  GearIcon,
+  type Icon as PhosphorIcon,
+  PulseIcon,
+  SquaresFourIcon,
+} from '@phosphor-icons/react'
+import type { TabsSize, TabsVariant } from '@tc96/ui/tabs'
 
 export const tabsVariantNames: TabsVariant[] = ['default', 'underline']
 
@@ -15,10 +15,10 @@ export const tabsOrientations = ['horizontal', 'vertical'] as const
 export type TabsOrientation = (typeof tabsOrientations)[number]
 
 export const tabItems = [
-  { icon: LayoutDashboardIcon, value: 'overview' },
-  { icon: ActivityIcon, value: 'activity' },
-  { icon: SettingsIcon, value: 'settings' },
-] as const satisfies readonly { icon: LucideIcon; value: string }[]
+  { icon: SquaresFourIcon, value: 'overview' },
+  { icon: PulseIcon, value: 'activity' },
+  { icon: GearIcon, value: 'settings' },
+] as const satisfies readonly { icon: PhosphorIcon; value: string }[]
 
 export type TabValue = (typeof tabItems)[number]['value']
 

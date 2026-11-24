@@ -1,4 +1,11 @@
 import {
+  CopySimpleIcon,
+  GridFourIcon,
+  PencilSimpleIcon,
+  StarIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
+import {
   ViewSwitcherCreate,
   ViewSwitcherItem,
   ViewSwitcherItems,
@@ -7,13 +14,6 @@ import {
 } from '@tc96/parttens'
 import { MenuItem, MenuSeparator } from '@tc96/ui/menu'
 import { Separator } from '@tc96/ui/separator'
-import {
-  CopyPlusIcon,
-  LayoutGridIcon,
-  PencilIcon,
-  StarIcon,
-  Trash2Icon,
-} from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 
 export interface ViewSwitcherOption {
@@ -38,7 +38,7 @@ export interface ViewSwitcherPickerProps {
 export function ViewIcon() {
   return (
     <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
-      <LayoutGridIcon aria-hidden="true" className="size-3" />
+      <GridFourIcon aria-hidden="true" className="size-3" />
     </span>
   )
 }
@@ -76,7 +76,7 @@ export function ViewSwitcherPicker({
 
     return (
       <ViewSwitcherItem
-        icon={view.icon ?? <ViewIcon />}
+        icon={view.icon ?? <ViewIcon aria-hidden="true" />}
         key={view.id}
         label={view.label}
         onSelect={() => onSelect(view.id)}
@@ -103,13 +103,13 @@ export function ViewSwitcherPicker({
               </MenuItem>
               {onRename ? (
                 <MenuItem onClick={() => onRename(view.id)}>
-                  <PencilIcon aria-hidden="true" />
+                  <PencilSimpleIcon aria-hidden="true" />
                   Renomear
                 </MenuItem>
               ) : null}
               {onDuplicate ? (
                 <MenuItem onClick={() => onDuplicate(view.id)}>
-                  <CopyPlusIcon aria-hidden="true" />
+                  <CopySimpleIcon aria-hidden="true" />
                   Duplicar
                 </MenuItem>
               ) : null}
@@ -119,7 +119,7 @@ export function ViewSwitcherPicker({
                   onClick={() => onDelete(view.id)}
                   variant="destructive"
                 >
-                  <Trash2Icon aria-hidden="true" />
+                  <TrashIcon aria-hidden="true" />
                   Excluir
                 </MenuItem>
               ) : null}
@@ -138,7 +138,7 @@ export function ViewSwitcherPicker({
 
   return (
     <ViewSwitcherMenu
-      icon={selected?.icon ?? <ViewIcon />}
+      icon={selected?.icon ?? <ViewIcon aria-hidden="true" />}
       label={selected?.label ?? 'Selecionar view'}
     >
       {searchable ? (

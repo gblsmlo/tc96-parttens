@@ -1,4 +1,11 @@
 import {
+  FileMagnifyingGlassIcon,
+  LockIcon,
+  MagnifyingGlassIcon,
+  TrayIcon,
+  WarningIcon,
+} from '@phosphor-icons/react'
+import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -8,13 +15,6 @@ import {
 } from '@tc96/ui/empty'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
-import {
-  AlertTriangleIcon,
-  FileQuestionIcon,
-  InboxIcon,
-  LockIcon,
-  SearchXIcon,
-} from 'lucide-react'
 import type { ReactNode } from 'react'
 import {
   STATE_SURFACE_ICON_COLORS,
@@ -24,12 +24,12 @@ import {
 } from '../../core'
 
 const KIND_ICONS = {
-  empty: InboxIcon,
-  error: AlertTriangleIcon,
-  'no-result': SearchXIcon,
-  'not-found': FileQuestionIcon,
+  empty: TrayIcon,
+  error: WarningIcon,
+  'no-result': MagnifyingGlassIcon,
+  'not-found': FileMagnifyingGlassIcon,
   permission: LockIcon,
-} as const satisfies Record<StateSurfaceKind, typeof InboxIcon>
+} as const satisfies Record<StateSurfaceKind, typeof TrayIcon>
 
 export function StateSurface({
   actions,
@@ -57,7 +57,7 @@ export function StateSurface({
               shape="rounded"
               size="xl"
             >
-              {icon === undefined ? <Icon /> : icon}
+              {icon === undefined ? <Icon aria-hidden="true" /> : icon}
             </IconFrame>
           </EmptyMedia>
         )}

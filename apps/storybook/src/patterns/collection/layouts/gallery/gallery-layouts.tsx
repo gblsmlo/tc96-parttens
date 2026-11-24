@@ -1,3 +1,4 @@
+import { DotsThreeIcon } from '@phosphor-icons/react'
 import { CollectionPagination, GalleryView } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
@@ -9,7 +10,6 @@ import {
 } from '@tc96/ui/card'
 import { Separator } from '@tc96/ui/separator'
 import { Text } from '@tc96/ui/text'
-import { EllipsisIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { sleep } from '../../../../test-utils/sleep'
 import {
@@ -92,7 +92,7 @@ export function SampleCard({
                 size="icon-xs"
                 variant="ghost"
               >
-                <EllipsisIcon aria-hidden="true" />
+                <DotsThreeIcon aria-hidden="true" />
               </Button>
             ) : null}
           </div>

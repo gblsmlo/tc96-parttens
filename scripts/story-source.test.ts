@@ -4,7 +4,7 @@ import { extractStory } from './story-source'
 const stories = `import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
-import { StarIcon } from 'lucide-react'
+import { StarIcon } from '@phosphor-icons/react'
 import { expect, within } from 'storybook/test'
 import { booleanArgType } from '../test-utils/story-arg-types'
 
@@ -72,7 +72,7 @@ test('keeps the story, its local helpers and only the imports they use', () => {
   expect(code).toContain('function Starred()')
   expect(code).toContain("const labels = ['Save', 'Cancel']")
   expect(code).toContain('<StarIcon className="size-4" />')
-  expect(code).toContain("import { StarIcon } from 'lucide-react'")
+  expect(code).toContain("import { StarIcon } from '@phosphor-icons/react'")
   expect(code).toContain("import { Button } from '@tc96/ui/button'")
   expect(code).not.toContain('unused')
   expect(code).not.toContain('@tc96/ui/badge')

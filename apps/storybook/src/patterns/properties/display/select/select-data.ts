@@ -1,18 +1,23 @@
-import type { SelectPropertyGroup, SelectPropertyOption } from '@tc96/parttens'
 import {
   BriefcaseIcon,
-  CircleDotIcon,
+  EnvelopeSimpleIcon,
   GavelIcon,
-  MailIcon,
   PhoneIcon,
+  RadioButtonIcon,
   UsersIcon,
-} from 'lucide-react'
+} from '@phosphor-icons/react'
+import type { SelectPropertyGroup, SelectPropertyOption } from '@tc96/parttens'
 
 export const activityOptions: SelectPropertyOption[] = [
   { icon: UsersIcon, label: 'Reunião', tone: 'info', value: 'meeting' },
   { icon: PhoneIcon, label: 'Ligação', tone: 'success', value: 'call' },
-  { icon: MailIcon, label: 'E-mail', tone: 'neutral', value: 'email' },
-  { icon: CircleDotIcon, label: 'Outro', tone: 'neutral', value: 'other' },
+  {
+    icon: EnvelopeSimpleIcon,
+    label: 'E-mail',
+    tone: 'neutral',
+    value: 'email',
+  },
+  { icon: RadioButtonIcon, label: 'Outro', tone: 'neutral', value: 'other' },
 ]
 
 export const withoutIcons = (

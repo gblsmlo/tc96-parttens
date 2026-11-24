@@ -1,4 +1,10 @@
 import {
+  BuildingsIcon,
+  type Icon as PhosphorIcon,
+  PlusIcon,
+  UserIcon,
+} from '@phosphor-icons/react'
+import {
   RecordGroup,
   RecordGroupFilter,
   RecordGroupItem,
@@ -16,12 +22,6 @@ import {
   MenuPopup,
   MenuTrigger,
 } from '@tc96/ui/menu'
-import {
-  Building2Icon,
-  type LucideIcon,
-  PlusIcon,
-  UserRoundIcon,
-} from 'lucide-react'
 import { useState } from 'react'
 
 interface Representative {
@@ -59,8 +59,8 @@ const ignore = (..._values: unknown[]) => undefined
 const onAdd = ignore
 
 const kindFrame = {
-  company: { color: '#7c3aed', icon: Building2Icon },
-  person: { color: '#2563eb', icon: UserRoundIcon },
+  company: { color: '#7c3aed', icon: BuildingsIcon },
+  person: { color: '#2563eb', icon: UserIcon },
 } as const
 
 const clientColor = 'var(--info-foreground)'
@@ -104,13 +104,13 @@ const parties: readonly Party[] = [
 ]
 
 const addGroups: readonly {
-  items: readonly { icon: LucideIcon; label: string; value: string }[]
+  items: readonly { icon: PhosphorIcon; label: string; value: string }[]
   label: string
 }[] = [
   {
     items: [
-      { icon: UserRoundIcon, label: 'Pessoa', value: 'party-person' },
-      { icon: Building2Icon, label: 'Empresa', value: 'party-company' },
+      { icon: UserIcon, label: 'Pessoa', value: 'party-person' },
+      { icon: BuildingsIcon, label: 'Empresa', value: 'party-company' },
     ],
     label: 'Parte',
   },

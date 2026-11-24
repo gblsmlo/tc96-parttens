@@ -1,11 +1,11 @@
 import type { DateRange } from '@daypicker/react'
+import { CalendarBlankIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { addDays, formatLongDate } from '@tc96/helpers/date'
 import { Button } from '@tc96/ui/button'
 import { Calendar } from '@tc96/ui/calendar'
 import { Field, FieldDescription, FieldLabel } from '@tc96/ui/field'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
-import { CalendarIcon } from 'lucide-react'
 import { useId, useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { DatePickerCanvas } from './date-picker-frame.tsx'
@@ -30,7 +30,7 @@ function DueDatePicker() {
       <FieldLabel htmlFor={id}>Due date</FieldLabel>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger id={id} render={triggerButton}>
-          <CalendarIcon aria-hidden="true" />
+          <CalendarBlankIcon aria-hidden="true" />
           {date ? formatLongDate(date, locale) : 'No due date'}
         </PopoverTrigger>
         <PopoverPopup aria-label="Choose a due date">
@@ -64,7 +64,7 @@ function StayPicker() {
       <FieldLabel htmlFor={id}>Check-in and check-out</FieldLabel>
       <Popover>
         <PopoverTrigger id={id} render={triggerButton}>
-          <CalendarIcon aria-hidden="true" />
+          <CalendarBlankIcon aria-hidden="true" />
           {formatRange(stay) ?? 'Add dates'}
         </PopoverTrigger>
         <PopoverPopup aria-label="Choose your stay">
@@ -91,7 +91,7 @@ function BirthDatePicker() {
       <FieldLabel htmlFor={id}>Date of birth</FieldLabel>
       <Popover>
         <PopoverTrigger id={id} render={triggerButton}>
-          <CalendarIcon aria-hidden="true" />
+          <CalendarBlankIcon aria-hidden="true" />
           {date ? formatLongDate(date, locale) : 'Select your date of birth'}
         </PopoverTrigger>
         <PopoverPopup aria-label="Choose your date of birth">
@@ -130,7 +130,7 @@ function ReportPeriodPicker() {
       <FieldLabel htmlFor={id}>Report period</FieldLabel>
       <Popover>
         <PopoverTrigger id={id} render={triggerButton}>
-          <CalendarIcon aria-hidden="true" />
+          <CalendarBlankIcon aria-hidden="true" />
           {formatRange(period) ?? 'Choose a period'}
         </PopoverTrigger>
         <PopoverPopup aria-label={popupLabels.range}>

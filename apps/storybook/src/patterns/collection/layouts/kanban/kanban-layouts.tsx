@@ -1,4 +1,9 @@
 import {
+  CalendarBlankIcon,
+  FileTextIcon,
+  RadioButtonIcon,
+} from '@phosphor-icons/react'
+import {
   KanbanCard,
   KanbanCardBody,
   KanbanCardControl,
@@ -13,7 +18,6 @@ import {
   KanbanView,
   PersonProperty,
 } from '@tc96/parttens'
-import { CalendarIcon, CircleDotIcon, FileTextIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { sleep } from '../../../../test-utils/sleep'
 import { type Deal, type DealStage, initialDeals } from '../../fixtures/deals'
@@ -121,10 +125,10 @@ export function SampleKanbanCard({
       </KanbanCardHeader>
       {fields ? (
         <KanbanCardBody>
-          <CardField icon={<CircleDotIcon aria-hidden />} label="Campo">
+          <CardField icon={<RadioButtonIcon aria-hidden />} label="Campo">
             Valor
           </CardField>
-          <CardField icon={<CalendarIcon aria-hidden />} label="Prazo">
+          <CardField icon={<CalendarBlankIcon aria-hidden />} label="Prazo">
             20 nov.
           </CardField>
         </KanbanCardBody>

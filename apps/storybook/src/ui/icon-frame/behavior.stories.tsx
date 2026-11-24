@@ -1,3 +1,4 @@
+import { DiamondIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   IconFrame,
@@ -5,7 +6,6 @@ import {
   iconFrameSizes,
   iconFrameVariantNames,
 } from '@tc96/ui/icon-frame'
-import { GemIcon } from 'lucide-react'
 import { expect, within } from 'storybook/test'
 import { iconFrameControlArgs } from './icon-frame-controls.ts'
 import { ComposedIconFrame } from './icon-frame-layouts.tsx'
@@ -59,7 +59,7 @@ export const EverySize: Story = {
     <div className="flex items-end gap-4" data-testid="sizes">
       {iconFrameSizes.map((size) => (
         <IconFrame key={size} size={size}>
-          <GemIcon />
+          <DiamondIcon aria-hidden="true" />
         </IconFrame>
       ))}
     </div>
@@ -85,7 +85,7 @@ export const EveryShape: Story = {
     <div className="flex items-center gap-4" data-testid="shapes">
       {iconFrameShapes.map((shape) => (
         <IconFrame key={shape} shape={shape}>
-          <GemIcon />
+          <DiamondIcon aria-hidden="true" />
         </IconFrame>
       ))}
     </div>
@@ -104,7 +104,7 @@ export const EveryVariant: Story = {
     <div className="flex items-center gap-4" data-testid="variants">
       {iconFrameVariantNames.map((variant) => (
         <IconFrame key={variant} variant={variant}>
-          <GemIcon />
+          <DiamondIcon aria-hidden="true" />
         </IconFrame>
       ))}
     </div>
@@ -172,7 +172,7 @@ export const RenderReplacesElement: Story = {
 export const IconSizeClassWins: Story = {
   render: () => (
     <ComposedIconFrame {...iconFrameControlArgs} size="xs">
-      <GemIcon className="size-5" />
+      <DiamondIcon aria-hidden="true" className="size-5" />
     </ComposedIconFrame>
   ),
   play: async ({ canvasElement }) => {
@@ -184,7 +184,7 @@ export const IconSizeClassWins: Story = {
 export const ClassNameWins: Story = {
   render: () => (
     <IconFrame className="rounded-sm" shape="circle">
-      <GemIcon />
+      <DiamondIcon aria-hidden="true" />
     </IconFrame>
   ),
   play: async ({ canvasElement }) => {

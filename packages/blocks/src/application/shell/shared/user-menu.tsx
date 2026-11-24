@@ -1,5 +1,6 @@
 'use client'
 
+import { CaretUpDownIcon, SignOutIcon } from '@phosphor-icons/react'
 import { getInitials } from '@tc96/helpers/initials'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import {
@@ -19,7 +20,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@tc96/ui/sidebar'
-import { ChevronsUpDownIcon, LogOutIcon } from 'lucide-react'
 import type { ReactElement } from 'react'
 import type { ShellAction, ShellLabels, ShellTheme, ShellUser } from './types'
 
@@ -86,7 +86,7 @@ export function UserMenu({
               <span className="truncate font-medium">{user.name}</span>
               <span className="truncate text-xs">{user.email}</span>
             </span>
-            <ChevronsUpDownIcon className="ms-auto" />
+            <CaretUpDownIcon aria-hidden="true" className="ms-auto" />
           </MenuTrigger>
           <MenuPopup
             align="end"
@@ -130,7 +130,7 @@ export function UserMenu({
               <>
                 <MenuSeparator />
                 <MenuItem onClick={onSignOut}>
-                  <LogOutIcon />
+                  <SignOutIcon aria-hidden="true" />
                   {labels.signOut}
                 </MenuItem>
               </>

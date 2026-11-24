@@ -1,29 +1,29 @@
+import {
+  CellSignalHighIcon,
+  CellSignalLowIcon,
+  CellSignalMediumIcon,
+  CheckCircleIcon,
+  CircleIcon,
+  ProhibitIcon,
+  RadioButtonIcon,
+} from '@phosphor-icons/react'
 import type {
   PersonPropertyOption,
   SelectPropertyOption,
   TagsPropertyOption,
 } from '@tc96/parttens'
-import {
-  CircleCheckIcon,
-  CircleDotIcon,
-  CircleIcon,
-  CircleSlashIcon,
-  SignalHighIcon,
-  SignalLowIcon,
-  SignalMediumIcon,
-} from 'lucide-react'
 
 export const statusOptions: readonly SelectPropertyOption[] = [
   { icon: CircleIcon, label: 'To do', tone: 'neutral', value: 'todo' },
   {
-    icon: CircleDotIcon,
+    icon: RadioButtonIcon,
     label: 'In progress',
     tone: 'info',
     value: 'inProgress',
   },
-  { icon: CircleCheckIcon, label: 'Done', tone: 'success', value: 'done' },
+  { icon: CheckCircleIcon, label: 'Done', tone: 'success', value: 'done' },
   {
-    icon: CircleSlashIcon,
+    icon: ProhibitIcon,
     label: 'Canceled',
     tone: 'neutral',
     value: 'canceled',
@@ -31,9 +31,14 @@ export const statusOptions: readonly SelectPropertyOption[] = [
 ]
 
 export const priorityOptions: readonly SelectPropertyOption[] = [
-  { icon: SignalHighIcon, label: 'High', tone: 'danger', value: 'high' },
-  { icon: SignalMediumIcon, label: 'Medium', tone: 'warning', value: 'medium' },
-  { icon: SignalLowIcon, label: 'Low', tone: 'neutral', value: 'low' },
+  { icon: CellSignalHighIcon, label: 'High', tone: 'danger', value: 'high' },
+  {
+    icon: CellSignalMediumIcon,
+    label: 'Medium',
+    tone: 'warning',
+    value: 'medium',
+  },
+  { icon: CellSignalLowIcon, label: 'Low', tone: 'neutral', value: 'low' },
 ]
 
 export const people: readonly PersonPropertyOption[] = [

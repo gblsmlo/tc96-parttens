@@ -1,3 +1,4 @@
+import { TagIcon, UsersIcon } from '@phosphor-icons/react'
 import {
   type CalendarDate,
   CalendarEventChip,
@@ -10,7 +11,6 @@ import {
   type CalendarViewMode,
   toZonedDateTime,
 } from '@tc96/parttens'
-import { TagIcon, UsersIcon } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import {
   CALENDAR_LOCALE,

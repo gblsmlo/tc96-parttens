@@ -1,4 +1,12 @@
 import {
+  BriefcaseIcon,
+  CarIcon,
+  CoffeeIcon,
+  ForkKnifeIcon,
+  HouseIcon,
+  ShoppingCartIcon,
+} from '@phosphor-icons/react'
+import {
   type BalancePoint,
   type BudgetCategory,
   type CashFlowPoint,
@@ -8,14 +16,6 @@ import {
   type Transaction,
 } from '@tc96/parttens'
 import { Badge } from '@tc96/ui/badge'
-import {
-  BriefcaseIcon,
-  CarIcon,
-  CoffeeIcon,
-  HouseIcon,
-  ShoppingCartIcon,
-  UtensilsIcon,
-} from 'lucide-react'
 
 export type MarketPeriod = 'month' | 'week'
 export type BalancePeriod = '1m' | '6m' | '1y'
@@ -144,7 +144,7 @@ export const budgetCategories: Record<BudgetPeriod, BudgetCategory[]> = {
   month: [
     {
       color: category.housing,
-      icon: <HouseIcon />,
+      icon: <HouseIcon aria-hidden="true" />,
       id: 'housing',
       label: 'Housing',
       limit: 1800,
@@ -152,7 +152,7 @@ export const budgetCategories: Record<BudgetPeriod, BudgetCategory[]> = {
     },
     {
       color: category.groceries,
-      icon: <ShoppingCartIcon />,
+      icon: <ShoppingCartIcon aria-hidden="true" />,
       id: 'groceries',
       label: 'Groceries',
       limit: 600,
@@ -160,7 +160,7 @@ export const budgetCategories: Record<BudgetPeriod, BudgetCategory[]> = {
     },
     {
       color: category.dining,
-      icon: <UtensilsIcon />,
+      icon: <ForkKnifeIcon aria-hidden="true" />,
       id: 'dining',
       label: 'Dining out',
       limit: 250,
@@ -168,7 +168,7 @@ export const budgetCategories: Record<BudgetPeriod, BudgetCategory[]> = {
     },
     {
       color: category.transport,
-      icon: <CarIcon />,
+      icon: <CarIcon aria-hidden="true" />,
       id: 'transport',
       label: 'Transport',
       limit: 300,
@@ -178,7 +178,7 @@ export const budgetCategories: Record<BudgetPeriod, BudgetCategory[]> = {
   week: [
     {
       color: category.groceries,
-      icon: <ShoppingCartIcon />,
+      icon: <ShoppingCartIcon aria-hidden="true" />,
       id: 'groceries',
       label: 'Groceries',
       limit: 150,
@@ -186,7 +186,7 @@ export const budgetCategories: Record<BudgetPeriod, BudgetCategory[]> = {
     },
     {
       color: category.dining,
-      icon: <UtensilsIcon />,
+      icon: <ForkKnifeIcon aria-hidden="true" />,
       id: 'dining',
       label: 'Dining out',
       limit: 60,
@@ -194,7 +194,7 @@ export const budgetCategories: Record<BudgetPeriod, BudgetCategory[]> = {
     },
     {
       color: category.transport,
-      icon: <CarIcon />,
+      icon: <CarIcon aria-hidden="true" />,
       id: 'transport',
       label: 'Transport',
       limit: 75,
@@ -208,7 +208,7 @@ export const transactions: Transaction[] = [
     amount: 4850,
     icon: (
       <IconFrame color={category.salary} shape="rounded">
-        <BriefcaseIcon />
+        <BriefcaseIcon aria-hidden="true" />
       </IconFrame>
     ),
     id: 'salary',
@@ -220,7 +220,7 @@ export const transactions: Transaction[] = [
     amount: -1800,
     icon: (
       <IconFrame color={category.housing} shape="rounded">
-        <HouseIcon />
+        <HouseIcon aria-hidden="true" />
       </IconFrame>
     ),
     id: 'rent',
@@ -231,7 +231,7 @@ export const transactions: Transaction[] = [
     amount: -86.4,
     icon: (
       <IconFrame color={category.groceries} shape="rounded">
-        <ShoppingCartIcon />
+        <ShoppingCartIcon aria-hidden="true" />
       </IconFrame>
     ),
     id: 'market',
@@ -242,7 +242,7 @@ export const transactions: Transaction[] = [
     amount: -5.75,
     icon: (
       <IconFrame color={category.coffee} shape="rounded">
-        <CoffeeIcon />
+        <CoffeeIcon aria-hidden="true" />
       </IconFrame>
     ),
     id: 'coffee',
@@ -254,7 +254,7 @@ export const transactions: Transaction[] = [
     amount: -42.9,
     icon: (
       <IconFrame color={category.transport} shape="rounded">
-        <CarIcon />
+        <CarIcon aria-hidden="true" />
       </IconFrame>
     ),
     id: 'fuel',
@@ -265,7 +265,7 @@ export const transactions: Transaction[] = [
     amount: -64.2,
     icon: (
       <IconFrame color={category.dining} shape="rounded">
-        <UtensilsIcon />
+        <ForkKnifeIcon aria-hidden="true" />
       </IconFrame>
     ),
     id: 'dinner',
@@ -276,7 +276,7 @@ export const transactions: Transaction[] = [
     amount: 320.5,
     icon: (
       <IconFrame color={category.salary} shape="rounded">
-        <BriefcaseIcon />
+        <BriefcaseIcon aria-hidden="true" />
       </IconFrame>
     ),
     id: 'freelance',
@@ -287,7 +287,7 @@ export const transactions: Transaction[] = [
     amount: -129,
     icon: (
       <IconFrame color={category.groceries} shape="rounded">
-        <ShoppingCartIcon />
+        <ShoppingCartIcon aria-hidden="true" />
       </IconFrame>
     ),
     id: 'market-2',
@@ -298,7 +298,7 @@ export const transactions: Transaction[] = [
     amount: -18.5,
     icon: (
       <IconFrame color={category.transport} shape="rounded">
-        <CarIcon />
+        <CarIcon aria-hidden="true" />
       </IconFrame>
     ),
     id: 'parking',
@@ -309,7 +309,7 @@ export const transactions: Transaction[] = [
     amount: -210,
     icon: (
       <IconFrame color={category.housing} shape="rounded">
-        <HouseIcon />
+        <HouseIcon aria-hidden="true" />
       </IconFrame>
     ),
     id: 'utilities',

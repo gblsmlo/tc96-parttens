@@ -1,10 +1,10 @@
+import { CaretDownIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import {
   Collapsible,
   CollapsiblePanel,
   CollapsibleTrigger,
 } from '@tc96/ui/collapsible'
-import { ChevronDownIcon } from 'lucide-react'
 import {
   type CollapsibleControls,
   collapsibleControlArgs,
@@ -21,7 +21,7 @@ export const collapsibleTriggerClassName =
   'group/trigger inline-flex items-center gap-2 font-medium text-sm'
 
 export const Chevron = () => (
-  <ChevronDownIcon
+  <CaretDownIcon
     aria-hidden="true"
     className="size-4 transition-transform group-data-panel-open/trigger:rotate-180"
   />

@@ -1,13 +1,13 @@
+import { RobotIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FlagProperty } from '@tc96/parttens'
-import { BotIcon } from 'lucide-react'
 import { expect } from 'storybook/test'
 import { FlagCanvas } from './flag-canvas.tsx'
 
 const meta = {
   args: {
     active: true,
-    activeIcon: BotIcon,
+    activeIcon: RobotIcon,
     label: 'label',
     variant: 'plain',
   },
