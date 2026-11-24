@@ -1,0 +1,91 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Icon Row
+
+A row with an icon in a frame, a title, an optional description and optional actions at the end. It holds a file with its download and menu, a destination or call to action where the whole row is a link or a button, and an option in a list of single or multiple choices, where the row is the `label` of a `Radio` or a `Checkbox`.
+
+The other pages of `Patterns/IconRow`: [Playground](?path=/story/patterns-iconrow-playground--playground) to try the texts, the variant, the icon color, the element and the actions, [Layouts](?path=/story/patterns-iconrow-layouts--default) for the formations it takes (Default, Stacked Rows, Divided Rows, Link Rows, Single Choice Rows and Multiple Choice Rows), [Behavior](?path=/story/patterns-iconrow-behavior--icon-is-hidden-from-assistive-technology) for what each formation guarantees, and [Usages](?path=/story/patterns-iconrow-usages--attachments) for real content on each formation.
+
+## Import
+
+```tsx
+import { IconRow, iconRowVariants, type IconRowVariant } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<IconRow
+  actions={actions}
+  description={description}
+  icon={<FileTextIcon />}
+  title={title}
+/>
+```
+
+The tree `IconRow` renders:
+
+```tsx
+<div data-slot="icon-row" data-variant="outline">
+  <span data-slot="icon-frame" aria-hidden="true">{icon}</span>
+  <span data-slot="icon-row-content">
+    <span data-slot="icon-row-title">{title}</span>
+    <span data-slot="icon-row-description">{description}</span>
+  </span>
+  <span data-slot="icon-row-actions">{actions}</span>
+</div>
+```
+
+## IconRow
+
+A row of an icon, a title, a description and actions. Renders a `div`, or the element `render` gives it: an `a` or a `button` makes the whole row the target, and a `label` makes the row choose the `Radio` or `Checkbox` it holds in `actions`. The icon sits in a 32px rounded `IconFrame`, the title stays on one line and truncates, and the description clamps at two lines. It keeps no state and never fetches, navigates or checks anything by itself.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `icon` | `ReactNode` | required | Sets the icon inside the frame, sized by the frame to 16px. |
+| `title` | `ReactNode` | required | Sets the title, in medium weight, truncated to one line. |
+| `description` | `ReactNode` | - | Sets the muted text under the title, clamped at two lines; without it only the title shows. |
+| `actions` | `ReactNode` | - | Renders content at the end of the row, which never shrinks: buttons and a menu, a chevron, or the row's `Radio` or `Checkbox`. |
+| `variant` | `"outline"` or `"plain"` | `"outline"` | Controls the frame: a 1px border with rounded corners, or none, for a list that draws its own border and dividers. |
+| `iconColor` | `string` | - | Tints the icon and its frame with a CSS color; without it the frame is muted. |
+| `render` | `ReactElement` or `(props) => ReactElement` | - | Replaces the `div` with another element, such as `a`, `button` or `label`, which receives the row's props. |
+| `className` | `string` | - | Adds classes to the row. |
+
+`render` takes the function form, `render={(props) => <a {...props} href="/billing" />}`, or the element form, `render={<button type="button" />}`; the element keeps its own props, such as `href` and `onClick`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"icon-row"` | Selects the row |
+| `data-variant` | `"outline"` or `"plain"` | Styles the row by variant |
+| `data-slot` | `"icon-frame"` | Selects the frame of the icon, with its own `data-shape="rounded"` and `data-size="sm"` |
+| `data-slot` | `"icon-row-content"` | Selects the column of the title and the description |
+| `data-slot` | `"icon-row-title"` | Selects the title |
+| `data-slot` | `"icon-row-description"` | Selects the description; it renders only with `description` |
+| `data-slot` | `"icon-row-actions"` | Selects the wrapper of `actions`, with a 4px gap; it renders only with `actions` |
+
+Every row has 12px of padding and 12px between the icon, the text and the actions, and fills the width of its container, a `button` included, with its text at the start.
+
+Rendered as an `a`, a `button` or a `label`, the row takes a pointer cursor and a `muted` background on hover. A row that takes focus, a link or a button, shows a 2px `ring` around it.
+
+Rendered as a `label` in the `outline` variant, the row turns its border `primary` while an element inside it has `data-checked`, which the `Radio` and the `Checkbox` set when checked.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `iconRowVariants` | `constant` | The values of `variant`: `["outline", "plain"]`. |
+| `IconRowVariant` | `type` | `"outline"` or `"plain"`. |
+| `IconRowProps` | `type` | The props of `IconRow`. |
+
+## Accessibility and theme
+
+- The icon frame is hidden from assistive technology; the title names the row.
+- A link or a button row is named by its whole text, title and description. `actions` inside it holds only content that is not interactive, such as a chevron with `aria-hidden`: a link or a button cannot hold another control.
+- A choice row is a `label` around the `Radio` or the `Checkbox` in `actions`, which takes the row's text as its name. Name the `RadioGroup` or the `CheckboxGroup` with `aria-label` or a visible label.
+- Name every icon button in `actions` with `aria-label`, including the record it acts on (`Download Quarterly report`).
+- Colors, the border and the radius come from the theme tokens `border`, `primary`, `muted`, `muted-foreground` and `ring`.
