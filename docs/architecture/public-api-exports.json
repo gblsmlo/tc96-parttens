@@ -708,11 +708,11 @@
     "assistantDefaultLabels",
     "assistantDefaultPlaceholder"
   ],
-  "icon-row": [
-    "IconRow",
-    "IconRowProps",
-    "IconRowVariant",
-    "iconRowVariants"
+  "list": [
+    "List",
+    "ListProps",
+    "ListVariant",
+    "listVariants"
   ],
   "parttens": [
     "Achievement",
@@ -1030,9 +1030,6 @@
     "IconLabelProperty",
     "IconLabelPropertyIcon",
     "IconLabelPropertyProps",
-    "IconRow",
-    "IconRowProps",
-    "IconRowVariant",
     "InvoiceStatus",
     "InvoiceStatusWidget",
     "InvoiceStatusWidgetProps",
@@ -1082,9 +1079,11 @@
     "LevelWidget",
     "LevelWidgetProps",
     "LinkButtonLabels",
+    "List",
     "ListGroup",
     "ListGroupActions",
     "ListGroupProps",
+    "ListProps",
     "ListRow",
     "ListRowAction",
     "ListRowActionProps",
@@ -1114,6 +1113,7 @@
     "ListRowTitleTriggerProps",
     "ListRowTrailing",
     "ListRowTrailingProps",
+    "ListVariant",
     "ListView",
     "ListViewProps",
     "MarketShareSegment",
@@ -1383,10 +1383,10 @@
     "fromZonedDateTime",
     "getTimeZoneOffsetMs",
     "groupStepTypes",
-    "iconRowVariants",
     "incomingOf",
     "isSameCalendarDate",
     "kanbanCardVariants",
+    "listVariants",
     "orderQuests",
     "outgoingOf",
     "parseCalendarDateKey",

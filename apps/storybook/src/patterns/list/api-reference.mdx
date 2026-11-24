@@ -7,12 +7,12 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A row with an icon in a frame, a title, an optional description and optional actions at the end. It holds a file with its download and menu, a destination or call to action where the whole row is a link or a button, and an option in a list of single or multiple choices, where the row is the `label` of a `Radio` or a `Checkbox`.
 
-The other pages of `Patterns/IconRow`: [Playground](?path=/story/patterns-iconrow-playground--playground) to try the texts, the variant, the icon color, the element and the actions, [Layouts](?path=/story/patterns-iconrow-layouts--default) for the formations it takes (Default, Stacked Rows, Divided Rows, Link Rows, Single Choice Rows and Multiple Choice Rows), [Behavior](?path=/story/patterns-iconrow-behavior--icon-is-hidden-from-assistive-technology) for what each formation guarantees, and [Usages](?path=/story/patterns-iconrow-usages--attachments) for real content on each formation.
+The other pages of `Patterns/List`: [Playground](?path=/story/patterns-list-playground--playground) to try the texts, the variant, the icon color, the element and the actions, [Layouts](?path=/story/patterns-list-layouts--default) for the formations it takes (Default, Stacked Rows, Divided Rows, Link Rows, Single Choice Rows and Multiple Choice Rows), [Behavior](?path=/story/patterns-list-behavior--icon-is-hidden-from-assistive-technology) for what each formation guarantees, and [Usages](?path=/story/patterns-list-usages--attachments) for real content on each formation.
 
 ## Import
 
 ```tsx
-import { IconRow, iconRowVariants, type IconRowVariant } from '@acme/patterns'
+import { List, listVariants, type ListVariant } from '@acme/patterns'
 ```
 
 ## Anatomy
@@ -20,7 +20,7 @@ import { IconRow, iconRowVariants, type IconRowVariant } from '@acme/patterns'
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
-<IconRow
+<List
   actions={actions}
   description={description}
   icon={<FileTextIcon />}
@@ -28,20 +28,20 @@ import { IconRow, iconRowVariants, type IconRowVariant } from '@acme/patterns'
 />
 ```
 
-The tree `IconRow` renders:
+The tree `List` renders:
 
 ```tsx
-<div data-slot="icon-row" data-variant="outline">
+<div data-slot="list" data-variant="outline">
   <span data-slot="icon-frame" aria-hidden="true">{icon}</span>
-  <span data-slot="icon-row-content">
-    <span data-slot="icon-row-title">{title}</span>
-    <span data-slot="icon-row-description">{description}</span>
+  <span data-slot="list-content">
+    <span data-slot="list-title">{title}</span>
+    <span data-slot="list-description">{description}</span>
   </span>
-  <span data-slot="icon-row-actions">{actions}</span>
+  <span data-slot="list-actions">{actions}</span>
 </div>
 ```
 
-## IconRow
+## List
 
 A row of an icon, a title, a description and actions. Renders a `div`, or the element `render` gives it: an `a` or a `button` makes the whole row the target, and a `label` makes the row choose the `Radio` or `Checkbox` it holds in `actions`. The icon sits in a 32px rounded `IconFrame`, the title stays on one line and truncates, and the description clamps at two lines. It keeps no state and never fetches, navigates or checks anything by itself.
 
@@ -60,13 +60,13 @@ A row of an icon, a title, a description and actions. Renders a `div`, or the el
 
 | Attribute | Values | Description |
 | --- | --- | --- |
-| `data-slot` | `"icon-row"` | Selects the row |
+| `data-slot` | `"list"` | Selects the row |
 | `data-variant` | `"outline"` or `"plain"` | Styles the row by variant |
 | `data-slot` | `"icon-frame"` | Selects the frame of the icon, with its own `data-shape="rounded"` and `data-size="sm"` |
-| `data-slot` | `"icon-row-content"` | Selects the column of the title and the description |
-| `data-slot` | `"icon-row-title"` | Selects the title |
-| `data-slot` | `"icon-row-description"` | Selects the description; it renders only with `description` |
-| `data-slot` | `"icon-row-actions"` | Selects the wrapper of `actions`, with a 4px gap; it renders only with `actions` |
+| `data-slot` | `"list-content"` | Selects the column of the title and the description |
+| `data-slot` | `"list-title"` | Selects the title |
+| `data-slot` | `"list-description"` | Selects the description; it renders only with `description` |
+| `data-slot` | `"list-actions"` | Selects the wrapper of `actions`, with a 4px gap; it renders only with `actions` |
 
 Every row has 12px of padding and 12px between the icon, the text and the actions, and fills the width of its container, a `button` included, with its text at the start.
 
@@ -78,9 +78,9 @@ Rendered as a `label` in the `outline` variant, the row turns its border `primar
 
 | Export | Kind | Description |
 | --- | --- | --- |
-| `iconRowVariants` | `constant` | The values of `variant`: `["outline", "plain"]`. |
-| `IconRowVariant` | `type` | `"outline"` or `"plain"`. |
-| `IconRowProps` | `type` | The props of `IconRow`. |
+| `listVariants` | `constant` | The values of `variant`: `["outline", "plain"]`. |
+| `ListVariant` | `type` | `"outline"` or `"plain"`. |
+| `ListProps` | `type` | The props of `List`. |
 
 ## Accessibility and theme
 

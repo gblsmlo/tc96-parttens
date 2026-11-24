@@ -1,11 +1,11 @@
 import type { useRender } from '@base-ui/react/use-render'
 import type { ReactNode } from 'react'
 
-export const iconRowVariants = ['outline', 'plain'] as const
+export const listVariants = ['outline', 'plain'] as const
 
-export type IconRowVariant = (typeof iconRowVariants)[number]
+export type ListVariant = (typeof listVariants)[number]
 
-export interface IconRowProps {
+export interface ListProps {
   actions?: ReactNode
   className?: string
   description?: ReactNode
@@ -13,5 +13,5 @@ export interface IconRowProps {
   iconColor?: string
   render?: useRender.ComponentProps<'div'>['render']
   title: ReactNode
-  variant?: IconRowVariant
+  variant?: ListVariant
 }

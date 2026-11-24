@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { IconRow } from '@tc96/parttens'
+import { List } from '@tc96/parttens'
 import { IconSlot, Slot } from '../../test-utils/anatomy-slot'
-import { IconRowCanvas } from './icon-row-canvas.tsx'
+import { ListCanvas } from './list-canvas.tsx'
 
 const meta = {
-  component: IconRow,
-  decorators: [IconRowCanvas],
+  component: List,
+  decorators: [ListCanvas],
   tags: ['!autodocs', '!dev'],
-  title: 'Patterns/IconRow/API Reference',
-} satisfies Meta<typeof IconRow>
+  title: 'Patterns/List/API Reference',
+} satisfies Meta<typeof List>
 
 export default meta
 
