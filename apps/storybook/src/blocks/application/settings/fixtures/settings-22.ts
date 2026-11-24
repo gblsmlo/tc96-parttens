@@ -1,0 +1,27 @@
+import type { Settings22Key } from '@tc96/blocks/application/settings/settings-22'
+
+export const settings22Keys: Settings22Key[] = [
+  {
+    active: true,
+    createdAt: '12 mar 2026',
+    id: 'key-producao',
+    lastUsed: 'há 2 horas',
+    maskedToken: 'sk_live_••••4f2a',
+    name: 'Produção',
+  },
+  {
+    active: true,
+    createdAt: '03 fev 2026',
+    id: 'key-integracao-crm',
+    lastUsed: 'ontem',
+    maskedToken: 'sk_live_••••9b10',
+    name: 'Integração CRM',
+  },
+  {
+    active: false,
+    createdAt: '20 jan 2026',
+    id: 'key-testes',
+    maskedToken: 'sk_test_••••c7d3',
+    name: 'Testes',
+  },
+]

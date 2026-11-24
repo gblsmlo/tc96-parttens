@@ -1,0 +1,101 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings22
+
+A settings section that lists API keys in a table. Each row shows the key name, the masked token with a copy button, when it was created and last used, a switch to turn it on or off and, when the app handles actions, a menu to rotate or revoke it. Reach for it when people manage the keys that access your API. Install it with `npx @tc96/parttens add settings-22`.
+
+It is a section, not a page: it renders no `main` landmark. Creating, rotating, revoking and copying stay in the app; the block only calls `onCreate`, `onKeyAction`, `onActiveChange` and `onCopy`, keeps no list of its own, never touches the clipboard and never fetches or stores anything. The token arrives already masked.
+
+The other pages of `Blocks/Application/Settings/Settings22`: [Playground](?path=/story/blocks-application-settings-settings22-playground--playground) to try the texts, the empty list and the callbacks, [Behavior](?path=/story/blocks-application-settings-settings22-behavior--empty-list-shows-state-surface) for the tests and [Usages](?path=/story/blocks-application-settings-settings22-usages--loaded) for the keys read over the network.
+
+## Import
+
+```tsx
+import { Settings22 } from '@tc96/blocks/application/settings/settings-22'
+```
+
+The same path exports the types `Settings22Props`, `Settings22Key`, `Settings22Action` and `Settings22Labels`.
+
+## Anatomy
+
+The section with three keys:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Settings22
+  keys={keys}
+  onActiveChange={(keyId, active) => setKeyActive(keyId, active)}
+  onCopy={(keyId) => copyToken(keyId)}
+  onCreate={openNewKey}
+  onKeyAction={(keyId, action) => handleKeyAction(keyId, action)}
+/>
+```
+
+## Settings22
+
+The API keys section. Renders the title, the description and, with `onCreate`, the New key button, then a table with one row per key. With no keys it renders an empty state in place of the table.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `keys` | `Settings22Key[]` | required | The keys to list; an empty array shows the empty state. |
+| `onCreate` | `() => void` | - | Called when the New key button is clicked. Without it the button is not rendered. |
+| `onCopy` | `(keyId: string) => void` | - | Called when the copy button of a row is clicked. Without it the copy buttons are not rendered. |
+| `onActiveChange` | `(keyId: string, active: boolean) => void` | - | Called with the key id and the next state when its switch is toggled. Without it the switches render disabled. |
+| `onKeyAction` | `(keyId: string, action: Settings22Action) => void` | - | Called with the key id and `'rotate'` or `'revoke'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `labels` | `Partial<Settings22Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+The block takes no other props.
+
+## Settings22Key
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the key in every callback. |
+| `name` | `string` | Name of the key. |
+| `maskedToken` | `string` | The token as shown, for example `sk_live_••••4f2a`. The block never receives the full token. |
+| `createdAt` | `string` | Creation date, already formatted. |
+| `lastUsed` | `string` | Last use, already formatted. Without it the row shows `labels.neverUsed`. |
+| `active` | `boolean` | State of the switch. The block keeps no copy of it. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Chaves de API"` |
+| `description` | `string` | `"Chaves para acessar a API da sua conta."` |
+| `newKey` | `string` | `"Nova chave"` |
+| `columnName` | `string` | `"Nome"` |
+| `columnToken` | `string` | `"Token"` |
+| `columnCreated` | `string` | `"Criada em"` |
+| `columnLastUsed` | `string` | `"Último uso"` |
+| `columnActions` | `string` | `"Ações"`; hidden header of the actions column |
+| `columnStatus` | `string` | `"Ativa"` |
+| `neverUsed` | `string` | `"Nunca usada"` |
+| `rotate` | `string` | `"Rotacionar"` |
+| `revoke` | `string` | `"Revogar"` |
+| `emptyTitle` | `string` | `"Nenhuma chave ainda"` |
+| `emptyDescription` | `string` | `"Crie uma chave para acessar a API."` |
+| `actions` | `(name: string) => string` | `"Ações de Produção"`; the accessible name of the row menu |
+| `copy` | `(name: string) => string` | `"Copiar token de Produção"`; the accessible name of the copy button |
+| `status` | `(name: string) => string` | `"Ativar Produção"`; the accessible name of the switch |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Settings22` | `component` | The API keys section. |
+| `Settings22Props` | `type` | The props of the section. |
+| `Settings22Key` | `type` | A key. |
+| `Settings22Action` | `type` | `'rotate' \| 'revoke'`. |
+| `Settings22Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The copy button, the switch and the row menu are named by `labels.copy`, `labels.status` and `labels.actions`, so each row is told apart by screen readers.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

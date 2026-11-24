@@ -1,0 +1,79 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings17
+
+A settings section of privacy controls. Each row has a title, a description and either a switch or, when the control carries an `actionLabel`, a button. A row may also carry a plan badge, Pro or Beta. Reach for it when the app lets people choose what is collected and shared about their account. Install it with `npx @tc96/parttens add settings-17`.
+
+It is a section, not a page: it renders no `main` landmark. The block holds no value: every switch shows `checked` and every change is reported through a callback.
+
+The other pages of `Blocks/Application/Settings/Settings17`: [Playground](?path=/story/blocks-application-settings-settings17-playground--playground) to try the texts and the button, [Behavior](?path=/story/blocks-application-settings-settings17-behavior--switch-calls-on-checked-change) for the tests and [Usages](?path=/story/blocks-application-settings-settings17-usages--loaded) for the controls read over the network.
+
+## Import
+
+```tsx
+import { Settings17 } from '@tc96/blocks/application/settings/settings-17'
+```
+
+The same path exports the types `Settings17Props`, `Settings17Control`, `Settings17Plan` and `Settings17Labels`.
+
+## Anatomy
+
+The section with switches, plan badges and one button row:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Settings17
+  controls={controls}
+  onAction={(controlId) => startAction(controlId)}
+  onCheckedChange={(controlId, checked) => save(controlId, checked)}
+/>
+```
+
+## Settings17
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `controls` | `Settings17Control[]` | required | The rows, in order. |
+| `onCheckedChange` | `(controlId: string, checked: boolean) => void` | - | Called when a switch is toggled. The switch shows `checked` until the app passes a new value. |
+| `onAction` | `(controlId: string) => void` | - | Called when the button of an action row is clicked. Without it the action rows render no button. |
+| `labels` | `Partial<Settings17Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+## Settings17Control
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row in the callbacks. |
+| `title` | `string` | Title of the row and accessible name of its switch. |
+| `description` | `string` | Text under the title. |
+| `checked` | `boolean` | Value of the switch; used by rows without `actionLabel`. |
+| `actionLabel` | `string` | Makes the row a button row, with this text, instead of a switch row. |
+| `plan` | `'pro' \| 'beta'` | Shows the Pro or Beta badge before the control. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Privacidade"` |
+| `description` | `string` | `"Decida o que é coletado e compartilhado sobre sua conta."` |
+| `pro` | `string` | `"Pro"` |
+| `beta` | `string` | `"Beta"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Settings17` | `component` | The privacy controls section. |
+| `Settings17Props` | `type` | The props of the section. |
+| `Settings17Control` | `type` | A row. |
+| `Settings17Plan` | `type` | `'pro' \| 'beta'`. |
+| `Settings17Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each switch is named by the title of its row.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

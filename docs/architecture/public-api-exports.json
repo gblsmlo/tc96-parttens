@@ -1736,5 +1736,58 @@
     "Settings16CostCenter",
     "Settings16Labels",
     "Settings16Props"
+  ],
+  "block:settings-17": [
+    "Settings17",
+    "Settings17Control",
+    "Settings17Labels",
+    "Settings17Plan",
+    "Settings17Props"
+  ],
+  "block:settings-18": [
+    "Settings18",
+    "Settings18Capability",
+    "Settings18Labels",
+    "Settings18Props",
+    "Settings18Role"
+  ],
+  "block:settings-19": [
+    "Settings19",
+    "Settings19Action",
+    "Settings19Endpoint",
+    "Settings19Labels",
+    "Settings19Props"
+  ],
+  "block:settings-20": [
+    "Settings20",
+    "Settings20Category",
+    "Settings20Channel",
+    "Settings20Event",
+    "Settings20Labels",
+    "Settings20Matrix",
+    "Settings20Props"
+  ],
+  "block:settings-21": [
+    "Settings21",
+    "Settings21App",
+    "Settings21Labels",
+    "Settings21Props",
+    "Settings21Status"
+  ],
+  "block:settings-22": [
+    "Settings22",
+    "Settings22Action",
+    "Settings22Key",
+    "Settings22Labels",
+    "Settings22Props"
+  ],
+  "block:settings-23": [
+    "Settings23",
+    "Settings23Invoice",
+    "Settings23InvoiceStatus",
+    "Settings23Labels",
+    "Settings23Plan",
+    "Settings23Props",
+    "Settings23Usage"
   ]
 }
