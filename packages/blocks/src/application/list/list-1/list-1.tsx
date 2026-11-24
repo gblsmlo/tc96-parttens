@@ -4,7 +4,9 @@ import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-su
 import { Amount } from '@tc96/parttens/widgets/shared/amount'
 import { TrendIndicator } from '@tc96/parttens/widgets/shared/trend-indicator'
 import { cn } from '@tc96/utils'
+import { listLoadState } from '../shared/list-load-state'
 import { defaultList1Labels } from './labels'
+import { List1Skeleton } from './list-1-skeleton'
 import type { List1Metric, List1Props } from './types'
 
 function amountFormat(
@@ -20,6 +22,9 @@ function amountFormat(
 }
 
 export function List1({
+  error,
+  onRetry,
+  pending,
   className,
   currency = 'BRL',
   labels: labelsProp,
@@ -27,6 +32,20 @@ export function List1({
   metrics,
 }: Readonly<List1Props>) {
   const labels = { ...defaultList1Labels, ...labelsProp }
+  const loadState = listLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <List1Skeleton label={labels.loading} />,
+  })
+
+  if (loadState)
+    return (
+      <section aria-label={labels.title} className={className}>
+        {loadState}
+      </section>
+    )
 
   if (metrics.length === 0) {
     return (

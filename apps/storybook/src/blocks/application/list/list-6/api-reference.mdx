@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A searchable table of top movers: logo initials, name, status badge, price and the change with a trend tone. Reach for it on a market or ranking screen. Install it with `npx @tc96/parttens add list-6`.
 
-It is a table, not a page: it renders no `main` landmark. The block keeps no state and never fetches or filters; the app owns the `query` and passes only the rows that match it.
+It is a table, not a page: it renders no `main` landmark. The block keeps no state and never fetches or filters; the app owns the `query` and passes only the rows that match it. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
-The other pages of `Blocks/Application/List/List6`: [Playground](?path=/story/blocks-application-list-list6-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list6-behavior--each-row-shows-name-status-price-and-change) for the tests and [Usages](?path=/story/blocks-application-list-list6-usages--loaded) for the data read over the network.
+The other pages of `Blocks/Application/List/List6`: [Playground](?path=/story/blocks-application-list-list6-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list6-behavior--each-row-shows-name-status-price-and-change) for the tests, [States](?path=/story/blocks-application-list-list6-states--default) for the loaded, loading and error states and the empty one and [Usages](?path=/story/blocks-application-list-list6-usages--loaded) for the data read over the network.
 
 ## Import
 
@@ -38,6 +38,9 @@ Five rows, with the search field above the table.
 | `onQueryChange` | `(query: string) => void` | required | Called with the typed text; the app filters `movers`. |
 | `locale` | `string` | `"pt-BR"` | Locale of the price and change columns. |
 | `currency` | `string` | `"BRL"` | ISO currency of the price column. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<List6Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root classes. |
 
@@ -62,6 +65,10 @@ Five rows, with the search field above the table.
 | `statuses` | `Record<List6MoverStatus, string>` | `"Ao vivo"`, `"Atrasado"`, `"Suspenso"` |
 | `emptyTitle`, `emptyDescription` | `string` | `"Sem ativos"` and its description |
 | `noResultTitle`, `noResultDescription` | `string` | `"Nenhum ativo encontrado"` and its description |
+| `loading` | `string` | `"Carregando ativos"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar os ativos"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 
@@ -75,6 +82,7 @@ Five rows, with the search field above the table.
 
 ## Accessibility and theme
 
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
 - The search field is a `searchbox` named by `labels.search`; the table is named by its caption.
 - The change shows its sign as text, so the trend never depends on color alone.
 - The block carries no color, radius or shadow of its own beyond the trend tone tokens: the theme belongs to the app.

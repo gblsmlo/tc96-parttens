@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import type { ListLoadLabels, ListLoadProps } from '../shared/types'
 
 export type List3Period = 'week' | 'month' | 'year'
 
@@ -10,7 +11,7 @@ export interface List3Transaction {
   id: string
 }
 
-export interface List3Labels {
+export interface List3Labels extends ListLoadLabels {
   credit: string
   debit: string
   emptyDescription: string
@@ -20,7 +21,7 @@ export interface List3Labels {
   title: string
 }
 
-export interface List3Props {
+export interface List3Props extends ListLoadProps {
   className?: string
   currency?: string
   labels?: Partial<List3Labels>

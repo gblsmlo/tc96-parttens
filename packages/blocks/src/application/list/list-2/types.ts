@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import type { ListLoadLabels, ListLoadProps } from '../shared/types'
 
 export type List2Range = '7d' | '30d' | '12m'
 
@@ -10,7 +11,7 @@ export interface List2Entry {
   share: number
 }
 
-export interface List2Labels {
+export interface List2Labels extends ListLoadLabels {
   emptyDescription: string
   emptyTitle: string
   range: string
@@ -19,7 +20,7 @@ export interface List2Labels {
   title: string
 }
 
-export interface List2Props {
+export interface List2Props extends ListLoadProps {
   className?: string
   currency?: string
   entries: List2Entry[]

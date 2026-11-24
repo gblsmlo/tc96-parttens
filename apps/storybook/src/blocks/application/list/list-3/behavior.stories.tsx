@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List3 } from '@tc96/blocks/application/list/list-3'
+import { List3, type List3Props } from '@tc96/blocks/application/list/list-3'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { transactions } from '../fixtures/list-3.ts'
 import { type List3Controls, list3ControlArgs } from './list-3-controls.ts'
 import { ComposedList3 } from './list-3-layouts.tsx'
+
+const loaded: List3Props = { period: 'month', transactions }
+
+const retry = fn()
 
 const meta = {
   args: { ...list3ControlArgs, onPeriodChange: fn() },
@@ -132,5 +136,62 @@ export const LabelsOverrideTexts: Story = {
     await expect(
       canvasElement.querySelector('[data-kind="credit"]'),
     ).toHaveTextContent('Recebido')
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <List3 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByLabelText('Carregando transações'),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <List3 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar as transações'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <List3 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <List3 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando transações')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar as transações'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorWinsOverEmpty: Story = {
+  render: () => <List3 {...loaded} transactions={[]} error />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar as transações'),
+    ).toBeVisible()
+    await expect(canvas.queryByText('Nenhuma transação no período')).toBeNull()
   },
 }

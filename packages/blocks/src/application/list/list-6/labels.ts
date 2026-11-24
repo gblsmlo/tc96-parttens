@@ -1,6 +1,10 @@
+import { defaultListLoadLabels } from '../shared/labels'
 import type { List6Labels } from './types'
 
 export const defaultList6Labels: List6Labels = {
+  ...defaultListLoadLabels,
+  errorTitle: 'Não foi possível carregar os ativos',
+  loading: 'Carregando ativos',
   columnChange: 'Variação',
   columnName: 'Ativo',
   columnPrice: 'Preço',

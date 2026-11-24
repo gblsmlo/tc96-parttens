@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A list of metric rows: an icon or initials, the metric name, an optional description, the value and a trend badge that points up, down or sideways. Reach for it on a dashboard that tracks a few indicators and compares each with the previous period. Install it with `npx @tc96/parttens add list-1`.
 
-It is a list, not a page: it renders a `ul` and no `main` landmark. The block keeps no state and never fetches; the app passes raw numbers and the block formats them with the `locale` and `currency` props.
+It is a list, not a page: it renders a `ul` and no `main` landmark. The block keeps no state and never fetches; the app passes raw numbers and the block formats them with the `locale` and `currency` props. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
-The other pages of `Blocks/Application/List/List1`: [Playground](?path=/story/blocks-application-list-list1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list1-behavior--each-metric-shows-name-description-and-value) for the tests and [Usages](?path=/story/blocks-application-list-list1-usages--loaded) for the data read over the network.
+The other pages of `Blocks/Application/List/List1`: [Playground](?path=/story/blocks-application-list-list1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-list-list1-behavior--each-metric-shows-name-description-and-value) for the tests, [States](?path=/story/blocks-application-list-list1-states--default) for the loaded, loading and error states and the empty one and [Usages](?path=/story/blocks-application-list-list1-usages--loaded) for the data read over the network.
 
 ## Import
 
@@ -36,6 +36,9 @@ Four metrics: a currency, a count, a percentage and a flat count.
 | `metrics` | `List1Metric[]` | required | The rows, in order. An empty array renders the empty state. |
 | `locale` | `string` | `"pt-BR"` | BCP 47 tag used to format values and changes. |
 | `currency` | `string` | `"BRL"` | ISO 4217 code of the `currency` metrics. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<List1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root classes. |
 
@@ -59,6 +62,10 @@ Four metrics: a currency, a count, a percentage and a flat count.
 | `trend` | `{ down: string; flat: string; up: string }` | `"Queda de"`, `"Sem variação"`, `"Alta de"`; read by screen readers before the change |
 | `emptyTitle` | `string` | `"Nenhuma métrica ainda"` |
 | `emptyDescription` | `string` | `"As métricas aparecem aqui quando houver dados."` |
+| `loading` | `string` | `"Carregando métricas"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar as métricas"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 
@@ -72,6 +79,7 @@ Four metrics: a currency, a count, a percentage and a flat count.
 
 ## Accessibility and theme
 
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
 - The list is named by `labels.title`; each metric is a list item.
 - The trend direction is also read: the badge carries a hidden prefix from `labels.trend`, so the arrow is not the only signal.
 - The block carries no color, radius or shadow of its own: the theme belongs to the app.

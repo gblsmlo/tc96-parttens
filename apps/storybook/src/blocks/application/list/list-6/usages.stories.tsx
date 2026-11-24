@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { List6, type List6Mover } from '@tc96/blocks/application/list/list-6'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
@@ -11,24 +9,18 @@ import { filterMovers } from './list-6-layouts.tsx'
 
 const TopMovers = () => {
   const [query, setQuery] = useState('')
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<List6Mover[]>('/list/movers'),
     queryKey: ['list', 'movers'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando ativos" />
-  if (error)
-    return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar os ativos</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    )
-
   return (
     <List6
-      movers={filterMovers(data, query)}
+      error={isError}
+      movers={filterMovers(data ?? [], query)}
       onQueryChange={setQuery}
+      onRetry={() => refetch()}
+      pending={isPending}
       query={query}
     />
   )

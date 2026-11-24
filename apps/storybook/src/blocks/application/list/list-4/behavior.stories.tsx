@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List4 } from '@tc96/blocks/application/list/list-4'
+import { List4, type List4Props } from '@tc96/blocks/application/list/list-4'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { integrations } from '../fixtures/list-4.ts'
 import { type List4Controls, list4ControlArgs } from './list-4-controls.ts'
 import { ComposedList4 } from './list-4-layouts.tsx'
+
+const loaded: List4Props = { integrations }
+
+const retry = fn()
 
 const meta = {
   args: list4ControlArgs,
@@ -86,5 +90,62 @@ export const LabelsOverrideTexts: Story = {
     await expect(canvas.getByRole('list', { name: 'Apps' })).toBeVisible()
     await expect(canvas.getByText('Ativo')).toBeVisible()
     await expect(canvas.getAllByText('Ativar')).toHaveLength(3)
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: () => <List4 {...loaded} pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByLabelText('Carregando integrações'),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: () => <List4 {...loaded} error onRetry={retry} />,
+  play: async ({ canvasElement }) => {
+    retry.mockClear()
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar as integrações'),
+    ).toBeVisible()
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: () => <List4 {...loaded} error />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: () => <List4 {...loaded} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando integrações')).toBeVisible()
+    await expect(
+      canvas.queryByText('Não foi possível carregar as integrações'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorWinsOverEmpty: Story = {
+  render: () => <List4 {...loaded} integrations={[]} error />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByText('Não foi possível carregar as integrações'),
+    ).toBeVisible()
+    await expect(canvas.queryByText('Sem integrações')).toBeNull()
   },
 }

@@ -1,3 +1,4 @@
+import type { ListLoadLabels, ListLoadProps } from '../shared/types'
 export interface List4Integration {
   connected?: boolean
   description: string
@@ -5,7 +6,7 @@ export interface List4Integration {
   name: string
 }
 
-export interface List4Labels {
+export interface List4Labels extends ListLoadLabels {
   connect: string
   connectTo: (name: string) => string
   connected: string
@@ -14,7 +15,7 @@ export interface List4Labels {
   title: string
 }
 
-export interface List4Props {
+export interface List4Props extends ListLoadProps {
   className?: string
   integrations: readonly List4Integration[]
   labels?: Partial<List4Labels>
