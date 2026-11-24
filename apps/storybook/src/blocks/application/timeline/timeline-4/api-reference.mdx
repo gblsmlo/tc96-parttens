@@ -1,0 +1,90 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Timeline4
+
+An activity sheet: a trigger button that opens a right-side sheet with a scrollable vertical feed. Each entry has a marker avatar, a title, a time and an optional badge. Reach for it when the history of a record should be one click away without taking space in the page. Install it with `npx @tc96/parttens add timeline-4`.
+
+It renders the trigger and the sheet, no landmark of its own. The block keeps no state and never fetches: `open` is controlled, so the app owns it and passes the entries already ordered. Loading, error and empty are the block's own states and render inside the sheet.
+
+The other pages of `Blocks/Application/Timeline/Timeline4`: [Playground](?path=/story/blocks-application-timeline-timeline4-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-timeline-timeline4-behavior--sheet-starts-closed) for the tests, [States](?path=/story/blocks-application-timeline-timeline4-states--default) for default, loading, error and empty, and [Usages](?path=/story/blocks-application-timeline-timeline4-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Timeline4 } from '@tc96/blocks/application/timeline/timeline-4'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The trigger button; the sheet opens from it.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Timeline4
+  entries={entries}
+  onOpenChange={setOpen}
+  open={open}
+/>
+```
+
+## Timeline4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `entries` | `Timeline4Entry[]` | required | The feed, already ordered. An empty array renders the empty state. |
+| `open` | `boolean` | required | Whether the sheet is open; controlled. |
+| `onOpenChange` | `(open: boolean) => void` | required | Called by the trigger, the close button, Escape and a click outside. The sheet shows `open` until the app changes it. |
+| `pending` | `boolean` | `false` | Renders the skeleton in the sheet, with `aria-busy="true"` and `labels.loading` as its name. |
+| `error` | `boolean` | `false` | Renders the error state in the sheet. |
+| `onRetry` | `() => void` | - | Called by Tentar novamente; the button renders only when it is passed. |
+| `labels` | `Partial<Timeline4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the classes of the trigger. |
+
+Precedence: `pending`, then `error`, then the empty state.
+
+## Timeline4Entry
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the entry. |
+| `title` | `string` | What happened. |
+| `time` | `string` | Already formatted; the block never formats dates. |
+| `actor` | `Timeline4Actor` | `name` and an optional `image`; with no image the initials fill the marker. |
+| `badge` | `{ label: string; tone?: 'error' \| 'info' \| 'outline' \| 'secondary' \| 'success' \| 'warning' }` | Optional badge; `tone` defaults to `secondary`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `trigger` | `string` | `"Ver atividades"`; the label of the button |
+| `title` | `string` | `"Atividades"`; the title and the accessible name of the sheet |
+| `description` | `string` | `"Histórico recente do registro."` |
+| `feed` | `string` | `"Linha do tempo de atividades"`; the accessible name of the list |
+| `loading` | `string` | `"Carregando atividades"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar as atividades"` |
+| `errorDescription` | `string` | `"Tente novamente em instantes."` |
+| `retry` | `string` | `"Tentar novamente"` |
+| `emptyTitle` | `string` | `"Nenhuma atividade"` |
+| `emptyDescription` | `string` | `"As atividades aparecem aqui quando houver movimentação."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Timeline4` | `component` | The trigger and its sheet. |
+| `Timeline4Props` | `type` | The props of the block. |
+| `Timeline4Entry` | `type` | An entry of the feed. |
+| `Timeline4Actor` | `type` | The author of an entry. |
+| `Timeline4Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The sheet is a dialog named by `labels.title`; focus moves into it, stays inside and returns to the trigger on close.
+- The feed is an ordered list named by `labels.feed`; the sheet body scrolls.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

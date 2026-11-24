@@ -1,0 +1,95 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Timeline2
+
+A release changelog: a vertical timeline of versions with a date rail, where each version lists its entries as a type badge (Novo, Melhoria, Correção) followed by a bulleted list of changes. Reach for it on a "what's new" or release notes page. Install it with `npx @tc96/parttens add timeline-2`.
+
+It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state: the app passes the releases already written. The date is an ISO day formatted in `locale`; the version and every change are text from the app. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, an empty `releases` the empty state. The precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/Application/Timeline/Timeline2`: [Playground](?path=/story/blocks-application-timeline-timeline2-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-timeline-timeline2-behavior--each-release-shows-version-and-date) for the tests, [States](?path=/story/blocks-application-timeline-timeline2-states--default) for the four states and [Usages](?path=/story/blocks-application-timeline-timeline2-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Timeline2 } from '@tc96/blocks/application/timeline/timeline-2'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Three releases of November, with new, improvement and fix entries.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Timeline2
+  error={isError}
+  onRetry={() => refetch()}
+  pending={isPending}
+  releases={releases}
+/>
+```
+
+## Timeline2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `releases` | `Timeline2Release[]` | required | The releases, in the order shown. An empty array renders the empty state. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the list; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `locale` | `string` | `"pt-BR"` | BCP 47 tag used to format the date rail. |
+| `labels` | `Partial<Timeline2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Timeline2Release
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the release. |
+| `version` | `string` | The version heading, as the app writes it. |
+| `date` | `string` | ISO calendar day (`2026-11-20`), shown as day and month in `locale`. A value that is not a date is shown as given. |
+| `entries` | `Timeline2Entry[]` | The groups of changes of the release. |
+
+## Timeline2Entry
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the entry inside the release. |
+| `type` | `'new' \| 'improvement' \| 'fix'` | Picks the badge label and tone: success, info and warning. |
+| `items` | `string[]` | The changes, one bullet each. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Histórico de versões"`; the heading and the accessible name of the section and the list |
+| `types` | `Record<Timeline2ChangeType, string>` | `"Novo"`, `"Melhoria"`, `"Correção"` |
+| `loading` | `string` | `"Carregando histórico de versões"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar o histórico de versões"` |
+| `errorDescription` | `string` | `"Tente novamente em instantes."` |
+| `retry` | `string` | `"Tentar novamente"` |
+| `emptyTitle` | `string` | `"Nenhuma versão publicada"` |
+| `emptyDescription` | `string` | `"As versões publicadas aparecem aqui."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Timeline2` | `component` | The release changelog. |
+| `Timeline2Props` | `type` | The props of the changelog. |
+| `Timeline2Release` | `type` | A release. |
+| `Timeline2Entry` | `type` | A group of changes of one type. |
+| `Timeline2ChangeType` | `type` | The entry types. |
+| `Timeline2Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The releases are an ordered list named by `labels.title`; the date is a `time` element with the ISO day as `dateTime`.
+- The type is told by the badge text, not by color alone.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- The tones are the theme badge tones; the block carries no raw color, radius or shadow.

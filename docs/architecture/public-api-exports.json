@@ -1943,5 +1943,35 @@
     "EmptyState6Labels",
     "EmptyState6Props",
     "EmptyState6Tab"
+  ],
+  "block:timeline-1": [
+    "Timeline1",
+    "Timeline1Attachment",
+    "Timeline1Event",
+    "Timeline1Labels",
+    "Timeline1Props"
+  ],
+  "block:timeline-2": [
+    "Timeline2",
+    "Timeline2ChangeType",
+    "Timeline2Entry",
+    "Timeline2Labels",
+    "Timeline2Props",
+    "Timeline2Release"
+  ],
+  "block:timeline-3": [
+    "Timeline3",
+    "Timeline3Labels",
+    "Timeline3Owner",
+    "Timeline3Props",
+    "Timeline3Status",
+    "Timeline3Step"
+  ],
+  "block:timeline-4": [
+    "Timeline4",
+    "Timeline4Actor",
+    "Timeline4Entry",
+    "Timeline4Labels",
+    "Timeline4Props"
   ]
 }

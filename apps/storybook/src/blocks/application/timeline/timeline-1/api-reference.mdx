@@ -1,0 +1,87 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Timeline1
+
+An activity timeline: a vertical list of events, each with the actor's avatar as the marker, the actor and the action side by side, the time, an optional status badge and optional attachment chips. Reach for it on a record page (a deal, a ticket, an order) that shows what happened and who did it. Install it with `npx @tc96/parttens add timeline-1`.
+
+It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state: the app passes the events already written. `actor` and `action` are separate fields, and `time` is a string the app formats, so the block composes no text. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, an empty `events` the empty state. The precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/Application/Timeline/Timeline1`: [Playground](?path=/story/blocks-application-timeline-timeline1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-timeline-timeline1-behavior--each-event-shows-actor-action-and-time) for the tests, [States](?path=/story/blocks-application-timeline-timeline1-states--default) for the four states and [Usages](?path=/story/blocks-application-timeline-timeline1-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Timeline1 } from '@tc96/blocks/application/timeline/timeline-1'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four events of a deal: an approval with a status and two attachments, a comment, a deadline change and the creation.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Timeline1
+  error={isError}
+  events={events}
+  onRetry={() => refetch()}
+  pending={isPending}
+/>
+```
+
+## Timeline1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `events` | `Timeline1Event[]` | required | The events, newest first as passed. An empty array renders the empty state. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the list; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `labels` | `Partial<Timeline1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Timeline1Event
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the event. |
+| `actor` | `string` | Who did it; its initials fill the avatar. |
+| `action` | `string` | What was done, shown after the actor. |
+| `time` | `string` | When, already formatted by the app. |
+| `avatarSrc` | `string` | Optional photo; without it the initials show. |
+| `status` | `{ label: string; tone?: 'error' \| 'info' \| 'outline' \| 'secondary' \| 'success' \| 'warning' }` | Optional status badge. |
+| `attachments` | `{ id: string; label: string }[]` | Optional chips under the time. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Atividades"`; the heading and the accessible name of the section and the list |
+| `attachments` | `string` | `"Anexos"`; the accessible name of the chips list |
+| `loading` | `string` | `"Carregando atividades"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar as atividades"` |
+| `errorDescription` | `string` | `"Tente novamente em instantes."` |
+| `retry` | `string` | `"Tentar novamente"` |
+| `emptyTitle` | `string` | `"Nenhuma atividade ainda"` |
+| `emptyDescription` | `string` | `"As atividades aparecem aqui assim que acontecerem."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Timeline1` | `component` | The activity timeline. |
+| `Timeline1Props` | `type` | The props of the timeline. |
+| `Timeline1Event` | `type` | An event. |
+| `Timeline1Attachment` | `type` | An attachment chip. |
+| `Timeline1Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The events are an ordered list named by `labels.title`; the connector line and the icons are decorative and hidden.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- Status colors come from the theme badge tones; the block carries no raw color, radius or shadow.
