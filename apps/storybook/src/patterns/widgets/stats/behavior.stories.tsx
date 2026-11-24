@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { MetricWidget, TrendIndicator } from '@tc96/parttens'
+import { AreaMetricWidget, MetricWidget, TrendIndicator } from '@tc96/parttens'
 import { Badge } from '@tc96/ui/badge'
 import { expect, within } from 'storybook/test'
 import { StatsCanvas } from './stats-canvas.tsx'
@@ -161,5 +161,39 @@ export const InvertedWrapsTheCardInTheDarkTheme: Story = {
       'data-tone',
       'inverted',
     )
+  },
+}
+
+export const AreaMetricNamesTheRegionAndHidesTheChart: Story = {
+  render: () => (
+    <AreaMetricWidget
+      caption="Last 28 days"
+      format={{ style: 'decimal' }}
+      label="Signups"
+      points={[120, 140, 132, 168, 150]}
+      value={4238}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const region = card(canvasElement, 'Signups')
+    await expect(region).toHaveAttribute('data-widget', 'area-metric')
+    await expect(region).toHaveTextContent('Last 28 days')
+    await expect(region).toHaveTextContent('4,238')
+    const chart = region.querySelector('[data-slot="area-metric-chart"]')
+    await expect(chart).toHaveAttribute('aria-hidden', 'true')
+    await expect(chart?.querySelector('svg.recharts-surface')).not.toBeNull()
+  },
+}
+
+export const AreaMetricDropsTheChartBelowTwoPoints: Story = {
+  render: () => (
+    <AreaMetricWidget label="Licenses" points={[3297]} value={3297} />
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(
+      card(canvasElement, 'Licenses').querySelector(
+        '[data-slot="area-metric-chart"]',
+      ),
+    ).toBeNull()
   },
 }

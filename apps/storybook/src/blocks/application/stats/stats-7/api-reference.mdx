@@ -1,0 +1,56 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Stats7
+
+A row of three metric cards with an area chart, after the metric cards of the ReUI Module Tracker dashboard. Each card shows its label, a caption with the source and the period, the value and an area chart of the period's points. Reach for it above a list or a table when each number needs its recent trend beside it. Install it with `npx @tc96/parttens add stats-7`.
+
+It is a section, not a page: it renders no `main` landmark. The cards sit side by side from `md` and stack below. The block keeps no state and fetches nothing: the app passes the value already aggregated, a sum for a flow such as revenue or the latest point for a running total such as active licenses. Each card is the `AreaMetricWidget` of the widgets pattern, the same card `Dashboard4` uses in its metric row. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `metrics` the empty state; the precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/Application/Stats/Stats7`: [Playground](?path=/story/blocks-application-stats-stats7-playground--playground) to try the currency and the states, [Behavior](?path=/story/blocks-application-stats-stats7-behavior--metrics-show-caption-and-formatted-value) for the tests, [States](?path=/story/blocks-application-stats-stats7-states--default) for the four states and [Usages](?path=/story/blocks-application-stats-stats7-usages--loaded) for the metrics read over the network.
+
+## Import
+
+```tsx
+import { Stats7 } from '@tc96/blocks/application/stats/stats-7'
+```
+
+The same path exports the types `Stats7Props`, `Stats7Metric`, `Stats7ValueKind` and `Stats7Labels`.
+
+## Anatomy
+
+Revenue, signups and active licenses over 28 days:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Stats7
+  error={isError}
+  metrics={metrics}
+  onRetry={() => refetch()}
+  pending={isPending}
+/>
+```
+
+## Stats7
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `metrics` | `Stats7Metric[]` | required | The cards, in order; the chart of each takes the next `--chart-n` color. |
+| `locale` | `string` | `'pt-BR'` | Locale of every value. |
+| `currency` | `string` | `'BRL'` | Currency of a `kind: 'currency'` metric, shown in compact notation. |
+| `pending` | `boolean` | - | Renders the skeleton; wins over `error`. |
+| `error` | `boolean` | - | Renders the error surface. |
+| `onRetry` | `() => void` | - | Called by Tentar novamente; without it the button is not rendered. |
+| `labels` | `Partial<Stats7Labels>` | pt-BR texts | `title`, `loading`, `errorTitle`, `errorDescription`, `retry`, `emptyTitle` and `emptyDescription`. |
+| `className` | `string` | - | Merged into the root classes. |
+
+`Stats7Metric` has `id`, `label`, `caption`, `value` (raw), `kind` (`'number' \| 'currency' \| 'percent'`) and `points` (`number[]`; fewer than two points hide the chart).
+
+## Accessibility and theme
+
+- Each card is a `region` named by its label; the area chart is decorative and hidden, because the card already shows the number.
+- The skeleton is an `output` with `aria-busy="true"` named by `labels.loading`.
+- Chart colors come from `--chart-1` to `--chart-5`; the block carries no raw color, radius or shadow.
