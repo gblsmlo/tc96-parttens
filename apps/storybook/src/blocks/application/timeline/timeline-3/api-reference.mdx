@@ -1,0 +1,95 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Timeline3
+
+An approval track: a horizontal, scrollable row of steps joined by connectors. Each step shows its owner, name, status badge and date; the current step is highlighted and is the only one with Aprovar and Recusar buttons. Reach for it to show where a request stands in an approval flow and to let the current approver decide. Install it with `npx @tc96/parttens add timeline-3`.
+
+It is a section, not a page: it renders no `main` landmark. The block keeps no state and never fetches: the app owns the statuses, passes `currentStepId` and updates the steps when `onApprove` or `onReject` fires. Loading and error are the block's own states.
+
+The other pages of `Blocks/Application/Timeline/Timeline3`: [Playground](?path=/story/blocks-application-timeline-timeline3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-timeline-timeline3-behavior--each-step-shows-owner-name-status-and-date) for the tests, [States](?path=/story/blocks-application-timeline-timeline3-states--default) for default, loading, error and empty, and [Usages](?path=/story/blocks-application-timeline-timeline3-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Timeline3 } from '@tc96/blocks/application/timeline/timeline-3'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four steps; the finance step is the current one.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Timeline3
+  currentStepId="finance"
+  onApprove={approve}
+  onReject={reject}
+  steps={steps}
+/>
+```
+
+## Timeline3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `steps` | `Timeline3Step[]` | required | The steps, in order. An empty array renders the empty state. |
+| `currentStepId` | `string` | - | The highlighted step; it alone gets the buttons. With none, no step is highlighted and no button renders. |
+| `onApprove` | `(stepId: string) => void` | - | Called when Aprovar is pressed. The block does not change the status. |
+| `onReject` | `(stepId: string) => void` | - | Called when Recusar is pressed. The block does not change the status. |
+| `pending` | `boolean` | `false` | Renders the skeleton, with `aria-busy="true"` and `labels.loading` as its name. |
+| `error` | `boolean` | `false` | Renders the error state. |
+| `onRetry` | `() => void` | - | Called by Tentar novamente; the button renders only when it is passed. |
+| `labels` | `Partial<Timeline3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+Precedence: `pending`, then `error`, then the empty state.
+
+## Timeline3Step
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the step; passed to the callbacks. |
+| `name` | `string` | Name of the step. |
+| `owner` | `Timeline3Owner` | `name` and an optional `image`; with no image the initials fill the avatar. |
+| `status` | `'approved' \| 'pending' \| 'rejected'` | Picks the badge. |
+| `date` | `string` | Already formatted; the block never formats dates. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Fluxo de aprovação"`; the heading, the section name and the list name |
+| `statuses` | `Record<Timeline3Status, string>` | `"Aprovado"`, `"Pendente"`, `"Recusado"` |
+| `currentStep` | `string` | `"Etapa atual"` |
+| `approve` | `string` | `"Aprovar"` |
+| `reject` | `string` | `"Recusar"` |
+| `loading` | `string` | `"Carregando etapas"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar as etapas"` |
+| `errorDescription` | `string` | `"Tente novamente em instantes."` |
+| `retry` | `string` | `"Tentar novamente"` |
+| `emptyTitle` | `string` | `"Nenhuma etapa de aprovação"` |
+| `emptyDescription` | `string` | `"As etapas aparecem aqui quando o fluxo for iniciado."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Timeline3` | `component` | The approval track. |
+| `Timeline3Props` | `type` | The props of the track. |
+| `Timeline3Step` | `type` | A step. |
+| `Timeline3Owner` | `type` | The owner of a step. |
+| `Timeline3Status` | `type` | The statuses of a step. |
+| `Timeline3Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The steps are an ordered list named by `labels.title`; the current step carries `aria-current="step"`.
+- The status is text in a badge, never color alone.
+- The track scrolls horizontally inside a `ScrollArea`, which is keyboard focusable.
+- The block carries no color, radius or shadow of its own beyond theme tokens: the theme belongs to the app.
