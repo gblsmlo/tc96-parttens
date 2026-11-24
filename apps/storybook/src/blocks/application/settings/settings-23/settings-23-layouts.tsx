@@ -1,7 +1,7 @@
 import {
   Settings23,
   type Settings23Props,
-} from '@tc96/blocks/application/settings/settings-23'
+} from '@tc96/ui/blocks/application/settings/settings-23'
 import {
   settings23Invoices,
   settings23Plan,

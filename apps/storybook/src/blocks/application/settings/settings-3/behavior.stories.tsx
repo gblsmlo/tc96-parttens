@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Settings3,
   type Settings3Props,
-} from '@tc96/blocks/application/settings/settings-3'
+} from '@tc96/ui/blocks/application/settings/settings-3'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { settings3Data } from '../fixtures/settings-3.ts'
 import {

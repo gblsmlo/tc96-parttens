@@ -1,5 +1,8 @@
 import { TagIcon, XIcon } from '@phosphor-icons/react'
-import { IconLabelProperty, type IconLabelPropertyProps } from '@tc96/parttens'
+import {
+  IconLabelProperty,
+  type IconLabelPropertyProps,
+} from '@tc96/ui/patterns'
 import type {
   IconLabelControls,
   IconLabelElement,

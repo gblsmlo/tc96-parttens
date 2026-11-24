@@ -1,4 +1,4 @@
-import { Otp1, type OtpProps } from '@tc96/blocks/application/auth/otp-1'
+import { Otp1, type OtpProps } from '@tc96/ui/blocks/application/auth/otp-1'
 import { authLogo } from '../fixtures/auth-data'
 import type { OtpControls } from './otp-1-controls.ts'
 

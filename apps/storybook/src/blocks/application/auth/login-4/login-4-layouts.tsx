@@ -1,4 +1,7 @@
-import { Login4, type Login4Props } from '@tc96/blocks/application/auth/login-4'
+import {
+  Login4,
+  type Login4Props,
+} from '@tc96/ui/blocks/application/auth/login-4'
 import { useState } from 'react'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import type { Login4Controls } from './login-4-controls.ts'

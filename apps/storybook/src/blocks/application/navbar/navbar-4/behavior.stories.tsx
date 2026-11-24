@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Navbar4 } from '@tc96/blocks/application/navbar/navbar-4'
+import { Navbar4 } from '@tc96/ui/blocks/application/navbar/navbar-4'
 import { expect, userEvent, within } from 'storybook/test'
 import {
   type Navbar4Controls,

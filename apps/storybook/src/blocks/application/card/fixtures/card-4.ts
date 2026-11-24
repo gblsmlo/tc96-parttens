@@ -1,4 +1,4 @@
-import type { Card4Meeting } from '@tc96/blocks/application/card/card-4'
+import type { Card4Meeting } from '@tc96/ui/blocks/application/card/card-4'
 
 export const meetings: Card4Meeting[] = [
   {

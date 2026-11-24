@@ -10,12 +10,14 @@
     "types": ["bun", "node"],
     "noEmit": true,
     "paths": {
-      "@tc96/ui/*": ["./packages/ui/src/*"],
-      "@tc96/helpers/*": ["./packages/helpers/src/*"],
       "@tc96/utils": ["./packages/utils/src/index.ts"],
-      "@tc96/parttens": ["./packages/parttens/src/index.ts"],
-      "@tc96/parttens/*": ["./packages/parttens/src/*"],
-      "@tc96/blocks/*": ["./packages/blocks/src/*"]
+      "@tc96/ui/patterns": ["./packages/ui/src/patterns/index.ts"],
+      "@tc96/ui/patterns/*": ["./packages/ui/src/patterns/*"],
+      "@tc96/ui/blocks/*": ["./packages/ui/src/blocks/*"],
+      "@tc96/ui/helpers/*": ["./packages/ui/src/helpers/*"],
+      "@tc96/ui/hooks/*": ["./packages/ui/src/hooks/*"],
+      "@tc96/ui/lib/*": ["./packages/ui/src/lib/*"],
+      "@tc96/ui/*": ["./packages/ui/src/components/*"]
     }
   },
   "exclude": ["**/node_modules", "**/dist"]

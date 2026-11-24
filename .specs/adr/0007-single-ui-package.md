@@ -3,7 +3,7 @@
 - **Status:** Draft
 - **Date:** 2026-10-31
 - **Origin:** auditoria da instalação no `lemind-mono` em 2026-10-31; o dono espera que um monorepo receba o tc96 num pacote `ui` (`ui/{components,elements,helpers,patterns,utils}`), e o `lemind-mono` recebeu cinco pacotes irmãos
-- **Supersedes:** none (nenhum ADR anterior); altera as decisões de 2026-10-01 e 2026-10-05 em `docs/architecture/tc96-parttens.md` § Estrutura do consumidor
+- **Supersedes:** none (nenhum ADR anterior); altera as decisões de 2026-10-01 e 2026-10-05 em `docs/architecture/tc96-ui.md` § Estrutura do consumidor
 - **Amends:** none
 
 ## Context

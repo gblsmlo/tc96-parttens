@@ -1,4 +1,4 @@
-import type { Settings15Category } from '@tc96/blocks/application/settings/settings-15'
+import type { Settings15Category } from '@tc96/ui/blocks/application/settings/settings-15'
 
 export const settings15Categories: Settings15Category[] = [
   {

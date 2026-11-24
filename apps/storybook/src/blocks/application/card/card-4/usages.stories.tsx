@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
-import { Card4, type Card4Meeting } from '@tc96/blocks/application/card/card-4'
+import {
+  Card4,
+  type Card4Meeting,
+} from '@tc96/ui/blocks/application/card/card-4'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card4Handlers } from '../../../../mocks/card-4.ts'

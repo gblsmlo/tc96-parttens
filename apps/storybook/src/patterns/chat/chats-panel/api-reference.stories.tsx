@@ -4,7 +4,7 @@ import {
   ChatsPanelItem,
   ChatsPanelList,
   ChatsPanelSkeleton,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { Slot } from '../../../test-utils/anatomy-slot'
 import { channels } from './fixtures/chats'
 

@@ -4,7 +4,7 @@ import type {
   Dashboard1FilterOption,
   Dashboard1Kpi,
   Dashboard1ReasonSlice,
-} from '@tc96/blocks/application/dashboard/dashboard-1'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-1'
 
 export const kpis: Dashboard1Kpi[] = [
   {

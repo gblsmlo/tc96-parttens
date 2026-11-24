@@ -5,7 +5,7 @@ import {
   type Dashboard4Metric,
   type Dashboard4Person,
   type Dashboard4Sort,
-} from '@tc96/blocks/application/dashboard/dashboard-4'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-4'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

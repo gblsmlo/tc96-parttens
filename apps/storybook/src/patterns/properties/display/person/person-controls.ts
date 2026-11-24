@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { PropertyVariant } from '@tc96/parttens'
+import type { PropertyVariant } from '@tc96/ui/patterns'
 
 export const personValues = ['gabriel', 'ana', 'marina', 'none'] as const
 

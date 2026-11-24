@@ -8,6 +8,14 @@ import {
   RadioButtonIcon,
 } from '@phosphor-icons/react'
 import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@tc96/ui/card'
+import { IconFrame } from '@tc96/ui/icon-frame'
+import {
   CalendarEventChip,
   CalendarEventChipOpenTrigger,
   CalendarEventChipTime,
@@ -29,15 +37,7 @@ import {
   ListRowTitle,
   ListRowTitleTrigger,
   ListRowTrailing,
-} from '@tc96/parttens'
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@tc96/ui/card'
-import { IconFrame } from '@tc96/ui/icon-frame'
+} from '@tc96/ui/patterns'
 import { Text } from '@tc96/ui/text'
 import { useCallback, useState } from 'react'
 import { DescriptionSegments } from './description-segments'

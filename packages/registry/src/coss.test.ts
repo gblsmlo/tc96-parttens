@@ -111,12 +111,18 @@ test('rejects dependencies outside @ui and renamed items', async () => {
   ).rejects.toThrow('published as toggle')
 })
 
+const directories = (ui: string) => ({
+  ui,
+  hooks: `${ui}/hooks`,
+  lib: `${ui}/lib`,
+})
+
 test('targets the ui directory with the consumer aliases', () => {
   expect(
     componentFiles(
       item('badge', 'import { cn } from "@/lib/utils"'),
       aliases,
-      'packages/ui/src',
+      directories('packages/ui/src'),
     ),
   ).toEqual([
     {
@@ -141,7 +147,7 @@ test('targets the hooks directory for a COSS hook', () => {
         ],
       },
       aliases,
-      'packages/ui/src',
+      directories('packages/ui/src'),
     ),
   ).toEqual([
     {
@@ -153,19 +159,59 @@ test('targets the hooks directory for a COSS hook', () => {
   ])
 })
 
+test('targets separate hooks and lib directories, as in tc96-mono', () => {
+  expect(
+    componentFiles(
+      {
+        name: 'composer',
+        files: [
+          {
+            path: 'registry/default/hooks/use-composer-editor.ts',
+            content: 'import { e } from "@tc96/ui/lib/composer-editor"',
+          },
+          {
+            path: 'registry/default/lib/composer-editor.ts',
+            content: 'export const e = 1',
+          },
+        ],
+      },
+      {
+        ui: '@tc96/ui',
+        utils: '@tc96/utils',
+        hooks: '@tc96/ui/hooks',
+        lib: '@tc96/ui/lib',
+      },
+      {
+        ui: 'packages/ui/src/components',
+        hooks: 'packages/ui/src/hooks',
+        lib: 'packages/ui/src/lib',
+      },
+    ).map(({ target, content }) => ({ target, content })),
+  ).toEqual([
+    {
+      target: '~/packages/ui/src/hooks/use-composer-editor.ts',
+      content: 'import { e } from "@tc96/ui/lib/composer-editor"',
+    },
+    {
+      target: '~/packages/ui/src/lib/composer-editor.ts',
+      content: 'export const e = 1',
+    },
+  ])
+})
+
 test('fails on items it cannot install faithfully', () => {
   expect(() =>
     componentFiles(
       item('chart', 'import { useMobile } from "@/hooks/use-mobile"'),
       aliases,
-      'src/ui',
+      directories('src/ui'),
     ),
   ).toThrow('@/hooks/use-mobile in chart.tsx has no alias')
   expect(() =>
     componentFiles(
       item('form', '', { envVars: { KEY: '' } }),
       aliases,
-      'src/ui',
+      directories('src/ui'),
     ),
   ).toThrow('envVars')
   expect(() =>
@@ -175,14 +221,14 @@ test('fails on items it cannot install faithfully', () => {
         files: [{ path: 'registry/default/lib/utils.ts', content: '' }],
       },
       aliases,
-      'src/ui',
+      directories('src/ui'),
     ),
   ).toThrow('own utils')
   expect(() =>
     componentFiles(
       { name: 'odd', files: [{ path: 'elsewhere/odd.tsx', content: '' }] },
       aliases,
-      'src/ui',
+      directories('src/ui'),
     ),
   ).toThrow('outside registry/default')
   expect(() =>
@@ -197,7 +243,7 @@ test('fails on items it cannot install faithfully', () => {
         ],
       }),
       aliases,
-      'src/ui',
+      directories('src/ui'),
     ),
   ).toThrow('@/hooks/use-mobile in chat/b.tsx has no alias')
 })
@@ -224,7 +270,7 @@ test('maps every file of a multi-file item and rewrites its imports', () => {
         ],
       },
       aliases,
-      'src/ui',
+      directories('src/ui'),
     ),
   ).toEqual([
     {

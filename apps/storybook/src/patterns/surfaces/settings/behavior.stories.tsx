@@ -1,5 +1,7 @@
 import { DotsThreeIcon, TextTIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
+import { Input } from '@tc96/ui/input'
 import {
   RecordGroup,
   RecordGroupItem,
@@ -9,9 +11,7 @@ import {
   SettingsSectionDescription,
   SettingsSectionHeader,
   SettingsSectionTitle,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { Input } from '@tc96/ui/input'
+} from '@tc96/ui/patterns'
 import { Switch } from '@tc96/ui/switch'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'

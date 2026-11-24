@@ -15,13 +15,29 @@ export async function fetchItem(url: string) {
 export const registry = 'https://coss.com/ui/r'
 export const manifestPath = 'packages/ui/ui.manifest.json'
 export const sourceDirectory = 'packages/ui/src'
+export const uiDirectories = ['components', 'hooks', 'lib'] as const
+
+/** Where a manifest path lives in the repo: hooks/ and lib/ sit beside components/. */
+export function uiSourcePath(path: string, root = sourceDirectory) {
+  return /^(hooks|lib)\//.test(path)
+    ? `${root}/${path}`
+    : `${root}/components/${path}`
+}
+
+/** The manifest path of a repo file under one of the ui directories. */
+export function manifestPathOf(file: string, root = sourceDirectory) {
+  const relative = file.slice(root.length + 1)
+  return relative.startsWith('components/')
+    ? relative.slice('components/'.length)
+    : relative
+}
 
 export interface UiManifestItem {
   origin: 'coss' | 'own'
   /** Theme tokens the item declares; the CLI lists the ones a consumer lacks. */
   cssVars?: CossRegistryItem['cssVars']
   css?: CossRegistryItem['css']
-  /** Paths under packages/ui/src, when the item is not a single `<name>.tsx`. */
+  /** Manifest paths (see uiSourcePath), when the item is not a single `<name>.tsx`. */
   paths?: string[]
 }
 
@@ -30,7 +46,7 @@ export interface UiManifest {
 }
 
 export interface CossItemFile {
-  /** Path under packages/ui/src. */
+  /** Manifest path (see uiSourcePath). */
   path: string
   content: string
 }

@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import { defaultFlowStepLibraryLabels } from '@tc96/parttens'
+import { defaultFlowStepLibraryLabels } from '@tc96/ui/patterns'
 import {
   type StepLibraryRunName,
   stepLibraryRunNames,

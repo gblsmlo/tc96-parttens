@@ -4,7 +4,7 @@ import {
   RecordGroupDivider,
   RecordGroupRow,
   RecordGroupSubgroup,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 
 const meta = {

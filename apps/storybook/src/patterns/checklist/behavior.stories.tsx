@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Checklist } from '@tc96/parttens'
+import { Checklist } from '@tc96/ui/patterns'
 import {
   expect,
   fn,

@@ -1,4 +1,4 @@
-import type { Card3Profile } from '@tc96/blocks/application/card/card-3'
+import type { Card3Profile } from '@tc96/ui/blocks/application/card/card-3'
 
 export const profile: Card3Profile = {
   availability: { label: 'Disponível', tone: 'success' },

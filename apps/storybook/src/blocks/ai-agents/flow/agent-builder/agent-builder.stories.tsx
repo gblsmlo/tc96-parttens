@@ -3,8 +3,8 @@ import {
   AgentBuilder,
   type AgentBuilderProps,
   type FlowStep,
-} from '@tc96/blocks/ai-agents/flow/agent-builder'
-import { flowStepNodeSize } from '@tc96/parttens/flow/canvas/core'
+} from '@tc96/ui/blocks/ai-agents/flow/agent-builder'
+import { flowStepNodeSize } from '@tc96/ui/patterns/flow/canvas/core'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../../.storybook/docs-page.tsx'
 import { withAppShell } from '../../../../templates/fixtures/app-shell'
@@ -25,7 +25,7 @@ import {
 } from '../fixtures/use-flow-editor-state'
 
 const usage = `
-// npx @tc96/parttens add agent-builder
+// npx @tc96/cli add agent-builder
 // import '@xyflow/react/dist/base.css' in your global CSS
 import { AgentBuilder } from '@acme/blocks/ai-agents/flow/agent-builder'
 
@@ -86,7 +86,7 @@ const docs = {
   ],
   description: {
     component:
-      'A builder for AI agents as a tree of steps, with the anatomy of the Flowly screens: step library, vertical canvas, inspector with Build, Status and Logs, and an AI assistant. Install it with `npx @tc96/parttens add agent-builder` and import `@xyflow/react/dist/base.css` once in your global CSS.',
+      'A builder for AI agents as a tree of steps, with the anatomy of the Flowly screens: step library, vertical canvas, inspector with Build, Status and Logs, and an AI assistant. Install it with `npx @tc96/cli add agent-builder` and import `@xyflow/react/dist/base.css` once in your global CSS.',
   },
   story: { height: '56rem', inline: false },
   usage,

@@ -1,4 +1,4 @@
-import type { FlowRunSummary } from '@tc96/parttens'
+import type { FlowRunSummary } from '@tc96/ui/patterns'
 import { failedRun, notRunRun, passedRun } from './fixtures/runs'
 
 export const stepLibraryRunNames = ['failed', 'success', 'not-run'] as const

@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Timeline2
 
-A release changelog: a vertical timeline of versions with a date rail, where each version lists its entries as a type badge (Novo, Melhoria, Correção) followed by a bulleted list of changes. Reach for it on a "what's new" or release notes page. Install it with `npx @tc96/parttens add timeline-2`.
+A release changelog: a vertical timeline of versions with a date rail, where each version lists its entries as a type badge (Novo, Melhoria, Correção) followed by a bulleted list of changes. Reach for it on a "what's new" or release notes page. Install it with `npx @tc96/cli add timeline-2`.
 
 It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state: the app passes the releases already written. The date is an ISO day formatted in `locale`; the version and every change are text from the app. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, an empty `releases` the empty state. The precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Timeline/Timeline2`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Timeline2 } from '@tc96/blocks/application/timeline/timeline-2'
+import { Timeline2 } from '@tc96/ui/blocks/application/timeline/timeline-2'
 ```
 
 The same path exports the types listed under Exports.

@@ -1,4 +1,6 @@
 import { TrayIcon } from '@phosphor-icons/react'
+import { ChatEmptyState } from '@tc96/ui/chat/chat-states'
+import { MenuRadioGroup, MenuRadioItem } from '@tc96/ui/menu'
 import {
   ChatsPanel,
   ChatsPanelItem,
@@ -7,9 +9,7 @@ import {
   CollectionToolbar,
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/parttens'
-import { ChatEmptyState } from '@tc96/ui/chat/chat-states'
-import { MenuRadioGroup, MenuRadioItem } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import type { ChatsPanelControls } from './chats-panel-controls.ts'
 import { ChatAvatar, channels, chats, unreadLabel } from './fixtures/chats'
 

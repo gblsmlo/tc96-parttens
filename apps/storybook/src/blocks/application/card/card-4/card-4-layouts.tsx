@@ -1,4 +1,4 @@
-import { Card4, type Card4Props } from '@tc96/blocks/application/card/card-4'
+import { Card4, type Card4Props } from '@tc96/ui/blocks/application/card/card-4'
 import { meetings } from '../fixtures/card-4.ts'
 import type { Card4Controls } from './card-4-controls.ts'
 

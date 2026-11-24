@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AppShell4 } from '@tc96/blocks/application/shell/app-shell-4'
+import { AppShell4 } from '@tc96/ui/blocks/application/shell/app-shell-4'
 import { type ReactElement, useState } from 'react'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
@@ -19,7 +19,7 @@ import {
 } from './fixtures/shell-data'
 
 const usage = `
-// npx @tc96/parttens add app-shell-4
+// npx @tc96/cli add app-shell-4
 import { AppShell4 } from '@acme/blocks/application/shell/app-shell-4'
 
 <AppShell4
@@ -66,7 +66,7 @@ const docs = {
   ],
   description: {
     component:
-      'An application shell with an icon rail of sections and a navigation panel per section, plus a header with ⌘K search, notifications and a Create action. It is the shell of the Verve CRM mapping. Install it with `npx @tc96/parttens add app-shell-4`.',
+      'An application shell with an icon rail of sections and a navigation panel per section, plus a header with ⌘K search, notifications and a Create action. It is the shell of the Verve CRM mapping. Install it with `npx @tc96/cli add app-shell-4`.',
   },
   story: { height: '42rem', inline: false },
   usage,

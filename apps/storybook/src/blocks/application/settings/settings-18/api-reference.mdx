@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings18
 
-A settings section of role capabilities. A role select sits in the header and the capabilities are cards in two columns, each with a title, a description and a switch. Reach for it when the app lets an admin choose what each role can do. Install it with `npx @tc96/parttens add settings-18`.
+A settings section of role capabilities. A role select sits in the header and the capabilities are cards in two columns, each with a title, a description and a switch. Reach for it when the app lets an admin choose what each role can do. Install it with `npx @tc96/cli add settings-18`.
 
 It is a section, not a page: it renders no `main` landmark. The block holds no value: the role and every switch come from props, and a change is reported through a callback. Loading the capabilities of the chosen role is the app's job.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings18`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings18 } from '@tc96/blocks/application/settings/settings-18'
+import { Settings18 } from '@tc96/ui/blocks/application/settings/settings-18'
 ```
 
 The same path exports the types `Settings18Props`, `Settings18Capability`, `Settings18Role` and `Settings18Labels`.

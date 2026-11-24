@@ -48,7 +48,7 @@ A fronteira que o ADR 0001 e o `AGENTS.md` traçam entre "COSS, intocado" e "tc9
 - Atualizações do COSS não chegam mais sozinhas: trazer uma correção upstream de um componente existente é uma comparação manual.
 - Podar uma variante ou um tamanho quebra o tipo para o consumidor que a usa; entra numa versão minor com nota de lançamento, como mudança de API pública.
 - `scripts/check-coss.ts`, `scripts/sync-coss.ts`, `scripts/coss.ts`, `packages/registry/src/coss.ts` e seus testes mudam, e o nome do script `check:coss` pode ser trocado.
-- `AGENTS.md` e `docs/architecture/tc96-parttens.md` (regra "somente leitura", exceção de `SelectItem` e `ComboboxItem`, nota sobre `sync:coss`) e `docs/architecture/installation-contract.md` são atualizados.
+- `AGENTS.md` e `docs/architecture/tc96-ui.md` (regra "somente leitura", exceção de `SelectItem` e `ComboboxItem`, nota sobre `sync:coss`) e `docs/architecture/installation-contract.md` são atualizados.
 - Os 10 itens ausentes e os itens de fundação entram com `sync:coss` antes da primeira edição; fontes e estilo são avaliados um a um, porque o tema é do consumidor.
 
 ## Not verified

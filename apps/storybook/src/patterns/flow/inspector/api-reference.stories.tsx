@@ -4,7 +4,7 @@ import {
   FlowInspectorDetails,
   FlowInspectorLogs,
   FlowInspectorStatus,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { IconSlot, Slot } from '../../../test-utils/anatomy-slot'
 import { desktop, InspectorFrame, RendererFrame } from './inspector-frame.tsx'
 

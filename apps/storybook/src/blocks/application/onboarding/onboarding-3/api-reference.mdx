@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Onboarding3
 
-A dialog onboarding: the same flow inside a `Dialog` with a dot stepper and a success screen. Reach for it to run setup over an existing screen, for example when a person opens a new workspace. Install it with `npx @tc96/parttens add onboarding-3`.
+A dialog onboarding: the same flow inside a `Dialog` with a dot stepper and a success screen. Reach for it to run setup over an existing screen, for example when a person opens a new workspace. Install it with `npx @tc96/cli add onboarding-3`.
 
 The block keeps no state and never fetches: the current step is controlled with `step` and `onStepChange`, the step forms are the consumer's `content`, and moving on, finishing and skipping are callbacks. The success state is also controlled with `completed`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Onboarding/Onboarding3`: [Playground](?pa
 ## Import
 
 ```tsx
-import { Onboarding3 } from '@tc96/blocks/application/onboarding/onboarding-3'
+import { Onboarding3 } from '@tc96/ui/blocks/application/onboarding/onboarding-3'
 ```
 
 The same path exports the types listed under Exports.

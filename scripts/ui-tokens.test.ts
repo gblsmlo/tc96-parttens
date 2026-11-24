@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { compareTokens, sourceClassStrings } from './ui-tokens'
 
-const ui = join(import.meta.dir, '..', 'packages', 'ui', 'src')
+const ui = join(import.meta.dir, '..', 'packages', 'ui', 'src', 'components')
 
 const components = [
   { name: 'alert', source: 'alert/alert.tsx', tokens: 'alert/TOKENS.md' },

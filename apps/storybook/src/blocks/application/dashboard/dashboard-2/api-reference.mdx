@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Dashboard2
 
-A retail revenue dashboard in four layers: a header with breadcrumb, title, description, period select and Exportar; a row of four KPI cards with sparklines; a stacked area chart of sales per channel against a dashed plan line beside a bar chart of the channel mix; and a table of recent orders with sortable columns, a search, pagination and a menu per row. Reach for it on a store or commerce home page that shows how much was sold, through which channel and which orders came in. Install it with `npx @tc96/parttens add dashboard-2`.
+A retail revenue dashboard in four layers: a header with breadcrumb, title, description, period select and Exportar; a row of four KPI cards with sparklines; a stacked area chart of sales per channel against a dashed plan line beside a bar chart of the channel mix; and a table of recent orders with sortable columns, a search, pagination and a menu per row. Reach for it on a store or commerce home page that shows how much was sold, through which channel and which orders came in. Install it with `npx @tc96/cli add dashboard-2`.
 
 It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The sort is controlled: the app passes `sort`, handles `onSortChange` and passes the rows already sorted; the block never reorders them. The period select, Exportar, the search, the pagination and the row menu render only when their callbacks are passed, and the app searches and pages the rows. The plan line renders only when a point has `plan`; the channel mix sums each channel over `sales`. Numbers arrive raw and the block formats them with `locale` and `currency` (`pt-BR` and `BRL` by default); `placedAt` is a string the app formats. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `kpis`, `sales` and `orders` the empty state. The precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Dashboard/Dashboard2`: [Playground](?path
 ## Import
 
 ```tsx
-import { Dashboard2 } from '@tc96/blocks/application/dashboard/dashboard-2'
+import { Dashboard2 } from '@tc96/ui/blocks/application/dashboard/dashboard-2'
 ```
 
 The same path exports the types listed under Exports.

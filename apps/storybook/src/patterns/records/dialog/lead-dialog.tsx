@@ -5,7 +5,7 @@ import {
   RecordDialogHeadline,
   RecordGroupRow,
   SelectProperty,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
 import { personOptions } from '../../collection/fixtures/task-fields'

@@ -1,4 +1,4 @@
-import type { Settings19Endpoint } from '@tc96/blocks/application/settings/settings-19'
+import type { Settings19Endpoint } from '@tc96/ui/blocks/application/settings/settings-19'
 
 export const endpoints: Settings19Endpoint[] = [
   {

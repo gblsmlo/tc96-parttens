@@ -25,7 +25,7 @@ export interface OverrideException {
 
 export const styledElements: Record<string, string[]> = {}
 
-const roots = ['packages/parttens/src', 'packages/blocks/src']
+const roots = ['packages/ui/src/patterns', 'packages/ui/src/blocks']
 const exceptionsPath = 'scripts/override-exceptions.json'
 
 const neutral =
@@ -286,7 +286,7 @@ async function classStrings(
 
 export async function findOverrides(
   paths = roots,
-  uiRoot = 'packages/ui/src',
+  uiRoot = 'packages/ui/src/components',
   styled = styledElements,
 ) {
   const found: (Omit<OverrideException, 'reason'> & { line: number })[] = []

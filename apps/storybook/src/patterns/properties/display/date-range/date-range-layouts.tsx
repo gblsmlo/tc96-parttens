@@ -3,7 +3,7 @@ import {
   type DateRange,
   DateRangeProperty,
   type DateRangePropertyProps,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { DateRangeControls } from './date-range-controls.ts'
 

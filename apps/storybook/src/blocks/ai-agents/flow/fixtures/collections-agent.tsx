@@ -5,8 +5,8 @@ import type {
   FlowStep,
   FlowStepStats,
   FlowStepType,
-} from '@tc96/blocks/ai-agents/flow/agent-builder'
-import { flowStepNodeSize, tidyTree } from '@tc96/parttens/flow/canvas/core'
+} from '@tc96/ui/blocks/ai-agents/flow/agent-builder'
+import { flowStepNodeSize, tidyTree } from '@tc96/ui/patterns/flow/canvas/core'
 import type { IconModule } from '@thesvg/icons'
 import anthropic from '@thesvg/icons/anthropic'
 import clickup from '@thesvg/icons/clickup'

@@ -1,7 +1,7 @@
 # TC96 Storybook
 
 Catálogo visual interno para desenvolver e testar os patterns sobre os pacotes do
-workspace. As stories importam os patterns de `@tc96/parttens` e os componentes de
+workspace. As stories importam os patterns de `@tc96/ui/patterns` e os componentes de
 UI por subpath, como `@tc96/ui/button`. `packages/ui` é o COSS sem alterações,
 travado em `packages/ui/coss.lock.json`. Utilitários sem interface, MDX e documentação conceitual pertencem ao
 app Fumadocs em `apps/docs`.

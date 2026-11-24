@@ -1,4 +1,4 @@
-import { AssignedProperty, AssignedPropertyBadge } from '@tc96/parttens'
+import { AssignedProperty, AssignedPropertyBadge } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import {
   type AssignedControls,

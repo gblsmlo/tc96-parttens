@@ -6,15 +6,6 @@ import {
   PlusIcon,
   TrashIcon,
 } from '@phosphor-icons/react'
-import {
-  RecordGroup,
-  RecordGroupAction,
-  RecordGroupFilter,
-  RecordGroupItem,
-  RecordGroupRow,
-  type RecordGroupVariant,
-  RecordStatusBadge,
-} from '@tc96/parttens'
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Button } from '@tc96/ui/button'
 import {
@@ -24,6 +15,15 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  RecordGroup,
+  RecordGroupAction,
+  RecordGroupFilter,
+  RecordGroupItem,
+  RecordGroupRow,
+  type RecordGroupVariant,
+  RecordStatusBadge,
+} from '@tc96/ui/patterns'
 import { type ReactNode, useState } from 'react'
 
 interface Person {

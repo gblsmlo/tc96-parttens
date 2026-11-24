@@ -1,4 +1,7 @@
-import { Login8, type Login8Props } from '@tc96/blocks/application/auth/login-8'
+import {
+  Login8,
+  type Login8Props,
+} from '@tc96/ui/blocks/application/auth/login-8'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import type { Login8Controls } from './login-8-controls.ts'
 

@@ -1,12 +1,12 @@
 
 <div align="center">
 
-# @tc96/parttens
-React patterns without business rules, installed as source on top of your COSS components
+# tc96 ui
+COSS components, React patterns and blocks without business rules, installed as source into the `@tc96/ui` package of your monorepo
 
-[![npm version](https://img.shields.io/npm/v/@tc96/parttens?style=flat&colorA=18181B&colorB=0EA5E9)](https://www.npmjs.com/package/@tc96/parttens)
-[![npm downloads](https://img.shields.io/npm/dm/@tc96/parttens?style=flat&colorA=18181B&colorB=0EA5E9)](https://www.npmjs.com/package/@tc96/parttens)
-[![License](https://img.shields.io/github/license/gblsmlo/tc96-parttens?style=flat&colorA=18181B&colorB=0EA5E9)](https://github.com/gblsmlo/tc96-parttens/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/@tc96/cli?style=flat&colorA=18181B&colorB=0EA5E9)](https://www.npmjs.com/package/@tc96/cli)
+[![npm downloads](https://img.shields.io/npm/dm/@tc96/cli?style=flat&colorA=18181B&colorB=0EA5E9)](https://www.npmjs.com/package/@tc96/cli)
+[![License](https://img.shields.io/github/license/gblsmlo/tc96-ui?style=flat&colorA=18181B&colorB=0EA5E9)](https://github.com/gblsmlo/tc96-ui/blob/main/LICENSE)
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=white&labelColor=18181B)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white&labelColor=18181B)
@@ -29,33 +29,41 @@ React patterns without business rules, installed as source on top of your COSS c
 
 ## Get Started
 
+In a monorepo with the tc96-mono layout (`packages/ui` as `@tc96/ui`, `packages/utils` as `@tc96/utils`), prepare it once at the root:
+
+```bash
+npx @tc96/cli init
+```
+
+`init` writes `components.json` with every layer in `packages/ui/src` and adds the layer exports `packages/ui/package.json` lacks. Edit the aliases in `components.json` to install a layer elsewhere; `init` keeps an existing `components.json`.
+
 Install one or more patterns by name:
 
 ```bash
-npx @tc96/parttens add collection properties
+npx @tc96/cli add collection properties
 ```
 
 The Record family has three items: `record-dialog`, `record-preview` and `record-group`.
 
 ```bash
-npx @tc96/parttens add record-dialog record-preview record-group
+npx @tc96/cli add record-dialog record-preview record-group
 ```
 
 Preview what would change before writing anything, or compare installed files with the current version:
 
 ```bash
-npx @tc96/parttens add record-dialog --dry-run
-npx @tc96/parttens add record-dialog --diff
+npx @tc96/cli add record-dialog --dry-run
+npx @tc96/cli add record-dialog --diff
 ```
 
-If the repo blocks `npx`, use `bunx @tc96/parttens add ...` or `pnpm dlx @tc96/parttens add ...`.
+If the repo blocks `npx`, use `bunx @tc96/cli add ...` or `pnpm dlx @tc96/cli add ...`.
 
 Before copying anything, the CLI type-checks the patterns against your own `ui` components. If they do not type-check, it stops with exit code 1, in a `--dry-run` too. Fix the diagnostics it prints, or pass `--force` to install anyway.
 
 **Quick Start:**
 
 ```tsx
-import { CollectionLayoutOutlet, TextProperty } from '@acme/patterns'
+import { CollectionLayoutOutlet, TextProperty } from '@tc96/ui/patterns'
 ```
 
 ### Blocks
@@ -63,28 +71,28 @@ import { CollectionLayoutOutlet, TextProperty } from '@acme/patterns'
 A block is a numbered variation of a page, a page frame or a page section that you install and then edit, such as an application shell. Blocks consume patterns; a pattern never imports a block. They live in categories: Application, Auth, Data, Charts, Solutions, AI & Agents, eCommerce and Marketing. The first ones are application shells, `app-shell-1` to `app-shell-4`, followed by the auth pages and the flow editors:
 
 ```bash
-npx @tc96/parttens add app-shell-1
+npx @tc96/cli add app-shell-1
 ```
 
-The CLI writes a block where the `blocks` alias resolves (`@acme/ui` gives `@acme/blocks`, or set `aliases.blocks` in `components.json`), and you import it from its folder:
+The CLI writes a block where the `blocks` alias resolves (`packages/ui/src/blocks` in the default layout), and you import it from its folder:
 
 ```tsx
-import { AppShell1 } from '@acme/blocks/application/shell/app-shell-1'
+import { AppShell1 } from '@tc96/ui/blocks/application/shell/app-shell-1'
 ```
 
-The `tsconfig` `paths` entry for `blocks` is needed only when you install a block; a consumer that still uses `aliases.templates` or the `templates` entry keeps working with a warning. The Blocks page in Storybook lists every block and its options.
+The `blocks` alias needs to resolve only when you install a block; a consumer that still uses `aliases.templates` or the `templates` entry keeps working with a warning. The Blocks page in Storybook lists every block and its options.
 
 #### Auth pages
 
 `login-1`, `login-2`, `otp-1`, `signup-1`, `signup-2`, `reset-password-1`, `reset-password-2`, `forgot-password-1` and `forgot-password-2` are the pages of the sign in flow. Each one is a whole page (the `main`, the centered card and your `logo` above it), so you only mount it on the route:
 
 ```bash
-npx @tc96/parttens add login-1
-npx @tc96/parttens add forgot-password-1
+npx @tc96/cli add login-1
+npx @tc96/cli add forgot-password-1
 ```
 
 ```tsx
-import { Login1 } from '@acme/blocks/auth/login-1'
+import { Login1 } from '@tc96/ui/blocks/application/auth/login-1'
 ```
 
 The pages are controlled: you pass `pending`, `error` and `fieldErrors` and receive `onSubmit(values)`, after the native constraints pass. They never fetch, keep a session or import an auth provider; links go through `renderLink` and only appear when you pass their `href`, every text is in `labels` (pt-BR by default), and the resend and link validity countdowns are numbers you count down and pass in. `login-2`, `signup-2` and `forgot-password-2` are the minimal `login-1`, `signup-1` and `forgot-password-1`, with only the fields and the submit button (no logo, links or providers). `reset-password-2` is `reset-password-1` with a validity timer for the reset link, and `forgot-password-1` and `forgot-password-2` swap their form for a confirmation when you pass `sent`.
@@ -94,8 +102,8 @@ The pages are controlled: you pass `pending`, `error` and `fieldErrors` and rece
 `workflow-editor` and `agent-builder` are two editor pages with the same anatomy: a page header (name, shortcuts, ask the AI, add step, run, actions menu), a step library on the left, a canvas on React Flow in the middle, an inspector with Build, Status and Logs on the right and an AI assistant card over the canvas. `workflow-editor` lays the steps out horizontally, with undo, redo, lock and a minimap; `agent-builder` lays them out as a vertical tree, with edge controls and an "Organizar árvore" button.
 
 ```bash
-npx @tc96/parttens add workflow-editor
-npx @tc96/parttens add agent-builder
+npx @tc96/cli add workflow-editor
+npx @tc96/cli add agent-builder
 ```
 
 Both bring `@xyflow/react` and `d3-hierarchy`, the `tabs`, `context-menu`, `progress` and `alert` COSS components and the `flow-canvas`, `flow-step-library`, `flow-inspector` and `chat-assistant` pattern files they import. Import the React Flow stylesheet once in your global CSS; without it the canvas does not place nodes or edges:
@@ -109,29 +117,31 @@ The block is controlled: you pass the steps, the connections, the selection, the
 ### How it works
 
 - **Your COSS components:** if a `ui` component is missing, the CLI installs it from its own package. If you already have it, yours is reused, customizations included
-- **Your aliases:** imports are rewritten to the aliases in your root `components.json`
+- **Your aliases:** imports are rewritten to the aliases in your root `components.json`; each alias resolves through the exports of the workspace package that owns it, or through the root `tsconfig` `paths`
 - **Your files:** existing files are kept. shadcn asks before overwriting anything
 
 ### Requirements
 
 - React 19, TypeScript and Tailwind CSS 4
-- COSS set up with shadcn, with `components.json` at the monorepo root
+- A Bun monorepo with the tc96-mono layout, or any workspace with a `components.json` at its root
 - Node and npm to run the CLI. Bun is not required
 
 ### Consumer structure
 
-tc96 expects a layered design system, in the spirit of atomic design, inside one `ui` workspace package and configured by one `components.json` at the monorepo root:
+The default is the tc96-mono layout: one `@tc96/ui` workspace package holds every layer, and `@tc96/utils` holds `cn`. Packages resolve through their `exports`, with no `tsconfig` `paths`:
 
 ```text
-components.json        aliases: ui, utils (helpers, patterns and blocks replace the last segment of ui)
+components.json        written by tc96 init
 packages/
-  ui/
-    package.json       exports ./components/*, ./helpers/*, ./patterns/*, ./lib/*
+  ui/                  @tc96/ui
+    package.json       exports ./*, ./hooks/*, ./lib/*, ./helpers/*, ./patterns, ./patterns/*, ./blocks/*
     src/
-      components/      atoms: COSS components and the tc96 components COSS does not have, such as Text and IconFrame
-      helpers/         React-free functions, such as amount formatting and rich text helpers
-      patterns/        organisms: tc96 patterns
-      lib/utils.ts     cn
+      components/      COSS components and the ones COSS does not have, such as Text and IconFrame (@tc96/ui/<component>)
+      hooks/ lib/      hooks and modules of the components (@tc96/ui/hooks/*, @tc96/ui/lib/*)
+      helpers/         React-free functions, such as amount formatting and rich text helpers (@tc96/ui/helpers/*)
+      patterns/        tc96 patterns (@tc96/ui/patterns)
+      blocks/          tc96 blocks (@tc96/ui/blocks/<category>/<group>/<block>)
+  utils/               @tc96/utils, exports cn
 apps/
   web/                 routes and pages
 ```
@@ -139,33 +149,36 @@ apps/
 ```json
 {
   "aliases": {
-    "components": "@acme/ui/components",
-    "ui": "@acme/ui/components",
-    "utils": "@acme/ui/lib/utils",
-    "lib": "@acme/ui/lib",
-    "hooks": "@acme/ui/hooks"
+    "components": "@tc96/ui",
+    "ui": "@tc96/ui",
+    "utils": "@tc96/utils",
+    "lib": "@tc96/ui/lib",
+    "hooks": "@tc96/ui/hooks",
+    "helpers": "@tc96/ui/helpers",
+    "patterns": "@tc96/ui/patterns",
+    "blocks": "@tc96/ui/blocks"
   }
 }
 ```
 
-This is the shadcn monorepo layout. `helpers` and `patterns` are derived as `@acme/ui/helpers` and `@acme/ui/patterns`; set them in `aliases` only to place a layer elsewhere, such as a separate `@acme/patterns` package. Imports only go down a layer: `patterns` can import `ui` and `utils`. `Text` and `IconFrame` are ui components: the CLI installs them with the COSS ones when a pattern needs them. Each alias also needs exact and wildcard entries in the root `tsconfig` `paths` (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`). The CLI adds the patterns' npm dependencies to the workspace package that holds the `patterns` path, `packages/ui/package.json` here.
+To install elsewhere, change these aliases. Each one must resolve through the exports of the workspace package that owns it (`"./patterns/*": "./src/patterns/*.tsx"`) or through the root `tsconfig` `paths` (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`). Without `hooks` and `lib`, hooks and lib files go under the `ui` directory; without `helpers`, `patterns` or `blocks`, the alias replaces the last segment of `ui`. Imports only go down a layer: `patterns` can import `ui` and `utils`. `Text` and `IconFrame` are ui components: the CLI installs them with the COSS ones when a pattern needs them, and adds their folder export to the ui package. The CLI adds the npm dependencies to the workspace package that holds the `patterns` path, `packages/ui/package.json` here.
 
 ### Install with an AI agent
 
 Paste this into your coding agent, replacing the pattern names:
 
 ````text
-Install the @tc96/parttens patterns `collection` and `properties` in this project.
+Install the tc96 patterns `collection` and `properties` in this project.
 
-1. Find the root `components.json`. It must define `aliases.ui` and `aliases.utils`. `aliases.helpers` and `aliases.patterns` are optional and replace the last segment of `ui` (`@acme/ui/components` gives `@acme/ui/helpers`, `@acme/ui` gives `@acme/helpers`). If the file is missing, stop and ask me; do not run `shadcn init --force`, which rewrites it.
-2. For `ui`, `helpers` and `patterns`, check that the root `tsconfig.json` `paths` has an exact entry and a wildcard entry (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`) and that the `ui` package's `package.json` `exports` covers each layer. If something is missing, show me the change and wait for my approval before editing.
+1. Find the root `components.json`. If it is missing and the repo has `packages/ui` (`@tc96/ui`) and `packages/utils` (`@tc96/utils`), run `npx @tc96/cli init` and show me what it wrote. Otherwise stop and ask me; do not run `shadcn init --force`, which rewrites it.
+2. Check that each alias in `components.json` resolves, through the exports of the workspace package that owns it or through the root `tsconfig.json` `paths`. If something is missing, show me the change and wait for my approval before editing.
 3. Preview first, from any directory inside the repo (the CLI searches upward for `components.json`; use `--cwd` to override):
-   npx @tc96/parttens add collection properties --dry-run
+   npx @tc96/cli add collection properties --dry-run
    Read the output. If it lists files that already exist or a destination I did not expect, such as a legacy folder with the same name, stop and ask me. If it stops with "do not type-check against your components", report the diagnostics and wait; do not add `--force`.
 4. Install:
-   npx @tc96/parttens add collection properties
+   npx @tc96/cli add collection properties
    Answer no to any shadcn prompt that would overwrite a file I own. If the repo blocks npx, use `bunx` or `pnpm dlx`.
-5. Do not edit the installed files or the COSS components in `ui`. Import from the `patterns` alias (`import { CollectionLayoutOutlet } from '@acme/ui/patterns'`).
+5. Do not edit the installed files or the COSS components in `ui`. Import from the `patterns` alias (`import { CollectionLayoutOutlet } from '@tc96/ui/patterns'`).
 6. Run the typecheck and lint scripts of the workspace that received the files, and report what was installed, where, and any errors.
 ````
 
@@ -195,7 +208,7 @@ Filter Builder and responsive layouts are out of scope for the first version.
 There is no package to update. To compare your installed files with the current version, run:
 
 ```bash
-npx @tc96/parttens add collection --diff
+npx @tc96/cli add collection --diff
 ```
 
 Then apply the changes you want by hand.
@@ -231,11 +244,15 @@ bun run release:check
 
 ```text
 packages/
-├── parttens/          # Pattern source
-├── helpers/           # React-free helpers shared by patterns, such as amount formatting
-├── ui/                # COSS-origin and own components (Text, IconFrame) owned by this repo, listed in ui.manifest.json
-├── utils/             # Shared helpers (cn)
-└── registry/          # Registry build and the CLI, published as @tc96/parttens
+├── ui/                # @tc96/ui, the same layout the consumer receives
+│   └── src/
+│       ├── components/  # COSS-origin and own components (Text, IconFrame), listed in ui.manifest.json
+│       ├── hooks/ lib/  # Hooks and modules of the components
+│       ├── helpers/     # React-free helpers shared by patterns, such as amount formatting
+│       ├── patterns/    # Pattern source
+│       └── blocks/      # Installable blocks
+├── utils/             # @tc96/utils, shared helpers (cn)
+└── registry/          # Registry build and the CLI, published as @tc96/cli
 apps/
 ├── storybook/         # Stories and interaction tests
 └── docs/              # Documentation site
@@ -243,13 +260,13 @@ docs/architecture/     # Boundaries and decisions (in Portuguese)
 scripts/               # Boundary, COSS sync and release checks
 ```
 
-The [architecture document](docs/architecture/tc96-parttens.md) records the boundaries and decisions. It is written in Portuguese.
+The [architecture document](docs/architecture/tc96-ui.md) records the boundaries and decisions. It is written in Portuguese.
 
 ## Contributing
 
 Contributions are welcome! Please:
 
-1. Check existing [issues](https://github.com/gblsmlo/tc96-parttens/issues) or create a new one
+1. Check existing [issues](https://github.com/gblsmlo/tc96-ui/issues) or create a new one
 2. Fork the repository and create a feature branch
 3. Run `bun run check` before submitting
 4. Submit a Pull Request with a clear description

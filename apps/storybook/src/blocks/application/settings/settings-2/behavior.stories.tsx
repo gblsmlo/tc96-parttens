@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Settings2 } from '@tc96/blocks/application/settings/settings-2'
+import { Settings2 } from '@tc96/ui/blocks/application/settings/settings-2'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { settings2Options, settings2Values } from '../fixtures/settings-2.ts'
 import {

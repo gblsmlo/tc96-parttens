@@ -10,12 +10,12 @@ import {
   WarningIcon,
   XCircleIcon,
 } from '@phosphor-icons/react'
-import { richTextToPlainText } from '@tc96/helpers/rich-text'
+import { richTextToPlainText } from '@tc96/ui/helpers/rich-text'
 import type {
   PersonPropertyOption,
   RichTextValue,
   SelectPropertyOption,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export interface NoteValues {
   body: RichTextValue

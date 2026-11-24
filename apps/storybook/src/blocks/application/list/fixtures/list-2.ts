@@ -1,7 +1,7 @@
 import type {
   List2Entry,
   List2Range,
-} from '@tc96/blocks/application/list/list-2'
+} from '@tc96/ui/blocks/application/list/list-2'
 
 export const entriesByRange: Record<List2Range, List2Entry[]> = {
   '7d': [

@@ -1,5 +1,4 @@
 import { DotsThreeIcon } from '@phosphor-icons/react'
-import { CollectionPagination, GalleryView } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
   Card,
@@ -8,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@tc96/ui/card'
+import { CollectionPagination, GalleryView } from '@tc96/ui/patterns'
 import { Separator } from '@tc96/ui/separator'
 import { Text } from '@tc96/ui/text'
 import { useEffect, useState } from 'react'

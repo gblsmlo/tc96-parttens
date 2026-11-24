@@ -1,6 +1,6 @@
 import { RocketIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EmptyState3 } from '@tc96/blocks/application/empty-state/empty-state-3'
+import { EmptyState3 } from '@tc96/ui/blocks/application/empty-state/empty-state-3'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { templates } from '../fixtures/empty-state-3.ts'
 

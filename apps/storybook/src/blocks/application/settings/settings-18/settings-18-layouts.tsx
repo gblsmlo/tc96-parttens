@@ -1,7 +1,7 @@
 import {
   Settings18,
   type Settings18Props,
-} from '@tc96/blocks/application/settings/settings-18'
+} from '@tc96/ui/blocks/application/settings/settings-18'
 import { useState } from 'react'
 import { capabilitiesByRole, roles } from '../fixtures/settings-18.ts'
 import type { Settings18Controls } from './settings-18-controls.ts'

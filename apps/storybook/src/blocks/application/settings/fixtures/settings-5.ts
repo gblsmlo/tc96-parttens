@@ -1,4 +1,4 @@
-import type { Settings5TimeZone } from '@tc96/blocks/application/settings/settings-5'
+import type { Settings5TimeZone } from '@tc96/ui/blocks/application/settings/settings-5'
 
 export interface Settings5Workspace {
   initials: string

@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { DataGridDensity } from '@tc96/parttens'
+import type { DataGridDensity } from '@tc96/ui/patterns'
 
 export const dataGridDensities: DataGridDensity[] = [
   'short',

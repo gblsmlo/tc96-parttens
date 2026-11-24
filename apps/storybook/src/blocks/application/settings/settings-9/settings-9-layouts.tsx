@@ -1,7 +1,7 @@
 import {
   Settings9,
   type Settings9Props,
-} from '@tc96/blocks/application/settings/settings-9'
+} from '@tc96/ui/blocks/application/settings/settings-9'
 import { rules } from '../fixtures/settings-9.ts'
 import type { Settings9Controls } from './settings-9-controls.ts'
 

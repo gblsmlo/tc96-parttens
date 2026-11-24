@@ -7,7 +7,7 @@ import {
   ActionBar,
   type ActionBarContext,
   type ActionBarGroup,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import type { ActionBarControls } from './action-bar-controls.ts'
 
 export interface DraftRow {

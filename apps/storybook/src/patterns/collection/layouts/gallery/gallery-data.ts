@@ -2,7 +2,7 @@ import type {
   CollectionDefinition,
   GalleryPageSize,
   GalleryRowSkeletonAnatomy,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export interface SampleRecord {
   id: string

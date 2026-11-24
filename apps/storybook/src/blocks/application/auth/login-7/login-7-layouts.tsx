@@ -2,7 +2,7 @@ import {
   Login7,
   type Login7FooterLink,
   type Login7Props,
-} from '@tc96/blocks/application/auth/login-7'
+} from '@tc96/ui/blocks/application/auth/login-7'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import type { Login7Controls } from './login-7-controls.ts'
 

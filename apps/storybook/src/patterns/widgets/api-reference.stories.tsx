@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { CardPanel } from '@tc96/ui/card'
 import {
   Amount,
   ExpandableList,
   TrendIndicator,
   WidgetPeriodToggle,
   WidgetShell,
-} from '@tc96/parttens'
-import { CardPanel } from '@tc96/ui/card'
+} from '@tc96/ui/patterns'
 import { Slot } from '../../test-utils/anatomy-slot.tsx'
 import { periodOptions } from './widgets-data.ts'
 

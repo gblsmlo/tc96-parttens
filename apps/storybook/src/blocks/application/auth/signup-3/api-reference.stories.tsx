@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Signup3 } from '@tc96/blocks/application/auth/signup-3'
+import { Signup3 } from '@tc96/ui/blocks/application/auth/signup-3'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import { signup3Brands, signup3Heading } from './signup-3-layouts.tsx'
 

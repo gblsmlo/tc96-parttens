@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { StateGuard, StateSurface, type StateSurfaceKind } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
+import {
+  StateGuard,
+  StateSurface,
+  type StateSurfaceKind,
+} from '@tc96/ui/patterns'
 import { expect, fn, mocked, userEvent, within } from 'storybook/test'
 import { StateCanvas } from './state-canvas.tsx'
 import { stateControlArgs } from './state-controls.ts'

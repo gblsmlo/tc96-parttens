@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Dashboard4 } from '@tc96/blocks/application/dashboard/dashboard-4'
+import { Dashboard4 } from '@tc96/ui/blocks/application/dashboard/dashboard-4'
 import { expect, fn, within } from 'storybook/test'
 import { initialSort, metrics, modules, team } from '../fixtures/dashboard-4.ts'
 import { dashboard4Breadcrumbs } from './dashboard-4-layouts.tsx'

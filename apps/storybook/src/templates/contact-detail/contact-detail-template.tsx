@@ -13,7 +13,9 @@ import {
   RadioButtonIcon,
   TagIcon,
 } from '@phosphor-icons/react'
-import { getInitials } from '@tc96/helpers/initials'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
+import { Button } from '@tc96/ui/button'
+import { getInitials } from '@tc96/ui/helpers/initials'
 import {
   type Activity,
   ActivityFeedWidget,
@@ -28,9 +30,7 @@ import {
   TagsProperty,
   TextProperty,
   type WidgetTone,
-} from '@tc96/parttens'
-import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { Text } from '@tc96/ui/text'
 import type { ReactNode } from 'react'
 import {

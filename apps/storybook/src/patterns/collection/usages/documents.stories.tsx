@@ -1,5 +1,14 @@
 import { FileTextIcon, GridFourIcon, RowsIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { iconFrameStyle } from '@tc96/ui/icon-frame'
+import {
+  MenuCheckboxItem,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+} from '@tc96/ui/menu'
 import {
   Action,
   CollectionFrame,
@@ -15,16 +24,7 @@ import {
   ViewSettingsMenu,
   type ViewSettingsMode,
   ViewSettingsSection,
-} from '@tc96/parttens'
-import { iconFrameStyle } from '@tc96/ui/icon-frame'
-import {
-  MenuCheckboxItem,
-  MenuGroup,
-  MenuGroupLabel,
-  MenuSub,
-  MenuSubPopup,
-  MenuSubTrigger,
-} from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { type ReactElement, type ReactNode, useMemo, useState } from 'react'
 import { expect, fn, within } from 'storybook/test'
 import {

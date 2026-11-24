@@ -1,7 +1,7 @@
 import type {
   Settings2Options,
   Settings2Values,
-} from '@tc96/blocks/application/settings/settings-2'
+} from '@tc96/ui/blocks/application/settings/settings-2'
 
 export const settings2Options: Settings2Options = {
   displayNames: [

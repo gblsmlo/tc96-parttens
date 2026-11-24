@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { RecordDialogBodyWidth, RecordDialogSize } from '@tc96/parttens'
+import type { RecordDialogBodyWidth, RecordDialogSize } from '@tc96/ui/patterns'
 
 export const recordDialogSizes: readonly RecordDialogSize[] = [
   'small',

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RecordGroupMetric } from '@tc96/parttens'
+import { RecordGroupMetric } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 
 const slotOf = (canvasElement: HTMLElement, name: string) =>

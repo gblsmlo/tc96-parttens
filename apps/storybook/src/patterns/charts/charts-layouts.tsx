@@ -1,4 +1,4 @@
-import { ScatterChart, type ScatterChartProps } from '@tc96/parttens'
+import { ScatterChart, type ScatterChartProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { type Account, accounts } from './fixtures/accounts'
 

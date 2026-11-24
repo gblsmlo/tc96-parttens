@@ -3,7 +3,6 @@ import {
   type Icon as PhosphorIcon,
   PlusIcon,
 } from '@phosphor-icons/react'
-import { PropertySurface } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
   Combobox,
@@ -16,6 +15,7 @@ import {
   ComboboxTrigger,
   useComboboxFilter,
 } from '@tc96/ui/combobox'
+import { PropertySurface } from '@tc96/ui/patterns'
 import { useState } from 'react'
 
 export interface CreatablePropertyLabels {

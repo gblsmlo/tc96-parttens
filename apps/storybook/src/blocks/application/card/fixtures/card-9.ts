@@ -1,7 +1,7 @@
 import type {
   Card9Action,
   Card9Delivery,
-} from '@tc96/blocks/application/card/card-9'
+} from '@tc96/ui/blocks/application/card/card-9'
 
 export const delivery: Card9Delivery = {
   address: 'Av. Paulista, 1578 - São Paulo, SP',

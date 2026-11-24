@@ -17,6 +17,15 @@ export interface CossRegistryItem {
 export interface CossAliases {
   ui: string
   utils: string
+  hooks?: string
+  lib?: string
+}
+
+/** Directories the ui, hooks and lib files of an item are written to. */
+export interface CossDirectories {
+  ui: string
+  hooks: string
+  lib: string
 }
 
 /** The only change allowed on top of COSS: its registry aliases become ours; the repo's own aliases become the given ones. */
@@ -24,26 +33,50 @@ export function normalizeImports(
   content: string,
   aliases: CossAliases = { ui: '@tc96/ui', utils: '@tc96/utils' },
 ) {
+  const hooks = aliases.hooks ?? `${aliases.ui}/hooks`
+  const lib = aliases.lib ?? `${aliases.ui}/lib`
   return content
     .replace(
       /(["'])@\/(?:registry\/default\/)?lib\/utils\1/g,
       `$1${aliases.utils}$1`,
     )
+    .replace(/(["'])@\/registry\/default\/hooks\//g, `$1${hooks}/`)
+    .replace(/(["'])@\/registry\/default\/lib\//g, `$1${lib}/`)
     .replace(
       /(["'])@\/registry\/default\/(?:ui\/)?([^"']+)\1/g,
       `$1${aliases.ui}/$2$1`,
     )
     .replace(/(["'])@tc96\/utils\1/g, `$1${aliases.utils}$1`)
+    .replace(/(["'])@tc96\/ui\/hooks\//g, `$1${hooks}/`)
+    .replace(/(["'])@tc96\/ui\/lib\//g, `$1${lib}/`)
     .replace(/(["'])@tc96\/ui\//g, `$1${aliases.ui}/`)
 }
 
 /**
- * Paths under the ui directory where an installed COSS item leaves a trace: a
- * component at the root, a hook in hooks/, or a folder named after an item
- * with several files.
+ * Paths where an installed COSS item leaves a trace: a component at the root
+ * of the ui directory, a hook in the hooks directory, or a folder named after
+ * an item with several files.
  */
-export function cossInstalledPaths(name: string) {
-  return [`${name}.tsx`, `hooks/${name}.ts`, name]
+export function cossInstalledPaths(
+  name: string,
+  directories: Pick<CossDirectories, 'ui' | 'hooks'> = {
+    ui: '.',
+    hooks: 'hooks',
+  },
+) {
+  return [
+    `${directories.ui}/${name}.tsx`,
+    `${directories.hooks}/${name}.ts`,
+    `${directories.ui}/${name}`,
+  ].map((path) => path.replace(/^\.\//, ''))
+}
+
+/** The directory and the path inside it where a ui file of an item goes. */
+export function cossTarget(path: string, directories: CossDirectories) {
+  const [, folder, rest] = path.match(/^(hooks|lib)\/(.+)$/) ?? []
+  if (folder === 'hooks' || folder === 'lib')
+    return `${directories[folder]}/${rest}`
+  return `${directories.ui}/${path}`
 }
 
 /**
@@ -101,7 +134,7 @@ export async function resolveItems(
 export function componentFiles(
   item: CossRegistryItem,
   aliases: CossAliases,
-  directory: string,
+  directories: CossDirectories,
 ): RegistryFile[] {
   for (const key of ['envVars', 'devDependencies', 'tailwind'] as const) {
     const value = item[key]
@@ -121,7 +154,7 @@ export function componentFiles(
       path: `ui/${path}`,
       type: 'registry:ui',
       content,
-      target: `~/${directory}/${path}`,
+      target: `~/${cossTarget(path, directories)}`,
     }
   })
 }

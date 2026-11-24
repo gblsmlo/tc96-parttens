@@ -11,7 +11,7 @@ import {
   TargetIcon,
   UserCheckIcon,
 } from '@phosphor-icons/react'
-import { richTextToPlainText } from '@tc96/helpers/rich-text'
+import { richTextToPlainText } from '@tc96/ui/helpers/rich-text'
 import {
   EditableText,
   EditorTitle,
@@ -23,7 +23,7 @@ import {
   type RichTextValue,
   SelectProperty,
   type SelectPropertyOption,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useRef, useState } from 'react'
 import { readStored, writeStored } from '../../../test-utils/usage-kit'
 

@@ -1,4 +1,4 @@
-import { List1 } from '@tc96/blocks/application/list/list-1'
+import { List1 } from '@tc96/ui/blocks/application/list/list-1'
 import { metrics } from '../fixtures/list-1.ts'
 import type { List1Controls } from './list-1-controls.ts'
 

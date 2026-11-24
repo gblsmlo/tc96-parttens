@@ -1,5 +1,5 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/react-vite'
-import { AssistantPanel } from '@tc96/parttens'
+import { AssistantPanel } from '@tc96/ui/patterns'
 import { Slot } from '../../../test-utils/anatomy-slot'
 
 const AnatomyCanvas: Decorator = (Story) => (

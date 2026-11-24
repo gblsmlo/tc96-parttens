@@ -13,7 +13,7 @@ import type {
   CalendarEventChipTone,
   CollectionDefinition,
   SelectPropertyOption,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export type TaskStatus = 'backlog' | 'todo' | 'in-progress' | 'review' | 'done'
 export type TaskPriority = 'urgent' | 'high' | 'medium' | 'low'

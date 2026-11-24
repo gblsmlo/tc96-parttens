@@ -1,4 +1,4 @@
-import type { AssistantMessage, AssistantSuggestion } from '@tc96/parttens'
+import type { AssistantMessage, AssistantSuggestion } from '@tc96/ui/patterns'
 
 export const suggestions: AssistantSuggestion[] = [
   { id: 'why-failed', label: 'Por que o passo Enriquecer empresa falhou?' },

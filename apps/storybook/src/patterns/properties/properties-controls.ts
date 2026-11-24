@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { PropertyVariant } from '@tc96/parttens'
+import type { PropertyVariant } from '@tc96/ui/patterns'
 import { type TaskItemId, taskItemIds } from './properties-data'
 
 export interface PropertiesControls {

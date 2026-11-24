@@ -1,4 +1,4 @@
-import { SelectProperty, type SelectPropertyProps } from '@tc96/parttens'
+import { SelectProperty, type SelectPropertyProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { SelectControls } from './select-controls.ts'
 import {

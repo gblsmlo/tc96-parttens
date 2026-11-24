@@ -1,7 +1,7 @@
 import type {
   Settings1Field,
   Settings1Props,
-} from '@tc96/blocks/application/settings/settings-1'
+} from '@tc96/ui/blocks/application/settings/settings-1'
 
 export const settings1Fields: Settings1Field[] = [
   {

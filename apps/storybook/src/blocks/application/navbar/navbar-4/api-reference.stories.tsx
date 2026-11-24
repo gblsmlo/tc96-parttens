@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Navbar4 } from '@tc96/blocks/application/navbar/navbar-4'
+import { Navbar4 } from '@tc96/ui/blocks/application/navbar/navbar-4'
 import { fn } from 'storybook/test'
 import { documentTitle, savedText } from '../fixtures/navbar-4.ts'
 

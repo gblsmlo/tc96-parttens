@@ -8,7 +8,7 @@ import {
   TagSimpleIcon,
   UserIcon,
 } from '@phosphor-icons/react'
-import type { ViewSettingsMode } from '@tc96/parttens'
+import type { ViewSettingsMode } from '@tc96/ui/patterns'
 
 export interface SavedView {
   id: string

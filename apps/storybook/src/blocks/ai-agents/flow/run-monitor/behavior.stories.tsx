@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RunMonitor } from '@tc96/blocks/ai-agents/flow/run-monitor'
+import { RunMonitor } from '@tc96/ui/blocks/ai-agents/flow/run-monitor'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { connections, steps } from '../fixtures/run-monitor.ts'
 import {

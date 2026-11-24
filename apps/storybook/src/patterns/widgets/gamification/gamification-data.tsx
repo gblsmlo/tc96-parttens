@@ -1,5 +1,5 @@
 import { FireIcon, SparkleIcon, TargetIcon } from '@phosphor-icons/react'
-import type { Achievement, Quest, StreakDay } from '@tc96/parttens'
+import type { Achievement, Quest, StreakDay } from '@tc96/ui/patterns'
 
 export const xp = { current: 180, target: 250, total: 930 }
 

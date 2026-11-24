@@ -1,6 +1,6 @@
 import { PlusIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PhoneProperty } from '@tc96/parttens'
+import { PhoneProperty } from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
 import { PhoneCanvas } from './phone-canvas.tsx'

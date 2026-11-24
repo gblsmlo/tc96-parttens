@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # List4
 
-An integrations directory: one row per app with its initials, name, description and a Connect button or a Connected badge. Reach for it on a settings or onboarding screen. Install it with `npx @tc96/parttens add list-4`.
+An integrations directory: one row per app with its initials, name, description and a Connect button or a Connected badge. Reach for it on a settings or onboarding screen. Install it with `npx @tc96/cli add list-4`.
 
 It is a list, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/List/List4`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { List4 } from '@tc96/blocks/application/list/list-4'
+import { List4 } from '@tc96/ui/blocks/application/list/list-4'
 ```
 
 The same path exports the types listed under Exports.

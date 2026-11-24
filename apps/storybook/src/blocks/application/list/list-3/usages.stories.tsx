@@ -4,7 +4,7 @@ import {
   List3,
   type List3Period,
   type List3Transaction,
-} from '@tc96/blocks/application/list/list-3'
+} from '@tc96/ui/blocks/application/list/list-3'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AssistantComposer, AssistantSuggestions } from '@tc96/parttens'
+import { AssistantComposer, AssistantSuggestions } from '@tc96/ui/patterns'
 import { assistantControlArgs } from './assistant-controls.ts'
 import { AssistantCanvas, ComposerCanvas } from './assistant-frame.tsx'
 import { ComposedAssistant } from './assistant-layouts.tsx'

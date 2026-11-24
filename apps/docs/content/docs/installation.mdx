@@ -5,67 +5,83 @@ description: Instale os fontes dos patterns no seu projeto COSS.
 
 # Instalação
 
-> O nome do CLI no npm ainda não foi confirmado.
+O CLI é o pacote `@tc96/cli`, com o comando `tc96`.
 
 ## Requisitos
 
 - React 19, TypeScript e Tailwind CSS 4.
-- COSS configurado, com `components.json` na raiz do monorepo. É o arquivo que o `shadcn init` cria; o CLI só o lê e não precisa do shadcn.
+- Um monorepo Bun no layout do tc96-mono, ou qualquer workspace com um `components.json` na raiz.
 - Node e npm para executar o CLI. Bun não é exigido.
 
-## Aliases
+## Estrutura padrão
 
-O tc96 instala as camadas dentro de um único pacote `ui`, no layout de monorepo
-do shadcn:
+O padrão é o layout do tc96-mono: um pacote `@tc96/ui` guarda todas as camadas e
+o `@tc96/utils` guarda o `cn`. Os pacotes resolvem pelos `exports`, sem `paths`
+no `tsconfig`:
 
 ```text
 packages/ui/src/
   components/   COSS e os componentes do tc96 que o COSS não tem (Text, IconFrame)
+  hooks/ lib/   hooks e módulos dos componentes
   helpers/      funções sem React
   patterns/     patterns do tc96
-  lib/utils.ts  cn
+  blocks/       blocks do tc96
+packages/utils/ cn
 ```
+
+Rode uma vez na raiz do monorepo:
+
+```sh
+npx @tc96/cli init
+```
+
+O `init` grava o `components.json` com esse layout e acrescenta ao
+`packages/ui/package.json` os `exports` de camada que faltam. Um
+`components.json` que já existe é mantido.
 
 ```json
 {
   "aliases": {
-    "components": "@acme/ui/components",
-    "ui": "@acme/ui/components",
-    "utils": "@acme/ui/lib/utils"
+    "components": "@tc96/ui",
+    "ui": "@tc96/ui",
+    "utils": "@tc96/utils",
+    "lib": "@tc96/ui/lib",
+    "hooks": "@tc96/ui/hooks",
+    "helpers": "@tc96/ui/helpers",
+    "patterns": "@tc96/ui/patterns",
+    "blocks": "@tc96/ui/blocks"
   }
 }
 ```
 
-`helpers` e `patterns` são derivados do `ui` trocando o último segmento
-(`@acme/ui/helpers`, `@acme/ui/patterns`).
-Declare-os em `aliases` só para pôr uma camada em outro lugar, como um pacote
-`@acme/patterns` separado.
+## Instalar em outro lugar
 
-Cada alias também precisa de entrada exata e de wildcard em `paths` no
-`tsconfig` da raiz (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`),
-e o `exports` do `package.json` do `ui` precisa cobrir cada camada. O CLI grava
-`helpers` e `patterns` no diretório que o wildcard de cada alias
-resolve, reescreve os imports para `ui` e `utils`, que continuam sendo seus, e
-instala as dependências npm no pacote do workspace que contém o diretório de
-`patterns`.
+Para mudar o destino de uma camada, edite o alias dela no `components.json`.
+Cada alias precisa resolver pelos `exports` do pacote do workspace que o contém
+(`"./patterns/*": "./src/patterns/*.tsx"`) ou por uma entrada em `paths` no
+`tsconfig` da raiz (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`).
+Sem `hooks` e `lib`, esses arquivos vão para dentro do diretório de `ui`; sem
+`helpers`, `patterns` ou `blocks`, o alias troca o último segmento do `ui`.
+O CLI reescreve os imports para os seus aliases e instala as dependências npm no
+pacote do workspace que contém o diretório de `patterns`.
 
-Se você usa o shadcn, o `shadcn init --force` regrava o `components.json` sem `helpers`
-e `patterns`, e troca o alias `ui`. Se rodar esse comando, acrescente as duas
-chaves de novo e revise o `ui`; o CLI avisa quando elas faltam.
+Se você usa o shadcn, o `shadcn init --force` regrava o `components.json` sem as
+chaves do tc96 e troca o alias `ui`. Se rodar esse comando, acrescente as chaves
+de novo e revise o `ui`.
 
 ## Instalar
 
 Instale um ou vários patterns de uma vez:
 
 ```sh
-npx @tc96/parttens add collection-views properties
+npx @tc96/cli add collection-views properties
 ```
 
-Para instalar o checklist isoladamente, use `npx @tc96/parttens add checklist`.
+Para instalar o checklist isoladamente, use `npx @tc96/cli add checklist`.
 
-Os widgets de finanças, produtividade, CRM e gamificação vêm juntos em `npx @tc96/parttens add widgets`. Os gráficos de saldo, progresso de tarefas e fluxo de caixa usam `recharts`, instalado como dependência do pattern.
+Os widgets de finanças, produtividade, CRM e gamificação vêm juntos em `npx @tc96/cli add widgets`. Os gráficos de saldo, progresso de tarefas e fluxo de caixa usam `recharts`, instalado como dependência do pattern.
 
-O editor de texto estilo Notion vem em `npx @tc96/parttens add rich-text-editor`. Ele usa o Plate headless (`platejs` e os plugins `@platejs/basic-nodes`, `@platejs/list-classic`, `@platejs/slash-command` e `@platejs/combobox`), instalados como dependências do pattern.
+O editor de texto estilo Notion vem em `npx @tc96/cli add rich-text-editor`. Ele usa o Plate headless (`platejs` e os plugins `@platejs/basic-nodes`, `@platejs/list-classic`, `@platejs/slash-command` e `@platejs/combobox`), instalados como dependências do pattern.
 
 Os componentes de `ui` que os patterns usam e que faltam no seu projeto vêm
 junto com o próprio CLI, sem acessar a rede. Os componentes que você já tem
@@ -109,7 +125,7 @@ ou npm). Depois, gera o `index.ts` no diretório de `patterns`, que exporta todo
 os patterns instalados, inclusive os de execuções anteriores:
 
 ```tsx
-import { CollectionViewOutlet, TextProperty } from '@acme/patterns'
+import { CollectionViewOutlet, TextProperty } from '@tc96/ui/patterns'
 ```
 
 Arquivos existentes que diferem são preservados. Num terminal, o CLI pergunta
@@ -126,7 +142,7 @@ Não há pacote para atualizar. Compare os arquivos instalados com a versão atu
 e incorpore as correções manualmente:
 
 ```sh
-npx @tc96/parttens add collection-views --diff
+npx @tc96/cli add collection-views --diff
 ```
 
 Filter Builder não faz parte desta versão.

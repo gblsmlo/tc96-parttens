@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Timeline3 } from '@tc96/blocks/application/timeline/timeline-3'
+import { Timeline3 } from '@tc96/ui/blocks/application/timeline/timeline-3'
 import { fn } from 'storybook/test'
 import { approvalSteps, currentStepId } from '../fixtures/timeline-3.ts'
 

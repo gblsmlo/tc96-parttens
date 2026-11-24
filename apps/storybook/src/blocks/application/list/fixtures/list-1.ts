@@ -1,4 +1,4 @@
-import type { List1Metric } from '@tc96/blocks/application/list/list-1'
+import type { List1Metric } from '@tc96/ui/blocks/application/list/list-1'
 
 export const metrics: List1Metric[] = [
   {

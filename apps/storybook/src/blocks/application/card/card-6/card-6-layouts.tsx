@@ -1,4 +1,4 @@
-import { Card6, type Card6Props } from '@tc96/blocks/application/card/card-6'
+import { Card6, type Card6Props } from '@tc96/ui/blocks/application/card/card-6'
 import { useState } from 'react'
 import { jobs } from '../fixtures/card-6.ts'
 import type { Card6Controls } from './card-6-controls.ts'

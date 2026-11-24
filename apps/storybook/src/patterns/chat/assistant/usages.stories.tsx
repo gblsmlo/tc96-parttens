@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { type AssistantMessage, AssistantPanel } from '@tc96/parttens'
+import { type AssistantMessage, AssistantPanel } from '@tc96/ui/patterns'
 import { useEffect, useRef, useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { AssistantCanvas, WorkflowCanvas } from './assistant-frame.tsx'

@@ -1,3 +1,4 @@
+import { Checkbox } from '@tc96/ui/checkbox'
 import {
   createSelectColumn,
   type DataGridColumnDef,
@@ -9,8 +10,7 @@ import {
   type PersonPropertyOption,
   SelectProperty,
   TextProperty,
-} from '@tc96/parttens'
-import { Checkbox } from '@tc96/ui/checkbox'
+} from '@tc96/ui/patterns'
 import {
   isPriority,
   isStatus,

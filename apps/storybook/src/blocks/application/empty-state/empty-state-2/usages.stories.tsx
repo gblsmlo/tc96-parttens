@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
-import { EmptyState2 } from '@tc96/blocks/application/empty-state/empty-state-2'
 import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
+import { EmptyState2 } from '@tc96/ui/blocks/application/empty-state/empty-state-2'
 import { Spinner } from '@tc96/ui/spinner'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'

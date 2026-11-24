@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AgentBuilderDialogs } from '@tc96/blocks/ai-agents/flow/agent-builder/partials'
+import { AgentBuilderDialogs } from '@tc96/ui/blocks/ai-agents/flow/agent-builder/partials'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { collectionsConnections } from '../../fixtures/collections-agent'
 

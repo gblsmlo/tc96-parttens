@@ -10,7 +10,7 @@ import {
 import type {
   Settings10Phase,
   Settings10Stage,
-} from '@tc96/blocks/application/settings/settings-10'
+} from '@tc96/ui/blocks/application/settings/settings-10'
 
 export const phases: Settings10Phase[] = [
   { id: 'aberto', label: 'Em aberto' },

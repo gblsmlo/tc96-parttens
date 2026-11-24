@@ -1,5 +1,5 @@
 import { CalendarBlankIcon } from '@phosphor-icons/react'
-import { Card1, type Card1Fact } from '@tc96/blocks/application/card/card-1'
+import { Card1, type Card1Fact } from '@tc96/ui/blocks/application/card/card-1'
 import { facts } from '../fixtures/card-1.ts'
 import type { Card1Controls } from './card-1-controls.ts'
 

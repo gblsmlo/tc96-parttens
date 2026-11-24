@@ -3,7 +3,7 @@ import {
   type AssistantPlacement,
   assistantDefaultDisclaimer,
   assistantDefaultPlaceholder,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import {
   type AssistantMessageSetName,
   assistantMessageSetNames,

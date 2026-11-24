@@ -1,7 +1,7 @@
 import type {
   CalendarEventChipTone,
   CollectionDefinition,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export type EventKind =
   | 'meeting'

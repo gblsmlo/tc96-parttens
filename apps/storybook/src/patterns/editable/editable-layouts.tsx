@@ -11,7 +11,7 @@ import {
   EditableSubmit,
   EditableToolbar,
   EditableTrigger,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { EditableControls } from './editable-controls.ts'
 

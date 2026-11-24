@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Stats6
 
-A card with period tabs above three sleeve cards. Each sleeve shows its name, its amount, a delta badge and a meter with its share of the portfolio. Reach for it when a dashboard breaks an investment portfolio into parts and lets people switch the period of the deltas. Install it with `npx @tc96/parttens add stats-6`.
+A card with period tabs above three sleeve cards. Each sleeve shows its name, its amount, a delta badge and a meter with its share of the portfolio. Reach for it when a dashboard breaks an investment portfolio into parts and lets people switch the period of the deltas. Install it with `npx @tc96/cli add stats-6`.
 
 It is a card, not a page: it renders a `section` and no `main` landmark. The three sleeves sit side by side from `md` and stack below. The block keeps no state and fetches nothing: `period` is controlled, so the app reads the sleeves of the chosen period and passes them back. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Stats/Stats6`: [Playground](?path=/story/
 ## Import
 
 ```tsx
-import { Stats6 } from '@tc96/blocks/application/stats/stats-6'
+import { Stats6 } from '@tc96/ui/blocks/application/stats/stats-6'
 ```
 
 The same path exports the types `Stats6Props`, `Stats6Sleeve`, `Stats6Period` and `Stats6Labels`.

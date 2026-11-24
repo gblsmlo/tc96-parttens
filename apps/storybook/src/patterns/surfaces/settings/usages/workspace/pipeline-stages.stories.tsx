@@ -10,6 +10,8 @@ import {
   XCircleIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   RecordDialog,
   RecordDialogHeadline,
@@ -22,9 +24,7 @@ import {
   SettingsSectionDescription,
   SettingsSectionHeader,
   SettingsSectionTitle,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { Text } from '@tc96/ui/text'
 import { useState } from 'react'
 import { expect, fn, within } from 'storybook/test'

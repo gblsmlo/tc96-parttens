@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DateRangeProperty } from '@tc96/parttens'
+import { DateRangeProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { DateRangeCanvas } from './date-range-canvas.tsx'
 import { sampleFrom, sampleTo } from './date-range-layouts.tsx'

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ResetPassword2 } from '@tc96/blocks/application/auth/reset-password-2'
+import { ResetPassword2 } from '@tc96/ui/blocks/application/auth/reset-password-2'
 import { fn } from 'storybook/test'
 import { authLogo } from '../fixtures/auth-data'
 

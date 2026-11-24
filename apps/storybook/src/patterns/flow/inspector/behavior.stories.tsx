@@ -8,7 +8,7 @@ import {
   type FlowInspectorTab,
   type FlowLogEntry,
   type FlowLogFilter,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   desktop,

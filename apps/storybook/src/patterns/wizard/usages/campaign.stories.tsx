@@ -8,15 +8,6 @@ import {
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
-  RecordGroup,
-  RecordGroupAction,
-  RecordGroupRow,
-  Wizard,
-  WizardFooter,
-  WizardNext,
-  WizardPrevious,
-} from '@tc96/parttens'
-import {
   AlertDialog,
   AlertDialogClose,
   AlertDialogDescription,
@@ -31,6 +22,15 @@ import { Checkbox } from '@tc96/ui/checkbox'
 import { Field, FieldError, FieldLabel } from '@tc96/ui/field'
 import { Input } from '@tc96/ui/input'
 import { Kbd } from '@tc96/ui/kbd'
+import {
+  RecordGroup,
+  RecordGroupAction,
+  RecordGroupRow,
+  Wizard,
+  WizardFooter,
+  WizardNext,
+  WizardPrevious,
+} from '@tc96/ui/patterns'
 import {
   Select,
   SelectItem,

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Stats4,
   type Stats4Props,
-} from '@tc96/blocks/application/stats/stats-4'
+} from '@tc96/ui/blocks/application/stats/stats-4'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { leadsOverview } from '../fixtures/stats-4.ts'
 import { type Stats4Controls, stats4ControlArgs } from './stats-4-controls.ts'

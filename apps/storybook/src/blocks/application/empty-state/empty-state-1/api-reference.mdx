@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # EmptyState1
 
-A data import start: a stacked icon, a title, a description, up to two actions and a short list of guide links. Reach for it on a list or table screen that has no records yet and where the fastest way to fill it is an import. Install it with `npx @tc96/parttens add empty-state-1`.
+A data import start: a stacked icon, a title, a description, up to two actions and a short list of guide links. Reach for it on a list or table screen that has no records yet and where the fastest way to fill it is an import. Install it with `npx @tc96/cli add empty-state-1`.
 
 It is a section, not a page: it renders no `main` landmark. The block keeps no state and never fetches: the actions are callbacks, and the guides come from the app. Each action renders only when its callback is passed.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Empty State/EmptyState1`: [Playground](?p
 ## Import
 
 ```tsx
-import { EmptyState1 } from '@tc96/blocks/application/empty-state/empty-state-1'
+import { EmptyState1 } from '@tc96/ui/blocks/application/empty-state/empty-state-1'
 ```
 
 The same path exports the types listed under Exports.

@@ -2,7 +2,7 @@ import {
   Stats6,
   type Stats6Period,
   type Stats6Props,
-} from '@tc96/blocks/application/stats/stats-6'
+} from '@tc96/ui/blocks/application/stats/stats-6'
 import { useEffect, useState } from 'react'
 import { sleevesByPeriod } from '../fixtures/stats-6.ts'
 import type { Stats6Controls } from './stats-6-controls.ts'

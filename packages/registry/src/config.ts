@@ -9,6 +9,7 @@ import {
   pathNames,
   validateConfig,
 } from './manifest'
+import { exportedAliasPath } from './workspace'
 
 const requiredAliasNames = ['ui', 'utils'] as const
 
@@ -21,12 +22,13 @@ const isAlias = (value: unknown): value is string =>
 const deriveAlias = (ui: string, name: string) =>
   ui.includes('/') ? `${ui.slice(0, ui.lastIndexOf('/'))}/${name}` : name
 
-// The consumer's components.json is the only configuration. ui and utils are
-// its standard aliases; helpers, patterns and blocks are tc96 keys read from
-// the same aliases object. When one is absent it is derived from the ui alias
-// by replacing its last segment, so "@acme/ui/components" yields "@acme/ui/patterns".
-// A components.json from before the rename keeps working: aliases.templates
-// stands in for an absent aliases.blocks.
+// The consumer's components.json is the only configuration. ui, utils, hooks
+// and lib are its standard aliases; helpers, patterns and blocks are tc96 keys
+// read from the same aliases object. hooks and lib default to children of ui.
+// The tc96 keys default to the ui alias with its last segment replaced, so
+// "@acme/ui/components" yields "@acme/ui/patterns". A components.json from
+// before the rename keeps working: aliases.templates stands in for an absent
+// aliases.blocks.
 export function readAliases(components: unknown): Aliases {
   const aliases = rawAliases(components)
   const missing = requiredAliasNames.filter((name) => !isAlias(aliases[name]))
@@ -42,16 +44,23 @@ export function readAliases(components: unknown): Aliases {
       return aliases.templates
     return deriveAlias(ui, name)
   }
+  const child = (name: 'hooks' | 'lib') => {
+    const alias = aliases[name]
+    return isAlias(alias) ? alias : `${ui}/${name}`
+  }
   return {
     ui,
     utils,
+    hooks: child('hooks'),
+    lib: child('lib'),
     helpers: pick('helpers'),
     patterns: pick('patterns'),
     blocks: pick('blocks'),
   }
 }
 
-// Files are written where the tsconfig resolves each alias.
+// Files are written where the tsconfig resolves each alias or, with no
+// tsconfig entry, where the workspace package that owns it exports it from.
 export function resolveAliasPath(
   root: string,
   alias: string,
@@ -59,10 +68,13 @@ export function resolveAliasPath(
   suggestion?: string,
 ): string {
   const pattern = options.paths?.[`${alias}/*`]?.[0]
-  if (!pattern?.endsWith('/*'))
+  if (!pattern?.endsWith('/*')) {
+    const exported = exportedAliasPath(root, alias)
+    if (exported && !exported.startsWith('..')) return exported
     throw new Error(
-      `tsconfig.json paths has no "${alias}/*" entry; add one pointing to the directory of that alias${suggestion ? `, e.g. "${alias}/*": ["${suggestion}/*"]` : ''}.`,
+      `Cannot find where "${alias}" points. Export "${alias}/*" from the workspace package that owns it (tc96 init adds the tc96 exports), or add a tsconfig.json paths entry${suggestion ? `, e.g. "${alias}/*": ["${suggestion}/*"]` : ''}.`,
     )
+  }
   const base = (options.baseUrl ?? options.pathsBasePath ?? root) as string
   const path = relative(root, resolve(base, pattern.slice(0, -2)))
   if (!path || path.startsWith('..') || isAbsolute(path))
@@ -103,14 +115,14 @@ async function readProject(root: string): Promise<Project> {
   const componentsPath = join(root, 'components.json')
   if (!existsSync(componentsPath))
     throw new Error(
-      `No components.json found in ${root} or any parent directory. Create it at the project root, or pass --cwd with the directory that holds it.`,
+      `No components.json found in ${root} or any parent directory. Run tc96 init at the monorepo root, or pass --cwd with the directory that holds it.`,
     )
   const components = JSON.parse(await readFile(componentsPath, 'utf8'))
   const aliases = readAliases(components)
-  const tsconfig = ts.findConfigFile(root, ts.sys.fileExists)
-  const read = tsconfig && ts.readConfigFile(tsconfig, ts.sys.readFile)
-  if (!read || read.error)
-    throw new Error('Cannot read the consumer tsconfig.json.')
+  const tsconfig = join(root, 'tsconfig.json')
+  if (!existsSync(tsconfig)) return { components, aliases, options: {} }
+  const read = ts.readConfigFile(tsconfig, ts.sys.readFile)
+  if (read.error) throw new Error('Cannot read the consumer tsconfig.json.')
   const { options } = ts.parseJsonConfigFileContent(read.config, ts.sys, root)
   return { components, aliases, options }
 }
@@ -195,12 +207,23 @@ export async function readInstallConfig(
       : uiSegments
           .map((segment) => (segment === 'ui' ? name : segment))
           .join('/')
-  const resolveSibling = (name: Exclude<PathName, 'ui'> | 'blocks') =>
-    resolveAliasPath(root, aliases[name], options, `./${suggestPath(name)}`)
+  const resolveSibling = (
+    name: Exclude<PathName, 'ui' | 'hooks' | 'lib'> | 'blocks',
+  ) => resolveAliasPath(root, aliases[name], options, `./${suggestPath(name)}`)
+  const resolveChild = (name: 'hooks' | 'lib') => {
+    const path = findAliasPath(root, aliases[name], options)
+    if (path !== undefined) return path
+    aliases[name] = `${aliases.ui}/${name}`
+    return `${uiPath}/${name}`
+  }
   const paths = Object.fromEntries(
     pathNames.map((name) => [
       name,
-      name === 'ui' ? uiPath : resolveSibling(name),
+      name === 'ui'
+        ? uiPath
+        : name === 'hooks' || name === 'lib'
+          ? resolveChild(name)
+          : resolveSibling(name),
     ]),
   ) as InstallConfig['paths']
   if (blocks) {

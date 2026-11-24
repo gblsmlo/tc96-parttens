@@ -13,17 +13,6 @@ import {
   TrashIcon,
   VideoCameraIcon,
 } from '@phosphor-icons/react'
-import {
-  RecordGroup,
-  RecordGroupAction,
-  RecordGroupDivider,
-  RecordGroupFilter,
-  RecordGroupItem,
-  RecordGroupLink,
-  RecordGroupSubgroup,
-  type RecordGroupVariant,
-  RecordStatusBadge,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { IconFrame } from '@tc96/ui/icon-frame'
@@ -34,6 +23,17 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  RecordGroup,
+  RecordGroupAction,
+  RecordGroupDivider,
+  RecordGroupFilter,
+  RecordGroupItem,
+  RecordGroupLink,
+  RecordGroupSubgroup,
+  type RecordGroupVariant,
+  RecordStatusBadge,
+} from '@tc96/ui/patterns'
 import { Fragment, type ReactNode, useState } from 'react'
 
 interface TaskEntry {

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Timeline2 } from '@tc96/blocks/application/timeline/timeline-2'
+import { Timeline2 } from '@tc96/ui/blocks/application/timeline/timeline-2'
 import { fn } from 'storybook/test'
 import { releases } from '../fixtures/timeline-2.ts'
 

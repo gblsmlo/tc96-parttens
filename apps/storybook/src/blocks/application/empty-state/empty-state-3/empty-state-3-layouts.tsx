@@ -1,4 +1,4 @@
-import { EmptyState3 } from '@tc96/blocks/application/empty-state/empty-state-3'
+import { EmptyState3 } from '@tc96/ui/blocks/application/empty-state/empty-state-3'
 import { templates } from '../fixtures/empty-state-3.ts'
 import type { EmptyState3Controls } from './empty-state-3-controls.ts'
 

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { CardPanel } from '@tc96/ui/card'
 import {
   Amount,
   AvatarStack,
@@ -8,8 +9,7 @@ import {
   TrendIndicator,
   WidgetPeriodToggle,
   WidgetShell,
-} from '@tc96/parttens'
-import { CardPanel } from '@tc96/ui/card'
+} from '@tc96/ui/patterns'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { WidgetsCanvas } from './widgets-canvas.tsx'
 

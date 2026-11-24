@@ -1,4 +1,4 @@
-import type { FlowStepType } from '@tc96/parttens'
+import type { FlowStepType } from '@tc96/ui/patterns'
 
 export const workflowStepTypes: FlowStepType[] = [
   {

@@ -3,7 +3,7 @@ import {
   AppShell1,
   type ShellBreadcrumbItem,
   type ShellNavGroup,
-} from '@tc96/blocks/application/shell/app-shell-1'
+} from '@tc96/ui/blocks/application/shell/app-shell-1'
 import { type ReactNode, useState } from 'react'
 import {
   shellNavigation,

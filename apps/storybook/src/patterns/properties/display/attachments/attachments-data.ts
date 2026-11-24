@@ -1,4 +1,4 @@
-import type { AttachmentType } from '@tc96/parttens'
+import type { AttachmentType } from '@tc96/ui/patterns'
 
 export interface AttachmentItem {
   href: string

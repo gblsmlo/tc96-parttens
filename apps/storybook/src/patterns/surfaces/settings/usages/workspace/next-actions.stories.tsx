@@ -7,6 +7,8 @@ import {
   RepeatIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   SettingsCollapsed,
   SettingsRow,
@@ -15,9 +17,7 @@ import {
   SettingsSectionHeader,
   SettingsSectionTitle,
   StateSurface,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { Switch } from '@tc96/ui/switch'
 import { Text } from '@tc96/ui/text'
 import type { ReactNode } from 'react'

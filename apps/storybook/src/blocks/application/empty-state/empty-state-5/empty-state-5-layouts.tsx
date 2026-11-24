@@ -1,4 +1,4 @@
-import { EmptyState5 } from '@tc96/blocks/application/empty-state/empty-state-5'
+import { EmptyState5 } from '@tc96/ui/blocks/application/empty-state/empty-state-5'
 import { useState } from 'react'
 import { connectors } from '../fixtures/empty-state-5.ts'
 import type { EmptyState5Controls } from './empty-state-5-controls.ts'

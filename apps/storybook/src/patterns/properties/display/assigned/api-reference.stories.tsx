@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AssignedProperty, AssignedPropertyBadge } from '@tc96/parttens'
+import { AssignedProperty, AssignedPropertyBadge } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { assignees } from './assigned-controls'
 

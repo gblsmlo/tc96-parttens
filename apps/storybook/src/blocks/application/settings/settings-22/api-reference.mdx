@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings22
 
-A settings section that lists API keys in a table. Each row shows the key name, the masked token with a copy button, when it was created and last used, a switch to turn it on or off and, when the app handles actions, a menu to rotate or revoke it. Reach for it when people manage the keys that access your API. Install it with `npx @tc96/parttens add settings-22`.
+A settings section that lists API keys in a table. Each row shows the key name, the masked token with a copy button, when it was created and last used, a switch to turn it on or off and, when the app handles actions, a menu to rotate or revoke it. Reach for it when people manage the keys that access your API. Install it with `npx @tc96/cli add settings-22`.
 
 It is a section, not a page: it renders no `main` landmark. Creating, rotating, revoking and copying stay in the app; the block only calls `onCreate`, `onKeyAction`, `onActiveChange` and `onCopy`, keeps no list of its own, never touches the clipboard and never fetches or stores anything. The token arrives already masked.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings22`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings22 } from '@tc96/blocks/application/settings/settings-22'
+import { Settings22 } from '@tc96/ui/blocks/application/settings/settings-22'
 ```
 
 The same path exports the types `Settings22Props`, `Settings22Key`, `Settings22Action` and `Settings22Labels`.

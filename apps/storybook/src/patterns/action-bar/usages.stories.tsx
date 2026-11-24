@@ -10,7 +10,7 @@ import {
   XCircleIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ActionBar } from '@tc96/parttens'
+import { ActionBar } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 
 const meta = {

@@ -54,12 +54,16 @@ test('reads non-default aliases and resolves their paths from tsconfig', async (
     aliases: {
       ui: '@acme/ui',
       utils: '@acme/ui/lib/utils',
+      hooks: '@acme/ui/hooks',
+      lib: '@acme/ui/lib',
       helpers: '@acme/toolkit',
       patterns: '@acme/organisms',
       blocks: '@acme/blocks',
     },
     paths: {
       ui: 'packages/ui/src',
+      hooks: 'packages/ui/src/hooks',
+      lib: 'packages/ui/src/lib',
       helpers: 'libs/toolkit/src',
       patterns: 'libs/organisms',
     },
@@ -194,6 +198,8 @@ test('derives the tc96 aliases from the ui alias when absent', () => {
   ).toEqual({
     ui: '@acme/ui',
     utils: '@acme/ui/lib/utils',
+    hooks: '@acme/ui/hooks',
+    lib: '@acme/ui/lib',
     helpers: '@acme/helpers',
     patterns: '@acme/patterns',
     blocks: '@acme/blocks',
@@ -254,6 +260,8 @@ test('resolves every layer inside one ui package', async () => {
   )
   expect((await readInstallConfig(root)).paths).toEqual({
     ui: 'packages/ui/src/components',
+    hooks: 'packages/ui/src/components/hooks',
+    lib: 'packages/ui/src/components/lib',
     helpers: 'packages/ui/src/helpers',
     patterns: 'packages/ui/src/patterns',
   })
@@ -278,7 +286,7 @@ test('requires a tsconfig path for the ui alias and each written alias', async (
     { '@acme/patterns/*': ['./packages/patterns/src/*'] },
   )
   await expect(readInstallConfig(root)).rejects.toThrow(
-    'tsconfig.json paths has no "@acme/ui/*" entry',
+    'Cannot find where "@acme/ui" points',
   )
   await writeFile(
     join(root, 'tsconfig.json'),
@@ -292,7 +300,7 @@ test('requires a tsconfig path for the ui alias and each written alias', async (
     }),
   )
   await expect(readInstallConfig(root)).rejects.toThrow(
-    'tsconfig.json paths has no "@acme/helpers/*" entry',
+    'Cannot find where "@acme/helpers" points',
   )
 })
 
@@ -329,4 +337,49 @@ test('falls back to the working directory when no components.json exists', async
   roots.push(root)
 
   expect(findProjectRoot(root)).toBe(root)
+})
+
+test('resolves the tc96-mono layout from package exports, without tsconfig paths', async () => {
+  const root = await consumer(
+    {
+      ui: '@tc96/ui',
+      utils: '@tc96/utils',
+      hooks: '@tc96/ui/hooks',
+      lib: '@tc96/ui/lib',
+      helpers: '@tc96/ui/helpers',
+      patterns: '@tc96/ui/patterns',
+      blocks: '@tc96/ui/blocks',
+    },
+    {},
+  )
+  await writeFile(
+    join(root, 'package.json'),
+    JSON.stringify({ workspaces: ['apps/*', 'packages/ui', 'packages/utils'] }),
+  )
+  await mkdir(join(root, 'packages/ui'), { recursive: true })
+  await writeFile(
+    join(root, 'packages/ui/package.json'),
+    JSON.stringify({
+      name: '@tc96/ui',
+      exports: {
+        './*': './src/components/*.tsx',
+        './hooks/*': './src/hooks/*.ts',
+        './lib/*': './src/lib/*.ts',
+        './helpers/*': './src/helpers/*.ts',
+        './patterns': './src/patterns/index.ts',
+        './patterns/*': './src/patterns/*.tsx',
+        './blocks/*': { types: './src/blocks/*/index.ts' },
+      },
+    }),
+  )
+  const config = await readInstallConfig(root, { blocks: true })
+  expect(config.paths).toEqual({
+    ui: 'packages/ui/src/components',
+    hooks: 'packages/ui/src/hooks',
+    lib: 'packages/ui/src/lib',
+    helpers: 'packages/ui/src/helpers',
+    patterns: 'packages/ui/src/patterns',
+    blocks: 'packages/ui/src/blocks',
+  })
+  expect(config.aliases.hooks).toBe('@tc96/ui/hooks')
 })

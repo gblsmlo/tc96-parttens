@@ -4,6 +4,7 @@ import {
   LightningIcon,
   SparkleIcon,
 } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
 import {
   AssetList,
   AssetListItem,
@@ -19,8 +20,7 @@ import {
   TransactionsWidget,
   TrendIndicator,
   type WidgetTone,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { type ReactElement, useState } from 'react'
 import type { FinanceControls, FinanceTone } from './finance-controls.ts'
 import {

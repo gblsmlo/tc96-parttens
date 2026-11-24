@@ -5,7 +5,7 @@ import {
   RecordGroupItem,
   RecordGroupLink,
   RecordStatusBadge,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 
 const tokens = {

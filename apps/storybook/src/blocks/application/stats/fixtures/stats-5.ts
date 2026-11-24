@@ -1,4 +1,4 @@
-import type { Stats5Item } from '@tc96/blocks/application/stats/stats-5'
+import type { Stats5Item } from '@tc96/ui/blocks/application/stats/stats-5'
 
 export const salesAndChurn: Stats5Item[] = [
   {

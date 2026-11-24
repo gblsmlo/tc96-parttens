@@ -5,7 +5,7 @@ import {
   TaskProgressWidget,
   UpcomingEventWidget,
   WorldClockWidget,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { ProductivityCanvas } from './productivity-canvas.tsx'
 

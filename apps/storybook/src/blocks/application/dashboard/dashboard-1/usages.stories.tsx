@@ -6,7 +6,7 @@ import {
   type Dashboard1Exception,
   type Dashboard1Kpi,
   type Dashboard1ReasonSlice,
-} from '@tc96/blocks/application/dashboard/dashboard-1'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-1'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

@@ -1,7 +1,7 @@
 import {
   Settings10,
   type Settings10Props,
-} from '@tc96/blocks/application/settings/settings-10'
+} from '@tc96/ui/blocks/application/settings/settings-10'
 import { phases, stages } from '../fixtures/settings-10.ts'
 import type { Settings10Controls } from './settings-10-controls.ts'
 

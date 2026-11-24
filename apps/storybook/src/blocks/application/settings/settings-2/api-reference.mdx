@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings2
 
-A preferences section with two groups: a general group with the display names select, and an interface group with the font size select, the underline switch and the theme select. Reach for it when the app lets people choose how names are shown and how the interface looks. Install it with `npx @tc96/parttens add settings-2`.
+A preferences section with two groups: a general group with the display names select, and an interface group with the font size select, the underline switch and the theme select. Reach for it when the app lets people choose how names are shown and how the interface looks. Install it with `npx @tc96/cli add settings-2`.
 
 It is a section, not a page: it renders no `main` landmark. The block keeps no state of its own: each change goes to `onValueChange` and the values come back through `values`, so the app decides whether and where to save them.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings2`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Settings2 } from '@tc96/blocks/application/settings/settings-2'
+import { Settings2 } from '@tc96/ui/blocks/application/settings/settings-2'
 ```
 
 The same path exports the types `Settings2Labels`, `Settings2Options`, `Settings2Props`, `Settings2SettingOption` and `Settings2Values`.

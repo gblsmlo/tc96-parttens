@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RecordGroup, type RecordGroupProps } from '@tc96/parttens'
+import { RecordGroup, type RecordGroupProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 

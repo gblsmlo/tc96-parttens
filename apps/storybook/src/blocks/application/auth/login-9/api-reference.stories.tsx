@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login9 } from '@tc96/blocks/application/auth/login-9'
+import { Login9 } from '@tc96/ui/blocks/application/auth/login-9'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import {
   login9Brands,

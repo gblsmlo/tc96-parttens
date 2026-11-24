@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Timeline3 } from '@tc96/blocks/application/timeline/timeline-3'
+import { Timeline3 } from '@tc96/ui/blocks/application/timeline/timeline-3'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { approvalSteps } from '../fixtures/timeline-3.ts'
 import { timeline3ControlArgs } from './timeline-3-controls.ts'

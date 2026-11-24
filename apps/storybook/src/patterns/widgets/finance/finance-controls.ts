@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { WidgetTone } from '@tc96/parttens'
+import type { WidgetTone } from '@tc96/ui/patterns'
 
 export const financeWidgetNames = [
   'market-share',

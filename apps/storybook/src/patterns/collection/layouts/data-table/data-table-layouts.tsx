@@ -1,3 +1,4 @@
+import { Checkbox } from '@tc96/ui/checkbox'
 import {
   CollectionToolbar,
   DataGridPagination,
@@ -10,8 +11,7 @@ import {
   useDataTable,
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/parttens'
-import { Checkbox } from '@tc96/ui/checkbox'
+} from '@tc96/ui/patterns'
 import { type ReactElement, useCallback, useMemo } from 'react'
 import {
   createDataTableColumns,

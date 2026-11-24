@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Login6
 
-The two column sign-in page: the logo at the top of the left column, a centered title and description, the e-mail and password form with the recovery link beside the password label, then the providers in a row of two below the form and the sign up link. The right column renders the `media` slot inside a rounded, bordered panel that fills the page height, from the `md` breakpoint up. There is no card around the form and no remember me box. Reach for it when the sign-in page should carry an image or a product illustration. Install it with `npx @tc96/parttens add login-6`.
+The two column sign-in page: the logo at the top of the left column, a centered title and description, the e-mail and password form with the recovery link beside the password label, then the providers in a row of two below the form and the sign up link. The right column renders the `media` slot inside a rounded, bordered panel that fills the page height, from the `md` breakpoint up. There is no card around the form and no remember me box. Reach for it when the sign-in page should carry an image or a product illustration. Install it with `npx @tc96/cli add login-6`.
 
 It is a whole page: the form column renders the `main` landmark and the media panel is a complementary landmark beside it, so do not wrap the block in another `main`. Authentication, the session, cookies and redirects stay in the app; the block only calls `onSubmit` and `onProviderSelect`.
 

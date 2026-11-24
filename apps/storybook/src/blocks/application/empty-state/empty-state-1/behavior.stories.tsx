@@ -1,6 +1,6 @@
 import { UsersIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EmptyState1 } from '@tc96/blocks/application/empty-state/empty-state-1'
+import { EmptyState1 } from '@tc96/ui/blocks/application/empty-state/empty-state-1'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { guides } from '../fixtures/empty-state-1.ts'
 

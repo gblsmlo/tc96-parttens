@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { QuestsWidget } from '@tc96/parttens'
+import { QuestsWidget } from '@tc96/ui/patterns'
 import { Slot } from '../../../test-utils/anatomy-slot.tsx'
 
 const meta = {

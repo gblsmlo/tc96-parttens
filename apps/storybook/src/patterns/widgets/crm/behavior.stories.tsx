@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
 import {
   ActivityFeedWidget,
   ContactWidget,
   DealsWidget,
   PipelineWidget,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { expect, fn, userEvent, within } from 'storybook/test'
 
 interface BehaviorArgs {

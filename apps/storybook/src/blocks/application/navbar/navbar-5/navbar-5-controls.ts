@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { Navbar5Status } from '@tc96/blocks/application/navbar/navbar-5'
+import type { Navbar5Status } from '@tc96/ui/blocks/application/navbar/navbar-5'
 
 export interface Navbar5Controls {
   maxPeople: number

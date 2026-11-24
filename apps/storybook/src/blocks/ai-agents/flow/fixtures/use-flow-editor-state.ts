@@ -10,7 +10,7 @@ import type {
   FlowStepAddOptions,
   FlowStepType,
   FlowStepValues,
-} from '@tc96/blocks/ai-agents/flow/workflow-editor'
+} from '@tc96/ui/blocks/ai-agents/flow/workflow-editor'
 import { useRef, useState } from 'react'
 
 let idCounter = 0

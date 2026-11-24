@@ -3,7 +3,7 @@ import {
   RecordDialog,
   RecordDialogCreateMore,
   RecordDialogHeadline,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { Slot } from '../../../test-utils/anatomy-slot'
 
 const ignore = () => undefined

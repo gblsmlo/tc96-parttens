@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ForgotPassword2 } from '@tc96/blocks/application/auth/forgot-password-2'
+import { ForgotPassword2 } from '@tc96/ui/blocks/application/auth/forgot-password-2'
 import { fn } from 'storybook/test'
 
 const meta = {

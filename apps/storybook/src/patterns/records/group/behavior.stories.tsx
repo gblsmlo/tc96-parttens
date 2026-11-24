@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Checklist, RecordGroup } from '@tc96/parttens'
+import { Checklist, RecordGroup } from '@tc96/ui/patterns'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { RecordGroupCanvas } from './record-group-canvas.tsx'
 import { recordGroupControlArgs } from './record-group-controls.ts'

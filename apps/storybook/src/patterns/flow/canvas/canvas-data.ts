@@ -4,7 +4,7 @@ import {
   type FlowStep,
   flowStepNodeSize,
   tidyTree,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import type { CanvasRunName } from './canvas-variants.ts'
 import {
   leadRoutingConnections,

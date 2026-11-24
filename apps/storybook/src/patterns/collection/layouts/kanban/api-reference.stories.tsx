@@ -15,7 +15,7 @@ import {
   KanbanCardTitle,
   type KanbanColumnData,
   KanbanView,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { Slot } from '../../../../test-utils/anatomy-slot'
 import { KanbanCanvas } from './kanban-canvas.tsx'

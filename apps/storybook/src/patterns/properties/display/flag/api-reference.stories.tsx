@@ -1,6 +1,6 @@
 import { RobotIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FlagProperty } from '@tc96/parttens'
+import { FlagProperty } from '@tc96/ui/patterns'
 import { expect } from 'storybook/test'
 import { FlagCanvas } from './flag-canvas.tsx'
 

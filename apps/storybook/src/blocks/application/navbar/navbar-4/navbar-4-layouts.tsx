@@ -1,4 +1,4 @@
-import { Navbar4 } from '@tc96/blocks/application/navbar/navbar-4'
+import { Navbar4 } from '@tc96/ui/blocks/application/navbar/navbar-4'
 import { useState } from 'react'
 import { fn } from 'storybook/test'
 import type { Navbar4Controls } from './navbar-4-controls.ts'

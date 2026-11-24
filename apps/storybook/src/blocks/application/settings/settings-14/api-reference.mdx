@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings14
 
-A settings section that lists the accounts of the workspace, banks and cash boxes, with the opening balance and date of each one. Each row shows an icon, the name, the type, the opening balance and date and, when the app handles actions, a menu to edit, make default, archive or restore. The default account carries a star. Reach for it when the app settles entries in bank accounts or cash boxes and needs one of them as the default. Install it with `npx @tc96/parttens add settings-14`.
+A settings section that lists the accounts of the workspace, banks and cash boxes, with the opening balance and date of each one. Each row shows an icon, the name, the type, the opening balance and date and, when the app handles actions, a menu to edit, make default, archive or restore. The default account carries a star. Reach for it when the app settles entries in bank accounts or cash boxes and needs one of them as the default. Install it with `npx @tc96/cli add settings-14`.
 
 It is a section, not a page: it renders no `main` landmark. Creating, editing and archiving stay in the app; the block only calls `onCreate` and `onAccountAction`, keeps no list of its own and never fetches or stores anything. The default account is a prop: the block shows the star and the menu options that follow from it, and the app moves the default when `make-default` arrives.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings14`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings14 } from '@tc96/blocks/application/settings/settings-14'
+import { Settings14 } from '@tc96/ui/blocks/application/settings/settings-14'
 ```
 
 The same path exports the types `Settings14Props`, `Settings14Account`, `Settings14AccountType`, `Settings14Action` and `Settings14Labels`.

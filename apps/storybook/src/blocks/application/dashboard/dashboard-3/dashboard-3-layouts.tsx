@@ -1,7 +1,7 @@
 import {
   Dashboard3,
   type Dashboard3Props,
-} from '@tc96/blocks/application/dashboard/dashboard-3'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-3'
 import { renderAnchor } from '@tc96/ui/render-anchor'
 import { useState } from 'react'
 import { crew, forecast, kpis, queue } from '../fixtures/dashboard-3.ts'

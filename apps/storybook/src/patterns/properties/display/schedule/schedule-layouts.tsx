@@ -3,7 +3,7 @@ import {
   ScheduleProperty,
   type SchedulePropertyProps,
   type ScheduleValue,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import type { ScheduleControls } from './schedule-controls.ts'
 import { scheduleToday, scheduleValues } from './schedule-data.ts'

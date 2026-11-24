@@ -50,7 +50,7 @@ function expectExports(actual: string[], expected: string[], when: string) {
       `Barrel after ${when}: missing ${missing.join(', ') || 'none'}; unexpected ${extra.join(', ') || 'none'}`,
     )
 }
-const all = baseline.parttens ?? []
+const all = baseline.patterns ?? []
 const first = ['collection', 'properties']
 const later = patternNames.filter((name) => !first.includes(name))
 const missingComponent = 'empty'

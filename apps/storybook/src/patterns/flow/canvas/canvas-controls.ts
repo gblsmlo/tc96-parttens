@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { FlowDirection } from '@tc96/parttens'
+import type { FlowDirection } from '@tc96/ui/patterns'
 import {
   type CanvasRunName,
   canvasDirectionNames,

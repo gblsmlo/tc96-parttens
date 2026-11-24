@@ -4,7 +4,7 @@ import {
   type FlowStepType,
   flowStepNodeSize,
   tidyTree,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export const collectionsStepTypes: FlowStepType[] = [
   {

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List3, type List3Props } from '@tc96/blocks/application/list/list-3'
+import { List3, type List3Props } from '@tc96/ui/blocks/application/list/list-3'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import { transactions } from '../fixtures/list-3.ts'
 import { type List3Controls, list3ControlArgs } from './list-3-controls.ts'

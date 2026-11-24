@@ -7,7 +7,7 @@ import type {
   Card7Contact,
   Card7Item,
   Card7Stat,
-} from '@tc96/blocks/application/card/card-7'
+} from '@tc96/ui/blocks/application/card/card-7'
 import { avatarUrl } from './avatar.ts'
 
 export const contact: Card7Contact = {

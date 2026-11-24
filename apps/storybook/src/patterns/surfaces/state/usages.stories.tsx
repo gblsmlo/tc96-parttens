@@ -1,7 +1,7 @@
 import { BellSlashIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { StateGuard, StateSurface } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
+import { StateGuard, StateSurface } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { StateCanvas } from './state-canvas.tsx'

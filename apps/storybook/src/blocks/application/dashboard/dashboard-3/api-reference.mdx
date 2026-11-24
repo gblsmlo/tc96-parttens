@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Dashboard3
 
-A team coverage dashboard in four layers: a header with breadcrumb, title, description, period select and Exportar; an optional row of KPI cards; an area chart of staff supply against a dashed forecast line beside an action queue with a button per item; and a crew table with a coverage bar per person, a search and pagination. Reach for it on a scheduling or workforce home page that shows who is covered and what needs a decision. Install it with `npx @tc96/parttens add dashboard-3`.
+A team coverage dashboard in four layers: a header with breadcrumb, title, description, period select and Exportar; an optional row of KPI cards; an area chart of staff supply against a dashed forecast line beside an action queue with a button per item; and a crew table with a coverage bar per person, a search and pagination. Reach for it on a scheduling or workforce home page that shows who is covered and what needs a decision. Install it with `npx @tc96/cli add dashboard-3`.
 
 It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The queue buttons render only when `onAction(id)` is passed, and the app removes or updates the item it resolved. The period select, Exportar, the search and the pagination render only when their callbacks are passed, and the app searches and pages the crew. Coverage is a raw ratio (`0.92`) the block formats with `locale`; `shift` and the series values are the app's. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `kpis`, `crew`, `queue` and `forecast` the empty state. The precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Dashboard/Dashboard3`: [Playground](?path
 ## Import
 
 ```tsx
-import { Dashboard3 } from '@tc96/blocks/application/dashboard/dashboard-3'
+import { Dashboard3 } from '@tc96/ui/blocks/application/dashboard/dashboard-3'
 ```
 
 The same path exports the types listed under Exports.

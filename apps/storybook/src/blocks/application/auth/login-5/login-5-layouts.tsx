@@ -4,7 +4,7 @@ import {
   type Login5EmailMethod,
   type Login5Method,
   type Login5Props,
-} from '@tc96/blocks/application/auth/login-5'
+} from '@tc96/ui/blocks/application/auth/login-5'
 import { useState } from 'react'
 import { authLogo } from '../fixtures/auth-data'
 import type { Login5Controls } from './login-5-controls.ts'

@@ -4,7 +4,7 @@ import {
   RichTextEditor,
   type RichTextEditorHandle,
   type RichTextEditorProps,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useRef } from 'react'
 import type { RichTextEditorControls } from './rich-text-editor-controls.ts'
 import {

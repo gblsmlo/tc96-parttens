@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings10
 
-A settings section that lists the stages of a funnel, grouped by phase. Each stage shows its icon, its name, how many leads it holds and, for a phase that closes the deal, how it closes. When the app handles actions, each stage has a menu to edit, move it up or down within its phase, or delete it. Reach for it when the app lets people organize the steps a lead goes through. Install it with `npx @tc96/parttens add settings-10`.
+A settings section that lists the stages of a funnel, grouped by phase. Each stage shows its icon, its name, how many leads it holds and, for a phase that closes the deal, how it closes. When the app handles actions, each stage has a menu to edit, move it up or down within its phase, or delete it. Reach for it when the app lets people organize the steps a lead goes through. Install it with `npx @tc96/cli add settings-10`.
 
 It is a page section: it renders a `main` landmark with the section inside. Creating, editing, moving and deleting stay in the app; the block only calls `onStageCreate` and `onStageAction`, keeps the list of stages in the props and never fetches or stores anything. Its only state is the open state of the New stage dialog.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings10`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings10 } from '@tc96/blocks/application/settings/settings-10'
+import { Settings10 } from '@tc96/ui/blocks/application/settings/settings-10'
 ```
 
 The same path exports the types `Settings10Props`, `Settings10Stage`, `Settings10Phase`, `Settings10Action` and `Settings10Labels`.

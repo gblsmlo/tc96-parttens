@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Navbar3 } from '@tc96/blocks/application/navbar/navbar-3'
+import { Navbar3 } from '@tc96/ui/blocks/application/navbar/navbar-3'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   notifications,

@@ -1,4 +1,4 @@
-import type { Settings9Rule } from '@tc96/blocks/application/settings/settings-9'
+import type { Settings9Rule } from '@tc96/ui/blocks/application/settings/settings-9'
 
 export const rules: Settings9Rule[] = [
   {

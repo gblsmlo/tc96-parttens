@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ActionBar, type ActionBarGroup } from '@tc96/parttens'
+import { ActionBar, type ActionBarGroup } from '@tc96/ui/patterns'
 import { IconSlot } from '../../test-utils/anatomy-slot'
 
 const clearNothing = () => {}

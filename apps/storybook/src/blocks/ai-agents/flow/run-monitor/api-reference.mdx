@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # RunMonitor
 
-A pipeline run monitor: a read-only horizontal canvas where each step is a node with its status and duration, and a side panel with the run summary, the steps waiting for approval and a replay button. Reach for it on a run page that shows what a pipeline did and lets a person decide on the steps that wait for them. Install it with `npx @tc96/parttens add run-monitor`.
+A pipeline run monitor: a read-only horizontal canvas where each step is a node with its status and duration, and a side panel with the run summary, the steps waiting for approval and a replay button. Reach for it on a run page that shows what a pipeline did and lets a person decide on the steps that wait for them. Install it with `npx @tc96/cli add run-monitor`.
 
 It is a section, not a page: it renders no `main` landmark. The block never fetches, keeps no state and runs no timer: the app passes the steps with the status and `durationMs` it already knows, and refreshes them itself. The block computes only the layout of the nodes and the summary counts. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, an empty `steps` the empty state. The precedence is `pending`, then `error`, then empty.
 
@@ -15,7 +15,7 @@ The other pages of `Blocks/AI & Agents/Flow/RunMonitor`: [Playground](?path=/sto
 
 ```tsx
 // import '@xyflow/react/dist/base.css' in your global CSS
-import { RunMonitor } from '@tc96/blocks/ai-agents/flow/run-monitor'
+import { RunMonitor } from '@tc96/ui/blocks/ai-agents/flow/run-monitor'
 ```
 
 The same path exports the types listed under Exports.

@@ -1,4 +1,4 @@
-import { ReferenceProperty } from '@tc96/parttens'
+import { ReferenceProperty } from '@tc96/ui/patterns'
 import type { ReferenceControls } from './reference-controls.ts'
 
 export const ComposedReference = ({

@@ -2,7 +2,7 @@ import {
   Checklist,
   type ChecklistItem,
   type ChecklistProps,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { ChecklistControls } from './checklist-controls.ts'
 import { authorOptions, sampleItems } from './checklist-data.ts'

@@ -15,7 +15,7 @@ import type {
   CollectionDefinition,
   SelectPropertyOption,
   TagsPropertyOption,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export type CampaignObjective =
   | 'awareness'

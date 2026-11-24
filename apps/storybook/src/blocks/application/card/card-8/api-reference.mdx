@@ -5,14 +5,14 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Card8
 
-A grid of meeting cards: title, time, duration, description, participants, a tag, a join button and an actions menu. Reach for it when a page lists the next meetings. Install it with `npx @tc96/parttens add card-8`.
+A grid of meeting cards: title, time, duration, description, participants, a tag, a join button and an actions menu. Reach for it when a page lists the next meetings. Install it with `npx @tc96/cli add card-8`.
 
 The block keeps no state and fetches nothing. Time and duration are final strings from the app. Empty `meetings` shows the empty state, which `error` wins over.
 
 ## Import
 
 ```tsx
-import { Card8 } from '@tc96/blocks/application/card/card-8'
+import { Card8 } from '@tc96/ui/blocks/application/card/card-8'
 ```
 
 The same path exports the types `Card8Props`, `Card8Meeting`, `Card8Action` and `Card8Labels`.

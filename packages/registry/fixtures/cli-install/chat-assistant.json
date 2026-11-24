@@ -5,7 +5,7 @@
   "registryDependencies": ["@ui/chat"],
   "files": [
     {
-      "path": "parttens/src/chat/proof.ts",
+      "path": "patterns/chat/proof.ts",
       "type": "registry:file",
       "content": "import { ChatBubble } from \"@tc96/ui/chat/chat-bubble\"\nexport const proof = ChatBubble\n"
     }

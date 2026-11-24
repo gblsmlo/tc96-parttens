@@ -1,6 +1,6 @@
 import { PlusIcon, TagIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { TagsProperty, type TagsPropertyOption } from '@tc96/parttens'
+import { TagsProperty, type TagsPropertyOption } from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
 import { esperarIndicadorADireita } from '../../../../test-utils/property-surface'

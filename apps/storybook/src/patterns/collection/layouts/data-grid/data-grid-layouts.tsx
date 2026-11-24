@@ -21,7 +21,7 @@ import {
   useDataGrid,
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import { createDataGridColumns } from '../../fixtures/task-fields'
 import { useTasks } from '../../fixtures/task-renderers'

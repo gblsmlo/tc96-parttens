@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Card3
 
-A profile card: avatar, name, role, an availability badge, a strip of three numbers and up to two actions. Reach for it in a team directory or a contact page. Install it with `npx @tc96/parttens add card-3`.
+A profile card: avatar, name, role, an availability badge, a strip of three numbers and up to two actions. Reach for it in a team directory or a contact page. Install it with `npx @tc96/cli add card-3`.
 
 It is a card, not a page: it renders no `main` landmark. The block keeps no state and never fetches; the data comes from the app. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Card/Card3`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { Card3 } from '@tc96/blocks/application/card/card-3'
+import { Card3 } from '@tc96/ui/blocks/application/card/card-3'
 ```
 
 The same path exports the types listed under Exports.

@@ -1,8 +1,8 @@
 import { BuildingIcon, PlusIcon } from '@phosphor-icons/react'
-import { formatAmount } from '@tc96/helpers/format'
-import { AvatarStack, GalleryView, IconFrame } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Card } from '@tc96/ui/card'
+import { formatAmount } from '@tc96/ui/helpers/format'
+import { AvatarStack, GalleryView, IconFrame } from '@tc96/ui/patterns'
 import { Separator } from '@tc96/ui/separator'
 import { Text } from '@tc96/ui/text'
 import {

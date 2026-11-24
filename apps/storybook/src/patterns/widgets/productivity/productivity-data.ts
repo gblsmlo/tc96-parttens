@@ -1,4 +1,4 @@
-import type { AgendaEvent, ProjectSubtask } from '@tc96/parttens'
+import type { AgendaEvent, ProjectSubtask } from '@tc96/ui/patterns'
 
 export type ProgressPeriod = 'month' | 'quarter'
 

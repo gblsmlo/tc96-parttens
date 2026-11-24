@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { StateGuardState } from '@tc96/parttens'
+import type { StateGuardState } from '@tc96/ui/patterns'
 import {
   type StateIconMode,
   stateIconModes,

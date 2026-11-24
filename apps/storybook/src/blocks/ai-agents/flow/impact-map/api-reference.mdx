@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # ImpactMap
 
-A growth impact map: a read-only vertical tree that links initiatives to metrics and metrics to a north-star metric. Each node is a card with its kind, title, the owner's initials and a progress bar, and a click selects it. Reach for it on a planning page that shows what each initiative moves. Install it with `npx @tc96/parttens add impact-map`.
+A growth impact map: a read-only vertical tree that links initiatives to metrics and metrics to a north-star metric. Each node is a card with its kind, title, the owner's initials and a progress bar, and a click selects it. Reach for it on a planning page that shows what each initiative moves. Install it with `npx @tc96/cli add impact-map`.
 
 It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state: the app passes the nodes with their progress, the links and the selected id, and decides what a selection does. The block computes only the layout. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, an empty `nodes` the empty state. The precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/AI & Agents/Flow/ImpactMap`: [Playground](?path=/stor
 ## Import
 
 ```tsx
-import { ImpactMap } from '@tc96/blocks/ai-agents/flow/impact-map'
+import { ImpactMap } from '@tc96/ui/blocks/ai-agents/flow/impact-map'
 ```
 
 The same path exports the types listed under Exports.

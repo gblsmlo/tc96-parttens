@@ -1,4 +1,5 @@
 import { LinkIcon } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
 import {
   PersonProperty,
   RecordDialog,
@@ -6,8 +7,7 @@ import {
   RichTextEditor,
   type RichTextValue,
   SelectProperty,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import {
   isNoteEmpty,

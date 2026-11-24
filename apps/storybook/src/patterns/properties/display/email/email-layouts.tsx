@@ -1,4 +1,4 @@
-import { EmailProperty, type EmailPropertyProps } from '@tc96/parttens'
+import { EmailProperty, type EmailPropertyProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { EmailControls } from './email-controls.ts'
 

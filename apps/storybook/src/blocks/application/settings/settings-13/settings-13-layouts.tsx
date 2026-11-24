@@ -1,7 +1,7 @@
 import {
   Settings13,
   type Settings13Props,
-} from '@tc96/blocks/application/settings/settings-13'
+} from '@tc96/ui/blocks/application/settings/settings-13'
 import { settings13Data } from '../fixtures/settings-13.ts'
 import type { Settings13Controls } from './settings-13-controls.ts'
 

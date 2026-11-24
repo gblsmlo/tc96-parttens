@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import { defaultMaxListDepth } from '@tc96/parttens'
+import { defaultMaxListDepth } from '@tc96/ui/patterns'
 
 export const richTextLabelPresets = ['default', 'english'] as const
 

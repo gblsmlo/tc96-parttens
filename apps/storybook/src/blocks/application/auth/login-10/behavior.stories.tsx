@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Login10,
   type Login10Props,
-} from '@tc96/blocks/application/auth/login-10'
+} from '@tc96/ui/blocks/application/auth/login-10'
 import { useState } from 'react'
 import {
   expect,

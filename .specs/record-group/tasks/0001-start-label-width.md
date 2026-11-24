@@ -25,7 +25,7 @@ Gap (a) was closed by the owner on 2026-10-11: option B. The owner approved the 
   - `Patterns/RecordGroup/Usages/Single Footer` is now `Patterns/Records/Group/Usages`.
   - The Brief and Versão rows are no longer `RecordGroupSubgroup` children. They render as `RecordGroupRow` inside a `RecordPreview`, opened from the `Briefing` and `Versions` stories (`apps/storybook/src/patterns/records/group/fixtures/blocks.tsx:271,326`).
 - `variants.ts:57-58`: `start` is `w-30 shrink-0` and `between` is `min-w-0 max-w-30`. Both are 120px.
-- `docs/architecture/tc96-parttens.md` disagrees with itself:
+- `docs/architecture/tc96-ui.md` disagrees with itself:
   - `:73` and `:75` say `w-30`/`max-w-30`, 120px. `:75` is the owner decision of 2026-10-06.
   - `:79` says "Decisão de escala: o rótulo `start` tem `w-32` (128px…)". This does not match the code.
   - `:85` says the row label is "limitado a `w-30`".
@@ -65,7 +65,7 @@ The owner chose B on 2026-10-11, and the tasks below implement it.
   - **Inputs:** none (no spec files). Sources:
     - `packages/parttens/src/records/group/lib/variants.ts:51-62`
     - `packages/parttens/src/records/group/AGENTS.md` (Styling, Verify)
-    - `docs/architecture/tc96-parttens.md:73,75,79,85`
+    - `docs/architecture/tc96-ui.md:73,75,79,85`
     - `apps/storybook/src/patterns/records/group/record-group.stories.tsx:267-322`
     - `apps/storybook/src/patterns/records/group/usages/blocks.stories.tsx:101-176,257-274`
   - **Scope:**
@@ -79,7 +79,7 @@ The owner chose B on 2026-10-11, and the tasks below implement it.
       - `Details` asserts that "Data de nascimento" is not truncated.
       - `Briefing` asserts that "Objetivo secundário" is not truncated inside the open `RecordPreview`. The dialog is in a portal, so query through `screen`.
       - `Versions` asserts the same inside the preview of Versão 1.
-    - `docs/architecture/tc96-parttens.md`:
+    - `docs/architecture/tc96-ui.md`:
       - `:73` says `w-36`.
       - `:79` replaces the `w-32` (128px) sentence with `w-36` (144px), measured with `getBoundingClientRect`.
       - `:85` says "limitado a `w-36`".

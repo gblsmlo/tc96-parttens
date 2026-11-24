@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Card4
 
-A grid of meeting cards. Each card shows the title, the time range, a duration badge and the attendees as a stack of avatars, with a join button when the app handles it. Reach for it when a dashboard needs the day's meetings at a glance. Install it with `npx @tc96/parttens add card-4`.
+A grid of meeting cards. Each card shows the title, the time range, a duration badge and the attendees as a stack of avatars, with a join button when the app handles it. Reach for it when a dashboard needs the day's meetings at a glance. Install it with `npx @tc96/cli add card-4`.
 
 It is a list of cards, not a page: it renders a `section` and no `main` landmark. The block keeps no state and fetches nothing: the app passes the meetings already prepared, and the time range and the duration are the final strings it shows. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Card/Card4`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { Card4 } from '@tc96/blocks/application/card/card-4'
+import { Card4 } from '@tc96/ui/blocks/application/card/card-4'
 ```
 
 The same path exports the types `Card4Props`, `Card4Meeting` and `Card4Labels`.

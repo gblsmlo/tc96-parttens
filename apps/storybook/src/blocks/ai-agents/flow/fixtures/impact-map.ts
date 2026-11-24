@@ -1,7 +1,7 @@
 import type {
   ImpactMapLink,
   ImpactMapNode,
-} from '@tc96/blocks/ai-agents/flow/impact-map'
+} from '@tc96/ui/blocks/ai-agents/flow/impact-map'
 
 export const nodes: ImpactMapNode[] = [
   {

@@ -1,4 +1,4 @@
-import type { RichTextMention, RichTextValue } from '@tc96/parttens'
+import type { RichTextMention, RichTextValue } from '@tc96/ui/patterns'
 
 export const sampleMentions: readonly RichTextMention[] = [
   { id: 'ana', label: 'Ana Souza' },

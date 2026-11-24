@@ -8,7 +8,7 @@ import {
   RocketIcon,
   TagIcon,
 } from '@phosphor-icons/react'
-import type { WizardStep } from '@tc96/parttens'
+import type { WizardStep } from '@tc96/ui/patterns'
 
 export const dealSteps = [
   {

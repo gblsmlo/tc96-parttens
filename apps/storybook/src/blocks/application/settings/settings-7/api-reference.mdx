@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings7
 
-A settings section that lists tags with their subtags. Each row shows a color swatch, the name, how many leads and tasks use it and, when the app handles actions, a menu to edit, add a subtag or delete. Reach for it when the app lets people organize leads and tasks with tags. Install it with `npx @tc96/parttens add settings-7`.
+A settings section that lists tags with their subtags. Each row shows a color swatch, the name, how many leads and tasks use it and, when the app handles actions, a menu to edit, add a subtag or delete. Reach for it when the app lets people organize leads and tasks with tags. Install it with `npx @tc96/cli add settings-7`.
 
 It is a section, not a page: it renders no `main` landmark. Creating, editing and deleting stay in the app; the block only calls `onCreate` and `onTagAction`, keeps no list of its own and never fetches or stores anything.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings7`: [Playground](?path=/
 ## Import
 
 ```tsx
-import { Settings7 } from '@tc96/blocks/application/settings/settings-7'
+import { Settings7 } from '@tc96/ui/blocks/application/settings/settings-7'
 ```
 
 The same path exports the types `Settings7Props`, `Settings7Tag`, `Settings7Action` and `Settings7Labels`.

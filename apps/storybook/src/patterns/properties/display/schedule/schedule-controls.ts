@@ -3,7 +3,7 @@ import type {
   PropertyVariant,
   ScheduleFooterLayout,
   ScheduleTimeControl,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { type ScheduleValueName, scheduleValueNames } from './schedule-data.ts'
 
 export const scheduleLocales = ['pt-BR', 'en-US'] as const

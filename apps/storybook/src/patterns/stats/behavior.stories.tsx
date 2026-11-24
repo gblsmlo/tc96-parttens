@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AreaMetricWidget, MetricWidget, TrendIndicator } from '@tc96/parttens'
 import { Badge } from '@tc96/ui/badge'
+import {
+  AreaMetricWidget,
+  MetricWidget,
+  TrendIndicator,
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { StatsCanvas } from './stats-canvas.tsx'
 

@@ -1,5 +1,5 @@
 import { BellIcon, PlugsIcon, ShieldCheckIcon } from '@phosphor-icons/react'
-import type { EmptyState6Tab } from '@tc96/blocks/application/empty-state/empty-state-6'
+import type { EmptyState6Tab } from '@tc96/ui/blocks/application/empty-state/empty-state-6'
 
 export const tabs: EmptyState6Tab[] = [
   {

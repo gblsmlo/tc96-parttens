@@ -11,15 +11,6 @@ import {
   UserIcon,
   XIcon,
 } from '@phosphor-icons/react'
-import {
-  RecordGroup,
-  RecordGroupFilter,
-  RecordGroupItem,
-  RecordGroupLink,
-  RecordGroupSubgroup,
-  type RecordGroupVariant,
-  RecordStatusBadge,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import {
@@ -29,6 +20,15 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from '@tc96/ui/menu'
+import {
+  RecordGroup,
+  RecordGroupFilter,
+  RecordGroupItem,
+  RecordGroupLink,
+  RecordGroupSubgroup,
+  type RecordGroupVariant,
+  RecordStatusBadge,
+} from '@tc96/ui/patterns'
 import { type ReactNode, useState } from 'react'
 
 type RecordType = 'lawsuit' | 'case' | 'lead' | 'task'

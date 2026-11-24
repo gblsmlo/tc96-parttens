@@ -2,7 +2,7 @@ import type {
   Settings23Invoice,
   Settings23Plan,
   Settings23Usage,
-} from '@tc96/blocks/application/settings/settings-23'
+} from '@tc96/ui/blocks/application/settings/settings-23'
 
 export const settings23Plan: Settings23Plan = {
   name: 'Profissional',

@@ -16,9 +16,7 @@ async function packageVersion() {
     'packages/registry/src/build-registry.ts',
     'utf8',
   )
-  const match = source.match(
-    /name: '@tc96\/parttens',\s*version: '(\d+\.\d+\.\d+)'/,
-  )
+  const match = source.match(/name: '@tc96\/cli',\s*version: '(\d+\.\d+\.\d+)'/)
   if (!match?.[1])
     throw new Error('Could not read the version from build-registry.ts')
   return match[1]
@@ -45,11 +43,11 @@ try {
   const published = Bun.spawnSync([
     'npm',
     'view',
-    `@tc96/parttens@${version}`,
+    `@tc96/cli@${version}`,
     'version',
   ])
   if (published.stdout.toString().trim())
-    throw new Error(`@tc96/parttens@${version} is already on npm`)
+    throw new Error(`@tc96/cli@${version} is already on npm`)
 
   const command = [
     'gh',

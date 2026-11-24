@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Settings7,
   type Settings7Tag,
-} from '@tc96/blocks/application/settings/settings-7'
+} from '@tc96/ui/blocks/application/settings/settings-7'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settingsHandlers } from '../../../../mocks/settings.ts'

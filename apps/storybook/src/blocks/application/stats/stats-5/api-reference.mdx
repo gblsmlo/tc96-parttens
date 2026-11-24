@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Stats5
 
-A single card split into divided columns, one per metric. Each column shows a label, a large value and a trend badge with the direction and the percent change. Reach for it when a dashboard compares a few headline numbers, such as sales, new customers and churn. Install it with `npx @tc96/parttens add stats-5`.
+A single card split into divided columns, one per metric. Each column shows a label, a large value and a trend badge with the direction and the percent change. Reach for it when a dashboard compares a few headline numbers, such as sales, new customers and churn. Install it with `npx @tc96/cli add stats-5`.
 
 It is a card, not a page: it renders a `section` and no `main` landmark. It is made for three items: on screens from `sm` they sit side by side, below that they stack. Values arrive as numbers and the block formats them; it keeps no state and fetches nothing. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Stats/Stats5`: [Playground](?path=/story/
 ## Import
 
 ```tsx
-import { Stats5 } from '@tc96/blocks/application/stats/stats-5'
+import { Stats5 } from '@tc96/ui/blocks/application/stats/stats-5'
 ```
 
 The same path exports the types `Stats5Props`, `Stats5Item`, `Stats5Format` and `Stats5Labels`.

@@ -1,11 +1,11 @@
+import { CardAction, CardHeader, CardPanel, CardTitle } from '@tc96/ui/card'
 import {
   Amount,
   ExpandableList,
   TrendIndicator,
   WidgetPeriodToggle,
   WidgetShell,
-} from '@tc96/parttens'
-import { CardAction, CardHeader, CardPanel, CardTitle } from '@tc96/ui/card'
+} from '@tc96/ui/patterns'
 import { useId, useState } from 'react'
 import type { WidgetsControls } from './widgets-controls.ts'
 import {

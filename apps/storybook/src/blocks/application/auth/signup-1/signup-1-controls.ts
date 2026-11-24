@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { AuthPasswordSuggestion } from '@tc96/blocks/application/auth/signup-1'
+import type { AuthPasswordSuggestion } from '@tc96/ui/blocks/application/auth/signup-1'
 
 export type SignupSuggestionsName = 'all' | 'numberAndSymbol' | 'none'
 

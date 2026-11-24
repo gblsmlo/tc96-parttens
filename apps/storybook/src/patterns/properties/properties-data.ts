@@ -11,7 +11,7 @@ import type {
   PersonPropertyOption,
   SelectPropertyOption,
   TagsPropertyOption,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 
 export const statusOptions: readonly SelectPropertyOption[] = [
   { icon: CircleIcon, label: 'To do', tone: 'neutral', value: 'todo' },

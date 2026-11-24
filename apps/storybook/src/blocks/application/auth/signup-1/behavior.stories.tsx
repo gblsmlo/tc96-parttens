@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   Signup1,
   type SignupProps,
-} from '@tc96/blocks/application/auth/signup-1'
+} from '@tc96/ui/blocks/application/auth/signup-1'
 import { renderAnchor } from '@tc96/ui/render-anchor'
 import { useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'

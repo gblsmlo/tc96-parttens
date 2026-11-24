@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { MenuItem } from '@tc96/ui/menu'
 import {
   Action,
   CollectionToolbar,
@@ -6,8 +7,7 @@ import {
   PresetsMenu,
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/parttens'
-import { MenuItem } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { viewModes } from './toolbar-data.tsx'

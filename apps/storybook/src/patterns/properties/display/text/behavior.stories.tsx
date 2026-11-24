@@ -1,6 +1,6 @@
 import { EnvelopeSimpleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { TextProperty } from '@tc96/parttens'
+import { TextProperty } from '@tc96/ui/patterns'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import {
   esperarSuperficieDeBadge,

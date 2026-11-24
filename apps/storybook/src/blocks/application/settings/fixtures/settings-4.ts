@@ -1,7 +1,7 @@
 import type {
   Settings4Option,
   Settings4ThemeGroup,
-} from '@tc96/blocks/application/settings/settings-4'
+} from '@tc96/ui/blocks/application/settings/settings-4'
 import {
   type ThemePreset,
   themePresets,

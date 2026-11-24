@@ -4,7 +4,7 @@ import {
   Stats6,
   type Stats6Period,
   type Stats6Sleeve,
-} from '@tc96/blocks/application/stats/stats-6'
+} from '@tc96/ui/blocks/application/stats/stats-6'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

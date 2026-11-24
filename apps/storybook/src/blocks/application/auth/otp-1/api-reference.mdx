@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Otp1
 
-A verification page: one input per digit, a Verificar button that is the only way to send the code, and an optional resend with a countdown the app controls, inside a centered card. Reach for it after a sign-in or a sign-up that sends a one-time code by e-mail or SMS. Install it with `npx @tc96/parttens add otp-1`.
+A verification page: one input per digit, a Verificar button that is the only way to send the code, and an optional resend with a countdown the app controls, inside a centered card. Reach for it after a sign-in or a sign-up that sends a one-time code by e-mail or SMS. Install it with `npx @tc96/cli add otp-1`.
 
 It is a whole page, not a field to place inside one: it renders its own `main` landmark. Verifying the code, the session and the redirect stay in the app; the block only calls `onSubmit`, `onComplete` and `onResend`, and it keeps no copy of the code.
 

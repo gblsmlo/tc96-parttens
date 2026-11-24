@@ -23,14 +23,14 @@ import {
 } from './bench-harness'
 
 const { CalendarEventChip, CalendarEventChipTitle, CalendarView } =
-  await import('../../packages/parttens/src/collection/layouts/calendar')
+  await import('../../packages/ui/src/patterns/collection/layouts/calendar')
 
 type Reschedule =
-  import('../../packages/parttens/src/collection/layouts/calendar').CalendarRecordReschedule<Item>
+  import('../../packages/ui/src/patterns/collection/layouts/calendar').CalendarRecordReschedule<Item>
 type Schedule =
-  import('../../packages/parttens/src/collection/layouts/calendar').CalendarRecordSchedule
+  import('../../packages/ui/src/patterns/collection/layouts/calendar').CalendarRecordSchedule
 type RenderContext =
-  import('../../packages/parttens/src/collection/layouts/calendar').CalendarRecordRenderContext
+  import('../../packages/ui/src/patterns/collection/layouts/calendar').CalendarRecordRenderContext
 
 type Mode = 'month' | 'week'
 

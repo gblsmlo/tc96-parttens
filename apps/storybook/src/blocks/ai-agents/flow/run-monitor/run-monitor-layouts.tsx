@@ -1,7 +1,7 @@
 import {
   RunMonitor,
   type RunMonitorProps,
-} from '@tc96/blocks/ai-agents/flow/run-monitor'
+} from '@tc96/ui/blocks/ai-agents/flow/run-monitor'
 import { connections, steps } from '../fixtures/run-monitor.ts'
 import type { RunMonitorControls } from './run-monitor-controls.ts'
 

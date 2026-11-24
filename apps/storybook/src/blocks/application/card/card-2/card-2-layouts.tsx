@@ -1,4 +1,4 @@
-import { Card2 } from '@tc96/blocks/application/card/card-2'
+import { Card2 } from '@tc96/ui/blocks/application/card/card-2'
 import { integrations } from '../fixtures/card-2.ts'
 import type { Card2Controls } from './card-2-controls.ts'
 

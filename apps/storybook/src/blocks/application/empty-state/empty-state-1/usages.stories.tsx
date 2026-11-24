@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EmptyState1 } from '@tc96/blocks/application/empty-state/empty-state-1'
+import { EmptyState1 } from '@tc96/ui/blocks/application/empty-state/empty-state-1'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { guides } from '../fixtures/empty-state-1.ts'

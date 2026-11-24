@@ -1,3 +1,4 @@
+import { Badge } from '@tc96/ui/badge'
 import {
   PersonProperty,
   RecordGroup,
@@ -6,8 +7,7 @@ import {
   SelectProperty,
   TextProperty,
   useRecordDraft,
-} from '@tc96/parttens'
-import { Badge } from '@tc96/ui/badge'
+} from '@tc96/ui/patterns'
 import { Skeleton } from '@tc96/ui/skeleton'
 import { Switch } from '@tc96/ui/switch'
 import { type ReactNode, useEffect, useState } from 'react'

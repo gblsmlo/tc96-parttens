@@ -215,7 +215,7 @@ export function Demo() {
 })
 
 const slots = `import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Group, Row } from '@tc96/parttens'
+import { Group, Row } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { fn } from 'storybook/test'
 

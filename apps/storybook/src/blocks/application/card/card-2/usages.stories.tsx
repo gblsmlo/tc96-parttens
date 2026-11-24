@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Card2,
   type Card2Integration,
-} from '@tc96/blocks/application/card/card-2'
+} from '@tc96/ui/blocks/application/card/card-2'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card2Handlers } from '../../../../mocks/card-2.ts'

@@ -1,7 +1,7 @@
 import {
   Stats1,
   type Stats1Props,
-} from '@tc96/blocks/application/stats/stats-1'
+} from '@tc96/ui/blocks/application/stats/stats-1'
 import { stats } from '../fixtures/stats-1.ts'
 import type { Stats1Controls } from './stats-1-controls.ts'
 

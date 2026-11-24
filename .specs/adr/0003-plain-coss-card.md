@@ -11,7 +11,7 @@
 | --- | --- |
 | `CardSurface` repete a classe de superfície do `Card` do COSS com o raio lido de `--card-radius`; o custo declarado no ADR 0002 é que `sync:coss` não chega a ela | `.specs/adr/0002-card-surface-standard.md` (Consequences, Costs) |
 | O `Card` do COSS fixa `rounded-2xl` e o realce em `calc(var(--radius-2xl)-1px)` na própria classe | `packages/ui/src/card.tsx:15` |
-| `packages/ui` é somente leitura; o tema é do consumidor | `AGENTS.md` (Rules enforced by scripts), `docs/architecture/tc96-parttens.md:203` |
+| `packages/ui` é somente leitura; o tema é do consumidor | `AGENTS.md` (Rules enforced by scripts), `docs/architecture/tc96-ui.md:203` |
 | O gancho `[data-slot="card"]` no tema já era o terceiro do ADR 0002 | `.specs/adr/0002-card-surface-standard.md` (D4 (3)) |
 | `--card-surface-radius` só era lida pelas linhas do `Checklist` | `packages/parttens/src/checklist/lib/variants.ts` |
 | O CLI copia para o consumidor o arquivo de `elements` que o pattern importa | `packages/registry/src/manifest.test.ts` (item `settings`) |

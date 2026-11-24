@@ -1,3 +1,4 @@
+import { Button } from '@tc96/ui/button'
 import {
   EditorTitle,
   type EditorTitleHandle,
@@ -6,8 +7,7 @@ import {
   type RichTextImage,
   type RichTextMention,
   type RichTextValue,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { useCallback, useRef, useState } from 'react'
 
 export interface StoredDocument {

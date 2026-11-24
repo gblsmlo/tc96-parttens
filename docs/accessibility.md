@@ -1,13 +1,13 @@
 # Acessibilidade e usabilidade
 
-Fonte única das regras, boas práticas e uso de acessibilidade e usabilidade do tc96-parttens. O [doc de arquitetura](architecture/tc96-parttens.md) e os `AGENTS.md` apontam para cá; o `AGENTS.md` de um pattern guarda só os invariantes de ARIA e foco daquele pattern.
+Fonte única das regras, boas práticas e uso de acessibilidade e usabilidade do tc96-parttens. O [doc de arquitetura](architecture/tc96-ui.md) e os `AGENTS.md` apontam para cá; o `AGENTS.md` de um pattern guarda só os invariantes de ARIA e foco daquele pattern.
 
 ## Camadas e responsabilidades
 
 | Camada | Onde | Responsabilidade |
 | --- | --- | --- |
 | 1. Tema | `apps/example/packages/ui/src/styles.css` e `themes/` | Tokens do consumidor. Contraste nunca muda valor de token; a correção global é uma regra por `data-slot`. |
-| 2. UI e patterns | `packages/ui`, `packages/parttens`, `packages/blocks` | Markup, ARIA, foco e o par cor/superfície certo. Uma violação real se corrige aqui, onde o elemento encontra a superfície. |
+| 2. UI e patterns | `packages/ui/src/components`, `packages/ui/src/patterns`, `packages/ui/src/blocks` | Markup, ARIA, foco e o par cor/superfície certo. Uma violação real se corrige aqui, onde o elemento encontra a superfície. |
 | 3. Story | `apps/storybook/src/**/*.stories.tsx` | Renderiza cada estado e testa o comportamento no `play`. Não contorna o axe: uma exceção na story precisa de motivo em [Exceções](#exceções). |
 | 4. Config do Storybook | `apps/storybook/.storybook/preview.ts` | O `@storybook/addon-a11y` com `test: 'error'` roda o axe depois de cada story; as regras e exclusões que valem para todas as stories ficam aqui. |
 | 5. Runner | `@storybook/addon-vitest` em `apps/storybook/vitest.config.ts` | Executa render, `play` e axe no Chromium, nos projetos `storybook` (claro) e `storybook-dark` (escuro). |

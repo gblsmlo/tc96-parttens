@@ -1,4 +1,4 @@
-import { emptyScheduleValue, type ScheduleValue } from '@tc96/parttens'
+import { emptyScheduleValue, type ScheduleValue } from '@tc96/ui/patterns'
 
 export const scheduleToday = new Date(2026, 9, 7)
 

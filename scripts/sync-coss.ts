@@ -9,8 +9,8 @@ import {
   normalizeImports,
   readManifest,
   registry,
-  sourceDirectory,
   type UiManifest,
+  uiSourcePath,
 } from './coss'
 
 // Copies new COSS items into packages/ui, changing only the registry import
@@ -39,9 +39,7 @@ const writes = fetched.flatMap((item) =>
     content: normalizeImports(content),
   })),
 )
-const existing = writes.filter(({ path }) =>
-  existsSync(`${sourceDirectory}/${path}`),
-)
+const existing = writes.filter(({ path }) => existsSync(uiSourcePath(path)))
 if (existing.length)
   throw new Error(
     `Would overwrite: ${existing.map(({ path }) => path).join(', ')}`,
@@ -50,8 +48,8 @@ if (existing.length)
 const next: UiManifest = { items: { ...manifest.items } }
 const dependencies = new Set<string>()
 for (const { path, content } of writes) {
-  await mkdir(dirname(`${sourceDirectory}/${path}`), { recursive: true })
-  await writeFile(`${sourceDirectory}/${path}`, content)
+  await mkdir(dirname(uiSourcePath(path)), { recursive: true })
+  await writeFile(uiSourcePath(path), content)
 }
 for (const item of fetched) {
   const paths = writes

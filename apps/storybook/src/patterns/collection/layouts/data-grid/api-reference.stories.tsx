@@ -1,5 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { DataGrid, type DataGridColumnDef, useDataGrid } from '@tc96/parttens'
+import {
+  DataGrid,
+  type DataGridColumnDef,
+  useDataGrid,
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { Slot } from '../../../../test-utils/anatomy-slot'
 import { DataGridCanvas } from './data-grid-canvas.tsx'

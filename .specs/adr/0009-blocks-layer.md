@@ -16,7 +16,7 @@
 | `boundaries:check` permite `templates` importar `parttens`, `ui`, `elements`, `utils` e `helpers`, e nada importa `templates` | `scripts/check-boundaries.ts` |
 | O build do registry publica todo item de pattern e de template como `registry:block` | `packages/registry/src/build-registry.ts:151` |
 | `templateNames` e `templateSources` listam `app-shell-1..4`, `workflow-editor` e `agent-builder` | `packages/registry/src/manifest.ts` |
-| `docs/architecture/tc96-parttens.md` descreve a camada Patterns como "blocos de produto" | `docs/architecture/tc96-parttens.md` |
+| `docs/architecture/tc96-ui.md` descreve a camada Patterns como "blocos de produto" | `docs/architecture/tc96-ui.md` |
 | Os editores de fluxo importam caminhos internos de patterns (`flow/canvas/composition/flow-canvas/flow-canvas`), então renomear um arquivo interno quebra o block | `docs/architecture/layer-decision-map.md` (Como o tc96 aplica, 3); `packages/blocks/AGENTS.md` (Dependents) |
 | O especificador `tc96/blocks` existiu no 0.1.0 e foi removido | `docs/architecture/public-api-baseline.md:3` |
 | Na literatura e no mercado, o nível composto e específico é feito do nível genérico e reutilizável: Atomic Design, recipes sobre o core, tiers de produto, blocks do shadcn com `registryDependencies`, COSS (primitives → particles → atoms) | `docs/architecture/layer-decision-map.md` (Fontes) |

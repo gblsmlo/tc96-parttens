@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login10 } from '@tc96/blocks/application/auth/login-10'
+import { Login10 } from '@tc96/ui/blocks/application/auth/login-10'
 import { authLogo } from '../fixtures/auth-data'
 import {
   login10FooterLinks,

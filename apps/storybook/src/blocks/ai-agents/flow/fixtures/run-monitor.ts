@@ -1,7 +1,7 @@
 import type {
   RunMonitorConnection,
   RunMonitorStep,
-} from '@tc96/blocks/ai-agents/flow/run-monitor'
+} from '@tc96/ui/blocks/ai-agents/flow/run-monitor'
 
 export const steps: RunMonitorStep[] = [
   {

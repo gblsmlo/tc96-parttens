@@ -1,7 +1,7 @@
 import type {
   Stats6Period,
   Stats6Sleeve,
-} from '@tc96/blocks/application/stats/stats-6'
+} from '@tc96/ui/blocks/application/stats/stats-6'
 
 export const sleevesByPeriod: Record<Stats6Period, Stats6Sleeve[]> = {
   day: [

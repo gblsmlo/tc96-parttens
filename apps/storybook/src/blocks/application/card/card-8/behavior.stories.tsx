@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Card8 } from '@tc96/blocks/application/card/card-8'
+import { Card8 } from '@tc96/ui/blocks/application/card/card-8'
 import { expect, fn, screen, userEvent, within } from 'storybook/test'
 import { meetings } from '../fixtures/card-8.tsx'
 import { type Card8Controls, card8ControlArgs } from './card-8-controls.ts'

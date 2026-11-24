@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Card } from '@tc96/ui/card'
 import {
   type CollectionDefinition,
   GalleryRowSkeleton,
   GalleryView,
-} from '@tc96/parttens'
-import { Card } from '@tc96/ui/card'
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { Slot } from '../../../../test-utils/anatomy-slot'
 import { GalleryCanvas } from './gallery-canvas.tsx'

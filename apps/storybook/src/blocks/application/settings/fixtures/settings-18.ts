@@ -1,7 +1,7 @@
 import type {
   Settings18Capability,
   Settings18Role,
-} from '@tc96/blocks/application/settings/settings-18'
+} from '@tc96/ui/blocks/application/settings/settings-18'
 
 export const roles: Settings18Role[] = [
   { label: 'Administrador', value: 'admin' },

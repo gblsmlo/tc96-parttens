@@ -723,7 +723,7 @@
     "ScatterChart",
     "ScatterChartProps"
   ],
-  "parttens": [
+  "patterns": [
     "Achievement",
     "AchievementsWidget",
     "AchievementsWidgetProps",

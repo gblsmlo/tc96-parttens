@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { EmailProperty } from '@tc96/parttens'
+import { EmailProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { EmailCanvas } from './email-canvas.tsx'
 import { StatefulEmail } from './email-layouts.tsx'

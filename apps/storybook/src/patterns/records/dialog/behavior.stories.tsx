@@ -3,7 +3,7 @@ import {
   type RecordDialogSettlement,
   type RecordDialogSize,
   useRecordDraft,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { type FormEvent, useState } from 'react'
 import {
   expect,

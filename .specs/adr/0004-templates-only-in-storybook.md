@@ -12,7 +12,7 @@
 | --- | --- |
 | O mapeamento do Verve CRM achou 20 páginas inteiras que compõem patterns existentes ou candidatos | `docs/plans/2026-10-20-verve-crm-mapeamento.md` (Templates) |
 | O repo não tem camada de Templates: nenhuma pasta em `packages/parttens/src`, nenhuma story em `Templates/` | `ls packages/parttens/src apps/storybook/src` |
-| A estrutura do consumidor põe templates e páginas na aplicação, em `apps/web/` | `docs/architecture/tc96-parttens.md:281` |
+| A estrutura do consumidor põe templates e páginas na aplicação, em `apps/web/` | `docs/architecture/tc96-ui.md:281` |
 | Patterns não carregam regra de negócio nem dados; são controlados pelo consumidor | `AGENTS.md` (Code conventions) |
 | `bun run story:source <id>` já entrega uma story como componente pronto, com helpers, dados e imports | `AGENTS.md` (Visual work) |
 

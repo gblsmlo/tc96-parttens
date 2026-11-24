@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { PropertyVariant, ReferencePropertyKind } from '@tc96/parttens'
+import type { PropertyVariant, ReferencePropertyKind } from '@tc96/ui/patterns'
 
 export const referenceKinds = [
   'account',

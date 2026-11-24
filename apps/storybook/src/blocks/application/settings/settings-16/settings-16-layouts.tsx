@@ -1,7 +1,7 @@
 import {
   Settings16,
   type Settings16Props,
-} from '@tc96/blocks/application/settings/settings-16'
+} from '@tc96/ui/blocks/application/settings/settings-16'
 import {
   settings16ArchivedCostCenters,
   settings16CostCenters,

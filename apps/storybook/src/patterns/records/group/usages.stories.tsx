@@ -18,6 +18,9 @@ import {
   UsersIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
+import { Badge } from '@tc96/ui/badge'
+import { Button } from '@tc96/ui/button'
 import {
   Checklist,
   type ChecklistItem,
@@ -36,10 +39,7 @@ import {
   SelectProperty,
   type SelectPropertyOption,
   TextProperty,
-} from '@tc96/parttens'
-import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
-import { Badge } from '@tc96/ui/badge'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { type ReactNode, useState } from 'react'
 
 import { expect, within } from 'storybook/test'

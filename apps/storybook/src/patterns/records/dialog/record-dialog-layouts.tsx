@@ -1,4 +1,5 @@
 import { ArrowsOutSimpleIcon, GitBranchIcon } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
 import {
   PersonProperty,
   RecordDialog,
@@ -9,8 +10,7 @@ import {
   RichTextEditor,
   SelectProperty,
   TextProperty,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { type ReactNode, useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
 import { people, priorityOptions, statusOptions } from './project-record'

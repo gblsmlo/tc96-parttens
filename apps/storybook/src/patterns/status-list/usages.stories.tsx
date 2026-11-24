@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
 import {
   RecordGroup,
   RecordGroupItem,
   type RecordStatus,
   RecordStatusItem,
   RecordStatusList,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { useEffect, useState } from 'react'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   AgentBuilderActions,
   AgentBuilderMenu,
-} from '@tc96/blocks/ai-agents/flow/agent-builder/partials'
+} from '@tc96/ui/blocks/ai-agents/flow/agent-builder/partials'
 import { expect, fn, within } from 'storybook/test'
 import { withAppShell } from '../../../../../templates/fixtures/app-shell'
 

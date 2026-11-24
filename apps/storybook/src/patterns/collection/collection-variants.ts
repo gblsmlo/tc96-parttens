@@ -1,4 +1,4 @@
-import type { CollectionFrameMode, CollectionLayout } from '@tc96/parttens'
+import type { CollectionFrameMode, CollectionLayout } from '@tc96/ui/patterns'
 
 export const collectionLayouts = [
   'datatable',

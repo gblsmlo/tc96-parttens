@@ -1,4 +1,4 @@
-import type { Settings13Reason } from '@tc96/blocks/application/settings/settings-13'
+import type { Settings13Reason } from '@tc96/ui/blocks/application/settings/settings-13'
 
 export interface Settings13Data {
   allowCustomReason: boolean

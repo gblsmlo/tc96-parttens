@@ -6,7 +6,7 @@ import {
   SettingsSectionDescription,
   SettingsSectionHeader,
   SettingsSectionTitle,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { expect } from 'storybook/test'
 import { Slot } from '../../../test-utils/anatomy-slot'
 import { SettingsCanvas } from './settings-canvas.tsx'

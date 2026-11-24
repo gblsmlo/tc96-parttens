@@ -1,4 +1,4 @@
-import type { FlowDirection } from '@tc96/parttens'
+import type { FlowDirection } from '@tc96/ui/patterns'
 
 export const canvasDirectionNames = [
   'horizontal',

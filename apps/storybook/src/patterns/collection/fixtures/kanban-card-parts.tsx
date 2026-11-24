@@ -1,13 +1,13 @@
 import { DotsThreeIcon } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   KanbanCardAction,
   KanbanCardActionButton,
   KanbanCardField,
   KanbanCardFieldLabel,
   KanbanCardFieldValue,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+} from '@tc96/ui/patterns'
 import type { ReactElement, ReactNode } from 'react'
 
 export interface CardMenuItem {

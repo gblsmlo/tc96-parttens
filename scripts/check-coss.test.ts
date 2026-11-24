@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { normalizeImports } from './coss'
+import { normalizeImports, uiSourcePath } from './coss'
 
 const script = join(import.meta.dir, 'check-coss.ts')
 const upstream = `"use client";
@@ -30,10 +30,10 @@ async function workspace(
     JSON.stringify({ items: { button: { origin: 'coss' }, ...items } }),
   )
   for (const [name, content] of Object.entries(files)) {
-    await mkdir(dirname(join(root, 'packages/ui/src', name)), {
+    await mkdir(dirname(join(root, uiSourcePath(name))), {
       recursive: true,
     })
-    await writeFile(join(root, 'packages/ui/src', name), content)
+    await writeFile(join(root, uiSourcePath(name)), content)
   }
   return spawnSync('bun', [script], { cwd: root, encoding: 'utf8' })
 }

@@ -1,7 +1,7 @@
 import {
   Dashboard1,
   type Dashboard1Props,
-} from '@tc96/blocks/application/dashboard/dashboard-1'
+} from '@tc96/ui/blocks/application/dashboard/dashboard-1'
 import { renderAnchor } from '@tc96/ui/render-anchor'
 import { useState } from 'react'
 import {

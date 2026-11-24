@@ -1,9 +1,9 @@
 import { EnvelopeSimpleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { FlowInspectorDetails, FlowInspectorStatus } from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Field, FieldLabel } from '@tc96/ui/field'
 import { Input } from '@tc96/ui/input'
+import { FlowInspectorDetails, FlowInspectorStatus } from '@tc96/ui/patterns'
 import {
   Select,
   SelectItem,

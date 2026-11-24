@@ -4,7 +4,7 @@ import {
   ImpactMap,
   type ImpactMapLink,
   type ImpactMapNode,
-} from '@tc96/blocks/ai-agents/flow/impact-map'
+} from '@tc96/ui/blocks/ai-agents/flow/impact-map'
 import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

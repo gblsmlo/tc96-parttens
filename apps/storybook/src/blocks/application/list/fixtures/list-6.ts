@@ -1,4 +1,4 @@
-import type { List6Mover } from '@tc96/blocks/application/list/list-6'
+import type { List6Mover } from '@tc96/ui/blocks/application/list/list-6'
 
 export const movers: List6Mover[] = [
   {

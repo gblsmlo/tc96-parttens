@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # List3
 
-A transactions feed: a header with a title and period tabs, then rows with an icon, the description, the date and a signed amount that reads green for a credit and red for a debit. Reach for it on an account or wallet screen that lists recent movements by period. Install it with `npx @tc96/parttens add list-3`.
+A transactions feed: a header with a title and period tabs, then rows with an icon, the description, the date and a signed amount that reads green for a credit and red for a debit. Reach for it on an account or wallet screen that lists recent movements by period. Install it with `npx @tc96/cli add list-3`.
 
 It is a section, not a page: it renders no `main` landmark. The block keeps no state and never fetches: `period` is controlled, so the app reads the transactions of the chosen period and passes them back. An empty array renders the empty state under the tabs. Loading and error are the block's: `pending` renders its skeleton in place of the content and `error` an error surface with a retry button; the precedence is `pending`, then `error`, then empty.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/List/List3`: [Playground](?path=/story/bl
 ## Import
 
 ```tsx
-import { List3 } from '@tc96/blocks/application/list/list-3'
+import { List3 } from '@tc96/ui/blocks/application/list/list-3'
 ```
 
 The same path exports the types listed under Exports.

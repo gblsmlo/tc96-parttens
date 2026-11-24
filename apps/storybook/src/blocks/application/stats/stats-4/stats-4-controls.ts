@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { Stats4Range } from '@tc96/blocks/application/stats/stats-4'
+import type { Stats4Range } from '@tc96/ui/blocks/application/stats/stats-4'
 
 export interface Stats4Controls {
   empty: boolean

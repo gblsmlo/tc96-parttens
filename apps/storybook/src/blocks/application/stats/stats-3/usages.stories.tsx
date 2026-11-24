@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
-import { Stats3, type Stats3Item } from '@tc96/blocks/application/stats/stats-3'
+import {
+  Stats3,
+  type Stats3Item,
+} from '@tc96/ui/blocks/application/stats/stats-3'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { stats3Handlers } from '../../../../mocks/stats-3.ts'

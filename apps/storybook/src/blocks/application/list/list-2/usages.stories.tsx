@@ -4,7 +4,7 @@ import {
   List2,
   type List2Entry,
   type List2Range,
-} from '@tc96/blocks/application/list/list-2'
+} from '@tc96/ui/blocks/application/list/list-2'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

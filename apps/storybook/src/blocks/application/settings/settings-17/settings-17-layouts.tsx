@@ -1,7 +1,7 @@
 import {
   Settings17,
   type Settings17Props,
-} from '@tc96/blocks/application/settings/settings-17'
+} from '@tc96/ui/blocks/application/settings/settings-17'
 import { useState } from 'react'
 import { privacyControls } from '../fixtures/settings-17.ts'
 import type { Settings17Controls } from './settings-17-controls.ts'

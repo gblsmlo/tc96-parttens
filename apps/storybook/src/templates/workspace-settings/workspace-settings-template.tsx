@@ -1,10 +1,3 @@
-import {
-  SettingsRow,
-  SettingsSection,
-  SettingsSectionDescription,
-  SettingsSectionHeader,
-  SettingsSectionTitle,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import { Input } from '@tc96/ui/input'
 import {
@@ -13,6 +6,13 @@ import {
   InputGroupInput,
   InputGroupText,
 } from '@tc96/ui/input-group'
+import {
+  SettingsRow,
+  SettingsSection,
+  SettingsSectionDescription,
+  SettingsSectionHeader,
+  SettingsSectionTitle,
+} from '@tc96/ui/patterns'
 import {
   Select,
   SelectItem,

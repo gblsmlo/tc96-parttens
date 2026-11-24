@@ -53,7 +53,7 @@ Fechadas pelo dono em 2026-11-02, na conversa. A linha a foi emendada no mesmo d
 - [ ] **T2 · Story `Settings` em cada `Application/Shell/AppShell{n}` [ENGINEERING]**
   - Fixtures `settingsNavigation` (com ícones), `settingsBreadcrumbs` e a página de Perfil em `fixtures/shell-data.tsx`; remove `settings-shell.stories.tsx`.
   - `play`: "Voltar ao app" aponta para `backHref`; o item ativo tem `aria-current="page"`; a navegação se chama `Navegação de configurações`; a navegação principal some. Uma story com `onBack` confere a chamada.
-  - Screenshots claro e escuro no preset `Default`; razões na seção Templates: App Shells de `docs/architecture/tc96-parttens.md`.
+  - Screenshots claro e escuro no preset `Default`; razões na seção Templates: App Shells de `docs/architecture/tc96-ui.md`.
   - **Done when:** `cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/application/shell` passa com axe em `error`.
 
 ### Fora deste plano

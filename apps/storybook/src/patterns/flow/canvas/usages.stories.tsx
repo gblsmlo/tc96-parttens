@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
 import {
   FlowCanvas,
   FlowCanvasControls,
   FlowCanvasMinimap,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { tidy } from './canvas-data.ts'
 import { CanvasFrame } from './canvas-frame.tsx'

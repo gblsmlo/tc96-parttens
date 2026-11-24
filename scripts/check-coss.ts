@@ -1,5 +1,12 @@
-import { relative } from 'node:path'
-import { manifestPaths, readManifest, sourceDirectory } from './coss'
+import { existsSync } from 'node:fs'
+import {
+  manifestPathOf,
+  manifestPaths,
+  readManifest,
+  sourceDirectory,
+  uiDirectories,
+  uiSourcePath,
+} from './coss'
 import { files } from './files'
 
 const manifest = await readManifest()
@@ -9,13 +16,21 @@ for (const [name, item] of Object.entries(manifest.items))
   for (const path of manifestPaths(name, item)) owners.set(path, name)
 
 const present = new Set(
-  (await files(sourceDirectory)).map((file) => relative(sourceDirectory, file)),
+  (
+    await Promise.all(
+      uiDirectories
+        .map((directory) => `${sourceDirectory}/${directory}`)
+        .map((directory) => (existsSync(directory) ? files(directory) : [])),
+    )
+  )
+    .flat()
+    .map((file) => manifestPathOf(file)),
 )
 for (const path of present) {
   if (owners.has(path)) continue
   if (/^[^/]+\.tsx$/.test(path))
     problems.push(`${path.replace(/\.tsx$/, '')}: missing from the ui manifest`)
-  else problems.push(`${sourceDirectory}/${path}: not in the ui manifest`)
+  else problems.push(`${uiSourcePath(path)}: not in the ui manifest`)
 }
 
 for (const [name, item] of Object.entries(manifest.items)) {

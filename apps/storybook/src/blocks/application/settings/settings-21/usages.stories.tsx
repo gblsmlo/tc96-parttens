@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Settings21,
   type Settings21App,
-} from '@tc96/blocks/application/settings/settings-21'
+} from '@tc96/ui/blocks/application/settings/settings-21'
 import { useEffect, useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'

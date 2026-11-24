@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { SelectProperty } from '@tc96/parttens'
+import { SelectProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { SelectCanvas } from './select-canvas.tsx'
 import {

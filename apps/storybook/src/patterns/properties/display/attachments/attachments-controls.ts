@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { AttachmentType } from '@tc96/parttens'
+import type { AttachmentType } from '@tc96/ui/patterns'
 
 export const attachmentTypes = [
   'pdf',

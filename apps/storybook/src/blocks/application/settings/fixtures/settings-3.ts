@@ -1,7 +1,7 @@
 import type {
   Settings3Options,
   Settings3Values,
-} from '@tc96/blocks/application/settings/settings-3'
+} from '@tc96/ui/blocks/application/settings/settings-3'
 
 export interface Settings3Data {
   options: Settings3Options

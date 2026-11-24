@@ -1,4 +1,4 @@
-import type { PeoplePropertyOption } from '@tc96/parttens'
+import type { PeoplePropertyOption } from '@tc96/ui/patterns'
 
 export const peopleOptions: PeoplePropertyOption[] = [
   { label: 'Bruno Lima', supportingLabel: 'Vendas', value: 'person-1' },

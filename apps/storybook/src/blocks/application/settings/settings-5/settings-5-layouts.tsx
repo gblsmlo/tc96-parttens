@@ -1,7 +1,7 @@
 import {
   Settings5,
   type Settings5Props,
-} from '@tc96/blocks/application/settings/settings-5'
+} from '@tc96/ui/blocks/application/settings/settings-5'
 import { timeZones, workspace } from '../fixtures/settings-5.ts'
 import type { Settings5Controls } from './settings-5-controls.ts'
 

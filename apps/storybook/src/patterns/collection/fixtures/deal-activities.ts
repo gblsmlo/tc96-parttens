@@ -1,7 +1,7 @@
 import type {
   CalendarEventChipTone,
   CollectionDefinition,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { type Deal, initialDeals, isOpenStage } from './deals'
 
 export type ActivityKind = 'call' | 'meeting' | 'demo' | 'proposal' | 'closing'

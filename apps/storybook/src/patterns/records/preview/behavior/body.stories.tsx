@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RecordPreviewBody } from '@tc96/parttens'
+import { RecordPreviewBody } from '@tc96/ui/patterns'
 import { expect } from 'storybook/test'
 
 const bodyOf = (canvasElement: HTMLElement) =>

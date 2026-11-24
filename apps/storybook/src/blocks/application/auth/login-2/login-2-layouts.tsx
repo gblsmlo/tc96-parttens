@@ -1,4 +1,7 @@
-import { Login2, type Login2Props } from '@tc96/blocks/application/auth/login-2'
+import {
+  Login2,
+  type Login2Props,
+} from '@tc96/ui/blocks/application/auth/login-2'
 import type { Login2Controls } from './login-2-controls.ts'
 
 type ComposedLogin2Props = Readonly<

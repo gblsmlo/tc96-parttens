@@ -1,7 +1,7 @@
 import {
   Timeline1,
   type Timeline1Props,
-} from '@tc96/blocks/application/timeline/timeline-1'
+} from '@tc96/ui/blocks/application/timeline/timeline-1'
 import { events } from '../fixtures/timeline-1.ts'
 import type { Timeline1Controls } from './timeline-1-controls.ts'
 

@@ -1,4 +1,4 @@
-import { Card9, type Card9Props } from '@tc96/blocks/application/card/card-9'
+import { Card9, type Card9Props } from '@tc96/ui/blocks/application/card/card-9'
 import { delivery, deliveryActions } from '../fixtures/card-9.ts'
 import type { Card9Controls } from './card-9-controls.ts'
 

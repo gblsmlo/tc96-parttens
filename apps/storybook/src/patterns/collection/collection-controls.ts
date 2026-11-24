@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { CollectionFrameMode, CollectionLayout } from '@tc96/parttens'
+import type { CollectionFrameMode, CollectionLayout } from '@tc96/ui/patterns'
 import { collectionFrameModes, collectionLayouts } from './collection-variants'
 
 export interface CollectionControls {

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Login2 } from '@tc96/blocks/application/auth/login-2'
+import { Login2 } from '@tc96/ui/blocks/application/auth/login-2'
 
 const ignore = () => undefined
 

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RecordStatusItem, RecordStatusList } from '@tc96/parttens'
+import { RecordStatusItem, RecordStatusList } from '@tc96/ui/patterns'
 import { expect } from 'storybook/test'
 import { Slot } from '../../test-utils/anatomy-slot'
 import { RecordStatusListCanvas } from './status-list-canvas.tsx'

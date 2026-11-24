@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Settings23
 
-A billing screen with the current plan, the usage of the plan and the invoices. The plan card shows the name, the price, the renewal date and, when the app handles it, a Change plan button. Below it, one meter per usage metric shows what was used against the limit, and a table lists the invoices with a status badge and a download button. Reach for it when people manage their subscription. Install it with `npx @tc96/parttens add settings-23`.
+A billing screen with the current plan, the usage of the plan and the invoices. The plan card shows the name, the price, the renewal date and, when the app handles it, a Change plan button. Below it, one meter per usage metric shows what was used against the limit, and a table lists the invoices with a status badge and a download button. Reach for it when people manage their subscription. Install it with `npx @tc96/cli add settings-23`.
 
 It is a section, not a page: it renders no `main` landmark. Changing the plan and downloading stay in the app; the block only calls `onChangePlan` and `onDownload`, keeps no state and never fetches or stores anything. Dates arrive already formatted; the amounts are formatted by the block with `formatAmount`.
 
@@ -14,7 +14,7 @@ The other pages of `Blocks/Application/Settings/Settings23`: [Playground](?path=
 ## Import
 
 ```tsx
-import { Settings23 } from '@tc96/blocks/application/settings/settings-23'
+import { Settings23 } from '@tc96/ui/blocks/application/settings/settings-23'
 ```
 
 The same path exports the types `Settings23Props`, `Settings23Plan`, `Settings23Usage`, `Settings23Invoice`, `Settings23InvoiceStatus` and `Settings23Labels`.

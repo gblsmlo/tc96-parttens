@@ -1,10 +1,10 @@
 import { BellSlashIcon } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
 import {
   StateGuard,
   type StateGuardState,
   type StateSurfaceProps,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import type { ReactNode } from 'react'
 import type { StateControls } from './state-controls.ts'
 import type { StateIconMode } from './state-variants.ts'

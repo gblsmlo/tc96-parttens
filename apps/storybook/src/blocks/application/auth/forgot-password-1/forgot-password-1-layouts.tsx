@@ -1,7 +1,7 @@
 import {
   ForgotPassword1,
   type ForgotPasswordProps,
-} from '@tc96/blocks/application/auth/forgot-password-1'
+} from '@tc96/ui/blocks/application/auth/forgot-password-1'
 import { useState } from 'react'
 import { authLogo } from '../fixtures/auth-data'
 import type { ForgotPassword1Controls } from './forgot-password-1-controls.ts'

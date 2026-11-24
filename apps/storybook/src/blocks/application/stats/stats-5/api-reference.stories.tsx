@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Stats5 } from '@tc96/blocks/application/stats/stats-5'
+import { Stats5 } from '@tc96/ui/blocks/application/stats/stats-5'
 import { salesAndChurn } from '../fixtures/stats-5.ts'
 
 const meta = {

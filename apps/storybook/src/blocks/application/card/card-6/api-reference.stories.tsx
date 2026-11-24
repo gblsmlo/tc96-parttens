@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Card6 } from '@tc96/blocks/application/card/card-6'
+import { Card6 } from '@tc96/ui/blocks/application/card/card-6'
 import { fn } from 'storybook/test'
 import { jobs } from '../fixtures/card-6.ts'
 

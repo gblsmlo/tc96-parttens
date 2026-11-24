@@ -25,7 +25,7 @@ export const patternNames = [
   'charts',
 ] as const
 export type PatternName = (typeof patternNames)[number]
-/** Folder under packages/parttens/src, kept as the path in the consumer. */
+/** Folder under packages/ui/src/patterns, kept as the path in the consumer. */
 export const patternSources: Record<PatternName, string> = {
   collection: 'collection',
   properties: 'properties',
@@ -145,7 +145,7 @@ export const blockNames = [
   'impact-map',
 ] as const
 export type BlockName = (typeof blockNames)[number]
-/** Folder under packages/blocks/src, kept as the path in the consumer. */
+/** Folder under packages/ui/src/blocks, kept as the path in the consumer. */
 export const blockSources: Record<BlockName, string> = {
   'app-shell-1': 'application/shell/app-shell-1',
   'app-shell-2': 'application/shell/app-shell-2',
@@ -242,7 +242,7 @@ export const blockSources: Record<BlockName, string> = {
   'impact-map': 'ai-agents/flow/impact-map',
 }
 export type ItemName = PatternName | BlockName
-/** Areas under packages/parttens/src that ship with an item no file of it imports. */
+/** Areas under packages/ui/src/patterns that ship with an item no file of it imports. */
 export const itemAreas: Partial<Record<ItemName, string[]>> = {
   collection: ['toolbar'],
 }
@@ -253,6 +253,8 @@ export function isBlock(name: string): name is BlockName {
 export interface Aliases {
   ui: string
   utils: string
+  hooks: string
+  lib: string
   helpers: string
   patterns: string
   blocks: string
@@ -260,15 +262,17 @@ export interface Aliases {
 export const aliasNames = [
   'ui',
   'utils',
+  'hooks',
+  'lib',
   'helpers',
   'patterns',
   'blocks',
 ] as const
 /**
- * Directories the aliases resolve to. Only helpers and patterns are written;
- * ui is read to find the COSS components the consumer already has.
+ * Directories the aliases resolve to. ui, hooks and lib receive the missing
+ * ui components; helpers and patterns receive the patterns.
  */
-export const pathNames = ['ui', 'helpers', 'patterns'] as const
+export const pathNames = ['ui', 'hooks', 'lib', 'helpers', 'patterns'] as const
 export type PathName = (typeof pathNames)[number]
 export interface InstallConfig {
   aliases: Aliases
@@ -290,20 +294,43 @@ export interface RegistryItem {
   registryDependencies?: string[]
   $schema?: string
 }
+/** The tc96-mono layout: one @tc96/ui package holding every layer, and @tc96/utils. */
 export const defaultConfig: InstallConfig = {
   aliases: {
     ui: '@tc96/ui',
     utils: '@tc96/utils',
-    helpers: '@tc96/helpers',
-    patterns: '@tc96/patterns',
-    blocks: '@tc96/blocks',
+    hooks: '@tc96/ui/hooks',
+    lib: '@tc96/ui/lib',
+    helpers: '@tc96/ui/helpers',
+    patterns: '@tc96/ui/patterns',
+    blocks: '@tc96/ui/blocks',
   },
   paths: {
-    ui: 'packages/ui/src',
-    helpers: 'packages/helpers/src',
-    patterns: 'packages/patterns/src',
-    blocks: 'packages/blocks/src',
+    ui: 'packages/ui/src/components',
+    hooks: 'packages/ui/src/hooks',
+    lib: 'packages/ui/src/lib',
+    helpers: 'packages/ui/src/helpers',
+    patterns: 'packages/ui/src/patterns',
+    blocks: 'packages/ui/src/blocks',
   },
+}
+/** Registry file paths start with one of these folders of packages/ui/src. */
+export const distributedLayers = ['patterns', 'helpers', 'blocks'] as const
+type DistributedLayer = (typeof distributedLayers)[number]
+const isDistributedLayer = (value: string): value is DistributedLayer =>
+  distributedLayers.includes(value as DistributedLayer)
+/** The alias an @tc96 import of the repo maps to, and the rest of the specifier. */
+export function repoImportAlias(
+  specifier: string,
+): { alias: keyof Aliases; rest: string } | undefined {
+  if (specifier === '@tc96/utils' || specifier.startsWith('@tc96/utils/'))
+    return { alias: 'utils', rest: specifier.slice('@tc96/utils'.length) }
+  const rest = specifier.match(/^@tc96\/ui(\/.*)$/)?.[1]
+  if (!rest) return undefined
+  const [, layer = '', tail = ''] = rest.match(/^\/([^/]+)(\/.*)?$/) ?? []
+  if (isDistributedLayer(layer) || layer === 'hooks' || layer === 'lib')
+    return { alias: layer, rest: tail }
+  return { alias: 'ui', rest }
 }
 export function selectItems(names: string[]): ItemName[] {
   if (!names.length) throw new Error('Choose at least one pattern or block.')
@@ -347,8 +374,8 @@ export function validateConfig(value: InstallConfig): InstallConfig {
 /** Fails when an item would ship the consumer's UI, its cn, or a theme. */
 export function assertDistributable(item: RegistryItem) {
   for (const file of item.files) {
-    const [pkg] = file.path.split('/')
-    if (pkg === 'ui' || pkg === 'utils')
+    const [layer = ''] = file.path.split('/')
+    if (!isDistributedLayer(layer))
       throw new Error(
         `${item.name}: ${file.path} belongs to the consumer and is not distributed.`,
       )
@@ -365,23 +392,20 @@ export function prepareItem(
 ): RegistryItem {
   const config = validateConfig(configuration)
   assertDistributable(item)
-  const destinations: Record<string, string | undefined> = {
-    parttens: config.paths.patterns,
+  const destinations: Record<DistributedLayer, string | undefined> = {
+    patterns: config.paths.patterns,
     helpers: config.paths.helpers,
     blocks: config.paths.blocks,
-  }
-  const aliases: Record<string, string> = {
-    ...config.aliases,
-    parttens: config.aliases.patterns,
-    blocks: config.aliases.blocks,
   }
   return {
     ...item,
     $schema: 'https://ui.shadcn.com/schema/registry-item.json',
     files: item.files.map((file) => {
-      const [pkg, src, ...suffix] = file.path.split('/')
-      const destination = destinations[pkg ?? '']
-      if (!destination || src !== 'src' || suffix.includes('..'))
+      const [layer = '', ...suffix] = file.path.split('/')
+      const destination = isDistributedLayer(layer)
+        ? destinations[layer]
+        : undefined
+      if (!destination || !suffix.length || suffix.includes('..'))
         throw new Error(`Invalid registry path: ${file.path}`)
       const ast = ts.createSourceFile(
         file.path,
@@ -396,18 +420,13 @@ export function prepareItem(
           node.moduleSpecifier &&
           ts.isStringLiteral(node.moduleSpecifier)
         ) {
-          const match = node.moduleSpecifier.text.match(
-            /^@tc96\/(ui|utils|helpers|parttens|patterns|blocks)(\/.*)?$/,
-          )
-          if (match) {
-            const alias = aliases[match[1] ?? '']
-            if (alias)
-              edits.push({
-                start: node.moduleSpecifier.getStart(ast) + 1,
-                end: node.moduleSpecifier.getEnd() - 1,
-                value: alias + (match[2] ?? ''),
-              })
-          }
+          const match = repoImportAlias(node.moduleSpecifier.text)
+          if (match)
+            edits.push({
+              start: node.moduleSpecifier.getStart(ast) + 1,
+              end: node.moduleSpecifier.getEnd() - 1,
+              value: config.aliases[match.alias] + match.rest,
+            })
         }
         ts.forEachChild(node, visit)
       }

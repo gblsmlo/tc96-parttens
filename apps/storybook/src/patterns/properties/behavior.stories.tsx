@@ -9,7 +9,7 @@ import {
   PropertyCollection,
   type PropertyCollectionItem,
   TagsProperty,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { useEffect, useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../test-utils/is-icon'

@@ -1,294 +1,294 @@
 [
   {
-    "file": "packages/parttens/src/collection/layouts/list/components/list-group.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-group.tsx",
     "component": "Separator",
     "className": "bg-border/40",
     "reason": "O separator entre itens da lista é mais discreto que o do COSS: as linhas agrupam itens sem competir com o conteúdo; `bg-border/40` mantém o token do tema com 40% da opacidade."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/list/components/list-view.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
     "component": "Separator",
     "className": "bg-border/40",
     "reason": "O separator entre itens da lista é mais discreto que o do COSS: as linhas agrupam itens sem competir com o conteúdo; `bg-border/40` mantém o token do tema com 40% da opacidade."
   },
   {
-    "file": "packages/parttens/src/records/dialog/components/dialog-shell.tsx",
+    "file": "packages/ui/src/patterns/records/dialog/components/dialog-shell.tsx",
     "component": "DialogTitle",
     "className": "text-foreground",
     "reason": "Shell do dialog portado do Lemind: o título vem depois do ancestral em `text-muted-foreground` numa trilha, e `font-medium text-sm text-foreground` o traz ao tamanho do ancestral em vez do `text-xl` do COSS; `text-foreground` é o token do tema."
   },
   {
-    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog.tsx",
+    "file": "packages/ui/src/patterns/records/dialog/composition/record-dialog/record-dialog.tsx",
     "component": "Kbd",
     "className": "text-primary-foreground",
     "reason": "A dica de atalho fica dentro do botão de enviar, que é `bg-primary`. O `text-muted-foreground` do `Kbd` do COSS é par de `background` e `muted` e ficava em 2,69:1 no claro e 3,00:1 no escuro sobre `primary` (axe, texto de 12 px); `text-primary-foreground` é o par que o tema garante para `primary`, o mesmo do rótulo do botão."
   },
   {
-    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog.tsx",
+    "file": "packages/ui/src/patterns/records/dialog/composition/record-dialog/record-dialog.tsx",
     "component": "Kbd",
     "className": "bg-primary-foreground/16",
     "reason": "O `bg-muted` do `Kbd` do COSS é 4% de preto ou de branco e some sobre o `bg-primary` do botão de enviar; `bg-primary-foreground/16` é a tecla clara sobre o botão escuro (e o inverso no escuro), com o texto acima de 4,5:1 nos dois temas."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/data-table/data-table.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table.tsx",
     "component": "TableHeader",
     "className": "not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)]",
     "reason": "O thead da tabela usa a mesma cor do `TableFooter` do COSS (`color-mix` de `var(--card)` com 2% de preto, ou de branco no escuro), para que cabeçalho e rodapé enquadrem as linhas, que ficam na cor do fundo."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/data-table/data-table.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table.tsx",
     "component": "TableHeader",
     "className": "dark:not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-white)_2%)]",
     "reason": "O thead da tabela usa a mesma cor do `TableFooter` do COSS (`color-mix` de `var(--card)` com 2% de preto, ou de branco no escuro), para que cabeçalho e rodapé enquadrem as linhas, que ficam na cor do fundo."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "hover:bg-card/60",
     "reason": "O card interativo do Kanban afrouxa o fundo para 60% no hover, o retorno visual de que o card e clicavel; o Card so define o estado de repouso."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-primary",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-offset-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-offset-background",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "border-dashed",
     "reason": "Somente o estilo da borda muda (tracejada), e apenas enquanto o card esta dimmed, para marcar o lugar de origem durante o arraste; largura e cor da borda continuam do Card."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-2",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-primary/40",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-offset-2",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-offset-background",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-primary",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-offset-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-offset-background",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/parttens/src/properties/shared/property-multi-select-shell.tsx",
+    "file": "packages/ui/src/patterns/properties/shared/property-multi-select-shell.tsx",
     "component": "ComboboxChips",
     "className": "**:data-[slot=combobox-chip]:rounded-sm",
     "reason": "O chip do valor selecionado e o ComboboxChip do COSS, com raio de `radius-md - 1px` (7px), enquanto todo chip de PropertySurface usa o `rounded-sm` do Badge (6px); o ComboboxChip nao repassa className sem trocar a classe inteira, entao o raio entra pelo container."
   },
   {
-    "file": "packages/parttens/src/records/group/composition/record-group/record-group.tsx",
+    "file": "packages/ui/src/patterns/records/group/composition/record-group/record-group.tsx",
     "component": "Card",
     "className": "bg-muted/72",
     "reason": "O invólucro dos variantes `card` e `inset` do RecordGroup é um painel rebaixado, sem sombra, e não o card elevado do Card; `bg-muted/72` usa o token do tema com 72% de opacidade no lugar de `bg-card`."
   },
   {
-    "file": "packages/parttens/src/chat/chats-panel/composition/chats-panel/chats-panel.tsx",
+    "file": "packages/ui/src/patterns/chat/chats-panel/composition/chats-panel/chats-panel.tsx",
     "component": "Card",
     "className": "bg-muted/72",
     "reason": "Os variantes `card` e `inset` do ChatsPanel usam o mesmo painel rebaixado do RecordGroup, sem sombra, no lugar do card elevado; `bg-muted/72` usa o token do tema com 72% de opacidade no lugar de `bg-card`."
   },
   {
-    "file": "packages/parttens/src/wizard/composition/wizard/wizard.tsx",
+    "file": "packages/ui/src/patterns/wizard/composition/wizard/wizard.tsx",
     "component": "Card",
     "className": "bg-muted",
     "reason": "O Card externo do Wizard é o plano de fundo, rebaixado e sem sombra, onde ficam a navegação das etapas e o Card do conteúdo, que continua o card elevado do COSS; `bg-muted` usa o token do tema, a pedido do dono, no lugar de `bg-card`, e o card do conteúdo fica 1,14:1 mais claro que ele no tema claro."
   },
   {
-    "file": "packages/parttens/src/wizard/composition/wizard/wizard.tsx",
+    "file": "packages/ui/src/patterns/wizard/composition/wizard/wizard.tsx",
     "component": "Card",
     "className": "dark:bg-sidebar",
     "reason": "No escuro, `bg-muted` (branco a 4%) fica mais claro que o `bg-card` e o card do conteúdo parecia afundado (1,05:1 mais escuro); o token `sidebar` do tema é mais escuro que o fundo, e o card do conteúdo volta a ficar à frente, 1,19:1 mais claro."
   },
   {
-    "file": "packages/parttens/src/chat/assistant/composition/assistant-composer/assistant-composer.tsx",
+    "file": "packages/ui/src/patterns/chat/assistant/composition/assistant-composer/assistant-composer.tsx",
     "component": "ComposerInput",
     "className": "placeholder:text-muted-foreground",
     "reason": "O placeholder do ComposerInput usa `muted-foreground` a 72% sobre o fundo do compositor e mede 3,15:1 no escuro e 3,08:1 no claro; o texto de orientação do assistente precisa de 4,5:1, e `placeholder:text-muted-foreground` com opacidade total mede 4,71:1 no escuro e 5,48:1 no claro sobre o fundo do compositor, sem mudar nenhum valor de token."
   },
   {
-    "file": "packages/parttens/src/flow/canvas/components/flow-step-node.tsx",
+    "file": "packages/ui/src/patterns/flow/canvas/components/flow-step-node.tsx",
     "component": "Card",
     "className": "ring-2",
     "reason": "O nó selecionado ganha um anel de 2px por fora do `Card` do COSS; o anel soma com a sombra do card (Tailwind compõe `--tw-ring-shadow` e `--tw-shadow`) e não troca borda, raio nem fundo."
   },
   {
-    "file": "packages/parttens/src/flow/canvas/components/flow-step-node.tsx",
+    "file": "packages/ui/src/patterns/flow/canvas/components/flow-step-node.tsx",
     "component": "Card",
     "className": "ring-primary",
     "reason": "O anel do nó selecionado usa `primary`, o mesmo par de seleção do canvas (aresta tomada, linha de conexão); a borda do `Card` fica a do tema."
   },
   {
-    "file": "packages/parttens/src/flow/canvas/components/flow-step-node.tsx",
+    "file": "packages/ui/src/patterns/flow/canvas/components/flow-step-node.tsx",
     "component": "Card",
     "className": "group-focus-visible/step:ring-2",
     "reason": "O foco do teclado fica no wrapper do React Flow (`group/step`), não no card; o anel de 2px aparece no `Card` quando o wrapper recebe `focus-visible`."
   },
   {
-    "file": "packages/parttens/src/flow/canvas/components/flow-step-node.tsx",
+    "file": "packages/ui/src/patterns/flow/canvas/components/flow-step-node.tsx",
     "component": "Card",
     "className": "group-focus-visible/step:ring-ring",
     "reason": "O anel de foco do teclado no `Card` do nó usa o token `ring`, o mesmo dos controles do COSS."
   },
   {
-    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
+    "file": "packages/ui/src/patterns/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
     "component": "Input",
     "className": "[&_input]:placeholder:text-muted-foreground/60",
     "reason": "O título e a descrição do `RecordDialogHeadline` são campos sem borda (`unstyled`): o placeholder é o único sinal do campo vazio e fica em `muted-foreground/60`, abaixo do `/72` do COSS, para recuar diante do conteúdo do dialog; volta ao token do tema no foco. Portado das stories de `Patterns/Records/RecordDialog`, onde já rodava com axe."
   },
   {
-    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
+    "file": "packages/ui/src/patterns/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
     "component": "Input",
     "className": "[&_input]:focus:placeholder:text-muted-foreground",
     "reason": "No foco, o placeholder do campo sem borda do `RecordDialogHeadline` volta ao `muted-foreground` inteiro, o par que o tema garante para `background`, porque é ali que a pessoa lê a orientação do campo."
   },
   {
-    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
+    "file": "packages/ui/src/patterns/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
     "component": "Textarea",
     "className": "[&_textarea]:placeholder:text-muted-foreground/60",
     "reason": "O título e a descrição do `RecordDialogHeadline` são campos sem borda (`unstyled`): o placeholder é o único sinal do campo vazio e fica em `muted-foreground/60`, abaixo do `/72` do COSS, para recuar diante do conteúdo do dialog; volta ao token do tema no foco. Portado das stories de `Patterns/Records/RecordDialog`, onde já rodava com axe."
   },
   {
-    "file": "packages/parttens/src/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
+    "file": "packages/ui/src/patterns/records/dialog/composition/record-dialog/record-dialog-headline.tsx",
     "component": "Textarea",
     "className": "[&_textarea]:focus:placeholder:text-muted-foreground",
     "reason": "No foco, o placeholder do campo sem borda do `RecordDialogHeadline` volta ao `muted-foreground` inteiro, o par que o tema garante para `background`, porque é ali que a pessoa lê a orientação do campo."
   },
   {
-    "file": "packages/blocks/src/application/shell/shared/shell-nav.tsx",
+    "file": "packages/ui/src/blocks/application/shell/shared/shell-nav.tsx",
     "component": "SidebarMenuBadge",
     "className": "text-current",
     "reason": "O badge do subitem fica dentro do `SidebarMenuSubButton`, onde o `peer-*/menu-button` do COSS não alcança, e mantinha o `sidebar-foreground` sobre o `sidebar-accent` do subitem ativo ou com hover: 4,22:1 no claro. `text-current` herda a cor do botão, o mesmo par do badge de primeiro nível: 13,33:1 (claro) e 16,04:1 (escuro) no ativo."
   },
   {
-    "file": "packages/parttens/src/flow/canvas/components/flow-step-node.tsx",
+    "file": "packages/ui/src/patterns/flow/canvas/components/flow-step-node.tsx",
     "component": "AvatarFallback",
     "className": "text-foreground",
     "reason": "As iniciais do `AvatarFallback` ficam sobre o `bg-border` do COSS e herdavam o `muted-foreground` do ancestral: 4,25:1 no escuro. `text-foreground` é o token do tema e passa nos dois modos. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
   },
   {
-    "file": "packages/parttens/src/flow/inspector/composition/flow-inspector-details/flow-inspector-details.tsx",
+    "file": "packages/ui/src/patterns/flow/inspector/composition/flow-inspector-details/flow-inspector-details.tsx",
     "component": "AvatarFallback",
     "className": "text-foreground",
     "reason": "As iniciais do `AvatarFallback` ficam sobre o `bg-border` do COSS e herdavam o `muted-foreground` do ancestral: 4,25:1 no escuro. `text-foreground` é o token do tema e passa nos dois modos. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
   },
   {
-    "file": "packages/parttens/src/properties/display/person/person-option-content.tsx",
+    "file": "packages/ui/src/patterns/properties/display/person/person-option-content.tsx",
     "component": "AvatarFallback",
     "className": "border",
     "reason": "O `PersonAvatar` sem foto contorna o fallback `bg-border` do COSS com `border-input`, como os registros só de avatar, para o círculo não sumir sobre `card` e `popover`; o fundo do fallback fica o do COSS. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
   },
   {
-    "file": "packages/parttens/src/properties/display/person/person-option-content.tsx",
+    "file": "packages/ui/src/patterns/properties/display/person/person-option-content.tsx",
     "component": "AvatarFallback",
     "className": "border-input",
     "reason": "O `PersonAvatar` sem foto contorna o fallback `bg-border` do COSS com `border-input`, como os registros só de avatar, para o círculo não sumir sobre `card` e `popover`; o fundo do fallback fica o do COSS. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
   },
   {
-    "file": "packages/blocks/src/application/shell/shared/user-menu.tsx",
+    "file": "packages/ui/src/blocks/application/shell/shared/user-menu.tsx",
     "component": "AvatarFallback",
     "className": "text-foreground",
     "reason": "O fallback do avatar do usuário fica sobre `bg-border` e herdava o `sidebar-foreground` esmaecido da sidebar: 3,83:1 no claro. `text-foreground` é o token do tema. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
   },
   {
-    "file": "packages/blocks/src/application/settings/settings-1/settings-1.tsx",
+    "file": "packages/ui/src/blocks/application/settings/settings-1/settings-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-2",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/blocks/src/application/settings/settings-1/settings-1.tsx",
+    "file": "packages/ui/src/blocks/application/settings/settings-1/settings-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-ring",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/blocks/src/application/settings/settings-1/settings-1.tsx",
+    "file": "packages/ui/src/blocks/application/settings/settings-1/settings-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-offset-1",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/blocks/src/application/settings/settings-1/settings-1.tsx",
+    "file": "packages/ui/src/blocks/application/settings/settings-1/settings-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-offset-background",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/blocks/src/application/settings/settings-5/settings-5.tsx",
+    "file": "packages/ui/src/blocks/application/settings/settings-5/settings-5.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-2",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/blocks/src/application/settings/settings-5/settings-5.tsx",
+    "file": "packages/ui/src/blocks/application/settings/settings-5/settings-5.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-ring",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/blocks/src/application/settings/settings-5/settings-5.tsx",
+    "file": "packages/ui/src/blocks/application/settings/settings-5/settings-5.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-offset-1",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/blocks/src/application/settings/settings-5/settings-5.tsx",
+    "file": "packages/ui/src/blocks/application/settings/settings-5/settings-5.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-offset-background",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."

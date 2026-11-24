@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Stats7 } from '@tc96/blocks/application/stats/stats-7'
+import { Stats7 } from '@tc96/ui/blocks/application/stats/stats-7'
 import { expect, fn, within } from 'storybook/test'
 import { stats7Metrics } from '../fixtures/stats-7.ts'
 

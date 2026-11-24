@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Settings20 } from '@tc96/blocks/application/settings/settings-20'
+import { Settings20 } from '@tc96/ui/blocks/application/settings/settings-20'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import {
   settings20Categories,

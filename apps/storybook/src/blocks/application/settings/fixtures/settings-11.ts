@@ -8,7 +8,7 @@ import {
 import type {
   Settings11Group,
   Settings11Status,
-} from '@tc96/blocks/application/settings/settings-11'
+} from '@tc96/ui/blocks/application/settings/settings-11'
 
 export type Settings11IconName =
   | 'check-circle'

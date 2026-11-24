@@ -1,5 +1,5 @@
 import { FileTextIcon, ReceiptIcon } from '@phosphor-icons/react'
-import { RecordGroup, RecordGroupLink } from '@tc96/parttens'
+import { RecordGroup, RecordGroupLink } from '@tc96/ui/patterns'
 
 export function LinkedRecordsGroup() {
   return (

@@ -2,7 +2,7 @@ import {
   List2,
   type List2Props,
   type List2Range,
-} from '@tc96/blocks/application/list/list-2'
+} from '@tc96/ui/blocks/application/list/list-2'
 import { useEffect, useState } from 'react'
 import { entriesByRange } from '../fixtures/list-2.ts'
 import type { List2Controls } from './list-2-controls.ts'

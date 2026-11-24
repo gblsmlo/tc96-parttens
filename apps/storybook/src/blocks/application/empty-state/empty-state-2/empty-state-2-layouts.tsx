@@ -1,4 +1,4 @@
-import { EmptyState2 } from '@tc96/blocks/application/empty-state/empty-state-2'
+import { EmptyState2 } from '@tc96/ui/blocks/application/empty-state/empty-state-2'
 import { suggestions } from '../fixtures/empty-state-2.ts'
 import type { EmptyState2Controls } from './empty-state-2-controls.ts'
 

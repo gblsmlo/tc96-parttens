@@ -2,7 +2,7 @@ import {
   List3,
   type List3Period,
   type List3Props,
-} from '@tc96/blocks/application/list/list-3'
+} from '@tc96/ui/blocks/application/list/list-3'
 import { useEffect, useState } from 'react'
 import { transactionsByPeriod } from '../fixtures/list-3.ts'
 import type { List3Controls } from './list-3-controls.ts'

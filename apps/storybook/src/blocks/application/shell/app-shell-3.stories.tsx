@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { AppShell3 } from '@tc96/blocks/application/shell/app-shell-3'
+import { AppShell3 } from '@tc96/ui/blocks/application/shell/app-shell-3'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
 import { expectSettingsLevel } from './fixtures/settings-play'
@@ -20,7 +20,7 @@ import {
 } from './fixtures/shell-data'
 
 const usage = `
-// npx @tc96/parttens add app-shell-3
+// npx @tc96/cli add app-shell-3
 import { AppShell3 } from '@acme/blocks/application/shell/app-shell-3'
 
 <AppShell3
@@ -73,7 +73,7 @@ const docs = {
   ],
   description: {
     component:
-      'An application shell with an inset sidebar: grouped navigation, projects with progress rings, a usage panel and the account menu, and a header with the breadcrumb and a notifications popover. Install it with `npx @tc96/parttens add app-shell-3`.',
+      'An application shell with an inset sidebar: grouped navigation, projects with progress rings, a usage panel and the account menu, and a header with the breadcrumb and a notifications popover. Install it with `npx @tc96/cli add app-shell-3`.',
   },
   story: { height: '42rem', inline: false },
   usage,

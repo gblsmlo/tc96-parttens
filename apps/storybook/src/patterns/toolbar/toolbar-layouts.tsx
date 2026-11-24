@@ -7,20 +7,6 @@ import {
   StarIcon,
   TrashIcon,
 } from '@phosphor-icons/react'
-import {
-  Action,
-  CollectionSearchField,
-  CollectionToolbar,
-  CollectionToolbarGroup,
-  FilterRadioSubmenu,
-  ViewSettingsMenu,
-  ViewSettingsSection,
-  ViewSwitcherCreate,
-  ViewSwitcherItem,
-  ViewSwitcherItems,
-  ViewSwitcherMenu,
-  ViewSwitcherSearch,
-} from '@tc96/parttens'
 import { Button } from '@tc96/ui/button'
 import {
   MenuCheckboxItem,
@@ -34,6 +20,20 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
+import {
+  Action,
+  CollectionSearchField,
+  CollectionToolbar,
+  CollectionToolbarGroup,
+  FilterRadioSubmenu,
+  ViewSettingsMenu,
+  ViewSettingsSection,
+  ViewSwitcherCreate,
+  ViewSwitcherItem,
+  ViewSwitcherItems,
+  ViewSwitcherMenu,
+  ViewSwitcherSearch,
+} from '@tc96/ui/patterns'
 import { Separator } from '@tc96/ui/separator'
 import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
 import { ToolbarButton } from '@tc96/ui/toolbar'

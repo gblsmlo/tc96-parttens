@@ -1,4 +1,5 @@
 import { EnvelopeSimpleIcon, TrashIcon } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
 import {
   FlowInspector,
   FlowInspectorDetails,
@@ -8,8 +9,7 @@ import {
   type FlowInspectorTab,
   type FlowLogEntry,
   type FlowLogFilter,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { useState } from 'react'
 import type { InspectorControls } from './inspector-controls.ts'
 import {

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from '@tc96/ui/button'
 import {
   AssetList,
   AssetListItem,
@@ -10,8 +11,7 @@ import {
   MarketShareWidget,
   RiskScoreWidget,
   TransactionsWidget,
-} from '@tc96/parttens'
-import { Button } from '@tc96/ui/button'
+} from '@tc96/ui/patterns'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { FinanceCanvas } from './finance-canvas.tsx'
 

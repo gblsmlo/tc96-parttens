@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PersonProperty, PersonPropertyBadge } from '@tc96/parttens'
+import { PersonProperty, PersonPropertyBadge } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { PersonCanvas } from './person-canvas.tsx'
 import { lawFirmOptions, personOptions } from './person-data.ts'

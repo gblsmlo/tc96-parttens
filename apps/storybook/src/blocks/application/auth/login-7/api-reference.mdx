@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Login7
 
-The centered card sign-in page: the logo above the card, a card with the title, the description, the e-mail and password form with the recovery link beside the password label, then the providers in a row of up to three below the form. The sign up link sits below the card and the `footerLinks` (privacy, terms, status) at the bottom of the page. There is no remember me box. Reach for it when the sign-in page needs legal or status links. Install it with `npx @tc96/parttens add login-7`.
+The centered card sign-in page: the logo above the card, a card with the title, the description, the e-mail and password form with the recovery link beside the password label, then the providers in a row of up to three below the form. The sign up link sits below the card and the `footerLinks` (privacy, terms, status) at the bottom of the page. There is no remember me box. Reach for it when the sign-in page needs legal or status links. Install it with `npx @tc96/cli add login-7`.
 
 It is a whole page: the card renders inside the `main` landmark and the footer links are a navigation landmark after it, so do not wrap the block in another `main`. Authentication, the session, cookies and redirects stay in the app; the block only calls `onSubmit` and `onProviderSelect`.
 

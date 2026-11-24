@@ -1,4 +1,4 @@
-import { Navbar5 } from '@tc96/blocks/application/navbar/navbar-5'
+import { Navbar5 } from '@tc96/ui/blocks/application/navbar/navbar-5'
 import { fn } from 'storybook/test'
 import { actions, breadcrumb, people } from '../fixtures/navbar-5.ts'
 import type { Navbar5Controls } from './navbar-5-controls.ts'

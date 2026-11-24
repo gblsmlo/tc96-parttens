@@ -5,7 +5,7 @@ import {
   LifebuoyIcon,
   UsersThreeIcon,
 } from '@phosphor-icons/react'
-import type { Card5Shortcut } from '@tc96/blocks/application/card/card-5'
+import type { Card5Shortcut } from '@tc96/ui/blocks/application/card/card-5'
 
 export type ShortcutIconName = 'calendar' | 'invoice' | 'support' | 'team'
 

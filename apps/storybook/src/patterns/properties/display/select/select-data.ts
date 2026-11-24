@@ -6,7 +6,10 @@ import {
   RadioButtonIcon,
   UsersIcon,
 } from '@phosphor-icons/react'
-import type { SelectPropertyGroup, SelectPropertyOption } from '@tc96/parttens'
+import type {
+  SelectPropertyGroup,
+  SelectPropertyOption,
+} from '@tc96/ui/patterns'
 
 export const activityOptions: SelectPropertyOption[] = [
   { icon: UsersIcon, label: 'Reunião', tone: 'info', value: 'meeting' },

@@ -1,5 +1,5 @@
 import { HandIcon, RobotIcon } from '@phosphor-icons/react'
-import { FlagProperty } from '@tc96/parttens'
+import { FlagProperty } from '@tc96/ui/patterns'
 import type { FlagControls } from './flag-controls.ts'
 
 export const ComposedFlag = ({

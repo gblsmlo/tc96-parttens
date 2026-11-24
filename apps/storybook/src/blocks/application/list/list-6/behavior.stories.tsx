@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { List6, type List6Props } from '@tc96/blocks/application/list/list-6'
+import { List6, type List6Props } from '@tc96/ui/blocks/application/list/list-6'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { movers } from '../fixtures/list-6.ts'
 import { type List6Controls, list6ControlArgs } from './list-6-controls.ts'

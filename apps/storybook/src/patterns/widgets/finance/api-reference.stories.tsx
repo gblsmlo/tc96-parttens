@@ -4,7 +4,7 @@ import {
   AssetListItem,
   MarketShareWidget,
   TransactionsWidget,
-} from '@tc96/parttens'
+} from '@tc96/ui/patterns'
 import { Slot } from '../../../test-utils/anatomy-slot.tsx'
 import { marketSegments } from './finance-data.tsx'
 
