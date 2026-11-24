@@ -25,6 +25,7 @@ export const ComposedLogin6 = ({
   passwordError,
   pending,
   providers = authProviders,
+  showProviders,
 }: ComposedLogin6Props) => (
   <Login6
     error={error || undefined}
@@ -43,6 +44,7 @@ export const ComposedLogin6 = ({
     onSubmit={onSubmit}
     pending={pending}
     providers={providers}
+    showProviders={showProviders}
     signupHref="/signup"
   />
 )

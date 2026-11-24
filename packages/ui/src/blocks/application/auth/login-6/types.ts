@@ -28,5 +28,6 @@ export interface Login6Props extends AuthBaseProps<Login6Labels> {
   onProviderSelect?: (id: string) => void
   onSubmit: (values: Login6Values) => void
   providers?: AuthProvider[]
+  showProviders?: boolean
   signupHref?: string
 }

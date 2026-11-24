@@ -1,0 +1,33 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Signup6
+
+The two column sign up page of the `login-6` family: the logo at the top of the left column, the title and description aligned left, the name, e-mail, password and confirmation fields, the providers in a row of two below the form, the terms notice and the sign in link. The right column renders `media` in a rounded panel from `md` up. Install it with `npx @tc96/cli add signup-6`.
+
+It shares its frame with `Login6`, `Signup6`, `ResetPassword6` and `MagicLink6` through `AuthSplitLayout`, so the four pages cover the whole auth flow with one look. It is a whole page: the form column is the `main` landmark and the media panel a complementary landmark named by `labels.mediaLabel`. Authentication, sessions and redirects stay in the app.
+
+## Import
+
+```tsx
+import { Signup6 } from '@acme/blocks/application/auth/signup-6'
+```
+
+The same path exports `Signup6Props`, `Signup6Values` and `Signup6Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Signup6
+  media={<ProductShot />}
+  error={error}
+  onSubmit={(values) => signUp(values)}
+  pending={isPending}
+/>
+```
+
+Every prop and label key is typed by `Signup6Props` and `Signup6Labels`; each missing label keeps its pt-BR default.

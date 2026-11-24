@@ -11,7 +11,14 @@ const meta = {
   argTypes: login6ControlArgTypes,
   parameters: {
     controls: {
-      exclude: ['emailError', 'error', 'media', 'passwordError', 'pending'],
+      exclude: [
+        'emailError',
+        'error',
+        'media',
+        'passwordError',
+        'pending',
+        'showProviders',
+      ],
     },
     layout: 'fullscreen',
   },

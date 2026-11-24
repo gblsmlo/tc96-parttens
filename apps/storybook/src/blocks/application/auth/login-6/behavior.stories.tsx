@@ -277,3 +277,14 @@ export const ProvidersCallBack: Story = {
     await expect(args.onProviderSelect).toHaveBeenCalledWith('google')
   },
 }
+
+export const HiddenProviders: Story = {
+  args: { providers: authProviders, showProviders: false },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.queryByRole('group', { name: 'Entrar com outro serviço' }),
+    ).toBeNull()
+    await expect(canvas.queryByText('ou continue com')).toBeNull()
+  },
+}

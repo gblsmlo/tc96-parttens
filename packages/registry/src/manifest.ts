@@ -141,6 +141,9 @@ export const blockNames = [
   'login-9',
   'login-10',
   'signup-3',
+  'signup-6',
+  'reset-password-6',
+  'magic-link-6',
   'run-monitor',
   'impact-map',
 ] as const
@@ -238,6 +241,9 @@ export const blockSources: Record<BlockName, string> = {
   'login-9': 'application/auth/login-9',
   'login-10': 'application/auth/login-10',
   'signup-3': 'application/auth/signup-3',
+  'signup-6': 'application/auth/signup-6',
+  'reset-password-6': 'application/auth/reset-password-6',
+  'magic-link-6': 'application/auth/magic-link-6',
   'run-monitor': 'ai-agents/flow/run-monitor',
   'impact-map': 'ai-agents/flow/impact-map',
 }

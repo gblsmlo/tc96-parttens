@@ -1,0 +1,33 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# ResetPassword6
+
+The two column reset password page of the `login-6` family: the new password with its suggestions and the confirmation on the left, the back to sign in link below, and `media` in a rounded panel on the right from `md` up. Install it with `npx @tc96/cli add reset-password-6`.
+
+It shares its frame with `Login6`, `Signup6`, `ResetPassword6` and `MagicLink6` through `AuthSplitLayout`, so the four pages cover the whole auth flow with one look. It is a whole page: the form column is the `main` landmark and the media panel a complementary landmark named by `labels.mediaLabel`. Authentication, sessions and redirects stay in the app.
+
+## Import
+
+```tsx
+import { ResetPassword6 } from '@acme/blocks/application/auth/reset-password-6'
+```
+
+The same path exports `ResetPassword6Props`, `ResetPassword6Values` and `ResetPassword6Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<ResetPassword6
+  media={<ProductShot />}
+  error={error}
+  onSubmit={(values) => resetPassword(values.password)}
+  pending={isPending}
+/>
+```
+
+Every prop and label key is typed by `ResetPassword6Props` and `ResetPassword6Labels`; each missing label keeps its pt-BR default.

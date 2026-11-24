@@ -3,9 +3,9 @@
 import { Button } from '@tc96/ui/button'
 import { Separator } from '@tc96/ui/separator'
 import type { ReactElement } from 'react'
-import type { AuthCommonLabels, AuthProvider } from '../shared/types'
+import type { AuthCommonLabels, AuthProvider } from './types'
 
-export interface Login6ProvidersProps {
+export interface AuthSplitProvidersProps {
   labels: Pick<
     AuthCommonLabels,
     'providerContinue' | 'providersGroup' | 'providersSeparator'
@@ -15,12 +15,12 @@ export interface Login6ProvidersProps {
   providers?: readonly AuthProvider[]
 }
 
-export function Login6Providers({
+export function AuthSplitProviders({
   labels,
   onSelect,
   pending = false,
   providers,
-}: Readonly<Login6ProvidersProps>): ReactElement | null {
+}: Readonly<AuthSplitProvidersProps>): ReactElement | null {
   if (!providers?.length) return null
   return (
     <div className="flex flex-col gap-4">

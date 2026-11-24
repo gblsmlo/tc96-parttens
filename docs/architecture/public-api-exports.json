@@ -2232,6 +2232,42 @@
     "Signup3Props",
     "Signup3Values"
   ],
+  "block:signup-6": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthNewPasswordLabels",
+    "AuthPasswordSuggestion",
+    "AuthProvider",
+    "AuthRenderLink",
+    "Signup6",
+    "Signup6Labels",
+    "Signup6Props",
+    "Signup6Values"
+  ],
+  "block:reset-password-6": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthNewPasswordLabels",
+    "AuthPasswordSuggestion",
+    "AuthRenderLink",
+    "ResetPassword6",
+    "ResetPassword6Labels",
+    "ResetPassword6Props",
+    "ResetPassword6Values"
+  ],
+  "block:magic-link-6": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthProvider",
+    "AuthRenderLink",
+    "MagicLink6",
+    "MagicLink6Labels",
+    "MagicLink6Props",
+    "MagicLink6Values"
+  ],
   "block:run-monitor": [
     "RunMonitor",
     "RunMonitorConnection",
