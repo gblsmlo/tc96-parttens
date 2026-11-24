@@ -4,6 +4,7 @@ import { files } from './files'
 for (const path of [
   'chat/assistant',
   'chat/chats-panel',
+  'charts',
   'checklist',
   'collection',
   'editable',

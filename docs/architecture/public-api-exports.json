@@ -718,6 +718,11 @@
     "ListVariant",
     "listVariants"
   ],
+  "charts": [
+    "RadiusRange",
+    "ScatterChart",
+    "ScatterChartProps"
+  ],
   "parttens": [
     "Achievement",
     "AchievementsWidget",
@@ -1178,6 +1183,7 @@
     "RICH_TEXT_ELEMENTS",
     "RICH_TEXT_EXTRA_BLOCKS",
     "RICH_TEXT_MARKS",
+    "RadiusRange",
     "RecordDialog",
     "RecordDialogBodyWidth",
     "RecordDialogCreateMore",
@@ -1242,6 +1248,8 @@
     "RiskScoreStat",
     "RiskScoreWidget",
     "RiskScoreWidgetProps",
+    "ScatterChart",
+    "ScatterChartProps",
     "ScheduleFooterLayout",
     "ScheduleProperty",
     "SchedulePropertyDropdownPlacement",
