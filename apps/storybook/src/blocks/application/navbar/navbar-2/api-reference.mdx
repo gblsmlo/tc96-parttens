@@ -1,0 +1,92 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar2
+
+A page-top bar whose breadcrumb segments are switchers: organization, project and environment. Reach for it on a console where the user moves between tenants and deploy targets. Install it with `npx @tc96/parttens add navbar-2`.
+
+It renders a `header`, not a page: it carries no `main` landmark. The block keeps no state: the three selected ids are props and every change is a callback.
+
+The other pages of `Blocks/Application/Navbar/Navbar2`: [Playground](?path=/story/blocks-application-navbar-navbar2-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar2-behavior--triggers-show-the-selected-names) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar2-usages--switching-the-environment-of-a-deploy-console) for a deploy console.
+
+## Import
+
+```tsx
+import { Navbar2 } from '@tc96/blocks/application/navbar/navbar-2'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Three switchers separated by the breadcrumb separator; the environment shows as a badge.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar2
+  environmentId={environmentId}
+  environments={environments}
+  onEnvironmentChange={setEnvironmentId}
+  onOrgChange={setOrganizationId}
+  onProjectChange={setProjectId}
+  organizationId={organizationId}
+  organizations={organizations}
+  projectId={projectId}
+  projects={projects}
+/>
+```
+
+## Navbar2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `organizations` | `Navbar2Option[]` | required | The organizations to pick from. |
+| `organizationId` | `string` | required | The `id` of the selected organization. |
+| `onOrgChange` | `(organizationId: string) => void` | required | Called with the picked `id`. The block does not change `organizationId` by itself. |
+| `projects` | `Navbar2Option[]` | required | The projects to pick from. |
+| `projectId` | `string` | required | The `id` of the selected project. |
+| `onProjectChange` | `(projectId: string) => void` | required | Called with the picked `id`. |
+| `environments` | `Navbar2Environment[]` | required | The environments to pick from. |
+| `environmentId` | `string` | required | The `id` of the selected environment. |
+| `onEnvironmentChange` | `(environmentId: string) => void` | required | Called with the picked `id`. |
+| `labels` | `Partial<Navbar2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Navbar2Option and Navbar2Environment
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the option. |
+| `name` | `string` | Text of the option. |
+| `tone` | `NavbarTone` | Environment only. Shows the name as a Badge of that tone (`success`, `warning`, `info`, `error`, `secondary` or `outline`); without it the name is plain text. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `breadcrumb` | `string` | `"Contexto atual"`; the accessible name of the breadcrumb |
+| `organization` | `string` | `"Organização"`; the title of the organization menu |
+| `project` | `string` | `"Projeto"`; the title of the project menu |
+| `environment` | `string` | `"Ambiente"`; the title of the environment menu |
+| `organizationTrigger` | `(name: string) => string` | `"Organização: Acme Logística"`; the accessible name of the trigger |
+| `projectTrigger` | `(name: string) => string` | `"Projeto: Checkout"` |
+| `environmentTrigger` | `(name: string) => string` | `"Ambiente: Homologação"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar2` | `component` | The switcher bar. |
+| `Navbar2Props` | `type` | The props of the bar. |
+| `Navbar2Option` | `type` | An organization or a project. |
+| `Navbar2Environment` | `type` | An environment, with its tone. |
+| `Navbar2Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The switchers sit in a breadcrumb navigation named by `labels.breadcrumb`; each trigger is a button named by its `...Trigger` label, so the current value is announced.
+- Each menu is a radio group: the selected option has `aria-checked`, and arrows, Enter and Escape work as in any menu.
+- The badge tone uses the theme tokens of COSS `Badge`; the block carries no color of its own.

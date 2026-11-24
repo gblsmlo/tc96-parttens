@@ -1,0 +1,99 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar3
+
+A page-top bar with a centered search that opens a command dialog, a notifications popover with an unread count and a user menu. Reach for it as the top bar of an app that has many pages. Install it with `npx @tc96/parttens add navbar-3`.
+
+It renders a `header`, not a page: it carries no `main` landmark. The block keeps no state beyond the open dialog, never fetches, and the routes, notifications and menu items are data.
+
+The other pages of `Blocks/Application/Navbar/Navbar3`: [Playground](?path=/story/blocks-application-navbar-navbar3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar3-behavior--search-trigger-opens-the-command-dialog) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar3-usages--loaded) for notifications read over the network.
+
+## Import
+
+```tsx
+import { Navbar3 } from '@tc96/blocks/application/navbar/navbar-3'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The logo slot on the left, the search trigger in the center, the bell and the user menu on the right.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar3
+  notifications={notifications}
+  onNavigate={navigate}
+  onUserAction={runUserAction}
+  routes={routes}
+  user={user}
+  userActions={userActions}
+/>
+```
+
+## Navbar3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `routes` | `Navbar3RouteGroup[]` | required | The groups the command dialog lists and filters. |
+| `notifications` | `Navbar3Notification[]` | required | The popover rows, in order. Empty renders the empty text. |
+| `user` | `Navbar3User` | required | Name, e-mail and photo of the signed-in user. |
+| `userActions` | `Navbar3UserAction[]` | - | The user menu items. Without them the menu lists only the user. |
+| `onNavigate` | `(href: string) => void` | - | Called with the `href` of the route picked in the dialog; the dialog closes first. |
+| `onNotificationSelect` | `(notificationId: string) => void` | - | Called when a notification row is clicked. |
+| `onNotificationsOpenChange` | `(open: boolean) => void` | - | Called when the popover opens or closes, so the app can mark them as read. |
+| `onUserAction` | `(actionId: string) => void` | - | Called with the `id` of the picked user menu item. |
+| `logo` | `ReactNode` | - | Content of the left slot. |
+| `labels` | `Partial<Navbar3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Data types
+
+| Type | Fields |
+| --- | --- |
+| `Navbar3RouteGroup` | `label` and `routes` |
+| `Navbar3Route` | `label` and `href` |
+| `Navbar3Notification` | `id`, `title`, `time`, optional `description` and `unread` |
+| `Navbar3User` | `name`, `email` and optional `avatarUrl` |
+| `Navbar3UserAction` | `id`, `label`, optional `icon` and `variant` (`default` or `destructive`) |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `search` | `string` | `"Buscar"`; the accessible name of the trigger and of the dialog |
+| `searchPlaceholder` | `string` | `"Buscar páginas e ações"`; the trigger text and the input placeholder |
+| `searchEmpty` | `string` | `"Nenhum resultado encontrado."` |
+| `searchNavigate` | `string` | `"Navegar"`; the footer hint |
+| `searchOpen` | `string` | `"Abrir"`; the footer hint |
+| `searchClose` | `string` | `"Fechar"`; the footer hint |
+| `notifications` | `string` | `"Notificações"`; the title of the popover |
+| `notificationsEmpty` | `string` | `"Nenhuma notificação por enquanto."` |
+| `notificationsTrigger` | `(unread: number) => string` | `"Notificações, 2 não lidas"`; the accessible name of the bell |
+| `unread` | `string` | `"não lida"`; read by assistive technology on unread rows |
+| `account` | `string` | `"Conta"`; the accessible name of the user button |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar3` | `component` | The command search bar. |
+| `Navbar3Props` | `type` | The props of the bar. |
+| `Navbar3RouteGroup` | `type` | A group of routes. |
+| `Navbar3Route` | `type` | A route. |
+| `Navbar3Notification` | `type` | A notification row. |
+| `Navbar3User` | `type` | The signed-in user. |
+| `Navbar3UserAction` | `type` | A user menu item. |
+| `Navbar3Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The search opens with the trigger or with ⌘K and Ctrl+K; the dialog traps focus and Escape closes it.
+- The bell is named by `labels.notificationsTrigger`, so the count is announced and the visual badge is `aria-hidden`.
+- The user button is named by `labels.account`; the avatar is decorative.
+- The block carries no color, radius or shadow of its own beyond the bottom border: the theme belongs to the app.

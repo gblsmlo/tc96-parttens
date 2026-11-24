@@ -112,6 +112,11 @@ export const blockNames = [
   'timeline-2',
   'timeline-3',
   'timeline-4',
+  'navbar-1',
+  'navbar-2',
+  'navbar-3',
+  'navbar-4',
+  'navbar-5',
 ] as const
 export type BlockName = (typeof blockNames)[number]
 /** Folder under packages/blocks/src, kept as the path in the consumer. */
@@ -182,6 +187,11 @@ export const blockSources: Record<BlockName, string> = {
   'timeline-2': 'application/timeline/timeline-2',
   'timeline-3': 'application/timeline/timeline-3',
   'timeline-4': 'application/timeline/timeline-4',
+  'navbar-1': 'application/navbar/navbar-1',
+  'navbar-2': 'application/navbar/navbar-2',
+  'navbar-3': 'application/navbar/navbar-3',
+  'navbar-4': 'application/navbar/navbar-4',
+  'navbar-5': 'application/navbar/navbar-5',
 }
 export type ItemName = PatternName | BlockName
 /** Areas under packages/parttens/src that ship with an item no file of it imports. */
