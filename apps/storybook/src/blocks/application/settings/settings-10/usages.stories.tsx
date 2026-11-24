@@ -102,7 +102,7 @@ const WorkspaceStages = () => {
 const meta = {
   component: WorkspaceStages,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings10/Usages',
 } satisfies Meta<typeof WorkspaceStages>
 

@@ -28,7 +28,7 @@ const ChangelogFeed = () => {
 const meta = {
   component: ChangelogFeed,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Timeline/Timeline2/Usages',
 } satisfies Meta<typeof ChangelogFeed>
 

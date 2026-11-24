@@ -25,7 +25,7 @@ const OverviewStats = () => {
 const meta = {
   component: OverviewStats,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Stats/Stats1/Usages',
 } satisfies Meta<typeof OverviewStats>
 

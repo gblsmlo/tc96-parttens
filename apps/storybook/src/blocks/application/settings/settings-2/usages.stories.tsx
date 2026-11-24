@@ -44,7 +44,7 @@ const PreferencesSettings = () => {
 const meta = {
   component: PreferencesSettings,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings2/Usages',
 } satisfies Meta<typeof PreferencesSettings>
 

@@ -32,7 +32,7 @@ const WorkspaceRules = () => {
 const meta = {
   component: WorkspaceRules,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings9/Usages',
 } satisfies Meta<typeof WorkspaceRules>
 

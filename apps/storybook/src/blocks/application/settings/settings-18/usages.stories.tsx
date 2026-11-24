@@ -54,7 +54,7 @@ const WorkspacePermissions = () => {
 const meta = {
   component: WorkspacePermissions,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings18/Usages',
 } satisfies Meta<typeof WorkspacePermissions>
 

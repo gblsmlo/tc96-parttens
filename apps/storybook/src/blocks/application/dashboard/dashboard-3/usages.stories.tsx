@@ -74,7 +74,7 @@ const CoverageDashboard = () => {
 const meta = {
   component: CoverageDashboard,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Dashboard/Dashboard3/Usages',
 } satisfies Meta<typeof CoverageDashboard>
 

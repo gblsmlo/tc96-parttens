@@ -28,7 +28,7 @@ const IntegrationCatalog = () => {
 const meta = {
   component: IntegrationCatalog,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Card/Card2/Usages',
 } satisfies Meta<typeof IntegrationCatalog>
 

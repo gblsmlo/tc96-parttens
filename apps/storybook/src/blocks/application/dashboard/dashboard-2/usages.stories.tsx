@@ -89,7 +89,7 @@ const RetailDashboard = () => {
 const meta = {
   component: RetailDashboard,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Dashboard/Dashboard2/Usages',
 } satisfies Meta<typeof RetailDashboard>
 

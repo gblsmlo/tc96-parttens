@@ -41,7 +41,7 @@ const TeamMembers = () => {
 const meta = {
   component: TeamMembers,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings6/Usages',
 } satisfies Meta<typeof TeamMembers>
 

@@ -28,7 +28,7 @@ const ActivityFeed = () => {
 const meta = {
   component: ActivityFeed,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Timeline/Timeline1/Usages',
 } satisfies Meta<typeof ActivityFeed>
 

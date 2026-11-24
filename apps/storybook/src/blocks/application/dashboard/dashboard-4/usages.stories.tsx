@@ -88,7 +88,7 @@ const ModuleTracker = () => {
 const meta = {
   component: ModuleTracker,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Dashboard/Dashboard4/Usages',
 } satisfies Meta<typeof ModuleTracker>
 

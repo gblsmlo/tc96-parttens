@@ -35,7 +35,7 @@ const OrdersHome = () => {
 const meta = {
   component: OrdersHome,
   parameters: { layout: 'fullscreen' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Navbar/Navbar3/Usages',
 } satisfies Meta<typeof OrdersHome>
 

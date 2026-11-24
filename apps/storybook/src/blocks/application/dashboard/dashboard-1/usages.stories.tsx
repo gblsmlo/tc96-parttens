@@ -83,7 +83,7 @@ const FulfillmentDashboard = () => {
 const meta = {
   component: FulfillmentDashboard,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Dashboard/Dashboard1/Usages',
 } satisfies Meta<typeof FulfillmentDashboard>
 

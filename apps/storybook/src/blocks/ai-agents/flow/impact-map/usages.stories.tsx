@@ -39,7 +39,7 @@ const GrowthPlan = () => {
 const meta = {
   component: GrowthPlan,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/AI & Agents/Flow/ImpactMap/Usages',
 } satisfies Meta<typeof GrowthPlan>
 

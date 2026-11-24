@@ -45,7 +45,7 @@ const ConnectStorage = () => {
 const meta = {
   component: ConnectStorage,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Empty State/EmptyState5/Usages',
 } satisfies Meta<typeof ConnectStorage>
 

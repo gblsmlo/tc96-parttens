@@ -27,7 +27,7 @@ const MeetingsCard = () => {
 const meta = {
   component: MeetingsCard,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Card/Card4/Usages',
 } satisfies Meta<typeof MeetingsCard>
 

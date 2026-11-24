@@ -28,7 +28,7 @@ const ShortcutsCard = () => {
 const meta = {
   component: ShortcutsCard,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Card/Card5/Usages',
 } satisfies Meta<typeof ShortcutsCard>
 

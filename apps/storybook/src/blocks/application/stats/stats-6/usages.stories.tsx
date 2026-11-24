@@ -33,7 +33,7 @@ const PortfolioCard = () => {
 const meta = {
   component: PortfolioCard,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Stats/Stats6/Usages',
 } satisfies Meta<typeof PortfolioCard>
 

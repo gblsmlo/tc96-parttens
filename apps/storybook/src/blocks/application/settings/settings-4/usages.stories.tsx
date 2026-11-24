@@ -39,7 +39,7 @@ const AppearanceSettings = () => {
 const meta = {
   component: AppearanceSettings,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings4/Usages',
 } satisfies Meta<typeof AppearanceSettings>
 

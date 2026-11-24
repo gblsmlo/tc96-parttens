@@ -42,7 +42,7 @@ const ApprovalTrack = () => {
 const meta = {
   component: ApprovalTrack,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Timeline/Timeline3/Usages',
 } satisfies Meta<typeof ApprovalTrack>
 

@@ -53,7 +53,7 @@ const WorkspacePrivacy = () => {
 const meta = {
   component: WorkspacePrivacy,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings17/Usages',
 } satisfies Meta<typeof WorkspacePrivacy>
 

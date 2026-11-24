@@ -26,7 +26,7 @@ const TeamMember = () => {
 const meta = {
   component: TeamMember,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Card/Card3/Usages',
 } satisfies Meta<typeof TeamMember>
 

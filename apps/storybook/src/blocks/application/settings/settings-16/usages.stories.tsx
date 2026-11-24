@@ -34,7 +34,7 @@ const WorkspaceCostCenters = () => {
 const meta = {
   component: WorkspaceCostCenters,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Settings/Settings16/Usages',
 } satisfies Meta<typeof WorkspaceCostCenters>
 

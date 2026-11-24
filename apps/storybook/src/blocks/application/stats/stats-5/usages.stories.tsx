@@ -24,7 +24,7 @@ const SalesCard = () => {
 const meta = {
   component: SalesCard,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Stats/Stats5/Usages',
 } satisfies Meta<typeof SalesCard>
 

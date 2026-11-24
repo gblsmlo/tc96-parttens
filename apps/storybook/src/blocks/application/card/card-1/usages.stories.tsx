@@ -24,7 +24,7 @@ const ProjectDetails = () => {
 const meta = {
   component: ProjectDetails,
   parameters: { layout: 'padded' },
-  tags: ['!autodocs'],
+  tags: ['!autodocs', 'msw'],
   title: 'Blocks/Application/Card/Card1/Usages',
 } satisfies Meta<typeof ProjectDetails>
 
