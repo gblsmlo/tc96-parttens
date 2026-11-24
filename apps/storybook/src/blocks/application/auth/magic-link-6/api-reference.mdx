@@ -1,0 +1,33 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# MagicLink6
+
+The two column passwordless sign in of the `login-6` family: one e-mail field that sends a sign in link, the providers below it and the sign up link. With `sent` it shows the check your e-mail state with resend and `onReset`. `media` renders in a rounded panel on the right from `md` up. Install it with `npx @tc96/cli add magic-link-6`.
+
+It shares its frame with `Login6`, `Signup6`, `ResetPassword6` and `MagicLink6` through `AuthSplitLayout`, so the four pages cover the whole auth flow with one look. It is a whole page: the form column is the `main` landmark and the media panel a complementary landmark named by `labels.mediaLabel`. Authentication, sessions and redirects stay in the app.
+
+## Import
+
+```tsx
+import { MagicLink6 } from '@acme/blocks/application/auth/magic-link-6'
+```
+
+The same path exports `MagicLink6Props`, `MagicLink6Values` and `MagicLink6Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<MagicLink6
+  media={<ProductShot />}
+  error={error}
+  onSubmit={(values) => sendLink(values.email)}
+  pending={isPending}
+/>
+```
+
+Every prop and label key is typed by `MagicLink6Props` and `MagicLink6Labels`; each missing label keeps its pt-BR default.

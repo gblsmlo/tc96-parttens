@@ -46,6 +46,7 @@ The same path exports the types `Login6Props`, `Login6Values`, `Login6Labels`, `
 | `signupHref` | `string` | - | Renders the sign up link only when passed. |
 | `forgotPasswordHref` | `string` | - | Renders the recovery link beside the password label only when passed. |
 | `providers` | `AuthProvider[]` | - | `{ id, label, icon? }` buttons below the form, after a separator, two per row. |
+| `showProviders` | `boolean` | `true` | `false` hides the providers and their separator even when `providers` is passed. |
 | `onProviderSelect` | `(id: string) => void` | - | Called with the provider id; never while `pending`. |
 | `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders each link with the app's router. |
 | `labels` | `Partial<Login6Labels>` | - | Overrides the texts the block owns; each missing key keeps its pt-BR default. |

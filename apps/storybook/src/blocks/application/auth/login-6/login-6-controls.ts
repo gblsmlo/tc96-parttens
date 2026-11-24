@@ -6,6 +6,7 @@ export interface Login6Controls {
   media: boolean
   passwordError: string
   pending: boolean
+  showProviders: boolean
 }
 
 export const login6ControlArgs: Login6Controls = {
@@ -14,6 +15,7 @@ export const login6ControlArgs: Login6Controls = {
   media: true,
   passwordError: '',
   pending: false,
+  showProviders: true,
 }
 
 export const login6ControlArgTypes: Partial<ArgTypes<Login6Controls>> = {
@@ -36,5 +38,9 @@ export const login6ControlArgTypes: Partial<ArgTypes<Login6Controls>> = {
   pending: {
     control: 'boolean',
     description: 'The `pending` prop of `Login6`.',
+  },
+  showProviders: {
+    control: 'boolean',
+    description: 'The `showProviders` prop of `Login6`.',
   },
 }
