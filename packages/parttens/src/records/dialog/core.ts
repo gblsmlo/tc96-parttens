@@ -21,8 +21,10 @@ export interface RecordDialogProps {
   open: boolean
   properties?: ReactNode
   size?: RecordDialogSize
+  step?: string
   stretchBody?: boolean
   submitDisabled?: boolean
+  submitHint?: ReactNode
   submitOnModEnter?: boolean
   submitLabel: string
   submittingLabel?: string

@@ -37,6 +37,7 @@ interface DialogShellProps {
   dismissible?: boolean
   errorMessage?: ReactNode
   footer?: ReactNode
+  footerHint?: ReactNode
   footerStart?: ReactNode
   formHost?: ReactNode
   onOpenChange: (open: boolean) => void
@@ -78,6 +79,7 @@ export function DialogShell({
   dismissible = true,
   errorMessage,
   footer,
+  footerHint,
   footerStart,
   formHost,
   onOpenChange,
@@ -114,10 +116,12 @@ export function DialogShell({
         </div>
       ) : null}
       {footer}
+      {footerHint}
     </>
   ) : null
 
-  const footerClassName = footerStart ? 'sm:items-center' : undefined
+  const footerClassName =
+    footerStart || footerHint ? 'sm:items-center' : undefined
 
   return (
     <Dialog onOpenChange={handleOpenChange} open={open}>

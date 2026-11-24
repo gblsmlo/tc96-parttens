@@ -30,11 +30,13 @@ import {
   WorkflowIcon,
 } from 'lucide-react'
 import { useState } from 'react'
-import { expect, fn, screen, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { initialContacts } from '../../collection/fixtures/contacts'
 import { CreateContactDialog, type NewContact } from './create-contact-dialog'
 import { CreateEventDialog } from './create-event-dialog'
 import type { EventSlot, EventValues } from './event-record'
+import { LawsuitDialog } from './lawsuit-dialog'
+import type { LawsuitLookup, LawsuitValues } from './lawsuit-record'
 import { LeadDialog } from './lead-dialog'
 import type { NewLead } from './lead-record'
 import { NoteDialog } from './note-dialog'
@@ -470,5 +472,82 @@ export const Events: StoryObj<EventsArgs> = {
       dialog.getByRole('combobox', { name: /^Availability/ }),
     ).toHaveTextContent('Busy')
     await expect(dialog.getByRole('button', { name: 'Save' })).toBeDisabled()
+  },
+}
+
+interface LawsuitsArgs {
+  lookup: LawsuitLookup
+  onCreate: (values: LawsuitValues) => void
+  onCreateCase: (values: LawsuitValues) => void
+  onOpenExisting: (number: string) => void
+  onSearchByOab: () => void
+}
+
+export const Lawsuits: StoryObj<LawsuitsArgs> = {
+  args: {
+    lookup: 'slow',
+    onCreate: fn(),
+    onCreateCase: fn(),
+    onOpenExisting: fn(),
+    onSearchByOab: fn(),
+  },
+  argTypes: {
+    lookup: {
+      control: 'inline-radio',
+      description:
+        'How the simulated sources answer: all in time, DataJud still searching, DataJud failing, or a number already registered.',
+      options: ['fast', 'slow', 'failing', 'duplicate'],
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A lawsuit created from its number, in two steps of one dialog. `origin` asks for the number, says why `Continuar` is disabled through `submitHint`, warns when the number is already registered and offers the other ways to start. `details` lists the sources in a `RecordStatusList` while every field stays editable: a value a source brings fills only a field the user did not touch and shows the source beside it, the parties wait in `Skeleton`, and the hint says the lawsuit can be created before the slow source answers. `Ainda não foi distribuído` moves to the `case` step. Each move is a `step` change, so focus goes to the first field of the new body.',
+      },
+    },
+  },
+  play: async ({ args }) => {
+    const dialog = within(
+      await screen.findByRole('dialog', { name: 'Novo processo' }),
+    )
+    const submit = dialog.getByRole('button', { name: 'Continuar' })
+    await expect(submit).toBeDisabled()
+    await expect(submit).toHaveAccessibleDescription('Digite os 20 dígitos.')
+    await userEvent.type(
+      dialog.getByRole('textbox', { name: 'Número do processo' }),
+      '9990011-96.2025.8.26.9999',
+    )
+    await waitFor(() => expect(submit).toBeEnabled())
+    await userEvent.click(submit)
+    await waitFor(() =>
+      expect(
+        dialog.getByRole('textbox', { name: 'Título do processo' }),
+      ).toHaveFocus(),
+    )
+    await expect(
+      dialog.getByRole('list', { name: 'Fontes consultadas' }),
+    ).toBeVisible()
+    await waitFor(() =>
+      expect(
+        dialog.getByRole('textbox', { name: 'Título do processo' }),
+      ).toHaveValue('Ada Lovelace × Comercial Aurora Ltda'),
+    )
+    await userEvent.click(
+      dialog.getByRole('button', { name: /Criar processo/ }),
+    )
+    await waitFor(() => expect(args.onCreate).toHaveBeenCalledOnce())
+  },
+  render: function Lawsuits(args) {
+    const [open, setOpen] = useState(true)
+
+    return (
+      <>
+        <Button onClick={() => setOpen(true)} variant="outline">
+          Novo processo
+        </Button>
+        <LawsuitDialog {...args} onOpenChange={setOpen} open={open} />
+      </>
+    )
   },
 }
