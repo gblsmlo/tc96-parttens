@@ -700,6 +700,12 @@
     "assistantDefaultLabels",
     "assistantDefaultPlaceholder"
   ],
+  "icon-row": [
+    "IconRow",
+    "IconRowProps",
+    "IconRowVariant",
+    "iconRowVariants"
+  ],
   "parttens": [
     "Achievement",
     "AchievementsWidget",
@@ -1016,6 +1022,9 @@
     "IconLabelProperty",
     "IconLabelPropertyIcon",
     "IconLabelPropertyProps",
+    "IconRow",
+    "IconRowProps",
+    "IconRowVariant",
     "InvoiceStatus",
     "InvoiceStatusWidget",
     "InvoiceStatusWidgetProps",
@@ -1361,6 +1370,7 @@
     "fromZonedDateTime",
     "getTimeZoneOffsetMs",
     "groupStepTypes",
+    "iconRowVariants",
     "incomingOf",
     "isSameCalendarDate",
     "kanbanCardVariants",

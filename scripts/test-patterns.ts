@@ -10,6 +10,7 @@ for (const path of [
   'flow/canvas',
   'flow/inspector',
   'flow/step-library',
+  'icon-row',
   'properties',
   'records/dialog',
   'records/group',

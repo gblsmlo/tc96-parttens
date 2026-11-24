@@ -19,6 +19,7 @@ export const patternNames = [
   'flow-step-library',
   'flow-inspector',
   'chat-assistant',
+  'icon-row',
 ] as const
 export type PatternName = (typeof patternNames)[number]
 /** Folder under packages/parttens/src, kept as the path in the consumer. */
@@ -40,6 +41,7 @@ export const patternSources: Record<PatternName, string> = {
   'flow-step-library': 'flow/step-library',
   'flow-inspector': 'flow/inspector',
   'chat-assistant': 'chat/assistant',
+  'icon-row': 'icon-row',
 }
 export const blockNames = [
   'app-shell-1',
