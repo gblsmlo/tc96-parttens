@@ -46,6 +46,9 @@ The API keys section. Renders the title, the description and, with `onCreate`, t
 | `onCopy` | `(keyId: string) => void` | - | Called when the copy button of a row is clicked. Without it the copy buttons are not rendered. |
 | `onActiveChange` | `(keyId: string, active: boolean) => void` | - | Called with the key id and the next state when its switch is toggled. Without it the switches render disabled. |
 | `onKeyAction` | `(keyId: string, action: Settings22Action) => void` | - | Called with the key id and `'rotate'` or `'revoke'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings22Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -83,6 +86,10 @@ The block takes no other props.
 | `actions` | `(name: string) => string` | `"Ações de Produção"`; the accessible name of the row menu |
 | `copy` | `(name: string) => string` | `"Copiar token de Produção"`; the accessible name of the copy button |
 | `status` | `(name: string) => string` | `"Ativar Produção"`; the accessible name of the switch |
+| `loading` | `string` | `"Carregando chaves"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as chaves"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

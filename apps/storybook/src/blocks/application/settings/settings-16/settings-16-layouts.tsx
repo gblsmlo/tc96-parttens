@@ -9,6 +9,9 @@ import {
 import type { Settings16Controls } from './settings-16-controls.ts'
 
 interface ComposedSettings16Props extends Settings16Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onCostCenterAction?: Settings16Props['onCostCenterAction']
   onCreate?: Settings16Props['onCreate']
 }
@@ -16,6 +19,9 @@ interface ComposedSettings16Props extends Settings16Controls {
 const ignore = () => undefined
 
 export const ComposedSettings16 = ({
+  error,
+  onRetry,
+  pending,
   description,
   empty,
   newCostCenter,
@@ -26,6 +32,9 @@ export const ComposedSettings16 = ({
   withArchived,
 }: Readonly<ComposedSettings16Props>) => (
   <Settings16
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     archivedCostCenters={
       withArchived ? settings16ArchivedCostCenters : undefined
     }

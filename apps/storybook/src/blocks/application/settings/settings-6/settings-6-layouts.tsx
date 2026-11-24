@@ -6,6 +6,9 @@ import { roles, seats, team } from '../fixtures/settings-6.ts'
 import type { Settings6Controls } from './settings-6-controls.ts'
 
 interface ComposedSettings6Props extends Settings6Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onInvitationAction?: Settings6Props['onInvitationAction']
   onInvite?: Settings6Props['onInvite']
   onMemberAction?: Settings6Props['onMemberAction']
@@ -15,6 +18,9 @@ interface ComposedSettings6Props extends Settings6Controls {
 const ignore = () => undefined
 
 export const ComposedSettings6 = ({
+  error,
+  onRetry,
+  pending,
   invite,
   onInvitationAction = ignore,
   onInvite = ignore,
@@ -26,6 +32,9 @@ export const ComposedSettings6 = ({
   withSeats,
 }: Readonly<ComposedSettings6Props>) => (
   <Settings6
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     invitations={withInvitations ? team.invitations : []}
     labels={{ invite, title }}
     members={team.members}

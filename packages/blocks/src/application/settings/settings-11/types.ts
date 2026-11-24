@@ -1,4 +1,5 @@
 import type { Icon } from '@phosphor-icons/react'
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 
 export interface Settings11Status {
   icon: Icon
@@ -14,7 +15,7 @@ export interface Settings11Group {
   title: string
 }
 
-export interface Settings11Labels {
+export interface Settings11Labels extends SettingsLoadLabels {
   actions: (name: string) => string
   delete: string
   description: string
@@ -26,7 +27,7 @@ export interface Settings11Labels {
 
 export type Settings11Action = 'edit' | 'delete'
 
-export interface Settings11Props {
+export interface Settings11Props extends SettingsLoadProps {
   className?: string
   groups: Settings11Group[]
   labels?: Partial<Settings11Labels>

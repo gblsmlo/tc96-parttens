@@ -9,6 +9,9 @@ import {
 import type { Settings15Controls } from './settings-15-controls.ts'
 
 interface ComposedSettings15Props extends Settings15Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onCategoryAction?: Settings15Props['onCategoryAction']
   onCreate?: Settings15Props['onCreate']
 }
@@ -16,6 +19,9 @@ interface ComposedSettings15Props extends Settings15Controls {
 const ignore = () => undefined
 
 export const ComposedSettings15 = ({
+  error,
+  onRetry,
+  pending,
   description,
   empty,
   newCategory,
@@ -26,6 +32,9 @@ export const ComposedSettings15 = ({
   withArchived,
 }: Readonly<ComposedSettings15Props>) => (
   <Settings15
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     archivedCategories={withArchived ? settings15ArchivedCategories : undefined}
     categories={empty ? [] : settings15Categories}
     labels={{ description, newCategory, title }}

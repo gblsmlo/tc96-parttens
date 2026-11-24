@@ -10,6 +10,9 @@ import {
 import type { Settings23Controls } from './settings-23-controls.ts'
 
 interface ComposedSettings23Props extends Settings23Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onChangePlan?: Settings23Props['onChangePlan']
   onDownload?: Settings23Props['onDownload']
 }
@@ -17,6 +20,9 @@ interface ComposedSettings23Props extends Settings23Controls {
 const ignore = () => undefined
 
 export const ComposedSettings23 = ({
+  error,
+  onRetry,
+  pending,
   changePlan,
   emptyInvoices,
   onChangePlan = ignore,
@@ -25,6 +31,9 @@ export const ComposedSettings23 = ({
   withActions,
 }: Readonly<ComposedSettings23Props>) => (
   <Settings23
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     invoices={emptyInvoices ? [] : settings23Invoices}
     labels={{ changePlan, title }}
     onChangePlan={withActions ? onChangePlan : undefined}

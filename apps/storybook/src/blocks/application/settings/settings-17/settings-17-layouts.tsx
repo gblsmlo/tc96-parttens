@@ -7,6 +7,9 @@ import { privacyControls } from '../fixtures/settings-17.ts'
 import type { Settings17Controls } from './settings-17-controls.ts'
 
 interface ComposedSettings17Props extends Settings17Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onAction?: Settings17Props['onAction']
   onCheckedChange?: Settings17Props['onCheckedChange']
 }
@@ -14,6 +17,9 @@ interface ComposedSettings17Props extends Settings17Controls {
 const ignore = () => undefined
 
 export const ComposedSettings17 = ({
+  error,
+  onRetry,
+  pending,
   description,
   empty,
   onAction = ignore,
@@ -25,6 +31,9 @@ export const ComposedSettings17 = ({
 
   return (
     <Settings17
+      error={error}
+      onRetry={onRetry}
+      pending={pending}
       controls={empty ? [] : controls}
       labels={{ description, title }}
       onAction={withActions ? onAction : undefined}

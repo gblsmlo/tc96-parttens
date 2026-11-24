@@ -19,8 +19,10 @@ import { Button } from '@tc96/ui/button'
 import { Switch } from '@tc96/ui/switch'
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsRowActions } from '../shared/settings-row-actions'
 import { defaultSettings12Labels } from './labels'
+import { Settings12Skeleton } from './settings-12-skeleton'
 import type {
   Settings12Action,
   Settings12ActionType,
@@ -36,6 +38,9 @@ const actionTypeIcons: Record<Settings12ActionType, Icon> = {
 }
 
 export function Settings12({
+  error,
+  onRetry,
+  pending,
   blockStageChanges = false,
   className,
   labels: labelsProp,
@@ -46,6 +51,13 @@ export function Settings12({
   stages,
 }: Readonly<Settings12Props>) {
   const labels = { ...defaultSettings12Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings12Skeleton />,
+  })
   const actions = [
     { id: 'edit', label: labels.edit },
     { destructive: true, id: 'delete', label: labels.delete },
@@ -62,104 +74,108 @@ export function Settings12({
           </SettingsSectionHeader>
         }
       >
-        <SettingsRow
-          description={labels.blockStageChangesDescription}
-          endSlot={
-            <Switch
-              aria-label={labels.blockStageChanges}
-              checked={blockStageChanges}
-              onCheckedChange={onBlockStageChangesChange}
-            />
-          }
-          title={labels.blockStageChanges}
-        />
-      </SettingsSection>
-      <SettingsSection
-        header={
-          <SettingsSectionHeader
-            actions={
-              onCreate ? (
-                <Button onClick={onCreate} size="sm">
-                  {labels.newAction}
-                </Button>
-              ) : undefined
+        {loadState ?? (
+          <SettingsRow
+            description={labels.blockStageChangesDescription}
+            endSlot={
+              <Switch
+                aria-label={labels.blockStageChanges}
+                checked={blockStageChanges}
+                onCheckedChange={onBlockStageChangesChange}
+              />
             }
-          >
-            <SettingsSectionTitle>{labels.title}</SettingsSectionTitle>
-            <SettingsSectionDescription>
-              {labels.description}
-            </SettingsSectionDescription>
-          </SettingsSectionHeader>
-        }
-      >
-        {stages.length === 0 ? (
-          <StateSurface
-            description={labels.emptyDescription}
-            kind="empty"
-            title={labels.emptyTitle}
+            title={labels.blockStageChanges}
           />
-        ) : (
-          <div>
-            {stages.map((stage) => (
-              <SettingsCollapsed
-                key={stage.id}
-                title={labels.leaving(stage.name)}
-              >
-                {stage.actions.length === 0 ? (
-                  <Text
-                    foreground="muted"
-                    render={<p className="py-3" />}
-                    size="sm"
-                  >
-                    {labels.emptyStage}
-                  </Text>
-                ) : (
-                  stage.actions.map((action) => {
-                    const ActionIcon = actionTypeIcons[action.type]
-
-                    return (
-                      <SettingsRow
-                        description={labels.actionType(action.type)}
-                        endSlot={
-                          <>
-                            <Switch
-                              aria-label={labels.required(action.title)}
-                              checked={action.required}
-                              onCheckedChange={(checked) =>
-                                onRequiredChange?.(action.id, checked)
-                              }
-                            />
-                            {onNextActionAction ? (
-                              <SettingsRowActions
-                                actions={actions}
-                                label={labels.actions(action.title)}
-                                onAction={(item) =>
-                                  onNextActionAction(
-                                    action.id,
-                                    item as Settings12Action,
-                                  )
-                                }
-                              />
-                            ) : null}
-                          </>
-                        }
-                        key={action.id}
-                        startSlot={
-                          <ActionIcon
-                            aria-hidden="true"
-                            className="text-muted-foreground"
-                          />
-                        }
-                        title={action.title}
-                      />
-                    )
-                  })
-                )}
-              </SettingsCollapsed>
-            ))}
-          </div>
         )}
       </SettingsSection>
+      {loadState ? null : (
+        <SettingsSection
+          header={
+            <SettingsSectionHeader
+              actions={
+                onCreate ? (
+                  <Button onClick={onCreate} size="sm">
+                    {labels.newAction}
+                  </Button>
+                ) : undefined
+              }
+            >
+              <SettingsSectionTitle>{labels.title}</SettingsSectionTitle>
+              <SettingsSectionDescription>
+                {labels.description}
+              </SettingsSectionDescription>
+            </SettingsSectionHeader>
+          }
+        >
+          {stages.length === 0 ? (
+            <StateSurface
+              description={labels.emptyDescription}
+              kind="empty"
+              title={labels.emptyTitle}
+            />
+          ) : (
+            <div>
+              {stages.map((stage) => (
+                <SettingsCollapsed
+                  key={stage.id}
+                  title={labels.leaving(stage.name)}
+                >
+                  {stage.actions.length === 0 ? (
+                    <Text
+                      foreground="muted"
+                      render={<p className="py-3" />}
+                      size="sm"
+                    >
+                      {labels.emptyStage}
+                    </Text>
+                  ) : (
+                    stage.actions.map((action) => {
+                      const ActionIcon = actionTypeIcons[action.type]
+
+                      return (
+                        <SettingsRow
+                          description={labels.actionType(action.type)}
+                          endSlot={
+                            <>
+                              <Switch
+                                aria-label={labels.required(action.title)}
+                                checked={action.required}
+                                onCheckedChange={(checked) =>
+                                  onRequiredChange?.(action.id, checked)
+                                }
+                              />
+                              {onNextActionAction ? (
+                                <SettingsRowActions
+                                  actions={actions}
+                                  label={labels.actions(action.title)}
+                                  onAction={(item) =>
+                                    onNextActionAction(
+                                      action.id,
+                                      item as Settings12Action,
+                                    )
+                                  }
+                                />
+                              ) : null}
+                            </>
+                          }
+                          key={action.id}
+                          startSlot={
+                            <ActionIcon
+                              aria-hidden="true"
+                              className="text-muted-foreground"
+                            />
+                          }
+                          title={action.title}
+                        />
+                      )
+                    })
+                  )}
+                </SettingsCollapsed>
+              ))}
+            </div>
+          )}
+        </SettingsSection>
+      )}
     </div>
   )
 }

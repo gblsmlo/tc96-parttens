@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings22Labels } from './types'
 
 export const defaultSettings22Labels: Settings22Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar as chaves',
+  loading: 'Carregando chaves',
   actions: (name) => `Ações de ${name}`,
   columnActions: 'Ações',
   columnCreated: 'Criada em',

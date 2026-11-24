@@ -46,6 +46,9 @@ The plan card with three meters, and the invoices table:
 | `onDownload` | `(invoiceId: string) => void` | - | Called when the download button of a row is clicked. Without it the buttons are not rendered. |
 | `currency` | `string` | `"BRL"` | Currency code passed to `formatAmount` for the price and the invoice amounts. |
 | `locale` | `string` | `"pt-BR"` | Locale passed to `formatAmount`. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings23Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the block's classes. |
 
@@ -99,6 +102,10 @@ The block takes no other props.
 | `renewsOn` | `(date: string) => string` | `"Renova em 15 dez 2026"` |
 | `usage` | `(used: number, limit: number, unit?: string) => string` | `"7 de 10 usuários"`; also the `aria-valuetext` of the meter |
 | `download` | `(date: string) => string` | `"Baixar fatura de 15 nov 2026"`; the accessible name of the download button |
+| `loading` | `string` | `"Carregando cobrança"` |
+| `errorTitle` | `string` | `"Não foi possível carregar a cobrança"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

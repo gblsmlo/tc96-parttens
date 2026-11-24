@@ -12,10 +12,16 @@ import {
 import type { Settings20Controls } from './settings-20-controls.ts'
 
 interface ComposedSettings20Props extends Settings20Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onChange?: Settings20Props['onChange']
 }
 
 export const ComposedSettings20 = ({
+  error,
+  onRetry,
+  pending,
   description,
   empty,
   onChange,
@@ -26,6 +32,9 @@ export const ComposedSettings20 = ({
 
   return (
     <Settings20
+      error={error}
+      onRetry={onRetry}
+      pending={pending}
       categories={empty ? [] : settings20Categories}
       channels={settings20Channels}
       labels={{ description, title }}

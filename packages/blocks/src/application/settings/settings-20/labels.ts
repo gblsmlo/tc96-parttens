@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings20Labels } from './types'
 
 export const defaultSettings20Labels: Settings20Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar as notificações',
+  loading: 'Carregando notificações',
   categories: 'Categorias de notificação',
   cell: (event, channel) => `${event} por ${channel}`,
   description: 'Escolha por onde receber o aviso de cada evento.',

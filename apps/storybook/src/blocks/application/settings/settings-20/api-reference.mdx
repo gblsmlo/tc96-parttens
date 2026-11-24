@@ -40,6 +40,9 @@ The same path exports the types `Settings20Props`, `Settings20Category`, `Settin
 | `channels` | `Settings20Channel[]` | required | The columns, shared by every tab. |
 | `matrix` | `Record<string, Record<string, boolean>>` | required | `matrix[eventId][channelId]`; a missing entry reads as unchecked. |
 | `onChange` | `(eventId: string, channelId: string, checked: boolean) => void` | - | Called when a checkbox is toggled. Without it the checkboxes render disabled. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings20Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -62,6 +65,10 @@ The same path exports the types `Settings20Props`, `Settings20Category`, `Settin
 | `emptyTitle` | `string` | `"Nenhum evento de notificação"` |
 | `emptyDescription` | `string` | `"Os eventos de notificação aparecem aqui quando existirem."` |
 | `cell` | `(event: string, channel: string) => string` | `"Fatura paga por E-mail"`; the accessible name of each checkbox |
+| `loading` | `string` | `"Carregando notificações"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as notificações"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

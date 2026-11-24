@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings3SettingOption {
   label: string
   value: string
@@ -14,7 +15,7 @@ export interface Settings3Options {
   language: Settings3SettingOption[]
 }
 
-export interface Settings3Labels {
+export interface Settings3Labels extends SettingsLoadLabels {
   emailNotifications: string
   emailNotificationsDescription: string
   fontSize: string
@@ -24,7 +25,7 @@ export interface Settings3Labels {
   title: string
 }
 
-export interface Settings3Props {
+export interface Settings3Props extends SettingsLoadProps {
   className?: string
   labels?: Partial<Settings3Labels>
   onValueChange?: <K extends keyof Settings3Values>(

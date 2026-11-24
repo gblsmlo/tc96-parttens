@@ -48,6 +48,9 @@ The next actions section. Renders the gates section with its switch, then the ac
 | `onRequiredChange` | `(actionId: string, required: boolean) => void` | - | Called with the action id and the new value when a required switch is toggled. |
 | `onCreate` | `() => void` | - | Called when the New action button is clicked. Without it the button is not rendered. |
 | `onNextActionAction` | `(actionId: string, action: Settings12Action) => void` | - | Called with the action id and `'edit'` or `'delete'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings12Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root's classes. |
 
@@ -89,6 +92,10 @@ The block takes no other props.
 | `emptyStage` | `string` | `"Leads avançam sem ações obrigatórias"` |
 | `emptyTitle` | `string` | `"Nenhuma próxima ação ainda"` |
 | `emptyDescription` | `string` | `"Adicione ações às etapas pelas quais os leads passam."` |
+| `loading` | `string` | `"Carregando próximas ações"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as próximas ações"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

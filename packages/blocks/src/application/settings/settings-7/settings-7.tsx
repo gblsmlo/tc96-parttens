@@ -10,9 +10,11 @@ import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-su
 import { Button } from '@tc96/ui/button'
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsRowActions } from '../shared/settings-row-actions'
 import { SettingsSwatch } from '../shared/settings-swatch'
 import { defaultSettings7Labels } from './labels'
+import { Settings7Skeleton } from './settings-7-skeleton'
 import type {
   Settings7Action,
   Settings7Labels,
@@ -75,6 +77,9 @@ function TagRow({ labels, onTagAction, parent, tag }: Readonly<TagRowProps>) {
 }
 
 export function Settings7({
+  error,
+  onRetry,
+  pending,
   className,
   labels: labelsProp,
   onCreate,
@@ -82,6 +87,13 @@ export function Settings7({
   tags,
 }: Readonly<Settings7Props>) {
   const labels = { ...defaultSettings7Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings7Skeleton />,
+  })
 
   return (
     <SettingsSection
@@ -103,31 +115,32 @@ export function Settings7({
         </SettingsSectionHeader>
       }
     >
-      {tags.length === 0 ? (
-        <StateSurface
-          description={labels.emptyDescription}
-          kind="empty"
-          title={labels.emptyTitle}
-        />
-      ) : (
-        tags.flatMap((tag) => [
-          <TagRow
-            key={tag.id}
-            labels={labels}
-            onTagAction={onTagAction}
-            tag={tag}
-          />,
-          ...(tag.subtags ?? []).map((subtag) => (
+      {loadState ??
+        (tags.length === 0 ? (
+          <StateSurface
+            description={labels.emptyDescription}
+            kind="empty"
+            title={labels.emptyTitle}
+          />
+        ) : (
+          tags.flatMap((tag) => [
             <TagRow
-              key={subtag.id}
+              key={tag.id}
               labels={labels}
               onTagAction={onTagAction}
-              parent={tag.name}
-              tag={subtag}
-            />
-          )),
-        ])
-      )}
+              tag={tag}
+            />,
+            ...(tag.subtags ?? []).map((subtag) => (
+              <TagRow
+                key={subtag.id}
+                labels={labels}
+                onTagAction={onTagAction}
+                parent={tag.name}
+                tag={subtag}
+              />
+            )),
+          ])
+        ))}
     </SettingsSection>
   )
 }

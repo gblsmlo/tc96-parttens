@@ -4,12 +4,12 @@ import {
   Settings21,
   type Settings21App,
 } from '@tc96/blocks/application/settings/settings-21'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { useEffect, useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settings21Handlers } from '../../../../mocks/settings-21.ts'
+import { settings21ControlArgs } from './settings-21-controls.ts'
+import { ComposedSettings21 } from './settings-21-layouts.tsx'
 
 const ConnectedApps = ({ initial }: Readonly<{ initial: Settings21App[] }>) => {
   const [apps, setApps] = useState(initial)
@@ -31,18 +31,19 @@ const ConnectedApps = ({ initial }: Readonly<{ initial: Settings21App[] }>) => {
 }
 
 const WorkspaceApps = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Settings21App[]>('/settings/connected-apps'),
     queryKey: ['settings', 'connected-apps'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando aplicativos" />
-  if (error)
+  if (isPending || isError)
     return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar os aplicativos</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
+      <ComposedSettings21
+        {...settings21ControlArgs}
+        error={isError}
+        onRetry={refetch}
+        pending={isPending}
+      />
     )
 
   return <ConnectedApps initial={data} />
@@ -90,11 +91,17 @@ export const Failed: Story = {
     msw.use(settings21Handlers.appsError)
   },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os aplicativos',
-      ),
+      await canvas.findByText('Não foi possível carregar os aplicativos'),
     ).toBeVisible()
+    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
+    await expect(retry).toBeEnabled()
+    await userEvent.click(retry)
+    await expect(await canvas.findByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
   },
 }
 
@@ -103,8 +110,9 @@ export const Pending: Story = {
     msw.use(settings21Handlers.appsPending)
   },
   play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando aplicativos'),
-    ).toBeVisible()
+    const skeleton = await within(canvasElement).findByLabelText(
+      'Carregando aplicativos',
+    )
+    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

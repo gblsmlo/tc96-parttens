@@ -7,11 +7,16 @@ import {
 } from '@tc96/parttens/surfaces/settings/composition/settings-section/settings-section-header'
 import { Switch } from '@tc96/ui/switch'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsSelect } from '../shared/settings-select'
 import { defaultSettings3Labels } from './labels'
+import { Settings3Skeleton } from './settings-3-skeleton'
 import type { Settings3Props } from './types'
 
 export function Settings3({
+  error,
+  onRetry,
+  pending,
   className,
   labels: labelsProp,
   onValueChange,
@@ -19,6 +24,13 @@ export function Settings3({
   values,
 }: Readonly<Settings3Props>) {
   const labels = { ...defaultSettings3Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings3Skeleton />,
+  })
 
   return (
     <SettingsSection
@@ -29,46 +41,50 @@ export function Settings3({
         </SettingsSectionHeader>
       }
     >
-      <SettingsRow
-        description={labels.fontSizeDescription}
-        endSlot={
-          <SettingsSelect
-            ariaLabel={labels.fontSize}
-            items={options.fontSize}
-            onValueChange={(next) => onValueChange?.('fontSize', next)}
-            value={values.fontSize}
-          />
-        }
-        startSlot={<TextTIcon aria-hidden="true" />}
-        title={labels.fontSize}
-      />
-      <SettingsRow
-        description={labels.languageDescription}
-        endSlot={
-          <SettingsSelect
-            ariaLabel={labels.language}
-            items={options.language}
-            onValueChange={(next) => onValueChange?.('language', next)}
-            value={values.language}
-          />
-        }
-        startSlot={<TranslateIcon aria-hidden="true" />}
-        title={labels.language}
-      />
-      <SettingsRow
-        description={labels.emailNotificationsDescription}
-        endSlot={
-          <Switch
-            aria-label={labels.emailNotifications}
-            checked={values.emailNotifications}
-            onCheckedChange={(next) =>
-              onValueChange?.('emailNotifications', next)
+      {loadState ?? (
+        <>
+          <SettingsRow
+            description={labels.fontSizeDescription}
+            endSlot={
+              <SettingsSelect
+                ariaLabel={labels.fontSize}
+                items={options.fontSize}
+                onValueChange={(next) => onValueChange?.('fontSize', next)}
+                value={values.fontSize}
+              />
             }
+            startSlot={<TextTIcon aria-hidden="true" />}
+            title={labels.fontSize}
           />
-        }
-        startSlot={<BellIcon aria-hidden="true" />}
-        title={labels.emailNotifications}
-      />
+          <SettingsRow
+            description={labels.languageDescription}
+            endSlot={
+              <SettingsSelect
+                ariaLabel={labels.language}
+                items={options.language}
+                onValueChange={(next) => onValueChange?.('language', next)}
+                value={values.language}
+              />
+            }
+            startSlot={<TranslateIcon aria-hidden="true" />}
+            title={labels.language}
+          />
+          <SettingsRow
+            description={labels.emailNotificationsDescription}
+            endSlot={
+              <Switch
+                aria-label={labels.emailNotifications}
+                checked={values.emailNotifications}
+                onCheckedChange={(next) =>
+                  onValueChange?.('emailNotifications', next)
+                }
+              />
+            }
+            startSlot={<BellIcon aria-hidden="true" />}
+            title={labels.emailNotifications}
+          />
+        </>
+      )}
     </SettingsSection>
   )
 }

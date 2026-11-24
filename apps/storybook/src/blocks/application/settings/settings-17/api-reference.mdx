@@ -40,6 +40,9 @@ The section with switches, plan badges and one button row:
 | `controls` | `Settings17Control[]` | required | The rows, in order. |
 | `onCheckedChange` | `(controlId: string, checked: boolean) => void` | - | Called when a switch is toggled. The switch shows `checked` until the app passes a new value. |
 | `onAction` | `(controlId: string) => void` | - | Called when the button of an action row is clicked. Without it the action rows render no button. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings17Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -62,6 +65,10 @@ The section with switches, plan badges and one button row:
 | `description` | `string` | `"Decida o que é coletado e compartilhado sobre sua conta."` |
 | `pro` | `string` | `"Pro"` |
 | `beta` | `string` | `"Beta"` |
+| `loading` | `string` | `"Carregando privacidade"` |
+| `errorTitle` | `string` | `"Não foi possível carregar a privacidade"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

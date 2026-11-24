@@ -9,11 +9,16 @@ import {
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsRowActions } from '../shared/settings-row-actions'
 import { defaultSettings11Labels } from './labels'
+import { Settings11Skeleton } from './settings-11-skeleton'
 import type { Settings11Action, Settings11Props } from './types'
 
 export function Settings11({
+  error,
+  onRetry,
+  pending,
   className,
   groups,
   labels: labelsProp,
@@ -21,6 +26,13 @@ export function Settings11({
   onStatusAction,
 }: Readonly<Settings11Props>) {
   const labels = { ...defaultSettings11Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings11Skeleton />,
+  })
   const actions = [
     { id: 'edit', label: labels.edit },
     { destructive: true, id: 'delete', label: labels.delete },
@@ -46,41 +58,43 @@ export function Settings11({
         </SettingsSectionHeader>
       }
     >
-      <div>
-        {groups.map((group) => (
-          <SettingsCollapsed key={group.id} title={group.title}>
-            {group.statuses.map(
-              ({ icon: StatusIcon, id, label, projects, toneClassName }) => (
-                <SettingsRow
-                  description={
-                    projects === undefined
-                      ? undefined
-                      : labels.projects(projects)
-                  }
-                  endSlot={
-                    onStatusAction ? (
-                      <SettingsRowActions
-                        actions={actions}
-                        label={labels.actions(label)}
-                        onAction={(action) =>
-                          onStatusAction(id, action as Settings11Action)
-                        }
-                      />
-                    ) : undefined
-                  }
-                  key={id}
-                  startSlot={
-                    <IconFrame className={toneClassName} shape="rounded">
-                      <StatusIcon aria-hidden="true" className="size-4" />
-                    </IconFrame>
-                  }
-                  title={label}
-                />
-              ),
-            )}
-          </SettingsCollapsed>
-        ))}
-      </div>
+      {loadState ?? (
+        <div>
+          {groups.map((group) => (
+            <SettingsCollapsed key={group.id} title={group.title}>
+              {group.statuses.map(
+                ({ icon: StatusIcon, id, label, projects, toneClassName }) => (
+                  <SettingsRow
+                    description={
+                      projects === undefined
+                        ? undefined
+                        : labels.projects(projects)
+                    }
+                    endSlot={
+                      onStatusAction ? (
+                        <SettingsRowActions
+                          actions={actions}
+                          label={labels.actions(label)}
+                          onAction={(action) =>
+                            onStatusAction(id, action as Settings11Action)
+                          }
+                        />
+                      ) : undefined
+                    }
+                    key={id}
+                    startSlot={
+                      <IconFrame className={toneClassName} shape="rounded">
+                        <StatusIcon aria-hidden="true" className="size-4" />
+                      </IconFrame>
+                    }
+                    title={label}
+                  />
+                ),
+              )}
+            </SettingsCollapsed>
+          ))}
+        </div>
+      )}
     </SettingsSection>
   )
 }

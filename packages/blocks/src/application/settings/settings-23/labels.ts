@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings23Labels } from './types'
 
 export const defaultSettings23Labels: Settings23Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar a cobrança',
+  loading: 'Carregando cobrança',
   changePlan: 'Alterar plano',
   columnActions: 'Ações',
   columnAmount: 'Valor',

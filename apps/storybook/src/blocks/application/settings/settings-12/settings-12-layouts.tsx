@@ -6,6 +6,9 @@ import { settings12Data } from '../fixtures/settings-12.ts'
 import type { Settings12Controls } from './settings-12-controls.ts'
 
 interface ComposedSettings12Props extends Settings12Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onBlockStageChangesChange?: Settings12Props['onBlockStageChangesChange']
   onCreate?: Settings12Props['onCreate']
   onNextActionAction?: Settings12Props['onNextActionAction']
@@ -15,6 +18,9 @@ interface ComposedSettings12Props extends Settings12Controls {
 const ignore = () => undefined
 
 export const ComposedSettings12 = ({
+  error,
+  onRetry,
+  pending,
   blockStageChanges,
   description,
   empty,
@@ -28,6 +34,9 @@ export const ComposedSettings12 = ({
   withActions,
 }: Readonly<ComposedSettings12Props>) => (
   <Settings12
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     blockStageChanges={blockStageChanges}
     labels={{ description, gatesTitle, newAction, title }}
     onBlockStageChangesChange={onBlockStageChangesChange}

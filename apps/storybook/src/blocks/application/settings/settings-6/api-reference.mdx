@@ -53,6 +53,9 @@ The members section. Renders the title, the seats description and, with `onInvit
 | `onRoleChange` | `(memberId: string, role: string) => void` | - | Called with the member id and the new role when the role select changes. |
 | `onMemberAction` | `(memberId: string, action: Settings6MemberAction) => void` | - | Called with the member id and `'remove'` when the row menu item is chosen. Without it the row menus are not rendered. |
 | `onInvitationAction` | `(invitationId: string, action: Settings6InvitationAction) => void` | - | Called with the invitation id and `'resend'` or `'revoke'` when a menu item is chosen. Without it the invitation menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings6Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root element's classes. |
 
@@ -100,6 +103,10 @@ The members section. Renders the title, the seats description and, with `onInvit
 | `resendInvitation` | `string` | `"Reenviar convite"` |
 | `revokeInvitation` | `string` | `"Revogar convite"` |
 | `seats` | `(used: number, limit: number, plan: string) => string` | `"${used} de ${limit} vagas usadas no plano ${plan}."`; `used` is the number of members |
+| `loading` | `string` | `"Carregando membros"` |
+| `errorTitle` | `string` | `"Não foi possível carregar os membros"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

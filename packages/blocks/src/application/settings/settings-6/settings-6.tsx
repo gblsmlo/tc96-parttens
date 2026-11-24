@@ -18,8 +18,10 @@ import {
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
 import { useState } from 'react'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsRowActions } from '../shared/settings-row-actions'
 import { defaultSettings6Labels } from './labels'
+import { Settings6Skeleton } from './settings-6-skeleton'
 import type {
   Settings6InvitationAction,
   Settings6Labels,
@@ -112,6 +114,9 @@ function MemberRow({
 }
 
 export function Settings6({
+  error,
+  onRetry,
+  pending,
   className,
   invitations,
   labels: labelsProp,
@@ -125,6 +130,13 @@ export function Settings6({
   seats,
 }: Readonly<Settings6Props>) {
   const labels = { ...defaultSettings6Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings6Skeleton />,
+  })
   const roleLabel = (role: string) =>
     roles.find((option) => option.value === role)?.label ?? role
 
@@ -152,19 +164,20 @@ export function Settings6({
           </SettingsSectionHeader>
         }
       >
-        {members.map((member) => (
-          <MemberRow
-            key={member.id}
-            labels={labels}
-            member={member}
-            onMemberAction={onMemberAction}
-            onRoleChange={onRoleChange}
-            owner={member.role === ownerRole}
-            roles={roles}
-          />
-        ))}
+        {loadState ??
+          members.map((member) => (
+            <MemberRow
+              key={member.id}
+              labels={labels}
+              member={member}
+              onMemberAction={onMemberAction}
+              onRoleChange={onRoleChange}
+              owner={member.role === ownerRole}
+              roles={roles}
+            />
+          ))}
       </SettingsSection>
-      {invitations.length > 0 ? (
+      {!loadState && invitations.length > 0 ? (
         <SettingsSection
           header={
             <SettingsSectionHeader>

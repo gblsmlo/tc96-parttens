@@ -4,11 +4,11 @@ import {
   Settings1,
   type Settings1Props,
 } from '@tc96/blocks/application/settings/settings-1'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
-import { expect, fn, within } from 'storybook/test'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settings1Handlers } from '../../../../mocks/settings-1.ts'
+import { settings1ControlArgs } from './settings-1-controls.ts'
+import { ComposedSettings1 } from './settings-1-layouts.tsx'
 
 type Settings1Account = Pick<
   Settings1Props,
@@ -16,18 +16,19 @@ type Settings1Account = Pick<
 >
 
 const AccountSettings = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Settings1Account>('/settings/account'),
     queryKey: ['settings', 'account'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando conta" />
-  if (error)
+  if (isPending || isError)
     return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar a conta</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
+      <ComposedSettings1
+        {...settings1ControlArgs}
+        error={isError}
+        onRetry={refetch}
+        pending={isPending}
+      />
     )
 
   return (
@@ -60,9 +61,9 @@ export const Loaded: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await expect(await canvas.findByText('Perfil')).toBeVisible()
-    await expect(canvas.getByRole('textbox', { name: 'E-mail' })).toHaveValue(
-      'ana@acme.com',
-    )
+    await expect(
+      await canvas.findByRole('textbox', { name: 'E-mail' }),
+    ).toHaveValue('ana@acme.com')
   },
 }
 
@@ -71,11 +72,17 @@ export const Failed: Story = {
     msw.use(settings1Handlers.error)
   },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar a conta',
-      ),
+      await canvas.findByText('Não foi possível carregar a conta'),
     ).toBeVisible()
+    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
+    await expect(retry).toBeEnabled()
+    await userEvent.click(retry)
+    await expect(await canvas.findByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
   },
 }
 
@@ -84,8 +91,8 @@ export const Pending: Story = {
     msw.use(settings1Handlers.pending)
   },
   play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando conta'),
-    ).toBeVisible()
+    const skeleton =
+      await within(canvasElement).findByLabelText('Carregando conta')
+    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

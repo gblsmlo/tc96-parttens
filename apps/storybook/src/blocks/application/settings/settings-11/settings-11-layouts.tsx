@@ -6,6 +6,9 @@ import { settings11Groups } from '../fixtures/settings-11.ts'
 import type { Settings11Controls } from './settings-11-controls.ts'
 
 interface ComposedSettings11Props extends Settings11Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onCreate?: Settings11Props['onCreate']
   onStatusAction?: Settings11Props['onStatusAction']
 }
@@ -13,6 +16,9 @@ interface ComposedSettings11Props extends Settings11Controls {
 const ignore = () => undefined
 
 export const ComposedSettings11 = ({
+  error,
+  onRetry,
+  pending,
   description,
   newStatus,
   onCreate = ignore,
@@ -21,6 +27,9 @@ export const ComposedSettings11 = ({
   withActions,
 }: Readonly<ComposedSettings11Props>) => (
   <Settings11
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     groups={settings11Groups}
     labels={{ description, newStatus, title }}
     onCreate={withActions ? onCreate : undefined}

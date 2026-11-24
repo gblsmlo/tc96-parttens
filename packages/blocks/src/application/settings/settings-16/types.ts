@@ -1,10 +1,11 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings16CostCenter {
   entries: number
   id: string
   name: string
 }
 
-export interface Settings16Labels {
+export interface Settings16Labels extends SettingsLoadLabels {
   actions: (name: string) => string
   archive: string
   archived: string
@@ -20,7 +21,7 @@ export interface Settings16Labels {
 
 export type Settings16Action = 'edit' | 'archive' | 'restore'
 
-export interface Settings16Props {
+export interface Settings16Props extends SettingsLoadProps {
   archivedCostCenters?: Settings16CostCenter[]
   className?: string
   costCenters: Settings16CostCenter[]

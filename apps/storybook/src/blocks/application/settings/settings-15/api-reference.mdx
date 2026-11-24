@@ -44,6 +44,9 @@ The categories section. Renders the title, the description and, with `onCreate`,
 | `archivedCategories` | `Settings15Category[]` | `[]` | Categories listed in the collapsed archived section, with their subcategories. Only rendered when not empty. |
 | `onCreate` | `() => void` | - | Called when the New category button is clicked. Without it the button is not rendered. |
 | `onCategoryAction` | `(categoryId: string, action: Settings15Action) => void` | - | Called with the category id and `'edit'`, `'add-subcategory'`, `'archive'` or `'restore'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings15Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -77,6 +80,10 @@ The block takes no other props.
 | `direction` | `(direction: 'income' \| 'expense') => string` | `"Receita"` for `"income"`, `"Despesa"` for `"expense"` |
 | `entries` | `(count: number) => string` | `"12 lançamentos"`; `1 lançamento` in the singular |
 | `subcategoryOf` | `(parent: string) => string` | `"Subcategoria de Honorários"` for `"Honorários"` |
+| `loading` | `string` | `"Carregando categorias"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as categorias"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

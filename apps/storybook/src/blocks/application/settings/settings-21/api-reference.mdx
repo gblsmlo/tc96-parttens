@@ -38,6 +38,9 @@ The same path exports the types `Settings21Props`, `Settings21App`, `Settings21S
 | `apps` | `Settings21App[]` | required | The apps to list; an empty array shows the empty state. |
 | `onConnect` | `(appId: string) => void` | - | Called by the Conectar button of a disconnected app and the Reconectar button of an app in error. Without it those buttons are not rendered. |
 | `onDisconnect` | `(appId: string) => void` | - | Called by the Desconectar button of a connected app. Without it the button is not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings21Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -67,6 +70,10 @@ The same path exports the types `Settings21Props`, `Settings21App`, `Settings21S
 | `disconnectAction` | `(name: string) => string` | `"Desconectar Slack"` |
 | `emptyTitle` | `string` | `"Nenhum aplicativo disponível"` |
 | `emptyDescription` | `string` | `"Os aplicativos disponíveis para conexão aparecem aqui."` |
+| `loading` | `string` | `"Carregando aplicativos"` |
+| `errorTitle` | `string` | `"Não foi possível carregar os aplicativos"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

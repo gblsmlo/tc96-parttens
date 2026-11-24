@@ -52,6 +52,9 @@ The loss reasons section. Renders the lost leads section with its two switches, 
 | `onAllowCustomReasonChange` | `(checked: boolean) => void` | - | Called with the new value when the custom reason switch is toggled. |
 | `onCreate` | `() => void` | - | Called when the New reason button is clicked. Without it the button is not rendered. |
 | `onReasonAction` | `(reasonId: string, action: Settings13Action) => void` | - | Called with the reason id and the chosen action when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings13Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root's classes. |
 
@@ -85,6 +88,10 @@ The loss reasons section. Renders the lost leads section with its two switches, 
 | `leadsLost` | `(leads: number) => string` | `"14 leads perdidos"`; `1 lead perdido` in the singular |
 | `emptyTitle` | `string` | `"Nenhum motivo de perda ainda"` |
 | `emptyDescription` | `string` | `"Crie um motivo para que os vendedores digam por que um lead foi perdido."` |
+| `loading` | `string` | `"Carregando motivos"` |
+| `errorTitle` | `string` | `"Não foi possível carregar os motivos"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

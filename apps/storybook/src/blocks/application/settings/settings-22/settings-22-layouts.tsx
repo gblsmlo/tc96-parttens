@@ -6,6 +6,9 @@ import { settings22Keys } from '../fixtures/settings-22.ts'
 import type { Settings22Controls } from './settings-22-controls.ts'
 
 interface ComposedSettings22Props extends Settings22Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onActiveChange?: Settings22Props['onActiveChange']
   onCopy?: Settings22Props['onCopy']
   onCreate?: Settings22Props['onCreate']
@@ -15,6 +18,9 @@ interface ComposedSettings22Props extends Settings22Controls {
 const ignore = () => undefined
 
 export const ComposedSettings22 = ({
+  error,
+  onRetry,
+  pending,
   description,
   empty,
   newKey,
@@ -26,6 +32,9 @@ export const ComposedSettings22 = ({
   withActions,
 }: Readonly<ComposedSettings22Props>) => (
   <Settings22
+    error={error}
+    onRetry={onRetry}
+    pending={pending}
     keys={empty ? [] : settings22Keys}
     labels={{ description, newKey, title }}
     onActiveChange={withActions ? onActiveChange : undefined}

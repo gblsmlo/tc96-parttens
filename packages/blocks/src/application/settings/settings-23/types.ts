@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings23Plan {
   name: string
   price: number
@@ -21,7 +22,7 @@ export interface Settings23Invoice {
   status: Settings23InvoiceStatus
 }
 
-export interface Settings23Labels {
+export interface Settings23Labels extends SettingsLoadLabels {
   changePlan: string
   columnActions: string
   columnAmount: string
@@ -41,7 +42,7 @@ export interface Settings23Labels {
   usageTitle: string
 }
 
-export interface Settings23Props {
+export interface Settings23Props extends SettingsLoadProps {
   className?: string
   currency?: string
   invoices: Settings23Invoice[]

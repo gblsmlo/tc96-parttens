@@ -10,7 +10,9 @@ import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { defaultSettings21Labels } from './labels'
+import { Settings21Skeleton } from './settings-21-skeleton'
 import type { Settings21App, Settings21Labels, Settings21Props } from './types'
 
 const initials = (name: string) =>
@@ -86,6 +88,9 @@ function AppRow({
 }
 
 export function Settings21({
+  error,
+  onRetry,
+  pending,
   apps,
   className,
   labels: labelsProp,
@@ -93,6 +98,13 @@ export function Settings21({
   onDisconnect,
 }: Readonly<Settings21Props>) {
   const labels = { ...defaultSettings21Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings21Skeleton />,
+  })
 
   return (
     <SettingsSection
@@ -106,23 +118,24 @@ export function Settings21({
         </SettingsSectionHeader>
       }
     >
-      {apps.length === 0 ? (
-        <StateSurface
-          description={labels.emptyDescription}
-          kind="empty"
-          title={labels.emptyTitle}
-        />
-      ) : (
-        apps.map((app) => (
-          <AppRow
-            app={app}
-            key={app.id}
-            labels={labels}
-            onConnect={onConnect}
-            onDisconnect={onDisconnect}
+      {loadState ??
+        (apps.length === 0 ? (
+          <StateSurface
+            description={labels.emptyDescription}
+            kind="empty"
+            title={labels.emptyTitle}
           />
-        ))
-      )}
+        ) : (
+          apps.map((app) => (
+            <AppRow
+              app={app}
+              key={app.id}
+              labels={labels}
+              onConnect={onConnect}
+              onDisconnect={onDisconnect}
+            />
+          ))
+        ))}
     </SettingsSection>
   )
 }

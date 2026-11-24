@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings2SettingOption {
   label: string
   value: string
@@ -16,7 +17,7 @@ export interface Settings2Options {
   theme: Settings2SettingOption[]
 }
 
-export interface Settings2Labels {
+export interface Settings2Labels extends SettingsLoadLabels {
   displayNames: string
   displayNamesDescription: string
   fontSize: string
@@ -29,7 +30,7 @@ export interface Settings2Labels {
   underlineLinksDescription: string
 }
 
-export interface Settings2Props {
+export interface Settings2Props extends SettingsLoadProps {
   className?: string
   labels?: Partial<Settings2Labels>
   onValueChange?: <K extends keyof Settings2Values>(

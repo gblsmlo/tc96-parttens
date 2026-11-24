@@ -10,8 +10,10 @@ import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-su
 import { Button } from '@tc96/ui/button'
 import { Switch } from '@tc96/ui/switch'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsRowActions } from '../shared/settings-row-actions'
 import { defaultSettings13Labels } from './labels'
+import { Settings13Skeleton } from './settings-13-skeleton'
 import type {
   Settings13Action,
   Settings13Labels,
@@ -63,6 +65,9 @@ function ReasonRow({
 }
 
 export function Settings13({
+  error,
+  onRetry,
+  pending,
   allowCustomReason = true,
   archivedReasons = [],
   className,
@@ -75,6 +80,13 @@ export function Settings13({
   requireReason = false,
 }: Readonly<Settings13Props>) {
   const labels = { ...defaultSettings13Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings13Skeleton />,
+  })
 
   return (
     <div
@@ -90,79 +102,85 @@ export function Settings13({
           </SettingsSectionHeader>
         }
       >
-        <SettingsRow
-          description={labels.requireReasonDescription}
-          endSlot={
-            <Switch
-              aria-label={labels.requireReason}
-              checked={requireReason}
-              onCheckedChange={onRequireReasonChange}
-            />
-          }
-          title={labels.requireReason}
-        />
-        <SettingsRow
-          description={labels.allowCustomReasonDescription}
-          endSlot={
-            <Switch
-              aria-label={labels.allowCustomReason}
-              checked={allowCustomReason}
-              onCheckedChange={onAllowCustomReasonChange}
-            />
-          }
-          title={labels.allowCustomReason}
-        />
-      </SettingsSection>
-      <SettingsSection
-        header={
-          <SettingsSectionHeader
-            actions={
-              onCreate ? (
-                <Button onClick={onCreate} size="sm">
-                  {labels.newReason}
-                </Button>
-              ) : undefined
-            }
-          >
-            <SettingsSectionTitle>{labels.title}</SettingsSectionTitle>
-            <SettingsSectionDescription>
-              {labels.description}
-            </SettingsSectionDescription>
-          </SettingsSectionHeader>
-        }
-      >
-        {reasons.length === 0 ? (
-          <StateSurface
-            description={labels.emptyDescription}
-            kind="empty"
-            title={labels.emptyTitle}
-          />
-        ) : (
-          reasons.map((reason) => (
-            <ReasonRow
-              key={reason.id}
-              labels={labels}
-              onReasonAction={onReasonAction}
-              reason={reason}
-            />
-          ))
-        )}
-        {archivedReasons.length > 0 ? (
-          <div>
-            <SettingsCollapsed defaultOpen={false} title={labels.archived}>
-              {archivedReasons.map((reason) => (
-                <ReasonRow
-                  archived
-                  key={reason.id}
-                  labels={labels}
-                  onReasonAction={onReasonAction}
-                  reason={reason}
+        {loadState ?? (
+          <>
+            <SettingsRow
+              description={labels.requireReasonDescription}
+              endSlot={
+                <Switch
+                  aria-label={labels.requireReason}
+                  checked={requireReason}
+                  onCheckedChange={onRequireReasonChange}
                 />
-              ))}
-            </SettingsCollapsed>
-          </div>
-        ) : null}
+              }
+              title={labels.requireReason}
+            />
+            <SettingsRow
+              description={labels.allowCustomReasonDescription}
+              endSlot={
+                <Switch
+                  aria-label={labels.allowCustomReason}
+                  checked={allowCustomReason}
+                  onCheckedChange={onAllowCustomReasonChange}
+                />
+              }
+              title={labels.allowCustomReason}
+            />
+          </>
+        )}
       </SettingsSection>
+      {loadState ? null : (
+        <SettingsSection
+          header={
+            <SettingsSectionHeader
+              actions={
+                onCreate ? (
+                  <Button onClick={onCreate} size="sm">
+                    {labels.newReason}
+                  </Button>
+                ) : undefined
+              }
+            >
+              <SettingsSectionTitle>{labels.title}</SettingsSectionTitle>
+              <SettingsSectionDescription>
+                {labels.description}
+              </SettingsSectionDescription>
+            </SettingsSectionHeader>
+          }
+        >
+          {reasons.length === 0 ? (
+            <StateSurface
+              description={labels.emptyDescription}
+              kind="empty"
+              title={labels.emptyTitle}
+            />
+          ) : (
+            reasons.map((reason) => (
+              <ReasonRow
+                key={reason.id}
+                labels={labels}
+                onReasonAction={onReasonAction}
+                reason={reason}
+              />
+            ))
+          )}
+          {archivedReasons.length > 0 ? (
+            <div>
+              <SettingsCollapsed defaultOpen={false} title={labels.archived}>
+                {archivedReasons.map((reason) => (
+                  <ReasonRow
+                    archived
+                    key={reason.id}
+                    labels={labels}
+                    onReasonAction={onReasonAction}
+                    reason={reason}
+                  />
+                ))}
+              </SettingsCollapsed>
+            </div>
+          ) : null}
+        </SettingsSection>
+      )}
     </div>
   )
 }

@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings10Labels } from './types'
 
 export const defaultSettings10Labels: Settings10Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar as etapas',
+  loading: 'Carregando etapas',
   actions: (name) => `Ações de ${name}`,
   cancel: 'Cancelar',
   createStage: 'Criar etapa',

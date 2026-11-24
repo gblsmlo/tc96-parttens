@@ -42,6 +42,9 @@ The preferences sections. Renders one row per setting: the display names select,
 | `values` | `Settings2Values` | required | The current value of each setting. |
 | `options` | `Settings2Options` | required | The choices of the three selects. |
 | `onValueChange` | `<K extends keyof Settings2Values>(key: K, value: Settings2Values[K]) => void` | - | Called with the setting key and the new value when a select or the switch changes. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root element's classes. |
 
@@ -78,6 +81,10 @@ The preferences sections. Renders one row per setting: the display names select,
 | `underlineLinksDescription` | `string` | `"Sempre sublinha os títulos das listas"` |
 | `theme` | `string` | `"Tema da interface"` |
 | `themeDescription` | `string` | `"Escolha o esquema de cores da interface"` |
+| `loading` | `string` | `"Carregando preferências"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as preferências"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

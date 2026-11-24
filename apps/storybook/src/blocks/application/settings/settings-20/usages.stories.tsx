@@ -6,12 +6,12 @@ import {
   type Settings20Channel,
   type Settings20Matrix,
 } from '@tc96/blocks/application/settings/settings-20'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { useEffect, useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settings20Handlers } from '../../../../mocks/settings-20.ts'
+import { settings20ControlArgs } from './settings-20-controls.ts'
+import { ComposedSettings20 } from './settings-20-layouts.tsx'
 
 interface NotificationSettings {
   categories: Settings20Category[]
@@ -42,19 +42,20 @@ const NotificationChannels = ({
 }
 
 const WorkspaceNotifications = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () =>
       fetchJson<NotificationSettings>('/settings/notification-channels'),
     queryKey: ['settings', 'notification-channels'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando notificações" />
-  if (error)
+  if (isPending || isError)
     return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar as notificações</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
+      <ComposedSettings20
+        {...settings20ControlArgs}
+        error={isError}
+        onRetry={refetch}
+        pending={isPending}
+      />
     )
 
   return <NotificationChannels data={data} />
@@ -102,11 +103,17 @@ export const Failed: Story = {
     msw.use(settings20Handlers.notificationsError)
   },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as notificações',
-      ),
+      await canvas.findByText('Não foi possível carregar as notificações'),
     ).toBeVisible()
+    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
+    await expect(retry).toBeEnabled()
+    await userEvent.click(retry)
+    await expect(await canvas.findByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
   },
 }
 
@@ -115,8 +122,9 @@ export const Pending: Story = {
     msw.use(settings20Handlers.notificationsPending)
   },
   play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando notificações'),
-    ).toBeVisible()
+    const skeleton = await within(canvasElement).findByLabelText(
+      'Carregando notificações',
+    )
+    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

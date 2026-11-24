@@ -8,6 +8,8 @@ import {
 } from './settings-11-controls.ts'
 import { ComposedSettings11 } from './settings-11-layouts.tsx'
 
+const retryHandler = fn()
+
 const meta = {
   args: { ...settings11ControlArgs, onCreate: fn(), onStatusAction: fn() },
   parameters: { layout: 'padded' },
@@ -101,5 +103,58 @@ export const LabelsOverrideTexts: Story = {
       canvas.getByRole('button', { name: 'Opções de Em andamento' }),
     ).toBeVisible()
     await expect(canvas.queryByText('Status de projetos')).toBeNull()
+  },
+}
+
+export const PendingShowsSkeleton: Story = {
+  render: (args) => <ComposedSettings11 {...args} pending />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByLabelText('Carregando status'),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      canvasElement.querySelector('[data-slot="settings-row"], table'),
+    ).toBeNull()
+  },
+}
+
+export const ErrorRetryCallsOnRetry: Story = {
+  render: (args) => (
+    <ComposedSettings11 {...args} error onRetry={retryHandler} />
+  ),
+  play: async ({ canvasElement }) => {
+    retryHandler.mockClear()
+    const canvas = within(canvasElement)
+    await expect(canvas.getByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(retryHandler).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutOnRetryHasNoButton: Story = {
+  render: (args) => <ComposedSettings11 {...args} error />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByRole('alert')).toBeVisible()
+    await expect(
+      canvas.queryByRole('button', { name: 'Tentar novamente' }),
+    ).toBeNull()
+  },
+}
+
+export const PendingWinsOverError: Story = {
+  render: (args) => <ComposedSettings11 {...args} error pending />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando status')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    await expect(canvas.queryByRole('alert')).toBeNull()
   },
 }

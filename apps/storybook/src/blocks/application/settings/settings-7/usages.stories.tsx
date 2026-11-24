@@ -4,25 +4,26 @@ import {
   Settings7,
   type Settings7Tag,
 } from '@tc96/blocks/application/settings/settings-7'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
-import { expect, fn, within } from 'storybook/test'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settingsHandlers } from '../../../../mocks/settings.ts'
+import { settings7ControlArgs } from './settings-7-controls.ts'
+import { ComposedSettings7 } from './settings-7-layouts.tsx'
 
 const WorkspaceTags = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Settings7Tag[]>('/settings/tags'),
     queryKey: ['settings', 'tags'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando tags" />
-  if (error)
+  if (isPending || isError)
     return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar as tags</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
+      <ComposedSettings7
+        {...settings7ControlArgs}
+        error={isError}
+        onRetry={refetch}
+        pending={isPending}
+      />
     )
 
   return <Settings7 onCreate={fn()} onTagAction={fn()} tags={data} />
@@ -66,11 +67,17 @@ export const Failed: Story = {
     msw.use(settingsHandlers.tagsError)
   },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as tags',
-      ),
+      await canvas.findByText('Não foi possível carregar as tags'),
     ).toBeVisible()
+    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
+    await expect(retry).toBeEnabled()
+    await userEvent.click(retry)
+    await expect(await canvas.findByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
   },
 }
 
@@ -79,8 +86,8 @@ export const Pending: Story = {
     msw.use(settingsHandlers.tagsPending)
   },
   play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando tags'),
-    ).toBeVisible()
+    const skeleton =
+      await within(canvasElement).findByLabelText('Carregando tags')
+    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

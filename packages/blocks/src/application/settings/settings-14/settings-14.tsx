@@ -14,8 +14,10 @@ import { StateSurface } from '@tc96/parttens/surfaces/state/composition/state-su
 import { Button } from '@tc96/ui/button'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { SettingsRowActions } from '../shared/settings-row-actions'
 import { defaultSettings14Labels } from './labels'
+import { Settings14Skeleton } from './settings-14-skeleton'
 import type {
   Settings14Account,
   Settings14AccountType,
@@ -101,6 +103,9 @@ function AccountRow({
 }
 
 export function Settings14({
+  error,
+  onRetry,
+  pending,
   accounts,
   archivedAccounts = [],
   className,
@@ -112,6 +117,13 @@ export function Settings14({
   onCreate,
 }: Readonly<Settings14Props>) {
   const labels = { ...defaultSettings14Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings14Skeleton />,
+  })
 
   return (
     <SettingsSection
@@ -133,42 +145,46 @@ export function Settings14({
         </SettingsSectionHeader>
       }
     >
-      {accounts.length === 0 ? (
-        <StateSurface
-          description={labels.emptyDescription}
-          kind="empty"
-          title={labels.emptyTitle}
-        />
-      ) : (
-        accounts.map((account) => (
-          <AccountRow
-            account={account}
-            currency={currency}
-            isDefault={account.id === defaultAccountId}
-            key={account.id}
-            labels={labels}
-            locale={locale}
-            onAccountAction={onAccountAction}
-          />
-        ))
-      )}
-      {archivedAccounts.length > 0 ? (
-        <div>
-          <SettingsCollapsed defaultOpen={false} title={labels.archived}>
-            {archivedAccounts.map((account) => (
+      {loadState ?? (
+        <>
+          {accounts.length === 0 ? (
+            <StateSurface
+              description={labels.emptyDescription}
+              kind="empty"
+              title={labels.emptyTitle}
+            />
+          ) : (
+            accounts.map((account) => (
               <AccountRow
                 account={account}
-                archived
                 currency={currency}
+                isDefault={account.id === defaultAccountId}
                 key={account.id}
                 labels={labels}
                 locale={locale}
                 onAccountAction={onAccountAction}
               />
-            ))}
-          </SettingsCollapsed>
-        </div>
-      ) : null}
+            ))
+          )}
+          {archivedAccounts.length > 0 ? (
+            <div>
+              <SettingsCollapsed defaultOpen={false} title={labels.archived}>
+                {archivedAccounts.map((account) => (
+                  <AccountRow
+                    account={account}
+                    archived
+                    currency={currency}
+                    key={account.id}
+                    labels={labels}
+                    locale={locale}
+                    onAccountAction={onAccountAction}
+                  />
+                ))}
+              </SettingsCollapsed>
+            </div>
+          ) : null}
+        </>
+      )}
     </SettingsSection>
   )
 }

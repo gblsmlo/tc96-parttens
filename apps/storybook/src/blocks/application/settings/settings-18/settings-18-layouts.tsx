@@ -7,6 +7,9 @@ import { capabilitiesByRole, roles } from '../fixtures/settings-18.ts'
 import type { Settings18Controls } from './settings-18-controls.ts'
 
 interface ComposedSettings18Props extends Settings18Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onCapabilityChange?: Settings18Props['onCapabilityChange']
   onRoleChange?: Settings18Props['onRoleChange']
 }
@@ -14,6 +17,9 @@ interface ComposedSettings18Props extends Settings18Controls {
 const ignore = () => undefined
 
 export const ComposedSettings18 = ({
+  error,
+  onRetry,
+  pending,
   description,
   empty,
   onCapabilityChange = ignore,
@@ -25,6 +31,9 @@ export const ComposedSettings18 = ({
 
   return (
     <Settings18
+      error={error}
+      onRetry={onRetry}
+      pending={pending}
       capabilities={empty ? [] : (byRole[role] ?? [])}
       labels={{ description, title }}
       onCapabilityChange={(id, checked) => {

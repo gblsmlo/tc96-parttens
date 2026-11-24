@@ -48,6 +48,9 @@ The appearance section. Renders the title, the mode row and the theme row. The t
 | `themeGroups` | `Settings4ThemeGroup[]` | required | The theme options, in groups. A group without `label` is listed without a heading. |
 | `onModeChange` | `(value: string) => void` | - | Called with the chosen mode value. Without it the mode select is not changeable. |
 | `onColorThemeChange` | `(value: string) => void` | - | Called with the chosen theme value. Without it the theme select is not changeable. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -75,6 +78,10 @@ The appearance section. Renders the title, the mode row and the theme row. The t
 | `modeDescription` | `string` | `"Claro, escuro ou a configuração do seu sistema"` |
 | `theme` | `string` | `"Tema"` |
 | `themeDescription` | `string` | `"Cores, raio e fontes da interface"` |
+| `loading` | `string` | `"Carregando aparência"` |
+| `errorTitle` | `string` | `"Não foi possível carregar a aparência"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 The `mode` and `theme` labels are also the accessible names of the two selects.
 

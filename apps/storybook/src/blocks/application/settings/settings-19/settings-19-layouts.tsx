@@ -7,6 +7,9 @@ import { endpoints as fixture } from '../fixtures/settings-19.ts'
 import type { Settings19Controls } from './settings-19-controls.ts'
 
 interface ComposedSettings19Props extends Settings19Controls {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
   onCreate?: Settings19Props['onCreate']
   onEnabledChange?: Settings19Props['onEnabledChange']
   onEndpointAction?: Settings19Props['onEndpointAction']
@@ -15,6 +18,9 @@ interface ComposedSettings19Props extends Settings19Controls {
 const ignore = () => undefined
 
 export const ComposedSettings19 = ({
+  error,
+  onRetry,
+  pending,
   description,
   empty,
   failing,
@@ -33,6 +39,9 @@ export const ComposedSettings19 = ({
 
   return (
     <Settings19
+      error={error}
+      onRetry={onRetry}
+      pending={pending}
       endpoints={empty ? [] : visible}
       labels={{ description, newEndpoint, title }}
       onCreate={withActions ? onCreate : undefined}

@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { Settings12 } from '@tc96/blocks/application/settings/settings-12'
-import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
-import { Spinner } from '@tc96/ui/spinner'
 import { useState } from 'react'
-import { expect, fn, within } from 'storybook/test'
+import { expect, fn, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { settings12Handlers } from '../../../../mocks/settings-12.ts'
 import type { Settings12Data } from '../fixtures/settings-12.ts'
+import { settings12ControlArgs } from './settings-12-controls.ts'
+import { ComposedSettings12 } from './settings-12-layouts.tsx'
 
 const NextActionsSettings = ({ data }: Readonly<{ data: Settings12Data }>) => {
   const [blockStageChanges, setBlockStageChanges] = useState(
@@ -43,18 +43,19 @@ const NextActionsSettings = ({ data }: Readonly<{ data: Settings12Data }>) => {
 }
 
 const WorkspaceNextActions = () => {
-  const { data, error, isPending } = useQuery({
+  const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Settings12Data>('/settings/next-actions'),
     queryKey: ['settings', 'next-actions'],
   })
 
-  if (isPending) return <Spinner aria-label="Carregando próximas ações" />
-  if (error)
+  if (isPending || isError)
     return (
-      <Alert variant="error">
-        <AlertTitle>Não foi possível carregar as próximas ações</AlertTitle>
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
+      <ComposedSettings12
+        {...settings12ControlArgs}
+        error={isError}
+        onRetry={refetch}
+        pending={isPending}
+      />
     )
 
   return <NextActionsSettings data={data} />
@@ -100,11 +101,17 @@ export const Failed: Story = {
     msw.use(settings12Handlers.error)
   },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as próximas ações',
-      ),
+      await canvas.findByText('Não foi possível carregar as próximas ações'),
     ).toBeVisible()
+    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
+    await expect(retry).toBeEnabled()
+    await userEvent.click(retry)
+    await expect(await canvas.findByRole('alert')).toHaveAttribute(
+      'data-kind',
+      'error',
+    )
   },
 }
 
@@ -113,8 +120,9 @@ export const Pending: Story = {
     msw.use(settings12Handlers.pending)
   },
   play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando próximas ações'),
-    ).toBeVisible()
+    const skeleton = await within(canvasElement).findByLabelText(
+      'Carregando próximas ações',
+    )
+    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

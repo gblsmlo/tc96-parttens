@@ -6,16 +6,28 @@ import {
 } from '@tc96/parttens/surfaces/settings/composition/settings-section/settings-section-header'
 import { Switch } from '@tc96/ui/switch'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { defaultSettings8Labels } from './labels'
+import { Settings8Skeleton } from './settings-8-skeleton'
 import type { Settings8Props } from './types'
 
 export function Settings8({
+  error,
+  onRetry,
+  pending,
   className,
   enabled = false,
   labels: labelsProp,
   onEnabledChange,
 }: Readonly<Settings8Props>) {
   const labels = { ...defaultSettings8Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings8Skeleton />,
+  })
 
   return (
     <SettingsSection
@@ -26,17 +38,19 @@ export function Settings8({
         </SettingsSectionHeader>
       }
     >
-      <SettingsRow
-        description={labels.description}
-        endSlot={
-          <Switch
-            aria-label={labels.enable}
-            checked={enabled}
-            onCheckedChange={onEnabledChange}
-          />
-        }
-        title={labels.enable}
-      />
+      {loadState ?? (
+        <SettingsRow
+          description={labels.description}
+          endSlot={
+            <Switch
+              aria-label={labels.enable}
+              checked={enabled}
+              onCheckedChange={onEnabledChange}
+            />
+          }
+          title={labels.enable}
+        />
+      )}
     </SettingsSection>
   )
 }

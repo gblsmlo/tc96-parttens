@@ -42,6 +42,9 @@ The statuses section. Renders the title, the description and, with `onCreate`, t
 | `groups` | `Settings11Group[]` | required | The groups to list, each with its statuses. |
 | `onCreate` | `() => void` | - | Called when the New status button is clicked. Without it the button is not rendered. |
 | `onStatusAction` | `(statusId: string, action: Settings11Action) => void` | - | Called with the status id and `'edit'` or `'delete'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings11Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -76,6 +79,10 @@ The block takes no other props.
 | `delete` | `string` | `"Excluir"` |
 | `actions` | `(name: string) => string` | `"Ações de Em andamento"` for `"Em andamento"`; the accessible name of the row menu |
 | `projects` | `(count: number) => string` | `"12 projetos"`; `1 projeto` in the singular |
+| `loading` | `string` | `"Carregando status"` |
+| `errorTitle` | `string` | `"Não foi possível carregar os status"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

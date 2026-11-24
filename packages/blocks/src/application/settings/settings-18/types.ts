@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings18Capability {
   checked: boolean
   description: string
@@ -10,7 +11,7 @@ export interface Settings18Role {
   value: string
 }
 
-export interface Settings18Labels {
+export interface Settings18Labels extends SettingsLoadLabels {
   description: string
   emptyDescription: string
   emptyTitle: string
@@ -18,7 +19,7 @@ export interface Settings18Labels {
   title: string
 }
 
-export interface Settings18Props {
+export interface Settings18Props extends SettingsLoadProps {
   capabilities: Settings18Capability[]
   className?: string
   labels?: Partial<Settings18Labels>

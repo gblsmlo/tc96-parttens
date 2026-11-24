@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings1Labels } from './types'
 
 export const defaultSettings1Labels: Settings1Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar a conta',
+  loading: 'Carregando conta',
   accountDescription: 'Dados de acesso e sessões da sua conta.',
   accountTitle: 'Conta',
   avatarDescription: 'PNG ou JPG, com pelo menos 256 × 256 px',

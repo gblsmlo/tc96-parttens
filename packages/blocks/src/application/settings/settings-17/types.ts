@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export type Settings17Plan = 'pro' | 'beta'
 
 export interface Settings17Control {
@@ -9,14 +10,14 @@ export interface Settings17Control {
   title: string
 }
 
-export interface Settings17Labels {
+export interface Settings17Labels extends SettingsLoadLabels {
   beta: string
   description: string
   pro: string
   title: string
 }
 
-export interface Settings17Props {
+export interface Settings17Props extends SettingsLoadProps {
   className?: string
   controls: Settings17Control[]
   labels?: Partial<Settings17Labels>

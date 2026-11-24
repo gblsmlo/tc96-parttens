@@ -16,7 +16,9 @@ import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
 import { useState } from 'react'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { defaultSettings10Labels } from './labels'
+import { Settings10Skeleton } from './settings-10-skeleton'
 import type {
   Settings10Action,
   Settings10Labels,
@@ -172,6 +174,9 @@ function NewStageDialog({
 }
 
 export function Settings10({
+  error,
+  onRetry,
+  pending,
   className,
   labels: labelsProp,
   onStageAction,
@@ -180,6 +185,13 @@ export function Settings10({
   stages,
 }: Readonly<Settings10Props>) {
   const labels = { ...defaultSettings10Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings10Skeleton />,
+  })
   const [creating, setCreating] = useState(false)
 
   return (
@@ -202,26 +214,28 @@ export function Settings10({
           </SettingsSectionHeader>
         }
       >
-        <div className="flex flex-col gap-3 py-4">
-          {phases.map((phase) => {
-            const group = stages.filter((stage) => stage.phase === phase.id)
-            return (
-              <RecordGroup key={phase.id} title={phase.label}>
-                {group.map((stage, index) => (
-                  <StageItem
-                    first={index === 0}
-                    key={stage.id}
-                    labels={labels}
-                    last={index === group.length - 1}
-                    onStageAction={onStageAction}
-                    phase={phase}
-                    stage={stage}
-                  />
-                ))}
-              </RecordGroup>
-            )
-          })}
-        </div>
+        {loadState ?? (
+          <div className="flex flex-col gap-3 py-4">
+            {phases.map((phase) => {
+              const group = stages.filter((stage) => stage.phase === phase.id)
+              return (
+                <RecordGroup key={phase.id} title={phase.label}>
+                  {group.map((stage, index) => (
+                    <StageItem
+                      first={index === 0}
+                      key={stage.id}
+                      labels={labels}
+                      last={index === group.length - 1}
+                      onStageAction={onStageAction}
+                      phase={phase}
+                      stage={stage}
+                    />
+                  ))}
+                </RecordGroup>
+              )
+            })}
+          </div>
+        )}
       </SettingsSection>
       {onStageCreate ? (
         <NewStageDialog

@@ -1,3 +1,4 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export type Settings21Status = 'connected' | 'disconnected' | 'error'
 
 export interface Settings21App {
@@ -7,7 +8,7 @@ export interface Settings21App {
   status: Settings21Status
 }
 
-export interface Settings21Labels {
+export interface Settings21Labels extends SettingsLoadLabels {
   connect: string
   connectAction: (name: string) => string
   connected: string
@@ -23,7 +24,7 @@ export interface Settings21Labels {
   title: string
 }
 
-export interface Settings21Props {
+export interface Settings21Props extends SettingsLoadProps {
   apps: Settings21App[]
   className?: string
   labels?: Partial<Settings21Labels>

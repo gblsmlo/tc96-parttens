@@ -1,10 +1,11 @@
+import type { SettingsLoadLabels, SettingsLoadProps } from '../shared/types'
 export interface Settings13Reason {
   id: string
   leads: number
   name: string
 }
 
-export interface Settings13Labels {
+export interface Settings13Labels extends SettingsLoadLabels {
   actions: (name: string) => string
   allowCustomReason: string
   allowCustomReasonDescription: string
@@ -27,7 +28,7 @@ export interface Settings13Labels {
 
 export type Settings13Action = 'edit' | 'archive' | 'restore' | 'delete'
 
-export interface Settings13Props {
+export interface Settings13Props extends SettingsLoadProps {
   allowCustomReason?: boolean
   archivedReasons?: Settings13Reason[]
   className?: string

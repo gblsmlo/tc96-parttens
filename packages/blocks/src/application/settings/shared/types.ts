@@ -8,3 +8,16 @@ export interface SettingsOption {
   label: string
   value: string
 }
+
+export interface SettingsLoadLabels {
+  errorDescription: string
+  errorTitle: string
+  loading: string
+  retry: string
+}
+
+export interface SettingsLoadProps {
+  error?: boolean
+  onRetry?: () => void
+  pending?: boolean
+}

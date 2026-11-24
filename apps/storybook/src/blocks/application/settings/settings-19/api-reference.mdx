@@ -42,6 +42,9 @@ The section with one failing endpoint and one disabled endpoint:
 | `onEnabledChange` | `(endpointId: string, enabled: boolean) => void` | - | Called when the enable switch of a row is toggled. |
 | `onCreate` | `() => void` | - | Called when the New endpoint button is clicked. Without it the button is not rendered. |
 | `onEndpointAction` | `(endpointId: string, action: Settings19Action) => void` | - | Called with the id and `'edit'`, `'send-test'` or `'delete'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings19Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the wrapper of the alert and the section. |
 
@@ -75,6 +78,10 @@ The section with one failing endpoint and one disabled endpoint:
 | `actions` | `(url: string) => string` | `"Ações de https://api.acme.com/hooks/crm"`; the accessible name of the row menu |
 | `emptyTitle` | `string` | `"Nenhum endpoint ainda"` |
 | `emptyDescription` | `string` | `"Crie um endpoint para receber eventos por HTTP."` |
+| `loading` | `string` | `"Carregando webhooks"` |
+| `errorTitle` | `string` | `"Não foi possível carregar os webhooks"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 ## Exports
 

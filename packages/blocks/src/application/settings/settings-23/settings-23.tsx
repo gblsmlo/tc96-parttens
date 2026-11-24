@@ -22,7 +22,9 @@ import {
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
 import { useId } from 'react'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { defaultSettings23Labels } from './labels'
+import { Settings23Skeleton } from './settings-23-skeleton'
 import type { Settings23InvoiceStatus, Settings23Props } from './types'
 
 const statusVariant = {
@@ -32,6 +34,9 @@ const statusVariant = {
 } as const satisfies Record<Settings23InvoiceStatus, string>
 
 export function Settings23({
+  error,
+  onRetry,
+  pending,
   className,
   currency = 'BRL',
   invoices,
@@ -43,6 +48,13 @@ export function Settings23({
   usage,
 }: Readonly<Settings23Props>) {
   const labels = { ...defaultSettings23Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings23Skeleton />,
+  })
   const planId = `settings-23-plan-${useId()}`
 
   return (
@@ -57,127 +69,136 @@ export function Settings23({
             weight="medium"
           />
         </SettingsSectionHeader>
-        <Card>
-          <div className="flex flex-col gap-6 p-6">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex flex-col gap-1">
-                <Text
-                  foreground="muted"
-                  render={<p>{labels.planTitle}</p>}
-                  size="sm"
-                />
-                <Text render={<p>{plan.name}</p>} size="lg" weight="medium" />
-                <Text
-                  foreground="muted"
-                  render={
-                    <p>
-                      {formatAmount(plan.price, { currency, locale })}{' '}
-                      {labels.perMonth} · {labels.renewsOn(plan.renewsOn)}
-                    </p>
-                  }
-                  size="sm"
-                />
-              </div>
-              {onChangePlan ? (
-                <Button onClick={onChangePlan} size="sm" variant="outline">
-                  {labels.changePlan}
-                </Button>
-              ) : null}
-            </div>
-            <ul className="flex flex-col gap-4" aria-label={labels.usageTitle}>
-              {usage.map((metric) => (
-                <li key={metric.id}>
-                  <Meter
-                    getAriaValueText={() =>
-                      labels.usage(metric.used, metric.limit, metric.unit)
+        {loadState ?? (
+          <Card>
+            <div className="flex flex-col gap-6 p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                  <Text
+                    foreground="muted"
+                    render={<p>{labels.planTitle}</p>}
+                    size="sm"
+                  />
+                  <Text render={<p>{plan.name}</p>} size="lg" weight="medium" />
+                  <Text
+                    foreground="muted"
+                    render={
+                      <p>
+                        {formatAmount(plan.price, { currency, locale })}{' '}
+                        {labels.perMonth} · {labels.renewsOn(plan.renewsOn)}
+                      </p>
                     }
-                    max={metric.limit}
-                    value={metric.used}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <MeterLabel>{metric.label}</MeterLabel>
-                      <Text
-                        foreground="muted"
-                        render={
-                          <span>
-                            {labels.usage(
-                              metric.used,
-                              metric.limit,
-                              metric.unit,
-                            )}
-                          </span>
-                        }
-                        size="sm"
-                      />
-                    </div>
-                    <MeterTrack>
-                      <MeterIndicator />
-                    </MeterTrack>
-                  </Meter>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Card>
-      </section>
-      <SettingsSection
-        header={
-          <SettingsSectionHeader>
-            <SettingsSectionTitle>{labels.invoicesTitle}</SettingsSectionTitle>
-            <SettingsSectionDescription>
-              {labels.invoicesDescription}
-            </SettingsSectionDescription>
-          </SettingsSectionHeader>
-        }
-      >
-        {invoices.length === 0 ? (
-          <StateSurface
-            description={labels.emptyDescription}
-            kind="empty"
-            title={labels.emptyTitle}
-          />
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{labels.columnDate}</TableHead>
-                <TableHead>{labels.columnAmount}</TableHead>
-                <TableHead>{labels.columnStatus}</TableHead>
-                <TableHead>
-                  <span className="sr-only">{labels.columnActions}</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.map((invoice) => (
-                <TableRow key={invoice.id}>
-                  <TableCell>{invoice.date}</TableCell>
-                  <TableCell>
-                    {formatAmount(invoice.amount, { currency, locale })}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={statusVariant[invoice.status]}>
-                      {labels.statuses[invoice.status]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-end">
-                    {onDownload ? (
-                      <Button
-                        aria-label={labels.download(invoice.date)}
-                        onClick={() => onDownload(invoice.id)}
-                        size="icon-sm"
-                        variant="ghost"
-                      >
-                        <DownloadSimpleIcon aria-hidden="true" />
-                      </Button>
-                    ) : null}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    size="sm"
+                  />
+                </div>
+                {onChangePlan ? (
+                  <Button onClick={onChangePlan} size="sm" variant="outline">
+                    {labels.changePlan}
+                  </Button>
+                ) : null}
+              </div>
+              <ul
+                className="flex flex-col gap-4"
+                aria-label={labels.usageTitle}
+              >
+                {usage.map((metric) => (
+                  <li key={metric.id}>
+                    <Meter
+                      getAriaValueText={() =>
+                        labels.usage(metric.used, metric.limit, metric.unit)
+                      }
+                      max={metric.limit}
+                      value={metric.used}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <MeterLabel>{metric.label}</MeterLabel>
+                        <Text
+                          foreground="muted"
+                          render={
+                            <span>
+                              {labels.usage(
+                                metric.used,
+                                metric.limit,
+                                metric.unit,
+                              )}
+                            </span>
+                          }
+                          size="sm"
+                        />
+                      </div>
+                      <MeterTrack>
+                        <MeterIndicator />
+                      </MeterTrack>
+                    </Meter>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Card>
         )}
-      </SettingsSection>
+      </section>
+      {loadState ? null : (
+        <SettingsSection
+          header={
+            <SettingsSectionHeader>
+              <SettingsSectionTitle>
+                {labels.invoicesTitle}
+              </SettingsSectionTitle>
+              <SettingsSectionDescription>
+                {labels.invoicesDescription}
+              </SettingsSectionDescription>
+            </SettingsSectionHeader>
+          }
+        >
+          {invoices.length === 0 ? (
+            <StateSurface
+              description={labels.emptyDescription}
+              kind="empty"
+              title={labels.emptyTitle}
+            />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{labels.columnDate}</TableHead>
+                  <TableHead>{labels.columnAmount}</TableHead>
+                  <TableHead>{labels.columnStatus}</TableHead>
+                  <TableHead>
+                    <span className="sr-only">{labels.columnActions}</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {invoices.map((invoice) => (
+                  <TableRow key={invoice.id}>
+                    <TableCell>{invoice.date}</TableCell>
+                    <TableCell>
+                      {formatAmount(invoice.amount, { currency, locale })}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={statusVariant[invoice.status]}>
+                        {labels.statuses[invoice.status]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-end">
+                      {onDownload ? (
+                        <Button
+                          aria-label={labels.download(invoice.date)}
+                          onClick={() => onDownload(invoice.id)}
+                          size="icon-sm"
+                          variant="ghost"
+                        >
+                          <DownloadSimpleIcon aria-hidden="true" />
+                        </Button>
+                      ) : null}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </SettingsSection>
+      )}
     </div>
   )
 }

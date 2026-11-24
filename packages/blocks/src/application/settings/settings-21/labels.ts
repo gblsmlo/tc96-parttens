@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings21Labels } from './types'
 
 export const defaultSettings21Labels: Settings21Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar os aplicativos',
+  loading: 'Carregando aplicativos',
   connect: 'Conectar',
   connectAction: (name) => `Conectar ${name}`,
   connected: 'Conectado',

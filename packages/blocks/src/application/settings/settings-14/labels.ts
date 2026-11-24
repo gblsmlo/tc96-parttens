@@ -1,3 +1,4 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings14AccountType, Settings14Labels } from './types'
 
 const accountTypeLabels: Record<Settings14AccountType, string> = {
@@ -6,6 +7,9 @@ const accountTypeLabels: Record<Settings14AccountType, string> = {
 }
 
 export const defaultSettings14Labels: Settings14Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar as contas',
+  loading: 'Carregando contas',
   accountType: (type) => accountTypeLabels[type],
   actions: (name) => `Ações de ${name}`,
   archive: 'Arquivar',

@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings9Labels } from './types'
 
 export const defaultSettings9Labels: Settings9Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar as regras',
+  loading: 'Carregando regras',
   actions: (field, operator, value) => `Ações de ${field} ${operator} ${value}`,
   addRule: 'Adicionar regra',
   condition: 'Condição',

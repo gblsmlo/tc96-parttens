@@ -42,6 +42,9 @@ The settings section. Renders the title and, in order, the font size row, the la
 | `values` | `Settings3Values` | required | The current values of the three rows. |
 | `options` | `Settings3Options` | required | The options of the two selects, `fontSize` and `language`. |
 | `onValueChange` | `<K extends keyof Settings3Values>(key: K, value: Settings3Values[K]) => void` | - | Called with `'fontSize'`, `'language'` or `'emailNotifications'` and the new value. Without it the rows cannot change and keep showing `values`. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
 | `labels` | `Partial<Settings3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the section's classes. |
 
@@ -73,6 +76,10 @@ A `Settings3SettingOption` is `{ label, value }`: the label is shown, the value 
 | `languageDescription` | `string` | `"O idioma dos menus e das mensagens"` |
 | `emailNotifications` | `string` | `"Notificações por e-mail"` |
 | `emailNotificationsDescription` | `string` | `"Envia um resumo da atividade do dia"` |
+| `loading` | `string` | `"Carregando configurações"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as configurações"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
 
 The `fontSize` and `language` labels are also the accessible names of the selects, and `emailNotifications` names the switch.
 

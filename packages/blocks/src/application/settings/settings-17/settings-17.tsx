@@ -9,7 +9,9 @@ import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { Switch } from '@tc96/ui/switch'
 import { cn } from '@tc96/utils'
+import { settingsLoadState } from '../shared/settings-load-state'
 import { defaultSettings17Labels } from './labels'
+import { Settings17Skeleton } from './settings-17-skeleton'
 import type {
   Settings17Control,
   Settings17Labels,
@@ -66,6 +68,9 @@ function ControlRow({
 }
 
 export function Settings17({
+  error,
+  onRetry,
+  pending,
   className,
   controls,
   labels: labelsProp,
@@ -73,6 +78,13 @@ export function Settings17({
   onCheckedChange,
 }: Readonly<Settings17Props>) {
   const labels = { ...defaultSettings17Labels, ...labelsProp }
+  const loadState = settingsLoadState({
+    error,
+    labels,
+    onRetry,
+    pending,
+    skeleton: <Settings17Skeleton />,
+  })
 
   return (
     <SettingsSection
@@ -86,15 +98,16 @@ export function Settings17({
         </SettingsSectionHeader>
       }
     >
-      {controls.map((control) => (
-        <ControlRow
-          control={control}
-          key={control.id}
-          labels={labels}
-          onAction={onAction}
-          onCheckedChange={onCheckedChange}
-        />
-      ))}
+      {loadState ??
+        controls.map((control) => (
+          <ControlRow
+            control={control}
+            key={control.id}
+            labels={labels}
+            onAction={onAction}
+            onCheckedChange={onCheckedChange}
+          />
+        ))}
     </SettingsSection>
   )
 }

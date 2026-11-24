@@ -1,6 +1,10 @@
+import { defaultSettingsLoadLabels } from '../shared/labels'
 import type { Settings16Labels } from './types'
 
 export const defaultSettings16Labels: Settings16Labels = {
+  ...defaultSettingsLoadLabels,
+  errorTitle: 'Não foi possível carregar os centros de custo',
+  loading: 'Carregando centros de custo',
   actions: (name) => `Ações de ${name}`,
   archive: 'Arquivar',
   archived: 'Arquivados',
