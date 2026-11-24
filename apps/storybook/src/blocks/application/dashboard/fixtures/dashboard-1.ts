@@ -3,6 +3,7 @@ import type {
   Dashboard1Exception,
   Dashboard1FilterOption,
   Dashboard1Kpi,
+  Dashboard1ReasonSlice,
 } from '@tc96/blocks/application/dashboard/dashboard-1'
 
 export const kpis: Dashboard1Kpi[] = [
@@ -97,15 +98,33 @@ export const exceptions: Dashboard1Exception[] = [
   },
 ]
 
-export const filterOptions: Dashboard1FilterOption[] = [
+export const reasons: Dashboard1ReasonSlice[] = [
+  { id: 'address', label: 'Endereço', value: 46 },
+  { id: 'carrier', label: 'Transportadora', value: 38 },
+  { id: 'stock', label: 'Estoque', value: 24 },
+  { id: 'payment', label: 'Pagamento', value: 20 },
+]
+
+const filters = [
   { label: 'Todas', value: 'all' },
   { label: 'Abertas', value: 'Aberta' },
   { label: 'Escaladas', value: 'Escalada' },
   { label: 'Resolvidas', value: 'Resolvida' },
 ]
 
-export const filterExceptions = (
+export const countFilterOptions = (
   rows: Dashboard1Exception[],
-  filter: string,
-) =>
-  filter === 'all' ? rows : rows.filter((row) => row.status.label === filter)
+): Dashboard1FilterOption[] =>
+  filters.map((option) => ({
+    ...option,
+    count: filterExceptions(rows, option.value).length,
+  }))
+
+export const filterOptions: Dashboard1FilterOption[] =
+  countFilterOptions(exceptions)
+
+export function filterExceptions(rows: Dashboard1Exception[], filter: string) {
+  return filter === 'all'
+    ? rows
+    : rows.filter((row) => row.status.label === filter)
+}

@@ -1,8 +1,40 @@
 import type {
   Dashboard3ForecastPoint,
+  Dashboard3Kpi,
   Dashboard3Member,
   Dashboard3QueueItem,
 } from '@tc96/blocks/application/dashboard/dashboard-3'
+
+export const kpis: Dashboard3Kpi[] = [
+  {
+    delta: 0.04,
+    format: 'percent',
+    id: 'coverage',
+    label: 'Cobertura média',
+    trend: 'positive',
+    value: 0.73,
+  },
+  {
+    delta: -0.1,
+    id: 'scheduled',
+    label: 'Pessoas escaladas',
+    trend: 'negative',
+    value: 42,
+  },
+  {
+    delta: 0.25,
+    id: 'gaps',
+    label: 'Turnos descobertos',
+    trend: 'negative',
+    value: 5,
+  },
+  {
+    id: 'overtime',
+    label: 'Horas extras previstas',
+    trend: 'neutral',
+    value: 18,
+  },
+]
 
 export const crew: Dashboard3Member[] = [
   {

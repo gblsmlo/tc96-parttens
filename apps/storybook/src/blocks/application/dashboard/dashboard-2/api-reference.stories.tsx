@@ -8,14 +8,20 @@ import {
   orders,
   sales,
 } from '../fixtures/dashboard-2.ts'
+import { breadcrumbsFor, periodOptions } from '../fixtures/shared.ts'
 
 const meta = {
   args: {
+    breadcrumbs: breadcrumbsFor('Receita do varejo'),
     channels,
     kpis,
+    onExport: fn(),
+    onPeriodChange: fn(),
     onRetry: fn(),
     onSortChange: fn(),
     orders,
+    period: '7d',
+    periodOptions,
     sales,
     sort: initialSort,
   },

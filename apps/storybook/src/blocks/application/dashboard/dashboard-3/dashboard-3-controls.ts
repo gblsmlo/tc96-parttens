@@ -5,6 +5,7 @@ export interface Dashboard3Controls {
   empty: boolean
   error: boolean
   pending: boolean
+  tableTools: boolean
   title: string
 }
 
@@ -13,6 +14,7 @@ export const dashboard3ControlArgs: Dashboard3Controls = {
   empty: false,
   error: false,
   pending: false,
+  tableTools: true,
   title: 'Cobertura das equipes',
 }
 
@@ -34,6 +36,11 @@ export const dashboard3ControlArgTypes: Partial<ArgTypes<Dashboard3Controls>> =
     pending: {
       control: 'boolean',
       description: 'The `pending` prop: renders the skeleton.',
+    },
+    tableTools: {
+      control: 'boolean',
+      description:
+        'Passes `onSearchChange` and `pagination` with `onPageChange`; off, the crew table shows every row with no search or pages.',
     },
     title: {
       control: 'text',

@@ -12,7 +12,18 @@ import { useState } from 'react'
 import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { dashboard2Handlers } from '../../../../mocks/dashboard-2.ts'
-import { initialSort, sortOrders } from '../fixtures/dashboard-2.ts'
+import {
+  initialSort,
+  orderActions,
+  sortOrders,
+} from '../fixtures/dashboard-2.ts'
+import {
+  breadcrumbsFor,
+  initialPeriod,
+  matchesSearch,
+  paginate,
+  periodOptions,
+} from '../fixtures/shared.ts'
 
 interface RetailData {
   channels: Dashboard2Channel[]
@@ -23,22 +34,53 @@ interface RetailData {
 
 const RetailDashboard = () => {
   const [sort, setSort] = useState<Dashboard2Sort>(initialSort)
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [period, setPeriod] = useState(initialPeriod)
   const { data, isError, isPending, refetch } = useQuery({
-    queryFn: () => fetchJson<RetailData>('/dashboard/retail-revenue'),
-    queryKey: ['dashboard', 'retail-revenue'],
+    queryFn: () =>
+      fetchJson<RetailData>(`/dashboard/retail-revenue?period=${period}`),
+    queryKey: ['dashboard', 'retail-revenue', period],
     retry: false,
   })
+  const visible = paginate(
+    sortOrders(
+      (data?.orders ?? []).filter((order) =>
+        matchesSearch(search, order.number, order.customer),
+      ),
+      sort,
+    ),
+    page,
+    4,
+  )
 
   return (
     <Dashboard2
+      breadcrumbs={breadcrumbsFor('Receita do varejo')}
       channels={data?.channels ?? []}
       error={isError}
       kpis={data?.kpis ?? []}
+      onExport={() => undefined}
+      onPageChange={setPage}
+      onPeriodChange={setPeriod}
       onRetry={() => refetch()}
-      onSortChange={setSort}
-      orders={sortOrders(data?.orders ?? [], sort)}
+      onRowAction={() => undefined}
+      onSearchChange={(next) => {
+        setSearch(next)
+        setPage(1)
+      }}
+      onSortChange={(next) => {
+        setSort(next)
+        setPage(1)
+      }}
+      orders={visible.rows}
+      pagination={visible.pagination}
       pending={isPending}
+      period={period}
+      periodOptions={periodOptions}
+      rowActions={orderActions}
       sales={data?.sales ?? []}
+      search={search}
       sort={sort}
     />
   )

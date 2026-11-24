@@ -2,6 +2,7 @@ import type {
   Dashboard2Channel,
   Dashboard2Kpi,
   Dashboard2Order,
+  Dashboard2RowAction,
   Dashboard2SalesPoint,
   Dashboard2Sort,
 } from '@tc96/blocks/application/dashboard/dashboard-2'
@@ -51,13 +52,41 @@ export const channels: Dashboard2Channel[] = [
 ]
 
 export const sales: Dashboard2SalesPoint[] = [
-  { label: 'Seg', values: { marketplace: 6200, store: 9800, web: 7100 } },
-  { label: 'Ter', values: { marketplace: 5900, store: 10400, web: 7600 } },
-  { label: 'Qua', values: { marketplace: 7300, store: 9100, web: 8200 } },
-  { label: 'Qui', values: { marketplace: 8100, store: 11200, web: 9400 } },
-  { label: 'Sex', values: { marketplace: 9600, store: 13800, web: 11300 } },
-  { label: 'Sáb', values: { marketplace: 8800, store: 16400, web: 10100 } },
-  { label: 'Dom', values: { marketplace: 5400, store: 7200, web: 6800 } },
+  {
+    label: 'Seg',
+    plan: 22000,
+    values: { marketplace: 6200, store: 9800, web: 7100 },
+  },
+  {
+    label: 'Ter',
+    plan: 23000,
+    values: { marketplace: 5900, store: 10400, web: 7600 },
+  },
+  {
+    label: 'Qua',
+    plan: 24000,
+    values: { marketplace: 7300, store: 9100, web: 8200 },
+  },
+  {
+    label: 'Qui',
+    plan: 26000,
+    values: { marketplace: 8100, store: 11200, web: 9400 },
+  },
+  {
+    label: 'Sex',
+    plan: 30000,
+    values: { marketplace: 9600, store: 13800, web: 11300 },
+  },
+  {
+    label: 'Sáb',
+    plan: 32000,
+    values: { marketplace: 8800, store: 16400, web: 10100 },
+  },
+  {
+    label: 'Dom',
+    plan: 20000,
+    values: { marketplace: 5400, store: 7200, web: 6800 },
+  },
 ]
 
 export const orders: Dashboard2Order[] = [
@@ -120,3 +149,9 @@ export const sortOrders = (rows: Dashboard2Order[], sort: Dashboard2Sort) => {
     return ((rank[a.id] ?? 0) - (rank[b.id] ?? 0)) * factor
   })
 }
+
+export const orderActions: Dashboard2RowAction[] = [
+  { id: 'view', label: 'Ver pedido' },
+  { id: 'resend', label: 'Reenviar nota fiscal' },
+  { destructive: true, id: 'refund', label: 'Reembolsar' },
+]

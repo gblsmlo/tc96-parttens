@@ -23,7 +23,10 @@ export function Dashboard1Skeleton({
         <KpiSkeleton />
         <KpiSkeleton />
       </div>
-      <PanelSkeleton />
+      <div className="grid gap-4 xl:grid-cols-[2fr_1fr]">
+        <PanelSkeleton />
+        <PanelSkeleton />
+      </div>
       <TableSkeleton />
     </section>
   )

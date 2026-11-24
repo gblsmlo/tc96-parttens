@@ -1,3 +1,5 @@
+import type { RenderLink } from '@tc96/ui/render-anchor'
+
 export type DashboardTone =
   | 'error'
   | 'info'
@@ -28,4 +30,54 @@ export interface DashboardKpi {
 export interface DashboardFormatProps {
   currency?: string
   locale?: string
+}
+
+export interface DashboardBreadcrumbItem {
+  href?: string
+  label: string
+}
+
+export interface DashboardOption {
+  label: string
+  value: string
+}
+
+export interface DashboardFilterOption extends DashboardOption {
+  count?: number
+}
+
+export interface DashboardRowAction {
+  destructive?: boolean
+  id: string
+  label: string
+}
+
+export interface DashboardPagination {
+  page: number
+  pageCount: number
+}
+
+export interface DashboardHeaderProps {
+  breadcrumbs?: DashboardBreadcrumbItem[]
+  onExport?: () => void
+  onPeriodChange?: (period: string) => void
+  period?: string
+  periodOptions?: DashboardOption[]
+  renderLink?: RenderLink
+}
+
+export interface DashboardHeaderLabels {
+  breadcrumb: string
+  description: string
+  export: string
+  period: string
+  title: string
+}
+
+export interface DashboardTableLabels {
+  nextPage: string
+  pageOf: (page: number, pageCount: number) => string
+  pagination: string
+  previousPage: string
+  search: string
 }

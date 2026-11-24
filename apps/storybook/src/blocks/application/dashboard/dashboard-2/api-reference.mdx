@@ -5,9 +5,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Dashboard2
 
-A retail revenue dashboard: a row of four KPI cards with sparklines, a stacked bar chart of sales per channel and a table of recent orders with sortable columns. Reach for it on a store or commerce home page that shows how much was sold, through which channel and which orders came in. Install it with `npx @tc96/parttens add dashboard-2`.
+A retail revenue dashboard in four layers: a header with breadcrumb, title, description, period select and Exportar; a row of four KPI cards with sparklines; a stacked area chart of sales per channel against a dashed plan line beside a bar chart of the channel mix; and a table of recent orders with sortable columns, a search, pagination and a menu per row. Reach for it on a store or commerce home page that shows how much was sold, through which channel and which orders came in. Install it with `npx @tc96/parttens add dashboard-2`.
 
-It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The sort is controlled: the app passes `sort`, handles `onSortChange` and passes the rows already sorted; the block never reorders them. Numbers arrive raw and the block formats them with `locale` and `currency` (`pt-BR` and `BRL` by default); `placedAt` is a string the app formats. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `kpis`, `sales` and `orders` the empty state. The precedence is `pending`, then `error`, then empty.
+It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The sort is controlled: the app passes `sort`, handles `onSortChange` and passes the rows already sorted; the block never reorders them. The period select, Exportar, the search, the pagination and the row menu render only when their callbacks are passed, and the app searches and pages the rows. The plan line renders only when a point has `plan`; the channel mix sums each channel over `sales`. Numbers arrive raw and the block formats them with `locale` and `currency` (`pt-BR` and `BRL` by default); `placedAt` is a string the app formats. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `kpis`, `sales` and `orders` the empty state. The precedence is `pending`, then `error`, then empty.
 
 The other pages of `Blocks/Application/Dashboard/Dashboard2`: [Playground](?path=/story/blocks-application-dashboard-dashboard2-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-dashboard-dashboard2-behavior--kpis-show-formatted-values-and-deltas) for the tests, [States](?path=/story/blocks-application-dashboard-dashboard2-states--default) for the four states and [Usages](?path=/story/blocks-application-dashboard-dashboard2-usages--loaded) for the data read over the network.
 
@@ -21,20 +21,31 @@ The same path exports the types listed under Exports.
 
 ## Anatomy
 
-Four KPIs with sparklines, a week of sales in three channels and five orders sorted by date.
+Four KPIs with sparklines, a week of sales in three channels against the plan and five orders sorted by date.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
 <Dashboard2
+  breadcrumbs={[{ href: '/painel', label: 'Painéis' }, { label: 'Receita do varejo' }]}
   channels={channels}
   error={isError}
   kpis={kpis}
+  onExport={exportReport}
+  onPageChange={setPage}
+  onPeriodChange={setPeriod}
   onRetry={() => refetch()}
+  onRowAction={(actionId, orderId) => act(actionId, orderId)}
+  onSearchChange={setSearch}
   onSortChange={setSort}
-  orders={sortedOrders}
+  orders={pageRows}
+  pagination={{ page, pageCount }}
   pending={isPending}
+  period={period}
+  periodOptions={periodOptions}
+  rowActions={rowActions}
   sales={sales}
+  search={search}
   sort={sort}
 />
 ```
@@ -49,6 +60,18 @@ Four KPIs with sparklines, a week of sales in three channels and five orders sor
 | `orders` | `Dashboard2Order[]` | required | The table rows, already sorted by the app. |
 | `sort` | `Dashboard2Sort` | required | The active column and direction; marks `aria-sort`. |
 | `onSortChange` | `(sort: Dashboard2Sort) => void` | required | Called by a column button: the same key flips the direction, another key starts `asc`. |
+| `breadcrumbs` | `{ label: string; href?: string }[]` | - | The trail above the title; the last item is the current page. |
+| `renderLink` | `RenderLink` | - | Builds the element of each breadcrumb link, for the app's router; without it the trail is plain text. |
+| `period` | `string` | - | The `value` of the active period. |
+| `periodOptions` | `{ label: string; value: string }[]` | - | The options of the period select. |
+| `onPeriodChange` | `(period: string) => void` | - | Called with the picked period; the select renders only with `period`, `periodOptions` and this callback. |
+| `onExport` | `() => void` | - | Renders the Exportar button in the header; hidden on error and on the empty state. |
+| `search` | `string` | `''` | The text of the table search. |
+| `onSearchChange` | `(search: string) => void` | - | Renders the table search; the app filters the rows. |
+| `pagination` | `{ page: number; pageCount: number }` | - | The current page, from 1, and the page count. |
+| `onPageChange` | `(page: number) => void` | - | Renders the pagination under the table with `pagination`; the app passes the rows of the page. |
+| `rowActions` | `{ id: string; label: string; destructive?: boolean }[]` | - | The items of the menu at the end of each row. |
+| `onRowAction` | `(actionId: string, rowId: string) => void` | - | Called with the action `id` and the row `id`; the menu column renders only with `rowActions` and this callback. |
 | `locale` | `string` | `'pt-BR'` | Locale of every formatted number. |
 | `currency` | `string` | `'BRL'` | Currency of the amounts. |
 | `pending` | `boolean` | `false` | Renders the skeleton; wins over `error` and the empty state. |
@@ -63,7 +86,7 @@ Four KPIs with sparklines, a week of sales in three channels and five orders sor
 | --- | --- |
 | `Dashboard2Kpi` | `id`, `label`, `value` (raw), `format` (`'number' \| 'currency' \| 'percent'`, a percent is a ratio), `delta` (ratio), `trend` (`'positive' \| 'negative' \| 'neutral'`) and `sparkline` (`number[]`). |
 | `Dashboard2Channel` | `id` and `label`. |
-| `Dashboard2SalesPoint` | `label` and `values`, a record from channel `id` to a raw amount. |
+| `Dashboard2SalesPoint` | `label`, `values`, a record from channel `id` to a raw amount, and an optional `plan`, the raw amount of the plan line. |
 | `Dashboard2Order` | `id`, `number`, `customer`, `placedAt` (formatted string), `total` (raw amount) and `status` (`{ label, tone? }`). |
 | `Dashboard2Sort` | `key` (`'customer' \| 'placedAt' \| 'total'`) and `direction` (`'asc' \| 'desc'`). |
 
@@ -81,6 +104,18 @@ Four KPIs with sparklines, a week of sales in three channels and five orders sor
 | `columnOrder`, `columnCustomer`, `columnStatus`, `columnPlacedAt`, `columnTotal` | `string` | `"Pedido"`, `"Cliente"`, `"Status"`, `"Data"`, `"Total"` |
 | `sortBy` | `(column: string) => string` | `` `Ordenar por ${column}` ``; the accessible name of a sort button |
 | `noOrders` | `string` | `"Nenhum pedido no período"` |
+| `breadcrumb` | `string` | `"Navegação estrutural"`; the accessible name of the trail |
+| `period`, `export` | `string` | `"Período"`, `"Exportar"` |
+| `search` | `string` | `"Buscar pedido ou cliente"`; the name and placeholder of the search |
+| `pagination` | `string` | `"Paginação dos pedidos"`; the name of the pagination |
+| `pageOf` | `(page, pageCount) => string` | `` `Página ${page} de ${pageCount}` `` |
+| `previousPage`, `nextPage` | `string` | `"Página anterior"`, `"Próxima página"` |
+| `description` | `string` | `"Receita por canal contra o plano do período."`; the text under the title |
+| `planSeries` | `string` | `"Plano"`; the name of the plan line |
+| `mixTitle`, `mixLabel` | `string` | `"Mix de canais"`, `"Participação de cada canal na receita do período"`; the title and the accessible name of the mix chart |
+| `mixSummary` | `(items) => string` | Joins `label: total` with `; ` |
+| `columnActions` | `string` | `"Ações"`; the hidden header of the menu column |
+| `rowActionsFor` | `(order: string) => string` | `` `Ações de ${order}` ``; the name of each row menu |
 | `errorTitle`, `errorDescription`, `retry` | `string` | `"Não foi possível carregar as vendas"`, `"Tente novamente em instantes."`, `"Tentar novamente"` |
 | `emptyTitle`, `emptyDescription` | `string` | `"Nenhuma venda registrada"`, `"As vendas aparecem aqui assim que forem registradas."` |
 
@@ -97,10 +132,15 @@ Four KPIs with sparklines, a week of sales in three channels and five orders sor
 | `Dashboard2Order` | `type` | A table row. |
 | `Dashboard2Sort`, `Dashboard2SortKey`, `Dashboard2SortDirection` | `type` | The sort state. |
 | `Dashboard2Labels` | `type` | The keys of `labels`. |
+| `Dashboard2MixSummaryItem` | `type` | The formatted item `mixSummary` receives. |
+| `Dashboard2RowAction` | `type` | An item of the row menu. |
+| `Dashboard2Pagination` | `type` | The `pagination` prop. |
 
 ## Accessibility and theme
 
-- The chart is an `img` named by `labels.salesLabel` and described by a visually hidden text from `labels.salesSummary`; the sparklines are decorative and hidden, because the card already shows the number.
+- The header is a `header` with the `h2` title; the breadcrumb is a `navigation` named by `labels.breadcrumb` and the period select a `combobox` named by `labels.period`.
+- The search is a `searchbox` named by `labels.search`; the pagination is a `navigation` named by `labels.pagination` whose buttons are disabled at the ends.
+- The sales chart and the mix chart are `img`s named by `labels.salesLabel` and `labels.mixLabel` and described by visually hidden texts from `labels.salesSummary` and `labels.mixSummary`; the sparklines are decorative and hidden, because the card already shows the number.
 - Each sortable header carries `aria-sort` and a button named by `labels.sortBy`.
 - The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
-- Chart colors come from `--chart-1` to `--chart-5`; status colors from the theme badge tones. The block carries no raw color, radius or shadow.
+- Chart colors come from `--chart-1` to `--chart-5` and the plan line from `--muted-foreground`, dashed so color is not the only cue; status colors from the theme badge tones. The block carries no raw color, radius or shadow.

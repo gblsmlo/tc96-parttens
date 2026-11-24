@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Dashboard3 } from '@tc96/blocks/application/dashboard/dashboard-3'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, within } from 'storybook/test'
 import { crew, forecast, queue } from '../fixtures/dashboard-3.ts'
 import {
   type Dashboard3Controls,
@@ -9,13 +9,28 @@ import {
 import { ComposedDashboard3 } from './dashboard-3-layouts.tsx'
 
 const meta = {
-  args: { ...dashboard3ControlArgs, onAction: fn(), onRetry: fn() },
+  args: {
+    ...dashboard3ControlArgs,
+    onAction: fn(),
+    onExport: fn(),
+    onPageChange: fn(),
+    onPeriodChange: fn(),
+    onRetry: fn(),
+    onSearchChange: fn(),
+  },
   parameters: { layout: 'padded' },
   render: (args) => <ComposedDashboard3 {...args} />,
   tags: ['!autodocs'],
   title: 'Blocks/Application/Dashboard/Dashboard3/Behavior',
 } satisfies Meta<
-  Dashboard3Controls & { onAction: (id: string) => void; onRetry: () => void }
+  Dashboard3Controls & {
+    onAction: (id: string) => void
+    onExport: () => void
+    onPageChange: (page: number) => void
+    onPeriodChange: (period: string) => void
+    onRetry: () => void
+    onSearchChange: (search: string) => void
+  }
 >
 
 export default meta
@@ -23,6 +38,84 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const baseProps = { crew, forecast, queue }
+
+export const HeaderShowsBreadcrumbPeriodAndExport: Story = {
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.getByRole('navigation', { name: 'Navegação estrutural' }),
+    ).toHaveTextContent('Cobertura das equipes')
+    await userEvent.click(canvas.getByRole('combobox', { name: 'Período' }))
+    await userEvent.click(
+      await screen.findByRole('option', { name: 'Últimos 30 dias' }),
+    )
+    await expect(args.onPeriodChange).toHaveBeenCalledWith('30d')
+    await userEvent.click(canvas.getByRole('button', { name: 'Exportar' }))
+    await expect(args.onExport).toHaveBeenCalledTimes(1)
+  },
+}
+
+export const KpisRenderOnlyWhenGiven: Story = {
+  play: async ({ canvasElement }) => {
+    await expect(
+      canvasElement.querySelector('[data-kpi="coverage"]'),
+    ).toHaveTextContent('73%')
+  },
+}
+
+export const KpiListDropsWithoutKpis: Story = {
+  render: () => <Dashboard3 {...baseProps} />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('list', { name: 'Indicadores' }),
+    ).toBeNull()
+  },
+}
+
+export const SearchCallsOnSearchChange: Story = {
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.type(
+      canvas.getByRole('searchbox', { name: 'Buscar pessoa' }),
+      'Bruno',
+    )
+    await expect(args.onSearchChange).toHaveBeenLastCalledWith('Bruno')
+    await expect(canvasElement.querySelectorAll('[data-member]')).toHaveLength(
+      1,
+    )
+    await expect(canvas.getByText('Bruno Tavares')).toBeVisible()
+  },
+}
+
+export const PaginationCallsOnPageChange: Story = {
+  play: async ({ args, canvasElement }) => {
+    const pages = within(canvasElement).getByRole('navigation', {
+      name: 'Paginação da equipe',
+    })
+    await expect(pages).toHaveTextContent('Página 1 de 2')
+    await userEvent.click(
+      within(pages).getByRole('button', { name: 'Próxima página' }),
+    )
+    await expect(args.onPageChange).toHaveBeenCalledWith(2)
+    await expect(
+      canvasElement.querySelector('[data-member="m4"]'),
+    ).toHaveTextContent('Bruno Tavares')
+  },
+}
+
+export const TableToolsRenderOnlyWithTheirCallbacks: Story = {
+  args: { tableTools: false },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.queryByRole('searchbox')).toBeNull()
+    await expect(
+      canvas.queryByRole('navigation', { name: 'Paginação da equipe' }),
+    ).toBeNull()
+    await expect(canvasElement.querySelectorAll('[data-member]')).toHaveLength(
+      crew.length,
+    )
+  },
+}
 
 export const CrewTableShowsMemberRoleAndShift: Story = {
   play: async ({ canvasElement }) => {

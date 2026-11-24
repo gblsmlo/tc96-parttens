@@ -5,6 +5,7 @@ export interface Dashboard1Controls {
   empty: boolean
   error: boolean
   pending: boolean
+  tableTools: boolean
   title: string
 }
 
@@ -13,6 +14,7 @@ export const dashboard1ControlArgs: Dashboard1Controls = {
   empty: false,
   error: false,
   pending: false,
+  tableTools: true,
   title: 'Exceções de expedição',
 }
 
@@ -24,7 +26,8 @@ export const dashboard1ControlArgTypes: Partial<ArgTypes<Dashboard1Controls>> =
     },
     empty: {
       control: 'boolean',
-      description: 'Passes `kpis`, `capacity` and `exceptions` empty.',
+      description:
+        'Passes `kpis`, `capacity`, `reasons` and `exceptions` empty.',
     },
     error: {
       control: 'boolean',
@@ -33,6 +36,11 @@ export const dashboard1ControlArgTypes: Partial<ArgTypes<Dashboard1Controls>> =
     pending: {
       control: 'boolean',
       description: 'The `pending` prop: renders the skeleton.',
+    },
+    tableTools: {
+      control: 'boolean',
+      description:
+        'Passes `onSearchChange`, `pagination` with `onPageChange` and `onRowAction`; off, the table shows every row with no search, pages or row menu.',
     },
     title: {
       control: 'text',

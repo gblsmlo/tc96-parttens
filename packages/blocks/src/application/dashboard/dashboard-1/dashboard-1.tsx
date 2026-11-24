@@ -8,14 +8,28 @@ import {
   TableHeader,
   TableRow,
 } from '@tc96/ui/table'
-import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
 import { cn } from '@tc96/utils'
-import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import { ChartFrame } from '../shared/chart-frame'
-import { ChartLegend, ChartTooltip } from '../shared/chart-tooltip'
+import { ChartLegend, ChartTooltip, chartColor } from '../shared/chart-tooltip'
 import { DashboardError } from '../shared/dashboard-error'
+import { DashboardFilter } from '../shared/dashboard-filter'
+import { DashboardHeader } from '../shared/dashboard-header'
 import { DashboardKpiCard } from '../shared/dashboard-kpi-card'
+import { DashboardPagination } from '../shared/dashboard-pagination'
 import { DashboardPanel } from '../shared/dashboard-panel'
+import { DashboardRowActions } from '../shared/dashboard-row-actions'
+import { DashboardSearch } from '../shared/dashboard-search'
 import { createDashboardFormatter } from '../shared/format'
 import { Dashboard1Skeleton } from './dashboard-1-skeleton'
 import { defaultDashboard1Labels } from './labels'
@@ -25,6 +39,7 @@ const usedColor = 'var(--chart-1)'
 const totalColor = 'var(--chart-2)'
 
 export function Dashboard1({
+  breadcrumbs,
   capacity,
   className,
   currency,
@@ -35,9 +50,21 @@ export function Dashboard1({
   kpis,
   labels: labelsProp,
   locale,
+  onExport,
   onFilterChange,
+  onPageChange,
+  onPeriodChange,
   onRetry,
+  onRowAction,
+  onSearchChange,
+  pagination,
   pending = false,
+  period,
+  periodOptions,
+  reasons = [],
+  renderLink,
+  rowActions,
+  search = '',
 }: Readonly<Dashboard1Props>) {
   const labels = { ...defaultDashboard1Labels, ...labelsProp }
 
@@ -53,7 +80,12 @@ export function Dashboard1({
 
   const formatter = createDashboardFormatter({ currency, locale })
   const isEmpty =
-    kpis.length === 0 && capacity.length === 0 && exceptions.length === 0
+    kpis.length === 0 &&
+    capacity.length === 0 &&
+    reasons.length === 0 &&
+    exceptions.length === 0
+  const hasRowActions = Boolean(onRowAction && rowActions?.length)
+  const columnCount = hasRowActions ? 6 : 5
 
   return (
     <section
@@ -61,7 +93,16 @@ export function Dashboard1({
       className={cn('grid gap-4', className)}
       data-block="dashboard-1"
     >
-      <h2 className="font-semibold text-lg">{labels.title}</h2>
+      <DashboardHeader
+        breadcrumbs={breadcrumbs}
+        labels={labels}
+        onExport={onExport}
+        onPeriodChange={onPeriodChange}
+        period={period}
+        periodOptions={periodOptions}
+        renderLink={renderLink}
+        showExport={!error && !isEmpty}
+      />
       {error ? (
         <DashboardError
           description={labels.errorDescription}
@@ -87,94 +128,143 @@ export function Dashboard1({
               </li>
             ))}
           </ul>
-          <DashboardPanel title={labels.capacityTitle}>
-            <ChartFrame
-              label={labels.capacityLabel}
-              summary={labels.capacitySummary(
-                capacity.map((point) => ({
-                  capacity: formatter.value(point.capacity),
-                  label: point.label,
-                  used: formatter.value(point.used),
-                })),
-              )}
-            >
-              <BarChart
-                accessibilityLayer={false}
-                barGap={4}
-                data={capacity}
-                margin={{ bottom: 0, left: 4, right: 4, top: 4 }}
+          <div
+            className={cn(
+              'grid items-start gap-4',
+              reasons.length > 0 && 'xl:grid-cols-[2fr_1fr]',
+            )}
+          >
+            <DashboardPanel title={labels.capacityTitle}>
+              <ChartFrame
+                label={labels.capacityLabel}
+                summary={labels.capacitySummary(
+                  capacity.map((point) => ({
+                    capacity: formatter.value(point.capacity),
+                    label: point.label,
+                    used: formatter.value(point.used),
+                  })),
+                )}
               >
-                <CartesianGrid
-                  stroke="var(--border)"
-                  strokeDasharray="3 3"
-                  vertical={false}
-                />
-                <XAxis
-                  axisLine={false}
-                  dataKey="label"
-                  tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
-                  tickLine={false}
-                  tickMargin={8}
-                />
-                <YAxis
-                  axisLine={false}
-                  tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
-                  tickFormatter={(value) => formatter.value(Number(value))}
-                  tickLine={false}
-                  width={48}
-                />
-                <Tooltip
-                  content={(tooltip) => (
-                    <ChartTooltip
-                      {...tooltip}
-                      formatValue={(value) => formatter.value(value)}
-                    />
+                <BarChart
+                  accessibilityLayer={false}
+                  barGap={4}
+                  data={capacity}
+                  margin={{ bottom: 0, left: 4, right: 4, top: 4 }}
+                >
+                  <CartesianGrid
+                    stroke="var(--border)"
+                    strokeDasharray="3 3"
+                    vertical={false}
+                  />
+                  <XAxis
+                    axisLine={false}
+                    dataKey="label"
+                    tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                    tickLine={false}
+                    tickMargin={8}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                    tickFormatter={(value) => formatter.value(Number(value))}
+                    tickLine={false}
+                    width={48}
+                  />
+                  <Tooltip
+                    content={(tooltip) => (
+                      <ChartTooltip
+                        {...tooltip}
+                        formatValue={(value) => formatter.value(value)}
+                      />
+                    )}
+                    cursor={{ fill: 'var(--muted)' }}
+                  />
+                  <Bar
+                    dataKey="used"
+                    fill={usedColor}
+                    isAnimationActive={false}
+                    name={labels.capacityUsed}
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="capacity"
+                    fill={totalColor}
+                    isAnimationActive={false}
+                    name={labels.capacityTotal}
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ChartFrame>
+              <ChartLegend
+                items={[
+                  { color: usedColor, label: labels.capacityUsed },
+                  { color: totalColor, label: labels.capacityTotal },
+                ]}
+              />
+            </DashboardPanel>
+            {reasons.length > 0 ? (
+              <DashboardPanel title={labels.reasonsTitle}>
+                <ChartFrame
+                  label={labels.reasonsLabel}
+                  summary={labels.reasonsSummary(
+                    reasons.map((slice) => ({
+                      label: slice.label,
+                      value: formatter.value(slice.value),
+                    })),
                   )}
-                  cursor={{ fill: 'var(--muted)' }}
+                >
+                  <PieChart accessibilityLayer={false}>
+                    <Tooltip
+                      content={(tooltip) => (
+                        <ChartTooltip
+                          {...tooltip}
+                          formatValue={(value) => formatter.value(value)}
+                        />
+                      )}
+                    />
+                    <Pie
+                      data={reasons}
+                      dataKey="value"
+                      innerRadius="60%"
+                      isAnimationActive={false}
+                      nameKey="label"
+                      outerRadius="90%"
+                      paddingAngle={2}
+                      stroke="var(--card)"
+                    >
+                      {reasons.map((slice, index) => (
+                        <Cell fill={chartColor(index)} key={slice.id} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ChartFrame>
+                <ChartLegend
+                  items={reasons.map((slice, index) => ({
+                    color: chartColor(index),
+                    label: slice.label,
+                  }))}
                 />
-                <Bar
-                  dataKey="used"
-                  fill={usedColor}
-                  isAnimationActive={false}
-                  name={labels.capacityUsed}
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar
-                  dataKey="capacity"
-                  fill={totalColor}
-                  isAnimationActive={false}
-                  name={labels.capacityTotal}
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ChartFrame>
-            <ChartLegend
-              items={[
-                { color: usedColor, label: labels.capacityUsed },
-                { color: totalColor, label: labels.capacityTotal },
-              ]}
-            />
-          </DashboardPanel>
+              </DashboardPanel>
+            ) : null}
+          </div>
           <DashboardPanel
             action={
-              <ToggleGroup
-                aria-label={labels.filter}
-                onValueChange={(next) => {
-                  const [value] = next as string[]
-                  if (value !== undefined) onFilterChange(value)
-                }}
-                size="sm"
-                value={[filter]}
-              >
-                {filterOptions.map((option) => (
-                  <ToggleGroupItem key={option.value} value={option.value}>
-                    {option.label}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
+              onSearchChange ? (
+                <DashboardSearch
+                  label={labels.search}
+                  onValueChange={onSearchChange}
+                  value={search}
+                />
+              ) : undefined
             }
             title={labels.exceptionsTitle}
           >
+            <DashboardFilter
+              label={labels.filter}
+              onValueChange={onFilterChange}
+              options={filterOptions}
+              value={filter}
+            />
             <Table aria-label={labels.exceptionsTitle}>
               <TableHeader>
                 <TableRow>
@@ -185,12 +275,17 @@ export function Dashboard1({
                     {labels.columnDelay}
                   </TableHead>
                   <TableHead>{labels.columnStatus}</TableHead>
+                  {hasRowActions ? (
+                    <TableHead className="w-10">
+                      <span className="sr-only">{labels.columnActions}</span>
+                    </TableHead>
+                  ) : null}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {exceptions.length === 0 ? (
                   <TableRow>
-                    <TableCell className="text-center" colSpan={5}>
+                    <TableCell className="text-center" colSpan={columnCount}>
                       <span className="text-muted-foreground">
                         {labels.noExceptions}
                       </span>
@@ -212,11 +307,33 @@ export function Dashboard1({
                           {exception.status.label}
                         </Badge>
                       </TableCell>
+                      {hasRowActions && rowActions && onRowAction ? (
+                        <TableCell className="text-right">
+                          <DashboardRowActions
+                            actions={rowActions}
+                            label={labels.rowActionsFor(exception.order)}
+                            onAction={(actionId) =>
+                              onRowAction(actionId, exception.id)
+                            }
+                          />
+                        </TableCell>
+                      ) : null}
                     </TableRow>
                   ))
                 )}
               </TableBody>
             </Table>
+            {pagination && onPageChange ? (
+              <DashboardPagination
+                label={labels.pagination}
+                nextLabel={labels.nextPage}
+                onPageChange={onPageChange}
+                page={pagination.page}
+                pageCount={pagination.pageCount}
+                pageOf={labels.pageOf}
+                previousLabel={labels.previousPage}
+              />
+            ) : null}
           </DashboardPanel>
         </>
       )}

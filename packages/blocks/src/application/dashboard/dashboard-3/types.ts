@@ -1,4 +1,16 @@
-import type { DashboardBadgeData, DashboardFormatProps } from '../shared/types'
+import type {
+  DashboardBadgeData,
+  DashboardFormatProps,
+  DashboardHeaderLabels,
+  DashboardHeaderProps,
+  DashboardKpi,
+  DashboardPagination,
+  DashboardTableLabels,
+} from '../shared/types'
+
+export type Dashboard3Kpi = DashboardKpi
+
+export type Dashboard3Pagination = DashboardPagination
 
 export interface Dashboard3Member {
   avatarSrc?: string
@@ -30,7 +42,9 @@ export interface Dashboard3ForecastSummaryItem {
   supply: string
 }
 
-export interface Dashboard3Labels {
+export interface Dashboard3Labels
+  extends DashboardHeaderLabels,
+    DashboardTableLabels {
   action: string
   actionFor: (action: string, title: string) => string
   columnCoverage: string
@@ -48,6 +62,7 @@ export interface Dashboard3Labels {
   forecastSeries: string
   forecastSummary: (items: Dashboard3ForecastSummaryItem[]) => string
   forecastTitle: string
+  indicators: string
   loading: string
   noCrew: string
   noQueue: string
@@ -57,14 +72,21 @@ export interface Dashboard3Labels {
   title: string
 }
 
-export interface Dashboard3Props extends DashboardFormatProps {
+export interface Dashboard3Props
+  extends DashboardFormatProps,
+    DashboardHeaderProps {
   className?: string
   crew: Dashboard3Member[]
   error?: boolean
   forecast: Dashboard3ForecastPoint[]
+  kpis?: Dashboard3Kpi[]
   labels?: Partial<Dashboard3Labels>
   onAction?: (id: string) => void
+  onPageChange?: (page: number) => void
   onRetry?: () => void
+  onSearchChange?: (search: string) => void
+  pagination?: Dashboard3Pagination
   pending?: boolean
   queue: Dashboard3QueueItem[]
+  search?: string
 }

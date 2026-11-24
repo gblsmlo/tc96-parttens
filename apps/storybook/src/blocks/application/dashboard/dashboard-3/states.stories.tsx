@@ -1,10 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Dashboard3 } from '@tc96/blocks/application/dashboard/dashboard-3'
 import { expect, fn, within } from 'storybook/test'
-import { crew, forecast, queue } from '../fixtures/dashboard-3.ts'
+import { crew, forecast, kpis, queue } from '../fixtures/dashboard-3.ts'
+import { breadcrumbsFor, periodOptions } from '../fixtures/shared.ts'
 
 const meta = {
-  args: { crew, forecast, onAction: fn(), onRetry: fn(), queue },
+  args: {
+    breadcrumbs: breadcrumbsFor('Cobertura das equipes'),
+    crew,
+    forecast,
+    kpis,
+    onAction: fn(),
+    onExport: fn(),
+    onPeriodChange: fn(),
+    onRetry: fn(),
+    period: '7d',
+    periodOptions,
+    queue,
+  },
   component: Dashboard3,
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
@@ -43,7 +56,7 @@ export const Failed: Story = {
 }
 
 export const Empty: Story = {
-  args: { crew: [], forecast: [], queue: [] },
+  args: { crew: [], forecast: [], kpis: [], queue: [] },
   play: async ({ canvasElement }) => {
     await expect(
       within(canvasElement).getByText('Nenhuma escala cadastrada'),
