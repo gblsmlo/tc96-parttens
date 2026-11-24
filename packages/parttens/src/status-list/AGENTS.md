@@ -45,5 +45,4 @@ The stories are in `apps/storybook/src/patterns/status-list/`, on `Patterns/Stat
 
 ## Pointers
 
-- `Blocks/Records/LookupCreate1/Usages, Lawsuits`: the sources of a create dialog.
 - `docs/accessibility.md`: the contrast rules for the `failed` row.
