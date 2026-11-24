@@ -57,8 +57,7 @@ export const resetPasswordControlArgTypes: Partial<
   },
   logo: {
     control: 'boolean',
-    description:
-      'Passes a `logo`, which renders inside the card, above the title.',
+    description: 'Passes a `logo`, which renders inside the card, above the title.',
   },
   passwordMinLength: {
     control: { max: 32, min: 1, type: 'number' },
