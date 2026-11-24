@@ -126,6 +126,8 @@ export const blockNames = [
   'login-3',
   'login-4',
   'login-5',
+  'run-monitor',
+  'impact-map',
 ] as const
 export type BlockName = (typeof blockNames)[number]
 /** Folder under packages/blocks/src, kept as the path in the consumer. */
@@ -210,6 +212,8 @@ export const blockSources: Record<BlockName, string> = {
   'login-3': 'auth/login-3',
   'login-4': 'auth/login-4',
   'login-5': 'auth/login-5',
+  'run-monitor': 'ai-agents/flow/run-monitor',
+  'impact-map': 'ai-agents/flow/impact-map',
 }
 export type ItemName = PatternName | BlockName
 /** Areas under packages/parttens/src that ship with an item no file of it imports. */
