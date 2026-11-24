@@ -77,6 +77,13 @@ export const blockNames = [
   'settings-14',
   'settings-15',
   'settings-16',
+  'settings-17',
+  'settings-18',
+  'settings-19',
+  'settings-20',
+  'settings-21',
+  'settings-22',
+  'settings-23',
 ] as const
 export type BlockName = (typeof blockNames)[number]
 /** Folder under packages/blocks/src, kept as the path in the consumer. */
@@ -112,6 +119,13 @@ export const blockSources: Record<BlockName, string> = {
   'settings-14': 'application/settings/settings-14',
   'settings-15': 'application/settings/settings-15',
   'settings-16': 'application/settings/settings-16',
+  'settings-17': 'application/settings/settings-17',
+  'settings-18': 'application/settings/settings-18',
+  'settings-19': 'application/settings/settings-19',
+  'settings-20': 'application/settings/settings-20',
+  'settings-21': 'application/settings/settings-21',
+  'settings-22': 'application/settings/settings-22',
+  'settings-23': 'application/settings/settings-23',
 }
 export type ItemName = PatternName | BlockName
 /** Areas under packages/parttens/src that ship with an item no file of it imports. */

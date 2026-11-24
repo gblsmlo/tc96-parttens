@@ -1,0 +1,120 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Settings23
+
+A billing screen with the current plan, the usage of the plan and the invoices. The plan card shows the name, the price, the renewal date and, when the app handles it, a Change plan button. Below it, one meter per usage metric shows what was used against the limit, and a table lists the invoices with a status badge and a download button. Reach for it when people manage their subscription. Install it with `npx @tc96/parttens add settings-23`.
+
+It is a section, not a page: it renders no `main` landmark. Changing the plan and downloading stay in the app; the block only calls `onChangePlan` and `onDownload`, keeps no state and never fetches or stores anything. Dates arrive already formatted; the amounts are formatted by the block with `formatAmount`.
+
+The other pages of `Blocks/Application/Settings/Settings23`: [Playground](?path=/story/blocks-application-settings-settings23-playground--playground) to try the texts, the empty invoices and the callbacks, [Behavior](?path=/story/blocks-application-settings-settings23-behavior--plan-summary-shows-price-and-renewal) for the tests and [Usages](?path=/story/blocks-application-settings-settings23-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Settings23 } from '@tc96/blocks/application/settings/settings-23'
+```
+
+The same path exports the types `Settings23Props`, `Settings23Plan`, `Settings23Usage`, `Settings23Invoice`, `Settings23InvoiceStatus` and `Settings23Labels`.
+
+## Anatomy
+
+The plan card with three meters, and the invoices table:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Settings23
+  invoices={invoices}
+  onChangePlan={openPlans}
+  onDownload={(invoiceId) => downloadInvoice(invoiceId)}
+  plan={plan}
+  usage={usage}
+/>
+```
+
+## Settings23
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `plan` | `Settings23Plan` | required | Name, monthly price and renewal date of the plan. |
+| `usage` | `Settings23Usage[]` | required | One meter per metric. |
+| `invoices` | `Settings23Invoice[]` | required | The invoices to list; an empty array shows the empty state. |
+| `onChangePlan` | `() => void` | - | Called when Change plan is clicked. Without it the button is not rendered. |
+| `onDownload` | `(invoiceId: string) => void` | - | Called when the download button of a row is clicked. Without it the buttons are not rendered. |
+| `currency` | `string` | `"BRL"` | Currency code passed to `formatAmount` for the price and the invoice amounts. |
+| `locale` | `string` | `"pt-BR"` | Locale passed to `formatAmount`. |
+| `labels` | `Partial<Settings23Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the block's classes. |
+
+The block takes no other props.
+
+## Settings23Plan
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | Name of the plan. |
+| `price` | `number` | Price per month, formatted with `currency` and `locale`. |
+| `renewsOn` | `string` | Renewal date, already formatted, shown in `labels.renewsOn`. |
+
+## Settings23Usage
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Key of the meter. |
+| `label` | `string` | Name of the metric. |
+| `used` | `number` | Amount used. |
+| `limit` | `number` | Limit of the plan; the meter's maximum. |
+| `unit` | `string` | Optional unit shown after the numbers, for example `GB`. |
+
+## Settings23Invoice
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the invoice in `onDownload`. |
+| `date` | `string` | Invoice date, already formatted. |
+| `amount` | `number` | Amount charged. |
+| `status` | `'paid' \| 'pending' \| 'failed'` | Badge of the row: success, warning or error, with the text of `labels.statuses`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Cobrança"` |
+| `planTitle` | `string` | `"Plano atual"` |
+| `perMonth` | `string` | `"por mês"` |
+| `changePlan` | `string` | `"Alterar plano"` |
+| `usageTitle` | `string` | `"Uso do plano"`; the accessible name of the metrics list |
+| `invoicesTitle` | `string` | `"Faturas"` |
+| `invoicesDescription` | `string` | `"Histórico de cobranças da assinatura."` |
+| `columnDate` | `string` | `"Data"` |
+| `columnAmount` | `string` | `"Valor"` |
+| `columnActions` | `string` | `"Ações"`; hidden header of the actions column |
+| `columnStatus` | `string` | `"Status"` |
+| `emptyTitle` | `string` | `"Nenhuma fatura ainda"` |
+| `emptyDescription` | `string` | `"As faturas aparecem aqui depois da primeira cobrança."` |
+| `statuses` | `Record<Settings23InvoiceStatus, string>` | `Paga`, `Pendente`, `Falhou` |
+| `renewsOn` | `(date: string) => string` | `"Renova em 15 dez 2026"` |
+| `usage` | `(used: number, limit: number, unit?: string) => string` | `"7 de 10 usuários"`; also the `aria-valuetext` of the meter |
+| `download` | `(date: string) => string` | `"Baixar fatura de 15 nov 2026"`; the accessible name of the download button |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Settings23` | `component` | The billing screen. |
+| `Settings23Props` | `type` | The props of the block. |
+| `Settings23Plan` | `type` | The plan summary. |
+| `Settings23Usage` | `type` | A usage metric. |
+| `Settings23Invoice` | `type` | An invoice. |
+| `Settings23InvoiceStatus` | `type` | `'paid' \| 'pending' \| 'failed'`. |
+| `Settings23Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each meter is a `role="meter"` with `aria-valuenow`, `aria-valuemax` and an `aria-valuetext` built by `labels.usage`.
+- The download button is named by `labels.download(date)`, so each row is told apart by screen readers.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.
