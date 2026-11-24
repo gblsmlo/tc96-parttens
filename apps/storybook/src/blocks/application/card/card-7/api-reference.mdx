@@ -1,0 +1,46 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Card7
+
+A contact profile card: avatar, name, status badge and email, a summary strip of stats, a list of amounts and one action button. Reach for it when a CRM page shows who a contact is and what they are worth. Install it with `npx @tc96/parttens add card-7`.
+
+The block keeps no state and fetches nothing. Every value of `stats` is a final string from the app; item amounts are numbers formatted with `formatAmount`. Without `contact` the block shows its skeleton.
+
+## Import
+
+```tsx
+import { Card7 } from '@tc96/blocks/application/card/card-7'
+```
+
+The same path exports the types `Card7Props`, `Card7Contact`, `Card7Stat`, `Card7Item` and `Card7Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+## Card7
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `contact` | `Card7Contact` | - | `name`, `email`, optional `avatarUrl` and `status` badge. |
+| `stats` | `readonly Card7Stat[]` | `[]` | `id`, `label` and a formatted `value`; hidden when empty. |
+| `items` | `readonly Card7Item[]` | `[]` | `id`, `label`, `amount`, `icon`, optional `color` and `currency`; hidden when empty. |
+| `onAction` | `() => void` | - | Without it the action button is not rendered. |
+| `actionIcon` | `ReactNode` | chat icon | Icon before `labels.action`. |
+| `currency` | `string` | `'BRL'` | Currency of items that carry none. |
+| `locale` | `string` | `'pt-BR'` | Locale of the amounts. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `labels` | `Partial<Card7Labels>` | pt-BR texts | Overrides the texts of the block. |
+| `className` | `string` | - | Merged into the root element's classes. |
+
+## Accessibility and theme
+
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- The card is a `section` named by the contact name; the stats are a description list named by `labels.stats` and the items a list named by `labels.items`.
+- The avatar image is decorative: the name is written as text.
+- The block carries no color of its own: the theme belongs to the app.

@@ -1883,6 +1883,28 @@
     "Card6Salary",
     "Card6WorkMode"
   ],
+  "block:card-7": [
+    "Card7",
+    "Card7Contact",
+    "Card7Item",
+    "Card7Labels",
+    "Card7Props",
+    "Card7Stat"
+  ],
+  "block:card-8": [
+    "Card8",
+    "Card8Action",
+    "Card8Labels",
+    "Card8Meeting",
+    "Card8Props"
+  ],
+  "block:card-9": [
+    "Card9",
+    "Card9Action",
+    "Card9Delivery",
+    "Card9Labels",
+    "Card9Props"
+  ],
   "block:list-1": [
     "List1",
     "List1Labels",

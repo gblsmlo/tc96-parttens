@@ -1,0 +1,42 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Card8
+
+A grid of meeting cards: title, time, duration, description, participants, a tag, a join button and an actions menu. Reach for it when a page lists the next meetings. Install it with `npx @tc96/parttens add card-8`.
+
+The block keeps no state and fetches nothing. Time and duration are final strings from the app. Empty `meetings` shows the empty state, which `error` wins over.
+
+## Import
+
+```tsx
+import { Card8 } from '@tc96/blocks/application/card/card-8'
+```
+
+The same path exports the types `Card8Props`, `Card8Meeting`, `Card8Action` and `Card8Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+## Card8
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `meetings` | `readonly Card8Meeting[]` | required | One card per meeting, in order. |
+| `onJoin` | `(meetingId: string) => void` | - | Without it the join footer is not rendered. |
+| `actions` | `readonly Card8Action[]` | - | Items of the menu; shown with `onActionSelect`. |
+| `onActionSelect` | `(meetingId: string, actionId: string) => void` | - | Called with the meeting and the chosen action. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `labels` | `Partial<Card8Labels>` | pt-BR texts | Overrides the texts of the block. |
+| `className` | `string` | - | Merged into the root element's classes. |
+
+## Accessibility and theme
+
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- Each card is a `section` named by its title; the join button and the menu take the meeting title in their names (`labels.joinTo`, `labels.more`).
+- The block carries no color of its own: the theme belongs to the app.

@@ -1,0 +1,41 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Card9
+
+A delivery details card: address with a tag, delivery time, tracking code and notes, with an actions menu. Reach for it when an order or a CRM record shows where a delivery stands. Install it with `npx @tc96/parttens add card-9`.
+
+The block keeps no state and fetches nothing. Every value is a final string from the app. Without `delivery` the block shows its skeleton.
+
+## Import
+
+```tsx
+import { Card9 } from '@tc96/blocks/application/card/card-9'
+```
+
+The same path exports the types `Card9Props`, `Card9Delivery`, `Card9Action` and `Card9Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+## Card9
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `delivery` | `Card9Delivery` | - | `address`, `duration`, `tracking`, optional `addressTag`, `updatedAt`, `trackingStatus` and `notes`. |
+| `actions` | `readonly Card9Action[]` | - | Items of the menu; shown with `onActionSelect`. |
+| `onActionSelect` | `(actionId: string) => void` | - | Called with the chosen action. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the content; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `labels` | `Partial<Card9Labels>` | pt-BR texts | Overrides the texts of the block. |
+| `className` | `string` | - | Merged into the root element's classes. |
+
+## Accessibility and theme
+
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- The card is a `section` named by `labels.title`; each detail is a description list term named by `labels.address`, `labels.duration` and `labels.tracking`, read by screen readers in place of the icon.
+- The block carries no color of its own: the theme belongs to the app.
