@@ -463,7 +463,7 @@ test('builds the wizard item from its folder with IconFrame and COSS as ui depen
 
 test('lists every block folder in blockSources', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const folders = ['*/*/*/index.ts', 'auth/*/index.ts']
+  const folders = ['*/*/*/index.ts']
     .flatMap((pattern) => [
       ...new Bun.Glob(pattern).scanSync(join(root, 'packages/blocks/src')),
     ])
@@ -586,12 +586,13 @@ test('builds the login-1 item with the auth shared files and the form parts from
       '@ui/separator',
     ]),
   )
-  expect(paths).toContain('blocks/src/auth/login-1/index.ts')
-  expect(paths).toContain('blocks/src/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/src/application/auth/login-1/index.ts')
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/auth/') || path.startsWith('helpers/src/'),
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
     ),
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
@@ -626,17 +627,20 @@ test('builds the login-2 item with the auth shared files and only the form parts
       '@ui/input-group',
     ]),
   )
-  expect(paths).toContain('blocks/src/auth/login-2/index.ts')
-  expect(paths).toContain('blocks/src/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/src/application/auth/login-2/index.ts')
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/auth/') || path.startsWith('helpers/src/'),
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
     ),
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
   expect(
-    paths.some((path) => path.startsWith('blocks/src/auth/login-1/')),
+    paths.some((path) =>
+      path.startsWith('blocks/src/application/auth/login-1/'),
+    ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
@@ -665,12 +669,13 @@ test('builds the otp-1 item with the auth shared files and the otp field from CO
       '@ui/otp-field',
     ]),
   )
-  expect(paths).toContain('blocks/src/auth/otp-1/index.ts')
-  expect(paths).toContain('blocks/src/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/src/application/auth/otp-1/index.ts')
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/auth/') || path.startsWith('helpers/src/'),
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
     ),
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
@@ -678,7 +683,9 @@ test('builds the otp-1 item with the auth shared files and the otp field from CO
     paths.some((path) => path.startsWith('blocks/src/application/shell/')),
   ).toBe(false)
   expect(
-    paths.some((path) => path.startsWith('blocks/src/auth/login-1/')),
+    paths.some((path) =>
+      path.startsWith('blocks/src/application/auth/login-1/'),
+    ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
@@ -710,13 +717,16 @@ test('builds the signup-1 item with the auth shared files and the form parts fro
       '@ui/separator',
     ]),
   )
-  expect(paths).toContain('blocks/src/auth/signup-1/index.ts')
-  expect(paths).toContain('blocks/src/auth/shared/auth-card.tsx')
-  expect(paths).toContain('blocks/src/auth/shared/auth-password-feedback.tsx')
+  expect(paths).toContain('blocks/src/application/auth/signup-1/index.ts')
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain(
+    'blocks/src/application/auth/shared/auth-password-feedback.tsx',
+  )
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/auth/') || path.startsWith('helpers/src/'),
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
     ),
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
@@ -726,8 +736,8 @@ test('builds the signup-1 item with the auth shared files and the form parts fro
   expect(
     paths.some(
       (path) =>
-        path.startsWith('blocks/src/auth/login-1/') ||
-        path.startsWith('blocks/src/auth/otp-1/'),
+        path.startsWith('blocks/src/application/auth/login-1/') ||
+        path.startsWith('blocks/src/application/auth/otp-1/'),
     ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
@@ -758,14 +768,21 @@ test('builds the reset-password-1 item with the auth shared files and the form p
       '@ui/render-anchor',
     ]),
   )
-  expect(paths).toContain('blocks/src/auth/reset-password-1/index.ts')
-  expect(paths).toContain('blocks/src/auth/shared/auth-card.tsx')
-  expect(paths).toContain('blocks/src/auth/shared/auth-password-field.tsx')
-  expect(paths).toContain('blocks/src/auth/shared/auth-password-feedback.tsx')
+  expect(paths).toContain(
+    'blocks/src/application/auth/reset-password-1/index.ts',
+  )
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain(
+    'blocks/src/application/auth/shared/auth-password-field.tsx',
+  )
+  expect(paths).toContain(
+    'blocks/src/application/auth/shared/auth-password-feedback.tsx',
+  )
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/auth/') || path.startsWith('helpers/src/'),
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
     ),
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
@@ -775,9 +792,9 @@ test('builds the reset-password-1 item with the auth shared files and the form p
   expect(
     paths.some(
       (path) =>
-        path.startsWith('blocks/src/auth/login-1/') ||
-        path.startsWith('blocks/src/auth/otp-1/') ||
-        path.startsWith('blocks/src/auth/signup-1/'),
+        path.startsWith('blocks/src/application/auth/login-1/') ||
+        path.startsWith('blocks/src/application/auth/otp-1/') ||
+        path.startsWith('blocks/src/application/auth/signup-1/'),
     ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
@@ -808,17 +825,24 @@ test('builds the reset-password-2 item with the auth shared files and its own co
       '@ui/render-anchor',
     ]),
   )
-  expect(paths).toContain('blocks/src/auth/reset-password-2/index.ts')
   expect(paths).toContain(
-    'blocks/src/auth/reset-password-2/format-countdown.ts',
+    'blocks/src/application/auth/reset-password-2/index.ts',
   )
-  expect(paths).toContain('blocks/src/auth/shared/auth-card.tsx')
-  expect(paths).toContain('blocks/src/auth/shared/auth-password-field.tsx')
-  expect(paths).toContain('blocks/src/auth/shared/auth-password-feedback.tsx')
+  expect(paths).toContain(
+    'blocks/src/application/auth/reset-password-2/format-countdown.ts',
+  )
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
+  expect(paths).toContain(
+    'blocks/src/application/auth/shared/auth-password-field.tsx',
+  )
+  expect(paths).toContain(
+    'blocks/src/application/auth/shared/auth-password-feedback.tsx',
+  )
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/auth/') || path.startsWith('helpers/src/'),
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
     ),
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
@@ -828,10 +852,10 @@ test('builds the reset-password-2 item with the auth shared files and its own co
   expect(
     paths.some(
       (path) =>
-        path.startsWith('blocks/src/auth/login-1/') ||
-        path.startsWith('blocks/src/auth/otp-1/') ||
-        path.startsWith('blocks/src/auth/signup-1/') ||
-        path.startsWith('blocks/src/auth/reset-password-1/'),
+        path.startsWith('blocks/src/application/auth/login-1/') ||
+        path.startsWith('blocks/src/application/auth/otp-1/') ||
+        path.startsWith('blocks/src/application/auth/signup-1/') ||
+        path.startsWith('blocks/src/application/auth/reset-password-1/'),
     ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
@@ -862,12 +886,15 @@ test('builds the forgot-password-1 item with the auth shared files and the form 
       '@ui/render-anchor',
     ]),
   )
-  expect(paths).toContain('blocks/src/auth/forgot-password-1/index.ts')
-  expect(paths).toContain('blocks/src/auth/shared/auth-card.tsx')
+  expect(paths).toContain(
+    'blocks/src/application/auth/forgot-password-1/index.ts',
+  )
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/auth/') || path.startsWith('helpers/src/'),
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
     ),
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
@@ -877,11 +904,11 @@ test('builds the forgot-password-1 item with the auth shared files and the form 
   expect(
     paths.some(
       (path) =>
-        path.startsWith('blocks/src/auth/login-1/') ||
-        path.startsWith('blocks/src/auth/otp-1/') ||
-        path.startsWith('blocks/src/auth/signup-1/') ||
-        path.startsWith('blocks/src/auth/reset-password-1/') ||
-        path.startsWith('blocks/src/auth/reset-password-2/'),
+        path.startsWith('blocks/src/application/auth/login-1/') ||
+        path.startsWith('blocks/src/application/auth/otp-1/') ||
+        path.startsWith('blocks/src/application/auth/signup-1/') ||
+        path.startsWith('blocks/src/application/auth/reset-password-1/') ||
+        path.startsWith('blocks/src/application/auth/reset-password-2/'),
     ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
@@ -912,17 +939,20 @@ test('builds the signup-2 item with the auth shared files and only the form part
       '@ui/input-group',
     ]),
   )
-  expect(paths).toContain('blocks/src/auth/signup-2/index.ts')
-  expect(paths).toContain('blocks/src/auth/shared/auth-card.tsx')
+  expect(paths).toContain('blocks/src/application/auth/signup-2/index.ts')
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/auth/') || path.startsWith('helpers/src/'),
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
     ),
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
   expect(
-    paths.some((path) => path.startsWith('blocks/src/auth/signup-1/')),
+    paths.some((path) =>
+      path.startsWith('blocks/src/application/auth/signup-1/'),
+    ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
@@ -951,17 +981,22 @@ test('builds the forgot-password-2 item with the auth shared files and only the 
       '@ui/input',
     ]),
   )
-  expect(paths).toContain('blocks/src/auth/forgot-password-2/index.ts')
-  expect(paths).toContain('blocks/src/auth/shared/auth-card.tsx')
+  expect(paths).toContain(
+    'blocks/src/application/auth/forgot-password-2/index.ts',
+  )
+  expect(paths).toContain('blocks/src/application/auth/shared/auth-card.tsx')
   expect(
     paths.every(
       (path) =>
-        path.startsWith('blocks/src/auth/') || path.startsWith('helpers/src/'),
+        path.startsWith('blocks/src/application/auth/') ||
+        path.startsWith('helpers/src/'),
     ),
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('parttens/'))).toBe(false)
   expect(
-    paths.some((path) => path.startsWith('blocks/src/auth/forgot-password-1/')),
+    paths.some((path) =>
+      path.startsWith('blocks/src/application/auth/forgot-password-1/'),
+    ),
   ).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })

@@ -6,7 +6,7 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 A block is the composition of a page, a page frame or a page section, such as an application shell or a sign-in page. It comes in numbered variations (`app-shell-1` to `app-shell-4`), is built from your COSS components and the patterns, and is yours to edit once installed. Blocks consume patterns; a pattern never imports a block, and a block never imports another block.
 
-Blocks live in categories, by what the screen is for: **Application** (frame: shell, settings), **Auth** (access), **Data**, **Charts**, **Solutions**, **AI & Agents**, **eCommerce** and **Marketing**. Each block sits at `Blocks/<Category>/<Group>/<Name>` in the sidebar and at `<category>/<group>/<block>/` in the source. A category without groups, such as Auth, puts its blocks directly under it: `Blocks/Auth/<Name>` and `auth/<block>/`.
+Blocks live in categories, by what the screen is for: **Application** (frame: shell, settings), **Auth** (access), **Data**, **Charts**, **Solutions**, **AI & Agents**, **eCommerce** and **Marketing**. Each block sits at `Blocks/<Category>/<Group>/<Name>` in the sidebar and at `<category>/<group>/<block>/` in the source. A category without groups, such as Auth, puts its blocks directly under it: `Blocks/Application/Auth/<Name>` and `auth/<block>/`.
 
 Screens that only live in Storybook, with example data and no install, are under `Templates` (`Templates/Contacts`, `Templates/Workspace Settings`). Each one renders inside [AppShell1](?path=/docs/blocks-application-shell-appshell1--doc). Copy the page from the Code panel of the story, which shows only the page, and render it in the `children` of your shell (the `<Outlet />` of the layout route).
 
@@ -109,7 +109,7 @@ export function AppLayout() {
 
 ### Auth
 
-Nine pages of the sign in flow, in `Blocks/Auth`, installed under `auth/`. Each one is a whole page: it renders the `main` and centers the card in the window (the numbered `-1` pages also put your `logo` above it), so you only mount it on the route and never wrap it in another `main`.
+Nine pages of the sign in flow, in `Blocks/Application/Auth`, installed under `application/auth/`. Each one is a whole page: it renders the `main` and centers the card in the window (the numbered `-1` pages also put your `logo` above it), so you only mount it on the route and never wrap it in another `main`.
 
 | Block | Install | What it is |
 | --- | --- | --- |
