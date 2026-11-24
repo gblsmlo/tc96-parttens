@@ -7,10 +7,10 @@ Dashboard cards that show prepared numbers, lists, charts and progress, grouped 
 | Folder | Holds |
 | --- | --- |
 | `shared/` | the frame and every piece more than one domain uses; `shared/index.ts` also re-exports `IconFrame` and `formatAmount`, so a copied pattern gets both from the widgets barrel |
-| `crm/`, `finance/`, `gamification/`, `productivity/` | one domain each, with its own `index.ts` barrel |
+| `analytics/`, `crm/`, `finance/`, `gamification/`, `productivity/` | one domain each, with its own `index.ts` barrel |
 | `types/` | `TrendDirection`, `WidgetPeriodOption`, `WidgetTone`, shared by `shared/` and the domains |
 
-Import direction: `<domain>/` → `shared/`, `types/`, and files of the same domain only (`ShareBar` from `finance/market-share-widget.tsx`, `ActivityTimeline`, `XpMeter`); `shared/` → `types/`, never a domain; no domain imports another. Recharts is used only by the three chart widgets.
+Import direction: `<domain>/` → `shared/`, `types/`, and files of the same domain only (`ShareBar` from `finance/market-share-widget.tsx`, `ActivityTimeline`, `XpMeter`); `shared/` → `types/`, never a domain; no domain imports another. Recharts is used only by the three chart widgets and `AreaMetricWidget`.
 
 The pattern has no bun tests and no `test/dom.ts`; its interface tests are Storybook plays (see Verify). The folder is not split into `composition/` and `components/`; grouping by domain is the layout.
 
@@ -46,6 +46,7 @@ Periods and expansion:
 Charts, time and markup:
 
 - `BalanceWidget`, `CashFlowWidget` and `TaskProgressWidget` render recharts with `accessibilityLayer={false}` and `isAnimationActive={false}` inside a `div role="img"` named by `chartLabel`, the string title or `Gráfico`. The plays run in Chromium, whose `ResizeObserver` feeds `ResponsiveContainer`; no stub is needed.
+- `AreaMetricWidget` (`analytics/`) draws its area chart inside a `div aria-hidden="true"` with `data-slot="area-metric-chart"`, because the card already shows the value; it drops the chart below two points. `blocks/application/stats/stats-7` and `blocks/application/dashboard/dashboard-4` import it by path.
 - `WorldClockWidget` renders every clock from one instant; without `now` it ticks every second, with `now` it never ticks. `AgendaWidget` keys events by `calendarDateKey` and `calendarProps` cannot override `mode`, `modifiers`, `onSelect` or `selected`.
 - `UpcomingEventWidget` defaults the window to 30 minutes on each side and calls `copyToClipboard(joinHref)` before `onCopy(joinHref)`.
 - `ContactWidget` builds a channel link only for a value it receives and renders it as a COSS `Button` through `render={<a />}`; WhatsApp opens with `target="_blank" rel="noreferrer"`.

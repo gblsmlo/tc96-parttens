@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { AreaMetricWidget } from '@tc96/parttens'
 import { StatsCanvas } from './stats-canvas.tsx'
 import { statsControlArgs } from './stats-controls.ts'
 import {
@@ -37,6 +38,18 @@ export const WithSparkline: Story = {
       sparkline
       trend={false}
       value={2350}
+    />
+  ),
+}
+
+export const WithArea: Story = {
+  render: () => (
+    <AreaMetricWidget
+      caption="store.example.com, 28 days"
+      format={{ maximumFractionDigits: 1, notation: 'compact' }}
+      label="Revenue"
+      points={[1.8, 2.1, 1.9, 2.4, 2.2, 2.6, 2.3, 2.5, 2.9, 2.7, 3.1, 2.8]}
+      value={62400}
     />
   ),
 }

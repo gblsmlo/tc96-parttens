@@ -1,0 +1,140 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Dashboard4
+
+A module tracker in three layers, after the ReUI Module Tracker dashboard: a sticky navbar with the breadcrumb, the team avatars and Convidar; a row of three metric cards, each with a caption, a compact value and an area chart of the period; and a table of modules with a progress ring, the module with its kind, owner and domain, the delivery window, a status badge and the row actions (open, favorite and a menu), with sortable columns, a status filter with counts, a search, Adicionar módulo and a pagination that shows the range. Reach for it on the home page of a product or platform team that follows the delivery of its modules. Install it with `npx @tc96/parttens add dashboard-4`.
+
+It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state. The sort, the filter, the search and the page are controlled: the app passes the rows already sorted, filtered and paged, and the block never reorders them. Each tool renders only with its callback. The metric cards are the `AreaMetricWidget` of the widgets pattern, the same card `Stats7` lays out; the value is a raw number the block formats with `locale` and `currency`, compact for `format: 'currency'`. The ready percentage comes from `tasksDone` over `tasksTotal`; `window` is a string the app formats. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and an empty `metrics` and `modules` the empty state, with Adicionar módulo when `onAddModule` is passed. The precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/Application/Dashboard/Dashboard4`: [Playground](?path=/story/blocks-application-dashboard-dashboard4-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-dashboard-dashboard4-behavior--navbar-shows-team-and-invite) for the tests, [States](?path=/story/blocks-application-dashboard-dashboard4-states--default) for the four states and [Usages](?path=/story/blocks-application-dashboard-dashboard4-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Dashboard4 } from '@tc96/blocks/application/dashboard/dashboard-4'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Eleven people in the team, three metrics of 28 days and the first ten of seventeen modules sorted by name.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Dashboard4
+  breadcrumbs={[{ href: '/', label: 'Início' }, { label: 'Workspace' }]}
+  error={isError}
+  filter={filter}
+  filterOptions={filterOptions}
+  metrics={metrics}
+  modules={pageRows}
+  onAddModule={addModule}
+  onFavoriteChange={(moduleId, favorite) => star(moduleId, favorite)}
+  onFilterChange={setFilter}
+  onInvite={openInvite}
+  onOpen={(moduleId) => open(moduleId)}
+  onPageChange={setPage}
+  onRetry={() => refetch()}
+  onRowAction={(actionId, moduleId) => act(actionId, moduleId)}
+  onSearchChange={setSearch}
+  onSortChange={setSort}
+  pagination={{ from, page, pageCount, to, total }}
+  pending={isPending}
+  rowActions={rowActions}
+  search={search}
+  sort={sort}
+  team={team}
+/>
+```
+
+## Dashboard4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `metrics` | `Dashboard4Metric[]` | required | The metric cards, in order; the chart of each takes the next `--chart-n` color. |
+| `modules` | `Dashboard4Module[]` | required | The table rows, already sorted, filtered and paged by the app. |
+| `sort` | `Dashboard4Sort` | required | The active column and direction; marks `aria-sort`. |
+| `onSortChange` | `(sort: Dashboard4Sort) => void` | required | Called by a column button: the same key flips the direction, another key starts `asc`. |
+| `breadcrumbs` | `{ label: string; href?: string }[]` | - | The trail of the navbar; the last item is the current page. |
+| `renderLink` | `RenderLink` | - | Builds the element of each breadcrumb link; without it the trail is plain text. |
+| `team` | `Dashboard4Person[]` | - | The avatars of the navbar; three show and the rest fold into a `+n` chip. |
+| `onInvite` | `() => void` | - | Renders Convidar in the navbar. |
+| `filter` | `string` | - | The `value` of the active status filter. |
+| `filterOptions` | `{ label: string; value: string; count?: number }[]` | - | The options of the status filter. |
+| `onFilterChange` | `(filter: string) => void` | - | Renders the status filter with `filter` and `filterOptions`; the app filters the rows. |
+| `search` | `string` | `''` | The text of the search. |
+| `onSearchChange` | `(search: string) => void` | - | Renders the search; the app filters the rows. |
+| `onAddModule` | `() => void` | - | Renders Adicionar módulo beside the search and in the empty state. |
+| `pagination` | `{ page, pageCount, from, to, total }` | - | The current page from 1, the page count and the range of rows shown. |
+| `onPageChange` | `(page: number) => void` | - | Renders the range and the pagination under the table with `pagination`. |
+| `onOpen` | `(moduleId: string) => void` | - | Renders the open button of each row. |
+| `onFavoriteChange` | `(moduleId: string, favorite: boolean) => void` | - | Renders the star toggle of each row, pressed when the module has `favorite`. |
+| `rowActions` | `{ id: string; label: string; destructive?: boolean }[]` | - | The items of the menu of each row. |
+| `onRowAction` | `(actionId: string, moduleId: string) => void` | - | Called with the action and the row `id`; the menu renders only with `rowActions` and this callback. |
+| `locale` | `string` | `'pt-BR'` | Locale of every formatted number. |
+| `currency` | `string` | `'BRL'` | Currency of a `format: 'currency'` metric. |
+| `pending` | `boolean` | `false` | Renders the skeleton; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by Tentar novamente; without it the button is not rendered. |
+| `labels` | `Partial<Dashboard4Labels>` | pt-BR texts | Overrides the texts of the block. |
+| `className` | `string` | - | Merged into the root classes. |
+
+The actions column renders when any of `onOpen`, `onFavoriteChange` or the row menu is passed.
+
+## Data types
+
+| Type | Fields |
+| --- | --- |
+| `Dashboard4Metric` | `id`, `label`, `caption`, `value` (raw: a sum for a flow, the latest point for a running total), `format` (`'number' \| 'currency' \| 'percent'`) and `points` (`number[]`, the area chart; fewer than two points hide it). |
+| `Dashboard4Person` | `id`, `label` and an optional `imageUrl`; without an image the avatar shows the initials. |
+| `Dashboard4Module` | `id`, `name`, `kind`, `owner` (`Dashboard4Person`), `domain`, `tasksDone`, `tasksTotal`, `window` (formatted string), `windowDays`, `status` (`{ label, tone? }`) and `favorite`. |
+| `Dashboard4Sort` | `key` (`'progress' \| 'name' \| 'window' \| 'status'`) and `direction` (`'asc' \| 'desc'`). |
+| `Dashboard4Pagination` | `page`, `pageCount`, `from`, `to` and `total`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Rastreador de módulos"`; the name of the section and its hidden heading |
+| `loading` | `string` | `"Carregando módulos"`; the accessible name of the skeleton |
+| `team`, `invite` | `string` | `"Equipe"`, `"Convidar"` |
+| `indicators` | `string` | `"Indicadores"`; the accessible name of the metric list |
+| `modulesTitle` | `string` | `"Módulos"`; the title of the panel and the table name |
+| `columnProgress`, `columnModule`, `columnWindow`, `columnStatus`, `columnActions` | `string` | `"Progresso"`, `"Módulo"`, `"Janela"`, `"Status"`, `"Ações"` |
+| `ready` | `(percent: string) => string` | `` `${percent} pronto` `` |
+| `tasks` | `(done, total) => string` | `` `${done}/${total} tarefas` `` |
+| `windowDays` | `(days: number) => string` | `` `Janela de ${days} dias` `` |
+| `open`, `favorite`, `rowActionsFor` | `(module: string) => string` | `` `Abrir ${module}` ``, `` `Favoritar ${module}` ``, `` `Ações de ${module}` `` |
+| `sortBy` | `(column: string) => string` | `` `Ordenar por ${column}` `` |
+| `filter`, `search`, `addModule` | `string` | `"Filtrar por status"`, `"Buscar módulo"`, `"Adicionar módulo"` |
+| `noModules` | `string` | `"Nenhum módulo encontrado"` |
+| `rangeOf` | `(from, to, total) => string` | `` `${from}–${to} de ${total} módulos` `` |
+| `pagination`, `pageOf`, `previousPage`, `nextPage` | | `"Paginação dos módulos"`, `` `Página ${page} de ${pageCount}` ``, `"Página anterior"`, `"Próxima página"` |
+| `breadcrumb` | `string` | `"Navegação estrutural"` |
+| `errorTitle`, `errorDescription`, `retry` | `string` | `"Não foi possível carregar os módulos"`, `"Tente novamente em instantes."`, `"Tentar novamente"` |
+| `emptyTitle`, `emptyDescription` | `string` | `"Nenhum módulo ainda"`, `"Os módulos aparecem aqui assim que forem criados."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Dashboard4` | `component` | The dashboard. |
+| `Dashboard4Props`, `Dashboard4Labels` | `type` | The props and the keys of `labels`. |
+| `Dashboard4Metric`, `Dashboard4Module`, `Dashboard4Person` | `type` | A metric card, a table row and a person. |
+| `Dashboard4Sort`, `Dashboard4SortKey`, `Dashboard4SortDirection` | `type` | The sort state. |
+| `Dashboard4FilterOption`, `Dashboard4Pagination`, `Dashboard4RowAction` | `type` | The filter option, the `pagination` prop and an item of the row menu. |
+
+## Accessibility and theme
+
+- The navbar is a `header` with a hidden `h2` title; the breadcrumb is a `navigation` named by `labels.breadcrumb` and the team a `list` named by `labels.team` whose overflow chip reads every folded name.
+- Each metric card is a `region` named by its label; its area chart is decorative and hidden, because the card already shows the number.
+- The progress ring is hidden; the percentage and the task count are text in the cell.
+- Each sortable header carries `aria-sort` and a button named by `labels.sortBy`; the status filter is a `group` named by `labels.filter`.
+- The star is a toggle button with `aria-pressed`, named by `labels.favorite`.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- Chart colors come from `--chart-1` to `--chart-5`, status colors from the theme badge tones. The block carries no raw color, radius or shadow.
