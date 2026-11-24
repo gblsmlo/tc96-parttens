@@ -2060,5 +2060,38 @@
     "Dashboard3Member",
     "Dashboard3Props",
     "Dashboard3QueueItem"
+  ],
+  "block:login-3": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthProvider",
+    "AuthRenderLink",
+    "Login3",
+    "Login3Labels",
+    "Login3Props",
+    "Login3Values"
+  ],
+  "block:login-4": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthRenderLink",
+    "Login4",
+    "Login4Labels",
+    "Login4Props",
+    "Login4Values"
+  ],
+  "block:login-5": [
+    "AuthBaseProps",
+    "AuthCommonLabels",
+    "AuthFieldErrors",
+    "AuthRenderLink",
+    "Login5",
+    "Login5EmailMethod",
+    "Login5Labels",
+    "Login5Method",
+    "Login5Props",
+    "Login5Values"
   ]
 }
