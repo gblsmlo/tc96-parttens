@@ -43,7 +43,7 @@ const legendOf = (canvasElement: HTMLElement) =>
 
 export const RevenueDashboard: Story = {
   render: () => (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <ComposedMetric
         {...statsControlArgs}
         changeLabel="from last month"
