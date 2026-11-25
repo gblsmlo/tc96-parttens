@@ -208,7 +208,7 @@ export function useSlashMenu({
     query: string
   } | null>(null)
 
-  const query = input?.query ?? ''
+  const query: string = input?.query ?? ''
   const matches = useMemo(
     () => filterSlashMenuOptions(options, query),
     [options, query],

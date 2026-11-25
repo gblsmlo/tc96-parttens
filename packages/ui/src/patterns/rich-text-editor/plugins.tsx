@@ -131,7 +131,7 @@ export const MENTION_TYPE = KEYS.mention
 const LIST_TYPES: readonly string[] = ['ul', 'ol']
 
 const isList = (node: unknown): node is TElement =>
-  ElementApi.isElement(node) && LIST_TYPES.includes(node.type)
+  ElementApi.isElement(node) && LIST_TYPES.includes((node as TElement).type)
 
 const inListItem = (editor: SlateEditor) =>
   editor.api.some({ match: { type: 'li' } })
@@ -330,7 +330,7 @@ const triggerNormalizer =
     transforms: {
       normalizeNode(entry: [unknown, Path]) {
         const [node, path] = entry
-        if (ElementApi.isElement(node) && node.type === type) {
+        if (ElementApi.isElement(node) && (node as TElement).type === type) {
           const text = NodeApi.string(node)
           if (text === '') {
             editor.tf.removeNodes({ at: path })

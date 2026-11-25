@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve } from 'node:path'
 import ts from 'typescript'
 import { readAliases, resolveAliasPath } from '../packages/registry/src/config'
@@ -54,7 +55,7 @@ export interface Consumer {
 // Copies apps/example and installs packages/ui into it with imports rewritten to the
 // consumer's aliases. The consumer then customizes its button with a marker class.
 export async function createConsumer(name: string): Promise<Consumer> {
-  const root = resolve(`.test-output/${name}`)
+  const root = join(tmpdir(), 'tc96-consumers', name)
   await rm(root, { recursive: true, force: true })
   await cp(resolve('apps/example'), root, {
     recursive: true,
