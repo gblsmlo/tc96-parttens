@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { menuControlArgs } from './menu-controls.ts'
-import { ComposedMenu, DialogFromMenu } from './menu-layouts.tsx'
+import {
+  ComposedMenu,
+  DialogFromMenu,
+  RadioGroupInSubmenuBody,
+} from './menu-layouts.tsx'
 
 interface BehaviorArgs {
   onAction: (action: string) => void
@@ -345,5 +349,48 @@ export const OpensADialog: Story = {
     await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
     await userEvent.click(within(dialog).getByRole('button', { name: 'Done' }))
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+  },
+}
+
+export const SubmenuRadioKeepsMenusOpen: Story = {
+  render: ({ onValueChange }) => (
+    <ComposedMenu {...closed}>
+      <RadioGroupInSubmenuBody onValueChange={onValueChange} />
+    </ComposedMenu>
+  ),
+  play: async ({ args, canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    const status = within(menu).getByRole('menuitem', { name: /^Status/ })
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}')
+    await expect(status).toHaveFocus()
+    await userEvent.keyboard('{ArrowRight}')
+    const review = await screen.findByRole('menuitemradio', {
+      name: 'In review',
+    })
+    await userEvent.click(review)
+    await expect(review).toHaveAttribute('aria-checked', 'true')
+    await expect(args.onValueChange).toHaveBeenCalledWith(
+      'In review',
+      expect.anything(),
+    )
+    await expect(screen.getAllByRole('menu')).toHaveLength(2)
+    await closeMenus()
+  },
+}
+
+export const InlineEndSideOpensAfterTrigger: Story = {
+  render: () => (
+    <div className="p-24">
+      <ComposedMenu {...closed} side="inline-end" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const menu = await openMenu(canvasElement)
+    const popup = menu.closest<HTMLElement>('[data-side]') ?? menu
+    await expect(popup).toHaveAttribute('data-side', 'inline-end')
+    await expect(menu.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+      getTrigger(canvasElement).getBoundingClientRect().right,
+    )
+    await closeMenus()
   },
 }

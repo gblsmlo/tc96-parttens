@@ -15,7 +15,7 @@ const meta = {
   },
   render: (args) => <ComposedMenu {...args} />,
   tags: ['!autodocs'],
-  title: 'UI/Menu/Stories',
+  title: 'UI/Menu/Variants',
 } satisfies Meta<MenuControls>
 
 export default meta
