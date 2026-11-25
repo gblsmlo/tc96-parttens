@@ -1,0 +1,104 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar6
+
+The team presence bar at the top of a shared workspace page: a breadcrumb trail, the people on the page, an invite button and filter and sort menus. Reach for it on a board, backlog or list that several people open at once and that the team narrows by filter and order. Install it with `npx @tc96/cli add navbar-6`.
+
+It renders a `header` that is full width with a bottom border. The block keeps no state and never fetches: the app passes the people, the selected filters and the sort, and every change is a callback. Each control renders only when its data and callback are passed.
+
+The other pages of `Blocks/Application/Navbar/Navbar6`: [Playground](?path=/story/blocks-application-navbar-navbar6-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar6-behavior--breadcrumb-ends-on-the-current-page) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar6-usages--filtering-the-board) for a board with controlled filters and sort.
+
+## Import
+
+```tsx
+import { Navbar6 } from '@tc96/ui/blocks/application/navbar/navbar-6'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+A breadcrumb that starts with a house icon, five people with a limit of three, the Convidar button, the filter menu with one filter on, the sort menu and the overflow menu.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar6
+  breadcrumb={breadcrumb}
+  filterOptions={filterOptions}
+  filters={filters}
+  menu={<MenuItem>Arquivar quadro</MenuItem>}
+  onFiltersChange={setFilters}
+  onInvite={invite}
+  onSortChange={setSort}
+  people={people}
+  sort={sort}
+  sortOptions={sortOptions}
+/>
+```
+
+## Navbar6
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `breadcrumb` | `Navbar6Crumb[]` | required | The path; the first item carries a house icon and the last item is the current page, never a link. |
+| `people` | `Navbar6Person[]` | `[]` | People on the page, in order; without them the avatar group is absent. |
+| `maxPeople` | `number` | `3` | How many avatars show; the rest becomes the `+N` counter. |
+| `onInvite` | `() => void` | - | Renders the outline Convidar button; it calls this. |
+| `filterOptions` | `Navbar6FilterOption[]` | `[]` | The options of the filter menu, shown as checkbox items. |
+| `filters` | `string[]` | `[]` | The ids of the selected options; any id gives the trigger its active look. |
+| `onFiltersChange` | `(filters: string[]) => void` | - | Called with the new list of ids; with `filterOptions` it renders the filter menu. |
+| `sortOptions` | `Navbar6SortOption[]` | `[]` | The options of the sort menu, shown as radio items. |
+| `sort` | `string` | - | The id of the selected sort option. |
+| `onSortChange` | `(sort: string) => void` | - | Called with the chosen id; with `sortOptions` it renders the sort menu and closes it after the choice. |
+| `menu` | `ReactNode` | - | `MenuItem` children of the overflow menu; without it the trigger is absent. |
+| `renderLink` | `RenderLink` | plain anchor | Builds the element of each breadcrumb link, for the app's router. |
+| `labels` | `Partial<Navbar6Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Navbar6Crumb, Navbar6Person and the option types
+
+| Type | Field | Description |
+| --- | --- | --- |
+| `Navbar6Crumb` | `id`, `label`, `href?` | An item without `href` renders as text. |
+| `Navbar6Person` | `id`, `name`, `image?` | The initials of `name` fill the avatar when there is no `image`. |
+| `Navbar6FilterOption` | `id`, `label` | One checkbox item of the filter menu. |
+| `Navbar6SortOption` | `id`, `label` | One radio item of the sort menu. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `breadcrumb` | `string` | `"Caminho da página"`; the name of the navigation |
+| `people` | `string` | `"Pessoas nesta página"`; the name of the avatar group |
+| `overflow` | `(count: number) => string` | `"Mais N pessoas"`; the name of the counter |
+| `invite` | `string` | `"Convidar"` |
+| `filter` | `string` | `"Filtrar"`; the name of the filter trigger |
+| `filterTitle` | `string` | `"Filtrar por"`; the heading of the filter menu |
+| `sort` | `string` | `"Ordenar"`; the name of the sort trigger |
+| `sortTitle` | `string` | `"Ordenar por"`; the heading of the sort menu |
+| `menu` | `string` | `"Mais opções"`; the name of the overflow trigger |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar6` | `component` | The team presence bar. |
+| `Navbar6Props` | `type` | The props of the bar. |
+| `Navbar6Crumb` | `type` | A breadcrumb item. |
+| `Navbar6Person` | `type` | A person in the avatar group. |
+| `Navbar6FilterOption` | `type` | An option of the filter menu. |
+| `Navbar6SortOption` | `type` | An option of the sort menu. |
+| `Navbar6Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The bar is a `header` banner; the breadcrumb is a named `nav` and the current page carries `aria-current="page"`.
+- The avatar group is named by `labels.people`; each avatar is an image named by the person and the counter is named by `labels.overflow`.
+- The filter, sort and overflow triggers are icon buttons named by `labels`; the menus open with Enter, move with the arrow keys and close with Escape.
+- The active filter state is also exposed as `data-active` on the trigger; the checked items carry `aria-checked`.
+- Buttons use the `sm` and `icon-sm` sizes.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

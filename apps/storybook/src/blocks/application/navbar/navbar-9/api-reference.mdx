@@ -1,0 +1,97 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar9
+
+The repository bar at the top of a code workspace: a brand, the repository path, Share and Run buttons and a branch picker. Reach for it on a code editor, a repository browser or a notebook app where the person works on one ref at a time. Install it with `npx @tc96/cli add navbar-9`.
+
+It renders a `header` that is full width with a bottom border. The block keeps no state beyond the open menu and never fetches: the app passes the paths, the refs and the active one, and every action is a callback.
+
+The other pages of `Blocks/Application/Navbar/Navbar9`: [Playground](?path=/story/blocks-application-navbar-navbar9-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar9-behavior--header-is-a-banner-with-a-border) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar9-usages--switching-branch-and-running) for a page with a controlled branch.
+
+## Import
+
+```tsx
+import { Navbar9 } from '@tc96/ui/blocks/application/navbar/navbar-9'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+A brand, a two-level path, Compartilhar, Executar and a branch picker over six refs in three kinds.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar9
+  branch={branch}
+  branches={branches}
+  logo={<Logo />}
+  name="Código Vivo"
+  onBranchChange={setBranch}
+  onRun={run}
+  onShare={share}
+  path={path}
+/>
+```
+
+## Navbar9
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `string` | required | The brand text. |
+| `path` | `Navbar9PathItem[]` | required | The repository path; the last item is the current one and never a link. |
+| `logo` | `ReactNode` | - | The brand mark, rendered before `name`. |
+| `branches` | `Navbar9Branch[]` | `[]` | The refs of the picker, grouped by `kind`. |
+| `branch` | `string` | - | The `id` of the active ref; the trigger shows its `label`. |
+| `onBranchChange` | `(branchId: string) => void` | - | With `branches`, renders the picker; called with the `id` of the chosen ref. |
+| `onShare` | `() => void` | - | Renders the Compartilhar button. |
+| `onRun` | `() => void` | - | Renders the Executar button. |
+| `running` | `boolean` | `false` | Disables Executar and shows the `running` text. |
+| `renderLink` | `RenderLink` | plain anchor | Builds the element of each path link, for the app's router. |
+| `labels` | `Partial<Navbar9Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Navbar9PathItem and Navbar9Branch
+
+| Type | Field | Description |
+| --- | --- | --- |
+| `Navbar9PathItem` | `id`, `label`, `href?` | An item without `href` renders as text. |
+| `Navbar9Branch` | `id`, `label` | The value and the text of a ref. |
+| `Navbar9Branch` | `kind?` | `'branch'` (default), `'tag'` or `'deploy'`; sets the group and the icon. Empty groups are omitted. |
+| `Navbar9Branch` | `default?` | Marks the ref with the `defaultBadge` text. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `path` | `string` | `"Caminho do repositório"`; the name of the navigation |
+| `share` | `string` | `"Compartilhar"` |
+| `run` | `string` | `"Executar"` |
+| `running` | `string` | `"Executando…"`; replaces `run` while `running` |
+| `branchTrigger` | `(branch: string) => string` | `"Trocar de branch, atual: main"`; the name of the picker trigger |
+| `kinds` | `Record<Navbar9BranchKind, string>` | `"Branches"`, `"Tags"`, `"Deploys"`; the group labels |
+| `defaultBadge` | `string` | `"Padrão"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar9` | `component` | The repository bar. |
+| `Navbar9Props` | `type` | The props of the bar. |
+| `Navbar9PathItem` | `type` | An item of the path. |
+| `Navbar9Branch` | `type` | A ref of the picker. |
+| `Navbar9BranchKind` | `type` | The three kinds of ref. |
+| `Navbar9Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The path is a named `nav`; the current item carries `aria-current="page"`.
+- The picker trigger is named by `labels.branchTrigger`; the menu holds radio items, opens with Enter or the arrow keys, moves with the arrows, closes with Escape and returns focus to the trigger.
+- The active ref is `aria-checked`, and the default ref is marked by text, not only a color.
+- Executar is disabled while `running`, and its text changes.
+- Buttons use the `sm` size.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

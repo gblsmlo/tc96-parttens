@@ -1,0 +1,97 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar12
+
+The marketing bar of a public site: a brand, a primary navigation with icon mega menus and plain links, and a call to action whose arrow slides on hover. Reach for it on a landing page or a product site where a few menus group many pages. Install it with `npx @tc96/cli add navbar-12`.
+
+It renders a `header` that is full width with a bottom border. Below the `md` breakpoint the navigation collapses into a menu button that opens a sheet with the same links, grouped. The block keeps only the open state of the menus and the sheet and never fetches: the app passes the items and the links go through `renderLink`.
+
+The other pages of `Blocks/Application/Navbar/Navbar12`: [Playground](?path=/story/blocks-application-navbar-navbar12-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar12-behavior--header-is-a-banner-with-a-border) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar12-usages--browsing-the-product-menu) for a small site that follows the links.
+
+## Import
+
+```tsx
+import { Navbar12 } from '@tc96/ui/blocks/application/navbar/navbar-12'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+A brand with a mark, the `Produto` menu with two groups, the `Empresa` menu with one, the `Preços` link and the call to action.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar12
+  cta={{ href: '/cadastro', label: 'Começar agora' }}
+  items={items}
+  logo={<SunHorizonIcon aria-hidden="true" />}
+  name="Aurora"
+/>
+```
+
+## Navbar12
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `string` | required | The brand name, shown beside the logo. |
+| `items` | `Navbar12Item[]` | required | The navigation, in order; each item is a plain link or a menu. |
+| `logo` | `ReactNode` | - | A mark rendered before the name. Decorative: give it `aria-hidden`. |
+| `homeHref` | `string` | `'/'` | Where the brand links to. |
+| `cta` | `Navbar12Cta` | - | The call to action, a link with an arrow that slides right on hover. |
+| `openOnHover` | `boolean` | `false` | Menus also open when the pointer rests on the trigger; click and keyboard always work. |
+| `renderLink` | `RenderLink` | plain anchor | Builds the element of every link, for the app's router. |
+| `labels` | `Partial<Navbar12Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+The call to action is a link, not a callback: pick `cta` for a destination and render a button of your own beside the block when the action is not a page.
+
+## Items
+
+| Type | Field | Description |
+| --- | --- | --- |
+| `Navbar12LinkItem` | `id`, `label`, `href` | A plain link of the bar. |
+| `Navbar12MenuItem` | `id`, `label`, `groups` | A trigger with a caret that opens the panel; one group is one column, two or more groups are two columns. |
+| `Navbar12MenuGroup` | `id`, `label?`, `links` | A column; `label` is its small heading. |
+| `Navbar12MenuLink` | `id`, `label`, `href`, `description?`, `icon?` | One entry of the panel: an icon, a title and a description. |
+| `Navbar12Cta` | `label`, `href` | The call to action. |
+
+An item with `groups` is a menu; any other is a link. Selecting a link of a panel closes it.
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `navigation` | `string` | `"Navegação principal"`; the name of the navigation, in the bar and in the sheet |
+| `openMenu` | `string` | `"Abrir menu de navegação"`; the name of the button that opens the sheet |
+| `menuTitle` | `string` | `"Menu"`; the title of the sheet |
+| `closeMenu` | `string` | `"Fechar menu"`; the name of the close button of the sheet |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar12` | `component` | The marketing bar. |
+| `Navbar12Props` | `type` | The props of the bar. |
+| `Navbar12Item` | `type` | A link or a menu. |
+| `Navbar12LinkItem` | `type` | A plain link of the bar. |
+| `Navbar12MenuItem` | `type` | A menu with its groups. |
+| `Navbar12MenuGroup` | `type` | A column of a panel. |
+| `Navbar12MenuLink` | `type` | An entry of a panel. |
+| `Navbar12Cta` | `type` | The call to action. |
+| `Navbar12Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The bar is a `header` (banner) with a named `nav`; the sheet has its own `nav` with the same name, and only one of them is visible at a time.
+- Each menu trigger is a button with `aria-expanded`; the panel is a dialog named by the menu label.
+- Enter and Space open a panel and move focus into it, Tab walks its links, and Escape closes it and returns focus to the trigger.
+- Opening one menu closes the other.
+- The caret and the arrow are decorative (`aria-hidden`); the arrow stops moving under `prefers-reduced-motion`.
+- The menu button is named by `labels.openMenu`; the sheet is titled by `labels.menuTitle` and closes with Escape or the close button, which `labels.closeMenu` names.
+- Buttons use the `sm` and `icon-sm` sizes.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

@@ -1,0 +1,117 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar7
+
+The analytics toolbar at the top of a dashboard page: a breadcrumb with refresh, auto-refresh, share and overflow controls, and a second row with a date range picker, a compare toggle and a ⌘K command search. Reach for it on a reports or analytics page where one period drives every chart. Install it with `npx @tc96/cli add navbar-7`.
+
+It renders a `header` that is full width with a bottom border and two rows. The block keeps only the open state of the date range popover and of the search dialog; the range, the compare flag and the refresh interval are controlled by the app, which also loads the data.
+
+The other pages of `Blocks/Application/Navbar/Navbar7`: [Playground](?path=/story/blocks-application-navbar-navbar7-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar7-behavior--breadcrumb-ends-on-the-current-page) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar7-usages--switching-reports-from-the-search) for a page with controlled state.
+
+## Import
+
+```tsx
+import { Navbar7 } from '@tc96/ui/blocks/application/navbar/navbar-7'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+A breadcrumb, refresh button, interval select, share button and overflow menu on the first row; the November range, the compare toggle and the search button on the second.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar7
+  breadcrumb={breadcrumb}
+  compare={compare}
+  menu={<MenuItem>Exportar como PDF</MenuItem>}
+  onCompareChange={setCompare}
+  onRangeChange={setRange}
+  onRefresh={reload}
+  onRefreshIntervalChange={setInterval}
+  onSearchSelect={(id) => openReport(id)}
+  onShare={share}
+  range={range}
+  refreshInterval={interval}
+  refreshOptions={refreshOptions}
+  searchItems={searchItems}
+/>
+```
+
+## Navbar7
+
+Every control renders only when its data and its callback are passed; the second row is absent when none of its controls renders.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `breadcrumb` | `Navbar7Crumb[]` | required | The path; the last item is the current page and never a link. |
+| `onRefresh` | `() => void` | - | Renders the refresh icon button and calls it on click. |
+| `refreshOptions` | `Navbar7RefreshOption[]` | `[]` | The options of the auto-refresh select. |
+| `refreshInterval` | `string` | first option | The `id` of the selected option. |
+| `onRefreshIntervalChange` | `(id: string) => void` | - | Called with the `id` of the chosen option; with `refreshOptions` it renders the select. |
+| `onShare` | `() => void` | - | Renders the Compartilhar button. |
+| `menu` | `ReactNode` | - | `MenuItem`s of the overflow menu; without it no trigger renders. |
+| `range` | `Navbar7Range` | `{}` | The selected period; without `from` the picker shows the placeholder. |
+| `onRangeChange` | `(range: Navbar7Range) => void` | - | Renders the date range picker; called on every click in the calendar. |
+| `compare` | `boolean` | `false` | The pressed state of the Comparar toggle. |
+| `onCompareChange` | `(compare: boolean) => void` | - | Renders the toggle; called with the next state. |
+| `searchItems` | `Navbar7SearchItem[]` | - | The entries of the command dialog. |
+| `onSearchSelect` | `(id: string) => void` | - | Called with the `id` of the chosen entry; with `searchItems` it renders the search button. |
+| `locale` | `string` | `'pt-BR'` | The `Intl` locale that formats the range in the button. |
+| `calendarLocale` | `Locale` | `ptBR` | The locale of the calendar, from `@daypicker/react/locale`. |
+| `renderLink` | `RenderLink` | plain anchor | Builds the element of each breadcrumb link, for the app's router. |
+| `labels` | `Partial<Navbar7Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Navbar7Crumb, Navbar7Range, Navbar7RefreshOption and Navbar7SearchItem
+
+| Type | Field | Description |
+| --- | --- | --- |
+| `Navbar7Crumb` | `id`, `label`, `href?` | An item without `href` renders as text. |
+| `Navbar7Range` | `from?`, `to?` | Dates of the period. The button shows `from` alone while `to` is missing. |
+| `Navbar7RefreshOption` | `id`, `label` | An option of the interval select. |
+| `Navbar7SearchItem` | `id`, `label`, `group?` | An entry of the dialog; entries with the same `group` sit under one heading, and entries without it have no heading. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `breadcrumb` | `string` | `"Caminho da página"`; the name of the navigation |
+| `refresh` | `string` | `"Atualizar dados"`; the name of the refresh button |
+| `refreshInterval` | `string` | `"Atualização automática"`; the name of the select |
+| `share` | `string` | `"Compartilhar"` |
+| `menu` | `string` | `"Mais ações"`; the name of the overflow trigger |
+| `dateRange` | `string` | `"Período da análise"`; the name of the calendar popover |
+| `dateRangePlaceholder` | `string` | `"Selecionar período"`; the button text without a range |
+| `compare` | `string` | `"Comparar"` |
+| `search` | `string` | `"Buscar"`; the button text and the name of the dialog and input |
+| `searchPlaceholder` | `string` | `"Buscar relatórios e ações"` |
+| `searchEmpty` | `string` | `"Nenhum resultado encontrado."` |
+| `searchNavigate`, `searchOpen`, `searchClose` | `string` | `"Navegar"`, `"Abrir"`, `"Fechar"`; the footer hints |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar7` | `component` | The analytics toolbar. |
+| `Navbar7Props` | `type` | The props of the toolbar. |
+| `Navbar7Crumb` | `type` | A breadcrumb item. |
+| `Navbar7Range` | `type` | The selected period. |
+| `Navbar7RefreshOption` | `type` | An option of the interval select. |
+| `Navbar7SearchItem` | `type` | An entry of the search dialog. |
+| `Navbar7Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The breadcrumb is a named `nav`; the current page carries `aria-current="page"`.
+- The refresh, overflow and interval controls are named by `labels`, never by an icon alone.
+- The compare control is a toggle button with `aria-pressed`.
+- The date range button shows the range as text; the calendar opens in a named popover, is operable with the arrow keys and closes with Escape.
+- The search opens from the button and from ⌘K or Ctrl+K; the dialog traps focus, filters as you type and closes with Escape.
+- Buttons use the `sm` and `icon-sm` sizes.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

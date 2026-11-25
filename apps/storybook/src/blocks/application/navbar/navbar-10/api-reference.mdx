@@ -1,0 +1,110 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar10
+
+The top bar of an API developer portal: a brand, a service switcher, an HTTP request bar and an account menu. Reach for it on a console where a developer picks a service, composes a call and sends it from the page. Install it with `npx @tc96/cli add navbar-10`.
+
+It renders a `header` that is full width with a bottom border. The block keeps no state beyond the open state of its menus and never fetches or sends anything: the app owns the service, the method and the path, and `onSend` receives the request to run.
+
+The other pages of `Blocks/Application/Navbar/Navbar10`: [Playground](?path=/story/blocks-application-navbar-navbar10-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar10-behavior--header-is-a-banner-with-a-border) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar10-usages--sending-a-request-from-the-portal) for a page that sends requests.
+
+## Import
+
+```tsx
+import { Navbar10 } from '@tc96/ui/blocks/application/navbar/navbar-10'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The brand with a mark and a name, a divider, the service switcher, the request form (method select, path input and Enviar) and the account menu.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar10
+  logo={<Logo />}
+  menu={<AccountMenuItems />}
+  method={method}
+  name="Portal Dev"
+  onMethodChange={setMethod}
+  onPathChange={setPath}
+  onSend={({ method, path }) => run(method, path)}
+  onServiceChange={setService}
+  path={path}
+  service={service}
+  services={services}
+  user={user}
+/>
+```
+
+## Navbar10
+
+Every control renders only when its data and callback are passed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `string` | required | The brand text. |
+| `logo` | `ReactNode` | - | The mark before the name. |
+| `services` | `Navbar10Service[]` | `[]` | The services listed in the switcher. |
+| `service` | `string` | - | The `id` of the active service. The switcher renders when it matches an item of `services` and `onServiceChange` is passed. |
+| `onServiceChange` | `(id: string) => void` | - | Called with the `id` of the chosen service. |
+| `method` | `Navbar10Method` | - | The selected method. With `onMethodChange` it renders the method select. |
+| `onMethodChange` | `(method: Navbar10Method) => void` | - | Called with the chosen method. |
+| `path` | `string` | - | The value of the path input. With `onPathChange` it renders the input. |
+| `onPathChange` | `(path: string) => void` | - | Called on every change of the path. |
+| `onSend` | `(request: Navbar10Request) => void` | - | Renders the request form; Enter in the input or Enviar calls it with the method and the path. |
+| `sending` | `boolean` | `false` | Disables Enviar and blocks submitting with Enter. |
+| `user` | `Navbar10User` | - | Renders the account menu with the identity of the user. |
+| `menu` | `ReactNode` | - | The items of the account menu, after a separator. |
+| `labels` | `Partial<Navbar10Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+Without `method` the request is sent as `GET`, and without `path` as an empty string.
+
+## Navbar10Service, Navbar10User and Navbar10Request
+
+| Type | Field | Description |
+| --- | --- | --- |
+| `Navbar10Service` | `id`, `label` | An item of the switcher. |
+| `Navbar10User` | `name`, `email?`, `image?` | The initials of `name` fill the avatar when there is no `image`. |
+| `Navbar10Request` | `method`, `path` | What `onSend` receives. |
+| `Navbar10Method` | - | `'GET' \| 'POST' \| 'PUT' \| 'PATCH' \| 'DELETE'`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `request` | `string` | `"Requisição"`; the name of the form |
+| `method` | `string` | `"Método HTTP"`; the name of the method select |
+| `path` | `string` | `"Caminho da requisição"`; the name of the path input |
+| `pathPlaceholder` | `string` | `"/modelos/{id}"` |
+| `send` | `string` | `"Enviar"` |
+| `service` | `string` | `"Serviço"`; the label of the switcher menu |
+| `serviceTrigger` | `(name: string) => string` | `"Serviço: NAME"`; the name of the switcher button |
+| `account` | `string` | `"Menu da conta"`; the name of the avatar button |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar10` | `component` | The API portal bar. |
+| `Navbar10Props` | `type` | The props of the bar. |
+| `Navbar10Service` | `type` | An item of the switcher. |
+| `Navbar10User` | `type` | The user of the account menu. |
+| `Navbar10Method` | `type` | The five HTTP methods. |
+| `Navbar10Request` | `type` | The argument of `onSend`. |
+| `Navbar10Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The root is a `header` banner; the request bar is a `form` named by `labels.request`, so Enter in the input submits it.
+- The method select and the path input are named by `labels.method` and `labels.path`; the path is monospace, without spell check.
+- The switcher and the avatar button are named by `labels.serviceTrigger` and `labels.account`; both menus are portals, operate with the keyboard and close with Escape.
+- The active service is a checked radio item of the menu.
+- Buttons use the `sm` and `icon-sm` sizes.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

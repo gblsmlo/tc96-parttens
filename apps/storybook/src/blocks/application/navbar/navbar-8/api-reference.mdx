@@ -1,0 +1,102 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar8
+
+The top bar of an agent marketplace: the brand, category pills that filter the catalog, a primary Implantar button, a notifications bell with an unread dot and a user menu. Reach for it on a catalog where people browse, filter and deploy agents. Install it with `npx @tc96/cli add navbar-8`.
+
+It renders a `header` that is full width with a bottom border. The block keeps no state beyond the open state of the feed and the menu, and never fetches: the app passes the categories, the checked category, the notifications and the user, and every action is a callback. Each control renders only when its data or callback is passed.
+
+The other pages of `Blocks/Application/Navbar/Navbar8`: [Playground](?path=/story/blocks-application-navbar-navbar8-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar8-behavior--header-is-a-banner-with-a-border) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar8-usages--filtering-the-catalog) for a catalog page.
+
+## Import
+
+```tsx
+import { Navbar8 } from '@tc96/ui/blocks/application/navbar/navbar-8'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The brand on the left, four category pills in the center, and on the right the Implantar button, the bell with two unread notifications and the user menu.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar8
+  categories={categories}
+  category={category}
+  logo={<BrandMark />}
+  menu={<UserMenuItems />}
+  name="Orbit Agentes"
+  notifications={notifications}
+  onCategoryChange={setCategory}
+  onDeploy={deploy}
+  onNotificationSelect={(id) => openNotification(id)}
+  user={user}
+/>
+```
+
+## Navbar8
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `string` | required | The brand name. |
+| `logo` | `ReactNode` | - | The mark shown before the name. |
+| `homeHref` | `string` | - | Turns the brand into a link, built by `renderLink`. |
+| `categories` | `Navbar8Category[]` | `[]` | The pills; with none the center stays empty. |
+| `category` | `string` | - | The `id` of the checked pill; the bar is controlled. |
+| `onCategoryChange` | `(id: string) => void` | - | Called with the `id` of the pill the user chose. |
+| `onDeploy` | `() => void` | - | Renders the Implantar button; it calls this. |
+| `pending` | `boolean` | `false` | Disables the Implantar button. |
+| `notifications` | `Navbar8Notification[]` | - | Renders the bell and its feed; an empty list shows the empty text. |
+| `onNotificationSelect` | `(id: string) => void` | - | Called with the `id` of the chosen notification; the feed then closes. |
+| `user` | `Navbar8User` | - | Renders the avatar menu with the name and the email. |
+| `menu` | `ReactNode` | - | The `MenuItem` elements listed under the user. |
+| `renderLink` | `RenderLink` | plain anchor | Builds the brand link, for the app's router. |
+| `labels` | `Partial<Navbar8Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Navbar8Category, Navbar8Notification and Navbar8User
+
+| Type | Field | Description |
+| --- | --- | --- |
+| `Navbar8Category` | `id`, `label` | One pill. |
+| `Navbar8Notification` | `id`, `title`, `time`, `description?`, `read?` | A feed entry; without `read` it counts as unread. |
+| `Navbar8User` | `name`, `email?`, `image?` | The initials of `name` fill the avatar when there is no `image`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `categories` | `string` | `"Categorias de agentes"`; the name of the pill group |
+| `deploy` | `string` | `"Implantar"` |
+| `notifications` | `string` | `"Notificações"`; the title of the feed |
+| `notificationsTrigger` | `(unread: number) => string` | `"Notificações"`, or `"Notificações, N não lidas"`; the name of the bell |
+| `notificationsEmpty` | `string` | `"Nenhuma notificação por enquanto."` |
+| `unread` | `string` | `"não lida"`; read by screen readers after the time of an unread entry |
+| `account` | `string` | `"Conta"`; the name of the avatar button |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar8` | `component` | The marketplace bar. |
+| `Navbar8Props` | `type` | The props of the bar. |
+| `Navbar8Category` | `type` | A category pill. |
+| `Navbar8Notification` | `type` | A feed entry. |
+| `Navbar8User` | `type` | The signed-in user. |
+| `Navbar8Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The root is a `header`, a banner landmark.
+- The pills are a named radio group: arrow keys move the focus and check the pill, and the checked pill is announced as checked.
+- The bell is named by `labels.notificationsTrigger`, which carries the unread count; the dot is decoration and hidden from assistive technology.
+- Unread entries add `labels.unread` for screen readers, so the state is not only a dot.
+- The feed is a popover and the user menu a menu; both are portals, open with Enter or Space and close with Escape.
+- Icon buttons use the `icon-sm` size and carry an accessible name.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.
