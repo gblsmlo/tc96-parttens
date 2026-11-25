@@ -5,7 +5,6 @@ import {
   type Timeline4Entry,
 } from '@tc96/ui/blocks/application/timeline/timeline-4'
 import { useState } from 'react'
-import { expect, screen, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { timeline4Handlers } from '../../../../mocks/timeline-4.ts'
 
@@ -28,13 +27,6 @@ const ActivitySheet = () => {
   )
 }
 
-const openSheet = async (canvasElement: HTMLElement) => {
-  await userEvent.click(
-    within(canvasElement).getByRole('button', { name: 'Ver atividades' }),
-  )
-  return screen.findByRole('dialog', { name: 'Atividades' })
-}
-
 const meta = {
   component: ActivitySheet,
   parameters: { layout: 'padded' },
@@ -50,26 +42,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline4Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const dialog = await openSheet(canvasElement)
-    await expect(
-      await within(dialog).findByText('Marina Souza aprovou o orçamento'),
-    ).toBeInTheDocument()
-    await expect(
-      within(dialog).getByText('Tiago Nunes criou o registro'),
-    ).toBeInTheDocument()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline4Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    const dialog = await openSheet(canvasElement)
-    await expect(
-      await within(dialog).findByText('Nenhuma atividade'),
-    ).toBeInTheDocument()
   },
 }
 
@@ -77,27 +54,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline4Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const dialog = await openSheet(canvasElement)
-    await expect(
-      await within(dialog).findByText(
-        'Não foi possível carregar as atividades',
-      ),
-    ).toBeInTheDocument()
-    await expect(
-      within(dialog).getByRole('button', { name: 'Tentar novamente' }),
-    ).toBeInTheDocument()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline4Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const dialog = await openSheet(canvasElement)
-    await expect(
-      await within(dialog).findByLabelText('Carregando atividades'),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

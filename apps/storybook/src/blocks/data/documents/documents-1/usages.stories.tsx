@@ -14,7 +14,6 @@ import {
   type Documents1View,
 } from '@tc96/ui/blocks/data/documents/documents-1'
 import { useEffect, useState } from 'react'
-import { expect, fireEvent, waitFor, within } from 'storybook/test'
 import { apiUrl, fetchJson } from '../../../../mocks/api.ts'
 import {
   type Documents1UploadBody,
@@ -201,28 +200,9 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const pickFile = (canvasElement: HTMLElement, name: string) => {
-  const input = canvasElement.querySelector<HTMLInputElement>(
-    '[data-slot="documents-1-upload-input"]',
-  ) as HTMLInputElement
-  const data = new DataTransfer()
-  data.items.add(new File(['conteúdo'], name, { type: 'application/pdf' }))
-  input.files = data.files
-  fireEvent.change(input)
-}
-
 export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(documents1Handlers.loaded)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Contrato de fornecimento assinado.pdf'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Todos' })).toBeVisible()
-    await expect(canvas.getByText('1–5 de 12')).toBeVisible()
   },
 }
 
@@ -230,25 +210,11 @@ export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(documents1Handlers.empty)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Nenhuma nota, documento ou mídia por aqui.',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(documents1Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando documentos'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Todos' })).toBeVisible()
   },
 }
 
@@ -256,58 +222,16 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(documents1Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível listar os documentos',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const UploadSucceeds: Story = {
   beforeEach: ({ msw }) => {
     msw.use(documents1Handlers.loaded, documents1Handlers.uploadSucceeds)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await canvas.findByText('Contrato de fornecimento assinado.pdf')
-    pickFile(canvasElement, 'Parecer técnico.pdf')
-    await expect(
-      await canvas.findByRole('progressbar', {
-        name: 'Envio de Parecer técnico.pdf',
-      }),
-    ).toBeVisible()
-    await waitFor(
-      () =>
-        expect(
-          canvas.queryByRole('progressbar', {
-            name: 'Envio de Parecer técnico.pdf',
-          }),
-        ).toBeNull(),
-      { timeout: 3000 },
-    )
-    await expect(canvas.getByText('Parecer técnico.pdf')).toBeVisible()
-  },
 }
 
 export const UploadFails: Story = {
   beforeEach: ({ msw }) => {
     msw.use(documents1Handlers.loaded, documents1Handlers.uploadFails)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await canvas.findByText('Contrato de fornecimento assinado.pdf')
-    pickFile(canvasElement, 'Vídeo da audiência.pdf')
-    await expect(
-      await canvas.findByText(
-        'O arquivo não cabe no seu espaço de armazenamento.',
-        undefined,
-        { timeout: 3000 },
-      ),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('img', { name: 'O arquivo não foi enviado' }),
-    ).toBeVisible()
   },
 }

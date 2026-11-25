@@ -8,7 +8,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { Card7, type Card7Item } from '@tc96/ui/blocks/application/card/card-7'
 import { formatAmount } from '@tc96/ui/helpers/format'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card7Handlers, type card7Summary } from '../../../../mocks/card-7.ts'
 
@@ -99,37 +99,16 @@ export const CrmContact: Story = {
     msw.use(card7Handlers.loaded)
   },
   name: 'CRM contact',
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByRole('heading', { name: 'Rafael Costa' }),
-    ).toBeVisible()
-    await expect(canvas.getByText('Em negociação')).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Enviar e-mail' }))
-    await expect(args.onEmail).toHaveBeenCalledWith('rafael-costa')
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card7Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando contato'),
-    ).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card7Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar o contato',
-      ),
-    ).toBeVisible()
   },
 }

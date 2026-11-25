@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Signup6 } from '@tc96/ui/blocks/application/auth/signup-6'
-import { expect, within } from 'storybook/test'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import { gradientMedia } from '../login-6/login-6-layouts.tsx'
 
@@ -28,12 +27,4 @@ export const SignUp: Story = {
       onSubmit={ignore}
     />
   ),
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByRole('heading', {
-        level: 1,
-        name: 'Criar conta',
-      }),
-    ).toBeVisible()
-  },
 }

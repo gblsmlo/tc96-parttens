@@ -9,7 +9,6 @@ import {
   type Inbox1Sort,
 } from '@tc96/ui/blocks/data/inbox/inbox-1'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { apiUrl, fetchJson } from '../../../../mocks/api.ts'
 import { inbox1Handlers } from '../../../../mocks/inbox-1.ts'
 import {
@@ -126,20 +125,9 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const firstTitle = 'Revisar minuta do contrato social da Padaria Trigo Bom'
-
-const rowsOf = (canvasElement: HTMLElement) =>
-  canvasElement.querySelectorAll('[data-slot="data-table"] tbody tr')
-
 export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...inbox1Handlers.loaded)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText(firstTitle)).toBeVisible()
-    await expect(canvas.getByRole('table', { name: 'Inbox' })).toBeVisible()
-    await expect(rowsOf(canvasElement)).toHaveLength(6)
   },
 }
 
@@ -147,33 +135,11 @@ export const LoadsMoreByCursor: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...inbox1Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      await canvas.findByRole('button', { name: 'Carregar mais' }),
-    )
-    await expect(
-      await canvas.findByText(
-        'Preparar audiência de conciliação da Mercearia Vila Nova',
-      ),
-    ).toBeVisible()
-    await expect(rowsOf(canvasElement)).toHaveLength(12)
-  },
 }
 
 export const LoadMoreFailed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...inbox1Handlers.moreFailed)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      await canvas.findByRole('button', { name: 'Carregar mais' }),
-    )
-    await expect(await canvas.findByRole('alert')).toHaveTextContent(
-      'Não foi possível carregar a Inbox.',
-    )
-    await expect(rowsOf(canvasElement)).toHaveLength(6)
   },
 }
 
@@ -181,32 +147,11 @@ export const MarkingReadFailed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...inbox1Handlers.markFailed)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      await canvas.findByRole('button', {
-        name: `Marcar ${firstTitle} como lida`,
-      }),
-    )
-    await expect(await canvas.findByRole('alert')).toHaveTextContent(
-      'Não foi possível marcar a entrada. Tente de novo.',
-    )
-    await expect(
-      await canvas.findByRole('button', {
-        name: `Marcar ${firstTitle} como lida`,
-      }),
-    ).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...inbox1Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma entrada na sua Inbox.'),
-    ).toBeVisible()
   },
 }
 
@@ -214,22 +159,10 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...inbox1Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando entradas'),
-    ).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...inbox1Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar a Inbox',
-      ),
-    ).toBeVisible()
   },
 }

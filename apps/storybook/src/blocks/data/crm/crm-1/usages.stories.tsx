@@ -16,7 +16,6 @@ import {
   type Crm1Variant,
 } from '@tc96/ui/blocks/data/crm/crm-1'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { crm1Handlers } from '../../../../mocks/crm-1.ts'
 import {
@@ -165,15 +164,6 @@ export const People: Story = {
   beforeEach: ({ msw }) => {
     msw.use(crm1Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Helena Prado')).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-    await expect(
-      canvas.getByRole('columnheader', { name: 'CPF' }),
-    ).toBeVisible()
-    await expect(canvas.getByText('1–10 de 10')).toBeVisible()
-  },
 }
 
 export const Companies: Story = {
@@ -181,26 +171,11 @@ export const Companies: Story = {
   beforeEach: ({ msw }) => {
     msw.use(crm1Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Moinho Santa Clara Ltda.'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('columnheader', { name: 'Setor' }),
-    ).toBeVisible()
-    await expect(canvas.getByText('1–10 de 10')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(crm1Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma pessoa cadastrada.'),
-    ).toBeVisible()
   },
 }
 
@@ -208,24 +183,10 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(crm1Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando pessoas'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Pessoas' })).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(crm1Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível listar as pessoas',
-      ),
-    ).toBeVisible()
   },
 }

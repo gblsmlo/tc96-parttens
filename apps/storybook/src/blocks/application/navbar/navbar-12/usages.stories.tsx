@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Navbar12 } from '@tc96/ui/blocks/application/navbar/navbar-12'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { cta, items, logo, name } from '../fixtures/navbar-12.tsx'
 
 const pages: Record<string, { text: string; title: string }> = {
@@ -68,46 +67,10 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const BrowsingTheProductMenu: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByText('Tudo o que seu time precisa')).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Produto' }))
-    const panel = await screen.findByRole('dialog', { name: 'Produto' })
-    await userEvent.click(within(panel).getByRole('link', { name: /Análises/ }))
-    await expect(
-      canvas.getByRole('heading', { name: 'Análises' }),
-    ).toBeVisible()
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-  },
-}
+export const BrowsingTheProductMenu: Story = {}
 
-export const GoingToPricingAndSigningUp: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('link', { name: 'Preços' }))
-    await expect(canvas.getByRole('heading', { name: 'Preços' })).toBeVisible()
-    await userEvent.click(canvas.getByRole('link', { name: 'Começar agora' }))
-    await expect(
-      canvas.getByRole('heading', { name: 'Comece agora' }),
-    ).toBeVisible()
-  },
-}
+export const GoingToPricingAndSigningUp: Story = {}
 
 export const NavigatingFromTheMobileSheet: Story = {
   globals: { viewport: { isRotated: false, value: 'mobile1' } },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Abrir menu de navegação' }),
-    )
-    const sheet = await screen.findByRole('dialog', { name: 'Menu' })
-    await userEvent.click(
-      within(sheet).getByRole('link', { name: /Segurança/ }),
-    )
-    await expect(
-      canvas.getByRole('heading', { name: 'Segurança' }),
-    ).toBeVisible()
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-  },
 }

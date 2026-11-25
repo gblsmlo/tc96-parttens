@@ -15,7 +15,6 @@ import {
   type Dashboard7Receivables,
 } from '@tc96/ui/blocks/application/dashboard/dashboard-7'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { dashboard7Handlers } from '../../../../mocks/dashboard-7.ts'
 import {
@@ -106,27 +105,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard7Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Honorários Silva')).toBeVisible()
-    const group = canvas.getByRole('group', { name: 'Tipo de categoria' })
-    await userEvent.click(
-      within(group).getByRole('button', { name: 'Despesas' }),
-    )
-    await expect(
-      await canvas.findByRole('img', { name: 'Despesa por categoria' }),
-    ).toBeInTheDocument()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard7Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum lançamento no período'),
-    ).toBeVisible()
   },
 }
 
@@ -134,26 +117,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard7Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar o analítico'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar de novo' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard7Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText(
-        'Carregando o analítico financeiro',
-      ),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

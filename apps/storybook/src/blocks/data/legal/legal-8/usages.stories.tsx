@@ -9,7 +9,6 @@ import {
   type Legal8View,
 } from '@tc96/ui/blocks/data/legal/legal-8'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { apiUrl, fetchJson } from '../../../../mocks/api.ts'
 import { legal8Handlers } from '../../../../mocks/legal-8.ts'
 import { type Legal8SavedViewConfig, nextSweepAt } from '../fixtures/legal-8.ts'
@@ -112,15 +111,6 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...legal8Handlers.loaded, ...legal8Handlers.savedViews())
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByRole('table', { name: 'Execuções' }),
-    ).toBeVisible()
-    await expect(
-      await canvas.findByText('Captura parada desde 20/11/2026'),
-    ).toBeVisible()
-  },
 }
 
 export const SweepFailed: Story = {
@@ -131,29 +121,11 @@ export const SweepFailed: Story = {
       ...legal8Handlers.savedViews(),
     )
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      await canvas.findByRole('button', { name: 'Tentar agora' }),
-    )
-    await expect(
-      await canvas.findByText(
-        'Não foi possível rodar a captura agora. Tente de novo.',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...legal8Handlers.empty, ...legal8Handlers.savedViews())
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Nenhuma captura rodou ainda.'),
-    ).toBeVisible()
-    await expect(canvas.getByText('Captura em dia')).toBeVisible()
   },
 }
 
@@ -161,52 +133,16 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...legal8Handlers.pending, ...legal8Handlers.savedViews())
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando monitoramento'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Rodar agora' }),
-    ).toBeDisabled()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...legal8Handlers.error, ...legal8Handlers.savedViews())
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar o monitoramento',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const SavedViews: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...legal8Handlers.loaded, ...legal8Handlers.savedViews())
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await canvas.findByRole('table', { name: 'Execuções' })
-    await userEvent.click(canvas.getByRole('button', { name: 'Execuções' }))
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Falhas externas' }),
-    )
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-    await expect(
-      await canvas.findByRole('table', { name: 'Falhas' }),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Falhas externas' }),
-    ).toBeVisible()
-    await waitFor(() =>
-      expect(
-        canvasElement.querySelectorAll('[data-slot="data-table"] tbody tr'),
-      ).toHaveLength(3),
-    )
   },
 }

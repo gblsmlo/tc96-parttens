@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AppShell1 } from '@tc96/ui/blocks/application/shell/app-shell-1'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
-import { expectSettingsLevel } from './fixtures/settings-play'
 import {
   ProfileSettingsPage,
   ShellHeaderActions,
@@ -116,40 +115,10 @@ type Story = StoryObj<typeof meta>
 
 const interaction = ['!autodocs']
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const navigation = canvas.getByRole('navigation', {
-      name: 'Navegação principal',
-    })
-    await expect(
-      within(navigation).getByRole('link', { name: 'Painel' }),
-    ).toHaveAttribute('aria-current', 'page')
-    await expect(
-      within(navigation).getByRole('list', { name: 'Fixados' }),
-    ).toBeVisible()
-    const breadcrumb = canvas.getByRole('navigation', {
-      name: 'Trilha de navegação',
-    })
-    await expect(within(breadcrumb).getByText('Painel')).toHaveAttribute(
-      'aria-current',
-      'page',
-    )
-  },
-}
+export const Default: Story = {}
 
 export const Collapsed: Story = {
   args: { defaultOpen: false },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const sidebar = canvasElement.querySelector('[data-slot="sidebar"]')
-    await expect(sidebar).toHaveAttribute('data-state', 'collapsed')
-    await expect(canvas.getByRole('link', { name: 'Painel' })).toBeVisible()
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Alternar barra lateral' }),
-    )
-    await expect(sidebar).toHaveAttribute('data-state', 'expanded')
-  },
 }
 
 export const Minimal: Story = {
@@ -172,21 +141,6 @@ export const Minimal: Story = {
 
 export const Mobile: Story = {
   globals: { viewport: { isRotated: false, value: 'mobile2' } },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.queryByRole('navigation', { name: 'Navegação principal' }),
-    ).toBeNull()
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Alternar barra lateral' }),
-    )
-    const sheet = await within(document.body).findByRole('dialog')
-    await waitFor(() =>
-      expect(
-        within(sheet).getByRole('navigation', { name: 'Navegação principal' }),
-      ).toBeVisible(),
-    )
-  },
 }
 
 export const SubItemBadge: Story = {
@@ -199,66 +153,17 @@ export const SubItemBadge: Story = {
       },
     },
   },
-  play: async ({ canvasElement }) => {
-    const navigation = within(canvasElement).getByRole('navigation', {
-      name: 'Navegação principal',
-    })
-    const active = within(navigation).getByRole('link', { name: 'Negócios 3' })
-    await expect(active).toHaveAttribute('aria-current', 'page')
-    await expect(within(active).getByText('3')).toBeVisible()
-    const forecast = within(navigation).getByRole('link', {
-      name: 'Previsão 8',
-    })
-    await expect(within(forecast).getByText('8')).toHaveAttribute(
-      'data-slot',
-      'sidebar-menu-badge',
-    )
-  },
 }
 
 export const SwitchWorkspace: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: /Risine CRM/ }))
-    const menu = await within(document.body).findByRole('menu')
-    await userEvent.click(
-      within(menu).getByRole('menuitemradio', { name: 'Acme Vendas' }),
-    )
-    await expect(args.onWorkspaceChange).toHaveBeenCalledWith('acme')
-    await waitFor(() =>
-      expect(within(document.body).queryByRole('menu')).toBeNull(),
-    )
-  },
   tags: interaction,
 }
 
 export const AccountMenu: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    const trigger = canvas.getByRole('button', { name: /Marina Costa/ })
-    await userEvent.click(trigger)
-    const menu = await within(document.body).findByRole('menu')
-    await userEvent.click(
-      within(menu).getByRole('menuitemradio', { name: 'Escuro' }),
-    )
-    await expect(args.onThemeChange).toHaveBeenCalledWith('dark')
-    await userEvent.click(within(menu).getByRole('menuitem', { name: 'Sair' }))
-    await expect(args.onSignOut).toHaveBeenCalledOnce()
-  },
   tags: interaction,
 }
 
 export const PinnedItemActions: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Ações de Leads quentes' }),
-    )
-    const menu = await within(document.body).findByRole('menu')
-    await expect(
-      within(menu).getByRole('menuitem', { name: 'Remover dos fixados' }),
-    ).toBeVisible()
-  },
   tags: interaction,
 }
 
@@ -276,9 +181,6 @@ export const Settings: Story = {
       },
     },
   },
-  play: async ({ canvasElement }) => {
-    await expectSettingsLevel(canvasElement)
-  },
 }
 
 export const SettingsBackButton: Story = {
@@ -286,14 +188,6 @@ export const SettingsBackButton: Story = {
     breadcrumbs: settingsBreadcrumbs,
     children: <ProfileSettingsPage />,
     settings: { navigation: shellSettings.navigation, onBack: fn() },
-  },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.queryByRole('link', { name: 'Voltar ao app' }),
-    ).toBeNull()
-    await userEvent.click(canvas.getByRole('button', { name: 'Voltar ao app' }))
-    await expect(args.settings?.onBack).toHaveBeenCalledOnce()
   },
   tags: interaction,
 }

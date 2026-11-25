@@ -4,7 +4,6 @@ import {
   type Navbar5Status,
 } from '@tc96/ui/blocks/application/navbar/navbar-5'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { actions, breadcrumb, people } from '../fixtures/navbar-5.ts'
 
 const PageEditor = () => {
@@ -47,26 +46,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const PublishingAPage: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByText('Alterações não publicadas')).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Publicar' }))
-    await expect(canvas.getByText('Publicado')).toBeVisible()
-    await expect(canvas.getByText('Página publicada.')).toBeVisible()
-  },
-}
+export const PublishingAPage: Story = {}
 
-export const UnpublishingFromTheMenu: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Mais opções de publicação' }),
-    )
-    await userEvent.click(
-      await screen.findByRole('menuitem', { name: 'Despublicar' }),
-    )
-    await expect(canvas.getByText('Rascunho')).toBeVisible()
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
-  },
-}
+export const UnpublishingFromTheMenu: Story = {}

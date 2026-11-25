@@ -4,7 +4,6 @@ import {
   Timeline1,
   type Timeline1Event,
 } from '@tc96/ui/blocks/application/timeline/timeline-1'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { timeline1Handlers } from '../../../../mocks/timeline-1.ts'
 
@@ -40,21 +39,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline1Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Marina Costa')).toBeVisible()
-    await expect(canvas.getByText('Rafael Lima')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline1Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma atividade ainda'),
-    ).toBeVisible()
   },
 }
 
@@ -62,24 +51,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline1Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar as atividades'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar novamente' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline1Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando atividades'),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

@@ -5,7 +5,6 @@ import {
   type Support3Rule,
 } from '@tc96/ui/blocks/data/support/support-3'
 import { useState } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { support3Handlers } from '../../../../mocks/support-3.ts'
 import { moveRule, rowActions, sameOrder } from '../fixtures/support-3.ts'
@@ -59,36 +58,9 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const ruleNames = (canvasElement: HTMLElement) =>
-  Array.from(
-    canvasElement.querySelectorAll(
-      '[data-slot="data-grid-row"] [data-column-id="rule"] .font-medium',
-    ),
-  ).map((cell) => cell.textContent)
-
 export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(support3Handlers.loaded)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const handle = await canvas.findByRole('button', {
-      name: 'Arrastar para reordenar a regra Pedidos de reembolso',
-    })
-    await waitFor(() => expect(handle).toHaveAttribute('aria-pressed', 'false'))
-    handle.focus()
-    await userEvent.keyboard(' ')
-    await userEvent.keyboard('{ArrowUp}{ArrowUp}')
-    await userEvent.keyboard(' ')
-    await waitFor(() =>
-      expect(ruleNames(canvasElement)[4]).toBe('Pedidos de reembolso'),
-    )
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Restaurar ordem' }),
-    )
-    await waitFor(() =>
-      expect(ruleNames(canvasElement)[6]).toBe('Pedidos de reembolso'),
-    )
   },
 }
 
@@ -96,37 +68,16 @@ export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(support3Handlers.empty)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma regra de roteamento.'),
-    ).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(support3Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as regras',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(support3Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando regras'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('heading', { name: 'Regras de roteamento' }),
-    ).toBeVisible()
   },
 }

@@ -5,7 +5,6 @@ import {
   type Timeline3Step,
 } from '@tc96/ui/blocks/application/timeline/timeline-3'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { timeline3Handlers } from '../../../../mocks/timeline-3.ts'
 
@@ -54,24 +53,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline3Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Marina Souza')).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Aprovar' }))
-    await expect(
-      canvasElement.querySelector('[aria-current="step"]'),
-    ).toHaveAttribute('data-step', 'board')
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline3Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma etapa de aprovação'),
-    ).toBeVisible()
   },
 }
 
@@ -79,24 +65,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline3Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar as etapas'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar novamente' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline3Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando etapas'),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

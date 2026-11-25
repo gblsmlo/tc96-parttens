@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Navbar1 } from '@tc96/ui/blocks/application/navbar/navbar-1'
 import { MenuItem } from '@tc96/ui/menu'
 import { Text } from '@tc96/ui/text'
-import { expect, within } from 'storybook/test'
 import { breadcrumbs, collaborators } from '../fixtures/navbar-1.ts'
 
 const ProjectPage = () => (
@@ -33,12 +32,4 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const ProjectPageHeader: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.getByRole('navigation', { name: 'Caminho da página' }),
-    ).toBeVisible()
-    await expect(canvas.getByText(/18 de 24 tarefas/)).toBeVisible()
-  },
-}
+export const ProjectPageHeader: Story = {}

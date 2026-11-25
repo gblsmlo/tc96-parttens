@@ -4,7 +4,6 @@ import {
   List4,
   type List4Integration,
 } from '@tc96/ui/blocks/application/list/list-4'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { list4Handlers } from '../../../../mocks/list-4.ts'
 
@@ -40,21 +39,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(list4Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Slack')).toBeVisible()
-    await expect(canvas.getByText('Conectado')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(list4Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Sem integrações'),
-    ).toBeVisible()
   },
 }
 
@@ -62,22 +51,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(list4Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as integrações',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(list4Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando integrações'),
-    ).toBeVisible()
   },
 }

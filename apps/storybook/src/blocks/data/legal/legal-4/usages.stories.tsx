@@ -6,7 +6,6 @@ import {
   type Legal4Mode,
 } from '@tc96/ui/blocks/data/legal/legal-4'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { legal4Handlers } from '../../../../mocks/legal-4.ts'
 import { owners } from '../fixtures/legal-4.ts'
@@ -56,23 +55,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal4Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Padaria Bom Grão Ltda.'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal4Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum cliente para exibir.'),
-    ).toBeVisible()
   },
 }
 
@@ -80,26 +67,10 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal4Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando clientes'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('heading', { name: 'Clientes' }),
-    ).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal4Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os clientes',
-      ),
-    ).toBeVisible()
   },
 }

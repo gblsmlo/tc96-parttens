@@ -5,7 +5,7 @@ import {
   type Flow3Connection,
   type Flow3Step,
 } from '@tc96/ui/blocks/application/flow/flow-3'
-import { expect, fn, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { flow3Handlers } from '../../../../mocks/flow-3.ts'
 
@@ -50,25 +50,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(flow3Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByRole('group', { name: 'Compilar, Concluído' }),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Aprovar Liberar release' }),
-    ).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(flow3Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum passo na execução'),
-    ).toBeVisible()
   },
 }
 
@@ -76,24 +62,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(flow3Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar a execução'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar novamente' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(flow3Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando execução'),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

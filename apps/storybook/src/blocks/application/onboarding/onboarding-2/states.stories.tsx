@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, fn, screen } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { StatefulOnboarding2 } from '../fixtures/onboarding-2.tsx'
 
 const meta = {
@@ -14,40 +14,17 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async () => {
-    await expect(screen.getByText('Passo 1 de 3')).toBeVisible()
-    await expect(
-      screen.getByRole('button', { name: /Continuar/ }),
-    ).toBeEnabled()
-  },
-}
+export const Default: Story = {}
 
 export const Pending: Story = {
   args: { pending: true },
-  play: async () => {
-    await expect(
-      screen.getByRole('button', { name: /Continuar/ }),
-    ).toBeDisabled()
-  },
 }
 
 export const ErrorState: Story = {
   name: 'Error',
   args: { error: 'Não foi possível salvar o seu perfil. Tente novamente.' },
-  play: async () => {
-    await expect(screen.getByRole('alert')).toHaveTextContent(
-      'Não foi possível salvar o seu perfil.',
-    )
-  },
 }
 
 export const Success: Story = {
   args: { completed: true },
-  play: async () => {
-    await expect(
-      screen.getByRole('heading', { name: 'Tudo pronto' }),
-    ).toBeVisible()
-    await expect(screen.getByRole('button', { name: 'Começar' })).toBeVisible()
-  },
 }

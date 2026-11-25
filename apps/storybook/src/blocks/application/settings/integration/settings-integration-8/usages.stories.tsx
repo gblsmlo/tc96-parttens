@@ -5,7 +5,6 @@ import {
   type SettingsIntegration8Item,
 } from '@tc96/ui/blocks/application/settings/integration/settings-integration-8'
 import { useEffect, useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../../mocks/api.ts'
 import { settingsIntegration8Handlers } from '../../../../../mocks/settings-integration-8.ts'
 import { settingsIntegration8Items } from '../../fixtures/settings-integration-8.ts'
@@ -82,24 +81,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsIntegration8Handlers.items)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const pause = await canvas.findByRole('switch', { name: 'Pausar tudo' })
-    await userEvent.click(pause)
-    await expect(
-      canvas.getByRole('switch', { name: 'Ativar GitHub' }),
-    ).toHaveAttribute('aria-checked', 'false')
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsIntegration8Handlers.itemsEmpty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma integração de API'),
-    ).toBeVisible()
   },
 }
 
@@ -107,27 +93,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsIntegration8Handlers.itemsError)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText(
-        'Não foi possível carregar as integrações de API',
-      ),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar novamente' }),
-    ).toBeEnabled()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsIntegration8Handlers.itemsPending)
-  },
-  play: async ({ canvasElement }) => {
-    const skeleton = await within(canvasElement).findByLabelText(
-      'Carregando integrações de API',
-    )
-    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

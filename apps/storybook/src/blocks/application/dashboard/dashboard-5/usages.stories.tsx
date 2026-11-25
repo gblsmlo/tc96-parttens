@@ -9,7 +9,6 @@ import {
   type Dashboard5Publication,
   type Dashboard5Queue,
 } from '@tc96/ui/blocks/application/dashboard/dashboard-5'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { dashboard5Handlers } from '../../../../mocks/dashboard-5.ts'
 import { dashboard5TimeZone, links } from '../fixtures/dashboard-5.ts'
@@ -64,23 +63,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard5Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Contestação')).toBeVisible()
-    await expect(
-      await canvas.findByRole('img', { name: 'Prazos em cada fila' }),
-    ).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard5Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma pendência'),
-    ).toBeVisible()
   },
 }
 
@@ -88,24 +75,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard5Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar.'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar de novo' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard5Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando pendências'),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

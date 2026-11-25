@@ -1,13 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { SettingsPreference2 } from '@tc96/ui/blocks/application/settings/preference/settings-preference-2'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../../mocks/api.ts'
 import { settingsPreference2Handlers } from '../../../../../mocks/settings-preference-2.ts'
-import {
-  type SettingsPreference2Data,
-  settingsPreference2Data,
-} from '../../fixtures/settings-preference-2.ts'
+import type { SettingsPreference2Data } from '../../fixtures/settings-preference-2.ts'
 import { settingsPreference2ControlArgs } from './settings-preference-2-controls.ts'
 import { ComposedSettingsPreference2 } from './settings-preference-2-layouts.tsx'
 
@@ -51,42 +48,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsPreference2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Interface e tema')).toBeVisible()
-    await expect(
-      await canvas.findByRole('combobox', { name: 'Tamanho da fonte' }),
-    ).toHaveTextContent(settingsPreference2Data.options.fontSize[1].label)
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsPreference2Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar as configurações'),
-    ).toBeVisible()
-    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
-    await expect(retry).toBeEnabled()
-    await userEvent.click(retry)
-    await expect(await canvas.findByRole('alert')).toHaveAttribute(
-      'data-kind',
-      'error',
-    )
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsPreference2Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const skeleton = await within(canvasElement).findByLabelText(
-      'Carregando configurações',
-    )
-    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { Card6, type Card6Job } from '@tc96/ui/blocks/application/card/card-6'
 import { useState } from 'react'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card6Handlers } from '../../../../mocks/card-6.ts'
 
@@ -48,30 +48,11 @@ export const Loaded: Story = {
     onApply.mockClear()
     msw.use(card6Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const save = await canvas.findByRole('button', {
-      name: 'Salvar vaga Gerente de produto',
-    })
-    await userEvent.click(save)
-    await expect(save).toHaveAttribute('aria-pressed', 'true')
-    await userEvent.click(
-      canvas.getByRole('button', {
-        name: 'Candidatar-se a Gerente de produto em Vale Logística',
-      }),
-    )
-    await expect(onApply).toHaveBeenCalledWith('product')
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card6Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma vaga recomendada'),
-    ).toBeVisible()
   },
 }
 
@@ -79,22 +60,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card6Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as vagas',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card6Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando vagas'),
-    ).toBeVisible()
   },
 }

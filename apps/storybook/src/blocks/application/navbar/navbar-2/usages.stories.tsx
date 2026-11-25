@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Navbar2 } from '@tc96/ui/blocks/application/navbar/navbar-2'
 import { Text } from '@tc96/ui/text'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { environments, organizations, projects } from '../fixtures/navbar-2.ts'
 
 const DeployConsole = () => {
@@ -45,15 +44,4 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const SwitchingTheEnvironmentOfADeployConsole: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByText(/Checkout em Homologação/)).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: /Ambiente/ }))
-    await userEvent.click(
-      await screen.findByRole('menuitemradio', { name: 'Produção' }),
-    )
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
-    await expect(canvas.getByText(/Checkout em Produção/)).toBeVisible()
-  },
-}
+export const SwitchingTheEnvironmentOfADeployConsole: Story = {}

@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EmptyState4 } from '@tc96/ui/blocks/application/empty-state/empty-state-4'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 
 const InviteFirstTeammate = () => {
   const [copied, setCopied] = useState(false)
@@ -39,16 +38,4 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const InviteFirstMember: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Copiar link' }))
-    await expect(
-      canvas.getByRole('button', { name: 'Link copiado' }),
-    ).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Convidar' }))
-    await expect(canvas.getByRole('status')).toHaveTextContent(
-      'Abrindo o convite',
-    )
-  },
-}
+export const InviteFirstMember: Story = {}

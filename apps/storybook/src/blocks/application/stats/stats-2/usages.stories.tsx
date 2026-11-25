@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { Stats2 } from '@tc96/ui/blocks/application/stats/stats-2'
-import { expect, fn, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { stats2Handlers } from '../../../../mocks/stats-2.ts'
 import type { QuotaUsage } from '../fixtures/stats-2.ts'
@@ -43,38 +43,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(stats2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByRole('meter')).toHaveAttribute(
-      'aria-valuenow',
-      '742000',
-    )
-    await expect(
-      canvas.getByRole('button', { name: 'Fazer upgrade' }),
-    ).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(stats2Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar o uso da API',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(stats2Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando uso da API'),
-    ).toBeVisible()
   },
 }

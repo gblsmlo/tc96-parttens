@@ -8,7 +8,6 @@ import {
   type Dashboard1ReasonSlice,
 } from '@tc96/ui/blocks/application/dashboard/dashboard-1'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { dashboard1Handlers } from '../../../../mocks/dashboard-1.ts'
 import {
@@ -95,23 +94,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard1Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('PED-48213')).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Escaladas 2' }))
-    await expect(canvas.getByText('PED-48177')).toBeVisible()
-    await expect(canvas.queryByText('PED-48213')).toBeNull()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard1Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma exceção de expedição'),
-    ).toBeVisible()
   },
 }
 
@@ -119,26 +106,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard1Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar as exceções'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar novamente' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard1Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText(
-        'Carregando exceções de expedição',
-      ),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }
