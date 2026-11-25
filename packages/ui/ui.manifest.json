@@ -286,6 +286,13 @@
     "radio-group": {
       "origin": "coss"
     },
+    "property-meta": {
+      "origin": "own"
+    },
+    "property-tone": {
+      "origin": "own",
+      "paths": ["lib/property-tone.ts"]
+    },
     "render-anchor": {
       "origin": "own"
     },

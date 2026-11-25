@@ -580,6 +580,8 @@ Decisão de 2026-11-24, do dono: `CollectionToolbar` virou só a moldura. Os slo
 
 Decisão de 2026-11-25, do dono: a pasta `view-settings/` virou `view-settings-menu/`, e o nó `Patterns/ViewSettings` virou `Patterns/ViewSettingsMenu`. A pasta cuida do popover e da organização dos campos: `ViewSettingsSubmenu` (escolha única com o valor atual no gatilho), `ViewSettingsFieldSection` (um switch de visibilidade por campo, com a contagem no rótulo) e `ViewSettingsShowAllFields`. Agrupar e ordenar continuam com o consumidor, que passa cada grupo pronto.
 
+Decisão de 2026-11-25, do dono: ícone e tom dos metadados genéricos têm uma fonte única. `packages/ui/src/lib/property-tone.ts` (sem React) guarda `PropertyTone` e `propertyToneClassName`, que `properties` reexporta; `packages/ui/src/components/property-meta.tsx` (`@tc96/ui/property-meta`) guarda `workflowStatusMeta`, `priorityMeta` e `PropertyMetaIcon`. O catálogo não tem rótulo, que continua com o consumidor. Status de domínio (pago, atrasado) e estados de execução (rodando, falhou) mantêm seus mapas e usam só o tom. A migração dos `*-options.ts` dos blocos para o catálogo vai em PR separado.
+
 ## Itens de menu do COSS ficam em `packages/ui`
 
 Decisão de 2026-11-19, do dono. Todo componente de menu instalado do COSS mora em `packages/ui` e é editado lá; nenhum pattern recria ou embrulha um deles para mudar a aparência.

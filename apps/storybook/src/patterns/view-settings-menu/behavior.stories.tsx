@@ -368,7 +368,7 @@ export const SubmenuTriggerFollowsTheCurrentOption: Story = {
     await expect(
       screen
         .getByRole('menuitem', { name: /Status/ })
-        .querySelector('svg.text-warning-foreground'),
+        .querySelector('[data-slot="property-meta-icon"][data-tone="warning"]'),
     ).not.toBeNull()
     await userEvent.keyboard('{Escape}')
     await closeMenu()

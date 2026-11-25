@@ -2,19 +2,9 @@ import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
 import {
   CalendarBlankIcon,
   CalendarDotsIcon,
-  CellSignalFullIcon,
   CellSignalHighIcon,
-  CellSignalLowIcon,
-  CellSignalMediumIcon,
-  ChartPieSliceIcon,
-  CheckCircleIcon,
-  CircleDashedIcon,
-  CircleHalfIcon,
-  CircleIcon,
   GridFourIcon,
   HashIcon,
-  MinusIcon,
-  ProhibitIcon,
   RadioButtonIcon,
   RowsIcon,
   TableIcon,
@@ -22,9 +12,15 @@ import {
   TextTIcon,
   UserCircleIcon,
   UserIcon,
-  WarningIcon,
 } from '@phosphor-icons/react'
 import type { ViewSettingsMode, ViewSettingsOption } from '@tc96/ui/patterns'
+import {
+  type PriorityLevel,
+  PropertyMetaIcon,
+  priorityMeta,
+  type WorkflowStatus,
+  workflowStatusMeta,
+} from '@tc96/ui/property-meta'
 
 export type FilterKey = 'assignee' | 'date' | 'priority' | 'status' | 'tags'
 
@@ -134,92 +130,42 @@ export const taskFields: readonly CollectionField[] = [
   { id: 'description', label: 'Descrição', type: 'text', visible: false },
 ]
 
-export type TaskStatus =
-  | 'done'
-  | 'backlog'
-  | 'blocked'
-  | 'in-progress'
-  | 'in-review'
-  | 'todo'
+export type TaskStatus = Exclude<WorkflowStatus, 'canceled'>
 
-export const statusOptions: readonly ViewSettingsOption<TaskStatus>[] = [
-  {
-    icon: <CircleDashedIcon aria-hidden="true" />,
-    label: 'Backlog',
-    value: 'backlog',
-  },
-  { icon: <CircleIcon aria-hidden="true" />, label: 'A fazer', value: 'todo' },
-  {
-    icon: (
-      <CircleHalfIcon aria-hidden="true" className="text-warning-foreground" />
-    ),
-    label: 'Em andamento',
-    value: 'in-progress',
-  },
-  {
-    icon: (
-      <ChartPieSliceIcon
-        aria-hidden="true"
-        className="text-success-foreground"
-      />
-    ),
-    label: 'Em revisão',
-    value: 'in-review',
-  },
-  {
-    icon: (
-      <ProhibitIcon
-        aria-hidden="true"
-        className="text-destructive-foreground"
-      />
-    ),
-    label: 'Bloqueado',
-    value: 'blocked',
-  },
-  {
-    icon: (
-      <CheckCircleIcon
-        aria-hidden="true"
-        className="text-primary"
-        weight="fill"
-      />
-    ),
-    label: 'Concluído',
-    value: 'done',
-  },
-]
+const statusLabels: Record<TaskStatus, string> = {
+  backlog: 'Backlog',
+  todo: 'A fazer',
+  'in-progress': 'Em andamento',
+  'in-review': 'Em revisão',
+  blocked: 'Bloqueado',
+  done: 'Concluído',
+}
 
-export type TaskPriority = 'high' | 'low' | 'medium' | 'none' | 'urgent'
+export const statusOptions: readonly ViewSettingsOption<TaskStatus>[] = (
+  Object.keys(statusLabels) as TaskStatus[]
+).map((value) => ({
+  icon: <PropertyMetaIcon meta={workflowStatusMeta[value]} />,
+  label: statusLabels[value],
+  value,
+}))
 
-export const priorityOptions: readonly ViewSettingsOption<TaskPriority>[] = [
-  {
-    icon: <MinusIcon aria-hidden="true" />,
-    label: 'Sem prioridade',
-    value: 'none',
-  },
-  {
-    icon: (
-      <WarningIcon aria-hidden="true" className="text-destructive-foreground" />
-    ),
-    label: 'Urgente',
-    value: 'urgent',
-  },
-  {
-    icon: <CellSignalFullIcon aria-hidden="true" />,
-    label: 'Alta',
-    value: 'high',
-  },
-  {
-    icon: <CellSignalMediumIcon aria-hidden="true" />,
-    label: 'Média',
-    value: 'medium',
-  },
-  {
-    icon: <CellSignalLowIcon aria-hidden="true" />,
-    label: 'Baixa',
-    value: 'low',
-  },
-]
+export type TaskPriority = PriorityLevel
+
+const priorityLabels: Record<TaskPriority, string> = {
+  none: 'Sem prioridade',
+  urgent: 'Urgente',
+  high: 'Alta',
+  medium: 'Média',
+  low: 'Baixa',
+}
+
+export const priorityOptions: readonly ViewSettingsOption<TaskPriority>[] = (
+  Object.keys(priorityLabels) as TaskPriority[]
+).map((value) => ({
+  icon: <PropertyMetaIcon meta={priorityMeta[value]} />,
+  label: priorityLabels[value],
+  value,
+}))
 
 export type TaskAssignee = 'ana' | 'bruno' | 'unassigned'
 
