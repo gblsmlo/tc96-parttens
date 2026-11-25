@@ -1,0 +1,100 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsIntegration8
+
+A settings section that lists the API integrations of the workspace in a paginated grid, built on the collection `DataGrid`. Each row shows the app logo and name, the masked API key with a copy button, the calls per day and a switch that enables or pauses the integration. A "Pausar tudo" switch in the header pauses every row at once. Reach for it when a workspace has many integrations with keys and usage to track. Install it with `npx @tc96/cli add settings-integration-8`.
+
+It is a section, not a page: it renders no `main` landmark. The block keeps no state of its own besides the page: keys, the enabled flags and the paused flag are the app's, and the block only calls `onCopyKey`, `onEnabledChange` and `onAllPausedChange`.
+
+The other pages of `Blocks/Application/Settings/Integration/Settings8`: [Playground](?path=/story/blocks-application-settings-integration-settings8-playground--playground), [Behavior](?path=/story/blocks-application-settings-integration-settings8-behavior--empty-list-shows-state-surface) and [Usages](?path=/story/blocks-application-settings-integration-settings8-usages--loaded).
+
+## Import
+
+```tsx
+import { SettingsIntegration8 } from '@tc96/ui/blocks/application/settings/integration/settings-integration-8'
+```
+
+The same path exports the types `SettingsIntegration8Props`, `SettingsIntegration8Item` and `SettingsIntegration8Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsIntegration8
+  allPaused={paused}
+  integrations={integrations}
+  onAllPausedChange={setPaused}
+  onCopyKey={(id) => copyKey(id)}
+  onEnabledChange={(id, enabled) => setEnabled(id, enabled)}
+/>
+```
+
+## SettingsIntegration8
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `integrations` | `SettingsIntegration8Item[]` | required | The rows; an empty array shows the empty state. |
+| `allPaused` | `boolean` | `false` | Shows every row switch off and disables it. |
+| `onAllPausedChange` | `(paused: boolean) => void` | - | Called by the "Pausar tudo" switch. Without it the switch is not rendered. |
+| `onCopyKey` | `(integrationId: string) => void` | - | Called by the copy button of a row. Without it the buttons are not rendered. |
+| `onEnabledChange` | `(integrationId: string, enabled: boolean) => void` | - | Called by the row switch. Without it the switches are disabled. |
+| `pageSize` | `number` | `10` | Rows per page at the start. |
+| `pageSizeOptions` | `readonly number[]` | `[10, 20, 50]` | Options of the rows per page select. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsIntegration8Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+## SettingsIntegration8Item
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row in the callbacks. |
+| `name` | `string` | Name beside the logo. |
+| `logo` | `{ svg: string; title?: string }` | Brand mark, for example an `@thesvg/icons` module; without it the initials fill the frame. |
+| `keyPreview` | `string` | The key as the app wants it shown, already masked. |
+| `calls` | `number` | Value the calls column sorts by. |
+| `callsLabel` | `string` | Calls per day, already formatted by the app. |
+| `enabled` | `boolean` | State of the row switch. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Integrações de API"` |
+| `description` | `string` | `"Acompanhe as chaves e o uso de cada integração de API."` |
+| `integrationColumn` | `string` | `"Integração"` |
+| `keyColumn` | `string` | `"Chave de API"` |
+| `callsColumn` | `string` | `"Chamadas por dia"` |
+| `enabledColumn` | `string` | `"Ativa"` |
+| `pauseAll` | `string` | `"Pausar tudo"` |
+| `rowsPerPage` | `string` | `"Linhas por página"` |
+| `copyAction` | `(name: string) => string` | `"Copiar chave de GitHub"` |
+| `enableAction` | `(name: string) => string` | `"Ativar GitHub"` |
+| `emptyTitle` | `string` | `"Nenhuma integração de API"` |
+| `emptyDescription` | `string` | `"As integrações de API aparecem aqui."` |
+| `loading` | `string` | `"Carregando integrações de API"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as integrações de API"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsIntegration8` | `component` | The API integrations section. |
+| `SettingsIntegration8Props` | `type` | The props of the section. |
+| `SettingsIntegration8Item` | `type` | A row. |
+| `SettingsIntegration8Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each copy button and row switch is named by its `*Action(name)` label; the pause switch is named by its visible text.
+- The calls column is the only sortable one, and the grid keeps the WAI-ARIA grid keyboard model of the collection `DataGrid`.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

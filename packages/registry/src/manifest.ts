@@ -91,6 +91,7 @@ export const blockNames = [
   'settings-integration-5',
   'settings-integration-6',
   'settings-integration-7',
+  'settings-integration-8',
   'settings-account-2',
   'stats-1',
   'stats-2',
@@ -241,6 +242,8 @@ export const blockSources: Record<BlockName, string> = {
     'application/settings/integration/settings-integration-6',
   'settings-integration-7':
     'application/settings/integration/settings-integration-7',
+  'settings-integration-8':
+    'application/settings/integration/settings-integration-8',
   'settings-account-2': 'application/settings/account/settings-account-2',
   'stats-1': 'application/stats/stats-1',
   'stats-2': 'application/stats/stats-2',

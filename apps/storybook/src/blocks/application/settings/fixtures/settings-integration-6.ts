@@ -1,4 +1,10 @@
 import type { SettingsIntegration6App } from '@tc96/ui/blocks/application/settings/integration/settings-integration-6'
+import googleLogo from '@thesvg/icons/google'
+import linearLogo from '@thesvg/icons/linear'
+import notionLogo from '@thesvg/icons/notion'
+import resendLogo from '@thesvg/icons/resend'
+import slackLogo from '@thesvg/icons/slack'
+import stripeLogo from '@thesvg/icons/stripe'
 
 export const settingsIntegration6Apps: SettingsIntegration6App[] = [
   {
@@ -7,6 +13,7 @@ export const settingsIntegration6Apps: SettingsIntegration6App[] = [
     enabled: true,
     id: 'google-workspace',
     name: 'Google Workspace',
+    logo: googleLogo,
   },
   {
     connected: true,
@@ -14,6 +21,7 @@ export const settingsIntegration6Apps: SettingsIntegration6App[] = [
     enabled: false,
     id: 'slack',
     name: 'Slack',
+    logo: slackLogo,
   },
   {
     connected: false,
@@ -21,6 +29,7 @@ export const settingsIntegration6Apps: SettingsIntegration6App[] = [
     enabled: false,
     id: 'stripe',
     name: 'Stripe',
+    logo: stripeLogo,
   },
   {
     connected: false,
@@ -28,6 +37,7 @@ export const settingsIntegration6Apps: SettingsIntegration6App[] = [
     enabled: false,
     id: 'notion',
     name: 'Notion',
+    logo: notionLogo,
   },
   {
     connected: true,
@@ -35,6 +45,7 @@ export const settingsIntegration6Apps: SettingsIntegration6App[] = [
     enabled: true,
     id: 'resend',
     name: 'Resend',
+    logo: resendLogo,
   },
   {
     connected: false,
@@ -42,5 +53,6 @@ export const settingsIntegration6Apps: SettingsIntegration6App[] = [
     enabled: false,
     id: 'linear',
     name: 'Linear',
+    logo: linearLogo,
   },
 ]

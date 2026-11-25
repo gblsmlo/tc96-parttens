@@ -1979,6 +1979,12 @@
     "SettingsIntegration7Props",
     "SettingsIntegration7Status"
   ],
+  "block:settings-integration-8": [
+    "SettingsIntegration8",
+    "SettingsIntegration8Item",
+    "SettingsIntegration8Labels",
+    "SettingsIntegration8Props"
+  ],
   "block:settings-account-2": [
     "SettingsAccount2",
     "SettingsAccount2Invoice",

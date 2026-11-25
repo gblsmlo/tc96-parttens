@@ -52,6 +52,7 @@ The same path exports the types `SettingsIntegration6Props`, `SettingsIntegratio
 | --- | --- | --- |
 | `id` | `string` | Identifies the app in the callbacks. |
 | `name` | `string` | Title of the card; its first two initials fill the icon frame. |
+| `logo` | `{ svg: string; title?: string }` | Brand mark, an `@thesvg/icons` module (only `svg` is read), drawn as an `img` with a `data:` URI in the icon frame; without it the initials show. A consumer CSP without `data:` in `img-src` blocks it. |
 | `description` | `string` | Line under the name. |
 | `connected` | `boolean` | Picks the Conectar or Desconectar button and enables the switch. |
 | `enabled` | `boolean` | State of the switch; shown off while the app is not connected. |
