@@ -4,7 +4,12 @@ import { initialTasks, type Task } from '../collection/fixtures/tasks'
 import { ListCanvas } from './list-canvas.tsx'
 import { listControlArgs } from './list-controls.ts'
 import { tasksWithoutInProgress } from './list-data.ts'
-import { ComposedList, DocumentRow, TasksList } from './list-layouts.tsx'
+import {
+  ComposedList,
+  DocumentRow,
+  SortableHeaderList,
+  TasksList,
+} from './list-layouts.tsx'
 
 interface ListBehaviorArgs {
   onRecordAdd: (groupId: string) => void
@@ -12,6 +17,7 @@ interface ListBehaviorArgs {
   onMenu: () => void
   onOpen: () => void
   onOpenTask: (task: Task) => void
+  onSort: (column: string, direction: 'asc' | 'desc') => void
 }
 
 const meta = {
@@ -21,6 +27,7 @@ const meta = {
     onMenu: fn(),
     onOpen: fn(),
     onOpenTask: fn(),
+    onSort: fn(),
   },
   decorators: [ListCanvas],
   render: ({ onMenu, onOpen }) => (
@@ -563,5 +570,36 @@ export const RowsAreTwoPixelsApart: Story = {
           first.getBoundingClientRect().bottom,
       ),
     ).toBe(2)
+  },
+}
+
+export const HeaderCellSortsAndFlipsDirection: Story = {
+  render: ({ onSort }) => <SortableHeaderList onSort={onSort} />,
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    const created = canvas.getByRole('button', {
+      name: 'Ordenar por Criado em, decrescente',
+    })
+
+    await userEvent.click(created)
+    await expect(args.onSort).toHaveBeenLastCalledWith('created', 'asc')
+    await canvas.findByRole('button', {
+      name: 'Ordenar por Criado em, crescente',
+    })
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Ordenar por Registro' }),
+    )
+    await expect(args.onSort).toHaveBeenLastCalledWith('title', 'asc')
+    const title = required(
+      canvas
+        .getByRole('button', { name: 'Ordenar por Registro, crescente' })
+        .closest<HTMLElement>('[data-slot="list-view-header-cell"]'),
+      'the title header cell',
+    )
+    await expect(title).toHaveAttribute('data-sort', 'asc')
+    await expect(
+      canvas.getByRole('button', { name: 'Ordenar por Criado em' }),
+    ).toBeInTheDocument()
   },
 }

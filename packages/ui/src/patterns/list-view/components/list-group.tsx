@@ -8,6 +8,7 @@ import {
 } from '@tc96/ui/collapsible'
 import { Empty, EmptyDescription } from '@tc96/ui/empty'
 import { Separator } from '@tc96/ui/separator'
+import { cn } from '@tc96/utils'
 import { Fragment, type ReactNode, useId } from 'react'
 import type { CollectionGroup } from '../../collection/types/collection'
 import {
@@ -31,6 +32,7 @@ export interface ListGroupProps<TRecord> {
   onCollapsedChange: (collapsed: boolean) => void
   renderRecord: (record: TRecord) => ReactNode
   renderGroupTitle?: (group: CollectionGroup<TRecord>) => ReactNode
+  stickyBelowHeader?: boolean
   getKey: (record: TRecord) => string | number
   loading?: boolean
   loadingAnatomy?: ListRowSkeletonAnatomy
@@ -56,6 +58,7 @@ export function ListGroup<TRecord>({
   onCollapsedChange,
   renderGroupTitle,
   renderRecord,
+  stickyBelowHeader = false,
 }: ListGroupProps<TRecord>) {
   const instanceId = useId()
   const titleId = `list-group-title-${instanceId}`
@@ -75,7 +78,10 @@ export function ListGroup<TRecord>({
         data-slot="list-group"
       >
         <div
-          className="sticky top-0 z-20 flex min-h-9 items-center justify-between rounded-lg bg-card px-1"
+          className={cn(
+            'sticky z-20 flex min-h-9 items-center justify-between rounded-lg bg-card px-1',
+            stickyBelowHeader ? 'top-9' : 'top-0',
+          )}
           data-slot="list-group-header"
         >
           <div className="flex min-w-0 items-center gap-1">

@@ -30,6 +30,7 @@ export const ptBRPropertyLabels = {
   },
   people: {
     add: 'Adicionar pessoa',
+    count: (count) => `${count} ${count === 1 ? 'pessoa' : 'pessoas'}`,
     empty: 'Nenhuma pessoa encontrada.',
     loading: 'Carregando pessoas…',
     remove: 'Remover',

@@ -560,8 +560,17 @@
     "assistantDefaultLabels",
     "assistantDefaultPlaceholder"
   ],
-  "list": ["List", "ListProps", "ListVariant", "listVariants"],
-  "charts": ["RadiusRange", "ScatterChart", "ScatterChartProps"],
+  "list": [
+    "List",
+    "ListProps",
+    "ListVariant",
+    "listVariants"
+  ],
+  "charts": [
+    "RadiusRange",
+    "ScatterChart",
+    "ScatterChartProps"
+  ],
   "patterns": [
     "Achievement",
     "AchievementsWidget",
@@ -1013,7 +1022,12 @@
     "ListRowTrailingProps",
     "ListVariant",
     "ListView",
+    "ListViewHeader",
+    "ListViewHeaderCell",
+    "ListViewHeaderCellProps",
+    "ListViewHeaderProps",
     "ListViewProps",
+    "ListViewSortDirection",
     "MIN_TABLE_COLUMN_WIDTH",
     "MarketShareSegment",
     "MarketShareWidget",
@@ -1787,8 +1801,17 @@
     "Stats1Stat",
     "Stats1ValueKind"
   ],
-  "block:stats-2": ["Stats2", "Stats2Labels", "Stats2Props"],
-  "block:stats-3": ["Stats3", "Stats3Item", "Stats3Labels", "Stats3Props"],
+  "block:stats-2": [
+    "Stats2",
+    "Stats2Labels",
+    "Stats2Props"
+  ],
+  "block:stats-3": [
+    "Stats3",
+    "Stats3Item",
+    "Stats3Labels",
+    "Stats3Props"
+  ],
   "block:stats-4": [
     "Stats4",
     "Stats4Labels",
@@ -1824,7 +1847,12 @@
     "Card1Labels",
     "Card1Props"
   ],
-  "block:card-2": ["Card2", "Card2Integration", "Card2Labels", "Card2Props"],
+  "block:card-2": [
+    "Card2",
+    "Card2Integration",
+    "Card2Labels",
+    "Card2Props"
+  ],
   "block:card-3": [
     "Card3",
     "Card3Labels",
@@ -1832,8 +1860,18 @@
     "Card3Props",
     "Card3Stat"
   ],
-  "block:card-4": ["Card4", "Card4Labels", "Card4Meeting", "Card4Props"],
-  "block:card-5": ["Card5", "Card5Labels", "Card5Props", "Card5Shortcut"],
+  "block:card-4": [
+    "Card4",
+    "Card4Labels",
+    "Card4Meeting",
+    "Card4Props"
+  ],
+  "block:card-5": [
+    "Card5",
+    "Card5Labels",
+    "Card5Props",
+    "Card5Shortcut"
+  ],
   "block:card-6": [
     "Card6",
     "Card6Job",
@@ -1885,8 +1923,18 @@
     "List3Props",
     "List3Transaction"
   ],
-  "block:list-4": ["List4", "List4Integration", "List4Labels", "List4Props"],
-  "block:list-5": ["List5", "List5Labels", "List5Module", "List5Props"],
+  "block:list-4": [
+    "List4",
+    "List4Integration",
+    "List4Labels",
+    "List4Props"
+  ],
+  "block:list-5": [
+    "List5",
+    "List5Labels",
+    "List5Module",
+    "List5Props"
+  ],
   "block:list-6": [
     "List6",
     "List6Labels",
@@ -1958,7 +2006,11 @@
     "Timeline4Labels",
     "Timeline4Props"
   ],
-  "block:navbar-1": ["Navbar1", "Navbar1Labels", "Navbar1Props"],
+  "block:navbar-1": [
+    "Navbar1",
+    "Navbar1Labels",
+    "Navbar1Props"
+  ],
   "block:navbar-2": [
     "Navbar2",
     "Navbar2Environment",
@@ -1976,7 +2028,11 @@
     "Navbar3User",
     "Navbar3UserAction"
   ],
-  "block:navbar-4": ["Navbar4", "Navbar4Labels", "Navbar4Props"],
+  "block:navbar-4": [
+    "Navbar4",
+    "Navbar4Labels",
+    "Navbar4Props"
+  ],
   "block:navbar-5": [
     "Navbar5",
     "Navbar5Action",
@@ -2641,6 +2697,49 @@
     "projects3Modes",
     "projects3Sorts",
     "projects3Statuses"
+  ],
+  "block:tasks-1": [
+    "Tasks1",
+    "Tasks1ColumnId",
+    "Tasks1GroupBy",
+    "Tasks1HideableColumnId",
+    "Tasks1Labels",
+    "Tasks1LabelsOverride",
+    "Tasks1Option",
+    "Tasks1Person",
+    "Tasks1Priority",
+    "Tasks1Props",
+    "Tasks1Sort",
+    "Tasks1Status",
+    "Tasks1Task",
+    "tasks1GroupBys",
+    "tasks1HideableColumns",
+    "tasks1Sorts",
+    "tasks1Statuses"
+  ],
+  "block:tasks-2": [
+    "Tasks2",
+    "Tasks2ColumnId",
+    "Tasks2CreateOption",
+    "Tasks2GroupBy",
+    "Tasks2KanbanGroupBy",
+    "Tasks2Labels",
+    "Tasks2LabelsOverride",
+    "Tasks2Mode",
+    "Tasks2Option",
+    "Tasks2Person",
+    "Tasks2Priority",
+    "Tasks2Props",
+    "Tasks2Sort",
+    "Tasks2SortColumn",
+    "Tasks2SortDirection",
+    "Tasks2Status",
+    "Tasks2Tag",
+    "Tasks2Task",
+    "tasks2GroupBys",
+    "tasks2Modes",
+    "tasks2Sorts",
+    "tasks2Statuses"
   ],
   "block:finance-1": [
     "Finance1",

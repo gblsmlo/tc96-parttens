@@ -37,6 +37,7 @@ export interface DataCollectionProps<TRecord extends RowData> {
   groupBy?: string | null
   kanban?: CollectionKanbanViewProps<TRecord>
   label: string
+  listHeader?: ReactNode
   loadingMore?: boolean
   mode: DataCollectionMode
   onCollapsedGroupIdsChange?: (groupIds: readonly string[]) => void
@@ -62,6 +63,7 @@ export function DataCollection<TRecord extends RowData>({
   groupBy: groupByProp,
   kanban,
   label,
+  listHeader,
   loadingMore,
   mode,
   onCollapsedGroupIdsChange,
@@ -175,6 +177,7 @@ export function DataCollection<TRecord extends RowData>({
             emptyGroupLabel: emptyGroupMessage ?? emptyMessage,
             emptyMessage,
             getGroupToggleLabel,
+            header: listHeader,
             onCollapsedGroupIdsChange,
           }}
           renderKanbanRecord={renderKanbanRecord}

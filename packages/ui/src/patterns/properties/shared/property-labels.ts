@@ -85,6 +85,7 @@ export interface PhonePropertyLabels
 
 export interface PeoplePropertyLabels {
   add: string
+  count: (count: number) => string
   empty: string
   loading: string
   remove: string
@@ -151,6 +152,7 @@ export const defaultPropertyLabels: PropertyLabels = {
   },
   people: {
     add: 'Add person',
+    count: (count) => `${count} ${count === 1 ? 'person' : 'people'}`,
     empty: 'No people found.',
     loading: 'Loading people…',
     remove: 'Remove',

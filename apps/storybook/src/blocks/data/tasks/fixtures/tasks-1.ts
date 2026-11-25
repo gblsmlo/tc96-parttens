@@ -1,0 +1,171 @@
+import type {
+  Tasks1Option,
+  Tasks1Person,
+  Tasks1Task,
+} from '@tc96/ui/blocks/data/tasks/tasks-1'
+
+export const projects: Tasks1Option[] = [
+  { id: 'website', label: 'Website redesign' },
+  { id: 'mobile', label: 'Mobile app 2.0' },
+  { id: 'billing', label: 'Billing migration' },
+  { id: 'onboarding', label: 'Customer onboarding' },
+]
+
+export const assignees: Tasks1Person[] = [
+  { id: 'ana', label: 'Ana Ferraz' },
+  { id: 'bruno', label: 'Bruno Lacerda' },
+  { id: 'carla', label: 'Carla Mendes' },
+  { id: 'diego', label: 'Diego Sato' },
+  { id: 'elisa', label: 'Elisa Prado' },
+]
+
+export const tags: Tasks1Option[] = [
+  { id: 'bug', label: 'Bug' },
+  { id: 'design', label: 'Design' },
+  { id: 'backend', label: 'Backend' },
+  { id: 'docs', label: 'Docs' },
+]
+
+export const tasks: Tasks1Task[] = [
+  {
+    assigneeIds: ['ana', 'carla'],
+    dueAt: '2026-11-20',
+    id: 'task-101',
+    overdue: true,
+    priority: 'urgent',
+    projectId: 'billing',
+    status: 'in-progress',
+    tagIds: ['backend', 'bug'],
+    title: 'Fix duplicate charges on annual plans',
+    updatedAt: '2026-11-25T13:42:00.000Z',
+  },
+  {
+    assigneeIds: ['bruno'],
+    dueAt: '2026-11-28',
+    id: 'task-102',
+    priority: 'high',
+    projectId: 'website',
+    status: 'todo',
+    tagIds: ['design'],
+    title: 'Redesign the pricing page hero',
+    updatedAt: '2026-11-25T11:05:00.000Z',
+  },
+  {
+    assigneeIds: ['diego'],
+    dueAt: '2026-12-02',
+    id: 'task-103',
+    priority: 'medium',
+    projectId: 'mobile',
+    status: 'in-progress',
+    tagIds: [],
+    title: 'Add offline mode to the task list',
+    updatedAt: '2026-11-24T18:20:00.000Z',
+  },
+  {
+    assigneeIds: [],
+    dueAt: null,
+    id: 'task-104',
+    priority: null,
+    projectId: null,
+    status: 'backlog',
+    tagIds: ['docs'],
+    title: 'Write the API rate limit guide',
+    updatedAt: '2026-11-24T09:12:00.000Z',
+  },
+  {
+    assigneeIds: ['elisa', 'ana'],
+    dueAt: '2026-11-22',
+    id: 'task-105',
+    priority: 'low',
+    projectId: 'onboarding',
+    status: 'done',
+    tagIds: [],
+    title: 'Record the welcome walkthrough video',
+    updatedAt: '2026-11-23T16:48:00.000Z',
+  },
+  {
+    assigneeIds: ['carla'],
+    dueAt: '2026-11-21',
+    id: 'task-106',
+    overdue: true,
+    priority: 'high',
+    projectId: 'billing',
+    status: 'todo',
+    tagIds: ['backend'],
+    title: 'Migrate invoices to the new ledger',
+    updatedAt: '2026-11-23T10:30:00.000Z',
+  },
+  {
+    assigneeIds: ['bruno', 'diego', 'elisa'],
+    dueAt: '2026-12-05',
+    id: 'task-107',
+    priority: 'medium',
+    projectId: 'website',
+    status: 'in-progress',
+    tagIds: ['design', 'docs'],
+    title: 'Update the design tokens documentation',
+    updatedAt: '2026-11-22T14:15:00.000Z',
+  },
+  {
+    assigneeIds: ['ana'],
+    dueAt: '2026-11-15',
+    id: 'task-108',
+    priority: 'medium',
+    projectId: 'mobile',
+    status: 'canceled',
+    tagIds: [],
+    title: 'Prototype the tablet layout',
+    updatedAt: '2026-11-21T08:00:00.000Z',
+  },
+  {
+    assigneeIds: ['diego'],
+    dueAt: '2026-11-27',
+    id: 'task-109',
+    priority: 'urgent',
+    projectId: 'mobile',
+    status: 'todo',
+    tagIds: ['bug'],
+    title: 'Crash when opening a shared link',
+    updatedAt: '2026-11-21T07:35:00.000Z',
+  },
+  {
+    assigneeIds: ['elisa'],
+    dueAt: '2026-12-10',
+    id: 'task-110',
+    priority: 'low',
+    projectId: 'onboarding',
+    status: 'backlog',
+    tagIds: [],
+    title: 'Translate the onboarding checklist',
+    updatedAt: '2026-11-20T17:22:00.000Z',
+  },
+  {
+    assigneeIds: ['bruno'],
+    dueAt: '2026-11-18',
+    id: 'task-111',
+    priority: 'high',
+    projectId: 'website',
+    status: 'done',
+    tagIds: [],
+    title: 'Ship the new blog template',
+    updatedAt: '2026-11-19T12:40:00.000Z',
+  },
+  {
+    assigneeIds: ['carla', 'elisa'],
+    dueAt: '2026-12-01',
+    id: 'task-112',
+    priority: 'medium',
+    projectId: 'billing',
+    status: 'in-progress',
+    tagIds: ['backend'],
+    title: 'Reconcile failed payment webhooks',
+    updatedAt: '2026-11-19T09:05:00.000Z',
+  },
+]
+
+export interface Tasks1Page {
+  items: Tasks1Task[]
+  total: number
+}
+
+export const pageSize = 6

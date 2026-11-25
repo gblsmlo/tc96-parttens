@@ -6,7 +6,7 @@ A flat or grouped list of one collection, usable alone or mounted by `Collection
 
 | Folder | Holds |
 | --- | --- |
-| `components/` | `ListView`, `ListGroup`, the `ListRow` parts with `ListRowSelect`, the row skeleton and the memoized item |
+| `components/` | `ListView`, `ListGroup`, the `ListRow` parts with `ListRowSelect`, the `ListViewHeader` parts, the row skeleton and the memoized item |
 | `index.ts` | the barrel |
 
 Import direction: `components/` → `collection/shared/lib/project-collection.ts`, `interactive-descendants.ts`, `skeleton-keys.ts` and `collection/types/`. It never imports another layout. The folder is `list-view/` because `list/` is the List pattern.
@@ -24,6 +24,7 @@ Import direction: `components/` → `collection/shared/lib/project-collection.ts
 - `ListRowSelect` with children hides the media and shows the checkbox on `group-hover/list-row`, `group-focus-within/list-row`, when it holds a `[data-checked]` and on `pointer-coarse`, so the checkbox stays reachable by keyboard and touch; without children it is a plain checkbox before the other leading parts. Selection is the consumer's: `ListRow selected` only paints the row and sets `data-state="selected"`.
 - `ListRowSkeleton` wraps the row in an `output` with `aria-busy`, because an `article` cannot be `status`.
 - Rows sit 2px apart (`gap-0.5` on `list-view-items` and `list-group-items`); a plain `ListRowSelect` sits 16px before the icon (`me-3` over the leading `gap-1`).
+- `header` renders a column header row above the list, sticky at the top at `z-30`; with it the wrapper has no padding and only the body (`list-view-body`) keeps `p-2`, the header spans the full width with `px-4` so its cells line up with the rows (`px-2` of the body plus `px-2` of the row), and the group headers stick at `top-9`, below it. Its `ListViewHeaderCell` hides below `lg` like `ListRowField` unless `always`, so a cell given the field's width stays aligned with it. With `onSort` the cell label is a button and `sortDirection` shows the arrow; the sort itself is the consumer's.
 - `ListView` is `min-h-0 flex-1` and scrolls itself through the `ScrollArea` of `@tc96/ui/scroll-area`, fading only its bottom edge through `viewportProps`, because its group headers stick to the top opaque, at `z-20` above the row fields' `z-10`, and a top fade would wash them out.
 - The consumer's renderer runs in a memoized leaf below the stateful component: it re-runs only when its identity or inputs change, so a renderer that reads other state with a stable identity goes stale.
 
@@ -37,6 +38,7 @@ Import direction: `components/` → `collection/shared/lib/project-collection.ts
 | `data-collection-grouping`, `data-interactive` | `ListView`, `ListRow` | consumers |
 | `data-state="selected"`, `data-density` | `ListRow` | consumers |
 | `data-media="avatar\|icon\|none"`, `data-lines`, `data-pills` | the `output` of `ListRowSkeleton`, from `loadingAnatomy` | tests, to check the loading row follows the row anatomy; not styled |
+| `data-slot="list-view-header\|list-view-header-row\|list-view-header-cell"` | the sticky header wrapper, `ListViewHeader` and `ListViewHeaderCell` | consumers and tests |
 | `data-slot="list-row"`, `list-row-leading\|body\|title\|title-trigger\|description\|header\|content\|footer\|trailing\|field\|action` | the `ListRow` root and slots | consumers and tests; the slot order is checked in the `RowAnatomy` story of `Patterns/ListView/API Reference`, the click contract in `Patterns/ListView/Behavior` |
 
 - Hover-only affordances pair `group-hover` with `group-focus-within` and `pointer-coarse:opacity-100`, because `hover:` does not fire on touch in v4.
