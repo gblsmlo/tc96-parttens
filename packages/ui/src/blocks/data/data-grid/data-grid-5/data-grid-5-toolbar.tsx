@@ -8,8 +8,9 @@ import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/componen
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { GridToolbar, GridToolbarButton } from '../shared/grid-toolbar'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { dataGrid5PriorityOrder } from './data-grid-5-columns'
 import type { DataGrid5Labels, DataGrid5Task } from './types'
 
@@ -44,8 +45,10 @@ export function DataGrid5Toolbar({
   return (
     <GridToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={
+        <GridToolbarHeading description={description} title={labels.title} />
+      }
+      right={
         <>
           <DataGridSearch
             aria-label={labels.search}
@@ -117,7 +120,6 @@ export function DataGrid5Toolbar({
           ) : null}
         </>
       }
-      title={labels.title}
     />
   )
 }

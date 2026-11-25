@@ -8,9 +8,6 @@ import type {
   GridPerson,
   GridSettingsLabels,
   GridSort,
-  GridView,
-  GridViewLabels,
-  GridViewProps,
 } from '../shared/types'
 
 export type DataGrid2ColumnId =
@@ -38,8 +35,6 @@ export type DataGrid2Presence = 'away' | 'offline' | 'online'
 export type DataGrid2Density = NonNullable<
   UseDataGridOptions<DataGrid2Member>['density']
 >
-
-export type DataGrid2View = GridView
 
 export type DataGrid2Person = GridPerson
 
@@ -79,10 +74,7 @@ export interface DataGrid2Settings {
   sort: DataGrid2Sort | null
 }
 
-export interface DataGrid2Labels
-  extends GridLoadLabels,
-    GridSettingsLabels,
-    GridViewLabels {
+export interface DataGrid2Labels extends GridLoadLabels, GridSettingsLabels {
   activity: (percent: string) => string
   clearFilters: string
   columns: Record<DataGrid2ColumnId, string>
@@ -114,10 +106,7 @@ export type DataGrid2LabelsOverride = Partial<
   presence?: Partial<DataGrid2Labels['presence']>
 }
 
-export interface DataGrid2Props
-  extends GridFormatProps,
-    GridLoadProps,
-    GridViewProps {
+export interface DataGrid2Props extends GridFormatProps, GridLoadProps {
   className?: string
   columnVisibility?: DataGrid2ColumnVisibility
   density?: DataGrid2Density

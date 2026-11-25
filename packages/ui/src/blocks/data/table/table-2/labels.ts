@@ -1,14 +1,12 @@
 import {
   defaultTableLoadLabels,
   defaultTableSettingsLabels,
-  defaultTableViewLabels,
 } from '../shared/labels'
 import type { Table2Labels, Table2LabelsOverride } from './types'
 
 export const defaultTable2Labels: Table2Labels = {
   ...defaultTableLoadLabels,
   ...defaultTableSettingsLabels,
-  ...defaultTableViewLabels,
   activity: (percent) => `Atividade de ${percent}`,
   clearFilters: 'Limpar filtros',
   columns: {

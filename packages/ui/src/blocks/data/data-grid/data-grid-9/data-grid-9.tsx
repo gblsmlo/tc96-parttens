@@ -14,6 +14,7 @@ import {
   visibilityFromState,
 } from '../shared/grid-state'
 import { GridToolbar } from '../shared/grid-toolbar'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { createDataGrid9Columns } from './data-grid-9-columns'
 import { DataGrid9Kpis } from './data-grid-9-kpis'
 import { DataGrid9Skeleton } from './data-grid-9-skeleton'
@@ -28,7 +29,6 @@ import type {
 const defaultPageSizeOptions = [10, 20, 50]
 
 export function DataGrid9({
-  activeViewId,
   campaigns,
   className,
   columnVisibility,
@@ -44,8 +44,6 @@ export function DataGrid9({
   onRetry,
   onRowAction,
   onSortChange,
-  onViewChange,
-  onViewCreate,
   pageSize = 10,
   pageSizeOptions = defaultPageSizeOptions,
   pending,
@@ -53,7 +51,6 @@ export function DataGrid9({
   rowActions,
   sort,
   summary,
-  views,
 }: Readonly<DataGrid9Props>) {
   const labels = useMemo(() => resolveDataGrid9Labels(labelsProp), [labelsProp])
   const formatter = useMemo(
@@ -136,21 +133,15 @@ export function DataGrid9({
         loadState ? (
           <GridToolbar
             aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
+            left={<GridToolbarHeading title={labels.title} />}
           />
         ) : (
           <DataGrid9Toolbar
-            activeViewId={activeViewId}
             description={description}
             labels={labels}
-            locale={locale}
             onCreate={onCreate}
             onExport={onExport}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
             table={table}
-            views={views}
           />
         )
       }

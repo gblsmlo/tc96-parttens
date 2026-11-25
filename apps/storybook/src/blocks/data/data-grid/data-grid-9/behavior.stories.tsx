@@ -24,8 +24,6 @@ const meta = {
     onExport: fn(),
     onRowAction: fn(),
     onSortChange: fn(),
-    onViewChange: fn(),
-    onViewCreate: fn(),
   },
   parameters: { layout: 'padded' },
   render: (args) => <ComposedDataGrid9 {...args} />,
@@ -39,8 +37,6 @@ const meta = {
     onExport: () => void
     onRowAction: () => void
     onSortChange: () => void
-    onViewChange: () => void
-    onViewCreate: () => void
   }
 >
 
@@ -93,15 +89,12 @@ export const TheHeadingAppearsOnce: Story = {
 export const TheToolbarCarriesTheHeadingAndTheControls: Story = {
   play: async ({ canvasElement }) => {
     const toolbar = toolbarOf(canvasElement)
-    await expect(toolbar).toHaveAttribute('data-variant', 'text')
+    await expect(toolbar).toHaveAttribute('data-mode', 'plain')
     const inToolbar = within(toolbar)
     await expect(
       inToolbar.getByRole('heading', { name: 'Desempenho de campanhas' }),
     ).toBeVisible()
     await expect(inToolbar.getByRole('searchbox')).toBeVisible()
-    await expect(
-      inToolbar.getByRole('button', { name: /Todas as campanhas/ }),
-    ).toBeVisible()
     await expect(
       inToolbar.getByRole('button', { name: 'Nova campanha' }),
     ).toBeVisible()
@@ -273,55 +266,6 @@ export const ColumnHeaderSortReportsOnSortChange: Story = {
     await expect(rowsOf(canvasElement)[0]).toHaveTextContent(
       'Reativação Base Inativa',
     )
-  },
-}
-
-export const TheViewSwitcherReportsAndAppliesTheChosenView: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: /Todas as campanhas/ }),
-    )
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Eficiência' }),
-    )
-    await expect(args.onViewChange).toHaveBeenCalledWith('efficiency')
-    await waitFor(() =>
-      expect(rowsOf(canvasElement)[0]).toHaveTextContent(
-        'Newsletter Black Friday',
-      ),
-    )
-    await expect(
-      canvas.queryByRole('columnheader', { name: /Tendência/ }),
-    ).toBeNull()
-    await expect(
-      canvasElement.querySelector('[data-density="medium"]'),
-    ).not.toBeNull()
-  },
-}
-
-export const CreateViewCallsOnViewCreate: Story = {
-  play: async ({ args, canvasElement }) => {
-    await userEvent.click(
-      within(canvasElement).getByRole('button', {
-        name: /Todas as campanhas/,
-      }),
-    )
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Criar nova view' }),
-    )
-    await expect(args.onViewCreate).toHaveBeenCalledOnce()
-  },
-}
-
-export const TheViewSwitcherNeedsViews: Story = {
-  args: { views: false },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).queryByRole('button', {
-        name: /Todas as campanhas/,
-      }),
-    ).toBeNull()
   },
 }
 

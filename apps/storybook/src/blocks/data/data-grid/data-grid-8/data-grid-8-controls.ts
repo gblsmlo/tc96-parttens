@@ -35,11 +35,11 @@ export const dataGrid8ControlArgTypes: Partial<ArgTypes<DataGrid8Controls>> = {
   savedViews: {
     control: 'boolean',
     description:
-      'Passes `views`, `onViewChange` and `onViewCreate`; off, the view switcher is not rendered.',
+      'Passes `views`, `onViewChange` and `onViewCreate`; off, the toolbar shows the heading and the loaded count in its place.',
   },
   title: {
     control: 'text',
     description:
-      'Text of `labels.title`, the toolbar heading and the name of the grid.',
+      'Text of `labels.title`: the name of the section and of the grid, and the toolbar heading when there are no views.',
   },
 }

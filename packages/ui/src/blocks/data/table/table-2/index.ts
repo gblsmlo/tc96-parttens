@@ -15,5 +15,4 @@ export type {
   Table2SortKey,
   Table2Team,
   Table2ToggleColumnId,
-  Table2View,
 } from './types'

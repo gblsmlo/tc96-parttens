@@ -8,8 +8,6 @@ export interface Table9Controls {
   pageSize: number
   rowActions: boolean
   title: string
-  viewCreate: boolean
-  views: boolean
 }
 
 export const table9ControlArgs: Table9Controls = {
@@ -20,8 +18,6 @@ export const table9ControlArgs: Table9Controls = {
   pageSize: 8,
   rowActions: true,
   title: 'Desempenho de campanhas',
-  viewCreate: true,
-  views: true,
 }
 
 export const table9ControlArgTypes: Partial<ArgTypes<Table9Controls>> = {
@@ -59,15 +55,5 @@ export const table9ControlArgTypes: Partial<ArgTypes<Table9Controls>> = {
     control: 'text',
     description:
       'Text of `labels.title`, the toolbar heading and the name of the table.',
-  },
-  viewCreate: {
-    control: 'boolean',
-    description:
-      'Passes `onViewCreate`; off, the view switcher has no create item.',
-  },
-  views: {
-    control: 'boolean',
-    description:
-      'Passes `views`, `activeViewId` and `onViewChange`; off, the view switcher is not rendered.',
   },
 }

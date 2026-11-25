@@ -5,9 +5,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # DataGrid9
 
-A campaign performance screen on the collection Data Grid: a toolbar that carries the title, the count and the period with the saved views, the search, one Configurações menu and the Exportar and Nova campanha buttons, a band of six indicators below it, and a grid with the spend, the conversions, an in-cell trend line, the CPA, the ROAS against its target and the share of new buyers. Reach for it on an analytics screen where each row carries several metrics to compare. Install it with `npx @tc96/cli add data-grid-9`.
+A campaign performance screen on the collection Data Grid: a toolbar that carries the title, the count and the period, the search, one Configurações menu and the Exportar and Nova campanha buttons, a band of six indicators below it, and a grid with the spend, the conversions, an in-cell trend line, the CPA, the ROAS against its target and the share of new buyers. Reach for it on an analytics screen where each row carries several metrics to compare. Install it with `npx @tc96/cli add data-grid-9`.
 
-It is a section, not a page: it renders no `main` landmark. Numbers arrive raw and are formatted with `locale` and `currency`; the block sums nothing, so the indicator band comes from `summary`. The heading is the toolbar's: the pattern `CollectionToolbar` with `variant="text"` carries `labels.title` as the only `h2` and `labels.subtitle` as its description, the view switcher (`ViewSwitcherMenu`) on the start side and the `DataGridSearch`, the `ViewSettingsMenu` and the header buttons on the end side, the menu whose sections are the Data Grid submenus (`DataGridSortSubmenu`, `DataGridColumnsSubmenu`, `DataGridDensitySubmenu`) and a `FilterRadioSubmenu` for the status. The Data Grid keeps the search, the status filter, the page and the page size locally; the block never applies a view, so the consumer passes back the sort, columns and density of the chosen view. The sort, the column visibility and the density are the ones a consumer saves, so they are controllable (`sort`, `columnVisibility`, `density`) and reported (`onSortChange`, `onColumnVisibilityChange`, `onDensityChange`). Loading and error are the block's: the toolbar keeps the heading and hides its controls, `pending` renders its skeleton in place of the band and the grid, and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
+It is a section, not a page: it renders no `main` landmark. Numbers arrive raw and are formatted with `locale` and `currency`; the block sums nothing, so the indicator band comes from `summary`. The heading is the toolbar's: the pattern `CollectionToolbar` carries `labels.title` as the only `h2` and `labels.subtitle` as its description in its `left` slot, and the `DataGridSearch`, the `ViewSettingsMenu` and the header buttons in its `right` slot, the menu whose sections are the Data Grid submenus (`DataGridSortSubmenu`, `DataGridColumnsSubmenu`, `DataGridDensitySubmenu`) and a `FilterRadioSubmenu` for the status. The Data Grid keeps the search, the status filter, the page and the page size locally. The screen has no saved views. The sort, the column visibility and the density are the ones a consumer saves, so they are controllable (`sort`, `columnVisibility`, `density`) and reported (`onSortChange`, `onColumnVisibilityChange`, `onDensityChange`). Loading and error are the block's: the toolbar keeps the heading and hides its controls, `pending` renders its skeleton in place of the band and the grid, and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
 The other pages of `Blocks/Data/DataGrid/DataGrid9`: [Playground](?path=/story/blocks-data-datagrid-datagrid9-playground--playground) to try the controls, [Behavior](?path=/story/blocks-data-datagrid-datagrid9-behavior--the-heading-appears-once) for the tests, [States](?path=/story/blocks-data-datagrid-datagrid9-states--default) for the loaded, loading, error and empty states and [Usages](?path=/story/blocks-data-datagrid-datagrid9-usages--loaded) for the data read over the network.
 
@@ -21,7 +21,7 @@ The same path exports the types listed under Exports.
 
 ## Anatomy
 
-The toolbar with the heading, the subtitle, the view switcher, the search, the Configurações menu and the two buttons; the six indicators; the grid with its footer and Linhas por página.
+The toolbar with the heading, the subtitle, the search, the Configurações menu and the two buttons; the six indicators; the grid with its footer and Linhas por página.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
@@ -46,10 +46,6 @@ The toolbar with the heading, the subtitle, the view switcher, the search, the C
 | `onColumnVisibilityChange` | `(visibility: DataGrid9ColumnVisibility) => void` | - | Called once per change, from the Colunas submenu or a column menu. |
 | `density` | `'short' \| 'medium' \| 'tall' \| 'extra-tall'` | `"tall"` | The row height. Controlled only with `onDensityChange`. |
 | `onDensityChange` | `(density: DataGrid9Density) => void` | - | Called when the Altura das linhas submenu changes the density. |
-| `views` | `DataGrid9View[]` | - | The saved views, `{ id, label }`. The view switcher renders only with it. |
-| `activeViewId` | `string` | - | The selected view; its label is the trigger text, `labels.viewSelect` without a match. |
-| `onViewChange` | `(viewId: string) => void` | - | Called when a view is picked. The block does not apply it. |
-| `onViewCreate` | `() => void` | - | The Criar nova view item renders only with it. |
 | `onExport` | `() => void` | - | The Exportar button renders only with it. |
 | `onCreate` | `() => void` | - | The Nova campanha button renders only with it. |
 | `rowActions` | `DataGrid9RowAction[]` | - | The items of the row menu. |
@@ -108,7 +104,6 @@ The toolbar with the heading, the subtitle, the view switcher, the search, the C
 | `densities` | `Record<'short' \| 'medium' \| 'tall' \| 'extra-tall', string>` | `"Compacta"`, `"Média"`, `"Alta"`, `"Extra alta"`; merges key by key |
 | `settingsWithFilters` | `(settings, activeFilters) => string` | `"Configurações (1)"`; the settings trigger while filters are active |
 | `filterAll`, `clearFilters` | `string` | `"Todos"`, `"Limpar filtros"`; the first option of the Status filter and the clear item |
-| `viewSelect`, `views`, `viewSearch`, `viewSearchPlaceholder`, `viewsEmpty`, `viewCreate` | `string` | `"Selecionar view"`, `"Views"`, `"Buscar views"`, `"Buscar views..."`, `"Nenhuma view encontrada"`, `"Criar nova view"` |
 | `pageSize` | `string` | `"Linhas por página"`; the page size selector |
 | `columns` | `Record<DataGrid9ColumnId, string>` | `"Campanha"`, `"Status"`, `"Investimento"`, `"Conversões"`, `"Tendência"`, `"CPA"`, `"ROAS"`, `"Novos compradores"`, `"Ações"` |
 | `statuses` | `Record<DataGrid9Status, string>` | `"Ativa"`, `"Em aprendizado"`, `"Pausada"`, `"Encerrada"`; the badges and the Status filter options |
@@ -130,7 +125,7 @@ The pattern parts have their own pt-BR texts, which `labels` does not reach: the
 | Export | Kind | Description |
 | --- | --- | --- |
 | `DataGrid9` | `component` | The campaign performance screen. |
-| `DataGrid9Props`, `DataGrid9Campaign`, `DataGrid9Summary`, `DataGrid9Period`, `DataGrid9RowAction`, `DataGrid9View` | `type` | The props, the data and the views. |
+| `DataGrid9Props`, `DataGrid9Campaign`, `DataGrid9Summary`, `DataGrid9Period`, `DataGrid9RowAction` | `type` | The props and the data. |
 | `DataGrid9Sort`, `DataGrid9SortKey`, `DataGrid9ColumnId`, `DataGrid9ToggleColumnId`, `DataGrid9ColumnVisibility`, `DataGrid9Density`, `DataGrid9Channel`, `DataGrid9Status` | `type` | The sort, the columns and the unions. |
 | `DataGrid9Labels` | `type` | The keys of `labels`. |
 
@@ -139,5 +134,5 @@ The pattern parts have their own pt-BR texts, which `labels` does not reach: the
 - The grid follows the WAI-ARIA grid pattern with arrow key navigation; the skeleton is `aria-busy="true"` and named by `labels.loading`, and the error surface has the `alert` role.
 - The trend line is `aria-hidden` and followed by a hidden summary; the bullet bar and the share bar are `aria-hidden` and followed by the value as text.
 - A change shows an arrow and a hidden word that says the direction and whether it is favorable, so the green and red tones never carry the meaning alone. In the CPA column an increase is the unfavorable direction.
-- The view switcher is a popover (`role="dialog"`) with a search field and one button per view, the selected one with `aria-current`; the settings are a menu whose submenus use `menuitemradio` and `menuitemcheckbox`.
+- The settings are a menu whose submenus use `menuitemradio` and `menuitemcheckbox`.
 - The block carries no color, radius or shadow of its own beyond token classes: the theme belongs to the app.

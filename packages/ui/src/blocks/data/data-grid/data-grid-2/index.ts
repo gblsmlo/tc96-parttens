@@ -15,5 +15,4 @@ export type {
   DataGrid2SortKey,
   DataGrid2Team,
   DataGrid2ToggleColumnId,
-  DataGrid2View,
 } from './types'

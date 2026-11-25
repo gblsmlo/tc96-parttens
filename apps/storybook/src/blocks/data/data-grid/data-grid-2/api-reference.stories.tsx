@@ -5,21 +5,16 @@ import {
   initialSort,
   members,
   pageSizeOptions,
-  views,
 } from '../fixtures/data-grid-2.ts'
 
 const meta = {
   args: {
-    activeViewId: 'all',
     members,
     onSave: fn(),
     onShowPausedChange: fn(),
-    onViewChange: fn(),
-    onViewCreate: fn(),
     pageSize: 8,
     pageSizeOptions,
     sort: initialSort,
-    views,
   },
   component: DataGrid2,
   parameters: { layout: 'padded' },

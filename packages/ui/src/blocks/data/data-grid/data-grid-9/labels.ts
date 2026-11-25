@@ -1,14 +1,12 @@
 import {
   defaultGridLoadLabels,
   defaultGridSettingsLabels,
-  defaultGridViewLabels,
 } from '../shared/labels'
 import type { DataGrid9Labels, DataGrid9LabelsOverride } from './types'
 
 export const defaultDataGrid9Labels: DataGrid9Labels = {
   ...defaultGridLoadLabels,
   ...defaultGridSettingsLabels,
-  ...defaultGridViewLabels,
   channels: {
     display: 'Display',
     email: 'E-mail',

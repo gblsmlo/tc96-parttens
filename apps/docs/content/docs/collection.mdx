@@ -51,11 +51,15 @@ import {
   preferences={preferences}
   onPreferencesChange={setPreferences}
 >
-  <CollectionToolbar>
-    <ViewSwitcherMenu />
-    <CollectionSearchField />
-    <ViewSettingsMenu />
-  </CollectionToolbar>
+  <CollectionToolbar
+    left={<ViewSwitcherMenu />}
+    right={
+      <>
+        <CollectionSearchField />
+        <ViewSettingsMenu />
+      </>
+    }
+  />
   <CollectionLayoutOutlet
     collection={collection}
     renderListRecord={renderTaskListRow}
@@ -175,7 +179,8 @@ pattern não a vê.
 
 ### CollectionToolbar
 
-Organiza os controles acima do layout. Tudo dentro dele lê e escreve no seu
+Organiza os controles acima do layout em três slots, `left`, `center` e `right`,
+com `mode` `plain` (padrão) ou `default`. Tudo dentro dele lê e escreve no seu
 estado.
 
 ### ViewSwitcherMenu
@@ -265,4 +270,4 @@ Story `Calendar` e `Patterns/Collection/Layouts/Calendar`.
 
 ### Visões salvas
 
-Busca, favoritos, opções e criação: `Patterns/Toolbar` (a view switcher é parte desse nó).
+Busca, favoritos, opções e criação: `Patterns/CollectionToolbar` (a view switcher é parte desse nó).

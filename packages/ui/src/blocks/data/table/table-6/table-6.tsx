@@ -8,6 +8,7 @@ import { createTableFormatter } from '../shared/format'
 import { TableFrame } from '../shared/table-frame'
 import { tableLoadState } from '../shared/table-load-state'
 import { TableToolbar } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { resolveTable6Labels } from './labels'
 import { sortByRegion, summarizeRegion } from './region-summary'
 import { createTable6Columns, Table6Nrr } from './table-6-columns'
@@ -174,8 +175,12 @@ export function Table6({
         loadState ? (
           <TableToolbar
             aria-label={labels.toolbar}
-            description={labels.description}
-            title={labels.title}
+            left={
+              <TableToolbarHeading
+                description={labels.description}
+                title={labels.title}
+              />
+            }
           />
         ) : (
           <Table6Toolbar

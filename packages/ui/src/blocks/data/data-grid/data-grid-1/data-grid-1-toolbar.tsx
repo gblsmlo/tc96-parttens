@@ -14,15 +14,14 @@ import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/componen
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
+import type { ReactNode } from 'react'
 import { GridToolbar, GridToolbarButton } from '../shared/grid-toolbar'
-import { GridViewSwitcher } from '../shared/grid-view-switcher'
 import type {
   DataGrid1Labels,
   DataGrid1Queue,
   DataGrid1Status,
   DataGrid1Ticket,
-  DataGrid1View,
 } from './types'
 
 const queues: readonly DataGrid1Queue[] = [
@@ -35,47 +34,37 @@ const queues: readonly DataGrid1Queue[] = [
 const statuses: readonly DataGrid1Status[] = ['open', 'pending', 'resolved']
 
 export interface DataGrid1ToolbarProps {
-  activeViewId?: string
-  description: string
   labels: DataGrid1Labels
-  locale?: string
+  left: ReactNode
   onCreate?: () => void
   onExport?: () => void
   onQueueChange: (queue: DataGrid1Queue | null) => void
   onSaveView?: () => void
   onStatusChange: (status: DataGrid1Status | null) => void
-  onViewChange?: (viewId: string) => void
-  onViewCreate?: () => void
   queue: DataGrid1Queue | null
   status: DataGrid1Status | null
   table: UseDataGridReturn<DataGrid1Ticket>['table']
-  views?: DataGrid1View[]
 }
 
 export function DataGrid1Toolbar({
-  activeViewId,
-  description,
   labels,
-  locale,
+  left,
   onCreate,
   onExport,
   onQueueChange,
   onSaveView,
   onStatusChange,
-  onViewChange,
-  onViewCreate,
   queue,
   status,
   table,
-  views,
 }: Readonly<DataGrid1ToolbarProps>) {
   const activeFilterCount = (queue ? 1 : 0) + (status ? 1 : 0)
 
   return (
     <GridToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={left}
+      right={
         <>
           <DataGridSearch
             aria-label={labels.search}
@@ -152,19 +141,6 @@ export function DataGrid1Toolbar({
           ) : null}
         </>
       }
-      startSlot={
-        views?.length ? (
-          <GridViewSwitcher
-            activeViewId={activeViewId}
-            labels={labels}
-            locale={locale}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
-            views={views}
-          />
-        ) : undefined
-      }
-      title={labels.title}
     />
   )
 }

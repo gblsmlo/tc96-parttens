@@ -1,16 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Table2 } from '@tc96/ui/blocks/data/table/table-2'
 import { expect, fn, within } from 'storybook/test'
-import { members, pageSizeOptions, views } from '../fixtures/table-2.ts'
+import { members, pageSizeOptions } from '../fixtures/table-2.ts'
 
 const meta = {
   args: {
-    activeViewId: 'all',
     members,
     onRetry: fn(),
     pageSize: 8,
     pageSizeOptions,
-    views,
   },
   component: Table2,
   parameters: { layout: 'padded' },

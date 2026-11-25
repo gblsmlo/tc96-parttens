@@ -302,7 +302,7 @@ function ContactsWorkspace({
         <CollectionFrameHeader>
           <CollectionToolbar
             aria-label="Controles da coleção de contatos"
-            endSlot={
+            right={
               <>
                 <ViewSettingsMenu
                   activeFilterCount={activeFilterCount}
@@ -446,9 +446,8 @@ function ContactsWorkspace({
                 />
               </>
             }
-            startSlot={
+            left={
               <ViewSwitcherPicker
-                footer="Criado pela equipe · 7 out 2026"
                 onCreate={createPreset}
                 onDelete={presets.length > 1 ? deletePreset : undefined}
                 onDuplicate={duplicatePreset}
@@ -460,7 +459,7 @@ function ContactsWorkspace({
                 views={presets}
               />
             }
-            variant="plain"
+            mode="plain"
           />
         </CollectionFrameHeader>
 

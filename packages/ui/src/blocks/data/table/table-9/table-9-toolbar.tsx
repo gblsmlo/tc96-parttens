@@ -11,10 +11,9 @@ import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/componen
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { TableToolbar, TableToolbarButton } from '../shared/table-toolbar'
-import { TableViewSwitcher } from '../shared/table-view-switcher'
-import type { TableViewProps } from '../shared/types'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import type { Table9Campaign, Table9Labels, Table9Status } from './types'
 
 const statuses: readonly Table9Status[] = [
@@ -24,34 +23,30 @@ const statuses: readonly Table9Status[] = [
   'ended',
 ]
 
-export interface Table9ToolbarProps extends TableViewProps {
+export interface Table9ToolbarProps {
   description: string
   labels: Table9Labels
-  locale: string
   onCreate?: () => void
   onExport?: () => void
   table: DataTableTable<Table9Campaign>
 }
 
 export function Table9Toolbar({
-  activeViewId,
   description,
   labels,
-  locale,
   onCreate,
   onExport,
-  onViewChange,
-  onViewCreate,
   table,
-  views,
 }: Readonly<Table9ToolbarProps>) {
   const statusColumn = table.getColumn('status')
 
   return (
     <TableToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={
+        <TableToolbarHeading description={description} title={labels.title} />
+      }
+      right={
         <>
           <DataGridSearch
             aria-label={labels.search}
@@ -114,19 +109,6 @@ export function Table9Toolbar({
           ) : null}
         </>
       }
-      startSlot={
-        views ? (
-          <TableViewSwitcher
-            activeViewId={activeViewId}
-            labels={labels}
-            locale={locale}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
-            views={views}
-          />
-        ) : undefined
-      }
-      title={labels.title}
     />
   )
 }

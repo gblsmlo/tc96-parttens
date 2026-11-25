@@ -15,5 +15,4 @@ export type {
   DataGrid9Status,
   DataGrid9Summary,
   DataGrid9ToggleColumnId,
-  DataGrid9View,
 } from './types'

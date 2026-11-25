@@ -6,9 +6,6 @@ import type {
   GridLoadProps,
   GridSettingsLabels,
   GridSort,
-  GridView,
-  GridViewLabels,
-  GridViewProps,
 } from '../shared/types'
 
 export type DataGrid9Channel =
@@ -39,8 +36,6 @@ export type DataGrid9SortKey =
   | 'roas'
   | 'spend'
   | 'status'
-
-export type DataGrid9View = GridView
 
 export type DataGrid9DeltaDirection = 'down' | 'flat' | 'up'
 
@@ -97,10 +92,7 @@ export type DataGrid9Sort = GridSort<DataGrid9SortKey>
 export type DataGrid9ColumnVisibility =
   GridColumnVisibility<DataGrid9ToggleColumnId>
 
-export interface DataGrid9Labels
-  extends GridLoadLabels,
-    GridSettingsLabels,
-    GridViewLabels {
+export interface DataGrid9Labels extends GridLoadLabels, GridSettingsLabels {
   channels: Record<DataGrid9Channel, string>
   clearFilters: string
   columns: Record<DataGrid9ColumnId, string>
@@ -148,10 +140,7 @@ export type DataGrid9LabelsOverride = Partial<
   statuses?: Partial<DataGrid9Labels['statuses']>
 }
 
-export interface DataGrid9Props
-  extends GridFormatProps,
-    GridLoadProps,
-    GridViewProps {
+export interface DataGrid9Props extends GridFormatProps, GridLoadProps {
   campaigns: DataGrid9Campaign[]
   className?: string
   columnVisibility?: DataGrid9ColumnVisibility

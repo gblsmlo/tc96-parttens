@@ -6,7 +6,6 @@ import type {
   Table9RowAction,
   Table9Sort,
   Table9Summary,
-  Table9View,
 } from '@tc96/ui/blocks/data/table/table-9'
 import {
   campaigns as dataGridCampaigns,
@@ -14,7 +13,6 @@ import {
   period as dataGridPeriod,
   rowActions as dataGridRowActions,
   summary as dataGridSummary,
-  views as dataGridViews,
 } from '../../data-grid/fixtures/data-grid-9.ts'
 
 export const campaigns: Table9Campaign[] = dataGridCampaigns
@@ -35,14 +33,8 @@ export interface Table9ViewSettings {
   sort: Table9Sort | null
 }
 
-export interface Table9SavedView extends Table9View {
-  settings: Table9ViewSettings
-}
-
 export const factorySettings: Table9ViewSettings = {
   columnVisibility: {},
   density: 'tall',
   sort: initialSort,
 }
-
-export const views: Table9SavedView[] = dataGridViews

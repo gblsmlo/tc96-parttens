@@ -9,7 +9,7 @@ One collection of records on one screen, in the layout the user picks: the tasks
 
 The other pages of `Patterns/Collection`: [Playground](?path=/story/patterns-collection-playground--playground) to try the layout, the frame mode, loading, the empty state and the toolbar parts, [Stories](?path=/story/patterns-collection-stories--default) for each layout and state, [Behavior](?path=/story/patterns-collection-behavior--fill-scrolls-the-body) for the tests and [Usages](?path=/story/patterns-collection-usages--tasks) for real screens (tasks, a pipeline, contacts, documents, campaigns, a calendar). The toolbar, the search field, the action and the footer are optional parts, toggled in the Playground: the root has no `Layouts` page, since `Patterns/Collection/Layouts` holds the layout nodes.
 
-Each layout has its own node, with its props, item parts and tests: [Calendar](?path=/docs/patterns-collection-layouts-calendar-api-reference--api-reference), [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference), [Data Table](?path=/docs/patterns-collection-layouts-data-table-api-reference--api-reference), [Gallery](?path=/docs/patterns-collection-layouts-gallery-api-reference--api-reference), [Kanban](?path=/docs/patterns-collection-layouts-kanban-api-reference--api-reference) and [List](?path=/docs/patterns-collection-layouts-list-api-reference--api-reference). The toolbar, the view switcher and the bar over a selection have theirs: [Patterns/Toolbar](?path=/docs/patterns-toolbar-api-reference--api-reference), which holds the view switcher too, and [Patterns/ActionBar](?path=/docs/patterns-actionbar--doc). The pagination of the collection is a part of this page, `CollectionPagination`, built on the parts of [UI/Pagination](?path=/docs/ui-pagination-api-reference--api-reference).
+Each layout has its own node, with its props, item parts and tests: [Calendar](?path=/docs/patterns-collection-layouts-calendar-api-reference--api-reference), [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference), [Data Table](?path=/docs/patterns-collection-layouts-data-table-api-reference--api-reference), [Gallery](?path=/docs/patterns-collection-layouts-gallery-api-reference--api-reference), [Kanban](?path=/docs/patterns-collection-layouts-kanban-api-reference--api-reference) and [List](?path=/docs/patterns-collection-layouts-list-api-reference--api-reference). The toolbar, the view switcher and the bar over a selection have theirs: [Patterns/CollectionToolbar](?path=/docs/patterns-collectiontoolbar-api-reference--api-reference), which holds the view switcher too, and [Patterns/ActionBar](?path=/docs/patterns-actionbar--doc). The pagination of the collection is a part of this page, `CollectionPagination`, built on the parts of [UI/Pagination](?path=/docs/ui-pagination-api-reference--api-reference).
 
 Used in: [Templates/Contacts](?path=/story/templates-contacts--default) and [Templates/Deal Board](?path=/story/templates-deal-board--default), which mount copies of the Contacts and Pipeline screens of Usages (`fixtures/contacts-usage.tsx` and `fixtures/pipeline-usage.tsx`).
 
@@ -52,8 +52,8 @@ import { RadioButtonIcon } from '@phosphor-icons/react'
   <CollectionFrame>
     <CollectionFrameHeader>
       <CollectionToolbar
-        startSlot={<CollectionSearchField onCommit={setSearch} />}
-        endSlot={
+        left={<CollectionSearchField onCommit={setSearch} />}
+        right={
           <>
             <ViewSettingsMenu onClearFilters={clearFilters}>
               <ViewSettingsSection label="Filtros">
@@ -89,7 +89,7 @@ import { RadioButtonIcon } from '@phosphor-icons/react'
 </CollectionProvider>
 ```
 
-`collection`, `setSearch`, `typeOptions`, `type`, `setType`, `clearFilters`, `create`, `renderRow`, `page`, `setPage`, `pageCount`, `pageSize`, `total` and `selectionActions` are the consumer's data, state and elements. `CollectionToolbar` is documented in `Patterns/Toolbar`; `CollectionSearchField`, `ViewSettingsMenu`, `Action` and `PresetsMenu` render toolbar buttons and inputs, so they only mount inside it. `PresetsMenu` takes the place of the view switcher on a screen whose views are a short list, so the anatomy does not show it.
+`collection`, `setSearch`, `typeOptions`, `type`, `setType`, `clearFilters`, `create`, `renderRow`, `page`, `setPage`, `pageCount`, `pageSize`, `total` and `selectionActions` are the consumer's data, state and elements. `CollectionToolbar` is documented in `Patterns/CollectionToolbar`; `CollectionSearchField`, `ViewSettingsMenu` (documented in [Patterns/ViewSettings](?path=/docs/patterns-viewsettings-api-reference--api-reference)), `Action` and `PresetsMenu` render toolbar buttons and inputs, so they only mount inside it. `PresetsMenu` takes the place of the view switcher on a screen whose views are a short list, so the anatomy does not show it.
 
 The pattern is controlled. It never fetches, filters, searches, sorts or persists: the consumer passes the records already filtered, keeps the search, the filters and the saved views, and saves every edit. The pattern keeps only the active layout and grouping when they are uncontrolled, the move in progress while the consumer settles it, the collapse state of List and Data Grid groups and the table state of `useDataGrid` and `useDataTable`.
 
@@ -174,39 +174,7 @@ The search of the collection, at the start of the toolbar. Renders a `form` with
 
 ## ViewSettingsMenu
 
-The settings of the view in one menu: tabs for the layouts, the consumer's sections (grouping, sorting, columns, filters), then Limpar filtros and Salvar preferência. Renders a ghost toolbar button with a sliders icon that opens a menu aligned to its end.
-
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `children` | `React.ReactNode` | required | Renders the sections, between the tabs and the footer items. |
-| `onClearFilters` | `() => void` | required | Called when Limpar filtros is picked. |
-| `modes` | `readonly ViewSettingsMode<TMode>[]` | `[]` | Lists the layouts as tabs, each `{ icon, label, value }`; fewer than two show no tabs. |
-| `mode` | `TMode` | - | Sets the checked tab. |
-| `onModeChange` | `(mode: TMode) => void` | - | Called when a tab is picked; the menu closes. |
-| `activeFilterCount` | `number` | `0` | Sets the count in the trigger, `Exibição (2)`, and enables Limpar filtros above zero. |
-| `onSavePreference` | `() => void` | - | Called when Salvar preferência is picked; without it the item is not rendered. |
-| `savePreferenceDisabled` | `boolean` | `false` | When true, disables Salvar preferência. |
-| `label` | `string` | `"Exibição"` | Sets the text of the trigger. |
-| `clearLabel` | `string` | `"Limpar filtros"` | Sets the text of the clear item. |
-| `savePreferenceLabel` | `string` | `"Salvar preferência"` | Sets the text of the save item. |
-| `className` | `string` | - | Adds classes to the trigger. |
-
-The width of the menu follows the number of tabs: 14rem (224px) with fewer than two, 16rem with two, 18rem with three, 24rem with four or more. Up to three tabs sit in one row with the icon beside the label; four or more stack the icon above the label. Each tab is a `menuitemradio`.
-
-| Attribute | Values | Description |
-| --- | --- | --- |
-| `data-slot` | `"view-settings-mode-tab"` | Selects a layout tab |
-| `data-layout` | `"inline"` or `"stacked"` | Styles a tab by arrangement: `"inline"` below four tabs, `"stacked"` from four |
-| `data-checked` | present on the active tab | Styles the active tab, on `background` with a shadow (`input` in dark) |
-
-### ViewSettingsSection
-
-A named section of the menu. Renders a menu group whose label comes first.
-
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `label` | `React.ReactNode` | required | Sets the label of the group. |
-| `children` | `React.ReactNode` | required | Renders the items and submenus of the section. |
+The display settings of the view have their own page: [ViewSettings](?path=/docs/patterns-viewsettings-api-reference--api-reference) documents `ViewSettingsMenu` and `ViewSettingsSection`. `FilterRadioSubmenu`, below, is one of the items a screen puts in its sections.
 
 ### FilterRadioSubmenu
 
@@ -373,9 +341,6 @@ Also takes every prop of a `div`.
 | `CollectionFrameFooterProps` | `type` | The props of `CollectionFrameFooter`. |
 | `CollectionFrameOverlayProps` | `type` | The props of `CollectionFrameOverlay`. |
 | `CollectionPaginationProps` | `type` | The props of `CollectionPagination`. |
-| `ViewSettingsMenuProps` | `type` | The props of `ViewSettingsMenu`. |
-| `ViewSettingsMode` | `type` | One tab of `ViewSettingsMenu`, `{ icon, label, value }`. |
-| `ViewSettingsSectionProps` | `type` | The props of `ViewSettingsSection`. |
 | `FilterRadioSubmenuProps` | `type` | The props of `FilterRadioSubmenu`. |
 | `CollectionSearchFieldProps` | `type` | The props of `CollectionSearchField`. |
 | `ActionProps` | `type` | The props of `Action`. |

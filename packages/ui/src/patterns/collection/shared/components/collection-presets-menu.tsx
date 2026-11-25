@@ -4,7 +4,7 @@ import { CaretDownIcon } from '@phosphor-icons/react'
 import { Badge } from '@tc96/ui/badge'
 import { Menu, MenuPopup } from '@tc96/ui/menu'
 import type { ReactElement, ReactNode } from 'react'
-import { CollectionToolbarMenuTrigger } from './collection-toolbar-menu-trigger'
+import { CollectionToolbarMenuTrigger } from '../../../toolbar/components/collection-toolbar-menu-trigger'
 
 export interface PresetsMenuProps {
   children: ReactNode

@@ -8,6 +8,7 @@ import { createTableFormatter } from '../shared/format'
 import { GridFrame } from '../shared/grid-frame'
 import { gridLoadState } from '../shared/grid-load-state'
 import { GridToolbar } from '../shared/grid-toolbar'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { createDataGrid6Columns, DataGrid6Nrr } from './data-grid-6-columns'
 import { DataGrid6Kpis } from './data-grid-6-kpis'
 import { DataGrid6Skeleton } from './data-grid-6-skeleton'
@@ -174,8 +175,12 @@ export function DataGrid6({
         loadState ? (
           <GridToolbar
             aria-label={labels.toolbar}
-            description={labels.description}
-            title={labels.title}
+            left={
+              <GridToolbarHeading
+                description={labels.description}
+                title={labels.title}
+              />
+            }
           />
         ) : (
           <DataGrid6Toolbar

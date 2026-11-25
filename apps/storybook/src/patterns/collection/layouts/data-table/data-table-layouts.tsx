@@ -104,7 +104,7 @@ const ColumnsToolbar = <TData extends object>({
   table,
 }: Readonly<{ table: DataTableTable<TData> }>) => (
   <CollectionToolbar
-    endSlot={
+    right={
       <ViewSettingsMenu onClearFilters={() => undefined}>
         <ViewSettingsSection label="Exibição">
           <DataTableColumnsSubmenu table={table} />

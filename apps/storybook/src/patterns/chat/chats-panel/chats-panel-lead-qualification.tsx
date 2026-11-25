@@ -38,6 +38,7 @@ import {
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
+import { Text } from '@tc96/ui/text'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { useId, useState } from 'react'
 import {
@@ -106,9 +107,27 @@ function LeadConversation({
     >
       <CollectionToolbar
         aria-label="Ações da conversa"
-        className="shrink-0 border-b px-4 py-2"
-        description={`${channel} · ${platforms[lead.source.platform].label}`}
-        endSlot={
+        className="min-h-14 shrink-0 border-b px-4 py-2"
+        left={
+          <div className="min-w-0">
+            <Text
+              className="truncate leading-tight"
+              family="heading"
+              render={<h2>{lead.name}</h2>}
+              size="base"
+              weight="semibold"
+            />
+            <Text
+              className="truncate leading-tight"
+              foreground="muted"
+              render={
+                <p>{`${channel} · ${platforms[lead.source.platform].label}`}</p>
+              }
+              size="sm"
+            />
+          </div>
+        }
+        right={
           <>
             <ToolbarButton
               onClick={onCall}
@@ -124,8 +143,6 @@ function LeadConversation({
             />
           </>
         }
-        title={lead.name}
-        variant="text"
       />
       <ChatConversation
         jumpLabel="Ir para a mais recente"
@@ -356,7 +373,7 @@ export function LeadQualificationScreen({
         actions={
           <CollectionToolbar
             aria-label="Ajustes das conversas"
-            endSlot={
+            right={
               <ViewSettingsMenu
                 activeFilterCount={platform ? 1 : 0}
                 onClearFilters={() => setPlatform('')}

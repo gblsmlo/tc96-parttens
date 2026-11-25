@@ -14,6 +14,8 @@ import {
   visibilityFromState,
 } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
+import { TableViewSwitcher } from '../shared/table-view-switcher'
 import { resolveTable1Labels } from './labels'
 import { createTable1Columns } from './table-1-columns'
 import { createTable1SelectionActions } from './table-1-selection-actions'
@@ -234,6 +236,22 @@ export function Table1({
     setPageIndex(0)
   }
 
+  const toolbarLeft = views?.length ? (
+    <TableViewSwitcher
+      activeViewId={activeViewId}
+      labels={labels}
+      locale={locale}
+      onViewChange={onViewChange}
+      onViewCreate={onViewCreate}
+      views={views}
+    />
+  ) : (
+    <TableToolbarHeading
+      description={loadState ? undefined : description}
+      title={labels.title}
+    />
+  )
+
   return (
     <TableFrame
       className={className}
@@ -241,28 +259,19 @@ export function Table1({
       title={labels.title}
       toolbar={
         loadState ? (
-          <TableToolbar
-            aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
-          />
+          <TableToolbar aria-label={labels.toolbar} left={toolbarLeft} />
         ) : (
           <Table1Toolbar
-            activeViewId={activeViewId}
-            description={description}
             labels={labels}
-            locale={locale}
+            left={toolbarLeft}
             onCreate={onCreate}
             onExport={onExport}
             onQueueChange={changeQueue}
             onSaveView={onSaveView}
             onStatusChange={changeStatus}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
             queue={queue}
             status={status}
             table={table}
-            views={views}
           />
         )
       }

@@ -6,7 +6,6 @@ import type {
   DataGrid2Settings,
   DataGrid2Sort,
   DataGrid2Team,
-  DataGrid2View,
 } from '@tc96/ui/blocks/data/data-grid/data-grid-2'
 
 const person = (id: string, label: string): DataGrid2Person => ({ id, label })
@@ -251,31 +250,3 @@ export const factorySettings: DataGrid2Settings = {
   showPaused: false,
   sort: initialSort,
 }
-
-export interface DataGrid2SavedView extends DataGrid2View {
-  settings: DataGrid2Settings
-}
-
-export const views: DataGrid2SavedView[] = [
-  { id: 'all', label: 'Todos os membros', settings: factorySettings },
-  {
-    id: 'top-rated',
-    label: 'Melhor avaliados',
-    settings: {
-      columnVisibility: { ...defaultVisibility, activity: false },
-      density: 'medium',
-      showPaused: false,
-      sort: { direction: 'desc', key: 'rating' },
-    },
-  },
-  {
-    id: 'newcomers',
-    label: 'Recém-chegados',
-    settings: {
-      columnVisibility: defaultVisibility,
-      density: 'tall',
-      showPaused: true,
-      sort: { direction: 'desc', key: 'joined' },
-    },
-  },
-]

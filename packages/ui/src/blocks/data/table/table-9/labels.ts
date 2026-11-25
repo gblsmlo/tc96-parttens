@@ -1,14 +1,12 @@
 import {
   defaultTableLoadLabels,
   defaultTableSettingsLabels,
-  defaultTableViewLabels,
 } from '../shared/labels'
 import type { Table9Labels, Table9LabelsOverride } from './types'
 
 export const defaultTable9Labels: Table9Labels = {
   ...defaultTableLoadLabels,
   ...defaultTableSettingsLabels,
-  ...defaultTableViewLabels,
   channels: {
     display: 'Display',
     email: 'E-mail',

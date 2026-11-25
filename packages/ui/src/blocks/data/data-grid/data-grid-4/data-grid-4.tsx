@@ -14,6 +14,7 @@ import {
 import { GridFrame } from '../shared/grid-frame'
 import { gridLoadState } from '../shared/grid-load-state'
 import { GridToolbar } from '../shared/grid-toolbar'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import type { DataGrid4Row } from './data-grid-4-cells'
 import { createDataGrid4Columns } from './data-grid-4-columns'
 import { DataGrid4Footer } from './data-grid-4-footer'
@@ -167,8 +168,12 @@ export function DataGrid4({
         loadState ? (
           <GridToolbar
             aria-label={labels.toolbar}
-            description={labels.description}
-            title={labels.title}
+            left={
+              <GridToolbarHeading
+                description={labels.description}
+                title={labels.title}
+              />
+            }
           />
         ) : (
           <DataGrid4Toolbar labels={labels} onAdd={onAdd} table={table} />

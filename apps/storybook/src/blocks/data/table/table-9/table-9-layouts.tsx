@@ -8,7 +8,6 @@ import {
   rowActions,
   summary,
   type Table9ViewSettings,
-  views,
 } from '../fixtures/table-9.ts'
 import type { Table9Controls } from './table-9-controls.ts'
 
@@ -19,8 +18,6 @@ interface ComposedTable9Props extends Table9Controls {
   onExport?: Table9Props['onExport']
   onRowAction?: Table9Props['onRowAction']
   onSortChange?: Table9Props['onSortChange']
-  onViewChange?: Table9Props['onViewChange']
-  onViewCreate?: Table9Props['onViewCreate']
 }
 
 export const ComposedTable9 = ({
@@ -34,22 +31,16 @@ export const ComposedTable9 = ({
   onExport,
   onRowAction,
   onSortChange,
-  onViewChange,
-  onViewCreate,
   pageSize,
   rowActions: showRowActions,
   title,
-  viewCreate,
-  views: showViews,
 }: Readonly<ComposedTable9Props>) => {
   const [settings, setSettings] = useState<Table9ViewSettings>(factorySettings)
-  const [activeViewId, setActiveViewId] = useState('all')
   const update = (patch: Partial<Table9ViewSettings>) =>
     setSettings((current) => ({ ...current, ...patch }))
 
   return (
     <Table9
-      activeViewId={showViews ? activeViewId : undefined}
       campaigns={empty ? [] : campaigns}
       columnVisibility={settings.columnVisibility}
       currency={currency}
@@ -73,26 +64,12 @@ export const ComposedTable9 = ({
         update({ sort })
         onSortChange?.(sort)
       }}
-      onViewChange={
-        showViews
-          ? (viewId) => {
-              const view = views.find((option) => option.id === viewId)
-              if (view) setSettings(view.settings)
-              setActiveViewId(viewId)
-              onViewChange?.(viewId)
-            }
-          : undefined
-      }
-      onViewCreate={
-        showViews && viewCreate ? () => onViewCreate?.() : undefined
-      }
       pageSize={pageSize}
       pageSizeOptions={pageSizeOptions}
       period={period}
       rowActions={showRowActions ? rowActions : undefined}
       sort={settings.sort}
       summary={summary}
-      views={showViews ? views : undefined}
     />
   )
 }

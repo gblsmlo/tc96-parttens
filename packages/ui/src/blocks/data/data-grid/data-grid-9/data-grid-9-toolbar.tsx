@@ -11,10 +11,9 @@ import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/componen
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { GridToolbar, GridToolbarButton } from '../shared/grid-toolbar'
-import { GridViewSwitcher } from '../shared/grid-view-switcher'
-import type { GridViewProps } from '../shared/types'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import type {
   DataGrid9Campaign,
   DataGrid9Labels,
@@ -28,34 +27,30 @@ const statuses: readonly DataGrid9Status[] = [
   'ended',
 ]
 
-export interface DataGrid9ToolbarProps extends GridViewProps {
+export interface DataGrid9ToolbarProps {
   description: string
   labels: DataGrid9Labels
-  locale: string
   onCreate?: () => void
   onExport?: () => void
   table: UseDataGridReturn<DataGrid9Campaign>['table']
 }
 
 export function DataGrid9Toolbar({
-  activeViewId,
   description,
   labels,
-  locale,
   onCreate,
   onExport,
-  onViewChange,
-  onViewCreate,
   table,
-  views,
 }: Readonly<DataGrid9ToolbarProps>) {
   const statusColumn = table.getColumn('status')
 
   return (
     <GridToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={
+        <GridToolbarHeading description={description} title={labels.title} />
+      }
+      right={
         <>
           <DataGridSearch
             aria-label={labels.search}
@@ -118,19 +113,6 @@ export function DataGrid9Toolbar({
           ) : null}
         </>
       }
-      startSlot={
-        views ? (
-          <GridViewSwitcher
-            activeViewId={activeViewId}
-            labels={labels}
-            locale={locale}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
-            views={views}
-          />
-        ) : undefined
-      }
-      title={labels.title}
     />
   )
 }

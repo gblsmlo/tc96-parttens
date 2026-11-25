@@ -90,8 +90,6 @@ Pagination:
 Toolbar:
 
 - `CollectionSearchField` commits on submit and when emptied, never per keystroke. `FilterRadioSubmenu` maps the "all" option to `''`, since a `MenuRadioGroup` cannot represent no choice.
-- `ViewSettingsMenu` renders its clear item only with `onClearFilters`, so a view without filters shows no dead item.
-- `ViewSettingsMenu` builds the trigger text with `formatTriggerLabel(label, activeFilterCount)` (default `label (count)`), so a consumer in another language passes the function instead of a concatenated string.
 - `FilterRadioSubmenu` with `loading` keeps the "all" option and replaces only `options` with `aria-hidden` skeleton rows, with `aria-busy` on the submenu popup: a `role="menu"` cannot own a `status`, so the rows carry no role of their own.
 
 ## Styling

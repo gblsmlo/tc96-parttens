@@ -47,7 +47,7 @@ const meta = {
         <CollectionFrame>
           <CollectionFrameHeader>
             <CollectionToolbar
-              endSlot={
+              right={
                 <>
                   <ViewSettingsMenu onClearFilters={ignore}>
                     <ViewSettingsSection label="ViewSettingsSection">
@@ -62,7 +62,7 @@ const meta = {
                   <Action label="Action" onClick={ignore} />
                 </>
               }
-              startSlot={
+              left={
                 <CollectionSearchField
                   label="CollectionSearchField"
                   onCommit={ignore}

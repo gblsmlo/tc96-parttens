@@ -67,7 +67,7 @@ export const TheToolbarSitsAboveTheTabs: Story = {
     const toolbar = canvas.getByRole('toolbar', {
       name: 'Controles das tarefas',
     })
-    await expect(toolbar).toHaveAttribute('data-variant', 'text')
+    await expect(toolbar).toHaveAttribute('data-mode', 'plain')
     const inToolbar = within(toolbar)
     await expect(
       inToolbar.getByRole('heading', { name: 'Entrega de tarefas' }),

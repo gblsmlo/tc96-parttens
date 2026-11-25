@@ -15,8 +15,6 @@ const meta = {
     onSave: fn(),
     onShowPausedChange: fn(),
     onSortChange: fn(),
-    onViewChange: fn(),
-    onViewCreate: fn(),
   },
   parameters: { layout: 'padded' },
   render: (args) => <ComposedTable2 {...args} />,
@@ -29,8 +27,6 @@ const meta = {
     onSave: () => void
     onShowPausedChange: () => void
     onSortChange: () => void
-    onViewChange: () => void
-    onViewCreate: () => void
   }
 >
 
@@ -100,16 +96,13 @@ export const TheHeadingAppearsOnce: Story = {
 export const TheToolbarCarriesTheHeadingAndTheControls: Story = {
   play: async ({ canvasElement }) => {
     const toolbar = toolbarOf(canvasElement)
-    await expect(toolbar).toHaveAttribute('data-variant', 'text')
+    await expect(toolbar).toHaveAttribute('data-mode', 'plain')
     const inToolbar = within(toolbar)
     await expect(
       inToolbar.getByRole('heading', { name: 'Membros' }),
     ).toBeVisible()
     await expect(
       inToolbar.getByRole('button', { name: 'Configurações' }),
-    ).toBeVisible()
-    await expect(
-      inToolbar.getByRole('button', { name: 'Todos os membros' }),
     ).toBeVisible()
   },
 }
@@ -143,70 +136,6 @@ export const PriorityAndLocationStartHidden: Story = {
     ).toBeNull()
     await expect(
       canvas.queryByRole('columnheader', { name: /Local/ }),
-    ).toBeNull()
-  },
-}
-
-export const TheViewSwitcherReportsAndAppliesTheChosenView: Story = {
-  play: async ({ args, canvasElement }) => {
-    await userEvent.click(
-      within(canvasElement).getByRole('button', { name: /Todos os membros/ }),
-    )
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Melhor avaliados' }),
-    )
-    await expect(args.onViewChange).toHaveBeenCalledWith('top-rated')
-    await waitFor(() =>
-      expect(rowsOf(canvasElement)[0]).toHaveTextContent('Henrique Melo'),
-    )
-    await expect(
-      within(canvasElement).getByRole('button', { name: /Melhor avaliados/ }),
-    ).toBeVisible()
-    await expect(
-      within(canvasElement).queryByRole('columnheader', { name: /Atividade/ }),
-    ).toBeNull()
-  },
-}
-
-export const TheViewSearchNarrowsTheViews: Story = {
-  play: async ({ canvasElement }) => {
-    await userEvent.click(
-      within(canvasElement).getByRole('button', { name: /Todos os membros/ }),
-    )
-    await userEvent.type(
-      await screen.findByRole('searchbox', { name: 'Buscar views' }),
-      'recém',
-    )
-    await expect(
-      await screen.findByRole('button', { name: 'Recém-chegados' }),
-    ).toBeVisible()
-    await waitFor(() =>
-      expect(
-        screen.queryByRole('button', { name: 'Melhor avaliados' }),
-      ).toBeNull(),
-    )
-  },
-}
-
-export const CreateViewCallsOnViewCreate: Story = {
-  play: async ({ args, canvasElement }) => {
-    await userEvent.click(
-      within(canvasElement).getByRole('button', { name: /Todos os membros/ }),
-    )
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Criar nova view' }),
-    )
-    await expect(args.onViewCreate).toHaveBeenCalledOnce()
-  },
-}
-
-export const TheViewSwitcherNeedsViews: Story = {
-  args: { views: false },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).queryByRole('button', {
-        name: /Todos os membros/,
-      }),
     ).toBeNull()
   },
 }

@@ -222,7 +222,7 @@ function DocumentsWorkspace({
         <CollectionFrameHeader>
           <CollectionToolbar
             aria-label="Controles de notas e documentos"
-            endSlot={
+            right={
               <>
                 <ViewSettingsMenu
                   activeFilterCount={kindFilter.length}
@@ -267,7 +267,7 @@ function DocumentsWorkspace({
                 <Action label="Nova nota" onClick={addNote} />
               </>
             }
-            startSlot={
+            left={
               <ViewSwitcherPicker
                 onCreate={createView}
                 onDelete={views.length > 1 ? deleteView : undefined}
@@ -279,7 +279,7 @@ function DocumentsWorkspace({
                 views={views}
               />
             }
-            variant="plain"
+            mode="plain"
           />
         </CollectionFrameHeader>
 

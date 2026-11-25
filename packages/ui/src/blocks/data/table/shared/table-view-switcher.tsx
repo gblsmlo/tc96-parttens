@@ -4,7 +4,7 @@ import {
   ViewSwitcherItems,
   ViewSwitcherMenu,
   ViewSwitcherSearch,
-} from '@tc96/ui/patterns/toolbar/components/view-switcher'
+} from '@tc96/ui/patterns/view-switcher/components/view-switcher'
 import { Separator } from '@tc96/ui/separator'
 import { useState } from 'react'
 import { defaultTableLocale } from './format'

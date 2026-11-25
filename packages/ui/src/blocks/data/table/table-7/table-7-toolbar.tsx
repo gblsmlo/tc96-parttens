@@ -1,5 +1,6 @@
 import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react'
 import { TableToolbar, TableToolbarButton } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import type { Table7Labels } from './types'
 
 export interface Table7ToolbarProps {
@@ -18,8 +19,10 @@ export function Table7Toolbar({
   return (
     <TableToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={
+        <TableToolbarHeading description={description} title={labels.title} />
+      }
+      right={
         onResetOrder ? (
           <TableToolbarButton disabled={!orderChanged} onClick={onResetOrder}>
             <ArrowCounterClockwiseIcon aria-hidden="true" />
@@ -27,7 +30,6 @@ export function Table7Toolbar({
           </TableToolbarButton>
         ) : undefined
       }
-      title={labels.title}
     />
   )
 }

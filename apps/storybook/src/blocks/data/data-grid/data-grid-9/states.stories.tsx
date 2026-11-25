@@ -6,19 +6,16 @@ import {
   pageSizeOptions,
   period,
   summary,
-  views,
 } from '../fixtures/data-grid-9.ts'
 
 const meta = {
   args: {
-    activeViewId: 'all',
     campaigns,
     onRetry: fn(),
     pageSize: 8,
     pageSizeOptions,
     period,
     summary,
-    views,
   },
   component: DataGrid9,
   parameters: { layout: 'padded' },

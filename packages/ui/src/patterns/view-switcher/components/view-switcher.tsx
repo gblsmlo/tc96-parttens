@@ -1,7 +1,7 @@
 'use client'
 
 import { CaretDownIcon, DotsThreeIcon, PlusIcon } from '@phosphor-icons/react'
-import { Button, type ButtonProps } from '@tc96/ui/button'
+import { Button } from '@tc96/ui/button'
 import { Menu, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   Popover,
@@ -22,12 +22,19 @@ import { createContext, useContext, useState } from 'react'
  */
 const ViewSwitcherCloseContext = createContext<() => void>(() => undefined)
 
+const triggerVariants = {
+  default: 'secondary',
+  ghost: 'ghost',
+} as const
+
+export type ViewSwitcherMenuVariant = keyof typeof triggerVariants
+
 export interface ViewSwitcherMenuProps {
   children: ReactNode
   className?: string
   icon?: ReactNode
   label: string
-  variant?: ButtonProps['variant']
+  variant?: ViewSwitcherMenuVariant
 }
 
 /** Gatilho com a view ativa e popup alinhado ao início da toolbar. */
@@ -36,7 +43,7 @@ export function ViewSwitcherMenu({
   className,
   icon,
   label,
-  variant = 'ghost',
+  variant = 'default',
 }: Readonly<ViewSwitcherMenuProps>): ReactElement {
   const [open, setOpen] = useState(false)
 
@@ -46,7 +53,11 @@ export function ViewSwitcherMenu({
         render={
           <ToolbarButton
             render={
-              <Button className={className} type="button" variant={variant} />
+              <Button
+                className={className}
+                type="button"
+                variant={triggerVariants[variant]}
+              />
             }
           />
         }

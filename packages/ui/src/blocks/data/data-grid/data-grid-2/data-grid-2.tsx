@@ -14,6 +14,7 @@ import {
   visibilityFromState,
 } from '../shared/grid-state'
 import { GridToolbar } from '../shared/grid-toolbar'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { createDataGrid2Columns } from './data-grid-2-columns'
 import { DataGrid2Skeleton } from './data-grid-2-skeleton'
 import { DataGrid2Toolbar } from './data-grid-2-toolbar'
@@ -32,7 +33,6 @@ export const defaultDataGrid2ColumnVisibility: DataGrid2ColumnVisibility = {
 const defaultPageSizeOptions = [10, 20, 50]
 
 export function DataGrid2({
-  activeViewId,
   className,
   columnVisibility,
   currency,
@@ -47,14 +47,11 @@ export function DataGrid2({
   onSave,
   onShowPausedChange,
   onSortChange,
-  onViewChange,
-  onViewCreate,
   pageSize = 10,
   pageSizeOptions = defaultPageSizeOptions,
   pending,
   showPaused = false,
   sort,
-  views,
 }: Readonly<DataGrid2Props>) {
   const labels = useMemo(() => resolveDataGrid2Labels(labelsProp), [labelsProp])
   const formatter = useMemo(
@@ -111,22 +108,16 @@ export function DataGrid2({
         loadState ? (
           <GridToolbar
             aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
+            left={<GridToolbarHeading title={labels.title} />}
           />
         ) : (
           <DataGrid2Toolbar
-            activeViewId={activeViewId}
             description={labels.summary(table.getRowCount())}
             labels={labels}
-            locale={locale}
             onSave={onSave}
             onShowPausedChange={onShowPausedChange}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
             showPaused={showPaused}
             table={table}
-            views={views}
           />
         )
       }

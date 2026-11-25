@@ -244,11 +244,6 @@
     "UseDataGridReturn",
     "UseDataTableOptions",
     "UseDataTableReturn",
-    "ViewSettingsMenu",
-    "ViewSettingsMenuProps",
-    "ViewSettingsMode",
-    "ViewSettingsSection",
-    "ViewSettingsSectionProps",
     "ZonedDateTime",
     "addCalendarDays",
     "calendarDateKey",
@@ -924,6 +919,7 @@
     "CollectionToolbar",
     "CollectionToolbarGroup",
     "CollectionToolbarGroupProps",
+    "CollectionToolbarMode",
     "CollectionToolbarProps",
     "ContactChannelLabels",
     "ContactTag",
@@ -2420,7 +2416,6 @@
     "DataGrid2SortKey",
     "DataGrid2Team",
     "DataGrid2ToggleColumnId",
-    "DataGrid2View",
     "defaultDataGrid2ColumnVisibility"
   ],
   "block:data-grid-3": [
@@ -2543,8 +2538,7 @@
     "DataGrid9SortKey",
     "DataGrid9Status",
     "DataGrid9Summary",
-    "DataGrid9ToggleColumnId",
-    "DataGrid9View"
+    "DataGrid9ToggleColumnId"
   ],
   "block:table-1": [
     "Table1",
@@ -2586,7 +2580,6 @@
     "Table2SortKey",
     "Table2Team",
     "Table2ToggleColumnId",
-    "Table2View",
     "defaultTable2ColumnVisibility"
   ],
   "block:table-3": [
@@ -2709,7 +2702,6 @@
     "Table9SortKey",
     "Table9Status",
     "Table9Summary",
-    "Table9ToggleColumnId",
-    "Table9View"
+    "Table9ToggleColumnId"
   ]
 }

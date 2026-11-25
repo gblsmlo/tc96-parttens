@@ -14,7 +14,7 @@ const meta = {
   parameters: { layout: 'fullscreen' },
   render: (args) => <ComposedToolbar {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Toolbar/Playground',
+  title: 'Patterns/CollectionToolbar/Playground',
 } satisfies Meta<ToolbarControls>
 
 export default meta

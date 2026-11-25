@@ -7,52 +7,37 @@ import type { DataTableTable } from '@tc96/ui/patterns/collection/layouts/data-t
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
+import type { ReactNode } from 'react'
 import { TableToolbar, TableToolbarButton } from '../shared/table-toolbar'
-import { TableViewSwitcher } from '../shared/table-view-switcher'
-import type {
-  Table3Condition,
-  Table3Labels,
-  Table3Renewal,
-  Table3View,
-} from './types'
+import type { Table3Condition, Table3Labels, Table3Renewal } from './types'
 
 export interface Table3ToolbarProps {
-  activeViewId?: string
   conditions: readonly Table3Condition[]
-  description: string
   labels: Table3Labels
-  locale?: string
+  left: ReactNode
   onConditionsChange?: (conditions: Table3Condition[]) => void
   onCreate?: () => void
   onSaveView?: () => void
-  onViewChange?: (viewId: string) => void
-  onViewCreate?: () => void
   table: DataTableTable<Table3Renewal>
-  views?: Table3View[]
 }
 
 export function Table3Toolbar({
-  activeViewId,
   conditions,
-  description,
   labels,
-  locale,
+  left,
   onConditionsChange,
   onCreate,
   onSaveView,
-  onViewChange,
-  onViewCreate,
   table,
-  views,
 }: Readonly<Table3ToolbarProps>) {
   const activeFilterCount = conditions.filter(isConditionComplete).length
 
   return (
     <TableToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={left}
+      right={
         <>
           <ViewSettingsMenu
             activeFilterCount={activeFilterCount}
@@ -89,19 +74,6 @@ export function Table3Toolbar({
           ) : null}
         </>
       }
-      startSlot={
-        views?.length ? (
-          <TableViewSwitcher
-            activeViewId={activeViewId}
-            labels={labels}
-            locale={locale}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
-            views={views}
-          />
-        ) : undefined
-      }
-      title={labels.title}
     />
   )
 }

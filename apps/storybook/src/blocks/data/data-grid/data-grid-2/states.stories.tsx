@@ -1,16 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { DataGrid2 } from '@tc96/ui/blocks/data/data-grid/data-grid-2'
 import { expect, fn, within } from 'storybook/test'
-import { members, pageSizeOptions, views } from '../fixtures/data-grid-2.ts'
+import { members, pageSizeOptions } from '../fixtures/data-grid-2.ts'
 
 const meta = {
   args: {
-    activeViewId: 'all',
     members,
     onRetry: fn(),
     pageSize: 8,
     pageSizeOptions,
-    views,
   },
   component: DataGrid2,
   parameters: { layout: 'padded' },

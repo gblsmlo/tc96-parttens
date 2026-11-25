@@ -5,6 +5,7 @@ import {
   emptyFilters,
   table8TotalCount,
   transactions,
+  views,
 } from '../fixtures/table-8.ts'
 import { type Table8Controls, table8ControlArgs } from './table-8-controls.ts'
 import { ComposedTable8 } from './table-8-layouts.tsx'
@@ -145,23 +146,28 @@ export const StatusIsABadge: Story = {
   },
 }
 
-export const TheHeadingAppearsOnce: Story = {
+export const TheViewSwitcherReplacesTheHeading: Story = {
   play: async ({ canvasElement }) => {
-    const headings = within(canvasElement).getAllByRole('heading')
-    await expect(headings).toHaveLength(1)
-    await expect(headings[0]).toHaveTextContent('Transações')
-    await expect(headings[0]?.tagName).toBe('H2')
+    const canvas = within(canvasElement)
+    await expect(canvas.queryAllByRole('heading')).toHaveLength(0)
+    await expect(
+      canvas.getByRole('button', { name: 'Todas as transações' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('region', { name: 'Transações' }),
+    ).toBeVisible()
   },
 }
 
-export const TheToolbarCarriesTheHeadingAndTheControls: Story = {
+export const TheToolbarCarriesTheViewSwitcherAndTheControls: Story = {
   play: async ({ canvasElement }) => {
     const toolbar = headerOf(canvasElement)
-    await expect(toolbar).toHaveAttribute('data-variant', 'text')
+    await expect(toolbar).toHaveAttribute('data-mode', 'plain')
     const inToolbar = within(toolbar)
     await expect(
-      inToolbar.getByRole('heading', { name: 'Transações' }),
+      inToolbar.getByRole('button', { name: 'Todas as transações' }),
     ).toBeVisible()
+    await expect(inToolbar.queryByRole('heading')).toBeNull()
     await expect(
       inToolbar.getByRole('button', { name: 'Atualizar' }),
     ).toBeVisible()
@@ -177,6 +183,7 @@ export const TheToolbarCarriesTheHeadingAndTheControls: Story = {
 }
 
 export const TheHeaderShowsLoadedOfTotal: Story = {
+  args: { savedViews: false },
   play: async ({ canvasElement }) => {
     await expect(headerOf(canvasElement)).toHaveTextContent(
       '40 de 10.000 carregadas',
@@ -232,6 +239,7 @@ export const NoLoadMoreWithoutHasMore: Story = {
 }
 
 export const LoadingMoreAppendsSkeletonRows: Story = {
+  args: { savedViews: false },
   play: async ({ args, canvasElement }) => {
     scrollToEnd(viewportOf(canvasElement))
     await waitFor(() => expect(args.onLoadMore).toHaveBeenCalledOnce())
@@ -459,19 +467,22 @@ export const TheViewSwitcherReportsTheView: Story = {
   },
 }
 
-export const TheViewSwitcherNeedsViews: Story = {
+export const WithoutViewsTheHeadingReturns: Story = {
   args: { savedViews: false },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      within(canvasElement).queryByRole('button', {
-        name: 'Todas as transações',
-      }),
+      canvas.queryByRole('button', { name: 'Todas as transações' }),
     ).toBeNull()
+    const headings = canvas.getAllByRole('heading')
+    await expect(headings).toHaveLength(1)
+    await expect(headings[0]).toHaveTextContent('Transações')
+    await expect(headings[0]?.tagName).toBe('H2')
   },
 }
 
 export const LocaleFormatsTheCounts: Story = {
-  args: { locale: 'en-US' },
+  args: { locale: 'en-US', savedViews: false },
   play: async ({ canvasElement }) => {
     await expect(headerOf(canvasElement)).toHaveTextContent(
       '40 de 10,000 carregadas',
@@ -526,6 +537,28 @@ export const PendingShowsSkeleton: Story = {
     ).toBeNull()
     await expect(canvas.queryByRole('table')).toBeNull()
     await expect(canvas.queryByRole('alert')).toBeNull()
+  },
+}
+
+export const PendingKeepsTheViewSwitcher: Story = {
+  render: () => (
+    <Table8
+      activeViewId="all"
+      onViewChange={fn()}
+      pending
+      totalCount={table8TotalCount}
+      transactions={transactions}
+      views={views}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando transações')).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Todas as transações' }),
+    ).toBeVisible()
+    await expect(canvas.queryAllByRole('heading')).toHaveLength(0)
+    await expect(canvas.queryByRole('button', { name: 'Atualizar' })).toBeNull()
   },
 }
 

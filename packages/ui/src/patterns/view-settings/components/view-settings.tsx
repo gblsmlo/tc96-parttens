@@ -18,7 +18,7 @@ import {
 } from '@tc96/ui/menu'
 import { cn } from '@tc96/utils'
 import type { ReactElement, ReactNode } from 'react'
-import { CollectionToolbarMenuTrigger } from './collection-toolbar-menu-trigger'
+import { CollectionToolbarMenuTrigger } from '../../toolbar/components/collection-toolbar-menu-trigger'
 
 export interface ViewSettingsMode<TMode extends string = string> {
   icon: PhosphorIcon

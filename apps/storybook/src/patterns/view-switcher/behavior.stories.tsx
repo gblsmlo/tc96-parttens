@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import type { ButtonProps } from '@tc96/ui/button'
 import { MenuItem } from '@tc96/ui/menu'
 import {
   CollectionToolbar,
@@ -11,6 +10,7 @@ import {
 } from '@tc96/ui/patterns'
 import type { ReactNode } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import type { SwitcherVariantName } from './view-switcher-variants.ts'
 
 const onSearch = fn((_value: string) => {})
 const onSelect = fn()
@@ -21,23 +21,24 @@ const longLabel =
   'Pessoas contatadas recentemente pela equipe comercial da região sul'
 
 const meta = {
-  component: CollectionToolbar,
+  args: { children: null, label: 'Todas as pessoas' },
+  component: ViewSwitcherMenu,
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/Toolbar/Behavior',
-} satisfies Meta<typeof CollectionToolbar>
+  title: 'Patterns/ViewSwitcher/Behavior',
+} satisfies Meta<typeof ViewSwitcherMenu>
 
 export default meta
 
-type Story = StoryObj<typeof CollectionToolbar>
+type Story = StoryObj<typeof meta>
 
 const menu = (
   children: ReactNode,
   label = 'Todas as pessoas',
-  variant?: ButtonProps['variant'],
+  variant?: SwitcherVariantName,
 ) => (
   <CollectionToolbar
-    startSlot={
+    left={
       <ViewSwitcherMenu
         icon={<i data-testid="icon" />}
         label={label}
@@ -100,7 +101,7 @@ export const KeyboardOpensTheDialogAndEscapeClosesIt: Story = {
 export const NoIconWrapperWithoutIcon: Story = {
   render: () => (
     <CollectionToolbar
-      startSlot={
+      left={
         <ViewSwitcherMenu label="Sem ícone">
           <span>Conteúdo</span>
         </ViewSwitcherMenu>
@@ -116,28 +117,29 @@ export const NoIconWrapperWithoutIcon: Story = {
   },
 }
 
-export const TriggerIsGhostByDefault: Story = {
+const triggerOf = (canvasElement: HTMLElement) =>
+  within(canvasElement).getByRole('button', {
+    name: 'Todas as pessoas',
+  })
+
+export const TriggerIsSecondaryByDefault: Story = {
   render: () => menu(<span>Conteúdo</span>),
   play: async ({ canvasElement }) => {
-    const trigger = within(canvasElement).getByRole('button', {
-      name: 'Todas as pessoas',
-    })
-    await expect(trigger).toHaveClass('hover:bg-accent')
-    await expect(trigger).not.toHaveClass('bg-secondary')
-  },
-}
-
-export const SecondaryVariantFillsTheTrigger: Story = {
-  render: () => menu(<span>Conteúdo</span>, 'Todas as pessoas', 'secondary'),
-  play: async ({ canvasElement }) => {
-    const trigger = within(canvasElement).getByRole('button', {
-      name: 'Todas as pessoas',
-    })
+    const trigger = triggerOf(canvasElement)
     await expect(trigger).toHaveClass(
       'bg-secondary',
       'text-secondary-foreground',
     )
     await expect(trigger).not.toHaveClass('hover:bg-accent')
+  },
+}
+
+export const GhostVariantLeavesTheTriggerWithoutFill: Story = {
+  render: () => menu(<span>Conteúdo</span>, 'Todas as pessoas', 'ghost'),
+  play: async ({ canvasElement }) => {
+    const trigger = triggerOf(canvasElement)
+    await expect(trigger).toHaveClass('hover:bg-accent')
+    await expect(trigger).not.toHaveClass('bg-secondary')
   },
 }
 

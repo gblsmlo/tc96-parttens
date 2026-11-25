@@ -277,7 +277,7 @@ export function PipelineUsage({
         <CollectionFrameHeader>
           <CollectionToolbar
             aria-label="Controles do pipeline de vendas"
-            endSlot={
+            right={
               <>
                 <ViewSettingsMenu
                   activeFilterCount={activeFilterCount}
@@ -314,7 +314,7 @@ export function PipelineUsage({
                 <Action label="Novo negócio" onClick={() => undefined} />
               </>
             }
-            startSlot={
+            left={
               <ViewSwitcherPicker
                 onSelect={(id) => {
                   const next = presets.find((preset) => preset.id === id)

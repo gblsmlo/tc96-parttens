@@ -11,11 +11,10 @@ import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/componen
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { sortFromSorting } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
-import { TableViewSwitcher } from '../shared/table-view-switcher'
-import type { TableViewProps } from '../shared/types'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import type {
   Table2ColumnVisibility,
   Table2Labels,
@@ -37,10 +36,9 @@ const table2ToggleColumns: readonly Table2ToggleColumnId[] = [
 
 type Table2Table = DataTableTable<Table2Member>
 
-export interface Table2ToolbarProps extends TableViewProps {
+export interface Table2ToolbarProps {
   description: string
   labels: Table2Labels
-  locale: string
   onSave?: (settings: Table2Settings) => void
   onShowPausedChange?: (showPaused: boolean) => void
   showPaused: boolean
@@ -81,17 +79,12 @@ function ColumnFilter({
 }
 
 export function Table2Toolbar({
-  activeViewId,
   description,
   labels,
-  locale,
   onSave,
   onShowPausedChange,
-  onViewChange,
-  onViewCreate,
   showPaused,
   table,
-  views,
 }: Readonly<Table2ToolbarProps>) {
   const members = table.options.data
   const activeFilterCount = table.store.state.columnFilters.length
@@ -107,8 +100,10 @@ export function Table2Toolbar({
   return (
     <TableToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={
+        <TableToolbarHeading description={description} title={labels.title} />
+      }
+      right={
         <ViewSettingsMenu
           activeFilterCount={activeFilterCount}
           clearLabel={labels.clearFilters}
@@ -179,19 +174,6 @@ export function Table2Toolbar({
           </ViewSettingsSection>
         </ViewSettingsMenu>
       }
-      startSlot={
-        views ? (
-          <TableViewSwitcher
-            activeViewId={activeViewId}
-            labels={labels}
-            locale={locale}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
-            views={views}
-          />
-        ) : undefined
-      }
-      title={labels.title}
     />
   )
 }

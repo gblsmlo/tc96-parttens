@@ -14,6 +14,8 @@ import {
   visibilityFromState,
 } from '../shared/grid-state'
 import { GridToolbar } from '../shared/grid-toolbar'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
+import { GridViewSwitcher } from '../shared/grid-view-switcher'
 import { createDataGrid1Columns } from './data-grid-1-columns'
 import { createDataGrid1SelectionActions } from './data-grid-1-selection-actions'
 import { DataGrid1Skeleton } from './data-grid-1-skeleton'
@@ -233,6 +235,22 @@ export function DataGrid1({
     setPageIndex(0)
   }
 
+  const toolbarLeft = views?.length ? (
+    <GridViewSwitcher
+      activeViewId={activeViewId}
+      labels={labels}
+      locale={locale}
+      onViewChange={onViewChange}
+      onViewCreate={onViewCreate}
+      views={views}
+    />
+  ) : (
+    <GridToolbarHeading
+      description={loadState ? undefined : description}
+      title={labels.title}
+    />
+  )
+
   return (
     <GridFrame
       className={className}
@@ -240,28 +258,19 @@ export function DataGrid1({
       title={labels.title}
       toolbar={
         loadState ? (
-          <GridToolbar
-            aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
-          />
+          <GridToolbar aria-label={labels.toolbar} left={toolbarLeft} />
         ) : (
           <DataGrid1Toolbar
-            activeViewId={activeViewId}
-            description={description}
             labels={labels}
-            locale={locale}
+            left={toolbarLeft}
             onCreate={onCreate}
             onExport={onExport}
             onQueueChange={changeQueue}
             onSaveView={onSaveView}
             onStatusChange={changeStatus}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
             queue={queue}
             status={status}
             table={table}
-            views={views}
           />
         )
       }

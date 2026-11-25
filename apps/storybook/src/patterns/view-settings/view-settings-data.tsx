@@ -10,17 +10,6 @@ import {
 } from '@phosphor-icons/react'
 import type { ViewSettingsMode } from '@tc96/ui/patterns'
 
-export interface SavedView {
-  id: string
-  label: string
-}
-
-export const savedViews: SavedView[] = [
-  { id: 'recent', label: 'Pessoas contatadas recentemente' },
-  { id: 'all', label: 'Todas as pessoas' },
-  { id: 'overdue', label: 'Aguardando retorno' },
-]
-
 export type FilterKey = 'assignee' | 'date' | 'priority' | 'status' | 'tags'
 
 export type Filters = Record<FilterKey, readonly string[]>
@@ -91,9 +80,3 @@ export const agendaModes: readonly ViewSettingsMode<AgendaLayout>[] = [
   { icon: TableIcon, label: 'Tabela', value: 'datagrid' },
   { icon: CalendarDotsIcon, label: 'Agenda', value: 'calendar' },
 ]
-
-export const ViewIcon = () => (
-  <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
-    <GridFourIcon aria-hidden="true" className="size-3" />
-  </span>
-)

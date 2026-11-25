@@ -286,7 +286,7 @@ export const blockSources: Record<BlockName, string> = {
 export type ItemName = PatternName | BlockName
 /** Areas under packages/ui/src/patterns that ship with an item no file of it imports. */
 export const itemAreas: Partial<Record<ItemName, string[]>> = {
-  collection: ['toolbar'],
+  collection: ['toolbar', 'view-settings', 'view-switcher'],
 }
 export function isBlock(name: string): name is BlockName {
   return blockNames.includes(name as BlockName)

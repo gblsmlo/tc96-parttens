@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Table3 } from '@tc96/ui/blocks/data/table/table-3'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
-import { renewals } from '../fixtures/table-3.ts'
+import { renewals, views } from '../fixtures/table-3.ts'
 import { type Table3Controls, table3ControlArgs } from './table-3-controls.ts'
 import { ComposedTable3 } from './table-3-layouts.tsx'
 
@@ -82,23 +82,42 @@ const select = (canvasElement: HTMLElement, account: string) =>
     }),
   )
 
-export const TheHeadingAppearsOnce: Story = {
+export const TheViewSwitcherReplacesTheHeading: Story = {
   play: async ({ canvasElement }) => {
-    const headings = within(canvasElement).getAllByRole('heading')
+    const canvas = within(canvasElement)
+    await expect(canvas.queryAllByRole('heading')).toHaveLength(0)
+    await expect(
+      canvas.getByRole('button', { name: 'Todas as renovações' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('region', { name: 'Revisão de renovações' }),
+    ).toBeVisible()
+  },
+}
+
+export const WithoutViewsTheHeadingReturns: Story = {
+  args: { savedViews: false },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(
+      canvas.queryByRole('button', { name: 'Todas as renovações' }),
+    ).toBeNull()
+    const headings = canvas.getAllByRole('heading')
     await expect(headings).toHaveLength(1)
     await expect(headings[0]).toHaveTextContent('Revisão de renovações')
     await expect(headings[0]?.tagName).toBe('H2')
   },
 }
 
-export const TheToolbarCarriesTheHeadingAndTheControls: Story = {
+export const TheToolbarCarriesTheViewSwitcherAndTheControls: Story = {
   play: async ({ canvasElement }) => {
     const toolbar = headerOf(canvasElement)
-    await expect(toolbar).toHaveAttribute('data-variant', 'text')
+    await expect(toolbar).toHaveAttribute('data-mode', 'plain')
     const inToolbar = within(toolbar)
     await expect(
-      inToolbar.getByRole('heading', { name: 'Revisão de renovações' }),
+      inToolbar.getByRole('button', { name: 'Todas as renovações' }),
     ).toBeVisible()
+    await expect(inToolbar.queryByRole('heading')).toBeNull()
     await expect(
       inToolbar.getByRole('button', { name: /^Configurações/ }),
     ).toBeVisible()
@@ -146,6 +165,7 @@ export const UrgencyAndHealthAreDataAttributes: Story = {
 }
 
 export const TheSummaryCountsTheFilteredRenewals: Story = {
+  args: { savedViews: false },
   play: async ({ canvasElement }) => {
     await expect(headerOf(canvasElement)).toHaveTextContent(
       /6 vencem em 30 dias · 3 em risco · R\$\s1,1\smi de ARR em risco/,
@@ -164,6 +184,7 @@ export const ItStartsWithAnEmptyAccountCondition: Story = {
 }
 
 export const AConditionValueFiltersTheRows: Story = {
+  args: { savedViews: false },
   play: async ({ args, canvasElement }) => {
     const chip = within(
       within(canvasElement).getByRole('group', { name: 'Filtro de Conta' }),
@@ -508,6 +529,23 @@ export const PendingShowsSkeleton: Story = {
       canvas.queryByRole('group', { name: 'Filtro de Conta' }),
     ).toBeNull()
     await expect(canvas.queryByRole('table')).toBeNull()
+  },
+}
+
+export const PendingKeepsTheViewSwitcher: Story = {
+  render: () => (
+    <Table3 activeViewId="all" pending renewals={renewals} views={views} />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando renovações')).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Todas as renovações' }),
+    ).toBeVisible()
+    await expect(canvas.queryAllByRole('heading')).toHaveLength(0)
+    await expect(
+      canvas.queryByRole('button', { name: /^Configurações/ }),
+    ).toBeNull()
   },
 }
 

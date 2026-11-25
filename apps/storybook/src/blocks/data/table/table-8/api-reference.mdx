@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A transaction ledger on the collection Data Table, a semantic `<table>`: transaction and charge id, customer, amount, status, payment method with the last four digits, channel, risk score and date, in a table of bounded height that asks for the next page when the scroll nears the end. Reach for it on a payments or billing screen where the list is far longer than what is loaded. Install it with `npx @tc96/cli add table-8`.
 
-It is a section, not a page: it renders no `main` landmark. A real ledger sorts, filters and searches on the server, so the block never reorders or filters `transactions`: the sort, the filters, the search, the view, the selection, the density and the column visibility are controlled and every change is a callback. The Data Table has no virtualization, so every loaded row is in the DOM; the table scrolls inside a viewport of `maxHeight` pixels, and when that scroll comes within eight rows of the end it calls `onLoadMore` once per `transactions.length`, only while `hasMore` is true; `loadingMore` appends skeleton rows and holds the next call. The heading is the toolbar's: one `CollectionToolbar` with `variant="text"` carries `labels.title` as the only `h2` and the loaded count as its description, then the view switcher, the search, Atualizar, Configurações de visualização and Exportar. Selected rows open the pattern's `ActionBar` floating over the table, with the count and the selected total, Exportar, Estornar and Sinalizar. Loading and error are the block's: the toolbar keeps the heading and hides its controls, `pending` renders the skeleton in place of the table and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
+It is a section, not a page: it renders no `main` landmark. A real ledger sorts, filters and searches on the server, so the block never reorders or filters `transactions`: the sort, the filters, the search, the view, the selection, the density and the column visibility are controlled and every change is a callback. The Data Table has no virtualization, so every loaded row is in the DOM; the table scrolls inside a viewport of `maxHeight` pixels, and when that scroll comes within eight rows of the end it calls `onLoadMore` once per `transactions.length`, only while `hasMore` is true; `loadingMore` appends skeleton rows and holds the next call. The toolbar is one `CollectionToolbar`. Its `left` slot holds either the view switcher, when `views` has items and `onViewChange` is passed, or `labels.title` as the only `h2` with the loaded count as its description, never both; with the switcher the page has no `h2` and the section and the table keep their name from `labels.title`. Its `right` slot holds the search, Atualizar, Configurações de visualização and Exportar. Selected rows open the pattern's `ActionBar` floating over the table, with the count and the selected total, Exportar, Estornar and Sinalizar. Loading and error are the block's: the toolbar keeps its `left` slot (the view switcher, or the heading without the count) and hides its controls, `pending` renders the skeleton in place of the table and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
 The other pages of `Blocks/Data/Table/Table8`: [Playground](?path=/story/blocks-data-table-table8-playground--playground) to try the controls, [Behavior](?path=/story/blocks-data-table-table8-behavior--each-row-shows-the-transaction) for the tests, [States](?path=/story/blocks-data-table-table8-states--default) for the loaded, loading, loading more, error and empty states and [Usages](?path=/story/blocks-data-table-table8-usages--loaded) for pages read over the network with `useInfiniteQuery`.
 
@@ -21,7 +21,7 @@ The same path exports `emptyTable8Filters` and the types listed under Exports.
 
 ## Anatomy
 
-The toolbar with the heading, the loaded count, the view switcher, the search, Atualizar, Configurações de visualização (sort, row height and columns, then the Status, Método and Canal filters) and Exportar; the table in its scrolling viewport; the `ActionBar` floating over it while rows are selected.
+The toolbar with the heading and the loaded count (the view switcher takes their place when `views` is passed), the search, Atualizar, Configurações de visualização (sort, row height and columns, then the Status, Método and Canal filters) and Exportar; the table in its scrolling viewport; the `ActionBar` floating over it while rows are selected.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
@@ -42,8 +42,8 @@ The toolbar with the heading, the loaded count, the view switcher, the search, A
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `transactions` | `Table8Transaction[]` | required | The loaded rows, already sorted and filtered. Keep the array stable between renders. |
-| `totalCount` | `number` | required | Rows on the server for the current query; the second number of the toolbar description. |
-| `loadedCount` | `number` | `transactions.length` | The first number of the toolbar description. |
+| `totalCount` | `number` | required | Rows on the server for the current query; the second number of the toolbar description, shown without views. |
+| `loadedCount` | `number` | `transactions.length` | The first number of the toolbar description, shown without views. |
 | `hasMore` | `boolean` | `false` | Whether the server has another page; without it `onLoadMore` is never called. |
 | `onLoadMore` | `() => void` | - | Called once per `transactions.length` when the scroll nears the end. |
 | `loadingMore` | `boolean` | `false` | Appends skeleton rows, sets `aria-busy` on the table and holds `onLoadMore`. |
@@ -55,7 +55,7 @@ The toolbar with the heading, the loaded count, the view switcher, the search, A
 | `search` | `string` | `''` | The committed search. |
 | `onSearchChange` | `(search: string) => void` | - | Called on submit and when the field is cleared, never per keystroke; the field renders only with it. |
 | `views`, `activeViewId` | `Table8View[]`, `string` | - | The saved views and the active one. |
-| `onViewChange` | `(viewId: string) => void` | - | The view switcher renders only with `views` and this callback. |
+| `onViewChange` | `(viewId: string) => void` | - | The view switcher renders only with items in `views` and this callback, in place of the heading and the loaded count. |
 | `onViewCreate` | `() => void` | - | Renders Criar visualização in the switcher. |
 | `selectedIds` | `string[]` | - | Controls the selected rows; without it the table keeps them. |
 | `onSelectedIdsChange` | `(ids: string[]) => void` | - | Called once per selection change. |
@@ -69,8 +69,8 @@ The toolbar with the heading, the loaded count, the view switcher, the search, A
 | `onColumnVisibilityChange` | `(visibility: Table8ColumnVisibility) => void` | - | Called by the Colunas menu or a column menu. |
 | `locale` | `string` | `"pt-BR"` | Locale of the amounts, counts and dates. |
 | `currency` | `string` | `"BRL"` | Currency of the amounts. |
-| `pending` | `boolean` | `false` | Renders the skeleton in place of the table and keeps only the heading in the toolbar; wins over `error`. |
-| `error` | `boolean` | `false` | Renders the error surface below the heading. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the table and keeps only the view switcher or the heading in the toolbar; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface below the toolbar. |
 | `onRetry` | `() => void` | - | Called by Tentar novamente; without it the button is not rendered. |
 | `labels` | `Table8LabelsOverride` | pt-BR texts | Overrides the texts; `columns`, `statuses`, `methods`, `channels` and `riskBands` merge key by key. Keep the object stable, because the columns are rebuilt when it changes. |
 | `className` | `string` | - | Merged into the root classes. |
@@ -92,7 +92,7 @@ The toolbar with the heading, the loaded count, the view switcher, the search, A
 
 | Key | Type | Default |
 | --- | --- | --- |
-| `title` | `string` | `"Transações"`; the toolbar heading and the name of the section and of the table |
+| `title` | `string` | `"Transações"`; the name of the section and of the table, and the toolbar heading without views |
 | `loaded` | `(loaded: string, total: string) => string` | `"40 de 10.000 carregadas"` |
 | `export`, `refresh`, `viewSettings` | `string` | `"Exportar"`, `"Atualizar"`, `"Configurações de visualização"` |
 | `toolbar` | `string` | `"Controles das transações"`; the name of the toolbar |

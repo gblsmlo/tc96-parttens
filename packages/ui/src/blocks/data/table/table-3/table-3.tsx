@@ -23,6 +23,8 @@ import {
   visibilityFromState,
 } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
+import { TableViewSwitcher } from '../shared/table-view-switcher'
 import { resolveTable3Labels } from './labels'
 import { healthLevel } from './table-3-cells'
 import { createTable3Columns } from './table-3-columns'
@@ -267,6 +269,22 @@ export function Table3({
     [labels, onAssignOwner, onStageUpdate, owners],
   )
 
+  const toolbarLeft = views?.length ? (
+    <TableViewSwitcher
+      activeViewId={activeViewId}
+      labels={labels}
+      locale={locale}
+      onViewChange={onViewChange}
+      onViewCreate={onViewCreate}
+      views={views}
+    />
+  ) : (
+    <TableToolbarHeading
+      description={loadState ? undefined : description}
+      title={labels.title}
+    />
+  )
+
   return (
     <TableFrame
       className={className}
@@ -274,25 +292,16 @@ export function Table3({
       title={labels.title}
       toolbar={
         loadState ? (
-          <TableToolbar
-            aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
-          />
+          <TableToolbar aria-label={labels.toolbar} left={toolbarLeft} />
         ) : (
           <Table3Toolbar
-            activeViewId={activeViewId}
             conditions={conditions}
-            description={description}
             labels={labels}
-            locale={locale}
+            left={toolbarLeft}
             onConditionsChange={changeConditions}
             onCreate={onCreate}
             onSaveView={onSaveView}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
             table={table}
-            views={views}
           />
         )
       }

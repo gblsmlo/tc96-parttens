@@ -13,8 +13,9 @@ import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/componen
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { TableToolbar, TableToolbarButton } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { table6HealthOrder } from './table-6-columns'
 import type { Table6Account, Table6Labels } from './types'
 
@@ -43,8 +44,13 @@ export function Table6Toolbar({
   return (
     <TableToolbar
       aria-label={labels.toolbar}
-      description={labels.description}
-      endSlot={
+      left={
+        <TableToolbarHeading
+          description={labels.description}
+          title={labels.title}
+        />
+      }
+      right={
         <>
           <DataGridSearch
             aria-label={labels.search}
@@ -101,7 +107,6 @@ export function Table6Toolbar({
           ) : null}
         </>
       }
-      title={labels.title}
     />
   )
 }

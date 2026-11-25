@@ -6,9 +6,6 @@ import type {
   TableLoadProps,
   TableSettingsLabels,
   TableSort,
-  TableView,
-  TableViewLabels,
-  TableViewProps,
 } from '../shared/types'
 
 export type Table9Channel = 'display' | 'email' | 'search' | 'social' | 'video'
@@ -34,8 +31,6 @@ export type Table9SortKey =
   | 'roas'
   | 'spend'
   | 'status'
-
-export type Table9View = TableView
 
 export type Table9DeltaDirection = 'down' | 'flat' | 'up'
 
@@ -91,10 +86,7 @@ export type Table9Sort = TableSort<Table9SortKey>
 
 export type Table9ColumnVisibility = TableColumnVisibility<Table9ToggleColumnId>
 
-export interface Table9Labels
-  extends TableLoadLabels,
-    TableSettingsLabels,
-    TableViewLabels {
+export interface Table9Labels extends TableLoadLabels, TableSettingsLabels {
   channels: Record<Table9Channel, string>
   clearFilters: string
   columns: Record<Table9ColumnId, string>
@@ -142,10 +134,7 @@ export type Table9LabelsOverride = Partial<
   statuses?: Partial<Table9Labels['statuses']>
 }
 
-export interface Table9Props
-  extends TableFormatProps,
-    TableLoadProps,
-    TableViewProps {
+export interface Table9Props extends TableFormatProps, TableLoadProps {
   campaigns: Table9Campaign[]
   className?: string
   columnVisibility?: Table9ColumnVisibility

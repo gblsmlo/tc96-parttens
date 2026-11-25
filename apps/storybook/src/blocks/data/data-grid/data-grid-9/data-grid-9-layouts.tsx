@@ -11,7 +11,6 @@ import {
   period,
   rowActions,
   summary,
-  views,
 } from '../fixtures/data-grid-9.ts'
 import type { DataGrid9Controls } from './data-grid-9-controls.ts'
 
@@ -22,8 +21,6 @@ interface ComposedDataGrid9Props extends DataGrid9Controls {
   onExport?: DataGrid9Props['onExport']
   onRowAction?: DataGrid9Props['onRowAction']
   onSortChange?: DataGrid9Props['onSortChange']
-  onViewChange?: DataGrid9Props['onViewChange']
-  onViewCreate?: DataGrid9Props['onViewCreate']
 }
 
 export const ComposedDataGrid9 = ({
@@ -37,23 +34,17 @@ export const ComposedDataGrid9 = ({
   onExport,
   onRowAction,
   onSortChange,
-  onViewChange,
-  onViewCreate,
   pageSize,
   rowActions: showRowActions,
   title,
-  viewCreate,
-  views: showViews,
 }: Readonly<ComposedDataGrid9Props>) => {
   const [settings, setSettings] =
     useState<DataGrid9ViewSettings>(factorySettings)
-  const [activeViewId, setActiveViewId] = useState('all')
   const update = (patch: Partial<DataGrid9ViewSettings>) =>
     setSettings((current) => ({ ...current, ...patch }))
 
   return (
     <DataGrid9
-      activeViewId={showViews ? activeViewId : undefined}
       campaigns={empty ? [] : campaigns}
       columnVisibility={settings.columnVisibility}
       currency={currency}
@@ -77,26 +68,12 @@ export const ComposedDataGrid9 = ({
         update({ sort })
         onSortChange?.(sort)
       }}
-      onViewChange={
-        showViews
-          ? (viewId) => {
-              const view = views.find((option) => option.id === viewId)
-              if (view) setSettings(view.settings)
-              setActiveViewId(viewId)
-              onViewChange?.(viewId)
-            }
-          : undefined
-      }
-      onViewCreate={
-        showViews && viewCreate ? () => onViewCreate?.() : undefined
-      }
       pageSize={pageSize}
       pageSizeOptions={pageSizeOptions}
       period={period}
       rowActions={showRowActions ? rowActions : undefined}
       sort={settings.sort}
       summary={summary}
-      views={showViews ? views : undefined}
     />
   )
 }

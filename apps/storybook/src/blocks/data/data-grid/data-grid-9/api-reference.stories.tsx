@@ -8,25 +8,20 @@ import {
   period,
   rowActions,
   summary,
-  views,
 } from '../fixtures/data-grid-9.ts'
 
 const meta = {
   args: {
-    activeViewId: 'all',
     campaigns,
     onCreate: fn(),
     onExport: fn(),
     onRowAction: fn(),
-    onViewChange: fn(),
-    onViewCreate: fn(),
     pageSize: 8,
     pageSizeOptions,
     period,
     rowActions,
     sort: initialSort,
     summary,
-    views,
   },
   component: DataGrid9,
   parameters: { layout: 'padded' },

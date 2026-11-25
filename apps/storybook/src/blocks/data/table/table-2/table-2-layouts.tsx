@@ -8,7 +8,6 @@ import {
   factorySettings,
   members,
   pageSizeOptions,
-  views,
 } from '../fixtures/table-2.ts'
 import type { Table2Controls } from './table-2-controls.ts'
 
@@ -18,8 +17,6 @@ interface ComposedTable2Props extends Table2Controls {
   onSave?: Table2Props['onSave']
   onShowPausedChange?: Table2Props['onShowPausedChange']
   onSortChange?: Table2Props['onSortChange']
-  onViewChange?: Table2Props['onViewChange']
-  onViewCreate?: Table2Props['onViewCreate']
 }
 
 export const ComposedTable2 = ({
@@ -30,23 +27,17 @@ export const ComposedTable2 = ({
   onSave,
   onShowPausedChange,
   onSortChange,
-  onViewChange,
-  onViewCreate,
   pageSize,
   savePreference,
   showPausedSwitch,
   title,
-  viewCreate,
-  views: showViews,
 }: Readonly<ComposedTable2Props>) => {
   const [settings, setSettings] = useState<Table2Settings>(factorySettings)
-  const [activeViewId, setActiveViewId] = useState('all')
   const update = (patch: Partial<Table2Settings>) =>
     setSettings((current) => ({ ...current, ...patch }))
 
   return (
     <Table2
-      activeViewId={showViews ? activeViewId : undefined}
       columnVisibility={settings.columnVisibility}
       density={settings.density}
       labels={{ title }}
@@ -73,24 +64,10 @@ export const ComposedTable2 = ({
         update({ sort })
         onSortChange?.(sort)
       }}
-      onViewChange={
-        showViews
-          ? (viewId) => {
-              const view = views.find((option) => option.id === viewId)
-              if (view) setSettings(view.settings)
-              setActiveViewId(viewId)
-              onViewChange?.(viewId)
-            }
-          : undefined
-      }
-      onViewCreate={
-        showViews && viewCreate ? () => onViewCreate?.() : undefined
-      }
       pageSize={pageSize}
       pageSizeOptions={pageSizeOptions}
       showPaused={settings.showPaused}
       sort={settings.sort}
-      views={showViews ? views : undefined}
     />
   )
 }

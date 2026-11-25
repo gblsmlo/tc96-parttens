@@ -1,5 +1,6 @@
 import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react'
 import { GridToolbar, GridToolbarButton } from '../shared/grid-toolbar'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import type { DataGrid7Labels } from './types'
 
 export interface DataGrid7ToolbarProps {
@@ -18,8 +19,10 @@ export function DataGrid7Toolbar({
   return (
     <GridToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={
+        <GridToolbarHeading description={description} title={labels.title} />
+      }
+      right={
         onResetOrder ? (
           <GridToolbarButton disabled={!orderChanged} onClick={onResetOrder}>
             <ArrowCounterClockwiseIcon aria-hidden="true" />
@@ -27,7 +30,6 @@ export function DataGrid7Toolbar({
           </GridToolbarButton>
         ) : undefined
       }
-      title={labels.title}
     />
   )
 }

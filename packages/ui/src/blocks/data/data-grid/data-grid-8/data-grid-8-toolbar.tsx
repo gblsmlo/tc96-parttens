@@ -16,17 +16,10 @@ import { CollectionSearchField } from '@tc96/ui/patterns/collection/shared/compo
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
-import {
-  ViewSwitcherCreate,
-  ViewSwitcherItem,
-  ViewSwitcherItems,
-  ViewSwitcherMenu,
-  ViewSwitcherSearch,
-} from '@tc96/ui/patterns/toolbar/components/view-switcher'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
-import { useState } from 'react'
+import type { ReactNode } from 'react'
 import { GridToolbar, GridToolbarButton } from '../shared/grid-toolbar'
 import type {
   DataGrid8Channel,
@@ -35,7 +28,6 @@ import type {
   DataGrid8Method,
   DataGrid8Status,
   DataGrid8Transaction,
-  DataGrid8View,
 } from './types'
 
 export const dataGrid8Statuses: readonly DataGrid8Status[] = [
@@ -66,82 +58,29 @@ export const emptyDataGrid8Filters: DataGrid8Filters = {
 }
 
 export interface DataGrid8ToolbarProps {
-  activeViewId?: string
-  description: string
   filters: DataGrid8Filters
   labels: DataGrid8Labels
+  left: ReactNode
   onExport?: () => void
   onFiltersChange?: (filters: DataGrid8Filters) => void
   onRefresh?: () => void
   onSearchChange?: (search: string) => void
-  onViewChange?: (viewId: string) => void
-  onViewCreate?: () => void
   refreshing: boolean
   search: string
   table: UseDataGridReturn<DataGrid8Transaction>['table']
-  views?: DataGrid8View[]
-}
-
-function DataGrid8ViewSwitcher({
-  activeViewId,
-  labels,
-  onViewChange,
-  onViewCreate,
-  views,
-}: Readonly<{
-  activeViewId?: string
-  labels: DataGrid8Labels
-  onViewChange: (viewId: string) => void
-  onViewCreate?: () => void
-  views: DataGrid8View[]
-}>) {
-  const [query, setQuery] = useState('')
-  const active = views.find((view) => view.id === activeViewId)
-  const needle = query.trim().toLocaleLowerCase()
-  const visible = needle
-    ? views.filter((view) => view.label.toLocaleLowerCase().includes(needle))
-    : views
-
-  return (
-    <ViewSwitcherMenu label={active?.label ?? labels.views}>
-      <ViewSwitcherSearch
-        label={labels.searchViews}
-        onValueChange={setQuery}
-        placeholder={labels.searchViews}
-        value={query}
-      />
-      <ViewSwitcherItems label={labels.views}>
-        {visible.map((view) => (
-          <ViewSwitcherItem
-            key={view.id}
-            label={view.label}
-            onSelect={() => onViewChange(view.id)}
-            selected={view.id === activeViewId}
-          />
-        ))}
-      </ViewSwitcherItems>
-      {onViewCreate ? (
-        <ViewSwitcherCreate label={labels.createView} onClick={onViewCreate} />
-      ) : null}
-    </ViewSwitcherMenu>
-  )
 }
 
 export function DataGrid8Toolbar({
-  activeViewId,
-  description,
   filters,
   labels,
+  left,
   onExport,
   onFiltersChange,
   onRefresh,
   onSearchChange,
-  onViewChange,
-  onViewCreate,
   refreshing,
   search,
   table,
-  views,
 }: Readonly<DataGrid8ToolbarProps>) {
   const activeFilterCount = Object.values(filters).filter(Boolean).length
   const setFilter = <TKey extends keyof DataGrid8Filters>(
@@ -149,16 +88,6 @@ export function DataGrid8Toolbar({
     value: string,
   ) => onFiltersChange?.({ ...filters, [key]: value as DataGrid8Filters[TKey] })
 
-  const switcher =
-    views && onViewChange ? (
-      <DataGrid8ViewSwitcher
-        activeViewId={activeViewId}
-        labels={labels}
-        onViewChange={onViewChange}
-        onViewCreate={onViewCreate}
-        views={views}
-      />
-    ) : null
   const searchField = onSearchChange ? (
     <CollectionSearchField
       label={labels.search}
@@ -171,8 +100,8 @@ export function DataGrid8Toolbar({
   return (
     <GridToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={left}
+      right={
         <>
           {searchField}
           {onRefresh ? (
@@ -255,8 +184,6 @@ export function DataGrid8Toolbar({
           ) : null}
         </>
       }
-      startSlot={switcher ?? undefined}
-      title={labels.title}
     />
   )
 }

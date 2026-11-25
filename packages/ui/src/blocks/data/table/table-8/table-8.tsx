@@ -13,11 +13,13 @@ import {
   visibilityFromState,
 } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { resolveTable8Labels } from './labels'
 import { createTable8Columns } from './table-8-columns'
 import { createTable8SelectionActions } from './table-8-selection-actions'
 import { Table8Skeleton } from './table-8-skeleton'
 import { emptyTable8Filters, Table8Toolbar } from './table-8-toolbar'
+import { Table8ViewSwitcher } from './table-8-view-switcher'
 import type { Table8Props, Table8Transaction } from './types'
 
 const selectionFromIds = (ids: readonly string[]) =>
@@ -128,6 +130,29 @@ export function Table8({
     [labels, onExportSelected, onFlag, onRefund],
   )
 
+  const toolbarLeft =
+    views?.length && onViewChange ? (
+      <Table8ViewSwitcher
+        activeViewId={activeViewId}
+        labels={labels}
+        onViewChange={onViewChange}
+        onViewCreate={onViewCreate}
+        views={views}
+      />
+    ) : (
+      <TableToolbarHeading
+        description={
+          loadState
+            ? undefined
+            : labels.loaded(
+                formatter.number(loadedCount ?? transactions.length),
+                formatter.number(totalCount),
+              )
+        }
+        title={labels.title}
+      />
+    )
+
   return (
     <TableFrame
       className={className}
@@ -135,30 +160,19 @@ export function Table8({
       title={labels.title}
       toolbar={
         loadState ? (
-          <TableToolbar
-            aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
-          />
+          <TableToolbar aria-label={labels.toolbar} left={toolbarLeft} />
         ) : (
           <Table8Toolbar
-            activeViewId={activeViewId}
-            description={labels.loaded(
-              formatter.number(loadedCount ?? transactions.length),
-              formatter.number(totalCount),
-            )}
             filters={filters}
             labels={labels}
+            left={toolbarLeft}
             onExport={onExport}
             onFiltersChange={onFiltersChange}
             onRefresh={onRefresh}
             onSearchChange={onSearchChange}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
             refreshing={refreshing}
             search={search}
             table={table}
-            views={views}
           />
         )
       }

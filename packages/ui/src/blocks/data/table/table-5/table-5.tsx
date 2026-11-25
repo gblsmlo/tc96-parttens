@@ -10,6 +10,7 @@ import { TableFrame } from '../shared/table-frame'
 import { tableLoadState } from '../shared/table-load-state'
 import { sortFromSorting, sortingFromSort } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { resolveTable5Labels } from './labels'
 import { createTable5Columns } from './table-5-columns'
 import { Table5Skeleton } from './table-5-skeleton'
@@ -137,8 +138,7 @@ export function Table5({
         loadState ? (
           <TableToolbar
             aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
+            left={<TableToolbarHeading title={labels.title} />}
           />
         ) : (
           <Table5Toolbar

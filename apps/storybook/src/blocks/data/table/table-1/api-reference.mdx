@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A support ticket queue on the collection Data Table (a semantic `<table>`), the same screen as `DataGrid1`: ticket title with code and opening time, requester, queue, priority, SLA and status, with the pattern's `ActionBar` floating over the table while tickets are selected, to assign an owner or move them, and a footer with the rows per page selector. Reach for it on a help desk or operations screen where people triage a queue of items with deadlines. Install it with `npx @tc96/cli add table-1`.
 
-It is a section, not a page: it renders no `main` landmark. The heading is the toolbar's: one `CollectionToolbar` with `variant="text"` carries `labels.title` as the only `h2` and the summary line as its description, then the view switcher (only with `views`), the search, the `ViewSettingsMenu` (Exibição) holding sort, row height and columns, the queue and status filters, Limpar filtros and Salvar visão, and the Exportar CSV and Novo chamado buttons. Every piece of state a consumer saves is controllable and reported: `search`, `queue`, `status`, `sort`, `columnVisibility`, `density`, `selectedIds` and `pageSize`; without the value the table keeps it locally and still calls the callback. The block filters, sorts and pages the rows it receives, but never changes a ticket: Atribuir responsável and Atualizar status are `ActionBar` items whose submenus list the owners and the statuses, and a choice only calls `onAssignOwner` or `onStatusUpdate` with the selected ids. Loading and error are the block's: the toolbar keeps the heading and hides its controls, `pending` renders the skeleton in place of the table and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
+It is a section, not a page: it renders no `main` landmark. The toolbar is one `CollectionToolbar`. Its `left` slot holds either the view switcher, when `views` has items, or `labels.title` as the only `h2` with the summary line as its description, never both; with the switcher the page has no `h2` and the section and the table keep their name from `labels.title`. Its `right` slot holds the search, the `ViewSettingsMenu` (Exibição) holding sort, row height and columns, the queue and status filters, Limpar filtros and Salvar visão, and the Exportar CSV and Novo chamado buttons. Every piece of state a consumer saves is controllable and reported: `search`, `queue`, `status`, `sort`, `columnVisibility`, `density`, `selectedIds` and `pageSize`; without the value the table keeps it locally and still calls the callback. The block filters, sorts and pages the rows it receives, but never changes a ticket: Atribuir responsável and Atualizar status are `ActionBar` items whose submenus list the owners and the statuses, and a choice only calls `onAssignOwner` or `onStatusUpdate` with the selected ids. Loading and error are the block's: the toolbar keeps its `left` slot (the view switcher, or the heading without the summary) and hides its controls, `pending` renders the skeleton in place of the table and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
 The other pages of `Blocks/Data/Table/Table1`: [Playground](?path=/story/blocks-data-table-table1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-data-table-table1-behavior--each-row-shows-the-ticket-details) for the tests, [States](?path=/story/blocks-data-table-table1-states--default) for the loaded, loading, error and empty states and [Usages](?path=/story/blocks-data-table-table1-usages--loaded) for the data read over the network.
 
@@ -21,7 +21,7 @@ The same path exports the types listed under Exports.
 
 ## Anatomy
 
-The toolbar with the heading, the summary line and the controls, the table, the `ActionBar` floating over it (only while rows are selected) and the pagination footer with Linhas por página.
+The toolbar with the heading and the summary line (the view switcher takes their place when `views` is passed) and the controls, the table, the `ActionBar` floating over it (only while rows are selected) and the pagination footer with Linhas por página.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
@@ -64,7 +64,7 @@ The toolbar with the heading, the summary line and the controls, the table, the 
 | `pageSize` | `number` | first of `pageSizeOptions` | Controls the rows per page. |
 | `pageSizeOptions` | `readonly number[]` | `[10, 20, 50]` | The options of Linhas por página. |
 | `onPageSizeChange` | `(pageSize: number) => void` | - | Called by the footer selector; the page goes back to the first. |
-| `views` | `Table1View[]` | - | The saved views of the view switcher; without it the switcher is not rendered. |
+| `views` | `Table1View[]` | - | The saved views of the view switcher, which replaces the heading and the summary line in the toolbar; without items the heading shows. |
 | `activeViewId` | `string` | - | The view shown on the switcher trigger and marked as selected. |
 | `onViewChange` | `(viewId: string) => void` | - | Called when a view is chosen. The block does not apply the view: the consumer changes the other props. |
 | `onViewCreate` | `() => void` | - | Renders Criar nova view at the end of the switcher. |
@@ -73,8 +73,8 @@ The toolbar with the heading, the summary line and the controls, the table, the 
 | `onExport` | `() => void` | - | Renders the Exportar CSV button. |
 | `rowActions` | `Table1RowAction[]` | - | The items of the row menu. |
 | `onRowAction` | `(actionId: string, ticketId: string) => void` | - | The row menu column renders only with it and a non-empty `rowActions`. |
-| `pending` | `boolean` | `false` | Renders the skeleton in place of the table and keeps only the heading in the toolbar; wins over `error`. |
-| `error` | `boolean` | `false` | Renders the error surface below the heading. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the table and keeps only the view switcher or the heading in the toolbar; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface below the toolbar. |
 | `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
 | `labels` | `Partial<Table1Labels>` | pt-BR texts | Overrides the texts of the block; `columns`, `priorities`, `queues` and `statuses` merge key by key. Keep the object stable, because the columns are rebuilt when it changes. |
 | `locale`, `currency` | `string` | `"pt-BR"`, `"BRL"` | The shared format props; this block formats no number or date, the texts arrive ready. |
@@ -98,7 +98,7 @@ The toolbar with the heading, the summary line and the controls, the table, the 
 
 | Key | Type | Default |
 | --- | --- | --- |
-| `title` | `string` | `"Fila de suporte"`; the toolbar heading and the name of the section and the table |
+| `title` | `string` | `"Fila de suporte"`; the name of the section and the table, and the toolbar heading without views |
 | `toolbar` | `string` | `"Controles da fila de suporte"`; the name of the toolbar |
 | `summary` | `(visible, unassigned, nearSla) => string` | `"11 visíveis · 2 sem responsável · 6 perto do SLA"`; counted over the rows left by the search and filters |
 | `create`, `export` | `string` | `"Novo chamado"`, `"Exportar CSV"` |

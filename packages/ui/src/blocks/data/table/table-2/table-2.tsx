@@ -14,6 +14,7 @@ import {
   visibilityFromState,
 } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { resolveTable2Labels } from './labels'
 import { createTable2Columns } from './table-2-columns'
 import { Table2Skeleton } from './table-2-skeleton'
@@ -28,7 +29,6 @@ export const defaultTable2ColumnVisibility: Table2ColumnVisibility = {
 const defaultPageSizeOptions = [10, 20, 50]
 
 export function Table2({
-  activeViewId,
   className,
   columnVisibility,
   currency,
@@ -43,14 +43,11 @@ export function Table2({
   onSave,
   onShowPausedChange,
   onSortChange,
-  onViewChange,
-  onViewCreate,
   pageSize = 10,
   pageSizeOptions = defaultPageSizeOptions,
   pending,
   showPaused = false,
   sort,
-  views,
 }: Readonly<Table2Props>) {
   const labels = useMemo(() => resolveTable2Labels(labelsProp), [labelsProp])
   const formatter = useMemo(
@@ -108,22 +105,16 @@ export function Table2({
         loadState ? (
           <TableToolbar
             aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
+            left={<TableToolbarHeading title={labels.title} />}
           />
         ) : (
           <Table2Toolbar
-            activeViewId={activeViewId}
             description={labels.summary(table.getRowCount())}
             labels={labels}
-            locale={locale}
             onSave={onSave}
             onShowPausedChange={onShowPausedChange}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
             showPaused={showPaused}
             table={table}
-            views={views}
           />
         )
       }

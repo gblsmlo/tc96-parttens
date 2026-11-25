@@ -1,44 +1,38 @@
 # Toolbar
 
-Not a pattern: the toolbar frame of a collection (`CollectionToolbar`, `CollectionToolbarGroup`) with start, center and end slots, and the view switcher that sits in it (`ViewSwitcherMenu`, `ViewSwitcherSearch`, `ViewSwitcherItems`, `ViewSwitcherItem`, `ViewSwitcherCreate`). The root barrel `packages/ui/src/patterns/index.ts` re-exports `index.ts`, so the registry treats this folder as an area that ships only with the items whose files import it. It keeps no state beyond the view switcher popover's `open`: the consumer passes `variant`, the slots, the views and the selection and handles the callbacks.
+Not a pattern: the toolbar frame of a collection (`CollectionToolbar`, `CollectionToolbarGroup`) with `left`, `center` and `right` slots and a `mode`, and the internal menu trigger that the controls in its slots share. The root barrel `packages/ui/src/patterns/index.ts` re-exports `index.ts`, so the registry treats this folder as an area that ships only with the items whose files import it. It keeps no state: the consumer passes `mode` and the slots. The controls that fill the slots have their own folders: `view-switcher/` and `view-settings/`.
 
 ## Map
 
 | Folder | Holds |
 | --- | --- |
-| `components/` | `collection-toolbar.tsx`, `view-switcher.tsx` and `collection-toolbar.test.ts`, the bun check of the root barrel's toolbar surface |
+| `components/` | `collection-toolbar.tsx`; `collection-toolbar-menu-trigger.tsx`, the ghost `ToolbarButton` that opens a menu, internal and not exported; and `collection-toolbar.test.ts`, the bun check of the root barrel's toolbar surface |
 | `index.ts` | the barrel |
 
-Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/ui/text`, `@tc96/utils`, `@phosphor-icons/react` and React only; `collection-toolbar.test.ts` imports the root barrel `../../index`. It never imports a pattern.
+Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/utils` and React only; `collection-toolbar.test.ts` imports the root barrel `../../index`. It never imports a pattern.
 
 ## Dependents
 
-- No file outside the folder imports `components/` by path; stories import through `@tc96/ui/patterns`.
-- No runtime file of a pattern imports this folder. The `collection` registry item ships it through `itemAreas` in `packages/registry/src/manifest.ts`, and `build-registry.ts` fails when an area the aggregate exports ships with no item.
+- The table and data grid blocks import `components/collection-toolbar` by path (`packages/ui/src/blocks/data/`); stories import through `@tc96/ui/patterns`.
+- `view-settings/components/view-settings.tsx` and `collection/shared/components/collection-presets-menu.tsx` import `components/collection-toolbar-menu-trigger` by path.
+- The `collection` registry item ships this folder through `itemAreas` in `packages/registry/src/manifest.ts`, and `build-registry.ts` fails when an area the aggregate exports ships with no item.
 
 ## Invariants
 
-Toolbar:
-
-- `variant` defaults to `plain`, not the COSS frame (`default`). `plain` and `text` strip the frame with `items-center rounded-none border-0 bg-transparent p-0`. `aria-label` defaults to `Controles da coleção`.
-- With `variant="text"`, `title` renders as an `h2` and `description`, optional, as a muted `p` only when it is not empty; in the other variants `title` is the HTML `title` attribute and `description` is typed `never`.
-- `startSlot`, `centerSlot` and `endSlot` are destructured so they never reach the DOM. Without `centerSlot` the end group carries `ms-auto`; with it, start and end become `flex-1 basis-0` (an `aria-hidden` spacer stands in for a missing side) so the center group sits at the toolbar's midpoint whatever the side widths.
-- `components/collection-toolbar.test.ts` pins the root barrel's toolbar surface: `ViewSettingsMenu`, `ViewSettingsSection`, `PresetsMenu` and `Action` must exist, and `SavedViewsMenu`, `FilterMenu` and `SettingsMenu` must not. Those live in `collection/shared/`, not here. The `Patterns/Toolbar/Behavior` plays check `hover:bg-accent` and `w-56` by class name, because `:hover` does not respond to synthetic events.
-
-View switcher:
-
-- `ViewSwitcherMenu` is a `Popover` (`role="dialog"`), not a menu, and its trigger is a `ToolbarButton`, so it must render inside a `CollectionToolbar`. A `ViewSwitcherItem` label is a `PopoverClose`; pressing an item in its `options` menu closes the popover through a context `ViewSwitcherMenu` provides, because that menu is a separate Base UI tree.
-- `ViewSwitcherItems` with `loading` renders its children first and then `aria-hidden` skeleton rows, with `aria-busy` on the `fieldset`, so a view already known (the default one) stays selectable while the saved views load.
+- `CollectionToolbar` is only the frame: no heading, no `children`. A heading or the view switcher enters through `left`; the table and data grid blocks compose their `h2` and description there.
+- `mode` defaults to `plain`, which strips the COSS frame with `rounded-none border-0 bg-transparent p-0`; `default` keeps it. Height is `min-h-9 md:min-h-10`, not fixed, so a two-line `left` grows the bar. `aria-label` defaults to `Controles da coleção`.
+- `left`, `center` and `right` are destructured so they never reach the DOM. Without `center` the right group carries `ms-auto`; with it, both sides become `flex-1 basis-0` (an `aria-hidden` spacer stands in for a missing side) so the center group sits at the toolbar's midpoint whatever the side widths.
+- `collection-toolbar-menu-trigger.tsx` renders a Base UI `ToolbarButton`, so every control built on it (`ViewSettingsMenu`, `PresetsMenu`) must render inside a `CollectionToolbar`.
+- `components/collection-toolbar.test.ts` pins the root barrel's toolbar surface: `ViewSettingsMenu`, `ViewSettingsSection`, `PresetsMenu` and `Action` must exist, and `SavedViewsMenu`, `FilterMenu` and `SettingsMenu` must not.
 
 ## Styling
 
 | Attribute | Where | Styled by |
 | --- | --- | --- |
-| `data-variant="default\|plain\|text"` | the toolbar root | consumers; the component picks its classes from the `variant` prop, and `apps/storybook/src/patterns/toolbar/behavior.stories.tsx` asserts the attribute in plays |
-| `data-selected` | the selected `ViewSwitcherItem` | consumers and tests |
+| `data-mode="default\|plain"` | the toolbar root | consumers; the component picks its classes from the `mode` prop, and `apps/storybook/src/patterns/collection-toolbar/behavior.stories.tsx` and the table and data grid block plays assert it |
 
-- `data-slot` names set here: `view-switcher-search`, `view-switcher-items`, `view-switcher-item`, `view-switcher-create`. `toolbar` and `toolbar-group` come from COSS.
-- No `cva` variants: the only design axis is the `variant` conditional inside `CollectionToolbar`, and every class is a complete string. Colors only from theme tokens.
+- `toolbar` and `toolbar-group` are the COSS `data-slot` names; this folder sets none of its own.
+- No `cva` variants: the only design axis is the `mode` conditional inside `CollectionToolbar`, and every class is a complete string. Colors only from theme tokens.
 - `scripts/override-exceptions.json` has no entry for this folder.
 
 ## Verify
@@ -47,10 +41,10 @@ View switcher:
 bun test --isolate packages/ui/src/patterns/toolbar
 bunx biome check packages/ui/src/patterns/toolbar
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
-cd apps/storybook && bunx vitest run --project=storybook src/patterns/toolbar
+cd apps/storybook && bunx vitest run --project=storybook src/patterns/collection-toolbar
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/toolbar/`, on the six pages of `Patterns/Toolbar`: `behavior.stories.tsx` (toolbar, slots, variants, keyboard, and the settings, presets and action parts that render inside it) and `behavior/view-switcher.stories.tsx` (one story per view switcher case, same title `Patterns/Toolbar/Behavior`). The view switcher has no node of its own: its Stories are in `stories/view-switcher.stories.tsx` (title `Patterns/Toolbar/Stories`) and its structures in `layouts.stories.tsx`. The only bun test left is `components/collection-toolbar.test.ts`, which renders nothing. Stories run axe with `test: 'error'`. `toolbar-layouts.tsx` holds the stateful compositions (`ComposedToolbar` and the others) that Playground, Stories, Layouts, Usages and Behavior share, and `toolbar-controls.ts` their controls. The toolbar stories are typed `StoryObj<typeof CollectionToolbar>`, not `StoryObj<typeof meta>`: `CollectionToolbarProps` is a union, and with `typeof meta` the story args collapse to `never`. The layout wrapper is the `ToolbarCanvas` decorator, `w-full max-w-6xl p-6`.
+Interface tests are `play` functions in `apps/storybook/src/patterns/collection-toolbar/behavior.stories.tsx`, on the five pages of `Patterns/CollectionToolbar` (API Reference, Playground, Layouts, Behavior, Usages); `PresetsMenu` and `Action` are tested there too, inside the bar. Layouts are only arrangements of the slots, drawn with anatomy placeholders (`DefaultSlots` and the others in `toolbar-layouts.tsx`), because each screen fills them its own way; what fills them lives in Usages, each story naming the layout it fills. The Playground picks the content of each slot with a select, and `ComposedToolbar` builds the view switcher and the view settings from the compositions in `apps/storybook/src/patterns/view-switcher/` and `view-settings/`. The only bun test is `components/collection-toolbar.test.ts`, which renders nothing. Stories run axe with `test: 'error'`. The layout wrapper is the `ToolbarCanvas` decorator, `w-full max-w-6xl p-6`.
 
 ## Pointers
 

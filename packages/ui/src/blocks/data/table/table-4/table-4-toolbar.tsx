@@ -5,8 +5,9 @@ import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/componen
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { TableToolbar, TableToolbarButton } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import type { Table4Row } from './table-4-cells'
 import type { Table4Labels, Table4Status } from './types'
 
@@ -33,8 +34,13 @@ export function Table4Toolbar({
   return (
     <TableToolbar
       aria-label={labels.toolbar}
-      description={labels.description}
-      endSlot={
+      left={
+        <TableToolbarHeading
+          description={labels.description}
+          title={labels.title}
+        />
+      }
+      right={
         <>
           <DataGridSearch
             aria-label={labels.search}
@@ -71,7 +77,6 @@ export function Table4Toolbar({
           ) : null}
         </>
       }
-      title={labels.title}
     />
   )
 }

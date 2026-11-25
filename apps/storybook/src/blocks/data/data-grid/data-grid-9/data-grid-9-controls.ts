@@ -8,8 +8,6 @@ export interface DataGrid9Controls {
   pageSize: number
   rowActions: boolean
   title: string
-  viewCreate: boolean
-  views: boolean
 }
 
 export const dataGrid9ControlArgs: DataGrid9Controls = {
@@ -20,8 +18,6 @@ export const dataGrid9ControlArgs: DataGrid9Controls = {
   pageSize: 8,
   rowActions: true,
   title: 'Desempenho de campanhas',
-  viewCreate: true,
-  views: true,
 }
 
 export const dataGrid9ControlArgTypes: Partial<ArgTypes<DataGrid9Controls>> = {
@@ -59,15 +55,5 @@ export const dataGrid9ControlArgTypes: Partial<ArgTypes<DataGrid9Controls>> = {
     control: 'text',
     description:
       'Text of `labels.title`, the toolbar heading and the name of the grid.',
-  },
-  viewCreate: {
-    control: 'boolean',
-    description:
-      'Passes `onViewCreate`; off, the view switcher has no create item.',
-  },
-  views: {
-    control: 'boolean',
-    description:
-      'Passes `views`, `activeViewId` and `onViewChange`; off, the view switcher is not rendered.',
   },
 }

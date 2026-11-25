@@ -1,14 +1,12 @@
 import {
   defaultGridLoadLabels,
   defaultGridSettingsLabels,
-  defaultGridViewLabels,
 } from '../shared/labels'
 import type { DataGrid2Labels, DataGrid2LabelsOverride } from './types'
 
 export const defaultDataGrid2Labels: DataGrid2Labels = {
   ...defaultGridLoadLabels,
   ...defaultGridSettingsLabels,
-  ...defaultGridViewLabels,
   activity: (percent) => `Atividade de ${percent}`,
   clearFilters: 'Limpar filtros',
   columns: {

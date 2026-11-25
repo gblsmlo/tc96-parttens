@@ -15,6 +15,7 @@ import {
 import { TableFrame } from '../shared/table-frame'
 import { tableLoadState } from '../shared/table-load-state'
 import { TableToolbar } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import {
   applyDraft,
   createPriceFormat,
@@ -164,8 +165,12 @@ export function Table4({
         loadState ? (
           <TableToolbar
             aria-label={labels.toolbar}
-            description={labels.description}
-            title={labels.title}
+            left={
+              <TableToolbarHeading
+                description={labels.description}
+                title={labels.title}
+              />
+            }
           />
         ) : (
           <Table4Toolbar labels={labels} onAdd={onAdd} table={table} />

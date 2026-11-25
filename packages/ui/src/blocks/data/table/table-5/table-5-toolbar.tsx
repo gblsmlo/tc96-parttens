@@ -8,8 +8,9 @@ import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/componen
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { TableToolbar, TableToolbarButton } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { table5PriorityOrder } from './table-5-columns'
 import type { Table5Labels, Table5Task } from './types'
 
@@ -44,8 +45,10 @@ export function Table5Toolbar({
   return (
     <TableToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={
+        <TableToolbarHeading description={description} title={labels.title} />
+      }
+      right={
         <>
           <DataGridSearch
             aria-label={labels.search}
@@ -117,7 +120,6 @@ export function Table5Toolbar({
           ) : null}
         </>
       }
-      title={labels.title}
     />
   )
 }

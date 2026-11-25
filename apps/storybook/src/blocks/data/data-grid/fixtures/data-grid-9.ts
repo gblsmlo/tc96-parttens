@@ -8,7 +8,6 @@ import type {
   DataGrid9Sort,
   DataGrid9Status,
   DataGrid9Summary,
-  DataGrid9View,
 } from '@tc96/ui/blocks/data/data-grid/data-grid-9'
 
 const trendOf = (seed: number, slope: number) =>
@@ -329,34 +328,8 @@ export interface DataGrid9ViewSettings {
   sort: DataGrid9Sort | null
 }
 
-export interface DataGrid9SavedView extends DataGrid9View {
-  settings: DataGrid9ViewSettings
-}
-
 export const factorySettings: DataGrid9ViewSettings = {
   columnVisibility: {},
   density: 'tall',
   sort: initialSort,
 }
-
-export const views: DataGrid9SavedView[] = [
-  { id: 'all', label: 'Todas as campanhas', settings: factorySettings },
-  {
-    id: 'efficiency',
-    label: 'Eficiência',
-    settings: {
-      columnVisibility: { newBuyers: false, trend: false },
-      density: 'medium',
-      sort: { direction: 'asc', key: 'cpa' },
-    },
-  },
-  {
-    id: 'return',
-    label: 'Retorno',
-    settings: {
-      columnVisibility: { conversions: false },
-      density: 'short',
-      sort: { direction: 'desc', key: 'roas' },
-    },
-  },
-]

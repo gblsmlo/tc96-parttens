@@ -21,6 +21,8 @@ import {
   visibilityFromState,
 } from '../shared/grid-state'
 import { GridToolbar } from '../shared/grid-toolbar'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
+import { GridViewSwitcher } from '../shared/grid-view-switcher'
 import { healthLevel } from './data-grid-3-cells'
 import { createDataGrid3Columns } from './data-grid-3-columns'
 import { createDataGrid3SelectionActions } from './data-grid-3-selection-actions'
@@ -269,6 +271,22 @@ export function DataGrid3({
     [labels, onAssignOwner, onStageUpdate, owners],
   )
 
+  const toolbarLeft = views?.length ? (
+    <GridViewSwitcher
+      activeViewId={activeViewId}
+      labels={labels}
+      locale={locale}
+      onViewChange={onViewChange}
+      onViewCreate={onViewCreate}
+      views={views}
+    />
+  ) : (
+    <GridToolbarHeading
+      description={loadState ? undefined : description}
+      title={labels.title}
+    />
+  )
+
   return (
     <GridFrame
       className={className}
@@ -276,25 +294,16 @@ export function DataGrid3({
       title={labels.title}
       toolbar={
         loadState ? (
-          <GridToolbar
-            aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
-          />
+          <GridToolbar aria-label={labels.toolbar} left={toolbarLeft} />
         ) : (
           <DataGrid3Toolbar
-            activeViewId={activeViewId}
             conditions={conditions}
-            description={description}
             labels={labels}
-            locale={locale}
+            left={toolbarLeft}
             onConditionsChange={changeConditions}
             onCreate={onCreate}
             onSaveView={onSaveView}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
             table={table}
-            views={views}
           />
         )
       }

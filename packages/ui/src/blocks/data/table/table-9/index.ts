@@ -15,5 +15,4 @@ export type {
   Table9Status,
   Table9Summary,
   Table9ToggleColumnId,
-  Table9View,
 } from './types'

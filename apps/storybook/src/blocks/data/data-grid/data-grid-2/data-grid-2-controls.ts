@@ -7,8 +7,6 @@ export interface DataGrid2Controls {
   savePreference: boolean
   showPausedSwitch: boolean
   title: string
-  viewCreate: boolean
-  views: boolean
 }
 
 export const dataGrid2ControlArgs: DataGrid2Controls = {
@@ -18,8 +16,6 @@ export const dataGrid2ControlArgs: DataGrid2Controls = {
   savePreference: true,
   showPausedSwitch: true,
   title: 'Membros',
-  viewCreate: true,
-  views: true,
 }
 
 export const dataGrid2ControlArgTypes: Partial<ArgTypes<DataGrid2Controls>> = {
@@ -51,15 +47,5 @@ export const dataGrid2ControlArgTypes: Partial<ArgTypes<DataGrid2Controls>> = {
     control: 'text',
     description:
       'Text of `labels.title`, the toolbar heading and the name of the grid.',
-  },
-  viewCreate: {
-    control: 'boolean',
-    description:
-      'Passes `onViewCreate`; off, the view switcher has no create item.',
-  },
-  views: {
-    control: 'boolean',
-    description:
-      'Passes `views`, `activeViewId` and `onViewChange`; off, the view switcher is not rendered.',
   },
 }

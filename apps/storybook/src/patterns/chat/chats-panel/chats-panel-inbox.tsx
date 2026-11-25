@@ -100,7 +100,7 @@ export function ChatInbox({
       actions={
         <CollectionToolbar
           aria-label="Ajustes das conversas"
-          endSlot={
+          right={
             <ViewSettingsMenu
               activeFilterCount={activeFilterCount}
               onClearFilters={clearFilters}

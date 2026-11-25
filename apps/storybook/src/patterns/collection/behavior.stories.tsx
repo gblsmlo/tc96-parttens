@@ -285,7 +285,7 @@ function LayoutTabs() {
 
   return (
     <CollectionToolbar
-      endSlot={
+      right={
         <ViewSettingsMenu
           mode={preferences.layout}
           modes={layoutModes}
@@ -799,7 +799,7 @@ const searchbox = (canvasElement: HTMLElement) =>
 export const SearchCommitsOnSubmit: Story = {
   render: ({ onCommit }) => (
     <CollectionToolbar
-      startSlot={
+      left={
         <CollectionSearchField
           label="Buscar contatos"
           onCommit={onCommit}
@@ -821,7 +821,7 @@ export const SearchCommitsOnSubmit: Story = {
 export const SearchCommitsWhenEmptied: Story = {
   render: ({ onCommit }) => (
     <CollectionToolbar
-      startSlot={
+      left={
         <CollectionSearchField
           label="Buscar contatos"
           onCommit={onCommit}
@@ -847,7 +847,7 @@ function ExternalSearchValue() {
         Voltar para a busca salva
       </Button>
       <CollectionToolbar
-        startSlot={
+        left={
           <CollectionSearchField
             label="Buscar contatos"
             onCommit={setValue}
@@ -896,7 +896,7 @@ function FilterSubmenu({
 }>) {
   return (
     <CollectionToolbar
-      endSlot={
+      right={
         <ViewSettingsMenu onClearFilters={() => undefined}>
           <ViewSettingsSection label="Filtros">
             <FilterRadioSubmenu
@@ -1018,7 +1018,7 @@ const popupWidths = [
 export const ModeTabCallsOnModeChange: Story = {
   render: ({ onModeChange }) => (
     <CollectionToolbar
-      endSlot={
+      right={
         <ViewSettingsMenu
           mode="mode-1"
           modes={modesOf(2)}
@@ -1049,7 +1049,7 @@ export const ModeTabCallsOnModeChange: Story = {
 export const PopupWidthFollowsTheModes: Story = {
   render: () => (
     <CollectionToolbar
-      endSlot={popupWidths.map(([label, count]) => (
+      right={popupWidths.map(([label, count]) => (
         <ViewSettingsMenu
           key={label}
           label={label}
@@ -1093,7 +1093,7 @@ function SettingsMenu(
 ) {
   return (
     <CollectionToolbar
-      endSlot={
+      right={
         <ViewSettingsMenu {...props}>
           <ViewSettingsSection label="Seção">
             <MenuItem>Item</MenuItem>

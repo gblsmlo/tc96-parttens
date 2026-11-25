@@ -7,8 +7,6 @@ export interface Table2Controls {
   savePreference: boolean
   showPausedSwitch: boolean
   title: string
-  viewCreate: boolean
-  views: boolean
 }
 
 export const table2ControlArgs: Table2Controls = {
@@ -18,8 +16,6 @@ export const table2ControlArgs: Table2Controls = {
   savePreference: true,
   showPausedSwitch: true,
   title: 'Membros',
-  viewCreate: true,
-  views: true,
 }
 
 export const table2ControlArgTypes: Partial<ArgTypes<Table2Controls>> = {
@@ -51,15 +47,5 @@ export const table2ControlArgTypes: Partial<ArgTypes<Table2Controls>> = {
     control: 'text',
     description:
       'Text of `labels.title`, the toolbar heading and the name of the table.',
-  },
-  viewCreate: {
-    control: 'boolean',
-    description:
-      'Passes `onViewCreate`; off, the view switcher has no create item.',
-  },
-  views: {
-    control: 'boolean',
-    description:
-      'Passes `views`, `activeViewId` and `onViewChange`; off, the view switcher is not rendered.',
   },
 }

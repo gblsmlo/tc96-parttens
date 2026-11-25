@@ -10,6 +10,7 @@ import { GridFrame } from '../shared/grid-frame'
 import { gridLoadState } from '../shared/grid-load-state'
 import { sortFromSorting, sortingFromSort } from '../shared/grid-state'
 import { GridToolbar } from '../shared/grid-toolbar'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { createDataGrid5Columns } from './data-grid-5-columns'
 import { DataGrid5Skeleton } from './data-grid-5-skeleton'
 import { DataGrid5Toolbar } from './data-grid-5-toolbar'
@@ -136,8 +137,7 @@ export function DataGrid5({
         loadState ? (
           <GridToolbar
             aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
+            left={<GridToolbarHeading title={labels.title} />}
           />
         ) : (
           <DataGrid5Toolbar

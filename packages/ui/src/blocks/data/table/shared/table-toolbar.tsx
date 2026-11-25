@@ -5,20 +5,12 @@ import type { ReactNode } from 'react'
 
 export interface TableToolbarProps {
   'aria-label': string
-  description: string
-  endSlot?: ReactNode
-  startSlot?: ReactNode
-  title: string
+  left?: ReactNode
+  right?: ReactNode
 }
 
 export function TableToolbar(props: Readonly<TableToolbarProps>) {
-  return (
-    <CollectionToolbar
-      className="flex-wrap gap-y-3"
-      variant="text"
-      {...props}
-    />
-  )
+  return <CollectionToolbar className="min-h-14 flex-wrap gap-y-3" {...props} />
 }
 
 export interface TableToolbarButtonProps {

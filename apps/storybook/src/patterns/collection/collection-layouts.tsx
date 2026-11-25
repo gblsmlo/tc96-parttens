@@ -411,7 +411,7 @@ export function CollectionScreen({
             <CollectionFrameHeader>
               <CollectionToolbar
                 aria-label="Controles da coleção de tarefas"
-                endSlot={
+                right={
                   <>
                     <ViewSettingsMenu
                       activeFilterCount={countTaskQuery(query)}
@@ -632,7 +632,7 @@ export function CollectionScreen({
                     ) : null}
                   </>
                 }
-                startSlot={
+                left={
                   <>
                     <ViewSwitcherMenu icon={viewIcon} label={activeView.label}>
                       <ViewSwitcherSearch
@@ -672,7 +672,7 @@ export function CollectionScreen({
                     ) : null}
                   </>
                 }
-                variant="plain"
+                mode="plain"
               />
             </CollectionFrameHeader>
           ) : null}

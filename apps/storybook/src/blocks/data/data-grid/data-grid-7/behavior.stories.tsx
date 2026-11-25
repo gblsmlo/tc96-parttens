@@ -85,7 +85,7 @@ export const TheHeadingAppearsOnce: Story = {
 export const TheToolbarCarriesTheHeadingAndTheControls: Story = {
   play: async ({ canvasElement }) => {
     const toolbar = toolbarOf(canvasElement)
-    await expect(toolbar).toHaveAttribute('data-variant', 'text')
+    await expect(toolbar).toHaveAttribute('data-mode', 'plain')
     const inToolbar = within(toolbar)
     await expect(
       inToolbar.getByRole('heading', { name: 'Regras de roteamento' }),

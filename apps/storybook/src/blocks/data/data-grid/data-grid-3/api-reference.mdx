@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A renewals review on the collection Data Grid: account with owner and segment, renewal due date, ARR with upside, health, stage and risk, filtered by condition chips (field, operator, value) and with the pattern's `ActionBar` floating over the grid while renewals are selected, to reassign the owner or move the stage. Reach for it on a customer success or revenue screen where people narrow a portfolio with several criteria at once. Install it with `npx @tc96/cli add data-grid-3`.
 
-It is a section, not a page: it renders no `main` landmark. The conditions belong to the consumer: `conditions` feeds the grid's global filter through `createDataGridConditionFilterFn`, and the `DataGridConditionFilters` chips, the Filtros field menu and Limpar filtros report through `onConditionsChange`; without that callback the chips are not rendered but the conditions still filter. The chips sit in their own row below the heading. The heading is the toolbar's: one `CollectionToolbar` with `variant="text"` carries `labels.title` as the only `h2` and the summary line as its description, then the view switcher (only with `views`), the `ViewSettingsMenu` (Configurações) holding sort, row height, columns, Limpar filtros and Salvar view, and the Nova transação button. The sort, the column visibility, the density and the selection are controllable and reported. The block never changes a renewal: Atribuir responsável and Mover etapa are `ActionBar` items whose submenus list the owners and the stages, and a choice only calls `onAssignOwner` or `onStageUpdate` with the selected ids. Loading and error are the block's: the toolbar keeps the heading and hides its controls and the chips, `pending` renders the skeleton in place of the grid and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
+It is a section, not a page: it renders no `main` landmark. The conditions belong to the consumer: `conditions` feeds the grid's global filter through `createDataGridConditionFilterFn`, and the `DataGridConditionFilters` chips, the Filtros field menu and Limpar filtros report through `onConditionsChange`; without that callback the chips are not rendered but the conditions still filter. The chips sit in their own row below the toolbar. The toolbar is one `CollectionToolbar`. Its `left` slot holds either the view switcher, when `views` has items, or `labels.title` as the only `h2` with the summary line as its description, never both; with the switcher the page has no `h2` and the section and the grid keep their name from `labels.title`. Its `right` slot holds the `ViewSettingsMenu` (Configurações) holding sort, row height, columns, Limpar filtros and Salvar view, and the Nova transação button. The sort, the column visibility, the density and the selection are controllable and reported. The block never changes a renewal: Atribuir responsável and Mover etapa are `ActionBar` items whose submenus list the owners and the stages, and a choice only calls `onAssignOwner` or `onStageUpdate` with the selected ids. Loading and error are the block's: the toolbar keeps its `left` slot (the view switcher, or the heading without the summary) and hides its controls and the chips, `pending` renders the skeleton in place of the grid and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
 The other pages of `Blocks/Data/DataGrid/DataGrid3`: [Playground](?path=/story/blocks-data-datagrid-datagrid3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-data-datagrid-datagrid3-behavior--each-row-shows-the-renewal-details) for the tests, [States](?path=/story/blocks-data-datagrid-datagrid3-states--default) for the loaded, loading, error and empty states and [Usages](?path=/story/blocks-data-datagrid-datagrid3-usages--loaded) for the data read over the network.
 
@@ -21,7 +21,7 @@ The same path exports the types listed under Exports.
 
 ## Anatomy
 
-The toolbar with the heading, the summary line, Configurações and Nova transação, the condition chips with Filtros and Limpar filtros, the grid, the `ActionBar` floating over it (only while rows are selected) and the pagination footer.
+The toolbar with the heading and the summary line (the view switcher takes their place when `views` is passed), Configurações and Nova transação, the condition chips with Filtros and Limpar filtros, the grid, the `ActionBar` floating over it (only while rows are selected) and the pagination footer.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
@@ -53,7 +53,7 @@ The toolbar with the heading, the summary line, Configurações and Nova transa�
 | `owners` | `DataGrid3Person[]` | the owners found in `renewals` | The items of the Atribuir responsável submenu of the `ActionBar` and the options of the Responsável condition. |
 | `onAssignOwner` | `(renewalIds: string[], ownerId: string) => void` | - | Called by an owner of Atribuir responsável; the item renders only with it and at least one owner. |
 | `onStageUpdate` | `(renewalIds: string[], stage: DataGrid3Stage) => void` | - | Called by a stage of Mover etapa; the item renders only with it. |
-| `views`, `activeViewId`, `onViewChange`, `onViewCreate` | `GridViewProps` | - | The shared view switcher; it renders only with `views`. The block does not apply a view. |
+| `views`, `activeViewId`, `onViewChange`, `onViewCreate` | `GridViewProps` | - | The shared view switcher, which replaces the heading and the summary line in the toolbar; without items in `views` the heading shows. The block does not apply a view. |
 | `onSaveView` | `() => void` | - | Renders Salvar view at the end of Configurações. |
 | `onCreate` | `() => void` | - | Renders the Nova transação button. |
 | `rowActions`, `onRowAction` | `DataGrid3RowAction[]`, `(actionId, renewalId) => void` | - | The row menu column renders only with both. |
@@ -83,7 +83,7 @@ The summary counts, over the filtered rows, the renewals due within 30 days, the
 
 | Key | Type | Default |
 | --- | --- | --- |
-| `title` | `string` | `"Revisão de renovações"`; the toolbar heading and the name of the section and the grid |
+| `title` | `string` | `"Revisão de renovações"`; the name of the section and the grid, and the toolbar heading without views |
 | `toolbar` | `string` | `"Controles das renovações"`; the name of the toolbar |
 | `summary` | `(dueSoon, atRisk, arrAtRisk) => string` | `"6 vencem em 30 dias · 3 em risco · R$ 1,1 mi de ARR em risco"` |
 | `create`, `settings`, `saveView` | `string` | `"Nova transação"`, `"Configurações"`, `"Salvar view"` |

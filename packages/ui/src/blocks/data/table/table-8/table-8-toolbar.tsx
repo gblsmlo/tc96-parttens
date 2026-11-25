@@ -16,17 +16,10 @@ import { CollectionSearchField } from '@tc96/ui/patterns/collection/shared/compo
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
-import {
-  ViewSwitcherCreate,
-  ViewSwitcherItem,
-  ViewSwitcherItems,
-  ViewSwitcherMenu,
-  ViewSwitcherSearch,
-} from '@tc96/ui/patterns/toolbar/components/view-switcher'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
-import { useState } from 'react'
+import type { ReactNode } from 'react'
 import { TableToolbar, TableToolbarButton } from '../shared/table-toolbar'
 import type {
   Table8Channel,
@@ -35,7 +28,6 @@ import type {
   Table8Method,
   Table8Status,
   Table8Transaction,
-  Table8View,
 } from './types'
 
 export const table8Statuses: readonly Table8Status[] = [
@@ -66,82 +58,29 @@ export const emptyTable8Filters: Table8Filters = {
 }
 
 export interface Table8ToolbarProps {
-  activeViewId?: string
-  description: string
   filters: Table8Filters
   labels: Table8Labels
+  left: ReactNode
   onExport?: () => void
   onFiltersChange?: (filters: Table8Filters) => void
   onRefresh?: () => void
   onSearchChange?: (search: string) => void
-  onViewChange?: (viewId: string) => void
-  onViewCreate?: () => void
   refreshing: boolean
   search: string
   table: DataTableTable<Table8Transaction>
-  views?: Table8View[]
-}
-
-function Table8ViewSwitcher({
-  activeViewId,
-  labels,
-  onViewChange,
-  onViewCreate,
-  views,
-}: Readonly<{
-  activeViewId?: string
-  labels: Table8Labels
-  onViewChange: (viewId: string) => void
-  onViewCreate?: () => void
-  views: Table8View[]
-}>) {
-  const [query, setQuery] = useState('')
-  const active = views.find((view) => view.id === activeViewId)
-  const needle = query.trim().toLocaleLowerCase()
-  const visible = needle
-    ? views.filter((view) => view.label.toLocaleLowerCase().includes(needle))
-    : views
-
-  return (
-    <ViewSwitcherMenu label={active?.label ?? labels.views}>
-      <ViewSwitcherSearch
-        label={labels.searchViews}
-        onValueChange={setQuery}
-        placeholder={labels.searchViews}
-        value={query}
-      />
-      <ViewSwitcherItems label={labels.views}>
-        {visible.map((view) => (
-          <ViewSwitcherItem
-            key={view.id}
-            label={view.label}
-            onSelect={() => onViewChange(view.id)}
-            selected={view.id === activeViewId}
-          />
-        ))}
-      </ViewSwitcherItems>
-      {onViewCreate ? (
-        <ViewSwitcherCreate label={labels.createView} onClick={onViewCreate} />
-      ) : null}
-    </ViewSwitcherMenu>
-  )
 }
 
 export function Table8Toolbar({
-  activeViewId,
-  description,
   filters,
   labels,
+  left,
   onExport,
   onFiltersChange,
   onRefresh,
   onSearchChange,
-  onViewChange,
-  onViewCreate,
   refreshing,
   search,
   table,
-  views,
 }: Readonly<Table8ToolbarProps>) {
   const activeFilterCount = Object.values(filters).filter(Boolean).length
   const setFilter = <TKey extends keyof Table8Filters>(
@@ -149,16 +88,6 @@ export function Table8Toolbar({
     value: string,
   ) => onFiltersChange?.({ ...filters, [key]: value as Table8Filters[TKey] })
 
-  const switcher =
-    views && onViewChange ? (
-      <Table8ViewSwitcher
-        activeViewId={activeViewId}
-        labels={labels}
-        onViewChange={onViewChange}
-        onViewCreate={onViewCreate}
-        views={views}
-      />
-    ) : null
   const searchField = onSearchChange ? (
     <CollectionSearchField
       label={labels.search}
@@ -171,8 +100,8 @@ export function Table8Toolbar({
   return (
     <TableToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={left}
+      right={
         <>
           {searchField}
           {onRefresh ? (
@@ -255,8 +184,6 @@ export function Table8Toolbar({
           ) : null}
         </>
       }
-      startSlot={switcher ?? undefined}
-      title={labels.title}
     />
   )
 }

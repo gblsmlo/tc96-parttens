@@ -6,14 +6,13 @@ import {
   type Table2Settings,
 } from '@tc96/ui/blocks/data/table/table-2'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { table2Handlers } from '../../../../mocks/table-2.ts'
-import { factorySettings, views } from '../fixtures/table-2.ts'
+import { factorySettings } from '../fixtures/table-2.ts'
 
 const TeamMembers = () => {
   const [settings, setSettings] = useState<Table2Settings>(factorySettings)
-  const [activeViewId, setActiveViewId] = useState('all')
   const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<Table2Member[]>('/data/table/members'),
     queryKey: ['data', 'table', 'members'],
@@ -21,7 +20,6 @@ const TeamMembers = () => {
 
   return (
     <Table2
-      activeViewId={activeViewId}
       columnVisibility={settings.columnVisibility}
       density={settings.density}
       error={isError}
@@ -34,17 +32,11 @@ const TeamMembers = () => {
       }
       onRetry={() => refetch()}
       onSortChange={(sort) => setSettings((current) => ({ ...current, sort }))}
-      onViewChange={(viewId) => {
-        const view = views.find((option) => option.id === viewId)
-        if (view) setSettings(view.settings)
-        setActiveViewId(viewId)
-      }}
       pageSize={6}
       pageSizeOptions={[6, 12]}
       pending={isPending}
       showPaused={settings.showPaused}
       sort={settings.sort}
-      views={views}
     />
   )
 }
@@ -68,17 +60,7 @@ export const Loaded: Story = {
     const canvas = within(canvasElement)
     await expect(await canvas.findByText('Ana Souza')).toBeVisible()
     await expect(canvas.getByRole('table')).toBeVisible()
-    await userEvent.click(
-      canvas.getByRole('button', { name: /Todos os membros/ }),
-    )
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Recém-chegados' }),
-    )
-    await waitFor(() =>
-      expect(
-        canvas.getByRole('button', { name: /Recém-chegados/ }),
-      ).toBeVisible(),
-    )
+    await expect(canvas.getByRole('heading', { name: 'Membros' })).toBeVisible()
   },
 }
 

@@ -6,7 +6,7 @@ import {
   type Table9Summary,
 } from '@tc96/ui/blocks/data/table/table-9'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
+import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { table9Handlers } from '../../../../mocks/table-9.ts'
 import {
@@ -14,7 +14,6 @@ import {
   factorySettings,
   period,
   type Table9ViewSettings,
-  views,
 } from '../fixtures/table-9.ts'
 
 interface CampaignsResponse {
@@ -24,7 +23,6 @@ interface CampaignsResponse {
 
 const CampaignPerformance = () => {
   const [settings, setSettings] = useState<Table9ViewSettings>(factorySettings)
-  const [activeViewId, setActiveViewId] = useState('all')
   const { data, isError, isPending, refetch } = useQuery({
     queryFn: () => fetchJson<CampaignsResponse>('/data/table/campaigns'),
     queryKey: ['data', 'table', 'campaigns'],
@@ -32,7 +30,6 @@ const CampaignPerformance = () => {
 
   return (
     <Table9
-      activeViewId={activeViewId}
       campaigns={data?.campaigns ?? []}
       columnVisibility={settings.columnVisibility}
       density={settings.density}
@@ -45,18 +42,12 @@ const CampaignPerformance = () => {
       }
       onRetry={() => refetch()}
       onSortChange={(sort) => setSettings((current) => ({ ...current, sort }))}
-      onViewChange={(viewId) => {
-        const view = views.find((option) => option.id === viewId)
-        if (view) setSettings(view.settings)
-        setActiveViewId(viewId)
-      }}
       pageSize={6}
       pageSizeOptions={[6, 12]}
       pending={isPending}
       period={period}
       sort={settings.sort}
       summary={data?.summary ?? emptySummary}
-      views={views}
     />
   )
 }
@@ -83,15 +74,6 @@ export const Loaded: Story = {
     ).toBeVisible()
     await expect(canvas.getByRole('table')).toBeVisible()
     await expect(canvas.getAllByRole('heading')).toHaveLength(1)
-    await userEvent.click(
-      canvas.getByRole('button', { name: /Todas as campanhas/ }),
-    )
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Retorno' }),
-    )
-    await waitFor(() =>
-      expect(canvas.getByRole('button', { name: /Retorno/ })).toBeVisible(),
-    )
   },
 }
 

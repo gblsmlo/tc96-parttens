@@ -8,9 +8,6 @@ import type {
   TablePerson,
   TableSettingsLabels,
   TableSort,
-  TableView,
-  TableViewLabels,
-  TableViewProps,
 } from '../shared/types'
 
 export type Table2ColumnId =
@@ -31,8 +28,6 @@ export type Table2SortKey = 'joined' | 'lastSeen' | 'member' | 'rating' | 'role'
 export type Table2Presence = 'away' | 'offline' | 'online'
 
 export type Table2Density = DataTableDensity
-
-export type Table2View = TableView
 
 export type Table2Person = TablePerson
 
@@ -71,10 +66,7 @@ export interface Table2Settings {
   sort: Table2Sort | null
 }
 
-export interface Table2Labels
-  extends TableLoadLabels,
-    TableSettingsLabels,
-    TableViewLabels {
+export interface Table2Labels extends TableLoadLabels, TableSettingsLabels {
   activity: (percent: string) => string
   clearFilters: string
   columns: Record<Table2ColumnId, string>
@@ -106,10 +98,7 @@ export type Table2LabelsOverride = Partial<
   presence?: Partial<Table2Labels['presence']>
 }
 
-export interface Table2Props
-  extends TableFormatProps,
-    TableLoadProps,
-    TableViewProps {
+export interface Table2Props extends TableFormatProps, TableLoadProps {
   className?: string
   columnVisibility?: Table2ColumnVisibility
   density?: Table2Density

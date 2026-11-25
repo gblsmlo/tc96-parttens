@@ -5,20 +5,12 @@ import type { ReactNode } from 'react'
 
 export interface GridToolbarProps {
   'aria-label': string
-  description: string
-  endSlot?: ReactNode
-  startSlot?: ReactNode
-  title: string
+  left?: ReactNode
+  right?: ReactNode
 }
 
 export function GridToolbar(props: Readonly<GridToolbarProps>) {
-  return (
-    <CollectionToolbar
-      className="flex-wrap gap-y-3"
-      variant="text"
-      {...props}
-    />
-  )
+  return <CollectionToolbar className="min-h-14 flex-wrap gap-y-3" {...props} />
 }
 
 export interface GridToolbarButtonProps {

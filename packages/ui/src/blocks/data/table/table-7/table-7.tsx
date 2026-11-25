@@ -10,6 +10,7 @@ import { createTableFormatter } from '../shared/format'
 import { TableFrame } from '../shared/table-frame'
 import { tableLoadState } from '../shared/table-load-state'
 import { TableToolbar } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { resolveTable7Labels } from './labels'
 import { createTable7Columns } from './table-7-columns'
 import { Table7Skeleton } from './table-7-skeleton'
@@ -125,8 +126,7 @@ export function Table7({
         loadState ? (
           <TableToolbar
             aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
+            left={<TableToolbarHeading title={labels.title} />}
           />
         ) : (
           <Table7Toolbar

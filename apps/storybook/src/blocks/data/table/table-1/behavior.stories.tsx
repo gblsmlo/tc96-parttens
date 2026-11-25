@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Table1 } from '@tc96/ui/blocks/data/table/table-1'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
-import { tickets } from '../fixtures/table-1.ts'
+import { tickets, views } from '../fixtures/table-1.ts'
 import { type Table1Controls, table1ControlArgs } from './table-1-controls.ts'
 import { ComposedTable1 } from './table-1-layouts.tsx'
 
@@ -93,22 +93,26 @@ const selectTicket = (canvasElement: HTMLElement, code: string) =>
     within(canvasElement).getByRole('checkbox', { name: `Selecionar ${code}` }),
   )
 
-export const TheHeadingAppearsOnce: Story = {
+export const TheViewSwitcherReplacesTheHeading: Story = {
   play: async ({ canvasElement }) => {
-    const headings = within(canvasElement).getAllByRole('heading')
-    await expect(headings).toHaveLength(1)
-    await expect(headings[0]).toHaveTextContent('Fila de suporte')
-    await expect(headings[0]?.tagName).toBe('H2')
+    const canvas = within(canvasElement)
+    await expect(canvas.queryAllByRole('heading')).toHaveLength(0)
+    await expect(
+      canvas.getByRole('button', { name: 'Todos os chamados' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('region', { name: 'Fila de suporte' }),
+    ).toBeVisible()
   },
 }
 
-export const TheToolbarCarriesTheHeadingAndTheControls: Story = {
+export const TheToolbarCarriesTheViewSwitcherAndTheControls: Story = {
   play: async ({ canvasElement }) => {
     const toolbar = headerOf(canvasElement)
-    await expect(toolbar).toHaveAttribute('data-variant', 'text')
+    await expect(toolbar).toHaveAttribute('data-mode', 'plain')
     const inToolbar = within(toolbar)
     await expect(
-      inToolbar.getByRole('heading', { name: 'Fila de suporte' }),
+      inToolbar.getByRole('button', { name: 'Todos os chamados' }),
     ).toBeVisible()
     await expect(
       inToolbar.getByRole('searchbox', { name: 'Buscar chamados' }),
@@ -152,6 +156,7 @@ export const SlaToneAndStatusAreDataAttributes: Story = {
 }
 
 export const TheSummaryCountsTheVisibleTickets: Story = {
+  args: { savedViews: false },
   play: async ({ canvasElement }) => {
     await expect(headerOf(canvasElement)).toHaveTextContent(
       '11 visíveis · 2 sem responsável · 6 perto do SLA',
@@ -160,6 +165,7 @@ export const TheSummaryCountsTheVisibleTickets: Story = {
 }
 
 export const SearchFiltersAndReports: Story = {
+  args: { savedViews: false },
   play: async ({ args, canvasElement }) => {
     await userEvent.type(
       within(canvasElement).getByRole('searchbox', { name: 'Buscar chamados' }),
@@ -252,14 +258,17 @@ export const TheViewSwitcherReportsTheView: Story = {
   },
 }
 
-export const TheViewSwitcherNeedsViews: Story = {
+export const WithoutViewsTheHeadingReturns: Story = {
   args: { savedViews: false },
   play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await expect(
-      within(canvasElement).queryByRole('button', {
-        name: 'Todos os chamados',
-      }),
+      canvas.queryByRole('button', { name: 'Todos os chamados' }),
     ).toBeNull()
+    const headings = canvas.getAllByRole('heading')
+    await expect(headings).toHaveLength(1)
+    await expect(headings[0]).toHaveTextContent('Fila de suporte')
+    await expect(headings[0]?.tagName).toBe('H2')
   },
 }
 
@@ -482,6 +491,21 @@ export const PendingShowsSkeleton: Story = {
     await expect(canvas.queryByRole('searchbox')).toBeNull()
     await expect(canvas.queryByRole('button', { name: 'Exibição' })).toBeNull()
     await expect(canvas.queryByRole('table')).toBeNull()
+  },
+}
+
+export const PendingKeepsTheViewSwitcher: Story = {
+  render: () => (
+    <Table1 activeViewId="all" pending tickets={tickets} views={views} />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.getByLabelText('Carregando chamados')).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Todos os chamados' }),
+    ).toBeVisible()
+    await expect(canvas.queryAllByRole('heading')).toHaveLength(0)
+    await expect(canvas.queryByRole('button', { name: 'Exibição' })).toBeNull()
   },
 }
 

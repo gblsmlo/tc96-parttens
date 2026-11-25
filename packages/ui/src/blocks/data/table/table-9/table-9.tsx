@@ -14,6 +14,7 @@ import {
   visibilityFromState,
 } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
+import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { resolveTable9Labels } from './labels'
 import { createTable9Columns } from './table-9-columns'
 import { Table9Kpis } from './table-9-kpis'
@@ -28,7 +29,6 @@ import type {
 const defaultPageSizeOptions = [10, 20, 50]
 
 export function Table9({
-  activeViewId,
   campaigns,
   className,
   columnVisibility,
@@ -44,8 +44,6 @@ export function Table9({
   onRetry,
   onRowAction,
   onSortChange,
-  onViewChange,
-  onViewCreate,
   pageSize = 10,
   pageSizeOptions = defaultPageSizeOptions,
   pending,
@@ -53,7 +51,6 @@ export function Table9({
   rowActions,
   sort,
   summary,
-  views,
 }: Readonly<Table9Props>) {
   const labels = useMemo(() => resolveTable9Labels(labelsProp), [labelsProp])
   const formatter = useMemo(
@@ -137,21 +134,15 @@ export function Table9({
         loadState ? (
           <TableToolbar
             aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
+            left={<TableToolbarHeading title={labels.title} />}
           />
         ) : (
           <Table9Toolbar
-            activeViewId={activeViewId}
             description={description}
             labels={labels}
-            locale={locale}
             onCreate={onCreate}
             onExport={onExport}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
             table={table}
-            views={views}
           />
         )
       }

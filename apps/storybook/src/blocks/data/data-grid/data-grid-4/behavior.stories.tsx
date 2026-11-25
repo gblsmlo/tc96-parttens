@@ -85,7 +85,7 @@ export const TheHeadingAppearsOnce: Story = {
 export const TheToolbarCarriesTheHeadingAndTheControls: Story = {
   play: async ({ canvasElement }) => {
     const toolbar = toolbarOf(canvasElement)
-    await expect(toolbar).toHaveAttribute('data-variant', 'text')
+    await expect(toolbar).toHaveAttribute('data-mode', 'plain')
     await expect(toolbar).toHaveTextContent(
       'Edite preços e estoque direto na tabela.',
     )

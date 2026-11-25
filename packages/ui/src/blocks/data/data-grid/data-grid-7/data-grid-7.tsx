@@ -10,6 +10,7 @@ import { createTableFormatter } from '../shared/format'
 import { GridFrame } from '../shared/grid-frame'
 import { gridLoadState } from '../shared/grid-load-state'
 import { GridToolbar } from '../shared/grid-toolbar'
+import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { createDataGrid7Columns } from './data-grid-7-columns'
 import { DataGrid7Skeleton } from './data-grid-7-skeleton'
 import { DataGrid7Toolbar } from './data-grid-7-toolbar'
@@ -125,8 +126,7 @@ export function DataGrid7({
         loadState ? (
           <GridToolbar
             aria-label={labels.toolbar}
-            description=""
-            title={labels.title}
+            left={<GridToolbarHeading title={labels.title} />}
           />
         ) : (
           <DataGrid7Toolbar

@@ -380,7 +380,7 @@ function TasksWorkspace({
         <CollectionFrameHeader>
           <CollectionToolbar
             aria-label="Controles da coleção de tarefas"
-            endSlot={
+            right={
               <>
                 <CollectionSearchField
                   label="Buscar tarefas"
@@ -556,7 +556,7 @@ function TasksWorkspace({
                 <Action label="Nova tarefa" onClick={() => undefined} />
               </>
             }
-            startSlot={
+            left={
               <ViewSwitcherPicker
                 onCreate={createPreset}
                 onDelete={presets.length > 1 ? deletePreset : undefined}
@@ -568,7 +568,7 @@ function TasksWorkspace({
                 views={presets}
               />
             }
-            variant="plain"
+            mode="plain"
           />
         </CollectionFrameHeader>
 

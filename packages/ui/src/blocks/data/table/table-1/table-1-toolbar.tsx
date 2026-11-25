@@ -14,15 +14,14 @@ import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/componen
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/collection/shared/components/collection-view-settings'
+} from '@tc96/ui/patterns/view-settings/components/view-settings'
+import type { ReactNode } from 'react'
 import { TableToolbar, TableToolbarButton } from '../shared/table-toolbar'
-import { TableViewSwitcher } from '../shared/table-view-switcher'
 import type {
   Table1Labels,
   Table1Queue,
   Table1Status,
   Table1Ticket,
-  Table1View,
 } from './types'
 
 const queues: readonly Table1Queue[] = [
@@ -35,47 +34,37 @@ const queues: readonly Table1Queue[] = [
 const statuses: readonly Table1Status[] = ['open', 'pending', 'resolved']
 
 export interface Table1ToolbarProps {
-  activeViewId?: string
-  description: string
   labels: Table1Labels
-  locale?: string
+  left: ReactNode
   onCreate?: () => void
   onExport?: () => void
   onQueueChange: (queue: Table1Queue | null) => void
   onSaveView?: () => void
   onStatusChange: (status: Table1Status | null) => void
-  onViewChange?: (viewId: string) => void
-  onViewCreate?: () => void
   queue: Table1Queue | null
   status: Table1Status | null
   table: DataTableTable<Table1Ticket>
-  views?: Table1View[]
 }
 
 export function Table1Toolbar({
-  activeViewId,
-  description,
   labels,
-  locale,
+  left,
   onCreate,
   onExport,
   onQueueChange,
   onSaveView,
   onStatusChange,
-  onViewChange,
-  onViewCreate,
   queue,
   status,
   table,
-  views,
 }: Readonly<Table1ToolbarProps>) {
   const activeFilterCount = (queue ? 1 : 0) + (status ? 1 : 0)
 
   return (
     <TableToolbar
       aria-label={labels.toolbar}
-      description={description}
-      endSlot={
+      left={left}
+      right={
         <>
           <DataGridSearch
             aria-label={labels.search}
@@ -152,19 +141,6 @@ export function Table1Toolbar({
           ) : null}
         </>
       }
-      startSlot={
-        views?.length ? (
-          <TableViewSwitcher
-            activeViewId={activeViewId}
-            labels={labels}
-            locale={locale}
-            onViewChange={onViewChange}
-            onViewCreate={onViewCreate}
-            views={views}
-          />
-        ) : undefined
-      }
-      title={labels.title}
     />
   )
 }
