@@ -12,7 +12,7 @@ import type { DataGridColumn } from '../lib/data-grid-features'
 import { resolveAriaExpanded } from '../lib/row-tree'
 import type { CellSelection } from '../lib/selection'
 import { createSkeletonRowIds } from '../lib/skeleton'
-import type { DataGridDensity } from '../types'
+import type { CollectionDensity } from '../types'
 import { DataGridEmptyRow } from './data-grid-empty-row'
 import {
   type DataGridGroupCellContext,
@@ -28,7 +28,7 @@ export interface DataGridBodyProps<TData extends RowData> {
   columnIds: readonly string[]
   columnLayouts: ColumnLayouts
   columns: readonly DataGridColumn<TData>[]
-  density: DataGridDensity
+  density: CollectionDensity
   emptyMessage: string
   entries: readonly BodyEntry<TData>[]
   expandable: boolean
@@ -37,12 +37,13 @@ export interface DataGridBodyProps<TData extends RowData> {
   getRowSelected?: (row: TData) => boolean
   hasInteracted: boolean
   headerRowCount: number
-  isLoading: boolean
+  loading: boolean
   labelColumnId?: string
   loadingMoreRowCount: number
   loadingMoreRowIndexOffset: number
-  loadingRowAnatomy?: DataGridRowSkeletonAnatomy
-  loadingRowCount: number
+  loadingAnatomy?: DataGridRowSkeletonAnatomy
+  loadingCount: number
+  loadingLabel: string
   minWidth: number
   onToggleGroup: (group: string, collapsed: boolean) => void
   getGroupToggleLabel?: (group: string, collapsed: boolean) => string
@@ -67,12 +68,13 @@ export function DataGridBody<TData extends RowData>({
   getRowSelected,
   hasInteracted,
   headerRowCount,
-  isLoading,
+  loading,
   labelColumnId,
   loadingMoreRowCount,
   loadingMoreRowIndexOffset,
-  loadingRowAnatomy,
-  loadingRowCount,
+  loadingAnatomy,
+  loadingCount,
+  loadingLabel,
   minWidth,
   onToggleGroup,
   pageRowCount,
@@ -113,15 +115,16 @@ export function DataGridBody<TData extends RowData>({
   }
 
   function renderContent() {
-    if (isLoading) {
+    if (loading) {
       return (
         <DataGridSkeletonRows
-          {...(loadingRowAnatomy ? { anatomy: loadingRowAnatomy } : {})}
+          label={loadingLabel}
+          {...(loadingAnatomy ? { anatomy: loadingAnatomy } : {})}
           columnIds={columnIds}
           columnLayouts={columnLayouts}
           density={density}
           headerRowCount={headerRowCount}
-          rowIds={createSkeletonRowIds(loadingRowCount)}
+          rowIds={createSkeletonRowIds(loadingCount)}
         />
       )
     }
@@ -179,7 +182,8 @@ export function DataGridBody<TData extends RowData>({
     if (loadingMoreRowCount === 0) return null
     return (
       <DataGridSkeletonRows
-        {...(loadingRowAnatomy ? { anatomy: loadingRowAnatomy } : {})}
+        label={loadingLabel}
+        {...(loadingAnatomy ? { anatomy: loadingAnatomy } : {})}
         columnIds={columnIds}
         columnLayouts={columnLayouts}
         density={density}

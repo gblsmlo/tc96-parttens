@@ -7,7 +7,7 @@ import { tasksWithoutInProgress } from './list-data.ts'
 import { ComposedList, DocumentRow, TasksList } from './list-layouts.tsx'
 
 interface ListBehaviorArgs {
-  onAddRecord: (groupId: string) => void
+  onRecordAdd: (groupId: string) => void
   onCollapsedGroupIdsChange: (groupIds: readonly string[]) => void
   onMenu: () => void
   onOpen: () => void
@@ -16,7 +16,7 @@ interface ListBehaviorArgs {
 
 const meta = {
   args: {
-    onAddRecord: fn(),
+    onRecordAdd: fn(),
     onCollapsedGroupIdsChange: fn(),
     onMenu: fn(),
     onOpen: fn(),
@@ -82,20 +82,20 @@ export const LoadingKeepsGroupsOpen: Story = {
 }
 
 export const LoadingHidesGroupActions: Story = {
-  render: ({ onAddRecord }) => (
-    <TasksList grouping="status" loading onAddRecord={onAddRecord} />
+  render: ({ onRecordAdd }) => (
+    <TasksList grouping="status" loading onRecordAdd={onRecordAdd} />
   ),
   play: async ({ args, canvasElement }) => {
     await expect(
       within(canvasElement).queryAllByRole('button', { name: /^Add item to/ }),
     ).toHaveLength(0)
-    await expect(args.onAddRecord).not.toHaveBeenCalled()
+    await expect(args.onRecordAdd).not.toHaveBeenCalled()
   },
 }
 
 export const AddActionReportsTheGroup: Story = {
-  render: ({ onAddRecord }) => (
-    <TasksList grouping="status" onAddRecord={onAddRecord} />
+  render: ({ onRecordAdd }) => (
+    <TasksList grouping="status" onRecordAdd={onRecordAdd} />
   ),
   play: async ({ args, canvasElement }) => {
     await userEvent.click(
@@ -104,8 +104,8 @@ export const AddActionReportsTheGroup: Story = {
       }),
     )
 
-    await expect(args.onAddRecord).toHaveBeenCalledOnce()
-    await expect(args.onAddRecord).toHaveBeenLastCalledWith('status:todo')
+    await expect(args.onRecordAdd).toHaveBeenCalledOnce()
+    await expect(args.onRecordAdd).toHaveBeenLastCalledWith('status:todo')
   },
 }
 

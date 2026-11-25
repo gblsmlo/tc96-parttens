@@ -21,7 +21,7 @@ describe('KanbanView', () => {
           { cards: [{ id: 'task-1' }], count: 1, id: 'todo', title: 'Todo' },
         ]}
         getKey={(card) => card.id}
-        renderCard={(card) => <span>{card.id}</span>}
+        renderRecord={(card) => <span>{card.id}</span>}
       />,
     )
 

@@ -1,5 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { ListRowDensity } from '@tc96/ui/patterns'
+import type { CollectionDensity } from '@tc96/ui/patterns'
 
 export type ListSelection = 'none' | 'checkbox' | 'icon'
 
@@ -7,7 +7,7 @@ export interface ListControls {
   action: boolean
   addAction: boolean
   collapseEmptyGroups: boolean
-  density: ListRowDensity
+  density: CollectionDensity
   description: boolean
   empty: boolean
   emptyGroupLabel: string
@@ -26,7 +26,7 @@ export const listControlArgs: ListControls = {
   action: true,
   addAction: false,
   collapseEmptyGroups: false,
-  density: 'comfortable',
+  density: 'short',
   description: true,
   empty: false,
   emptyGroupLabel: 'Nenhum registro neste grupo.',
@@ -50,7 +50,7 @@ export const listControlArgTypes: Partial<ArgTypes<ListControls>> = {
   addAction: {
     control: 'boolean',
     description:
-      'Passes `onAddRecord` in `getGroupActions`: adds the plus button to each group header.',
+      'Passes `onRecordAdd` in `getGroupActions`: adds the plus button to each group header.',
   },
   collapseEmptyGroups: {
     control: 'boolean',
@@ -60,7 +60,7 @@ export const listControlArgTypes: Partial<ArgTypes<ListControls>> = {
   density: {
     control: 'inline-radio',
     description: 'The `density` of every `ListRow`.',
-    options: ['comfortable', 'compact'],
+    options: ['compact', 'short', 'medium', 'tall', 'extra-tall'],
   },
   description: {
     control: 'boolean',
@@ -116,6 +116,6 @@ export const listControlArgTypes: Partial<ArgTypes<ListControls>> = {
   trigger: {
     control: 'boolean',
     description:
-      'Wraps every title in a `ListRowTitleTrigger`, which opens the row.',
+      'Wraps every title in a `ListRowOpenTrigger`, which opens the row.',
   },
 }

@@ -5,8 +5,6 @@ export interface KanbanColumnData<TCard = unknown> {
   cards: TCard[]
   /** CSS color used for the column marker and its tinted surface. */
   color?: string
-  /** Presentation state controlled by the consumer. */
-  collapsed?: boolean
   /** Hidden columns remain in consumer data so view settings can restore them. */
   hidden?: boolean
 }
@@ -24,10 +22,9 @@ export interface KanbanColumnActions {
   colorLabel?: string
   collapseLabel?: string
   colorOptions?: KanbanColumnColorOption[]
-  onAddCard?: (columnId: string) => void
-  onOpenSettings?: (columnId: string) => void
+  onRecordAdd?: (columnId: string) => void
+  onSettingsOpen?: (columnId: string) => void
   onColorChange?: (columnId: string, color: string) => void
-  onCollapsedChange?: (columnId: string, collapsed: boolean) => void
 }
 
 export interface KanbanCardMove<TCard = unknown> {
@@ -46,4 +43,8 @@ export interface KanbanCardMove<TCard = unknown> {
 export interface KanbanColumnOption {
   label: string
   value: string
+}
+
+export type KanbanBoardColumn<TCard = unknown> = KanbanColumnData<TCard> & {
+  collapsed?: boolean
 }

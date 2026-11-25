@@ -25,8 +25,8 @@ import {
   dataTableFeatures,
 } from './data-table-features'
 import type {
+  CollectionDensity,
   DataTableCellValueChange,
-  DataTableDensity,
   DataTableTableMeta,
 } from './data-table-types'
 
@@ -68,8 +68,8 @@ export interface UseDataTableOptions<TData extends RowData> {
   onPaginationChange?: (pagination: PaginationState) => void
   expanded?: ExpandedState
   onExpandedChange?: (expanded: ExpandedState) => void
-  density?: DataTableDensity
-  onDensityChange?: (density: DataTableDensity) => void
+  density?: CollectionDensity
+  onDensityChange?: (density: CollectionDensity) => void
   onCellValueChange?: (change: DataTableCellValueChange) => void
   /** Escape hatch for any TanStack Table option not surfaced above. */
   tableOptions?: Partial<TableOptions<DataTableFeatures, TData>>
@@ -184,7 +184,7 @@ export function useDataTable<TData extends RowData>({
     onExpandedChange,
   )
   const [density, setDensity] = useControllableTableState<
-    DataTableDensity | undefined
+    CollectionDensity | undefined
   >(
     onDensityChange ? densityProp : undefined,
     () => densityProp,

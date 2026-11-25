@@ -1,7 +1,7 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { DataGridDensity } from '@tc96/ui/patterns'
+import type { CollectionDensity } from '@tc96/ui/patterns'
 
-export const dataGridDensities: DataGridDensity[] = [
+export const dataGridDensities: CollectionDensity[] = [
   'short',
   'medium',
   'tall',
@@ -14,12 +14,12 @@ export type LoadingCellName = (typeof loadingCells)[number]
 
 export interface DataGridControls {
   addRow: boolean
-  density: DataGridDensity
+  density: CollectionDensity
   empty: boolean
   emptyMessage: string
   fillColumn: boolean
   grouped: boolean
-  isLoading: boolean
+  loading: boolean
   loadingCell: LoadingCellName
   pagination: boolean
   selectedRow: boolean
@@ -35,7 +35,7 @@ export const dataGridControlArgs: DataGridControls = {
   emptyMessage: 'Nenhum projeto para exibir.',
   fillColumn: true,
   grouped: false,
-  isLoading: false,
+  loading: false,
   loadingCell: 'control',
   pagination: true,
   selectedRow: false,
@@ -48,7 +48,7 @@ export const dataGridControlArgTypes: Partial<ArgTypes<DataGridControls>> = {
   addRow: {
     control: 'boolean',
     description:
-      'Passes `onRowAdd`, which adds the "Adicionar linha" row below the body.',
+      'Passes `onRecordAdd`, which adds the "Adicionar linha" row below the body.',
   },
   density: {
     control: 'inline-radio',
@@ -74,15 +74,13 @@ export const dataGridControlArgTypes: Partial<ArgTypes<DataGridControls>> = {
     description:
       'Passes `getRowGroup` with the owner, which opens a group row per run of the same owner.',
   },
-  isLoading: {
+  loading: {
     control: 'boolean',
-    description:
-      'The `isLoading` of `DataGrid`: skeleton rows replace the rows.',
+    description: 'The `loading` of `DataGrid`: skeleton rows replace the rows.',
   },
   loadingCell: {
     control: 'inline-radio',
-    description:
-      'The `cell` of `loadingRowAnatomy`; acts only while `isLoading`.',
+    description: 'The `cell` of `loadingAnatomy`; acts only while `loading`.',
     options: loadingCells,
   },
   pagination: {

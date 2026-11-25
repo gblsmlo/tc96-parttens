@@ -1,6 +1,6 @@
 # Kanban
 
-A controlled board for one collection: the consumer passes `columns` (`id`, `title`, `count`, `cards`, optional `color`, `collapsed`, `hidden`), a `renderCard` function and a `getKey`, and `KanbanView` lays them out as columns with a mobile column switcher. Passing `onMoveCard` turns on card drag with dnd-kit (pointer, touch and keyboard); the consumer accepts the move by returning `true` (or a promise) and rejects it with `false`, which rolls the board back. The view fetches, filters, sorts and persists nothing.
+A controlled board for one collection: the consumer passes `columns` (`id`, `title`, `count`, `cards`, optional `color`, `hidden`), a `renderRecord` function and a `getKey`, and `KanbanView` lays them out as columns with a mobile column switcher. Passing `onRecordMove` turns on card drag with dnd-kit (pointer, touch and keyboard); the consumer accepts the move by returning `true` (or a promise) and rejects it with `false`, which rolls the board back. The view fetches, filters, sorts and persists nothing.
 
 ## Layouts
 
@@ -8,7 +8,7 @@ A controlled board for one collection: the consumer passes `columns` (`id`, `tit
 
 The mobile panel never enables card drag: it holds no `[data-kanban-card-drag-handle]`, and drag exists only on the desktop board.
 
-Because the active column's cards render twice, `renderCard` must be pure and must not emit DOM ids (`id`, `htmlFor` targets, `aria-labelledby` references), or the page ends up with duplicates.
+Because the active column's cards render twice, `renderRecord` must be pure and must not emit DOM ids (`id`, `htmlFor` targets, `aria-labelledby` references), or the page ends up with duplicates.
 
 ## Benchmark
 
@@ -20,11 +20,11 @@ bun scripts/bench/kanban.bench.ts --json scripts/bench/results/kanban.base.json
 bun scripts/bench/kanban.bench.ts --compare scripts/bench/results/kanban.base.json --gate
 ```
 
-`--gate` exits 1 when any render counter rose or a scenario disappeared; timing differences only warn. The bench imports `KanbanView` from the public entry and counts how many times the consumer's `renderCard` ran (`cards`). Cases are 5 columns x 20 cards and 10 columns x 100 cards, data from `seededRandom(96)`; the wrapper holds the columns in state and accepts every reported move, so the DOM really changes. `KanbanView` renders the active column twice in JSDOM (the mobile switcher and the desktop board are both in the DOM), so mount counts one extra column of cards.
+`--gate` exits 1 when any render counter rose or a scenario disappeared; timing differences only warn. The bench imports `KanbanView` from the public entry and counts how many times the consumer's `renderRecord` ran (`cards`). Cases are 5 columns x 20 cards and 10 columns x 100 cards, data from `seededRandom(96)`; the wrapper holds the columns in state and accepts every reported move, so the DOM really changes. `KanbanView` renders the active column twice in JSDOM (the mobile switcher and the desktop board are both in the DOM), so mount counts one extra column of cards.
 
 | Scenario | What it does | What `cards` counts |
 | --- | --- | --- |
-| mount | a fresh mount of the board | every `renderCard` call of the first render |
+| mount | a fresh mount of the board | every `renderRecord` call of the first render |
 | parent re-render | a wrapper counter button re-renders `KanbanView` with the same props | cards re-rendered although nothing changed; expected 0 |
 | collapse and expand column | a wrapper button collapses column 1 and expands it again | the cards of that column mounting again; expected one column of cards |
 | switch mobile column | the column selector buttons switch to column 1 and back | the cards of the mobile column mounting again, twice |

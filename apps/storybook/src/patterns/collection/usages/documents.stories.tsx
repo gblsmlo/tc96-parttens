@@ -290,8 +290,8 @@ function DocumentsWorkspace({
               <GalleryView
                 collection={pinnedDocuments}
                 loading={loading}
-                loadingRecordCount={3}
-                loadingRecordLabel="Carregando item fixado"
+                loadingCount={3}
+                loadingLabel="Carregando item fixado"
                 renderRecord={renderPinnedRecord}
               />
             </section>
@@ -303,14 +303,14 @@ function DocumentsWorkspace({
               gallery={{
                 emptyMessage: 'Nenhuma nota ou documento por aqui.',
                 loading,
-                loadingRecordCount: 8,
-                loadingRecordLabel: 'Carregando documento',
+                loadingCount: 8,
+                loadingLabel: 'Carregando documento',
               }}
               list={{
                 emptyMessage: 'Nenhuma nota ou documento por aqui.',
                 loading,
-                loadingRecordCount: 6,
-                loadingRecordLabel: 'Carregando documento',
+                loadingCount: 6,
+                loadingLabel: 'Carregando documento',
               }}
               renderGalleryRecord={renderGalleryRecord}
               renderKanbanRecord={() => null}

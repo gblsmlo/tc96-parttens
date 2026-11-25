@@ -1,6 +1,12 @@
 import type { ReactNode } from 'react'
 
 export type CollectionGroupingId = string
+export type CollectionDensity =
+  | 'compact'
+  | 'short'
+  | 'medium'
+  | 'tall'
+  | 'extra-tall'
 export type CollectionLayout =
   | 'calendar'
   | 'datagrid'

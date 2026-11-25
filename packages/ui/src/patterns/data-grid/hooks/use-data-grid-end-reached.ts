@@ -1,10 +1,10 @@
 import type { RefObject } from 'react'
 import { useEndReached } from '../../collection/shared/hooks/use-end-reached'
 import { BOTTOM_BAR_HEIGHT_PX, ROW_HEIGHT } from '../lib/constants'
-import type { DataGridDensity } from '../types'
+import type { CollectionDensity } from '../types'
 
 interface UseDataGridEndReachedOptions {
-  density: DataGridDensity
+  density: CollectionDensity
   enabled: boolean
   gridRef: RefObject<HTMLDivElement | null>
   hasBottomBar: boolean

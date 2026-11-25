@@ -8,18 +8,20 @@ import type { ReactElement } from 'react'
 import { useId } from 'react'
 
 import { defaultColumnColor } from '../lib/column-color'
-import type { KanbanColumnActions, KanbanColumnData } from '../types'
+import type { KanbanBoardColumn, KanbanColumnActions } from '../types'
 
 export interface KanbanColumnSettingsProps {
   actions: KanbanColumnActions
-  column: Pick<KanbanColumnData, 'collapsed' | 'color' | 'id' | 'title'>
+  column: Pick<KanbanBoardColumn, 'collapsed' | 'color' | 'id' | 'title'>
   label: string
+  onCollapsedChange?: (collapsed: boolean) => void
 }
 
 export function KanbanColumnSettings({
   actions,
   column,
   label,
+  onCollapsedChange,
 }: Readonly<KanbanColumnSettingsProps>): ReactElement {
   const colorName = useId()
   const collapseId = useId()
@@ -31,7 +33,7 @@ export function KanbanColumnSettings({
   return (
     <Popover
       onOpenChange={(open) => {
-        if (open) actions.onOpenSettings?.(column.id)
+        if (open) actions.onSettingsOpen?.(column.id)
       }}
     >
       <PopoverTrigger
@@ -87,7 +89,7 @@ export function KanbanColumnSettings({
               </div>
             </fieldset>
           ) : null}
-          {actions.onCollapsedChange ? (
+          {onCollapsedChange ? (
             <div
               className="flex items-center justify-between gap-3"
               data-slot="kanban-column-collapse"
@@ -98,9 +100,7 @@ export function KanbanColumnSettings({
               <Switch
                 checked={Boolean(column.collapsed)}
                 id={collapseId}
-                onCheckedChange={(collapsed) =>
-                  actions.onCollapsedChange?.(column.id, collapsed)
-                }
+                onCheckedChange={onCollapsedChange}
               />
             </div>
           ) : null}

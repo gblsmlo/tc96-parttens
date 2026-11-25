@@ -16,7 +16,7 @@ import type { KanbanCardMove, KanbanColumnData } from '../types'
 interface UseKanbanDragAndDropOptions<TCard> {
   columns: KanbanColumnData<TCard>[]
   getKey: (card: TCard) => string | number
-  onMoveCard?: (move: KanbanCardMove<TCard>) => boolean | Promise<boolean>
+  onRecordMove?: (move: KanbanCardMove<TCard>) => boolean | Promise<boolean>
 }
 
 interface PendingCardMove {
@@ -30,7 +30,7 @@ interface PendingCardMove {
 export function useKanbanDragAndDrop<TCard>({
   columns,
   getKey,
-  onMoveCard,
+  onRecordMove,
 }: UseKanbanDragAndDropOptions<TCard>) {
   const [optimisticColumns, setOptimisticColumns] = useState<
     KanbanColumnData<TCard>[] | null
@@ -92,7 +92,7 @@ export function useKanbanDragAndDrop<TCard>({
       const { type: sourceType } = source?.data ?? {}
       const { columnId: targetColumnId, type: targetType } = target?.data ?? {}
 
-      if (!onMoveCard || !source || sourceType !== 'card') return
+      if (!onRecordMove || !source || sourceType !== 'card') return
 
       const visibleColumns =
         optimisticColumnsRef.current ??
@@ -124,7 +124,7 @@ export function useKanbanDragAndDrop<TCard>({
       if (projectedColumns !== visibleColumns)
         updateOptimisticColumns(projectedColumns)
     },
-    [getCardDragId, onMoveCard, updateOptimisticColumns],
+    [getCardDragId, onRecordMove, updateOptimisticColumns],
   )
 
   const handleDragEnd = useCallback(
@@ -150,7 +150,7 @@ export function useKanbanDragAndDrop<TCard>({
         getCardDragId,
       )
 
-      if (!move || !onMoveCard) {
+      if (!move || !onRecordMove) {
         if (!pendingCardMoveRef.current) updateOptimisticColumns(null)
         return
       }
@@ -201,7 +201,7 @@ export function useKanbanDragAndDrop<TCard>({
       }
 
       try {
-        const moveAccepted = onMoveCard(move)
+        const moveAccepted = onRecordMove(move)
 
         if (isPromiseLike(moveAccepted)) {
           // Holding a suspended operation across network latency keeps the
@@ -219,11 +219,11 @@ export function useKanbanDragAndDrop<TCard>({
         settleCardMove(false, true)
       }
     },
-    [getCardDragId, onMoveCard, updateOptimisticColumns],
+    [getCardDragId, onRecordMove, updateOptimisticColumns],
   )
 
   return {
-    cardDragEnabled: Boolean(onMoveCard),
+    cardDragEnabled: Boolean(onRecordMove),
     focusCardDragId,
     getCardDragId,
     handleCardFocusRestored,

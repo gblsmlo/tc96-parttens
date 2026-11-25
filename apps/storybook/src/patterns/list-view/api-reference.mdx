@@ -27,7 +27,7 @@ import {
   ListRowSelect,
   ListRowSkeleton,
   ListRowTitle,
-  ListRowTitleTrigger,
+  ListRowOpenTrigger,
   ListRowTrailing,
   ListView,
 } from '@acme/patterns'
@@ -41,7 +41,7 @@ import {
 <ListView
   collection={collection}
   emptyGroupLabel="emptyGroupLabel"
-  getGroupActions={() => ({ onAddRecord })}
+  getGroupActions={() => ({ onRecordAdd })}
   grouping="status"
   renderGroupTitle={(group) => group.label}
   renderRecord={(record) => <ListRow>{/* the row parts */}</ListRow>}
@@ -57,7 +57,7 @@ import {
   <ListRowLeading />
   <ListRowBody>
     <ListRowTitle>
-      <ListRowTitleTrigger onClick={open} />
+      <ListRowOpenTrigger onClick={open} />
     </ListRowTitle>
     <ListRowDescription />
   </ListRowBody>
@@ -111,9 +111,9 @@ The list. Renders a `ScrollArea` of [UI/ScrollArea](?path=/docs/ui-scroll-area-a
 | `emptyGroupLabel` | `React.ReactNode` or `(group: CollectionGroup<TRecord>) => React.ReactNode` | `"No items in this group."` | Sets the text of a group with no records. |
 | `emptyMessage` | `React.ReactNode` | `"No items to show."` | Sets the text of a flat list with no records. |
 | `loading` | `boolean` | `false` | When true, replaces the rows with skeletons, keeps every group open, hides the add actions and sets `aria-busy`. |
-| `loadingRecordAnatomy` | `ListRowSkeletonAnatomy` | - | Sets the parts of each skeleton, so it matches the row. |
-| `loadingRecordCount` | `number` | `1` | Sets the skeletons in each group, or in the whole list when it is flat. |
-| `loadingRecordLabel` | `string` | - | Names each skeleton; without it the skeleton is named `"Loading item"`. |
+| `loadingAnatomy` | `ListRowSkeletonAnatomy` | - | Sets the parts of each skeleton, so it matches the row. |
+| `loadingCount` | `number` | `1` | Sets the skeletons in each group, or in the whole list when it is flat. |
+| `loadingLabel` | `string` | - | Names each skeleton; without it the skeleton is named `"Loading item"`. |
 
 | Attribute | Values | Description |
 | --- | --- | --- |
@@ -130,7 +130,7 @@ Uncontrolled, the list keeps the choice made on each group. With `collapseEmptyG
 
 ### Groups
 
-Each group is a `section` named by its `h2` heading, so it is a `region` landmark. Its header holds a ghost icon button named by `getGroupToggleLabel`, `Collapse <label>` or `Expand <label>` by default, the group icon (`icon` of the grouping option, left out with `renderGroupTitle`), the heading, the count of the group in a round 20px badge and, with `onAddRecord` and not loading, a plus button. The header sticks to the top of the list while its rows scroll.
+Each group is a `section` named by its `h2` heading, so it is a `region` landmark. Its header holds a ghost icon button named by `getGroupToggleLabel`, `Collapse <label>` or `Expand <label>` by default, the group icon (`icon` of the grouping option, left out with `renderGroupTitle`), the heading, the count of the group in a round 20px badge and, with `onRecordAdd` and not loading, a plus button. The header sticks to the top of the list while its rows scroll.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
@@ -145,7 +145,7 @@ What `getGroupActions` returns for a group.
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `onAddRecord` | `(groupId: string) => void` | - | Called when the plus button is clicked, with the group `id` (`"<grouping>:<option id>"`). |
+| `onRecordAdd` | `(groupId: string) => void` | - | Called when the plus button is clicked, with the group `id` (`"<grouping>:<option id>"`). |
 | `addLabel` | `string` | `"Add item to <label>"` | Names the plus button. |
 
 ## ListRow
@@ -154,7 +154,7 @@ The row. Renders an `article`, with no content of its own: the consumer fills it
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `density` | `"comfortable"` or `"compact"` | `"comfortable"` | Controls the vertical padding: 6px, or 4px. |
+| `density` | `CollectionDensity` | `"short"` | Controls the row height and vertical padding: `compact` 4px, `short` 6px in 36px, `medium` 44px, `tall` 56px, `extra-tall` 72px, the same steps as the tables. |
 | `interactive` | `boolean` | `true` | When true, fills the row on hover. |
 | `selected` | `boolean` | `false` | When true, fills the row and sets `data-state="selected"`. |
 
@@ -163,17 +163,17 @@ Also takes every prop of an `article`.
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-slot` | `"list-row"` | Selects the row |
-| `data-density` | `"comfortable"` or `"compact"` | Styles the row by density |
+| `data-density` | `"compact"`, `"short"`, `"medium"`, `"tall"` or `"extra-tall"` | Styles the row by density |
 | `data-interactive` | present when `interactive` | Styles a row with the hover fill |
 | `data-state` | `"selected"` when `selected` | Styles a selected row |
 
-### ListRowTitle, ListRowTitleTrigger
+### ListRowTitle, ListRowOpenTrigger
 
-`ListRowTitle` is the heading of the row, truncated to one line: an `h2` in a flat `ListView`, an `h3` inside a group or outside a `ListView`. `ListRowTitleTrigger` is a `button` with `type="button"` that goes inside the title and stretches over the whole row, so a click anywhere on the row reaches it, and draws the focus ring around the row. It is the keyboard path to the record; without it the row has no button of its own. Each takes every prop of its element.
+`ListRowTitle` is the heading of the row, truncated to one line: an `h2` in a flat `ListView`, an `h3` inside a group or outside a `ListView`. `ListRowOpenTrigger` is a `button` with `type="button"` that goes inside the title and stretches over the whole row, so a click anywhere on the row reaches it, and draws the focus ring around the row. It is the keyboard path to the record; without it the row has no button of its own. Each takes every prop of its element.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
-| `data-slot` | `"list-row-title"` or `"list-row-title-trigger"` | Selects the title and the trigger |
+| `data-slot` | `"list-row-title"` or `"list-row-open-trigger"` | Selects the title and the trigger |
 
 ### ListRowLeading, ListRowField
 
@@ -245,7 +245,7 @@ Takes no other prop.
 | `data-lines` | `"1"` or `"2"` | Reports `lines` on the `output` |
 | `data-pills` | the number of pills | Reports `pills` on the `output` |
 
-`ListView` renders it from `loadingRecordAnatomy`, which takes the same fields except `label`.
+`ListView` renders it from `loadingAnatomy`, which takes the same fields except `label`.
 
 ## Exports
 
@@ -253,14 +253,14 @@ Takes no other prop.
 | --- | --- | --- |
 | `ListGroup` | `component` | One collapsible group, with its header and rows; `ListView` renders it. |
 | `ListViewProps`, `ListGroupProps`, `ListRowProps` | `type` | The props of `ListView`, `ListGroup` and `ListRow`. |
-| `ListRowDensity` | `type` | `"comfortable"` or `"compact"`. |
-| `ListRowSkeletonAnatomy`, `ListRowSkeletonMedia`, `ListRowSkeletonProps` | `type` | The fields of `loadingRecordAnatomy`, the values of `media` and the props of `ListRowSkeleton`. |
+| `CollectionDensity` | `type` | `"compact"`, `"short"`, `"medium"`, `"tall"` or `"extra-tall"`; shared by ListRow, the Gallery skeleton, DataTable and DataGrid. |
+| `ListRowSkeletonAnatomy`, `ListRowSkeletonMedia`, `ListRowSkeletonProps` | `type` | The fields of `loadingAnatomy`, the values of `media` and the props of `ListRowSkeleton`. |
 
-Each row part also exports its props type (`ListRowFieldProps`, `ListRowTitleTriggerProps`, …). `CollectionDefinition` and `CollectionGroup` belong to the collection: see the [API Reference of `Patterns/Collection`](?path=/docs/patterns-collection-api-reference--api-reference).
+Each row part also exports its props type (`ListRowFieldProps`, `ListRowOpenTriggerProps`, …). `CollectionDefinition` and `CollectionGroup` belong to the collection: see the [API Reference of `Patterns/Collection`](?path=/docs/patterns-collection-api-reference--api-reference).
 
 ## Accessibility and theme
 
-- Name the row by its title: put the title text in `ListRowTitleTrigger`, and name every icon-only control in the row with `aria-label`.
-- The built-in texts are English (`No items to show.`, `No items in this group.`, `Loading item`, `Collapse`, `Expand`, `Add item to`); pass `emptyMessage`, `emptyGroupLabel`, `loadingRecordLabel`, `getGroupToggleLabel` and `addLabel` to change them.
+- Name the row by its title: put the title text in `ListRowOpenTrigger`, and name every icon-only control in the row with `aria-label`.
+- The built-in texts are English (`No items to show.`, `No items in this group.`, `Loading item`, `Collapse`, `Expand`, `Add item to`); pass `emptyMessage`, `emptyGroupLabel`, `loadingLabel`, `getGroupToggleLabel` and `addLabel` to change them.
 - Groups are `region` landmarks named by their headings, so keep group labels distinct.
 - The frame uses `card` and `border`, the hover fill `muted`, and the separators and description `border` and `muted-foreground`.

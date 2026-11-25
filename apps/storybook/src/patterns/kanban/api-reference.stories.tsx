@@ -36,14 +36,14 @@ const ignore = () => undefined
 const meta = {
   args: {
     columns: anatomyColumns,
-    emptyColumnLabel: 'emptyColumnLabel',
-    getColumnActions: () => ({ onAddCard: ignore, onOpenSettings: ignore }),
+    emptyGroupLabel: 'emptyGroupLabel',
+    getGroupActions: () => ({ onRecordAdd: ignore, onSettingsOpen: ignore }),
     getKey: (card) => card.id,
-    renderCard: () => (
+    renderRecord: () => (
       <KanbanCard>
         <div className="flex justify-center p-4">
           <KanbanCardTitle>
-            <Slot name="renderCard" />
+            <Slot name="renderRecord" />
           </KanbanCardTitle>
         </div>
       </KanbanCard>
@@ -63,7 +63,7 @@ export const Anatomy: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await expect(canvas.getAllByRole('region')).toHaveLength(3)
-    await expect(canvas.getAllByText('renderCard')).not.toHaveLength(0)
+    await expect(canvas.getAllByText('renderRecord')).not.toHaveLength(0)
     await expect(
       canvas.getByRole('button', { name: 'Adicionar item à seção Column' }),
     ).toBeVisible()

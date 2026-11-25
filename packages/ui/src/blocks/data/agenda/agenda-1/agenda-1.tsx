@@ -236,7 +236,7 @@ export function Agenda1({
         start: new Date(entry.start),
       }),
       loading: Boolean(pending),
-      loadingRecordLabel: labels.loading,
+      loadingLabel: labels.loading,
       locale,
       mode: period,
       now: now ? new Date(now) : undefined,
@@ -252,11 +252,11 @@ export function Agenda1({
             })
           }
         : undefined,
-      onSelectDay: (date) => {
+      onDaySelect: (date) => {
         setPeriod('day')
         setAnchor(calendarDateKey(date))
       },
-      onSelectSlot: create
+      onSlotSelect: create
         ? (slot) =>
             create({
               end: fromZonedDateTime(

@@ -21,8 +21,8 @@ interface CalendarBehaviorArgs {
   onAction: (record: CalendarSample) => void
   onOpen: (record: CalendarSample) => void
   onRecordReschedule: (change: CalendarRecordReschedule<CalendarSample>) => void
-  onSelectDay: (date: CalendarDate) => void
-  onSelectSlot: (slot: CalendarSlot) => void
+  onDaySelect: (date: CalendarDate) => void
+  onSlotSelect: (slot: CalendarSlot) => void
 }
 
 const meta = {
@@ -250,13 +250,13 @@ export const ItemActionStaysAboveTheTrigger: Story = {
 }
 
 export const SelectsTheSlotUnderThePointer: Story = {
-  args: { onSelectSlot: fn() },
-  render: ({ onSelectSlot }) => (
+  args: { onSlotSelect: fn() },
+  render: ({ onSlotSelect }) => (
     <CalendarFrame>
       <StatefulCalendar
         initialRecords={calendarSamples}
         mode="week"
-        onSelectSlot={onSelectSlot}
+        onSlotSelect={onSlotSelect}
       />
     </CalendarFrame>
   ),
@@ -275,8 +275,8 @@ export const SelectsTheSlotUnderThePointer: Story = {
       { coords, keys: '[MouseLeft>]', target: column },
       { coords, keys: '[/MouseLeft]', target: column },
     ])
-    await expect(args.onSelectSlot).toHaveBeenCalledOnce()
-    await expect(args.onSelectSlot).toHaveBeenLastCalledWith({
+    await expect(args.onSlotSelect).toHaveBeenCalledOnce()
+    await expect(args.onSlotSelect).toHaveBeenLastCalledWith({
       day: { day: 9, month: 8, year: 2026 },
       endMinutes: 10 * 60 + 45,
       startMinutes: 10 * 60 + 30,
@@ -385,13 +385,13 @@ export const MonthOverflowListsHiddenItems: Story = {
 }
 
 export const MonthOverflowTitleSelectsDay: Story = {
-  args: { onSelectDay: fn() },
-  render: ({ onSelectDay }) => (
+  args: { onDaySelect: fn() },
+  render: ({ onDaySelect }) => (
     <CalendarFrame>
       <StatefulCalendar
         initialRecords={calendarSamples}
         mode="month"
-        onSelectDay={onSelectDay}
+        onDaySelect={onDaySelect}
       />
     </CalendarFrame>
   ),
@@ -404,8 +404,8 @@ export const MonthOverflowTitleSelectsDay: Story = {
       within(popup).getByRole('button', { name: /^Mostrar todos os 4 itens/ }),
     )
 
-    await expect(args.onSelectDay).toHaveBeenCalledOnce()
-    await expect(args.onSelectDay).toHaveBeenLastCalledWith({
+    await expect(args.onDaySelect).toHaveBeenCalledOnce()
+    await expect(args.onDaySelect).toHaveBeenLastCalledWith({
       day: 12,
       month: 8,
       year: 2026,

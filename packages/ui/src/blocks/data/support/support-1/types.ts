@@ -23,7 +23,12 @@ export type Support1Status = 'open' | 'pending' | 'resolved'
 
 export type Support1SlaTone = 'breached' | 'closed' | 'healthy' | 'warning'
 
-export type Support1Density = 'extra-tall' | 'medium' | 'short' | 'tall'
+export type Support1Density =
+  | 'compact'
+  | 'extra-tall'
+  | 'medium'
+  | 'short'
+  | 'tall'
 
 export type Support1ToggleColumnId =
   | 'priority'

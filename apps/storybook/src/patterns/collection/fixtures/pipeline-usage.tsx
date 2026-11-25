@@ -86,7 +86,6 @@ const projectDealColumns = (deals: readonly Deal[]): KanbanColumnData<Deal>[] =>
 
 export function DealCard({
   deal,
-  density = 'sm',
   onOpen,
   onOwnerChange,
   onStageChange,
@@ -114,11 +113,7 @@ export function DealCard({
   )
 
   return (
-    <KanbanCard
-      density={density}
-      {...(onOpen ? { variant: 'interactive' as const } : {})}
-      {...cardProps}
-    >
+    <KanbanCard interactive={Boolean(onOpen)} {...cardProps}>
       {onOpen ? (
         <KanbanCardOpenTrigger
           aria-label={`Abrir negócio ${deal.company}`}
@@ -130,7 +125,7 @@ export function DealCard({
           <KanbanCardTitle className="min-w-0 flex-1 truncate">
             {deal.company}
           </KanbanCardTitle>
-          {cardProps.display === 'compact' ? owner : null}
+          {cardProps.display === 'minimal' ? owner : null}
         </div>
         <KanbanCardDescription>{deal.contact}</KanbanCardDescription>
         <CardMenu
@@ -330,21 +325,21 @@ export function PipelineUsage({
         <CollectionFrameBody aria-label="Visualização da coleção">
           <KanbanView
             columns={columns}
-            emptyColumnLabel="Nenhum negócio nesta etapa."
-            getCardLabel={(deal) => deal.company}
+            emptyGroupLabel="Nenhum negócio nesta etapa."
+            getRecordLabel={(deal) => deal.company}
             getKey={(deal) => deal.id}
             loading={loading}
-            loadingCardCount={2}
-            loadingCardLabel="Carregando negócio"
-            onMoveCard={moveDeal}
-            renderCard={(deal) => (
+            loadingCount={2}
+            loadingLabel="Carregando negócio"
+            onRecordMove={moveDeal}
+            renderRecord={(deal) => (
               <DealCard
                 deal={deal}
                 onOwnerChange={(ownerId) => changeOwner(deal.id, ownerId)}
                 onStageChange={(stage) => changeStage(deal.id, stage)}
               />
             )}
-            renderColumnTitle={(column) => (
+            renderGroupTitle={(column) => (
               <>
                 {column.title}{' '}
                 <span className="font-normal text-muted-foreground tabular-nums">

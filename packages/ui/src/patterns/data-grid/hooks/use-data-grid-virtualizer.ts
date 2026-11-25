@@ -10,10 +10,10 @@ import {
 } from '../lib/constants'
 import type { DataGridFeatures, DataGridTable } from '../lib/data-grid-features'
 import { resolveVirtualScrollTop } from '../lib/virtual-scroll'
-import type { DataGridDensity } from '../types'
+import type { CollectionDensity } from '../types'
 
 interface UseDataGridVirtualizerOptions<TData extends RowData> {
-  density: DataGridDensity
+  density: CollectionDensity
   enabled: boolean
   gridRef: RefObject<HTMLDivElement | null>
   hasBottomBar: boolean

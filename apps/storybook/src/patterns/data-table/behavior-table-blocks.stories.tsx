@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { SortingState } from '@tanstack/react-table'
 import {
   ActionBar,
+  type CollectionDensity,
   CollectionToolbar,
   createDataGridConditionFilterFn,
   createDataTableSelectColumn,
@@ -14,7 +15,6 @@ import {
   type DataTableColumnDef,
   type DataTableColumnMeta,
   DataTableColumnsSubmenu,
-  type DataTableDensity,
   type DataTableFeatures,
   type DataTableTable,
   useDataTable,
@@ -91,7 +91,7 @@ function MembersToolbar({
 
 function MembersTable() {
   const [sorting, setSorting] = useState<SortingState>([])
-  const [density, setDensity] = useState<DataTableDensity>('short')
+  const [density, setDensity] = useState<CollectionDensity>('short')
   const { table } = useDataTable<Member>({
     columns: memberColumns,
     data: members,

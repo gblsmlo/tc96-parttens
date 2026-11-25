@@ -1,6 +1,5 @@
 export type {
   GalleryRowSkeletonAnatomy,
-  GalleryRowSkeletonDensity,
   GalleryRowSkeletonProps,
 } from './components/gallery-row-skeleton'
 export { GalleryRowSkeleton } from './components/gallery-row-skeleton'

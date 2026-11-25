@@ -30,7 +30,7 @@ type Story = StoryObj<typeof meta>
 
 export const Anatomy: Story = {
   render: () => (
-    <KanbanCard variant="interactive">
+    <KanbanCard interactive>
       <KanbanCardOpenTrigger aria-label="OpenTrigger" />
       <KanbanCardHeader>
         <KanbanCardTitle>

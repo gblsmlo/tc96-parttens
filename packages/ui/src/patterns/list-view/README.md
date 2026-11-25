@@ -8,7 +8,7 @@ Each item is rendered through a memoized wrapper keyed on `{ item, renderRecord 
 
 ## ListRow
 
-`ListRow` is the structural row for `renderRecord`: an `article` with slots and no content props. `ListRowLeading`, `ListRowBody` (`ListRowTitle`, `ListRowDescription`) and `ListRowTrailing` (`ListRowField`, `ListRowAction`) are the top level; `ListRowHeader`, `ListRowContent` and `ListRowFooter` cover single-line layouts. A `ListRowTitleTrigger` inside the title opens the whole row and is its keyboard path; fields and actions stay independently clickable. `ListRowSkeleton` is the loading row, shaped by `media`, `lines`, `pills` and `action`, and `ListView` passes them through `loadingRecordAnatomy`. Stories: the row is documented in the List node, `Patterns/ListView`: `RowAnatomy` of `Patterns/ListView/API Reference` shows its slots, and `Patterns/ListView/Behavior` tests its click contract.
+`ListRow` is the structural row for `renderRecord`: an `article` with slots and no content props. `ListRowLeading`, `ListRowBody` (`ListRowTitle`, `ListRowDescription`) and `ListRowTrailing` (`ListRowField`, `ListRowAction`) are the top level; `ListRowHeader`, `ListRowContent` and `ListRowFooter` cover single-line layouts. A `ListRowOpenTrigger` inside the title opens the whole row and is its keyboard path; fields and actions stay independently clickable. `ListRowSkeleton` is the loading row, shaped by `media`, `lines`, `pills` and `action`, and `ListView` passes them through `loadingAnatomy`. Stories: the row is documented in the List node, `Patterns/ListView`: `RowAnatomy` of `Patterns/ListView/API Reference` shows its slots, and `Patterns/ListView/Behavior` tests its click contract.
 
 ## Benchmark
 

@@ -1,11 +1,14 @@
+import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
 import {
   CalendarDotsIcon,
   CellSignalHighIcon,
   GridFourIcon,
+  HashIcon,
   RadioButtonIcon,
   RowsIcon,
   TableIcon,
   TagSimpleIcon,
+  TextTIcon,
   UserIcon,
 } from '@phosphor-icons/react'
 import type { ViewSettingsMode } from '@tc96/ui/patterns'
@@ -79,4 +82,36 @@ export const agendaModes: readonly ViewSettingsMode<AgendaLayout>[] = [
   { icon: RowsIcon, label: 'Lista', value: 'list' },
   { icon: TableIcon, label: 'Tabela', value: 'datagrid' },
   { icon: CalendarDotsIcon, label: 'Agenda', value: 'calendar' },
+]
+
+export type FieldType = 'date' | 'number' | 'person' | 'select' | 'text'
+
+export const fieldTypes: readonly {
+  icon: PhosphorIcon
+  label: string
+  value: FieldType
+}[] = [
+  { icon: TextTIcon, label: 'Texto', value: 'text' },
+  { icon: RadioButtonIcon, label: 'Seleção', value: 'select' },
+  { icon: UserIcon, label: 'Pessoa', value: 'person' },
+  { icon: CalendarDotsIcon, label: 'Data', value: 'date' },
+  { icon: HashIcon, label: 'Número', value: 'number' },
+]
+
+export interface CollectionField {
+  id: string
+  label: string
+  type: FieldType
+  visible: boolean
+}
+
+export const taskFields: readonly CollectionField[] = [
+  { id: 'title', label: 'Título', type: 'text', visible: true },
+  { id: 'status', label: 'Status', type: 'select', visible: true },
+  { id: 'assignee', label: 'Responsável', type: 'person', visible: true },
+  { id: 'due', label: 'Prazo', type: 'date', visible: true },
+  { id: 'priority', label: 'Prioridade', type: 'select', visible: false },
+  { id: 'estimate', label: 'Estimativa', type: 'number', visible: false },
+  { id: 'created', label: 'Criado em', type: 'date', visible: false },
+  { id: 'description', label: 'Descrição', type: 'text', visible: false },
 ]

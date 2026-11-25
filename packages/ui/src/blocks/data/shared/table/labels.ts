@@ -24,9 +24,10 @@ export const defaultTableViewLabels: TableViewLabels = {
 export const defaultTableSettingsLabels: TableSettingsLabels = {
   clearSort: 'Limpar ordenação',
   densities: {
+    compact: 'Compacta',
     'extra-tall': 'Extra alta',
     medium: 'Média',
-    short: 'Compacta',
+    short: 'Padrão',
     tall: 'Alta',
   },
   settingsWithFilters: (settings, activeFilters) =>

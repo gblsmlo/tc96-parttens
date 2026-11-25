@@ -25,15 +25,15 @@ import {
   tableFeatures,
 } from '@tanstack/react-table'
 import type {
+  CollectionDensity,
   DataGridCellValueChange,
   DataGridColumnMeta,
-  DataGridDensity,
 } from '../types'
 
 export interface DataGridTableMeta {
-  dataGridDensity?: DataGridDensity
+  dataGridDensity?: CollectionDensity
   dataGridPaginationRowOffset?: number
-  onDataGridDensityChange?: (density: DataGridDensity) => void
+  onDataGridDensityChange?: (density: CollectionDensity) => void
   onDataGridCellValueChange?: (change: DataGridCellValueChange) => void
 }
 

@@ -1,4 +1,4 @@
-import type { DataGridAlign, DataGridDensity } from '../types'
+import type { CollectionDensity, DataGridAlign } from '../types'
 
 export const HEADER_ALIGN: Record<DataGridAlign, string> = {
   center: 'justify-center',
@@ -12,21 +12,24 @@ export const CELL_ALIGN: Record<DataGridAlign, string> = {
   start: 'text-start justify-start',
 }
 
-export const ROW_DENSITY: Record<DataGridDensity, string> = {
+export const ROW_DENSITY: Record<CollectionDensity, string> = {
+  compact: 'min-h-8',
   'extra-tall': 'min-h-18',
   medium: 'min-h-11',
   short: 'min-h-9',
   tall: 'min-h-14',
 }
 
-export const CELL_DENSITY: Record<DataGridDensity, string> = {
+export const CELL_DENSITY: Record<CollectionDensity, string> = {
+  compact: 'px-2 py-1',
   'extra-tall': 'px-3 py-4',
   medium: 'px-2.5 py-2',
   short: 'px-2 py-1.5',
   tall: 'px-3 py-3',
 }
 
-export const ROW_HEIGHT: Record<DataGridDensity, number> = {
+export const ROW_HEIGHT: Record<CollectionDensity, number> = {
+  compact: 32,
   'extra-tall': 72,
   medium: 44,
   short: 36,

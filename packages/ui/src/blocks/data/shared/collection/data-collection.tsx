@@ -165,7 +165,7 @@ export function DataCollection<TRecord extends RowData>({
                     onCollapsedGroupIdsChange(tableGrouping.toIds(groups))
                 : undefined,
             onEndReached,
-            onRowClick: onOpen ? (row) => onOpen(row.original) : undefined,
+            onRowOpen: onOpen ? (row) => onOpen(row.original) : undefined,
             selectionActions,
             table,
           }}

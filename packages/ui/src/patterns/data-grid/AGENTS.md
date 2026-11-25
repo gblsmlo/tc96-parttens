@@ -53,7 +53,7 @@ Groups and pagination:
 - `DataGridPagination` renders the page size selector only with `pageSizeOptions`, `pageSizeLabel` and a table that has `setPageSize`; a change calls `setPageSize` and returns to page one. `DataGrid` renders `DataGridPagination` without those props, so a grid with the selector passes it as `footer`; the parent that builds the `footer` element must keep `data` referentially stable, or the page index resets on every render.
 - `DataGridSearch` and `DataGridFilterMenu` return to page one on every change; the search filters per keystroke, unlike `CollectionSearchField`.
 - Virtualization applies only without `getRowGroup`, not loading and with rows, because only then is `entries[i]` the `i`-th virtual row.
-- Loading rows keep the height of loaded rows when `loadingRowAnatomy.cell` matches the cells: `control` (24px, the property surfaces) or `text` (20px); the density sets the row minimum either way. Pass the page size as `loadingRowCount` when the grid paginates. The skeleton rows carry `data-cell`.
+- Loading rows keep the height of loaded rows when `loadingAnatomy.cell` matches the cells: `control` (24px, the property surfaces) or `text` (20px); the density sets the row minimum either way. Pass the page size as `loadingCount` when the grid paginates. The skeleton rows carry `data-cell`.
 
 Row tree (`enableExpanding`):
 
@@ -79,7 +79,7 @@ Row reorder (`onRowMove`):
 End of scroll (`onEndReached`, `loadingMore`):
 
 - `onEndReached` fires from the viewport's `scroll` event and once after render, when the distance to the end is within `endReachedThreshold` rows (default 5, `ROW_HEIGHT` of the density, plus the sticky footer or add row) and not loading. It fires once per `table.options.data.length`: a load that adds nothing does not retry, and a shorter-than-viewport list fires on mount. The same geometry serves virtualized and plain grids. Use it without pagination.
-- `loadingMore` appends `loadingMoreRowCount` (3) skeleton rows (`DataGridSkeletonRows`, `data-loading-more`), sets `aria-busy`, counts in `aria-rowcount` and suppresses `onEndReached`. They render only with rows and not `isLoading`. When virtualized they are absolutely positioned after the last virtual row and `totalSize` grows by their height.
+- `loadingMore` appends `loadingMoreRowCount` (3) skeleton rows (`DataGridSkeletonRows`, `data-loading-more`), sets `aria-busy`, counts in `aria-rowcount` and suppresses `onEndReached`. They render only with rows and not `loading`. When virtualized they are absolutely positioned after the last virtual row and `totalSize` grows by their height.
 
 Cells:
 
@@ -110,6 +110,9 @@ ARIA and layout:
 - The last column's resize handle and grab area grow inward: outward they add 8px of scroll past the content, and the strip reads as an extra column.
 - With no fill column the wrapper and the bordered root are `w-fit max-w-full`, because stretching leaves a borderless strip that reads as a phantom column; it still scrolls when columns overflow. The wrapper also positions the selection action bar.
 - The grid is the `ScrollArea` of `@tc96/ui/scroll-area`; its default `clampContentMinWidth` puts `style={{ minWidth: 0 }}` on the content, the only way to beat Base UI's inline `minWidth: fit-content`. The frame classes on its root are registered in `scripts/override-exceptions.json`.
+
+- Each skeleton row carries a visually hidden `output` with `aria-busy` in its first cell, holding `loadingLabel` (`"Carregando linha"`): a `tr` or a `role="row"` cannot be wrapped in a status, as List and Kanban wrap their skeletons.
+- `density` is the shared `CollectionDensity` (`compact`, `short`, `medium`, `tall`, `extra-tall`); `compact` is the step below `short`.
 
 ## Styling
 

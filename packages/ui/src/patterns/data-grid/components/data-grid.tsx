@@ -31,7 +31,7 @@ import {
 import { ROW_HEIGHT } from '../lib/constants'
 import type { DataGridTable } from '../lib/data-grid-features'
 import type {
-  DataGridDensity,
+  CollectionDensity,
   DataGridRowDragAnnouncements,
   DataGridRowMove,
 } from '../types'
@@ -50,13 +50,14 @@ import type { DataGridRowSkeletonAnatomy } from './data-grid-skeleton-rows'
 
 export interface DataGridProps<TData extends RowData> {
   table: DataGridTable<TData>
-  pagination?: boolean
+  showPagination?: boolean
   fillColumn?: string | false
   footer?: ReactNode
-  density?: DataGridDensity
-  isLoading?: boolean
-  loadingRowAnatomy?: DataGridRowSkeletonAnatomy
-  loadingRowCount?: number
+  density?: CollectionDensity
+  loading?: boolean
+  loadingAnatomy?: DataGridRowSkeletonAnatomy
+  loadingCount?: number
+  loadingLabel?: string
   loadingMore?: boolean
   loadingMoreRowCount?: number
   onEndReached?: () => void
@@ -72,8 +73,8 @@ export interface DataGridProps<TData extends RowData> {
   onRowMove?: (move: DataGridRowMove) => void
   rowDragAnnouncements?: DataGridRowDragAnnouncements
   getRowSelected?: (row: TData) => boolean
-  onRowAdd?: () => void | Promise<void>
-  addRowLabel?: string
+  onRecordAdd?: () => void | Promise<void>
+  addLabel?: string
   virtualize?: boolean
   overscan?: number
   className?: string
@@ -85,13 +86,14 @@ const NO_GROUPS: readonly string[] = []
 
 export function DataGrid<TData extends RowData>({
   table,
-  pagination,
+  showPagination,
   fillColumn,
   footer,
   density: densityProp,
-  isLoading = false,
-  loadingRowAnatomy,
-  loadingRowCount = 5,
+  loading = false,
+  loadingAnatomy,
+  loadingCount = 5,
+  loadingLabel = 'Carregando linha',
   loadingMore = false,
   loadingMoreRowCount = 3,
   onEndReached,
@@ -107,8 +109,8 @@ export function DataGrid<TData extends RowData>({
   onRowMove,
   rowDragAnnouncements,
   getRowSelected,
-  onRowAdd,
-  addRowLabel = 'Adicionar linha',
+  onRecordAdd,
+  addLabel = 'Adicionar linha',
   virtualize = false,
   overscan = 8,
   className,
@@ -117,7 +119,7 @@ export function DataGrid<TData extends RowData>({
 }: DataGridProps<TData>) {
   const gridRef = useRef<HTMLDivElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
-  const showsPagination = pagination ?? !table.options.manualPagination
+  const showsPagination = showPagination ?? !table.options.manualPagination
   const footerContent =
     footer ?? (showsPagination ? <DataGridPagination table={table} /> : null)
   const density = densityProp ?? table.options.meta?.dataGridDensity ?? 'short'
@@ -159,12 +161,12 @@ export function DataGrid<TData extends RowData>({
   })
 
   const shouldVirtualize =
-    virtualize && !getRowGroup && !isLoading && rows.length > 0
+    virtualize && !getRowGroup && !loading && rows.length > 0
   const virtualizer = useDataGridVirtualizer({
     density,
     enabled: shouldVirtualize,
     gridRef,
-    hasBottomBar: Boolean(onRowAdd || footerContent),
+    hasBottomBar: Boolean(onRecordAdd || footerContent),
     maxHeight,
     overscan,
     rows,
@@ -174,20 +176,20 @@ export function DataGrid<TData extends RowData>({
   const reorderActive = isRowReorderActive({
     enabled: Boolean(onRowMove),
     grouped: Boolean(getRowGroup),
-    loading: isLoading,
+    loading: loading,
     sorted: sorting.length > 0,
     virtualized: shouldVirtualize,
   })
   const expandable = Boolean(table.options.enableExpanding)
   const loadingMoreCount =
-    loadingMore && !isLoading && model.pageRows.length > 0
+    loadingMore && !loading && model.pageRows.length > 0
       ? loadingMoreRowCount
       : 0
   useDataGridEndReached({
     density,
-    enabled: Boolean(onEndReached) && !isLoading,
+    enabled: Boolean(onEndReached) && !loading,
     gridRef,
-    hasBottomBar: Boolean(onRowAdd || footerContent),
+    hasBottomBar: Boolean(onRecordAdd || footerContent),
     loadingMore: loadingMoreCount > 0,
     onEndReached,
     rowCount: table.options.data.length,
@@ -236,8 +238,8 @@ export function DataGrid<TData extends RowData>({
     ],
   )
 
-  const bodyRowCount = isLoading
-    ? loadingRowCount
+  const bodyRowCount = loading
+    ? loadingCount
     : model.collectionRowCount === 0
       ? 1
       : model.collectionRowCount + model.groupRowCount
@@ -247,13 +249,13 @@ export function DataGrid<TData extends RowData>({
     footerContent
       ? '[data-slot="data-grid-footer"]'
       : '[data-slot="data-grid-add-row-group"]',
-    Boolean(footerContent || onRowAdd),
+    Boolean(footerContent || onRecordAdd),
   )
   const ariaRowCount =
     model.headerRowCount +
     bodyRowCount +
     loadingMoreCount +
-    (onRowAdd ? 1 : 0) +
+    (onRecordAdd ? 1 : 0) +
     (footerContent ? 1 : 0)
   const totalSize = table.getTotalSize()
 
@@ -274,7 +276,7 @@ export function DataGrid<TData extends RowData>({
         ref={scrollAreaRef}
         verticalScrollbarProps={{ style: scrollbarInsetStyle }}
         viewportProps={{
-          'aria-busy': isLoading || loadingMoreCount > 0 || undefined,
+          'aria-busy': loading || loadingMoreCount > 0 || undefined,
           'aria-colcount': leafColumns.length,
           'aria-label': ariaLabel,
           'aria-multiselectable': true,
@@ -294,7 +296,7 @@ export function DataGrid<TData extends RowData>({
           ref: gridRef,
           role: expandable ? 'treegrid' : 'grid',
           style: { maxHeight },
-          tabIndex: rows.length > 0 && !isLoading ? -1 : 0,
+          tabIndex: rows.length > 0 && !loading ? -1 : 0,
         }}
       >
         <DataGridHeaderRows
@@ -325,12 +327,13 @@ export function DataGrid<TData extends RowData>({
               getRowSelected={getRowSelected}
               hasInteracted={cellSelection.hasInteracted}
               headerRowCount={model.headerRowCount}
-              isLoading={isLoading}
+              loading={loading}
               labelColumnId={leafColumns[firstNavigableColumn]?.id}
               loadingMoreRowCount={loadingMoreCount}
               loadingMoreRowIndexOffset={bodyRowCount}
-              {...(loadingRowAnatomy ? { loadingRowAnatomy } : {})}
-              loadingRowCount={loadingRowCount}
+              {...(loadingAnatomy ? { loadingAnatomy } : {})}
+              loadingCount={loadingCount}
+              loadingLabel={loadingLabel}
               minWidth={totalSize}
               onToggleGroup={onToggleGroup}
               pageRowCount={model.pageRows.length}
@@ -345,14 +348,14 @@ export function DataGrid<TData extends RowData>({
             />
           </DataGridRowReorder>
         </DataGridRowContext>
-        {onRowAdd ? (
+        {onRecordAdd ? (
           <DataGridAddRow
             ariaRowIndex={
               model.headerRowCount + bodyRowCount + loadingMoreCount + 1
             }
-            label={addRowLabel}
+            label={addLabel}
             minWidth={totalSize}
-            onAdd={onRowAdd}
+            onAdd={onRecordAdd}
           />
         ) : null}
         {footerContent ? (

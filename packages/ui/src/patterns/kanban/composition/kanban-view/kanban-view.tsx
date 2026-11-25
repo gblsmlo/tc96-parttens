@@ -3,6 +3,7 @@ import { ScrollArea } from '@tc96/ui/scroll-area'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'
 import { useLayoutEffect, useMemo, useRef } from 'react'
+import { useCollapsedGroups } from '../../../collection/shared/hooks/use-collapsed-groups'
 import type { KanbanCardSkeletonAnatomy } from '../../components/kanban-card-skeleton'
 import { KanbanColumn } from '../../components/kanban-column'
 import { KanbanColumnSelector } from '../../components/kanban-column-selector'
@@ -18,37 +19,43 @@ import type {
 
 export interface KanbanViewProps<TCard = unknown> {
   columns: KanbanColumnData<TCard>[]
-  renderCard: (card: TCard) => ReactNode
+  collapsedGroupIds?: readonly string[]
+  defaultCollapsedGroupIds?: readonly string[]
+  onCollapsedGroupIdsChange?: (groupIds: readonly string[]) => void
+  renderRecord: (card: TCard) => ReactNode
   getKey: (card: TCard) => string | number
-  getCardLabel?: (card: TCard) => string
-  getColumnActions?: (
+  getRecordLabel?: (card: TCard) => string
+  getGroupActions?: (
     column: KanbanColumnData<TCard>,
   ) => KanbanColumnActions | undefined
-  emptyColumnLabel?: string
+  emptyGroupLabel?: ReactNode
   loading?: boolean
-  loadingCardAnatomy?: KanbanCardSkeletonAnatomy
-  loadingCardCount?: number
-  loadingCardLabel?: string
+  loadingAnatomy?: KanbanCardSkeletonAnatomy
+  loadingCount?: number
+  loadingLabel?: string
   mobileColumnHint?: string
-  onMoveCard?: (move: KanbanCardMove<TCard>) => boolean | Promise<boolean>
-  renderColumnTitle?: (column: KanbanColumnData<TCard>) => ReactNode
+  onRecordMove?: (move: KanbanCardMove<TCard>) => boolean | Promise<boolean>
+  renderGroupTitle?: (column: KanbanColumnData<TCard>) => ReactNode
   renderHeaderActions?: (column: KanbanColumnData<TCard>) => ReactNode
 }
 
 export function KanbanView<TCard>({
   columns,
-  renderCard,
+  collapsedGroupIds,
+  defaultCollapsedGroupIds,
+  onCollapsedGroupIdsChange,
+  renderRecord,
   getKey,
-  getCardLabel,
-  getColumnActions,
-  emptyColumnLabel,
+  getRecordLabel,
+  getGroupActions,
+  emptyGroupLabel,
   loading = false,
-  loadingCardAnatomy,
-  loadingCardCount = 1,
-  loadingCardLabel,
+  loadingAnatomy,
+  loadingCount = 1,
+  loadingLabel,
   mobileColumnHint,
-  onMoveCard,
-  renderColumnTitle,
+  onRecordMove,
+  renderGroupTitle,
   renderHeaderActions,
 }: KanbanViewProps<TCard>) {
   const shownColumns = useMemo(
@@ -68,7 +75,7 @@ export function KanbanView<TCard>({
   } = useKanbanDragAndDrop({
     columns: shownColumns,
     getKey,
-    ...(!loading && onMoveCard ? { onMoveCard } : {}),
+    ...(!loading && onRecordMove ? { onRecordMove } : {}),
   })
   const { isDragging: isBoardDragging, rootRef } = useHorizontalDragScroll()
   const boardContentRef = useRef<HTMLDivElement | null>(null)
@@ -92,20 +99,38 @@ export function KanbanView<TCard>({
     getCardDragId,
     getKey,
     loading,
-    ...(loadingCardAnatomy ? { loadingCardAnatomy } : {}),
-    loadingCardCount,
-    loadingCardLabel,
-    renderColumnTitle,
+    ...(loadingAnatomy ? { loadingAnatomy } : {}),
+    loadingCount,
+    loadingLabel,
+    renderGroupTitle,
     renderHeaderActions,
-    renderCard,
+    renderRecord,
     sortableCards: cardDragEnabled,
-    ...(emptyColumnLabel ? { emptyLabel: emptyColumnLabel } : {}),
-    ...(getCardLabel ? { getCardLabel } : {}),
+    ...(emptyGroupLabel ? { emptyGroupLabel } : {}),
+    ...(getRecordLabel ? { getRecordLabel } : {}),
   }
   const showHorizontalScrollbar = cardDragEnabled && isBoardDragging
-  const getColumnActionProps = (column: KanbanColumnData<TCard>) => {
-    const actions = getColumnActions?.(column)
-    return actions ? { actions } : {}
+  const collapsible = Boolean(onCollapsedGroupIdsChange)
+  const { collapsedGroupIds: collapsedIds, setGroupCollapsed } =
+    useCollapsedGroups({
+      controlled: collapsedGroupIds,
+      defaultValue: defaultCollapsedGroupIds ?? [],
+      onChange: onCollapsedGroupIdsChange,
+    })
+  const getColumnProps = (column: KanbanColumnData<TCard>) => {
+    const actions = getGroupActions?.(column)
+    const collapsed = collapsedIds.includes(column.id)
+
+    return {
+      collapsed,
+      ...(actions ? { actions } : {}),
+      ...(collapsible
+        ? {
+            onCollapsedChange: (next: boolean) =>
+              setGroupCollapsed(column.id, next),
+          }
+        : {}),
+    }
   }
 
   useLayoutEffect(() => {
@@ -159,7 +184,7 @@ export function KanbanView<TCard>({
                 column={activeColumn}
                 {...columnProps}
                 sortableCards={false}
-                {...getColumnActionProps(activeColumn)}
+                {...getColumnProps(activeColumn)}
               />
             ) : null}
           </div>
@@ -194,7 +219,7 @@ export function KanbanView<TCard>({
                   column={column}
                   key={column.id}
                   {...columnProps}
-                  {...getColumnActionProps(column)}
+                  {...getColumnProps(column)}
                 />
               ))}
             </div>
@@ -203,7 +228,7 @@ export function KanbanView<TCard>({
         <DragOverlay className="pointer-events-none" dropAnimation={null}>
           {(source) => {
             const card = cardsByDragId.get(String(source.id))
-            return card ? renderCard(card) : null
+            return card ? renderRecord(card) : null
           }}
         </DragOverlay>
       </DragDropProvider>

@@ -7,7 +7,9 @@ import type {
   RowMove,
 } from '../collection/shared/lib/row-reorder'
 
-export type DataTableDensity = 'short' | 'medium' | 'tall' | 'extra-tall'
+import type { CollectionDensity } from '../collection/types/collection'
+
+export type { CollectionDensity }
 
 export type DataTableAlign = 'start' | 'center' | 'end'
 
@@ -20,7 +22,7 @@ export type DataTableRowMove = RowMove
 export type DataTableRowDragAnnouncements = RowDragAnnouncements
 
 export interface DataTableTableMeta {
-  dataGridDensity?: DataTableDensity
-  onDataGridDensityChange?: (density: DataTableDensity) => void
+  dataGridDensity?: CollectionDensity
+  onDataGridDensityChange?: (density: CollectionDensity) => void
   onDataTableCellValueChange?: (change: DataTableCellValueChange) => void
 }

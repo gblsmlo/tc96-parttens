@@ -31,7 +31,7 @@ export interface DataTableBodyProps<TData extends RowData> {
   getRowOpenLabel?: (row: TableRowOf<TData>) => string
   loadingMore: ReactNode
   meta: DataTableTable<TData>['options']['meta']
-  onRowClick?: (row: TableRowOf<TData>) => void
+  onRowOpen?: (row: TableRowOf<TData>) => void
   onRowMove?: (move: DataTableRowMove) => void
   onToggleGroup: (group: string, collapsed: boolean) => void
   renderGroupCell?: (context: DataTableGroupCellContext<TData>) => ReactNode
@@ -54,7 +54,7 @@ export function DataTableBody<TData extends RowData>({
   getRowOpenLabel,
   loadingMore,
   meta,
-  onRowClick,
+  onRowOpen,
   onRowMove,
   onToggleGroup,
   renderGroupCell,
@@ -86,14 +86,14 @@ export function DataTableBody<TData extends RowData>({
   })
 
   const renderRow = (row: TableRowOf<TData>) => {
-    const opens = onRowClick && (getRowCanOpen?.(row) ?? true)
+    const opens = onRowOpen && (getRowCanOpen?.(row) ?? true)
     return (
       <DataTableRow
         canSelect={row.getCanSelect()}
         expanded={row.getIsExpanded()}
         key={row.id}
         meta={meta}
-        onRowClick={opens ? onRowClick : undefined}
+        onRowOpen={opens ? onRowOpen : undefined}
         openLabel={
           opens ? (getRowOpenLabel?.(row) ?? defaultRowOpenLabel) : undefined
         }

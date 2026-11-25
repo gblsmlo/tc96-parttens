@@ -85,7 +85,6 @@ export type {
   DataGridCellVariant,
   DataGridColumnMeta,
   DataGridColumnType,
-  DataGridDensity,
   DataGridRowDragAnnouncements,
   DataGridRowMove,
   DataGridSelectOption,

@@ -158,7 +158,7 @@ export const ComposedGallery = ({
     )}
     emptyMessage={emptyMessage}
     loading={loading}
-    loadingRecordAnatomy={{
+    loadingAnatomy={{
       action,
       density,
       descriptionLines,
@@ -166,7 +166,7 @@ export const ComposedGallery = ({
       footer,
       titleLines,
     }}
-    loadingRecordLabel="Carregando registro"
+    loadingLabel="Carregando registro"
     {...(pageSize === 'none' ? {} : { pageSize })}
     renderRecord={(record) => (
       <SampleCard
@@ -192,7 +192,7 @@ const noActions: DocumentActions = {
   onTogglePin: ignore,
 }
 
-export function PaginatedDocumentsGallery({
+export function DocumentsGallery({
   actions = noActions,
   loadingFor,
 }: Readonly<{ actions?: DocumentActions; loadingFor?: number }>) {
@@ -210,8 +210,8 @@ export function PaginatedDocumentsGallery({
         collection={createDocumentCollection(pageOfDocuments)}
         emptyMessage="Nenhum documento para exibir."
         loading={loading}
-        loadingRecordAnatomy={documentCardAnatomy}
-        loadingRecordLabel="Carregando documento"
+        loadingAnatomy={documentCardAnatomy}
+        loadingLabel="Carregando documento"
         pageSize={DOCUMENTS_PAGE_SIZE}
         renderRecord={renderDocumentCard(actions)}
       />

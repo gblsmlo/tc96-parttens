@@ -18,7 +18,7 @@ Import direction: `components/` → `collection/shared/lib/skeleton-keys.ts` and
 
 ## Invariants
 
-- `GalleryView` renders the flat `collection.records` in source order and never groups, sorts or owns card anatomy. The grid has one column, two from `sm` and three from `lg`. It never paginates: `pageSize` (3, 6, 9 or 12, whole rows of three) only sizes the page the consumer passes, so loading renders that many skeletons and the grid reserves the rows of a full page (`minmax(13rem, auto)`, the card `min-h-52`) at each breakpoint, and a partial last page keeps the height. Each size maps to one complete class string, so the Tailwind scanner sees every class. Loading renders `loadingRecordCount` skeletons (four by default) shaped by `loadingRecordAnatomy` (`eyebrow`, `action`, `titleLines`, `descriptionLines`, `footer`, `density`), at the real line heights of the COSS `Card`, and an empty collection renders `emptyMessage` through the COSS `Empty` block.
+- `GalleryView` renders the flat `collection.records` in source order and never groups, sorts or owns card anatomy. The grid has one column, two from `sm` and three from `lg`. It never paginates: `pageSize` (3, 6, 9 or 12, whole rows of three) only sizes the page the consumer passes, so loading renders that many skeletons and the grid reserves the rows of a full page (`minmax(13rem, auto)`, the card `min-h-52`) at each breakpoint, and a partial last page keeps the height. Each size maps to one complete class string, so the Tailwind scanner sees every class. Loading renders `loadingCount` skeletons (four by default) shaped by `loadingAnatomy` (`eyebrow`, `action`, `titleLines`, `descriptionLines`, `footer`, `density`), at the real line heights of the COSS `Card`, and an empty collection renders `emptyMessage` through the COSS `Empty` block.
 - `GalleryRowSkeleton` wraps the card in an `output` with `aria-busy`, because an `article` cannot be `status`.
 - The consumer's renderer runs in a memoized leaf below the stateful component: it re-runs only when its identity or inputs change, so a renderer that reads other state with a stable identity goes stale.
 
@@ -28,7 +28,7 @@ Import direction: `components/` → `collection/shared/lib/skeleton-keys.ts` and
 | --- | --- | --- |
 | `data-slot="gallery-view"` | the `GalleryView` grid root | consumers and tests; not styled outside the view |
 | `data-page-size` | the `GalleryView` grid root, when `pageSize` is set | tests; not styled |
-| `data-density`, `data-description-lines` | the `output` of `GalleryRowSkeleton`, from `loadingRecordAnatomy` | tests; not styled |
+| `data-density`, `data-description-lines` | the `output` of `GalleryRowSkeleton`, from `loadingAnatomy` | tests; not styled |
 
 - Colors only from theme tokens; the card is the theme's `Card`.
 

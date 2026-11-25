@@ -51,7 +51,7 @@ import {
   DataTableSkeletonRows,
 } from './data-table-skeleton-rows'
 import type {
-  DataTableDensity,
+  CollectionDensity,
   DataTableRowDragAnnouncements,
   DataTableRowMove,
   DataTableTableMeta,
@@ -66,9 +66,10 @@ export type DataTableSelectionActionsProp<TData extends RowData> =
 export interface DataTableProps<TData extends RowData>
   extends Omit<ComponentProps<'table'>, 'children'> {
   table: DataTableTable<TData>
-  isLoading?: boolean
-  loadingRowAnatomy?: DataTableRowSkeletonAnatomy
-  loadingRowCount?: number
+  loading?: boolean
+  loadingAnatomy?: DataTableRowSkeletonAnatomy
+  loadingCount?: number
+  loadingLabel?: string
   emptyMessage?: string
   /** Moldura do DataGrid, para as duas views lerem como a mesma superfície. */
   bordered?: boolean
@@ -76,10 +77,10 @@ export interface DataTableProps<TData extends RowData>
   defaultAggregations?: DataTableAggregations
   onAggregationsChange?: (aggregations: DataTableAggregations) => void
   aggregationLabels?: Partial<DataTableAggregationLabels>
-  onRowClick?: (row: Row<DataTableFeatures, TData>) => void
+  onRowOpen?: (row: Row<DataTableFeatures, TData>) => void
   getRowOpenLabel?: (row: Row<DataTableFeatures, TData>) => string
   getRowCanOpen?: (row: Row<DataTableFeatures, TData>) => boolean
-  density?: DataTableDensity
+  density?: CollectionDensity
   selectionActions?: DataTableSelectionActionsProp<TData>
   getRowGroup?: (row: TData) => string | null
   collapsedGroupIds?: readonly string[]
@@ -98,7 +99,8 @@ export interface DataTableProps<TData extends RowData>
 const NO_GROUPS: readonly string[] = []
 const FALLBACK_ROW_HEIGHT_PX = 40
 
-const DENSITY_CLASS: Record<DataTableDensity, string | undefined> = {
+const DENSITY_CLASS: Record<CollectionDensity, string | undefined> = {
+  compact: '[&_tbody_td]:py-1.5',
   'extra-tall': '[&_tbody_td]:py-7',
   medium: '[&_tbody_td]:py-3.5',
   short: undefined,
@@ -112,16 +114,17 @@ const columnMetaOf = <TData,>(column: {
 
 export function DataTable<TData extends RowData>({
   table,
-  isLoading = false,
-  loadingRowAnatomy = {},
-  loadingRowCount = 5,
+  loading = false,
+  loadingAnatomy = {},
+  loadingCount = 5,
+  loadingLabel = 'Carregando linha',
   emptyMessage = 'Nenhum registro para exibir.',
   bordered = true,
   aggregations: controlledAggregations,
   defaultAggregations = {},
   onAggregationsChange,
   aggregationLabels,
-  onRowClick,
+  onRowOpen,
   getRowOpenLabel,
   getRowCanOpen,
   density: densityProp,
@@ -165,7 +168,7 @@ export function DataTable<TData extends RowData>({
   const fillColumnId = visibleColumns.at(-1)?.id
   const meta = table.options.meta
   const aggregatedRows = table.getPrePaginatedRowModel().rows
-  const showAggregations = !isLoading && aggregatedRows.length > 0
+  const showAggregations = !loading && aggregatedRows.length > 0
   const hasFooter = table
     .getAllLeafColumns()
     .some(
@@ -184,15 +187,15 @@ export function DataTable<TData extends RowData>({
   const reorderActive = isRowReorderActive({
     enabled: Boolean(onRowMove),
     grouped: Boolean(getRowGroup),
-    loading: isLoading,
+    loading: loading,
     sorted: table.store.state.sorting.length > 0,
     virtualized: false,
   })
   const loadingMoreCount =
-    loadingMore && !isLoading && rows.length > 0 ? loadingMoreRowCount : 0
+    loadingMore && !loading && rows.length > 0 ? loadingMoreRowCount : 0
   const [scrollContainerRef, overflow] = useHorizontalOverflow<HTMLDivElement>()
   useEndReached({
-    enabled: Boolean(onEndReached) && !isLoading,
+    enabled: Boolean(onEndReached) && !loading,
     loadingMore: loadingMoreCount > 0,
     measure: (viewport) => ({
       bottomInset:
@@ -238,7 +241,7 @@ export function DataTable<TData extends RowData>({
         }}
       >
         <Table
-          aria-busy={isLoading || loadingMoreCount > 0 || undefined}
+          aria-busy={loading || loadingMoreCount > 0 || undefined}
           data-density={density}
           render={
             <div
@@ -302,13 +305,14 @@ export function DataTable<TData extends RowData>({
               </TableRow>
             ))}
           </TableHeader>
-          {isLoading ? (
+          {loading ? (
             <TableBody>
               <DataTableSkeletonRows
-                anatomy={loadingRowAnatomy}
+                label={loadingLabel}
+                anatomy={loadingAnatomy}
                 columnCount={columnCount}
                 linesColumnIndex={linesColumnIndex}
-                rowCount={loadingRowCount}
+                rowCount={loadingCount}
                 scope="loading"
               />
             </TableBody>
@@ -322,7 +326,8 @@ export function DataTable<TData extends RowData>({
               loadingMore={
                 loadingMoreCount > 0 ? (
                   <DataTableSkeletonRows
-                    anatomy={loadingRowAnatomy}
+                    label={loadingLabel}
+                    anatomy={loadingAnatomy}
                     columnCount={columnCount}
                     linesColumnIndex={linesColumnIndex}
                     loadingMore
@@ -332,7 +337,7 @@ export function DataTable<TData extends RowData>({
                 ) : null
               }
               meta={meta}
-              onRowClick={onRowClick}
+              onRowOpen={onRowOpen}
               onRowMove={onRowMove}
               onToggleGroup={onToggleGroup}
               renderGroupCell={renderGroupCell}

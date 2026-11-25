@@ -15,10 +15,10 @@ export interface CalendarMonthGridProps<TRecord> {
   dropEnabled: boolean
   gridLabel: string
   loading: boolean
-  loadingRecordCount: number
-  loadingRecordLabel?: string
+  loadingCount: number
+  loadingLabel?: string
   maxVisibleRecords: number
-  onSelectDay?: (date: CalendarDate) => void
+  onDaySelect?: (date: CalendarDate) => void
   range: readonly CalendarDate[]
   renderSegment: (segment: CalendarItemSegment<TRecord>) => ReactNode
   segmentsByDay: ReadonlyMap<string, CalendarItemSegment<TRecord>[]>
@@ -32,10 +32,10 @@ export function CalendarMonthGrid<TRecord>({
   dropEnabled,
   gridLabel,
   loading,
-  loadingRecordCount,
-  loadingRecordLabel,
+  loadingCount,
+  loadingLabel,
   maxVisibleRecords,
-  onSelectDay,
+  onDaySelect,
   range,
   renderSegment,
   segmentsByDay,
@@ -85,9 +85,9 @@ export function CalendarMonthGrid<TRecord>({
                 overflowLabel={(hiddenCount) => `+${hiddenCount}`}
                 renderSegment={renderSegment}
                 segments={segmentsByDay.get(calendarDateKey(date)) ?? []}
-                showSkeleton={loading && position < loadingRecordCount}
-                {...(loadingRecordLabel ? { loadingRecordLabel } : {})}
-                {...(onSelectDay ? { onSelectDay } : {})}
+                showSkeleton={loading && position < loadingCount}
+                {...(loadingLabel ? { loadingLabel } : {})}
+                {...(onDaySelect ? { onDaySelect } : {})}
               />
             )
           })}

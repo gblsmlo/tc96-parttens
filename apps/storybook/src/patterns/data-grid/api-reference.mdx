@@ -59,7 +59,7 @@ const { table } = useDataGrid({ columns, data, enablePagination: true, getRowId 
           <div data-slot="data-grid-cell" role="gridcell">{cell}</div>
         </div>
       </div>
-      <div data-slot="data-grid-add-row-group" role="rowgroup" />{/* only with onRowAdd */}
+      <div data-slot="data-grid-add-row-group" role="rowgroup" />{/* only with onRecordAdd */}
       <div data-slot="data-grid-footer" role="row">{/* pagination or footer */}</div>
     </div>
   </ScrollArea>
@@ -75,10 +75,11 @@ The spreadsheet of one collection. Renders a `div` with `role="grid"`, the WAI-A
 | --- | --- | --- | --- |
 | `table` | `DataGridTable<TData>` | required | Supplies the rows, columns and state, from `useDataGrid`. |
 | `aria-label` | `string` | - | Names the grid. |
-| `density` | `"short"`, `"medium"`, `"tall"` or `"extra-tall"` | the table's density | Controls the row height and the cell padding; when set, wins over `DataGridDensitySubmenu`. |
-| `isLoading` | `boolean` | `false` | When true, replaces the rows with skeleton rows and marks the grid busy. |
-| `loadingRowCount` | `number` | `5` | Sets how many skeleton rows show; pass the page size when the grid paginates. |
-| `loadingRowAnatomy` | `DataGridRowSkeletonAnatomy` | - | Shapes the skeleton rows to match the loaded ones. |
+| `density` | `"compact"`, `"short"`, `"medium"`, `"tall"` or `"extra-tall"` | the table's density | Controls the row height and the cell padding; when set, wins over `DataGridDensitySubmenu`. |
+| `loading` | `boolean` | `false` | When true, replaces the rows with skeleton rows and marks the grid busy. |
+| `loadingCount` | `number` | `5` | Sets how many skeleton rows show; pass the page size when the grid paginates. |
+| `loadingLabel` | `string` | `"Carregando linha"` | Names each skeleton row: a visually hidden `output` with `aria-busy` in its first cell, since a row cannot be wrapped in a status. |
+| `loadingAnatomy` | `DataGridRowSkeletonAnatomy` | - | Shapes the skeleton rows to match the loaded ones. |
 | `emptyMessage` | `string` | `"Nenhum registro para exibir."` | Sets the text of the one row shown when there are no rows. |
 | `fillColumn` | `string` or `false` | the last unpinned column | Sets the column that takes the spare width; `false` keeps every width and fits the grid to its columns. |
 | `maxHeight` | `number` or `string` | - | Caps the height of the scrolling area; without it the grid is as tall as its rows. |
@@ -88,10 +89,10 @@ The spreadsheet of one collection. Renders a `div` with `role="grid"`, the WAI-A
 | `onCollapsedGroupIdsChange` | `(groupIds: readonly string[]) => void` | - | Called when a group collapses or expands, with every collapsed group. |
 | `getRowSelected` | `(row: TData) => boolean` | - | Marks more rows as selected, besides the table's row selection. |
 | `selectionActions` | `ReactNode` or `(context) => ReactNode` | - | Renders over the bottom of the grid while rows are selected; the function gets `selectedRows`, `selectedCount` and `clearSelection`. |
-| `pagination` | `boolean` | `true` when the table paginates | When false, drops the pagination footer. |
+| `showPagination` | `boolean` | `true` when the table paginates | When false, drops the pagination footer. |
 | `footer` | `ReactNode` | - | Replaces the pagination in the footer row. |
-| `onRowAdd` | `() => void \| Promise<void>` | - | Called when the add row is pressed; adds a row below the body that sticks to the bottom. |
-| `addRowLabel` | `string` | `"Adicionar linha"` | Sets the text of the add row. |
+| `onRecordAdd` | `() => void \| Promise<void>` | - | Called when the add row is pressed; adds a row below the body that sticks to the bottom. |
+| `addLabel` | `string` | `"Adicionar linha"` | Sets the text of the add row. |
 | `virtualize` | `boolean` | `false` | When true, renders only the rows in view; ignored with `getRowGroup`, while loading or without rows. |
 | `overscan` | `number` | `8` | Sets how many rows render past the view when virtualized. |
 | `className` | `string` | - | Adds classes to the outer `div`. |
@@ -111,7 +112,7 @@ The `role="grid"` element is the scroll viewport inside `[data-slot="data-grid"]
 | --- | --- | --- |
 | `data-density` | the density | Marks the grid by density |
 | `data-drag-scroll` | `"dragging"` while dragged sideways | Marks the grid during a drag-scroll |
-| `aria-busy` | `"true"` while `isLoading` | Marks the grid busy |
+| `aria-busy` | `"true"` while `loading` | Marks the grid busy |
 
 The grid declares `aria-rowcount` and `aria-colcount`, and is `aria-multiselectable`, since Shift extends the cell selection. The add row and the footer count as rows. Without a fill column the grid shrinks to its columns and still scrolls when they overflow. The header and the footer stick to the edges, and the vertical scrollbar runs between them. The header fill is `card` mixed with 2% black, 2% white in dark.
 
@@ -149,7 +150,7 @@ With no rows, the body shows one row with `emptyMessage`.
 
 ### Loading rows
 
-While `isLoading`, the body shows `loadingRowCount` skeleton rows, one bar per cell, at the row height of the density. `loadingRowAnatomy` matches the bars to the loaded cells, so the grid keeps its height when the data arrives:
+While `loading`, the body shows `loadingCount` skeleton rows, one bar per cell, at the row height of the density. `loadingAnatomy` matches the bars to the loaded cells, so the grid keeps its height when the data arrives:
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -182,7 +183,7 @@ Creates the table `DataGrid` reads, with sorting, filtering, search, pagination,
 | `data` | `TData[]` | required | Sets the rows, in order. |
 | `columns` | `DataGridColumnDef<TData>[]` | required | Declares the columns; a column with no `cell` renders through `DataGridCell`. |
 | `getRowId` | `(row: TData, index: number) => string` | - | Identifies a row; pass a stable key so focus and selection follow the record. |
-| `density` | `"short"`, `"medium"`, `"tall"` or `"extra-tall"` | `"short"` | Sets the starting density, which `DataGridDensitySubmenu` changes. |
+| `density` | `"compact"`, `"short"`, `"medium"`, `"tall"` or `"extra-tall"` | `"short"` | Sets the starting density, which `DataGridDensitySubmenu` changes. |
 | `onCellValueChange` | `(change: DataGridCellValueChange) => void` | - | Called when an editable cell picks a value, with `{ rowId, columnId, value }`; turns editable select cells on. |
 | `enableSorting` | `boolean` | `true` | When true, columns can be sorted. |
 | `enableColumnFilters` | `boolean` | `true` | When true, columns can be filtered. |
@@ -283,7 +284,7 @@ Submenus for a `ViewSettingsMenu` or any `Menu`, each with a `table` and a `labe
 | Part | `label` default | Holds |
 | --- | --- | --- |
 | `DataGridSortSubmenu` | `"Ordenar por"` | `<label>: crescente` and `<label>: decrescente` per sortable column, and `Limpar ordenação` while sorted; nothing renders when no column sorts |
-| `DataGridDensitySubmenu` | `"Altura das linhas"` | a radio group: `Compacta`, `Média`, `Alta`, `Extra alta`; its icon follows the density |
+| `DataGridDensitySubmenu` | `"Altura das linhas"` | a radio group: `Compacta`, `Padrão`, `Média`, `Alta`, `Extra alta`; its icon follows the density |
 | `DataGridColumnsSubmenu` | `"Colunas"` | a checkbox per column that can hide, which stays open on click; nothing renders when no column hides |
 
 ## DataGridPagination
@@ -342,7 +343,7 @@ Operators by kind: `text` has `contains`, `is`, `is-not`; `option` has `is`, `is
 | `DataGridColumnDef`, `DataGridColumn`, `DataGridHeader`, `DataGridTable`, `DataGridTableMeta`, `DataGridFeatures`, `UseDataGridOptions`, `UseDataGridReturn` | `type` | The column, table and hook types. |
 | `DataGridCondition`, `DataGridConditionField`, `DataGridConditionFilterField`, `DataGridConditionFilterLabels`, `DataGridConditionFiltersProps`, `DataGridConditionJoin`, `DataGridConditionKind`, `DataGridConditionOperator`, `MatchConditionsOptions` | `type` | The condition model and the props of the filter builder. |
 | `DATA_GRID_CONDITION_OPERATORS`, `createDataGridConditionFilterFn`, `matchesConditions`, `matchesCondition`, `createCondition`, `changeConditionOperator`, `normalizeConditionValue`, `isConditionComplete`, `getConditionOperators` | `constant`, `function` | The pure condition model and its filter function. |
-| `DataGridColumnMeta`, `DataGridCellRow`, `DataGridCellVariant`, `DataGridColumnType`, `DataGridAlign`, `DataGridDensity`, `DataGridSelectOption`, `DataGridCellValueChange` | `type` | The column meta and its unions. |
+| `DataGridColumnMeta`, `DataGridCellRow`, `DataGridCellVariant`, `DataGridColumnType`, `DataGridAlign`, `CollectionDensity`, `DataGridSelectOption`, `DataGridCellValueChange` | `type` | The column meta and its unions. |
 
 ## Accessibility and theme
 

@@ -24,7 +24,7 @@ type Story = StoryObj<typeof meta>
 const LOAD_DELAY = 2000
 
 function LoadingTasksGrid() {
-  const [isLoading, setIsLoading] = useState(true)
+  const [loading, setIsLoading] = useState(true)
 
   useEffect(() => {
     let active = true
@@ -36,7 +36,7 @@ function LoadingTasksGrid() {
     }
   }, [])
 
-  return <TasksGrid density="short" isLoading={isLoading} />
+  return <TasksGrid density="short" loading={loading} />
 }
 
 const gridOf = (canvasElement: HTMLElement) =>
@@ -55,6 +55,20 @@ const firstTask = () => {
 
 const pageOf = (page: number) =>
   initialTasks.slice((page - 1) * TASK_PAGE_SIZE, page * TASK_PAGE_SIZE)
+
+export const LoadingRowsAreAnnounced: Story = {
+  render: () => <TasksGrid density="short" loading />,
+  play: async ({ canvasElement }) => {
+    const statuses = within(canvasElement).getAllByRole('status')
+    const rows = canvasElement.querySelectorAll('[role=row][data-cell]')
+
+    await expect(statuses).toHaveLength(rows.length)
+    for (const status of statuses) {
+      await expect(status).toHaveTextContent('Carregando linha')
+      await expect(status).toHaveAttribute('aria-busy', 'true')
+    }
+  },
+}
 
 export const LoadingKeepsTheRowHeight: Story = {
   render: () => <LoadingTasksGrid />,

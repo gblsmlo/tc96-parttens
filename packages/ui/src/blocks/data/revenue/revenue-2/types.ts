@@ -29,7 +29,12 @@ export type Revenue2Health = 'at-risk' | 'healthy' | 'watchlist'
 
 export type Revenue2Urgency = 'later' | 'overdue' | 'soon'
 
-export type Revenue2Density = 'extra-tall' | 'medium' | 'short' | 'tall'
+export type Revenue2Density =
+  | 'compact'
+  | 'extra-tall'
+  | 'medium'
+  | 'short'
+  | 'tall'
 
 export type Revenue2ToggleColumnId =
   | 'arr'

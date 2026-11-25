@@ -13,9 +13,9 @@ import {
   ListRowFooter,
   ListRowHeader,
   ListRowLeading,
+  ListRowOpenTrigger,
   ListRowSelect,
   ListRowTitle,
-  ListRowTitleTrigger,
   ListRowTrailing,
   ListView,
 } from '@tc96/ui/patterns'
@@ -95,9 +95,9 @@ export function SampleListRow({
       <ListRowBody>
         <ListRowTitle>
           {trigger ? (
-            <ListRowTitleTrigger onClick={ignore}>
+            <ListRowOpenTrigger onClick={ignore}>
               {record.title}
-            </ListRowTitleTrigger>
+            </ListRowOpenTrigger>
           ) : (
             record.title
           )}
@@ -133,7 +133,7 @@ export function SampleListRow({
 }
 
 export interface ComposedListProps extends ListControls {
-  onAddRecord?: (groupId: string) => void
+  onRecordAdd?: (groupId: string) => void
 }
 
 export const ComposedList = ({
@@ -150,7 +150,7 @@ export const ComposedList = ({
   interactive,
   leading,
   loading,
-  onAddRecord = ignore,
+  onRecordAdd = ignore,
   selection,
   separated,
   trigger,
@@ -172,16 +172,16 @@ export const ComposedList = ({
       collection={sampleCollection(empty ? [] : sampleRecords)}
       emptyGroupLabel={emptyGroupLabel}
       emptyMessage={emptyMessage}
-      getGroupActions={() => (addAction ? { onAddRecord } : undefined)}
+      getGroupActions={() => (addAction ? { onRecordAdd } : undefined)}
       grouping={grouped ? 'status' : null}
       loading={loading}
-      loadingRecordAnatomy={{
+      loadingAnatomy={{
         action,
         lines: description ? 2 : 1,
         media: leading ? 'icon' : 'none',
         pills: field ? 1 : 0,
       }}
-      loadingRecordLabel="Carregando registro"
+      loadingLabel="Carregando registro"
       renderRecord={(record) => (
         <SampleListRow
           action={action}
@@ -210,9 +210,9 @@ export const SingleLineList = () => (
       <ListRow density="compact">
         <ListRowHeader>
           <ListRowTitle>
-            <ListRowTitleTrigger onClick={ignore}>
+            <ListRowOpenTrigger onClick={ignore}>
               {record.title}
-            </ListRowTitleTrigger>
+            </ListRowOpenTrigger>
           </ListRowTitle>
           <ListRowContent>Descrição curta do registro.</ListRowContent>
         </ListRowHeader>
@@ -227,7 +227,7 @@ interface TasksListProps {
   getGroupToggleLabel?: (group: string, collapsed: boolean) => string
   grouping: string | null
   loading?: boolean
-  onAddRecord?: (groupId: string) => void
+  onRecordAdd?: (groupId: string) => void
   onCollapsedGroupIdsChange?: (groupIds: readonly string[]) => void
   onOpen?: (task: Task) => void
   startingTasks?: readonly Task[]
@@ -238,7 +238,7 @@ export function TasksList({
   getGroupToggleLabel,
   grouping,
   loading = false,
-  onAddRecord,
+  onRecordAdd,
   onCollapsedGroupIdsChange,
   onOpen = ignore,
   startingTasks = initialTasks,
@@ -251,15 +251,15 @@ export function TasksList({
       collection={createCollection(loading ? [] : tasks)}
       emptyGroupLabel="Nenhuma tarefa neste grupo."
       emptyMessage="Nenhuma tarefa para exibir."
-      {...(onAddRecord ? { getGroupActions: () => ({ onAddRecord }) } : {})}
+      {...(onRecordAdd ? { getGroupActions: () => ({ onRecordAdd }) } : {})}
       {...(getGroupToggleLabel ? { getGroupToggleLabel } : {})}
       grouping={grouping}
       loading={loading}
-      loadingRecordAnatomy={{ media: 'icon', pills: 4 }}
-      loadingRecordLabel="Carregando tarefa"
+      loadingAnatomy={{ media: 'icon', pills: 4 }}
+      loadingLabel="Carregando tarefa"
       {...(onCollapsedGroupIdsChange ? { onCollapsedGroupIdsChange } : {})}
       renderGroupTitle={(group) => group.label}
-      renderRecord={renderTaskListRow(updateTask, 'comfortable', onOpen)}
+      renderRecord={renderTaskListRow(updateTask, 'short', onOpen)}
     />
   )
 }
@@ -291,8 +291,8 @@ export function DocumentRow({
       collection={documentCollection}
       grouping={null}
       loading={loading}
-      loadingRecordAnatomy={{ action: true, lines: 2, media: 'icon', pills: 1 }}
-      loadingRecordLabel="Carregando documento"
+      loadingAnatomy={{ action: true, lines: 2, media: 'icon', pills: 1 }}
+      loadingLabel="Carregando documento"
       renderRecord={() => (
         <ListRow>
           <ListRowLeading>
@@ -302,9 +302,9 @@ export function DocumentRow({
           </ListRowLeading>
           <ListRowBody>
             <ListRowTitle>
-              <ListRowTitleTrigger disabled={disabled} onClick={onOpen}>
+              <ListRowOpenTrigger disabled={disabled} onClick={onOpen}>
                 Contrato de prestação de serviços
-              </ListRowTitleTrigger>
+              </ListRowOpenTrigger>
             </ListRowTitle>
             <ListRowDescription>Mariana Souza</ListRowDescription>
           </ListRowBody>

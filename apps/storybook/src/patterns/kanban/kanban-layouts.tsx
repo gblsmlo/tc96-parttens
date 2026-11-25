@@ -48,53 +48,48 @@ export function useSimulatedLoading(delay: number | undefined) {
 const ignore = () => undefined
 
 export interface ComposedKanbanProps extends KanbanControls {
-  onAddCard?: (columnId: string) => void
-  onCollapsedChange?: (columnId: string, collapsed: boolean) => void
+  onRecordAdd?: (columnId: string) => void
+  onCollapsedGroupIdsChange?: (groupIds: readonly string[]) => void
   onColorChange?: (columnId: string, color: string) => void
-  onMoveCard?: (move: KanbanCardMove<SampleCard>) => boolean
+  onRecordMove?: (move: KanbanCardMove<SampleCard>) => boolean
 }
 
 export function ComposedKanban({
   addAction,
   collapsed,
   description,
-  emptyColumnLabel,
+  emptyGroupLabel,
   fields,
   footer,
   hidden,
   loading,
   menu,
-  onAddCard = ignore,
-  onCollapsedChange,
+  onRecordAdd = ignore,
+  onCollapsedGroupIdsChange,
   onColorChange,
-  onMoveCard,
+  onRecordMove,
   openTrigger,
   settingsAction,
 }: Readonly<ComposedKanbanProps>) {
   const [columns, setColumns] = useState(sampleColumns)
+  const [collapsedIds, setCollapsedIds] = useState<readonly string[]>([])
+  const firstColumnId = columns[0]?.id
   const lastColumnId = columns.at(-1)?.id
+  const collapsedGroupIds =
+    collapsed && firstColumnId && !collapsedIds.includes(firstColumnId)
+      ? [...collapsedIds, firstColumnId]
+      : collapsedIds
   const shownColumns = columns.map(
-    (column, position): KanbanColumnData<SampleCard> => ({
+    (column): KanbanColumnData<SampleCard> => ({
       ...column,
-      collapsed: column.collapsed || (collapsed && position === 0),
       hidden: hidden && column.id === lastColumnId,
     }),
   )
   const actions = {
-    ...(addAction ? { onAddCard } : {}),
+    ...(addAction ? { onRecordAdd } : {}),
     ...(settingsAction
       ? {
           colorOptions: columnColorOptions,
-          onCollapsedChange: (columnId: string, next: boolean) => {
-            onCollapsedChange?.(columnId, next)
-            setColumns((current) =>
-              current.map((column) =>
-                column.id === columnId
-                  ? { ...column, collapsed: next }
-                  : column,
-              ),
-            )
-          },
           onColorChange: (columnId: string, color: string) => {
             onColorChange?.(columnId, color)
             setColumns((current) =>
@@ -109,29 +104,38 @@ export function ComposedKanban({
 
   return (
     <KanbanView<SampleCard>
+      collapsedGroupIds={collapsedGroupIds}
       columns={shownColumns}
-      emptyColumnLabel={emptyColumnLabel}
-      getCardLabel={(card) => card.title}
-      getColumnActions={() =>
+      {...(settingsAction
+        ? {
+            onCollapsedGroupIdsChange: (groupIds: readonly string[]) => {
+              onCollapsedGroupIdsChange?.(groupIds)
+              setCollapsedIds(groupIds)
+            },
+          }
+        : {})}
+      emptyGroupLabel={emptyGroupLabel}
+      getRecordLabel={(card) => card.title}
+      getGroupActions={() =>
         addAction || settingsAction ? actions : undefined
       }
       getKey={(card) => card.id}
       loading={loading}
-      loadingCardAnatomy={{
+      loadingAnatomy={{
         assignee: footer,
         counts: footer ? 1 : 0,
         descriptionLines: description ? 1 : 0,
         fields: fields ? 2 : 0,
         menu,
       }}
-      loadingCardCount={2}
-      loadingCardLabel="Carregando card"
-      onMoveCard={(move) => {
-        if (onMoveCard && !onMoveCard(move)) return false
+      loadingCount={2}
+      loadingLabel="Carregando card"
+      onRecordMove={(move) => {
+        if (onRecordMove && !onRecordMove(move)) return false
         setColumns((current) => applyCardMove(current, move))
         return true
       }}
-      renderCard={(card) => (
+      renderRecord={(card) => (
         <SampleKanbanCard
           card={card}
           description={description}
@@ -158,26 +162,29 @@ export function LoadingSampleBoard({
 
 export function TaskBoard({
   loadingFor,
-  onAddCard = ignore,
-}: Readonly<{ loadingFor?: number; onAddCard?: (columnId: string) => void }>) {
+  onRecordAdd = ignore,
+}: Readonly<{
+  loadingFor?: number
+  onRecordAdd?: (columnId: string) => void
+}>) {
   const loading = useSimulatedLoading(loadingFor)
   const { tasks, updateTask } = useTasks()
 
   return (
     <KanbanView
       columns={projectTaskColumns(tasks)}
-      getCardLabel={(task) => task.title}
-      getColumnActions={() => ({ onAddCard })}
+      getRecordLabel={(task) => task.title}
+      getGroupActions={() => ({ onRecordAdd })}
       getKey={(task) => task.id}
       loading={loading}
-      loadingCardAnatomy={taskCardAnatomy}
-      loadingCardLabel="Carregando tarefa"
-      onMoveCard={({ card, targetColumnId }) => {
+      loadingAnatomy={taskCardAnatomy}
+      loadingLabel="Carregando tarefa"
+      onRecordMove={({ card, targetColumnId }) => {
         if (!isStatus(targetColumnId)) return false
         updateTask(card.id, { status: targetColumnId })
         return true
       }}
-      renderCard={renderTaskKanbanCard(updateTask)}
+      renderRecord={renderTaskKanbanCard(updateTask)}
     />
   )
 }
@@ -194,9 +201,9 @@ export function DealColumn({
       columns={[{ cards: [deal], count: 1, id: 'deals', title: 'Negócios' }]}
       getKey={(current) => current.id}
       loading={loading}
-      loadingCardAnatomy={dealCardAnatomy}
-      loadingCardLabel="Carregando negócio"
-      renderCard={(current) => (
+      loadingAnatomy={dealCardAnatomy}
+      loadingLabel="Carregando negócio"
+      renderRecord={(current) => (
         <DealCard
           deal={current}
           onOpen={onOpen}

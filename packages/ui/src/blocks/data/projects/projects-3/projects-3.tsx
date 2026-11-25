@@ -379,8 +379,8 @@ export function Projects3({
 
   const kanban = useMemo<CollectionKanbanViewProps<Projects3Task>>(
     () => ({
-      emptyColumnLabel: labels.emptyColumn,
-      onMoveCard:
+      emptyGroupLabel: labels.emptyColumn,
+      onRecordMove:
         changeStatus && kanbanGroupBy === 'status'
           ? ({ card, sourceGroup, targetGroup }) => {
               if (card.archived || targetGroup.grouping !== 'status')

@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Kanban
 
-A board of columns of cards for a collection grouped by one dimension: deals by stage, tasks by status, campaigns by objective. The consumer passes the columns with their cards, returns each card from `renderCard`, usually a [KanbanCard](?path=/docs/patterns-kanbancard-api-reference--api-reference), and decides whether a card moved between or inside columns is accepted.
+A board of columns of cards for a collection grouped by one dimension: deals by stage, tasks by status, campaigns by objective. The consumer passes the columns with their cards, returns each card from `renderRecord`, usually a [KanbanCard](?path=/docs/patterns-kanbancard-api-reference--api-reference), and decides whether a card moved between or inside columns is accepted.
 
 The other pages of `Patterns/Kanban`: [Playground](?path=/story/patterns-kanban-playground--playground) to try the column states and the parts of the sample cards, [Variants](?path=/story/patterns-kanban-variants--default) for each prop value, [Behavior](?path=/story/patterns-kanban-behavior--loading-keeps-card-height) for the tests, [Usages](?path=/story/patterns-kanban-usages--tasks) for a board of tasks and [Layouts](?path=/story/patterns-kanban-layouts--with-column-settings) for the column settings and a collapsed column.
 
@@ -24,14 +24,14 @@ import { KanbanCardSkeleton, KanbanView } from '@acme/patterns'
 ```tsx
 <KanbanView
   columns={columns}
-  emptyColumnLabel="emptyColumnLabel"
-  getColumnActions={() => ({ onAddCard, onOpenSettings })}
+  emptyGroupLabel="emptyGroupLabel"
+  getGroupActions={() => ({ onRecordAdd, onSettingsOpen })}
   getKey={(card) => card.id}
-  renderCard={(card) => <KanbanCard>{/* the card parts */}</KanbanCard>}
+  renderRecord={(card) => <KanbanCard>{/* the card parts */}</KanbanCard>}
 />
 ```
 
-`KanbanView` renders one column per entry of `columns`, with a header (the color marker, the title, the count and the actions) and the cards `renderCard` returns. The card is the consumer's, usually a [KanbanCard](?path=/docs/patterns-kanbancard-api-reference--api-reference). While `loading`, a `KanbanCardSkeleton` takes the place of each card:
+`KanbanView` renders one column per entry of `columns`, with a header (the color marker, the title, the count and the actions) and the cards `renderRecord` returns. The card is the consumer's, usually a [KanbanCard](?path=/docs/patterns-kanbancard-api-reference--api-reference). While `loading`, a `KanbanCardSkeleton` takes the place of each card:
 
 <Canvas of={ApiReferenceStories.SkeletonAnatomy} />
 
@@ -41,23 +41,26 @@ import { KanbanCardSkeleton, KanbanView } from '@acme/patterns'
 
 ## KanbanView
 
-The board. Renders a `div`, with no role, that takes the full height of its parent, so its parent needs a bounded height. It never fetches, sorts, filters or stores the cards: it shows the `columns` it receives, and a move reaches the consumer through `onMoveCard`.
+The board. Renders a `div`, with no role, that takes the full height of its parent, so its parent needs a bounded height. It never fetches, sorts, filters or stores the cards: it shows the `columns` it receives, and a move reaches the consumer through `onRecordMove`.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `columns` | `KanbanColumnData<TCard>[]` | required | Sets the columns, in order, with their cards. |
 | `getKey` | `(card: TCard) => string \| number` | required | Returns the key of a card, unique on the board. |
-| `renderCard` | `(card: TCard) => React.ReactNode` | required | Returns the whole card. |
-| `onMoveCard` | `(move: KanbanCardMove<TCard>) => boolean \| Promise<boolean>` | - | Called when a card is dropped in another column or position; returns whether the move is accepted. Turns on card drag. |
-| `getCardLabel` | `(card: TCard) => string` | - | Returns the name of a card in its drag handle, `Mover card <label>`; without it the handle uses the key. |
-| `getColumnActions` | `(column: KanbanColumnData<TCard>) => KanbanColumnActions \| undefined` | - | Returns the add and settings actions of a column header. |
-| `renderColumnTitle` | `(column: KanbanColumnData<TCard>) => React.ReactNode` | - | Replaces the text of a column heading. |
+| `renderRecord` | `(card: TCard) => React.ReactNode` | required | Returns the whole card. |
+| `onRecordMove` | `(move: KanbanCardMove<TCard>) => boolean \| Promise<boolean>` | - | Called when a card is dropped in another column or position; returns whether the move is accepted. Turns on card drag. |
+| `getRecordLabel` | `(card: TCard) => string` | - | Returns the name of a card in its drag handle, `Mover card <label>`; without it the handle uses the key. |
+| `getGroupActions` | `(column: KanbanColumnData<TCard>) => KanbanColumnActions \| undefined` | - | Returns the add and settings actions of a column header. |
+| `renderGroupTitle` | `(column: KanbanColumnData<TCard>) => React.ReactNode` | - | Replaces the text of a column heading. |
 | `renderHeaderActions` | `(column: KanbanColumnData<TCard>) => React.ReactNode` | - | Adds content after the header buttons of a column. |
-| `emptyColumnLabel` | `string` | `"Nenhum item nesta coluna."` | Sets the text of a column with no cards. |
+| `emptyGroupLabel` | `React.ReactNode` | `"Nenhum item nesta coluna."` | Sets the content of a column with no cards. |
+| `collapsedGroupIds` | `readonly string[]` | - | Sets the collapsed columns by `id`, controlled. |
+| `defaultCollapsedGroupIds` | `readonly string[]` | `[]` | Sets the starting collapsed columns when uncontrolled. |
+| `onCollapsedGroupIdsChange` | `(groupIds: readonly string[]) => void` | - | Called with every collapsed column when the collapse switch of the settings popover changes; turns the switch on. |
 | `loading` | `boolean` | `false` | When true, replaces the cards with skeletons, hides the column actions, turns off drag and sets `aria-busy`. |
-| `loadingCardAnatomy` | `KanbanCardSkeletonAnatomy` | - | Sets the parts of each skeleton, so it matches the card. |
-| `loadingCardCount` | `number` | `1` | Sets the number of skeletons in each column while loading. |
-| `loadingCardLabel` | `string` | - | Names each skeleton; without it the skeleton is named `"Carregando card"`. |
+| `loadingAnatomy` | `KanbanCardSkeletonAnatomy` | - | Sets the parts of each skeleton, so it matches the card. |
+| `loadingCount` | `number` | `1` | Sets the number of skeletons in each column while loading. |
+| `loadingLabel` | `string` | - | Names each skeleton; without it the skeleton is named `"Carregando card"`. |
 | `mobileColumnHint` | `string` | - | Adds a line of help under the column selector, below `md`. |
 
 | Attribute | Values | Description |
@@ -65,13 +68,13 @@ The board. Renders a `div`, with no role, that takes the full height of its pare
 | `data-slot` | `"kanban-view"` | Selects the board |
 | `aria-busy` | `"true"` while `loading` | Marks the board as loading |
 
-The board has two layouts in the DOM and CSS shows one. From the `md` breakpoint, every column that is not `hidden` sits side by side in a horizontal scroll area, 304px wide each (352px from `xl`) with 8px between them. Below `md`, a row of toggle buttons named `<title> · <count>` (`aria-pressed` on the active one), under the label `Coluna`, picks the one column shown. The cards of the active column therefore render twice: keep `renderCard` pure, and do not emit DOM ids in it.
+The board has two layouts in the DOM and CSS shows one. From the `md` breakpoint, every column that is not `hidden` sits side by side in a horizontal scroll area, 304px wide each (352px from `xl`) with 8px between them. Below `md`, a row of toggle buttons named `<title> · <count>` (`aria-pressed` on the active one), under the label `Coluna`, picks the one column shown. The cards of the active column therefore render twice: keep `renderRecord` pure, and do not emit DOM ids in it.
 
 ### Moving cards
 
-With `onMoveCard` and not `loading`, each card on the desktop board gets a drag handle: a button named `Mover card <label>` at its top-left corner, visible only when it has keyboard focus. Space picks the card up, the arrow keys move it between and inside columns, Space or Tab drops it and Escape cancels. A pointer drags the whole card after 5px of movement (on touch, after a 250ms press within 5px), except from a control inside it, such as a button, a field or a menu; a drag can start on `KanbanCardOpenTrigger`. Below `md` and on a collapsed column, no card can be dropped.
+With `onRecordMove` and not `loading`, each card on the desktop board gets a drag handle: a button named `Mover card <label>` at its top-left corner, visible only when it has keyboard focus. Space picks the card up, the arrow keys move it between and inside columns, Space or Tab drops it and Escape cancels. A pointer drags the whole card after 5px of movement (on touch, after a 250ms press within 5px), except from a control inside it, such as a button, a field or a menu; a drag can start on `KanbanCardOpenTrigger`. Below `md` and on a collapsed column, no card can be dropped.
 
-When the card is dropped, the board shows it at the target at once and calls `onMoveCard`. `true` keeps it there until `columns` shows the card at the target; `false`, a thrown error or a rejected promise puts it back. A promise ends the drop animation at once, without waiting for it to settle. Focus returns to the handle of the moved card. While cards can be dragged, a pointer drag of more than 8px on the board outside a card and its controls scrolls the board sideways, and a click within 500ms after such a drag is ignored.
+When the card is dropped, the board shows it at the target at once and calls `onRecordMove`. `true` keeps it there until `columns` shows the card at the target; `false`, a thrown error or a rejected promise puts it back. A promise ends the drop animation at once, without waiting for it to settle. Focus returns to the handle of the moved card. While cards can be dragged, a pointer drag of more than 8px on the board outside a card and its controls scrolls the board sideways, and a click within 500ms after such a drag is ignored.
 
 ## KanbanColumnData
 
@@ -79,12 +82,11 @@ A column the consumer passes in `columns`.
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `id` | `string` | required | Identifies the column in `onMoveCard` and the column actions. |
+| `id` | `string` | required | Identifies the column in `onRecordMove` and the column actions. |
 | `title` | `string` | required | Sets the heading, which names the column. |
 | `count` | `number` | required | Sets the number in the header badge; the board does not count `cards`. |
 | `cards` | `TCard[]` | required | Sets the cards, in order. |
 | `color` | `string` | `"var(--color-slate-400)"` | Sets a CSS color for the marker dot, a 4% tint of the column surface and an 8% tint of its border. Prefer a primitive token, such as `"var(--color-green-500)"`. |
-| `collapsed` | `boolean` | - | When true, narrows the column to 48px with a vertical title, and hides its cards and its add button. |
 | `hidden` | `boolean` | - | When true, leaves the column out of the board and the selector. |
 
 Each column renders a `section` named by its `h2` heading, so it is a `region` landmark.
@@ -92,21 +94,20 @@ Each column renders a `section` named by its `h2` heading, so it is a `region` l
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-slot` | `"kanban-column"` | Selects a column |
-| `data-collapsed` | `"true"` when `collapsed` | Styles a collapsed column |
+| `data-collapsed` | `"true"` when the column `id` is in `collapsedGroupIds` | Styles a collapsed column: 48px wide, vertical title, no cards and no add button |
 
 ## KanbanColumnActions
 
-What `getColumnActions` returns for a column. Each callback adds an icon button to the header, named by its label, and receives the column `id`. With `onColorChange` and `colorOptions`, or with `onCollapsedChange`, the settings button opens a popover, named by `settingsLabel`, with the column title, a radio group of color swatches and a switch that collapses the column; `onOpenSettings` is then called when it opens. See [With Column Settings](?path=/story/patterns-kanban-layouts--with-column-settings).
+What `getGroupActions` returns for a column. Each callback adds an icon button to the header, named by its label, and receives the column `id`. With `onColorChange` and `colorOptions`, or with `onCollapsedGroupIdsChange` on the view, the settings button opens a popover, named by `settingsLabel`, with the column title, a radio group of color swatches and a switch that collapses the column; `onSettingsOpen` is then called when it opens. See [With Column Settings](?path=/story/patterns-kanban-layouts--with-column-settings).
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `onAddCard` | `(columnId: string) => void` | - | Called when the plus button is clicked; the button is not rendered on a collapsed column. |
-| `onOpenSettings` | `(columnId: string) => void` | - | Called when the settings button is clicked. |
+| `onRecordAdd` | `(columnId: string) => void` | - | Called when the plus button is clicked; the button is not rendered on a collapsed column. |
+| `onSettingsOpen` | `(columnId: string) => void` | - | Called when the settings button is clicked. |
 | `addLabel` | `string` | `"Adicionar item à seção <title>"` | Names the plus button. |
 | `settingsLabel` | `string` | `"Configurar seção <title>"` | Names the settings button and its popover. |
 | `colorOptions` | `KanbanColumnColorOption[]` | - | Sets the swatches of the popover, each a `{ label, value }` with a CSS color; the one equal to the column `color` is checked. |
 | `onColorChange` | `(columnId: string, color: string) => void` | - | Called when a swatch is picked. Needs `colorOptions`. |
-| `onCollapsedChange` | `(columnId: string, collapsed: boolean) => void` | - | Called when the collapse switch changes; the switch reads the column `collapsed`. |
 | `colorLabel` | `string` | `"Cor"` | Sets the legend of the swatches. |
 | `collapseLabel` | `string` | `"Recolher coluna"` | Names the collapse switch. |
 
@@ -120,7 +121,7 @@ The swatches are native radios, so the arrow keys move between them; each is nam
 
 ## KanbanCardMove
 
-What `onMoveCard` receives.
+What `onRecordMove` receives.
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -141,10 +142,10 @@ A loading card. Renders an `output`, whose role is `status`, named by `label`, w
 | `descriptionLines` | `number` | `2` | Sets the description lines; `0` removes them. |
 | `fields` | `number` | `0` | Sets the rows of the body; `0` removes it. |
 | `counts` | `number` | `1` | Sets the count buttons of the footer. |
-| `assignee` | `boolean` | `true` | When true, adds a round avatar to the footer, or to the header in `compact`. |
+| `assignee` | `boolean` | `true` | When true, adds a round avatar to the footer, or to the header in `minimal`. |
 | `menu` | `boolean` | `false` | When true, adds a square for the header menu. |
 
-Also takes the props of `KanbanCard` (`display`, `density`, `selected`, `dimmed`), except `children`, `role`, `title`, `aria-busy` and `aria-label`. With no `counts` and no `assignee`, the footer is left out.
+Also takes the props of `KanbanCard` (`display`, `interactive`, `selected`, `dimmed`), except `children`, `role`, `title`, `aria-busy` and `aria-label`. With no `counts` and no `assignee`, the footer is left out.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
@@ -152,7 +153,7 @@ Also takes the props of `KanbanCard` (`display`, `density`, `selected`, `dimmed`
 | `data-description-lines` | the number of description lines | Reports `descriptionLines` on the `output` |
 | `data-fields` | the number of body rows | Reports `fields` on the `output` |
 
-`KanbanView` renders it from `loadingCardAnatomy`, which takes the same fields except `label`.
+`KanbanView` renders it from `loadingAnatomy`, which takes the same fields except `label`.
 
 ## Exports
 
@@ -166,13 +167,13 @@ Also takes the props of `KanbanCard` (`display`, `density`, `selected`, `dimmed`
 | `useActiveColumnId` | `hook` | Keeps the id of the column shown below `md`, and falls back to the first column when it goes away. `useActiveColumnId(columns) => [id, setId]` |
 | `KanbanViewProps` | `type` | The props of `KanbanView`. |
 | `KanbanColumnOption` | `type` | A button of the selector: `{ label, value }`. |
-| `KanbanCardSkeletonAnatomy`, `KanbanCardSkeletonProps` | `type` | The fields of `loadingCardAnatomy` and the props of `KanbanCardSkeleton`. |
+| `KanbanCardSkeletonAnatomy`, `KanbanCardSkeletonProps` | `type` | The fields of `loadingAnatomy` and the props of `KanbanCardSkeleton`. |
 
 `KanbanColumn` (`KanbanColumnProps`), `KanbanColumnSelector` and `KanbanBadge` also export their props type.
 
 ## Accessibility and theme
 
-- Pass `getCardLabel` so the drag handles read the card name instead of its key.
+- Pass `getRecordLabel` so the drag handles read the card name instead of its key.
 - The built-in texts are Portuguese (`Nenhum item nesta coluna.`, `Carregando card`, `Mover card`, `Adicionar item à seção`, `Configurar seção`, `Coluna`); pass the labels to change them.
 - Columns are `region` landmarks named by their headings, so keep column titles distinct.
 - The column surface is `card` and its border `border`, tinted by `color`.

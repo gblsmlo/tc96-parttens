@@ -1,13 +1,10 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type {
-  GalleryPageSize,
-  GalleryRowSkeletonDensity,
-} from '@tc96/ui/patterns'
+import type { CollectionDensity, GalleryPageSize } from '@tc96/ui/patterns'
 import { galleryPageSizes } from './gallery-data.ts'
 
 export interface GalleryControls {
   action: boolean
-  density: GalleryRowSkeletonDensity
+  density: CollectionDensity
   descriptionLines: number
   empty: boolean
   emptyMessage: string
@@ -20,7 +17,7 @@ export interface GalleryControls {
 
 export const galleryControlArgs: GalleryControls = {
   action: true,
-  density: 'comfortable',
+  density: 'compact',
   descriptionLines: 2,
   empty: false,
   emptyMessage: 'Nenhum registro para exibir.',
@@ -41,7 +38,7 @@ export const galleryControlArgTypes: Partial<ArgTypes<GalleryControls>> = {
     control: 'inline-radio',
     description:
       'Sets the padding of every card; the skeleton follows through `density`.',
-    options: ['comfortable', 'compact'],
+    options: ['compact', 'short', 'medium', 'tall', 'extra-tall'],
   },
   descriptionLines: {
     control: { max: 4, min: 0, type: 'range' },

@@ -25,9 +25,9 @@ export interface CalendarMonthDayCellProps<TRecord> {
   isOutsideMonth: boolean
   isToday: boolean
   loading: boolean
-  loadingRecordLabel?: string
+  loadingLabel?: string
   maxVisibleRecords: number
-  onSelectDay?: (date: CalendarDate) => void
+  onDaySelect?: (date: CalendarDate) => void
   overflowLabel: (hiddenCount: number) => string
   renderSegment: (segment: CalendarItemSegment<TRecord>) => ReactNode
   segments: readonly CalendarItemSegment<TRecord>[]
@@ -41,9 +41,9 @@ export function CalendarMonthDayCell<TRecord>({
   isOutsideMonth,
   isToday,
   loading,
-  loadingRecordLabel,
+  loadingLabel,
   maxVisibleRecords,
-  onSelectDay,
+  onDaySelect,
   overflowLabel,
   renderSegment,
   segments,
@@ -92,7 +92,7 @@ export function CalendarMonthDayCell<TRecord>({
 
       {showSkeleton ? (
         <CalendarItemSkeleton
-          {...(loadingRecordLabel ? { label: loadingRecordLabel } : {})}
+          {...(loadingLabel ? { label: loadingLabel } : {})}
         />
       ) : null}
 
@@ -112,11 +112,11 @@ export function CalendarMonthDayCell<TRecord>({
           </PopoverTrigger>
           <PopoverPopup align="start" aria-label={dayLabel} className="w-72">
             <div className="flex flex-col gap-2">
-              {onSelectDay ? (
+              {onDaySelect ? (
                 <PopoverClose
                   aria-label={`Mostrar todos os ${segments.length} itens de ${dayLabel}`}
                   className="self-start rounded-sm text-start font-medium text-sm outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
-                  onClick={() => onSelectDay(date)}
+                  onClick={() => onDaySelect(date)}
                 >
                   {dayLabel}
                 </PopoverClose>

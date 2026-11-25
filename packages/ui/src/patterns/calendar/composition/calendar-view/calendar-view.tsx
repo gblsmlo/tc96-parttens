@@ -44,8 +44,8 @@ export interface CalendarViewProps<TRecord = unknown> {
   getRecordSchedule: (record: TRecord) => CalendarRecordSchedule | null
   loading?: boolean
   /** Esqueletos distribuídos pela grade durante o carregamento. */
-  loadingRecordCount?: number
-  loadingRecordLabel?: string
+  loadingCount?: number
+  loadingLabel?: string
   /** Localidade dos rótulos de data e hora. */
   locale?: string
   /** Chips visíveis por célula do mês antes do "+N". */
@@ -57,9 +57,9 @@ export interface CalendarViewProps<TRecord = unknown> {
   onRecordReschedule?: (
     change: CalendarRecordReschedule<TRecord>,
   ) => boolean | Promise<boolean>
-  onSelectSlot?: (slot: CalendarSlot) => void
+  onSlotSelect?: (slot: CalendarSlot) => void
   /** Título do dia no popover do "+N" de uma célula cheia do mês. */
-  onSelectDay?: (date: CalendarDate) => void
+  onDaySelect?: (date: CalendarDate) => void
   /** Incremento do arraste no time grid, em minutos. */
   snapMinutes?: number
   renderRecord: (
@@ -78,15 +78,15 @@ export function CalendarView<TRecord>({
   getRecordLabel,
   getRecordSchedule,
   loading = false,
-  loadingRecordCount = 3,
-  loadingRecordLabel,
+  loadingCount = 3,
+  loadingLabel,
   locale = 'pt-BR',
   maxVisibleMonthRecords = 3,
   mode,
   now: controlledNow,
   onRecordReschedule,
-  onSelectDay,
-  onSelectSlot,
+  onDaySelect,
+  onSlotSelect,
   renderRecord,
   snapMinutes = 15,
   timeZone,
@@ -275,15 +275,15 @@ export function CalendarView<TRecord>({
             dropEnabled={dragEnabled && !loading}
             gridLabel={labels.monthTitle(anchorDate)}
             loading={loading}
-            loadingRecordCount={loadingRecordCount}
+            loadingCount={loadingCount}
             maxVisibleRecords={maxVisibleMonthRecords}
             range={range}
             renderSegment={(segment) => renderSegment(segment, 'month')}
             segmentsByDay={segmentsByDay}
             today={zonedNow.date}
             weekdayLabels={range.slice(0, 7).map(labels.weekdayShort)}
-            {...(loadingRecordLabel ? { loadingRecordLabel } : {})}
-            {...(onSelectDay ? { onSelectDay } : {})}
+            {...(loadingLabel ? { loadingLabel } : {})}
+            {...(onDaySelect ? { onDaySelect } : {})}
           />
         ) : timeGrid ? (
           <CalendarTimeGrid
@@ -308,8 +308,8 @@ export function CalendarView<TRecord>({
             timedSegmentsByDay={timeGrid.timedSegmentsByDay}
             timeZoneLabel={labels.timeZoneLabel(now)}
             today={zonedNow.date}
-            {...(loadingRecordLabel ? { loadingRecordLabel } : {})}
-            {...(onSelectSlot && !loading ? { onSelectSlot } : {})}
+            {...(loadingLabel ? { loadingLabel } : {})}
+            {...(onSlotSelect && !loading ? { onSlotSelect } : {})}
           />
         ) : null}
 

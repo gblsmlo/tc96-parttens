@@ -12,13 +12,14 @@ import {
   interactiveControls,
   interactiveDescendants,
 } from '../../collection/shared/lib/interactive-descendants'
+import type { CollectionDensity } from '../../collection/types/collection'
 
 export const ListRowHeadingLevelContext = createContext<2 | 3>(3)
 
-export type ListRowDensity = 'comfortable' | 'compact'
+export type { CollectionDensity }
 
 export interface ListRowProps extends ComponentPropsWithoutRef<'article'> {
-  density?: ListRowDensity
+  density?: CollectionDensity
   interactive?: boolean
   selected?: boolean
 }
@@ -37,7 +38,7 @@ export interface ListRowSelectProps
   children?: ReactNode
 }
 export type ListRowTitleProps = ComponentPropsWithoutRef<'h3'>
-export type ListRowTitleTriggerProps = ComponentPropsWithoutRef<'button'>
+export type ListRowOpenTriggerProps = ComponentPropsWithoutRef<'button'>
 export type ListRowTrailingProps = ComponentPropsWithoutRef<'div'>
 
 function openFromPlainArea(event: MouseEvent<HTMLDivElement>) {
@@ -58,7 +59,7 @@ function openFromPlainArea(event: MouseEvent<HTMLDivElement>) {
 
   area
     .closest('[data-slot="list-row"]')
-    ?.querySelector<HTMLButtonElement>('[data-slot="list-row-title-trigger"]')
+    ?.querySelector<HTMLButtonElement>('[data-slot="list-row-open-trigger"]')
     ?.click()
 }
 
@@ -81,9 +82,17 @@ function PlainArea({
   )
 }
 
+const listRowDensity: Record<CollectionDensity, string> = {
+  compact: 'py-1',
+  'extra-tall': 'min-h-18 py-4',
+  medium: 'min-h-11 py-2',
+  short: 'py-1.5',
+  tall: 'min-h-14 py-3',
+}
+
 export function ListRow({
   className,
-  density = 'comfortable',
+  density = 'short',
   interactive = true,
   selected = false,
   ...props
@@ -92,7 +101,7 @@ export function ListRow({
     <article
       className={cn(
         'group/list-row relative flex min-h-9 min-w-0 items-center gap-3 overflow-hidden rounded-lg px-2',
-        density === 'compact' ? 'py-1' : 'py-1.5',
+        listRowDensity[density],
         interactive && 'hover:bg-muted/50',
         selected && 'bg-muted hover:bg-muted',
         className,
@@ -197,17 +206,17 @@ export function ListRowTitle({
   )
 }
 
-export function ListRowTitleTrigger({
+export function ListRowOpenTrigger({
   className,
   ...props
-}: ListRowTitleTriggerProps): ReactElement {
+}: ListRowOpenTriggerProps): ReactElement {
   return (
     <button
       className={cn(
         'min-w-0 truncate text-start outline-none after:absolute after:inset-0 after:rounded-[inherit] focus-visible:after:ring-2 focus-visible:after:ring-ring',
         className,
       )}
-      data-slot="list-row-title-trigger"
+      data-slot="list-row-open-trigger"
       type="button"
       {...props}
     />

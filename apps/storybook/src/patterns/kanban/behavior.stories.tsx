@@ -13,19 +13,19 @@ import {
 } from './kanban-layouts.tsx'
 
 interface KanbanBehaviorArgs {
-  onAddCard: (columnId: string) => void
-  onCollapsedChange: (columnId: string, collapsed: boolean) => void
+  onRecordAdd: (columnId: string) => void
+  onCollapsedGroupIdsChange: (groupIds: readonly string[]) => void
   onColorChange: (columnId: string, color: string) => void
-  onMoveCard: (move: KanbanCardMove<SampleCard>) => boolean
+  onRecordMove: (move: KanbanCardMove<SampleCard>) => boolean
   onOpen: () => void
 }
 
 const meta = {
   args: {
-    onAddCard: fn(),
-    onCollapsedChange: fn(),
+    onRecordAdd: fn(),
+    onCollapsedGroupIdsChange: fn(),
     onColorChange: fn(),
-    onMoveCard: fn(() => true),
+    onRecordMove: fn(() => true),
     onOpen: fn(),
   },
   decorators: [KanbanCanvas],
@@ -73,7 +73,7 @@ export const LoadingKeepsCardHeight: Story = {
 
     await expect(board).toHaveAttribute('aria-busy', 'true')
     await expect(
-      canvas.queryByText(kanbanControlArgs.emptyColumnLabel),
+      canvas.queryByText(kanbanControlArgs.emptyGroupLabel),
     ).toBeNull()
     await expect(
       canvas.queryByRole('button', { name: /^Adicionar item/ }),
@@ -140,7 +140,7 @@ export const ColumnIsNamedByItsTitle: Story = {
 }
 
 export const AddActionReportsTheColumn: Story = {
-  render: ({ onAddCard }) => <TaskBoard onAddCard={onAddCard} />,
+  render: ({ onRecordAdd }) => <TaskBoard onRecordAdd={onRecordAdd} />,
   play: async ({ args, canvasElement }) => {
     await userEvent.click(
       column(canvasElement, 'Backlog').getByRole('button', {
@@ -148,8 +148,8 @@ export const AddActionReportsTheColumn: Story = {
       }),
     )
 
-    await expect(args.onAddCard).toHaveBeenCalledOnce()
-    await expect(args.onAddCard).toHaveBeenLastCalledWith('backlog')
+    await expect(args.onRecordAdd).toHaveBeenCalledOnce()
+    await expect(args.onRecordAdd).toHaveBeenLastCalledWith('backlog')
   },
 }
 
@@ -175,12 +175,12 @@ export const EmptyColumnShowsItsLabel: Story = {
     const done = column(canvasElement, 'Concluído')
 
     await expect(
-      done.getByText(kanbanControlArgs.emptyColumnLabel),
+      done.getByText(kanbanControlArgs.emptyGroupLabel),
     ).toBeVisible()
     await expect(done.queryAllByRole('article')).toHaveLength(0)
     await expect(
       column(canvasElement, 'A fazer').queryByText(
-        kanbanControlArgs.emptyColumnLabel,
+        kanbanControlArgs.emptyGroupLabel,
       ),
     ).toBeNull()
   },
@@ -210,8 +210,8 @@ export const HiddenColumnIsLeftOut: Story = {
 }
 
 export const KeyboardMoveReportsTheColumns: Story = {
-  render: ({ onMoveCard }) => (
-    <ComposedKanban {...kanbanControlArgs} onMoveCard={onMoveCard} />
+  render: ({ onRecordMove }) => (
+    <ComposedKanban {...kanbanControlArgs} onRecordMove={onRecordMove} />
   ),
   play: async ({ args, canvasElement }) => {
     await tabToTheFirstHandle(canvasElement)
@@ -221,8 +221,8 @@ export const KeyboardMoveReportsTheColumns: Story = {
     await userEvent.keyboard('[Space]')
     await waitFor(() => expect(dragOverlay()).toBeEmptyDOMElement())
 
-    await expect(args.onMoveCard).toHaveBeenCalledOnce()
-    await expect(args.onMoveCard).toHaveBeenLastCalledWith(
+    await expect(args.onRecordMove).toHaveBeenCalledOnce()
+    await expect(args.onRecordMove).toHaveBeenLastCalledWith(
       expect.objectContaining({
         card: { id: 'card-1', title: 'Primeiro card' },
         sourceColumnId: 'todo',
@@ -238,9 +238,9 @@ export const KeyboardMoveReportsTheColumns: Story = {
 }
 
 export const RejectedMoveRollsBack: Story = {
-  args: { onMoveCard: fn(() => false) },
-  render: ({ onMoveCard }) => (
-    <ComposedKanban {...kanbanControlArgs} onMoveCard={onMoveCard} />
+  args: { onRecordMove: fn(() => false) },
+  render: ({ onRecordMove }) => (
+    <ComposedKanban {...kanbanControlArgs} onRecordMove={onRecordMove} />
   ),
   play: async ({ args, canvasElement }) => {
     await tabToTheFirstHandle(canvasElement)
@@ -250,7 +250,7 @@ export const RejectedMoveRollsBack: Story = {
     await userEvent.keyboard('[Space]')
     await waitFor(() => expect(dragOverlay()).toBeEmptyDOMElement())
 
-    await expect(args.onMoveCard).toHaveBeenCalledOnce()
+    await expect(args.onRecordMove).toHaveBeenCalledOnce()
     await waitFor(() =>
       expect(
         column(canvasElement, 'A fazer').getByText('Primeiro card'),
@@ -331,10 +331,10 @@ export const SettingsSwatchChangesTheColumnColor: Story = {
 }
 
 export const SettingsSwitchCollapsesTheColumn: Story = {
-  render: ({ onCollapsedChange }) => (
+  render: ({ onCollapsedGroupIdsChange }) => (
     <ComposedKanban
       {...kanbanControlArgs}
-      onCollapsedChange={onCollapsedChange}
+      onCollapsedGroupIdsChange={onCollapsedGroupIdsChange}
       settingsAction
     />
   ),
@@ -344,8 +344,10 @@ export const SettingsSwitchCollapsesTheColumn: Story = {
     await userEvent.click(
       settings.getByRole('switch', { name: 'Recolher coluna' }),
     )
-    await expect(args.onCollapsedChange).toHaveBeenCalledOnce()
-    await expect(args.onCollapsedChange).toHaveBeenLastCalledWith('todo', true)
+    await expect(args.onCollapsedGroupIdsChange).toHaveBeenCalledOnce()
+    await expect(args.onCollapsedGroupIdsChange).toHaveBeenLastCalledWith([
+      'todo',
+    ])
     await waitFor(() =>
       expect(
         within(canvasElement)

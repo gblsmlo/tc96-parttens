@@ -13,7 +13,7 @@ const meta = {
   decorators: [DataGridCanvas],
   parameters: {
     controls: {
-      exclude: ['density', 'empty', 'fillColumn', 'isLoading', 'selectedRow'],
+      exclude: ['density', 'empty', 'fillColumn', 'loading', 'selectedRow'],
     },
   },
   render: (args) => <ComposedDataGrid {...args} />,
@@ -43,7 +43,7 @@ export const DensityExtraTall: Story = {
 }
 
 export const Loading: Story = {
-  args: { isLoading: true },
+  args: { loading: true },
 }
 
 export const Empty: Story = {

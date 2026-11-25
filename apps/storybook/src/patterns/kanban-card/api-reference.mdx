@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # KanbanCard
 
-The card of a kanban board: a deal, a task, a campaign. It is only structure, an `article` with slots and no content props; the consumer fills each slot and returns the card from `renderCard` of `KanbanView`, or renders it on its own.
+The card of a kanban board: a deal, a task, a campaign. It is only structure, an `article` with slots and no content props; the consumer fills each slot and returns the card from `renderRecord` of `KanbanView`, or renders it on its own.
 
 The other pages of `Patterns/KanbanCard`: [Playground](?path=/story/patterns-kanbancard-playground--playground) to try the display, the state and the optional parts, [Variants](?path=/story/patterns-kanbancard-variants--default) for each prop value, [Layouts](?path=/story/patterns-kanbancard-layouts--title-only) for the parts left out, [Behavior](?path=/story/patterns-kanbancard-behavior--card-is-an-article) for the tests and [Usages](?path=/story/patterns-kanbancard-usages--deal) for a deal and a task.
 
@@ -36,7 +36,7 @@ import {
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
-<KanbanCard variant="interactive">
+<KanbanCard interactive>
   <KanbanCardOpenTrigger aria-label="Abrir negócio" onClick={open} />
   <KanbanCardHeader>
     <KanbanCardTitle />
@@ -63,9 +63,8 @@ The card. Renders a `Card` as an `article`, with no content of its own: the cons
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `display` | `"full"` or `"compact"` | `"full"` | Controls the parts shown: `compact` hides the description, the body and the footer, and keeps the header on one line. |
-| `variant` | `"default"` or `"interactive"` | `"default"` | Controls the cursor and focus ring of a card that opens. |
-| `density` | `"sm"` or `"md"` | `"sm"` | Sets `data-density` and the `--card-padding` and `--card-section-gap` variables. |
+| `display` | `"full"` or `"minimal"` | `"full"` | Controls the parts shown: `minimal` hides the description, the body and the footer, and keeps the header on one line. |
+| `interactive` | `boolean` | `false` | When true, sets the cursor and focus ring of a card that opens. |
 | `selected` | `boolean` | `false` | When true, draws a ring around the card and sets `data-state="selected"`. |
 | `dimmed` | `boolean` | `false` | When true, draws a dashed border with no shadow, as for a card being moved. |
 | `render` | `React.ReactElement` or `(props) => React.ReactElement` | - | Replaces the `article` with another element. |
@@ -76,12 +75,9 @@ Also takes every prop of an `article`.
 | --- | --- | --- |
 | `data-slot` | `"card"` | Selects the card; the theme's card rule sets its radius |
 | `data-pattern` | `"kanban-card"` | Tells a kanban card from other cards |
-| `data-display` | `"full"` or `"compact"` | Styles the card by display |
-| `data-variant` | `"default"` or `"interactive"` | Styles the card by variant |
-| `data-density` | `"sm"` or `"md"` | Styles the card by density |
+| `data-display` | `"full"` or `"minimal"` | Styles the card by display |
+| `data-interactive` | present when `interactive` | Styles a card that opens |
 | `data-state` | `"selected"` when `selected` | Styles a selected card |
-
-`density` sets `--card-padding` and `--card-section-gap` (16px and 8px at `"sm"`, 24px and 16px at `"md"`), but no part of the card reads them: the parts have fixed padding, so both densities look the same.
 
 The card draws a 2px `primary` ring when any element inside it has keyboard focus, since the open trigger has no outline of its own, and a lighter fill on hover. Any element inside the card with `data-kanban-card-action` sits above the open trigger: `KanbanCardAction`, `KanbanCardActionButton`, `KanbanCardControl` and an `interactive` `KanbanCardFieldValue` set it.
 
@@ -95,7 +91,7 @@ The button that opens the card. Renders a `button` with `type="button"`, stretch
 
 ## KanbanCardHeader, KanbanCardTitle, KanbanCardDescription, KanbanCardAction
 
-The header holds the title, the description and the action, as a `CardHeader` with 12px of padding (8px at the bottom); in `compact` it is one row at least 40px tall. `KanbanCardTitle` is a `div` in `font-medium` `text-sm`, truncated to one line in `compact`. `KanbanCardDescription` is a muted `div` in `text-xs`, clamped to three lines and hidden in `compact`. `KanbanCardAction` is the cell at the end of the header, for a menu. Each takes every prop of a `div`.
+The header holds the title, the description and the action, as a `CardHeader` with 12px of padding (8px at the bottom); in `minimal` it is one row at least 40px tall. `KanbanCardTitle` is a `div` in `font-medium` `text-sm`, truncated to one line in `minimal`. `KanbanCardDescription` is a muted `div` in `text-xs`, clamped to three lines and hidden in `minimal`. `KanbanCardAction` is the cell at the end of the header, for a menu. Each takes every prop of a `div`.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
@@ -120,7 +116,7 @@ Also takes every prop of a `button`. Name an icon-only button with `aria-label`.
 
 ## KanbanCardBody, KanbanCardField, KanbanCardFieldLabel, KanbanCardFieldValue
 
-The body is a two-column grid, hidden in `compact`: the label column takes the width of the widest `KanbanCardFieldLabel`, with 8px before the values. Each `KanbanCardField` is one row, a `div` that spans both columns. `KanbanCardFieldLabel` is a muted `span` for an icon and a label; `KanbanCardFieldValue` is a `div` for the value.
+The body is a two-column grid, hidden in `minimal`: the label column takes the width of the widest `KanbanCardFieldLabel`, with 8px before the values. Each `KanbanCardField` is one row, a `div` that spans both columns. `KanbanCardFieldLabel` is a muted `span` for an icon and a label; `KanbanCardFieldValue` is a `div` for the value.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -136,22 +132,22 @@ Each takes every prop of its element.
 
 ## KanbanCardFooter, KanbanCardControl
 
-The footer is a row at least 36px tall, in `text-xs`, hidden in `compact`. `KanbanCardControl` is a `span` that holds controls, such as count menus or the assignee, above the open trigger. Each takes every prop of its element.
+The footer is a row at least 36px tall, in `text-xs`, hidden in `minimal`. `KanbanCardControl` is a `span` that holds controls, such as count menus or the assignee, above the open trigger. Each takes every prop of its element.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-slot` | `"card-footer"` or `"kanban-card-control"` | Selects the footer and a control |
 | `data-kanban-card-action` | `""` on `KanbanCardControl` | Raises it above the open trigger |
 
-In `compact` the footer is hidden, so put a part that must stay, such as the assignee, in the header.
+In `minimal` the footer is hidden, so put a part that must stay, such as the assignee, in the header.
 
 ## Exports
 
 | Export | Kind | Description |
 | --- | --- | --- |
-| `kanbanCardVariants` | `function` | The classes of `KanbanCard` by `variant`, `selected` and `dimmed`. |
+| `kanbanCardVariants` | `function` | The classes of `KanbanCard` by `interactive`, `selected` and `dimmed`. |
 | `KanbanCardProps` | `type` | The props of `KanbanCard`. |
-| `KanbanCardDisplay` | `type` | `"full"` or `"compact"`. |
+| `KanbanCardDisplay` | `type` | `"full"` or `"minimal"`. |
 
 Each card part also exports its props type (`KanbanCardHeaderProps`, `KanbanCardFieldValueProps`, …).
 

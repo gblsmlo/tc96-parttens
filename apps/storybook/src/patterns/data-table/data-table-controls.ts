@@ -10,7 +10,7 @@ export interface DataTableControls {
   empty: boolean
   emptyMessage: string
   footer: boolean
-  isLoading: boolean
+  loading: boolean
   loadingCell: LoadingCellName
   loadingLines: 1 | 2
   pagination: boolean
@@ -26,7 +26,7 @@ export const dataTableControlArgs: DataTableControls = {
   empty: false,
   emptyMessage: 'Nenhum projeto para exibir.',
   footer: true,
-  isLoading: false,
+  loading: false,
   loadingCell: 'text',
   loadingLines: 1,
   pagination: true,
@@ -60,21 +60,19 @@ export const dataTableControlArgTypes: Partial<ArgTypes<DataTableControls>> = {
     description:
       'Gives Projeto and Horas `meta.aggregations`, which adds the footer with a count and a sum.',
   },
-  isLoading: {
+  loading: {
     control: 'boolean',
     description:
-      'The `isLoading` of `DataTable`: skeleton rows replace the rows.',
+      'The `loading` of `DataTable`: skeleton rows replace the rows.',
   },
   loadingCell: {
     control: 'inline-radio',
-    description:
-      'The `cell` of `loadingRowAnatomy`; acts only while `isLoading`.',
+    description: 'The `cell` of `loadingAnatomy`; acts only while `loading`.',
     options: loadingCells,
   },
   loadingLines: {
     control: 'inline-radio',
-    description:
-      'The `lines` of `loadingRowAnatomy`; acts only while `isLoading`.',
+    description: 'The `lines` of `loadingAnatomy`; acts only while `loading`.',
     options: [1, 2],
   },
   pagination: {
@@ -90,7 +88,7 @@ export const dataTableControlArgTypes: Partial<ArgTypes<DataTableControls>> = {
   rowClick: {
     control: 'boolean',
     description:
-      'Passes `onRowClick` and `getRowOpenLabel`, which turn every row into a button.',
+      'Passes `onRowOpen` and `getRowOpenLabel`, which turn every row into a button.',
   },
   selectedRow: {
     control: 'boolean',

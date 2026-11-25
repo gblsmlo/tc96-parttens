@@ -56,7 +56,7 @@ function Invoices({ invoices }: { invoices: Invoice[] }) {
 | `footer` | replaces the pagination slot |
 | `fillColumn` | column that absorbs spare width; defaults to the last unpinned common column; `false` keeps declared widths |
 | `density` | `short`, `medium`, `tall`, `extra-tall`; defaults to the table meta |
-| `isLoading`, `loadingRowCount` | skeleton rows |
+| `loading`, `loadingCount` | skeleton rows |
 | `emptyMessage` | text of the empty row |
 | `maxHeight` | viewport max height |
 | `getRowGroup` | group value per row; one group row per run of equal values |
@@ -66,7 +66,7 @@ function Invoices({ invoices }: { invoices: Invoice[] }) {
 | `onRowMove`, `rowDragAnnouncements` | drag reorder through a `createRowDragColumn` handle: `onRowMove({ rowId, fromIndex, toIndex, overRowId })` fires on drop and the consumer reorders `data`; off while grouped, sorted, loading or virtualized; `rowDragAnnouncements` carries the spoken texts |
 | `onEndReached`, `endReachedThreshold` | fires once per `data.length` when the last `endReachedThreshold` rows (default 5) are near the viewport end; works with or without `virtualize` |
 | `loadingMore`, `loadingMoreRowCount` | skeleton rows after the last row (3 by default) and no further `onEndReached` while true |
-| `onRowAdd`, `addRowLabel` | trailing add row |
+| `onRecordAdd`, `addLabel` | trailing add row |
 | `virtualize`, `overscan` | row virtualization; ignored with `getRowGroup` or while loading |
 | `selectionActions` | node or render function shown while rows are selected |
 | `className`, `aria-label` | root class and grid name |

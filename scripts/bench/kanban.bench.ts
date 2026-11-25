@@ -95,7 +95,7 @@ const renderOtherCards = countRenders<[Card], ReactNode>(
   'cards',
 )
 
-const renderCard = (card: Card): ReactNode =>
+const renderRecord = (card: Card): ReactNode =>
   card.id === draggedCardId
     ? createElement('span', null, card.title)
     : renderOtherCards(card)
@@ -106,7 +106,7 @@ function Board({ initial }: { initial: Column[] }) {
   const [columns, setColumns] = useState(initial)
   const [collapsed, setCollapsed] = useState(false)
   const [, setTick] = useState(0)
-  const onMoveCard = useCallback((move: Move) => {
+  const onRecordMove = useCallback((move: Move) => {
     setColumns((current) => applyMove(current, move))
     return true
   }, [])
@@ -145,8 +145,8 @@ function Board({ initial }: { initial: Column[] }) {
     createElement(KanbanView<Card>, {
       columns: shown,
       getKey,
-      onMoveCard,
-      renderCard,
+      onRecordMove,
+      renderRecord,
     }),
   )
 }

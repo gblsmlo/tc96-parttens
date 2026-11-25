@@ -42,10 +42,10 @@ export interface ListViewProps<TRecord> {
   /** `null` lê a coleção como uma lista plana, sem cabeçalho nem colapso. */
   grouping: CollectionGroupingId | null
   loading?: boolean
-  loadingRecordAnatomy?: ListRowSkeletonAnatomy
+  loadingAnatomy?: ListRowSkeletonAnatomy
   /** Esqueletos por grupo — ou da lista inteira, quando não há agrupamento. */
-  loadingRecordCount?: number
-  loadingRecordLabel?: string
+  loadingCount?: number
+  loadingLabel?: string
   onCollapsedGroupIdsChange?: (groupIds: readonly string[]) => void
   renderGroupTitle?: (group: CollectionGroup<TRecord>) => ReactNode
   renderRecord: (record: TRecord) => ReactNode
@@ -64,9 +64,9 @@ export function ListView<TRecord>({
   getGroupToggleLabel,
   grouping,
   loading = false,
-  loadingRecordAnatomy,
-  loadingRecordCount = 1,
-  loadingRecordLabel,
+  loadingAnatomy,
+  loadingCount = 1,
+  loadingLabel,
   onCollapsedGroupIdsChange,
   renderGroupTitle,
   renderRecord,
@@ -132,17 +132,13 @@ export function ListView<TRecord>({
           <ListRowHeadingLevelContext.Provider value={2}>
             <div className="flex flex-col gap-0.5" data-slot="list-view-items">
               {loading ? (
-                skeletonKeys('loading', loadingRecordCount).map(
-                  (skeletonKey) => (
-                    <ListRowSkeleton
-                      key={skeletonKey}
-                      {...loadingRecordAnatomy}
-                      {...(loadingRecordLabel
-                        ? { label: loadingRecordLabel }
-                        : {})}
-                    />
-                  ),
-                )
+                skeletonKeys('loading', loadingCount).map((skeletonKey) => (
+                  <ListRowSkeleton
+                    key={skeletonKey}
+                    {...loadingAnatomy}
+                    {...(loadingLabel ? { label: loadingLabel } : {})}
+                  />
+                ))
               ) : collection.records.length ? (
                 collection.records.map((record, position) => (
                   <Fragment key={collection.getKey(record)}>
@@ -167,7 +163,7 @@ export function ListView<TRecord>({
               <ListGroup
                 collapsed={isCollapsed(group)}
                 separated={separated}
-                emptyLabel={
+                emptyGroupLabel={
                   typeof emptyGroupLabel === 'function'
                     ? emptyGroupLabel(group)
                     : emptyGroupLabel
@@ -177,14 +173,14 @@ export function ListView<TRecord>({
                 group={group}
                 key={group.id}
                 loading={loading}
-                {...(loadingRecordAnatomy ? { loadingRecordAnatomy } : {})}
-                loadingRecordCount={loadingRecordCount}
+                {...(loadingAnatomy ? { loadingAnatomy } : {})}
+                loadingCount={loadingCount}
                 onCollapsedChange={(collapsed) =>
                   setGroupCollapsed(group.id, collapsed)
                 }
                 {...(renderGroupTitle ? { renderGroupTitle } : {})}
                 renderRecord={renderRecord}
-                {...(loadingRecordLabel ? { loadingRecordLabel } : {})}
+                {...(loadingLabel ? { loadingLabel } : {})}
                 {...(actions ? { actions } : {})}
               />
             )

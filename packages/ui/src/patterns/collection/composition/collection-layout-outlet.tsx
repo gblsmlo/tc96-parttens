@@ -52,20 +52,17 @@ export interface CollectionKanbanCardMove<TRecord>
   targetGroup: CollectionGroup<TRecord>
 }
 
-export type CollectionKanbanColumnState = Pick<
-  KanbanColumnData,
-  'collapsed' | 'color'
->
+export type CollectionKanbanColumnState = Pick<KanbanColumnData, 'color'>
 
 export interface CollectionKanbanViewProps<TRecord>
   extends Omit<
     KanbanViewProps<TRecord>,
-    'columns' | 'getKey' | 'onMoveCard' | 'renderCard'
+    'columns' | 'getKey' | 'onRecordMove' | 'renderRecord'
   > {
   getColumnState?: (
     group: CollectionGroup<TRecord>,
   ) => CollectionKanbanColumnState | undefined
-  onMoveCard?: (
+  onRecordMove?: (
     move: CollectionKanbanCardMove<TRecord>,
   ) => boolean | Promise<boolean>
 }
@@ -126,7 +123,7 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
   )
   const {
     getColumnState,
-    onMoveCard: onCollectionMoveCard,
+    onRecordMove: onCollectionRecordMove,
     ...kanbanProps
   } = kanban ?? {}
   const columns = useMemo<KanbanColumnData<TRecord>[]>(
@@ -140,9 +137,6 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
           id: group.id,
           title: group.label,
           ...(state?.color === undefined ? {} : { color: state.color }),
-          ...(state?.collapsed === undefined
-            ? {}
-            : { collapsed: state.collapsed }),
         }
       }),
     [getColumnState, kanbanGroups],
@@ -152,7 +146,7 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
       collection.groupings.find(({ id }) => id === preferences.groupBy)
         ?.setGroupId,
   )
-  const onMoveCard = useCallback(
+  const onRecordMove = useCallback(
     (move: KanbanCardMove<TRecord>) => {
       const sourceGroup = kanbanGroups.find(
         (group) => group.id === move.sourceColumnId,
@@ -162,8 +156,8 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
       )
 
       if (!sourceGroup || !targetGroup) return false
-      if (onCollectionMoveCard)
-        return onCollectionMoveCard({ ...move, sourceGroup, targetGroup })
+      if (onCollectionRecordMove)
+        return onCollectionRecordMove({ ...move, sourceGroup, targetGroup })
 
       const setGroupId = collection.groupings.find(
         ({ id }) => id === targetGroup.grouping,
@@ -179,7 +173,12 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
         reason: 'grouping',
       })
     },
-    [collection.groupings, kanbanGroups, onCollectionMoveCard, onRecordChange],
+    [
+      collection.groupings,
+      kanbanGroups,
+      onCollectionRecordMove,
+      onRecordChange,
+    ],
   )
 
   if (preferences.layout === 'datagrid') {
@@ -189,7 +188,7 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
       )
     }
 
-    return <DataGrid {...datagrid} isLoading={datagrid.isLoading ?? loading} />
+    return <DataGrid {...datagrid} loading={datagrid.loading ?? loading} />
   }
 
   if (preferences.layout === 'datatable') {
@@ -199,9 +198,7 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
       )
     }
 
-    return (
-      <DataTable {...datatable} isLoading={datatable.isLoading ?? loading} />
-    )
+    return <DataTable {...datatable} loading={datatable.loading ?? loading} />
   }
 
   if (preferences.layout === 'calendar') {
@@ -265,12 +262,12 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
   return (
     <KanbanView
       columns={columns}
-      getCardLabel={collection.getLabel}
+      getRecordLabel={collection.getLabel}
       getKey={collection.getKey}
-      renderCard={renderKanbanRecord}
+      renderRecord={renderKanbanRecord}
       {...kanbanProps}
       loading={kanbanProps.loading ?? loading}
-      {...(onCollectionMoveCard || canWriteGroup ? { onMoveCard } : {})}
+      {...(onCollectionRecordMove || canWriteGroup ? { onRecordMove } : {})}
     />
   )
 }

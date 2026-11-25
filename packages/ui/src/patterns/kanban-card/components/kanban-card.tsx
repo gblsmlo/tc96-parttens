@@ -13,7 +13,7 @@ import {
 } from '@tc96/ui/card'
 import { Text } from '@tc96/ui/text'
 import { cn } from '@tc96/utils'
-import { cva, type VariantProps } from 'class-variance-authority'
+import { cva } from 'class-variance-authority'
 import {
   type ComponentProps,
   type ComponentPropsWithoutRef,
@@ -22,25 +22,15 @@ import {
   useContext,
 } from 'react'
 
-export type KanbanCardDisplay = 'full' | 'compact'
-
-const kanbanCardSurfaceVariants = cva(null, {
-  defaultVariants: { density: 'md' },
-  variants: {
-    density: {
-      md: '[--card-padding:--spacing(6)] [--card-section-gap:--spacing(4)]',
-      sm: '[--card-padding:--spacing(4)] [--card-section-gap:--spacing(2)]',
-    },
-  },
-})
+export type KanbanCardDisplay = 'full' | 'minimal'
 
 export const kanbanCardVariants = cva(
   'relative isolate min-w-0 w-full overflow-hidden transition-colors hover:bg-card/60 has-focus-visible:ring-2 has-focus-visible:ring-primary has-focus-visible:ring-offset-2 has-focus-visible:ring-offset-background [&_[data-kanban-card-action]]:relative [&_[data-kanban-card-action]]:z-10',
   {
     defaultVariants: {
       dimmed: false,
+      interactive: false,
       selected: false,
-      variant: 'default',
     },
     variants: {
       dimmed: {
@@ -51,10 +41,9 @@ export const kanbanCardVariants = cva(
         false: null,
         true: 'ring-2 ring-primary/40 ring-offset-2 ring-offset-background',
       },
-      variant: {
-        default: null,
-        interactive:
-          'cursor-pointer text-left outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background [&>:focus-visible]:outline-none',
+      interactive: {
+        false: null,
+        true: 'cursor-pointer text-left outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background [&>:focus-visible]:outline-none',
       },
     },
   },
@@ -65,7 +54,7 @@ const kanbanCardHeaderVariants = cva(
   {
     variants: {
       display: {
-        compact: 'flex min-h-10 min-w-0 items-center gap-2 px-3 py-2',
+        minimal: 'flex min-h-10 min-w-0 items-center gap-2 px-3 py-2',
         full: 'px-3 pt-3 pb-2',
       },
     },
@@ -75,7 +64,7 @@ const kanbanCardHeaderVariants = cva(
 const kanbanCardTitleVariants = cva('font-medium text-sm leading-5', {
   variants: {
     display: {
-      compact: 'min-w-0 flex-1 truncate',
+      minimal: 'min-w-0 flex-1 truncate',
       full: null,
     },
   },
@@ -84,7 +73,7 @@ const kanbanCardTitleVariants = cva('font-medium text-sm leading-5', {
 const kanbanCardDescriptionVariants = cva('text-xs leading-5', {
   variants: {
     display: {
-      compact: null,
+      minimal: null,
       full: 'line-clamp-3',
     },
   },
@@ -99,11 +88,10 @@ const kanbanCardFooterVariants = cva(
 )
 
 export interface KanbanCardProps extends useRender.ComponentProps<'article'> {
-  density?: VariantProps<typeof kanbanCardSurfaceVariants>['density']
   dimmed?: boolean
   display?: KanbanCardDisplay
+  interactive?: boolean
   selected?: boolean
-  variant?: VariantProps<typeof kanbanCardVariants>['variant']
 }
 
 export type KanbanCardActionProps = ComponentProps<typeof CardAction>
@@ -130,28 +118,25 @@ const KanbanCardDisplayContext = createContext<KanbanCardDisplay>('full')
 export function KanbanCard({
   children,
   className,
-  density = 'sm',
   dimmed = false,
   display = 'full',
+  interactive = false,
   ref,
   render,
   selected = false,
-  variant = 'default',
   ...props
 }: KanbanCardProps): ReactElement {
   return (
     <KanbanCardDisplayContext.Provider value={display}>
       <Card
         className={cn(
-          kanbanCardSurfaceVariants({ density }),
-          kanbanCardVariants({ dimmed, selected, variant }),
+          kanbanCardVariants({ dimmed, interactive, selected }),
           className,
         )}
-        data-density={density}
         data-display={display}
+        data-interactive={interactive ? '' : undefined}
         data-pattern="kanban-card"
         data-state={selected ? 'selected' : undefined}
-        data-variant={variant}
         render={render ?? <article />}
         ref={ref as ComponentProps<typeof Card>['ref']}
         {...props}
@@ -200,7 +185,7 @@ export function KanbanCardDescription({
     <CardDescription
       className={cn(kanbanCardDescriptionVariants({ display }), className)}
       {...props}
-      hidden={display === 'compact' || props.hidden}
+      hidden={display === 'minimal' || props.hidden}
     />
   )
 }
@@ -213,7 +198,7 @@ export function KanbanCardAction({
 
   return (
     <CardAction
-      className={cn(display === 'compact' && 'shrink-0 self-center', className)}
+      className={cn(display === 'minimal' && 'shrink-0 self-center', className)}
       data-kanban-card-action=""
       {...props}
     />
@@ -271,7 +256,7 @@ export function KanbanCardBody({
     <CardContent
       className={cn(kanbanCardBodyVariants(), className)}
       {...props}
-      hidden={display === 'compact' || props.hidden}
+      hidden={display === 'minimal' || props.hidden}
     />
   )
 }
@@ -346,7 +331,7 @@ export function KanbanCardFooter({
     <CardFooter
       className={cn(kanbanCardFooterVariants(), className)}
       {...props}
-      hidden={display === 'compact' || props.hidden}
+      hidden={display === 'minimal' || props.hidden}
     />
   )
 }

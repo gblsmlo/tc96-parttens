@@ -25,8 +25,8 @@ type Story = StoryObj<KanbanCardControls>
 
 export const Default: Story = {}
 
-export const Compact: Story = {
-  args: { display: 'compact' },
+export const Minimal: Story = {
+  args: { display: 'minimal' },
 }
 
 export const Loading: Story = {

@@ -5,11 +5,13 @@ import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import { skeletonKeys } from '../../collection/shared/lib/skeleton-keys'
 
-export type GalleryRowSkeletonDensity = 'comfortable' | 'compact'
+import type { CollectionDensity } from '../../collection/types/collection'
+
+export type { CollectionDensity }
 
 export interface GalleryRowSkeletonAnatomy {
   action?: boolean
-  density?: GalleryRowSkeletonDensity
+  density?: CollectionDensity
   descriptionLines?: number
   eyebrow?: boolean
   footer?: boolean
@@ -25,7 +27,7 @@ const descriptionWidths = ['w-full', 'w-11/12', 'w-4/5', 'w-2/3'] as const
 
 export function GalleryRowSkeleton({
   action = false,
-  density = 'comfortable',
+  density = 'compact',
   descriptionLines = 1,
   eyebrow = true,
   footer = true,
