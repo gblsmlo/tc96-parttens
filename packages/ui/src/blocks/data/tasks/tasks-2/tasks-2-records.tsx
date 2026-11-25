@@ -14,6 +14,7 @@ import {
   ListViewHeader,
   ListViewHeaderCell,
 } from '@tc96/ui/patterns/list-view/components/list-view-header'
+import { IconLabelProperty } from '@tc96/ui/patterns/properties/display/icon-label/icon-label-property'
 import { cn } from '@tc96/utils'
 import { DataCollectionKanbanCard } from '../../shared/collection/data-collection-record-parts'
 import {
@@ -62,7 +63,10 @@ export function Tasks2ListHeader({
 
   return (
     <ListViewHeader data-slot="tasks-2-list-header">
-      <ListViewHeaderCell always className={tasks2LeadingWidth} />
+      <ListViewHeaderCell
+        always
+        className={cn(tasks2LeadingWidth, '-me-0.5')}
+      />
       <ListViewHeaderCell always className="flex-1" {...sortable('title')}>
         {labels.columns.title}
       </ListViewHeaderCell>
@@ -108,7 +112,7 @@ export const renderTasks2ListRow =
         interactive={Boolean(onOpen)}
         selected={selected}
       >
-        <ListRowLeading className={tasks2LeadingWidth}>
+        <ListRowLeading className={cn(tasks2LeadingWidth, '-me-0.5 ps-1')}>
           {onSelectedChange ? (
             <ListRowSelect
               aria-label={labels.selectTask(task.title)}
@@ -122,21 +126,27 @@ export const renderTasks2ListRow =
           ) : (
             <Tasks2PriorityMark context={context} item={task} />
           )}
-          <Tasks2StatusMark context={context} item={task} />
         </ListRowLeading>
         <ListRowBody>
           <ListRowHeader>
             <ListRowTitle>
-              {onOpen ? (
-                <ListRowOpenTrigger
-                  aria-label={labels.openTask(task.title)}
-                  onClick={() => onOpen(task.id)}
-                >
-                  {task.title}
-                </ListRowOpenTrigger>
-              ) : (
-                task.title
-              )}
+              <IconLabelProperty
+                className="gap-2 font-medium text-foreground"
+                label={
+                  onOpen ? (
+                    <ListRowOpenTrigger
+                      aria-label={labels.openTask(task.title)}
+                      onClick={() => onOpen(task.id)}
+                    >
+                      {task.title}
+                    </ListRowOpenTrigger>
+                  ) : (
+                    task.title
+                  )
+                }
+                leading={<Tasks2StatusMark context={context} item={task} />}
+                variant="plain"
+              />
             </ListRowTitle>
             <span className="hidden shrink-0 md:flex">
               <Tasks2Tags context={context} item={task} />

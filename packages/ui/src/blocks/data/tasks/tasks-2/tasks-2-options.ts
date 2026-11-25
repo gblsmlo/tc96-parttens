@@ -47,7 +47,7 @@ export const tasks2NoGroup = 'none'
 
 export const tasks2VisibleTags = 1
 
-export const tasks2LeadingWidth = 'w-9'
+export const tasks2LeadingWidth = 'w-5'
 
 export const tasks2FieldWidth = {
   assignees: 'w-40',

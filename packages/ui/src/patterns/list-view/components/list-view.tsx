@@ -3,7 +3,6 @@
 import { Empty, EmptyDescription } from '@tc96/ui/empty'
 import { ScrollArea } from '@tc96/ui/scroll-area'
 import { Separator } from '@tc96/ui/separator'
-import { cn } from '@tc96/utils'
 import { Fragment, type ReactNode, useMemo, useState } from 'react'
 
 import { projectCollection } from '../../collection/shared/lib/project-collection'
@@ -138,10 +137,7 @@ export function ListView<TRecord>({
           {header}
         </div>
       ) : null}
-      <div
-        className={cn('flex flex-col gap-1', header ? 'px-2 pb-2' : 'p-2')}
-        data-slot="list-view-body"
-      >
+      <div className="flex flex-col gap-1 p-2" data-slot="list-view-body">
         {grouping === null && preparedGroups === undefined ? (
           <ListRowHeadingLevelContext.Provider value={2}>
             <div className="flex flex-col gap-0.5" data-slot="list-view-items">

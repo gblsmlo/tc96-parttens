@@ -1,5 +1,6 @@
 import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
 import { createDataTableSelectColumn } from '@tc96/ui/patterns/data-table/data-table-select-column'
+import { IconLabelProperty } from '@tc96/ui/patterns/properties/display/icon-label/icon-label-property'
 import {
   Tasks1AssigneesField,
   Tasks1DueField,
@@ -17,10 +18,12 @@ function Tasks1TaskCell({
   item,
 }: Readonly<{ context: Tasks1FieldContext; item: Tasks1Task }>) {
   return (
-    <span className="flex min-w-0 items-center gap-2" data-slot="tasks-1-task">
-      <Tasks1StatusMark context={context} item={item} />
-      <span className="min-w-0 truncate font-medium">{item.title}</span>
-    </span>
+    <IconLabelProperty
+      className="gap-2 font-medium text-foreground"
+      label={item.title}
+      leading={<Tasks1StatusMark context={context} item={item} />}
+      variant="plain"
+    />
   )
 }
 
