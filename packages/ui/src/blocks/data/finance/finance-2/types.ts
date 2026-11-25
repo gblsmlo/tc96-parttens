@@ -14,7 +14,12 @@ export type Finance2Channel = 'api' | 'mobile' | 'pos' | 'web'
 
 export type Finance2RiskBand = 'high' | 'low' | 'medium'
 
-export type Finance2Density = 'extra-tall' | 'medium' | 'short' | 'tall'
+export type Finance2Density =
+  | 'compact'
+  | 'extra-tall'
+  | 'medium'
+  | 'short'
+  | 'tall'
 
 export type Finance2ToggleColumnId =
   | 'amount'

@@ -468,7 +468,7 @@ function ContactsWorkspace({
               'aria-label': 'Contatos',
               emptyMessage: 'Nenhum contato com esses filtros.',
               getRowGroup: grouping ? groupRowLabel : undefined,
-              isLoading: loading,
+              loading: loading,
               selectionActions: ({
                 clearSelection,
                 selectedCount,
@@ -490,7 +490,7 @@ function ContactsWorkspace({
               'aria-label': 'Contatos',
               bordered: true,
               emptyMessage: 'Nenhum contato com esses filtros.',
-              isLoading: loading,
+              loading: loading,
               table: dataTable,
             }}
             list={{
@@ -498,8 +498,8 @@ function ContactsWorkspace({
               emptyGroupLabel: 'Nenhum contato neste grupo.',
               emptyMessage: 'Nenhum contato com esses filtros.',
               loading,
-              loadingRecordCount: 3,
-              loadingRecordLabel: 'Carregando contato',
+              loadingCount: 3,
+              loadingLabel: 'Carregando contato',
               renderGroupTitle: (group) => group.label,
             }}
             renderListRecord={renderContactListRow(updateContact)}

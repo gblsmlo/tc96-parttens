@@ -1,8 +1,8 @@
 'use client'
 
 import type { RowData } from '@tanstack/react-table'
-import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import { useMemo } from 'react'
 import { useControllable } from '../../shared/collection/use-controllable'
 import type { Finance3SelectionProps } from './types'

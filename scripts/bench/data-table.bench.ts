@@ -8,13 +8,13 @@ import {
 } from './bench-harness'
 
 const { DataTable, useDataTable } = await import(
-  '../../packages/ui/src/patterns/collection/layouts/data-table'
+  '../../packages/ui/src/patterns/data-table'
 )
 
 type TableColumn =
-  import('../../packages/ui/src/patterns/collection/layouts/data-table').DataTableColumnDef<Row>
+  import('../../packages/ui/src/patterns/data-table').DataTableColumnDef<Row>
 type TableInstance =
-  import('../../packages/ui/src/patterns/collection/layouts/data-table').DataTableTable<Row>
+  import('../../packages/ui/src/patterns/data-table').DataTableTable<Row>
 
 type Row = Record<string, string | number> & { id: string }
 

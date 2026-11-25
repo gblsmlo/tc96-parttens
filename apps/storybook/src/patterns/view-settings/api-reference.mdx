@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 The display settings of a collection in one menu: tabs for the layouts, the sections the screen passes (grouping, sorting, density, columns, filters), then the clear and save items. It keeps no state: the consumer passes the active layout, the filter count and the sections, and handles every callback. Its trigger is a toolbar button, so it only mounts inside a [CollectionToolbar](?path=/docs/patterns-collectiontoolbar-api-reference--api-reference), usually in its `right` slot.
 
-The other pages of `Patterns/ViewSettings`: [Playground](?path=/story/patterns-viewsettings-playground--playground) to try the texts and the footer items, [Layouts](?path=/story/patterns-viewsettings-layouts--default) for the arrangements of the layout tabs, [Behavior](?path=/story/patterns-viewsettings-behavior--trigger-is-a-ghost-toolbar-button) for the tests, and [Usages](?path=/story/patterns-viewsettings-usages--task-list) for real settings menus.
+The other pages of `Patterns/ViewSettings`: [Playground](?path=/story/patterns-viewsettings-playground--playground) to try the texts and the footer items, [Layouts](?path=/story/patterns-viewsettings-layouts--default) for the arrangements of the layout tabs and the field settings, [Behavior](?path=/story/patterns-viewsettings-behavior--trigger-is-a-ghost-toolbar-button) for the tests, and [Usages](?path=/story/patterns-viewsettings-usages--task-list) for real settings menus.
 
 Used in: the toolbar of every [Collection](?path=/story/patterns-collection-usages--tasks) usage and of the table and data grid blocks. `FilterRadioSubmenu`, an item for the filter section, is documented in [Patterns/Collection](?path=/docs/patterns-collection-api-reference--api-reference).
 
@@ -85,6 +85,21 @@ A named section of the menu. Renders a menu group whose label comes first.
 | --- | --- | --- | --- |
 | `label` | `React.ReactNode` | required | Sets the label of the group. |
 | `children` | `React.ReactNode` | required | Renders the items and submenus of the section. |
+
+## Field settings
+
+A collection that lets the user choose its fields composes them as sections of the menu, as in [Field Settings](?path=/story/patterns-viewsettings-layouts--field-settings) ([open](?path=/story/patterns-viewsettings-layouts--field-settings-open)). The menu has no prop for it: the consumer groups, sorts and filters the fields and passes the sections ready. The rules:
+
+- Grouping and sorting are two submenus, never one list of combinations. `Agrupar por` offers `Nenhum`, `Tipo` and `Visibilidade`; `Ordenar por` offers `Manual`, `Nome A-Z` and `Nome Z-A`.
+- The name order applies inside each group. "By type, in alphabetical order" is `Tipo` plus `Nome A-Z`, not a fourth option.
+- Each submenu trigger shows its current value after the label, in `muted-foreground`, so the state reads without opening it.
+- The default is `Visibilidade` with `Manual`: `Visíveis` comes before `Ocultos`, and `Manual` keeps the order the consumer passes.
+- Each group is a `ViewSettingsSection` whose label carries the count of its fields; an empty group is not rendered. Without grouping, one section named `Campos` holds every field.
+- Each field is a `MenuCheckboxItem` with `variant="switch"` and `closeOnClick={false}`: the switch shows or hides the field and the menu stays open. Grouped by visibility, the field moves to the other group at once.
+- The row shows the type icon and the name; the type label follows only when the list is not grouped by type, where it would repeat the group label.
+- Type labels are words the user reads (`Texto`, `Seleção`, `Pessoa`, `Data`, `Número`), never the storage type.
+- `Mostrar todos os campos` closes the field sections and stays disabled while no field is hidden.
+- The menu does not reorder fields by drag; a manual order is edited elsewhere and arrives in the order the consumer passes.
 
 ## Exports
 

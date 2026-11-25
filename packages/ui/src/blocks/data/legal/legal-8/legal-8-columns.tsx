@@ -1,6 +1,6 @@
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
-import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
+import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
 import { TextProperty } from '@tc96/ui/patterns/properties/display/text/text-property'
 import {
   DataDate,

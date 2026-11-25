@@ -8,7 +8,7 @@ import { Button } from '@tc96/ui/button'
 import { getInitials } from '@tc96/ui/helpers/initials'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import type { UseDataTableOptions } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import type { UseDataTableOptions } from '@tc96/ui/patterns/data-table/use-data-table'
 import { cn } from '@tc96/utils'
 import {
   DataDate,

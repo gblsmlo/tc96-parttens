@@ -1,0 +1,50 @@
+export interface KanbanColumnData<TCard = unknown> {
+  id: string
+  title: string
+  count: number
+  cards: TCard[]
+  /** CSS color used for the column marker and its tinted surface. */
+  color?: string
+  /** Hidden columns remain in consumer data so view settings can restore them. */
+  hidden?: boolean
+}
+
+export interface KanbanColumnColorOption {
+  label: string
+  value: string
+}
+
+export interface KanbanColumnActions {
+  /** Accessible label for the add action. Defaults to a label containing the column title. */
+  addLabel?: string
+  /** Accessible label for the settings action. Defaults to a label containing the column title. */
+  settingsLabel?: string
+  colorLabel?: string
+  collapseLabel?: string
+  colorOptions?: KanbanColumnColorOption[]
+  onRecordAdd?: (columnId: string) => void
+  onSettingsOpen?: (columnId: string) => void
+  onColorChange?: (columnId: string, color: string) => void
+}
+
+export interface KanbanCardMove<TCard = unknown> {
+  card: TCard
+  cardId: string
+  /** Column containing the card when the interaction started. */
+  sourceColumnId: string
+  /** Original zero-based position in the source column. */
+  sourceIndex?: number
+  /** Destination column; equal to sourceColumnId for an in-column reorder. */
+  targetColumnId: string
+  /** Requested zero-based position for consumer-owned persistence. */
+  targetIndex?: number
+}
+
+export interface KanbanColumnOption {
+  label: string
+  value: string
+}
+
+export type KanbanBoardColumn<TCard = unknown> = KanbanColumnData<TCard> & {
+  collapsed?: boolean
+}

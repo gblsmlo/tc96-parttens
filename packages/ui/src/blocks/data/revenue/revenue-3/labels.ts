@@ -18,9 +18,10 @@ export const defaultRevenue3Labels: Revenue3Labels = {
   },
   columnsMenu: 'Colunas',
   densities: {
+    compact: 'Compacta',
     'extra-tall': 'Extra alta',
     medium: 'Média',
-    short: 'Compacta',
+    short: 'Padrão',
     tall: 'Alta',
   },
   density: 'Altura das linhas',

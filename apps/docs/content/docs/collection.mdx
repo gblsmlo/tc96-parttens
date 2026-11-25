@@ -150,7 +150,7 @@ lança erro quando o layout ativo não a recebe.
   renderKanbanRecord={renderTaskKanbanCard}
   onRecordChange={({ record }) => saveTask(record)}
   list={{ emptyGroupLabel: 'No tasks in this group.' }}
-  kanban={{ emptyColumnLabel: 'No tasks in this column.' }}
+  kanban={{ emptyGroupLabel: 'No tasks in this column.' }}
   datagrid={{ 'aria-label': 'Tasks', table: dataGridTable }}
   datatable={{ 'aria-label': 'Tasks', table: dataTable }}
   calendar={calendarProps}
@@ -171,7 +171,7 @@ Kanban, com o registro já reconstruído por `setGroupId`.
 - Salve e retorne `true`, ou retorne `false` (ou rejeite) para devolver o card.
 - Enquanto a promise está pendente, o card fica na coluna de destino.
 - Para vetar ou redirecionar o movimento com os dois grupos em mãos, passe
-  `kanban.onMoveCard`. Ele tem prioridade sobre `onRecordChange`.
+  `kanban.onRecordMove`. Ele tem prioridade sobre `onRecordChange`.
 
 Uma edição dentro de uma linha, card ou célula (select de status, responsável,
 prazo) é o seu renderizador chamando a sua própria função de atualização. O
@@ -211,11 +211,11 @@ Mostra ações em lote para as linhas selecionadas. O DataGrid a recebe por
 ### Estados de carregamento e vazio
 
 Cada layout tem suas props: `loading` em List, Kanban, Gallery e Calendar,
-`isLoading` em DataGrid e DataTable, e um rótulo de vazio em cada um.
+`loading` em DataGrid e DataTable, e um rótulo de vazio em cada um.
 
 Passe `loading` uma vez ao `CollectionLayoutOutlet`: o layout ativo o recebe
 como padrão da sua própria prop. Um valor no bloco de props do layout
-(`datatable.isLoading`, `list.loading`) tem prioridade.
+(`datatable.loading`, `list.loading`) tem prioridade.
 
 A toolbar tem leituras próprias: as opções dos filtros e as visões salvas.
 Enquanto carregam, passe `loading` ao `FilterRadioSubmenu` (linhas de skeleton
@@ -253,20 +253,20 @@ List e Gallery. Story `Documents`.
 ### Pipeline
 
 Board Kanban, cards e arraste. Story `Pipeline` e
-`Patterns/Collection/Layouts/Kanban`, que documenta o board e o card.
+`Patterns/Kanban`, que documenta o board e o card.
 
 ### Calendar
 
 Mês, grade de horários, navegação, arraste e redimensionamento.
-Story `Calendar` e `Patterns/Collection/Layouts/Calendar`.
+Story `Calendar` e `Patterns/Calendar`.
 
 ### Layouts
 
-- List, grupos e colapso: `Patterns/Collection/Layouts/List`.
-- Spreadsheet com células editáveis: `Patterns/Collection/Layouts/Data Grid`.
-- Tabela somente leitura: `Patterns/Collection/Layouts/Data Table`.
-- Kanban, card e carregamento: `Patterns/Collection/Layouts/Kanban`.
-- Galeria: `Patterns/Collection/Layouts/Gallery`.
+- List, grupos e colapso: `Patterns/ListView`.
+- Spreadsheet com células editáveis: `Patterns/DataGrid`.
+- Tabela somente leitura: `Patterns/DataTable`.
+- Kanban, card e carregamento: `Patterns/Kanban`.
+- Galeria: `Patterns/Gallery`.
 
 ### Visões salvas
 

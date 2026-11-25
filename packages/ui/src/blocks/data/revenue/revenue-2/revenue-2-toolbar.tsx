@@ -1,8 +1,8 @@
-import { DataGridDensitySubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-density-submenu'
-import { DataGridSortSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-sort-submenu'
-import { isConditionComplete } from '@tc96/ui/patterns/collection/layouts/data-grid/lib/data-grid-conditions'
-import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-columns-submenu'
-import type { DataTableTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
+import { DataGridDensitySubmenu } from '@tc96/ui/patterns/data-grid/components/data-grid-density-submenu'
+import { DataGridSortSubmenu } from '@tc96/ui/patterns/data-grid/components/data-grid-sort-submenu'
+import { isConditionComplete } from '@tc96/ui/patterns/data-grid/lib/data-grid-conditions'
+import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/data-table/data-table-columns-submenu'
+import type { DataTableTable } from '@tc96/ui/patterns/data-table/data-table-features'
 import {
   ViewSettingsMenu,
   ViewSettingsSection,

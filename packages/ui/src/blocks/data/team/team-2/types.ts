@@ -1,4 +1,4 @@
-import type { DataTableDensity } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-types'
+import type { CollectionDensity } from '@tc96/ui/patterns/data-table/data-table-types'
 import type { DataPriority } from '../../shared/properties/data-priority'
 import type { DataOptionAppearance } from '../../shared/properties/types'
 import type {
@@ -28,7 +28,7 @@ export type Team2SortKey = 'joined' | 'lastSeen' | 'member' | 'rating' | 'role'
 
 export type Team2Presence = 'away' | 'offline' | 'online'
 
-export type Team2Density = DataTableDensity
+export type Team2Density = CollectionDensity
 
 export type Team2Person = TablePerson
 

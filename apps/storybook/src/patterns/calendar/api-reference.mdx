@@ -1,0 +1,318 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Calendar
+
+A collection laid out on a calendar: the meetings of a team, the activities of a pipeline, the due dates of a backlog. It shows a day, a week or a month around an instant, in one time zone, and lets the user move and resize items when the consumer accepts the change. Reach for it when the date of a record is what the reader scans; the consumer keeps the records, the period and the mode.
+
+The other pages of `Patterns/Calendar`: [Playground](?path=/story/patterns-calendar-playground--playground) to try the mode, the loading state, the week start, the locale, the month overflow and the parts of an item, [Variants](?path=/story/patterns-calendar-variants--default) for each mode, state and tone, [Behavior](?path=/story/patterns-calendar-behavior--loads-into-items) for the tests, [Usages](?path=/story/patterns-calendar-usages--team-agenda) for a team agenda with its toolbar and [Layouts](?path=/story/patterns-calendar-layouts--without-time) for items without the time, with an action or without the open trigger.
+
+Used in: [Patterns/Collection/Usages, Calendar](?path=/story/patterns-collection-usages--calendar), the activities of a pipeline, and [Patterns/Collection/Usages, Tasks](?path=/story/patterns-collection-usages--tasks), as one of the layouts of `CollectionLayoutOutlet`.
+
+## Import
+
+```tsx
+import {
+  CalendarEventChip,
+  CalendarEventChipOpenTrigger,
+  CalendarEventChipTime,
+  CalendarEventChipTitle,
+  CalendarView,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+<Canvas of={ApiReferenceStories.EventChipAnatomy} />
+
+```tsx
+<CalendarView
+  anchor={anchor}
+  collection={collection}
+  getRecordSchedule={(record) => ({ start, end, isAllDay })}
+  mode="week"
+  renderRecord={(record, context) => (
+    <CalendarEventChip display={context.placement === 'time-grid' ? 'block' : 'chip'}>
+      <CalendarEventChipTime />
+      <CalendarEventChipTitle />
+      <CalendarEventChipOpenTrigger aria-label={`Abrir ${record.title}`} />
+    </CalendarEventChip>
+  )}
+  timeZone="America/Fortaleza"
+/>
+```
+
+`CalendarView` renders the grid and calls `renderRecord` once per item; the item is the consumer's, and `CalendarEventChip` with its parts is the one the pattern ships. While `loading`, the view renders `CalendarItemSkeleton` in place of the items. The tree it renders:
+
+```tsx
+<div data-slot="calendar-view">
+  {/* day and week */}
+  <div data-slot="calendar-time-grid">
+    <h2 />
+    <div>{/* time zone, then one heading per day */}</div>
+    <div>{/* "dia inteiro", then one all-day cell per day */}</div>
+    <ScrollArea>
+      <section>{/* one per day */}
+        <h3 />
+        <div data-calendar-date>
+          <div>{/* one positioned box per item */}
+            <div data-calendar-item-id>{renderRecord(record, context)}</div>
+          </div>
+          <div data-slot="calendar-now-line" />
+        </div>
+      </section>
+    </ScrollArea>
+  </div>
+  {/* month */}
+  <div data-slot="calendar-month-grid">
+    <h2 />
+    <div>{/* weekday names */}</div>
+    <div>{/* one row per week */}
+      <div data-calendar-date>{/* day number, items, "+N" */}</div>
+    </div>
+  </div>
+</div>
+```
+
+## CalendarView
+
+The calendar of one collection. Renders a `div` that fills the height of its parent and holds a time grid in `day` and `week`, or a month grid in `month`. It is controlled: it never fetches, filters or stores records, never changes `anchor` or `mode`, and keeps only the clock, the drag in progress and the optimistic window of a moved item until `getRecordSchedule` returns it.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `anchor` | `Date` | required | Sets the instant the period is built around, read in `timeZone`. |
+| `collection` | `CollectionDefinition<TRecord>` | required | Supplies the records; only `records`, `getKey` and `getLabel` are read. |
+| `getRecordSchedule` | `(record: TRecord) => CalendarRecordSchedule \| null` | required | Places a record; `null` leaves it out of the calendar. |
+| `mode` | `"day"`, `"week"` or `"month"` | required | Controls the period and the grid: a time grid of one or seven days, or the weeks of a month. |
+| `renderRecord` | `(record: TRecord, context: CalendarRecordRenderContext) => ReactNode` | required | Renders one item, once per day it covers. |
+| `timeZone` | `string` | required | Sets the IANA time zone every day, hour and drop is computed in. |
+| `loading` | `boolean` | `false` | When true, replaces the items with skeletons and turns off dragging, resizing and `onSlotSelect`. |
+| `loadingCount` | `number` | `3` | Sets how many month cells show a skeleton, starting from the first cell. |
+| `loadingLabel` | `string` | `"Carregando compromisso"` | Names each skeleton. |
+| `locale` | `string` | `"pt-BR"` | Sets the locale of the day, weekday and period labels. |
+| `maxVisibleMonthRecords` | `number` | `3` | Sets how many items a month cell shows before the rest move behind a "+N" button. |
+| `weekStartsOn` | `0` or `1` | `0` | Sets the first day of the week: `0` is Sunday, `1` is Monday. |
+| `now` | `Date` | - | Sets the current instant for the now line and today; without it the view reads the clock and advances every minute. |
+| `snapMinutes` | `number` | `15` | Sets the grid, in minutes, of time-grid drops, resizes and selected slots. |
+| `getRecordLabel` | `(record: TRecord) => string` | `collection.getLabel` | Names the item's drag handle, `Mover <label>`. |
+| `onRecordReschedule` | `(change: CalendarRecordReschedule<TRecord>) => boolean \| Promise<boolean>` | - | Called when an item is dropped or resized into a new window; turns on dragging and resizing. Return `false`, or reject, to put the item back. |
+| `onSlotSelect` | `(slot: CalendarSlot) => void` | - | Called when the bare area of a time-grid column is clicked, with the slot under the pointer. |
+| `onDaySelect` | `(date: CalendarDate) => void` | - | Called when the day title inside a month cell's "+N" popup is clicked; without it the title is plain text. |
+
+Takes no other prop, `className` included: give it a parent of bounded height, a flex column with `min-h-0`, so the time grid scrolls inside it.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"calendar-view"` | Selects the root |
+| `data-calendar-mode` | `"day"`, `"week"` or `"month"` | Mirrors `mode` |
+| `aria-busy` | `"true"` while `loading` | Marks the calendar busy for assistive technology |
+
+### Time grid
+
+In `day` and `week`. A heading row names each day by its short weekday and number, with today's number on `primary`, after the time zone as a short offset (`GMT-3`). An all-day strip follows, labelled `dia inteiro`, with one cell per day for the all-day items. Below it, 24 hours of 3rem each scroll inside a scroll area that opens at 07:00. Each day is a `section` named by a hidden `h3` with the full date, and the grid carries a hidden `h2` with the range.
+
+A timed item sits from its start to its end; one with `end: null` is an instant and gets a minimum height of 2% of the day. Items that overlap share the column in side-by-side lanes. Each item sits in a size container named `calendar-item`, which `CalendarEventChip display="block"` reads. Today's column carries a now line at `now`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"calendar-time-grid"` | Selects the time grid |
+| `data-calendar-date` | `"YYYY-MM-DD"` | Marks the area of a day column, where items are positioned and dropped |
+| `data-calendar-all-day-date` | `"YYYY-MM-DD"` | Marks an all-day cell |
+| `data-today` | present on today | Marks today's heading and column |
+| `data-slot` | `"calendar-now-line"` | Selects the now line, hidden from assistive technology |
+
+While `loading`, each day column shows one skeleton block and no timed item; the all-day strip keeps its items.
+
+### Month grid
+
+In `month`. The weeks that cover the month of `anchor`, from the first week holding the 1st to the last week holding the final day, under a row of short weekday names. The grid carries a hidden `h2` with the month and year.
+
+Each cell shows its day number, then up to `maxVisibleMonthRecords` items in order of start. The others move behind a "+N" button named `Mostrar mais N itens de <full date>` (`item` for one), which opens a popup named by the full date and lists only the hidden items, so no item renders twice. The popup's title is the date: with `onDaySelect`, a button named `Mostrar todos os N itens de <full date>` that calls it and closes the popup; without it, plain text. An item drags out of the popup like any other.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"calendar-month-grid"` | Selects the month grid |
+| `data-calendar-date` | `"YYYY-MM-DD"` | Marks a day cell |
+| `data-today` | present on today | Marks today's cell; its number sits on `primary` |
+| `data-outside-month` | present on days of the neighbouring months | Marks the leading and trailing days, drawn on `muted` |
+
+While `loading`, the first `loadingCount` cells show one skeleton each and no cell shows an item.
+
+### Moving and resizing
+
+With `onRecordReschedule`, every item gets a drag handle, a `button` named `Mover <label>` at its start edge, transparent until it has keyboard focus. The pointer drags the whole item past 5px (on touch, after holding 250ms within 5px), except from a control inside it; the open trigger also starts a drag past 5px, and a shorter press is a click. With the keyboard, Space on the handle picks the item up, the arrow keys move it, Space or Tab drops it and Escape cancels. The dragged item turns 40% opaque.
+
+A drop on a day or an all-day cell keeps the wall-clock time and the duration; a drop on a time-grid column moves the start under the pointer, snapped to `snapMinutes`. All-day items drop on all-day and month cells; timed items on time-grid columns and month cells. A drop that resolves to the same window calls nothing.
+
+In the time grid, a timed item with an `end` also gets a resize edge at its top, on the first day it covers, and at its bottom, on the last; the edges are pointer-only and hidden from assistive technology. From the handle, Alt+ArrowUp and Alt+ArrowDown move the start, and Shift+ArrowUp and Shift+ArrowDown move the end, one `snapMinutes` step at a time, announced through `aria-keyshortcuts`. A resized edge lands on the `snapMinutes` grid of `timeZone`, and the item keeps at least `snapMinutes` of duration. All-day items, items without `end` and month items do not resize.
+
+The new window shows at once. It stays until `getRecordSchedule` returns it, or goes back if `onRecordReschedule` returns `false` or rejects.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-calendar-item-id` | the record key | Marks the box around every item |
+| `data-calendar-item-draggable` | present with `onRecordReschedule` | Marks an item that drags |
+| `data-calendar-item-drag-handle` | present | Marks the drag handle |
+| `data-calendar-item-drag-id` | the drag id | Marks the drag handle, for focus after a move |
+| `data-calendar-item-resize` | `"start"` or `"end"` | Marks a resize edge |
+
+Without `onRecordReschedule`, items have no handle, no resize edge and no drag attribute.
+
+### Creating from a slot
+
+With `onSlotSelect`, a click that both starts and ends on the bare area of a time-grid column, not on an item, a resize edge or the end of a drag, calls it with the day and the `snapMinutes` slot under the pointer, clamped to the day. It is ignored while `loading`. The column takes no focus, so pair it with a create button for the keyboard.
+
+### renderRecord
+
+Each item renders in a memoized box: `renderRecord` runs again only when its identity, the record, or the day, placement or minutes of that item change. A renderer that reads other state through a stable identity shows stale content; pass that state through the record, or give `renderRecord` a new identity when it changes. Keep `renderRecord` free of DOM ids: the drag overlay renders the item once more while it moves, with `startMinutes` and `endMinutes` set to `null`.
+
+## CalendarEventChip
+
+The item `renderRecord` returns. Renders an `article`, with no content of its own: the consumer fills it with the parts below. Change the element with `render`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `display` | `"chip"` or `"block"` | `"chip"` | Controls the shape: one line for month and all-day cells, or a box that fills a time-grid item. |
+| `tone` | `"neutral"`, `"primary"`, `"success"`, `"warning"` or `"destructive"` | `"neutral"` | Controls the start border, the background and the text color. |
+| `completed` | `boolean` | `false` | When true, dims the item to 60% opacity and strikes the title. |
+| `render` | `ReactElement` or `(props, state) => ReactElement` | - | Replaces the `article` with another element. |
+| `className` | `string` | - | Adds classes after the item's own, so a conflicting class wins. |
+
+Also takes every prop of an `article`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"calendar-event-chip"` | Selects the item |
+| `data-display` | `"chip"` or `"block"` | Styles the item by shape |
+| `data-tone` | the tone | Styles the item by tone |
+| `data-completed` | present when `completed` | Styles a completed item |
+
+Every tone has a 2px start border and a translucent fill: `neutral` reads `muted` with a `muted-foreground` border, `primary` reads `primary`, and `success`, `warning` and `destructive` also take their `-foreground` text color. The fill is 8% of the tone in light and 16% in dark, except `neutral`, 60% and 40% of `muted`.
+
+In `block`, the item fills its box and stacks the title over the time. In a `calendar-item` box shorter than 2.625rem, the title and the time share one wrapping row, so a short item shows its title and shows the time only when it fits; narrower than 3.5rem, the horizontal padding drops to 1px.
+
+The item draws a 2px `primary` ring when an element inside it has keyboard focus. A child marked `data-calendar-item-action` sits above the open trigger, so it keeps its own click.
+
+## CalendarEventChipTime
+
+The start of the item. Renders a `time`, at 70% opacity, that never wraps. In `block` it follows the title. Pass `dateTime` for a machine-readable value.
+
+Also takes every prop of a `time`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"calendar-event-chip-time"` | Selects the time |
+
+## CalendarEventChipTitle
+
+The name of the item. Renders a `span` that takes the remaining width and truncates first; `completed` strikes it through.
+
+Also takes every prop of a `span`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"calendar-event-chip-title"` | Selects the title |
+
+## CalendarEventChipOpenTrigger
+
+The button that opens the record. Renders a `button` with `type="button"`, stretched over the whole item, above the time and the title. It has no text: name it with `aria-label`. It draws no outline of its own; the item draws the ring.
+
+Also takes every prop of a `button`.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"calendar-event-chip-open-trigger"` | Selects the open trigger |
+
+## CalendarItemSkeleton
+
+The loading item `CalendarView` renders while `loading`. Renders an `output` with `aria-busy="true"`, named by `label`, holding two bars hidden from assistive technology. Render it yourself only to keep a loading item outside the view. In `chip` display it is 16px tall, while a `CalendarEventChip` with one line of text is 20px: the loaded item does not keep the skeleton height.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `display` | `"chip"` or `"block"` | `"chip"` | Controls the shape, like `CalendarEventChip`. |
+| `label` | `string` | `"Carregando compromisso"` | Names the `output`. |
+| `className` | `string` | - | Adds classes after the skeleton's own. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"calendar-item-skeleton"` | Selects the skeleton |
+
+## CalendarRecordSchedule
+
+What `getRecordSchedule` returns for a record.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `start` | `Date` | required | Sets the start instant. |
+| `end` | `Date \| null` | required | Sets the end instant; `null` is an instant with no duration. |
+| `isAllDay` | `boolean` | required | Places the item in the all-day strip of the time grid. |
+
+An item that spans several days renders once per day it covers.
+
+## CalendarRecordRenderContext
+
+The second argument of `renderRecord`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `date` | `CalendarDate` | required | Sets the day this item covers. |
+| `placement` | `"time-grid"`, `"all-day"` or `"month"` | required | Says where the item renders. |
+| `startMinutes` | `number \| null` | required | Sets the minutes from midnight where the item starts on that day; `null` outside the time grid. |
+| `endMinutes` | `number \| null` | required | Sets the minutes from midnight where the item ends on that day; `null` outside the time grid. |
+| `isStart` | `boolean` | required | Says whether the item starts on that day. |
+| `isEnd` | `boolean` | required | Says whether the item ends on that day. |
+
+`CalendarDate` is `{ year: number, month: number, day: number }`, with `month` from 1 to 12.
+
+## CalendarRecordReschedule
+
+What `onRecordReschedule` receives.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `record` | `TRecord` | required | The record that moved. |
+| `recordKey` | `string` | required | Its key from `collection.getKey`. |
+| `start` | `Date` | required | The new start. |
+| `end` | `Date \| null` | required | The new end. |
+| `isAllDay` | `boolean` | required | Whether the item is still all-day. |
+| `sourceStart` | `Date` | required | The start when the move began. |
+| `sourceEnd` | `Date \| null` | required | The end when the move began. |
+
+## CalendarSlot
+
+What `onSlotSelect` receives.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `day` | `CalendarDate` | required | The day of the column. |
+| `startMinutes` | `number` | required | The start of the slot, in minutes from midnight, floored to `snapMinutes`. |
+| `endMinutes` | `number` | required | The end of the slot, `snapMinutes` later, at most 1440. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `calendarEventChipVariants` | `function` | The classes of `CalendarEventChip`. `calendarEventChipVariants({ display, tone, completed }) => string` |
+| `CalendarTimeGrid`, `CalendarMonthGrid`, `CalendarDayColumn`, `CalendarAllDayCell` | `component` | The grids and cells `CalendarView` renders. They take the view's internal segments; use `CalendarView` instead. Their props types are exported with a `Props` suffix. |
+| `calendarRange` | `function` | Lists the days a mode shows around a date. `(anchor: CalendarDate, mode: CalendarViewMode, weekStartsOn: 0 \| 1) => CalendarDate[]` |
+| `addCalendarDays` | `function` | Moves a date by whole days. `(date: CalendarDate, days: number) => CalendarDate` |
+| `startOfWeek` | `function` | First day of the week holding a date. `(date: CalendarDate, weekStartsOn: 0 \| 1) => CalendarDate` |
+| `compareCalendarDates`, `isSameCalendarDate` | `function` | Order and compare two dates. |
+| `calendarDateKey`, `parseCalendarDateKey` | `function` | Write and read the `"YYYY-MM-DD"` key of `data-calendar-date`; parsing returns `null` for a day that does not exist. |
+| `toZonedDateTime` | `function` | Reads an instant as a day and minutes in a time zone. `(instant: Date, timeZone: string) => ZonedDateTime` |
+| `fromZonedDateTime` | `function` | Turns a day and minutes in a time zone back into an instant. `(zoned: ZonedDateTime, timeZone: string) => Date` |
+| `getTimeZoneOffsetMs` | `function` | The offset of a time zone at an instant, in milliseconds, positive east of UTC. |
+| `CalendarViewProps`, `CalendarViewMode`, `CalendarItemPlacement`, `CalendarDate`, `ZonedDateTime` | `type` | The props of `CalendarView` and the types its props use. |
+| `CalendarEventChipProps`, `CalendarEventChipTimeProps`, `CalendarEventChipTitleProps`, `CalendarEventChipOpenTriggerProps`, `CalendarEventChipDisplay`, `CalendarEventChipTone`, `CalendarItemSkeletonProps` | `type` | The props of the item parts and their unions. |
+
+## Accessibility and theme
+
+- Name every `CalendarEventChipOpenTrigger` with `aria-label`, distinct per record: it has no text.
+- The time grid is a pointer surface for creating: `onSlotSelect` has no keyboard path, so offer a create button beside the calendar.
+- The drag handle is the keyboard path for moving and resizing; it is named from `getRecordLabel` or `collection.getLabel`, so keep labels distinct.
+- The copy is Portuguese (`Mover`, `dia inteiro`, `Mostrar mais`, `Mostrar todos os`, `Carregando compromisso`); the dates follow `locale`.
+- The colors come from the theme tokens `background`, `border`, `muted`, `muted-foreground`, `foreground`, `primary`, `primary-foreground`, `accent`, `ring`, `destructive`, `success`, `warning` and their `-foreground` pairs. Measured contrast: `docs/accessibility.md`.

@@ -7,7 +7,12 @@ import type {
 
 export type Revenue4Health = 'atRisk' | 'healthy' | 'watch'
 
-export type Revenue4Density = 'extra-tall' | 'medium' | 'short' | 'tall'
+export type Revenue4Density =
+  | 'compact'
+  | 'extra-tall'
+  | 'medium'
+  | 'short'
+  | 'tall'
 
 export type Revenue4ToggleColumnId =
   | 'arr'

@@ -54,7 +54,12 @@ export interface TableViewLabels {
   viewsEmpty: string
 }
 
-export type TableDensity = 'extra-tall' | 'medium' | 'short' | 'tall'
+export type TableDensity =
+  | 'compact'
+  | 'extra-tall'
+  | 'medium'
+  | 'short'
+  | 'tall'
 
 export interface TableSettingsLabels {
   clearSort: string

@@ -5,8 +5,8 @@ import { Alert, AlertDescription } from '@tc96/ui/alert'
 import { createAmountFormatter } from '@tc96/ui/helpers/format'
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
 import type { CollectionKanbanViewProps } from '@tc96/ui/patterns/collection/composition/collection-layout-outlet'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
 import { CollectionPagination } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import { useMemo } from 'react'
 import {
   DataCollection,
@@ -283,19 +283,19 @@ export function Crm2({
     const activeStageOf = (stageId: string | null) =>
       stages.find((stage) => stage.id === stageId && !stage.inactive)
     return {
-      emptyColumnLabel: labels.emptyColumn,
-      getColumnActions:
+      emptyGroupLabel: labels.emptyColumn,
+      getGroupActions:
         byStage && createInStage
           ? (column) => {
               const stage = activeStageOf(stageIdOf(column.id))
               if (!stage) return undefined
               return {
                 addLabel: labels.createInStage(stage.label),
-                onAddCard: () => createInStage(stage.id),
+                onRecordAdd: () => createInStage(stage.id),
               }
             }
           : undefined,
-      onMoveCard:
+      onRecordMove:
         byStage && changeStage
           ? ({ card, targetGroup }) => {
               const stage = activeStageOf(targetGroup.value)
@@ -304,7 +304,7 @@ export function Crm2({
               return false
             }
           : undefined,
-      renderColumnTitle: (column) => {
+      renderGroupTitle: (column) => {
         const value =
           byStage && stageValues
             ? (stageValues[stageIdOf(column.id)] ?? 0)

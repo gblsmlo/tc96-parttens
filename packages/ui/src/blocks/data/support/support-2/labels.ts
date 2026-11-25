@@ -26,9 +26,10 @@ export const defaultSupport2Labels: Support2Labels = {
   create: 'Novo chamado',
   clearSort: 'Limpar ordenação',
   densities: {
+    compact: 'Compacta',
     'extra-tall': 'Extra alta',
     medium: 'Média',
-    short: 'Compacta',
+    short: 'Padrão',
     tall: 'Alta',
   },
   density: 'Altura das linhas',

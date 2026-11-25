@@ -1,6 +1,6 @@
 'use client'
 
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import { useMemo } from 'react'
 import {
   DataCollection,

@@ -1,7 +1,7 @@
 'use client'
 
 import type { CollectionKanbanViewProps } from '@tc96/ui/patterns/collection/composition/collection-layout-outlet'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import { useMemo } from 'react'
 import {
   DataCollection,
@@ -143,8 +143,8 @@ export function Legal1({
 
   const kanban = useMemo<CollectionKanbanViewProps<Legal1Case>>(
     () => ({
-      emptyColumnLabel: labels.emptyColumn,
-      onMoveCard: changePhase
+      emptyGroupLabel: labels.emptyColumn,
+      onRecordMove: changePhase
         ? ({ card, targetGroup }) => {
             const phase = legal1Phases.find(
               (item) => item === targetGroup.value,

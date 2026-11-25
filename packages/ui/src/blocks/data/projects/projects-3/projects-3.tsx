@@ -2,8 +2,8 @@
 
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
 import type { CollectionKanbanViewProps } from '@tc96/ui/patterns/collection/composition/collection-layout-outlet'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
 import { CollectionPagination } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import { useMemo } from 'react'
 import {
   DataCollection,
@@ -379,8 +379,8 @@ export function Projects3({
 
   const kanban = useMemo<CollectionKanbanViewProps<Projects3Task>>(
     () => ({
-      emptyColumnLabel: labels.emptyColumn,
-      onMoveCard:
+      emptyGroupLabel: labels.emptyColumn,
+      onRecordMove:
         changeStatus && kanbanGroupBy === 'status'
           ? ({ card, sourceGroup, targetGroup }) => {
               if (card.archived || targetGroup.grouping !== 'status')

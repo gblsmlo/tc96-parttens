@@ -10,7 +10,7 @@ import {
   toZonedDateTime,
 } from '@tc96/ui/helpers/zoned-date-time'
 import type { CollectionCalendarViewProps } from '@tc96/ui/patterns/collection/composition/collection-layout-outlet'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import { useMemo, useState } from 'react'
 import {
   DataCollection,
@@ -236,7 +236,7 @@ export function Agenda1({
         start: new Date(entry.start),
       }),
       loading: Boolean(pending),
-      loadingRecordLabel: labels.loading,
+      loadingLabel: labels.loading,
       locale,
       mode: period,
       now: now ? new Date(now) : undefined,
@@ -252,11 +252,11 @@ export function Agenda1({
             })
           }
         : undefined,
-      onSelectDay: (date) => {
+      onDaySelect: (date) => {
         setPeriod('day')
         setAnchor(calendarDateKey(date))
       },
-      onSelectSlot: create
+      onSlotSelect: create
         ? (slot) =>
             create({
               end: fromZonedDateTime(

@@ -1,7 +1,7 @@
 import { IdentificationBadgeIcon, StarIcon } from '@phosphor-icons/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { getInitials } from '@tc96/ui/helpers/initials'
-import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
+import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
 import { AvatarStack } from '@tc96/ui/patterns/widgets/shared/avatar-stack'
 import { ProgressRing } from '@tc96/ui/patterns/widgets/shared/progress-ring'
 import { cn } from '@tc96/utils'

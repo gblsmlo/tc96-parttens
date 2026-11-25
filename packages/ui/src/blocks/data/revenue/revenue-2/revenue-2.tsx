@@ -4,15 +4,15 @@ import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
 import {
   type DataGridConditionFilterField,
   DataGridConditionFilters,
-} from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-condition-filters'
-import { DataGridPagination } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-pagination'
+} from '@tc96/ui/patterns/data-grid/components/data-grid-condition-filters'
+import { DataGridPagination } from '@tc96/ui/patterns/data-grid/components/data-grid-pagination'
 import {
   createDataGridConditionFilterFn,
   type DataGridConditionField,
-} from '@tc96/ui/patterns/collection/layouts/data-grid/lib/data-grid-conditions'
-import { DataTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table'
-import type { DataTableFeatures } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+} from '@tc96/ui/patterns/data-grid/lib/data-grid-conditions'
+import { DataTable } from '@tc96/ui/patterns/data-table/data-table'
+import type { DataTableFeatures } from '@tc96/ui/patterns/data-table/data-table-features'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import {
   CollectionToolbarDescription,
   CollectionToolbarHeading,

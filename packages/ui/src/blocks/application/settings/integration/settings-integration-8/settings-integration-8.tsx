@@ -1,9 +1,9 @@
 'use client'
 
 import type { PaginationState } from '@tanstack/react-table'
-import { DataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid'
-import { DataGridPagination } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-pagination'
-import { useDataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import { DataGrid } from '@tc96/ui/patterns/data-grid/components/data-grid'
+import { DataGridPagination } from '@tc96/ui/patterns/data-grid/components/data-grid-pagination'
+import { useDataGrid } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import { StateSurface } from '@tc96/ui/patterns/surfaces/state/composition/state-surface/state-surface'
 import { Switch } from '@tc96/ui/switch'
 import { Text } from '@tc96/ui/text'

@@ -1,5 +1,5 @@
-import type { DataTableColumnMeta } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-aggregation'
-import type { UseDataTableOptions } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import type { DataTableColumnMeta } from '@tc96/ui/patterns/data-table/data-table-aggregation'
+import type { UseDataTableOptions } from '@tc96/ui/patterns/data-table/use-data-table'
 import { dataSelectOptions } from '../../shared/properties/data-properties'
 import type { TableFormatter } from '../../shared/table/format'
 import { type Inventory2PriceFormat, parseStock } from './edit-values'

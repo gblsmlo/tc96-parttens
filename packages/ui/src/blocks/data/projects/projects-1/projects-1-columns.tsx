@@ -11,8 +11,8 @@ import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   DataGridExpandToggle,
   type DataGridExpandToggleProps,
-} from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-expand-toggle'
-import type { UseDataGridOptions } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+} from '@tc96/ui/patterns/data-grid/components/data-grid-expand-toggle'
+import type { UseDataGridOptions } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import { TextProperty } from '@tc96/ui/patterns/properties/display/text/text-property'
 import { cn } from '@tc96/utils'
 import {

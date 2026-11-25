@@ -1,8 +1,8 @@
 'use client'
 
-import { DataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid'
-import type { DataGridGroupCellContext } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-group-row'
-import { useDataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import { DataGrid } from '@tc96/ui/patterns/data-grid/components/data-grid'
+import type { DataGridGroupCellContext } from '@tc96/ui/patterns/data-grid/components/data-grid-group-row'
+import { useDataGrid } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import {
   CollectionToolbarDescription,
   CollectionToolbarHeading,
@@ -227,7 +227,7 @@ export function Revenue3({
                 ? handleCollapsedGroupIdsChange
                 : undefined
             }
-            pagination={false}
+            showPagination={false}
             renderGroupCell={renderGroupCell}
             table={table}
           />

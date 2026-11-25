@@ -19,6 +19,7 @@ export type {
   CollectionDataTableViewProps,
   CollectionGalleryViewProps,
   CollectionKanbanCardMove,
+  CollectionKanbanColumnState,
   CollectionKanbanViewProps,
   CollectionLayoutOutletProps,
   CollectionListViewProps,

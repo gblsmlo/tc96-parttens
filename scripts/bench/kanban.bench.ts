@@ -1,7 +1,7 @@
 // bench-harness v1 adapter for KanbanView.
 //
 // Drag scenarios use dnd-kit's keyboard sensor outside act(), on cases without the profiler,
-// and do not count the dragged card (see layouts/kanban/README.md).
+// and do not count the dragged card (see packages/ui/src/patterns/kanban/README.md).
 //
 //   bun scripts/bench/kanban.bench.ts --json scripts/bench/results/kanban.base.json
 //   bun scripts/bench/kanban.bench.ts --compare scripts/bench/results/kanban.base.json --gate
@@ -27,7 +27,7 @@ const { flushSync } = await import('react-dom')
 const { createRoot } = await import('react-dom/client')
 type Root = ReturnType<typeof createRoot>
 const { KanbanView } = await import(
-  '../../packages/ui/src/patterns/collection/layouts/kanban/index'
+  '../../packages/ui/src/patterns/kanban/index'
 )
 
 interface Card {
@@ -95,7 +95,7 @@ const renderOtherCards = countRenders<[Card], ReactNode>(
   'cards',
 )
 
-const renderCard = (card: Card): ReactNode =>
+const renderRecord = (card: Card): ReactNode =>
   card.id === draggedCardId
     ? createElement('span', null, card.title)
     : renderOtherCards(card)
@@ -106,7 +106,7 @@ function Board({ initial }: { initial: Column[] }) {
   const [columns, setColumns] = useState(initial)
   const [collapsed, setCollapsed] = useState(false)
   const [, setTick] = useState(0)
-  const onMoveCard = useCallback((move: Move) => {
+  const onRecordMove = useCallback((move: Move) => {
     setColumns((current) => applyMove(current, move))
     return true
   }, [])
@@ -145,8 +145,8 @@ function Board({ initial }: { initial: Column[] }) {
     createElement(KanbanView<Card>, {
       columns: shown,
       getKey,
-      onMoveCard,
-      renderCard,
+      onRecordMove,
+      renderRecord,
     }),
   )
 }

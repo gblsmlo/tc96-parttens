@@ -491,7 +491,7 @@ function CampaignsWorkspace({
               'aria-label': 'Campanhas',
               emptyMessage: 'Nenhuma campanha com esses filtros.',
               getRowGroup: grouping ? groupRowLabel : undefined,
-              isLoading: loading,
+              loading: loading,
               selectionActions: ({
                 clearSelection,
                 selectedCount,
@@ -514,15 +514,15 @@ function CampaignsWorkspace({
               bordered: true,
               defaultAggregations: campaignTableAggregations,
               emptyMessage: 'Nenhuma campanha com esses filtros.',
-              isLoading: loading,
+              loading: loading,
               table: dataTable,
             }}
             list={{
               collapseEmptyGroups: true,
               emptyGroupLabel: 'Nenhuma campanha neste grupo.',
               loading,
-              loadingRecordCount: 3,
-              loadingRecordLabel: 'Carregando campanha',
+              loadingCount: 3,
+              loadingLabel: 'Carregando campanha',
               renderGroupTitle: (group) => group.label,
             }}
             renderKanbanRecord={() => null}

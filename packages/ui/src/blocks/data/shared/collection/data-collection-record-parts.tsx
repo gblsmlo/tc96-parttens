@@ -9,7 +9,7 @@ import {
   KanbanCardHeader,
   KanbanCardOpenTrigger,
   KanbanCardTitle,
-} from '@tc96/ui/patterns/collection/layouts/kanban/components/kanban-card'
+} from '@tc96/ui/patterns/kanban-card/components/kanban-card'
 import {
   ListRow,
   ListRowAction,
@@ -18,10 +18,10 @@ import {
   ListRowField,
   ListRowHeader,
   ListRowLeading,
+  ListRowOpenTrigger,
   ListRowTitle,
-  ListRowTitleTrigger,
   ListRowTrailing,
-} from '@tc96/ui/patterns/collection/layouts/list/components/list-row'
+} from '@tc96/ui/patterns/list-view/components/list-row'
 import { Fragment, type ReactNode } from 'react'
 
 export function DataCollectionCaption({
@@ -75,9 +75,9 @@ export function DataCollectionListRow({
   const heading = (
     <ListRowTitle>
       {onOpen ? (
-        <ListRowTitleTrigger aria-label={openLabel} onClick={onOpen}>
+        <ListRowOpenTrigger aria-label={openLabel} onClick={onOpen}>
           {title}
-        </ListRowTitleTrigger>
+        </ListRowOpenTrigger>
       ) : (
         title
       )}
@@ -143,7 +143,7 @@ export function DataCollectionKanbanCard({
   title,
 }: Readonly<DataCollectionKanbanCardProps>) {
   return (
-    <KanbanCard density="sm" variant={onOpen ? 'interactive' : 'default'}>
+    <KanbanCard interactive={Boolean(onOpen)}>
       {onOpen ? (
         <KanbanCardOpenTrigger aria-label={openLabel} onClick={onOpen} />
       ) : null}

@@ -1,9 +1,9 @@
 'use client'
 
 import { Badge } from '@tc96/ui/badge'
-import { DataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid'
-import { DataGridPagination } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-pagination'
-import { useDataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import { DataGrid } from '@tc96/ui/patterns/data-grid/components/data-grid'
+import { DataGridPagination } from '@tc96/ui/patterns/data-grid/components/data-grid-pagination'
+import { useDataGrid } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import {
   CollectionToolbarHeading,
   CollectionToolbarTitle,

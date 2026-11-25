@@ -1,7 +1,7 @@
 import { DotsThreeIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
+import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
 import {
   DataSelect,
   dataSelectOptions,

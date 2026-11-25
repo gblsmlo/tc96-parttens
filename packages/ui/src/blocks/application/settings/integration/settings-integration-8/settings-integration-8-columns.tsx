@@ -1,7 +1,7 @@
 import { CopyIcon } from '@phosphor-icons/react'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
-import type { UseDataGridOptions } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import type { UseDataGridOptions } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import { Switch } from '@tc96/ui/switch'
 import { SettingsAppLogo } from '../../shared/settings-app-logo'
 import type {

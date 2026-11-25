@@ -1,5 +1,5 @@
-import { createRowDragColumn } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-row-drag-handle'
-import type { UseDataGridOptions } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import { createRowDragColumn } from '@tc96/ui/patterns/data-grid/components/data-grid-row-drag-handle'
+import type { UseDataGridOptions } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import type { GridFormatter } from '../../shared/grid/format'
 import {
   ClauseCell,

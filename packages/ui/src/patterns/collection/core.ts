@@ -20,18 +20,17 @@ export type {
   CalendarRecordReschedule,
   CalendarRecordSchedule,
   CalendarViewMode,
-} from './layouts/calendar/types'
-export type { DataGridColumnDef } from './layouts/data-grid/lib/data-grid-features'
+} from '../calendar/types'
+export type { DataGridColumnDef } from '../data-grid/lib/data-grid-features'
 export type {
   DataGridAlign,
   DataGridCellValueChange,
   DataGridCellVariant,
   DataGridColumnMeta,
   DataGridColumnType,
-  DataGridDensity,
   DataGridSelectOption,
-} from './layouts/data-grid/types'
-export { DATA_GRID_COLUMN_TYPES } from './layouts/data-grid/types'
+} from '../data-grid/types'
+export { DATA_GRID_COLUMN_TYPES } from '../data-grid/types'
 export {
   createCardDragId,
   createColumnDropId,
@@ -40,13 +39,13 @@ export {
   parseColumnId,
   projectKanbanColumns,
   resolveKanbanCardMove,
-} from './layouts/kanban/lib/drag-and-drop'
+} from '../kanban/lib/drag-and-drop'
 export type {
   KanbanCardMove,
   KanbanColumnActions,
   KanbanColumnData,
   KanbanColumnOption,
-} from './layouts/kanban/types'
+} from '../kanban/types'
 export { projectCollection } from './shared/lib/project-collection'
 export type {
   CollectionDefinition,

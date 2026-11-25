@@ -1,0 +1,213 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Data Table
+
+A collection as a semantic table: the tasks of a release, the campaigns of an account, the contacts of a segment. Each row can open its record, cells hold the consumer's own controls, and the footer can count or sum a column across every page. Reach for it when the reader scans and opens records; for a spreadsheet the user edits cell by cell, use the [Data Grid](?path=/docs/patterns-datagrid-api-reference--api-reference).
+
+The other pages of `Patterns/DataTable`: [Playground](?path=/story/patterns-datatable-playground--playground) to try the frame, the loading and empty states, the loading row, column resizing, the selected row and the optional parts, [Variants](?path=/story/patterns-datatable-variants--default) for each prop value, [Behavior](?path=/story/patterns-datatable-behavior--loading-keeps-the-row-height) for the tests, [Usages](?path=/story/patterns-datatable-usages--release-tasks) for the tasks of a release and [Layouts](?path=/story/patterns-datatable-layouts--with-columns-menu) for the columns menu and the table without its footer, pagination, selection column or row click.
+
+Used in: [Patterns/Collection/Usages, Tasks](?path=/story/patterns-collection-usages--tasks) and [Patterns/Collection/Usages, Campaigns](?path=/story/patterns-collection-usages--campaigns), as the Tabela layout of `CollectionLayoutOutlet`.
+
+## Import
+
+```tsx
+import {
+  DataGridPagination,
+  DataTable,
+  DataTableColumnsSubmenu,
+  type DataTableColumnDef,
+  useDataTable,
+} from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+const { table } = useDataTable({ columns, data, enablePagination: true, getRowId })
+
+<DataTable aria-label="Tarefas" defaultAggregations={{ value: 'sum' }} table={table} />
+<DataGridPagination table={table} />
+```
+
+`DataTable` renders every part itself from the table: the consumer declares the columns, with their `header`, `cell`, `footer` and `meta`. The tree it renders:
+
+```tsx
+<div data-slot="data-table">
+  <ScrollArea>
+    <div data-slot="data-table-viewport">
+      <div data-slot="table-container">
+        <table data-slot="table">
+          <colgroup />{/* only with enableColumnResizing */}
+          <thead data-slot="table-header">
+            <tr>
+              <th>{header}{/* resize handle */}</th>
+            </tr>
+          </thead>
+          <tbody data-slot="table-body">
+            <tr>
+              <td>
+                <button data-slot="data-table-row-trigger" />{/* only with onRowOpen, unless getRowCanOpen returns false */}
+                {cell}
+              </td>
+            </tr>
+          </tbody>
+          <tfoot data-slot="table-footer">
+            <tr>
+              <td>
+                <div data-slot="data-table-aggregation" />{/* or the column's footer */}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </ScrollArea>
+  <div data-slot="data-table-overflow-start" />
+  <div data-slot="data-table-overflow-end" />
+</div>
+```
+
+## DataTable
+
+The table of one collection. Renders a `table` inside a scroll area that fills a bounded flex column, with a sticky header and footer. It is controlled: it never fetches, sorts, filters or stores rows, and reads everything from `table`; its only state is the uncontrolled aggregation choice.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `table` | `DataTableTable<TData>` | required | Supplies the rows, columns and state, from `useDataTable`. |
+| `bordered` | `boolean` | `true` | When true, draws a rounded border and the `background` fill around the scroll area. |
+| `loading` | `boolean` | `false` | When true, replaces the rows with skeleton rows and marks the table busy. |
+| `loadingCount` | `number` | `5` | Sets how many skeleton rows show; pass the page size when the table paginates. |
+| `loadingLabel` | `string` | `"Carregando linha"` | Names each skeleton row: a visually hidden `output` with `aria-busy` in its first cell, since a row cannot be wrapped in a status. |
+| `loadingAnatomy` | `DataTableRowSkeletonAnatomy` | `{}` | Shapes the skeleton rows to match the loaded ones. |
+| `emptyMessage` | `string` | `"Nenhum registro para exibir."` | Sets the text of the one row shown when there are no rows. |
+| `onRowOpen` | `(row: Row<DataTableFeatures, TData>) => void` | - | Called when a row is clicked outside its controls, or its open button is pressed; turns every row into a button. |
+| `getRowOpenLabel` | `(row: Row<DataTableFeatures, TData>) => string` | - | Names the open button of a row; without it every row reads `Abrir registro`. |
+| `getRowCanOpen` | `(row: Row<DataTableFeatures, TData>) => boolean` | - | With `onRowOpen`, returns `false` for a row that opens nothing; without it every row opens. |
+| `defaultAggregations` | `DataTableAggregations` | `{}` | Sets the first aggregation of each column, uncontrolled. |
+| `aggregations` | `DataTableAggregations` | - | Sets the aggregation of each column, controlled. |
+| `onAggregationsChange` | `(aggregations: DataTableAggregations) => void` | - | Called when the user picks an aggregation, with every column's choice. |
+| `aggregationLabels` | `Partial<DataTableAggregationLabels>` | - | Replaces the menu labels: `none` (`Nenhum`), `count` (`Contagem`), `sum` (`Soma`) and `trigger` (`Calcular`). |
+| `className` | `string` | - | Adds classes to the `table`. |
+| `style` | `CSSProperties` | - | Sets styles on the `table`, after its `minWidth` when columns resize. |
+
+Also takes every prop of a `table` except `children`, passed to the `table`: name it with `aria-label` or `aria-labelledby`.
+
+`DataTableAggregations` is `Readonly<Record<string, "count" | "sum" | null>>`, keyed by column id.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"data-table"` | Selects the root |
+| `data-overflow-start` | `"true"` while content scrolls past the start edge | Shows the start fade |
+| `data-overflow-end` | `"true"` while content scrolls past the end edge | Shows the end fade |
+| `data-slot` | `"data-table-viewport"` | Selects the scrolling element |
+| `data-bordered` | present when `bordered` | Marks the table container |
+| `aria-busy` | `"true"` while `loading` | Marks the `table` busy |
+
+The header and the footer stick to the edges of the scroll area, and the vertical scrollbar runs between them. The header fill is `card` mixed with 2% black, 2% white in dark. When the columns overflow the width, a fade of `background` covers the edge the content continues past, so the overflow reads even with hidden scrollbars.
+
+### Rows
+
+Each row renders the `cell` of every visible column. A selected row carries `data-state="selected"`.
+
+With `onRowOpen`, the first cell holds a `button` stretched over the whole row, under the cells, named by `getRowOpenLabel`. The cells let a click through to it, except on what they hold that takes input: a control, a link, a label or a focusable element inside a cell keeps its click and does not open the row. The button is reachable with Tab and draws its own focus ring inside the row. Without `onRowOpen`, rows are plain, and so is a row for which `getRowCanOpen` returns `false`: no button, no `data-interactive`, its cells and selection unchanged.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-state` | `"selected"` when the row is selected | Styles a selected row |
+| `data-interactive` | present with `onRowOpen` on a row that opens | Marks a row that opens |
+| `data-slot` | `"data-table-row-trigger"` | Selects the open button of a row |
+
+With no rows, the body shows one row with `emptyMessage` across every column.
+
+### Loading rows
+
+While `loading`, the body shows `loadingCount` skeleton rows, one bar per cell. `loadingAnatomy` matches them to the loaded rows, so the table keeps its height when the data arrives:
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `cell` | `"text"` or `"control"` | `"text"` | Sets the bar of each cell: 20px for text, 24px for a control such as a select or a checkbox. |
+| `lines` | `1` or `2` | `1` | Sets two bars, a title and a subtitle, in the first column that has an accessor. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-cell` | `"text"` or `"control"` | Marks a skeleton row by its cell |
+| `data-lines` | `"1"` or `"2"` | Marks a skeleton row by its lines |
+
+### Footer and aggregations
+
+The footer renders when a column declares a `footer` or `meta.aggregations`. A column with `meta.aggregations` replaces its footer with a menu button: `Calcular` while no aggregation is set, transparent until the footer is hovered or focused, then the label and the result, such as `Soma 42 h`. The menu lists `Nenhum` and the column's aggregations. Aggregations read every row before pagination, so they cover every page: `count` is the number of rows, `sum` adds the values that are finite numbers. An aggregation the column does not list reads as none.
+
+Without rows, or while `loading`, aggregated cells are empty, and a footer with only aggregated columns is not rendered.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"data-table-aggregation"` | Selects the aggregation cell content |
+| `data-aggregation` | `"count"` or `"sum"` | Marks the chosen aggregation; absent for none |
+
+### Column resizing
+
+With `enableColumnResizing` on `useDataTable`, the table lays out with fixed widths: every visible column but the last takes its size, the last takes the remaining space, and the table is at least as wide as the sum of the sizes, so the container scrolls once they overflow it. Cells clip their content. Each header but the last, and those with `enableResizing: false`, gets a resize handle: a `separator` named `Redimensionar coluna <header>`, with its size in `aria-valuenow` and its bounds in `aria-valuemin` (`minSize`, 20 by default) and `aria-valuemax` (`maxSize`). Drag it, or focus it and press ArrowLeft or ArrowRight to change the width by 8px; a double click resets it.
+
+## useDataTable
+
+Creates the table `DataTable` reads, with selection, sorting, sizing, resizing, visibility and pagination, and keeps that state locally.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `data` | `TData[]` | required | Sets the rows, in order. |
+| `columns` | `DataTableColumnDef<TData>[]` | required | Declares the columns. |
+| `getRowId` | `(row: TData, index: number) => string` | - | Identifies a row; pass a stable key so the selection follows the record. |
+| `enableRowSelection` | `boolean` | `false` | When true, rows can be selected. |
+| `enableSorting` | `boolean` | `false` | When true, columns can be sorted; the header renderer calls `column.toggleSorting`. |
+| `enableColumnResizing` | `boolean` | `false` | When true, columns take fixed widths with a resize handle. |
+| `enablePagination` | `boolean` | `false` | When true, the table yields one page of `pageSize` rows; otherwise every row. |
+| `pageSize` | `number` | `10` | Sets the rows per page. |
+| `tableOptions` | `Partial<TableOptions<DataTableFeatures, TData>>` | - | Passes any other table option, spread last so it wins; its `initialState` seeds sorting, sizes, selection and the page. |
+
+Returns `{ table }`.
+
+## DataTableColumnMeta
+
+The `meta` of a column.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `aggregations` | `readonly ("count" \| "sum")[]` | - | Lists the aggregations the footer menu offers. |
+| `formatAggregation` | `(value: number, aggregation: "count" \| "sum") => ReactNode` | - | Formats the result; without it the number shows as is. |
+| `getAggregationValue` | `(row: TData) => number \| null \| undefined` | - | Reads the value to sum; without it the column's value. |
+| `align` | `"start"`, `"center"` or `"end"` | - | Aligns the header, the body cells, the group cells and the aggregation menu; a `flex` child of the cell is justified the same way. Without it the cells keep the table default. |
+| `label` | `string` | - | Names the column in `DataTableColumnsSubmenu`; without it the column id. |
+
+## DataTableColumnsSubmenu
+
+A submenu that shows and hides columns, for a `ViewSettingsMenu` or any `Menu`. Renders a submenu trigger with a columns icon and one checkbox item per column that can hide, which stays open on click. Renders nothing when no column can hide.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `table` | `DataTableTable<TData>` | required | Supplies the columns. |
+| `label` | `string` | `"Colunas"` | Sets the text of the submenu trigger. |
+
+## DataGridPagination
+
+Pagination for a table that paginates, shared with the Data Grid: place it below `DataTable`. See [its section in the Data Grid](?path=/docs/patterns-datagrid-api-reference--api-reference).
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `dataTableFeatures` | `constant` | The TanStack features and row models `useDataTable` registers. |
+| `DataTableProps`, `DataTableRowSkeletonAnatomy`, `DataTableColumnsSubmenuProps` | `type` | The props of the parts. |
+| `DataTableColumnDef`, `DataTableTable`, `DataTableFeatures`, `UseDataTableOptions`, `UseDataTableReturn` | `type` | The column, table and hook types. |
+| `DataTableAggregation`, `DataTableAggregations`, `DataTableAggregationLabels`, `DataTableColumnMeta` | `type` | The aggregation types. |
+
+## Accessibility and theme
+
+- Name the table with `aria-label` or `aria-labelledby`, and name each row's open button with `getRowOpenLabel`; without it every row reads `Abrir registro`.
+- Name the controls you render in cells, such as a select-all checkbox in the header and one per row.
+- The copy is Portuguese (`Abrir registro`, `Nenhum registro para exibir.`, `Calcular`, `Nenhum`, `Contagem`, `Soma`, `Colunas`, `Redimensionar coluna`).
+- The colors come from the theme tokens `background`, `card`, `border`, `muted-foreground`, `accent`, `primary` and `ring`. Measured contrast: `docs/accessibility.md`, section `DataTable`.

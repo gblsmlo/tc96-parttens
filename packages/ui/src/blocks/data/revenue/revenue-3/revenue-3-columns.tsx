@@ -8,7 +8,7 @@ import { Button } from '@tc96/ui/button'
 import { getInitials } from '@tc96/ui/helpers/initials'
 import { IconFrame } from '@tc96/ui/icon-frame'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import type { UseDataGridOptions } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import type { UseDataGridOptions } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import { cn } from '@tc96/utils'
 import type { GridFormatter } from '../../shared/grid/format'
 import {

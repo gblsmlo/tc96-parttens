@@ -98,7 +98,7 @@ function DealCard({
   onStageChange: (stage: DealStage) => void
 }>) {
   return (
-    <KanbanCard density="sm">
+    <KanbanCard>
       <KanbanCardHeader>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <KanbanCardTitle className="min-w-0 flex-1 truncate">
@@ -324,21 +324,21 @@ const meta = {
           <CollectionFrameBody aria-label="Visualização da coleção">
             <KanbanView
               columns={columns}
-              emptyColumnLabel="Nenhum negócio nesta etapa."
-              getCardLabel={(deal) => deal.company}
+              emptyGroupLabel="Nenhum negócio nesta etapa."
+              getRecordLabel={(deal) => deal.company}
               getKey={(deal) => deal.id}
               loading={loading}
-              loadingCardCount={2}
-              loadingCardLabel="Carregando negócio"
-              onMoveCard={moveDeal}
-              renderCard={(deal) => (
+              loadingCount={2}
+              loadingLabel="Carregando negócio"
+              onRecordMove={moveDeal}
+              renderRecord={(deal) => (
                 <DealCard
                   deal={deal}
                   onOwnerChange={(ownerId) => changeOwner(deal.id, ownerId)}
                   onStageChange={(stage) => changeStage(deal.id, stage)}
                 />
               )}
-              renderColumnTitle={(column) => (
+              renderGroupTitle={(column) => (
                 <>
                   {column.title}{' '}
                   <span className="font-normal text-muted-foreground tabular-nums">

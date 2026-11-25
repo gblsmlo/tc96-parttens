@@ -2,12 +2,12 @@
 
 import { IdentificationBadgeIcon, UsersThreeIcon } from '@phosphor-icons/react'
 import { MenuCheckboxItem, MenuSeparator } from '@tc96/ui/menu'
-import { DataGridDensitySubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-density-submenu'
-import { DataGridSortSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-sort-submenu'
-import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-columns-submenu'
-import type { DataTableTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import type { DataTableTableMeta } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-types'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
+import { DataGridDensitySubmenu } from '@tc96/ui/patterns/data-grid/components/data-grid-density-submenu'
+import { DataGridSortSubmenu } from '@tc96/ui/patterns/data-grid/components/data-grid-sort-submenu'
+import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/data-table/data-table-columns-submenu'
+import type { DataTableTable } from '@tc96/ui/patterns/data-table/data-table-features'
+import type { DataTableTableMeta } from '@tc96/ui/patterns/data-table/data-table-types'
 import {
   CollectionToolbarDescription,
   CollectionToolbarHeading,

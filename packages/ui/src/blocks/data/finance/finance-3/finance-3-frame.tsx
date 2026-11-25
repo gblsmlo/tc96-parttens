@@ -5,8 +5,8 @@ import {
   ActionBar,
   type ActionBarGroup,
 } from '@tc96/ui/patterns/action-bar/components/action-bar'
-import type { DataTableTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
 import { CollectionPagination } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
+import type { DataTableTable } from '@tc96/ui/patterns/data-table/data-table-features'
 import { type ReactNode, useMemo } from 'react'
 import {
   DataCollection,

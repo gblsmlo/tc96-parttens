@@ -164,8 +164,8 @@ export function CompaniesTemplate({
         collection={createCompanyCollection(companies)}
         emptyMessage="Nenhuma empresa cadastrada."
         loading={loading}
-        loadingRecordCount={8}
-        loadingRecordLabel="Carregando empresa"
+        loadingCount={8}
+        loadingLabel="Carregando empresa"
         renderRecord={(company) => <CompanyCard company={company} />}
       />
     </div>

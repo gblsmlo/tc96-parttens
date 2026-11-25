@@ -1,8 +1,8 @@
 import { DotsThreeIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import type { UseDataGridOptions } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
-import { createSelectColumn } from '@tc96/ui/patterns/collection/layouts/data-grid/lib/create-select-column'
+import type { UseDataGridOptions } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
+import { createSelectColumn } from '@tc96/ui/patterns/data-grid/lib/create-select-column'
 import type { GridFormatter } from '../../shared/grid/format'
 import { dataSelectOptions } from '../../shared/properties/data-properties'
 import {

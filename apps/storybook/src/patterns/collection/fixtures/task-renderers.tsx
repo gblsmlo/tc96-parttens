@@ -21,6 +21,7 @@ import {
   CalendarEventChipTime,
   CalendarEventChipTitle,
   type CalendarRecordRenderContext,
+  type CollectionDensity,
   KanbanCard,
   KanbanCardBody,
   KanbanCardControl,
@@ -30,12 +31,11 @@ import {
   KanbanCardTitle,
   ListRow,
   ListRowBody,
-  type ListRowDensity,
   ListRowDescription,
   ListRowField,
   ListRowLeading,
+  ListRowOpenTrigger,
   ListRowTitle,
-  ListRowTitleTrigger,
   ListRowTrailing,
 } from '@tc96/ui/patterns'
 import { Text } from '@tc96/ui/text'
@@ -77,7 +77,7 @@ export function useTasks(initial: readonly Task[] = initialTasks) {
 export const renderTaskListRow =
   (
     updateTask: UpdateTask,
-    density: ListRowDensity = 'comfortable',
+    density: CollectionDensity = 'short',
     onOpen: (task: Task) => void = () => undefined,
   ) =>
   (task: Task) => {
@@ -96,9 +96,9 @@ export const renderTaskListRow =
         ) : null}
         <ListRowBody>
           <ListRowTitle>
-            <ListRowTitleTrigger onClick={() => onOpen(task)}>
+            <ListRowOpenTrigger onClick={() => onOpen(task)}>
               {task.title}
-            </ListRowTitleTrigger>
+            </ListRowOpenTrigger>
           </ListRowTitle>
           <ListRowDescription>
             <DescriptionSegments segments={[task.id, task.description]} />
@@ -119,7 +119,7 @@ export const renderTaskListRow =
 export const renderTaskKanbanCard =
   (updateTask: UpdateTask) => (task: Task) => {
     return (
-      <KanbanCard density="sm" key={task.id} variant="interactive">
+      <KanbanCard key={task.id} interactive>
         <KanbanCardHeader>
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <KanbanCardTitle className="min-w-0 flex-1 truncate">
@@ -226,7 +226,7 @@ export const createTaskCalendarProps = (updateTask: UpdateTask) => ({
     isAllDay: task.isAllDay ?? false,
     start: new Date(task.start),
   }),
-  loadingRecordLabel: 'Carregando tarefa',
+  loadingLabel: 'Carregando tarefa',
   now: NOW,
   onRecordReschedule: ({
     end,

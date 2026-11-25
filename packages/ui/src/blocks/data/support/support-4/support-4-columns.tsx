@@ -1,5 +1,5 @@
-import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import { createDataTableRowDragColumn } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-row-drag-column'
+import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
+import { createDataTableRowDragColumn } from '@tc96/ui/patterns/data-table/data-table-row-drag-column'
 import type { TableFormatter } from '../../shared/table/format'
 import {
   ClauseCell,
