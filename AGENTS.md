@@ -131,6 +131,10 @@ Before reporting a change as done, run Biome on the files you touched, `typechec
 - A PR closes the issues it resolves with `Closes #N` in its body, one keyword per issue (`Closes #1, #2` closes only #1). Issues opened while working on it go under References. After `gh pr create`, confirm with `gh pr view <n> --json closingIssuesReferences`.
 - Do not commit, push or publish unless asked. Before any npm publish, stop and ask the user to run `npm login`.
 
+## CI cache forum (temporary)
+
+Since 2026-11-25, while the CI cache is evaluated, inputs and reports about it go to the forum issue #527 as comments (`gh issue comment 527 --body-file <file>`), never as files in the repo. `storybook-release.yml` posts each run's cache report there through its `cache-report` job. Remove this section when #527 is closed.
+
 ## Specs
 
 Spec files live in `.specs/`, written as `Draft` and approved by the owner in the conversation (`WF-SPEC-06`). Decided on 2026-10-11.
