@@ -7,6 +7,7 @@ import {
   launchBriefStatus,
   launchBriefTitle,
 } from '../fixtures/rich-text-editor-1.ts'
+import { DocumentPage } from './rich-text-editor-1-layouts.tsx'
 
 const meta = {
   args: {
@@ -27,6 +28,7 @@ const meta = {
     ),
   ],
   parameters: { layout: 'fullscreen' },
+  render: (args) => <DocumentPage {...args} />,
   tags: ['!autodocs', '!dev'],
   title: 'Blocks/Application/Rich Text Editor/RichTextEditor1/API Reference',
 } satisfies Meta<typeof RichTextEditor1>

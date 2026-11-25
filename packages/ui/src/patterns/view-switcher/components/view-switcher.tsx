@@ -143,6 +143,8 @@ export function ViewSwitcherItems({
 }
 
 export interface ViewSwitcherItemProps {
+  'aria-label'?: string
+  count?: number | string
   icon?: ReactNode
   label: string
   onSelect: () => void
@@ -152,6 +154,8 @@ export interface ViewSwitcherItemProps {
 }
 
 export function ViewSwitcherItem({
+  'aria-label': ariaLabel,
+  count,
   icon,
   label,
   onSelect,
@@ -172,6 +176,7 @@ export function ViewSwitcherItem({
     >
       <PopoverClose
         aria-current={selected ? 'true' : undefined}
+        aria-label={ariaLabel}
         onClick={onSelect}
         render={
           <Button
@@ -184,6 +189,15 @@ export function ViewSwitcherItem({
       >
         {icon ? <span className="shrink-0">{icon}</span> : null}
         <span className="truncate">{label}</span>
+        {count === undefined ? null : (
+          <span
+            aria-hidden="true"
+            className="ms-auto shrink-0 text-muted-foreground text-xs tabular-nums"
+            data-slot="view-switcher-item-count"
+          >
+            {count}
+          </span>
+        )}
       </PopoverClose>
       {options ? (
         <Menu

@@ -1,5 +1,5 @@
 import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import { LegalTitleCell } from '../shared/legal-record-parts'
+import { DataCollectionTitleCell } from '../../shared/collection/data-collection-record-parts'
 import {
   type Legal2FieldContext,
   Legal2OwnerField,
@@ -25,7 +25,7 @@ export function createLegal2Columns(
       ...column('contract'),
       accessorFn: (item) => `${item.title} ${item.code}`,
       cell: ({ row }) => (
-        <LegalTitleCell
+        <DataCollectionTitleCell
           caption={[row.original.code]}
           title={row.original.title}
         />

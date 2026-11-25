@@ -38,6 +38,7 @@ export interface ListViewProps<TRecord> {
   getGroupActions?: (
     group: CollectionGroup<TRecord>,
   ) => ListGroupActions | undefined
+  getGroupToggleLabel?: (group: string, collapsed: boolean) => string
   /** `null` lê a coleção como uma lista plana, sem cabeçalho nem colapso. */
   grouping: CollectionGroupingId | null
   loading?: boolean
@@ -60,6 +61,7 @@ export function ListView<TRecord>({
   emptyGroupLabel = 'No items in this group.',
   emptyMessage = 'No items to show.',
   getGroupActions,
+  getGroupToggleLabel,
   grouping,
   loading = false,
   loadingRecordAnatomy,
@@ -170,6 +172,7 @@ export function ListView<TRecord>({
                     ? emptyGroupLabel(group)
                     : emptyGroupLabel
                 }
+                {...(getGroupToggleLabel ? { getGroupToggleLabel } : {})}
                 getKey={collection.getKey}
                 group={group}
                 key={group.id}

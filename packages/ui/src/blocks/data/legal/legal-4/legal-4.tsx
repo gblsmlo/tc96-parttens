@@ -2,15 +2,18 @@
 
 import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
 import { useMemo } from 'react'
-import { defaultLegalLocale } from '../shared/labels'
 import {
-  LegalCollection,
-  type LegalCollectionDefinition,
-} from '../shared/legal-collection'
-import { LegalFrame } from '../shared/legal-frame'
-import { legalLoadState } from '../shared/legal-load-state'
-import { LegalToolbar } from '../shared/legal-toolbar'
-import { useControllable, useStableHandler } from '../shared/use-controllable'
+  DataCollection,
+  type DataCollectionDefinition,
+} from '../../shared/collection/data-collection'
+import { DataCollectionFrame } from '../../shared/collection/data-collection-frame'
+import { dataCollectionLoadState } from '../../shared/collection/data-collection-load-state'
+import { DataCollectionToolbar } from '../../shared/collection/data-collection-toolbar'
+import { defaultDataCollectionLocale } from '../../shared/collection/labels'
+import {
+  useControllable,
+  useStableHandler,
+} from '../../shared/collection/use-controllable'
 import { resolveLegal4Labels } from './labels'
 import { createLegal4Columns } from './legal-4-columns'
 import { createLegal4Options, type Legal4FieldContext } from './legal-4-fields'
@@ -33,7 +36,7 @@ export function Legal4({
   clients,
   error,
   labels: labelsProp,
-  locale = defaultLegalLocale,
+  locale = defaultDataCollectionLocale,
   mode: modeProp,
   onCreate,
   onExport,
@@ -97,7 +100,7 @@ export function Legal4({
     [clients, statusFilter],
   )
 
-  const collection = useMemo<LegalCollectionDefinition<Legal4Client>>(
+  const collection = useMemo<DataCollectionDefinition<Legal4Client>>(
     () => ({
       getKey: (item) => item.id,
       getLabel: (item) => item.name,
@@ -114,7 +117,7 @@ export function Legal4({
     getRowId: (item) => item.id,
   })
 
-  const loadState = legalLoadState({
+  const loadState = dataCollectionLoadState({
     error,
     labels,
     onRetry,
@@ -123,12 +126,12 @@ export function Legal4({
   })
 
   return (
-    <LegalFrame
+    <DataCollectionFrame
       className={className}
       data-block="legal-4"
       title={labels.title}
       toolbar={
-        <LegalToolbar<Legal4Mode, Legal4Status>
+        <DataCollectionToolbar<Legal4Mode, Legal4Status>
           description={labels.summary(
             visibleClients.length,
             visibleClients.filter((item) => item.status === 'active').length,
@@ -149,7 +152,7 @@ export function Legal4({
       }
     >
       {loadState ?? (
-        <LegalCollection<Legal4Client>
+        <DataCollection<Legal4Client>
           collection={collection}
           emptyMessage={labels.empty}
           getRowOpenLabel={(item) => labels.openClient(item.name)}
@@ -160,6 +163,6 @@ export function Legal4({
           table={table}
         />
       )}
-    </LegalFrame>
+    </DataCollectionFrame>
   )
 }

@@ -1,7 +1,12 @@
-import { RichTextEditor5 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-5'
+import { Navbar1 } from '@tc96/ui/blocks/application/navbar/navbar-1'
+import {
+  RichTextEditor5,
+  type RichTextEditor5Props,
+} from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-5'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   rolloutAuthors,
+  rolloutBreadcrumbs,
   rolloutTime,
   rolloutValue,
 } from '../fixtures/rich-text-editor-5.ts'
@@ -12,6 +17,15 @@ export const richTextEditor5Handlers = {
   onDecision: fn(),
 }
 
+export const PlanPage = (props: Readonly<RichTextEditor5Props>) => (
+  <RichTextEditor5
+    {...props}
+    navbar={({ status }) => (
+      <Navbar1 breadcrumbs={rolloutBreadcrumbs} status={status} />
+    )}
+  />
+)
+
 export const ComposedRichTextEditor5 = ({
   authorId,
   stepDelay,
@@ -20,7 +34,7 @@ export const ComposedRichTextEditor5 = ({
     rolloutAuthors.find((person) => person.id === authorId) ?? rolloutAuthors[0]
   if (!author) return null
   return (
-    <RichTextEditor5
+    <PlanPage
       author={author}
       defaultValue={rolloutValue()}
       formatTime={rolloutTime}
@@ -62,10 +76,25 @@ export const editorOf = (canvasElement: HTMLElement) =>
 
 export const dockOf = (canvasElement: HTMLElement) =>
   within(
-    within(canvasElement).getByRole('region', {
+    within(canvasElement).getByRole('complementary', {
       name: 'Assistente de escrita',
     }),
   )
+
+export const statusOf = (canvasElement: HTMLElement) => {
+  const status = canvasElement.querySelector<HTMLElement>(
+    '[data-slot="assistant-status"]',
+  )
+  if (!status) throw new Error('No assistant status')
+  return status
+}
+
+export async function openTaskMenu(canvasElement: HTMLElement) {
+  await userEvent.click(
+    dockOf(canvasElement).getByRole('button', { name: 'Escolher uma tarefa' }),
+  )
+  return within(await screen.findByRole('listbox'))
+}
 
 export const reviewItems = (root: HTMLElement) =>
   Array.from(
@@ -85,10 +114,15 @@ export const topBlocks = (canvasElement: HTMLElement) =>
   )
 
 export async function runTask(canvasElement: HTMLElement, name: string) {
-  const tasks = within(
-    dockOf(canvasElement).getByRole('group', { name: 'Tarefas do assistente' }),
-  )
-  await userEvent.click(tasks.getByRole('button', { name }))
+  const group = dockOf(canvasElement).queryByRole('group', {
+    name: 'Tarefas do assistente',
+  })
+  if (group) {
+    await userEvent.click(within(group).getByRole('button', { name }))
+    return
+  }
+  const menu = await openTaskMenu(canvasElement)
+  await userEvent.click(menu.getByRole('option', { name }))
 }
 
 export async function waitForFinished(canvasElement: HTMLElement) {

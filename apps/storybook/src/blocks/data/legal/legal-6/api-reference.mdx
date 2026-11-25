@@ -1,0 +1,93 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Legal6
+
+The deadline queues of a law firm (Jurídico > Prazos): one table of deadlines read through eight fixed queues, with the internal and final dates, the business days left and, on Propostos, the decision of a manager. Reach for it on a deadlines screen whose list is read from the server one queue at a time. Install it with `npx @tc96/cli add legal-6`.
+
+The block is controlled and renders what it gets. It does not filter, sort or page `deadlines`: the queue, the filters, the order and the cursor are value and callback pairs, and the consumer reads the matching records on the server. Without a value, `view`, `sort`, `ownerFilter` and `kindFilter` are kept locally so the controls still answer. The days-left text and its tone arrive ready in `daysLeft`; the block never counts business days. Data interna and Data fatal read `dd/mm/aaaa` by default, as lemind shows them; `dateFormat="short"` shows the short form of `DateProperty` (`24 de nov.`).
+
+The toolbar `left` holds the view switcher with the queues, always in the order Minha fila, Atrasados, Hoje e amanhã, Até 5 dias úteis, Sem responsável, Todos, Propostos and Aguardando baixa, so the page has no `h2`; with `counts`, each queue in the popup shows its count as its own element and the trigger shows only the name. With `savedViews` (or `savedViewsLoading`), the popup lists Minhas visões after the queues; the trigger shows the active saved view, marked as changed with `savedViewModified`, and each saved view and footer action renders only with its callback (select, Atualizar, Salvar visão atual…, Renomear, Duplicar, Excluir). The block never applies a saved view: `onSavedViewSelect` reports the id and the consumer sets the queue, filters and order it stores; picking a queue calls `onViewChange`, and the consumer clears `savedViewId`. The name and delete dialogs are the consumer's. Exibição holds Ordenar (Data fatal or Data interna), Filtros (Responsável and Tipo), Limpar filtros and, with `onSavePreference`, Salvar preferência; while `ownersLoading` or `kindsLoading` is true, that filter's submenu shows skeleton rows (`aria-busy`). Novo prazo renders with `onCreate`. There are no mode tabs: the layout is the collection Data Table. The Decisão column renders only on `proposed` and only with `onConfirm` or `onReject`; its buttons call the callback with the deadline id and never open the row, and the dialogs they lead to belong to the consumer. The footer loads more by cursor with Carregar mais. An empty queue shows its own message, or the filtered message when `filtered` is true, and a link to the next queue that `counts` reports with items.
+
+The other pages of `Blocks/Data/Legal/Legal6`: [Playground](?path=/story/blocks-data-legal-legal6-playground--playground), [Layouts](?path=/story/blocks-data-legal-legal6-layouts--default), [Behavior](?path=/story/blocks-data-legal-legal6-behavior--the-view-switcher-replaces-the-heading) and [Usages](?path=/story/blocks-data-legal-legal6-usages--loaded).
+
+## Import
+
+```tsx
+import { Legal6 } from '@tc96/ui/blocks/data/legal/legal-6'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Legal6
+  counts={counts}
+  deadlines={page.items}
+  hasMore={page.nextCursor !== null}
+  kinds={kinds}
+  onLoadMore={loadMore}
+  onOpen={openDeadline}
+  onViewChange={setView}
+  owners={owners}
+  view={view}
+/>
+```
+
+## Legal6
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `deadlines` | `Legal6Deadline[]` | required | The deadlines of the active queue, already filtered and ordered. Keep the array stable between renders. |
+| `view`, `onViewChange` | `Legal6View`, `(view) => void` | the first of `views` | The active queue and the callback of the view switcher and of the next-queue link. |
+| `views` | `readonly Legal6View[]` | the eight queues | The queues this member may see. The fixed order is kept whatever the order of the array. |
+| `counts` | `Partial<Record<Legal6View, number>>` | - | The count shown beside each queue in the switcher popup, with the item named by `labels.viewCountName` (`Atrasados, 1 prazo`); the trigger shows only the queue name. It also picks the next queue with items when the list is empty. |
+| `sort`, `onSortChange` | `'fatal' \| 'internal'`, `(sort) => void` | `'fatal'` | The order chosen in Ordenar. The block does not sort. |
+| `ownerFilter`, `onOwnerFilterChange` | `string \| null`, `(ownerId) => void` | `null` | The Responsável filter, with the options of `owners`. |
+| `kindFilter`, `onKindFilterChange` | `string \| null`, `(kindId) => void` | `null` | The Tipo filter, with the options of `kinds`. |
+| `owners` | `Legal6Person[]` | `[]` | The people of the Responsável column and filter. |
+| `kinds` | `Legal6Kind[]` | `[]` | The deadline kinds of the workspace, as `{ id, label }`. |
+| `ownersLoading`, `kindsLoading` | `boolean` | `false` | Show skeleton rows in the Responsável or Tipo submenu while that catalog loads. |
+| `savedViews` | `{ id: string; label: string; icon?: ReactNode }[]` | - | The member's saved views, listed under Minhas visões. |
+| `savedViewId` | `string \| null` | - | The active saved view; the trigger shows its label and no queue is selected. |
+| `savedViewModified` | `boolean` | `false` | Marks the active saved view as changed and offers Atualizar. |
+| `savedViewsLoading`, `savedViewsPending` | `boolean` | `false` | Skeleton rows under Minhas visões; Duplicar and Atualizar disabled while a write runs. |
+| `onSavedViewSelect`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | `(savedViewId: string) => void` | - | Select a saved view, or render that item of its options menu. |
+| `onSavedViewCreate`, `onSavedViewUpdate` | `() => void` | - | Render Salvar visão atual… and, on a changed active view, Atualizar. |
+| `onSavePreference` | `() => void` | - | Renders Salvar preferência at the end of Exibição. |
+| `dateFormat` | `'numeric' \| 'short'` | `'numeric'` | How Data interna and Data fatal read: `dd/mm/aaaa`, or the short form of `DateProperty`. |
+| `filtered` | `boolean` | an owner or kind filter is set | Shows `labels.emptyFiltered` in place of the queue message when the list is empty. |
+| `onOpen` | `(deadlineId: string) => void` | - | Makes the row open the deadline, named by `labels.openDeadline`. |
+| `onConfirm`, `onReject` | `(deadlineId: string) => void` | - | Render Confirmar and Rejeitar in the Decisão column of the `proposed` queue. |
+| `onCreate` | `() => void` | - | Renders Novo prazo. |
+| `hasMore`, `onLoadMore` | `boolean`, `() => void` | `false`, - | Together render Carregar mais under the table. |
+| `loadingMore` | `boolean` | `false` | Disables Carregar mais while the next page is read. |
+| `loadMoreError` | `boolean` | `false` | Renders `labels.loadMoreError` with `role="alert"`. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. The view switcher stays while pending. |
+| `labels` | `Legal6LabelsOverride` | pt-BR texts | Overrides the texts; `columns`, `views`, `emptyViews`, `savedViews` and `sorts` merge key by key. |
+| `locale`, `timeZone` | `string` | `"pt-BR"`, `"America/Sao_Paulo"` | Format the dates. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Legal6Deadline
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `label` | `string` | The identity and the Prazo cell. |
+| `kind` | `string \| null` | The ready kind name, shown under the label when it differs from it. |
+| `lawsuitTitle` | `string` | The Processo cell. |
+| `clients` | `string[]` | The Cliente cell, joined by `labels.clientList`. |
+| `internalDate`, `fatalDate` | `string` | A calendar day (`YYYY-MM-DD`, shown as that day) or an ISO instant. |
+| `daysLeft` | `{ label: string; tone: 'danger' \| 'warning' \| 'neutral' }` | The ready Faltam text and its tone. |
+| `ownerId` | `string \| null` | One of `owners`; `null` shows `labels.unassigned`. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Legal6` | `component` | The deadline queues. |
+| `legal6Views` | `const` | The eight queues in their fixed order. |
+| `legal6Sorts` | `const` | `['fatal', 'internal']`. |
+| `Legal6Props`, `Legal6Deadline`, `Legal6DaysLeft`, `Legal6Kind`, `Legal6Person`, `Legal6View`, `Legal6Sort`, `Legal6Tone`, `Legal6Counts`, `Legal6ColumnId`, `Legal6Labels`, `Legal6LabelsOverride` | `type` | The props, the data and the labels. |

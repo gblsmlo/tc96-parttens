@@ -12,6 +12,7 @@ export type {
   RichTextEditor4Labels,
   RichTextEditor4LabelsInput,
   RichTextEditor4Message,
+  RichTextEditor4NavbarContext,
   RichTextEditor4Props,
   RichTextEditor4Room,
   RichTextEditor4Status,

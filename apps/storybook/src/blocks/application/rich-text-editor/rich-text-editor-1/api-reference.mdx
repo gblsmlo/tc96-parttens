@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # RichTextEditor1
 
-A document editor inside a frame: title, description and status, a fixed formatting toolbar, a scrolling body and a footer with live counts and a keyboard shortcuts popover. Reach for it where people write long-form text, such as a brief, a proposal or meeting notes. Install it with `npx @tc96/cli add rich-text-editor-1`.
+A plain document page with no frame, border or shadow: a fixed formatting toolbar above the title and description, the body and a footer with live counts and a keyboard shortcuts popover. The status badge and the document menu (edit or view only, copy, clear) go to the page header, which comes from the consumer through `navbar`, composed with `Navbar1` in the stories. Reach for it where people write long-form text, such as a brief, a proposal or meeting notes. Install it with `npx @tc96/cli add rich-text-editor-1`.
 
 The block is built on the `rich-text-editor` pattern (Plate). It keeps the document inside the editor, never fetches and never persists: the app receives `onChange`, `onSave` (debounced), `onCopy` and `onClear`, and decides what to do with them. It mounts its own `ToastProvider` for the copy and undo toasts.
 
@@ -21,12 +21,15 @@ The same path exports the types listed under Exports.
 
 ## Anatomy
 
-The header with title, description and status; the document menu; the toolbar; the body with a launch brief; the footer with counts and the Atalhos popover.
+The `Navbar1` header with the status badge and the document menu; the toolbar; the title and description; the body with a launch brief; the footer with counts and the Atalhos popover.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
 <RichTextEditor1
+  navbar={({ menuItems, status }) => (
+    <Navbar1 breadcrumbs={breadcrumbs} menu={menuItems} status={status} />
+  )}
   defaultTitle="Briefing de lançamento"
   defaultValue={brief}
   description="Plano de comunicação para o lançamento de março."
@@ -43,7 +46,7 @@ The header with title, description and status; the document menu; the toolbar; t
 | `defaultValue` | `RichTextValue` | empty document | The initial document; read once, the editor owns it afterwards. |
 | `defaultTitle` | `string` | `""` | The initial title; read once. |
 | `description` | `string` | - | A line under the title. |
-| `status` | `string` | - | Text of the badge beside the title. |
+| `status` | `string` | - | Text of the badge handed to `navbar` as `status`. |
 | `readOnly` | `boolean` | - | Controlled view-only mode. When set, the menu only reports through `onReadOnlyChange`. |
 | `defaultReadOnly` | `boolean` | `false` | Initial mode when `readOnly` is not passed. |
 | `onReadOnlyChange` | `(readOnly: boolean) => void` | - | Called when the menu picks Editar or Somente leitura. |
@@ -53,14 +56,15 @@ The header with title, description and status; the document menu; the toolbar; t
 | `onTitleChange` | `(title: string) => void` | - | Called as the title is typed. |
 | `onCopy` | `(format: 'html' \| 'text', content: string) => void` | - | Called by the copy items with the HTML fragment or the plain text. The app writes it to the clipboard. |
 | `onClear` | `() => void` | - | Called after the user confirms clearing; the block restores the text itself when the toast action is used. |
+| `navbar` | `ReactNode \| ((context: RichTextEditor1NavbarContext) => ReactNode)` | - | The page header, rendered above the toolbar. As a function it receives `status` (the badge, or `null`), `menuItems` (the document menu items, for the `menu` of a Navbar1) and `readOnly`. Without a navbar the document menu is not rendered. |
 | `labels` | `Partial<RichTextEditor1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
-| `className` | `string` | - | Merged into the frame. |
+| `className` | `string` | - | Merged into the root classes. |
 
 ## Labels
 
 | Key | Type | Default |
 | --- | --- | --- |
-| `toolbar`, `blockType`, `document`, `documentMenu`, `titleLabel`, `emptyTitle`, `placeholder` | `string` | The accessible names and the placeholder. |
+| `toolbar`, `blockType`, `document`, `titleLabel`, `emptyTitle`, `placeholder` | `string` | The accessible names and the placeholder. |
 | `blocks`, `marks`, `align`, `history`, `link` | `object` | Names of the toolbar buttons, grouped as in the toolbar. |
 | `bulletList`, `numberedList`, `taskList`, `quote`, `codeBlock`, `divider` | `string` | Block buttons. |
 | `editMode`, `viewMode` | `string` | `"Editar"` and `"Somente leitura"` in the menu. |
@@ -78,6 +82,7 @@ The header with title, description and status; the document menu; the toolbar; t
 | `RichTextEditor1Labels` | `type` | The keys of `labels`. |
 | `RichTextEditor1CopyFormat` | `type` | `'html' \| 'text'`. |
 | `RichTextEditor1SaveState` | `type` | `'saved' \| 'unsaved'`. |
+| `RichTextEditor1NavbarContext` | `type` | The argument of `navbar` as a function. |
 | `RichTextEditor1Shortcut` | `type` | An entry of the shortcut list. |
 | `RichTextEditor1MarkdownRule` | `type` | An entry of the markdown rules. |
 
@@ -88,4 +93,5 @@ The header with title, description and status; the document menu; the toolbar; t
 - The counts are plain text and are not announced on every keystroke.
 - The shortcuts popover opens from a button and closes with Escape; clearing asks for confirmation in an alert dialog.
 - Buttons use the `sm` and `icon-sm` sizes.
-- The block carries tokens only: no color, radius or shadow of its own beyond the COSS frame.
+- The block carries tokens only: no color, border, radius or shadow of its own. The title area is a `div`, so the page keeps one `banner`, the navbar's.
+- The document menu trigger belongs to the navbar (`Mais ações` in Navbar1).

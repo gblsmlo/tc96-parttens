@@ -1,5 +1,5 @@
 import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import { LegalTitleCell } from '../shared/legal-record-parts'
+import { DataCollectionTitleCell } from '../../shared/collection/data-collection-record-parts'
 import {
   Legal3DueField,
   type Legal3FieldContext,
@@ -24,7 +24,7 @@ export function createLegal3Columns(
       ...column('deadline'),
       accessorFn: (item) => item.title,
       cell: ({ row }) => (
-        <LegalTitleCell
+        <DataCollectionTitleCell
           caption={[labels.kinds[row.original.kind]]}
           title={row.original.title}
         />
@@ -35,7 +35,7 @@ export function createLegal3Columns(
       ...column('case'),
       accessorFn: (item) => `${item.caseTitle} ${item.caseNumber}`,
       cell: ({ row }) => (
-        <LegalTitleCell
+        <DataCollectionTitleCell
           caption={[row.original.caseNumber]}
           title={row.original.caseTitle}
         />

@@ -1,11 +1,11 @@
 import type {
-  LegalFormatProps,
-  LegalLoadLabels,
-  LegalLoadProps,
-  LegalModeLabels,
-  LegalPerson,
-  LegalToolbarLabels,
-} from '../shared/types'
+  DataCollectionFormatProps,
+  DataCollectionLoadLabels,
+  DataCollectionLoadProps,
+  DataCollectionModeLabels,
+  DataCollectionPerson,
+  DataCollectionToolbarLabels,
+} from '../../shared/collection/types'
 
 export type Legal4Mode = 'list' | 'table'
 
@@ -15,7 +15,7 @@ export type Legal4Queue = 'billing' | 'onboarding' | 'relationship' | 'service'
 
 export type Legal4Status = 'active' | 'defaulting' | 'inactive' | 'prospect'
 
-export type Legal4Person = LegalPerson
+export type Legal4Person = DataCollectionPerson
 
 export interface Legal4Contact {
   email: string
@@ -45,13 +45,15 @@ export type Legal4ColumnId =
   | 'since'
   | 'status'
 
-export interface Legal4Labels extends LegalLoadLabels, LegalToolbarLabels {
+export interface Legal4Labels
+  extends DataCollectionLoadLabels,
+    DataCollectionToolbarLabels {
   activeCases: (count: number) => string
   columns: Record<Legal4ColumnId, string>
   contractCount: (count: number) => string
   empty: string
   kinds: Record<Legal4Kind, string>
-  modes: LegalModeLabels
+  modes: DataCollectionModeLabels
   noContact: string
   noDate: string
   openClient: (name: string) => string
@@ -71,7 +73,9 @@ export type Legal4LabelsOverride = Partial<
   statuses?: Partial<Legal4Labels['statuses']>
 }
 
-export interface Legal4Props extends LegalFormatProps, LegalLoadProps {
+export interface Legal4Props
+  extends DataCollectionFormatProps,
+    DataCollectionLoadProps {
   className?: string
   clients: Legal4Client[]
   labels?: Legal4LabelsOverride

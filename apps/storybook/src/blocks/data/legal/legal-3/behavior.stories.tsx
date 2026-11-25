@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Legal3 } from '@tc96/ui/blocks/data/legal/legal-3'
-import { expect, fn, screen, userEvent, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { deadlines, owners } from '../fixtures/legal-3.ts'
 import { type Legal3Controls, legal3ControlArgs } from './legal-3-controls.ts'
 import { ComposedLegal3 } from './legal-3-layouts.tsx'
@@ -65,6 +65,7 @@ const rowOf = (canvasElement: HTMLElement, title: string) =>
 const pick = async (trigger: HTMLElement, option: string) => {
   await userEvent.click(trigger)
   await userEvent.click(await screen.findByRole('option', { name: option }))
+  await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
 }
 
 export const TheHeadingNamesTheSection: Story = {

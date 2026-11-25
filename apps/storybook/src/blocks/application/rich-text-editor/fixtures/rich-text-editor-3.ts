@@ -115,3 +115,9 @@ export function contractValue(changes = redlineChangeCount): RichTextValue {
 }
 
 export const cleanContractValue = (): RichTextValue => contractValue(0)
+
+export const contractBreadcrumbs = [
+  { href: '/contratos', label: 'Contratos' },
+  { href: '/contratos/fornecedores', label: 'Fornecedores' },
+  { label: 'Prestação de serviços' },
+]

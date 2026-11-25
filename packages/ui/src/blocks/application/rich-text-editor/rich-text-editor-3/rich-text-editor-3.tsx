@@ -1,17 +1,11 @@
 'use client'
 
-import {
-  CaretDownIcon,
-  CaretUpIcon,
-  ExportIcon,
-  ListMagnifyingGlassIcon,
-} from '@phosphor-icons/react'
+import { ListMagnifyingGlassIcon } from '@phosphor-icons/react'
 import {
   CodePlugin,
   HighlightPlugin,
   StrikethroughPlugin,
 } from '@platejs/basic-nodes/react'
-import { SlashPlugin } from '@platejs/slash-command/react'
 import {
   AlertDialog,
   AlertDialogClose,
@@ -24,7 +18,7 @@ import {
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
 import { useMediaQuery } from '@tc96/ui/hooks/use-media-query'
-import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+import { MenuItem } from '@tc96/ui/menu'
 import {
   RichTextEditor,
   type RichTextValue,
@@ -38,7 +32,6 @@ import {
   SheetPopup,
   SheetTitle,
 } from '@tc96/ui/sheet'
-import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
 import { cn } from '@tc96/utils'
 import { useMemo, useState } from 'react'
 import {
@@ -58,14 +51,15 @@ import {
   useSuggestions,
 } from '../shared/suggestions'
 import { defaultRichTextEditor3Labels } from './labels'
-import { RedlineReviewPanel, RedlineToolbar } from './redline-parts'
+import { RedlineReviewPanel } from './redline-parts'
 import type {
   RichTextEditor3ExportFormat,
   RichTextEditor3Labels,
+  RichTextEditor3NavbarContext,
   RichTextEditor3Props,
 } from './types'
 
-const views: readonly SuggestionView[] = ['all', 'final', 'original']
+const floatingMarks = ['bold', 'italic', 'underline'] as const
 
 export function RichTextEditor3({
   author,
@@ -74,16 +68,15 @@ export function RichTextEditor3({
   defaultValue,
   formatTime,
   labels: labelsProp,
+  navbar,
   onChange,
   onDecision,
   onExport,
-  title,
 }: Readonly<RichTextEditor3Props>) {
   const labels: RichTextEditor3Labels = {
     ...defaultRichTextEditor3Labels,
     ...labelsProp,
     blocks: { ...defaultRichTextEditor3Labels.blocks, ...labelsProp?.blocks },
-    marks: { ...defaultRichTextEditor3Labels.marks, ...labelsProp?.marks },
     review: {
       ...defaultRichTextEditor3Labels.review,
       ...labelsProp?.review,
@@ -105,7 +98,6 @@ export function RichTextEditor3({
         StrikethroughPlugin.configure({ enabled: false }),
         CodePlugin.configure({ enabled: false }),
         HighlightPlugin.configure({ enabled: false }),
-        SlashPlugin.configure({ enabled: false }),
       ],
     },
   })
@@ -172,15 +164,48 @@ export function RichTextEditor3({
       onReject={(id) => decide(id, 'reject')}
       onRejectAll={() => setConfirm('reject')}
       onSelect={select}
+      onStep={step}
+      onViewChange={(next: SuggestionView) => setSuggestionView(editor, next)}
       showTitle={showTitle}
+      view={view}
     />
   )
 
-  const viewLabel: Record<SuggestionView, string> = {
-    all: labels.viewAll,
-    final: labels.viewFinal,
-    original: labels.viewOriginal,
+  const context: RichTextEditor3NavbarContext = {
+    count: changes.length,
+    menuItems: (
+      <>
+        <MenuItem onClick={() => exportAs('redline-html')}>
+          {labels.exportHtml}
+        </MenuItem>
+        <MenuItem onClick={() => exportAs('final-text')}>
+          {labels.exportFinal}
+        </MenuItem>
+        <MenuItem onClick={() => exportAs('original-text')}>
+          {labels.exportOriginal}
+        </MenuItem>
+      </>
+    ),
+    status: (
+      <>
+        <Badge data-slot="redline-count" variant="secondary">
+          {labels.count(changes.length)}
+        </Badge>
+        {wide ? null : (
+          <Button
+            aria-label={labels.openReview}
+            onClick={() => setReviewOpen(true)}
+            size="icon-sm"
+            variant="ghost"
+          >
+            <ListMagnifyingGlassIcon aria-hidden="true" />
+          </Button>
+        )}
+      </>
+    ),
+    view,
   }
+  const navbarNode = typeof navbar === 'function' ? navbar(context) : navbar
 
   return (
     <div
@@ -191,104 +216,29 @@ export function RichTextEditor3({
       data-slot="rich-text-editor-3"
       data-view={view}
     >
-      <header
-        className="sticky top-0 z-20 flex flex-wrap items-center gap-x-4 gap-y-2 border-b bg-background px-4 py-2"
-        data-slot="redline-header"
-      >
-        <div className="min-w-0 flex-1 basis-48">
-          <h2 className="truncate font-semibold text-base">
-            {title ?? labels.document}
-          </h2>
-          <output
-            className="block text-muted-foreground text-xs"
-            data-slot="redline-count"
-          >
-            {labels.count(changes.length)}
-          </output>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button
-            aria-label={labels.previous}
-            disabled={changes.length === 0 || view !== 'all'}
-            onClick={() => step(-1)}
-            size="icon-sm"
-            variant="outline"
-          >
-            <CaretUpIcon aria-hidden="true" />
-          </Button>
-          <Button
-            aria-label={labels.next}
-            disabled={changes.length === 0 || view !== 'all'}
-            onClick={() => step(1)}
-            size="icon-sm"
-            variant="outline"
-          >
-            <CaretDownIcon aria-hidden="true" />
-          </Button>
-        </div>
-        <ToggleGroup
-          aria-label={labels.views}
-          onValueChange={(next) => {
-            const chosen = next[0] as SuggestionView | undefined
-            if (chosen) setSuggestionView(editor, chosen)
-          }}
-          size="sm"
-          value={[view]}
-          variant="outline"
-        >
-          {views.map((option) => (
-            <ToggleGroupItem key={option} value={option}>
-              {viewLabel[option]}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-        <Menu>
-          <MenuTrigger render={<Button size="sm" variant="outline" />}>
-            <ExportIcon aria-hidden="true" />
-            {labels.export}
-          </MenuTrigger>
-          <MenuPopup align="end">
-            <MenuItem onClick={() => exportAs('redline-html')}>
-              {labels.exportHtml}
-            </MenuItem>
-            <MenuItem onClick={() => exportAs('final-text')}>
-              {labels.exportFinal}
-            </MenuItem>
-            <MenuItem onClick={() => exportAs('original-text')}>
-              {labels.exportOriginal}
-            </MenuItem>
-          </MenuPopup>
-        </Menu>
-        {wide ? null : (
-          <Button
-            onClick={() => setReviewOpen(true)}
-            size="sm"
-            variant="outline"
-          >
-            <ListMagnifyingGlassIcon aria-hidden="true" />
-            {labels.openReview}
-            <Badge variant="secondary">{changes.length}</Badge>
-          </Button>
-        )}
-      </header>
+      {navbarNode}
       <div className="flex items-start">
-        <div className="min-w-0 flex-1 px-4 py-6 sm:px-8">
+        <div className="min-w-0 flex-1 px-6 pt-10 pb-6 sm:px-12">
           <div className="mx-auto max-w-3xl">
             <RichTextEditor
               aria-label={labels.document}
+              blockLabels={labels.blocks}
               contentClassName="min-h-96 pb-16 leading-7"
               editor={editor}
-              floatingToolbar={false}
+              floatingToolbarMarks={floatingMarks}
               onValueChange={onChange}
+              placeholder={labels.placeholder}
               readOnly={view !== 'all'}
-              toolbar={<RedlineToolbar labels={labels} />}
+              slashMenuEmptyLabel={labels.slashMenuEmpty}
+              slashMenuLabel={labels.slashMenu}
+              toolbarLabel={labels.formatting}
             />
           </div>
         </div>
         {wide ? (
           <aside
             aria-label={labels.reviewTitle}
-            className="sticky top-14 max-h-[calc(100dvh-3.5rem)] w-80 shrink-0 overflow-y-auto border-s bg-card/50"
+            className="sticky top-0 max-h-dvh w-80 shrink-0 self-stretch overflow-y-auto border-s"
             data-slot="redline-margin"
           >
             {panel(true)}

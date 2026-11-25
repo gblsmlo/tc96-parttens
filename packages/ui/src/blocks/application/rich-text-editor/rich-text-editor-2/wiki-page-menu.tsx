@@ -1,6 +1,7 @@
 import { LockSimpleIcon } from '@phosphor-icons/react'
 import { Badge } from '@tc96/ui/badge'
 import { MenuCheckboxItem } from '@tc96/ui/menu'
+import type { ReactNode } from 'react'
 import type { RichTextEditor2Labels, RichTextEditor2Settings } from './types'
 
 export function WikiPageMenuItems({
@@ -47,31 +48,37 @@ export function WikiLockBadge({
   )
 }
 
-export function WikiPageStrip({
+export function WikiPageStatus({
   labels,
-  outline,
+  lockBadge,
   saveStatus,
-  settings,
 }: Readonly<{
   labels: RichTextEditor2Labels
-  outline: React.ReactNode
+  lockBadge: ReactNode
   saveStatus: 'saved' | 'saving' | null
-  settings: RichTextEditor2Settings
 }>) {
   return (
+    <>
+      {saveStatus ? (
+        <output
+          className="text-muted-foreground text-sm"
+          data-slot="wiki-save-status"
+        >
+          {labels[saveStatus]}
+        </output>
+      ) : null}
+      {lockBadge}
+    </>
+  )
+}
+
+export function WikiPageStrip({ outline }: Readonly<{ outline: ReactNode }>) {
+  return (
     <div
-      className="flex min-h-10 items-center gap-2 py-1"
+      className="flex min-h-10 items-center gap-2 px-4 py-1 lg:hidden"
       data-slot="wiki-page-strip"
     >
       {outline}
-      <div className="ms-auto flex items-center gap-2">
-        {saveStatus ? (
-          <output className="text-muted-foreground text-sm">
-            {labels[saveStatus]}
-          </output>
-        ) : null}
-        {settings.locked ? <WikiLockBadge labels={labels} /> : null}
-      </div>
     </div>
   )
 }

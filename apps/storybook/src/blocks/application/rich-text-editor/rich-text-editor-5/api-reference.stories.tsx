@@ -6,6 +6,7 @@ import {
   rolloutTime,
   rolloutValue,
 } from '../fixtures/rich-text-editor-5.ts'
+import { PlanPage } from './rich-text-editor-5-layouts.tsx'
 
 const meta = {
   args: {
@@ -18,6 +19,7 @@ const meta = {
   },
   component: RichTextEditor5,
   parameters: { layout: 'fullscreen' },
+  render: (args) => <PlanPage {...args} />,
   tags: ['!autodocs', '!dev'],
   title: 'Blocks/Application/Rich Text Editor/RichTextEditor5/API Reference',
 } satisfies Meta<typeof RichTextEditor5>

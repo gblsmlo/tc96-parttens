@@ -118,6 +118,31 @@ test("lets a block depend on its own folder and its group's shared", async () =>
   expect(result.status).toBe(0)
 })
 
+test("lets a grouped block depend on its category's shared", async () => {
+  const result = await workspace({
+    'packages/ui/src/blocks/data/support/support-1/support-1.tsx':
+      "import { frame } from '../../shared/grid/grid-frame'\nexport const page = frame\n",
+    'packages/ui/src/blocks/data/shared/grid/grid-frame.ts':
+      "import { select } from '../properties/data-select'\nexport const frame = select\n",
+    'packages/ui/src/blocks/data/shared/properties/data-select.ts':
+      'export const select = {}\n',
+  })
+  expect(result.status).toBe(0)
+})
+
+test("rejects a grouped block depending on another category's shared", async () => {
+  const result = await workspace({
+    'packages/ui/src/blocks/application/shell/app-shell-1/app-shell-1.tsx':
+      "import { frame } from '../../../data/shared/grid/grid-frame'\nexport const page = frame\n",
+    'packages/ui/src/blocks/data/shared/grid/grid-frame.ts':
+      'export const frame = {}\n',
+  })
+  expect(result.status).not.toBe(0)
+  expect(result.stderr).toContain(
+    'a block cannot depend on packages/ui/src/blocks/data/shared/grid/grid-frame.ts',
+  )
+})
+
 test('rejects a block depending on another block of its group', async () => {
   const result = await workspace({
     'packages/ui/src/blocks/application/shell/app-shell-2/app-shell-2.tsx':

@@ -4,14 +4,17 @@ import type { CollectionKanbanViewProps } from '@tc96/ui/patterns/collection/com
 import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
 import { useMemo } from 'react'
 import {
-  LegalCollection,
-  type LegalCollectionDefinition,
-} from '../shared/legal-collection'
-import { LegalFrame } from '../shared/legal-frame'
-import { legalLoadState } from '../shared/legal-load-state'
-import { LegalToolbar } from '../shared/legal-toolbar'
-import { LegalViewSwitcher } from '../shared/legal-view-switcher'
-import { useControllable, useStableHandler } from '../shared/use-controllable'
+  DataCollection,
+  type DataCollectionDefinition,
+} from '../../shared/collection/data-collection'
+import { DataCollectionFrame } from '../../shared/collection/data-collection-frame'
+import { dataCollectionLoadState } from '../../shared/collection/data-collection-load-state'
+import { DataCollectionToolbar } from '../../shared/collection/data-collection-toolbar'
+import { DataCollectionViewSwitcher } from '../../shared/collection/data-collection-view-switcher'
+import {
+  useControllable,
+  useStableHandler,
+} from '../../shared/collection/use-controllable'
 import { resolveLegal1Labels } from './labels'
 import { createLegal1Columns } from './legal-1-columns'
 import { createLegal1Options, type Legal1FieldContext } from './legal-1-fields'
@@ -111,7 +114,7 @@ export function Legal1({
     [cases, statusFilter, view],
   )
 
-  const collection = useMemo<LegalCollectionDefinition<Legal1Case>>(
+  const collection = useMemo<DataCollectionDefinition<Legal1Case>>(
     () => ({
       getKey: (item) => item.id,
       getLabel: (item) => item.title,
@@ -154,7 +157,7 @@ export function Legal1({
     [changePhase, labels.emptyColumn],
   )
 
-  const loadState = legalLoadState({
+  const loadState = dataCollectionLoadState({
     error,
     labels,
     onRetry,
@@ -163,15 +166,15 @@ export function Legal1({
   })
 
   return (
-    <LegalFrame
+    <DataCollectionFrame
       className={className}
       data-block="legal-1"
       title={labels.title}
       toolbar={
-        <LegalToolbar<Legal1Mode, Legal1Status>
+        <DataCollectionToolbar<Legal1Mode, Legal1Status>
           labels={labels}
           left={
-            <LegalViewSwitcher<Legal1View>
+            <DataCollectionViewSwitcher<Legal1View>
               label={labels.viewList}
               onViewChange={setView}
               view={view}
@@ -194,7 +197,7 @@ export function Legal1({
       }
     >
       {loadState ?? (
-        <LegalCollection<Legal1Case>
+        <DataCollection<Legal1Case>
           collection={collection}
           emptyMessage={labels.empty}
           getRowOpenLabel={(item) => labels.openCase(item.title)}
@@ -207,6 +210,6 @@ export function Legal1({
           table={table}
         />
       )}
-    </LegalFrame>
+    </DataCollectionFrame>
   )
 }

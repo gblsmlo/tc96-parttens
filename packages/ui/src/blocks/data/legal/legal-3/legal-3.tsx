@@ -3,15 +3,21 @@
 import type { CollectionCalendarViewProps } from '@tc96/ui/patterns/collection/composition/collection-layout-outlet'
 import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
 import { useMemo, useState } from 'react'
-import { defaultLegalLocale, defaultLegalTimeZone } from '../shared/labels'
 import {
-  LegalCollection,
-  type LegalCollectionDefinition,
-} from '../shared/legal-collection'
-import { LegalFrame } from '../shared/legal-frame'
-import { legalLoadState } from '../shared/legal-load-state'
-import { LegalToolbar } from '../shared/legal-toolbar'
-import { useControllable, useStableHandler } from '../shared/use-controllable'
+  DataCollection,
+  type DataCollectionDefinition,
+} from '../../shared/collection/data-collection'
+import { DataCollectionFrame } from '../../shared/collection/data-collection-frame'
+import { dataCollectionLoadState } from '../../shared/collection/data-collection-load-state'
+import { DataCollectionToolbar } from '../../shared/collection/data-collection-toolbar'
+import {
+  defaultDataCollectionLocale,
+  defaultDataCollectionTimeZone,
+} from '../../shared/collection/labels'
+import {
+  useControllable,
+  useStableHandler,
+} from '../../shared/collection/use-controllable'
 import { resolveLegal3Labels } from './labels'
 import { createLegal3Columns } from './legal-3-columns'
 import { createLegal3Options, type Legal3FieldContext } from './legal-3-fields'
@@ -38,7 +44,7 @@ export function Legal3({
   deadlines,
   error,
   labels: labelsProp,
-  locale = defaultLegalLocale,
+  locale = defaultDataCollectionLocale,
   mode: modeProp,
   now,
   onCreate,
@@ -53,7 +59,7 @@ export function Legal3({
   owners = noOwners,
   pending,
   statusFilter: statusFilterProp,
-  timeZone = defaultLegalTimeZone,
+  timeZone = defaultDataCollectionTimeZone,
 }: Readonly<Legal3Props>) {
   const labels = useMemo(() => resolveLegal3Labels(labelsProp), [labelsProp])
   const [mode, setMode] = useControllable<Legal3Mode>(
@@ -109,7 +115,7 @@ export function Legal3({
     [deadlines, statusFilter],
   )
 
-  const collection = useMemo<LegalCollectionDefinition<Legal3Deadline>>(
+  const collection = useMemo<DataCollectionDefinition<Legal3Deadline>>(
     () => ({
       getKey: (item) => item.id,
       getLabel: (item) => item.title,
@@ -144,7 +150,7 @@ export function Legal3({
     [anchor, context, locale, mountedAt, now, timeZone],
   )
 
-  const loadState = legalLoadState({
+  const loadState = dataCollectionLoadState({
     error,
     labels,
     onRetry,
@@ -153,12 +159,12 @@ export function Legal3({
   })
 
   return (
-    <LegalFrame
+    <DataCollectionFrame
       className={className}
       data-block="legal-3"
       title={labels.title}
       toolbar={
-        <LegalToolbar<Legal3Mode, Legal3Status>
+        <DataCollectionToolbar<Legal3Mode, Legal3Status>
           description={labels.summary(
             visibleDeadlines.length,
             visibleDeadlines.filter((item) => item.status === 'pending').length,
@@ -179,7 +185,7 @@ export function Legal3({
       }
     >
       {loadState ?? (
-        <LegalCollection<Legal3Deadline>
+        <DataCollection<Legal3Deadline>
           calendar={calendar}
           collection={collection}
           emptyMessage={labels.empty}
@@ -191,6 +197,6 @@ export function Legal3({
           table={table}
         />
       )}
-    </LegalFrame>
+    </DataCollectionFrame>
   )
 }

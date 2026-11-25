@@ -1,13 +1,13 @@
 import {
-  defaultLegalLoadLabels,
-  defaultLegalModeLabels,
-  defaultLegalToolbarLabels,
-} from '../shared/labels'
+  defaultDataCollectionLoadLabels,
+  defaultDataCollectionModeLabels,
+  defaultDataCollectionToolbarLabels,
+} from '../../shared/collection/labels'
 import type { Legal1Labels, Legal1LabelsOverride } from './types'
 
 export const defaultLegal1Labels: Legal1Labels = {
-  ...defaultLegalLoadLabels,
-  ...defaultLegalToolbarLabels,
+  ...defaultDataCollectionLoadLabels,
+  ...defaultDataCollectionToolbarLabels,
   areas: {
     civil: 'Cível',
     consumer: 'Consumidor',
@@ -33,7 +33,7 @@ export const defaultLegal1Labels: Legal1Labels = {
   emptyColumn: 'Nenhum processo nesta fase.',
   errorTitle: 'Não foi possível carregar os processos',
   loading: 'Carregando processos',
-  modes: defaultLegalModeLabels,
+  modes: defaultDataCollectionModeLabels,
   noCourt: 'Extrajudicial',
   noDeadline: 'Sem prazo',
   noNumber: 'Sem número',

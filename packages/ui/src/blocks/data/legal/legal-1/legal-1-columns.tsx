@@ -1,5 +1,5 @@
 import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import { LegalCaption } from '../shared/legal-record-parts'
+import { DataCollectionCaption } from '../../shared/collection/data-collection-record-parts'
 import {
   Legal1DeadlineField,
   type Legal1FieldContext,
@@ -57,7 +57,7 @@ export function createLegal1Columns(
       accessorFn: (item) => `${item.instance ?? ''} ${item.court ?? ''}`,
       cell: ({ row }) => (
         <span className="text-muted-foreground">
-          <LegalCaption
+          <DataCollectionCaption
             parts={
               row.original.instance && row.original.court
                 ? [row.original.instance, row.original.court]

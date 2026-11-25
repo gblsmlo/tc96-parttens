@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  RichTextEditor5,
-  type RichTextEditor5Decision,
-  type RichTextEditor5Planner,
+import type {
+  RichTextEditor5Decision,
+  RichTextEditor5Planner,
 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-5'
 import { useState } from 'react'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
@@ -16,6 +15,7 @@ import {
 import {
   dockOf,
   editorOf,
+  PlanPage,
   reviewItems,
   runTask,
   waitForFinished,
@@ -32,7 +32,7 @@ const RolloutRoom = ({
   const [log, setLog] = useState<string[]>([])
   return (
     <div className="flex min-h-svh flex-col">
-      <RichTextEditor5
+      <PlanPage
         author={rolloutAuthor}
         className="flex-1"
         defaultValue={rolloutValue()}

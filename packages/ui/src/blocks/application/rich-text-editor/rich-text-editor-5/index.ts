@@ -9,6 +9,7 @@ export type {
   RichTextEditor5Finding,
   RichTextEditor5FindingKind,
   RichTextEditor5Labels,
+  RichTextEditor5NavbarContext,
   RichTextEditor5Plan,
   RichTextEditor5PlanEvent,
   RichTextEditor5Planner,

@@ -3,15 +3,18 @@
 import { formatAmount } from '@tc96/ui/helpers/format'
 import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
 import { useMemo } from 'react'
-import { defaultLegalLocale } from '../shared/labels'
 import {
-  LegalCollection,
-  type LegalCollectionDefinition,
-} from '../shared/legal-collection'
-import { LegalFrame } from '../shared/legal-frame'
-import { legalLoadState } from '../shared/legal-load-state'
-import { LegalToolbar } from '../shared/legal-toolbar'
-import { useControllable, useStableHandler } from '../shared/use-controllable'
+  DataCollection,
+  type DataCollectionDefinition,
+} from '../../shared/collection/data-collection'
+import { DataCollectionFrame } from '../../shared/collection/data-collection-frame'
+import { dataCollectionLoadState } from '../../shared/collection/data-collection-load-state'
+import { DataCollectionToolbar } from '../../shared/collection/data-collection-toolbar'
+import { defaultDataCollectionLocale } from '../../shared/collection/labels'
+import {
+  useControllable,
+  useStableHandler,
+} from '../../shared/collection/use-controllable'
 import { resolveLegal2Labels } from './labels'
 import { createLegal2Columns } from './legal-2-columns'
 import { createLegal2Options, type Legal2FieldContext } from './legal-2-fields'
@@ -35,7 +38,7 @@ export function Legal2({
   currency = 'BRL',
   error,
   labels: labelsProp,
-  locale = defaultLegalLocale,
+  locale = defaultDataCollectionLocale,
   mode: modeProp,
   onCreate,
   onExport,
@@ -108,7 +111,7 @@ export function Legal2({
     [contracts, statusFilter],
   )
 
-  const collection = useMemo<LegalCollectionDefinition<Legal2Contract>>(
+  const collection = useMemo<DataCollectionDefinition<Legal2Contract>>(
     () => ({
       getKey: (item) => item.id,
       getLabel: (item) => item.title,
@@ -125,7 +128,7 @@ export function Legal2({
     getRowId: (item) => item.id,
   })
 
-  const loadState = legalLoadState({
+  const loadState = dataCollectionLoadState({
     error,
     labels,
     onRetry,
@@ -134,12 +137,12 @@ export function Legal2({
   })
 
   return (
-    <LegalFrame
+    <DataCollectionFrame
       className={className}
       data-block="legal-2"
       title={labels.title}
       toolbar={
-        <LegalToolbar<Legal2Mode, Legal2Status>
+        <DataCollectionToolbar<Legal2Mode, Legal2Status>
           description={labels.summary(
             visibleContracts.length,
             visibleContracts.filter((item) => item.status === 'signed').length,
@@ -160,7 +163,7 @@ export function Legal2({
       }
     >
       {loadState ?? (
-        <LegalCollection<Legal2Contract>
+        <DataCollection<Legal2Contract>
           collection={collection}
           emptyMessage={labels.empty}
           getRowOpenLabel={(item) => labels.openContract(item.title)}
@@ -171,6 +174,6 @@ export function Legal2({
           table={table}
         />
       )}
-    </LegalFrame>
+    </DataCollectionFrame>
   )
 }

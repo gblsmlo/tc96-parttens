@@ -19,6 +19,7 @@ export function Navbar1({
   menu,
   onShare,
   renderLink = renderAnchor,
+  status,
 }: Readonly<Navbar1Props>): ReactElement {
   const texts = { ...defaultNavbar1Labels, ...labels }
 
@@ -31,6 +32,14 @@ export function Navbar1({
           renderLink={renderLink}
         />
         <div className="ms-auto flex items-center gap-3">
+          {status ? (
+            <div
+              className="flex items-center gap-2"
+              data-slot="navbar-1-status"
+            >
+              {status}
+            </div>
+          ) : null}
           {collaborators?.length ? (
             <NavbarAvatarStack
               label={texts.collaborators(collaborators.length)}

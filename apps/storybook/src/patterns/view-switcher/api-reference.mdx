@@ -65,6 +65,7 @@ div[role=dialog][data-slot=popover-popup]       portaled, aria-label is the labe
         ├── fieldset[data-slot=view-switcher-items]   ViewSwitcherItems
         │   ├── div[data-slot=view-switcher-item]     ViewSwitcherItem
         │   │   ├── button                            label, closes the popover
+        │   │   │   └── span[data-slot=view-switcher-item-count]   count, only with count
         │   │   └── button                            options trigger, only with options
         │   └── div[aria-hidden]                      skeleton row, only with loading
         └── button[data-slot=view-switcher-create]    ViewSwitcherCreate
@@ -82,7 +83,7 @@ The trigger and the popover of the view switcher. Renders a toolbar button that 
 | `variant` | `"default" \| "ghost"` | `"default"` | Sets the look of the trigger: `default` is a filled `secondary` button, `ghost` has no fill until hover. |
 | `className` | `string` | - | Adds classes to the trigger. |
 
-The label is truncated, so a long view name never widens the trigger past its container; the accessible name stays whole. A chevron after the label is always drawn.
+The label is truncated, so a long view name never widens the trigger past its container; the accessible name stays whole. A chevron after the label is always drawn. The trigger has no count: a `ViewSwitcherItem` shows the count of its view inside the popover, and the trigger names the active view only.
 
 | Attribute | Part | Values | Description |
 | --- | --- | --- | --- |
@@ -130,12 +131,16 @@ One view of the list. Renders a `div` with `data-slot="view-switcher-item"` that
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `label` | `string` | required | Sets the text of the row and its accessible name. |
+| `label` | `string` | required | Sets the text of the row and, without `aria-label`, its accessible name. |
 | `onSelect` | `() => void` | required | Called when the label is pressed, before the popover closes. |
 | `selected` | `boolean` | `false` | When true, marks the row as the current one and gives it the accent background. |
+| `count` | `number \| string` | - | Shows the number of records of the view at the end of the label button; `0` is shown, `undefined` shows nothing. A `string` passes a number already formatted, such as `"1.284"`. |
+| `aria-label` | `string` | - | Sets the accessible name of the label button, as a final string the consumer writes, such as `"Minha fila, 3 prazos"`; the count itself is hidden from assistive technology. |
 | `icon` | `ReactNode` | - | Sets an icon before the label; without it the row has no icon wrapper. |
 | `options` | `ReactNode` | - | Sets the content of the options menu, usually `MenuItem` parts; without it the options button is not rendered. |
 | `optionsLabel` | `string` | `"Opções de {label}"` | Sets the `aria-label` of the options button. |
+
+The count is a muted `span` in extra-small text with tabular numbers, pushed to the end of the label button, so it stays aligned across rows and sits just before the options button. It never shrinks: a long label truncates and the count stays whole. It is `aria-hidden`, so the pattern never joins it to the label: without `aria-label` the row is named by `label` alone, and with it by that string. Start `aria-label` with the visible `label`, so a voice user can say what they see.
 
 The options menu is a `Menu` that opens to the right of the options button, aligned to its start and 16rem wide. It is a separate tree from the popover, so the item closes the popover itself: pressing an option closes the menu and the popover together, while closing the menu with Escape leaves the popover open. An option that is `disabled` stays visible and does nothing.
 
@@ -144,6 +149,7 @@ The options menu is a `Menu` that opens to the right of the options button, alig
 | `data-slot` | `"view-switcher-item"` | Selects the row |
 | `data-selected` | present when `selected` | Lets the theme style the current row; absent otherwise |
 | `aria-current` | `"true"` on the label button when `selected` | Marks the current view for assistive technology |
+| `data-slot` | `"view-switcher-item-count"` on the count, only with `count` | Selects the count |
 
 ## ViewSwitcherCreate
 
@@ -171,7 +177,8 @@ The button that creates a view. Renders a ghost button at the full width of the 
 ## Accessibility and theme
 
 - The labels the view switcher writes itself (`"Buscar views"`, `"Buscar views..."`, `"Views"`, `"Opções de {label}"` and `"Criar nova view"`) are in Portuguese: pass `label`, `placeholder` and `optionsLabel` in the language of the screen.
+- With `count`, pass an `aria-label` that says the count in words, such as `"Minha fila, 3 prazos"`: the visible number is hidden from assistive technology, so without it the row is named by its `label` alone.
 - Give `ViewSwitcherItems` a `label` that names its group, such as `"Favoritos"` for a favorites group; the popover is named by the `label` of `ViewSwitcherMenu`.
 - Pass icons that hide themselves (`aria-hidden="true"`; the `@phosphor-icons/react` icons do not set it, so pass it), since the label already names the control.
 - Escape closes the popover and returns focus to the trigger, and the options menu closes before the popover does.
-- The popover reads `--popover`, `--popover-foreground` and `--border`, the current row `--accent`, and the placeholder `--muted-foreground`. The trigger and the buttons read the tokens of `Button`.
+- The popover reads `--popover`, `--popover-foreground` and `--border`, the current row `--accent`, and the placeholder and the count `--muted-foreground`. The trigger and the buttons read the tokens of `Button`.

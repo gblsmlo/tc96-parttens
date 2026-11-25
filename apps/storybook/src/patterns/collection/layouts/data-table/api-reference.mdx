@@ -51,7 +51,7 @@ const { table } = useDataTable({ columns, data, enablePagination: true, getRowId
           <tbody data-slot="table-body">
             <tr>
               <td>
-                <button data-slot="data-table-row-trigger" />{/* only with onRowClick */}
+                <button data-slot="data-table-row-trigger" />{/* only with onRowClick, unless getRowCanOpen returns false */}
                 {cell}
               </td>
             </tr>
@@ -86,6 +86,7 @@ The table of one collection. Renders a `table` inside a scroll area that fills a
 | `emptyMessage` | `string` | `"Nenhum registro para exibir."` | Sets the text of the one row shown when there are no rows. |
 | `onRowClick` | `(row: Row<DataTableFeatures, TData>) => void` | - | Called when a row is clicked outside its controls, or its open button is pressed; turns every row into a button. |
 | `getRowOpenLabel` | `(row: Row<DataTableFeatures, TData>) => string` | - | Names the open button of a row; without it every row reads `Abrir registro`. |
+| `getRowCanOpen` | `(row: Row<DataTableFeatures, TData>) => boolean` | - | With `onRowClick`, returns `false` for a row that opens nothing; without it every row opens. |
 | `defaultAggregations` | `DataTableAggregations` | `{}` | Sets the first aggregation of each column, uncontrolled. |
 | `aggregations` | `DataTableAggregations` | - | Sets the aggregation of each column, controlled. |
 | `onAggregationsChange` | `(aggregations: DataTableAggregations) => void` | - | Called when the user picks an aggregation, with every column's choice. |
@@ -112,12 +113,12 @@ The header and the footer stick to the edges of the scroll area, and the vertica
 
 Each row renders the `cell` of every visible column. A selected row carries `data-state="selected"`.
 
-With `onRowClick`, the first cell holds a `button` stretched over the whole row, under the cells, named by `getRowOpenLabel`. The cells let a click through to it, except on what they hold that takes input: a control, a link, a label or a focusable element inside a cell keeps its click and does not open the row. The button is reachable with Tab and draws its own focus ring inside the row. Without `onRowClick`, rows are plain.
+With `onRowClick`, the first cell holds a `button` stretched over the whole row, under the cells, named by `getRowOpenLabel`. The cells let a click through to it, except on what they hold that takes input: a control, a link, a label or a focusable element inside a cell keeps its click and does not open the row. The button is reachable with Tab and draws its own focus ring inside the row. Without `onRowClick`, rows are plain, and so is a row for which `getRowCanOpen` returns `false`: no button, no `data-interactive`, its cells and selection unchanged.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-state` | `"selected"` when the row is selected | Styles a selected row |
-| `data-interactive` | present with `onRowClick` | Marks a row that opens |
+| `data-interactive` | present with `onRowClick` on a row that opens | Marks a row that opens |
 | `data-slot` | `"data-table-row-trigger"` | Selects the open button of a row |
 
 With no rows, the body shows one row with `emptyMessage` across every column.

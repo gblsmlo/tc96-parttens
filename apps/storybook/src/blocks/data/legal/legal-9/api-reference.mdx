@@ -1,0 +1,110 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Legal9
+
+The fee contracts of a law firm (Contratos): name, holder, billing model, status, amount and owner, shown as a Tabela or a Lista. Reach for it on the screen that lists the contracts signed with people and companies and is filtered and paged by the server. Install it with `npx @tc96/cli add legal-9`.
+
+The block is controlled and renders what it gets. Mode, grouping, search, sort, every filter, the selection and the page are a value and a callback; without the value the block keeps it locally. It does **not** filter, sort or page `records`: the consumer sends each change to its server (or orders the loaded page itself) and passes the result back, with `filtered` saying whether any filter is active. Owners are a workspace catalog passed as `{ id, label }[]`; Status and Modelo are the fixed unions of the contract. Whether a contract accepts changes is a rule of the consumer: it arrives ready in `editable`.
+
+With `savedViews`, the toolbar `left` slot holds the view switcher: Padrão, the collection with no saved view, then the saved views with select, update, create, rename, duplicate and delete, each rendered with its callback; the page then has no `h2`, and the section and the table keep their name from `labels.title`. Without `savedViews` the slot shows the heading. On the right: the search field (only with `onSearchChange`), Exibição (the mode tabs, Ordenar, Agrupar, Filtros and Salvar preferência) and Novo contrato. Ordenar always has a choice (Atualização by default). Agrupar por offers Status, Modelo and, when `owners` has items, Responsável, in the Tabela and in the Lista; the table groups consecutive rows, so the block orders the rows it receives by the active grouping and keeps the consumer's order inside each group. Status and Modelo filters render with their callbacks, Responsável with `owners` or `ownersLoading`.
+
+In the Tabela, Titular is a read-only `TextProperty`, Status a read-only `SelectProperty` badge, Valor the amount in `locale` and `currency`, and Modelo and Responsável a `SelectProperty` and a `PersonProperty` that are editable only on a record with `editable` and with their callback. Selecting rows opens the `ActionBar` with Responsável and Modelo; each reports only the ids of the selected records with `editable`, is disabled when none has it, and clears the selection. The Lista shows the holder as the caption and Status, Modelo, Valor and the owner's avatar at the end of the row; it has no selection. The footer is the `CollectionPagination`, rendered with `pageCount` while there are records.
+
+The other pages of `Blocks/Data/Legal/Legal9`: [Playground](?path=/story/blocks-data-legal-legal9-playground--playground), [Layouts](?path=/story/blocks-data-legal-legal9-layouts--default), [Behavior](?path=/story/blocks-data-legal-legal9-behavior--saved-views-replace-the-heading) and [Usages](?path=/story/blocks-data-legal-legal9-usages--loaded).
+
+## Import
+
+```tsx
+import { Legal9 } from '@tc96/ui/blocks/data/legal/legal-9'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Legal9
+  billingModelFilter={billingModel}
+  filtered={hasFilters}
+  groupBy={groupBy}
+  onBillingModelFilterChange={setBillingModel}
+  onBulkOwnerChange={assignOwner}
+  onGroupByChange={setGroupBy}
+  onOwnerChange={changeOwner}
+  onPageChange={setPage}
+  onSavedViewSelect={applySavedView}
+  onSortChange={setSort}
+  onStatusFilterChange={setStatus}
+  owners={members}
+  page={pageNumber}
+  pageCount={pageCount}
+  pageSize={25}
+  records={page.items}
+  savedViewId={savedViewId}
+  savedViews={savedViews}
+  sort={sort}
+  statusFilter={status}
+  total={page.total}
+/>
+```
+
+## Legal9
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `records` | `Legal9Record[]` | required | The page of contracts, already filtered, sorted and paged. Keep the array stable between renders. |
+| `owners` | `Legal9Person[]` | `[]` | The options of Responsável in a row, in the filter, in the grouping and in the action bar. |
+| `ownersLoading` | `boolean` | `false` | Shows the loading rows of the Responsável filter while the catalog loads. |
+| `locale`, `currency` | `string` | `'pt-BR'`, `'BRL'` | Format of Valor; `amountCents` is divided by 100. |
+| `mode`, `onModeChange` | `'table' \| 'list'`, `(mode) => void` | `'table'` | The controllable layout. |
+| `groupBy`, `onGroupByChange` | `Legal9GroupBy \| null`, `(groupBy) => void` | `null` | The controllable grouping; Agrupar por renders with `onGroupByChange`. `null` is Sem agrupamento. |
+| `collapsedGroupIds`, `onCollapsedGroupIdsChange` | `string[]`, `(groupIds) => void` | - | The collapsed groups, as `<grouping>:<option id>` or `<grouping>:unassigned`. |
+| `sort`, `onSortChange` | `Legal9Sort`, `(sort) => void` | `'updated'` | Ordenar por, rendered with `onSortChange`. |
+| `search`, `onSearchChange` | `string`, `(search) => void` | - | The search field, rendered with `onSearchChange`; called on submit and when emptied. |
+| `statusFilter`, `onStatusFilterChange` | `Legal9Status \| null`, `(status) => void` | `null` | The Status filter, rendered with its callback. |
+| `billingModelFilter`, `onBillingModelFilterChange` | `Legal9BillingModel \| null`, `(billingModel) => void` | `null` | The Modelo filter, rendered with its callback. |
+| `ownerFilter`, `onOwnerFilterChange` | `string \| null`, `(ownerId) => void` | `null` | The Responsável filter, rendered when `owners` has items or `ownersLoading`. |
+| `filtered` | `boolean` | `false` | Picks `labels.noResult` instead of `labels.empty` for the empty message. |
+| `savedViews` | `Legal9SavedView[]` | - | Renders the view switcher in place of the heading, with Padrão and these views. |
+| `savedViewId`, `savedViewModified` | `string \| null`, `boolean` | - | The applied saved view, shown in the trigger, and whether it changed since (`labels.savedViews.modified` and Atualizar). |
+| `savedViewsLoading`, `savedViewsPending` | `boolean` | `false` | Loading rows of the saved views; disables update and duplicate while a write runs. |
+| `viewCount` | `number` | - | The count of Padrão in the switcher popup, named by `labels.viewCountName`. |
+| `onDefaultViewSelect` | `() => void` | - | Called when Padrão is chosen. |
+| `onSavedViewSelect`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | `(savedViewId: string) => void` | - | Choose a saved view and render its options. |
+| `onSavedViewCreate`, `onSavedViewUpdate` | `() => void` | - | Render Salvar visualização and Atualizar; the dialogs are the consumer's. |
+| `onSavePreference` | `() => void` | - | Renders Salvar preferência in Exibição. |
+| `onBillingModelChange`, `onOwnerChange` | `(recordId, value) => void` | - | Make Modelo and Responsável editable in the rows with `editable`; Modelo can be cleared to `null`. |
+| `onOpen` | `(recordId: string) => void` | - | Makes the row and the list title open the contract. |
+| `selectedIds`, `onSelectedIdsChange` | `string[]`, `(recordIds) => void` | `[]` | The controllable row selection of the Tabela. Either one, or a bulk callback, adds the select column. |
+| `onBulkOwnerChange`, `onBulkBillingModelChange` | `(recordIds, value) => void` | - | Render Responsável and Modelo in the action bar; the ids are only those with `editable`. |
+| `page`, `onPageChange` | `number`, `(page) => void` | `1` | The controllable page, starting at 1. |
+| `pageCount` | `number` | - | Renders the pagination footer while there are records. |
+| `pageSize`, `total` | `number` | - | Together they show the range summary (`1–25 de 57`); `total` of 0 hides the footer. |
+| `onCreate` | `() => void` | - | Renders Novo contrato. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. |
+| `labels` | `Legal9LabelsOverride` | pt-BR texts | Overrides the texts; `billingModels`, `columns`, `groupings`, `modes`, `paginationButtons`, `savedViews`, `sorts` and `statuses` merge key by key. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Legal9Record
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `title` | `string` | The identity and the Nome cell. |
+| `holder` | `string \| null` | The person or company that holds the contract; `null` shows `labels.noHolder`. |
+| `billingModel` | `'fixed' \| 'hourly' \| 'subscription' \| 'contingency' \| 'other' \| null` | Modelo; `null` shows `labels.noBillingModel`. |
+| `status` | `'active' \| 'closed'` | Status. |
+| `amountCents` | `number \| null` | Valor in cents; `null` shows `labels.noAmount`. |
+| `ownerId` | `string \| null` | One of `owners`. |
+| `editable` | `boolean` | Whether the member may change this contract; off, its row is read-only and the bulk actions skip it. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Legal9` | `component` | The fee contracts list. |
+| `legal9Modes` | `const` | `['table', 'list']`. |
+| `legal9Statuses`, `legal9BillingModels`, `legal9Sorts`, `legal9Groupings` | `const` | The fixed unions in the order the menus show them. |
+| `Legal9Props`, `Legal9Record`, `Legal9Person`, `Legal9SavedView`, `Legal9Status`, `Legal9BillingModel`, `Legal9Sort`, `Legal9GroupBy`, `Legal9Mode`, `Legal9ColumnId`, `Legal9Labels`, `Legal9LabelsOverride` | `type` | The props, the data and the labels. |

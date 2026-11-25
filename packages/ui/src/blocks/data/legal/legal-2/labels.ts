@@ -1,13 +1,13 @@
 import {
-  defaultLegalLoadLabels,
-  defaultLegalModeLabels,
-  defaultLegalToolbarLabels,
-} from '../shared/labels'
+  defaultDataCollectionLoadLabels,
+  defaultDataCollectionModeLabels,
+  defaultDataCollectionToolbarLabels,
+} from '../../shared/collection/labels'
 import type { Legal2Labels, Legal2LabelsOverride } from './types'
 
 export const defaultLegal2Labels: Legal2Labels = {
-  ...defaultLegalLoadLabels,
-  ...defaultLegalToolbarLabels,
+  ...defaultDataCollectionLoadLabels,
+  ...defaultDataCollectionToolbarLabels,
   columns: {
     contract: 'Contrato',
     owner: 'Responsável',
@@ -22,7 +22,7 @@ export const defaultLegal2Labels: Legal2Labels = {
   empty: 'Nenhum contrato para exibir.',
   errorTitle: 'Não foi possível carregar os contratos',
   loading: 'Carregando contratos',
-  modes: defaultLegalModeLabels,
+  modes: defaultDataCollectionModeLabels,
   noEndDate: 'Prazo indeterminado',
   noValue: 'Sem valor',
   openContract: (title) => `Abrir ${title}`,

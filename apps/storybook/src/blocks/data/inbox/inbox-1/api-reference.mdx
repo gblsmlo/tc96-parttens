@@ -1,0 +1,89 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Inbox1
+
+The member's Inbox: one table of entries about tasks, deadlines, court publications and movements, and capture monitoring, read through the categories Todos, Tarefas, Prazos, Tribunal and Monitoramento. Reach for it on a notification screen whose list is read from the server one page at a time. Install it with `npx @tc96/cli add inbox-1`.
+
+The block is controlled and renders what it gets. It does not filter, sort or page `entries`, and it computes no date and no relative time: the category, the three filters, the order, the selection and the cursor are value and callback pairs, and the consumer reads the matching entries on the server. Without a value, `category`, `sort`, `readFilter`, `kindFilter`, `receivedFilter` and `selectedIds` are kept locally so the controls still answer. The reason, the due text with its tone and the received text with its hint arrive ready.
+
+The toolbar `left` holds the category switcher, whose trigger shows the icon and the name of the selected category, so the page has no `h2`. With `counts`, each category in its popup shows its number, and `labels.viewCountName` names the item with it. Exibição holds Ordenar (Mais recentes, Mais antigas, Não lidas primeiro) and Filtros: Leitura, Motivo and Recebida. The Motivo options are the reasons of the selected category, all nine under Todos; changing the category clears a reason that is not in the new one. Limpar filtros clears the three filters and keeps the category and the order.
+
+The columns, in order: selection, the read toggle, Entrada (the reason icon in an `IconFrame` and the title, semibold while unread), Origem, Motivo, Vencimento and Recebida. The read toggle calls `onReadChange(id, read)` with the new state and never opens the row; without `onReadChange` the column shows the dot alone. A row opens through `onOpen`, except one with `openable: false`, which has no open button and keeps its cells and its selection. The block never marks an entry read on open: the consumer does it in `onOpen`. Selected rows open the `ActionBar` with Abrir (exactly one selected entry that opens) and Marcar como lida (sends only the unread ids); each action clears the selection first. The footer loads more by cursor and announces a failed load or a failed read change.
+
+The other pages of `Blocks/Data/Inbox/Inbox1`: [Playground](?path=/story/blocks-data-inbox-inbox1-playground--playground), [Layouts](?path=/story/blocks-data-inbox-inbox1-layouts--default), [Behavior](?path=/story/blocks-data-inbox-inbox1-behavior--the-category-switcher-replaces-the-heading) and [Usages](?path=/story/blocks-data-inbox-inbox1-usages--loaded).
+
+## Import
+
+```tsx
+import { Inbox1 } from '@tc96/ui/blocks/data/inbox/inbox-1'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Inbox1
+  category={category}
+  entries={page.items}
+  hasMore={page.nextCursor !== null}
+  onCategoryChange={setCategory}
+  onLoadMore={loadMore}
+  onMarkRead={markRead}
+  onOpen={openEntry}
+  onReadChange={setRead}
+/>
+```
+
+## Inbox1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `entries` | `Inbox1Entry[]` | required | The entries of the active category and filters, already ordered. Keep the array stable between renders. |
+| `category`, `onCategoryChange` | `Inbox1Category \| null`, `(category) => void` | `null` | The selected category; `null` is Todos. |
+| `counts` | `Partial<Record<'all' \| Inbox1Category, number>>` | - | The number shown beside each category in the switcher popup, such as the unread entries of the sidebar badge; a category without a number shows none. |
+| `categories` | `readonly Inbox1Category[]` | the four categories | The categories this member may open, such as all but `monitoring`. Todos always shows, and the fixed order is kept. |
+| `sort`, `onSortChange` | `'newest' \| 'oldest' \| 'unread'`, `(sort) => void` | `'newest'` | The order chosen in Ordenar. The block does not sort. |
+| `readFilter`, `onReadFilterChange` | `'unread' \| 'read' \| null`, `(filter) => void` | `null` | The Leitura filter; `null` is Todas. |
+| `kindFilter`, `onKindFilterChange` | `Inbox1Kind \| null`, `(kind) => void` | `null` | The Motivo filter, with the reasons of the selected category. |
+| `receivedFilter`, `onReceivedFilterChange` | `'today' \| 'last7' \| 'last30' \| null`, `(filter) => void` | `null` | The Recebida filter; `null` is Qualquer data. |
+| `filtered` | `boolean` | a category or a filter is set | Shows `labels.emptyFiltered` in place of `labels.empty` when the list is empty. |
+| `selectedIds`, `onSelectedIdsChange` | `string[]`, `(entryIds) => void` | `[]` | The selected rows. |
+| `onOpen` | `(entryId: string) => void` | - | Makes a row, its Recebida text and the Abrir action open the entry, named by `labels.openEntry`. |
+| `onReadChange` | `(entryId: string, read: boolean) => void` | - | Turns the read dot into the toggle, named by `labels.markRead` or `labels.markUnread`. |
+| `onMarkRead` | `(entryIds: string[]) => void` | - | Renders Marcar como lida in the action bar; receives only the unread selected ids. |
+| `markError` | `boolean` | `false` | Renders `labels.markError` with `role="alert"`. |
+| `hasMore`, `onLoadMore` | `boolean`, `() => void` | `false`, - | Together render Carregar mais under the table. |
+| `loadingMore` | `boolean` | `false` | Disables Carregar mais while the next page is read. |
+| `loadMoreError` | `boolean` | `false` | Renders `labels.loadMoreError` with `role="alert"`. |
+| `originColors` | `Partial<Record<Inbox1Origin, string>>` | - | A CSS color per origin for the entry icon, passed to the `IconFrame` `color`; without it the icon sits on the muted frame. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. The category switcher stays while pending. |
+| `labels` | `Inbox1LabelsOverride` | pt-BR texts | Overrides the texts, `viewCountName(label, count)` included (`Tarefas, 3 não lidas` by default); `actions`, `categories`, `columns`, `kinds`, `origins`, `readFilters`, `readStates`, `receivedFilters` and `sorts` merge key by key. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Inbox1Entry
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `title` | `string` | The identity and the Entrada text. |
+| `kind` | `Inbox1Kind` | One of the nine reasons; picks the icon and the Motivo filter option. |
+| `origin` | `'task' \| 'deadline' \| 'publication' \| 'movement' \| 'monitoring'` | The Origem text and the key of `originColors`. |
+| `reason` | `string` | The ready Motivo text, such as "Data fatal" or "Disponibilizada em 12 nov.". |
+| `due` | `{ label: string; tone: 'error' \| 'attention' \| 'neutral' } \| null` | The ready Vencimento text and its tone; `null` shows `labels.noDueMark` named by `labels.noDue`. |
+| `received`, `receivedHint` | `string`, `string?` | The ready Recebida text and its tooltip. |
+| `read` | `boolean` | Whether the member read the entry. |
+| `openable` | `boolean?` | `false` for an entry that leads nowhere for this member: the row renders no open button and Abrir stays disabled. Defaults to `true`. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Inbox1` | `component` | The Inbox. |
+| `inbox1Categories` | `const` | The four categories in their fixed order. |
+| `inbox1Kinds` | `const` | The nine reasons in their fixed order. |
+| `inbox1KindsByCategory` | `const` | The reasons of each category. |
+| `inbox1Sorts` | `const` | `['newest', 'oldest', 'unread']`. |
+| `Inbox1Props`, `Inbox1Entry`, `Inbox1Due`, `Inbox1DueTone`, `Inbox1Category`, `Inbox1Kind`, `Inbox1Origin`, `Inbox1OriginColors`, `Inbox1Sort`, `Inbox1ReadFilter`, `Inbox1ReceivedFilter`, `Inbox1ColumnId`, `Inbox1ActionId`, `Inbox1Labels`, `Inbox1LabelsOverride` | `type` | The props, the data and the labels. |

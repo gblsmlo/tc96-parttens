@@ -5,5 +5,6 @@ export type {
   RichTextEditor3Decision,
   RichTextEditor3ExportFormat,
   RichTextEditor3Labels,
+  RichTextEditor3NavbarContext,
   RichTextEditor3Props,
 } from './types'

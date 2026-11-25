@@ -25,7 +25,7 @@ O mesmo caminho exporta os tipos listados em Exports.
 
 ## Anatomy
 
-Cabeçalho com as pessoas na sala, o interruptor Online e o botão Reproduzir; barra de formatação; o texto com os cursores dos colegas; e a coluna de conversas.
+A navbar (Navbar1 nas histórias) com as pessoas na sala, o interruptor Online e o botão Reproduzir; o texto sem barra fixa, com os cursores dos colegas; e a coluna de conversas. Blocos vêm do `/` e a formatação da barra que aparece sobre a seleção, que termina no botão Comentar trecho.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
@@ -34,6 +34,7 @@ const room = useLocalRoom({ script, teammates })
 
 room ? (
   <RichTextEditor4
+    navbar={({ status }) => <Navbar1 breadcrumbs={breadcrumbs} status={status} />}
     defaultValue={value}
     onCommentsChange={save}
     room={room}
@@ -68,6 +69,7 @@ const room = {
 | `defaultValue` | `RichTextValue` | um parágrafo vazio | Texto inicial, usado só quando o documento da sala está vazio, e também ao Reproduzir. |
 | `onCommentsChange` | `(threads: RichTextEditor4Thread[]) => void` | - | Chamado com todas as conversas sempre que uma muda e na montagem. |
 | `now` | `() => number` | `Date.now` | Relógio das mensagens; injete um fixo nos testes. |
+| `navbar` | `ReactNode \| ((context: RichTextEditor4NavbarContext) => ReactNode)` | - | O cabeçalho da página. Como função recebe `status` (pessoas, interruptor Online e Reproduzir) e `online`. Sem navbar essas informações não aparecem. |
 | `labels` | `RichTextEditor4LabelsInput` | textos em pt-BR | Mescla grupo a grupo sobre os padrões; veja Labels. |
 | `className` | `string` | - | Mesclada na raiz. |
 
@@ -105,7 +107,7 @@ const room = {
 
 ## Labels
 
-`labels` agrupa os textos em `blocks`, `comments`, `online`, `presence` e `tools`, mais `editor`, `title` e `replay`. Cada grupo é mesclado sobre o padrão em pt-BR; `presence.status` também. As funções (`online.merged`, `presence.person`, `comments.openThread`, `comments.replies`) recebem os dados e devolvem o texto final.
+`labels` agrupa os textos em `blocks`, `comments`, `online`, `presence` e `tools` (`blockType`, `paragraph`, `bulletList`, `numberedList`, `comment` e `format`, o nome da barra da seleção), mais `editor`, `title` (o nome da região), `replay`, `placeholder`, `slashMenu` e `slashMenuEmpty`. Cada grupo é mesclado sobre o padrão em pt-BR; `presence.status` também. As funções (`online.merged`, `presence.person`, `comments.openThread`, `comments.replies`) recebem os dados e devolvem o texto final.
 
 ## Exports
 
@@ -118,6 +120,7 @@ const room = {
 | `RichTextEditor4Props`, `RichTextEditor4Room`, `RichTextEditor4User`, `RichTextEditor4Color`, `RichTextEditor4Status` | `type` | O contrato do componente. |
 | `RichTextEditor4Thread`, `RichTextEditor4Message` | `type` | As conversas. |
 | `RichTextEditor4Labels`, `RichTextEditor4LabelsInput` | `type` | Os textos. |
+| `RichTextEditor4NavbarContext` | `type` | O argumento de `navbar` como função. |
 
 ## Comportamento e limites
 
@@ -131,6 +134,6 @@ const room = {
 
 - As pessoas na sala são botões nomeados com o status ("Carla Prado, Editando"), com `aria-pressed` quando seguidas; o resumo em texto repete os números, então o status nunca depende só da cor.
 - Cursores e seleções são decorativos (`aria-hidden`); o nome também está nos botões da lista.
-- A conversa é um popover nomeado; a coluna de conversas dá a mesma via por teclado, com um botão por conversa.
+- Comentar começa pelo botão Comentar trecho da barra da seleção (`Alt+F10` leva o foco até ela). A conversa é um popover nomeado; a coluna de conversas é um `complementary` com o nome da lista e dá a mesma via por teclado, com um botão por conversa.
 - Os avisos de offline e de mesclagem são `output`, anunciados sem tirar o foco.
 - Cores só de tokens (`chart-1` a `chart-5`, `primary`); os botões usam `sm` e `icon-sm`.

@@ -105,6 +105,7 @@ The list. Renders a `ScrollArea` of [UI/ScrollArea](?path=/docs/ui-scroll-area-a
 | `defaultCollapsedGroupIds` | `readonly string[]` | `[]` | Sets the groups collapsed at first, when uncontrolled. |
 | `onCollapsedGroupIdsChange` | `(groupIds: readonly string[]) => void` | - | Called when a group is collapsed or expanded, with the ids of every collapsed group. |
 | `getGroupActions` | `(group: CollectionGroup<TRecord>) => ListGroupActions \| undefined` | - | Returns the add action of a group header. |
+| `getGroupToggleLabel` | `(group: string, collapsed: boolean) => string` | `Collapse <label>` or `Expand <label>` | Names the collapse button of a group, from the group label (its id when the label is not a string) and whether it is collapsed. |
 | `renderGroupTitle` | `(group: CollectionGroup<TRecord>) => React.ReactNode` | - | Replaces the group heading text, and removes the group icon. |
 | `emptyGroupLabel` | `React.ReactNode` or `(group: CollectionGroup<TRecord>) => React.ReactNode` | `"No items in this group."` | Sets the text of a group with no records. |
 | `emptyMessage` | `React.ReactNode` | `"No items to show."` | Sets the text of a flat list with no records. |
@@ -128,7 +129,7 @@ Uncontrolled, the list keeps the choice made on each group. With `collapseEmptyG
 
 ### Groups
 
-Each group is a `section` named by its `h2` heading, so it is a `region` landmark. Its header holds a ghost icon button named `Collapse <label>` or `Expand <label>`, the group icon (`icon` of the grouping option, left out with `renderGroupTitle`), the heading, the count of the group in a round 20px badge and, with `onAddRecord` and not loading, a plus button. The header sticks to the top of the list while its rows scroll.
+Each group is a `section` named by its `h2` heading, so it is a `region` landmark. Its header holds a ghost icon button named by `getGroupToggleLabel`, `Collapse <label>` or `Expand <label>` by default, the group icon (`icon` of the grouping option, left out with `renderGroupTitle`), the heading, the count of the group in a round 20px badge and, with `onAddRecord` and not loading, a plus button. The header sticks to the top of the list while its rows scroll.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
@@ -237,6 +238,6 @@ Each row part also exports its props type (`ListRowFieldProps`, `ListRowTitleTri
 ## Accessibility and theme
 
 - Name the row by its title: put the title text in `ListRowTitleTrigger`, and name every icon-only control in the row with `aria-label`.
-- The built-in texts are English (`No items to show.`, `No items in this group.`, `Loading item`, `Collapse`, `Expand`, `Add item to`); pass `emptyMessage`, `emptyGroupLabel`, `loadingRecordLabel` and `addLabel` to change them. The collapse button names cannot be changed.
+- The built-in texts are English (`No items to show.`, `No items in this group.`, `Loading item`, `Collapse`, `Expand`, `Add item to`); pass `emptyMessage`, `emptyGroupLabel`, `loadingRecordLabel`, `getGroupToggleLabel` and `addLabel` to change them.
 - Groups are `region` landmarks named by their headings, so keep group labels distinct.
 - The frame uses `card` and `border`, the hover fill `muted`, and the separators and description `border` and `muted-foreground`.

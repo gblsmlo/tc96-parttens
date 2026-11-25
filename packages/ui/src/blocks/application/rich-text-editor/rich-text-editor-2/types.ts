@@ -26,16 +26,7 @@ export interface RichTextEditor2Settings {
 }
 
 export interface RichTextEditor2Labels {
-  blockAdd: string
-  blockDelete: string
-  blockDuplicate: string
   blockKinds: Record<RichTextEditor2BlockKind, string>
-  blockMenu: string
-  blockMoveDown: string
-  blockMoveUp: string
-  blockSelection: string
-  blockTurnInto: string
-  dragHandle: string
   editor: string
   fullWidth: string
   locked: string
@@ -70,6 +61,7 @@ export interface RichTextEditor2NavbarContext {
   pageMenuItems: ReactNode
   saveStatus: 'saved' | 'saving' | null
   settings: RichTextEditor2Settings
+  status: ReactNode
 }
 
 export interface RichTextEditor2Props {

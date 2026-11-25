@@ -1,19 +1,18 @@
 'use client'
 
+import { SparkleIcon } from '@phosphor-icons/react'
 import {
   CodePlugin,
   HighlightPlugin,
   StrikethroughPlugin,
 } from '@platejs/basic-nodes/react'
 import { SlashPlugin } from '@platejs/slash-command/react'
+import { Badge } from '@tc96/ui/badge'
+import { Button } from '@tc96/ui/button'
 import {
   RichTextEditor,
-  RichTextHistoryButton,
-  RichTextMarkButton,
-  RichTextToolbar,
   useRichTextEditor,
 } from '@tc96/ui/patterns/rich-text-editor'
-import { ToolbarGroup, ToolbarSeparator } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
 import type { TRange } from 'platejs'
 import { RangeApi } from 'platejs'
@@ -30,7 +29,7 @@ import {
   useSuggestionState,
   useSuggestions,
 } from '../shared/suggestions'
-import { AssistantDock } from './assistant-dock'
+import { AssistantChat, type AssistantTurn } from './assistant-chat'
 import { passageLines } from './document-text'
 import { defaultRichTextEditor5Labels } from './labels'
 import { defaultPlanner, matchTask, selectionTasks } from './planner'
@@ -38,6 +37,7 @@ import { SelectionBubble } from './selection-bubble'
 import type {
   RichTextEditor5Finding,
   RichTextEditor5Labels,
+  RichTextEditor5NavbarContext,
   RichTextEditor5Props,
   RichTextEditor5Task,
 } from './types'
@@ -60,6 +60,7 @@ export function RichTextEditor5({
   defaultValue,
   formatTime,
   labels: labelsProp,
+  navbar,
   onChange,
   onDecision,
   planner = defaultPlanner,
@@ -80,11 +81,6 @@ export function RichTextEditor5({
         ...labelsProp?.review?.kind,
       },
     },
-    history: {
-      ...defaultRichTextEditor5Labels.history,
-      ...labelsProp?.history,
-    },
-    marks: { ...defaultRichTextEditor5Labels.marks, ...labelsProp?.marks },
     tasks: { ...defaultRichTextEditor5Labels.tasks, ...labelsProp?.tasks },
   }
   const assistant = useMemo(
@@ -116,7 +112,6 @@ export function RichTextEditor5({
   const [selection, setSelection] = useState<TRange | null>(null)
   const [focused, setFocused] = useState(false)
   const [passage, setPassage] = useState<Passage | null>(null)
-  const [fallback, setFallback] = useState<string | null>(null)
   const [canUndo, setCanUndo] = useState(false)
   const [activeFindingId, setActiveFindingId] = useState<string | null>(null)
   const [caretBox, setCaretBox] = useState<{
@@ -124,8 +119,12 @@ export function RichTextEditor5({
     left: number
     top: number
   } | null>(null)
+  const [turns, setTurns] = useState<AssistantTurn[]>([])
+  const [assistantOpen, setAssistantOpen] = useState(true)
+  const [composerFocus, setComposerFocus] = useState(0)
   const surface = useRef<HTMLDivElement>(null)
-  const input = useRef<HTMLInputElement>(null)
+  const chat = useRef<HTMLElement>(null)
+  const turnCount = useRef(0)
   const running = run?.status === 'running'
 
   useEffect(() => {
@@ -166,9 +165,32 @@ export function RichTextEditor5({
     return text ? { range, text } : null
   }
 
-  const run1 = (task: RichTextEditor5Task, from: Passage | null) => {
+  const addTurn = (
+    turn:
+      | { fallback: string; kind: 'fallback'; prompt: string }
+      | { kind: 'task'; prompt: string },
+  ) => {
+    turnCount.current += 1
+    const id = `turn-${turnCount.current}`
+    setTurns((current) => [
+      ...current.map((previous, index) =>
+        index === current.length - 1 &&
+        previous.kind === 'task' &&
+        !previous.run
+          ? { ...previous, run: run ?? undefined }
+          : previous,
+      ),
+      { ...turn, id },
+    ])
+  }
+
+  const run1 = (
+    task: RichTextEditor5Task,
+    from: Passage | null,
+    prompt: string = labels.tasks[task],
+  ) => {
     const scoped = from && selectionTasks.includes(task) ? from : null
-    setFallback(null)
+    addTurn({ kind: 'task', prompt })
     setCanUndo(false)
     setActiveFindingId(null)
     if (!scoped) setPassage(null)
@@ -185,17 +207,24 @@ export function RichTextEditor5({
     const from = bubbleRange ? passageFrom(bubbleRange) : null
     if (!from) return
     setPassage(from)
-    setFallback(null)
-    input.current?.focus()
+    setAssistantOpen(true)
+    setComposerFocus((count) => count + 1)
   }
+
+  useEffect(() => {
+    if (composerFocus === 0) return
+    chat.current
+      ?.querySelector<HTMLElement>('[data-slot="composer-input"]')
+      ?.focus()
+  }, [composerFocus])
 
   const request = (text: string) => {
     const task = matchTask(text)
     if (!task) {
-      setFallback(text)
+      addTurn({ fallback: text, kind: 'fallback', prompt: text })
       return
     }
-    run1(task, passage)
+    run1(task, passage, text)
   }
 
   const decide = (id: string, action: 'accept' | 'reject') => {
@@ -250,47 +279,40 @@ export function RichTextEditor5({
     jumpToText(editor, finding.quote)
   }
 
+  const context: RichTextEditor5NavbarContext = {
+    pending: changes.length,
+    running,
+    status:
+      running || changes.length > 0 ? (
+        <Badge data-slot="assistant-navbar-status" variant="secondary">
+          {running && run
+            ? labels.running(labels.tasks[run.task])
+            : labels.pending(changes.length)}
+        </Badge>
+      ) : null,
+  }
+  const navbarNode = typeof navbar === 'function' ? navbar(context) : navbar
+
   return (
     <div
       className={cn(
-        'relative flex min-h-svh w-full flex-col bg-background text-foreground',
+        'relative flex h-svh w-full flex-col overflow-hidden bg-background text-foreground',
         className,
       )}
       data-slot="rich-text-editor-5"
     >
-      <div className="min-w-0 flex-1 px-4 py-6 sm:px-8">
+      {navbarNode}
+      <div
+        className="min-h-0 flex-1 overflow-y-auto px-6 pt-10 pb-24 sm:px-12"
+        data-slot="rich-text-editor-5-scroll"
+      >
         <div className="relative mx-auto max-w-3xl" ref={surface}>
           <RichTextEditor
             aria-label={labels.document}
-            contentClassName="min-h-96 pb-48 leading-7"
+            contentClassName="min-h-96 leading-7"
             editor={editor}
             floatingToolbar={false}
             onValueChange={onChange}
-            toolbar={
-              <RichTextToolbar
-                aria-label={labels.formatting}
-                className="mb-6 rounded-lg border bg-card p-1"
-              >
-                <ToolbarGroup>
-                  <RichTextHistoryButton
-                    action="undo"
-                    label={labels.history.undo}
-                  />
-                  <RichTextHistoryButton
-                    action="redo"
-                    label={labels.history.redo}
-                  />
-                </ToolbarGroup>
-                <ToolbarSeparator />
-                <ToolbarGroup>
-                  <RichTextMarkButton label={labels.marks.bold} mark="bold" />
-                  <RichTextMarkButton
-                    label={labels.marks.italic}
-                    mark="italic"
-                  />
-                </ToolbarGroup>
-              </RichTextToolbar>
-            }
           >
             <SelectionWatcher onSelection={setSelection} />
           </RichTextEditor>
@@ -312,6 +334,53 @@ export function RichTextEditor5({
           ) : null}
         </div>
       </div>
+      {assistantOpen ? (
+        <aside
+          aria-label={labels.dock}
+          className="absolute end-4 bottom-4 z-20 flex h-[min(36rem,calc(100%-5rem))] w-[min(24rem,calc(100%-2rem))] flex-col overflow-hidden rounded-2xl border bg-popover text-popover-foreground shadow-lg/10"
+          data-slot="assistant-dock"
+        >
+          <AssistantChat
+            activeFindingId={activeFindingId}
+            activeId={activeId}
+            canUndo={canUndo}
+            changes={changes}
+            chatRef={chat}
+            formatTime={formatTime}
+            labels={labels}
+            onAccept={(id) => decide(id, 'accept')}
+            onAcceptAll={() => decideAll('accept')}
+            onClearPassage={() => setPassage(null)}
+            onCollapse={() => setAssistantOpen(false)}
+            onFinding={jump}
+            onReject={(id) => decide(id, 'reject')}
+            onRejectAll={() => decideAll('reject')}
+            onRequest={request}
+            onRun={(task) => run1(task, passage)}
+            onSelect={(id) => goTo(editor, id)}
+            onStep={step}
+            onStop={stop}
+            onUndo={undo}
+            passage={passage}
+            run={run}
+            turns={turns}
+          />
+        </aside>
+      ) : (
+        <Button
+          className="absolute end-4 bottom-4 z-20 shadow-lg/10"
+          data-slot="assistant-launcher"
+          onClick={() => setAssistantOpen(true)}
+          size="sm"
+          variant="outline"
+        >
+          <SparkleIcon aria-hidden="true" />
+          {labels.assistant}
+          {changes.length > 0 ? (
+            <Badge variant="secondary">{changes.length}</Badge>
+          ) : null}
+        </Button>
+      )}
       <SelectionBubble
         editor={editor}
         labels={labels}
@@ -319,30 +388,6 @@ export function RichTextEditor5({
         onSpelling={() => fromBubble('spelling')}
         onSummary={() => fromBubble('summary')}
         range={bubbleRange}
-      />
-      <AssistantDock
-        activeFindingId={activeFindingId}
-        activeId={activeId}
-        canUndo={canUndo}
-        changes={changes}
-        fallback={fallback}
-        formatTime={formatTime}
-        inputRef={input}
-        labels={labels}
-        onAccept={(id) => decide(id, 'accept')}
-        onAcceptAll={() => decideAll('accept')}
-        onClearPassage={() => setPassage(null)}
-        onFinding={jump}
-        onReject={(id) => decide(id, 'reject')}
-        onRejectAll={() => decideAll('reject')}
-        onRequest={request}
-        onRun={(task) => run1(task, passage)}
-        onSelect={(id) => goTo(editor, id)}
-        onStep={step}
-        onStop={stop}
-        onUndo={undo}
-        passage={passage}
-        run={run}
       />
     </div>
   )

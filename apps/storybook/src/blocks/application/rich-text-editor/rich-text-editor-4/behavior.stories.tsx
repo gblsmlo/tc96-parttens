@@ -153,16 +153,13 @@ export const FollowingAFaceScrollsToItsCaret: Story = {
     await editorOf(canvasElement)
     const room = await ready()
     room.stepAll()
-    const scroller = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="rich-text-editor-4-scroll"]',
-    ) as HTMLElement
+    const scroller = document.scrollingElement as HTMLElement
     await waitFor(() =>
       expect(remoteCaret(canvasElement, 'carla')).not.toBeNull(),
     )
     const inView = () => {
       const caret = remoteCaret(canvasElement, 'carla')?.getBoundingClientRect()
-      const view = scroller.getBoundingClientRect()
-      return !!caret && caret.top >= view.top && caret.bottom <= view.bottom
+      return !!caret && caret.top >= 0 && caret.bottom <= window.innerHeight
     }
     await expect(inView()).toBe(false)
     const face = within(canvasElement).getByRole('button', {
@@ -185,14 +182,16 @@ async function createThread(
 ) {
   const editor = await editorOf(canvasElement, editorName)
   selectText(editor, text)
-  const offer = await waitFor(() => {
+  const toolbar = await waitFor(() => {
     const element = document.querySelector<HTMLElement>(
-      '[data-slot="comment-offer"]',
+      '[data-slot="floating-toolbar"]',
     )
     expect(element).not.toBeNull()
     return element as HTMLElement
   })
-  await userEvent.click(within(offer).getByRole('button', { name: 'Comentar' }))
+  await userEvent.click(
+    within(toolbar).getByRole('button', { name: 'Comentar trecho' }),
+  )
   const compose = await waitFor(() => {
     const element = document.querySelector<HTMLElement>(
       '[data-slot="comment-compose"]',
@@ -351,7 +350,6 @@ export const CommentsReachTheOtherClient: Story = {
 
 export const UndoRevertsOnlyTheLocalEdits: Story = {
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
     const editor = await editorOf(canvasElement)
     const room = await ready()
     room.stepAll()
@@ -360,9 +358,8 @@ export const UndoRevertsOnlyTheLocalEdits: Story = {
     )
     await typeAtEnd(editor, ' Minha nota.')
     await waitFor(() => expect(typedText(editor)).toContain('Minha nota.'))
-    const undo = canvas.getByRole('button', { name: 'Desfazer' })
-    await waitFor(() => expect(undo).toBeEnabled())
-    await userEvent.click(undo)
+    const mod = /Mac/.test(navigator.platform) ? 'Meta' : 'Control'
+    await userEvent.keyboard(`{${mod}>}z{/${mod}}`)
     await waitFor(() => expect(typedText(editor)).not.toContain('Minha nota.'))
     await expect(typedText(editor)).toContain('Revisar com o time de dados.')
   },

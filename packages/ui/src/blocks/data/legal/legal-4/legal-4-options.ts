@@ -8,7 +8,7 @@ import {
   UserPlusIcon,
   WarningIcon,
 } from '@phosphor-icons/react'
-import type { LegalOptionAppearance } from '../shared/types'
+import type { DataOptionAppearance } from '../../shared/properties/types'
 import type { Legal4Queue, Legal4Status } from './types'
 
 export const legal4Queues: readonly Legal4Queue[] = [
@@ -30,11 +30,11 @@ export const legal4QueueAppearance = {
   onboarding: { icon: UserPlusIcon, tone: 'info' },
   relationship: { icon: HandshakeIcon, tone: 'success' },
   service: { icon: HeadsetIcon, tone: 'neutral' },
-} as const satisfies Record<Legal4Queue, LegalOptionAppearance>
+} as const satisfies Record<Legal4Queue, DataOptionAppearance>
 
 export const legal4StatusAppearance = {
   active: { icon: CheckCircleIcon, tone: 'success' },
   defaulting: { icon: WarningIcon, tone: 'danger' },
   inactive: { icon: MinusCircleIcon, tone: 'neutral' },
   prospect: { icon: SparkleIcon, tone: 'info' },
-} as const satisfies Record<Legal4Status, LegalOptionAppearance>
+} as const satisfies Record<Legal4Status, DataOptionAppearance>

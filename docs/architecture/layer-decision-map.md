@@ -105,7 +105,7 @@ Caminho: `packages/ui/src/blocks/<categoria>/<grupo>/<block>/`. Story: `Blocks/<
 | Categoria | Pasta | Escolha quando a tela serve para… | Grupos atuais e previstos | Patterns que costuma consumir |
 | --- | --- | --- | --- | --- |
 | Application | `application/` | dar moldura ou acesso ao app | `shell` (`app-shell-1..4`), `auth` (`login-1`, `signup-1`, `forgot-password-1`, `reset-password-1`, `otp-1`), `settings` (`settings-<categoria>-<n>`, em oito categorias), `stats` (`stats-1..6`), `card` (`card-1..6`), `list` (`list-1..6`), `empty-state` (`empty-state-1..6`), `timeline` (`timeline-1..4`), `dashboard` (`dashboard-1..3`), `navbar` (`navbar-1..12`), `onboarding` (`onboarding-1..3`), `rich-text-editor` (`rich-text-editor-1..5`), `flow` (`flow-1..4`), `errors` | `surfaces/settings`, `surfaces/state`, `widgets` |
-| Data | `data/` | ver e editar registros de qualquer domínio | `data-grid` (`data-grid-1..9`), `table` (`table-1..9`), `board`, `record` | `collection`, `records/*`, `properties`, `editable` |
+| Data | `data/` | ver e editar registros de qualquer domínio | por domínio: `support`, `team`, `revenue`, `inventory`, `projects`, `finance`, `marketing`, `legal` | `collection`, `records/*`, `properties`, `editable` |
 | Charts | `charts/` | ler métricas | `dashboard`, `report` | `widgets` |
 | Solutions | `solutions/` | uma vertical sem categoria própria (CRM, helpdesk) | `crm` (candidatos: `Templates/Contacts`, `DealBoard`, `ContactDetail`) | vários |
 | AI & Agents | `ai-agents/` | conversar com IA ou acompanhar agentes | `ai-chat` (`ai-chat-1`) | `chat/*` |

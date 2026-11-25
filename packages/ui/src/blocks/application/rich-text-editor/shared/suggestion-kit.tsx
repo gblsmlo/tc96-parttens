@@ -51,12 +51,21 @@ export function SuggestionLeaf(props: PlateLeafProps): ReactElement {
   )
 }
 
+const triggerInputTypes = new Set(['slash_input', 'mention_input'])
+
 const directEditsPlugin = createPlatePlugin({
   key: 'redline_direct_edits',
 }).overrideEditor(
   ({
     editor,
-    tf: { addMark, deleteBackward, deleteForward, insertBreak, removeMark },
+    tf: {
+      addMark,
+      deleteBackward,
+      deleteForward,
+      insertBreak,
+      insertText,
+      removeMark,
+    },
   }) => {
     const direct = (edit: () => void) =>
       (editor as RichTextEditorInstance)
@@ -71,8 +80,18 @@ const directEditsPlugin = createPlatePlugin({
         ? editor.api.isStart(selection.anchor, block[1])
         : editor.api.isEnd(selection.anchor, block[1])
     }
+    const inTriggerInput = () =>
+      !!editor.api.above({
+        match: (node) =>
+          'type' in node && triggerInputTypes.has(String(node.type)),
+      })
     return {
       transforms: {
+        insertText(text, options) {
+          if (text === '/' || inTriggerInput())
+            direct(() => insertText(text, options))
+          else insertText(text, options)
+        },
         addMark(key, value) {
           direct(() => addMark(key, value))
         },

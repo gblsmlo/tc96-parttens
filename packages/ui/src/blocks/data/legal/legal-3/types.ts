@@ -1,11 +1,11 @@
 import type {
-  LegalFormatProps,
-  LegalLoadLabels,
-  LegalLoadProps,
-  LegalModeLabels,
-  LegalPerson,
-  LegalToolbarLabels,
-} from '../shared/types'
+  DataCollectionFormatProps,
+  DataCollectionLoadLabels,
+  DataCollectionLoadProps,
+  DataCollectionModeLabels,
+  DataCollectionPerson,
+  DataCollectionToolbarLabels,
+} from '../../shared/collection/types'
 
 export type Legal3Mode = 'calendar' | 'list' | 'table'
 
@@ -15,7 +15,7 @@ export type Legal3Queue = 'drafting' | 'filing' | 'intake' | 'review'
 
 export type Legal3Status = 'done' | 'missed' | 'pending'
 
-export type Legal3Person = LegalPerson
+export type Legal3Person = DataCollectionPerson
 
 export interface Legal3Deadline {
   allDay: boolean
@@ -39,11 +39,13 @@ export type Legal3ColumnId =
   | 'queue'
   | 'status'
 
-export interface Legal3Labels extends LegalLoadLabels, LegalToolbarLabels {
+export interface Legal3Labels
+  extends DataCollectionLoadLabels,
+    DataCollectionToolbarLabels {
   columns: Record<Legal3ColumnId, string>
   empty: string
   kinds: Record<Legal3Kind, string>
-  modes: LegalModeLabels
+  modes: DataCollectionModeLabels
   noDate: string
   openDeadline: (title: string) => string
   queues: Record<Legal3Queue, string>
@@ -62,7 +64,9 @@ export type Legal3LabelsOverride = Partial<
   statuses?: Partial<Legal3Labels['statuses']>
 }
 
-export interface Legal3Props extends LegalFormatProps, LegalLoadProps {
+export interface Legal3Props
+  extends DataCollectionFormatProps,
+    DataCollectionLoadProps {
   anchor?: string
   className?: string
   deadlines: Legal3Deadline[]

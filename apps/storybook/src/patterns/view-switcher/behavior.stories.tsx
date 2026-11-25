@@ -291,6 +291,112 @@ export const MarksOnlySelectedItemAsCurrent: Story = {
   },
 }
 
+const countOf = (button: HTMLElement) =>
+  button.querySelector<HTMLElement>('[data-slot="view-switcher-item-count"]')
+
+export const CountSitsAtTheEndOfTheRow: Story = {
+  render: () =>
+    menu(
+      <ViewSwitcherItems>
+        <ViewSwitcherItem
+          count={3}
+          label="Minha fila"
+          onSelect={onSelect}
+          options={<MenuItem>Duplicar</MenuItem>}
+        />
+      </ViewSwitcherItems>,
+    ),
+  play: async ({ canvasElement }) => {
+    const dialog = within(await open(canvasElement))
+    const item = dialog.getByRole('button', { name: 'Minha fila' })
+    const count = countOf(item)
+    if (!count) throw new Error('count not rendered')
+    await expect(count).toHaveTextContent('3')
+    await expect(count).toHaveAttribute('aria-hidden', 'true')
+    await expect(count).toHaveClass(
+      'ms-auto',
+      'text-muted-foreground',
+      'tabular-nums',
+    )
+    await expect(item.lastElementChild).toBe(count)
+    const options = dialog.getByRole('button', { name: 'Opções de Minha fila' })
+    await expect(count.getBoundingClientRect().right).toBeLessThanOrEqual(
+      options.getBoundingClientRect().left,
+    )
+    await closeDialog()
+  },
+}
+
+export const ZeroIsACountAndUndefinedIsNone: Story = {
+  render: () =>
+    menu(
+      <ViewSwitcherItems>
+        <ViewSwitcherItem count={0} label="Vencidos" onSelect={onSelect} />
+        <ViewSwitcherItem label="Todos" onSelect={onSelect} />
+      </ViewSwitcherItems>,
+    ),
+  play: async ({ canvasElement }) => {
+    const dialog = within(await open(canvasElement))
+    const zero = countOf(dialog.getByRole('button', { name: 'Vencidos' }))
+    await expect(zero).not.toBeNull()
+    await expect(zero).toHaveTextContent('0')
+    await expect(
+      countOf(dialog.getByRole('button', { name: 'Todos' })),
+    ).toBeNull()
+    await closeDialog()
+  },
+}
+
+export const AriaLabelNamesTheItemWithItsCount: Story = {
+  render: () =>
+    menu(
+      <ViewSwitcherItems>
+        <ViewSwitcherItem
+          aria-label="Minha fila, 3 prazos"
+          count={3}
+          label="Minha fila"
+          onSelect={onSelect}
+          options={<MenuItem>Duplicar</MenuItem>}
+        />
+        <ViewSwitcherItem count={8} label="Equipe" onSelect={onSelect} />
+      </ViewSwitcherItems>,
+    ),
+  play: async ({ canvasElement }) => {
+    const dialog = within(await open(canvasElement))
+    await expect(
+      dialog.getByRole('button', { name: 'Minha fila, 3 prazos' }),
+    ).toBeVisible()
+    await expect(
+      dialog.getByRole('button', { name: 'Opções de Minha fila' }),
+    ).toBeVisible()
+    await expect(dialog.getByRole('button', { name: 'Equipe' })).toBeVisible()
+    await closeDialog()
+  },
+}
+
+export const CountStaysWhenTheLabelTruncates: Story = {
+  render: () =>
+    menu(
+      <ViewSwitcherItems>
+        <ViewSwitcherItem count={1284} label={longLabel} onSelect={onSelect} />
+      </ViewSwitcherItems>,
+    ),
+  play: async ({ canvasElement }) => {
+    const dialog = within(await open(canvasElement))
+    const item = dialog.getByRole('button', { name: longLabel })
+    const label = item.querySelector<HTMLElement>('.truncate')
+    const count = countOf(item)
+    if (!label || !count) throw new Error('label or count not rendered')
+    await expect(label.scrollWidth).toBeGreaterThan(label.clientWidth)
+    await expect(count).toBeVisible()
+    await expect(count.scrollWidth).toBeLessThanOrEqual(count.clientWidth)
+    await expect(count.getBoundingClientRect().right).toBeLessThanOrEqual(
+      item.getBoundingClientRect().right,
+    )
+    await closeDialog()
+  },
+}
+
 export const SelectingItemCallsOnSelectAndCloses: Story = {
   render: () =>
     menu(

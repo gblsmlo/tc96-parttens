@@ -1,0 +1,122 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Dashboard5
+
+A legal work-due dashboard in three layers: a header with breadcrumb, title and description; a row of up to four metric cards (deadlines due in five business days, overdue deadlines, publications to decide, capture state), each a link to its queue; and a grid of panels with the member's next deadlines, the publications to decide, a column chart of deadlines due per business day, a bar chart of the deadline queues with a link per queue, and the next appointments. Reach for it on the home page of a legal practice that shows what is due and what needs a decision. Install it with `npx @tc96/cli add dashboard-5`.
+
+It is a section, not a page: it renders no `main` landmark. The block never fetches and keeps no state; links render through `renderLink(href)` (default `renderAnchor`). Every text that depends on a business rule arrives ready: the business days left (`daysLeft`, "4 dias úteis"), the metric sub-lines (`detail`) and the publication lines. Counts arrive raw and are formatted with `locale`; dates arrive as ISO values and are formatted with `locale` and `timeZone`. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and empty `metrics`, lists, `queues` and `dueDays` the empty state. The precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/Application/Dashboard/Dashboard5`: [Playground](?path=/story/blocks-application-dashboard-dashboard5-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-dashboard-dashboard5-behavior--header-shows-breadcrumb-and-title) for the tests, [States](?path=/story/blocks-application-dashboard-dashboard5-states--default) for the four states and [Usages](?path=/story/blocks-application-dashboard-dashboard5-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Dashboard5 } from '@tc96/ui/blocks/application/dashboard/dashboard-5'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Four metrics, four deadlines, two publications, five due days, three queues and two appointments.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Dashboard5
+  appointments={appointments}
+  breadcrumbs={[{ href: '/painel', label: 'Painéis' }, { label: 'Pendências' }]}
+  deadlines={myDeadlines}
+  dueDays={dueDays}
+  error={isError}
+  links={{ agenda: '/agenda', deadlines: '/juridico/prazos', publications: '/juridico/publicacoes' }}
+  metrics={metrics}
+  onRetry={() => refetch()}
+  pending={isPending}
+  publications={canTriage ? publications : undefined}
+  queues={queues}
+  renderLink={(href) => <Link to={href} />}
+  timeZone="America/Sao_Paulo"
+/>
+```
+
+## Dashboard5
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `deadlines` | `Dashboard5Deadline[]` | required | The member's next deadlines, in order. An empty array renders a message. |
+| `queues` | `Dashboard5Queue[]` | required | The deadline queues with their counts: the bar chart and the queue links. An empty array renders a message. |
+| `appointments` | `Dashboard5Appointment[]` | required | The next appointments. An empty array renders a message. |
+| `publications` | `Dashboard5Publication[]` | - | The publications to decide; without it the panel is not rendered (a member who cannot triage). |
+| `dueDays` | `Dashboard5DueDay[]` | `[]` | Deadlines due per business day; without days the column chart is not rendered. |
+| `metrics` | `Dashboard5Metrics` | `{}` | The metric cards: `dueSoon`, `overdue`, `publications` and `capture`; each renders only when given. |
+| `links` | `{ deadlines?, publications?, agenda? }` | `{}` | The hrefs of the Abrir Prazos, Abrir fila and Abrir Agenda links in the panel headers. |
+| `renderLink` | `RenderLink` | `renderAnchor` | Builds the element of every link, for the app's router. |
+| `breadcrumbs` | `{ label: string; href?: string }[]` | - | The trail above the title; the last item is the current page. |
+| `locale` | `string` | `'pt-BR'` | Locale of counts and dates. |
+| `timeZone` | `string` | runtime zone | IANA zone of the appointment day and time. |
+| `pending` | `boolean` | `false` | Renders the skeleton; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar de novo button; without it the button is not rendered. |
+| `labels` | `Partial<Dashboard5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Data types
+
+| Type | Fields |
+| --- | --- |
+| `Dashboard5CountMetric` | `count`, `detail` (the ready sub-line, such as "o primeiro em 26/11") and `href` (the whole label becomes a link). |
+| `Dashboard5CaptureMetric` | `state` (`running`, `simulated` or `stopped`, shown through `labels.captureStates`), `detail` and `href`. |
+| `Dashboard5Deadline` | `id`, `title` (the deadline kind), `lawsuitTitle`, `fatalDate` (ISO), `daysLeft` (ready text), `urgency` (`overdue`, `today`, `soon`, `later`: the badge tone) and `href`. |
+| `Dashboard5Publication` | `id`, `title` (ready, "Intimação · TJSP"), `description` (ready), `availableOn` (ISO) and `href`. |
+| `Dashboard5Appointment` | `id`, `title`, `recordTitle`, `startsAt` (ISO instant) and `href`. |
+| `Dashboard5Queue` | `id`, `label`, `count` and `href`. |
+| `Dashboard5DueDay` | `date` (ISO day) and `count`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Pendências"`; the heading and the accessible name of the section |
+| `description` | `string` | `"Prazos que vencem, publicações para decidir e a situação da captura."` |
+| `loading` | `string` | `"Carregando pendências"`; the accessible name of the skeleton |
+| `indicators` | `string` | `"Indicadores"`; the accessible name of the metric list |
+| `dueSoonLabel`, `overdueLabel`, `publicationsLabel`, `captureLabel` | `string` | `"Vencem em até 5 dias úteis"`, `"Prazos atrasados"`, `"Publicações para decidir"`, `"Captura do DJEN"` |
+| `captureStates` | `Record<state, string>` | `"Em dia"`, `"Simulado"`, `"Parada"` |
+| `deadlinesTitle`, `deadlinesLink`, `deadlinesEmpty` | `string` | `"Meus prazos"`, `"Abrir Prazos"`, `"Nenhum prazo seu em andamento."` |
+| `fatalOn` | `(lawsuitTitle, date) => string` | `` `${lawsuitTitle} · fatal ${date}` `` |
+| `publicationsTitle`, `publicationsLink`, `publicationsEmpty`, `decide` | `string` | `"Publicações para decidir"`, `"Abrir fila"`, `"Nenhuma publicação para decidir. As novas chegam com a próxima captura."`, `"Decidir"` |
+| `appointmentsTitle`, `agendaLink`, `appointmentsEmpty` | `string` | `"Compromissos dos meus processos"`, `"Abrir Agenda"`, `"Nenhum compromisso marcado nos seus processos."` |
+| `appointmentWhen` | `(day, time) => string` | `` `${day} · ${time}` `` |
+| `queuesTitle`, `queuesLabel`, `queuesEmpty` | `string` | `"Filas de prazo"`, `"Prazos em cada fila"` (the chart name), `"Nenhuma fila de prazo."` |
+| `queuesSummary`, `queuesTooltip` | functions | Join `label: count` with `; `; the chart description and the tooltip text |
+| `dueDaysTitle`, `dueDaysLabel` | `string` | `"Prazos por dia"`, `"Prazos que vencem em cada um dos próximos dias úteis"` (the chart name) |
+| `dueDaysSummary`, `dueDaysTooltip` | functions | Join `dd/mm: count` with `; `; the chart description and the tooltip text |
+| `breadcrumb`, `period`, `export` | `string` | `"Navegação estrutural"`, `"Período"`, `"Exportar"` (the header keys; this block has no period or export) |
+| `errorTitle`, `errorDescription`, `retry` | `string` | `"Não foi possível carregar."`, `"Tente de novo em instantes."`, `"Tentar de novo"` |
+| `emptyTitle`, `emptyDescription` | `string` | `"Nenhuma pendência"`, `"Os prazos, as publicações e os compromissos aparecem aqui assim que chegarem."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Dashboard5` | `component` | The dashboard. |
+| `Dashboard5Props` | `type` | The props of the dashboard. |
+| `Dashboard5Metrics`, `Dashboard5CountMetric`, `Dashboard5CaptureMetric`, `Dashboard5CaptureState` | `type` | The metric cards. |
+| `Dashboard5Deadline`, `Dashboard5Urgency` | `type` | A deadline row and its badge tone. |
+| `Dashboard5Publication`, `Dashboard5Appointment`, `Dashboard5Queue`, `Dashboard5DueDay` | `type` | The other rows. |
+| `Dashboard5Links` | `type` | The `links` prop. |
+| `Dashboard5CountSummaryItem` | `type` | The formatted item the summary functions receive. |
+| `Dashboard5Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The header is a `header` with the `h2` title; the breadcrumb is a `navigation` named by `labels.breadcrumb`.
+- Each metric label is a link when `href` is given, so the card is reachable by keyboard; the value is text, never color alone, and the overdue and capture tones only repeat it.
+- Both charts are TanStack Charts SVGs with the `img` role, named by `labels.queuesLabel` and `labels.dueDaysLabel` and described by a `desc` built by the summary functions; the queue bars carry direct value labels and the queue list below repeats every count as text with its link.
+- The deadline badge names the business days left in text; its tone repeats the urgency.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- Chart colors come from `--chart-1`; tooltip and axis colors from `--popover`, `--border` and `--muted-foreground`. The block carries no raw color, radius or shadow.

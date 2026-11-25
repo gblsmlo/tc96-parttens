@@ -13,7 +13,7 @@ Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/utils`, `@pho
 
 ## Dependents
 
-- The table and data grid blocks import `components/view-settings` by path (`packages/ui/src/blocks/data/table/*/` and `data-grid/*/`); stories import through `@tc96/ui/patterns`.
+- The table and data grid blocks import `components/view-settings` by path (`packages/ui/src/blocks/data/<domain>/*/`); stories import through `@tc96/ui/patterns`.
 - The `collection` entry of `docs/architecture/public-api-exports.json` no longer lists `ViewSettings*`; the root `parttens` entry does.
 - The `collection` registry item ships this folder through `itemAreas` in `packages/registry/src/manifest.ts`.
 

@@ -28,9 +28,11 @@ import {
   CollectionProvider,
   CollectionSearchField,
   CollectionToolbar,
+  FilterCheckboxSubmenu,
   FilterRadioSubmenu,
   PresetsMenu,
   projectCollection,
+  SortRadioSubmenu,
   useCollectionPreferences,
   ViewSettingsMenu,
   ViewSettingsSection,
@@ -174,7 +176,7 @@ The search of the collection, at the start of the toolbar. Renders a `form` with
 
 ## ViewSettingsMenu
 
-The display settings of the view have their own page: [ViewSettings](?path=/docs/patterns-viewsettings-api-reference--api-reference) documents `ViewSettingsMenu` and `ViewSettingsSection`. `FilterRadioSubmenu`, below, is one of the items a screen puts in its sections.
+The display settings of the view have their own page: [ViewSettings](?path=/docs/patterns-viewsettings-api-reference--api-reference) documents `ViewSettingsMenu` and `ViewSettingsSection`. `FilterRadioSubmenu`, `FilterCheckboxSubmenu` and `SortRadioSubmenu`, below, are items a screen puts in its sections.
 
 ### FilterRadioSubmenu
 
@@ -192,6 +194,37 @@ A single-choice filter inside a menu: a submenu whose first option means "any". 
 | `loadingOptionCount` | `number` | `3` | Sets the number of skeleton rows. |
 
 The skeleton rows are hidden from assistive technology and carry no role, since a menu cannot own a status. `"__all__"` is the internal value of the "any" option, so it cannot be an option value.
+
+### FilterCheckboxSubmenu
+
+A multiple-choice filter inside a menu, such as several phases or tags at once: no value checked means "any". Renders a submenu trigger with the icon and the label, and a checkbox item per option. Picking an option toggles it and keeps the menu open, so the user can check several in a row.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `icon` | `Icon` (Phosphor) | required | Sets the icon of the trigger. |
+| `label` | `string` | required | Sets the text of the trigger. |
+| `options` | `readonly (FilterCheckboxOption<TValue> \| FilterCheckboxGroup<TValue>)[]` | required | Lists the options in order: a `[value, label]` pair renders a plain item, a `{ label, options }` group renders its pairs under a group label. Both can mix. |
+| `onValueChange` | `(value: TValue[]) => void` | required | Called when an option is toggled, with the new list of values (a checked option is appended), or `[]` from the clear item. |
+| `value` | `readonly TValue[]` | `[]` | Sets the checked options. |
+| `clearLabel` | `string` | - | Adds a first item with this text, checked while `value` is empty, that clears the choice. Without it there is no clear item. |
+| `loading` | `boolean` | `false` | When true, replaces the options and groups with skeleton rows and marks the submenu `aria-busy`; the clear item stays. |
+| `loadingOptionCount` | `number` | `3` | Sets the number of skeleton rows. |
+
+`TValue` is a string type inferred from `options`, `string` by default. Each group is a `role="group"` named by its label, so a screen reader announces the label when focus enters it. Clicking the clear item while nothing is checked does not call `onValueChange`. Group labels are keys, so they are unique within one submenu.
+
+### SortRadioSubmenu
+
+A single choice that always has a value, such as the order of a list (Data fatal, Data interna). Renders a submenu trigger with the icon and the label, and a radio group of the options with no "any" option, so exactly one option is checked at all times.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `icon` | `Icon` (Phosphor) | required | Sets the icon of the trigger. |
+| `label` | `string` | required | Sets the text of the trigger. |
+| `options` | `readonly (readonly [value: TValue, label: string])[]` | required | Lists the options as `[value, label]` pairs, in order. |
+| `value` | `TValue` | required | Sets the checked option; pass one of the option values. |
+| `onValueChange` | `(value: TValue) => void` | required | Called when an option is picked, with its value; never with `""`. |
+
+`TValue` is a string type inferred from `options`. Use `FilterRadioSubmenu` when the choice can be empty, and this one when a default always applies: the consumer maps its default (an unset sort in the URL, say) to an option value. It has no `loading`, since an order is a fixed list.
 
 ## Action
 
@@ -314,6 +347,10 @@ Also takes every prop of a `div`.
 | `CollectionFrameFooterProps` | `type` | The props of `CollectionFrameFooter`. |
 | `CollectionFrameOverlayProps` | `type` | The props of `CollectionFrameOverlay`. |
 | `FilterRadioSubmenuProps` | `type` | The props of `FilterRadioSubmenu`. |
+| `FilterCheckboxSubmenuProps` | `type` | The props of `FilterCheckboxSubmenu`. |
+| `FilterCheckboxOption` | `type` | One option of `FilterCheckboxSubmenu`, `readonly [value, label]`. |
+| `FilterCheckboxGroup` | `type` | A labeled group of options, `{ label, options }`. |
+| `SortRadioSubmenuProps` | `type` | The props of `SortRadioSubmenu`. |
 | `CollectionSearchFieldProps` | `type` | The props of `CollectionSearchField`. |
 | `ActionProps` | `type` | The props of `Action`. |
 | `PresetsMenuProps` | `type` | The props of `PresetsMenu`. |
@@ -323,5 +360,5 @@ Also takes every prop of a `div`.
 - Name `CollectionFrameBody` with `aria-label`, so the records sit in a named `region`, and name each layout through its own props (`datatable["aria-label"]`, `datagrid["aria-label"]`).
 - Name `CollectionSearchField` with `label` when the default `Buscar` does not say what it searches, and `CollectionPagination` with `label` after the collection it pages.
 - Keyboard: the toolbar is one Tab stop whose controls the arrow keys move between; the layout tabs of `ViewSettingsMenu` are radio items of the menu. Every layout keeps a keyboard path for its moves, documented on its node. Each button of `CollectionPagination` is its own Tab stop, and a disabled one is skipped.
-- The copy of the parts is Portuguese (`Exibição`, `Limpar filtros`, `Salvar preferência`, `Todos`, `Buscar`, `Adicionar`, `itens`); every one of those texts is a prop. The names of the `CollectionPagination` buttons (`Primeira página`, `Página anterior`, `Próxima página`, `Última página`) and the `de` of its range are fixed.
+- The copy of the parts is Portuguese (`Exibição`, `Limpar filtros`, `Salvar preferência`, `Todos`, `Buscar`, `Adicionar`, `itens`); every one of those texts is a prop. `FilterCheckboxSubmenu` and `SortRadioSubmenu` have no text of their own. The names of the `CollectionPagination` buttons (`Primeira página`, `Página anterior`, `Próxima página`, `Última página`) and the `de` of its range are fixed.
 - The colors come from the theme tokens `background`, `foreground`, `muted-foreground`, `accent`, `primary`, `primary-foreground` and `input`, through the menu, button, input and badge of the theme.

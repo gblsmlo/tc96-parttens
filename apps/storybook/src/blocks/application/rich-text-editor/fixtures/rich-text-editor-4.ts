@@ -85,3 +85,9 @@ export const specScript: LocalRoomStep[] = [
 export const followScript: LocalRoomStep[] = [
   { at: 100, block: 20, offset: 6, type: 'caret', user: 'carla' },
 ]
+
+export const specBreadcrumbs = [
+  { href: '/produto', label: 'Produto' },
+  { href: '/produto/especificacoes', label: 'Especificações' },
+  { label: 'Checkout em um passo' },
+]

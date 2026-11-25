@@ -8,7 +8,7 @@ import {
   ScalesIcon,
   TrayIcon,
 } from '@phosphor-icons/react'
-import type { LegalOptionAppearance } from '../shared/types'
+import type { DataOptionAppearance } from '../../shared/properties/types'
 import type {
   Legal1Phase,
   Legal1Queue,
@@ -43,13 +43,13 @@ export const legal1QueueAppearance = {
   hearings: { icon: MicrophoneIcon, tone: 'warning' },
   intake: { icon: TrayIcon, tone: 'neutral' },
   review: { icon: MagnifyingGlassIcon, tone: 'info' },
-} as const satisfies Record<Legal1Queue, LegalOptionAppearance>
+} as const satisfies Record<Legal1Queue, DataOptionAppearance>
 
 export const legal1StatusAppearance = {
   active: { icon: ScalesIcon, tone: 'info' },
   closed: { icon: CheckCircleIcon, tone: 'neutral' },
   settled: { icon: HandshakeIcon, tone: 'success' },
   suspended: { icon: PauseCircleIcon, tone: 'warning' },
-} as const satisfies Record<Legal1Status, LegalOptionAppearance>
+} as const satisfies Record<Legal1Status, DataOptionAppearance>
 
 export const legal1Views: readonly Legal1View[] = ['all', 'lawsuits', 'matters']

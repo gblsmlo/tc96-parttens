@@ -1,9 +1,6 @@
 import type { RichTextEditor2Labels } from './types'
 
 export const defaultRichTextEditor2Labels: RichTextEditor2Labels = {
-  blockAdd: 'Adicionar bloco abaixo',
-  blockDelete: 'Excluir',
-  blockDuplicate: 'Duplicar',
   blockKinds: {
     blockquote: 'Citação',
     callout: 'Destaque',
@@ -15,12 +12,6 @@ export const defaultRichTextEditor2Labels: RichTextEditor2Labels = {
     todo: 'Lista de tarefas',
     ul: 'Lista com marcadores',
   },
-  blockMenu: 'Opções do bloco',
-  blockMoveDown: 'Mover para baixo',
-  blockMoveUp: 'Mover para cima',
-  blockSelection: 'Blocos selecionados',
-  blockTurnInto: 'Transformar em',
-  dragHandle: 'Arrastar bloco',
   editor: 'Conteúdo da página',
   fullWidth: 'Largura total',
   locked: 'Página bloqueada',

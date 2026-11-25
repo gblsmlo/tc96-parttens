@@ -1,11 +1,11 @@
 import type {
-  LegalFormatProps,
-  LegalLoadLabels,
-  LegalLoadProps,
-  LegalModeLabels,
-  LegalPerson,
-  LegalToolbarLabels,
-} from '../shared/types'
+  DataCollectionFormatProps,
+  DataCollectionLoadLabels,
+  DataCollectionLoadProps,
+  DataCollectionModeLabels,
+  DataCollectionPerson,
+  DataCollectionToolbarLabels,
+} from '../../shared/collection/types'
 
 export type Legal1Mode = 'kanban' | 'list' | 'table'
 
@@ -26,7 +26,7 @@ export type Legal1Queue = 'drafting' | 'hearings' | 'intake' | 'review'
 
 export type Legal1Status = 'active' | 'closed' | 'settled' | 'suspended'
 
-export type Legal1Person = LegalPerson
+export type Legal1Person = DataCollectionPerson
 
 export interface Legal1Case {
   area: Legal1Area
@@ -56,13 +56,15 @@ export type Legal1ColumnId =
   | 'status'
   | 'title'
 
-export interface Legal1Labels extends LegalLoadLabels, LegalToolbarLabels {
+export interface Legal1Labels
+  extends DataCollectionLoadLabels,
+    DataCollectionToolbarLabels {
   areas: Record<Legal1Area, string>
   columns: Record<Legal1ColumnId, string>
   copyNumber: string
   empty: string
   emptyColumn: string
-  modes: LegalModeLabels
+  modes: DataCollectionModeLabels
   noCourt: string
   noDeadline: string
   noNumber: string
@@ -90,7 +92,9 @@ export type Legal1LabelsOverride = Partial<
   views?: Partial<Legal1Labels['views']>
 }
 
-export interface Legal1Props extends LegalFormatProps, LegalLoadProps {
+export interface Legal1Props
+  extends DataCollectionFormatProps,
+    DataCollectionLoadProps {
   cases: Legal1Case[]
   className?: string
   labels?: Legal1LabelsOverride

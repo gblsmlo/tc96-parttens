@@ -1,4 +1,7 @@
-import { LegalKanbanCard, LegalListRow } from '../shared/legal-record-parts'
+import {
+  DataCollectionKanbanCard,
+  DataCollectionListRow,
+} from '../../shared/collection/data-collection-record-parts'
 import {
   Legal1DeadlineField,
   type Legal1FieldContext,
@@ -13,7 +16,7 @@ export const renderLegal1ListRow =
   (context: Legal1FieldContext) => (item: Legal1Case) => {
     const { labels, onOpen } = context
     return (
-      <LegalListRow
+      <DataCollectionListRow
         caption={[item.client, labels.areas[item.area]]}
         fields={
           <>
@@ -34,7 +37,7 @@ export const renderLegal1KanbanCard =
   (context: Legal1FieldContext) => (item: Legal1Case) => {
     const { labels, onOpen } = context
     return (
-      <LegalKanbanCard
+      <DataCollectionKanbanCard
         caption={[item.client]}
         fields={[
           {

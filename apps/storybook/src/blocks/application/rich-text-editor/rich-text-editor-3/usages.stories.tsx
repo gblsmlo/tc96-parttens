@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  RichTextEditor3,
-  type RichTextEditor3Decision,
-  type RichTextEditor3ExportFormat,
+import type {
+  RichTextEditor3Decision,
+  RichTextEditor3ExportFormat,
 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-3'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
@@ -12,6 +11,7 @@ import {
   redlineAuthors,
   redlineTime,
 } from '../fixtures/rich-text-editor-3.ts'
+import { ContractPage } from './rich-text-editor-3-layouts.tsx'
 
 const decisionText = (decision: RichTextEditor3Decision) =>
   'change' in decision
@@ -30,7 +30,7 @@ const ReviewRoom = () => {
 
   return (
     <div className="flex min-h-svh flex-col">
-      <RichTextEditor3
+      <ContractPage
         author={redlineAuthor}
         authors={redlineAuthors}
         className="flex-1"
@@ -115,7 +115,7 @@ export const CopyingTheRedlineForTheCounterparty: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await userEvent.click(
-      await canvas.findByRole('button', { name: 'Exportar' }),
+      await canvas.findByRole('button', { name: 'Mais ações' }),
     )
     await userEvent.click(
       await screen.findByRole('menuitem', { name: 'Copiar redline em HTML' }),

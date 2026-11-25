@@ -1,0 +1,92 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Agenda1
+
+One window of a person's or a team's agenda: appointments, tasks, due dates and deadlines on the collection calendar (Dia, Semana or Mês), or the same entries as a Lista or a Tabela. Reach for it on the screen that shows what happens in a period and lets the user move through periods, open an entry, reschedule it by dragging and create one. Install it with `npx @tc96/cli add agenda-1`.
+
+The block is controlled and renders what it gets. The mode, the period, the anchor day, the grouping and the filters are a value and a callback; without the value the block keeps it locally. It does **not** fetch, filter or page `entries`: the consumer reads the window of the anchor and period (`agenda1Window` gives its `from` and `to` instants), applies the filters on its server and passes the result, in start order. Entry kinds and modalities are fixed unions with labels, icons and tones; owners are a workspace catalog passed as `{ id, label }[]`. Every time arrives as an ISO instant and is shown in `timeZone`; an all-day entry runs from midnight of its first day to midnight after its last day in that zone.
+
+The toolbar heading is `labels.title` with the period title below it (`23 – 29 de nov. de 2026`, `novembro de 2026`, `25 de novembro de 2026`). On the right: Hoje, Período anterior and Próximo período, which call `onAnchorChange` with a `YYYY-MM-DD` day (the month moves to day 1 of its neighbour, so a 31st never skips a shorter month), then Exibição (the mode tabs, Período, Agrupar por in the Lista and the Tabela, and the Tipo and Responsável filters) and Novo compromisso. The toolbar stays while `pending` and on `error`, so the user can keep moving through periods while a window loads.
+
+In the calendar each item shows its time and title in the tone of its kind (Compromisso neutral, Tarefa primary, Vencimento warning, Prazo destructive) and is named `Kind: title`; a completed entry is struck through. With `onReschedule`, a Compromisso or a Tarefa drags to another day or time and resizes in the time grid; a Vencimento or a Prazo is refused and rolls back, because a deadline is a date that moves from its source record. With `onCreate`, a click on an empty slot of the Dia or Semana grid reports that slot (`{ start, end }`, one 15-minute step) and Novo compromisso reports no slot. In Mês, a full day collapses behind `+N`, and the day title in its popup opens that day in the Dia period. The Lista groups by day (or by kind) under one heading per group; the Tabela shows Título, Tipo, Quando, Modalidade, Local, Responsável (with `owners`) and Ações (with `onCancel`). Cancelar renders only on a Compromisso that is not completed.
+
+The other pages of `Blocks/Data/Agenda/Agenda1`: [Playground](?path=/story/blocks-data-agenda-agenda1-playground--playground), [Layouts](?path=/story/blocks-data-agenda-agenda1-layouts--default), [Behavior](?path=/story/blocks-data-agenda-agenda1-behavior--the-heading-names-the-period) and [Usages](?path=/story/blocks-data-agenda-agenda1-usages--loaded).
+
+## Import
+
+```tsx
+import { Agenda1, agenda1Window } from '@tc96/ui/blocks/data/agenda/agenda-1'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+const { from, to } = agenda1Window(anchor, period, timeZone)
+
+<Agenda1
+  anchor={anchor}
+  entries={windowEntries}
+  onAnchorChange={setAnchor}
+  onCancel={cancelEntry}
+  onCreate={openCreateDialog}
+  onOpen={openEntry}
+  onPeriodChange={setPeriod}
+  onReschedule={reschedule}
+  owners={owners}
+  period={period}
+  pending={isPending}
+  timeZone={timeZone}
+/>
+```
+
+## Agenda1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `entries` | `Agenda1Entry[]` | required | The entries of the window, already filtered, in start order. Keep the array stable between renders. |
+| `anchor`, `onAnchorChange` | `string`, `(anchor) => void` | today in `timeZone` | The controllable anchor day, `YYYY-MM-DD`. Hoje, the arrows and the `+N` day title change it. |
+| `period`, `onPeriodChange` | `'day' \| 'week' \| 'month'`, `(period) => void` | `'week'` | The controllable period of the window. |
+| `mode`, `onModeChange` | `'calendar' \| 'list' \| 'table'`, `(mode) => void` | `'calendar'` | The controllable layout. |
+| `groupBy`, `onGroupByChange` | `'day' \| 'kind' \| null`, `(groupBy) => void` | `'day'` | The grouping of the Lista and the Tabela; the block orders the table rows by it. |
+| `collapsedGroupIds`, `onCollapsedGroupIdsChange` | `string[]`, `(groupIds) => void` | - | The collapsed groups, keyed `day:YYYY-MM-DD` or `kind:<kind>`. |
+| `kindFilter`, `onKindFilterChange` | `Agenda1Kind[]`, `(kinds) => void` | `[]` | The Tipo filter, rendered with `onKindFilterChange`. |
+| `ownerFilter`, `onOwnerFilterChange` | `string \| null`, `(ownerId) => void` | `null` | The Responsável filter, rendered when `owners` has items or `ownersLoading`. |
+| `owners`, `ownersLoading` | `Agenda1Person[]`, `boolean` | `[]`, `false` | The owner catalog: the Responsável column, the list avatar and the filter. |
+| `filtered` | `boolean` | `false` | Picks `labels.noResult` instead of `labels.empty` in the Lista and the Tabela. |
+| `onOpen` | `(entry: Agenda1Entry) => void` | - | Makes a calendar item, a list title and a table row open the entry. |
+| `onReschedule` | `(change: Agenda1Reschedule) => boolean \| Promise<boolean>` | - | Enables drag and resize of Compromissos and Tarefas; `false` or a rejection rolls the item back. |
+| `onCreate` | `(slot?: Agenda1Slot) => void` | - | Renders Novo compromisso (no slot) and reports a click on an empty time-grid slot. |
+| `onCancel` | `(entryId: string) => void` | - | Renders Cancelar on an open Compromisso in the Lista and the Tabela. |
+| `onSavePreference` | `() => void` | - | Ends Exibição with Salvar preferência. |
+| `now` | `string` | the mount time | The instant of today and of the now line. |
+| `locale`, `timeZone`, `weekStartsOn` | `string`, `string`, `0 \| 1` | `'pt-BR'`, `'America/Sao_Paulo'`, `1` | How dates and times are shown and where a week starts. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks; in the calendar `pending` shows skeleton items in the grid, in the Lista and the Tabela the block's skeleton. |
+| `labels` | `Agenda1LabelsOverride` | pt-BR texts | Overrides the texts; `columns`, `groupings`, `kinds`, `modalities`, `modes` and `periods` merge key by key. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Agenda1Entry
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `title` | `string` | The identity and the title. |
+| `kind` | `'appointment' \| 'task' \| 'due' \| 'deadline'` | Compromisso, Tarefa, Vencimento or Prazo: the label, icon and tone. |
+| `start`, `end` | `string`, `string \| null` | ISO instants; `end` of `null` is a single instant (a due date). |
+| `allDay` | `boolean` | Places the entry in the all-day strip. |
+| `completed` | `boolean` | Strikes the item through and marks it Concluído. |
+| `modality` | `'in-person' \| 'video' \| 'phone' \| null` | Presencial, Videochamada or Telefone. |
+| `location`, `caption` | `string \| null` | The place, and a ready text about what the entry is linked to. |
+| `ownerId` | `string \| null` | One of `owners`. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Agenda1` | `component` | The agenda window. |
+| `agenda1Window` | `function` | `(anchor, period, timeZone, weekStartsOn = 1) => { from, to }`, the ISO instants of the days the period shows, to fetch the window. |
+| `agenda1Modes`, `agenda1Periods`, `agenda1Kinds`, `agenda1Modalities` | `const` | The values of the unions, in display order. |
+| `Agenda1Props`, `Agenda1Entry`, `Agenda1Kind`, `Agenda1Modality`, `Agenda1Mode`, `Agenda1Period`, `Agenda1GroupBy`, `Agenda1Person`, `Agenda1Reschedule`, `Agenda1Slot`, `Agenda1Window`, `Agenda1ColumnId`, `Agenda1Labels`, `Agenda1LabelsOverride` | `type` | The props, the data and the labels. |

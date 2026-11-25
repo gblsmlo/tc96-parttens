@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A wiki page editor that flows in its page, with no frame around it. Reach for it on a runbook, playbook or knowledge base page where people write with `/` blocks, mention teammates with `@`, and need an outline of the headings. Install it with `npx @tc96/cli add rich-text-editor-2`.
 
-It composes the `RichTextEditor` pattern with a block gutter, an outline, a table bar and a page menu. The block never fetches or persists: the app passes the first document, the people and the save callback.
+It composes the `RichTextEditor` pattern with an outline, a table bar and a page menu. Blocks come only from `/` and formatting only from the toolbar that appears over a selection: there is no block gutter, block menu or drag handle. The block never fetches or persists: the app passes the first document, the people and the save callback.
 
 The other pages of `Blocks/Application/Rich Text Editor/RichTextEditor2`: [Playground](?path=/story/blocks-application-rich-text-editor-richtexteditor2-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-rich-text-editor-richtexteditor2-behavior--slash-menu-lists-the-blocks) for the tests and [Usages](?path=/story/blocks-application-rich-text-editor-richtexteditor2-usages--editing-the-escalation-playbook) for a page that records each saved version.
 
@@ -21,7 +21,7 @@ The same path exports the types listed under Exports.
 
 ## Anatomy
 
-The navbar slot (Navbar1 in the stories), a thin strip with the outline trigger below `lg`, the save status and the lock badge, the document with a gutter beside the hovered block, the table bar when the caret is in a table, and the outline rail on the right edge on wide screens.
+The navbar slot (Navbar1 in the stories) with the save status and the lock badge, the outline trigger below `lg`, the document, the table bar when the caret is in a table, and the outline rail on the right edge on wide screens.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
@@ -53,7 +53,7 @@ The navbar slot (Navbar1 in the stories), a thin strip with the outline trigger 
 | --- | --- | --- |
 | `RichTextEditor2Person` | `id`, `name`, `role`, `image?` | A teammate; the initials of `name` fill the avatar when there is no `image`. |
 | `RichTextEditor2Settings` | `fullWidth`, `smallText`, `locked` | The page menu state; `locked` makes the page read only. |
-| `RichTextEditor2NavbarContext` | `settings`, `onSettingChange`, `pageMenuItems`, `saveStatus`, `lockBadge` | What the `navbar` function receives; pass `pageMenuItems` as the `menu` of a Navbar1 (the three checkbox items: full width, small text, lock). |
+| `RichTextEditor2NavbarContext` | `settings`, `onSettingChange`, `pageMenuItems`, `saveStatus`, `lockBadge`, `status` | What the `navbar` function receives; pass `pageMenuItems` as the `menu` of a Navbar1 (the three checkbox items: full width, small text, lock) and `status` (the save status and the lock badge, or `null`) as its `status`. |
 | `RichTextEditor2BlockKind` | - | The types of the "Transformar em" submenu. |
 
 ## Labels
@@ -64,10 +64,7 @@ The navbar slot (Navbar1 in the stories), a thin strip with the outline trigger 
 | `placeholder` | `"Digite '/' para blocos ou '@' para mencionar alguém"` |
 | `slashMenu`, `slashMenuEmpty` | `"Blocos"`, `"Nenhum bloco com esse nome"` |
 | `mention`, `mentionEmpty` | `"Pessoas"`, `"Ninguém com esse nome"` |
-| `blockAdd`, `blockMenu` | `"Adicionar bloco abaixo"`, `"Opções do bloco"` |
-| `blockTurnInto`, `blockDuplicate`, `blockMoveUp`, `blockMoveDown`, `blockDelete` | the block menu items |
-| `blockKinds` | the name of each type in the submenu |
-| `dragHandle`, `blockSelection` | `"Arrastar bloco"`, `"Blocos selecionados"` |
+| `blockKinds` | the name of each block type; `p`, `h2`, `h3`, `blockquote`, `ul` and `ol` name the selection toolbar |
 | `outline`, `outlineEmpty`, `outlineTrigger` | the outline name, its empty text and the popover trigger |
 | `fullWidth`, `smallText`, `lockPage`, `locked` | the page menu items and the lock badge |
 | `saving`, `saved` | the save status |
@@ -90,7 +87,7 @@ The navbar slot (Navbar1 in the stories), a thin strip with the outline trigger 
 
 - The editable is named by `labels.editor`; locked, it becomes a `document`.
 - The `/` and `@` menus are listboxes the editor points to with `aria-activedescendant`.
-- The gutter buttons and the drag handle carry an `aria-label`; the page menu trigger belongs to the navbar.
+- The selection toolbar is Plate's floating toolbar of the pattern; the page menu trigger belongs to the navbar.
 - The table bar is a named toolbar; the header toggle uses `aria-pressed`; deleting a table asks first in an alert dialog.
 - The outline rail is a named `nav` whose buttons keep their names while collapsed; below `lg` a popover lists the same headings.
 - Buttons use the `sm` and `icon-sm` sizes.

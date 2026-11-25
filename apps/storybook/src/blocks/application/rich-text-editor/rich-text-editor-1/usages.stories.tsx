@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RichTextEditor1 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-1'
 import { Button } from '@tc96/ui/button'
 import type { RichTextValue } from '@tc96/ui/patterns/rich-text-editor'
 import { useState } from 'react'
@@ -11,6 +10,7 @@ import {
   launchBriefStatus,
   launchBriefTitle,
 } from '../fixtures/rich-text-editor-1.ts'
+import { DocumentPage } from './rich-text-editor-1-layouts.tsx'
 
 const { focusEditor } = richTextTyping('Conteúdo do documento')
 
@@ -20,7 +20,7 @@ const AutosavedBrief = () => {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-3 p-6">
-      <RichTextEditor1
+      <DocumentPage
         defaultTitle={launchBriefTitle}
         defaultValue={launchBrief}
         description={launchBriefDescription}
@@ -57,7 +57,7 @@ const ReviewedBrief = () => {
           {readOnly ? 'Pedir edição' : 'Concluir revisão'}
         </Button>
       </div>
-      <RichTextEditor1
+      <DocumentPage
         defaultTitle={launchBriefTitle}
         defaultValue={launchBrief}
         onReadOnlyChange={setReadOnly}
@@ -73,7 +73,7 @@ const ClipboardBrief = () => {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-3 p-6">
-      <RichTextEditor1
+      <DocumentPage
         defaultTitle={launchBriefTitle}
         defaultValue={launchBrief}
         onCopy={(_format, content) => setCopied(content)}
@@ -134,9 +134,7 @@ export const CopyingToTheClipboard: Story = {
   render: () => <ClipboardBrief />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Menu do documento' }),
-    )
+    await userEvent.click(canvas.getByRole('button', { name: 'Mais ações' }))
     await userEvent.click(
       await screen.findByRole('menuitem', { name: 'Copiar como texto' }),
     )

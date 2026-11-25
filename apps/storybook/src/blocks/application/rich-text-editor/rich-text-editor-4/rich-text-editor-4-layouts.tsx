@@ -1,4 +1,5 @@
 import type { Decorator } from '@storybook/react-vite'
+import { Navbar1 } from '@tc96/ui/blocks/application/navbar/navbar-1'
 import {
   type LocalRoom,
   type LocalRoomStep,
@@ -15,6 +16,7 @@ import { fn } from 'storybook/test'
 import {
   localUser,
   secondUser,
+  specBreadcrumbs,
   specScript,
   specValue,
   teammateUsers,
@@ -30,6 +32,24 @@ export const withToasts: Decorator = (Story) => (
 export const richTextEditor4Handlers = {
   onCommentsChange: fn<(threads: RichTextEditor4Thread[]) => void>(),
 }
+
+export const SpecPage = ({
+  breadcrumbLabel,
+  ...props
+}: Readonly<RichTextEditor4Props & { breadcrumbLabel?: string }>) => (
+  <RichTextEditor4
+    {...props}
+    navbar={({ status }) => (
+      <Navbar1
+        breadcrumbs={specBreadcrumbs}
+        status={status}
+        {...(breadcrumbLabel
+          ? { labels: { breadcrumb: breadcrumbLabel } }
+          : {})}
+      />
+    )}
+  />
+)
 
 export const sessions: {
   room: LocalRoom | null
@@ -77,14 +97,12 @@ export const ComposedRichTextEditor4 = ({
   )
   if (!editorRoom) return null
   return (
-    <div className="p-4">
-      <RichTextEditor4
-        defaultValue={value}
-        onCommentsChange={richTextEditor4Handlers.onCommentsChange}
-        room={editorRoom}
-        user={localUser}
-      />
-    </div>
+    <SpecPage
+      defaultValue={value}
+      onCommentsChange={richTextEditor4Handlers.onCommentsChange}
+      room={editorRoom}
+      user={localUser}
+    />
   )
 }
 
@@ -101,10 +119,12 @@ export const TwoClients = (
   }, [second])
   if (!room || !second) return null
   return (
-    <div className="grid gap-4 p-4 xl:grid-cols-2">
-      <RichTextEditor4
+    <div className="grid gap-4 xl:grid-cols-2">
+      <SpecPage
+        breadcrumbLabel="Caminho da página de Marina"
         defaultValue={specValue}
         labels={{
+          comments: { list: 'Conversas de Marina' },
           editor: 'Editor da Marina',
           title: 'Visão de Marina Costa',
           ...props.labels,
@@ -113,9 +133,14 @@ export const TwoClients = (
         room={room}
         user={localUser}
       />
-      <RichTextEditor4
+      <SpecPage
+        breadcrumbLabel="Caminho da página de Otávio"
         defaultValue={specValue}
-        labels={{ editor: 'Editor do Otávio', title: 'Visão de Otávio Reis' }}
+        labels={{
+          comments: { list: 'Conversas de Otávio' },
+          editor: 'Editor do Otávio',
+          title: 'Visão de Otávio Reis',
+        }}
         room={second}
         user={secondUser}
       />

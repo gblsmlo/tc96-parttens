@@ -97,6 +97,8 @@ export interface RichTextEditorProps {
   editor?: RichTextEditorInstance
   features?: RichTextEditorFeatures
   floatingToolbar?: boolean
+  floatingToolbarActions?: ReactNode
+  floatingToolbarMarks?: readonly RichTextMark[]
   linkLabels?: LinkButtonLabels
   markLabels?: Readonly<Record<RichTextMark, string>>
   maxListDepth?: number
@@ -428,6 +430,8 @@ function RichTextEditorView({
   editor,
   extraBlockLabels = defaultExtraBlockLabels,
   floatingToolbar = true,
+  floatingToolbarActions,
+  floatingToolbarMarks,
   linkLabels = defaultLinkLabels,
   markLabels = defaultMarkLabels,
   mentionEmptyLabel = 'Ninguém com esse nome',
@@ -480,6 +484,7 @@ function RichTextEditorView({
         />
         {floatingToolbar && !readOnly ? (
           <FloatingToolbar
+            actions={floatingToolbarActions}
             blockLabels={blockLabels}
             blockTypeLabel={blockTypeLabel}
             label={toolbarLabel}
@@ -487,6 +492,7 @@ function RichTextEditorView({
             markLabels={markLabels}
             paragraphLabel={paragraphLabel}
             toolbarRef={toolbarRef}
+            {...(floatingToolbarMarks ? { marks: floatingToolbarMarks } : {})}
           />
         ) : null}
         {children}

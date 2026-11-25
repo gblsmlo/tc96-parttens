@@ -196,9 +196,11 @@ const taskRowAnatomy: DataTableRowSkeletonAnatomy = {
 const ignoreTask = () => undefined
 
 export function TasksTable({
+  canOpen,
   isLoading = false,
   onOpen = ignoreTask,
 }: Readonly<{
+  canOpen?: (task: Task) => boolean
   isLoading?: boolean
   onOpen?: (task: Task) => void
 }>): ReactElement {
@@ -226,6 +228,7 @@ export function TasksTable({
         aria-label="Tarefas do lançamento"
         defaultAggregations={taskTableAggregations}
         emptyMessage="Nenhuma tarefa para exibir."
+        getRowCanOpen={canOpen ? (row) => canOpen(row.original) : undefined}
         getRowOpenLabel={(row) => `Abrir ${row.original.title}`}
         isLoading={isLoading}
         loadingRowAnatomy={taskRowAnatomy}

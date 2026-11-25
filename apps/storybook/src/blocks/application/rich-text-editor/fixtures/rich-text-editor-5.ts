@@ -84,3 +84,9 @@ export const modelPlanner: RichTextEditor5Planner = async function* ({
     type: 'edit',
   }
 }
+
+export const rolloutBreadcrumbs = [
+  { href: '/documentos', label: 'Documentos' },
+  { href: '/documentos/suporte', label: 'Suporte' },
+  { label: 'Plano de lançamento' },
+]

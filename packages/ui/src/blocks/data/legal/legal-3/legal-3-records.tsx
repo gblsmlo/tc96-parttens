@@ -4,7 +4,7 @@ import {
   CalendarEventChipTime,
   CalendarEventChipTitle,
 } from '@tc96/ui/patterns/collection/layouts/calendar/components/calendar-event-chip'
-import { LegalListRow } from '../shared/legal-record-parts'
+import { DataCollectionListRow } from '../../shared/collection/data-collection-record-parts'
 import {
   Legal3DueField,
   type Legal3FieldContext,
@@ -19,7 +19,7 @@ export const renderLegal3ListRow =
   (context: Legal3FieldContext) => (item: Legal3Deadline) => {
     const { labels, onOpen } = context
     return (
-      <LegalListRow
+      <DataCollectionListRow
         caption={[labels.kinds[item.kind], item.caseNumber, item.caseTitle]}
         fields={
           <>

@@ -1,7 +1,12 @@
-import { RichTextEditor1 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-1'
+import { Navbar1 } from '@tc96/ui/blocks/application/navbar/navbar-1'
+import {
+  RichTextEditor1,
+  type RichTextEditor1Props,
+} from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-1'
 import { fn } from 'storybook/test'
 import {
   launchBrief,
+  launchBriefBreadcrumbs,
   launchBriefDescription,
   launchBriefStatus,
   launchBriefTitle,
@@ -17,6 +22,19 @@ export const richTextEditor1Handlers = {
   onTitleChange: fn(),
 }
 
+export const DocumentPage = (props: Readonly<RichTextEditor1Props>) => (
+  <RichTextEditor1
+    {...props}
+    navbar={({ menuItems, status }) => (
+      <Navbar1
+        breadcrumbs={launchBriefBreadcrumbs}
+        menu={menuItems}
+        status={status}
+      />
+    )}
+  />
+)
+
 export const ComposedRichTextEditor1 = ({
   readOnly,
   saveDelay,
@@ -25,20 +43,18 @@ export const ComposedRichTextEditor1 = ({
   withContent,
   withSave,
 }: Readonly<RichTextEditor1Controls>) => (
-  <div className="mx-auto max-w-6xl p-6">
-    <RichTextEditor1
-      defaultTitle={launchBriefTitle}
-      {...(withContent ? { defaultValue: launchBrief } : {})}
-      {...(showDescription ? { description: launchBriefDescription } : {})}
-      onChange={richTextEditor1Handlers.onChange}
-      onClear={richTextEditor1Handlers.onClear}
-      onCopy={richTextEditor1Handlers.onCopy}
-      onReadOnlyChange={richTextEditor1Handlers.onReadOnlyChange}
-      onSave={withSave ? richTextEditor1Handlers.onSave : undefined}
-      onTitleChange={richTextEditor1Handlers.onTitleChange}
-      readOnly={readOnly || undefined}
-      saveDelay={saveDelay}
-      {...(showStatus ? { status: launchBriefStatus } : {})}
-    />
-  </div>
+  <DocumentPage
+    defaultTitle={launchBriefTitle}
+    {...(withContent ? { defaultValue: launchBrief } : {})}
+    {...(showDescription ? { description: launchBriefDescription } : {})}
+    onChange={richTextEditor1Handlers.onChange}
+    onClear={richTextEditor1Handlers.onClear}
+    onCopy={richTextEditor1Handlers.onCopy}
+    onReadOnlyChange={richTextEditor1Handlers.onReadOnlyChange}
+    onSave={withSave ? richTextEditor1Handlers.onSave : undefined}
+    onTitleChange={richTextEditor1Handlers.onTitleChange}
+    readOnly={readOnly || undefined}
+    saveDelay={saveDelay}
+    {...(showStatus ? { status: launchBriefStatus } : {})}
+  />
 )

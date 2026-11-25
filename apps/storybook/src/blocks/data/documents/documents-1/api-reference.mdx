@@ -1,0 +1,124 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Documents1
+
+The library of a workspace in one list (Documentos): written pages, notes, web links and uploaded files, with their type, what they are linked to, their visibility, who created them, when, and the size of a file, shown as a Tabela or a Lista. Reach for it on the screen that lists every document a member can read, filtered, sorted and paged by the server. Install it with `npx @tc96/cli add documents-1`.
+
+The block is controlled and renders what it gets. View, search, sort, the Tipo filter, the grouping and the page are a value and a callback; without the value the block keeps it locally. It does **not** filter, sort or page `records`: the consumer sends each change to its server and passes the resulting page back, with `filtered` saying whether a filter or the search is active. The only order the block applies is the active grouping in the Tabela, which keeps each group's rows together.
+
+The items are one collection: `kind` (`page`, `note`, `link`, `file`) is a field of the record, and the record is a union whose fields follow the kind (`contentType`, `size` and `upload` on a file; `url` and `site` on a link; `excerpt` on a page or a note). The type a member sees (Documento, Nota, Weblink, Imagem, Vídeo, Áudio) comes from the kind and, for a file, from the family of `contentType`; `documents1TypeOf` gives the same answer to the consumer. The size of a file and what an item is linked to arrive as ready text; `createdAt` is an ISO instant shown as a day in `timeZone`.
+
+The toolbar `left` slot holds the view switcher (Todos, Notas, Documentos, Weblinks, Mídia), so the page has no `h2`; the section and the table keep their name from `labels.title`. A view is a scope the consumer applies; `documents1ViewTypes` lists the types of each view. On the right: the search field, then Exibição (the mode tabs, Ordenar, Agrupar and the Tipo filter, each with its callback) and Novo, a menu with Documento, Nota, Weblink and Enviar arquivo, each rendered with its callback. Enviar arquivo opens the browser's file picker and calls `onUpload` with the chosen files; the block never reads or sends a file.
+
+A row shows the type icon (colored by `typeColors`), the name and a pin when `pinned`. Tipo and Visibilidade are read-only `SelectProperty` displays, Criado por a `PersonProperty`, Criado em a `DateProperty`. The actions menu at the end of the row holds Abrir, Baixar (a file only), Renomear, Fixar or Desafixar, Visibilidade and Excluir, each rendered with its callback; `canEdit: false` hides Renomear and `canDelete: false` hides Excluir. Dialogs (rename, a new link, sharing, the delete confirmation) belong to the consumer. A file with `upload` shows its state under the name: a `Progress` with `labels.uploading` while `uploading`, or the consumer's error after `failed`; such a row does not open, has no menu while uploading, and offers only Excluir after a failure. There is no selection: the library has no bulk action. The footer is the `CollectionPagination`, rendered with `pageCount` while there are records.
+
+The other pages of `Blocks/Data/Documents/Documents1`: [Playground](?path=/story/blocks-data-documents-documents1-playground--playground), [Layouts](?path=/story/blocks-data-documents-documents1-layouts--default), [Behavior](?path=/story/blocks-data-documents-documents1-behavior--the-view-switcher-replaces-the-heading) and [Usages](?path=/story/blocks-data-documents-documents1-usages--loaded).
+
+## Import
+
+```tsx
+import { Documents1 } from '@tc96/ui/blocks/data/documents/documents-1'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Documents1
+  counts={page.counts}
+  filtered={hasFilters}
+  onCreateLink={openLinkDialog}
+  onCreateNote={openNoteDialog}
+  onCreatePage={openPageDialog}
+  onDelete={confirmDelete}
+  onDownload={download}
+  onOpen={open}
+  onPageChange={setPage}
+  onPinnedChange={setPinned}
+  onRename={openRenameDialog}
+  onSearchChange={setSearch}
+  onShare={openShareDialog}
+  onTypeFilterChange={setTypes}
+  onUpload={upload}
+  onViewChange={setView}
+  page={pageNumber}
+  pageCount={pageCount}
+  pageSize={25}
+  people={members}
+  records={[...uploads, ...page.items]}
+  search={search}
+  total={page.total}
+  typeFilter={types}
+  view={view}
+/>
+```
+
+## Documents1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `records` | `Documents1Record[]` | required | The page of items, already filtered, sorted and paged, with any upload in progress. Keep the array stable between renders. |
+| `people` | `Documents1Person[]` | `[]` | The members who create items: the options of Criado por. |
+| `typeColors` | `Partial<Record<Documents1Type, string>>` | - | A CSS color per type for the icon frame; without it the frame stays muted. |
+| `view`, `onViewChange` | `'all' \| 'notes' \| 'documents' \| 'links' \| 'media'`, `(view) => void` | `'all'` | The controllable view of the switcher. |
+| `counts` | `Partial<Record<Documents1View, number>>` | - | The count shown beside each view in the switcher popup; `labels.viewCountName` composes the item's accessible name. |
+| `mode`, `onModeChange` | `'table' \| 'list'`, `(mode) => void` | `'table'` | The controllable layout. |
+| `search`, `onSearchChange` | `string`, `(search) => void` | - | The search field, rendered with `onSearchChange`; called on submit and when emptied. |
+| `sort`, `onSortChange` | `'name' \| 'oldest' \| null`, `(sort) => void` | `null` | Ordenar por, rendered with `onSortChange`; `null` is Mais recentes. |
+| `typeFilter`, `onTypeFilterChange` | `Documents1Type[]`, `(types) => void` | `[]` | The multiple-choice Tipo filter, rendered with `onTypeFilterChange`. |
+| `groupBy`, `onGroupByChange` | `'pinned' \| 'type' \| null`, `(groupBy) => void` | `null` | Agrupar por, rendered with `onGroupByChange`; `pinned` lists Fixados before Recentes. |
+| `collapsedGroupIds`, `onCollapsedGroupIdsChange` | `string[]`, `(groupIds) => void` | - | The collapsed groups, as `<grouping>:<group>` ids. |
+| `filtered` | `boolean` | `false` | Picks `labels.noResult` instead of the view's `labels.empty`. |
+| `onOpen` | `(recordId: string) => void` | - | Makes the row and the list title open the item, and adds Abrir to the menu. |
+| `onDownload` | `(recordId: string) => void` | - | Adds Baixar to the menu of a file. |
+| `onRename` | `(recordId: string) => void` | - | Adds Renomear, unless the record has `canEdit: false`. |
+| `onPinnedChange` | `(recordId: string, pinned: boolean) => void` | - | Adds Fixar or Desafixar with the new state. |
+| `onShare` | `(recordId: string) => void` | - | Adds Visibilidade, with the icon of the current access. |
+| `onDelete` | `(recordId: string) => void` | - | Adds Excluir, unless the record has `canDelete: false`; it is the only action of a failed upload. |
+| `onCreatePage`, `onCreateNote`, `onCreateLink` | `() => void` | - | Add Documento, Nota and Weblink to Novo. |
+| `onUpload` | `(files: File[]) => void` | - | Adds Enviar arquivo to Novo; called with the files picked, never empty. |
+| `uploadAccept` | `string` | - | The `accept` of the file picker (`application/pdf,image/*`). |
+| `page`, `onPageChange` | `number`, `(page) => void` | `1` | The controllable page, starting at 1. |
+| `pageCount` | `number` | - | Renders the pagination footer while there are records. |
+| `pageSize`, `total` | `number` | - | Together they show the range summary (`1–25 de 57`); `total` of 0 hides the footer. |
+| `savedViews`, `savedViewId`, `savedViewModified`, `savedViewsLoading`, `savedViewsPending` | see `Legal5` | - | Saved views listed under Minhas visões in the switcher. |
+| `onSavedViewCreate`, `onSavedViewSelect`, `onSavedViewUpdate`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete`, `onSavePreference` | callbacks | - | Each renders its saved view action; `onSavePreference` ends Exibição with Salvar preferência. |
+| `locale`, `timeZone` | `string` | `'pt-BR'`, `'America/Sao_Paulo'` | Format Criado em. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. |
+| `labels` | `Documents1LabelsOverride` | pt-BR texts | Overrides the texts; `access`, `columns`, `empty`, `groupings`, `modes`, `paginationButtons`, `pinnedGroups`, `savedViews`, `sorts`, `types` and `views` merge key by key. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Documents1Record
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `name` | `string` | The identity and the name cell. |
+| `kind` | `'page' \| 'note' \| 'link' \| 'file'` | Picks the other fields of the record and, with `contentType`, its type. |
+| `access` | `'private' \| 'shared' \| 'public'` | Privado, Compartilhado or Público in Visibilidade. |
+| `pinned` | `boolean` | Shows the pin beside the name and picks Fixar or Desafixar. |
+| `createdAt` | `string` | The ISO instant of Criado em. |
+| `createdById` | `string \| null` | One of `people`; `null` shows `labels.noCreator`. |
+| `linkedTo` | `string \| null` | The ready name of the record the item hangs on; `null` shows `labels.noLink`. |
+| `canEdit`, `canDelete` | `boolean` | `false` hides Renomear or Excluir; absent counts as allowed. |
+| `contentType` | `string` | A file only: its MIME type; `image/*`, `video/*` and `audio/*` are Imagem, Vídeo and Áudio, the rest Documento. |
+| `size` | `string \| null` | A file only: the ready size text (`2,4 MB`). |
+| `upload` | `{ status: 'uploading'; progress: number } \| { status: 'failed'; error: string } \| null` | A file only: the upload state; `progress` runs from 0 to 100 and `error` is the ready message. |
+| `url`, `site` | `string`, `string \| null` | A link only: the address, and the site shown in the list caption in its place. |
+| `excerpt` | `string \| null` | A page or a note only: the caption of the list row. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Documents1` | `component` | The library list. |
+| `documents1Modes` | `const` | `['table', 'list']`. |
+| `documents1Views` | `const` | `['all', 'notes', 'documents', 'links', 'media']`. |
+| `documents1Types` | `const` | `['note', 'document', 'link', 'image', 'video', 'audio']`. |
+| `documents1Sorts` | `const` | `['name', 'oldest']`. |
+| `documents1ViewTypes` | `const` | The types of each view; Todos has none, which means every type. |
+| `documents1TypeOf` | `function` | The type of a record, as the block shows it. |
+| `Documents1Props`, `Documents1Record`, `Documents1FileRecord`, `Documents1LinkRecord`, `Documents1WrittenRecord`, `Documents1Upload`, `Documents1Kind`, `Documents1Type`, `Documents1TypeColors`, `Documents1Access`, `Documents1View`, `Documents1Mode`, `Documents1Sort`, `Documents1GroupBy`, `Documents1Person`, `Documents1SavedView`, `Documents1ColumnId`, `Documents1Labels`, `Documents1LabelsOverride` | `type` | The props, the data and the labels. |

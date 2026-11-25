@@ -11,7 +11,8 @@ export const defaultRichTextEditor5Labels: RichTextEditor5Labels = {
   bubbleSpelling: 'Corrigir ortografia',
   bubbleSummary: 'Resumir',
   clearPassage: 'Remover trecho selecionado',
-  collapse: 'Recolher painel do assistente',
+  collapse: 'Recolher assistente',
+  conversation: 'Conversa com o assistente',
   dock: 'Assistente de escrita',
   document: 'Plano de lançamento',
   done: (edits, findings) =>
@@ -20,10 +21,10 @@ export const defaultRichTextEditor5Labels: RichTextEditor5Labels = {
       : edits > 0
         ? `Pronto: ${plural(edits, 'sugestão escrita', 'sugestões escritas')} no texto.`
         : 'Pronto: não havia nada para sugerir.',
-  expand: 'Expandir painel do assistente',
+  emptyDescription:
+    'Escolha uma tarefa ou digite / no campo abaixo. As alterações entram no texto como sugestões para você aceitar ou rejeitar.',
+  emptyTitle: 'Como posso ajudar no plano?',
   failed: 'A tarefa falhou. Nada foi alterado além das sugestões já escritas.',
-  formatting: 'Formatação do plano',
-  history: { redo: 'Refazer', undo: 'Desfazer' },
   fallback: (request) =>
     `Não entendi “${request}”. Experimente uma destas tarefas:`,
   findingKinds: {
@@ -35,9 +36,11 @@ export const defaultRichTextEditor5Labels: RichTextEditor5Labels = {
   findingsEmpty: 'Nada encontrado no texto.',
   goTo: 'Ir para o trecho',
   goToFinding: (finding) => `Ir para o trecho: ${finding.text}`,
-  marks: { bold: 'Negrito', italic: 'Itálico' },
+  jump: 'Ir para a mais recente',
   next: 'Próxima sugestão',
   passage: (text) => `Trecho: ${text}`,
+  pending: (count) =>
+    plural(count, 'sugestão para revisar', 'sugestões para revisar'),
   position: (current, total) => `${current} de ${total}`,
   previous: 'Sugestão anterior',
   rejectAll: 'Rejeitar tudo',
@@ -71,6 +74,8 @@ export const defaultRichTextEditor5Labels: RichTextEditor5Labels = {
     summary: 'Escrever resumo',
     tighten: 'Enxugar o texto',
   },
+  taskMenu: 'Escolher uma tarefa',
   tasksGroup: 'Tarefas do assistente',
+  typing: 'O assistente está trabalhando',
   undo: 'Desfazer última decisão',
 }

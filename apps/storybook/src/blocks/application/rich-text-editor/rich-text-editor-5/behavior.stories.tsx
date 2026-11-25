@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RichTextEditor5 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-5'
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
 import {
   rolloutAuthor,
@@ -19,11 +18,14 @@ import {
   ComposedRichTextEditor5,
   dockOf,
   editorOf,
+  openTaskMenu,
+  PlanPage,
   requestOf,
   reviewItems,
   richTextEditor5Handlers,
   runTask,
   selectRolloutText,
+  statusOf,
   topBlocks,
   waitForFinished,
 } from './rich-text-editor-5-layouts.tsx'
@@ -72,7 +74,7 @@ export const SpellingWritesSuggestionsFromTheAssistant: Story = {
     const first = reviewItems(canvasElement)[0] as HTMLElement
     await expect(first).toHaveAttribute('data-kind', 'replace')
     await expect(within(first).getByText('Assistente')).toBeVisible()
-    await expect(dockOf(canvasElement).getByRole('status')).toHaveTextContent(
+    await expect(statusOf(canvasElement)).toHaveTextContent(
       'Pronto: 5 sugestões escritas no texto.',
     )
   },
@@ -191,7 +193,7 @@ export const QuestionsAreFindingsThatEditNothing: Story = {
     await expect(
       editorOf(canvasElement).querySelector('[data-suggestion-type]'),
     ).toBeNull()
-    await expect(dock.getByRole('status')).toHaveTextContent(
+    await expect(statusOf(canvasElement)).toHaveTextContent(
       'Pronto: 3 achados, nenhuma alteração no texto.',
     )
   },
@@ -306,14 +308,14 @@ export const StopKeepsTheEditsWrittenSoFar: Story = {
     )
     await userEvent.click(await dock.findByRole('button', { name: 'Parar' }))
     await waitFor(() =>
-      expect(dock.getByRole('status')).toHaveTextContent(/^Interrompido/),
+      expect(statusOf(canvasElement)).toHaveTextContent(/^Interrompido/),
     )
     const kept = reviewItems(canvasElement).length
     await expect(kept).toBeLessThan(rolloutTypoCount)
     await expect(dock.queryByRole('button', { name: 'Parar' })).toBeNull()
     await new Promise((resolve) => setTimeout(resolve, 800))
     await expect(reviewItems(canvasElement)).toHaveLength(kept)
-    await expect(dock.getByRole('status')).toHaveTextContent(
+    await expect(statusOf(canvasElement)).toHaveTextContent(
       `Interrompido: ${kept} ${kept === 1 ? 'sugestão mantida' : 'sugestões mantidas'} no texto.`,
     )
   },
@@ -325,18 +327,21 @@ export const TasksAreDisabledWhileARunIsActive: Story = {
     await runTask(canvasElement, 'Corrigir ortografia')
     const dock = dockOf(canvasElement)
     await expect(
-      within(
-        dock.getByRole('group', { name: 'Tarefas do assistente' }),
-      ).getByRole('button', { name: 'Enxugar o texto' }),
+      dock.getByRole('button', { name: 'Enviar pedido' }),
     ).toBeDisabled()
+    const menu = await openTaskMenu(canvasElement)
+    await expect(
+      menu.getByRole('option', { name: 'Enxugar o texto' }),
+    ).toHaveAttribute('aria-disabled', 'true')
+    await userEvent.keyboard('{Escape}')
     await userEvent.click(await dock.findByRole('button', { name: 'Parar' }))
     await waitFor(() =>
-      expect(
-        within(
-          dock.getByRole('group', { name: 'Tarefas do assistente' }),
-        ).getByRole('button', { name: 'Enxugar o texto' }),
-      ).toBeEnabled(),
+      expect(dock.queryByRole('button', { name: 'Parar' })).toBeNull(),
     )
+    const reopened = await openTaskMenu(canvasElement)
+    await expect(
+      reopened.getByRole('option', { name: 'Enxugar o texto' }),
+    ).not.toHaveAttribute('aria-disabled')
   },
 }
 
@@ -507,7 +512,7 @@ export const KeywordsPickTheMatchingTask: Story = {
     )
     await waitForFinished(canvasElement)
     await waitFor(() => expect(reviewItems(canvasElement)).toHaveLength(1))
-    await expect(dock.getByRole('status')).toHaveTextContent(
+    await expect(statusOf(canvasElement)).toHaveTextContent(
       'Pronto: 1 sugestão escrita no texto.',
     )
     await expect(topBlocks(canvasElement)[1]).toHaveTextContent('Resumo:')
@@ -524,7 +529,6 @@ export const KeywordsPickTheMatchingTask: Story = {
 
 export const EveryTaskHasKeywords: Story = {
   play: async ({ canvasElement }) => {
-    const dock = dockOf(canvasElement)
     const cases: [string, RegExp][] = [
       ['corrigir os erros do texto', /sugestões escritas/],
       ['enxugue o texto, deixe mais conciso', /sugestões escritas/],
@@ -534,7 +538,7 @@ export const EveryTaskHasKeywords: Story = {
     for (const [text, status] of cases) {
       await userEvent.type(requestOf(canvasElement), `${text}{enter}`)
       await waitFor(
-        () => expect(dock.getByRole('status')).toHaveTextContent(status),
+        () => expect(statusOf(canvasElement)).toHaveTextContent(status),
         { timeout: 8000 },
       )
     }
@@ -566,8 +570,8 @@ export const AnUnmatchedRequestGetsThreeSuggestedTasks: Story = {
       expect(reviewItems(canvasElement)).toHaveLength(rolloutRewriteCount),
     )
     await expect(
-      canvasElement.querySelector('[data-slot="assistant-fallback"]'),
-    ).toBeNull()
+      canvasElement.querySelectorAll('[data-slot="assistant-turn"]'),
+    ).toHaveLength(2)
   },
 }
 
@@ -716,7 +720,7 @@ export const ADockTaskRunsOnThePassageWhenOneIsHanded: Story = {
 
 export const AFailingPlannerLeavesTheTextAlone: Story = {
   render: () => (
-    <RichTextEditor5
+    <PlanPage
       author={rolloutAuthor}
       defaultValue={rolloutValue()}
       formatTime={rolloutTime}
@@ -729,9 +733,7 @@ export const AFailingPlannerLeavesTheTextAlone: Story = {
   play: async ({ canvasElement }) => {
     await runTask(canvasElement, 'Corrigir ortografia')
     await waitFor(() =>
-      expect(dockOf(canvasElement).getByRole('status')).toHaveTextContent(
-        'A tarefa falhou.',
-      ),
+      expect(statusOf(canvasElement)).toHaveTextContent('A tarefa falhou.'),
     )
     await expect(reviewItems(canvasElement)).toHaveLength(0)
   },
@@ -751,7 +753,7 @@ export const ACustomPlannerReceivesTheRequest: Story = {
       steps: [{ id: 'a', kind: 'planning' as const, text: 'Plano do modelo' }],
     }))
     return (
-      <RichTextEditor5
+      <PlanPage
         author={rolloutAuthor}
         defaultValue={rolloutValue()}
         formatTime={rolloutTime}
@@ -774,26 +776,79 @@ export const ACustomPlannerReceivesTheRequest: Story = {
   },
 }
 
-export const PanelCollapsesAndExpands: Story = {
+export const RepliesAreChatMessagesWithATypingIndicator: Story = {
+  args: { stepDelay: 350 },
   play: async ({ canvasElement }) => {
+    const dock = dockOf(canvasElement)
+    await expect(dock.getByText('Como posso ajudar no plano?')).toBeVisible()
+    await runTask(canvasElement, 'Enxugar o texto')
+    const log = await dock.findByRole('log', {
+      name: 'Conversa com o assistente',
+    })
+    await expect(within(log).getByText('Enxugar o texto')).toBeVisible()
+    await expect(
+      within(log).getByText('O assistente está trabalhando'),
+    ).toBeInTheDocument()
+    await waitForFinished(canvasElement)
+    await waitFor(() =>
+      expect(
+        within(log).queryByText('O assistente está trabalhando'),
+      ).toBeNull(),
+    )
+    await expect(
+      within(log).getByRole('region', { name: 'Revisão das sugestões' }),
+    ).toBeVisible()
+  },
+}
+
+export const TheCardCollapsesAndTheBubbleReopensIt: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
     await runTask(canvasElement, 'Enxugar o texto')
     await waitForFinished(canvasElement)
-    const dock = dockOf(canvasElement)
-    await waitFor(() => expect(reviewItems(canvasElement)).toHaveLength(2))
     await userEvent.click(
-      dock.getByRole('button', { name: 'Recolher painel do assistente' }),
+      dockOf(canvasElement).getByRole('button', {
+        name: 'Recolher assistente',
+      }),
     )
-    await expect(reviewItems(canvasElement)).toHaveLength(0)
+    await expect(
+      canvas.queryByRole('complementary', { name: 'Assistente de escrita' }),
+    ).toBeNull()
+    const launcher = canvas.getByRole('button', { name: 'Assistente 2' })
+    await expect(launcher).toBeVisible()
+    await userEvent.click(launcher)
     await userEvent.click(
-      dock.getByRole('button', { name: 'Expandir painel do assistente' }),
+      dockOf(canvasElement).getByRole('button', {
+        name: 'Recolher assistente',
+      }),
     )
-    await expect(reviewItems(canvasElement)).toHaveLength(2)
+    await selectRolloutText(editorOf(canvasElement), 'Cronograma')
+    const bubble = await bubbleOf(canvasElement)
+    await userEvent.click(
+      within(bubble).getByRole('button', { name: 'Pedir ao assistente' }),
+    )
+    await waitFor(() => expect(requestOf(canvasElement)).toHaveFocus())
+  },
+}
+
+export const SlashInTheComposerRunsATask: Story = {
+  play: async ({ canvasElement }) => {
+    await userEvent.type(requestOf(canvasElement), '/enx')
+    const option = await within(
+      await within(document.body).findByRole('listbox'),
+    ).findByRole('option', { name: 'Enxugar o texto' })
+    await userEvent.click(option)
+    await waitForFinished(canvasElement)
+    await expect(statusOf(canvasElement)).toHaveTextContent(
+      'Pronto: 2 sugestões escritas no texto.',
+    )
+    await expect(requestOf(canvasElement)).toHaveTextContent('')
   },
 }
 
 export const LabelsOverrideTheTexts: Story = {
   render: () => (
-    <RichTextEditor5
+    <PlanPage
       author={rolloutAuthor}
       defaultValue={rolloutValue()}
       formatTime={rolloutTime}
@@ -816,7 +871,7 @@ export const LabelsOverrideTheTexts: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const dock = within(
-      canvas.getByRole('region', { name: 'Writing assistant' }),
+      canvas.getByRole('complementary', { name: 'Writing assistant' }),
     )
     await expect(
       dock.getByRole('textbox', { name: 'Ask something' }),

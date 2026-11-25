@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Legal2 } from '@tc96/ui/blocks/data/legal/legal-2'
-import { expect, fn, screen, userEvent, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { contracts, owners } from '../fixtures/legal-2.ts'
 import { type Legal2Controls, legal2ControlArgs } from './legal-2-controls.ts'
 import { ComposedLegal2 } from './legal-2-layouts.tsx'
@@ -65,6 +65,7 @@ const rowOf = (canvasElement: HTMLElement, title: string) =>
 const pick = async (trigger: HTMLElement, option: string) => {
   await userEvent.click(trigger)
   await userEvent.click(await screen.findByRole('option', { name: option }))
+  await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
 }
 
 export const TheHeadingNamesTheSection: Story = {

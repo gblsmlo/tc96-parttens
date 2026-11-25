@@ -1,4 +1,5 @@
 import type { RichTextValue } from '@tc96/ui/patterns/rich-text-editor'
+import type { ReactNode } from 'react'
 import type { Awareness } from 'y-protocols/awareness'
 import type * as Y from 'yjs'
 
@@ -85,22 +86,18 @@ export interface RichTextEditor4Labels {
     summary: (counts: Record<RichTextEditor4Status, number>) => string
     you: string
   }
+  placeholder: string
   replay: string
+  slashMenu: string
+  slashMenuEmpty: string
   title: string
   tools: {
-    bold: string
+    blockType: string
     bulletList: string
-    code: string
     comment: string
     format: string
-    italic: string
     numberedList: string
     paragraph: string
-    redo: string
-    strikethrough: string
-    blockType: string
-    underline: string
-    undo: string
   }
 }
 
@@ -110,10 +107,16 @@ export type RichTextEditor4LabelsInput = {
     : Partial<RichTextEditor4Labels[Key]>
 }
 
+export interface RichTextEditor4NavbarContext {
+  online: boolean
+  status: ReactNode
+}
+
 export interface RichTextEditor4Props {
   className?: string
   defaultValue?: RichTextValue
   labels?: RichTextEditor4LabelsInput
+  navbar?: ReactNode | ((context: RichTextEditor4NavbarContext) => ReactNode)
   now?: () => number
   onCommentsChange?: (threads: RichTextEditor4Thread[]) => void
   room: RichTextEditor4Room

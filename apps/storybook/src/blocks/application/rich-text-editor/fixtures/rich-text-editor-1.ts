@@ -66,3 +66,9 @@ export const launchBrief: RichTextValue = [
     type: 'p',
   },
 ]
+
+export const launchBriefBreadcrumbs = [
+  { href: '/documentos', label: 'Documentos' },
+  { href: '/documentos/marketing', label: 'Marketing' },
+  { label: 'Briefing de lançamento' },
+]

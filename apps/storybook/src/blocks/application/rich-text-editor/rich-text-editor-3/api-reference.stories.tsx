@@ -7,6 +7,7 @@ import {
   redlineAuthors,
   redlineTime,
 } from '../fixtures/rich-text-editor-3.ts'
+import { ContractPage } from './rich-text-editor-3-layouts.tsx'
 
 const meta = {
   args: {
@@ -20,6 +21,7 @@ const meta = {
   },
   component: RichTextEditor3,
   parameters: { layout: 'fullscreen' },
+  render: (args) => <ContractPage {...args} />,
   tags: ['!autodocs', '!dev'],
   title: 'Blocks/Application/Rich Text Editor/RichTextEditor3/API Reference',
 } satisfies Meta<typeof RichTextEditor3>

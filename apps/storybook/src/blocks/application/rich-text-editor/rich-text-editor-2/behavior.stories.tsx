@@ -52,33 +52,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const blockTexts = (canvasElement: HTMLElement) =>
-  Array.from(
-    canvasElement.querySelectorAll('[data-slot="rich-text-block"]'),
-    (block) => block.textContent?.replace(/\ufeff/g, ''),
-  )
-
-const blockAt = (canvasElement: HTMLElement, index: number) => {
-  const block = canvasElement.querySelectorAll('[data-slot="rich-text-block"]')[
-    index
-  ]
-  if (!block) throw new Error(`No block at ${index}`)
-  return block
-}
-
-async function openBlockMenu(canvasElement: HTMLElement, index: number) {
-  await userEvent.hover(blockAt(canvasElement, index))
-  const trigger = await within(canvasElement).findByRole('button', {
-    name: 'Opções do bloco',
-  })
-  await userEvent.click(trigger)
-  await screen.findByRole('menu')
-}
-
-async function chooseMenuItem(name: string) {
-  await userEvent.click(await screen.findByRole('menuitem', { name }))
-}
-
 async function placeCaretInCell(canvasElement: HTMLElement, selector: string) {
   const editor = within(canvasElement).getByRole('textbox', {
     name: editorName,
@@ -153,98 +126,22 @@ export const SelectingTextRaisesTheFormatBubble: Story = {
   },
 }
 
-export const GutterAddsABlockBelow: Story = {
+export const BlocksCarryNoGutterOrDragHandle: Story = {
   play: async ({ canvasElement }) => {
-    await userEvent.hover(blockAt(canvasElement, 0))
-    await userEvent.click(
-      await within(canvasElement).findByRole('button', {
-        name: 'Adicionar bloco abaixo',
-      }),
-    )
-    await waitFor(() =>
-      expect(blockTexts(canvasElement)).toEqual([
-        'Primeiro bloco',
-        '',
-        'Segundo bloco',
-        'Terceiro bloco',
-      ]),
-    )
-  },
-}
-
-export const BlockMenuTurnsABlockIntoAnotherType: Story = {
-  play: async ({ canvasElement }) => {
-    await openBlockMenu(canvasElement, 1)
-    await chooseMenuItem('Transformar em')
-    await chooseMenuItem('Título de seção')
-    const editor = within(canvasElement).getByRole('textbox', {
-      name: editorName,
-    })
-    await waitFor(() =>
-      expect(editor.querySelector('h2')).toHaveTextContent('Segundo bloco'),
-    )
-  },
-}
-
-export const BlockMenuDuplicates: Story = {
-  play: async ({ canvasElement }) => {
-    await openBlockMenu(canvasElement, 0)
-    await chooseMenuItem('Duplicar')
-    await waitFor(() =>
-      expect(blockTexts(canvasElement)).toEqual([
-        'Primeiro bloco',
-        'Primeiro bloco',
-        'Segundo bloco',
-        'Terceiro bloco',
-      ]),
-    )
-  },
-}
-
-export const BlockMenuMovesUpAndDown: Story = {
-  play: async ({ canvasElement }) => {
-    await openBlockMenu(canvasElement, 1)
-    await chooseMenuItem('Mover para cima')
-    await waitFor(() =>
-      expect(blockTexts(canvasElement)).toEqual([
-        'Segundo bloco',
-        'Primeiro bloco',
-        'Terceiro bloco',
-      ]),
-    )
-    await openBlockMenu(canvasElement, 0)
+    const canvas = within(canvasElement)
+    const editor = canvas.getByRole('textbox', { name: editorName })
+    const first = editor.querySelector('[data-slate-node="element"]')
+    if (!first) throw new Error('No block')
+    await userEvent.hover(first)
     await expect(
-      await screen.findByRole('menuitem', { name: 'Mover para cima' }),
-    ).toHaveAttribute('aria-disabled', 'true')
-    await chooseMenuItem('Mover para baixo')
-    await waitFor(() =>
-      expect(blockTexts(canvasElement)).toEqual([
-        'Primeiro bloco',
-        'Segundo bloco',
-        'Terceiro bloco',
-      ]),
-    )
-  },
-}
-
-export const BlockMenuDeletes: Story = {
-  play: async ({ canvasElement }) => {
-    await openBlockMenu(canvasElement, 2)
-    await chooseMenuItem('Excluir')
-    await waitFor(() =>
-      expect(blockTexts(canvasElement)).toEqual([
-        'Primeiro bloco',
-        'Segundo bloco',
-      ]),
-    )
-  },
-}
-
-export const EveryBlockCarriesADragHandle: Story = {
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getAllByRole('button', { name: 'Arrastar bloco' }),
-    ).toHaveLength(3)
+      canvasElement.querySelector('[data-slot="rich-text-block"]'),
+    ).toBeNull()
+    for (const name of [
+      'Adicionar bloco abaixo',
+      'Opções do bloco',
+      'Arrastar bloco',
+    ])
+      await expect(canvas.queryByRole('button', { name })).toBeNull()
   },
 }
 
@@ -461,8 +358,6 @@ export const PageMenuTogglesWidthAndTextSize: Story = {
 export const LockingThePageMakesItReadOnly: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.hover(blockAt(canvasElement, 0))
-    await canvas.findByRole('button', { name: 'Opções do bloco' })
     await userEvent.click(canvas.getByRole('button', { name: 'Mais ações' }))
     await userEvent.click(
       await screen.findByRole('menuitemcheckbox', { name: 'Bloquear página' }),
@@ -470,10 +365,9 @@ export const LockingThePageMakesItReadOnly: Story = {
     await expect(
       await canvas.findByRole('document', { name: editorName }),
     ).toHaveAttribute('contenteditable', 'false')
-    await expect(canvas.getByText('Página bloqueada')).toBeVisible()
     await expect(
-      canvasElement.querySelector('[data-slot="wiki-block-gutter"]'),
-    ).toBeNull()
+      within(canvas.getByRole('banner')).getByText('Página bloqueada'),
+    ).toBeVisible()
 
     await userEvent.click(
       screen.getByRole('menuitemcheckbox', { name: 'Bloquear página' }),
@@ -493,7 +387,9 @@ export const SaveRunsOnceAfterTheDelay: Story = {
     await canvas.findByText('Salvando...')
     await expect(args.onSave).not.toHaveBeenCalled()
     await waitFor(() => expect(args.onSave).toHaveBeenCalledTimes(1))
-    await expect(canvas.getByText('Salvo')).toBeVisible()
+    await expect(
+      within(canvas.getByRole('banner')).getByText('Salvo'),
+    ).toBeVisible()
     const saved = JSON.stringify(lastSaved(args.onSave))
     await expect(saved).toContain('Ligar para o cliente')
     await expect(saved).not.toContain('"id"')

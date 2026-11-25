@@ -1,11 +1,11 @@
 import type {
-  LegalFormatProps,
-  LegalLoadLabels,
-  LegalLoadProps,
-  LegalModeLabels,
-  LegalPerson,
-  LegalToolbarLabels,
-} from '../shared/types'
+  DataCollectionFormatProps,
+  DataCollectionLoadLabels,
+  DataCollectionLoadProps,
+  DataCollectionModeLabels,
+  DataCollectionPerson,
+  DataCollectionToolbarLabels,
+} from '../../shared/collection/types'
 
 export type Legal2Mode = 'list' | 'table'
 
@@ -15,7 +15,7 @@ export type Legal2Queue = 'drafting' | 'negotiation' | 'renewal' | 'signature'
 
 export type Legal2Status = 'draft' | 'expired' | 'review' | 'signed'
 
-export type Legal2Person = LegalPerson
+export type Legal2Person = DataCollectionPerson
 
 export interface Legal2Contract {
   client: string
@@ -42,10 +42,12 @@ export type Legal2ColumnId =
   | 'type'
   | 'value'
 
-export interface Legal2Labels extends LegalLoadLabels, LegalToolbarLabels {
+export interface Legal2Labels
+  extends DataCollectionLoadLabels,
+    DataCollectionToolbarLabels {
   columns: Record<Legal2ColumnId, string>
   empty: string
-  modes: LegalModeLabels
+  modes: DataCollectionModeLabels
   noEndDate: string
   noValue: string
   openContract: (title: string) => string
@@ -66,7 +68,9 @@ export type Legal2LabelsOverride = Partial<
   types?: Partial<Legal2Labels['types']>
 }
 
-export interface Legal2Props extends LegalFormatProps, LegalLoadProps {
+export interface Legal2Props
+  extends DataCollectionFormatProps,
+    DataCollectionLoadProps {
   className?: string
   contracts: Legal2Contract[]
   currency?: string

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RichTextEditor3 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-3'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   cleanContractValue,
@@ -13,6 +12,7 @@ import {
 } from './rich-text-editor-3-controls.ts'
 import {
   ComposedRichTextEditor3,
+  ContractPage,
   redlineDocumentName,
   richTextEditor3Handlers,
   selectRedlineText,
@@ -346,7 +346,7 @@ export const OtherViewsDisableSteppingBecauseTheMarkupIsGone: Story = {
 export const ExportMenuSendsTheRedlineHtml: Story = {
   play: async ({ canvasElement }) => {
     await userEvent.click(
-      within(canvasElement).getByRole('button', { name: 'Exportar' }),
+      within(canvasElement).getByRole('button', { name: 'Mais ações' }),
     )
     await userEvent.click(
       await screen.findByRole('menuitem', { name: 'Copiar redline em HTML' }),
@@ -370,11 +370,11 @@ export const ExportMenuSendsTheRedlineHtml: Story = {
 export const ExportMenuSendsTheFinalAndOriginalText: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Exportar' }))
+    await userEvent.click(canvas.getByRole('button', { name: 'Mais ações' }))
     await userEvent.click(
       await screen.findByRole('menuitem', { name: 'Copiar texto final' }),
     )
-    await userEvent.click(canvas.getByRole('button', { name: 'Exportar' }))
+    await userEvent.click(canvas.getByRole('button', { name: 'Mais ações' }))
     await userEvent.click(
       await screen.findByRole('menuitem', { name: 'Copiar texto original' }),
     )
@@ -398,17 +398,23 @@ export const ExportMenuSendsTheFinalAndOriginalText: Story = {
 export const FormattingAppliesDirectly: Story = {
   args: { existingChanges: 0 },
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
     const editor = textbox(canvasElement)
     await selectRedlineText(editor, 'Contrato de prestação')
-    await userEvent.click(canvas.getByRole('button', { name: 'Negrito' }))
+    const toolbar = within(
+      await screen.findByRole('toolbar', { name: 'Formatação do contrato' }),
+    )
+    await userEvent.click(toolbar.getByRole('button', { name: 'Negrito' }))
     await waitFor(() =>
       expect(editor.querySelector('strong')).toHaveTextContent(
         'Contrato de prestação',
       ),
     )
     await selectRedlineText(editor, 'As partes manterão')
-    await userEvent.click(canvas.getByRole('button', { name: 'Citação' }))
+    await userEvent.click(
+      within(
+        await screen.findByRole('toolbar', { name: 'Formatação do contrato' }),
+      ).getByRole('button', { name: 'Citação' }),
+    )
     await waitFor(() =>
       expect(editor.querySelector('blockquote')).not.toBeNull(),
     )
@@ -432,20 +438,40 @@ export const SplittingAParagraphAppliesDirectly: Story = {
   },
 }
 
-export const StrikeCodeHighlightAndTasksAreOff: Story = {
+export const SelectionToolbarOffersOnlyBoldItalicAndUnderline: Story = {
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    for (const name of [
-      'Tachado',
-      'Código',
-      'Destaque de texto',
-      'Lista de tarefas',
-    ])
-      await expect(canvas.queryByRole('button', { name })).toBeNull()
+    await expect(
+      within(canvasElement).queryByRole('toolbar', {
+        name: 'Formatação do contrato',
+      }),
+    ).toBeNull()
+    await selectRedlineText(textbox(canvasElement), 'As partes manterão')
+    const toolbar = within(
+      await screen.findByRole('toolbar', { name: 'Formatação do contrato' }),
+    )
+    for (const name of ['Negrito', 'Itálico', 'Sublinhado'])
+      await expect(toolbar.getByRole('button', { name })).toBeVisible()
+    for (const name of ['Tachado', 'Código', 'Destaque de texto'])
+      await expect(toolbar.queryByRole('button', { name })).toBeNull()
+  },
+}
+
+export const SlashOpensTheBlockMenuWithoutRecordingAChange: Story = {
+  play: async ({ canvasElement }) => {
     const editor = textbox(canvasElement)
+    const before = items(canvasElement).length
     await selectRedlineText(editor, 'dos serviços.', 'end')
-    await userEvent.keyboard('/')
-    await expect(screen.queryByRole('listbox', { name: 'Blocos' })).toBeNull()
+    await userEvent.keyboard('{Enter}/cita')
+    const menu = await screen.findByRole('listbox', { name: 'Blocos' })
+    await expect(within(menu).getByRole('option')).toHaveTextContent('Citação')
+    await expect(items(canvasElement)).toHaveLength(before)
+    await userEvent.keyboard('{Enter}Nova cláusula')
+    await waitFor(() =>
+      expect(editor.querySelector('blockquote')).toHaveTextContent(
+        'Nova cláusula',
+      ),
+    )
+    await waitFor(() => expect(items(canvasElement)).toHaveLength(before + 1))
   },
 }
 
@@ -486,7 +512,7 @@ export const NarrowViewportMovesTheMarginIntoASheet: Story = {
 
 export const LabelsOverrideTheTexts: Story = {
   render: () => (
-    <RichTextEditor3
+    <ContractPage
       author={redlineAuthor}
       authors={redlineAuthors}
       defaultValue={cleanContractValue()}
@@ -494,7 +520,7 @@ export const LabelsOverrideTheTexts: Story = {
       labels={{
         acceptAll: 'Accept all',
         count: (count) => `${count} edits`,
-        export: 'Export',
+        reviewTitle: 'Review',
         views: 'Version',
       }}
     />
@@ -502,7 +528,7 @@ export const LabelsOverrideTheTexts: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await expect(canvas.getByText('0 edits')).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Export' })).toBeVisible()
+    await expect(canvas.getByRole('heading', { name: 'Review' })).toBeVisible()
     await expect(canvas.getByRole('group', { name: 'Version' })).toBeVisible()
     await expect(
       canvas.getByRole('button', { name: 'Accept all' }),

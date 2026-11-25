@@ -1,0 +1,131 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Crm2
+
+The leads of a sales team in one block: a Quadro with one column per pipeline stage and a Tabela with Lead, Contato, Etapa, Origem, Responsável, Valor, Próxima ação, Prazo and Tags. Reach for it on the funnel screen that the server filters, sorts and pages. Install it with `npx @tc96/cli add crm-2`.
+
+The block is controlled and renders what it gets. Mode, grouping, search, sort, every filter, the selection and the page are a value and a callback; without the value the block keeps it locally. It does **not** filter, sort or page `leads`: the consumer sends each change to its server and passes the result back, with `filtered` saying whether a filter or the search is active. Stages, owners and tags are workspace catalogs; Origem, Arquivados, the order and the status are fixed unions. A lead's text that depends on a rule arrives ready: `contact` is the name to show, `nextActionOverdue` marks the deadline, `editable` says whether the member may change the lead.
+
+`leads` is one list for both modes. In the Quadro it is the open, unarchived leads the board loaded; the block projects them into columns by the active grouping (Etapa, Responsável or Origem), the only ordering it does. Grouped by Etapa there is one column per active stage, in catalog order, even when empty; an inactive stage gets a column only while a lead sits in it. The column title shows the sum of `stageValues` for its stage, or the sum of the loaded cards for the other groupings. The Tabela renders the page as given. Arquivados and Ordenar exist only in the Tabela, Agrupar por only in the Quadro, and the pagination footer only in the Tabela.
+
+Grouped by Etapa, each active column has Novo lead em (`onCreateInStage`) and a card drop calls `onStageChange(leadId, stageId)` and returns `false`: the card goes back and moves when `leads` changes. A drop is refused, with no call, when the lead is not `editable`, not `open` or `archived`, and on an inactive stage. The Etapa cell follows the same rule and offers only the active stages plus the lead's current one; Origem and Responsável need only `editable`. In the action bar, Mover para etapa reports only the selected leads that can move and is disabled when none can, Responsável reports the editable ones and Arquivar the editable leads not yet archived; a selection with no editable lead shows no action.
+
+The toolbar `left` slot holds the view switcher when there are saved views (`savedViews`, `savedViewsLoading` or `onSavedViewCreate`), so the page has no `h2`; otherwise the heading names the block. With `boardHasMore`, the Quadro shows a status notice above the toolbar.
+
+The other pages of `Blocks/Data/CRM/Crm2`: [Playground](?path=/story/blocks-data-crm-crm2-playground--playground), [Layouts](?path=/story/blocks-data-crm-crm2-layouts--board), [Behavior](?path=/story/blocks-data-crm-crm2-behavior--the-board-has-one-column-per-active-stage) and [Usages](?path=/story/blocks-data-crm-crm2-usages--sales-board).
+
+## Import
+
+```tsx
+import { Crm2 } from '@tc96/ui/blocks/data/crm/crm-2'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Crm2
+  filtered={hasFilters}
+  groupBy={groupBy}
+  leads={isBoard ? board.leads : page.items}
+  mode={mode}
+  onCreateInStage={startLead}
+  onGroupByChange={setGroupBy}
+  onModeChange={setMode}
+  onOpen={openLead}
+  onPageChange={setPage}
+  onStageChange={moveLead}
+  onStageFilterChange={setStageFilter}
+  owners={owners}
+  page={pageNumber}
+  pageCount={pageCount}
+  pageSize={25}
+  stageFilter={stageFilter}
+  stageValues={board.stageValues}
+  stages={stages}
+  tags={tags}
+  total={page.total}
+/>
+```
+
+## Crm2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `leads` | `Crm2Lead[]` | required | The leads to show: the board's open leads in the Quadro, the page in the Tabela. Keep the array stable between renders. |
+| `stages` | `Crm2Stage[]` | `[]` | The pipeline stages, in funnel order: the columns of the Quadro, the Etapa options and filter, and Mover para etapa. |
+| `owners` | `Crm2Person[]` | `[]` | The options of Responsável in a row, in the filter, in the action bar and the Responsável grouping. |
+| `tags` | `Crm2Option[]` | `[]` | The tag catalog: the badges of a lead and the Tags filter. |
+| `stagesLoading`, `ownersLoading`, `tagsLoading` | `boolean` | `false` | Show loading rows in the filter submenu of a catalog still being read. |
+| `mode`, `onModeChange` | `'kanban' \| 'table'`, `(mode) => void` | `'kanban'` | The controllable layout: Quadro or Tabela. |
+| `groupBy`, `onGroupByChange` | `'stage' \| 'owner' \| 'origin'`, `(groupBy) => void` | `'stage'` | How the Quadro groups its cards; the Tabela is never grouped. |
+| `stageValues` | `Partial<Record<string, number>>` | - | The value in cents of each stage, by stage id, shown in the column title when grouped by Etapa. |
+| `boardHasMore` | `boolean` | `false` | Shows the notice that some stages hold only their first leads. |
+| `search`, `onSearchChange` | `string`, `(search) => void` | - | The search field, rendered with `onSearchChange`; called on submit and when emptied. |
+| `sort`, `onSortChange` | `Crm2Sort`, `(sort) => void` | `'created'` | Ordenar por in the Tabela, rendered with `onSortChange`. |
+| `stageFilter`, `onStageFilterChange` | `string \| null`, `(stageId) => void` | `null` | The Etapa filter, rendered when `stages` has items or is loading. |
+| `ownerFilter`, `onOwnerFilterChange` | `string \| null`, `(ownerId) => void` | `null` | The Responsável filter, rendered when `owners` has items or is loading. |
+| `originFilter`, `onOriginFilterChange` | `Crm2Origin \| null`, `(origin) => void` | `null` | The Origem filter, rendered with its callback. |
+| `tagFilter`, `onTagFilterChange` | `string[]`, `(tagIds) => void` | `[]` | The Tags filter, rendered when `tags` has items or is loading. |
+| `archivedFilter`, `onArchivedFilterChange` | `Crm2Archived \| null`, `(archived) => void` | `null` | The Arquivados filter of the Tabela, rendered with its callback; `null` and `'exclude'` are Sem arquivados. |
+| `filtered` | `boolean` | `false` | Picks `labels.noResult` instead of `labels.empty` for the empty message. |
+| `onStageChange` | `(leadId, stageId) => void` | - | Makes Etapa editable and cards draggable when grouped by Etapa. |
+| `onOwnerChange`, `onOriginChange` | `(leadId, value) => void` | - | Make Responsável and Origem editable in a row. |
+| `onCreate` | `() => void` | - | Renders Novo lead. |
+| `onCreateInStage` | `(stageId: string) => void` | - | Renders Novo lead em on each active stage column. |
+| `onOpen` | `(leadId: string) => void` | - | Makes a card and a row open the lead. |
+| `selectedIds`, `onSelectedIdsChange` | `string[]`, `(leadIds) => void` | `[]` | The controllable row selection of the Tabela. Either one, or a bulk callback, adds the select column. |
+| `onBulkStageChange`, `onBulkOwnerChange` | `(leadIds, value) => void` | - | Render Mover para etapa and Responsável in the action bar. |
+| `onBulkArchive` | `(leadIds: string[]) => void` | - | Renders Arquivar in the action bar. |
+| `page`, `onPageChange` | `number`, `(page) => void` | `1` | The controllable page of the Tabela, starting at 1. |
+| `pageCount` | `number` | - | Renders the pagination footer of the Tabela while there are leads. |
+| `pageSize`, `total` | `number` | - | Together they show the range summary (`1–25 de 57`); `total` of 0 hides the footer. |
+| `view`, `onViewChange`, `counts` | `'all'`, `(view) => void`, `Partial<Record<'all', number>>` | `'all'` | The built-in view of the switcher and its count. |
+| `savedViews`, `savedViewId`, `savedViewModified`, `savedViewsLoading`, `savedViewsPending` | - | - | The saved views of the switcher; see `DataCollectionViewSwitcher`. |
+| `onSavedViewCreate`, `onSavedViewSelect`, `onSavedViewUpdate`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | callbacks | - | The saved view actions. |
+| `onSavePreference` | `() => void` | - | Renders Salvar preferência in Exibição. |
+| `locale`, `currency`, `timeZone` | `string` | `'pt-BR'`, `'BRL'`, `'America/Sao_Paulo'` | Format the values and the deadlines. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks; the skeleton follows the mode. |
+| `labels` | `Crm2LabelsOverride` | pt-BR texts | Overrides the texts; `archivedOptions`, `columns`, `groupings`, `modes`, `origins`, `paginationButtons`, `savedViews`, `sorts` and `views` merge key by key. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Crm2Lead
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `title` | `string` | The identity and the title. |
+| `contact` | `string \| null` | The person or company to show; `null` shows `labels.noContact`. |
+| `stageId` | `string` | One of `stages`. |
+| `ownerId` | `string \| null` | One of `owners`; `null` is Sem responsável. |
+| `origin` | `Crm2Origin` | `'referral'`, `'website'`, `'social-media'`, `'paid-ads'`, `'event'`, `'existing-client'` or `'other'`. |
+| `valueCents` | `number \| null` | The value in cents, formatted with `locale` and `currency`; `null` shows Sem valor. |
+| `nextAction` | `string \| null` | The next action; `null` shows Sem próxima ação. |
+| `nextActionAt` | `string \| null` | The day of the next action (`YYYY-MM-DD`). |
+| `nextActionOverdue` | `boolean` | Marks the deadline as overdue. |
+| `tagIds` | `string[]` | Ids of `tags`, shown as read-only badges. |
+| `status` | `'open' \| 'won' \| 'lost'` | Only an open lead changes stage. |
+| `archived` | `boolean` | An archived lead never changes stage and is left out of Arquivar. |
+| `editable` | `boolean` | `false` makes every cell of the lead read-only and leaves it out of the bulk actions; defaults to `true`. |
+
+## Crm2Stage
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `label` | `string` | The identity and the name, ready (`Proposta › Revisão` for a sub-stage). |
+| `tone` | `'neutral' \| 'info' \| 'success' \| 'warning' \| 'danger'` | The tone of the stage icon in the Etapa cell; defaults to `neutral`. |
+| `inactive` | `boolean` | An archived stage, or one whose sub-stages hold its leads: it names the leads in it but gets no board column and is never offered. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Crm2` | `component` | The leads board and table. |
+| `crm2Modes` | `const` | `['kanban', 'table']`. |
+| `crm2Groupings` | `const` | `['stage', 'owner', 'origin']`. |
+| `crm2Sorts` | `const` | `['created', 'updated', 'next-action', 'value']`. |
+| `crm2Origins` | `const` | The seven origins, in menu order. |
+| `Crm2Props`, `Crm2Lead`, `Crm2Stage`, `Crm2StageTone`, `Crm2Option`, `Crm2Person`, `Crm2SavedView`, `Crm2Mode`, `Crm2View`, `Crm2GroupBy`, `Crm2Sort`, `Crm2Origin`, `Crm2Archived`, `Crm2Status`, `Crm2ColumnId`, `Crm2Labels`, `Crm2LabelsOverride` | `type` | The props, the data and the labels. |

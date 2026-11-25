@@ -5,6 +5,7 @@ import {
 } from './view-switcher-variants.ts'
 
 export interface ViewSwitcherControls {
+  counts: boolean
   create: boolean
   icon: boolean
   loading: boolean
@@ -14,6 +15,7 @@ export interface ViewSwitcherControls {
 }
 
 export const viewSwitcherControlArgs: ViewSwitcherControls = {
+  counts: false,
   create: false,
   icon: true,
   loading: false,
@@ -25,6 +27,11 @@ export const viewSwitcherControlArgs: ViewSwitcherControls = {
 export const viewSwitcherControlArgTypes: Partial<
   ArgTypes<ViewSwitcherControls>
 > = {
+  counts: {
+    control: 'boolean',
+    description:
+      'Gives every `ViewSwitcherItem` a `count` and an `aria-label` that names the view with its count; Aguardando retorno has 0, which still shows. The trigger keeps the view name alone.',
+  },
   create: {
     control: 'boolean',
     description:

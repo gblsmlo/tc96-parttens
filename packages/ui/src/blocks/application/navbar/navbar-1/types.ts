@@ -20,4 +20,5 @@ export interface Navbar1Props {
   menu?: ReactNode
   onShare?: () => void
   renderLink?: NavbarRenderLink
+  status?: ReactNode
 }

@@ -8,7 +8,7 @@ import {
 } from '@tc96/ui/toolbar'
 import { RangeApi, type SlateEditor, type TRange } from 'platejs'
 import { useEditorRef, useEditorSelector } from 'platejs/react'
-import type { ReactElement, RefObject } from 'react'
+import type { ReactElement, ReactNode, RefObject } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { LinkButton, type LinkButtonLabels } from './link-button'
 import {
@@ -36,21 +36,25 @@ function selectionAnchor(editor: SlateEditor, selection: TRange) {
 }
 
 export interface FloatingToolbarProps {
+  actions?: ReactNode
   blockLabels: Readonly<Record<RichTextBlock, string>>
   blockTypeLabel: string
   label: string
   linkLabels: LinkButtonLabels
   markLabels: Readonly<Record<RichTextMark, string>>
+  marks?: readonly RichTextMark[]
   paragraphLabel: string
   toolbarRef: RefObject<HTMLDivElement | null>
 }
 
 export function FloatingToolbar({
+  actions,
   blockLabels,
   blockTypeLabel,
   label,
   linkLabels,
   markLabels,
+  marks = RICH_TEXT_MARKS,
   paragraphLabel,
   toolbarRef,
 }: Readonly<FloatingToolbarProps>): ReactElement {
@@ -65,16 +69,18 @@ export function FloatingToolbar({
   const [dismissed, setDismissed] = useState<TRange | null>(null)
 
   useEffect(() => {
-    const editable = editor.api.toDOMNode(editor)
+    const inEditable = (node: Node) =>
+      editor.api.toDOMNode(editor)?.contains(node) ?? false
     const inside = (node: EventTarget | null) =>
       node instanceof Node &&
-      ((editable?.contains(node) ?? false) ||
+      (inEditable(node) ||
         (toolbarRef.current?.contains(node) ?? false) ||
         (node instanceof Element &&
           node.closest('[data-slot=select-popup],[data-slot=popover-popup]') !==
             null))
     const down = (event: PointerEvent) => {
-      if (editable?.contains(event.target as Node)) setPointerDown(true)
+      if (event.target instanceof Node && inEditable(event.target))
+        setPointerDown(true)
     }
     const up = () => setPointerDown(false)
     const focusIn = (event: FocusEvent) => setFocusWithin(inside(event.target))
@@ -150,7 +156,7 @@ export function FloatingToolbar({
           />
           <ToolbarSeparator orientation="vertical" />
           <ToolbarGroup className="gap-0.5">
-            {RICH_TEXT_MARKS.map((mark) => (
+            {marks.map((mark) => (
               <MarkButton key={mark} label={markLabels[mark]} mark={mark} />
             ))}
           </ToolbarGroup>
@@ -167,6 +173,12 @@ export function FloatingToolbar({
               />
             ))}
           </ToolbarGroup>
+          {actions ? (
+            <>
+              <ToolbarSeparator orientation="vertical" />
+              <ToolbarGroup className="gap-0.5">{actions}</ToolbarGroup>
+            </>
+          ) : null}
         </ToolbarPrimitive.Root>
       </PopoverPopup>
     </Popover>

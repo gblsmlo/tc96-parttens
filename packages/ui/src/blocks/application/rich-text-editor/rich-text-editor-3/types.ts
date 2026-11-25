@@ -1,8 +1,10 @@
 import type { RichTextValue } from '@tc96/ui/patterns/rich-text-editor'
+import type { ReactNode } from 'react'
 import type {
   SuggestionAuthor,
   SuggestionChange,
   SuggestionReviewLabels,
+  SuggestionView,
 } from '../shared/suggestions'
 
 export type RichTextEditor3Author = SuggestionAuthor
@@ -31,25 +33,31 @@ export interface RichTextEditor3Labels {
   confirmRejectAllTitle: string
   count: (count: number) => string
   document: string
-  export: string
   exportFinal: string
   exportHtml: string
   exportOriginal: string
   formatting: string
-  marks: Record<'bold' | 'italic' | 'underline', string>
   next: string
   openReview: string
+  placeholder: string
   previous: string
-  redo: string
   rejectAll: string
   review: SuggestionReviewLabels
   reviewDescription: string
   reviewTitle: string
-  undo: string
+  slashMenu: string
+  slashMenuEmpty: string
   viewAll: string
   viewFinal: string
   viewOriginal: string
   views: string
+}
+
+export interface RichTextEditor3NavbarContext {
+  count: number
+  menuItems: ReactNode
+  status: ReactNode
+  view: SuggestionView
 }
 
 export interface RichTextEditor3Props {
@@ -59,8 +67,8 @@ export interface RichTextEditor3Props {
   defaultValue: RichTextValue
   formatTime?: (date: Date) => string
   labels?: Partial<RichTextEditor3Labels>
+  navbar?: ReactNode | ((context: RichTextEditor3NavbarContext) => ReactNode)
   onChange?: (value: RichTextValue) => void
   onDecision?: (decision: RichTextEditor3Decision) => void
   onExport?: (format: RichTextEditor3ExportFormat, content: string) => void
-  title?: string
 }

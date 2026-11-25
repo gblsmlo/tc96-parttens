@@ -79,7 +79,7 @@ export function RichTextEditor1Footer({
 
   return (
     <footer
-      className="sticky bottom-0 z-10 flex flex-wrap items-center justify-between gap-2 border-t bg-background px-4 py-2 text-muted-foreground text-sm"
+      className="sticky bottom-0 z-10 flex flex-wrap items-center justify-between gap-2 bg-background px-6 py-2 text-muted-foreground text-sm"
       data-slot="rich-text-editor-1-footer"
     >
       <p className="flex flex-wrap items-center gap-x-3 tabular-nums">

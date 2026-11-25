@@ -9,7 +9,6 @@ import {
 } from '@tc96/ui/alert-dialog'
 import { Badge } from '@tc96/ui/badge'
 import { Button } from '@tc96/ui/button'
-import { Frame, FramePanel } from '@tc96/ui/frame'
 import { richTextToHtml, richTextToPlainText } from '@tc96/ui/helpers/rich-text'
 import {
   EditorTitle,
@@ -18,12 +17,17 @@ import {
   useRichTextEditor,
 } from '@tc96/ui/patterns/rich-text-editor'
 import { ToastProvider, toastManager } from '@tc96/ui/toast'
+import { cn } from '@tc96/utils'
 import { useState } from 'react'
 import { resolveRichTextEditor1Labels } from './labels'
 import { RichTextEditor1Footer } from './rich-text-editor-1-footer'
-import { RichTextEditor1Menu } from './rich-text-editor-1-menu'
+import { RichTextEditor1MenuItems } from './rich-text-editor-1-menu-items'
 import { RichTextEditor1Toolbar } from './rich-text-editor-1-toolbar'
-import type { RichTextEditor1CopyFormat, RichTextEditor1Props } from './types'
+import type {
+  RichTextEditor1CopyFormat,
+  RichTextEditor1NavbarContext,
+  RichTextEditor1Props,
+} from './types'
 import { useDebouncedSave } from './use-debounced-save'
 import { useReadOnly } from './use-read-only'
 
@@ -40,6 +44,7 @@ export function RichTextEditor1({
   defaultValue,
   description,
   labels: labelsProp,
+  navbar,
   onChange,
   onClear,
   onCopy,
@@ -100,67 +105,79 @@ export function RichTextEditor1({
     })
   }
 
+  const context: RichTextEditor1NavbarContext = {
+    menuItems: (
+      <RichTextEditor1MenuItems
+        labels={labels}
+        onClear={() => setConfirmingClear(true)}
+        onCopy={handleCopy}
+        onReadOnlyChange={setReadOnly}
+        readOnly={readOnly}
+      />
+    ),
+    readOnly,
+    status: status ? <Badge variant="secondary">{status}</Badge> : null,
+  }
+  const navbarNode = typeof navbar === 'function' ? navbar(context) : navbar
+
   return (
     <ToastProvider position="bottom-center">
-      <Frame className={className} data-slot="rich-text-editor-1">
-        <FramePanel className="flex flex-col gap-0 overflow-hidden p-0">
-          <header className="flex items-start gap-3 px-6 pt-5 pb-3">
-            <div className="flex min-w-0 flex-1 flex-col gap-1">
-              {readOnly ? (
-                <h1 className="font-semibold text-2xl text-foreground tracking-tight">
-                  {title || labels.emptyTitle}
-                </h1>
-              ) : (
-                <EditorTitle
-                  defaultValue={title}
-                  emptyLabel={labels.emptyTitle}
-                  label={labels.titleLabel}
-                  onChange={handleTitleChange}
-                />
-              )}
-              {description ? (
-                <p className="text-muted-foreground text-sm">{description}</p>
-              ) : null}
-            </div>
-            {status ? <Badge variant="secondary">{status}</Badge> : null}
-            <RichTextEditor1Menu
-              labels={labels}
-              onClear={() => setConfirmingClear(true)}
-              onCopy={handleCopy}
-              onReadOnlyChange={setReadOnly}
-              readOnly={readOnly}
-            />
-          </header>
-          <RichTextEditor
-            aria-label={labels.document}
-            blockLabels={{
-              blockquote: labels.quote,
-              h2: labels.blocks.h2,
-              h3: labels.blocks.h3,
-              ol: labels.numberedList,
-              ul: labels.bulletList,
-            }}
-            className="flex max-h-[28rem] flex-col overflow-y-auto"
-            contentClassName="min-h-56 flex-1 px-6 py-4"
-            editor={editor}
-            floatingToolbar={false}
-            linkLabels={labels.link}
-            onValueChange={handleValueChange}
-            paragraphLabel={labels.blocks.paragraph}
-            placeholder={labels.placeholder}
-            readOnly={readOnly}
-            toolbar={
-              readOnly ? undefined : (
-                <div className="sticky top-0 z-10">
+      <div
+        className={cn('flex w-full flex-col bg-background', className)}
+        data-slot="rich-text-editor-1"
+      >
+        {navbarNode}
+        <RichTextEditor
+          aria-label={labels.document}
+          blockLabels={{
+            blockquote: labels.quote,
+            h2: labels.blocks.h2,
+            h3: labels.blocks.h3,
+            ol: labels.numberedList,
+            ul: labels.bulletList,
+          }}
+          className="mx-auto flex w-full max-w-4xl flex-1 flex-col"
+          contentClassName="min-h-96 flex-1 px-6 pt-2 pb-12"
+          editor={editor}
+          floatingToolbar={false}
+          linkLabels={labels.link}
+          onValueChange={handleValueChange}
+          paragraphLabel={labels.blocks.paragraph}
+          placeholder={labels.placeholder}
+          readOnly={readOnly}
+          toolbar={
+            <>
+              {readOnly ? null : (
+                <div className="sticky top-0 z-10 bg-background px-3 py-2">
                   <RichTextEditor1Toolbar labels={labels} />
                 </div>
-              )
-            }
-          >
-            <RichTextEditor1Footer labels={labels} saveState={save.state} />
-          </RichTextEditor>
-        </FramePanel>
-      </Frame>
+              )}
+              <div
+                className="flex flex-col gap-1 px-6 pt-6 pb-2"
+                data-slot="rich-text-editor-1-heading"
+              >
+                {readOnly ? (
+                  <h1 className="font-semibold text-2xl text-foreground tracking-tight">
+                    {title || labels.emptyTitle}
+                  </h1>
+                ) : (
+                  <EditorTitle
+                    defaultValue={title}
+                    emptyLabel={labels.emptyTitle}
+                    label={labels.titleLabel}
+                    onChange={handleTitleChange}
+                  />
+                )}
+                {description ? (
+                  <p className="text-muted-foreground text-sm">{description}</p>
+                ) : null}
+              </div>
+            </>
+          }
+        >
+          <RichTextEditor1Footer labels={labels} saveState={save.state} />
+        </RichTextEditor>
+      </div>
       <AlertDialog onOpenChange={setConfirmingClear} open={confirmingClear}>
         <AlertDialogPopup>
           <AlertDialogHeader>

@@ -26,6 +26,7 @@ export interface ListGroupProps<TRecord> {
   collapsed: boolean
   separated?: boolean
   emptyLabel: ReactNode
+  getGroupToggleLabel?: (group: string, collapsed: boolean) => string
   group: CollectionGroup<TRecord>
   onCollapsedChange: (collapsed: boolean) => void
   renderRecord: (record: TRecord) => ReactNode
@@ -37,11 +38,15 @@ export interface ListGroupProps<TRecord> {
   loadingRecordLabel?: string
 }
 
+const defaultGroupToggleLabel = (group: string, collapsed: boolean) =>
+  `${collapsed ? 'Expand' : 'Collapse'} ${group}`
+
 export function ListGroup<TRecord>({
   actions,
   collapsed,
   separated = false,
   emptyLabel,
+  getGroupToggleLabel = defaultGroupToggleLabel,
   getKey,
   group,
   loading = false,
@@ -80,7 +85,7 @@ export function ListGroup<TRecord>({
             <CollapsibleTrigger
               render={
                 <Button
-                  aria-label={`${collapsed ? 'Expand' : 'Collapse'} ${groupLabel}`}
+                  aria-label={getGroupToggleLabel(groupLabel, collapsed)}
                   size="icon-sm"
                   variant="ghost"
                 />

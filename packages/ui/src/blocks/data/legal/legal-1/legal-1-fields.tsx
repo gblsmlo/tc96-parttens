@@ -1,11 +1,11 @@
 import { TextProperty } from '@tc96/ui/patterns/properties/display/text/text-property'
 import {
-  LegalDate,
-  LegalOwner,
-  LegalSelect,
-  legalSelectOptions,
-} from '../shared/legal-properties'
-import type { LegalPropertyVariant } from '../shared/types'
+  DataDate,
+  DataOwner,
+  DataSelect,
+  dataSelectOptions,
+} from '../../shared/properties/data-properties'
+import type { DataPropertyVariant } from '../../shared/properties/types'
 import {
   legal1QueueAppearance,
   legal1Queues,
@@ -28,19 +28,19 @@ export interface Legal1FieldContext {
   onQueueChange?: (caseId: string, queue: Legal1Queue) => void
   onStatusChange?: (caseId: string, status: Legal1Status) => void
   owners: readonly Legal1Person[]
-  queueOptions: ReturnType<typeof legalSelectOptions>
-  statusOptions: ReturnType<typeof legalSelectOptions>
+  queueOptions: ReturnType<typeof dataSelectOptions>
+  statusOptions: ReturnType<typeof dataSelectOptions>
   timeZone?: string
 }
 
 export function createLegal1Options(labels: Legal1Labels) {
   return {
-    queueOptions: legalSelectOptions(
+    queueOptions: dataSelectOptions(
       legal1Queues,
       labels.queues,
       legal1QueueAppearance,
     ),
-    statusOptions: legalSelectOptions(
+    statusOptions: dataSelectOptions(
       legal1Statuses,
       labels.statuses,
       legal1StatusAppearance,
@@ -51,13 +51,13 @@ export function createLegal1Options(labels: Legal1Labels) {
 interface FieldProps {
   context: Legal1FieldContext
   item: Legal1Case
-  variant?: LegalPropertyVariant
+  variant?: DataPropertyVariant
 }
 
 export function Legal1StatusField({ context, item, variant }: FieldProps) {
   const { labels, onStatusChange, statusOptions } = context
   return (
-    <LegalSelect<Legal1Status>
+    <DataSelect<Legal1Status>
       ariaLabel={labels.columns.status}
       onChange={
         onStatusChange ? (status) => onStatusChange(item.id, status) : undefined
@@ -72,7 +72,7 @@ export function Legal1StatusField({ context, item, variant }: FieldProps) {
 export function Legal1QueueField({ context, item, variant }: FieldProps) {
   const { labels, onQueueChange, queueOptions } = context
   return (
-    <LegalSelect<Legal1Queue>
+    <DataSelect<Legal1Queue>
       ariaLabel={labels.columns.queue}
       onChange={
         onQueueChange ? (queue) => onQueueChange(item.id, queue) : undefined
@@ -92,7 +92,7 @@ export function Legal1OwnerField({
 }: FieldProps & { avatarOnly?: boolean }) {
   const { labels, onOwnerChange, owners } = context
   return (
-    <LegalOwner
+    <DataOwner
       ariaLabel={labels.columns.owner}
       avatarOnly={avatarOnly}
       onChange={
@@ -109,7 +109,7 @@ export function Legal1OwnerField({
 export function Legal1DeadlineField({ context, item, variant }: FieldProps) {
   const { labels, locale, timeZone } = context
   return (
-    <LegalDate
+    <DataDate
       ariaLabel={labels.columns.deadline}
       fallback={labels.noDeadline}
       locale={locale}

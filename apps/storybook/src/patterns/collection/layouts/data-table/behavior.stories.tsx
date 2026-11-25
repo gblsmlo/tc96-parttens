@@ -110,6 +110,43 @@ export const RowOpensFromAPlainArea: Story = {
   },
 }
 
+export const RowThatDoesNotOpen: Story = {
+  args: { onOpen: fn() },
+  render: ({ onOpen }) => {
+    const [, second] = firstTwo()
+    return (
+      <TasksTable canOpen={(task) => task.id !== second.id} onOpen={onOpen} />
+    )
+  },
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+    const [first, second] = firstTwo()
+    const closedRow = bodyRowsOf(tableOf(canvasElement))[1]
+    if (!closedRow) throw new Error('The table has no second row.')
+
+    await expect(
+      canvas.getByRole('button', { name: `Abrir ${first.title}` }),
+    ).toBeVisible()
+    await expect(
+      canvas.queryByRole('button', { name: `Abrir ${second.title}` }),
+    ).toBeNull()
+    await expect(closedRow).not.toHaveAttribute('data-interactive')
+    await expect(
+      closedRow.querySelector('[data-slot="data-table-row-trigger"]'),
+    ).toBeNull()
+
+    await userEvent.click(closedRow.querySelectorAll('td')[1] as Element)
+    await expect(args.onOpen).not.toHaveBeenCalled()
+
+    const checkbox = canvas.getByRole('checkbox', {
+      name: `Selecionar ${second.title}`,
+    })
+    await userEvent.click(checkbox)
+    await expect(checkbox).toHaveAttribute('aria-checked', 'true')
+    await expect(closedRow).toHaveAttribute('data-state', 'selected')
+  },
+}
+
 export const CellControlsKeepTheirClick: Story = {
   args: { onOpen: fn() },
   render: ({ onOpen }) => <TasksTable onOpen={onOpen} />,

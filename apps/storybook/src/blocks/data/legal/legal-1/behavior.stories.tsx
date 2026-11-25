@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Legal1 } from '@tc96/ui/blocks/data/legal/legal-1'
-import { expect, fn, screen, userEvent, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { cases, owners } from '../fixtures/legal-1.ts'
 import { type Legal1Controls, legal1ControlArgs } from './legal-1-controls.ts'
 import { ComposedLegal1 } from './legal-1-layouts.tsx'
@@ -69,6 +69,7 @@ const rowOf = (canvasElement: HTMLElement, title: string) =>
 const pick = async (trigger: HTMLElement, option: string) => {
   await userEvent.click(trigger)
   await userEvent.click(await screen.findByRole('option', { name: option }))
+  await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
 }
 
 export const TheViewSwitcherReplacesTheHeading: Story = {

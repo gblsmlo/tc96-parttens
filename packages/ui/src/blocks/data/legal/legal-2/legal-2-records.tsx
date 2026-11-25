@@ -1,4 +1,4 @@
-import { LegalListRow } from '../shared/legal-record-parts'
+import { DataCollectionListRow } from '../../shared/collection/data-collection-record-parts'
 import {
   type Legal2FieldContext,
   Legal2OwnerField,
@@ -12,7 +12,7 @@ export const renderLegal2ListRow =
   (context: Legal2FieldContext) => (item: Legal2Contract) => {
     const { formatValue, labels, onOpen } = context
     return (
-      <LegalListRow
+      <DataCollectionListRow
         caption={[
           item.code,
           labels.types[item.type],

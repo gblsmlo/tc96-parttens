@@ -61,6 +61,8 @@ Toolbar and focus:
 
 - The toolbar is Base UI's unstyled `ToolbarPrimitive.Root`, not the COSS `Toolbar`, whose border, radius and background would duplicate the popup frame and need an override.
 - It opens only while the selection is expanded with text, the pointer is up and focus is inside the editable, the toolbar, a `[data-slot=select-popup]` or a `[data-slot=popover-popup]`, so the block `Select` and link popover count as inside. Escape dismisses it for that selection; `Alt+F10` focuses the first `[data-slot=toolbar-button]`.
+- The editable is looked up on every focus and pointer event, not once on mount: with Yjs (`skipInitialization`) it renders after the toolbar's effect runs, and a stored reference left the toolbar closed for good.
+- `floatingToolbarMarks` narrows the mark buttons (blocks that disable strike, code or highlight pass the rest) and `floatingToolbarActions` appends one more group after a separator, inside the `toolbar` so it shares the roving focus; `RichTextEditor4` puts its comment button there.
 - `onExitStart` fires on ArrowUp on the first visual line of the first block, or on Backspace at the document start only when the first block is a paragraph. `EditorTitle` hands Enter to `onEnter` and ArrowDown at the end to `onArrowDownAtEnd`; with `focusStart()` and `focusEnd()` the consumer moves focus between title and body.
 - `EditorTitle` flattens line breaks on change and keeps the caret in place; while empty it renders `emptyLabel` as `sr-only` inside the `h1`.
 

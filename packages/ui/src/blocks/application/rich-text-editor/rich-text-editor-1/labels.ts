@@ -34,7 +34,6 @@ export const defaultRichTextEditor1Labels: RichTextEditor1Labels = {
   },
   divider: 'Divisor',
   document: 'Conteúdo do documento',
-  documentMenu: 'Menu do documento',
   editMode: 'Editar',
   emptyTitle: 'Documento sem título',
   history: { redo: 'Refazer', undo: 'Desfazer' },

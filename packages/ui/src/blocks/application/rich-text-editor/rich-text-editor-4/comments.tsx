@@ -19,7 +19,7 @@ import { Textarea } from '@tc96/ui/textarea'
 import { toastManager } from '@tc96/ui/toast'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
-import { KEYS, RangeApi, type RangeRef, TextApi, type TRange } from 'platejs'
+import { KEYS, RangeApi, type RangeRef, TextApi } from 'platejs'
 import {
   type PlateEditor,
   PlateLeaf,
@@ -475,26 +475,7 @@ export function CommentPopovers({
   actions,
 }: Readonly<{ actions: CommentsActions }>): ReactElement | null {
   const editor = useEditorRef()
-  const { beginCompose, labels, popover, threads } = useComments()
-  const selectionKey = useEditorSelector(
-    (current) =>
-      current.selection && RangeApi.isExpanded(current.selection)
-        ? JSON.stringify(current.selection)
-        : null,
-    [],
-  )
-  const [offer, setOffer] = useState<TRange | null>(null)
-  const dismissed = useRef<string | null>(null)
-
-  useEffect(() => {
-    if (!selectionKey) {
-      setOffer(null)
-      dismissed.current = null
-      return
-    }
-    if (selectionKey === dismissed.current) return
-    if (editor.api.isFocused()) setOffer(JSON.parse(selectionKey) as TRange)
-  }, [editor, selectionKey])
+  const { labels, popover, threads } = useComments()
 
   const composeRange = popover?.kind === 'compose' ? popover.ref.current : null
   const thread =
@@ -546,42 +527,6 @@ export function CommentPopovers({
     )
   }
 
-  if (!popover && offer) {
-    return (
-      <Popover
-        onOpenChange={(open) => {
-          if (open) return
-          dismissed.current = selectionKey
-          setOffer(null)
-        }}
-        open
-      >
-        <PopoverPopup
-          anchor={virtualAnchor(() =>
-            editor.api.toDOMRange(offer)?.getBoundingClientRect(),
-          )}
-          data-slot="comment-offer"
-          initialFocus={false}
-          side="top"
-        >
-          <div className="p-1">
-            <Button
-              onClick={() => {
-                setOffer(null)
-                beginCompose()
-              }}
-              onMouseDown={(event) => event.preventDefault()}
-              size="sm"
-              variant="ghost"
-            >
-              <ChatCenteredDotsIcon aria-hidden="true" />
-              {labels.new}
-            </Button>
-          </div>
-        </PopoverPopup>
-      </Popover>
-    )
-  }
   return null
 }
 

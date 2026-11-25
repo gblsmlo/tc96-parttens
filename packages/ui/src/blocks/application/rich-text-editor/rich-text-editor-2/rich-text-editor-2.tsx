@@ -13,11 +13,11 @@ import type {
   RichTextEditor2Props,
   RichTextEditor2Settings,
 } from './types'
-import { WikiBlockGutter } from './wiki-block-menu'
 import { WikiOutlinePopover, WikiOutlineRail } from './wiki-outline'
 import {
   WikiLockBadge,
   WikiPageMenuItems,
+  WikiPageStatus,
   WikiPageStrip,
 } from './wiki-page-menu'
 import { WikiTableBar } from './wiki-table-bar'
@@ -26,11 +26,6 @@ const defaultSettings: RichTextEditor2Settings = {
   fullWidth: false,
   locked: false,
   smallText: false,
-}
-
-interface HoveredBlock {
-  index: number
-  top: number
 }
 
 export function RichTextEditor2({
@@ -57,8 +52,6 @@ export function RichTextEditor2({
     ...settingsProp,
   })
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving'>('saved')
-  const [hovered, setHovered] = useState<HoveredBlock | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const mentions = useMemo<RichTextMention[]>(
@@ -75,12 +68,7 @@ export function RichTextEditor2({
   )
 
   const editor = useRichTextEditor({
-    blockDragLabels: {
-      handle: labels.dragHandle,
-      selection: labels.blockSelection,
-    },
     ...(defaultValue ? { defaultValue } : {}),
-    draggableBlocks: true,
     features: { h1: true },
     mentions,
   })
@@ -106,40 +94,11 @@ export function RichTextEditor2({
     onSettingsChange?.(next)
   }
 
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-    const trackBlock = (event: globalThis.MouseEvent) => {
-      const target = event.target
-      if (!(target instanceof Element)) return
-      const block = target.closest('[data-slot="rich-text-block"]')
-      if (!block) return
-      const index = editor.children.findIndex((node) => {
-        const dom = editor.api.toDOMNode(node)
-        return dom ? block.contains(dom) : false
-      })
-      if (index < 0) return
-      const top =
-        block.getBoundingClientRect().top -
-        container.getBoundingClientRect().top
-      setHovered((current) =>
-        current?.index === index && current.top === top
-          ? current
-          : { index, top },
-      )
-    }
-    container.addEventListener('mousemove', trackBlock)
-    container.addEventListener('mouseover', trackBlock)
-    return () => {
-      container.removeEventListener('mousemove', trackBlock)
-      container.removeEventListener('mouseover', trackBlock)
-    }
-  }, [editor])
-
   const status = onSave ? saveStatus : null
   const outline = <WikiOutlinePopover labels={labels} />
+  const lockBadge = settings.locked ? <WikiLockBadge labels={labels} /> : null
   const context: RichTextEditor2NavbarContext = {
-    lockBadge: settings.locked ? <WikiLockBadge labels={labels} /> : null,
+    lockBadge,
     onSettingChange: handleSettingChange,
     pageMenuItems: (
       <WikiPageMenuItems
@@ -150,11 +109,16 @@ export function RichTextEditor2({
     ),
     saveStatus: status,
     settings,
+    status:
+      status || lockBadge ? (
+        <WikiPageStatus
+          labels={labels}
+          lockBadge={lockBadge}
+          saveStatus={status}
+        />
+      ) : null,
   }
   const navbarNode = typeof navbar === 'function' ? navbar(context) : navbar
-
-  const shownBlock =
-    hovered && hovered.index < editor.children.length ? hovered : null
 
   return (
     <div
@@ -167,15 +131,20 @@ export function RichTextEditor2({
           'relative mx-auto w-full',
           settings.fullWidth ? 'max-w-none' : 'max-w-4xl',
         )}
-        ref={containerRef}
       >
         <RichTextEditor
           aria-label={labels.editor}
+          blockLabels={{
+            blockquote: labels.blockKinds.blockquote,
+            h2: labels.blockKinds.h2,
+            h3: labels.blockKinds.h3,
+            ol: labels.blockKinds.ol,
+            ul: labels.blockKinds.ul,
+          }}
           contentClassName={cn(
-            'min-h-96 pt-6 pb-24 ps-24 lg:pe-16',
+            'min-h-96 px-6 pt-10 pb-24 sm:px-12 lg:pe-16',
             settings.smallText ? 'text-sm' : 'text-base',
           )}
-          draggableBlocks
           editor={editor}
           mentionEmptyLabel={labels.mentionEmpty}
           mentionLabel={labels.mention}
@@ -189,24 +158,11 @@ export function RichTextEditor2({
           toolbar={
             <>
               {navbarNode}
-              <WikiPageStrip
-                labels={labels}
-                outline={outline}
-                saveStatus={status}
-                settings={settings}
-              />
+              <WikiPageStrip outline={outline} />
               <WikiTableBar labels={labels} />
             </>
           }
         >
-          {shownBlock && !settings.locked ? (
-            <WikiBlockGutter
-              editor={editor}
-              index={shownBlock.index}
-              labels={labels}
-              top={shownBlock.top}
-            />
-          ) : null}
           <WikiOutlineRail labels={labels} />
         </RichTextEditor>
       </div>

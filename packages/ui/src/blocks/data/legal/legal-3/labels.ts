@@ -1,13 +1,13 @@
 import {
-  defaultLegalLoadLabels,
-  defaultLegalModeLabels,
-  defaultLegalToolbarLabels,
-} from '../shared/labels'
+  defaultDataCollectionLoadLabels,
+  defaultDataCollectionModeLabels,
+  defaultDataCollectionToolbarLabels,
+} from '../../shared/collection/labels'
 import type { Legal3Labels, Legal3LabelsOverride } from './types'
 
 export const defaultLegal3Labels: Legal3Labels = {
-  ...defaultLegalLoadLabels,
-  ...defaultLegalToolbarLabels,
+  ...defaultDataCollectionLoadLabels,
+  ...defaultDataCollectionToolbarLabels,
   columns: {
     case: 'Processo vinculado',
     deadline: 'Prazo',
@@ -27,7 +27,7 @@ export const defaultLegal3Labels: Legal3Labels = {
     hearing: 'Audiência',
   },
   loading: 'Carregando prazos',
-  modes: defaultLegalModeLabels,
+  modes: defaultDataCollectionModeLabels,
   noDate: 'Sem data',
   openDeadline: (title) => `Abrir ${title}`,
   queues: {

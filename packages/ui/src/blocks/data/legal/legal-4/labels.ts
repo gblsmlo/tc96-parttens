@@ -1,13 +1,13 @@
 import {
-  defaultLegalLoadLabels,
-  defaultLegalModeLabels,
-  defaultLegalToolbarLabels,
-} from '../shared/labels'
+  defaultDataCollectionLoadLabels,
+  defaultDataCollectionModeLabels,
+  defaultDataCollectionToolbarLabels,
+} from '../../shared/collection/labels'
 import type { Legal4Labels, Legal4LabelsOverride } from './types'
 
 export const defaultLegal4Labels: Legal4Labels = {
-  ...defaultLegalLoadLabels,
-  ...defaultLegalToolbarLabels,
+  ...defaultDataCollectionLoadLabels,
+  ...defaultDataCollectionToolbarLabels,
   activeCases: (count) =>
     count === 1 ? '1 processo ativo' : `${count} processos ativos`,
   columns: {
@@ -29,7 +29,7 @@ export const defaultLegal4Labels: Legal4Labels = {
     person: 'Pessoa física',
   },
   loading: 'Carregando clientes',
-  modes: defaultLegalModeLabels,
+  modes: defaultDataCollectionModeLabels,
   noContact: 'Sem contato',
   noDate: 'Sem data',
   openClient: (name) => `Abrir ${name}`,

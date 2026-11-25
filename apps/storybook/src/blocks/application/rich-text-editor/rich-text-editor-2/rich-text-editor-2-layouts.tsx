@@ -21,7 +21,7 @@ export const richTextEditor2Handlers = {
 export const WikiPage = (props: Readonly<RichTextEditor2Props>) => (
   <RichTextEditor2
     {...props}
-    navbar={({ pageMenuItems }) => (
+    navbar={({ pageMenuItems, status }) => (
       <Navbar1
         breadcrumbs={breadcrumbs}
         collaborators={(props.people ?? []).map(({ id, name }) => ({
@@ -30,6 +30,7 @@ export const WikiPage = (props: Readonly<RichTextEditor2Props>) => (
         }))}
         menu={pageMenuItems}
         onShare={richTextEditor2Handlers.onShare}
+        status={status}
       />
     )}
   />
@@ -43,15 +44,13 @@ export const ComposedRichTextEditor2 = ({
   withPeople,
   withPlaybook,
 }: Readonly<RichTextEditor2Controls>) => (
-  <div className="p-6">
-    <WikiPage
-      defaultSettings={{ fullWidth, locked, smallText }}
-      defaultValue={withPlaybook ? playbook : emptyPage}
-      key={`${fullWidth}-${locked}-${smallText}-${withPlaybook}`}
-      onSave={richTextEditor2Handlers.onSave}
-      onSettingsChange={richTextEditor2Handlers.onSettingsChange}
-      people={withPeople ? people : []}
-      saveDelay={saveDelay}
-    />
-  </div>
+  <WikiPage
+    defaultSettings={{ fullWidth, locked, smallText }}
+    defaultValue={withPlaybook ? playbook : emptyPage}
+    key={`${fullWidth}-${locked}-${smallText}-${withPlaybook}`}
+    onSave={richTextEditor2Handlers.onSave}
+    onSettingsChange={richTextEditor2Handlers.onSettingsChange}
+    people={withPeople ? people : []}
+    saveDelay={saveDelay}
+  />
 )

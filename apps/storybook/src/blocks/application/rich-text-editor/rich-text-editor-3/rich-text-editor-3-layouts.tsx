@@ -1,6 +1,11 @@
-import { RichTextEditor3 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-3'
+import { Navbar1 } from '@tc96/ui/blocks/application/navbar/navbar-1'
+import {
+  RichTextEditor3,
+  type RichTextEditor3Props,
+} from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-3'
 import { fn } from 'storybook/test'
 import {
+  contractBreadcrumbs,
   contractValue,
   redlineAuthors,
   redlineTime,
@@ -13,16 +18,32 @@ export const richTextEditor3Handlers = {
   onExport: fn(),
 }
 
+export const ContractPage = (props: Readonly<RichTextEditor3Props>) => (
+  <RichTextEditor3
+    {...props}
+    navbar={({ menuItems, status }) => (
+      <Navbar1
+        breadcrumbs={contractBreadcrumbs}
+        collaborators={(props.authors ?? []).map(({ id, name }) => ({
+          id,
+          name,
+        }))}
+        menu={menuItems}
+        status={status}
+      />
+    )}
+  />
+)
+
 export const ComposedRichTextEditor3 = ({
   authorId,
   existingChanges,
-  title,
 }: Readonly<RichTextEditor3Controls>) => {
   const author =
     redlineAuthors.find((person) => person.id === authorId) ?? redlineAuthors[0]
   if (!author) return null
   return (
-    <RichTextEditor3
+    <ContractPage
       author={author}
       authors={redlineAuthors}
       defaultValue={contractValue(existingChanges)}
@@ -31,7 +52,6 @@ export const ComposedRichTextEditor3 = ({
       onChange={richTextEditor3Handlers.onChange}
       onDecision={richTextEditor3Handlers.onDecision}
       onExport={richTextEditor3Handlers.onExport}
-      title={title}
     />
   )
 }

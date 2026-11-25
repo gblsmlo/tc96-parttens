@@ -1,0 +1,120 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Dashboard7
+
+A finance analytics dashboard for a law firm, mapped from the Financeiro screens of lemind (Analítico, Fluxo de caixa and Dinheiro de clientes). From top to bottom: a header with breadcrumb, title, description and period select; an optional account filter; a row of balance cards (realized today and one per projection date) and a row of four indicators (Inadimplência, Prazo de recebimento, Margem de caixa, Fôlego de caixa), each card with its explanation as visible text; a column chart of income and expenses per month with the period totals beside a bar chart of what is open, overdue and received; a bar chart by category with a Receitas / Despesas toggle beside the entries due in the next 7 days; the realized balance per account and the client money table with pagination; and the cash-flow grid by month. Reach for it on the finance home of a services firm. Install it with `npx @tc96/cli add dashboard-7`.
+
+It is a section, not a page: it renders no `main` landmark. The block never fetches, filters, sums or pages, and keeps no state. Money arrives in cents and is formatted with `locale` and `currency`; dates arrive as ISO values (`YYYY-MM-DD`, months as `YYYY-MM`) and are shown in `timeZone`; text that depends on a business rule arrives ready (`runway.text`, every `detail`, `balances.scope`, the entry `kind` and `status`). The period select, the account filter, the category toggle, the client pagination and the grid cell buttons render only when their callbacks are passed. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and the empty state shows only when every list is empty and `balances`, `receivables` and every indicator are absent. The precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/Application/Dashboard/Dashboard7`: [Playground](?path=/story/blocks-application-dashboard-dashboard7-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-dashboard-dashboard7-behavior--period-select-calls-on-period-change) for the tests, [States](?path=/story/blocks-application-dashboard-dashboard7-states--default) for the four states and [Usages](?path=/story/blocks-application-dashboard-dashboard7-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Dashboard7 } from '@tc96/ui/blocks/application/dashboard/dashboard-7'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+One balance and three projections, four indicators, six months (three realized, the current one and two forecast), three entries due soon, two accounts, three of five clients and the grid of the same six months.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Dashboard7
+  account={account}
+  accountBalances={accountBalances}
+  accountOptions={accountOptions}
+  balances={balances}
+  breadcrumbs={[{ href: '/financeiro', label: 'Financeiro' }, { label: 'Analítico financeiro' }]}
+  cashFlow={cashFlow}
+  cashFlowGrid={cashFlowGrid}
+  cashFlowTotals={cashFlowTotals}
+  categoryKind={categoryKind}
+  clientMoney={clientRows}
+  clientMoneyPagination={{ page, pageCount }}
+  dueSoon={dueSoon}
+  error={isError}
+  expenseByCategory={expenseByCategory}
+  incomeByCategory={incomeByCategory}
+  indicators={indicators}
+  onAccountChange={setAccount}
+  onCategoryKindChange={setCategoryKind}
+  onCellSelect={(rowId, month) => openEntries(rowId, month)}
+  onClientMoneyPageChange={setPage}
+  onPeriodChange={setPeriod}
+  onRetry={() => refetch()}
+  pending={isPending}
+  period={period}
+  periodOptions={periodOptions}
+  receivables={receivables}
+  timeZone="America/Sao_Paulo"
+/>
+```
+
+## Dashboard7
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `cashFlow` | `Dashboard7CashFlowMonth[]` | required | The months of the column chart, in order. An empty array shows a message in the panel. |
+| `cashFlowTotals` | `{ inflowCents, outflowCents, resultCents }` | - | The totals above the chart; a negative result is shown in the destructive tone. |
+| `receivables` | `Dashboard7Receivables` | - | Open, overdue, received and total, in cents; without it the panel is not rendered. |
+| `incomeByCategory`, `expenseByCategory` | `Dashboard7Category[]` | required | The bars of the category chart, in the order given; `share` is a ratio shown in the tooltip. |
+| `categoryKind` | `'income' \| 'expense'` | `'income'` | Which list the category chart shows. |
+| `onCategoryKindChange` | `(kind) => void` | - | Renders the Receitas / Despesas toggle in the panel header. |
+| `dueSoon` | `Dashboard7Entry[]` | required | The entries due in the next days; each description links to `href`. |
+| `balances` | `Dashboard7Balances` | - | The realized balance and the projections; `scope` is the line under each value. |
+| `indicators` | `Dashboard7Indicators` | `{}` | The four indicators; each renders only when passed, and a `null` value shows `labels.noData`. |
+| `accountBalances` | `Dashboard7AccountBalance[]` | - | The balance per account; without it the panel is not rendered. |
+| `clientMoney` | `Dashboard7ClientMoney[]` | - | The client money rows of the page; without it the panel is not rendered, an empty array shows a message row. |
+| `clientMoneyPagination`, `onClientMoneyPageChange` | `{ page, pageCount }`, `(page) => void` | - | Render the pagination under the client table; the app pages the rows. |
+| `cashFlowGrid` | `Dashboard7CashFlowGrid` | - | The months and rows of the grid; without it the panel is not rendered. |
+| `onCellSelect` | `(rowId: string, month: string) => void` | - | Turns every non-zero cell of a `selectable` row into a button. |
+| `account`, `accountOptions`, `onAccountChange` | `string`, `{ label, value }[]`, `(account) => void` | - | The account filter, rendered only with the three. |
+| `period`, `periodOptions`, `onPeriodChange` | `string`, `{ label, value }[]`, `(period) => void` | - | The period select of the header, rendered only with the three. |
+| `breadcrumbs` | `{ label: string; href?: string }[]` | - | The trail above the title. |
+| `renderLink` | `RenderLink` | `renderAnchor` | Builds the element of every link, for the app's router. |
+| `currency` | `string` | `'BRL'` | Currency of every amount. |
+| `locale` | `string` | `'pt-BR'` | Locale of every number and date. |
+| `timeZone` | `string` | runtime zone | Time zone of the dates. |
+| `pending` | `boolean` | `false` | Renders the skeleton; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar de novo button; without it the button is not rendered. |
+| `labels` | `Partial<Dashboard7Labels>` | pt-BR texts | Overrides the texts of the block. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Data types
+
+| Type | Fields |
+| --- | --- |
+| `Dashboard7CashFlowMonth` | `month` (`YYYY-MM`), `column` (`realized`, `current` or `forecast`), `inflowCents` and `outflowCents`. |
+| `Dashboard7Balances` | `realizedCents`, `projections` (`{ date, cents }[]`) and `scope`. |
+| `Dashboard7Indicators` | `delinquency` and `cashMargin` (`{ ratio, detail }`), `collectionDays` (`{ days, detail }`) and `runway` (`{ text, detail }`, the text already written, such as `2,5 meses`). |
+| `Dashboard7Entry` | `id`, `description`, `kind`, `dueDate`, `amountCents` (signed), `status` (`{ label, tone? }`) and `href`. |
+| `Dashboard7CashFlowGrid` | `months` (`{ month, column }[]`) and `rows` (`{ id, label, kind: 'section' \| 'line' \| 'total', cells, selectable? }`), where `cells[i]` is the cents of `months[i]` or `null`. |
+| `Dashboard7Category`, `Dashboard7AccountBalance`, `Dashboard7ClientMoney` | `id`, `name` and the amount in cents (`cents`, `heldCents`), plus `share` or `href`. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Dashboard7` | `component` | The dashboard. |
+| `Dashboard7Props`, `Dashboard7Labels` | `type` | The props and the keys of `labels`. |
+| `Dashboard7CashFlowMonth`, `Dashboard7CashFlowTotals`, `Dashboard7CashFlowGrid`, `Dashboard7GridMonth`, `Dashboard7GridRow`, `Dashboard7GridRowKind`, `Dashboard7MonthColumn` | `type` | The cash-flow chart and grid. |
+| `Dashboard7Balances`, `Dashboard7Projection`, `Dashboard7Indicators`, `Dashboard7RatioIndicator`, `Dashboard7DaysIndicator`, `Dashboard7TextIndicator` | `type` | The cards. |
+| `Dashboard7Receivables`, `Dashboard7Category`, `Dashboard7CategoryKind`, `Dashboard7Entry`, `Dashboard7AccountBalance`, `Dashboard7ClientMoney` | `type` | The panels. |
+| `Dashboard7FlowSummaryItem`, `Dashboard7AmountSummaryItem` | `type` | The formatted items the summary label functions receive. |
+
+## Accessibility and theme
+
+- Every chart is drawn with TanStack Charts as one SVG with `role="img"`, named by its label (`cashFlowLabel`, `receivablesLabel`, `categoriesLabel`) and described by a `<desc>` built by a summary label function with every value. The SVG is focusable and the arrow keys move between the points, with a tooltip per point.
+- Forecast months are drawn with a lighter fill and a dashed outline, the legend shows a dashed marker named Previsto, and the summary marks each forecast month with `(previsto)`, so color is not the only cue. The `current` month is drawn solid, as realized.
+- The cash-flow grid is a table with the exact values of every month; each month header carries a badge (Realizado, Mês atual, Previsto). A cell button is named by `labels.cellEntries(row, month, value)`, which keeps the visible value in the name. The table scrolls sideways inside a focusable `region` named by `labels.gridScroll`, so the hidden months are reachable by keyboard.
+- The balance and indicator cards show their explanation as visible text, not in a tooltip.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.
+- Chart colors come from `--chart-1` to `--chart-3`; status colors come from the theme badge tones. The block carries no raw color, radius or shadow.

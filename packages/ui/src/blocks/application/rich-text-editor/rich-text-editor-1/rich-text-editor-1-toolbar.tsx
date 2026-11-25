@@ -19,7 +19,7 @@ export function RichTextEditor1Toolbar({
   return (
     <RichTextToolbar
       aria-label={labels.toolbar}
-      className="flex-nowrap overflow-x-auto border-b bg-background px-3 py-2"
+      className="flex-nowrap overflow-x-auto"
     >
       <ToolbarGroup>
         <RichTextHistoryButton action="undo" label={labels.history.undo} />

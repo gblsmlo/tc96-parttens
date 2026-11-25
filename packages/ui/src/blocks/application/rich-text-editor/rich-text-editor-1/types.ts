@@ -1,4 +1,5 @@
 import type { RichTextValue } from '@tc96/ui/patterns/rich-text-editor'
+import type { ReactNode } from 'react'
 
 export type RichTextEditor1CopyFormat = 'html' | 'text'
 
@@ -49,7 +50,6 @@ export interface RichTextEditor1Labels {
   }
   divider: string
   document: string
-  documentMenu: string
   editMode: string
   emptyTitle: string
   history: { redo: string; undo: string }
@@ -82,6 +82,12 @@ export interface RichTextEditor1Labels {
   words: (count: number) => string
 }
 
+export interface RichTextEditor1NavbarContext {
+  menuItems: ReactNode
+  readOnly: boolean
+  status: ReactNode
+}
+
 export interface RichTextEditor1Props {
   className?: string
   defaultReadOnly?: boolean
@@ -89,6 +95,7 @@ export interface RichTextEditor1Props {
   defaultValue?: RichTextValue
   description?: string
   labels?: Partial<RichTextEditor1Labels>
+  navbar?: ReactNode | ((context: RichTextEditor1NavbarContext) => ReactNode)
   onChange?: (value: RichTextValue) => void
   onClear?: () => void
   onCopy?: (format: RichTextEditor1CopyFormat, content: string) => void

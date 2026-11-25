@@ -13,13 +13,14 @@ Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/utils`, `@pho
 
 ## Dependents
 
-- The table and data grid blocks import `components/view-switcher` by path (`blocks/data/table/shared/table-view-switcher.tsx`, `table-8/table-8-view-switcher.tsx`, `blocks/data/data-grid/shared/grid-view-switcher.tsx`, `data-grid-8/data-grid-8-view-switcher.tsx`); stories import through `@tc96/ui/patterns`.
+- The table and data grid blocks import `components/view-switcher` by path (`blocks/data/shared/table/table-view-switcher.tsx`, `blocks/data/shared/grid/grid-view-switcher.tsx`, `finance/finance-1/finance-1-view-switcher.tsx`, `finance/finance-2/finance-2-view-switcher.tsx`); stories import through `@tc96/ui/patterns`.
 - The `collection` registry item ships this folder through `itemAreas` in `packages/registry/src/manifest.ts`.
 
 ## Invariants
 
 - `ViewSwitcherMenu` is a `Popover` (`role="dialog"`), not a menu, because it holds a search field and, in each view, an options button, which a `role="menu"` cannot contain. Its trigger is a COSS `ToolbarButton`, so it must render inside a `CollectionToolbar`.
 - A `ViewSwitcherItem` label is a `PopoverClose`; pressing an item in its `options` menu closes the popover through a context `ViewSwitcherMenu` provides, because that menu is a separate Base UI tree.
+- A `ViewSwitcherItem` `count` is `aria-hidden` and never joined to the label: the label button is named by the consumer's `aria-label`, or by `label` alone. `0` renders, `undefined` renders nothing. The trigger shows no count: it names the active view only.
 - `ViewSwitcherItems` with `loading` renders its children first and then `aria-hidden` skeleton rows, with `aria-busy` on the `fieldset`, so a view already known (the default one) stays selectable while the saved views load.
 
 ## Styling
@@ -28,7 +29,7 @@ Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/utils`, `@pho
 | --- | --- | --- |
 | `data-selected` | the selected `ViewSwitcherItem` | consumers and tests |
 
-- `data-slot` names set here: `view-switcher-search`, `view-switcher-items`, `view-switcher-item`, `view-switcher-create`.
+- `data-slot` names set here: `view-switcher-search`, `view-switcher-items`, `view-switcher-item`, `view-switcher-item-count`, `view-switcher-create`.
 - The trigger `variant` is `default` (COSS `Button` `secondary`, the default) or `ghost`; no `cva` here. Colors only from theme tokens.
 - `scripts/override-exceptions.json` has no entry for this folder.
 

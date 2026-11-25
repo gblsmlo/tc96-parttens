@@ -5,9 +5,11 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # RichTextEditor5
 
-A writing assistant that edits through suggestions. The document is a rollout plan, a dock floats over the bottom of the page with six tasks, and every edit the assistant makes lands in the text as a suggestion you accept or reject. Reach for it when an assistant should propose and a person should decide, such as a plan, a policy or a help article. Install it with `npx @tc96/cli add rich-text-editor-5`.
+A writing assistant that edits through suggestions. The document is a rollout plan that takes the whole page, the assistant is a chat card inset in the bottom corner over it, and every edit the assistant makes lands in the text as a suggestion you accept or reject. Reach for it when an assistant should propose and a person should decide, such as a plan, a policy or a help article. Install it with `npx @tc96/cli add rich-text-editor-5`.
 
-The tasks are fix spelling, tighten wording, write a summary, add a checklist, list open questions and list owners. Fix spelling, tighten wording and write a summary can be limited to a selected passage: a bubble above the selection runs "Resumir" or "Corrigir ortografia" directly, or hands the passage to the dock. Typing a request in the dock picks the task by keyword; a request it cannot match is answered with three suggested tasks. A run shows its steps as they happen, can be stopped, and writes its edits behind a labelled caret ("Assistente"). Review steps through each edit as a was/now pair with accept, reject, accept all and reject all, and the last decision undoes in one step. The two review tasks answer with findings that jump to their text and edit nothing.
+The tasks are fix spelling, tighten wording, write a summary, add a checklist, list open questions and list owners. The card is built from the COSS chat and composer: an empty state lists the six tasks, `/` in the composer (or its lightning button) opens the same list, and a typed request picks the task by keyword; a request it cannot match is answered with three suggested tasks. Each request is an outgoing message and each answer an incoming message from "Assistente" with the status, the steps and the findings, with a typing indicator while a run is active. The card collapses to a button in the same corner, with the count of pending suggestions, and the bubble above a selection opens it again. Fix spelling, tighten wording and write a summary can be limited to a selected passage: the bubble runs "Resumir" or "Corrigir ortografia" directly, or hands the passage to the composer. A run can be stopped and writes its edits behind a labelled caret ("Assistente"). The review sits in the latest answer: it steps through each edit as a was/now pair with accept, reject, accept all and reject all, and the last decision undoes in one step. The two review tasks answer with findings that jump to their text and edit nothing.
+
+There is no formatting toolbar: the page is plain text with the assistant as the only tool. The page header comes from the consumer through `navbar`, composed with `Navbar1` in the stories.
 
 The block is controlled: it never fetches or persists, and the app receives the document and the decisions through callbacks. The assistant has no model behind it; see The planner seam.
 
@@ -23,7 +25,7 @@ The same path exports `planAction` and the types listed under Exports.
 
 ## Anatomy
 
-The formatting toolbar over the plan, and the dock with the task buttons and the request field.
+The `Navbar1` header with the pending count, the plan over the whole page, and the assistant card in the bottom corner with its empty state and composer.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
@@ -31,6 +33,9 @@ The formatting toolbar over the plan, and the dock with the task buttons and the
 <RichTextEditor5
   author={{ id: 'ana', name: 'Ana Souza' }}
   defaultValue={plan}
+  navbar={({ status }) => (
+    <Navbar1 breadcrumbs={breadcrumbs} status={status} />
+  )}
   onChange={saveDraft}
   onDecision={logDecision}
 />
@@ -47,6 +52,7 @@ The formatting toolbar over the plan, and the dock with the task buttons and the
 | `formatTime` | `(date: Date) => string` | `Intl` pt-BR, short date and time | Formats the time of each suggestion in the review list. |
 | `onChange` | `(value: RichTextValue) => void` | - | Called with the document, suggestions included, on every edit and every decision. |
 | `onDecision` | `(decision: RichTextEditor5Decision) => void` | - | Called after Accept, Reject, Accept all or Reject all. Undo is not a decision. |
+| `navbar` | `ReactNode \| ((context: RichTextEditor5NavbarContext) => ReactNode)` | - | The page header, rendered above the plan. As a function it receives `status` (a badge with the running task or the pending count, `null` when there is neither), `pending` (the number of suggestions) and `running`. |
 | `labels` | `Partial<RichTextEditor5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root classes. |
 
@@ -89,8 +95,11 @@ A finding is `{ id, kind: 'question' \| 'tbd' \| 'owner', text, quote }`; `quote
 
 | Key | Type | Default |
 | --- | --- | --- |
-| `document`, `formatting` | `string` | `"Plano de lançamento"`, the editor name, and `"Formatação do plano"`, the toolbar name |
-| `dock`, `tasksGroup`, `request`, `requestPlaceholder`, `send` | `string` | The dock region, the group of task buttons, the request field and its button |
+| `document` | `string` | `"Plano de lançamento"`, the editor name |
+| `dock`, `collapse` | `string` | `"Assistente de escrita"`, the card, and `"Recolher assistente"`, its collapse button |
+| `emptyTitle`, `emptyDescription`, `tasksGroup` | `string` | The empty state of the chat and its group of task buttons |
+| `conversation`, `jump`, `typing` | `string` | The message log, its jump-to-latest button and the typing indicator |
+| `request`, `requestPlaceholder`, `send`, `taskMenu` | `string` | The composer field, its send button and the button that opens the `/` task list |
 | `tasks` | `Record<RichTextEditor5Task, string>` | The six task names |
 | `assistant` | `string` | `"Assistente"`; the author name of the assistant and the label of its caret |
 | `bubble`, `bubbleSummary`, `bubbleSpelling`, `bubbleAsk` | `string` | The bubble group and its three buttons |
@@ -98,11 +107,10 @@ A finding is `{ id, kind: 'question' \| 'tbd' \| 'owner', text, quote }`; `quote
 | `fallback` | `(request: string) => string` | The answer to a request that matches no task |
 | `steps`, `stop` | `string` | The step list name and the stop button |
 | `running`, `done`, `stopped`, `failed` | functions and `string` | The status line of a run |
+| `pending` | `(count: number) => string` | The navbar badge when suggestions wait for review |
 | `findings`, `findingsEmpty`, `findingKinds`, `goTo`, `goToFinding` | strings and functions | The findings list, its kinds and the jump buttons |
 | `reviewTitle`, `previous`, `next`, `position` | strings and function | The review header and its stepping buttons |
 | `acceptAll`, `rejectAll`, `undo` | `string` | `"Aceitar tudo"`, `"Rejeitar tudo"`, `"Desfazer última decisão"` |
-| `collapse`, `expand` | `string` | The panel toggle |
-| `history`, `marks` | records | The toolbar button names |
 | `review` | `SuggestionReviewLabels` | `accept`, `reject`, `acceptChange(change)`, `rejectChange(change)`, `was`, `now`, `kind`, `list`, `empty` |
 
 ## Exports
@@ -112,6 +120,7 @@ A finding is `{ id, kind: 'question' \| 'tbd' \| 'owner', text, quote }`; `quote
 | `RichTextEditor5` | `component` | The assistant screen. |
 | `planAction` | `function` | The local planner, the seam to swap. |
 | `RichTextEditor5Props` | `type` | The props of the screen. |
+| `RichTextEditor5NavbarContext` | `type` | The argument of `navbar` as a function. |
 | `RichTextEditor5Planner`, `RichTextEditor5Request` | `type` | The planner function and its argument. |
 | `RichTextEditor5Plan`, `RichTextEditor5PlanEvent` | `type` | What a planner returns. |
 | `RichTextEditor5Edit`, `RichTextEditor5Finding`, `RichTextEditor5FindingKind` | `type` | The edits and findings of a plan. |
@@ -128,14 +137,18 @@ A finding is `{ id, kind: 'question' \| 'tbd' \| 'owner', text, quote }`; `quote
 - A `replace` or `insert` edit finds text by exact match inside one block; text that spans two blocks is not found.
 - Stop keeps the suggestions already written; it does not undo them.
 - The undo button calls the editor history: it reverts the last decision only while nothing else was edited after it.
-- Formatting, block type changes and paragraph splits are direct edits and never appear as suggestions.
+- Formatting, block type changes and paragraph splits are direct edits and never appear as suggestions. There is no toolbar; formatting comes from keyboard shortcuts and markdown.
+- The card covers the end of the lines under it; collapse it to read the whole page.
 
 ## Accessibility and theme
 
-- The dock is a `region` named by `labels.dock`; the task buttons are a `group` named by `labels.tasksGroup`.
-- The status line is an `output` with `aria-live="polite"`: a run announces what it is doing and how it ended.
+- The card is an `aside` named by `labels.dock` and its chat is a `section` named by its `h2`. Collapsed, it is a button named by its visible text and the pending count.
+- The empty state is a `status`; its task buttons are a `group` named by `labels.tasksGroup`. The conversation is a `log` named by `labels.conversation`.
+- The `/` list is the composer listbox: options are disabled while a run is active, and tasks that cannot take a passage are disabled while one is handed.
+- The status line of the latest answer is an `output` with `aria-live="polite"`: a run announces what it is doing and how it ended. Earlier answers keep their status as plain text.
 - The step trace is an ordered list; the state of each step is also in `data-state`.
 - The labelled caret is decoration (`aria-hidden`); the trace and the status carry the same information.
 - Insertions and deletions are `ins` and `del`, so meaning does not depend on color: deletions are struck through and insertions are underlined.
 - Accept and Reject buttons are named with the author and the text, so each one is distinct.
 - Buttons use the `sm` and `icon-sm` sizes. Colors come from tokens; the `success` and `destructive` foreground tokens keep contrast on the card background.
+- The composer placeholder uses the full `muted-foreground` token instead of the COSS 72%, registered in `scripts/override-exceptions.json` with the same ratios as the `AssistantComposer`.

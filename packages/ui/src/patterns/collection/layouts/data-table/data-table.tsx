@@ -78,6 +78,7 @@ export interface DataTableProps<TData extends RowData>
   aggregationLabels?: Partial<DataTableAggregationLabels>
   onRowClick?: (row: Row<DataTableFeatures, TData>) => void
   getRowOpenLabel?: (row: Row<DataTableFeatures, TData>) => string
+  getRowCanOpen?: (row: Row<DataTableFeatures, TData>) => boolean
   density?: DataTableDensity
   selectionActions?: DataTableSelectionActionsProp<TData>
   getRowGroup?: (row: TData) => string | null
@@ -122,6 +123,7 @@ export function DataTable<TData extends RowData>({
   aggregationLabels,
   onRowClick,
   getRowOpenLabel,
+  getRowCanOpen,
   density: densityProp,
   selectionActions,
   getRowGroup,
@@ -314,6 +316,7 @@ export function DataTable<TData extends RowData>({
             <DataTableBody
               collapsedGroupIds={collapsedGroupIds}
               getGroupToggleLabel={getGroupToggleLabel}
+              getRowCanOpen={getRowCanOpen}
               getRowGroup={getRowGroup}
               getRowOpenLabel={getRowOpenLabel}
               loadingMore={

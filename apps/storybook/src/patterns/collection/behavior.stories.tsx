@@ -1,9 +1,11 @@
 import {
+  ArrowsDownUpIcon,
   CalendarDotsIcon,
   CardsIcon,
   GridFourIcon,
   RadioButtonIcon,
   RowsIcon,
+  SignpostIcon,
   TableIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -28,7 +30,10 @@ import {
   type CollectionRecordChange,
   CollectionSearchField,
   CollectionToolbar,
+  FilterCheckboxSubmenu,
+  type FilterCheckboxSubmenuProps,
   FilterRadioSubmenu,
+  SortRadioSubmenu,
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
@@ -96,6 +101,7 @@ interface BehaviorArgs {
   onRowClick: NonNullable<CollectionDataTableViewProps<Item>['onRowClick']>
   onSavePreference: () => void
   onValueChange: (value: string) => void
+  onValuesChange: (value: string[]) => void
 }
 
 const meta = {
@@ -110,6 +116,7 @@ const meta = {
     onRowClick: fn(),
     onSavePreference: fn(),
     onValueChange: fn(),
+    onValuesChange: fn(),
   },
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
@@ -995,6 +1002,271 @@ export const FilterSubmenuLoading: Story = {
     await userEvent.click(allOption)
     await expect(args.onValueChange).toHaveBeenCalledOnce()
     await expect(args.onValueChange).toHaveBeenLastCalledWith('')
+    await closeMenus()
+  },
+}
+
+const phaseOptions: FilterCheckboxSubmenuProps['options'] = [
+  ['triage', 'Triagem'],
+  {
+    label: 'Conhecimento',
+    options: [
+      ['petition', 'Petição inicial'],
+      ['hearing', 'Audiência'],
+    ],
+  },
+  { label: 'Recursal', options: [['appeal', 'Apelação']] },
+]
+
+function PhaseFilterSubmenu({
+  clearLabel,
+  defaultValue = [],
+  loading,
+  onValueChange,
+}: Readonly<{
+  clearLabel?: string
+  defaultValue?: readonly string[]
+  loading?: boolean
+  onValueChange: (value: string[]) => void
+}>) {
+  const [value, setValue] = useState(defaultValue)
+  return (
+    <CollectionToolbar
+      right={
+        <ViewSettingsMenu onClearFilters={() => undefined}>
+          <ViewSettingsSection label="Filtros">
+            <FilterCheckboxSubmenu
+              clearLabel={clearLabel}
+              icon={SignpostIcon}
+              label="Fase"
+              loading={loading}
+              onValueChange={(next) => {
+                onValueChange(next)
+                setValue(next)
+              }}
+              options={phaseOptions}
+              value={value}
+            />
+          </ViewSettingsSection>
+        </ViewSettingsMenu>
+      }
+    />
+  )
+}
+
+const openPhaseSubmenu = async (canvasElement: HTMLElement) => {
+  await userEvent.click(
+    within(canvasElement).getByRole('button', { name: 'Exibição' }),
+  )
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Fase' }))
+}
+
+const phaseSubmenuOf = (item: HTMLElement) =>
+  item.closest('[role="menu"]') as HTMLElement
+
+export const CheckboxFilterTogglesWithoutClosing: Story = {
+  render: ({ onValuesChange }) => (
+    <PhaseFilterSubmenu onValueChange={onValuesChange} />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await openPhaseSubmenu(canvasElement)
+
+    const triage = await screen.findByRole('menuitemcheckbox', {
+      name: 'Triagem',
+    })
+    await userEvent.click(triage)
+    await expect(args.onValuesChange).toHaveBeenLastCalledWith(['triage'])
+    await expect(triage).toBeVisible()
+    await expect(triage).toHaveAttribute('aria-checked', 'true')
+
+    await userEvent.click(
+      screen.getByRole('menuitemcheckbox', { name: 'Apelação' }),
+    )
+    await expect(args.onValuesChange).toHaveBeenLastCalledWith([
+      'triage',
+      'appeal',
+    ])
+
+    await userEvent.click(triage)
+    await expect(args.onValuesChange).toHaveBeenLastCalledWith(['appeal'])
+    await expect(triage).toHaveAttribute('aria-checked', 'false')
+    await expect(args.onValuesChange).toHaveBeenCalledTimes(3)
+    await closeMenus()
+  },
+}
+
+export const CheckboxFilterAnnouncesTheGroups: Story = {
+  render: ({ onValuesChange }) => (
+    <PhaseFilterSubmenu onValueChange={onValuesChange} />
+  ),
+  play: async ({ canvasElement }) => {
+    await openPhaseSubmenu(canvasElement)
+
+    const knowledge = await screen.findByRole('group', {
+      name: 'Conhecimento',
+    })
+    await expect(
+      within(knowledge)
+        .getAllByRole('menuitemcheckbox')
+        .map((item) => item.textContent),
+    ).toEqual(['Petição inicial', 'Audiência'])
+    await expect(
+      within(screen.getByRole('group', { name: 'Recursal' })).getByRole(
+        'menuitemcheckbox',
+        { name: 'Apelação' },
+      ),
+    ).toBeVisible()
+    await expect(
+      screen
+        .getByRole('menuitemcheckbox', { name: 'Triagem' })
+        .closest('[role="group"]'),
+    ).toBeNull()
+    await closeMenus()
+  },
+}
+
+export const CheckboxFilterClearResets: Story = {
+  render: ({ onValuesChange }) => (
+    <PhaseFilterSubmenu
+      clearLabel="Todas as fases"
+      defaultValue={['triage', 'appeal']}
+      onValueChange={onValuesChange}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await openPhaseSubmenu(canvasElement)
+
+    const clear = await screen.findByRole('menuitemcheckbox', {
+      name: 'Todas as fases',
+    })
+    await expect(clear).toHaveAttribute('aria-checked', 'false')
+
+    await userEvent.click(clear)
+    await expect(args.onValuesChange).toHaveBeenCalledOnce()
+    await expect(args.onValuesChange).toHaveBeenLastCalledWith([])
+    await expect(clear).toHaveAttribute('aria-checked', 'true')
+    await expect(
+      screen.getByRole('menuitemcheckbox', { name: 'Triagem' }),
+    ).toHaveAttribute('aria-checked', 'false')
+
+    await userEvent.click(clear)
+    await expect(args.onValuesChange).toHaveBeenCalledOnce()
+    await expect(clear).toHaveAttribute('aria-checked', 'true')
+    await closeMenus()
+  },
+}
+
+export const CheckboxFilterHasNoClearWithoutLabel: Story = {
+  render: ({ onValuesChange }) => (
+    <PhaseFilterSubmenu onValueChange={onValuesChange} />
+  ),
+  play: async ({ canvasElement }) => {
+    await openPhaseSubmenu(canvasElement)
+
+    const triage = await screen.findByRole('menuitemcheckbox', {
+      name: 'Triagem',
+    })
+    await expect(
+      within(phaseSubmenuOf(triage))
+        .getAllByRole('menuitemcheckbox')
+        .map((item) => item.textContent),
+    ).toEqual(['Triagem', 'Petição inicial', 'Audiência', 'Apelação'])
+    await closeMenus()
+  },
+}
+
+export const CheckboxFilterLoading: Story = {
+  render: ({ onValuesChange }) => (
+    <PhaseFilterSubmenu
+      clearLabel="Todas as fases"
+      loading
+      onValueChange={onValuesChange}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await openPhaseSubmenu(canvasElement)
+
+    const clear = await screen.findByRole('menuitemcheckbox', {
+      name: 'Todas as fases',
+    })
+    const submenu = phaseSubmenuOf(clear)
+    await expect(submenu).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      submenu.querySelectorAll('[data-slot="skeleton"]'),
+    ).toHaveLength(3)
+    await expect(within(submenu).getAllByRole('menuitemcheckbox')).toEqual([
+      clear,
+    ])
+    await expect(within(submenu).queryByRole('group')).toBeNull()
+    await closeMenus()
+  },
+}
+
+const sortOptions = [
+  ['fatal', 'Data fatal'],
+  ['internal', 'Data interna'],
+] as const
+
+type DeadlineSort = (typeof sortOptions)[number][0]
+
+function DeadlineSortSubmenu({
+  onValueChange,
+}: Readonly<{ onValueChange: (value: string) => void }>) {
+  const [sort, setSort] = useState<DeadlineSort>('fatal')
+  return (
+    <CollectionToolbar
+      right={
+        <ViewSettingsMenu>
+          <ViewSettingsSection label="Ordenar">
+            <SortRadioSubmenu
+              icon={ArrowsDownUpIcon}
+              label="Ordenar por"
+              onValueChange={(next) => {
+                onValueChange(next)
+                setSort(next)
+              }}
+              options={sortOptions}
+              value={sort}
+            />
+          </ViewSettingsSection>
+        </ViewSettingsMenu>
+      }
+    />
+  )
+}
+
+const checkedSorts = (submenu: HTMLElement) =>
+  within(submenu)
+    .getAllByRole('menuitemradio')
+    .filter((item) => item.getAttribute('aria-checked') === 'true')
+    .map((item) => item.textContent)
+
+export const SortSubmenuAlwaysHasAChoice: Story = {
+  render: ({ onValueChange }) => (
+    <DeadlineSortSubmenu onValueChange={onValueChange} />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Exibição' }),
+    )
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Ordenar por' }),
+    )
+
+    const internal = await screen.findByRole('menuitemradio', {
+      name: 'Data interna',
+    })
+    const submenu = internal.closest('[role="menu"]') as HTMLElement
+    await expect(within(submenu).getAllByRole('menuitemradio')).toHaveLength(2)
+    await expect(checkedSorts(submenu)).toEqual(['Data fatal'])
+
+    await userEvent.click(internal)
+    await expect(args.onValueChange).toHaveBeenLastCalledWith('internal')
+    await waitFor(() => expect(checkedSorts(submenu)).toEqual(['Data interna']))
+
+    await userEvent.click(internal)
+    await expect(checkedSorts(submenu)).toEqual(['Data interna'])
+    await expect(args.onValueChange).not.toHaveBeenCalledWith('')
     await closeMenus()
   },
 }

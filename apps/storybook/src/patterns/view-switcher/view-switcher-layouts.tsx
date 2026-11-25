@@ -20,6 +20,7 @@ export interface ComposedViewSwitcherProps extends ViewSwitcherControls {
 }
 
 export function ComposedViewSwitcher({
+  counts,
   create,
   icon,
   initialFavoriteIds = [],
@@ -73,6 +74,8 @@ export function ComposedViewSwitcher({
 
     return (
       <ViewSwitcherItem
+        aria-label={counts ? view.countLabel : undefined}
+        count={counts ? view.count : undefined}
         icon={
           favorite ? (
             <StarIcon

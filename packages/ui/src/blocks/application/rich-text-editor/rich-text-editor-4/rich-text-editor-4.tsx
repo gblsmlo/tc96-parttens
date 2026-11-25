@@ -22,24 +22,34 @@ import {
   useState,
 } from 'react'
 import * as Y from 'yjs'
-import { CollabToolbar } from './collab-toolbar'
 import {
   CommentPopovers,
   CommentsProvider,
   CommentsRail,
+  CommentToolbarButton,
   commentPlugins,
   useCommentsController,
 } from './comments'
 import { clearThreads, getMembers, registerMember } from './comments-store'
+import { historyKeysPlugin } from './history-keys'
 import { defaultRichTextEditor4Labels } from './labels'
 import { type PresenceEntry, PresenceStack } from './presence-stack'
 import { RemoteCarets, useRemotePeople } from './remote-carets'
 import { ROOM_PROVIDER_TYPE } from './room-provider'
 import type {
   RichTextEditor4Labels,
+  RichTextEditor4NavbarContext,
   RichTextEditor4Props,
   RichTextEditor4Status,
 } from './types'
+
+const floatingMarks = [
+  'bold',
+  'italic',
+  'underline',
+  'strikethrough',
+  'code',
+] as const
 
 const emptyValue: RichTextValue = [{ children: [{ text: '' }], type: 'p' }]
 
@@ -84,6 +94,7 @@ function CollaborativeEditor({
   className,
   defaultValue = emptyValue,
   labels: labelsInput,
+  navbar,
   now = Date.now,
   onCommentsChange,
   room,
@@ -100,6 +111,7 @@ function CollaborativeEditor({
       HighlightPlugin.configure({ enabled: false }),
       NodeIdPlugin.configure({ enabled: false }),
       ...commentPlugins(),
+      historyKeysPlugin,
       YjsPlugin.configure({
         options: {
           awareness: room.awareness,
@@ -272,6 +284,35 @@ function CollaborativeEditor({
     room.replay?.()
   }, [editor, room])
 
+  const context: RichTextEditor4NavbarContext = {
+    online,
+    status: (
+      <>
+        <PresenceStack
+          followId={followId}
+          labels={labels.presence}
+          onFollow={setFollowId}
+          others={others}
+          self={self}
+        />
+        <Label>
+          <Switch
+            checked={online}
+            onCheckedChange={(next) => void changeOnline(next)}
+          />
+          {labels.online.label}
+        </Label>
+        {room.replay ? (
+          <Button onClick={() => void replay()} size="sm" variant="outline">
+            <ArrowCounterClockwiseIcon aria-hidden="true" />
+            {labels.replay}
+          </Button>
+        ) : null}
+      </>
+    ),
+  }
+  const navbarNode = typeof navbar === 'function' ? navbar(context) : navbar
+
   const composeRange =
     comments.context.popover?.kind === 'compose'
       ? comments.context.popover.ref.current
@@ -282,38 +323,14 @@ function CollaborativeEditor({
       <section
         aria-label={labels.title}
         className={cn(
-          'flex min-w-0 flex-col overflow-hidden rounded-xl border bg-card text-card-foreground',
+          'flex min-w-0 flex-col bg-background text-foreground',
           className,
         )}
         data-online={online}
         data-slot="rich-text-editor-4"
         ref={rootRef}
       >
-        <header className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b px-4 py-3">
-          <h2 className="font-semibold text-base">{labels.title}</h2>
-          <div className="ms-auto flex flex-wrap items-center gap-x-5 gap-y-2">
-            <PresenceStack
-              followId={followId}
-              labels={labels.presence}
-              onFollow={setFollowId}
-              others={others}
-              self={self}
-            />
-            <Label>
-              <Switch
-                checked={online}
-                onCheckedChange={(next) => void changeOnline(next)}
-              />
-              {labels.online.label}
-            </Label>
-            {room.replay ? (
-              <Button onClick={() => void replay()} size="sm" variant="outline">
-                <ArrowCounterClockwiseIcon aria-hidden="true" />
-                {labels.replay}
-              </Button>
-            ) : null}
-          </div>
-        </header>
+        {navbarNode}
         {online && note ? (
           <output
             className="block border-b bg-info/8 px-4 py-2 text-info-foreground text-sm"
@@ -334,16 +351,29 @@ function CollaborativeEditor({
         )}
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
           <div
-            className="max-h-[32rem] min-h-80 min-w-0 flex-1 overflow-auto"
-            data-slot="rich-text-editor-4-scroll"
+            className="min-h-80 min-w-0 flex-1 px-6 pt-10 pb-16 sm:px-12"
+            data-slot="rich-text-editor-4-body"
           >
-            <div className="relative" ref={contentRef}>
+            <div className="relative mx-auto max-w-3xl" ref={contentRef}>
               <RichTextEditor
                 aria-label={labels.editor}
-                contentClassName="px-6 py-5 min-h-72"
+                blockLabels={{
+                  ...labels.blocks,
+                  ol: labels.tools.numberedList,
+                  ul: labels.tools.bulletList,
+                }}
+                blockTypeLabel={labels.tools.blockType}
+                contentClassName="min-h-72"
                 editor={editor}
-                floatingToolbar={false}
-                toolbar={<CollabToolbar labels={labels} />}
+                floatingToolbarActions={
+                  <CommentToolbarButton label={labels.tools.comment} />
+                }
+                floatingToolbarMarks={floatingMarks}
+                paragraphLabel={labels.tools.paragraph}
+                placeholder={labels.placeholder}
+                slashMenuEmptyLabel={labels.slashMenuEmpty}
+                slashMenuLabel={labels.slashMenu}
+                toolbarLabel={labels.tools.format}
               >
                 <CommentPopovers actions={comments.actions} />
               </RichTextEditor>
@@ -357,9 +387,12 @@ function CollaborativeEditor({
               />
             </div>
           </div>
-          <div className="border-t md:w-72 md:shrink-0 md:overflow-auto md:border-t-0 md:border-s">
+          <aside
+            aria-label={labels.comments.list}
+            className="border-t md:w-80 md:shrink-0 md:border-t-0 md:border-s"
+          >
             <CommentsRail />
-          </div>
+          </aside>
         </div>
       </section>
     </CommentsProvider>

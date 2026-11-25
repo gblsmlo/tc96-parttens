@@ -1,0 +1,126 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Revenue2
+
+A renewals review on the collection Data Table (a semantic `<table>`), the same screen as `Revenue1`: account with owner and segment, renewal due date, ARR with upside, health, stage and risk, filtered by condition chips (field, operator, value) and with the pattern's `ActionBar` floating over the table while renewals are selected, to reassign the owner or move the stage. Reach for it on a customer success or revenue screen where people narrow a portfolio with several criteria at once. Install it with `npx @tc96/cli add revenue-2`.
+
+It is a section, not a page: it renders no `main` landmark. The conditions belong to the consumer: `conditions` feeds the table's global filter through `createDataGridConditionFilterFn` (typed with `DataTableFeatures`), and the `DataGridConditionFilters` chips, the Filtros field menu and Limpar filtros report through `onConditionsChange`; without that callback the chips are not rendered but the conditions still filter. The chips sit in their own row below the toolbar. The toolbar is one `CollectionToolbar`. Its `left` slot holds either the view switcher, when `views` has items, or `labels.title` as the only `h2` with the summary line as its description, never both; with the switcher the page has no `h2` and the section and the table keep their name from `labels.title`. Its `right` slot holds the `ViewSettingsMenu` (Configurações) holding sort, row height, columns, Limpar filtros and Salvar view, and the Nova transação button. The sort, the column visibility, the density and the selection are controllable and reported. The block never changes a renewal: Atribuir responsável and Mover etapa are `ActionBar` items whose submenus list the owners and the stages, and a choice only calls `onAssignOwner` or `onStageUpdate` with the selected ids. Loading and error are the block's: the toolbar keeps its `left` slot (the view switcher, or the heading without the summary) and hides its controls and the chips, `pending` renders the skeleton in place of the table and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
+
+The other pages of `Blocks/Data/Revenue/Revenue2`: [Playground](?path=/story/blocks-data-revenue-revenue2-playground--playground) to try the controls, [Behavior](?path=/story/blocks-data-revenue-revenue2-behavior--each-row-shows-the-renewal-details) for the tests, [States](?path=/story/blocks-data-revenue-revenue2-states--default) for the loaded, loading, error and empty states and [Usages](?path=/story/blocks-data-revenue-revenue2-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Revenue2 } from '@tc96/ui/blocks/data/revenue/revenue-2'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The toolbar with the heading and the summary line (the view switcher takes their place when `views` is passed), Configurações and Nova transação, the condition chips with Filtros and Limpar filtros, the table, the `ActionBar` floating over it (only while rows are selected) and the pagination footer.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Revenue2
+  conditions={conditions}
+  onAssignOwner={assign}
+  onConditionsChange={setConditions}
+  onStageUpdate={move}
+  renewals={renewals}
+/>
+```
+
+## Revenue2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `renewals` | `Revenue2Renewal[]` | required | The rows. Keep the array stable between renders. |
+| `conditions` | `readonly Revenue2Condition[]` | `[]` | The filter conditions; an incomplete one (no value) does not filter. Conditions join with AND. |
+| `onConditionsChange` | `(conditions: Revenue2Condition[]) => void` | - | Called by every chip change, the Filtros menu, the chip menu, Limpar filtros and the Limpar filtros item of Configurações; the chips render only with it. The page goes back to the first. |
+| `sort` | `Revenue2Sort \| null` | - | Controls the sort; risk and stage sort by their order, not alphabetically. |
+| `onSortChange` | `(sort: Revenue2Sort \| null) => void` | - | Called once per sort change, from Configurações > Ordenar por; the table has no column menu. |
+| `columnVisibility` | `Revenue2ColumnVisibility` | all visible | Controls the visible columns; a column is hidden only when its value is `false`. |
+| `onColumnVisibilityChange` | `(visibility: Revenue2ColumnVisibility) => void` | - | Called once per change. |
+| `density` | `Revenue2Density` | `"tall"` | Row height. |
+| `onDensityChange` | `(density: Revenue2Density) => void` | - | With it, `density` is controlled and Configurações > Altura das linhas reports here. |
+| `selectedIds` | `string[]` | - | Controls the selected renewal ids. |
+| `onSelectedIdsChange` | `(renewalIds: string[]) => void` | - | Called on every selection change, Limpar seleção included. |
+| `owners` | `Revenue2Person[]` | the owners found in `renewals` | The items of the Atribuir responsável submenu of the `ActionBar` and the options of the Responsável condition. |
+| `onAssignOwner` | `(renewalIds: string[], ownerId: string) => void` | - | Called by an owner of Atribuir responsável; the item renders only with it and at least one owner. |
+| `onStageUpdate` | `(renewalIds: string[], stage: Revenue2Stage) => void` | - | Called by a stage of Mover etapa; the item renders only with it. |
+| `views`, `activeViewId`, `onViewChange`, `onViewCreate` | `GridViewProps` | - | The shared view switcher, which replaces the heading and the summary line in the toolbar; without items in `views` the heading shows. The block does not apply a view. |
+| `onSaveView` | `() => void` | - | Renders Salvar view at the end of Configurações. |
+| `onCreate` | `() => void` | - | Renders the Nova transação button. |
+| `rowActions`, `onRowAction` | `Revenue2RowAction[]`, `(actionId, renewalId) => void` | - | The row menu column renders only with both. |
+| `pageSize` | `number` | `10` | Rows per page of the footer. |
+| `locale`, `currency` | `string` | `"pt-BR"`, `"BRL"` | Format of the ARR, upside, percentages, dates and the summary amount. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The shared load state; `pending` wins over `error`, and the retry button renders only with `onRetry`. |
+| `labels` | `Partial<Revenue2Labels>` | pt-BR texts | Overrides the texts; the records merge key by key. Keep the object stable, because the columns are rebuilt when it changes. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Revenue2Renewal
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row and is what the callbacks receive. |
+| `account` | `{ name; segment; logoUrl? }` | The logo tile (the first initial without `logoUrl`), the name and the segment (`enterprise`, `mid-market`, `scale`). |
+| `owner` | `Revenue2Person` | The small avatar and name under the account; filterable as Responsável. |
+| `renewalDate` | `string` | ISO date, shown under the due text and filtered by the date condition. |
+| `dueInDays` | `number` | The due text: overdue below 0, soon up to 30 days, later beyond; up to 14 days the text is destructive, up to 30 warning. |
+| `arr`, `upside` | `number` | Raw amounts formatted with `locale` and `currency`; a positive upside is green. |
+| `health` | `number` | Ratio from 0 to 1: a bar, the percentage and the level (below 0.55 Em risco, below 0.75 Em observação, else Saudável). Its condition takes the percentage (0 to 100). |
+| `stage` | `'preparing' \| 'commercial-review' \| 'legal-review' \| 'signed'` | The stage, a read-only select property with its icon. |
+| `risk` | `'critical' \| 'high' \| 'medium' \| 'low'` | The risk, a read-only select property with its icon. |
+
+The summary counts, over the filtered rows, the renewals due within 30 days, the ones at risk (`critical` risk or health level Em risco) and the ARR of those at risk.
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Revisão de renovações"`; the name of the section and the table, and the toolbar heading without views |
+| `toolbar` | `string` | `"Controles das renovações"`; the name of the toolbar |
+| `summary` | `(dueSoon, atRisk, arrAtRisk) => string` | `"6 vencem em 30 dias · 3 em risco · R$ 1,1 mi de ARR em risco"` |
+| `create`, `settings`, `saveView` | `string` | `"Nova transação"`, `"Configurações"`, `"Salvar view"` |
+| `sortBy`, `sortOption`, `clearSort` | `string`, `(column, direction) => string`, `string` | `"Ordenar por"`, `"ARR: decrescente"`, `"Limpar ordenação"` |
+| `density`, `densities`, `columnsMenu` | `string`, `Record<Revenue2Density, string>`, `string` | `"Altura das linhas"`, `"Compacta"`…`"Extra alta"`, `"Colunas"` |
+| `filterCount` | `(label, count) => string` | `"Configurações (1)"`; the trigger while conditions are complete |
+| `conditions` | `DataGridConditionFilterLabels` | `"Filtros"`, `"Limpar filtros"`, `"Filtro de Conta"`, `"Ações do filtro de Conta"`, `"Remover filtro"`, `"Buscar campos"`, `"Buscar..."` and the value editor texts |
+| `operators` | `Record<Revenue2ConditionOperator, string>` | `"contém"`, `"é"`, `"não é"`, `"é um de"`, `"igual a"`, `"maior que"`, `"menor que"`, `"entre"`, `"antes de"`, `"depois de"` |
+| `fields` | `Record<Revenue2FilterField, string>` | `"Conta"`, `"Responsável"`, `"Segmento"`, `"Etapa"`, `"Risco"`, `"ARR"`, `"Saúde (%)"`, `"Data de renovação"` |
+| `due` | `(urgency, days) => string` | `"Vence em 7 d"`, `"Em 37 d"`, `"Venceu há 3 d"` |
+| `upside` | `(amount: string) => string` | `"+R$ 95.000 de potencial"` |
+| `healthScore`, `health` | `(percent, level) => string`, `Record<Revenue2Health, string>` | `"Saúde 46%, Em risco"` (hidden text of the bar); `"Em risco"`, `"Em observação"`, `"Saudável"` |
+| `stages`, `risks`, `segments` | `Record<..., string>` | `"Preparação"`, `"Revisão comercial"`, `"Revisão jurídica"`, `"Assinada"`; `"Crítico"`, `"Alto"`, `"Médio"`, `"Baixo"`; `"Enterprise"`, `"Mid-market"`, `"Scale"` |
+| `selectionActions`, `selectedCount` | `string`, `(count) => string` | `"Ações das renovações selecionadas"`, `"2 renovações selecionadas"`; the name and the count of the `ActionBar` |
+| `owner`, `assignOwner`, `newStage`, `moveStage`, `clearSelection` | `string` | `"Responsável"`, `"Atribuir responsável"`, `"Nova etapa"`, `"Mover etapa"`, `"Limpar seleção"`; `owner` and `newStage` label the submenu groups |
+| `selectAll`, `selectAccount`, `rowActionsFor` | `string`, `(account) => string` | `"Selecionar todas as renovações da página"`, `"Selecionar Atlas Pagamentos"`, `"Ações de Atlas Pagamentos"` |
+| `columns` | `Record<Revenue2ColumnId, string>` | `"Conta"`, `"Renovação"`, `"ARR"`, `"Saúde"`, `"Etapa"`, `"Risco"`, `"Ações"` |
+| `viewSelect`, `viewSearch`, `viewSearchPlaceholder`, `views`, `viewsEmpty`, `viewCreate` | `string` | the shared view switcher texts |
+| `empty`, `loading`, `errorTitle`, `errorDescription`, `retry` | `string` | `"Nenhuma renovação para exibir."`, `"Carregando renovações"`, `"Não foi possível carregar as renovações"`, `"Verifique sua conexão e tente novamente."`, `"Tentar novamente"` |
+
+The pagination buttons and range keep the collection pagination texts, which `labels` does not reach.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Revenue2` | `component` | The renewals review. |
+| `Revenue2Props`, `Revenue2Renewal`, `Revenue2Account`, `Revenue2Person`, `Revenue2Segment`, `Revenue2Stage`, `Revenue2Risk`, `Revenue2Health`, `Revenue2Urgency` | `type` | The props and the data. |
+| `Revenue2Condition`, `Revenue2ConditionOperator`, `Revenue2FilterField` | `type` | The conditions. |
+| `Revenue2Sort`, `Revenue2SortKey`, `Revenue2ColumnId`, `Revenue2ToggleColumnId`, `Revenue2ColumnVisibility`, `Revenue2Density`, `Revenue2View`, `Revenue2RowAction` | `type` | The sort, the columns, the views and the row menu. |
+| `Revenue2Labels`, `Revenue2LabelsOverride` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each condition chip is a group named by `conditions.condition(field)`; its operator, value and actions are buttons, and the value editor is named by `conditions.editValue(field)`.
+- The block renders a semantic `table` with column headers and no grid keyboard model: Tab moves through the checkboxes, the row menus, the chips and the toolbar, and sorting lives in Configurações because the header is plain text.
+- The `ActionBar` is a `toolbar` named by `labels.selectionActions`, and each choice of Atribuir responsável and Mover etapa is a `menuitem` under its group label.
+- The health bar is decorative with a hidden `healthScore` text; stage and risk are read-only select properties (`role="img"` named by the column) whose tone sits on the icon.
+- The due text and the upside carry their tone as color and fall back to the foreground on a selected row, because the selected row background drops the warning, success and destructive foregrounds below 4.5:1.
+- The block carries no color, radius or shadow of its own beyond token classes: the theme belongs to the app.

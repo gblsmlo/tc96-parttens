@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { RichTextEditor1 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-1'
 import { richTextStats } from '@tc96/ui/helpers/rich-text'
 import type { RichTextValue } from '@tc96/ui/patterns/rich-text-editor'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
@@ -14,6 +13,7 @@ import {
 } from './rich-text-editor-1-controls.ts'
 import {
   ComposedRichTextEditor1,
+  DocumentPage,
   richTextEditor1Handlers,
 } from './rich-text-editor-1-layouts.tsx'
 
@@ -42,8 +42,28 @@ const initialStats = richTextStats(launchBrief)
 
 const openMenu = async (canvasElement: HTMLElement) => {
   await userEvent.click(
-    within(canvasElement).getByRole('button', { name: 'Menu do documento' }),
+    within(canvasElement).getByRole('button', { name: 'Mais ações' }),
   )
+}
+
+export const StatusAndMenuSitInTheNavbarAboveTheToolbar: Story = {
+  args: { showStatus: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const banner = within(canvas.getByRole('banner'))
+    await expect(banner.getByText('Em revisão')).toBeVisible()
+    await expect(
+      banner.getByRole('button', { name: 'Mais ações' }),
+    ).toBeVisible()
+    const toolbar = canvas.getByRole('toolbar', {
+      name: 'Formatação do documento',
+    })
+    const title = canvas.getByRole('heading', { level: 1 })
+    await expect(
+      toolbar.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    await expect(canvasElement.querySelector('[data-slot="frame"]')).toBeNull()
+  },
 }
 
 export const ToolbarHasEveryFormattingAction: Story = {
@@ -406,7 +426,7 @@ export const TitleChangeCallsOnTitleChange: Story = {
 
 export const LabelsOverrideTexts: Story = {
   render: () => (
-    <RichTextEditor1
+    <DocumentPage
       defaultTitle="Brief"
       labels={{
         document: 'Corpo do brief',

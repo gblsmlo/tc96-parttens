@@ -1,5 +1,5 @@
 import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import { LegalTitleCell } from '../shared/legal-record-parts'
+import { DataCollectionTitleCell } from '../../shared/collection/data-collection-record-parts'
 import {
   type Legal4FieldContext,
   Legal4OwnerField,
@@ -24,7 +24,7 @@ export function createLegal4Columns(
       ...column('client'),
       accessorFn: (item) => item.name,
       cell: ({ row }) => (
-        <LegalTitleCell
+        <DataCollectionTitleCell
           caption={[labels.kinds[row.original.kind]]}
           title={row.original.name}
         />
@@ -36,7 +36,7 @@ export function createLegal4Columns(
       accessorFn: (item) => item.contact?.name ?? '',
       cell: ({ row }) =>
         row.original.contact ? (
-          <LegalTitleCell
+          <DataCollectionTitleCell
             caption={[row.original.contact.email]}
             title={row.original.contact.name}
           />

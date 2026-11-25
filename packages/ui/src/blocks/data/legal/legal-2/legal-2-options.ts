@@ -8,7 +8,7 @@ import {
   SignatureIcon,
   WarningIcon,
 } from '@phosphor-icons/react'
-import type { LegalOptionAppearance } from '../shared/types'
+import type { DataOptionAppearance } from '../../shared/properties/types'
 import type { Legal2Queue, Legal2Status } from './types'
 
 export const legal2Queues: readonly Legal2Queue[] = [
@@ -30,11 +30,11 @@ export const legal2QueueAppearance = {
   negotiation: { icon: ChatCircleIcon, tone: 'info' },
   renewal: { icon: ArrowsClockwiseIcon, tone: 'warning' },
   signature: { icon: SignatureIcon, tone: 'info' },
-} as const satisfies Record<Legal2Queue, LegalOptionAppearance>
+} as const satisfies Record<Legal2Queue, DataOptionAppearance>
 
 export const legal2StatusAppearance = {
   draft: { icon: FileTextIcon, tone: 'neutral' },
   expired: { icon: WarningIcon, tone: 'danger' },
   review: { icon: MagnifyingGlassIcon, tone: 'warning' },
   signed: { icon: CheckCircleIcon, tone: 'success' },
-} as const satisfies Record<Legal2Status, LegalOptionAppearance>
+} as const satisfies Record<Legal2Status, DataOptionAppearance>

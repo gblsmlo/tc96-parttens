@@ -1,4 +1,5 @@
 import type { RichTextValue } from '@tc96/ui/patterns/rich-text-editor'
+import type { ReactNode } from 'react'
 import type {
   SuggestionAuthor,
   SuggestionChange,
@@ -86,20 +87,22 @@ export interface RichTextEditor5Labels {
   bubbleSummary: string
   clearPassage: string
   collapse: string
+  conversation: string
   dock: string
   done: (edits: number, findings: number) => string
-  expand: string
+  emptyDescription: string
+  emptyTitle: string
   failed: string
-  formatting: string
-  history: Record<'redo' | 'undo', string>
   fallback: (request: string) => string
   findingKinds: Record<RichTextEditor5FindingKind, string>
   findings: string
   findingsEmpty: string
   goTo: string
   goToFinding: (finding: RichTextEditor5Finding) => string
+  jump: string
   next: string
   passage: (text: string) => string
+  pending: (count: number) => string
   position: (current: number, total: number) => string
   previous: string
   rejectAll: string
@@ -113,10 +116,17 @@ export interface RichTextEditor5Labels {
   stop: string
   stopped: (edits: number) => string
   tasks: Record<RichTextEditor5Task, string>
+  taskMenu: string
   tasksGroup: string
-  marks: Record<'bold' | 'italic', string>
+  typing: string
   undo: string
   document: string
+}
+
+export interface RichTextEditor5NavbarContext {
+  pending: number
+  running: boolean
+  status: ReactNode
 }
 
 export interface RichTextEditor5Props {
@@ -125,6 +135,7 @@ export interface RichTextEditor5Props {
   defaultValue: RichTextValue
   formatTime?: (date: Date) => string
   labels?: Partial<RichTextEditor5Labels>
+  navbar?: ReactNode | ((context: RichTextEditor5NavbarContext) => ReactNode)
   onChange?: (value: RichTextValue) => void
   onDecision?: (decision: RichTextEditor5Decision) => void
   planner?: RichTextEditor5Planner
