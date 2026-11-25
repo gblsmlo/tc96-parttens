@@ -1,4 +1,5 @@
 import type { CollectionPaginationButtonLabels } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
+import type { TagsPropertyLabels } from '@tc96/ui/patterns/properties/core'
 import type {
   DataCollectionLoadLabels,
   DataCollectionLoadProps,
@@ -122,6 +123,7 @@ export interface Legal5Labels
   viewCountName: (label: string, count: number) => string
   viewList: string
   views: Record<Legal5View, string>
+  tagPicker: TagsPropertyLabels
 }
 
 type Legal5LabelGroup =
@@ -136,6 +138,7 @@ type Legal5LabelGroup =
   | 'savedViews'
   | 'situations'
   | 'sorts'
+  | 'tagPicker'
   | 'views'
 
 export type Legal5LabelsOverride = Partial<

@@ -1361,9 +1361,9 @@ const modesOf = (count: number): ViewSettingsMode[] =>
   }))
 
 const popupWidths = [
-  ['Sem modos', 0, 14],
-  ['Dois modos', 2, 16],
-  ['Três modos', 3, 18],
+  ['Sem modos', 0, 20],
+  ['Dois modos', 2, 20],
+  ['Três modos', 3, 20],
   ['Quatro modos', 4, 24],
 ] as const
 
@@ -1481,8 +1481,9 @@ export const ClearCallsOnClearFilters: Story = {
     await userEvent.click(
       screen.getByRole('menuitem', { name: 'Limpar filtros' }),
     )
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
     await expect(args.onClearFilters).toHaveBeenCalledOnce()
+    await expect(screen.getByRole('menu')).toBeVisible()
+    await closeMenus()
   },
 }
 

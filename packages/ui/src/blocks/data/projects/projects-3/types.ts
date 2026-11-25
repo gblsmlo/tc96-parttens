@@ -1,4 +1,5 @@
 import type { CollectionPaginationButtonLabels } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
+import type { TagsPropertyLabels } from '@tc96/ui/patterns/properties/core'
 import type {
   DataCollectionFormatProps,
   DataCollectionLoadLabels,
@@ -118,6 +119,7 @@ export interface Projects3Labels
   statuses: Record<Projects3Status, string>
   unassigned: string
   viewList: string
+  tagPicker: TagsPropertyLabels
 }
 
 type Projects3LabelGroup =
@@ -129,6 +131,7 @@ type Projects3LabelGroup =
   | 'priorities'
   | 'savedViews'
   | 'sorts'
+  | 'tagPicker'
   | 'statuses'
 
 export type Projects3LabelsOverride = Partial<

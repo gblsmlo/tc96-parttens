@@ -60,6 +60,13 @@ export const defaultProjects3Labels: Projects3Labels = {
   noResult: 'Nenhuma tarefa com esses filtros.',
   noStart: 'Sem início',
   noTags: 'Sem tags',
+  tagPicker: {
+    add: 'Adicionar tag',
+    count: (count) => `${count} ${count === 1 ? 'tag' : 'tags'}`,
+    empty: 'Nenhuma tag encontrada.',
+    loading: 'Carregando tags…',
+    remove: 'Remover tag',
+  },
   openTask: (title) => `Abrir detalhes da tarefa: ${title}`,
   pageRange: (first, last, total) =>
     total === 0 ? '0 de 0' : `${first}–${last} de ${total}`,
@@ -116,6 +123,7 @@ export function resolveProjects3Labels(
     priorities: { ...base.priorities, ...labels?.priorities },
     savedViews: { ...base.savedViews, ...labels?.savedViews },
     sorts: { ...base.sorts, ...labels?.sorts },
+    tagPicker: { ...base.tagPicker, ...labels?.tagPicker },
     statuses: { ...base.statuses, ...labels?.statuses },
   }
 }

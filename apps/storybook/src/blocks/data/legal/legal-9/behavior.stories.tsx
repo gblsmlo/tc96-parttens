@@ -348,7 +348,8 @@ export const ClearFiltersResetsEveryFilter: Story = {
     await expect(args.onStatusFilterChange).toHaveBeenLastCalledWith(null)
     await expect(args.onBillingModelFilterChange).toHaveBeenLastCalledWith(null)
     await expect(args.onOwnerFilterChange).toHaveBeenLastCalledWith(null)
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
+    await expect(screen.getByRole('menu')).toBeVisible()
+    await closeMenus()
   },
 }
 
