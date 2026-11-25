@@ -1,0 +1,106 @@
+name: Storybook release
+
+on:
+  pull_request:
+    # labeled and unlabeled rerun the story tests when skip-storybook is added or removed.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  workflow_dispatch:
+    inputs:
+      storybook-runner:
+        description: Runner image for the Storybook job
+        type: choice
+        options: [ubuntu-24.04, ubuntu-24.04-arm]
+        default: ubuntu-24.04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: storybook-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # One runner closed the browser mid-run with 232 story files (PR #425) and with 448 per shard (PR #429).
+  storybook-shard:
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch'
+      || (startsWith(github.head_ref, 'chore/release-')
+      && !contains(github.event.pull_request.labels.*.name, 'skip-storybook')) }}
+    name: storybook (${{ matrix.shard }}/5)
+    runs-on: ${{ inputs.storybook-runner || 'ubuntu-24.04' }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+
+      - run: bun install --frozen-lockfile
+
+      - name: Read the Playwright version
+        id: playwright
+        run: echo "version=$(bunx playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+        working-directory: apps/storybook
+
+      - id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}
+
+      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps --only-shell chromium
+        working-directory: apps/storybook
+
+      # The cache holds the browser only; its system libraries still come from apt.
+      - if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+        working-directory: apps/storybook
+
+      - run: bun run test --passWithNoTests --shard=${{ matrix.shard }}/5
+        working-directory: apps/storybook
+
+  build:
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch'
+      || (startsWith(github.head_ref, 'chore/release-')
+      && !contains(github.event.pull_request.labels.*.name, 'skip-storybook')) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+
+      - run: bun install --frozen-lockfile
+
+      - run: bun run storybook:build
+
+      - run: bun run docs:build

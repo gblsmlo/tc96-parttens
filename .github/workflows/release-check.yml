@@ -27,9 +27,26 @@ jobs:
         with:
           node-version: 24
 
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+
       - run: bun install --frozen-lockfile
 
-      - run: bunx playwright install --with-deps --only-shell chromium
-        working-directory: apps/storybook
-
-      - run: bun run release:check
+      # Story tests, storybook:build and docs:build run sharded in storybook-release.yml.
+      - run: bun run check:coss
+      - run: bun run boundaries:check
+      - run: bun run overrides:check
+      - run: bun run typecheck
+      - run: bun run lint:ci
+      - run: bun run storybook:typecheck
+      - run: bun run storybook:lint
+      - run: bun run test
+      - run: bun run build
+      - run: bun run verify:public-api
+      - run: bun run test:consumer:registry
+      - run: bun run test:consumer:ssr
+      - run: bun run bench:views
+      - run: bun run pack:check
