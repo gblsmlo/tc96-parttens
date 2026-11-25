@@ -104,11 +104,11 @@ Caminho: `packages/ui/src/blocks/<categoria>/<grupo>/<block>/`. Story: `Blocks/<
 
 | Categoria | Pasta | Escolha quando a tela serve para… | Grupos atuais e previstos | Patterns que costuma consumir |
 | --- | --- | --- | --- | --- |
-| Application | `application/` | dar moldura ou acesso ao app | `shell` (`app-shell-1..4`), `auth` (`login-1`, `signup-1`, `forgot-password-1`, `reset-password-1`, `otp-1`), `settings` (`settings-<categoria>-<n>`, em oito categorias), `stats` (`stats-1..6`), `card` (`card-1..6`), `list` (`list-1..6`), `empty-state` (`empty-state-1..6`), `timeline` (`timeline-1..4`), `dashboard` (`dashboard-1..3`), `navbar` (`navbar-1..12`), `onboarding` (`onboarding-1..3`), `rich-text-editor` (`rich-text-editor-1..5`), `errors` | `surfaces/settings`, `surfaces/state`, `widgets` |
+| Application | `application/` | dar moldura ou acesso ao app | `shell` (`app-shell-1..4`), `auth` (`login-1`, `signup-1`, `forgot-password-1`, `reset-password-1`, `otp-1`), `settings` (`settings-<categoria>-<n>`, em oito categorias), `stats` (`stats-1..6`), `card` (`card-1..6`), `list` (`list-1..6`), `empty-state` (`empty-state-1..6`), `timeline` (`timeline-1..4`), `dashboard` (`dashboard-1..3`), `navbar` (`navbar-1..12`), `onboarding` (`onboarding-1..3`), `rich-text-editor` (`rich-text-editor-1..5`), `flow` (`flow-1..4`), `errors` | `surfaces/settings`, `surfaces/state`, `widgets` |
 | Data | `data/` | ver e editar registros de qualquer domínio | `data-grid` (`data-grid-1..9`), `table` (`table-1..9`), `board`, `record` | `collection`, `records/*`, `properties`, `editable` |
 | Charts | `charts/` | ler métricas | `dashboard`, `report` | `widgets` |
 | Solutions | `solutions/` | uma vertical sem categoria própria (CRM, helpdesk) | `crm` (candidatos: `Templates/Contacts`, `DealBoard`, `ContactDetail`) | vários |
-| AI & Agents | `ai-agents/` | conversar com IA ou configurar agentes e fluxos | `flow` (`workflow-editor`, `agent-builder`), `chat` | `flow/*`, `chat/*` |
+| AI & Agents | `ai-agents/` | conversar com IA ou acompanhar agentes | `ai-chat` (`ai-chat-1`) | `chat/*` |
 | eCommerce | `ecommerce/` | catálogo, carrinho, checkout, pedidos | nenhum ainda | `collection`, `widgets` |
 | Marketing | `marketing/` | páginas públicas e suas seções (hero, pricing, CTA) | nenhum ainda | poucos; quase sempre só `ui` |
 
@@ -157,7 +157,7 @@ O `boundaries:check` impede que `parttens` importe `blocks` e que um block impor
 1. **"Pode consumir" não é "deve consumir".** Um block pode usar só `ui`; os blocks de auth vão usar `form`, `field`, `otp-field` e `card`, sem nenhum pattern.
 2. **Import por arquivo, não pelo barrel** (ADR 0005 D3). Pelo barrel, o item levaria todos os patterns.
 3. **Lacuna: os blocks entram no interior dos patterns.** Os editores de fluxo importam `flow/canvas/composition/flow-canvas/flow-canvas`, `flow/canvas/core` e outros caminhos internos (`packages/blocks/AGENTS.md`, Dependents). Renomear um arquivo interno de um pattern quebra o block. Proposta: um block só importa o `index.ts` do pattern, o `core.ts` ou `composition/<nome>/index.ts`, e o `boundaries:check` passa a recusar os demais caminhos.
-4. **A atualização de um pattern checa os blocks instalados.** Ao instalar ou atualizar um pattern, a checagem de compatibilidade do CLI compila também os arquivos `.ts` e `.tsx` da pasta de blocks do consumidor (`packages/registry/src/check-compatibility.ts`, `dependents`) e relata só os erros que a atualização causa: o que o block já tinha de errado antes não aparece. Quando o consumidor atualiza `flow-canvas`, o `agent-builder` que ele já tem é compilado junto.
+4. **A atualização de um pattern checa os blocks instalados.** Ao instalar ou atualizar um pattern, a checagem de compatibilidade do CLI compila também os arquivos `.ts` e `.tsx` da pasta de blocks do consumidor (`packages/registry/src/check-compatibility.ts`, `dependents`) e relata só os erros que a atualização causa: o que o block já tinha de errado antes não aparece. Quando o consumidor atualiza `flow-canvas`, o `flow-2` que ele já tem é compilado junto.
 5. **Block não importa block,** nem dentro da mesma categoria. Peças do grupo ficam em `<grupo>/shared/`; peças entre grupos descem para pattern.
 6. **Um pattern não sabe que blocks existem:** nenhum slot, default ou label pensado para um block específico. Se um pattern precisa de algo que só um block tem, isso desce para o pattern ou para `ui`.
 7. **O block segue o contrato dos patterns:** é controlado e não faz fetch, não guarda sessão, não lê cookie, não aplica tema. No auth, isso quer dizer `onSubmit(values)`, `pending`, `error` e `renderLink`, sem provider de autenticação dentro do block.
@@ -170,7 +170,7 @@ O `boundaries:check` impede que `parttens` importe `blocks` e que um block impor
 | 2 | Página de Marketing feita de seções | a página copia as seções que usa (block não importa block) | permitir que um block de página importe blocks de seção da mesma categoria |
 | 3 | Lacuna 3: blocks importando o interior dos patterns | o `boundaries:check` aceita só `index.ts`, `core.ts` e `composition/<nome>/index.ts` | ficar como está |
 
-Já decidido no ADR 0009: os editores de fluxo são blocks de `ai-agents/flow/`. Já feito na remoção de `elements`: os patterns dimensionam o Avatar do COSS por `--avatar-size`. Já feito no refactor do CLI: o alias é `blocks`, e quem ainda usa `aliases.templates`, o caminho `templates` do tsconfig ou `elements` recebe um aviso e continua funcionando.
+Já decidido no ADR 0009: os editores de fluxo são blocks; em 2026-11-24 o dono os moveu de `ai-agents/flow/` para `application/flow/` (`flow-1..4`), como no ReUI. Já feito na remoção de `elements`: os patterns dimensionam o Avatar do COSS por `--avatar-size`. Já feito no refactor do CLI: o alias é `blocks`, e quem ainda usa `aliases.templates`, o caminho `templates` do tsconfig ou `elements` recebe um aviso e continua funcionando.
 
 ## Fontes
 

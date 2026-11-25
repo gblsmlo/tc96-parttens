@@ -522,7 +522,7 @@ test('resolves the core entry of a pattern from a block import', () => {
   )
   const resolved = ts.resolveModuleName(
     '@tc96/ui/patterns/flow/canvas/core',
-    join(root, 'packages/ui/src/blocks/ai-agents/flow/shared/types.ts'),
+    join(root, 'packages/ui/src/blocks/application/flow/shared/types.ts'),
     parsed.options,
     ts.sys,
   ).resolvedModule
@@ -989,7 +989,7 @@ test('builds the forgot-password-2 item with the auth shared files and only the 
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
 })
 
-test('builds the flow blocks from ai-agents/flow, the flow patterns, the assistant and helpers only', () => {
+test('builds the flow blocks from application/flow, the flow patterns, the assistant and helpers only', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(
     process.execPath,
@@ -997,7 +997,7 @@ test('builds the flow blocks from ai-agents/flow, the flow patterns, the assista
     { cwd: root },
   )
   expect(build.status).toBe(0)
-  for (const name of ['workflow-editor', 'agent-builder']) {
+  for (const name of ['flow-1', 'flow-2']) {
     const item: RegistryItem = JSON.parse(
       readFileSync(join(root, `dist/registry/${name}.json`), 'utf8'),
     )
@@ -1006,11 +1006,11 @@ test('builds the flow blocks from ai-agents/flow, the flow patterns, the assista
     expect(item.name).toBe(name)
     expect(item.dependencies).toContain('@xyflow/react@12.12.0')
     expect(item.dependencies).toContain('d3-hierarchy@3.1.2')
-    expect(paths).toContain(`blocks/ai-agents/flow/${name}/index.ts`)
+    expect(paths).toContain(`blocks/application/flow/${name}/index.ts`)
     expect(
       paths.every(
         (path) =>
-          path.startsWith('blocks/ai-agents/flow/') ||
+          path.startsWith('blocks/application/flow/') ||
           path.startsWith('patterns/flow/') ||
           path.startsWith('patterns/chat/assistant/') ||
           path.startsWith('helpers/'),
@@ -1021,7 +1021,7 @@ test('builds the flow blocks from ai-agents/flow, the flow patterns, the assista
   }
 })
 
-test('builds run-monitor with the flow canvas and impact-map with the flow core only', () => {
+test('builds flow-3 with the flow canvas and flow-4 with the flow core only', () => {
   const root = resolve(import.meta.dir, '../../..')
   const build = spawnSync(
     process.execPath,
@@ -1032,26 +1032,26 @@ test('builds run-monitor with the flow canvas and impact-map with the flow core 
   const read = (name: string): RegistryItem =>
     JSON.parse(readFileSync(join(root, `dist/registry/${name}.json`), 'utf8'))
   const allowed = (path: string) =>
-    path.startsWith('blocks/ai-agents/flow/') ||
+    path.startsWith('blocks/application/flow/') ||
     path.startsWith('patterns/flow/canvas/') ||
     path.startsWith('patterns/surfaces/state/') ||
     path.startsWith('helpers/')
 
-  const monitor = read('run-monitor')
+  const monitor = read('flow-3')
   const monitorPaths = monitor.files.map((file) => file.path)
   expect(monitor.dependencies).toContain('@xyflow/react@12.12.0')
   expect(monitor.dependencies).toContain('d3-hierarchy@3.1.2')
-  expect(monitorPaths).toContain('blocks/ai-agents/flow/run-monitor/index.ts')
+  expect(monitorPaths).toContain('blocks/application/flow/flow-3/index.ts')
   expect(monitorPaths.every(allowed)).toBe(true)
 
-  const map = read('impact-map')
+  const map = read('flow-4')
   const mapPaths = map.files.map((file) => file.path)
   expect(map.dependencies).toContain('d3-hierarchy@3.1.2')
   expect(map.dependencies).not.toContain('@xyflow/react@12.12.0')
-  expect(mapPaths).toContain('blocks/ai-agents/flow/impact-map/index.ts')
+  expect(mapPaths).toContain('blocks/application/flow/flow-4/index.ts')
   expect(mapPaths.every(allowed)).toBe(true)
   expect(
-    mapPaths.some((path) => path.startsWith('blocks/ai-agents/flow/shared/')),
+    mapPaths.some((path) => path.startsWith('blocks/application/flow/shared/')),
   ).toBe(false)
   expect(
     mapPaths.some((path) =>
@@ -1060,4 +1060,29 @@ test('builds run-monitor with the flow canvas and impact-map with the flow core 
   ).toBe(false)
   for (const path of [...monitorPaths, ...mapPaths])
     expect(/\.test\.(ts|tsx)$/.test(path)).toBe(false)
+})
+
+test('builds ai-chat-1 on the COSS chat and composer with the state surface only', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  const build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: root },
+  )
+  expect(build.status).toBe(0)
+  const item: RegistryItem = JSON.parse(
+    readFileSync(join(root, 'dist/registry/ai-chat-1.json'), 'utf8'),
+  )
+  const paths = item.files.map((file) => file.path)
+  expect(paths).toContain('blocks/ai-agents/ai-chat/ai-chat-1/index.ts')
+  expect(
+    paths.every(
+      (path) =>
+        path.startsWith('blocks/ai-agents/ai-chat/ai-chat-1/') ||
+        path.startsWith('patterns/surfaces/state/'),
+    ),
+  ).toBe(true)
+  expect(item.registryDependencies).toEqual(
+    expect.arrayContaining(['@ui/chat', '@ui/composer']),
+  )
 })

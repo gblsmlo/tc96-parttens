@@ -21,7 +21,7 @@ Import direction: `composition/` → `components/`, `hooks/`, `lib/`, `store/`, 
 ## Dependents
 
 - `flow/step-library` and `flow/inspector` import types and `serializeStepTransfer` from `../canvas/core` only, never from this folder's React files.
-- `packages/ui/src/blocks/ai-agents/flow/` (`workflow-editor`, `agent-builder`) import `FlowCanvas`, `FlowCanvasControls` and `FlowCanvasMinimap` by file path (`@tc96/ui/patterns/flow/canvas/composition/flow-canvas/flow-canvas`) and `tidyTree` from `@tc96/ui/patterns/flow/canvas/core`. Renaming a composition file breaks them.
+- `packages/ui/src/blocks/application/flow/` (`flow-1`, `flow-2`) import `FlowCanvas`, `FlowCanvasControls` and `FlowCanvasMinimap` by file path (`@tc96/ui/patterns/flow/canvas/composition/flow-canvas/flow-canvas`) and `tidyTree` from `@tc96/ui/patterns/flow/canvas/core`. Renaming a composition file breaks them.
 - `packages/ui/src/patterns/index.ts` re-exports `flow/canvas/index`; `packages/registry/src/manifest.ts` and `scripts/test-patterns.ts` list the folder `flow/canvas` for the item `flow-canvas`; `manifest.test.ts` asserts it declares `@xyflow/react@12.12.0` and `d3-hierarchy@3.1.2`.
 
 ## Invariants

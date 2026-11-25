@@ -20,7 +20,7 @@ Import direction: `composition/` → `components/`, `hooks/`, `lib/`, `store/`, 
 ## Dependents
 
 - `packages/ui/src/patterns/index.ts` re-exports `flow/inspector/index`.
-- `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts` list `flow/inspector` for the item `flow-inspector`. The T5 templates (`workflow-editor`, `agent-builder`) mount `FlowInspector` with their own `shared/step-form.tsx` as `build`.
+- `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts` list `flow/inspector` for the item `flow-inspector`. The T5 templates (`flow-1`, `flow-2`) mount `FlowInspector` with their own `shared/step-form.tsx` as `build`.
 
 ## Invariants
 

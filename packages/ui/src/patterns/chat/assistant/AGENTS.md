@@ -21,7 +21,7 @@ Import direction: `composition/` → `components/`, `lib/`, `store/`, `types/`, 
 
 - `packages/ui/src/patterns/index.ts` re-exports `chat/assistant/index`.
 - `packages/registry/src/manifest.ts` (`patternSources`) and `scripts/test-patterns.ts` list the folder `chat/assistant` for the registry item `chat-assistant`, which depends on `@coss/chat` and `@coss/composer` besides `badge`, `button`, `card` and `tooltip`.
-- The workflow and agent-builder templates (T5) mount `AssistantPanel` by file path.
+- The workflow and flow-2 templates (T5) mount `AssistantPanel` by file path.
 
 ## Invariants
 

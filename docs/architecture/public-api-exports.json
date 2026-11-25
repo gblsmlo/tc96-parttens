@@ -1741,9 +1741,11 @@
     "ForgotPassword2Props",
     "ForgotPassword2Values"
   ],
-  "block:workflow-editor": [
+  "block:flow-1": [
     "AssistantMessage",
     "AssistantSuggestion",
+    "Flow1",
+    "Flow1Props",
     "FlowAssistantConfig",
     "FlowBreadcrumbItem",
     "FlowConnectInput",
@@ -1759,15 +1761,13 @@
     "FlowStepAddOptions",
     "FlowStepStats",
     "FlowStepType",
-    "FlowStepValues",
-    "WorkflowEditor",
-    "WorkflowEditorProps"
+    "FlowStepValues"
   ],
-  "block:agent-builder": [
-    "AgentBuilder",
-    "AgentBuilderProps",
+  "block:flow-2": [
     "AssistantMessage",
     "AssistantSuggestion",
+    "Flow2",
+    "Flow2Props",
     "FlowAssistantConfig",
     "FlowBreadcrumbItem",
     "FlowConnectInput",
@@ -2585,21 +2585,40 @@
     "MagicLink6Props",
     "MagicLink6Values"
   ],
-  "block:run-monitor": [
-    "RunMonitor",
-    "RunMonitorConnection",
-    "RunMonitorLabels",
-    "RunMonitorProps",
-    "RunMonitorStatus",
-    "RunMonitorStep"
+  "block:flow-3": [
+    "Flow3",
+    "Flow3Connection",
+    "Flow3Labels",
+    "Flow3Props",
+    "Flow3Status",
+    "Flow3Step"
   ],
-  "block:impact-map": [
-    "ImpactMap",
-    "ImpactMapKind",
-    "ImpactMapLabels",
-    "ImpactMapLink",
-    "ImpactMapNode",
-    "ImpactMapProps"
+  "block:flow-4": [
+    "Flow4",
+    "Flow4Kind",
+    "Flow4Labels",
+    "Flow4Link",
+    "Flow4Node",
+    "Flow4Props"
+  ],
+  "block:ai-chat-1": [
+    "AiChat1",
+    "AiChat1AssistantMessage",
+    "AiChat1AttachAction",
+    "AiChat1Chip",
+    "AiChat1ChipKind",
+    "AiChat1Code",
+    "AiChat1Feedback",
+    "AiChat1Labels",
+    "AiChat1Message",
+    "AiChat1Model",
+    "AiChat1Props",
+    "AiChat1Reasoning",
+    "AiChat1Source",
+    "AiChat1Starter",
+    "AiChat1Thread",
+    "AiChat1Usage",
+    "AiChat1UserMessage"
   ],
   "block:data-grid-1": [
     "DataGrid1",

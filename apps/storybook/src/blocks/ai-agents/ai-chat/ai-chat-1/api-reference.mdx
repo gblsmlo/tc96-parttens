@@ -1,0 +1,114 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# AiChat1
+
+A full-page copilot: a header with the thread switcher, the context window meter, export and new thread; a transcript of questions and answers; and a docked composer with context chips, attach, web search, extended thinking, model, voice and send. With no messages the transcript gives way to a starter view of prompt shortcuts by category. Reach for it when the assistant is the page, not a panel beside another screen. Install it with `npx @tc96/cli add ai-chat-1`.
+
+The block is built on the COSS `chat` parts (`ChatConversation`, `ChatMessage`, `ChatTypingIndicator`, `useChatScroll`) and the COSS `Composer`. It is controlled: it never calls a model, streams, fetches or persists. The app passes the messages, grows the text of the last answer while it streams and sets `responding`; every action is a callback.
+
+The other pages of `Blocks/AI & Agents/AI Chat/AiChat1`: [Playground](?path=/story/blocks-ai-agents-ai-chat-aichat1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-ai-agents-ai-chat-aichat1-behavior--sending-clears-the-draft-and-adds-the-turn) for the tests, [States](?path=/story/blocks-ai-agents-ai-chat-aichat1-states--default) for starter, responding, loading and error, and [Usages](?path=/story/blocks-ai-agents-ai-chat-aichat1-usages--analytics-copilot) for a copilot with streamed replies.
+
+## Import
+
+```tsx
+import { AiChat1 } from '@tc96/ui/blocks/ai-agents/ai-chat/ai-chat-1'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<AiChat1
+  messages={messages}
+  models={models}
+  model={model}
+  onModelChange={setModel}
+  onSend={ask}
+  onStop={abort}
+  responding={streaming}
+  starters={starters}
+  threadId={threadId}
+  threads={threads}
+  onThreadChange={openThread}
+/>
+```
+
+The starter view, shown while `messages` is empty:
+
+<Canvas of={ApiReferenceStories.Starter} />
+
+## AiChat1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `messages` | `AiChat1Message[]` | required | The transcript, oldest first. Empty shows the starter view. |
+| `onSend` | `(text: string) => void` | required | Called with the trimmed text of the composer, or with a starter prompt. The block clears its draft; the chips are yours to clear. |
+| `responding` | `boolean` | `false` | An answer is on its way. Send is disabled and becomes Stop when `onStop` is passed. While the last message is the question, the typing indicator shows; once the last message is the answer, its actions hide until `responding` ends. |
+| `onStop` | `() => void` | - | Renders Stop in place of Send while `responding`. |
+| `threads`, `threadId`, `onThreadChange` | `AiChat1Thread[]`, `string`, `(id) => void` | `[]` | The header switcher, a menu with Fixadas (`pinned`) and Recentes. Without `onThreadChange` the header shows the title of `threadId` as text. |
+| `onNewThread` | `() => void` | - | Renders Nova conversa. |
+| `onExport` | `() => void` | - | Renders Exportar conversa, only when the thread has messages. |
+| `usage` | `{ used: number; limit: number }` | - | The context window meter, in tokens, formatted compact with `locale`. |
+| `starters` | `AiChat1Starter[]` | `[]` | Categories of the starter view, each `{ id, label, icon?, prompts }`; a prompt click calls `onSend(prompt)`. |
+| `models`, `model`, `onModelChange` | `AiChat1Model[]`, `string`, `(id) => void` | `[]`, the first model | The model menu in the composer, each `{ id, label, description? }`. It renders only with `onModelChange`. The label of `message.model` names each answer. |
+| `chips`, `onChipRemove` | `AiChat1Chip[]`, `(id) => void` | `[]` | Context attached to the next message (`{ id, label, kind?: 'file' \| 'link' \| 'page' }`); the remove button renders only with `onChipRemove`. |
+| `attachActions`, `onAttach` | `AiChat1AttachAction[]`, `(id) => void` | `[]` | The attach menu; adding the chip is yours. |
+| `webSearch`, `onWebSearchChange` | `boolean`, `(on) => void` | `false` | The web search toggle, rendered only with its callback. |
+| `extendedThinking`, `onExtendedThinkingChange` | `boolean`, `(on) => void` | `false` | The extended thinking toggle, rendered only with its callback. |
+| `listening`, `onListeningChange` | `boolean`, `(on) => void` | `false` | The voice toggle. The block does no dictation; pressing it only reports the new value. |
+| `onCopy` | `(text: string, messageId: string) => void` | - | Copiar resposta passes the answer text; Copiar código passes only the code. Writing to the clipboard is yours. |
+| `onRegenerate` | `(messageId: string) => void` | - | Renders Gerar de novo on each answer. |
+| `onFeedback` | `(messageId, feedback: 'up' \| 'down' \| null) => void` | - | Renders Boa resposta and Resposta ruim, pressed from `message.feedback`; pressing the pressed one passes `null`. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | `false` | Loading a thread. `pending` shows the skeleton and disables Send; `error` shows the error surface, with Tentar novamente only with `onRetry`, and hides the composer. `pending` wins over `error`. |
+| `locale` | `string` | `'pt-BR'` | Formats the token counts. |
+| `labels` | `Partial<AiChat1Labels>` | pt-BR texts | Overrides the texts of the block. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Messages
+
+| Type | Shape | Description |
+| --- | --- | --- |
+| `AiChat1UserMessage` | `{ id, role: 'user', text, chips? }` | A question, as an outgoing bubble with the chips it carried. |
+| `AiChat1AssistantMessage` | `{ id, role: 'assistant', text, model?, reasoning?, code?, sources?, feedback? }` | An answer without a bubble. `text` is split into paragraphs on blank lines; `reasoning` (`{ seconds, text }`) is a collapsed section; `code` (`{ language, code }`) is a code figure; `sources` (`{ id, title, href }`) are numbered links that open in a new tab. |
+
+## Labels
+
+| Key | Default |
+| --- | --- |
+| `title`, `threadSwitcher`, `pinned`, `recent`, `newThread`, `transcript` | `"Copiloto"`, `"Trocar de conversa"`, `"Fixadas"`, `"Recentes"`, `"Nova conversa"`, `"Exportar conversa"` |
+| `contextWindow`, `usage(used, limit)` | `"Janela de contexto"`, `"48,2 mil de 200 mil tokens"` |
+| `conversation`, `jump`, `thinking`, `assistant` | The transcript log, its jump button, the typing indicator and the author when a message has no `model` |
+| `messageActions(author)`, `copy`, `copyCode`, `regenerate`, `like`, `dislike` | The answer actions |
+| `reasoning(seconds)`, `code(language)`, `sources` | `"Pensou por 6 s"`, `"Código SQL"`, `"Fontes"` |
+| `starterTitle`, `starterDescription`, `starterCategories` | The starter view |
+| `prompt`, `promptPlaceholder`, `send`, `stop`, `chips`, `removeChip(label)`, `attach`, `webSearch`, `extendedThinking`, `model`, `microphone`, `listening`, `disclaimer` | The composer |
+| `loading`, `errorTitle`, `errorDescription`, `retry` | The thread states |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `AiChat1` | `component` | The copilot page. |
+| `AiChat1Props`, `AiChat1Labels` | `type` | The props and the keys of `labels`. |
+| `AiChat1Message`, `AiChat1UserMessage`, `AiChat1AssistantMessage` | `type` | The transcript. |
+| `AiChat1Reasoning`, `AiChat1Code`, `AiChat1Source`, `AiChat1Feedback` | `type` | The parts of an answer. |
+| `AiChat1Thread`, `AiChat1Model`, `AiChat1Starter`, `AiChat1AttachAction`, `AiChat1Chip`, `AiChat1ChipKind`, `AiChat1Usage` | `type` | The header, composer and starter data. |
+
+## Limits
+
+- No markdown: the answer text is plain paragraphs, one code figure and a list of sources.
+- The composer draft is the block's own; the consumer cannot set or read it before Send.
+- The root takes `min-h-160` and `flex-1`; give it a flex column parent with a height, such as the content area of a shell.
+
+## Accessibility and theme
+
+- The root is a `section` named by a hidden `h2` with `labels.title`.
+- The transcript is the `log` of `ChatConversation`; answers stream into it and the jump button appears when you scroll up.
+- The answer actions are a `fieldset` named by `messageActions(author)`; like and dislike are toggles with `aria-pressed`.
+- The context window is a `meter` whose value text is `labels.usage`; the visible count repeats it and is hidden from assistive tech.
+- The web search, extended thinking and voice controls are toggles with fixed names; only `aria-pressed` changes.
+- Buttons use the `sm` and `icon-sm` sizes and every color comes from tokens.
