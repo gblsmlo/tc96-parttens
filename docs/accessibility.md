@@ -274,6 +274,10 @@ As decisões e as medidas do badge ficam em `packages/ui/src/badge/ACCESSIBILITY
 
 As decisões e as medidas do menu ficam em `packages/ui/src/menu/ACCESSIBILITY.md`.
 
+### `property-meta`
+
+O tom `complete` (`--complete-foreground`) foi criado em 2026-11-25 para o status concluído: `violet-700` no claro e `violet-400` no escuro, no mesmo desenho de `info` e `success` (500 no token base, 700 e 400 no foreground). Calculado sobre o `--popover` do `Default`, o ícone fica em 7,29:1 no claro e 5,84:1 no escuro; o `violet-500` puro ficaria em 4,40:1 e 3,78:1. As prioridades baixa, média e alta usam o peso `fill` do `CellSignal*` em `muted-foreground` (5,69:1 no claro e 5,10:1 no escuro): o peso regular desenha só as barras ativas, e em baixa isso são dois traços pequenos que não se viam; o `fill` desenha o triângulo inteiro com contorno e a parte ativa sólida. Valores calculados a partir dos tokens, não medidos no navegador.
+
 ### `ContextMenu`
 
 `packages/ui/src/context-menu.tsx` repete as decisões do `Menu` (check à direita, atalho `aria-hidden`, itens de 44px com ponteiro grosso, popup de 160px no mínimo com 8px de respiro), e as duas regras do tema (`apps/example/packages/ui/src/styles.css`) também alcançam os slots `context-menu-*`. Os pares são os mesmos do menu, sobre o mesmo `--popover`: contorno de foco 4,73:1 (claro) e 3,52:1 (escuro), atalho 5,73:1 e 5,10:1. Em `UI/ContextMenu/Behavior`, `CheckAfterLabel` confere o check depois do rótulo, `ShortcutOutOfName` o nome do item sem o atalho e `FocusOutlineOnKeyboard` o contorno no foco por teclado; o axe passa nos dois temas. A nota para o consumidor copiar as regras está em `apps/docs/content/docs/installation.mdx` (`Regras de tema do menu`).

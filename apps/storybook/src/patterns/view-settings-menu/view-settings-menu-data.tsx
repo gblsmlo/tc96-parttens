@@ -137,8 +137,8 @@ const statusLabels: Record<TaskStatus, string> = {
   todo: 'A fazer',
   'in-progress': 'Em andamento',
   'in-review': 'Em revisão',
-  blocked: 'Bloqueado',
   done: 'Concluído',
+  blocked: 'Bloqueado',
 }
 
 export const statusOptions: readonly ViewSettingsOption<TaskStatus>[] = (

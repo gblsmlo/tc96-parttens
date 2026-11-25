@@ -42,7 +42,7 @@ export const workflowStatusMeta = {
   backlog: { icon: CircleDashedIcon, tone: 'neutral' },
   blocked: { icon: ProhibitIcon, tone: 'danger' },
   canceled: { icon: XCircleIcon, tone: 'neutral' },
-  done: { icon: CheckCircleIcon, tone: 'success', weight: 'fill' },
+  done: { icon: CheckCircleIcon, tone: 'complete', weight: 'fill' },
   'in-progress': { icon: CircleHalfIcon, tone: 'warning' },
   'in-review': { icon: ChartPieSliceIcon, tone: 'info' },
   todo: { icon: CircleIcon, tone: 'neutral' },
@@ -51,11 +51,11 @@ export const workflowStatusMeta = {
 export type PriorityLevel = 'high' | 'low' | 'medium' | 'none' | 'urgent'
 
 export const priorityMeta = {
-  high: { icon: CellSignalHighIcon, tone: 'warning' },
-  low: { icon: CellSignalLowIcon, tone: 'neutral' },
-  medium: { icon: CellSignalMediumIcon, tone: 'info' },
+  high: { icon: CellSignalHighIcon, tone: 'neutral', weight: 'fill' },
+  low: { icon: CellSignalLowIcon, tone: 'neutral', weight: 'fill' },
+  medium: { icon: CellSignalMediumIcon, tone: 'neutral', weight: 'fill' },
   none: { icon: MinusIcon, tone: 'neutral' },
-  urgent: { icon: WarningCircleIcon, tone: 'danger' },
+  urgent: { icon: WarningCircleIcon, tone: 'danger', weight: 'fill' },
 } as const satisfies Record<PriorityLevel, PropertyMeta>
 
 export interface PropertyMetaIconProps {
