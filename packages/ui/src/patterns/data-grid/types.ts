@@ -42,7 +42,7 @@ export type DataGridColumnType = (typeof DATA_GRID_COLUMN_TYPES)[number]
 
 export type DataGridAlign = 'start' | 'center' | 'end'
 
-export type DataGridDensity = 'short' | 'medium' | 'tall' | 'extra-tall'
+export type { CollectionDensity } from '../collection/types/collection'
 
 export interface DataGridSelectOption {
   label: string

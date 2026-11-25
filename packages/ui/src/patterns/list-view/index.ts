@@ -4,16 +4,15 @@ export type {
   ListRowActionProps,
   ListRowBodyProps,
   ListRowContentProps,
-  ListRowDensity,
   ListRowDescriptionProps,
   ListRowFieldProps,
   ListRowFooterProps,
   ListRowHeaderProps,
   ListRowLeadingProps,
+  ListRowOpenTriggerProps,
   ListRowProps,
   ListRowSelectProps,
   ListRowTitleProps,
-  ListRowTitleTriggerProps,
   ListRowTrailingProps,
 } from './components/list-row'
 export {
@@ -26,9 +25,9 @@ export {
   ListRowFooter,
   ListRowHeader,
   ListRowLeading,
+  ListRowOpenTrigger,
   ListRowSelect,
   ListRowTitle,
-  ListRowTitleTrigger,
   ListRowTrailing,
 } from './components/list-row'
 export type {

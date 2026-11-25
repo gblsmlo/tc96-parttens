@@ -308,10 +308,10 @@ export const TheDensitySubmenuChangesTheRowHeight: Story = {
       await screen.findByRole('menuitemradio', { name: 'Compacta' }),
     )
     await waitFor(() =>
-      expect(args.onDensityChange).toHaveBeenLastCalledWith('short'),
+      expect(args.onDensityChange).toHaveBeenLastCalledWith('compact'),
     )
     await expect(
-      canvasElement.querySelector('[data-density="short"]'),
+      canvasElement.querySelector('[data-density="compact"]'),
     ).not.toBeNull()
   },
 }

@@ -12,7 +12,7 @@ export interface DataTableRowProps<TData extends RowData> {
   canSelect: boolean
   expanded: boolean
   meta: DataTableTable<TData>['options']['meta']
-  onRowClick?: (row: Row<DataTableFeatures, TData>) => void
+  onRowOpen?: (row: Row<DataTableFeatures, TData>) => void
   openLabel?: string
   reorderable: boolean
   row: Row<DataTableFeatures, TData>
@@ -21,7 +21,7 @@ export interface DataTableRowProps<TData extends RowData> {
 }
 
 function DataTableRowView<TData extends RowData>({
-  onRowClick,
+  onRowOpen,
   openLabel,
   reorderable,
   row,
@@ -30,32 +30,32 @@ function DataTableRowView<TData extends RowData>({
   return (
     <TableRow
       className={
-        onRowClick || reorderable
+        onRowOpen || reorderable
           ? cn(
-              onRowClick && 'isolate',
+              onRowOpen && 'isolate',
               reorderable && 'data-dnd-dragging:bg-background',
             )
           : undefined
       }
-      data-interactive={onRowClick ? '' : undefined}
+      data-interactive={onRowOpen ? '' : undefined}
       data-state={selected ? 'selected' : undefined}
     >
       {row.getVisibleCells().map((cell, position) => (
         <TableCell
           className={
             cn(
-              onRowClick && ['pointer-events-none', interactiveDescendants],
+              onRowOpen && ['pointer-events-none', interactiveDescendants],
               columnAlignClass(cell.column),
             ) || undefined
           }
           key={cell.id}
         >
-          {onRowClick && position === 0 ? (
+          {onRowOpen && position === 0 ? (
             <button
               aria-label={openLabel}
               className="absolute inset-0 -z-10 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
               data-slot="data-table-row-trigger"
-              onClick={() => onRowClick(row)}
+              onClick={() => onRowOpen(row)}
               type="button"
             />
           ) : null}

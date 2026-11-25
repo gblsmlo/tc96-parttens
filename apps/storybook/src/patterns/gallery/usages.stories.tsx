@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, within } from 'storybook/test'
 import { initialDocuments } from '../collection/fixtures/documents'
 import { GalleryCanvas } from './gallery-canvas.tsx'
-import { PaginatedDocumentsGallery } from './gallery-layouts.tsx'
+import { DocumentsGallery } from './gallery-layouts.tsx'
 
 const meta = {
   decorators: [GalleryCanvas],
@@ -14,8 +14,8 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const PaginatedDocuments: Story = {
-  render: () => <PaginatedDocumentsGallery />,
+export const Documents: Story = {
+  render: () => <DocumentsGallery />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     await expect(

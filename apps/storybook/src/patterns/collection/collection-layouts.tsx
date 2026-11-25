@@ -669,10 +669,10 @@ export function CollectionScreen({
               }}
               gallery={{ emptyMessage }}
               kanban={{
-                emptyColumnLabel: 'Nenhuma tarefa nesta coluna.',
-                getColumnActions: (column) => ({
+                emptyGroupLabel: 'Nenhuma tarefa nesta coluna.',
+                getGroupActions: (column) => ({
                   addLabel: `Nova tarefa em ${column.title}`,
-                  onAddCard: () => undefined,
+                  onRecordAdd: () => undefined,
                 }),
               }}
               list={{

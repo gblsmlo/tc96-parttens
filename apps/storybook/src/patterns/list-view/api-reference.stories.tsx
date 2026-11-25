@@ -10,9 +10,9 @@ import {
   ListRowFooter,
   ListRowHeader,
   ListRowLeading,
+  ListRowOpenTrigger,
   ListRowSkeleton,
   ListRowTitle,
-  ListRowTitleTrigger,
   ListRowTrailing,
   ListView,
 } from '@tc96/ui/patterns'
@@ -51,7 +51,7 @@ const meta = {
   args: {
     collection: anatomyCollection,
     emptyGroupLabel: <Slot name="emptyGroupLabel" />,
-    getGroupActions: () => ({ onAddRecord: ignore }),
+    getGroupActions: () => ({ onRecordAdd: ignore }),
     grouping: 'status',
     renderGroupTitle: (group) => <Slot name={group.label} />,
     renderRecord: () => (
@@ -96,9 +96,9 @@ export const RowAnatomy: Story = {
       </ListRowLeading>
       <ListRowBody className="gap-1">
         <ListRowTitle>
-          <ListRowTitleTrigger>
+          <ListRowOpenTrigger>
             <Slot name="TitleTrigger" />
-          </ListRowTitleTrigger>
+          </ListRowOpenTrigger>
         </ListRowTitle>
         <ListRowDescription>
           <Slot name="Description" />
@@ -123,7 +123,7 @@ export const RowAnatomy: Story = {
       'list-row-leading',
       'list-row-body',
       'list-row-title',
-      'list-row-title-trigger',
+      'list-row-open-trigger',
       'list-row-description',
       'list-row-trailing',
       'list-row-field',

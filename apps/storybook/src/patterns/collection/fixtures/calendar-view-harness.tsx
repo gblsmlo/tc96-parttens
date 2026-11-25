@@ -42,13 +42,13 @@ export const renderChip = (record: CalendarTestRecord): ReactNode => (
 export interface CalendarViewHarnessProps {
   anchor: string
   loading?: boolean
-  loadingRecordCount?: number
-  loadingRecordLabel?: string
+  loadingCount?: number
+  loadingLabel?: string
   maxVisibleMonthRecords?: number
   mode: CalendarViewMode
   onRecordReschedule?: CalendarViewProps<CalendarTestRecord>['onRecordReschedule']
-  onSelectDay?: CalendarViewProps<CalendarTestRecord>['onSelectDay']
-  onSelectSlot?: CalendarViewProps<CalendarTestRecord>['onSelectSlot']
+  onDaySelect?: CalendarViewProps<CalendarTestRecord>['onDaySelect']
+  onSlotSelect?: CalendarViewProps<CalendarTestRecord>['onSlotSelect']
   records: CalendarTestRecord[]
   renderRecord: CalendarViewProps<CalendarTestRecord>['renderRecord']
   snapMinutes?: number

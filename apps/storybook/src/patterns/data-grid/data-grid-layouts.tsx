@@ -5,13 +5,13 @@ import {
 } from '@phosphor-icons/react'
 import {
   ActionBar,
+  type CollectionDensity,
   CollectionToolbar,
   createSelectColumn,
   DataGrid,
   type DataGridCellValueChange,
   type DataGridColumnDef,
   DataGridColumnsSubmenu,
-  type DataGridDensity,
   DataGridDensitySubmenu,
   DataGridFilterMenu,
   DataGridSearch,
@@ -199,7 +199,7 @@ function ProjectsGrid({
   emptyMessage,
   fillColumn,
   grouped,
-  isLoading,
+  loading,
   loadingCell,
   pagination,
   selectedRow,
@@ -257,15 +257,15 @@ function ProjectsGrid({
       <DataGrid<GridProject>
         aria-label="Projetos do trimestre"
         emptyMessage={emptyMessage}
-        isLoading={isLoading}
-        loadingRowAnatomy={{ cell: loadingCell }}
-        loadingRowCount={pagination ? GRID_PAGE_SIZE : gridProjects.length}
+        loading={loading}
+        loadingAnatomy={{ cell: loadingCell }}
+        loadingCount={pagination ? GRID_PAGE_SIZE : gridProjects.length}
         table={table}
         {...(fillColumn ? {} : { fillColumn: false })}
         {...(grouped
           ? { getRowGroup: (record: GridProject) => record.owner }
           : {})}
-        {...(addRow ? { onRowAdd: addProject } : {})}
+        {...(addRow ? { onRecordAdd: addProject } : {})}
         {...(selectionActions
           ? { selectionActions: selectionActionBar<GridProject> }
           : {})}
@@ -295,11 +295,11 @@ const assigneeName = (task: Task) =>
 export function TasksGrid({
   density = 'medium',
   grouped = false,
-  isLoading = false,
+  loading = false,
 }: Readonly<{
-  density?: DataGridDensity
+  density?: CollectionDensity
   grouped?: boolean
-  isLoading?: boolean
+  loading?: boolean
 }>): ReactElement {
   const { tasks, updateTask } = useTasks(initialTasks)
   const columns = useMemo(() => createDataGridColumns(updateTask), [updateTask])
@@ -321,9 +321,9 @@ export function TasksGrid({
       aria-label="Tarefas do lançamento"
       density={density}
       emptyMessage="Nenhuma tarefa para exibir."
-      isLoading={isLoading}
-      loadingRowAnatomy={{ cell: 'control' }}
-      loadingRowCount={TASK_PAGE_SIZE}
+      loading={loading}
+      loadingAnatomy={{ cell: 'control' }}
+      loadingCount={TASK_PAGE_SIZE}
       selectionActions={selectionActionBar<Task>}
       table={table}
       {...(grouped ? { getRowGroup: assigneeName } : {})}

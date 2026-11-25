@@ -12,12 +12,12 @@ import type {
   DataGridFeatures,
   DataGridTableMeta,
 } from '../lib/data-grid-features'
-import type { DataGridDensity } from '../types'
+import type { CollectionDensity } from '../types'
 
 export interface DataGridBodyCellProps<TData extends RowData> {
   cell: Cell<DataGridFeatures, TData, unknown>
   columnIndex: number
-  density: DataGridDensity
+  density: CollectionDensity
   interactions: CellInteractions
   isFocused: boolean
   isSelected: boolean

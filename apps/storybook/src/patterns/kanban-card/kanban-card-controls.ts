@@ -40,7 +40,7 @@ export const kanbanCardControlArgTypes: Partial<ArgTypes<KanbanCardControls>> =
     display: {
       control: 'inline-radio',
       description: 'The `display` of `KanbanCard`.',
-      options: ['full', 'compact'],
+      options: ['full', 'minimal'],
     },
     fields: {
       control: 'boolean',
@@ -57,8 +57,7 @@ export const kanbanCardControlArgTypes: Partial<ArgTypes<KanbanCardControls>> =
     },
     openTrigger: {
       control: 'boolean',
-      description:
-        'Adds a `KanbanCardOpenTrigger` and sets `variant="interactive"`.',
+      description: 'Adds a `KanbanCardOpenTrigger` and sets `interactive`.',
     },
     selected: {
       control: 'boolean',

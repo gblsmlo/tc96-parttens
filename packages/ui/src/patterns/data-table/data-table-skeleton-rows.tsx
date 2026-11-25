@@ -13,6 +13,7 @@ export interface DataTableRowSkeletonAnatomy {
 export interface DataTableSkeletonRowsProps {
   anatomy: DataTableRowSkeletonAnatomy
   columnCount: number
+  label: string
   linesColumnIndex: number
   loadingMore?: boolean
   rowCount: number
@@ -22,6 +23,7 @@ export interface DataTableSkeletonRowsProps {
 export function DataTableSkeletonRows({
   anatomy,
   columnCount,
+  label,
   linesColumnIndex,
   loadingMore = false,
   rowCount,
@@ -36,6 +38,11 @@ export function DataTableSkeletonRows({
     >
       {skeletonKeys(rowKey, columnCount).map((cellKey, index) => (
         <TableCell key={cellKey}>
+          {index === 0 ? (
+            <output aria-busy="true" className="sr-only">
+              {label}
+            </output>
+          ) : null}
           {index === linesColumnIndex && anatomy.lines === 2 ? (
             <div className="flex min-w-4 flex-col">
               <Skeleton className="my-0.5 h-4 w-full" />

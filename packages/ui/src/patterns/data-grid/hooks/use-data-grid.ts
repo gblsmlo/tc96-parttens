@@ -25,7 +25,7 @@ import {
   type DataGridTableMeta,
   dataGridFeatures,
 } from '../lib/data-grid-features'
-import type { DataGridCellValueChange, DataGridDensity } from '../types'
+import type { CollectionDensity, DataGridCellValueChange } from '../types'
 
 export interface UseDataGridOptions<TData extends RowData> {
   data: TData[]
@@ -59,8 +59,8 @@ export interface UseDataGridOptions<TData extends RowData> {
   pagination?: PaginationState
   onPaginationChange?: (pagination: PaginationState) => void
   pageSize?: number
-  density?: DataGridDensity
-  onDensityChange?: (density: DataGridDensity) => void
+  density?: CollectionDensity
+  onDensityChange?: (density: CollectionDensity) => void
   onCellValueChange?: (change: DataGridCellValueChange) => void
   tableOptions?: Partial<TableOptions<DataGridFeatures, TData>>
 }
@@ -168,7 +168,7 @@ export function useDataGrid<TData extends RowData>({
       () => initialState?.expanded ?? {},
       onExpandedChange,
     )
-  const [density, setDensity] = useControllableTableState<DataGridDensity>(
+  const [density, setDensity] = useControllableTableState<CollectionDensity>(
     onDensityChange ? densityProp : undefined,
     () => densityProp,
     onDensityChange,

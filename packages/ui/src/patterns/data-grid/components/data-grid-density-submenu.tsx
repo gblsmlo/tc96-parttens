@@ -16,16 +16,17 @@ import {
 } from '@tc96/ui/menu'
 import type React from 'react'
 import type { DataGridTableMeta } from '../lib/data-grid-features'
-import type { DataGridDensity } from '../types'
+import type { CollectionDensity } from '../types'
 
 interface DensityOption {
   icon: React.ComponentType<React.ComponentProps<'svg'>>
   label: string
-  value: DataGridDensity
+  value: CollectionDensity
 }
 
 const DENSITIES: [DensityOption, ...DensityOption[]] = [
-  { icon: MinusIcon, label: 'Compacta', value: 'short' },
+  { icon: MinusIcon, label: 'Compacta', value: 'compact' },
+  { icon: EqualsIcon, label: 'Padrão', value: 'short' },
   { icon: EqualsIcon, label: 'Média', value: 'medium' },
   { icon: ArrowsVerticalIcon, label: 'Alta', value: 'tall' },
   { icon: ArrowsInLineVerticalIcon, label: 'Extra alta', value: 'extra-tall' },
@@ -42,7 +43,7 @@ export interface DataGridDensityTable {
 
 export interface DataGridDensitySubmenuProps<_TData extends RowData = RowData> {
   label?: string
-  densityLabels?: Partial<Record<DataGridDensity, string>>
+  densityLabels?: Partial<Record<CollectionDensity, string>>
   table: DataGridDensityTable
 }
 
@@ -66,7 +67,7 @@ export function DataGridDensitySubmenu<TData extends RowData>({
         <MenuRadioGroup
           onValueChange={(value) =>
             table.options.meta?.onDataGridDensityChange?.(
-              value as DataGridDensity,
+              value as CollectionDensity,
             )
           }
           value={density}

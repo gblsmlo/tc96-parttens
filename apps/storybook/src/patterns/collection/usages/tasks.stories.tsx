@@ -578,7 +578,7 @@ function TasksWorkspace({
             calendar={{
               ...createTaskCalendarProps(updateTask),
               loading,
-              loadingRecordLabel: 'Carregando tarefa',
+              loadingLabel: 'Carregando tarefa',
               mode: calendarMode,
             }}
             collection={collection}
@@ -586,7 +586,7 @@ function TasksWorkspace({
               'aria-label': 'Tarefas do lançamento',
               emptyMessage: 'Nenhuma tarefa com esses filtros.',
               getRowGroup: grouping ? groupRowLabel : undefined,
-              isLoading: loading,
+              loading: loading,
               selectionActions: ({
                 clearSelection,
                 selectedCount,
@@ -608,24 +608,24 @@ function TasksWorkspace({
               'aria-label': 'Tarefas do lançamento',
               bordered: true,
               defaultAggregations: taskTableAggregations,
-              isLoading: loading,
+              loading: loading,
               emptyMessage: 'Nenhuma tarefa com esses filtros.',
               table: dataTable,
             }}
             kanban={{
               loading,
-              loadingCardCount: 2,
-              loadingCardLabel: 'Carregando tarefa',
-              emptyColumnLabel: 'Nenhuma tarefa nesta coluna.',
-              getColumnActions: (column) => ({
+              loadingCount: 2,
+              loadingLabel: 'Carregando tarefa',
+              emptyGroupLabel: 'Nenhuma tarefa nesta coluna.',
+              getGroupActions: (column) => ({
                 addLabel: `Nova tarefa em ${column.title}`,
-                onAddCard: () => undefined,
+                onRecordAdd: () => undefined,
               }),
             }}
             list={{
               loading,
-              loadingRecordCount: 3,
-              loadingRecordLabel: 'Carregando tarefa',
+              loadingCount: 3,
+              loadingLabel: 'Carregando tarefa',
               collapseEmptyGroups: true,
               emptyGroupLabel: 'Nenhuma tarefa neste grupo.',
               renderGroupTitle: (group) => group.label,

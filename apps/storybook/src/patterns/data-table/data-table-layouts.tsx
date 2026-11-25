@@ -126,7 +126,7 @@ function ProjectsTable({
   empty,
   emptyMessage,
   footer,
-  isLoading,
+  loading,
   loadingCell,
   loadingLines,
   onOpen = ignoreProject,
@@ -152,8 +152,8 @@ function ProjectsTable({
       ? { tableOptions: { initialState: { rowSelection: { 'P-102': true } } } }
       : {}),
   })
-  const onRowClick = useCallback<
-    NonNullable<DataTableProps<Project>['onRowClick']>
+  const onRowOpen = useCallback<
+    NonNullable<DataTableProps<Project>['onRowOpen']>
   >((row) => onOpen(row.original), [onOpen])
 
   return (
@@ -164,19 +164,19 @@ function ProjectsTable({
         bordered={bordered}
         defaultAggregations={footer ? { hours: 'sum', name: 'count' } : {}}
         emptyMessage={emptyMessage}
-        isLoading={isLoading}
-        loadingRowAnatomy={{ cell: loadingCell, lines: loadingLines }}
-        loadingRowCount={pagination ? PROJECT_PAGE_SIZE : projects.length}
+        loading={loading}
+        loadingAnatomy={{ cell: loadingCell, lines: loadingLines }}
+        loadingCount={pagination ? PROJECT_PAGE_SIZE : projects.length}
         table={table}
         {...(rowClick
           ? {
               getRowOpenLabel: (row: { original: Project }) =>
                 `Abrir ${row.original.name}`,
-              onRowClick,
+              onRowOpen,
             }
           : {})}
       />
-      {pagination && !isLoading ? <DataGridPagination table={table} /> : null}
+      {pagination && !loading ? <DataGridPagination table={table} /> : null}
     </div>
   )
 }
@@ -197,11 +197,11 @@ const ignoreTask = () => undefined
 
 export function TasksTable({
   canOpen,
-  isLoading = false,
+  loading = false,
   onOpen = ignoreTask,
 }: Readonly<{
   canOpen?: (task: Task) => boolean
-  isLoading?: boolean
+  loading?: boolean
   onOpen?: (task: Task) => void
 }>): ReactElement {
   const { tasks, updateTask } = useTasks(initialTasks)
@@ -209,9 +209,10 @@ export function TasksTable({
     () => createDataTableColumns(updateTask),
     [updateTask],
   )
-  const onRowClick = useCallback<
-    NonNullable<DataTableProps<Task>['onRowClick']>
-  >((row) => onOpen(row.original), [onOpen])
+  const onRowOpen = useCallback<NonNullable<DataTableProps<Task>['onRowOpen']>>(
+    (row) => onOpen(row.original),
+    [onOpen],
+  )
   const { table } = useDataTable<Task>({
     columns,
     data: tasks,
@@ -230,13 +231,13 @@ export function TasksTable({
         emptyMessage="Nenhuma tarefa para exibir."
         getRowCanOpen={canOpen ? (row) => canOpen(row.original) : undefined}
         getRowOpenLabel={(row) => `Abrir ${row.original.title}`}
-        isLoading={isLoading}
-        loadingRowAnatomy={taskRowAnatomy}
-        loadingRowCount={TASK_PAGE_SIZE}
-        onRowClick={onRowClick}
+        loading={loading}
+        loadingAnatomy={taskRowAnatomy}
+        loadingCount={TASK_PAGE_SIZE}
+        onRowOpen={onRowOpen}
         table={table}
       />
-      {isLoading ? null : <DataGridPagination table={table} />}
+      {loading ? null : <DataGridPagination table={table} />}
     </div>
   )
 }

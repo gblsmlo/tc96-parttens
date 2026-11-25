@@ -13,7 +13,7 @@ const meta = {
   decorators: [DataTableCanvas],
   parameters: {
     controls: {
-      exclude: ['bordered', 'empty', 'isLoading', 'resizable', 'selectedRow'],
+      exclude: ['bordered', 'empty', 'loading', 'resizable', 'selectedRow'],
     },
   },
   render: (args) => <ComposedDataTable {...args} />,
@@ -33,7 +33,7 @@ export const Borderless: Story = {
 }
 
 export const Loading: Story = {
-  args: { isLoading: true },
+  args: { loading: true },
 }
 
 export const Empty: Story = {

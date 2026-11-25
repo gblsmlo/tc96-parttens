@@ -4,7 +4,7 @@ export interface KanbanControls {
   addAction: boolean
   collapsed: boolean
   description: boolean
-  emptyColumnLabel: string
+  emptyGroupLabel: string
   fields: boolean
   footer: boolean
   hidden: boolean
@@ -18,7 +18,7 @@ export const kanbanControlArgs: KanbanControls = {
   addAction: true,
   collapsed: false,
   description: true,
-  emptyColumnLabel: 'Nenhum card nesta coluna.',
+  emptyGroupLabel: 'Nenhum card nesta coluna.',
   fields: true,
   footer: true,
   hidden: false,
@@ -32,21 +32,21 @@ export const kanbanControlArgTypes: Partial<ArgTypes<KanbanControls>> = {
   addAction: {
     control: 'boolean',
     description:
-      'Passes `onAddCard` in `getColumnActions`: adds the plus button to each open column header.',
+      'Passes `onRecordAdd` in `getGroupActions`: adds the plus button to each open column header.',
   },
   collapsed: {
     control: 'boolean',
-    description: 'Sets `collapsed` on the first column.',
+    description: 'Adds the first column to `collapsedGroupIds`.',
   },
   description: {
     control: 'boolean',
     description:
       'Adds a `KanbanCardDescription` to every card; the skeleton follows.',
   },
-  emptyColumnLabel: {
+  emptyGroupLabel: {
     control: 'text',
     description:
-      'The `emptyColumnLabel` of `KanbanView`, shown in the empty last column.',
+      'The `emptyGroupLabel` of `KanbanView`, shown in the empty last column.',
   },
   fields: {
     control: 'boolean',
@@ -74,11 +74,11 @@ export const kanbanControlArgTypes: Partial<ArgTypes<KanbanControls>> = {
   openTrigger: {
     control: 'boolean',
     description:
-      'Adds a `KanbanCardOpenTrigger` to every card and sets `variant="interactive"`.',
+      'Adds a `KanbanCardOpenTrigger` to every card and sets `interactive`.',
   },
   settingsAction: {
     control: 'boolean',
     description:
-      'Passes `colorOptions`, `onColorChange` and `onCollapsedChange` in `getColumnActions`: the settings button opens a popover with the color swatches and the collapse switch.',
+      'Passes `colorOptions` and `onColorChange` in `getGroupActions` and `onCollapsedGroupIdsChange` to the view: the settings button opens a popover with the color swatches and the collapse switch.',
   },
 }

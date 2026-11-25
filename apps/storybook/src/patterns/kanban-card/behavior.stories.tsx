@@ -28,7 +28,7 @@ export const CardIsAnArticle: Story = {
     const card = within(canvasElement).getByRole('article')
 
     await expect(card).toHaveAttribute('data-slot', 'card')
-    await expect(card).toHaveAttribute('data-variant', 'interactive')
+    await expect(card).toHaveAttribute('data-interactive')
     await expect(canvasElement.querySelector('button button')).toBeNull()
   },
 }
@@ -89,14 +89,14 @@ export const ControlsKeepTheirClick: Story = {
   },
 }
 
-export const CompactHidesDescriptionBodyAndFooter: Story = {
+export const MinimalHidesDescriptionBodyAndFooter: Story = {
   render: () => (
-    <ComposedKanbanCard {...kanbanCardControlArgs} display="compact" />
+    <ComposedKanbanCard {...kanbanCardControlArgs} display="minimal" />
   ),
   play: async ({ canvasElement }) => {
     const card = within(canvasElement).getByRole('article')
 
-    await expect(card).toHaveAttribute('data-display', 'compact')
+    await expect(card).toHaveAttribute('data-display', 'minimal')
     await expect(within(card).getByText('Primeiro card')).toBeVisible()
     await expect(
       within(card).getByText('Descrição curta do card.'),

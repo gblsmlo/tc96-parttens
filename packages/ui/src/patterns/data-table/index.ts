@@ -30,7 +30,6 @@ export type {
   DataTableAlign,
   DataTableCellRow,
   DataTableCellValueChange,
-  DataTableDensity,
   DataTableRowDragAnnouncements,
   DataTableRowMove,
   DataTableTableMeta,

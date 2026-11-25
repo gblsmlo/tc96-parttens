@@ -90,9 +90,9 @@ The calendar of one collection. Renders a `div` that fills the height of its par
 | `mode` | `"day"`, `"week"` or `"month"` | required | Controls the period and the grid: a time grid of one or seven days, or the weeks of a month. |
 | `renderRecord` | `(record: TRecord, context: CalendarRecordRenderContext) => ReactNode` | required | Renders one item, once per day it covers. |
 | `timeZone` | `string` | required | Sets the IANA time zone every day, hour and drop is computed in. |
-| `loading` | `boolean` | `false` | When true, replaces the items with skeletons and turns off dragging, resizing and `onSelectSlot`. |
-| `loadingRecordCount` | `number` | `3` | Sets how many month cells show a skeleton, starting from the first cell. |
-| `loadingRecordLabel` | `string` | `"Carregando compromisso"` | Names each skeleton. |
+| `loading` | `boolean` | `false` | When true, replaces the items with skeletons and turns off dragging, resizing and `onSlotSelect`. |
+| `loadingCount` | `number` | `3` | Sets how many month cells show a skeleton, starting from the first cell. |
+| `loadingLabel` | `string` | `"Carregando compromisso"` | Names each skeleton. |
 | `locale` | `string` | `"pt-BR"` | Sets the locale of the day, weekday and period labels. |
 | `maxVisibleMonthRecords` | `number` | `3` | Sets how many items a month cell shows before the rest move behind a "+N" button. |
 | `weekStartsOn` | `0` or `1` | `0` | Sets the first day of the week: `0` is Sunday, `1` is Monday. |
@@ -100,8 +100,8 @@ The calendar of one collection. Renders a `div` that fills the height of its par
 | `snapMinutes` | `number` | `15` | Sets the grid, in minutes, of time-grid drops, resizes and selected slots. |
 | `getRecordLabel` | `(record: TRecord) => string` | `collection.getLabel` | Names the item's drag handle, `Mover <label>`. |
 | `onRecordReschedule` | `(change: CalendarRecordReschedule<TRecord>) => boolean \| Promise<boolean>` | - | Called when an item is dropped or resized into a new window; turns on dragging and resizing. Return `false`, or reject, to put the item back. |
-| `onSelectSlot` | `(slot: CalendarSlot) => void` | - | Called when the bare area of a time-grid column is clicked, with the slot under the pointer. |
-| `onSelectDay` | `(date: CalendarDate) => void` | - | Called when the day title inside a month cell's "+N" popup is clicked; without it the title is plain text. |
+| `onSlotSelect` | `(slot: CalendarSlot) => void` | - | Called when the bare area of a time-grid column is clicked, with the slot under the pointer. |
+| `onDaySelect` | `(date: CalendarDate) => void` | - | Called when the day title inside a month cell's "+N" popup is clicked; without it the title is plain text. |
 
 Takes no other prop, `className` included: give it a parent of bounded height, a flex column with `min-h-0`, so the time grid scrolls inside it.
 
@@ -131,7 +131,7 @@ While `loading`, each day column shows one skeleton block and no timed item; the
 
 In `month`. The weeks that cover the month of `anchor`, from the first week holding the 1st to the last week holding the final day, under a row of short weekday names. The grid carries a hidden `h2` with the month and year.
 
-Each cell shows its day number, then up to `maxVisibleMonthRecords` items in order of start. The others move behind a "+N" button named `Mostrar mais N itens de <full date>` (`item` for one), which opens a popup named by the full date and lists only the hidden items, so no item renders twice. The popup's title is the date: with `onSelectDay`, a button named `Mostrar todos os N itens de <full date>` that calls it and closes the popup; without it, plain text. An item drags out of the popup like any other.
+Each cell shows its day number, then up to `maxVisibleMonthRecords` items in order of start. The others move behind a "+N" button named `Mostrar mais N itens de <full date>` (`item` for one), which opens a popup named by the full date and lists only the hidden items, so no item renders twice. The popup's title is the date: with `onDaySelect`, a button named `Mostrar todos os N itens de <full date>` that calls it and closes the popup; without it, plain text. An item drags out of the popup like any other.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
@@ -140,7 +140,7 @@ Each cell shows its day number, then up to `maxVisibleMonthRecords` items in ord
 | `data-today` | present on today | Marks today's cell; its number sits on `primary` |
 | `data-outside-month` | present on days of the neighbouring months | Marks the leading and trailing days, drawn on `muted` |
 
-While `loading`, the first `loadingRecordCount` cells show one skeleton each and no cell shows an item.
+While `loading`, the first `loadingCount` cells show one skeleton each and no cell shows an item.
 
 ### Moving and resizing
 
@@ -164,7 +164,7 @@ Without `onRecordReschedule`, items have no handle, no resize edge and no drag a
 
 ### Creating from a slot
 
-With `onSelectSlot`, a click that both starts and ends on the bare area of a time-grid column, not on an item, a resize edge or the end of a drag, calls it with the day and the `snapMinutes` slot under the pointer, clamped to the day. It is ignored while `loading`. The column takes no focus, so pair it with a create button for the keyboard.
+With `onSlotSelect`, a click that both starts and ends on the bare area of a time-grid column, not on an item, a resize edge or the end of a drag, calls it with the day and the `snapMinutes` slot under the pointer, clamped to the day. It is ignored while `loading`. The column takes no focus, so pair it with a create button for the keyboard.
 
 ### renderRecord
 
@@ -284,7 +284,7 @@ What `onRecordReschedule` receives.
 
 ## CalendarSlot
 
-What `onSelectSlot` receives.
+What `onSlotSelect` receives.
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -312,7 +312,7 @@ What `onSelectSlot` receives.
 ## Accessibility and theme
 
 - Name every `CalendarEventChipOpenTrigger` with `aria-label`, distinct per record: it has no text.
-- The time grid is a pointer surface for creating: `onSelectSlot` has no keyboard path, so offer a create button beside the calendar.
+- The time grid is a pointer surface for creating: `onSlotSelect` has no keyboard path, so offer a create button beside the calendar.
 - The drag handle is the keyboard path for moving and resizing; it is named from `getRecordLabel` or `collection.getLabel`, so keep labels distinct.
 - The copy is Portuguese (`Mover`, `dia inteiro`, `Mostrar mais`, `Mostrar todos os`, `Carregando compromisso`); the dates follow `locale`.
 - The colors come from the theme tokens `background`, `border`, `muted`, `muted-foreground`, `foreground`, `primary`, `primary-foreground`, `accent`, `ring`, `destructive`, `success`, `warning` and their `-foreground` pairs. Measured contrast: `docs/accessibility.md`.

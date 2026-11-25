@@ -54,7 +54,7 @@ export interface GridViewLabels {
   viewsEmpty: string
 }
 
-export type GridDensity = 'extra-tall' | 'medium' | 'short' | 'tall'
+export type GridDensity = 'compact' | 'extra-tall' | 'medium' | 'short' | 'tall'
 
 export interface GridSettingsLabels {
   clearSort: string

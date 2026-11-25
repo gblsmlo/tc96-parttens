@@ -186,12 +186,12 @@ export function CalendarWorkspace({
           collection={collection}
           getRecordSchedule={getEventSchedule}
           loading={loading}
-          loadingRecordLabel="Carregando compromisso"
+          loadingLabel="Carregando compromisso"
           locale={CALENDAR_LOCALE}
           mode={mode}
           now={NOW}
           onRecordReschedule={rescheduleEvent}
-          onSelectDay={openDay}
+          onDaySelect={openDay}
           renderRecord={renderEvent}
           timeZone={TIME_ZONE}
           weekStartsOn={CALENDAR_WEEK_STARTS_ON}

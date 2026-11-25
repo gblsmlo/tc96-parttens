@@ -37,9 +37,10 @@ export const defaultRevenue2Labels: Revenue2Labels = {
   create: 'Nova transação',
   clearSort: 'Limpar ordenação',
   densities: {
+    compact: 'Compacta',
     'extra-tall': 'Extra alta',
     medium: 'Média',
-    short: 'Compacta',
+    short: 'Padrão',
     tall: 'Alta',
   },
   density: 'Altura das linhas',

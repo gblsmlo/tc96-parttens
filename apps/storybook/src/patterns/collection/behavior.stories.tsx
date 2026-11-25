@@ -92,14 +92,14 @@ interface BehaviorArgs {
   onClearFilters: () => void
   onCommit: (value: string) => void
   onModeChange: (mode: string) => void
-  onMoveCard: (move: CollectionKanbanCardMove<Item>) => boolean
+  onRecordMove: (move: CollectionKanbanCardMove<Item>) => boolean
   onPageChange: (page: number) => void
   onPreferencesChange: (
     preferences: CollectionPreferences,
     details: CollectionPreferencesChangeDetails,
   ) => void
   onRecordChange: (change: CollectionRecordChange<Item>) => boolean
-  onRowClick: NonNullable<CollectionDataTableViewProps<Item>['onRowClick']>
+  onRowOpen: NonNullable<CollectionDataTableViewProps<Item>['onRowOpen']>
   onSavePreference: () => void
   onValueChange: (value: string) => void
   onValuesChange: (value: string[]) => void
@@ -110,11 +110,11 @@ const meta = {
     onClearFilters: fn(),
     onCommit: fn(),
     onModeChange: fn(),
-    onMoveCard: fn(() => true),
+    onRecordMove: fn(() => true),
     onPageChange: fn(),
     onPreferencesChange: fn(),
     onRecordChange: fn(() => true),
-    onRowClick: fn(),
+    onRowOpen: fn(),
     onSavePreference: fn(),
     onValueChange: fn(),
     onValuesChange: fn(),
@@ -445,10 +445,10 @@ export const MountsTheActiveLayout: Story = {
 }
 
 function Outlet({
-  onRowClick,
+  onRowOpen,
   withListRenderer = true,
 }: Readonly<{
-  onRowClick?: BehaviorArgs['onRowClick']
+  onRowOpen?: BehaviorArgs['onRowOpen']
   withListRenderer?: boolean
 }>) {
   const { table } = useDataTable<Item>({
@@ -464,7 +464,7 @@ function Outlet({
     >
       <CollectionLayoutOutlet
         collection={flatCollection}
-        datatable={{ 'aria-label': 'Itens', onRowClick, table }}
+        datatable={{ 'aria-label': 'Itens', onRowOpen, table }}
         {...(withListRenderer ? { renderListRecord: renderTitle } : {})}
       />
     </CollectionProvider>
@@ -481,14 +481,14 @@ export const NeedsOnlyTheActiveLayoutProps: Story = {
 }
 
 export const ForwardsTheRowClick: Story = {
-  render: ({ onRowClick }) => <Outlet onRowClick={onRowClick} />,
+  render: ({ onRowOpen }) => <Outlet onRowOpen={onRowOpen} />,
   play: async ({ args, canvasElement }) => {
     await userEvent.click(
       within(canvasElement).getByRole('button', { name: 'Abrir registro' }),
     )
 
-    await expect(args.onRowClick).toHaveBeenCalledOnce()
-    await expect(args.onRowClick).toHaveBeenLastCalledWith(
+    await expect(args.onRowOpen).toHaveBeenCalledOnce()
+    await expect(args.onRowOpen).toHaveBeenLastCalledWith(
       expect.objectContaining({ id: 'a', original: firstItem }),
     )
   },
@@ -557,9 +557,9 @@ export const LayoutLoadingWins: Story = {
 }
 
 function Board({
-  onMoveCard,
+  onRecordMove,
   onRecordChange,
-}: Readonly<Partial<Pick<BehaviorArgs, 'onMoveCard' | 'onRecordChange'>>>) {
+}: Readonly<Partial<Pick<BehaviorArgs, 'onRecordMove' | 'onRecordChange'>>>) {
   return (
     <div className="flex h-96 flex-col">
       <CollectionProvider
@@ -568,7 +568,7 @@ function Board({
       >
         <CollectionLayoutOutlet
           collection={boardCollection}
-          kanban={onMoveCard ? { onMoveCard } : undefined}
+          kanban={onRecordMove ? { onRecordMove } : undefined}
           onRecordChange={onRecordChange}
           renderKanbanRecord={renderTitle}
         />
@@ -586,6 +586,9 @@ function BoardWithColumnSettings() {
   const [states, setStates] = useState<
     Record<string, CollectionKanbanColumnState>
   >({})
+  const [collapsedGroupIds, setCollapsedGroupIds] = useState<readonly string[]>(
+    [],
+  )
   const update = (columnId: string, next: CollectionKanbanColumnState) =>
     setStates((current) => ({
       ...current,
@@ -601,13 +604,13 @@ function BoardWithColumnSettings() {
         <CollectionLayoutOutlet
           collection={boardCollection}
           kanban={{
-            getColumnActions: () => ({
+            collapsedGroupIds,
+            getColumnState: (group) => states[group.id],
+            getGroupActions: () => ({
               colorOptions: swatches,
-              onCollapsedChange: (columnId, collapsed) =>
-                update(columnId, { collapsed }),
               onColorChange: (columnId, color) => update(columnId, { color }),
             }),
-            getColumnState: (group) => states[group.id],
+            onCollapsedGroupIdsChange: setCollapsedGroupIds,
           }}
           renderKanbanRecord={renderTitle}
         />
@@ -727,8 +730,8 @@ async function dragWithPointer(from: Element, to: Element) {
 }
 
 export const KanbanOnMoveCardWins: Story = {
-  render: ({ onMoveCard, onRecordChange }) => (
-    <Board onMoveCard={onMoveCard} onRecordChange={onRecordChange} />
+  render: ({ onRecordMove, onRecordChange }) => (
+    <Board onRecordMove={onRecordMove} onRecordChange={onRecordChange} />
   ),
   play: async ({ args, canvasElement }) => {
     await dragWithPointer(
@@ -737,8 +740,8 @@ export const KanbanOnMoveCardWins: Story = {
     )
     await waitFor(() => expect(dragOverlay()).toBeEmptyDOMElement())
 
-    await waitFor(() => expect(args.onMoveCard).toHaveBeenCalledOnce())
-    await expect(args.onMoveCard).toHaveBeenLastCalledWith(
+    await waitFor(() => expect(args.onRecordMove).toHaveBeenCalledOnce())
+    await expect(args.onRecordMove).toHaveBeenLastCalledWith(
       expect.objectContaining({
         card: firstItem,
         sourceGroup: expect.objectContaining({ value: 'todo' }),

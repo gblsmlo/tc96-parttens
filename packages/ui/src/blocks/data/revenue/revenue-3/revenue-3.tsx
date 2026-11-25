@@ -227,7 +227,7 @@ export function Revenue3({
                 ? handleCollapsedGroupIdsChange
                 : undefined
             }
-            pagination={false}
+            showPagination={false}
             renderGroupCell={renderGroupCell}
             table={table}
           />

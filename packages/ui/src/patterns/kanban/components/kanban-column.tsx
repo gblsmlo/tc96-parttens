@@ -9,7 +9,11 @@ import { memo, useId } from 'react'
 
 import { defaultColumnColor } from '../lib/column-color'
 import { createColumnDropId } from '../lib/drag-and-drop'
-import type { KanbanColumnActions, KanbanColumnData } from '../types'
+import type {
+  KanbanBoardColumn,
+  KanbanColumnActions,
+  KanbanColumnData,
+} from '../types'
 import { KanbanBadge } from './kanban-badge'
 import {
   KanbanCardSkeleton,
@@ -20,17 +24,19 @@ import { SortableKanbanCard } from './sortable-kanban-card'
 
 export interface KanbanColumnProps<TCard = unknown> {
   column: KanbanColumnData<TCard>
-  renderCard: (card: TCard) => ReactNode
+  collapsed?: boolean
+  onCollapsedChange?: (collapsed: boolean) => void
+  renderRecord: (card: TCard) => ReactNode
   getKey: (card: TCard) => string | number
-  emptyLabel?: string
+  emptyGroupLabel?: ReactNode
   className?: string
   getCardDragId?: (card: TCard) => string
-  getCardLabel?: (card: TCard) => string
+  getRecordLabel?: (card: TCard) => string
   loading?: boolean
-  loadingCardAnatomy?: KanbanCardSkeletonAnatomy
-  loadingCardCount?: number
-  loadingCardLabel?: string
-  renderColumnTitle?: (column: KanbanColumnData<TCard>) => ReactNode
+  loadingAnatomy?: KanbanCardSkeletonAnatomy
+  loadingCount?: number
+  loadingLabel?: string
+  renderGroupTitle?: (column: KanbanColumnData<TCard>) => ReactNode
   renderHeaderActions?: (column: KanbanColumnData<TCard>) => ReactNode
   sortableCards?: boolean
   actions?: KanbanColumnActions
@@ -55,22 +61,23 @@ function KanbanEmptyState({
 function KanbanColumnHeader<TCard>({
   actions,
   column,
-  renderColumnTitle,
+  onCollapsedChange,
+  renderGroupTitle,
   renderHeaderActions,
   titleId,
 }: Readonly<{
   actions?: KanbanColumnActions
-  column: KanbanColumnData<TCard>
-  renderColumnTitle?: (column: KanbanColumnData<TCard>) => ReactNode
+  column: KanbanBoardColumn<TCard>
+  onCollapsedChange?: (collapsed: boolean) => void
+  renderGroupTitle?: (column: KanbanColumnData<TCard>) => ReactNode
   renderHeaderActions?: (column: KanbanColumnData<TCard>) => ReactNode
   titleId: string
 }>) {
   const settingsLabel =
     actions?.settingsLabel ?? `Configurar seção ${column.title}`
   const settingsPopover = Boolean(
-    actions &&
-      ((actions.onColorChange && actions.colorOptions?.length) ||
-        actions.onCollapsedChange),
+    (actions?.onColorChange && actions.colorOptions?.length) ||
+      onCollapsedChange,
   )
 
   return (
@@ -98,7 +105,7 @@ function KanbanColumnHeader<TCard>({
           )}
           id={titleId}
         >
-          {renderColumnTitle?.(column) ?? column.title}
+          {renderGroupTitle?.(column) ?? column.title}
         </h2>
         <KanbanBadge
           className={column.collapsed ? 'order-0' : undefined}
@@ -107,9 +114,9 @@ function KanbanColumnHeader<TCard>({
           {column.count}
         </KanbanBadge>
       </div>
-      {actions?.onOpenSettings ||
+      {actions?.onSettingsOpen ||
       settingsPopover ||
-      (!column.collapsed && actions?.onAddCard) ||
+      (!column.collapsed && actions?.onRecordAdd) ||
       renderHeaderActions ? (
         <div
           className={cn(
@@ -117,28 +124,29 @@ function KanbanColumnHeader<TCard>({
             column.collapsed && 'flex-col',
           )}
         >
-          {!column.collapsed && actions?.onAddCard ? (
+          {!column.collapsed && actions?.onRecordAdd ? (
             <Button
               aria-label={
                 actions.addLabel ?? `Adicionar item à seção ${column.title}`
               }
-              onClick={() => actions.onAddCard?.(column.id)}
+              onClick={() => actions.onRecordAdd?.(column.id)}
               size="icon-sm"
               variant="ghost"
             >
               <PlusIcon aria-hidden="true" />
             </Button>
           ) : null}
-          {actions && settingsPopover ? (
+          {settingsPopover ? (
             <KanbanColumnSettings
-              actions={actions}
+              actions={actions ?? {}}
               column={column}
               label={settingsLabel}
+              {...(onCollapsedChange ? { onCollapsedChange } : {})}
             />
-          ) : actions?.onOpenSettings ? (
+          ) : actions?.onSettingsOpen ? (
             <Button
               aria-label={settingsLabel}
-              onClick={() => actions.onOpenSettings?.(column.id)}
+              onClick={() => actions.onSettingsOpen?.(column.id)}
               size="icon-sm"
               variant="ghost"
             >
@@ -153,35 +161,35 @@ function KanbanColumnHeader<TCard>({
 }
 
 interface KanbanColumnCardsProps<TCard> {
-  column: KanbanColumnData<TCard>
-  emptyLabel: string
+  column: KanbanBoardColumn<TCard>
+  emptyGroupLabel: ReactNode
   getCardDragId?: (card: TCard) => string
-  getCardLabel: (card: TCard) => string
+  getRecordLabel: (card: TCard) => string
   getKey: (card: TCard) => string | number
   loading: boolean
-  loadingCardAnatomy?: KanbanCardSkeletonAnatomy
-  loadingCardCount: number
-  loadingCardLabel?: string
-  renderCard: (card: TCard) => ReactNode
+  loadingAnatomy?: KanbanCardSkeletonAnatomy
+  loadingCount: number
+  loadingLabel?: string
+  renderRecord: (card: TCard) => ReactNode
   sortableCards: boolean
 }
 
 function KanbanColumnCards<TCard>({
   column,
-  emptyLabel,
+  emptyGroupLabel,
   getCardDragId,
-  getCardLabel,
+  getRecordLabel,
   getKey,
   loading,
-  loadingCardAnatomy,
-  loadingCardCount,
-  loadingCardLabel,
-  renderCard,
+  loadingAnatomy,
+  loadingCount,
+  loadingLabel,
+  renderRecord,
   sortableCards,
 }: KanbanColumnCardsProps<TCard>) {
   if (loading) {
     const loadingCards = Array.from(
-      { length: loadingCardCount },
+      { length: loadingCount },
       (_, position) => ({
         id: `${column.id}-loading-${position + 1}`,
       }),
@@ -190,8 +198,8 @@ function KanbanColumnCards<TCard>({
     return loadingCards.map((card) => (
       <KanbanCardSkeleton
         key={card.id}
-        {...loadingCardAnatomy}
-        {...(loadingCardLabel ? { label: loadingCardLabel } : {})}
+        {...loadingAnatomy}
+        {...(loadingLabel ? { label: loadingLabel } : {})}
       />
     ))
   }
@@ -199,7 +207,7 @@ function KanbanColumnCards<TCard>({
   if (!column.cards.length) {
     return (
       <KanbanEmptyState className="bg-card/60 py-10">
-        {emptyLabel}
+        {emptyGroupLabel}
       </KanbanEmptyState>
     )
   }
@@ -210,10 +218,10 @@ function KanbanColumnCards<TCard>({
     <KanbanColumnCard
       card={card}
       columnId={column.id}
-      dragLabel={`Mover card ${getCardLabel(card)}`}
+      dragLabel={`Mover card ${getRecordLabel(card)}`}
       index={index}
       key={getKey(card)}
-      renderCard={renderCard}
+      renderRecord={renderRecord}
       {...(sortable ? { dragId: getCardDragId(card) } : {})}
     />
   ))
@@ -225,7 +233,7 @@ interface KanbanColumnCardProps<TCard> {
   dragId?: string
   dragLabel: string
   index: number
-  renderCard: (card: TCard) => ReactNode
+  renderRecord: (card: TCard) => ReactNode
 }
 
 const KanbanColumnCard = memo(function KanbanColumnCard<TCard>({
@@ -234,9 +242,11 @@ const KanbanColumnCard = memo(function KanbanColumnCard<TCard>({
   dragId,
   dragLabel,
   index,
-  renderCard,
+  renderRecord,
 }: KanbanColumnCardProps<TCard>) {
-  const content = <KanbanCardContentSlot card={card} renderCard={renderCard} />
+  const content = (
+    <KanbanCardContentSlot card={card} renderRecord={renderRecord} />
+  )
 
   if (dragId === undefined) {
     return (
@@ -260,30 +270,35 @@ const KanbanColumnCard = memo(function KanbanColumnCard<TCard>({
 
 const KanbanCardContentSlot = memo(function KanbanCardContentSlot<TCard>({
   card,
-  renderCard,
-}: Pick<KanbanColumnCardProps<TCard>, 'card' | 'renderCard'>) {
-  return renderCard(card)
+  renderRecord,
+}: Pick<KanbanColumnCardProps<TCard>, 'card' | 'renderRecord'>) {
+  return renderRecord(card)
 }) as <TCard>(
-  props: Pick<KanbanColumnCardProps<TCard>, 'card' | 'renderCard'>,
+  props: Pick<KanbanColumnCardProps<TCard>, 'card' | 'renderRecord'>,
 ) => ReactNode
 
 export function KanbanColumn<TCard>({
-  column,
-  renderCard,
+  column: columnData,
+  collapsed = false,
+  renderRecord,
   getKey,
-  emptyLabel = 'Nenhum item nesta coluna.',
+  emptyGroupLabel = 'Nenhum item nesta coluna.',
   className,
   getCardDragId,
-  getCardLabel = (card) => String(getKey(card)),
+  getRecordLabel = (card) => String(getKey(card)),
   loading = false,
-  loadingCardAnatomy,
-  loadingCardCount = 1,
-  loadingCardLabel,
-  renderColumnTitle,
+  loadingAnatomy,
+  loadingCount = 1,
+  loadingLabel,
+  renderGroupTitle,
   renderHeaderActions,
   sortableCards = false,
   actions,
+  onCollapsedChange,
 }: KanbanColumnProps<TCard>) {
+  const column: KanbanBoardColumn<TCard> = collapsed
+    ? { ...columnData, collapsed }
+    : columnData
   const instanceId = useId()
   const titleId = `kanban-column-title-${instanceId}`
   const color = column.color ?? defaultColumnColor
@@ -316,7 +331,8 @@ export function KanbanColumn<TCard>({
         column={column}
         titleId={titleId}
         {...(!loading && actions ? { actions } : {})}
-        {...(renderColumnTitle ? { renderColumnTitle } : {})}
+        {...(!loading && onCollapsedChange ? { onCollapsedChange } : {})}
+        {...(renderGroupTitle ? { renderGroupTitle } : {})}
         {...(renderHeaderActions ? { renderHeaderActions } : {})}
       />
 
@@ -328,16 +344,16 @@ export function KanbanColumn<TCard>({
           >
             <KanbanColumnCards
               column={column}
-              emptyLabel={emptyLabel}
-              getCardLabel={getCardLabel}
+              emptyGroupLabel={emptyGroupLabel}
+              getRecordLabel={getRecordLabel}
               getKey={getKey}
               loading={loading}
-              {...(loadingCardAnatomy ? { loadingCardAnatomy } : {})}
-              loadingCardCount={loadingCardCount}
-              renderCard={renderCard}
+              {...(loadingAnatomy ? { loadingAnatomy } : {})}
+              loadingCount={loadingCount}
+              renderRecord={renderRecord}
               sortableCards={sortableCards}
               {...(getCardDragId ? { getCardDragId } : {})}
-              {...(loadingCardLabel ? { loadingCardLabel } : {})}
+              {...(loadingLabel ? { loadingLabel } : {})}
             />
           </div>
         </ScrollArea>

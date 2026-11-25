@@ -21,10 +21,10 @@ export interface CalendarDayColumnProps<TRecord> {
   isToday: boolean
   lanes: ReadonlyMap<string, TimeGridLane>
   loading: boolean
-  loadingRecordLabel?: string
+  loadingLabel?: string
   /** Minutos do instante corrente no fuso — posiciona a linha "agora". */
   nowMinutes: number | null
-  onSelectSlot?: (slot: CalendarSlot) => void
+  onSlotSelect?: (slot: CalendarSlot) => void
   renderSegment: (segment: CalendarItemSegment<TRecord>) => ReactNode
   segments: readonly CalendarItemSegment<TRecord>[]
   snapMinutes?: number
@@ -37,9 +37,9 @@ export function CalendarDayColumn<TRecord>({
   isToday,
   lanes,
   loading,
-  loadingRecordLabel,
+  loadingLabel,
   nowMinutes,
-  onSelectSlot,
+  onSlotSelect,
   renderSegment,
   segments,
   snapMinutes = 15,
@@ -58,7 +58,7 @@ export function CalendarDayColumn<TRecord>({
   })
 
   const pressedOnSlot = useRef(false)
-  const selectSlot = onSelectSlot
+  const selectSlot = onSlotSelect
     ? {
         onClick: (event: MouseEvent<HTMLDivElement>) => {
           const pressed = pressedOnSlot.current
@@ -66,7 +66,7 @@ export function CalendarDayColumn<TRecord>({
           if (!pressed || event.target !== event.currentTarget) return
 
           const rect = event.currentTarget.getBoundingClientRect()
-          onSelectSlot({
+          onSlotSelect({
             day: date,
             ...slotFromOffset({
               height: rect.height,
@@ -105,7 +105,7 @@ export function CalendarDayColumn<TRecord>({
           <div className="absolute inset-x-1 top-[30%] h-[6%]">
             <CalendarItemSkeleton
               display="block"
-              {...(loadingRecordLabel ? { label: loadingRecordLabel } : {})}
+              {...(loadingLabel ? { label: loadingLabel } : {})}
             />
           </div>
         ) : (

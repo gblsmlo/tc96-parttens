@@ -18,14 +18,14 @@ import { ListViewItem } from './list-view-item'
 
 export interface ListGroupActions {
   addLabel?: string
-  onAddRecord?: (groupId: string) => void
+  onRecordAdd?: (groupId: string) => void
 }
 
 export interface ListGroupProps<TRecord> {
   actions?: ListGroupActions
   collapsed: boolean
   separated?: boolean
-  emptyLabel: ReactNode
+  emptyGroupLabel: ReactNode
   getGroupToggleLabel?: (group: string, collapsed: boolean) => string
   group: CollectionGroup<TRecord>
   onCollapsedChange: (collapsed: boolean) => void
@@ -33,9 +33,9 @@ export interface ListGroupProps<TRecord> {
   renderGroupTitle?: (group: CollectionGroup<TRecord>) => ReactNode
   getKey: (record: TRecord) => string | number
   loading?: boolean
-  loadingRecordAnatomy?: ListRowSkeletonAnatomy
-  loadingRecordCount?: number
-  loadingRecordLabel?: string
+  loadingAnatomy?: ListRowSkeletonAnatomy
+  loadingCount?: number
+  loadingLabel?: string
 }
 
 const defaultGroupToggleLabel = (group: string, collapsed: boolean) =>
@@ -45,14 +45,14 @@ export function ListGroup<TRecord>({
   actions,
   collapsed,
   separated = false,
-  emptyLabel,
+  emptyGroupLabel,
   getGroupToggleLabel = defaultGroupToggleLabel,
   getKey,
   group,
   loading = false,
-  loadingRecordAnatomy,
-  loadingRecordCount = 1,
-  loadingRecordLabel,
+  loadingAnatomy,
+  loadingCount = 1,
+  loadingLabel,
   onCollapsedChange,
   renderGroupTitle,
   renderRecord,
@@ -60,12 +60,9 @@ export function ListGroup<TRecord>({
   const instanceId = useId()
   const titleId = `list-group-title-${instanceId}`
   const groupLabel = typeof group.label === 'string' ? group.label : group.id
-  const loadingItems = Array.from(
-    { length: loadingRecordCount },
-    (_, position) => ({
-      id: `${group.id}-loading-${position + 1}`,
-    }),
-  )
+  const loadingItems = Array.from({ length: loadingCount }, (_, position) => ({
+    id: `${group.id}-loading-${position + 1}`,
+  }))
 
   return (
     <Collapsible
@@ -113,10 +110,10 @@ export function ListGroup<TRecord>({
               {group.count}
             </Badge>
           </div>
-          {!loading && actions?.onAddRecord ? (
+          {!loading && actions?.onRecordAdd ? (
             <Button
               aria-label={actions.addLabel ?? `Add item to ${groupLabel}`}
-              onClick={() => actions.onAddRecord?.(group.id)}
+              onClick={() => actions.onRecordAdd?.(group.id)}
               size="icon-sm"
               variant="ghost"
             >
@@ -130,8 +127,8 @@ export function ListGroup<TRecord>({
               loadingItems.map((record) => (
                 <ListRowSkeleton
                   key={record.id}
-                  {...loadingRecordAnatomy}
-                  {...(loadingRecordLabel ? { label: loadingRecordLabel } : {})}
+                  {...loadingAnatomy}
+                  {...(loadingLabel ? { label: loadingLabel } : {})}
                 />
               ))
             ) : group.records.length ? (
@@ -145,7 +142,7 @@ export function ListGroup<TRecord>({
               ))
             ) : (
               <Empty>
-                <EmptyDescription>{emptyLabel}</EmptyDescription>
+                <EmptyDescription>{emptyGroupLabel}</EmptyDescription>
               </Empty>
             )}
           </div>

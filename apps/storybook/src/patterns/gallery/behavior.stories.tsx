@@ -8,15 +8,12 @@ import {
 import { GalleryCanvas } from './gallery-canvas.tsx'
 import { galleryControlArgs } from './gallery-controls.ts'
 import { LOAD_DELAY } from './gallery-data.ts'
-import {
-  ComposedGallery,
-  PaginatedDocumentsGallery,
-} from './gallery-layouts.tsx'
+import { ComposedGallery, DocumentsGallery } from './gallery-layouts.tsx'
 
 const meta = {
   args: { onArchive: fn(), onOpen: fn(), onTogglePin: fn() },
   decorators: [GalleryCanvas],
-  render: (args) => <PaginatedDocumentsGallery actions={args} />,
+  render: (args) => <DocumentsGallery actions={args} />,
   tags: ['!autodocs'],
   title: 'Patterns/Gallery/Behavior',
 } satisfies Meta<DocumentActions>
@@ -45,9 +42,7 @@ const titlesOf = (documents: readonly DocumentRecord[]) =>
   documents.map((document) => document.title)
 
 export const LoadingKeepsPageHeight: Story = {
-  render: (args) => (
-    <PaginatedDocumentsGallery actions={args} loadingFor={LOAD_DELAY} />
-  ),
+  render: (args) => <DocumentsGallery actions={args} loadingFor={LOAD_DELAY} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const gallery = galleryIn(canvasElement)

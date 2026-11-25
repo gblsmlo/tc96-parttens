@@ -6,7 +6,7 @@ import { Skeleton } from '@tc96/ui/skeleton'
 import { cn } from '@tc96/utils'
 import type { ColumnLayouts } from '../lib/column-layout'
 import { CELL_DENSITY, ROW_DENSITY, ROW_HEIGHT } from '../lib/constants'
-import type { DataGridDensity } from '../types'
+import type { CollectionDensity } from '../types'
 
 export interface DataGridRowSkeletonAnatomy {
   cell?: 'control' | 'text'
@@ -16,8 +16,9 @@ export interface DataGridSkeletonRowsProps {
   anatomy?: DataGridRowSkeletonAnatomy
   columnIds: readonly string[]
   columnLayouts: ColumnLayouts
-  density: DataGridDensity
+  density: CollectionDensity
   headerRowCount: number
+  label: string
   loadingMore?: boolean
   rowIds: readonly string[]
   rowIndexOffset?: number
@@ -30,6 +31,7 @@ export function DataGridSkeletonRows({
   columnLayouts,
   density,
   headerRowCount,
+  label,
   loadingMore,
   rowIds,
   rowIndexOffset = 0,
@@ -73,6 +75,11 @@ export function DataGridSkeletonRows({
             style={layout?.style}
             tabIndex={-1}
           >
+            {columnIndex === 0 ? (
+              <output aria-busy="true" className="sr-only">
+                {label}
+              </output>
+            ) : null}
             <Skeleton
               className={cn(
                 'w-full',

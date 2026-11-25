@@ -26,9 +26,9 @@ export interface CalendarTimeGridProps<TRecord> {
   hourLabels: readonly string[]
   lanesByDay: ReadonlyMap<string, ReadonlyMap<string, TimeGridLane>>
   loading: boolean
-  loadingRecordLabel?: string
+  loadingLabel?: string
   nowMinutes: number | null
-  onSelectSlot?: (slot: CalendarSlot) => void
+  onSlotSelect?: (slot: CalendarSlot) => void
   range: readonly CalendarDate[]
   renderAllDaySegment: (segment: CalendarItemSegment<TRecord>) => ReactNode
   renderSegment: (segment: CalendarItemSegment<TRecord>) => ReactNode
@@ -47,9 +47,9 @@ export function CalendarTimeGrid<TRecord>({
   hourLabels,
   lanesByDay,
   loading,
-  loadingRecordLabel,
+  loadingLabel,
   nowMinutes,
-  onSelectSlot,
+  onSlotSelect,
   range,
   renderAllDaySegment,
   renderSegment,
@@ -168,8 +168,8 @@ export function CalendarTimeGrid<TRecord>({
               renderSegment={renderSegment}
               segments={timedSegmentsByDay.get(calendarDateKey(date)) ?? []}
               snapMinutes={snapMinutes}
-              {...(loadingRecordLabel ? { loadingRecordLabel } : {})}
-              {...(onSelectSlot ? { onSelectSlot } : {})}
+              {...(loadingLabel ? { loadingLabel } : {})}
+              {...(onSlotSelect ? { onSlotSelect } : {})}
             />
           ))}
         </div>

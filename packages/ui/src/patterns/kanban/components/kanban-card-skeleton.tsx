@@ -67,7 +67,7 @@ export function KanbanCardSkeleton({
             <KanbanCardTitle className="min-w-0 flex-1">
               <Skeleton className="my-0.5 h-4 w-2/3" />
             </KanbanCardTitle>
-            {display === 'compact' && assignee ? (
+            {display === 'minimal' && assignee ? (
               <Skeleton className="size-6 shrink-0 rounded-full" />
             ) : null}
           </div>

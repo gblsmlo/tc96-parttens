@@ -51,7 +51,7 @@ const { table } = useDataTable({ columns, data, enablePagination: true, getRowId
           <tbody data-slot="table-body">
             <tr>
               <td>
-                <button data-slot="data-table-row-trigger" />{/* only with onRowClick, unless getRowCanOpen returns false */}
+                <button data-slot="data-table-row-trigger" />{/* only with onRowOpen, unless getRowCanOpen returns false */}
                 {cell}
               </td>
             </tr>
@@ -80,13 +80,14 @@ The table of one collection. Renders a `table` inside a scroll area that fills a
 | --- | --- | --- | --- |
 | `table` | `DataTableTable<TData>` | required | Supplies the rows, columns and state, from `useDataTable`. |
 | `bordered` | `boolean` | `true` | When true, draws a rounded border and the `background` fill around the scroll area. |
-| `isLoading` | `boolean` | `false` | When true, replaces the rows with skeleton rows and marks the table busy. |
-| `loadingRowCount` | `number` | `5` | Sets how many skeleton rows show; pass the page size when the table paginates. |
-| `loadingRowAnatomy` | `DataTableRowSkeletonAnatomy` | `{}` | Shapes the skeleton rows to match the loaded ones. |
+| `loading` | `boolean` | `false` | When true, replaces the rows with skeleton rows and marks the table busy. |
+| `loadingCount` | `number` | `5` | Sets how many skeleton rows show; pass the page size when the table paginates. |
+| `loadingLabel` | `string` | `"Carregando linha"` | Names each skeleton row: a visually hidden `output` with `aria-busy` in its first cell, since a row cannot be wrapped in a status. |
+| `loadingAnatomy` | `DataTableRowSkeletonAnatomy` | `{}` | Shapes the skeleton rows to match the loaded ones. |
 | `emptyMessage` | `string` | `"Nenhum registro para exibir."` | Sets the text of the one row shown when there are no rows. |
-| `onRowClick` | `(row: Row<DataTableFeatures, TData>) => void` | - | Called when a row is clicked outside its controls, or its open button is pressed; turns every row into a button. |
+| `onRowOpen` | `(row: Row<DataTableFeatures, TData>) => void` | - | Called when a row is clicked outside its controls, or its open button is pressed; turns every row into a button. |
 | `getRowOpenLabel` | `(row: Row<DataTableFeatures, TData>) => string` | - | Names the open button of a row; without it every row reads `Abrir registro`. |
-| `getRowCanOpen` | `(row: Row<DataTableFeatures, TData>) => boolean` | - | With `onRowClick`, returns `false` for a row that opens nothing; without it every row opens. |
+| `getRowCanOpen` | `(row: Row<DataTableFeatures, TData>) => boolean` | - | With `onRowOpen`, returns `false` for a row that opens nothing; without it every row opens. |
 | `defaultAggregations` | `DataTableAggregations` | `{}` | Sets the first aggregation of each column, uncontrolled. |
 | `aggregations` | `DataTableAggregations` | - | Sets the aggregation of each column, controlled. |
 | `onAggregationsChange` | `(aggregations: DataTableAggregations) => void` | - | Called when the user picks an aggregation, with every column's choice. |
@@ -105,7 +106,7 @@ Also takes every prop of a `table` except `children`, passed to the `table`: nam
 | `data-overflow-end` | `"true"` while content scrolls past the end edge | Shows the end fade |
 | `data-slot` | `"data-table-viewport"` | Selects the scrolling element |
 | `data-bordered` | present when `bordered` | Marks the table container |
-| `aria-busy` | `"true"` while `isLoading` | Marks the `table` busy |
+| `aria-busy` | `"true"` while `loading` | Marks the `table` busy |
 
 The header and the footer stick to the edges of the scroll area, and the vertical scrollbar runs between them. The header fill is `card` mixed with 2% black, 2% white in dark. When the columns overflow the width, a fade of `background` covers the edge the content continues past, so the overflow reads even with hidden scrollbars.
 
@@ -113,19 +114,19 @@ The header and the footer stick to the edges of the scroll area, and the vertica
 
 Each row renders the `cell` of every visible column. A selected row carries `data-state="selected"`.
 
-With `onRowClick`, the first cell holds a `button` stretched over the whole row, under the cells, named by `getRowOpenLabel`. The cells let a click through to it, except on what they hold that takes input: a control, a link, a label or a focusable element inside a cell keeps its click and does not open the row. The button is reachable with Tab and draws its own focus ring inside the row. Without `onRowClick`, rows are plain, and so is a row for which `getRowCanOpen` returns `false`: no button, no `data-interactive`, its cells and selection unchanged.
+With `onRowOpen`, the first cell holds a `button` stretched over the whole row, under the cells, named by `getRowOpenLabel`. The cells let a click through to it, except on what they hold that takes input: a control, a link, a label or a focusable element inside a cell keeps its click and does not open the row. The button is reachable with Tab and draws its own focus ring inside the row. Without `onRowOpen`, rows are plain, and so is a row for which `getRowCanOpen` returns `false`: no button, no `data-interactive`, its cells and selection unchanged.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-state` | `"selected"` when the row is selected | Styles a selected row |
-| `data-interactive` | present with `onRowClick` on a row that opens | Marks a row that opens |
+| `data-interactive` | present with `onRowOpen` on a row that opens | Marks a row that opens |
 | `data-slot` | `"data-table-row-trigger"` | Selects the open button of a row |
 
 With no rows, the body shows one row with `emptyMessage` across every column.
 
 ### Loading rows
 
-While `isLoading`, the body shows `loadingRowCount` skeleton rows, one bar per cell. `loadingRowAnatomy` matches them to the loaded rows, so the table keeps its height when the data arrives:
+While `loading`, the body shows `loadingCount` skeleton rows, one bar per cell. `loadingAnatomy` matches them to the loaded rows, so the table keeps its height when the data arrives:
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -141,7 +142,7 @@ While `isLoading`, the body shows `loadingRowCount` skeleton rows, one bar per c
 
 The footer renders when a column declares a `footer` or `meta.aggregations`. A column with `meta.aggregations` replaces its footer with a menu button: `Calcular` while no aggregation is set, transparent until the footer is hovered or focused, then the label and the result, such as `Soma 42 h`. The menu lists `Nenhum` and the column's aggregations. Aggregations read every row before pagination, so they cover every page: `count` is the number of rows, `sum` adds the values that are finite numbers. An aggregation the column does not list reads as none.
 
-Without rows, or while `isLoading`, aggregated cells are empty, and a footer with only aggregated columns is not rendered.
+Without rows, or while `loading`, aggregated cells are empty, and a footer with only aggregated columns is not rendered.
 
 | Attribute | Values | Description |
 | --- | --- | --- |

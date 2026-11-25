@@ -33,7 +33,7 @@ type Story = StoryObj<DataTableBehaviorArgs>
 const LOAD_DELAY = 2000
 
 function LoadingTasksTable() {
-  const [isLoading, setIsLoading] = useState(true)
+  const [loading, setIsLoading] = useState(true)
 
   useEffect(() => {
     let active = true
@@ -45,7 +45,7 @@ function LoadingTasksTable() {
     }
   }, [])
 
-  return <TasksTable isLoading={isLoading} />
+  return <TasksTable loading={loading} />
 }
 
 const tableOf = (canvasElement: HTMLElement) =>
@@ -62,6 +62,20 @@ const firstTwo = () => {
   const [first, second] = pageOf(1)
   if (!(first && second)) throw new Error('The fixture has fewer tasks.')
   return [first, second] as const
+}
+
+export const LoadingRowsAreAnnounced: Story = {
+  render: () => <TasksTable loading />,
+  play: async ({ canvasElement }) => {
+    const statuses = within(canvasElement).getAllByRole('status')
+    const rows = canvasElement.querySelectorAll('tbody tr')
+
+    await expect(statuses).toHaveLength(rows.length)
+    for (const status of statuses) {
+      await expect(status).toHaveTextContent('Carregando linha')
+      await expect(status).toHaveAttribute('aria-busy', 'true')
+    }
+  },
 }
 
 export const LoadingKeepsTheRowHeight: Story = {

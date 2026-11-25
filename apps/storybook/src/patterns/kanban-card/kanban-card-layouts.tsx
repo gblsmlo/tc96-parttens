@@ -69,7 +69,7 @@ export function SampleKanbanCard({
       dimmed={dimmed}
       display={display}
       selected={selected}
-      variant={openTrigger ? 'interactive' : 'default'}
+      interactive={openTrigger}
     >
       {openTrigger ? (
         <KanbanCardOpenTrigger

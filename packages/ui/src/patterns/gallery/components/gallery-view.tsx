@@ -24,9 +24,9 @@ export interface GalleryViewProps<TRecord> {
   collection: CollectionDefinition<TRecord>
   emptyMessage?: ReactNode
   loading?: boolean
-  loadingRecordAnatomy?: GalleryRowSkeletonAnatomy
-  loadingRecordCount?: number
-  loadingRecordLabel?: string
+  loadingAnatomy?: GalleryRowSkeletonAnatomy
+  loadingCount?: number
+  loadingLabel?: string
   pageSize?: GalleryPageSize
   renderRecord: (record: TRecord) => ReactNode
 }
@@ -35,9 +35,9 @@ export function GalleryView<TRecord>({
   collection,
   emptyMessage = 'No items to show.',
   loading = false,
-  loadingRecordAnatomy,
-  loadingRecordCount = 4,
-  loadingRecordLabel,
+  loadingAnatomy,
+  loadingCount = 4,
+  loadingLabel,
   pageSize,
   renderRecord,
 }: GalleryViewProps<TRecord>) {
@@ -54,12 +54,12 @@ export function GalleryView<TRecord>({
       data-slot="gallery-view"
     >
       {loading ? (
-        skeletonKeys('gallery-loading', pageSize ?? loadingRecordCount).map(
+        skeletonKeys('gallery-loading', pageSize ?? loadingCount).map(
           (skeletonKey) => (
             <GalleryRowSkeleton
               key={skeletonKey}
-              {...loadingRecordAnatomy}
-              {...(loadingRecordLabel ? { label: loadingRecordLabel } : {})}
+              {...loadingAnatomy}
+              {...(loadingLabel ? { label: loadingLabel } : {})}
             />
           ),
         )

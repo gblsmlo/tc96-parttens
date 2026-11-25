@@ -273,21 +273,21 @@ Mounts the layout of the active preferences: `DataTable`, `ListView`, `DataGrid`
 | `datagrid` | `CollectionDataGridViewProps<TRecord>` | - | Passes the props of `DataGrid`, its `table` included; required for `"datagrid"`. |
 | `calendar` | `CollectionCalendarViewProps<TRecord>` | - | Passes the props of `CalendarView` except `collection`; required for `"calendar"`. |
 | `list` | `CollectionListViewProps<TRecord>` | - | Passes the props of `ListView` except `collection`, `grouping` and `renderRecord`. |
-| `kanban` | `CollectionKanbanViewProps<TRecord>` | - | Passes the props of `KanbanView` except `columns`, `getKey` and `renderCard`, with an `onMoveCard` that also receives the groups and a `getColumnState` that returns the `color` and `collapsed` of each group's column. |
+| `kanban` | `CollectionKanbanViewProps<TRecord>` | - | Passes the props of `KanbanView` except `columns`, `getKey` and `renderRecord`, with an `onRecordMove` that also receives the groups and a `getColumnState` that returns the `color` of each group's column. |
 | `gallery` | `CollectionGalleryViewProps<TRecord>` | - | Passes the props of `GalleryView` except `collection` and `renderRecord`. |
 | `groups` | `readonly CollectionGroup<TRecord>[]` | - | Sets prepared groups for List and Kanban instead of projecting `collection`. |
 | `loading` | `boolean` | - | When true, the active layout renders its loading state, unless its own props set one. |
 | `onRecordChange` | `(change: CollectionRecordChange<TRecord>) => boolean \| Promise<boolean>` | - | Called when a Kanban card is dropped in another group, with the record rebuilt by `setGroupId`; return `false` or reject to move it back. |
 
-The active layout and `groupBy` come from the provider. List groups by `groupBy` and renders a flat list for `null`; Kanban always groups, so `groupBy: null` throws there unless `groups` is passed. Kanban takes `getKey` from the collection, and `getLabel` as its card label unless `kanban.getCardLabel` sets another.
+The active layout and `groupBy` come from the provider. List groups by `groupBy` and renders a flat list for `null`; Kanban always groups, so `groupBy: null` throws there unless `groups` is passed. Kanban takes `getKey` from the collection, and `getLabel` as its card label unless `kanban.getRecordLabel` sets another.
 
-`loading` is the default of each layout's own flag: `isLoading` of `datatable` and `datagrid`, `loading` of `list`, `kanban`, `gallery` and `calendar`. A value set there wins, `false` included.
+`loading` is the default of each layout's own flag: `loading` of `datatable` and `datagrid`, `loading` of `list`, `kanban`, `gallery` and `calendar`. A value set there wins, `false` included.
 
 `groups` win over the projection in List and Kanban, and an empty array renders no groups; it never falls back to `collection.records`. A `CollectionGroup` is an option (`id`, `label`, `icon?`) plus `count`, `grouping`, `records` and `value`, the group id the records share, `null` for the unassigned group. In List, `groups` also wins over `list.groups`.
 
-The outlet builds each Kanban column from a group, so the column's `color` and `collapsed` come from `kanban.getColumnState(group)`; the column `id` is the group `id`, which `getColumnActions` callbacks such as `onColorChange` and `onCollapsedChange` receive back. The consumer keeps that state and returns it from `getColumnState`.
+The outlet builds each Kanban column from a group, so the column's `color` comes from `kanban.getColumnState(group)`, and the collapsed columns from `kanban.collapsedGroupIds` with `onCollapsedGroupIdsChange`, as in List and the tables. The column `id` is the group `id`, which `onColorChange` receives back. The consumer keeps that state.
 
-A Kanban card drags when `kanban.onMoveCard` is passed, or when `onRecordChange` is passed and the active dimension has `setGroupId`; otherwise the board is static. A drop in another group calls `onRecordChange` with `{ grouping, record, previousRecord, reason: "grouping" }`, where `record` is `setGroupId(card, target group value)`. A drop inside the same group returns `false`, since the order of the collection is the consumer's. `kanban.onMoveCard` wins over `onRecordChange` and receives the move with `sourceGroup` and `targetGroup`; a column with no matching group rejects the move. While a returned promise is pending, the card stays in the target column.
+A Kanban card drags when `kanban.onRecordMove` is passed, or when `onRecordChange` is passed and the active dimension has `setGroupId`; otherwise the board is static. A drop in another group calls `onRecordChange` with `{ grouping, record, previousRecord, reason: "grouping" }`, where `record` is `setGroupId(card, target group value)`. A drop inside the same group returns `false`, since the order of the collection is the consumer's. `kanban.onRecordMove` wins over `onRecordChange` and receives the move with `sourceGroup` and `targetGroup`; a column with no matching group rejects the move. While a returned promise is pending, the card stays in the target column.
 
 Other edits (a status changed in a row, a date in a cell) are the consumer's renderers and columns calling the consumer's own update; the outlet does not see them.
 
@@ -334,14 +334,14 @@ Also takes every prop of a `div`.
 | `CollectionProviderValue` | `type` | The value the render function of `CollectionProvider` receives. |
 | `CollectionPreferencesContextValue` | `type` | The value of `useCollectionPreferences`. |
 | `CollectionRecordChange` | `type` | The change `onRecordChange` receives. |
-| `CollectionKanbanCardMove` | `type` | The move `kanban.onMoveCard` receives, with `sourceGroup` and `targetGroup`. |
+| `CollectionKanbanCardMove` | `type` | The move `kanban.onRecordMove` receives, with `sourceGroup` and `targetGroup`. |
 | `CollectionLayoutOutletProps` | `type` | The props of `CollectionLayoutOutlet`. |
 | `CollectionCalendarViewProps` | `type` | The `calendar` block of the outlet. |
 | `CollectionDataGridViewProps` | `type` | The `datagrid` block of the outlet. |
 | `CollectionDataTableViewProps` | `type` | The `datatable` block of the outlet. |
 | `CollectionGalleryViewProps` | `type` | The `gallery` block of the outlet. |
 | `CollectionKanbanViewProps` | `type` | The `kanban` block of the outlet. |
-| `CollectionKanbanColumnState` | `type` | What `getColumnState` returns: `{ color?, collapsed? }`. |
+| `CollectionKanbanColumnState` | `type` | What `getColumnState` returns: `{ color? }`. |
 | `CollectionListViewProps` | `type` | The `list` block of the outlet. |
 | `CollectionFrameMode` | `type` | `"fill"` or `"flow"`. |
 | `CollectionFrameProps` | `type` | The props of `CollectionFrame`. |
