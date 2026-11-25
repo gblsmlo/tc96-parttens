@@ -1,5 +1,5 @@
-import { expect, test } from 'bun:test'
-import { spawnSync } from 'node:child_process'
+import { beforeAll, expect, test } from 'bun:test'
+import { type SpawnSyncReturns, spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import ts from 'typescript'
@@ -36,6 +36,17 @@ const config: InstallConfig = {
     blocks: 'apps/web/src/blocks',
   },
 }
+
+let build: SpawnSyncReturns<Buffer>
+
+beforeAll(() => {
+  build = spawnSync(
+    process.execPath,
+    ['packages/registry/src/build-registry.ts'],
+    { cwd: resolve(import.meta.dir, '../../..') },
+  )
+}, 60_000)
+
 function item(path: string, content: string): RegistryItem {
   return {
     name: 'proof',
@@ -263,11 +274,6 @@ test('combines COSS dependencies and leaves out the installed ones', () => {
 
 test('builds the record-preview item with COSS-only dependencies and no test files', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/record-preview.json'), 'utf8'),
@@ -286,11 +292,6 @@ test('builds the record-preview item with COSS-only dependencies and no test fil
 
 test('builds the record-group item shipping the properties catalog it imports by path', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/record-group.json'), 'utf8'),
@@ -310,11 +311,6 @@ test('builds the record-group item shipping the properties catalog it imports by
 
 test('builds the record-dialog item shipping the headline and create-more parts', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/record-dialog.json'), 'utf8'),
@@ -339,11 +335,6 @@ test('builds the record-dialog item shipping the headline and create-more parts'
 
 test('builds the state-surface item with COSS-only dependencies and no test files', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/state-surface.json'), 'utf8'),
@@ -364,11 +355,6 @@ test('builds the state-surface item with COSS-only dependencies and no test file
 
 test('builds the settings item depending on the ui Text and shipping no test files', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/settings.json'), 'utf8'),
@@ -388,11 +374,6 @@ test('builds the settings item depending on the ui Text and shipping no test fil
 
 test('builds the chats-panel item from the chat folder with COSS-only dependencies', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/chats-panel.json'), 'utf8'),
@@ -414,11 +395,6 @@ test('builds the chats-panel item from the chat folder with COSS-only dependenci
 
 test('builds the chat-assistant item with the COSS chat and composer dependencies', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/chat-assistant.json'), 'utf8'),
@@ -441,11 +417,6 @@ test('builds the chat-assistant item with the COSS chat and composer dependencie
 
 test('builds the wizard item from its folder with IconFrame and COSS as ui dependencies', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/wizard.json'), 'utf8'),
@@ -477,11 +448,6 @@ test('lists every block folder in blockSources', () => {
 
 test('builds flow-canvas with the d3-hierarchy version of the patterns and no React Flow in the other flow items', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const read = (name: string): RegistryItem =>
     JSON.parse(readFileSync(join(root, `dist/registry/${name}.json`), 'utf8'))
@@ -497,11 +463,6 @@ test('builds flow-canvas with the d3-hierarchy version of the patterns and no Re
 
 test('builds flow-canvas with @xyflow/react@12.12.0 now that the pattern imports React Flow', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const canvas: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/flow-canvas.json'), 'utf8'),
@@ -533,11 +494,6 @@ test('resolves the core entry of a pattern from a block import', () => {
 
 test('builds the app-shell-1 item with the shell shared files and the sidebar from COSS', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/app-shell-1.json'), 'utf8'),
@@ -562,11 +518,6 @@ test('builds the app-shell-1 item with the shell shared files and the sidebar fr
 
 test('builds the login-1 item with the auth shared files and the form parts from COSS', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/login-1.json'), 'utf8'),
@@ -606,11 +557,6 @@ test('builds the login-1 item with the auth shared files and the form parts from
 
 test('builds the login-2 item with the auth shared files and only the form parts it renders', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/login-2.json'), 'utf8'),
@@ -647,11 +593,6 @@ test('builds the login-2 item with the auth shared files and only the form parts
 
 test('builds the otp-1 item with the auth shared files and the otp field from COSS', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/otp-1.json'), 'utf8'),
@@ -690,11 +631,6 @@ test('builds the otp-1 item with the auth shared files and the otp field from CO
 
 test('builds the signup-1 item with the auth shared files and the form parts from COSS', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/signup-1.json'), 'utf8'),
@@ -743,11 +679,6 @@ test('builds the signup-1 item with the auth shared files and the form parts fro
 
 test('builds the reset-password-1 item with the auth shared files and the form parts from COSS', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/reset-password-1.json'), 'utf8'),
@@ -798,11 +729,6 @@ test('builds the reset-password-1 item with the auth shared files and the form p
 
 test('builds the reset-password-2 item with the auth shared files and its own countdown formatter', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/reset-password-2.json'), 'utf8'),
@@ -857,11 +783,6 @@ test('builds the reset-password-2 item with the auth shared files and its own co
 
 test('builds the forgot-password-1 item with the auth shared files and the form parts from COSS', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/forgot-password-1.json'), 'utf8'),
@@ -908,11 +829,6 @@ test('builds the forgot-password-1 item with the auth shared files and the form 
 
 test('builds the signup-2 item with the auth shared files and only the form parts it renders', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/signup-2.json'), 'utf8'),
@@ -949,11 +865,6 @@ test('builds the signup-2 item with the auth shared files and only the form part
 
 test('builds the forgot-password-2 item with the auth shared files and only the form parts it renders', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/forgot-password-2.json'), 'utf8'),
@@ -991,11 +902,6 @@ test('builds the forgot-password-2 item with the auth shared files and only the 
 
 test('builds the flow blocks from application/flow, the flow patterns, the assistant and helpers only', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   for (const name of ['flow-1', 'flow-2']) {
     const item: RegistryItem = JSON.parse(
@@ -1023,11 +929,6 @@ test('builds the flow blocks from application/flow, the flow patterns, the assis
 
 test('builds flow-3 with the flow canvas and flow-4 with the flow core only', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const read = (name: string): RegistryItem =>
     JSON.parse(readFileSync(join(root, `dist/registry/${name}.json`), 'utf8'))
@@ -1064,11 +965,6 @@ test('builds flow-3 with the flow canvas and flow-4 with the flow core only', ()
 
 test('builds ai-chat-1 on the COSS chat and composer with the state surface only', () => {
   const root = resolve(import.meta.dir, '../../..')
-  const build = spawnSync(
-    process.execPath,
-    ['packages/registry/src/build-registry.ts'],
-    { cwd: root },
-  )
   expect(build.status).toBe(0)
   const item: RegistryItem = JSON.parse(
     readFileSync(join(root, 'dist/registry/ai-chat-1.json'), 'utf8'),
