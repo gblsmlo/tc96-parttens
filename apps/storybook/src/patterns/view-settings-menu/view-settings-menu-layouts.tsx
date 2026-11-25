@@ -52,6 +52,16 @@ type Density = 'comfortable' | 'compact'
 
 type ViewSort = 'due' | 'updated'
 
+const densityOptions: readonly ViewSettingsOption<Density>[] = [
+  { label: 'Confortável', value: 'comfortable' },
+  { label: 'Compacta', value: 'compact' },
+]
+
+const sortOptions: readonly ViewSettingsOption<ViewSort>[] = [
+  { label: 'Prazo', value: 'due' },
+  { label: 'Atualização', value: 'updated' },
+]
+
 export interface ComposedViewSettingsProps extends ViewSettingsControls {
   filters?: boolean
   modes?: readonly ViewSettingsMode[]
@@ -63,6 +73,8 @@ export function ComposedViewSettings({
   filters: showFilters = true,
   label,
   modes = [],
+  reset,
+  resetLabel,
   savePreference,
   savePreferenceLabel,
 }: Readonly<ComposedViewSettingsProps>) {
@@ -81,6 +93,13 @@ export function ComposedViewSettings({
     mode !== initialMode ||
     sort !== 'due' ||
     density !== 'comfortable'
+
+  const resetSettings = () => {
+    setMode(initialMode)
+    setDensity('comfortable')
+    setSort('due')
+    setFilters(noFilters)
+  }
 
   const clearFilter = (key: FilterKey) => {
     setFilters((current) => ({ ...current, [key]: [] }))
@@ -104,7 +123,10 @@ export function ComposedViewSettings({
       modes={modes}
       onClearFilters={clear ? () => setFilters(noFilters) : undefined}
       onModeChange={setMode}
+      onReset={reset ? resetSettings : undefined}
       onSavePreference={savePreference ? () => undefined : undefined}
+      resetDisabled={!modified}
+      resetLabel={resetLabel}
       savePreferenceDisabled={!modified}
       savePreferenceLabel={savePreferenceLabel}
     >
@@ -384,8 +406,22 @@ export function PropertySubmenusLayout(
   const [assignee, setAssignee] = useState<TaskAssignee>('unassigned')
   const [startDate, setStartDate] = useState<DateRange>()
   const [dueDate, setDueDate] = useState<DateRange>()
+  const [density, setDensity] = useState<Density>('comfortable')
+  const [sort, setSort] = useState<ViewSort>('due')
+
+  const reset = () => {
+    setDensity('comfortable')
+    setSort('due')
+    setStatus('todo')
+    setPriority('none')
+    setAssignee('unassigned')
+    setStartDate(undefined)
+    setDueDate(undefined)
+  }
 
   const modified =
+    density !== 'comfortable' ||
+    sort !== 'due' ||
     status !== 'todo' ||
     priority !== 'none' ||
     assignee !== 'unassigned' ||
@@ -395,10 +431,30 @@ export function PropertySubmenusLayout(
   return (
     <ViewSettingsMenu
       label={controls.label}
+      onReset={controls.reset ? reset : undefined}
       onSavePreference={controls.savePreference ? () => undefined : undefined}
+      resetDisabled={!modified}
+      resetLabel={controls.resetLabel}
       savePreferenceDisabled={!modified}
       savePreferenceLabel={controls.savePreferenceLabel}
     >
+      <ViewSettingsSection label="Exibição">
+        <ViewSettingsSubmenu
+          icon={RowsIcon}
+          label="Densidade"
+          onValueChange={setDensity}
+          options={densityOptions}
+          value={density}
+        />
+        <ViewSettingsSubmenu
+          icon={SortAscendingIcon}
+          label="Ordenar por"
+          onValueChange={setSort}
+          options={sortOptions}
+          value={sort}
+        />
+      </ViewSettingsSection>
+      <MenuSeparator />
       <ViewSettingsSection label="Propriedades">
         <ViewSettingsSubmenu
           label="Status"

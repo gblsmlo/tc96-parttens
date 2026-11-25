@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # ViewSettingsMenu
 
-The display settings of a collection in one menu: tabs for the layouts, the sections the screen passes (grouping, sorting, density, columns, filters), then the clear and save items. It owns the popover and the organization of the fields: a submenu that shows its current value, the field sections with a visibility switch per field, and the item that shows every field. It keeps no state: the consumer passes the active layout, the filter count and the sections, and handles every callback. Its trigger is a toolbar button, so it only mounts inside a [CollectionToolbar](?path=/docs/patterns-collectiontoolbar-api-reference--api-reference), usually in its `right` slot.
+The display settings of a collection in one menu: tabs for the layouts, the sections the screen passes (grouping, sorting, density, columns, filters), then the clear, reset and save items. It owns the popover and the organization of the fields: a submenu that shows its current value, the field sections with a visibility switch per field, and the item that shows every field. It keeps no state: the consumer passes the active layout, the filter count and the sections, and handles every callback. Its trigger is a toolbar button, so it only mounts inside a [CollectionToolbar](?path=/docs/patterns-collectiontoolbar-api-reference--api-reference), usually in its `right` slot.
 
 The other pages of `Patterns/ViewSettingsMenu`: [Playground](?path=/story/patterns-viewsettingsmenu-playground--playground) to try the texts and the footer items, [Layouts](?path=/story/patterns-viewsettingsmenu-layouts--default) for the arrangements of the layout tabs, the field settings, the switch options and the property submenus, [Behavior](?path=/story/patterns-viewsettingsmenu-behavior--trigger-is-a-ghost-toolbar-button) for the tests, and [Usages](?path=/story/patterns-viewsettingsmenu-usages--task-list) for real settings menus.
 
@@ -52,26 +52,30 @@ div[role=menu]                                  portaled, aligned to the end of 
 ├── children                                    the sections, as passed
 ├── div[data-slot=menu-separator]
 ├── div[role=menuitem]                          Limpar filtros, only with onClearFilters
+├── div[role=menuitem]                          Redefinir, only with onReset
 └── div[role=menuitem]                          Salvar preferência, only with onSavePreference
 ```
 
 ## ViewSettingsMenu
 
-The settings of the view in one menu: tabs for the layouts, the consumer's sections (grouping, sorting, columns, filters), then Limpar filtros and Salvar preferência. Renders a ghost toolbar button with a sliders icon that opens a menu aligned to its end.
+The settings of the view in one menu: tabs for the layouts, the consumer's sections (grouping, sorting, columns, filters), then Limpar filtros, Redefinir and Salvar preferência. Renders a ghost toolbar button with a sliders icon that opens a menu aligned to its end.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `children` | `React.ReactNode` | required | Renders the sections, between the tabs and the footer items. |
-| `onClearFilters` | `() => void` | - | Called when Limpar filtros is picked; without it the item is not rendered. |
+| `onClearFilters` | `() => void` | - | Called when Limpar filtros is picked; the menu stays open. Without it the item is not rendered. |
 | `modes` | `readonly ViewSettingsMode<TMode>[]` | `[]` | Lists the layouts as tabs, each `{ icon, label, value }`; fewer than two show no tabs. |
 | `mode` | `TMode` | - | Sets the checked tab. |
 | `onModeChange` | `(mode: TMode) => void` | - | Called when a tab is picked; the menu closes. |
 | `activeFilterCount` | `number` | `0` | Sets the count in the trigger, `Exibição (2)`, and enables Limpar filtros above zero. |
+| `onReset` | `() => void` | - | Called when Redefinir is picked; the menu stays open and the consumer restores every setting of the menu to its default. Without it the item is not rendered. |
+| `resetDisabled` | `boolean` | `false` | When true, disables Redefinir; pass it while nothing differs from the defaults. |
 | `onSavePreference` | `() => void` | - | Called when Salvar preferência is picked; without it the item is not rendered. |
 | `savePreferenceDisabled` | `boolean` | `false` | When true, disables Salvar preferência. |
 | `label` | `string` | `"Exibição"` | Sets the text of the trigger. |
 | `formatTriggerLabel` | `(label: string, activeFilterCount: number) => string` | `` `${label} (${count})` `` | Builds the trigger text when `activeFilterCount` is above zero. |
 | `clearLabel` | `string` | `"Limpar filtros"` | Sets the text of the clear item. |
+| `resetLabel` | `string` | `"Redefinir"` | Sets the text of the reset item. |
 | `savePreferenceLabel` | `string` | `"Salvar preferência"` | Sets the text of the save item. |
 | `className` | `string` | - | Adds classes to the trigger. |
 
@@ -138,7 +142,7 @@ A filter submenu opens with an option for every value, `Todos` or `Todas` to agr
 
 A screen that sets one value per property, as in [Property Submenus](?path=/story/patterns-viewsettingsmenu-layouts--property-submenus), gives each property a `ViewSettingsSubmenu`. The rules:
 
-- The trigger shows the icon and the label of the current option, so `Status` with `Em andamento` shows the half circle in `warning-foreground` and the text `Em andamento`.
+- The trigger shows the icon and the label of the current option, so `Status` with `Em andamento` shows the half circle in `complete-foreground` and the text `Em andamento`.
 - Status and priority icons come from the catalog in `@tc96/ui/property-meta`: `<PropertyMetaIcon meta={workflowStatusMeta.done} />`, `priorityMeta.urgent`. The catalog holds the icon and the tone only; the label is the consumer's.
 - A property with an empty choice offers it as an option (`Sem prioridade`, `Sem responsável`), so the trigger still reads a value. A property with no value at all, such as a date not set, passes no `value` and shows only its icon and name.
 - An icon outside the catalog takes color only from `propertyToneClassName` (`@tc96/ui/lib/property-tone`), never from the palette.
@@ -174,7 +178,7 @@ A collection that lets the user choose its fields composes the parts above, as i
 
 ## Accessibility and theme
 
-- The trigger text and the footer items are in Portuguese by default (`"Exibição"`, `"Limpar filtros"`, `"Salvar preferência"`): pass `label`, `clearLabel` and `savePreferenceLabel` in the language of the screen, and `formatTriggerLabel` when the count needs another grammar.
+- The trigger text and the footer items are in Portuguese by default (`"Exibição"`, `"Limpar filtros"`, `"Redefinir"`, `"Salvar preferência"`): pass `label`, `clearLabel`, `resetLabel` and `savePreferenceLabel` in the language of the screen, and `formatTriggerLabel` when the count needs another grammar.
 - The field rows are `menuitemcheckbox` items with a switch look; the default `Mostrar todos os campos` is in Portuguese, so pass `label` in the language of the screen.
 - The layout tabs are `menuitemradio` items of the menu, so the arrow keys move between them and Enter picks one; picking a tab closes the menu.
 - The menu reads `--popover`, `--popover-foreground` and `--border`; the active tab `--background` (`--input` in dark) with a shadow, the others `--muted-foreground`, and the icon square `--primary`. The trigger reads the tokens of the ghost `Button`.

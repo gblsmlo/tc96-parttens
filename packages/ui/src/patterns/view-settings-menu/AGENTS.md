@@ -24,7 +24,7 @@ Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/utils`, `@pho
 - `ViewSettingsSubmenu` shows the label of the current option after its own label, and the option's icon in place of its own when the option has one, so the trigger reads the state without opening it. Without `value` no option is checked.
 - `ViewSettingsFieldSection` renders nothing for an empty list and shows the field count in its label; each row is a switch with `closeOnClick={false}`, so the menu stays open while fields are toggled.
 - `ViewSettingsShowAllFields` keeps the menu open and stays disabled while `hiddenCount` is zero.
-- The footer renders the clear item only with `onClearFilters`, and it stays disabled while `activeFilterCount` is zero; the save item renders only with `onSavePreference`. Clear comes before save.
+- The footer renders the clear item only with `onClearFilters`, and it stays disabled while `activeFilterCount` is zero; the reset item renders only with `onReset` and is disabled by `resetDisabled`; the save item renders only with `onSavePreference`. The order is clear, reset, save: clear and reset go back to a starting point, save moves forward from it. Clear and reset keep the menu open, so the result shows in the sections; save closes it.
 - The trigger text is `formatTriggerLabel(label, activeFilterCount)` (default `label (count)`) only when the count is above zero, so a consumer in another language passes the function instead of a concatenated string.
 
 ## Styling

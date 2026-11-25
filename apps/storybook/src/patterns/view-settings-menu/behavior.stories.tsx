@@ -17,6 +17,7 @@ import {
 
 const onClearFilters = fn()
 const onModeChange = fn()
+const onReset = fn()
 const onSavePreference = fn()
 
 const meta = {
@@ -227,7 +228,7 @@ export const FourModesStackTheTabs: Story = {
   },
 }
 
-export const FilterCountAndClear: Story = {
+export const ClearFiltersKeepsTheMenuOpen: Story = {
   render: () => (
     <CollectionToolbar
       right={
@@ -248,7 +249,8 @@ export const FilterCountAndClear: Story = {
       await screen.findByRole('menuitem', { name: 'Limpar filtros' }),
     )
     await expect(onClearFilters).toHaveBeenCalledTimes(1)
-    await expectMenuClosed()
+    await expect(screen.getByRole('menu')).toBeVisible()
+    await closeMenu()
   },
 }
 
@@ -368,9 +370,80 @@ export const SubmenuTriggerFollowsTheCurrentOption: Story = {
     await expect(
       screen
         .getByRole('menuitem', { name: /Status/ })
-        .querySelector('[data-slot="property-meta-icon"][data-tone="warning"]'),
+        .querySelector('[data-slot="property-meta-icon"][data-tone="complete"]'),
     ).not.toBeNull()
     await userEvent.keyboard('{Escape}')
+    await closeMenu()
+  },
+}
+
+export const ResetComesBeforeSaveAndKeepsTheMenuOpen: Story = {
+  render: () => (
+    <CollectionToolbar
+      right={<PropertySubmenusLayout {...viewSettingsControlArgs} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const menu = await openSettings(canvasElement)
+    const footer = menu
+      .getAllByRole('menuitem')
+      .map((item) => item.textContent)
+      .slice(-2)
+    await expect(footer).toEqual(['Redefinir', 'Salvar preferência'])
+    const reset = menu.getByRole('menuitem', { name: 'Redefinir' })
+    await expect(reset).toHaveAttribute('aria-disabled', 'true')
+    await userEvent.click(menu.getByRole('menuitem', { name: /Densidade/ }))
+    await userEvent.click(
+      await screen.findByRole('menuitemradio', { name: 'Compacta' }),
+    )
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() =>
+      expect(
+        screen.getByRole('menuitem', { name: 'Redefinir' }),
+      ).not.toHaveAttribute('aria-disabled', 'true'),
+    )
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Redefinir' }))
+    await expect(screen.getByRole('menu')).toBeVisible()
+    await waitFor(() =>
+      expect(
+        screen.getByRole('menuitem', { name: /Densidade/ }),
+      ).toHaveTextContent('DensidadeConfortável'),
+    )
+    await expect(
+      screen.getByRole('menuitem', { name: 'Redefinir' }),
+    ).toHaveAttribute('aria-disabled', 'true')
+    await closeMenu()
+  },
+}
+
+export const ResetRendersOnlyWithItsHandler: Story = {
+  render: () => (
+    <CollectionToolbar
+      right={
+        <>
+          <ViewSettingsMenu label="Sem redefinir">
+            <ViewSettingsSection label="Exibição">
+              <MenuItem>Densidade</MenuItem>
+            </ViewSettingsSection>
+          </ViewSettingsMenu>
+          <ViewSettingsMenu label="Com redefinir" onReset={onReset}>
+            <ViewSettingsSection label="Exibição">
+              <MenuItem>Densidade</MenuItem>
+            </ViewSettingsSection>
+          </ViewSettingsMenu>
+        </>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    onReset.mockClear()
+    let menu = await openSettings(canvasElement, 'Sem redefinir')
+    await expect(menu.queryByRole('menuitem', { name: 'Redefinir' })).toBeNull()
+    await closeMenu()
+    menu = await openSettings(canvasElement, 'Com redefinir')
+    await userEvent.click(menu.getByRole('menuitem', { name: 'Redefinir' }))
+    await expect(onReset).toHaveBeenCalledTimes(1)
+    await expect(screen.getByRole('menu')).toBeVisible()
     await closeMenu()
   },
 }

@@ -77,7 +77,7 @@ export const SwitchOptions: Story = {
 
 export const PropertySubmenus: Story = {
   parameters: describe(
-    'One submenu per property, each trigger with the icon and label of its current option, and each option with its own icon and a check on the chosen one. A property without a value shows only its icon and name. Shown open on Status. For a single choice per property, such as the status, priority, assignee and dates of a task.',
+    'An Exibição section with the density and the sort, then one submenu per property, each trigger with the icon and label of its current option, and each option with its own icon and a check on the chosen one. A property without a value shows only its icon and name. Shown open on Status. For a single choice per property, such as the status, priority, assignee and dates of a task.',
   ),
   render: () => <PropertySubmenusLayout {...viewSettingsControlArgs} />,
   play: async ({ canvasElement }) => {
