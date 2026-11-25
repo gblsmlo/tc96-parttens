@@ -1,20 +1,16 @@
 import type { ArgTypes } from '@storybook/react-vite'
 import type { PropertyVariant } from '@tc96/ui/patterns'
-
-export const emailDisplays = ['chips', 'trigger'] as const
-
-export type EmailDisplay = (typeof emailDisplays)[number]
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 
 export const emailVariants = ['badge', 'plain'] as const
 
 export interface EmailControls {
-  addLabel: string
   addTrigger: boolean
   ariaLabel: string
   disabled: boolean
-  display: EmailDisplay
   errorMessage: string
-  inputPlaceholder: string
+  labelsAdd: string
+  labelsInputPlaceholder: string
   placeholder: string
   readOnly: boolean
   value: string[]
@@ -22,13 +18,12 @@ export interface EmailControls {
 }
 
 export const emailControlArgs: EmailControls = {
-  addLabel: 'Adicionar e-mail',
   addTrigger: true,
   ariaLabel: 'E-mails',
   disabled: false,
-  display: 'chips',
   errorMessage: '',
-  inputPlaceholder: 'nome@exemplo.com',
+  labelsAdd: ptBRPropertyLabels.email.add,
+  labelsInputPlaceholder: ptBRPropertyLabels.email.inputPlaceholder,
   placeholder: 'Sem e-mail',
   readOnly: false,
   value: ['ana.souza@example.com', 'bruno.lima@example.com'],
@@ -36,11 +31,6 @@ export const emailControlArgs: EmailControls = {
 }
 
 export const emailControlArgTypes: Partial<ArgTypes<EmailControls>> = {
-  addLabel: {
-    control: 'text',
-    description:
-      'The `addLabel` of `EmailProperty`: names the add trigger and the popup.',
-  },
   addTrigger: {
     control: 'boolean',
     description: 'Shows the add trigger; off passes `addDisabled`.',
@@ -54,20 +44,20 @@ export const emailControlArgTypes: Partial<ArgTypes<EmailControls>> = {
     control: 'boolean',
     description: 'The `disabled` of `EmailProperty`.',
   },
-  display: {
-    control: 'inline-radio',
-    description: 'The `display` of `EmailProperty`.',
-    options: emailDisplays,
-  },
   errorMessage: {
     control: 'text',
     description:
-      'The `errorMessage` of `EmailProperty`, shown in the open popup or under the inline field; empty passes `null`.',
+      'The `errorMessage` of `EmailProperty`, shown in the open popup; empty passes `null`.',
   },
-  inputPlaceholder: {
+  labelsAdd: {
     control: 'text',
     description:
-      'The `inputPlaceholder` of `EmailProperty`, shown in the empty fields of the popup.',
+      '`labels.add` of `EmailProperty`: names the add trigger and the popup.',
+  },
+  labelsInputPlaceholder: {
+    control: 'text',
+    description:
+      '`labels.inputPlaceholder` of `EmailProperty`, shown in the empty fields of the popup.',
   },
   placeholder: {
     control: 'text',
@@ -86,7 +76,7 @@ export const emailControlArgTypes: Partial<ArgTypes<EmailControls>> = {
   variant: {
     control: 'inline-radio',
     description:
-      'The `variant` of `EmailProperty`; acts on the read-only row and the `trigger` display, not on the editable chips.',
+      'The `variant` of `EmailProperty`; acts on the read-only row, not on the editable chips.',
     options: emailVariants,
   },
 }

@@ -18,14 +18,15 @@ import {
   type EditorTitleHandle,
   PropertyCollection,
   type PropertyCollectionItem,
+  type PropertyOption,
   RichTextEditor,
   type RichTextEditorHandle,
   type RichTextValue,
   SelectProperty,
-  type SelectPropertyOption,
 } from '@tc96/ui/patterns'
 import { useRef, useState } from 'react'
 import { readStored, writeStored } from '../../../test-utils/usage-kit'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 
 export interface CampaignBrief {
   body: RichTextValue
@@ -36,7 +37,7 @@ export interface CampaignBrief {
   title: string
 }
 
-const objectiveOptions: readonly SelectPropertyOption[] = [
+const objectiveOptions: readonly PropertyOption[] = [
   {
     icon: CalendarPlusIcon,
     label: 'Gerar novas consultas',
@@ -55,7 +56,7 @@ const objectiveOptions: readonly SelectPropertyOption[] = [
   { icon: HandshakeIcon, label: 'Fortalecer indicação', value: 'referrals' },
 ]
 
-const targetOptions: readonly SelectPropertyOption[] = [
+const targetOptions: readonly PropertyOption[] = [
   {
     icon: CalendarCheckIcon,
     label: 'Consulta agendada',
@@ -124,11 +125,12 @@ export function CampaignBriefEditor({
       render: () => (
         <SelectProperty
           ariaLabel="Objetivo primário"
-          emptyOptionLabel="Sem definição"
           onValueChange={(primaryObjective) => update({ primaryObjective })}
           options={objectiveOptions}
           placeholder="Objetivo primário"
           value={brief.primaryObjective}
+          allowEmpty
+          labels={{ emptyOption: 'Sem definição' }}
         />
       ),
     },
@@ -140,11 +142,12 @@ export function CampaignBriefEditor({
       render: () => (
         <SelectProperty
           ariaLabel="Objetivo secundário"
-          emptyOptionLabel="Sem definição"
           onValueChange={(secondaryObjective) => update({ secondaryObjective })}
           options={objectiveOptions}
           placeholder="Objetivo secundário"
           value={brief.secondaryObjective}
+          allowEmpty
+          labels={{ emptyOption: 'Sem definição' }}
         />
       ),
     },
@@ -156,11 +159,12 @@ export function CampaignBriefEditor({
       render: () => (
         <SelectProperty
           ariaLabel="Target esperado"
-          emptyOptionLabel="Sem definição"
           onValueChange={(expectedTarget) => update({ expectedTarget })}
           options={targetOptions}
           placeholder="Sem conversão definida"
           value={brief.expectedTarget}
+          allowEmpty
+          labels={{ emptyOption: 'Sem definição' }}
         />
       ),
     },
@@ -193,6 +197,7 @@ export function CampaignBriefEditor({
         <PropertyCollection
           ariaLabel="Propriedades do briefing"
           items={properties}
+          labels={ptBRPropertyLabels.collection}
         />
       </header>
       <RichTextEditor

@@ -15,6 +15,7 @@ export interface AttachmentsControls {
   actionLabel: string
   ariaLabel: string
   empty: boolean
+  readOnly: boolean
   remove: boolean
   type: AttachmentType
   typeIcon: boolean
@@ -24,9 +25,10 @@ export const attachmentsControlArgs: AttachmentsControls = {
   action: true,
   actionDisabled: false,
   actionIcon: true,
-  actionLabel: 'Attach file',
-  ariaLabel: 'Files',
+  actionLabel: 'Anexar arquivo',
+  ariaLabel: 'Arquivos',
   empty: false,
+  readOnly: false,
   remove: true,
   type: 'pdf',
   typeIcon: true,
@@ -61,6 +63,11 @@ export const attachmentsControlArgTypes: Partial<
   empty: {
     control: 'boolean',
     description: 'Renders the row with no `AttachmentProperty`.',
+  },
+  readOnly: {
+    control: 'boolean',
+    description:
+      'Leaves out `action` and every `onRemove`, as a consumer does for a row the user cannot change.',
   },
   remove: {
     control: 'boolean',

@@ -115,7 +115,6 @@ export function Projects3PriorityField({ context, item, variant }: FieldProps) {
   return (
     <SelectProperty
       ariaLabel={labels.columns.priority}
-      emptyOptionLabel={onPriorityChange ? labels.noPriority : undefined}
       onValueChange={
         onPriorityChange
           ? (value) => {
@@ -133,6 +132,8 @@ export function Projects3PriorityField({ context, item, variant }: FieldProps) {
       placeholder={labels.noPriority}
       value={item.priority}
       variant={variant}
+      allowEmpty={Boolean(onPriorityChange)}
+      labels={{ emptyOption: labels.noPriority }}
     />
   )
 }
@@ -165,7 +166,6 @@ export function Projects3StartField({ context, item, variant }: FieldProps) {
       allowClear={false}
       ariaLabel={labels.columns.start}
       calendarLocale={ptBR}
-      fallback={labels.noStart}
       locale={locale}
       onValueChange={
         onStartChange
@@ -178,6 +178,7 @@ export function Projects3StartField({ context, item, variant }: FieldProps) {
       serializeDate={serializeDay}
       {...dateDisplayOf(item.startAt, timeZone)}
       variant={variant}
+      labels={{ fallback: labels.noStart }}
     />
   )
 }
@@ -188,8 +189,6 @@ export function Projects3DueField({ context, item, variant }: FieldProps) {
     <DateProperty
       ariaLabel={labels.columns.due}
       calendarLocale={ptBR}
-      clearLabel={labels.clearDate}
-      fallback={labels.noDue}
       isOverdue={Boolean(item.overdue)}
       locale={locale}
       onValueChange={
@@ -199,6 +198,7 @@ export function Projects3DueField({ context, item, variant }: FieldProps) {
       serializeDate={serializeDay}
       {...dateDisplayOf(item.dueAt, timeZone)}
       variant={variant}
+      labels={{ clear: labels.clearDate, fallback: labels.noDue }}
     />
   )
 }

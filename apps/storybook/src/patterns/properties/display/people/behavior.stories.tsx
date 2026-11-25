@@ -1,13 +1,16 @@
 import { PlusIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PeopleProperty, type PeoplePropertyOption } from '@tc96/ui/patterns'
+import { PeopleProperty, type PersonPropertyOption } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
 import { esperarAvatarComAresta } from '../../../../test-utils/property-surface'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { PeopleCanvas } from './people-canvas.tsx'
+import { peopleControlArgs } from './people-controls.ts'
+import { ComposedPeople } from './people-layouts.tsx'
 
-const options: PeoplePropertyOption<string>[] = [
+const options: PersonPropertyOption<string>[] = [
   { label: 'Bruno Lima', value: 'person-1' },
   { label: 'Ana Souza', value: 'person-2' },
 ]
@@ -18,6 +21,8 @@ const meta = {
     onValueChange: fn(),
     options,
     value: ['person-1'],
+    placeholder: 'Adicionar pessoa',
+    labels: ptBRPropertyLabels.people,
   },
   component: PeopleProperty,
   decorators: [PeopleCanvas],
@@ -171,12 +176,15 @@ export const ActionGetsAddedAndRemoved: Story = {
 
     return (
       <PeopleProperty
+        ariaLabel="Pessoas"
+        placeholder="Adicionar pessoa"
         {...args}
         action={(next, context) => {
           action?.(next, context)
           setValue(next)
         }}
         value={value}
+        labels={{ ...ptBRPropertyLabels.people, ...args.labels }}
       />
     )
   },
@@ -277,5 +285,53 @@ export const PlainChipsShowNoFocusRing: Story = {
     await waitFor(() => expect(chips.matches(':focus-within')).toBe(true))
     await expect(getComputedStyle(chips).boxShadow).not.toContain('3px')
     await expect(args.onValueChange).toHaveBeenCalledOnce()
+  },
+}
+
+const TRANSPARENT = 'rgba(0, 0, 0, 0)'
+
+const chipsOf = (canvasElement: HTMLElement) => {
+  const chips = canvasElement.querySelector<HTMLElement>(
+    '[data-slot="combobox-chips"]',
+  )
+  if (!chips) throw new Error('The story did not render the chips.')
+  return chips
+}
+
+export const PlainByDefaultHasNoFrame: Story = {
+  render: () => <ComposedPeople {...peopleControlArgs} />,
+  play: async ({ canvasElement }) => {
+    const chips = getComputedStyle(chipsOf(canvasElement))
+
+    await expect(
+      canvasElement.querySelector('[data-slot="people-property"]'),
+    ).toHaveAttribute('data-variant', 'plain')
+    await expect(chips.backgroundColor).toBe(TRANSPARENT)
+    await expect(chips.borderTopColor).toBe(TRANSPARENT)
+  },
+}
+
+export const BadgeFramesTheChips: Story = {
+  render: () => <ComposedPeople {...peopleControlArgs} variant="badge" />,
+  play: async ({ canvasElement }) => {
+    const chips = getComputedStyle(chipsOf(canvasElement))
+
+    await expect(
+      canvasElement.querySelector('[data-slot="people-property"]'),
+    ).toHaveAttribute('data-variant', 'badge')
+    await expect(chips.borderTopWidth).toBe('1px')
+    await expect(chips.borderTopColor).not.toBe(TRANSPARENT)
+  },
+}
+
+export const DisabledBlocksAddingAndRemoving: Story = {
+  render: () => <ComposedPeople {...peopleControlArgs} disabled />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(addChip(canvasElement)).toBeDisabled()
+    await expect(
+      canvas.getByRole('button', { name: 'Remover Bruno Lima' }),
+    ).toHaveAttribute('aria-disabled', 'true')
   },
 }

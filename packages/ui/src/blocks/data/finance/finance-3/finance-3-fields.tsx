@@ -55,9 +55,9 @@ export function Finance3TextField({
   return (
     <TextProperty
       ariaLabel={ariaLabel}
-      fallback={fallback}
       value={value}
       variant="plain"
+      labels={{ fallback: fallback }}
     />
   )
 }

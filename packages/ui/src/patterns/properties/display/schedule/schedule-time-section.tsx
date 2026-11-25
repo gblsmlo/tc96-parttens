@@ -15,8 +15,8 @@ import {
 } from '@tc96/ui/select'
 import { Switch } from '@tc96/ui/switch'
 import { useId } from 'react'
+import type { SchedulePropertyLabels } from '../../shared/property-labels'
 import { propertySelectItemClassName } from '../../shared/property-select-shell'
-import type { SchedulePropertyLabels } from './schedule-labels'
 import type { ScheduleValue } from './schedule-value'
 
 export type ScheduleTimeControl = 'select' | 'input'

@@ -1,10 +1,13 @@
 'use client'
 
-import { BuildingsIcon, CubeIcon, PackageIcon } from '@phosphor-icons/react'
+import {
+  type ReferencePropertyKind,
+  referenceKindIcons,
+} from '../../shared/property-display-meta'
 import type { PropertyVariant } from '../../shared/property-surface'
 import { IconLabelProperty } from '../icon-label/icon-label-property'
 
-export type ReferencePropertyKind = 'account' | 'product' | 'record'
+export type { ReferencePropertyKind }
 
 export interface ReferencePropertyProps {
   label: string
@@ -13,12 +16,6 @@ export interface ReferencePropertyProps {
   kind?: ReferencePropertyKind
   variant?: PropertyVariant
 }
-
-const referenceIcon = {
-  account: BuildingsIcon,
-  product: PackageIcon,
-  record: CubeIcon,
-} satisfies Record<ReferencePropertyKind, typeof CubeIcon>
 
 export function ReferenceProperty({
   ariaLabel,
@@ -31,7 +28,7 @@ export function ReferenceProperty({
     <IconLabelProperty
       ariaLabel={ariaLabel}
       className={className}
-      icon={referenceIcon[kind]}
+      icon={referenceKindIcons[kind]}
       label={label}
       variant={variant}
     />

@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 The values of a record shown in place, one display per kind of value: the status, priority, assignee, due date and tags of a task, the owner and next contact of a lead. Each display renders one value on a small surface and, when the consumer passes a handler, edits it in a popup. `PropertyCollection` lines up the displays of a record in one row and lets the user pick which ones show.
 
-The other pages of `Patterns/Properties`: [Playground](?path=/story/patterns-properties-playground--playground) to try the row, its labels, its surface and its visible properties, [Stories](?path=/story/patterns-properties-stories--default) for each state of the row, [Behavior](?path=/story/patterns-properties-behavior--collection-shows-default-visible-items) for the tests of the row and of the parts every display shares, [Usages](?path=/story/patterns-properties-usages--task) for the header of a task and of a lead, and [Layouts](?path=/story/patterns-properties-layouts--plain-column) for plain values, editable and read-only, in one column.
+The other pages of `Patterns/Properties`: [Playground](?path=/story/patterns-properties-playground--playground) to try the row, its labels, its surface and its visible properties, [Variants](?path=/story/patterns-properties-variants--default) for the `badge` and `plain` surfaces and the row with no values, [Layouts](?path=/story/patterns-properties-layouts--default) for the row and for plain values in one column, [Behavior](?path=/story/patterns-properties-behavior--collection-shows-default-visible-items) for the tests of the row and of the parts every display shares, and [Usages](?path=/story/patterns-properties-usages--task) for the header of a task and of a lead.
 
-Each display has its own node, with its props, states and tests: [Assigned](?path=/docs/patterns-properties-display-assigned-api-reference--api-reference), [Attachments](?path=/docs/patterns-properties-display-attachments-api-reference--api-reference), [Date](?path=/docs/patterns-properties-display-date-api-reference--api-reference), [Date Range](?path=/docs/patterns-properties-display-daterange-api-reference--api-reference), [Editable Text](?path=/docs/patterns-properties-display-editable-text-api-reference--api-reference), [Email](?path=/docs/patterns-properties-display-email-api-reference--api-reference), [Flag](?path=/docs/patterns-properties-display-flag-api-reference--api-reference), [Icon Label](?path=/docs/patterns-properties-display-icon-label-api-reference--api-reference), [People](?path=/docs/patterns-properties-display-people-api-reference--api-reference), [Person](?path=/docs/patterns-properties-display-person-api-reference--api-reference), [Phone](?path=/docs/patterns-properties-display-phone-api-reference--api-reference), [Phone Input](?path=/docs/patterns-properties-display-phone-input-api-reference--api-reference), [Reference](?path=/docs/patterns-properties-display-reference-api-reference--api-reference), [Schedule](?path=/docs/patterns-properties-display-schedule-api-reference--api-reference), [Select](?path=/docs/patterns-properties-display-select-api-reference--api-reference), [Tags](?path=/docs/patterns-properties-display-tags-api-reference--api-reference) and [Text](?path=/docs/patterns-properties-display-text-api-reference--api-reference). This page documents what they share: the surface, the row, the select and multi-select shells, the add trigger, the entry form and its editor, and the calendar popover.
+Each display has its own node, with its props, states and tests: [Assigned](?path=/docs/patterns-properties-display-assigned-api-reference--api-reference), [Attachments](?path=/docs/patterns-properties-display-attachments-api-reference--api-reference), [Date](?path=/docs/patterns-properties-display-date-api-reference--api-reference), [Date Range](?path=/docs/patterns-properties-display-daterange-api-reference--api-reference), [Editable Text](?path=/docs/patterns-properties-display-editabletext-api-reference--api-reference), [Email](?path=/docs/patterns-properties-display-email-api-reference--api-reference), [Flag](?path=/docs/patterns-properties-display-flag-api-reference--api-reference), [Icon Label](?path=/docs/patterns-properties-display-iconlabel-api-reference--api-reference), [People](?path=/docs/patterns-properties-display-people-api-reference--api-reference), [Person](?path=/docs/patterns-properties-display-person-api-reference--api-reference), [Phone](?path=/docs/patterns-properties-display-phone-api-reference--api-reference), [PhoneInput](?path=/docs/patterns-properties-display-phoneinput-api-reference--api-reference), [Reference](?path=/docs/patterns-properties-display-reference-api-reference--api-reference), [Schedule](?path=/docs/patterns-properties-display-schedule-api-reference--api-reference), [Select](?path=/docs/patterns-properties-display-select-api-reference--api-reference), [Tags](?path=/docs/patterns-properties-display-tags-api-reference--api-reference) and [Text](?path=/docs/patterns-properties-display-text-api-reference--api-reference). This page documents what they share: the surface, the row, the select and multi-select shells, the add trigger, the entry form and its editor, the calendar popover, the `labels` every display takes and the catalog types: options, icons, change contexts and popup placement.
 
 Used in: the brief header of [Campaign Brief Template in Patterns/Rich Text Editor/Usages](?path=/story/patterns-rich-text-editor-usages--campaign-brief-template) mounts a `PropertyCollection`.
 
@@ -17,9 +17,12 @@ Used in: the brief header of [Campaign Brief Template in Patterns/Rich Text Edit
 
 ```tsx
 import {
+  defaultPropertyLabels,
   PropertyCollection,
   PropertySurface,
   type PropertyCollectionItem,
+  type PropertyLabels,
+  type PropertyOption,
 } from '@acme/patterns'
 ```
 
@@ -36,6 +39,7 @@ import { RadioButtonIcon, TagIcon } from '@phosphor-icons/react'
     { defaultVisible: true, icon: RadioButtonIcon, id: 'status', label: 'Status', render: () => <SelectProperty {...status} /> },
     { icon: TagIcon, id: 'tags', label: 'Tags', render: () => <TagsProperty {...tags} /> },
   ]}
+  labels={{ trigger: 'Ajustar propriedades' }}
 />
 ```
 
@@ -54,7 +58,7 @@ The properties of one record in a row, with a menu to pick which of them show. R
 | `defaultVisible` | `readonly string[]` | ids of the items with `defaultVisible: true` | Sets the ids visible at first when uncontrolled; wins over the items' own `defaultVisible`. |
 | `visible` | `readonly string[]` | - | Sets the visible ids and makes the visibility controlled. |
 | `readOnly` | `boolean` | `false` | When true, removes the menu trigger. The displays keep their own handlers. |
-| `triggerLabel` | `string` | `"Ajustar propriedades"` | Names the menu trigger (`aria-label`). |
+| `labels` | `Partial<PropertyCollectionLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.collection`: `trigger` (`"Adjust properties"`) names the menu trigger (`aria-label`). |
 | `onVisibleChange` | `(visible: readonly string[]) => void` | - | Called when the user toggles an item, with the visible ids in catalog order. |
 | `className` | `string` | - | Adds classes to the `fieldset`. |
 
@@ -180,6 +184,62 @@ The date picker of `DateProperty` and `DateRangeProperty`. Renders the surface a
 - A disabled trigger does not open.
 - With a tooltip, `DateProperty` shows the full date on hover and focus through `PropertyTooltip`, which also names it in a `hidden` span the trigger points to with `aria-describedby`.
 
+## Labels
+
+Every text a display shows or announces comes from a prop, never from a literal in the display. `ariaLabel` and `placeholder` are top-level props; every other text goes through `labels`, typed `Partial<<Display>Labels>`. Without them, a display falls back to English: `defaultPropertyLabels` for `labels`, and an English `ariaLabel` and `placeholder` of its own (`"Tags"`, `"Add a tag"`), which are not exported.
+
+`defaultPropertyLabels` is one object of type `PropertyLabels`, keyed by display: `attachment`, `collection`, `date`, `dateRange`, `email`, `people`, `phone`, `phoneInput`, `schedule`, `select`, `tags` and `text`. A display merges its `labels` over its key key by key and skips a key set to `undefined`, so a partial object keeps the other defaults. An app in another language writes one object typed `PropertyLabels` and passes each display its key (`labels={ptBR.tags}`).
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `trigger` | `string` | `"Adjust properties"` | Names the menu trigger of `PropertyCollection` (`aria-label`). |
+
+The table above is `PropertyCollectionLabels`; each display page lists its own keys. Texts that carry a value are composed from these words and the value: `<ariaLabel>: <value>`, `<remove> <label>`, `<from> <date>`. Two keys are functions, because their word order depends on the language: `tags.count` is `(count: number) => string`, and `removeEntry` of `email` and `phone` is `(entry: string) => string`.
+
+## PropertyOption
+
+One option of a catalog, the shape `SelectProperty`, `TagsProperty` and the schedule options take; `PersonPropertyOption` extends it for people.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `TValue extends string` | required | Identifies the option; the display's `value` holds it. |
+| `label` | `string` | required | Names the option in the list, on the surface and in the change context. |
+| `icon` | `PropertyIcon` | - | Sets the icon before the label. |
+| `tone` | `PropertyTone` | - | Colors the icon of `SelectProperty` with the class `propertyToneClassName` maps the tone to. |
+| `weight` | `IconWeight` | - | Sets the Phosphor `weight` of the icon (`"fill"`, `"bold"` and the others). |
+
+`PropertyIcon` is the type of `icon` here and in `PropertyCollectionItem`: a component that takes SVG props and an optional Phosphor `weight`. Every `@phosphor-icons/react` icon fits it.
+
+## Change context
+
+What `action` receives as its second argument, after the next value. A single-value display (`SelectProperty`, `PersonProperty`, `DateProperty`, `AssignedProperty`) passes `PropertyChangeContext<TValue>`:
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `previousValue` | `TValue` | required | Holds the value before the change. |
+
+A list display (`TagsProperty`, `PeopleProperty`, `EmailProperty`, `PhoneProperty`) passes `PropertyListChangeContext<TItem, TValue>`, where `TItem` is the option for tags and people and the entry string for email and phone:
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `added` | `TItem` or `null` | required | Holds the item the change added, or `null`. |
+| `removed` | `TItem` or `null` | required | Holds the item the change removed, or `null`. |
+| `previousValue` | `readonly TValue[]` | required | Holds the list before the change. |
+
+## Dropdown placement
+
+The `dropdownPlacement` prop of a display moves its popup. `PropertySelectDropdownPlacement` (`SelectProperty`, `PersonProperty`), `PropertyMultiSelectDropdownPlacement` (`TagsProperty`, `PeopleProperty`) and `PropertyPopoverDropdownPlacement` (`DateProperty`, `DateRangeProperty`, and `ScheduleProperty` through its own type) share these fields; only the select one has `alignItemWithTrigger`.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `side` | `Side` | `"bottom"` | Sets the side of the trigger the popup opens on. |
+| `align` | `"start"`, `"center"` or `"end"` | the display's | Sets the alignment of the popup against the trigger. |
+| `sideOffset` | `number` or `OffsetFunction` | `4` | Sets the gap between the trigger and the popup, in pixels. |
+| `alignOffset` | `number` or `OffsetFunction` | `0` | Shifts the popup along the alignment axis, in pixels. |
+| `alignItemWithTrigger` | `boolean` | `false` | When true, places the selected option over the trigger. Select only. |
+
+Values of `side`: `"top"`, `"bottom"`, `"left"`, `"right"`, `"inline-start"`, `"inline-end"`. Each display sets its own `align` (start for the select and calendar popups, end for the multi-select list, center for `DateRangeProperty`); a field passed in `dropdownPlacement` wins over the display's.
+
 ## Exports
 
 | Export | Kind | Description |
@@ -187,9 +247,16 @@ The date picker of `DateProperty` and `DateRangeProperty`. Renders the surface a
 | `PropertyCollectionProps` | `type` | The props of `PropertyCollection`. |
 | `PropertySurfaceProps` | `type` | The props of `PropertySurface`. |
 | `PropertyVariant` | `type` | `"badge"` or `"plain"`. |
-| `PropertyIcon` | `type` | An icon component that takes SVG props, as the `@phosphor-icons/react` icons. |
-| `PropertyTone` | `type` | `"danger"`, `"info"`, `"neutral"`, `"success"` or `"warning"`. |
-| `PropertyPreset` | `type` | A preset option, `{ icon, label, tone, value }`. |
+| `PropertyIcon` | `type` | An icon component that takes SVG props and an optional Phosphor `weight`, as the `@phosphor-icons/react` icons. |
+| `PropertyTone` | `type` | `"danger"`, `"info"`, `"neutral"`, `"purple"`, `"success"`, `"teal"` or `"warning"`. |
+| `PropertyOption` | `type` | One option of a catalog: `{ value, label, icon?, tone?, weight? }`; `weight` reaches a Phosphor icon. |
+| `PropertyChangeContext` | `type` | What `action` receives from a single-value display: `{ previousValue }`. |
+| `PropertyListChangeContext` | `type` | What `action` receives from a list display: `{ added, removed, previousValue }`. |
+| `PropertySelectDropdownPlacement` | `type` | `side`, `align`, `sideOffset`, `alignOffset` and `alignItemWithTrigger` of a select list. |
+| `PropertyMultiSelectDropdownPlacement` | `type` | `side`, `align`, `sideOffset` and `alignOffset` of a combobox list. |
+| `PropertyPopoverDropdownPlacement` | `type` | `side`, `align`, `sideOffset` and `alignOffset` of a popover. |
+| `defaultPropertyLabels` | `constant` | The English default texts of every display, keyed by display; also in `core`. |
+| `PropertyLabels` and `<Display>Labels` | `type` | The shape of `defaultPropertyLabels` and of each display's `labels` prop; `PropertyEntryListLabels` is the shape email and phone share. |
 | `propertyBadgeClassName` | `constant` | The classes the badge surface adds to `Badge`. |
 | `propertyToneClassName` | `constant` | The text color of each tone, from the theme tokens: `Record<PropertyTone, string>`. |
 
@@ -197,5 +264,5 @@ The date picker of `DateProperty` and `DateRangeProperty`. Renders the surface a
 
 - Name `PropertyCollection` with `ariaLabel` and every display with its own `ariaLabel`: the triggers read `<ariaLabel>: <value>`, and a read-only value reads as an image with that name.
 - Keyboard: every trigger is a `button` in the Tab order; Enter or Space opens its popup or menu, and Escape closes it. In the entry form, Enter saves.
-- The copy is Portuguese (`Ajustar propriedades`, `Adicionar outro`, `Salvar`, `Limpar data`); the labels of each display are props.
+- Every default text is English and lives in `defaultPropertyLabels`; `ariaLabel` and `placeholder` are top-level props, every other text goes through the `labels` prop of each display (`labels.trigger` here).
 - The colors come from the theme tokens `primary` (the text of a value), `secondary`, `muted-foreground`, `foreground`, `ring`, `destructive-foreground` and the tone tokens of `propertyToneClassName`, through the badge, menu, popover, combobox and select of the theme.

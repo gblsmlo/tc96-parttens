@@ -4,6 +4,12 @@ import { CopyIcon, PlusIcon } from '@phosphor-icons/react'
 import { copyToClipboard } from '@tc96/ui/helpers/clipboard'
 import { cn } from '@tc96/utils'
 import { useState } from 'react'
+import type { PropertyIcon } from '../../shared/property-catalog'
+import {
+  defaultPropertyLabels,
+  resolvePropertyLabels,
+  type TextPropertyLabels,
+} from '../../shared/property-labels'
 import {
   PropertySurface,
   type PropertyVariant,
@@ -11,50 +17,48 @@ import {
 import { EditableText } from '../editable-text/index'
 import {
   IconLabelProperty,
-  type IconLabelPropertyIcon,
   type IconLabelPropertyTrailingVisibility,
 } from '../icon-label/icon-label-property'
-
-export type TextPropertyIcon = IconLabelPropertyIcon
 
 export type TextPropertyEditing = 'inline' | 'trigger'
 
 export interface TextPropertyProps {
   value: string | null
-  addLabel?: string
   ariaLabel?: string
   className?: string
-  copyLabel?: string
+  copyable?: boolean
   disabled?: boolean
   editing?: TextPropertyEditing
-  fallback?: string
-  icon?: TextPropertyIcon
-  inputPlaceholder?: string
+  icon?: PropertyIcon
   iconClassName?: string
+  labels?: Partial<TextPropertyLabels>
   trailingVisibility?: IconLabelPropertyTrailingVisibility
   variant?: PropertyVariant
   onCommit?: (value: string | null) => void
 }
 
 export function TextProperty({
-  addLabel,
   ariaLabel,
   className,
-  copyLabel,
+  copyable = false,
   disabled = false,
   editing = 'trigger',
-  fallback = 'Não informado',
   icon: Icon,
   iconClassName,
-  inputPlaceholder,
+  labels: labelOverrides,
   trailingVisibility,
   value,
   variant = 'badge',
   onCommit,
 }: Readonly<TextPropertyProps>) {
   const [editingInline, setEditingInline] = useState(false)
+  const labels = resolvePropertyLabels(
+    defaultPropertyLabels.text,
+    labelOverrides,
+  )
+  const { fallback } = labels
   const text = value?.trim() || null
-  const copiable = Boolean(copyLabel && text)
+  const copiable = copyable && Boolean(text)
   const editable = Boolean(onCommit) && !disabled
 
   const commit = (next: string | null) => {
@@ -65,7 +69,7 @@ export function TextProperty({
   if (editable && !text && editing === 'trigger' && !editingInline) {
     return (
       <PropertySurface
-        aria-label={addLabel ?? fallback}
+        aria-label={labels.add ?? fallback}
         className={cn('gap-1', className)}
         muted
         onClick={() => setEditingInline(true)}
@@ -80,7 +84,7 @@ export function TextProperty({
   const copyAffordance =
     copiable && text ? (
       <button
-        aria-label={copyLabel}
+        aria-label={labels.copy}
         className="h-full shrink-0 cursor-pointer px-1.5 opacity-80 transition-opacity hover:opacity-100"
         data-slot="text-property-copy"
         onClick={() => void copyToClipboard(text)?.catch(() => undefined)}
@@ -97,7 +101,7 @@ export function TextProperty({
         autoFocus={editingInline}
         className="field-sizing-content w-auto min-w-[1ch] max-w-full"
         onCommit={commit}
-        placeholder={inputPlaceholder ?? fallback}
+        placeholder={labels.inputPlaceholder ?? fallback}
         size="sm"
         value={text}
       />

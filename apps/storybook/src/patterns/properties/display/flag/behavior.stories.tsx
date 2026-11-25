@@ -8,13 +8,15 @@ import {
   esperarSuperficiePlana,
 } from '../../../../test-utils/property-surface'
 import { FlagCanvas } from './flag-canvas.tsx'
+import { flagControlArgs } from './flag-controls.ts'
+import { ComposedFlag } from './flag-layouts.tsx'
 
 const meta = {
   args: {
     active: true,
     activeIcon: RobotIcon,
     inactiveIcon: CircleIcon,
-    label: 'Overdue',
+    label: 'Atrasada',
   },
   component: FlagProperty,
   decorators: [FlagCanvas],
@@ -33,31 +35,31 @@ export const ActiveShowsLabelAndIcon: Story = {
   args: { ariaLabel: 'Prazo' },
   play: async ({ canvasElement }) => {
     const flag = within(canvasElement).getByRole('img', {
-      name: 'Prazo: Overdue',
+      name: 'Prazo: Atrasada',
     })
 
-    await expect(flag.textContent).toBe('Overdue')
+    await expect(flag.textContent).toBe('Atrasada')
     await expect(isIcon(iconIn(canvasElement), RobotIcon)).toBe(true)
   },
 }
 
 export const HidesInactiveByDefault: Story = {
-  args: { active: false, inactiveLabel: 'On time' },
+  args: { active: false, inactiveLabel: 'No prazo' },
   play: async ({ canvasElement }) => {
     await expect(
       canvasElement.querySelector('[data-slot="property-surface"]'),
     ).toBeNull()
-    await expect(within(canvasElement).queryByText('On time')).toBeNull()
+    await expect(within(canvasElement).queryByText('No prazo')).toBeNull()
   },
 }
 
 export const ShowsInactiveWhenRequested: Story = {
-  args: { active: false, inactiveLabel: 'On time', showInactive: true },
+  args: { active: false, inactiveLabel: 'No prazo', showInactive: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
-    await expect(canvas.getByText('On time')).toBeVisible()
-    await expect(canvas.queryByText('Overdue')).toBeNull()
+    await expect(canvas.getByText('No prazo')).toBeVisible()
+    await expect(canvas.queryByText('Atrasada')).toBeNull()
     await expect(isIcon(iconIn(canvasElement), CircleIcon)).toBe(true)
   },
 }
@@ -65,7 +67,7 @@ export const ShowsInactiveWhenRequested: Story = {
 export const InactiveFallsBackToLabel: Story = {
   args: { active: false, showInactive: true },
   play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByText('Overdue')).toBeVisible()
+    await expect(within(canvasElement).getByText('Atrasada')).toBeVisible()
   },
 }
 
@@ -103,6 +105,35 @@ export const BadgeFillsTheSurface: Story = {
 export const PlainHasNoFill: Story = {
   args: { variant: 'plain' },
   play: async ({ canvasElement }) => {
+    await expect(
+      canvasElement.querySelector('[data-slot="property-surface"]'),
+    ).toHaveAttribute('data-variant', 'plain')
     await esperarSuperficiePlana(canvasElement)
+  },
+}
+
+export const InactiveKeepsTheActiveSurface: Story = {
+  render: () => <ComposedFlag {...flagControlArgs} active={false} />,
+  play: async ({ canvasElement }) => {
+    const flag = within(canvasElement).getByRole('img', {
+      name: 'Modo de execução: Manual',
+    })
+
+    await expect(flag).not.toHaveAttribute('data-empty')
+    await expect(flag).toHaveAttribute('data-variant', 'badge')
+    await esperarSuperficieDeBadge(canvasElement)
+    await expect(surfaceColorWithPrimary(canvasElement)).toBe('rgb(255, 0, 0)')
+  },
+}
+
+export const NoIconWithoutIcons: Story = {
+  render: () => <ComposedFlag {...flagControlArgs} icon={false} />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole('img', {
+        name: 'Modo de execução: Automático',
+      }),
+    ).toBeVisible()
+    await expect(iconIn(canvasElement)).toBeNull()
   },
 }

@@ -20,14 +20,15 @@ import {
   statusOptions,
   tagOptions,
 } from './properties-data'
+import { ptBRPropertyLabels } from './properties-labels.ts'
 
 function TaskProperties({
   ariaLabel,
   defaultVisible,
   empty,
   icons,
+  labelsTrigger,
   readOnly,
-  triggerLabel,
   variant,
 }: Readonly<PropertiesControls>) {
   const [status, setStatus] = useState<string | null>(
@@ -104,12 +105,12 @@ function TaskProperties({
           render: () => (
             <DateProperty
               ariaLabel="Due date"
-              fallback="Set due date"
               locale="en-US"
               onValueChange={setDueDate}
               timeZone="UTC"
               value={dueDate}
               variant={variant}
+              labels={ptBRPropertyLabels.date}
             />
           ),
         },
@@ -126,12 +127,13 @@ function TaskProperties({
               placeholder="Add tag"
               value={tags}
               variant={variant}
+              labels={ptBRPropertyLabels.tags}
             />
           ),
         },
       ]}
       readOnly={readOnly}
-      triggerLabel={triggerLabel}
+      labels={{ ...ptBRPropertyLabels.collection, trigger: labelsTrigger }}
     />
   )
 }
@@ -142,171 +144,6 @@ export function ComposedProperties(args: Readonly<PropertiesControls>) {
       key={`${args.defaultVisible.join()}:${args.empty}`}
       {...args}
     />
-  )
-}
-
-export function TaskHeader() {
-  const [status, setStatus] = useState<string | null>('inProgress')
-  const [priority, setPriority] = useState<string | null>('high')
-  const [assignee, setAssignee] = useState<string | null>(null)
-  const [dueDate, setDueDate] = useState<string | null>(null)
-  const [tags, setTags] = useState<readonly string[]>([])
-
-  return (
-    <header className="flex max-w-xl flex-col gap-2">
-      <h2 className="font-semibold text-lg">Review the Acme contract</h2>
-      <PropertyCollection
-        ariaLabel="Task properties"
-        items={[
-          {
-            defaultVisible: true,
-            icon: RadioButtonIcon,
-            id: 'status',
-            label: 'Status',
-            render: () => (
-              <SelectProperty
-                ariaLabel="Status"
-                onValueChange={setStatus}
-                options={statusOptions}
-                value={status}
-              />
-            ),
-          },
-          {
-            defaultVisible: true,
-            icon: CellSignalHighIcon,
-            id: 'priority',
-            label: 'Priority',
-            render: () => (
-              <SelectProperty
-                ariaLabel="Priority"
-                onValueChange={setPriority}
-                options={priorityOptions}
-                value={priority}
-              />
-            ),
-          },
-          {
-            defaultVisible: true,
-            icon: UserCircleIcon,
-            id: 'assignee',
-            label: 'Assignee',
-            render: () => (
-              <PersonProperty
-                ariaLabel="Assignee"
-                onValueChange={setAssignee}
-                options={people}
-                placeholder="Set assignee"
-                value={assignee}
-              />
-            ),
-          },
-          {
-            defaultVisible: true,
-            icon: CalendarDotsIcon,
-            id: 'dueDate',
-            label: 'Due date',
-            render: () => (
-              <DateProperty
-                ariaLabel="Due date"
-                fallback="Set due date"
-                locale="pt-BR"
-                onValueChange={setDueDate}
-                value={dueDate}
-              />
-            ),
-          },
-          {
-            icon: TagIcon,
-            id: 'tags',
-            label: 'Tags',
-            render: () => (
-              <TagsProperty
-                ariaLabel="Tags"
-                onValueChange={setTags}
-                options={tagOptions}
-                value={tags}
-              />
-            ),
-          },
-        ]}
-      />
-    </header>
-  )
-}
-
-export function LeadHeader() {
-  const [status, setStatus] = useState<string | null>('todo')
-  const [owner, setOwner] = useState<string | null>('person-2')
-  const [nextContact, setNextContact] = useState<string | null>('2026-08-28')
-  const [tags, setTags] = useState<readonly string[]>(['return'])
-
-  return (
-    <header className="flex max-w-xl flex-col gap-2">
-      <h2 className="font-semibold text-lg">Marina Costa · Northwind</h2>
-      <PropertyCollection
-        ariaLabel="Lead properties"
-        items={[
-          {
-            defaultVisible: true,
-            icon: RadioButtonIcon,
-            id: 'status',
-            label: 'Status',
-            render: () => (
-              <SelectProperty
-                ariaLabel="Status"
-                onValueChange={setStatus}
-                options={statusOptions}
-                value={status}
-              />
-            ),
-          },
-          {
-            defaultVisible: true,
-            icon: UserCircleIcon,
-            id: 'owner',
-            label: 'Dono',
-            render: () => (
-              <PersonProperty
-                ariaLabel="Owner"
-                onValueChange={setOwner}
-                options={people}
-                placeholder="Set owner"
-                value={owner}
-              />
-            ),
-          },
-          {
-            defaultVisible: true,
-            icon: TagIcon,
-            id: 'tags',
-            label: 'Tags',
-            render: () => (
-              <TagsProperty
-                ariaLabel="Tags"
-                onValueChange={setTags}
-                options={tagOptions}
-                value={tags}
-              />
-            ),
-          },
-          {
-            icon: CalendarDotsIcon,
-            id: 'nextContact',
-            label: 'Next contact',
-            render: () => (
-              <DateProperty
-                ariaLabel="Next contact"
-                fallback="Schedule contact"
-                locale="pt-BR"
-                onValueChange={setNextContact}
-                value={nextContact}
-              />
-            ),
-          },
-        ]}
-      />
-    </header>
   )
 }
 
@@ -340,16 +177,17 @@ export function PlainPropertyColumn() {
       <dd className="flex min-w-0 items-center" data-row="due-date">
         <DateProperty
           ariaLabel="Due date"
-          fallback="Set due date"
           onValueChange={setDueDate}
           timeZone="UTC"
           value={dueDate}
           variant="plain"
+          labels={{ ...ptBRPropertyLabels.date, fallback: 'Set due date' }}
         />
       </dd>
       <dt className="text-muted-foreground">Assignee</dt>
       <dd className="flex min-w-0 items-center" data-row="assignee">
         <PersonProperty
+          placeholder="Sem responsável"
           ariaLabel="Assignee"
           options={people}
           readOnly

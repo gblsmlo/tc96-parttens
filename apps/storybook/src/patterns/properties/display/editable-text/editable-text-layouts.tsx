@@ -25,9 +25,13 @@ export function StatefulEditableText({
   )
 }
 
+export interface ComposedEditableTextProps extends EditableTextControls {
+  onCommit?: EditableTextProps['onCommit']
+}
+
 export const ComposedEditableText = ({
   value,
   ...props
-}: Readonly<EditableTextControls>) => (
+}: Readonly<ComposedEditableTextProps>) => (
   <StatefulEditableText {...props} key={value} value={value || null} />
 )

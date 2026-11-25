@@ -1,5 +1,6 @@
 import { PeopleProperty, type PeoplePropertyProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import type { PeopleControls } from './people-controls.ts'
 import { peopleOptions } from './people-data.ts'
 
@@ -16,10 +17,23 @@ export const StatefulPeople = ({
 }: Readonly<StatefulPeopleProps>) => {
   const [value, setValue] = useState(initialValue)
 
-  return <PeopleProperty {...props} onValueChange={setValue} value={value} />
+  return (
+    <PeopleProperty
+      ariaLabel="Pessoas"
+      placeholder="Adicionar pessoa"
+      {...props}
+      onValueChange={setValue}
+      value={value}
+      labels={{ ...ptBRPropertyLabels.people, ...props.labels }}
+    />
+  )
 }
 
 export const ComposedPeople = ({
+  labelsAdd,
+  labelsEmpty,
+  labelsLoading,
+  labelsRemove,
   value,
   ...props
 }: Readonly<PeopleControls>) => (
@@ -27,6 +41,12 @@ export const ComposedPeople = ({
     {...props}
     initialValue={value}
     key={value.join()}
+    labels={{
+      add: labelsAdd,
+      empty: labelsEmpty,
+      loading: labelsLoading,
+      remove: labelsRemove,
+    }}
     options={peopleOptions}
   />
 )

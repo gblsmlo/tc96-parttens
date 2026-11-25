@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A chip that names another record this one points to: the account of a deal, the product of an order, the lead or support ticket a task came from. It only shows the name with an icon for its kind; it opens nothing and edits nothing.
 
-The other pages of `Patterns/Properties/Display/Reference`: [Playground](?path=/story/patterns-properties-display-reference-playground--playground) to try the label, the kind, the surface and the accessible name, [Stories](?path=/story/patterns-properties-display-reference-stories--default) for each kind and surface, [Behavior](?path=/story/patterns-properties-display-reference-behavior--kind-picks-icon) for the tests, and [Usages](?path=/story/patterns-properties-display-reference-usages--deal-relations) for the relations of a deal and the header of a ticket.
+The other pages of `Patterns/Properties/Display/Reference`: [Playground](?path=/story/patterns-properties-display-reference-playground--playground) to try the label, the kind, the surface and the accessible name, [Variants](?path=/story/patterns-properties-display-reference-variants--default) for each kind and the `plain` surface, [Layouts](?path=/story/patterns-properties-display-reference-layouts--default) for the one formation, [Behavior](?path=/story/patterns-properties-display-reference-behavior--account-kind-shows-the-buildings-icon) for the tests, and [Usages](?path=/story/patterns-properties-display-reference-usages--deal-relations) for the relations of a deal and the header of a ticket.
 
-The chip is an `IconLabelProperty` with an icon chosen by `kind` ([Patterns/Properties/Display/Icon Label](?path=/docs/patterns-properties-display-icon-label-api-reference--api-reference)), drawn on the shared `PropertySurface`, documented once in the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference).
+The chip is an `IconLabelProperty` with an icon chosen by `kind` ([Patterns/Properties/Display/IconLabel](?path=/docs/patterns-properties-display-iconlabel-api-reference--api-reference)), drawn on the shared `PropertySurface`, documented once in the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference).
 
 ## Import
 
@@ -47,7 +47,7 @@ Takes no other prop. It has no handler: a reference is always read-only.
 | `data-variant` | `"badge"` or `"plain"` | Reports `variant` |
 | `data-slot` | `"property-icon"` | Selects the icon of the kind |
 
-The icon is 12px and hidden from assistive technology (`aria-hidden`); the kind reaches a screen reader only through the words of `ariaLabel` and `label`. The chip takes `max-w-full`, so a long label is cut to the width of its container.
+The icon is 16px and hidden from assistive technology (`aria-hidden`); the kind reaches a screen reader only through the words of `ariaLabel` and `label`. The chip takes `max-w-full`, so a long label is cut to the width of its container.
 
 ## Exports
 
@@ -60,4 +60,4 @@ The icon is 12px and hidden from assistive technology (`aria-hidden`); the kind 
 
 - Pass `ariaLabel` with the relation (`Conta`, `Produto`): the icon says the kind only visually, so without it a screen reader reads the bare label.
 - The chip is not focusable and is not a link. To open the referenced record, render your own link or button next to it.
-- The `"badge"` chip reads `secondary` and `secondary-foreground`, with the icon at 80% opacity; the `"plain"` text takes the color of its container.
+- The `"badge"` chip reads `secondary` for its fill, with the icon at 80% opacity; both surfaces draw the label and the icon in `primary`.

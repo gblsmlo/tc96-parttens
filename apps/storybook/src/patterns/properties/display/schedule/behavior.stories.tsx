@@ -9,9 +9,11 @@ import {
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
 import { esperarSuperficieDeBadge } from '../../../../test-utils/property-surface'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { ScheduleCanvas } from './schedule-canvas.tsx'
+import { scheduleControlArgs } from './schedule-controls.ts'
 import { scheduleToday, timedWeeklySchedule } from './schedule-data.ts'
-import { StatefulSchedule } from './schedule-layouts.tsx'
+import { ComposedSchedule, StatefulSchedule } from './schedule-layouts.tsx'
 
 const october26 = new Date(2026, 9, 26)
 
@@ -23,6 +25,8 @@ const meta = {
     onValueChange: fn((_value: ScheduleValue) => {}),
     today: scheduleToday,
     value: timedWeeklySchedule,
+    locale: 'pt-BR',
+    labels: ptBRPropertyLabels.schedule,
   },
   component: ScheduleProperty,
   decorators: [ScheduleCanvas],
@@ -123,7 +127,11 @@ export const WithoutHandlerIsLabelledImage: Story = {
     value: { ...emptyScheduleValue, frequency: 'weekly', from: october26 },
   },
   render: ({ onValueChange: _onValueChange, ...args }) => (
-    <ScheduleProperty {...args} />
+    <ScheduleProperty
+      locale="pt-BR"
+      {...args}
+      labels={{ ...ptBRPropertyLabels.schedule, ...args.labels }}
+    />
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
@@ -151,11 +159,37 @@ export const ReadOnlyWinsOverHandler: Story = {
   },
 }
 
+export const PlainSurfaceHasNoFill: Story = {
+  render: () => <ComposedSchedule {...scheduleControlArgs} variant="plain" />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: /^Data:/,
+    })
+
+    await expect(trigger).toHaveAttribute('data-variant', 'plain')
+    await expect(getComputedStyle(trigger).backgroundColor).toBe(
+      'rgba(0, 0, 0, 0)',
+    )
+  },
+}
+
+export const AllDayValueShowsTheDayAlone: Story = {
+  render: () => <ComposedSchedule {...scheduleControlArgs} value="allDay" />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Data: 28 de out',
+    })
+
+    await expect(trigger).toHaveTextContent(/^28 de out$/)
+    await expect(trigger).not.toHaveAttribute('data-empty')
+  },
+}
+
 export const EmptyShowsFallback: Story = {
   args: {
     ariaLabel: 'Prazo',
-    fallback: 'Sem prazo',
     value: emptyScheduleValue,
+    labels: { ...ptBRPropertyLabels.schedule, fallback: 'Sem prazo' },
   },
   play: async ({ canvasElement }) => {
     await expect(
@@ -176,6 +210,26 @@ export const PopupIsNamedDialogWithoutViewport: Story = {
     ).toBeNull()
     await closePopup()
     await expect(args.onValueChange).not.toHaveBeenCalled()
+  },
+}
+
+export const OpenPopupShowsPresetsCalendarAndRows: Story = {
+  render: () => <ComposedSchedule {...scheduleControlArgs} openOnMount />,
+  play: async () => {
+    const body = await waitFor(() => {
+      const opened = popup()
+      if (!opened || popupFrame().hasAttribute('data-starting-style'))
+        throw new Error('The schedule popup did not open.')
+      return within(opened)
+    })
+
+    await expect(presets().getAllByRole('button')).toHaveLength(5)
+    await waitFor(() => expect(body.getByRole('grid')).toBeVisible())
+    for (const row of ['Hora', 'Repetir', 'Lembretes']) {
+      await expect(body.getByRole('button', { name: row })).toBeVisible()
+    }
+
+    await closePopup()
   },
 }
 
@@ -566,6 +620,7 @@ export const LabelsAndLocaleReplaceCopy: Story = {
     ariaLabel: 'Date',
     calendarLocale: undefined,
     labels: {
+      ...ptBRPropertyLabels.schedule,
       addReminder: 'Add reminder',
       allDay: 'All day',
       back: 'Back',
@@ -686,9 +741,11 @@ export const DrillInReplacesPopupAndReturns: Story = {
     await expect(
       popup()?.querySelector('[data-slot="schedule-detail"]'),
     ).toBeNull()
-    await expect(
-      screen.getByRole('list', { name: 'Atalhos de data' }),
-    ).toBeVisible()
+    await waitFor(() =>
+      expect(
+        screen.getByRole('list', { name: 'Atalhos de data' }),
+      ).toBeVisible(),
+    )
     await expect(body.getByRole('button', { name: 'Repetir' })).toHaveFocus()
     await expect(args.onValueChange).not.toHaveBeenCalled()
 

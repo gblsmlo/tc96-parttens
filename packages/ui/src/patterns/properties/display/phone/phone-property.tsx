@@ -1,13 +1,22 @@
 'use client'
 
-import { PhoneIcon, XIcon } from '@phosphor-icons/react'
+import { XIcon } from '@phosphor-icons/react'
 import { Popover, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
 import { useEntryListEditor } from '../../hooks/use-entry-list-editor'
 import { createEntryParser } from '../../shared/lib/entry-parser'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import { PropertyAddTrigger } from '../../shared/property-add-trigger'
+import type { PropertyListChangeContext } from '../../shared/property-catalog'
+import { propertyDisplayIcons } from '../../shared/property-display-meta'
 import { PropertyEntryForm } from '../../shared/property-entry-form'
+import {
+  defaultPropertyAriaLabels,
+  defaultPropertyLabels,
+  defaultPropertyPlaceholders,
+  type PhonePropertyLabels,
+  resolvePropertyLabels,
+} from '../../shared/property-labels'
 import { PropertyRow } from '../../shared/property-row'
 import {
   PropertySurface,
@@ -21,23 +30,13 @@ import {
 } from '../phone-input/index'
 import { internationalPhoneLabel } from '../phone-input/phone-number'
 
-const invalidPhoneMessage = 'Informe um telefone válido.'
-const duplicatePhoneMessage = 'Este telefone já está na lista.'
-const parsePhone = createEntryParser(phoneNumberSchema(), invalidPhoneMessage)
+const PhoneIcon = propertyDisplayIcons.phone
 
-export interface PhonePropertyActionContext {
-  added: string | null
-  previousValue: readonly string[]
-  removed: string | null
-}
+type PhoneChangeContext = PropertyListChangeContext<string, string>
 
 export interface PhonePropertyProps {
   value: readonly string[]
-  action?: (
-    value: readonly string[],
-    context: PhonePropertyActionContext,
-  ) => void
-  addLabel?: string
+  action?: (value: readonly string[], context: PhoneChangeContext) => void
   ariaLabel?: string
   className?: string
   /** País assumido para o número digitado em formato nacional. */
@@ -61,13 +60,7 @@ export interface PhonePropertyProps {
    * só — com um preenchido, não há segundo a adicionar.
    */
   addDisabled?: boolean
-  /**
-   * Rótulos das entradas do popup, na ordem de precedência — o cadastro que
-   * guarda um número principal e um secundário declara os dois aqui. O tamanho
-   * da lista é o teto: com todas preenchidas, não há outra a acrescentar.
-   */
-  entryLabels?: readonly string[]
-  inputPlaceholder?: string
+  labels?: Partial<PhonePropertyLabels>
   placeholder?: string
   readOnly?: boolean
   variant?: PropertyVariant
@@ -87,29 +80,37 @@ export interface PhonePropertyProps {
 export function PhoneProperty({
   action,
   addDisabled = false,
-  addLabel = 'Adicionar telefone',
-  ariaLabel = 'Telefones',
+  ariaLabel = defaultPropertyAriaLabels.phone,
   className,
   defaultCountry,
   disabled = false,
   display = 'chips',
-  entryLabels = ['Principal', 'Secundário'],
   errorMessage = null,
-  inputPlaceholder,
+  labels: labelOverrides,
   onValueChange,
-  placeholder = 'Sem telefone',
+  placeholder = defaultPropertyPlaceholders.phone,
   readOnly = false,
   value,
   variant = 'plain',
 }: Readonly<PhonePropertyProps>) {
-  const commit = (
-    next: readonly string[],
-    context: PhonePropertyActionContext,
-  ) => emitChange({ action, onValueChange }, next, context)
+  const labels = resolvePropertyLabels(
+    defaultPropertyLabels.phone,
+    labelOverrides,
+  )
+  const parsePhone = createEntryParser(
+    phoneNumberSchema({
+      invalidMessage: labels.invalid,
+      requiredMessage: labels.required,
+    }),
+    labels.invalid,
+  )
+
+  const commit = (next: readonly string[], context: PhoneChangeContext) =>
+    emitChange({ action, onValueChange }, next, context)
 
   const editor = useEntryListEditor({
-    duplicateMessage: duplicatePhoneMessage,
-    limit: entryLabels.length,
+    duplicateMessage: labels.duplicate,
+    limit: labels.entries.length,
     onCommit: commit,
     parse: parsePhone,
     value,
@@ -143,25 +144,24 @@ export function PhoneProperty({
 
   const entryForm = (
     <PropertyEntryForm
-      addLabel={addLabel}
       canAddAnother={editor.canAddAnother}
       drafts={editor.drafts}
-      entryLabels={entryLabels}
       errorMessage={errorMessage}
       errors={editor.errors}
+      labels={labels}
       onAdd={editor.addDraft}
       onChange={editor.setDraft}
       onRemove={editor.removeDraft}
       onSave={editor.save}
-      removeLabel={(entryLabel) => `Remover ${entryLabel} telefone`}
       renderField={(field) => (
         <PhoneInput
           ariaLabel={field.ariaLabel}
           defaultCountry={defaultCountry}
           invalid={field.invalid}
+          labels={labels}
           onKeyDown={field.onKeyDown}
           onValueChange={(next) => field.onChange(next ?? '')}
-          placeholder={inputPlaceholder}
+          placeholder={labels.inputPlaceholder}
           value={field.draft || null}
         />
       )}
@@ -218,7 +218,7 @@ export function PhoneProperty({
           label={internationalPhoneLabel(phone)}
           trailing={
             <button
-              aria-label={`Remover telefone ${internationalPhoneLabel(phone)}`}
+              aria-label={`${labels.remove} ${internationalPhoneLabel(phone)}`}
               className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
               disabled={disabled}
               onClick={() =>
@@ -240,7 +240,7 @@ export function PhoneProperty({
           <PopoverTrigger
             render={
               <PropertyAddTrigger
-                addLabel={addLabel}
+                addLabel={labels.add}
                 disabled={disabled}
                 hasValue={value.length > 0}
                 icon={PhoneIcon}

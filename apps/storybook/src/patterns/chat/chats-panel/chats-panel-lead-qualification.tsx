@@ -43,6 +43,7 @@ import {
 } from '@tc96/ui/patterns'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { useId, useState } from 'react'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import {
   type AdPlatform,
   attendants,
@@ -283,14 +284,18 @@ function LeadSidebar({
             ariaLabel="Campanha"
             value={lead.source.campaign}
             variant="plain"
+            labels={ptBRPropertyLabels.text}
           />
         </RecordGroupRow>
         <RecordGroupRow label={platform.creativeLabel}>
           <TextProperty
             ariaLabel={platform.creativeLabel}
-            fallback={platform.creativeFallback}
             value={lead.source.creative}
             variant="plain"
+            labels={{
+              ...ptBRPropertyLabels.text,
+              fallback: platform.creativeFallback,
+            }}
           />
         </RecordGroupRow>
       </RecordGroup>
@@ -311,11 +316,11 @@ function LeadSidebar({
           <RecordGroupRow key={key} label={label}>
             <SelectProperty
               ariaLabel={label}
-              fallback="Sem resposta"
               onValueChange={(value) => onAnswer(key, value)}
               options={options}
               value={lead.answers[key]}
               variant="plain"
+              labels={{ fallback: 'Sem resposta' }}
             />
           </RecordGroupRow>
         ))}

@@ -16,7 +16,14 @@ export const StatefulPerson = <TValue extends string>({
 }: Readonly<StatefulPersonProps<TValue>>) => {
   const [value, setValue] = useState(initialValue)
 
-  return <PersonProperty {...props} onValueChange={setValue} value={value} />
+  return (
+    <PersonProperty
+      placeholder="Sem responsável"
+      {...props}
+      onValueChange={setValue}
+      value={value}
+    />
+  )
 }
 
 export const ComposedPerson = ({

@@ -12,7 +12,7 @@ import {
 import type {
   CalendarEventChipTone,
   CollectionDefinition,
-  SelectPropertyOption,
+  PropertyOption,
 } from '@tc96/ui/patterns'
 
 export type TaskStatus = 'backlog' | 'todo' | 'in-progress' | 'review' | 'done'
@@ -66,7 +66,7 @@ export const statusOptions = [
   },
   { icon: EyeIcon, label: 'Em revisão', tone: 'warning', value: 'review' },
   { icon: CheckCircleIcon, label: 'Concluída', tone: 'success', value: 'done' },
-] as const satisfies readonly (SelectPropertyOption & { value: TaskStatus })[]
+] as const satisfies readonly (PropertyOption & { value: TaskStatus })[]
 
 export const priorityOptions = [
   {
@@ -78,7 +78,7 @@ export const priorityOptions = [
   { icon: CellSignalHighIcon, label: 'Alta', tone: 'warning', value: 'high' },
   { icon: CellSignalMediumIcon, label: 'Média', tone: 'info', value: 'medium' },
   { icon: CellSignalLowIcon, label: 'Baixa', tone: 'neutral', value: 'low' },
-] as const satisfies readonly (SelectPropertyOption & {
+] as const satisfies readonly (PropertyOption & {
   value: TaskPriority
 })[]
 

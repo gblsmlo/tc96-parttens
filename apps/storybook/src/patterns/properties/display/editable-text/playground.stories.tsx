@@ -13,7 +13,7 @@ const meta = {
   decorators: [EditableTextCanvas],
   render: (args) => <ComposedEditableText {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Editable Text/Playground',
+  title: 'Patterns/Properties/Display/EditableText/Playground',
 } satisfies Meta<EditableTextControls>
 
 export default meta

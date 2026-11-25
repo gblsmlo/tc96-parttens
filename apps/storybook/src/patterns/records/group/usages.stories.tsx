@@ -26,7 +26,8 @@ import {
   type ChecklistItem,
   DateProperty,
   PeopleProperty,
-  type PeoplePropertyOption,
+  type PersonPropertyOption,
+  type PropertyOption,
   RecordGroup,
   RecordGroupAction,
   RecordGroupItem,
@@ -37,7 +38,6 @@ import {
   RecordPreview,
   RecordStatusBadge,
   SelectProperty,
-  type SelectPropertyOption,
   TextProperty,
 } from '@tc96/ui/patterns'
 import { type ReactNode, useState } from 'react'
@@ -45,6 +45,7 @@ import { type ReactNode, useState } from 'react'
 import { expect, within } from 'storybook/test'
 import { sleep } from '../../../test-utils/sleep'
 import { usageParameters } from '../../../test-utils/usage-kit'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import { NoteDialog } from '../dialog/note-dialog'
 import {
   initialNotes,
@@ -60,12 +61,12 @@ import {
 
 const today = '09/10/2026'
 
-const yesNoOptions: readonly SelectPropertyOption[] = [
+const yesNoOptions: readonly PropertyOption[] = [
   { label: 'Sim', value: 'yes' },
   { label: 'Não', value: 'no' },
 ]
 
-const peopleOptions: readonly PeoplePropertyOption[] = [
+const peopleOptions: readonly PersonPropertyOption[] = [
   { label: 'Ana Souza', value: 'ana' },
   { label: 'Gabriel Melo', value: 'gabriel' },
   { label: 'Pedro Rocha', value: 'pedro' },
@@ -84,13 +85,13 @@ interface BriefVersion {
   values: BriefValues
 }
 
-const objectiveOptions: readonly SelectPropertyOption[] = [
+const objectiveOptions: readonly PropertyOption[] = [
   { label: 'Gerar novas consultas', value: 'new-appointments' },
   { label: 'Divulgar área de atuação', value: 'practice-area' },
   { label: 'Fortalecer indicação', value: 'referrals' },
 ]
 
-const targetOptions: readonly SelectPropertyOption[] = [
+const targetOptions: readonly PropertyOption[] = [
   { label: 'Consulta agendada', value: 'booked-appointment' },
   { label: 'Conversa no WhatsApp', value: 'whatsapp-conversation' },
 ]
@@ -99,7 +100,7 @@ const briefFields: readonly {
   key: keyof BriefValues
   label: string
   empty: string
-  options: readonly SelectPropertyOption[]
+  options: readonly PropertyOption[]
 }[] = [
   {
     empty: 'Sem objetivo 1',
@@ -166,25 +167,25 @@ const installments = [
   { id: 'parcela-3', name: 'Parcela 3', status: 'Prevista · 10/11/2026' },
 ]
 
-const paymentMethodOptions: readonly SelectPropertyOption[] = [
+const paymentMethodOptions: readonly PropertyOption[] = [
   { label: 'Boleto', value: 'boleto' },
   { label: 'Pix', value: 'pix' },
   { label: 'Cartão', value: 'card' },
 ]
 
-const sourceOptions: readonly SelectPropertyOption[] = [
+const sourceOptions: readonly PropertyOption[] = [
   { label: 'Instagram', value: 'instagram' },
   { label: 'Indicação', value: 'referral' },
   { label: 'Google', value: 'google' },
 ]
 
-const interestOptions: readonly SelectPropertyOption[] = [
+const interestOptions: readonly PropertyOption[] = [
   { label: 'Revisional bancária', value: 'banking' },
   { label: 'Trabalhista', value: 'labor' },
   { label: 'Família', value: 'family' },
 ]
 
-const urgencyOptions: readonly SelectPropertyOption[] = [
+const urgencyOptions: readonly PropertyOption[] = [
   { label: 'Alta', value: 'high' },
   { label: 'Média', value: 'medium' },
   { label: 'Baixa', value: 'low' },
@@ -420,10 +421,12 @@ export const Access: Story = {
         </RecordGroupRow>
         <RecordGroupRow label="Participantes">
           <PeopleProperty
+            placeholder="Adicionar pessoa"
             ariaLabel="Participantes"
             onValueChange={setParticipants}
             options={peopleOptions}
             value={participants}
+            labels={ptBRPropertyLabels.people}
           />
         </RecordGroupRow>
       </RecordGroup>
@@ -508,13 +511,13 @@ export const Briefing: Story = {
             <RecordGroupRow key={field.key} label={field.label}>
               <SelectProperty
                 ariaLabel={field.label}
-                fallback={field.empty}
                 onValueChange={(value) =>
                   setBrief((current) => ({ ...current, [field.key]: value }))
                 }
                 options={field.options}
                 value={brief[field.key]}
                 variant="plain"
+                labels={{ fallback: field.empty }}
               />
             </RecordGroupRow>
           ))}
@@ -577,11 +580,11 @@ export const Versions: Story = {
             <RecordGroupRow key={field.key} label={field.label}>
               <SelectProperty
                 ariaLabel={`${field.label} da versão ${previewed.number}`}
-                fallback={field.empty}
                 options={field.options}
                 readOnly
                 value={previewed.values[field.key]}
                 variant="plain"
+                labels={{ fallback: field.empty }}
               />
             </RecordGroupRow>
           ))}
@@ -701,11 +704,11 @@ export const Billing: Story = {
         <RecordGroupRow label="Meio">
           <SelectProperty
             ariaLabel="Meio"
-            fallback="Sem meio"
             onValueChange={setMethod}
             options={paymentMethodOptions}
             value={method}
             variant="plain"
+            labels={{ fallback: 'Sem meio' }}
           />
         </RecordGroupRow>
         <RecordGroupRow label="Vencimento">
@@ -716,14 +719,15 @@ export const Billing: Story = {
             timeZone="UTC"
             value="2026-10-10T12:00:00.000Z"
             variant="plain"
+            labels={ptBRPropertyLabels.date}
           />
         </RecordGroupRow>
         <RecordGroupRow label="Emissão">
           <TextProperty
             ariaLabel="Emissão"
-            fallback="Não emitida"
             value={issuedAt ? `Emitida em ${issuedAt}` : null}
             variant="plain"
+            labels={{ ...ptBRPropertyLabels.text, fallback: 'Não emitida' }}
           />
         </RecordGroupRow>
       </RecordGroup>
@@ -767,6 +771,7 @@ export const Details: Story = {
             timeZone="UTC"
             value={birthDate}
             variant="plain"
+            labels={ptBRPropertyLabels.date}
           />
         </RecordGroupRow>
         <RecordGroupRow label="CPF">
@@ -776,16 +781,17 @@ export const Details: Story = {
             onCommit={setCpf}
             value={cpf}
             variant="plain"
+            labels={ptBRPropertyLabels.text}
           />
         </RecordGroupRow>
         <RecordGroupRow label="Profissão">
           <TextProperty
             ariaLabel="Profissão"
             editing="inline"
-            fallback="Sem profissão"
             onCommit={setOccupation}
             value={occupation}
             variant="plain"
+            labels={{ ...ptBRPropertyLabels.text, fallback: 'Sem profissão' }}
           />
         </RecordGroupRow>
         <RecordGroupRow label="Origem">
@@ -833,11 +839,11 @@ export const Stage: Story = {
         <RecordGroupRow label="Urgência">
           <SelectProperty
             ariaLabel="Urgência"
-            fallback="Sem urgência"
             onValueChange={setUrgency}
             options={urgencyOptions}
             value={urgency}
             variant="plain"
+            labels={{ fallback: 'Sem urgência' }}
           />
         </RecordGroupRow>
         <RecordGroupLink

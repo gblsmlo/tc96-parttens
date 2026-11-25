@@ -7,13 +7,9 @@ import {
   ProhibitIcon,
   RadioButtonIcon,
 } from '@phosphor-icons/react'
-import type {
-  PersonPropertyOption,
-  SelectPropertyOption,
-  TagsPropertyOption,
-} from '@tc96/ui/patterns'
+import type { PersonPropertyOption, PropertyOption } from '@tc96/ui/patterns'
 
-export const statusOptions: readonly SelectPropertyOption[] = [
+export const statusOptions: readonly PropertyOption[] = [
   { icon: CircleIcon, label: 'To do', tone: 'neutral', value: 'todo' },
   {
     icon: RadioButtonIcon,
@@ -30,7 +26,7 @@ export const statusOptions: readonly SelectPropertyOption[] = [
   },
 ]
 
-export const priorityOptions: readonly SelectPropertyOption[] = [
+export const priorityOptions: readonly PropertyOption[] = [
   { icon: CellSignalHighIcon, label: 'High', tone: 'danger', value: 'high' },
   {
     icon: CellSignalMediumIcon,
@@ -46,7 +42,7 @@ export const people: readonly PersonPropertyOption[] = [
   { label: 'Ana Souza', value: 'person-2' },
 ]
 
-export const tagOptions: readonly TagsPropertyOption[] = [
+export const tagOptions: readonly PropertyOption[] = [
   { label: 'Documents', value: 'documents' },
   { label: 'Follow-up', value: 'return' },
 ]

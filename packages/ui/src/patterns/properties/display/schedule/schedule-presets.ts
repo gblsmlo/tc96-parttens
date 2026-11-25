@@ -6,7 +6,7 @@ import {
   SunIcon,
 } from '@phosphor-icons/react'
 import type { PropertyIcon } from '../../shared/property-catalog'
-import type { SchedulePropertyLabels } from './schedule-labels'
+import type { SchedulePropertyLabels } from '../../shared/property-labels'
 import { addLocalDays } from './schedule-value'
 
 export interface SchedulePreset {

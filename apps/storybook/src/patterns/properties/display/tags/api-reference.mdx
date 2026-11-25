@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A property for several labels out of a list the consumer defines: the tags of a task, the segments of a contact, the placements of a campaign. Each label is a chip with a remove button and an add chip at the end opens the list; in a dense row the chips give way to a count that opens the same list. For one value, use [Select](?path=/docs/patterns-properties-display-select-api-reference--api-reference); for people, [People](?path=/docs/patterns-properties-display-people-api-reference--api-reference).
 
-The other pages of `Patterns/Properties/Display/Tags`: [Playground](?path=/story/patterns-properties-display-tags-playground--playground) to try the tags, the texts, the display, the surface and the states, [Stories](?path=/story/patterns-properties-display-tags-stories--default) for each state, display and surface, [Behavior](?path=/story/patterns-properties-display-tags-behavior--plain-by-default-has-no-frame) for the tests, and [Usages](?path=/story/patterns-properties-display-tags-usages--task-tags) for real content.
+The other pages of `Patterns/Properties/Display/Tags`: [Playground](?path=/story/patterns-properties-display-tags-playground--playground) to try the tags, the texts, the display, the surface and the states, [Variants](?path=/story/patterns-properties-display-tags-variants--default) for each surface and state, [Layouts](?path=/story/patterns-properties-display-tags-layouts--default) for the chips and the [count](?path=/story/patterns-properties-display-tags-layouts--count), [Behavior](?path=/story/patterns-properties-display-tags-behavior--plain-by-default-has-no-frame) for the tests, and [Usages](?path=/story/patterns-properties-display-tags-usages--task-tags) for real content.
 
-Used in: the tags of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages-tasks--default) and of the contact dialog of [Patterns/Records/RecordDialog/Usages, Contacts](?path=/story/patterns-records-recorddialog-usages--contacts), and the placements column, as a count, of [Patterns/Collection/Usages, Campaigns](?path=/story/patterns-collection-usages--campaigns).
+Used in: the tags of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages--tasks) and of the contact dialog of [Patterns/Records/RecordDialog/Usages, Contacts](?path=/story/patterns-records-recorddialog-usages--contacts), and the placements column, as a count, of [Patterns/Collection/Usages, Campaigns](?path=/story/patterns-collection-usages--campaigns).
 
 ## Import
 
@@ -39,16 +39,16 @@ Renders a `div` that holds a multiple combobox, or, read-only, a `fieldset` name
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `value` | `readonly TValue[]` | required | Sets the values of the applied tags, in the order of the chips. |
-| `options` | `readonly TagsPropertyOption<TValue>[]` | required | Sets the tags the list offers, in order. |
+| `options` | `readonly PropertyOption<TValue>[]` | required | Sets the tags the list offers, in order. |
 | `onValueChange` | `(value: readonly TValue[]) => void` | - | Called with the next list after a tag is picked or removed. |
-| `action` | `(value: readonly TValue[], context: TagsPropertyActionContext<TValue>) => void` | - | Called instead of `onValueChange`, with the tag that changed. |
+| `action` | `(value, context) => void` | - | Called instead of `onValueChange`, with the tag that changed. `context` is a `PropertyListChangeContext`. |
 | `display` | `"chips"` or `"count"` | `"chips"` | Controls the value: one chip per tag, or one surface with a tag icon and the count. |
 | `variant` | `"badge"` or `"plain"` | `"plain"` | Controls the look: the bordered frame of a combobox field around the editable chips, or no frame; the surface of each read-only tag and of the count. |
-| `countLabel` | `(count: number) => string` | `"1 Tag"`, `"<count> Tags"` | Sets the text of the count. |
+| `labels` | `Partial<TagsPropertyLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.tags`: `add` (`"Add tag"`), `remove` (`"Remove tag"`, followed by the label), `loading` (`"Loading tags…"`), `empty` (`"No tags found."`) and `count` (`(count) => string`, `"1 Tag"`, `"<count> Tags"`). |
 | `ariaLabel` | `string` | `"Tags"` | Names the list and the read-only row, and prefixes the name of the count. |
-| `placeholder` | `string` | `"Adicionar uma tag"` | Sets the text of the read-only chips while no tag is applied. |
-| `isLoading` | `boolean` | `false` | When true, shows `"Carregando tags…"` at the top of the open list. |
-| `dropdownPlacement` | `TagsPropertyDropdownPlacement` | - | Sets the `side`, `align`, `sideOffset` and `alignOffset` of the list; it aligns to the end of the chips, or of the count, by default. |
+| `placeholder` | `string` | `"Add a tag"` | Sets the text of the read-only row while no tag is applied. |
+| `isLoading` | `boolean` | `false` | When true, shows `labels.loading` at the top of the open list. |
+| `dropdownPlacement` | `PropertyMultiSelectDropdownPlacement` | - | Sets the `side`, `align`, `sideOffset` and `alignOffset` of the list; it aligns to the end of the chips, or of the count, by default. |
 | `disabled` | `boolean` | `false` | When true, disables the combobox, the add chip, the remove buttons and the count. |
 | `readOnly` | `boolean` | `false` | When true, shows the tags with no add chip, no remove buttons and no list. |
 | `className` | `string` | - | Adds classes to the row. |
@@ -66,48 +66,48 @@ Renders a `div` that holds a multiple combobox, or, read-only, a `fieldset` name
 
 ### The chips
 
-Each tag is a chip with its label and a remove button named `"Remover tag <label>"`; the chip sets its text size to 14px and a small radius to match the property surface. A value that no option declares shows as a chip with the value as its label. The add chip comes last: while no tag is applied it shows a tag icon and `"Adicionar tag"` and takes its name from that text; once a tag is applied it shrinks to a 24px `+` named `"Adicionar tag"`. The add chip always reads `"Adicionar tag"`: `placeholder` does not reach it.
+Each tag is a chip with its label and a remove button named `"<labels.remove> <label>"` (`"Remove tag <label>"`); the chip sets its text size to 14px and a small radius to match the property surface. A value that no option declares shows as a chip with the value as its label. The add chip comes last: while no tag is applied it shows a tag icon and `labels.add` (`"Add tag"`) and takes its name from that text; once a tag is applied it shrinks to a 24px `+` named `labels.add`. The add chip always reads `labels.add`: `placeholder` does not reach it.
 
 ### The count
 
-With `display="count"` the chips give way to one surface with a 12px tag icon and the `countLabel` of the number of applied tags. Editable, it is a `button` named `"<ariaLabel>: <count>"` that opens the list below it; with no tag applied it takes the empty look (an outlined badge, or muted plain text). Read-only, it is a surface inside the row, with no name of its own.
+With `display="count"` the chips give way to one surface with a 12px tag icon and the `labels.count` of the number of applied tags. Editable, it is a `button` named `"<ariaLabel>: <count>"` that opens the list below it; with no tag applied it takes the empty look (an outlined badge, or muted plain text). Read-only, it is a surface inside the row, with no name of its own.
 
 ### The list
 
-The list opens from the add chip, or from the count, as wide as its longest option, with no search field. Each option shows its label, and an applied tag is marked with a check at the right. Picking a tag adds it to the end of the list, and picking an applied tag removes it; the list stays open, so several tags are applied in a row. With no option, the list says `"Nenhuma tag encontrada."`.
+The list opens from the add chip, or from the count, as wide as its longest option, with no search field. Each option shows its label, and an applied tag is marked with a check at the right. Picking a tag adds it to the end of the list, and picking an applied tag removes it; the list stays open, so several tags are applied in a row. With no option, the list says `labels.empty` (`"No tags found."`).
 
 ### Read-only
 
 A read-only `TagsProperty` renders the row with each tag on a `variant` surface, or one surface with `placeholder` in muted text while no tag is applied. With `display="count"` it renders the count surface instead. It has no button and no list.
 
-## TagsPropertyOption
+## PropertyOption
 
-A tag of `options`.
+A tag of `options`, the catalog option shared by every display (`icon`, `tone` and `weight` are not drawn by tags).
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `value` | `TValue` | required | The value of the tag. |
 | `label` | `string` | required | The text of the chip and of the option. |
 
-## TagsPropertyActionContext
+## PropertyListChangeContext
 
 What `action` receives with the next list.
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `added` | `TagsPropertyOption<TValue> \| null` | - | The tag that was picked. |
-| `removed` | `TagsPropertyOption<TValue> \| null` | - | The tag that was removed. |
+| `added` | `PropertyOption<TValue> \| null` | - | The tag that was picked. |
+| `removed` | `PropertyOption<TValue> \| null` | - | The tag that was removed. |
 | `previousValue` | `readonly TValue[]` | - | The values before the change. |
 
 ## Exports
 
 | Export | Kind | Description |
 | --- | --- | --- |
-| `TagsPropertyDropdownPlacement` | `type` | `side`, `align`, `sideOffset` and `alignOffset` of the list. |
+| `TagsPropertyLabels` | `type` | The texts of `labels`. |
 | `TagsPropertyProps` | `type` | The props of `TagsProperty`. |
 
 ## Accessibility and theme
 
 - Give each row an `ariaLabel` that says whose tags they are ("Tags da tarefa"): it names the list and the count.
-- The built-in texts are Brazilian Portuguese: `"Adicionar tag"`, `"Remover tag <label>"`, `"Carregando tags…"` and `"Nenhuma tag encontrada."` cannot be changed; pass a `countLabel` in the language of the page.
+- The built-in texts are English: pass `labels`, `placeholder` (`"Add a tag"`) and `ariaLabel` in the language of the page.
 - The chips read the theme tokens `accent` and `accent-foreground`; the add chip and the count read the badge tokens of the property surface.

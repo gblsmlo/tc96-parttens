@@ -70,8 +70,7 @@ export const personControlArgTypes: Partial<ArgTypes<PersonControls>> = {
   },
   value: {
     control: 'select',
-    description:
-      'The person of `value`; `none` passes `null`. The story keeps the pick in its own state until this control changes.',
+    description: 'The person of `value`; `none` passes `null`.',
     options: personValues,
   },
   variant: {

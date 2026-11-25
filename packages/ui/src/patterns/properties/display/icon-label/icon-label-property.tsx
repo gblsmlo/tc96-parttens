@@ -1,17 +1,13 @@
 'use client'
 
 import { cn } from '@tc96/utils'
-import type React from 'react'
 import type { ReactNode } from 'react'
+import type { PropertyIcon } from '../../shared/property-catalog'
 import {
   PropertySurface,
   type PropertySurfaceProps,
   type PropertyVariant,
 } from '../../shared/property-surface'
-
-export type IconLabelPropertyIcon = React.ComponentType<
-  React.SVGProps<SVGSVGElement>
->
 
 export type IconLabelPropertyTrailingVisibility = 'always' | 'hover'
 
@@ -19,7 +15,7 @@ export interface IconLabelPropertyProps {
   label: ReactNode
   ariaLabel?: string
   className?: string
-  icon?: IconLabelPropertyIcon
+  icon?: PropertyIcon
   iconClassName?: string
   leading?: ReactNode
   muted?: boolean

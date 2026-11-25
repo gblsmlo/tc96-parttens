@@ -20,6 +20,14 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const ActivityType: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The type of an activity, on the [Default](?path=/story/patterns-properties-display-select-layouts--default) layout with a `plain` surface: a call in a list of details, beside the name of the activity.',
+      },
+    },
+  },
   render: () => (
     <dl className="grid w-80 grid-cols-[6rem_1fr] items-center gap-x-4 gap-y-3 text-sm">
       <dt className="text-muted-foreground">Atividade</dt>
@@ -45,15 +53,24 @@ export const ActivityType: Story = {
 }
 
 export const MeetingTemplate: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The template of a new meeting, on the [Default](?path=/story/patterns-properties-display-select-layouts--default) layout with the catalog in sections: Reuniões and Audiências, plus Sem modelo at the top.',
+      },
+    },
+  },
   render: () => (
     <div className="flex items-center gap-3 text-sm">
       <span className="text-muted-foreground">Modelo</span>
       <StatefulSelect
         ariaLabel="Modelo"
-        emptyOptionLabel="Sem modelo"
         groups={meetingTemplateGroups}
         initialValue={null}
         placeholder="Escolher modelo"
+        allowEmpty
+        labels={{ emptyOption: 'Sem modelo' }}
       />
     </div>
   ),
@@ -65,14 +82,23 @@ export const MeetingTemplate: Story = {
 }
 
 export const Frequency: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'How often a task repeats, on the [Default](?path=/story/patterns-properties-display-select-layouts--default) layout with a catalog without icons and Não repete as the empty option.',
+      },
+    },
+  },
   render: () => (
     <div className="flex items-center gap-3 text-sm">
       <span className="text-muted-foreground">Repetir</span>
       <StatefulSelect
         ariaLabel="Frequência"
-        emptyOptionLabel="Não repete"
         initialValue="weekly"
         options={frequencyOptions}
+        allowEmpty
+        labels={{ emptyOption: 'Não repete' }}
       />
     </div>
   ),
@@ -86,15 +112,23 @@ export const Frequency: Story = {
 }
 
 export const ArchivedActivity: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'An archived activity whose type left the catalog, on the [Default](?path=/story/patterns-properties-display-select-layouts--default) layout: the read-only value shows Tipo removido instead of a missing label.',
+      },
+    },
+  },
   render: () => (
     <div className="grid w-80 gap-2 rounded-lg border p-4 text-sm">
       <span className="font-medium">Visita ao cliente</span>
       <span className="text-muted-foreground">Arquivada em 12/03/2026</span>
       <SelectProperty
         ariaLabel="Tipo da atividade"
-        fallback="Tipo removido"
         options={activityOptions}
         value="visit"
+        labels={{ fallback: 'Tipo removido' }}
       />
     </div>
   ),

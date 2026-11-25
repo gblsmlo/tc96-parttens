@@ -15,13 +15,20 @@ import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
 } from '../../../../test-utils/property-surface'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { DateRangeCanvas } from './date-range-canvas.tsx'
+import { dateRangeControlArgs } from './date-range-controls.ts'
+import { ComposedDateRange } from './date-range-layouts.tsx'
 
 const march = new Date(2026, 2, 2)
 const april = new Date(2026, 3, 15)
 
 const meta = {
-  args: { locale: 'en-US', value: { from: march, to: april } },
+  args: {
+    locale: 'en-US',
+    value: { from: march, to: april },
+    labels: ptBRPropertyLabels.dateRange,
+  },
   component: DateRangeProperty,
   decorators: [DateRangeCanvas],
   tags: ['!autodocs'],
@@ -91,10 +98,10 @@ export const DisplayLabelReplacesFormattedRange: Story = {
 export const EmptyKeepsFallbackOverDisplayLabel: Story = {
   args: {
     displayLabel: '02/03/2026 – 15/04/2026',
-    fallback: 'Sem período',
     locale: undefined,
     readOnly: true,
     value: undefined,
+    labels: { ...ptBRPropertyLabels.dateRange, fallback: 'Sem período' },
   },
   play: async ({ canvasElement }) => {
     await expect(
@@ -121,12 +128,35 @@ export const OpenEndedUntil: Story = {
   },
 }
 
+export const LoneStartPrefixesTheFromLabel: Story = {
+  render: () => <ComposedDateRange {...dateRangeControlArgs} ends="from" />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Período: A partir de 19 de jun.',
+    })
+
+    await expect(trigger).toHaveTextContent(/^A partir de 19 de jun\.$/)
+    await expect(trigger).not.toHaveAttribute('data-empty')
+  },
+}
+
+export const LoneEndPrefixesTheUntilLabel: Story = {
+  render: () => <ComposedDateRange {...dateRangeControlArgs} ends="until" />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Período: Até 26 de jun.',
+    })
+
+    await expect(trigger).toHaveTextContent(/^Até 26 de jun\.$/)
+    await expect(trigger).not.toHaveAttribute('data-empty')
+  },
+}
+
 export const CustomFromLabel: Story = {
   args: {
-    fromLabel: 'From',
     readOnly: true,
-    untilLabel: 'Until',
     value: { from: march, to: undefined },
+    labels: { ...ptBRPropertyLabels.dateRange, from: 'From', until: 'Until' },
   },
   play: async ({ canvasElement }) => {
     await expect(
@@ -137,10 +167,9 @@ export const CustomFromLabel: Story = {
 
 export const CustomUntilLabel: Story = {
   args: {
-    fromLabel: 'From',
     readOnly: true,
-    untilLabel: 'Until',
     value: { from: undefined, to: april },
+    labels: { ...ptBRPropertyLabels.dateRange, from: 'From', until: 'Until' },
   },
   play: async ({ canvasElement }) => {
     await expect(
@@ -151,10 +180,10 @@ export const CustomUntilLabel: Story = {
 
 export const FallbackWithNeitherEnd: Story = {
   args: {
-    fallback: 'Sem período',
     locale: undefined,
     readOnly: true,
     value: undefined,
+    labels: { ...ptBRPropertyLabels.dateRange, fallback: 'Sem período' },
   },
   play: async ({ canvasElement }) => {
     const surface = within(canvasElement)

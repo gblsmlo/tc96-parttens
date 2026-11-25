@@ -6,6 +6,7 @@ import {
   IconLabelProperty,
   PersonProperty,
   type PersonPropertyOption,
+  type PropertyOption,
   RecordGroup,
   RecordGroupRow,
   RecordPreview,
@@ -14,9 +15,7 @@ import {
   ScheduleProperty,
   type ScheduleValue,
   SelectProperty,
-  type SelectPropertyOption,
   TagsProperty,
-  type TagsPropertyOption,
   TextProperty,
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
@@ -26,15 +25,16 @@ import {
   statusOptions,
   TIME_ZONE,
 } from '../../collection/fixtures/tasks'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 
-const typeOptions: readonly SelectPropertyOption[] = [
+const typeOptions: readonly PropertyOption[] = [
   { label: 'Protocolo', value: 'filing' },
   { label: 'Audiência', value: 'hearing' },
   { label: 'Petição', value: 'petition' },
   { label: 'Análise', value: 'review' },
 ]
 
-const tagOptions: readonly TagsPropertyOption[] = [
+const tagOptions: readonly PropertyOption[] = [
   { label: 'Prazo', value: 'deadline' },
   { label: 'Urgente', value: 'urgent' },
   { label: 'Cível', value: 'civil' },
@@ -188,14 +188,17 @@ export const Tasks: Story = {
               </RecordGroupRow>
               <RecordGroupRow label="Tags">
                 <TagsProperty
+                  placeholder="Adicionar uma tag"
                   ariaLabel="Tags"
                   onValueChange={setTags}
                   options={tagOptions}
                   value={tags}
+                  labels={ptBRPropertyLabels.tags}
                 />
               </RecordGroupRow>
               <RecordGroupRow label="Responsável">
                 <PersonProperty
+                  placeholder="Sem responsável"
                   ariaLabel="Responsável"
                   onValueChange={setAssignee}
                   options={people}
@@ -206,11 +209,13 @@ export const Tasks: Story = {
             <RecordGroup title="Agenda">
               <RecordGroupRow label="Data">
                 <ScheduleProperty
+                  locale="pt-BR"
                   ariaLabel="Data"
                   className={withoutIcon}
                   onValueChange={setSchedule}
                   today={new Date(2026, 9, 14)}
                   value={schedule}
+                  labels={ptBRPropertyLabels.schedule}
                 />
               </RecordGroupRow>
               <RecordGroupRow label="Prazo">
@@ -222,6 +227,7 @@ export const Tasks: Story = {
                   locale="pt-BR"
                   onValueChange={setDue}
                   value={due}
+                  labels={ptBRPropertyLabels.date}
                 />
               </RecordGroupRow>
             </RecordGroup>
@@ -229,9 +235,10 @@ export const Tasks: Story = {
               <RecordGroupRow label="ID">
                 <TextProperty
                   ariaLabel="ID"
-                  copyLabel="Copiar ID"
                   value={record.id}
                   variant="plain"
+                  copyable
+                  labels={{ ...ptBRPropertyLabels.text, copy: 'Copiar ID' }}
                 />
               </RecordGroupRow>
               <RecordGroupRow label="Criado em">
@@ -248,6 +255,7 @@ export const Tasks: Story = {
               </RecordGroupRow>
               <RecordGroupRow label="Criado por">
                 <PersonProperty
+                  placeholder="Sem responsável"
                   ariaLabel="Criado por"
                   options={people}
                   readOnly

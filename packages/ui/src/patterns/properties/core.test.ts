@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import {
+  defaultPropertyLabels,
   defaultScheduleRecurrenceOptions,
   emptyScheduleValue,
   formatDateProperty,
@@ -36,7 +37,7 @@ describe('properties core', () => {
     ).toBe('26 de out')
     expect(
       scheduleRecurrenceLabel('daily', defaultScheduleRecurrenceOptions),
-    ).toBe('Diariamente')
+    ).toBe('Daily')
   })
 
   test('formats a date range without rendering', () => {
@@ -52,6 +53,22 @@ describe('properties core', () => {
     )
   })
 
+  test('exposes English default labels without rendering', () => {
+    expect(defaultPropertyLabels.date.fallback).toBe('No date')
+    expect(defaultPropertyLabels.dateRange.from).toBe('From')
+    expect(defaultPropertyLabels.email.removeEntry('Primary')).toBe(
+      'Remove Primary email',
+    )
+    expect(defaultPropertyLabels.tags.count(2)).toBe('2 Tags')
+    expect(
+      formatDateRangeProperty(
+        { from: new Date(2026, 2, 2), to: undefined },
+        defaultPropertyLabels.dateRange.fallback,
+        'en-US',
+      ),
+    ).toBe('From Mar 2')
+  })
+
   test('exposes the tone class map', () => {
     expect(propertyToneClassName.danger).toBe('text-destructive-foreground')
   })
@@ -60,6 +77,7 @@ describe('properties core', () => {
     for (const file of [
       './display/date/date-value.ts',
       './display/date-range/date-range-format.ts',
+      './shared/property-labels.ts',
     ]) {
       const source = await Bun.file(new URL(file, import.meta.url)).text()
 

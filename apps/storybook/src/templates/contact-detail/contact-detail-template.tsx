@@ -51,6 +51,7 @@ import {
   initialDeals,
 } from '../../patterns/collection/fixtures/deals'
 import { peopleById, TIME_ZONE } from '../../patterns/collection/fixtures/tasks'
+import { ptBRPropertyLabels } from '../../patterns/properties/properties-labels.ts'
 
 const LOCALE = 'pt-BR'
 
@@ -194,6 +195,7 @@ export function ContactDetailTemplate({
               ariaLabel="Empresa"
               value={contact.company}
               variant="plain"
+              labels={ptBRPropertyLabels.text}
             />
           </RecordGroupRow>
           <RecordGroupRow
@@ -204,6 +206,7 @@ export function ContactDetailTemplate({
               ariaLabel="Cargo"
               value={contact.role}
               variant="plain"
+              labels={ptBRPropertyLabels.text}
             />
           </RecordGroupRow>
           <RecordGroupRow
@@ -211,10 +214,12 @@ export function ContactDetailTemplate({
             leading={<EnvelopeSimpleIcon aria-hidden="true" />}
           >
             <EmailProperty
+              placeholder="Sem e-mail"
               ariaLabel="E-mails"
               readOnly
               value={contact.emails}
               variant="plain"
+              labels={ptBRPropertyLabels.email}
             />
           </RecordGroupRow>
           <RecordGroupRow
@@ -222,19 +227,23 @@ export function ContactDetailTemplate({
             leading={<PhoneIcon aria-hidden="true" />}
           >
             <PhoneProperty
+              placeholder="Sem telefone"
               ariaLabel="Telefones"
               readOnly
               value={contact.phones}
               variant="plain"
+              labels={ptBRPropertyLabels.phone}
             />
           </RecordGroupRow>
           <RecordGroupRow label="Tags" leading={<TagIcon aria-hidden="true" />}>
             <TagsProperty
+              placeholder="Adicionar uma tag"
               ariaLabel="Tags"
               options={tagOptions}
               readOnly
               value={contact.tags}
               variant="plain"
+              labels={ptBRPropertyLabels.tags}
             />
           </RecordGroupRow>
           <RecordGroupRow
@@ -248,6 +257,7 @@ export function ContactDetailTemplate({
               timeZone={TIME_ZONE}
               value={contact.lastContactAt.slice(0, 10)}
               variant="plain"
+              labels={ptBRPropertyLabels.date}
             />
           </RecordGroupRow>
         </RecordGroup>

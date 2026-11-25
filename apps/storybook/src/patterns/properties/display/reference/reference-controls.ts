@@ -22,7 +22,7 @@ export interface ReferenceControls {
 export const referenceControlArgs: ReferenceControls = {
   ariaLabel: '',
   kind: 'record',
-  label: 'Authorized lead',
+  label: 'Lead autorizado',
   variant: 'badge',
 }
 

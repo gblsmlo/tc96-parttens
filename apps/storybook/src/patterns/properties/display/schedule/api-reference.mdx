@@ -7,11 +7,11 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 When something happens: one day, optional start and end times, a recurrence and reminders, as for a calendar event, an appointment or a task with a deadline. The value shows as a chip; when the consumer can change it, the chip opens one popup with date presets, a calendar and a footer with the time, the recurrence and the reminders. The consumer keeps the value and receives the next one.
 
-The other pages of `Patterns/Properties/Display/Schedule`: [Playground](?path=/story/patterns-properties-display-schedule-playground--playground) to try the value, the texts, the footer and the placement, [Stories](?path=/story/patterns-properties-display-schedule-stories--default) for each state, [Behavior](?path=/story/patterns-properties-display-schedule-behavior--name-carries-recurrence) for the tests, [Usages](?path=/story/patterns-properties-display-schedule-usages--pipeline-meeting) for an event, a deadline, an English event and a read-only agenda, and [Layouts](?path=/story/patterns-properties-display-schedule-layouts--date-only) for the popup without the footer and with the drill-in footer.
+The other pages of `Patterns/Properties/Display/Schedule`: [Playground](?path=/story/patterns-properties-display-schedule-playground--playground) to try the value, the texts, the footer and the placement, [Variants](?path=/story/patterns-properties-display-schedule-variants--default) for each surface and value, [Layouts](?path=/story/patterns-properties-display-schedule-layouts--default) for the popup, the popup [without the footer](?path=/story/patterns-properties-display-schedule-layouts--date-only-popup) and the [drill-in footer](?path=/story/patterns-properties-display-schedule-layouts--drill-in), [Behavior](?path=/story/patterns-properties-display-schedule-behavior--name-carries-recurrence) for the tests, and [Usages](?path=/story/patterns-properties-display-schedule-usages--pipeline-meeting) for an event, a deadline, a quarterly review and a read-only agenda.
 
 The chip is the shared `PropertySurface`, and the reminders are a `PropertyMultiSelectShell`, both documented once in the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference). The recurrence section picks its frequency with a [`SelectProperty`](?path=/docs/patterns-properties-display-select-api-reference--api-reference) and its end with a [`DateProperty`](?path=/docs/patterns-properties-display-date-api-reference--api-reference).
 
-Used in: the Date row of the event dialog of [Patterns/Records/RecordDialog/Usages, Events](?path=/story/patterns-records-recorddialog-usages--events) and the tasks of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages-tasks--default).
+Used in: the Date row of the event dialog of [Patterns/Records/RecordDialog/Usages, Events](?path=/story/patterns-records-recorddialog-usages--events) and the tasks of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages--tasks).
 
 ## Import
 
@@ -53,13 +53,12 @@ The schedule. It is read-only when `readOnly` is set or when it has no `onValueC
 | `footerLayout` | `"rows"` or `"drill-in"` | `"rows"` | Controls where a footer row opens its editor: under the row, or in place of the popup. |
 | `timeControl` | `"select"` or `"input"` | `"select"` | Controls the time fields of **Hora**: a list of 15-minute slots, or a native time field. |
 | `dateOnly` | `boolean` | `false` | When true, drops the footer: the popup holds only the presets and the calendar. |
-| `fallback` | `string` | `labels.noDate` | Sets the label while there is no day. |
-| `labels` | `Partial<SchedulePropertyLabels>` | - | Replaces any of the texts of the popup; the rest keep their Portuguese default. |
-| `locale` | `string` | `"pt-BR"` | Sets the BCP 47 locale that formats the label, the preset hints and the end date of the recurrence. |
+| `labels` | `Partial<SchedulePropertyLabels>` | English | Replaces any of the texts, merged over `defaultPropertyLabels.schedule`; the default options are built from them. |
+| `locale` | `string` | `"en-US"` | Sets the BCP 47 locale that formats the label, the preset hints and the end date of the recurrence. |
 | `calendarLocale` | `DayPickerLocale` | - | Sets the DayPicker locale of every calendar of the popup, the end date picker included. |
 | `calendarProps` | `PropertyCalendarProps` | - | Passes props to every calendar of the popup, after `calendarLocale`, so its `locale` wins. |
-| `recurrenceOptions` | `readonly ScheduleRecurrenceOption[]` | `defaultScheduleRecurrenceOptions` | Sets the frequencies **Repetir** offers. |
-| `reminderOptions` | `readonly ScheduleReminderOption[]` | `defaultScheduleReminderOptions` | Sets the reminders **Lembretes** offers, in the order they show. |
+| `recurrenceOptions` | `readonly PropertyOption[]` | built from `labels` (`daily` to `yearly`) | Sets the frequencies **Repeat** offers. |
+| `reminderOptions` | `readonly PropertyOption[]` | built from `labels` (`tenMinutesBefore` to `oneDayBefore`) | Sets the reminders **Reminders** offers, in the order they show. |
 | `recurrenceEnabled` | `boolean` | - | When true, enables **Repetir** even with no day; when false, disables it. Without it, **Repetir** follows the day. |
 | `remindersEnabled` | `boolean` | - | When true, enables **Lembretes** even with no day; when false, disables it. Without it, **Lembretes** follows the day. |
 | `today` | `Date` | the start of the current local day | Sets the day the presets count from, the month the calendar opens on with no day, and the calendar's today marker. |
@@ -76,7 +75,7 @@ Takes no other prop. `PropertyCalendarProps` is every prop of the calendar excep
 | `data-empty` | `"true"` while there is no day | Styles the empty schedule: the `"badge"` chip turns to an outline, plain text to `muted-foreground` |
 | `data-slot` | `"property-icon"` | Selects the calendar icon; the repeat icon has no slot |
 
-The label is the day and the short month in `locale`, without dots (`26 de out`, `Oct 26`), followed by `· <start> – <end>` when the value is not all day and has a start time (`26 de out · 14:00 – 16:00`), or by the start alone without an end time. With no day it is `fallback`. The recurrence shows only as the repeat icon on screen, and in full in the name: the trigger and the read-only chip are named `"<ariaLabel>: <label> · <frequency>"` (`Data: 26 de out · 14:00 – 16:00 · Semanalmente`), or without the frequency when the value does not repeat. A frequency that matches no option counts as no recurrence.
+The label is the day and the short month in `locale`, without dots (`26 de out`, `Oct 26`), followed by `· <start> – <end>` when the value is not all day and has a start time (`26 de out · 14:00 – 16:00`), or by the start alone without an end time. With no day it is `labels.fallback`. The recurrence shows only as the repeat icon on screen, and in full in the name: the trigger and the read-only chip are named `"<ariaLabel>: <label> · <frequency>"` (`Data: 26 de out · 14:00 – 16:00 · Semanalmente`), or without the frequency when the value does not repeat. A frequency that matches no option counts as no recurrence.
 
 With `variant="plain"` the editable trigger is the plain trigger box of `PropertySurface`: no fill at rest, a `secondary` fill on hover, on keyboard focus and while the popup is open. The read-only plain chip never fills. See the `PropertySurface` section of the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference).
 
@@ -141,28 +140,39 @@ The texts of the popup. Each field is optional in `labels`.
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `noDate` | `string` | `"Sem data"` | The no date preset, and the label with no day when `fallback` is not set. |
-| `presets` | `string` | `"Atalhos de data"` | Names the list of presets. |
-| `today` | `string` | `"Hoje"` | The today preset. |
-| `tomorrow` | `string` | `"Amanhã"` | The tomorrow preset. |
-| `thisWeekend` | `string` | `"Este fim de semana"` | The next Saturday preset. |
-| `nextWeek` | `string` | `"Próxima semana"` | The next Monday preset. |
-| `time` | `string` | `"Hora"` | The time row. |
-| `start` | `string` | `"Início"` | Names the start time. |
-| `end` | `string` | `"Fim"` | Names the end time. |
-| `allDay` | `string` | `"Dia inteiro"` | The all-day switch, and the time row's value when all day. |
-| `repeat` | `string` | `"Repetir"` | The recurrence row. |
-| `frequency` | `string` | `"Frequência"` | Names the frequency select. |
-| `noRepeat` | `string` | `"Não repete"` | The empty frequency, and the recurrence row's value without one. |
-| `until` | `string` | `"Até"` | Names the end date, and starts the end in the recurrence row's value. |
-| `untilFallback` | `string` | `"Sem término"` | The end date while there is none. |
-| `reminders` | `string` | `"Lembretes"` | The reminders row, and the name of the reminders list. |
-| `addReminder` | `string` | `"Adicionar lembrete"` | The add chip, and the reminders row's value without one. |
-| `removeReminder` | `string` | `"Remover lembrete"` | Starts the name of each reminder's remove button. |
-| `noReminders` | `string` | `"Nenhum lembrete encontrado."` | Shown when the reminder search matches nothing. |
-| `back` | `string` | `"Voltar"` | The back button of `footerLayout="drill-in"`. |
+| `noDate` | `string` | `"No date"` | The no date preset. |
+| `fallback` | `string` | `"No date"` | The label while there is no day. |
+| `presets` | `string` | `"Date shortcuts"` | Names the list of presets. |
+| `today` | `string` | `"Today"` | The today preset. |
+| `tomorrow` | `string` | `"Tomorrow"` | The tomorrow preset. |
+| `thisWeekend` | `string` | `"This weekend"` | The next Saturday preset. |
+| `nextWeek` | `string` | `"Next week"` | The next Monday preset. |
+| `time` | `string` | `"Time"` | The time row. |
+| `start` | `string` | `"Start"` | Names the start time. |
+| `end` | `string` | `"End"` | Names the end time. |
+| `allDay` | `string` | `"All day"` | The all-day switch, and the time row's value when all day. |
+| `repeat` | `string` | `"Repeat"` | The recurrence row. |
+| `frequency` | `string` | `"Frequency"` | Names the frequency select. |
+| `noRepeat` | `string` | `"Does not repeat"` | The empty frequency, and the recurrence row's value without one. |
+| `until` | `string` | `"Until"` | Names the end date, and starts the end in the recurrence row's value. |
+| `untilFallback` | `string` | `"No end"` | The end date while there is none. |
+| `clearUntil` | `string` | `"Clear date"` | The clear button of the end date picker. |
+| `reminders` | `string` | `"Reminders"` | The reminders row, and the name of the reminders list. |
+| `addReminder` | `string` | `"Add reminder"` | The add chip, and the reminders row's value without one. |
+| `removeReminder` | `string` | `"Remove reminder"` | Starts the name of each reminder's remove button. |
+| `noReminders` | `string` | `"No reminders found."` | Shown when the reminder search matches nothing. |
+| `back` | `string` | `"Back"` | The back button of `footerLayout="drill-in"`. |
+| `daily` | `string` | `"Daily"` | The daily option of the default `recurrenceOptions`. |
+| `weekdays` | `string` | `"Weekdays"` | The weekdays option. |
+| `weekly` | `string` | `"Weekly"` | The weekly option. |
+| `monthly` | `string` | `"Monthly"` | The monthly option. |
+| `yearly` | `string` | `"Yearly"` | The yearly option. |
+| `tenMinutesBefore` | `string` | `"10 min before"` | The 10-minute option of the default `reminderOptions`. |
+| `thirtyMinutesBefore` | `string` | `"30 min before"` | The 30-minute option. |
+| `oneHourBefore` | `string` | `"1 hour before"` | The 1-hour option. |
+| `oneDayBefore` | `string` | `"1 day before"` | The 1-day option. |
 
-## ScheduleRecurrenceOption and ScheduleReminderOption
+## PropertyOption (recurrence and reminder options)
 
 One option of `recurrenceOptions` or `reminderOptions`, `{ label, value }`. The pattern stores `value` and shows `label`; it never reads a value's meaning, so the consumer turns `"weekly"` or `"30"` into a rule or a time.
 
@@ -188,15 +198,13 @@ One option of `recurrenceOptions` or `reminderOptions`, `{ label, value }`. The 
 | Export | Kind | Description |
 | --- | --- | --- |
 | `emptyScheduleValue` | `constant` | A `ScheduleValue` with no day. |
-| `defaultScheduleRecurrenceOptions` | `constant` | The default `recurrenceOptions`. |
-| `defaultScheduleReminderOptions` | `constant` | The default `reminderOptions`. |
+| `defaultScheduleRecurrenceOptions` | `constant` | The recurrence options built from the English default labels. |
+| `defaultScheduleReminderOptions` | `constant` | The reminder options built from the English default labels. |
 | `formatScheduleProperty` | `function` | Formats a value as the label shows it, or returns the fallback. `formatScheduleProperty(value, fallback, locale) => string` |
 | `scheduleRecurrenceLabel` | `function` | Returns the label of the option that matches a frequency, or `null`. `scheduleRecurrenceLabel(frequency, options) => string \| null` |
 | `SchedulePropertyProps` | `type` | The props of `ScheduleProperty`. |
 | `ScheduleValue` | `type` | The value. |
 | `SchedulePropertyLabels` | `type` | The texts of `labels`. |
-| `ScheduleRecurrenceOption` | `type` | A recurrence option. |
-| `ScheduleReminderOption` | `type` | A reminder option. |
 | `SchedulePropertyDropdownPlacement` | `type` | The shape of `dropdownPlacement`. |
 | `ScheduleFooterLayout` | `type` | `"rows"` or `"drill-in"`. |
 | `ScheduleTimeControl` | `type` | `"select"` or `"input"`. |
@@ -204,7 +212,7 @@ One option of `recurrenceOptions` or `reminderOptions`, `{ label, value }`. The 
 ## Accessibility and theme
 
 - Pass `ariaLabel` with the meaning of the date (`Data`, `Prazo`): the trigger and the popup are named by it.
-- The texts default to Portuguese: pass `labels` and the labels of your options to change them, `locale` to format the label and the hints, and `calendarLocale` for the language of the calendars, which is English without it.
+- The texts default to English and the label to `en-US`: pass `labels`, `locale` to format the label and the hints, and `calendarLocale` for the language of the calendars.
 - Keyboard: the trigger is a `button` in the Tab order; Enter or Space opens the popup and moves the focus into it, Escape closes it and returns the focus to the trigger.
 - Pass `today` when the day the presets count from is not the device's day (another time zone, a fixed day in tests).
 - The chip reads `secondary`, the empty chip `input` and `background`; the popup reads `popover` and `border`, the preset and row hover `accent`, and an open row's editor `muted` at 40%.

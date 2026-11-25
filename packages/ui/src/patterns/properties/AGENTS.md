@@ -9,16 +9,20 @@ Controlled property displays (date, date range, editable text, email, flag, icon
 | `composition/` | `PropertyCollection` and `assigned/` (`AssignedProperty`) |
 | `display/<property>/` | one folder per display, each with its own `index.ts`; `display/index.ts` re-exports all but `phone-input/` |
 | `hooks/` | `useEntryListEditor`: the popup session (drafts, row errors, save, diff) of email and phone |
-| `shared/` | the surface, catalog, select and multi-select shells, calendar popover, tooltip, entry form, add trigger, row `fieldset` |
+| `shared/` | the surface, select and multi-select shells, calendar popover, tooltip, entry form, add trigger, row `fieldset` |
+| `shared/property-catalog.ts` | the one public vocabulary: `PropertyIcon` (accepts a Phosphor `weight`), `PropertyOption`, `PropertyChangeContext`, `PropertyListChangeContext`, the three placement types (select, multi-select, popover) and the `propertyToneClassName` re-export |
+| `shared/property-labels.ts` | React-free English defaults: `defaultPropertyLabels` keyed by display, each `<Display>Labels` type, the default `ariaLabel`s and `placeholder`s, and `resolvePropertyLabels` |
+| `shared/property-display-meta.ts` | the default icon of each display, the reference kind icons and the attachment type icon and tone (`AttachmentType`, `ReferencePropertyKind` live here) |
 | `shared/lib/` | `isEditable`/`emitChange` (handler rule), option lookup and diff, zod entry parser |
-| `core.ts` | React-free surface: catalog types, `propertyToneClassName`, date formatters; workspace only, not reached from the barrel |
+| `core.ts` | React-free surface: catalog types, `defaultPropertyLabels` and the label types, `propertyToneClassName`, date formatters; reached by package subpath `@tc96/ui/patterns/properties/core` (blocks import `PropertyOption` from it), not from the barrel |
 
-Import direction: `composition/` → `display/`, `shared/`; `display/<property>/` → `hooks/`, `shared/`, other display folders; `display/editable-text/` → `editable/index.ts` (`Editable`, `EditableField`), the only import into another pattern; `hooks/` → `shared/lib/`; `shared/` → only COSS, Base UI, `@tc96/utils`, `@tc96/ui/lib/property-tone` (the tone it re-exports) and zod types, never a display, hook or composition.
+Import direction: `composition/` → `display/`, `shared/`; `display/<property>/` → `hooks/`, `shared/`, other display folders; `display/editable-text/` → `editable/index.ts` (`Editable`, `EditableField`), the only import into another pattern; `hooks/` → `shared/lib/`; `shared/` → only COSS, Base UI, Phosphor, `@tc96/utils`, `@tc96/ui/lib/property-tone` (the tone it re-exports) and zod types, never a display, hook or composition.
 
 ## Dependents
 
 - `checklist` imports by file path, not through the barrel: `display/date/date-property.tsx`, `display/person/person-property.tsx` (`PersonProperty`, `PersonPropertyOption`) and `display/editable-text/editable-text.tsx` (`EditableText`, `EditableTextSize`). Renaming or moving these breaks `checklist`. The path is deliberate: an import through the barrel would make the `checklist` registry item ship every file of `properties`.
 - `record-group` imports `shared/property-catalog.ts` (`PropertyIcon`) by file path, as a type, from its `core.ts`. Renaming or moving it breaks `record-group`.
+- `packages/ui/src/blocks/data/` imports `PropertyOption` from `@tc96/ui/patterns/properties/core` and the displays by file path (`display/select/select-property.tsx`, `display/person/person-property.tsx`, `display/date/date-property.tsx`).
 - `packages/ui/src/patterns/index.ts` re-exports `properties/index`.
 
 ## Invariants
@@ -70,7 +74,13 @@ Markup:
 - The multi-select add chip (`PeopleProperty`, `TagsProperty`, the `ScheduleProperty` reminders) is a `PropertySurface` button, the same surface as the empty chip of `PersonProperty`: muted outline with a `size-4` icon and `gap-1.5` while empty, and a filled `w-6` plus chip once there is a value. Its accessible name is the placeholder while empty and `addLabel` with a value. It is not a COSS `Button`, which differed in radius, icon size and fill.
 - `PropertyAddTrigger` (email, phone, attachments) follows the same standard: `size-4` glyph, empty or with a value.
 - The selected-value chip of `PeopleProperty` and `TagsProperty` stays the COSS `ComboboxChip`, which cannot take a `className` without losing its own. The chips container sets `text-sm` and `rounded-sm` on it, so text size and radius match a `PropertySurface` chip; the radius is a registered override in `scripts/override-exceptions.json`. Fill and height stay COSS.
-- Default copy is pt-BR; the fallback `ariaLabel`s `Date`, `Person` and `Period` are English.
+Copy:
+
+- Every default text is an English fallback in `shared/property-labels.ts`; no display holds a literal. `ariaLabel` and `placeholder` stay top-level props; every other text goes through `labels?: Partial<<Display>Labels>`, merged by `resolvePropertyLabels`, which ignores `undefined` so a partial override keeps the other defaults.
+- Texts that take a value are composed as today, with the words from `labels`: `${ariaLabel}: ${value}`, `${labels.remove} ${label}`, `${labels.from} ${date}`, `${frequency} · ${labels.until} ${date}`, `${labels.country}: ${name}`. `labels.count` (tags) and `labels.removeEntry` (email, phone) are functions because their word order differs by language.
+- `SelectProperty` shows its empty option only with `allowEmpty`, and `TextProperty` its copy button only with `copyable`, because a default label can no longer switch them on.
+- `ScheduleProperty` builds its default recurrence and reminder options from `labels`; `locale` defaults to `en-US` like every display.
+- `PhoneInput` country names still come from the pt-BR locale file of `react-phone-number-input`.
 
 ## Styling
 
@@ -109,7 +119,7 @@ cd apps/storybook && bunx vitest run --project=storybook src/patterns/properties
 
 Stories in `apps/storybook/src/patterns/properties/` (`Patterns/Properties/...`) follow the six pages of `Get Started/Component Docs` and run axe with `test: 'error'`. The root node `Patterns/Properties` documents `PropertyCollection`, `PropertySurface` and the internal parts of `shared/` and `hooks/`: those are not exported, so its `Behavior` tests them through the public displays that render them (`EmailProperty`, `TagsProperty`, `PeopleProperty`, `DateProperty`, `DateRangeProperty`, `AttachmentsProperty`, `SelectProperty`), and a display's API Reference links to the root instead of documenting them again. Each display, `AssignedProperty` included, is a node `Patterns/Properties/Display/<Display>` in `display/<display>/`. A node's `<node>-controls.ts` holds the Playground args and `<node>-layouts.tsx` the compositions its pages render, with the consumer's state in the composition (`useState`). Layout wrappers such as `p-4` or `min-h-80` are decorators, not markup in the render.
 
-Interface tests are `play` functions on each node's `Behavior` page. `Phone Input` imports its component through the package subpath (`@tc96/ui/patterns/properties/display/...`) because the barrel does not export it. CSS `:hover` cannot be reached by `userEvent.hover`, a synthetic event, so the plain hover box of `PropertySurface` is tested by reading the `:hover` rules that match the surface in the CSSOM (`Patterns/Properties/Behavior`, `Surface Plain Hover Shows Secondary`); focus and the open popup are tested on the computed style. The bun tests left are pure: `core.test.ts`, `shared/lib/` and the value, format and parser tests next to `date`, `date-range`, `phone-input` and `schedule`.
+Interface tests are `play` functions on each node's `Behavior` page. `PhoneInput` imports its component through the package subpath (`@tc96/ui/patterns/properties/display/...`) because the barrel does not export it. CSS `:hover` cannot be reached by `userEvent.hover`, a synthetic event, so the plain hover box of `PropertySurface` is tested by reading the `:hover` rules that match the surface in the CSSOM (`Patterns/Properties/Behavior`, `Surface Plain Hover Shows Secondary`); focus and the open popup are tested on the computed style. The bun tests left are pure: `core.test.ts`, `shared/lib/` and the value, format and parser tests next to `date`, `date-range`, `phone-input` and `schedule`.
 
 ## Pointers
 

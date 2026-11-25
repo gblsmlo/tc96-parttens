@@ -3,11 +3,11 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 <Meta of={ApiReferenceStories} name="API Reference" />
 
-# Phone Input
+# PhoneInput
 
 A phone number field with its country: a country picker on the left and the number on the right, formatted in the country's national pattern as it is typed. The consumer keeps the value in E.164 (`+5511987654321`) and receives the next one; the field never validates on its own, and the same library that formats it also validates it through `phoneNumberSchema`.
 
-The other pages of `Patterns/Properties/Display/Phone Input`: [Playground](?path=/story/patterns-properties-display-phone-input-playground--playground) to try the value, the country and the states, [Stories](?path=/story/patterns-properties-display-phone-input-stories--default) for each state, [Behavior](?path=/story/patterns-properties-display-phone-input-behavior--saved-number-in-national-format) for the tests, and [Usages](?path=/story/patterns-properties-display-phone-input-usages--contact-mobile) for a mobile number, a number abroad and a rejected number.
+The other pages of `Patterns/Properties/Display/PhoneInput`: [Playground](?path=/story/patterns-properties-display-phoneinput-playground--playground) to try the value, the country, the texts and the states, [Variants](?path=/story/patterns-properties-display-phoneinput-variants--default) for the empty, invalid, read-only and disabled field, [Layouts](?path=/story/patterns-properties-display-phoneinput-layouts--default) for the field alone and under a visible label, [Behavior](?path=/story/patterns-properties-display-phoneinput-behavior--saved-number-in-national-format) for the tests, and [Usages](?path=/story/patterns-properties-display-phoneinput-usages--contact-mobile) for a mobile number, a number abroad and a rejected number.
 
 Used in: each field of the entry popup of [Patterns/Properties/Display/Phone](?path=/docs/patterns-properties-display-phone-api-reference--api-reference).
 
@@ -31,7 +31,7 @@ The field renders all its parts itself:
 
 ```text
 PhoneInput                  div, role="group", data-slot="phone-input"
-├── country trigger         button, role="combobox", named "País: <country>"
+├── country trigger         button, role="combobox", named "<labels.country>: <country>"
 │   ├── flag                20px, hidden from assistive technology
 │   ├── calling code        "+55"
 │   └── chevron
@@ -39,7 +39,7 @@ PhoneInput                  div, role="group", data-slot="phone-input"
 └── number field            input, named by ariaLabel
 ```
 
-The country trigger opens a list anchored to the whole field: a search field, `Nenhum país encontrado.` when nothing matches, and one option per country.
+The country trigger opens a list anchored to the whole field: a search field, `labels.countryEmpty` when nothing matches, and one option per country.
 
 ## PhoneInput
 
@@ -52,6 +52,7 @@ Renders a group with the country trigger and the number field. It is controlled:
 | `ariaLabel` | `string` | - | Names the number field. |
 | `defaultCountry` | `PhoneCountryCode` | `"BR"` | Sets the country while the number names none. Read when the field mounts. |
 | `placeholder` | `string` | - | Sets the placeholder of the number field. |
+| `labels` | `Partial<PhoneInputLabels>` | English | Overrides the texts of the country picker, merged over `defaultPropertyLabels.phoneInput`: `country` (`"Country"`, followed by `: <country>`), `countryList` (`"Select country"`), `countrySearch` (`"Search country"`) and `countryEmpty` (`"No country found."`). |
 | `invalid` | `boolean` | `false` | When true, marks the number field `aria-invalid`; the country trigger is not marked. |
 | `disabled` | `boolean` | `false` | When true, disables the number field and the country trigger. |
 | `readOnly` | `boolean` | `false` | When true, makes the number field read-only and disables the country trigger. |
@@ -81,7 +82,7 @@ A disabled field dims to 64% opacity.
 | Export | Kind | Description |
 | --- | --- | --- |
 | `phoneNumberSchema` | `function` | A zod schema that trims the text and accepts only a valid number, with the library that formats the field. `phoneNumberSchema({ invalidMessage, requiredMessage }) => z.ZodType<string, string>` |
-| `PhoneNumberSchemaOptions` | `type` | The messages of `phoneNumberSchema`: `invalidMessage` (`"Informe um telefone válido."`) and `requiredMessage` (`"Informe um telefone."`). |
+| `PhoneNumberSchemaOptions` | `type` | The messages of `phoneNumberSchema`: `invalidMessage` (default `defaultPropertyLabels.phone.invalid`, `"Enter a valid phone number."`) and `requiredMessage` (default `defaultPropertyLabels.phone.required`, `"Enter a phone number."`). |
 | `defaultPhoneCountry` | `constant` | `"BR"`, the default of `defaultCountry`. |
 | `PhoneCountryCode` | `type` | A two-letter country code the field knows (`"BR"`, `"PT"`, `"US"`). |
 | `PhoneInputProps` | `type` | The props of `PhoneInput`. |
@@ -89,6 +90,6 @@ A disabled field dims to 64% opacity.
 ## Accessibility and theme
 
 - Pass `ariaLabel`: the number field has no visible label of its own, and the group is not named. A `label` element wrapping the field would name the country trigger, the first control inside it, not the number.
-- The country trigger is named `País: <country>` and the list `Selecionar país`, in Portuguese; the country names are Portuguese too. They cannot be changed.
-- Show the error text yourself, next to the field: `invalid` only marks the number field.
+- The country trigger is named `<labels.country>: <country>` (`Country: Brasil`) and the list `labels.countryList`; the texts default to English through `labels`, while the country names stay Portuguese and cannot be changed.
+- Show the error text yourself, next to the field, as the [Label Over Field](?path=/story/patterns-properties-display-phoneinput-layouts--label-over-field) layout does: `invalid` only marks the number field.
 - The group reads `input` for its border, `background` (and `input` at 32% in dark) for its fill, and `destructive` for the border of an invalid number; the calling code reads `muted-foreground`.

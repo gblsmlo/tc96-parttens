@@ -1,4 +1,4 @@
-import type { SelectPropertyOption } from '@tc96/ui/patterns'
+import type { PropertyOption } from '@tc96/ui/patterns'
 
 export type LeadStage = 'new' | 'contacted' | 'qualified'
 
@@ -24,7 +24,7 @@ export const leadStageOptions = [
   { label: 'Novo', value: 'new' },
   { label: 'Contatado', value: 'contacted' },
   { label: 'Qualificado', value: 'qualified' },
-] as const satisfies readonly (SelectPropertyOption & { value: LeadStage })[]
+] as const satisfies readonly (PropertyOption & { value: LeadStage })[]
 
 export const leadSourceOptions = [
   { label: 'Indicação', value: 'referral' },
@@ -32,7 +32,7 @@ export const leadSourceOptions = [
   { label: 'Anúncio', value: 'ads' },
   { label: 'Evento', value: 'event' },
   { label: 'Prospecção ativa', value: 'outbound' },
-] as const satisfies readonly (SelectPropertyOption & { value: LeadSource })[]
+] as const satisfies readonly (PropertyOption & { value: LeadSource })[]
 
 export const leadNextActionOptions = [
   { label: 'Ligar', value: 'call' },
@@ -40,7 +40,7 @@ export const leadNextActionOptions = [
   { label: 'Agendar reunião', value: 'meeting' },
   { label: 'Enviar proposta', value: 'proposal' },
   { label: 'Fazer follow-up', value: 'follow-up' },
-] as const satisfies readonly (SelectPropertyOption & {
+] as const satisfies readonly (PropertyOption & {
   value: LeadNextAction
 })[]
 

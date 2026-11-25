@@ -23,6 +23,7 @@ import {
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, fn, screen, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../../properties/properties-labels.ts'
 import {
   extraProperties,
   type ProjectValues,
@@ -194,12 +195,12 @@ const meta = {
                 .map(({ id, label }) => (
                   <DateProperty
                     ariaLabel={label}
-                    fallback={label}
                     key={id}
                     onValueChange={(value) =>
                       setDates((current) => ({ ...current, [id]: value }))
                     }
                     value={dates[id] ?? null}
+                    labels={{ ...ptBRPropertyLabels.date, fallback: label }}
                   />
                 ))}
               <Menu>

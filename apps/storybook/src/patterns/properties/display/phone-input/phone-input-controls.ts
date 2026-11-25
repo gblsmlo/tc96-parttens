@@ -1,4 +1,5 @@
 import type { ArgTypes } from '@storybook/react-vite'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 
 export const phoneInputCountries = ['BR', 'PT', 'US'] as const
 
@@ -7,6 +8,10 @@ export interface PhoneInputControls {
   defaultCountry: (typeof phoneInputCountries)[number]
   disabled: boolean
   invalid: boolean
+  labelsCountry: string
+  labelsCountryEmpty: string
+  labelsCountryList: string
+  labelsCountrySearch: string
   placeholder: string
   readOnly: boolean
   value: string
@@ -17,6 +22,10 @@ export const phoneInputControlArgs: PhoneInputControls = {
   defaultCountry: 'BR',
   disabled: false,
   invalid: false,
+  labelsCountry: ptBRPropertyLabels.phoneInput.country,
+  labelsCountryEmpty: ptBRPropertyLabels.phoneInput.countryEmpty,
+  labelsCountryList: ptBRPropertyLabels.phoneInput.countryList,
+  labelsCountrySearch: ptBRPropertyLabels.phoneInput.countrySearch,
   placeholder: '',
   readOnly: false,
   value: '+5511987654321',
@@ -42,6 +51,26 @@ export const phoneInputControlArgTypes: Partial<ArgTypes<PhoneInputControls>> =
       control: 'boolean',
       description:
         'The `invalid` of `PhoneInput`: marks the number field `aria-invalid`.',
+    },
+    labelsCountry: {
+      control: 'text',
+      description:
+        '`labels.country` of `PhoneInput`: names the country trigger, before `: <country>`.',
+    },
+    labelsCountryEmpty: {
+      control: 'text',
+      description:
+        '`labels.countryEmpty` of `PhoneInput`, shown in the list when no country matches the search.',
+    },
+    labelsCountryList: {
+      control: 'text',
+      description:
+        '`labels.countryList` of `PhoneInput`: names the country list.',
+    },
+    labelsCountrySearch: {
+      control: 'text',
+      description:
+        '`labels.countrySearch` of `PhoneInput`: names the search field of the list and is its placeholder.',
     },
     placeholder: {
       control: 'text',

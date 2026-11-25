@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EmailProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 
 const ignore = () => undefined
 
@@ -8,6 +9,9 @@ const meta = {
   args: {
     onValueChange: ignore,
     value: ['ana.souza@example.com'],
+    ariaLabel: 'E-mails',
+    placeholder: 'Sem e-mail',
+    labels: ptBRPropertyLabels.email,
   },
   component: EmailProperty,
   decorators: [

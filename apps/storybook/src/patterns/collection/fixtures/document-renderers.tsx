@@ -37,6 +37,7 @@ import {
 } from '@tc96/ui/patterns'
 import { Separator } from '@tc96/ui/separator'
 import { Text } from '@tc96/ui/text'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import {
   type DocumentRecord,
   formatCreatedAt,
@@ -206,8 +207,10 @@ export const renderDocumentCard =
           readOnly
           value={document.createdAt.slice(0, 10)}
           variant="plain"
+          labels={ptBRPropertyLabels.date}
         />
         <PersonProperty
+          placeholder="Sem responsável"
           ariaLabel="Dono"
           avatarSize="sm"
           display="avatar"

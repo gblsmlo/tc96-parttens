@@ -6,12 +6,9 @@ import {
   RadioButtonIcon,
   UsersIcon,
 } from '@phosphor-icons/react'
-import type {
-  SelectPropertyGroup,
-  SelectPropertyOption,
-} from '@tc96/ui/patterns'
+import type { PropertyOption, SelectPropertyGroup } from '@tc96/ui/patterns'
 
-export const activityOptions: SelectPropertyOption[] = [
+export const activityOptions: PropertyOption[] = [
   { icon: UsersIcon, label: 'Reunião', tone: 'info', value: 'meeting' },
   { icon: PhoneIcon, label: 'Ligação', tone: 'success', value: 'call' },
   {
@@ -24,12 +21,11 @@ export const activityOptions: SelectPropertyOption[] = [
 ]
 
 export const withoutIcons = (
-  options: readonly SelectPropertyOption[],
-): SelectPropertyOption[] =>
-  options.map(({ label, value }) => ({ label, value }))
+  options: readonly PropertyOption[],
+): PropertyOption[] => options.map(({ label, value }) => ({ label, value }))
 
 export const groupActivities = (
-  options: readonly SelectPropertyOption[],
+  options: readonly PropertyOption[],
 ): SelectPropertyGroup[] => {
   const pick = (...values: string[]) =>
     options.filter((option) => values.includes(option.value))
@@ -58,7 +54,7 @@ export const meetingTemplateGroups: SelectPropertyGroup[] = [
   },
 ]
 
-export const frequencyOptions: SelectPropertyOption[] = [
+export const frequencyOptions: PropertyOption[] = [
   { label: 'Diariamente', value: 'daily' },
   { label: 'Semanalmente', value: 'weekly' },
   { label: 'Mensalmente', value: 'monthly' },

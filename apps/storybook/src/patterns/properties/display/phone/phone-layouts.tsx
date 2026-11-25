@@ -1,5 +1,6 @@
 import { PhoneProperty, type PhonePropertyProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import type { PhoneControls } from './phone-controls.ts'
 
 type StatefulPhoneProps = Omit<
@@ -15,24 +16,43 @@ export const StatefulPhone = ({
 }: Readonly<StatefulPhoneProps>) => {
   const [value, setValue] = useState(initialValue)
 
-  return <PhoneProperty {...props} onValueChange={setValue} value={value} />
+  return (
+    <PhoneProperty
+      ariaLabel="Telefones"
+      placeholder="Sem telefone"
+      {...props}
+      onValueChange={setValue}
+      value={value}
+      labels={{ ...ptBRPropertyLabels.phone, ...props.labels }}
+    />
+  )
 }
+
+type ComposedPhoneProps = PhoneControls & Pick<PhonePropertyProps, 'display'>
 
 export const ComposedPhone = ({
   addTrigger,
   errorMessage,
-  inputPlaceholder,
+  labelsAdd,
+  labelsInputPlaceholder,
   value,
   ...props
-}: Readonly<PhoneControls>) => (
+}: Readonly<ComposedPhoneProps>) => (
   <StatefulPhone
     {...props}
     addDisabled={!addTrigger}
     errorMessage={errorMessage || null}
     initialValue={value}
-    inputPlaceholder={inputPlaceholder || undefined}
     key={`${value.join()}-${props.defaultCountry}`}
+    labels={{
+      add: labelsAdd,
+      inputPlaceholder: labelsInputPlaceholder || undefined,
+    }}
   />
+)
+
+export const ListInPopoverPhone = (args: Readonly<PhoneControls>) => (
+  <ComposedPhone {...args} display="trigger" />
 )
 
 export function PrimaryNumberPhone({
@@ -42,12 +62,16 @@ export function PrimaryNumberPhone({
 
   return (
     <PhoneProperty
+      placeholder="Sem telefone"
       addDisabled={value.length > 0}
-      addLabel="Adicionar telefone principal"
       ariaLabel="Telefone principal"
-      entryLabels={['Principal']}
       onValueChange={setValue}
       value={value}
+      labels={{
+        ...ptBRPropertyLabels.phone,
+        add: 'Adicionar telefone principal',
+        entries: ['Principal'],
+      }}
     />
   )
 }

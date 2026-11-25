@@ -13,6 +13,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const WithoutIcon: Story = {
-  render: () => <ComposedFlag {...flagControlArgs} icon={false} />,
+export const Default: Story = {
+  render: () => <ComposedFlag {...flagControlArgs} />,
 }

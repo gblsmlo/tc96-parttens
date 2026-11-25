@@ -12,17 +12,17 @@ import {
   DateProperty,
   PersonProperty,
   type PersonPropertyOption,
+  type PropertyOption,
   RecordGroup,
   RecordGroupRow,
   SelectProperty,
-  type SelectPropertyOption,
   TagsProperty,
-  type TagsPropertyOption,
   TextProperty,
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
+import { ptBRPropertyLabels } from '../../../properties/properties-labels.ts'
 
-export const statusOptions: SelectPropertyOption[] = [
+export const statusOptions: PropertyOption[] = [
   {
     icon: RadioButtonIcon,
     label: 'In progress',
@@ -38,7 +38,7 @@ const assigneeOptions: PersonPropertyOption[] = [
   { label: 'Daniel Costa', value: 'daniel' },
 ]
 
-const labelOptions: TagsPropertyOption[] = [
+const labelOptions: PropertyOption[] = [
   { label: 'Compliance', value: 'compliance' },
   { label: 'Customer', value: 'customer' },
   { label: 'Urgent', value: 'urgent' },
@@ -69,6 +69,7 @@ export function PropertiesGroup({
           onCommit={setTitle}
           value={title}
           variant={look}
+          labels={ptBRPropertyLabels.text}
         />
       </RecordGroupRow>
       <RecordGroupRow
@@ -91,6 +92,7 @@ export function PropertiesGroup({
         leading={<UserIcon aria-hidden />}
       >
         <PersonProperty
+          placeholder="Sem responsável"
           ariaLabel="Assignee"
           onValueChange={setAssignee}
           options={assigneeOptions}
@@ -105,12 +107,14 @@ export function PropertiesGroup({
         leading={<TagIcon aria-hidden />}
       >
         <TagsProperty
+          placeholder="Adicionar uma tag"
           ariaLabel="Labels"
           onValueChange={setLabels}
           options={labelOptions}
           readOnly={readOnly}
           value={labels}
           variant={look}
+          labels={ptBRPropertyLabels.tags}
         />
       </RecordGroupRow>
       <RecordGroupRow
@@ -126,6 +130,7 @@ export function PropertiesGroup({
           timeZone="UTC"
           value={due}
           variant={look}
+          labels={ptBRPropertyLabels.date}
         />
       </RecordGroupRow>
     </RecordGroup>

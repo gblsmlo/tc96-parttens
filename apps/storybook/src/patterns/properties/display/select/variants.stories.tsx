@@ -12,11 +12,11 @@ const meta = {
   argTypes: selectControlArgTypes,
   decorators: [SelectCanvas],
   parameters: {
-    controls: { exclude: ['disabled', 'value', 'variant'] },
+    controls: { exclude: ['disabled', 'readOnly', 'value', 'variant'] },
   },
   render: (args) => <ComposedSelect {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Select/Stories',
+  title: 'Patterns/Properties/Display/Select/Variants',
 } satisfies Meta<SelectControls>
 
 export default meta
@@ -33,8 +33,8 @@ export const Empty: Story = {
   args: { value: 'none' },
 }
 
-export const OutsideCatalog: Story = {
-  args: { value: 'unknown' },
+export const ReadOnly: Story = {
+  args: { readOnly: true },
 }
 
 export const Disabled: Story = {

@@ -18,12 +18,12 @@ export interface EditableTextControls {
 }
 
 export const editableTextControlArgs: EditableTextControls = {
-  ariaLabel: 'Title',
+  ariaLabel: 'Título',
   multiline: false,
-  placeholder: 'Untitled',
+  placeholder: 'Sem título',
   readOnly: false,
   size: 'base',
-  value: 'Check the contract signatures before the meeting',
+  value: 'Conferir as assinaturas do contrato antes da reunião',
 }
 
 export const editableTextControlArgTypes: Partial<

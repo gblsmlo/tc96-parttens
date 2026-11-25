@@ -16,7 +16,7 @@ const meta = {
   component: IconLabelProperty,
   decorators: [IconLabelCanvas],
   tags: ['!autodocs', '!dev'],
-  title: 'Patterns/Properties/Display/Icon Label/API Reference',
+  title: 'Patterns/Properties/Display/IconLabel/API Reference',
 } satisfies Meta<typeof IconLabelProperty>
 
 export default meta

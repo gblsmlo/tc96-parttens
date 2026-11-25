@@ -8,6 +8,8 @@ import {
   esperarSuperficiePlana,
 } from '../../../../test-utils/property-surface'
 import { ReferenceCanvas } from './reference-canvas.tsx'
+import { referenceControlArgs } from './reference-controls.ts'
+import { ComposedReference } from './reference-layouts.tsx'
 
 const meta = {
   args: { label: 'Acme Corp' },
@@ -24,24 +26,62 @@ type Story = StoryObj<typeof meta>
 const iconOf = (chip: HTMLElement) =>
   chip.querySelector('[data-slot="property-icon"]')
 
-export const KindPicksIcon: Story = {
+const iconNamed = (canvasElement: HTMLElement, name: string) =>
+  iconOf(
+    within(canvasElement).getByRole('img', { name: new RegExp(`^${name}:`) }),
+  )
+
+export const AccountKindShowsTheBuildingsIcon: Story = {
+  render: () => (
+    <ComposedReference
+      {...referenceControlArgs}
+      ariaLabel="Conta"
+      kind="account"
+      label="Acme"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(isIcon(iconNamed(canvasElement, 'Conta'), BuildingsIcon)).toBe(
+      true,
+    )
+  },
+}
+
+export const ProductKindShowsThePackageIcon: Story = {
+  render: () => (
+    <ComposedReference
+      {...referenceControlArgs}
+      ariaLabel="Produto"
+      kind="product"
+      label="Pro"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(isIcon(iconNamed(canvasElement, 'Produto'), PackageIcon)).toBe(
+      true,
+    )
+  },
+}
+
+export const RecordKindIsTheDefaultCubeIcon: Story = {
   render: () => (
     <div className="flex gap-2">
-      <ReferenceProperty ariaLabel="Account" kind="account" label="Acme" />
-      <ReferenceProperty ariaLabel="Product" kind="product" label="Pro" />
-      <ReferenceProperty ariaLabel="Record" kind="record" label="Lead" />
-      <ReferenceProperty ariaLabel="Default" label="Ticket" />
+      <ComposedReference
+        {...referenceControlArgs}
+        ariaLabel="Registro"
+        kind="record"
+        label="Lead"
+      />
+      <ReferenceProperty ariaLabel="Padrão" label="Ticket" />
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const icon = (name: string) =>
-      iconOf(canvas.getByRole('img', { name: new RegExp(`^${name}:`) }))
-
-    await expect(isIcon(icon('Account'), BuildingsIcon)).toBe(true)
-    await expect(isIcon(icon('Product'), PackageIcon)).toBe(true)
-    await expect(isIcon(icon('Record'), CubeIcon)).toBe(true)
-    await expect(isIcon(icon('Default'), CubeIcon)).toBe(true)
+    await expect(isIcon(iconNamed(canvasElement, 'Registro'), CubeIcon)).toBe(
+      true,
+    )
+    await expect(isIcon(iconNamed(canvasElement, 'Padrão'), CubeIcon)).toBe(
+      true,
+    )
   },
 }
 

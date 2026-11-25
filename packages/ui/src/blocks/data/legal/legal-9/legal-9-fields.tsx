@@ -41,9 +41,9 @@ export function Legal9HolderField({ context, item }: FieldProps) {
   return (
     <TextProperty
       ariaLabel={context.labels.columns.holder}
-      fallback={context.labels.noHolder}
       value={item.holder}
       variant="plain"
+      labels={{ fallback: context.labels.noHolder }}
     />
   )
 }
@@ -74,8 +74,6 @@ export function Legal9BillingModelField({ context, item }: FieldProps) {
   return (
     <SelectProperty
       ariaLabel={labels.columns.billingModel}
-      emptyOptionLabel={editable ? labels.noBillingModel : undefined}
-      fallback={labels.noBillingModel}
       onValueChange={
         editable
           ? (value) => {
@@ -92,6 +90,11 @@ export function Legal9BillingModelField({ context, item }: FieldProps) {
       readOnly={!editable}
       value={item.billingModel}
       variant="plain"
+      allowEmpty={editable}
+      labels={{
+        emptyOption: labels.noBillingModel,
+        fallback: labels.noBillingModel,
+      }}
     />
   )
 }

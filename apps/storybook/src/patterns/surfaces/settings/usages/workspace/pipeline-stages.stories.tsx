@@ -13,13 +13,13 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
+  type PropertyOption,
   RecordDialog,
   RecordDialogHeadline,
   RecordGroup,
   RecordGroupItem,
   RecordGroupRow,
   SelectProperty,
-  type SelectPropertyOption,
   SettingsSection,
   SettingsSectionDescription,
   SettingsSectionHeader,
@@ -43,7 +43,7 @@ interface Stage {
 
 const phases: PhaseId[] = ['Open', 'Won', 'Lost']
 
-const phaseOptions: SelectPropertyOption[] = phases.map((phase) => ({
+const phaseOptions: PropertyOption[] = phases.map((phase) => ({
   label: phase,
   value: phase,
 }))

@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, within } from 'storybook/test'
 import { PhoneInputCanvas } from './phone-input-canvas.tsx'
-import { StatefulPhoneInput } from './phone-input-layouts.tsx'
+import { phoneInputControlArgs } from './phone-input-controls.ts'
+import { LabelOverFieldPhoneInput } from './phone-input-layouts.tsx'
 
 const meta = {
   decorators: [PhoneInputCanvas],
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Phone Input/Usages',
+  title: 'Patterns/Properties/Display/PhoneInput/Usages',
 } satisfies Meta
 
 export default meta
@@ -14,18 +15,21 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const ContactMobile: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The mobile number of a contact, on the [Label Over Field](?path=/story/patterns-properties-display-phoneinput-layouts--label-over-field) layout: the hint says what the number is for.',
+      },
+    },
+  },
   render: () => (
-    <div className="flex w-full flex-col gap-2">
-      <span className="font-medium text-sm">Celular</span>
-      <StatefulPhoneInput
-        ariaLabel="Celular"
-        placeholder="(11) 91234-5678"
-        value="+5511987654321"
-      />
-      <p className="text-muted-foreground text-xs">
-        Usado para lembretes por WhatsApp e SMS.
-      </p>
-    </div>
+    <LabelOverFieldPhoneInput
+      {...phoneInputControlArgs}
+      ariaLabel="Celular"
+      message="Usado para lembretes por WhatsApp e SMS."
+      placeholder="(11) 91234-5678"
+    />
   ),
   play: async ({ canvasElement }) => {
     await expect(
@@ -35,15 +39,21 @@ export const ContactMobile: Story = {
 }
 
 export const LisbonOffice: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The number of an office abroad, on the [Label Over Field](?path=/story/patterns-properties-display-phoneinput-layouts--label-over-field) layout with no message: the country comes from the number, Portugal.',
+      },
+    },
+  },
   render: () => (
-    <div className="flex w-full flex-col gap-2">
-      <span className="font-medium text-sm">Escritório em Lisboa</span>
-      <StatefulPhoneInput
-        ariaLabel="Escritório em Lisboa"
-        defaultCountry="PT"
-        value="+351912345678"
-      />
-    </div>
+    <LabelOverFieldPhoneInput
+      {...phoneInputControlArgs}
+      ariaLabel="Escritório em Lisboa"
+      defaultCountry="PT"
+      value="+351912345678"
+    />
   ),
   play: async ({ canvasElement }) => {
     await expect(
@@ -53,18 +63,22 @@ export const LisbonOffice: Story = {
 }
 
 export const RejectedNumber: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A business number the consumer rejected, on the [Label Over Field](?path=/story/patterns-properties-display-phoneinput-layouts--label-over-field) layout: the field is marked invalid and the consumer shows the message under it.',
+      },
+    },
+  },
   render: () => (
-    <div className="flex w-full flex-col gap-2">
-      <span className="font-medium text-sm">Telefone comercial</span>
-      <StatefulPhoneInput
-        ariaLabel="Telefone comercial"
-        invalid
-        value="+55119876"
-      />
-      <p className="text-destructive-foreground text-xs" role="alert">
-        Informe um telefone válido.
-      </p>
-    </div>
+    <LabelOverFieldPhoneInput
+      {...phoneInputControlArgs}
+      ariaLabel="Telefone comercial"
+      invalid
+      message="Informe um telefone válido."
+      value="+55119876"
+    />
   ),
   play: async ({ canvasElement }) => {
     await expect(

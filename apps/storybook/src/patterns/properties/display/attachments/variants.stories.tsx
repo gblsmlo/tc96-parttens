@@ -12,11 +12,11 @@ const meta = {
   argTypes: attachmentsControlArgTypes,
   decorators: [AttachmentsCanvas],
   parameters: {
-    controls: { exclude: ['actionDisabled', 'empty', 'type'] },
+    controls: { exclude: ['actionDisabled', 'empty', 'readOnly', 'type'] },
   },
   render: (args) => <ComposedAttachments {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Attachments/Stories',
+  title: 'Patterns/Properties/Display/Attachments/Variants',
 } satisfies Meta<AttachmentsControls>
 
 export default meta
@@ -29,21 +29,22 @@ export const Empty: Story = {
   args: { empty: true },
 }
 
-export const DisabledAction: Story = {
+export const ReadOnly: Story = {
+  args: { readOnly: true },
+}
+
+export const ActionDisabled: Story = {
   args: { actionDisabled: true },
 }
 
 export const TypeDoc: Story = {
   args: { type: 'doc' },
-  name: 'Type doc',
 }
 
 export const TypeAudio: Story = {
   args: { type: 'audio' },
-  name: 'Type audio',
 }
 
 export const TypeLink: Story = {
   args: { type: 'link' },
-  name: 'Type link',
 }

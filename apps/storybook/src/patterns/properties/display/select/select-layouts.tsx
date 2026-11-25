@@ -1,5 +1,6 @@
 import { SelectProperty, type SelectPropertyProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import type { SelectControls } from './select-controls.ts'
 import {
   activityOptions,
@@ -28,28 +29,34 @@ const initialValueOf = (value: SelectControls['value']) =>
   value === 'none' ? null : value
 
 export const ComposedSelect = ({
-  emptyOptionLabel,
   grouped,
   icons,
+  labelsEmptyOption,
+  labelsFallback,
   value,
   ...props
 }: Readonly<SelectControls>) => {
   const options = icons ? activityOptions : withoutIcons(activityOptions)
+  const labels = {
+    ...ptBRPropertyLabels.select,
+    emptyOption: labelsEmptyOption,
+    fallback: labelsFallback,
+  }
 
   return grouped ? (
     <StatefulSelect
       {...props}
-      emptyOptionLabel={emptyOptionLabel || undefined}
       groups={groupActivities(options)}
       initialValue={initialValueOf(value)}
       key={value}
+      labels={labels}
     />
   ) : (
     <StatefulSelect
       {...props}
-      emptyOptionLabel={emptyOptionLabel || undefined}
       initialValue={initialValueOf(value)}
       key={value}
+      labels={labels}
       options={options}
     />
   )

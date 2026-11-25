@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 The person responsible for a record, picked from a list of people: the owner of a task, the assignee of a ticket, the account manager of a client. Reach for it when the value means "who is responsible"; for any other person value, use `PersonProperty`, which it renders with the defaults of an assignee.
 
-The other pages of `Patterns/Properties/Display/Assigned`: [Playground](?path=/story/patterns-properties-display-assigned-playground--playground) to try the value, the labels, the surface and the states, [Stories](?path=/story/patterns-properties-display-assigned-stories--default) for each state, [Behavior](?path=/story/patterns-properties-display-assigned-behavior--read-only-renders-no-combobox) for the tests and [Usages](?path=/story/patterns-properties-display-assigned-usages--task-owner) for a task card and a team's task list. It has no `Layouts` page: the value has no optional part.
+The other pages of `Patterns/Properties/Display/Assigned`: [Playground](?path=/story/patterns-properties-display-assigned-playground--playground) to try the value, the texts, the surface and the states, [Variants](?path=/story/patterns-properties-display-assigned-variants--default) for each surface and state, [Layouts](?path=/story/patterns-properties-display-assigned-layouts--default) for the formation, [Behavior](?path=/story/patterns-properties-display-assigned-behavior--read-only-renders-no-combobox) for the tests and [Usages](?path=/story/patterns-properties-display-assigned-usages--task-owner) for a task card and a team's task list.
 
 The trigger and the list are the select shell of the single-choice properties, and the value is drawn on the shared surface: see `PropertySelectShell` and `PropertySurface` in the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference). The avatar and the option rows are those of [Person](?path=/docs/patterns-properties-display-person-api-reference--api-reference).
 
@@ -34,18 +34,18 @@ import { AssignedProperty, AssignedPropertyBadge } from '@acme/patterns'
 
 ## AssignedProperty
 
-The assignee of a record on a property surface. Renders `PersonProperty` with `ariaLabel` `"Responsável"` and `placeholder` `"Sem responsável"` as defaults. Editable, it renders a `button` with `role="combobox"` that opens the list of people below it; read-only, a `span` with `role="img"`. Both are named `<ariaLabel>: <name of the assignee or placeholder>`.
+The assignee of a record on a property surface. Renders `PersonProperty` with `ariaLabel` `"Assignee"` and `placeholder` `"No assignee"` as defaults. Editable, it renders a `button` with `role="combobox"` that opens the list of people below it; read-only, a `span` with `role="img"`. Both are named `<ariaLabel>: <name of the assignee or placeholder>`.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `value` | `TValue` or `null` | required | Sets the assignee; `null` shows the placeholder on a muted surface. |
-| `options` | `readonly AssignedPropertyOption<TValue>[]` | required | Lists the people to pick from, in order. |
+| `options` | `readonly PersonPropertyOption<TValue>[]` | required | Lists the people to pick from, in order. |
 | `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface: a filled chip, or text with no fill. |
-| `ariaLabel` | `string` | `"Responsável"` | Names the value, before the colon. |
-| `placeholder` | `string` | `"Sem responsável"` | Sets the text shown with no assignee, after a 12px user-plus icon. |
+| `ariaLabel` | `string` | `"Assignee"` | Names the value, before the colon. |
+| `placeholder` | `string` | `"No assignee"` | Sets the text shown with no assignee, after a 12px user-plus icon. |
 | `readOnly` | `boolean` | `false` | When true, renders the value with no list to open. |
 | `disabled` | `boolean` | `false` | When true, disables the trigger. |
-| `dropdownPlacement` | `AssignedPropertyDropdownPlacement` | - | Places the list: `side`, `sideOffset`, `align`, `alignOffset` and `alignItemWithTrigger`. |
+| `dropdownPlacement` | `PropertySelectDropdownPlacement` | - | Places the list: `side`, `sideOffset`, `align`, `alignOffset` and `alignItemWithTrigger`. |
 | `onValueChange` | `(value: TValue) => void` | - | Called when another person is picked, with their value. |
 | `action` | `(value: TValue, context: AssignedPropertyActionContext<TValue>) => void` | - | Called instead of `onValueChange` when both are passed, with `{ option, previousValue }`. |
 | `className` | `string` | - | Adds classes to the surface. |
@@ -62,7 +62,7 @@ The value shows a 16px avatar, the name cut to one line and, from the `sm` break
 | `data-popup-open` | present while the list is open | Styles the open trigger |
 | `data-disabled` | present when `disabled` | Styles the disabled trigger |
 
-### AssignedPropertyOption
+### PersonPropertyOption (from Person)
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -80,8 +80,8 @@ The assignee as a read-only chip, for a place that only shows it: a list row, a 
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `option` | `AssignedPropertyOption<TValue>` or `null` | required | Sets the person shown; `null` shows the placeholder. |
-| `placeholder` | `string` | `"Sem responsável"` | Sets the text shown with no person. |
+| `option` | `PersonPropertyOption<TValue>` or `null` | required | Sets the person shown; `null` shows the placeholder. |
+| `placeholder` | `string` | `"No assignee"` | Sets the text shown with no person. |
 | `className` | `string` | - | Adds classes to the surface. |
 
 It sets `data-slot="property-surface"`, `data-variant="badge"` and, with no person, `data-empty="true"`. It takes no name: the text inside it is what a screen reader reads.
@@ -91,12 +91,10 @@ It sets `data-slot="property-surface"`, `data-variant="badge"` and, with no pers
 | Export | Kind | Description |
 | --- | --- | --- |
 | `AssignedPropertyProps` | `type` | The props of `AssignedProperty`. |
-| `AssignedPropertyOption` | `type` | One person of `options`. |
 | `AssignedPropertyActionContext` | `type` | The context `action` receives, `{ option, previousValue }`. |
-| `AssignedPropertyDropdownPlacement` | `type` | The placement props of the list. |
 
 ## Accessibility and theme
 
-- Pass an `ariaLabel` in the language of the screen when it is not Portuguese: the default names the value `Responsável`.
+- Pass an `ariaLabel` in the language of the screen when it is not English: the default names the value `Assignee`.
 - Keyboard: the editable trigger takes Tab focus; Enter or Space opens the list, and Escape closes it.
 - The colors come from the theme tokens `secondary` (badge), `muted-foreground` (placeholder and supporting label), `input` (avatar outline) and the select of the theme.

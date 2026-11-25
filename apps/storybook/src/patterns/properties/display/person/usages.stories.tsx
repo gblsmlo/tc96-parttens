@@ -16,6 +16,14 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const TaskAssignee: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The assignee of a task, on the [Default](?path=/story/patterns-properties-display-person-layouts--default) layout: avatar and name in a list of details, opening the people of the law firm.',
+      },
+    },
+  },
   render: () => (
     <dl className="grid w-80 grid-cols-[6rem_1fr] items-center gap-x-4 gap-y-3 text-sm">
       <dt className="text-muted-foreground">Tarefa</dt>
@@ -41,6 +49,14 @@ export const TaskAssignee: Story = {
 }
 
 export const AccountOwner: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The owner of an account, on the [Default](?path=/story/patterns-properties-display-person-layouts--default) layout, with the list aligned to the start of the trigger and 8px below it.',
+      },
+    },
+  },
   render: () => (
     <div className="flex items-center gap-3 text-sm">
       <span className="text-muted-foreground">Dono da conta</span>
@@ -63,6 +79,14 @@ export const AccountOwner: Story = {
 }
 
 export const CardAvatars: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The assignees of task cards, on the [Avatar Only Value](?path=/story/patterns-properties-display-person-layouts--avatar-only-value) layout, read-only: one avatar per card, and a user icon on the card with no one set.',
+      },
+    },
+  },
   render: () => (
     <ul className="grid w-80 gap-2 text-sm">
       {[
@@ -76,6 +100,7 @@ export const CardAvatars: Story = {
         >
           {task.title}
           <PersonProperty
+            placeholder="Sem responsável"
             ariaLabel="Responsável"
             display="avatar"
             options={lawFirmOptions}
@@ -97,10 +122,19 @@ export const CardAvatars: Story = {
 }
 
 export const CreatedBy: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Who created a record, on the [Default](?path=/story/patterns-properties-display-person-layouts--default) layout as a read-only `PersonPropertyBadge` with a `plain` surface: a person without a photo shows the initials.',
+      },
+    },
+  },
   render: () => (
     <div className="flex items-center gap-3 text-sm">
       <span className="text-muted-foreground">Criado por</span>
       <PersonPropertyBadge
+        placeholder="Sem responsável"
         ariaLabel="Criado por: Paula Nunes"
         option={lawFirmOptions[2] ?? null}
         variant="plain"

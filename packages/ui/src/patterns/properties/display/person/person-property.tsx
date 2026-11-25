@@ -1,12 +1,19 @@
 'use client'
 
-import { UserPlusIcon } from '@phosphor-icons/react'
 import { SelectItem } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import { resolveOption } from '../../shared/lib/property-options'
+import type {
+  PropertyChangeContext,
+  PropertySelectDropdownPlacement,
+} from '../../shared/property-catalog'
+import { propertyDisplayIcons } from '../../shared/property-display-meta'
 import {
-  type PropertySelectDropdownPlacement,
+  defaultPropertyAriaLabels,
+  defaultPropertyPlaceholders,
+} from '../../shared/property-labels'
+import {
   PropertySelectShell,
   propertySelectItemClassName,
 } from '../../shared/property-select-shell'
@@ -23,11 +30,9 @@ import {
 
 export type { PersonPropertyOption }
 
-export type PersonPropertyDropdownPlacement = PropertySelectDropdownPlacement
-
-export interface PersonPropertyActionContext<TValue extends string = string> {
+export interface PersonPropertyActionContext<TValue extends string = string>
+  extends PropertyChangeContext<TValue | null> {
   option: PersonPropertyOption<TValue>
-  previousValue: TValue | null
 }
 
 export interface PersonPropertyProps<TValue extends string = string> {
@@ -39,7 +44,7 @@ export interface PersonPropertyProps<TValue extends string = string> {
   className?: string
   disabled?: boolean
   display?: 'avatar' | 'full'
-  dropdownPlacement?: PersonPropertyDropdownPlacement
+  dropdownPlacement?: PropertySelectDropdownPlacement
   placeholder?: string
   readOnly?: boolean
   variant?: PropertyVariant
@@ -56,13 +61,13 @@ export function PersonProperty<TValue extends string = string>({
   dropdownPlacement,
   onValueChange,
   options,
-  placeholder = 'Sem responsável',
+  placeholder = defaultPropertyPlaceholders.person,
   readOnly = false,
   value,
   variant = 'badge',
 }: Readonly<PersonPropertyProps<TValue>>) {
   const selectedOption = value ? resolveOption(options, value) : null
-  const accessibleLabel = ariaLabel ?? 'Person'
+  const accessibleLabel = ariaLabel ?? defaultPropertyAriaLabels.person
 
   return (
     <PropertySelectShell
@@ -113,7 +118,7 @@ export function PersonPropertyBadge<TValue extends string = string>({
   className,
   display = 'full',
   option,
-  placeholder = 'Sem responsável',
+  placeholder = defaultPropertyPlaceholders.person,
   variant = 'badge',
 }: Readonly<{
   ariaLabel?: string
@@ -156,9 +161,11 @@ function PersonPropertyContent<TValue extends string = string>({
   }
 
   if (!option) {
+    const AddIcon = propertyDisplayIcons.personAdd
+
     return (
       <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
-        <UserPlusIcon aria-hidden className="size-4" />
+        <AddIcon aria-hidden className="size-4" />
         <span className="truncate">{placeholder}</span>
       </span>
     )

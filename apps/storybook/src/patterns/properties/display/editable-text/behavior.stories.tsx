@@ -2,7 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EditableText } from '@tc96/ui/patterns'
 import { expect, fn, userEvent, within } from 'storybook/test'
 import { EditableTextCanvas } from './editable-text-canvas.tsx'
-import { StatefulEditableText } from './editable-text-layouts.tsx'
+import { editableTextControlArgs } from './editable-text-controls.ts'
+import {
+  ComposedEditableText,
+  StatefulEditableText,
+} from './editable-text-layouts.tsx'
 
 const meta = {
   args: {
@@ -13,7 +17,7 @@ const meta = {
   component: EditableText,
   decorators: [EditableTextCanvas],
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Editable Text/Behavior',
+  title: 'Patterns/Properties/Display/EditableText/Behavior',
 } satisfies Meta<typeof EditableText>
 
 export default meta
@@ -82,7 +86,15 @@ export const EnterCommitsSingleLineOnce: Story = {
 }
 
 export const EnterDoesNotCommitMultiline: Story = {
-  args: { ariaLabel: 'Descrição', multiline: true, value: 'Resumo' },
+  render: ({ onCommit }) => (
+    <ComposedEditableText
+      {...editableTextControlArgs}
+      ariaLabel="Descrição"
+      multiline
+      onCommit={onCommit}
+      value="Resumo"
+    />
+  ),
   play: async ({ args, canvasElement }) => {
     const field = fieldIn(canvasElement, 'Descrição')
 
@@ -285,29 +297,87 @@ export const ReachableByKeyboard: Story = {
   },
 }
 
-export const SizesMapToScale: Story = {
+const fontSizeOf = (field: HTMLElement) => getComputedStyle(field).fontSize
+
+export const DefaultSizeIsSixteenPixels: Story = {
   render: ({ onCommit }) => (
-    <div className="grid gap-2">
-      <EditableText ariaLabel="sm" onCommit={onCommit} size="sm" value="a" />
-      <EditableText
-        ariaLabel="base"
-        onCommit={onCommit}
-        size="base"
-        value="a"
-      />
-      <EditableText ariaLabel="lg" onCommit={onCommit} size="lg" value="a" />
-      <EditableText ariaLabel="xl" onCommit={onCommit} size="xl" value="a" />
-    </div>
+    <ComposedEditableText {...editableTextControlArgs} onCommit={onCommit} />
   ),
   play: async ({ args, canvasElement }) => {
-    await expect(fieldIn(canvasElement, 'sm').className).toContain('text-sm')
-    await expect(fieldIn(canvasElement, 'base').className).toContain(
-      'text-base',
-    )
-    await expect(fieldIn(canvasElement, 'lg').className).toContain('text-2xl')
-    await expect(fieldIn(canvasElement, 'xl').className).toContain(
-      'text-[2rem]',
-    )
+    const field = fieldIn(canvasElement)
+
+    await expect(field.className).toContain('text-base')
+    await expect(fontSizeOf(field)).toBe('16px')
+    await expect(args.onCommit).not.toHaveBeenCalled()
+  },
+}
+
+export const SizeSmSetsFourteenPixels: Story = {
+  render: ({ onCommit }) => (
+    <ComposedEditableText
+      {...editableTextControlArgs}
+      onCommit={onCommit}
+      size="sm"
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const field = fieldIn(canvasElement)
+
+    await expect(field.className).toContain('text-sm')
+    await expect(fontSizeOf(field)).toBe('14px')
+    await expect(args.onCommit).not.toHaveBeenCalled()
+  },
+}
+
+export const SizeLgSetsTwentyFourPixels: Story = {
+  render: ({ onCommit }) => (
+    <ComposedEditableText
+      {...editableTextControlArgs}
+      onCommit={onCommit}
+      size="lg"
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const field = fieldIn(canvasElement)
+
+    await expect(field.className).toContain('text-2xl')
+    await expect(fontSizeOf(field)).toBe('24px')
+    await expect(args.onCommit).not.toHaveBeenCalled()
+  },
+}
+
+export const SizeXlSetsThirtyTwoPixels: Story = {
+  render: ({ onCommit }) => (
+    <ComposedEditableText
+      {...editableTextControlArgs}
+      onCommit={onCommit}
+      size="xl"
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const field = fieldIn(canvasElement)
+
+    await expect(field.className).toContain('text-[2rem]')
+    await expect(fontSizeOf(field)).toBe('32px')
+    await expect(args.onCommit).not.toHaveBeenCalled()
+  },
+}
+
+export const EmptyValueShowsThePlaceholder: Story = {
+  render: ({ onCommit }) => (
+    <ComposedEditableText
+      {...editableTextControlArgs}
+      onCommit={onCommit}
+      value=""
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const field = fieldIn(canvasElement)
+
+    await expect(field.value).toBe('')
+    await expect(field.placeholder).toBe('Sem título')
+    await expect(field).toHaveAttribute('data-empty')
+    await expect(field.classList.contains('text-muted-foreground')).toBe(true)
     await expect(args.onCommit).not.toHaveBeenCalled()
   },
 }

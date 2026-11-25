@@ -2,10 +2,11 @@
 
 import type { DayPickerLocale } from '@daypicker/react'
 import type { PropertyCalendarProps } from '../../shared/property-calendar-popover'
+import type { PropertyOption } from '../../shared/property-catalog'
+import type { SchedulePropertyLabels } from '../../shared/property-labels'
 import { DateProperty } from '../date/date-property'
 import { SelectProperty } from '../select/select-property'
-import type { SchedulePropertyLabels } from './schedule-labels'
-import type { ScheduleRecurrenceOption, ScheduleValue } from './schedule-value'
+import type { ScheduleValue } from './schedule-value'
 
 export function ScheduleRecurrenceSection({
   calendarLocale,
@@ -21,7 +22,7 @@ export function ScheduleRecurrenceSection({
   labels: SchedulePropertyLabels
   locale: string
   onChange: (value: ScheduleValue) => void
-  options: readonly ScheduleRecurrenceOption[]
+  options: readonly PropertyOption[]
   value: ScheduleValue
 }>) {
   return (
@@ -29,8 +30,9 @@ export function ScheduleRecurrenceSection({
       <div className="flex h-8 items-center justify-between gap-2 text-sm">
         {labels.frequency}
         <SelectProperty
+          allowEmpty
           ariaLabel={labels.frequency}
-          emptyOptionLabel={labels.noRepeat}
+          labels={{ emptyOption: labels.noRepeat }}
           onValueChange={(frequency) =>
             onChange({
               ...value,
@@ -50,7 +52,10 @@ export function ScheduleRecurrenceSection({
             ariaLabel={labels.until}
             calendarLocale={calendarLocale}
             calendarProps={calendarProps}
-            fallback={labels.untilFallback}
+            labels={{
+              clear: labels.clearUntil,
+              fallback: labels.untilFallback,
+            }}
             locale={locale}
             onValueChange={(until) => onChange({ ...value, until })}
             value={value.until}

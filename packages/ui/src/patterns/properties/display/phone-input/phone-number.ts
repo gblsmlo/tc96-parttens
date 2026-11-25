@@ -4,6 +4,7 @@ import {
   parsePhoneNumber,
 } from 'react-phone-number-input/input-max'
 import { z } from 'zod'
+import { defaultPropertyLabels } from '../../shared/property-labels'
 import type { PhoneCountryCode } from './countries'
 
 export const defaultPhoneCountry: PhoneCountryCode = 'BR'
@@ -32,8 +33,8 @@ export interface PhoneNumberSchemaOptions {
 }
 
 export function phoneNumberSchema({
-  invalidMessage = 'Informe um telefone válido.',
-  requiredMessage = 'Informe um telefone.',
+  invalidMessage = defaultPropertyLabels.phone.invalid,
+  requiredMessage = defaultPropertyLabels.phone.required,
 }: PhoneNumberSchemaOptions = {}): z.ZodType<string, string> {
   return z
     .string({ error: requiredMessage })

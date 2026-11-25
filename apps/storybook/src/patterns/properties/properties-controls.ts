@@ -1,14 +1,15 @@
 import type { ArgTypes } from '@storybook/react-vite'
 import type { PropertyVariant } from '@tc96/ui/patterns'
 import { type TaskItemId, taskItemIds } from './properties-data'
+import { ptBRPropertyLabels } from './properties-labels.ts'
 
 export interface PropertiesControls {
   ariaLabel: string
   defaultVisible: TaskItemId[]
   empty: boolean
   icons: boolean
+  labelsTrigger: string
   readOnly: boolean
-  triggerLabel: string
   variant: PropertyVariant
 }
 
@@ -17,8 +18,8 @@ export const propertiesControlArgs: PropertiesControls = {
   defaultVisible: ['status', 'priority', 'assignee', 'dueDate'],
   empty: false,
   icons: true,
+  labelsTrigger: ptBRPropertyLabels.collection.trigger,
   readOnly: false,
-  triggerLabel: 'Ajustar propriedades',
   variant: 'badge',
 }
 
@@ -45,14 +46,15 @@ export const propertiesControlArgTypes: Partial<ArgTypes<PropertiesControls>> =
       description:
         'Gives each catalog item an `icon`, shown beside its label in the menu.',
     },
+    labelsTrigger: {
+      control: 'text',
+      description:
+        '`labels.trigger` of `PropertyCollection`: the accessible name of the menu trigger.',
+    },
     readOnly: {
       control: 'boolean',
       description:
-        'The `readOnly` of `PropertyCollection`: removes the menu trigger. The displays stay editable.',
-    },
-    triggerLabel: {
-      control: 'text',
-      description: 'The `triggerLabel` of `PropertyCollection`.',
+        'The `readOnly` of `PropertyCollection`: removes the menu trigger; the displays stay editable.',
     },
     variant: {
       control: 'inline-radio',

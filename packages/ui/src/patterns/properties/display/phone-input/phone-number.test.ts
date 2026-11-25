@@ -10,7 +10,7 @@ describe('phoneNumberSchema', () => {
     const result = phoneNumberSchema().safeParse('+55119876')
 
     expect(result.success).toBe(false)
-    expect(result.error?.issues[0]?.message).toBe('Informe um telefone válido.')
+    expect(result.error?.issues[0]?.message).toBe('Enter a valid phone number.')
   })
 
   test('rejects digits that no country accepts, not only short ones', () => {
@@ -21,7 +21,7 @@ describe('phoneNumberSchema', () => {
     const result = phoneNumberSchema().safeParse('')
 
     expect(result.success).toBe(false)
-    expect(result.error?.issues[0]?.message).toBe('Informe um telefone.')
+    expect(result.error?.issues[0]?.message).toBe('Enter a phone number.')
   })
 
   test('carries the messages the consumer chose', () => {

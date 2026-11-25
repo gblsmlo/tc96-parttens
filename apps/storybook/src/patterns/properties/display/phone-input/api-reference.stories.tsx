@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PhoneInput } from '@tc96/ui/patterns/properties/display/phone-input/phone-input'
 import { expect, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { PhoneInputCanvas } from './phone-input-canvas.tsx'
 
 const ignore = () => undefined
@@ -10,11 +11,12 @@ const meta = {
     ariaLabel: 'ariaLabel',
     onValueChange: ignore,
     value: '+5511987654321',
+    labels: ptBRPropertyLabels.phoneInput,
   },
   component: PhoneInput,
   decorators: [PhoneInputCanvas],
   tags: ['!autodocs', '!dev'],
-  title: 'Patterns/Properties/Display/Phone Input/API Reference',
+  title: 'Patterns/Properties/Display/PhoneInput/API Reference',
 } satisfies Meta<typeof PhoneInput>
 
 export default meta

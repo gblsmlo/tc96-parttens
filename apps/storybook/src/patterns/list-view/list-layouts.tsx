@@ -30,6 +30,7 @@ import {
   initialTasks,
   type Task,
 } from '../collection/fixtures/tasks'
+import { ptBRPropertyLabels } from '../properties/properties-labels.ts'
 import type { ListControls, ListSelection } from './list-controls.ts'
 import {
   type SampleRecord,
@@ -319,6 +320,7 @@ export function DocumentRow({
                 tooltip
                 value="2026-11-10T13:00:00.000Z"
                 variant="plain"
+                labels={ptBRPropertyLabels.date}
               />
             </ListRowField>
             <ListRowAction>

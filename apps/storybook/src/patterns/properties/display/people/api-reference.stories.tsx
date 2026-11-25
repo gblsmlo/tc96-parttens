@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PeopleProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { peopleOptions } from './people-data.ts'
 
 const ignore = () => undefined
@@ -10,6 +11,9 @@ const meta = {
     onValueChange: ignore,
     options: peopleOptions,
     value: ['person-1', 'person-2'],
+    ariaLabel: 'Pessoas',
+    placeholder: 'Adicionar pessoa',
+    labels: ptBRPropertyLabels.people,
   },
   component: PeopleProperty,
   decorators: [

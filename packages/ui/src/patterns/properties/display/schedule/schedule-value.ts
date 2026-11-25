@@ -1,3 +1,9 @@
+import type { PropertyOption } from '../../shared/property-catalog'
+import {
+  defaultPropertyLabels,
+  type SchedulePropertyLabels,
+} from '../../shared/property-labels'
+
 export interface ScheduleValue {
   allDay: boolean
   endTime: string
@@ -18,36 +24,47 @@ export const emptyScheduleValue: ScheduleValue = {
   until: null,
 }
 
-export interface ScheduleRecurrenceOption {
-  label: string
-  value: string
+export function scheduleRecurrenceOptions(
+  labels: Pick<
+    SchedulePropertyLabels,
+    'daily' | 'monthly' | 'weekdays' | 'weekly' | 'yearly'
+  >,
+): readonly PropertyOption[] {
+  return [
+    { label: labels.daily, value: 'daily' },
+    { label: labels.weekdays, value: 'weekdays' },
+    { label: labels.weekly, value: 'weekly' },
+    { label: labels.monthly, value: 'monthly' },
+    { label: labels.yearly, value: 'yearly' },
+  ]
 }
 
-export const defaultScheduleRecurrenceOptions: readonly ScheduleRecurrenceOption[] =
-  [
-    { label: 'Diariamente', value: 'daily' },
-    { label: 'Dias úteis', value: 'weekdays' },
-    { label: 'Semanalmente', value: 'weekly' },
-    { label: 'Mensalmente', value: 'monthly' },
-    { label: 'Anualmente', value: 'yearly' },
+export function scheduleReminderOptions(
+  labels: Pick<
+    SchedulePropertyLabels,
+    | 'oneDayBefore'
+    | 'oneHourBefore'
+    | 'tenMinutesBefore'
+    | 'thirtyMinutesBefore'
+  >,
+): readonly PropertyOption[] {
+  return [
+    { label: labels.tenMinutesBefore, value: '10' },
+    { label: labels.thirtyMinutesBefore, value: '30' },
+    { label: labels.oneHourBefore, value: '60' },
+    { label: labels.oneDayBefore, value: '1440' },
   ]
-
-export interface ScheduleReminderOption {
-  label: string
-  value: string
 }
 
-export const defaultScheduleReminderOptions: readonly ScheduleReminderOption[] =
-  [
-    { label: '10 min antes', value: '10' },
-    { label: '30 min antes', value: '30' },
-    { label: '1 hora antes', value: '60' },
-    { label: '1 dia antes', value: '1440' },
-  ]
+export const defaultScheduleRecurrenceOptions: readonly PropertyOption[] =
+  scheduleRecurrenceOptions(defaultPropertyLabels.schedule)
+
+export const defaultScheduleReminderOptions: readonly PropertyOption[] =
+  scheduleReminderOptions(defaultPropertyLabels.schedule)
 
 export function sortScheduleReminders(
   reminders: readonly string[],
-  options: readonly ScheduleReminderOption[],
+  options: readonly PropertyOption[],
 ): string[] {
   const rank = (reminder: string) => {
     const index = options.findIndex((option) => option.value === reminder)
@@ -92,7 +109,7 @@ export function formatScheduleProperty(
 
 export function scheduleRecurrenceLabel(
   frequency: string | null,
-  options: readonly ScheduleRecurrenceOption[],
+  options: readonly PropertyOption[],
 ): string | null {
   if (!frequency) return null
   return options.find((option) => option.value === frequency)?.label ?? null

@@ -1,8 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { AttachmentType } from '@tc96/ui/patterns'
 import { AttachmentProperty, AttachmentsProperty } from '@tc96/ui/patterns'
 import { expect, fn, userEvent, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { AttachmentsCanvas } from './attachments-canvas.tsx'
+import { attachmentsControlArgs } from './attachments-controls.ts'
 import { meetingMaterial } from './attachments-data.ts'
+import { ComposedAttachments } from './attachments-layouts.tsx'
 
 interface AttachmentsBehaviorArgs {
   onRemove: (id: string) => void
@@ -17,7 +21,12 @@ const meta = {
   decorators: [AttachmentsCanvas],
   render: () => (
     <AttachmentsProperty ariaLabel="Arquivos">
-      <AttachmentProperty href="#contrato" label="Contrato.pdf" type="pdf" />
+      <AttachmentProperty
+        href="#contrato"
+        label="Contrato.pdf"
+        type="pdf"
+        labels={ptBRPropertyLabels.attachment}
+      />
     </AttachmentsProperty>
   ),
   tags: ['!autodocs'],
@@ -27,6 +36,39 @@ const meta = {
 export default meta
 
 type Story = StoryObj<AttachmentsBehaviorArgs>
+
+const typeIcons = (canvasElement: HTMLElement) => [
+  ...canvasElement.querySelectorAll<SVGElement>(
+    '[data-slot="attachment-type-icon"]',
+  ),
+]
+
+const colorOfClass = (canvasElement: HTMLElement, className: string) => {
+  const probe = document.createElement('span')
+  probe.className = className
+  canvasElement.append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
+}
+
+async function expectIconsInTone(
+  canvasElement: HTMLElement,
+  type: AttachmentType,
+  toneClassName: string,
+) {
+  const icons = typeIcons(canvasElement)
+  const tone = colorOfClass(canvasElement, toneClassName)
+
+  await expect(tone).not.toBe(
+    colorOfClass(canvasElement, 'text-destructive-foreground'),
+  )
+  await expect(icons).toHaveLength(2)
+  for (const icon of icons) {
+    await expect(icon).toHaveAttribute('data-attachment-type', type)
+    await expect(getComputedStyle(icon).color).toBe(tone)
+  }
+}
 
 export const ListsAttachments: Story = {
   play: async ({ canvasElement }) => {
@@ -60,8 +102,11 @@ export const RemoveIsSiblingOfLink: Story = {
         href="#contrato"
         label="Contrato.pdf"
         onRemove={() => onRemove('contrato')}
-        removeLabel="Remover Contrato.pdf"
         type="pdf"
+        labels={{
+          ...ptBRPropertyLabels.attachment,
+          remove: 'Remover Contrato.pdf',
+        }}
       />
     </AttachmentsProperty>
   ),
@@ -85,6 +130,7 @@ export const RemoveHasDefaultName: Story = {
         href="#contrato"
         label="Contrato.pdf"
         onRemove={() => onRemove('contrato')}
+        labels={ptBRPropertyLabels.attachment}
       />
     </AttachmentsProperty>
   ),
@@ -105,15 +151,21 @@ export const TypeOnLeftOnlyRemoveOnRight: Story = {
         href="#proposta"
         label="Proposta comercial.pdf"
         onRemove={() => undefined}
-        removeLabel="Remover Proposta comercial.pdf"
         type="pdf"
+        labels={{
+          ...ptBRPropertyLabels.attachment,
+          remove: 'Remover Proposta comercial.pdf',
+        }}
       />
       <AttachmentProperty
         href="#gravacao"
         label="Gravação da reunião"
         onRemove={() => undefined}
-        removeLabel="Remover Gravação da reunião"
         type="link"
+        labels={{
+          ...ptBRPropertyLabels.attachment,
+          remove: 'Remover Gravação da reunião',
+        }}
       />
     </AttachmentsProperty>
   ),
@@ -155,8 +207,11 @@ export const EveryTypeHasItsIcon: Story = {
           key={item.id}
           label={item.label}
           onRemove={() => undefined}
-          removeLabel={`Remove ${item.label}`}
           type={item.type}
+          labels={{
+            ...ptBRPropertyLabels.attachment,
+            remove: `Remover ${item.label}`,
+          }}
         />
       ))}
     </AttachmentsProperty>
@@ -216,7 +271,12 @@ export const ActionReachableByKeyboard: Story = {
       action={{ label: 'Anexar arquivo', onSelect }}
       ariaLabel="Arquivos"
     >
-      <AttachmentProperty href="#contrato" label="Contrato.pdf" type="pdf" />
+      <AttachmentProperty
+        href="#contrato"
+        label="Contrato.pdf"
+        type="pdf"
+        labels={ptBRPropertyLabels.attachment}
+      />
     </AttachmentsProperty>
   ),
   play: async ({ args, canvasElement }) => {
@@ -257,7 +317,12 @@ export const CollapsesToSingleSign: Story = {
       action={{ label: 'Anexar arquivo', onSelect }}
       ariaLabel="Arquivos"
     >
-      <AttachmentProperty href="#contrato" label="Contrato.pdf" type="pdf" />
+      <AttachmentProperty
+        href="#contrato"
+        label="Contrato.pdf"
+        type="pdf"
+        labels={ptBRPropertyLabels.attachment}
+      />
     </AttachmentsProperty>
   ),
   play: async ({ args, canvasElement }) => {
@@ -288,4 +353,103 @@ export const DisabledActionDoesNotRun: Story = {
 
     await expect(args.onSelect).not.toHaveBeenCalled()
   },
+}
+
+export const RemoveOffLeavesLinksAndAddTrigger: Story = {
+  render: () => (
+    <ComposedAttachments {...attachmentsControlArgs} remove={false} />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.getAllByRole('link')).toHaveLength(2)
+    await expect(canvas.queryByRole('button', { name: /^Remover / })).toBeNull()
+    await expect(
+      canvas.getByRole('button', { name: 'Anexar arquivo' }),
+    ).toBeVisible()
+  },
+}
+
+export const ActionOffKeepsEveryRemove: Story = {
+  render: () => (
+    <ComposedAttachments {...attachmentsControlArgs} action={false} />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(
+      canvas.queryByRole('button', { name: 'Anexar arquivo' }),
+    ).toBeNull()
+    await expect(
+      canvas.getAllByRole('button', { name: /^Remover / }),
+    ).toHaveLength(2)
+  },
+}
+
+export const ReadOnlyRowHasOnlyLinks: Story = {
+  render: () => <ComposedAttachments {...attachmentsControlArgs} readOnly />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.getAllByRole('link')).toHaveLength(2)
+    await expect(canvas.queryByRole('button')).toBeNull()
+  },
+}
+
+export const TypeIconOffDrawsNoTypeIcon: Story = {
+  render: () => (
+    <ComposedAttachments {...attachmentsControlArgs} typeIcon={false} />
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getAllByRole('link')).toHaveLength(2)
+    await expect(typeIcons(canvasElement)).toHaveLength(0)
+  },
+}
+
+export const EmptyWithoutIconShowsOnlyTheLabel: Story = {
+  render: () => (
+    <ComposedAttachments {...attachmentsControlArgs} actionIcon={false} empty />
+  ),
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Anexar arquivo',
+    })
+
+    await expect(trigger).toHaveTextContent(/^Anexar arquivo$/)
+    await expect(trigger.querySelector('svg')).toBeNull()
+  },
+}
+
+export const ActionDisabledDimsTheTrigger: Story = {
+  render: () => (
+    <ComposedAttachments {...attachmentsControlArgs} actionDisabled />
+  ),
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Anexar arquivo',
+    })
+
+    await expect(trigger).toBeDisabled()
+    await expect(getComputedStyle(trigger).opacity).toBe('0.64')
+  },
+}
+
+export const TypeDocPaintsTheIconInInfo: Story = {
+  render: () => <ComposedAttachments {...attachmentsControlArgs} type="doc" />,
+  play: ({ canvasElement }) =>
+    expectIconsInTone(canvasElement, 'doc', 'text-info-foreground'),
+}
+
+export const TypeAudioPaintsTheIconInWarning: Story = {
+  render: () => (
+    <ComposedAttachments {...attachmentsControlArgs} type="audio" />
+  ),
+  play: ({ canvasElement }) =>
+    expectIconsInTone(canvasElement, 'audio', 'text-warning-foreground'),
+}
+
+export const TypeLinkPaintsTheIconMuted: Story = {
+  render: () => <ComposedAttachments {...attachmentsControlArgs} type="link" />,
+  play: ({ canvasElement }) =>
+    expectIconsInTone(canvasElement, 'link', 'text-muted-foreground'),
 }

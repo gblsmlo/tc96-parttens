@@ -26,6 +26,11 @@ import type React from 'react'
 import type { ComponentRef } from 'react'
 import { useCallback, useRef, useState } from 'react'
 import PhoneNumberInput from 'react-phone-number-input/input-max'
+import {
+  defaultPropertyLabels,
+  type PhoneInputLabels,
+  resolvePropertyLabels,
+} from '../../shared/property-labels'
 import { propertySelectItemClassName } from '../../shared/property-select-shell'
 import {
   findPhoneCountry,
@@ -47,6 +52,7 @@ export interface PhoneInputProps {
   defaultCountry?: PhoneCountryCode
   disabled?: boolean
   invalid?: boolean
+  labels?: Partial<PhoneInputLabels>
   name?: string
   placeholder?: string
   readOnly?: boolean
@@ -61,6 +67,7 @@ export function PhoneInput({
   defaultCountry = defaultPhoneCountry,
   disabled = false,
   invalid = false,
+  labels: labelOverrides,
   name,
   onBlur,
   onKeyDown,
@@ -71,6 +78,10 @@ export function PhoneInput({
   value,
 }: Readonly<PhoneInputProps>) {
   const fieldRef = useRef<ComponentRef<typeof InputGroup>>(null)
+  const labels = resolvePropertyLabels(
+    defaultPropertyLabels.phoneInput,
+    labelOverrides,
+  )
   const [chosenCountry, setChosenCountry] =
     useState<PhoneCountryCode>(defaultCountry)
 
@@ -107,7 +118,7 @@ export function PhoneInput({
             value={country}
           >
             <ComboboxTrigger
-              aria-label={`País: ${country.name}`}
+              aria-label={`${labels.country}: ${country.name}`}
               className="flex cursor-pointer items-center gap-1.5 rounded-md px-1 py-0.5 outline-none transition-colors hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/24 disabled:cursor-default disabled:hover:bg-transparent"
               disabled={disabled || readOnly}
             >
@@ -120,19 +131,19 @@ export function PhoneInput({
             <ComboboxPopup
               align="start"
               anchor={fieldRef}
-              aria-label="Selecionar país"
+              aria-label={labels.countryList}
               className="w-max"
             >
               <ComboboxInput
-                aria-label="Buscar país"
+                aria-label={labels.countrySearch}
                 className="border-transparent! bg-transparent! shadow-none before:hidden has-focus-visible:ring-0"
-                placeholder="Buscar país"
+                placeholder={labels.countrySearch}
                 showTrigger={false}
                 startAddon={<MagnifyingGlassIcon aria-hidden="true" />}
               />
               <ComboboxSeparator className="mx-0 my-0" />
-              <ComboboxEmpty>Nenhum país encontrado.</ComboboxEmpty>
-              <ComboboxList aria-label="Selecionar país">
+              <ComboboxEmpty>{labels.countryEmpty}</ComboboxEmpty>
+              <ComboboxList aria-label={labels.countryList}>
                 {(item: PhoneCountry) => (
                   <ComboboxItem
                     className={propertySelectItemClassName}

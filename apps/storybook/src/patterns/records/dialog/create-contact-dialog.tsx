@@ -29,6 +29,7 @@ import {
   stageOptions,
   tagOptions,
 } from '../../collection/fixtures/contacts'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import {
   CreatableProperty,
   type CreatablePropertyLabels,
@@ -183,6 +184,7 @@ export function CreateContactDialog({
             placeholder="Telefone"
             value={phones}
             variant="badge"
+            labels={ptBRPropertyLabels.phone}
           />
           <EmailProperty
             ariaLabel="E-mails"
@@ -191,6 +193,7 @@ export function CreateContactDialog({
             placeholder="E-mail"
             value={emails}
             variant="badge"
+            labels={ptBRPropertyLabels.email}
           />
           <SelectProperty
             ariaLabel="Tipo"
@@ -204,15 +207,19 @@ export function CreateContactDialog({
             value={documentType}
           />
           <TextProperty
-            addLabel="Documento"
             ariaLabel="Documento"
-            fallback="Documento"
             icon={FileTextIcon}
-            inputPlaceholder={
-              documentType === 'cnpj' ? '00.000.000/0000-00' : '000.000.000-00'
-            }
             onCommit={setDocument}
             value={document}
+            labels={{
+              ...ptBRPropertyLabels.text,
+              add: 'Documento',
+              fallback: 'Documento',
+              inputPlaceholder:
+                documentType === 'cnpj'
+                  ? '00.000.000/0000-00'
+                  : '000.000.000-00',
+            }}
           />
           {visible.has('stage') ? (
             <SelectProperty
@@ -226,12 +233,14 @@ export function CreateContactDialog({
           ) : null}
           {visible.has('tags') ? (
             <TagsProperty<ContactTag>
+              placeholder="Adicionar uma tag"
               ariaLabel="Tags"
               display="count"
               onValueChange={setTags}
               options={tagOptions}
               value={tags}
               variant="badge"
+              labels={ptBRPropertyLabels.tags}
             />
           ) : null}
           {visible.has('company') ? (

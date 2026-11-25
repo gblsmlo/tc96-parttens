@@ -13,6 +13,7 @@ import {
   RecordGroupRow,
   TextProperty,
 } from '@tc96/ui/patterns'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import type { RecordGroupControls } from './record-group-controls.ts'
 
 interface ComposedRecordGroupProps extends RecordGroupControls {
@@ -63,16 +64,33 @@ export function ComposedRecordGroup({
       ) : (
         <>
           <RecordGroupRow label="Type" leading={icon(ShapesIcon)}>
-            <TextProperty value="Document request" variant="plain" />
+            <TextProperty
+              value="Document request"
+              variant="plain"
+              labels={ptBRPropertyLabels.text}
+            />
           </RecordGroupRow>
           <RecordGroupRow label="Owner" leading={icon(UserIcon)}>
-            <TextProperty value="Mariana Souza" variant="plain" />
+            <TextProperty
+              value="Mariana Souza"
+              variant="plain"
+              labels={ptBRPropertyLabels.text}
+            />
           </RecordGroupRow>
           <RecordGroupRow label="Reference" leading={icon(HashIcon)}>
-            <TextProperty value="REQ-1042" variant="plain" />
+            <TextProperty
+              value="REQ-1042"
+              variant="plain"
+              labels={ptBRPropertyLabels.text}
+            />
           </RecordGroupRow>
           <RecordGroupRow label="Due" leading={icon(CalendarDotsIcon)}>
-            <DateProperty readOnly value="2026-10-21" variant="plain" />
+            <DateProperty
+              readOnly
+              value="2026-10-21"
+              variant="plain"
+              labels={ptBRPropertyLabels.date}
+            />
           </RecordGroupRow>
         </>
       )}

@@ -11,7 +11,7 @@ import { IconLabelCanvas } from './icon-label-canvas.tsx'
 const meta = {
   decorators: [IconLabelCanvas],
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Icon Label/Usages',
+  title: 'Patterns/Properties/Display/IconLabel/Usages',
 } satisfies Meta
 
 export default meta
@@ -19,6 +19,14 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const RecordDates: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The creation and update dates of a record, on the [Default](?path=/story/patterns-properties-display-iconlabel-layouts--default) layout with `plain` surfaces, each named by the term beside it.',
+      },
+    },
+  },
   render: () => (
     <dl className="grid w-72 grid-cols-[auto_1fr] items-center gap-x-6 gap-y-2 text-sm">
       <dt className="text-muted-foreground">Criado em</dt>
@@ -39,6 +47,14 @@ export const RecordDates: Story = {
 }
 
 export const RecordOrigin: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Where a record came from, on the [Default](?path=/story/patterns-properties-display-iconlabel-layouts--default) layout, with an icon per origin.',
+      },
+    },
+  },
   render: () => (
     <div className="flex flex-wrap gap-2">
       <IconLabelProperty
@@ -63,6 +79,14 @@ export const RecordOrigin: Story = {
 }
 
 export const CategoryDirection: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The direction of a finance category, on the [Default](?path=/story/patterns-properties-display-iconlabel-layouts--default) layout with a colored dot as `leading`.',
+      },
+    },
+  },
   render: () => (
     <div className="flex flex-wrap gap-2">
       <IconLabelProperty
@@ -88,6 +112,14 @@ export const CategoryDirection: Story = {
 }
 
 export const RemovableFilter: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'An applied filter, on the [Default](?path=/story/patterns-properties-display-iconlabel-layouts--default) layout with a remove button as `trailing` that shows on hover or focus.',
+      },
+    },
+  },
   render: () => (
     <IconLabelProperty
       ariaLabel="Filtro"

@@ -10,6 +10,7 @@ import {
 } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { Slot } from '../../test-utils/anatomy-slot'
+import { ptBRPropertyLabels } from './properties-labels.ts'
 
 const ignore = () => undefined
 
@@ -59,6 +60,7 @@ export const Anatomy: Story = {
           render: () => <Slot name="item.render()" />,
         },
       ]}
+      labels={ptBRPropertyLabels.collection}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -90,8 +92,20 @@ export const Surface: Story = {
 export const AddTrigger: Story = {
   render: () => (
     <div className="flex items-center gap-4">
-      <EmailProperty onValueChange={ignore} value={[]} />
-      <EmailProperty onValueChange={ignore} value={['ana@example.com']} />
+      <EmailProperty
+        ariaLabel="E-mails"
+        placeholder="Sem e-mail"
+        onValueChange={ignore}
+        value={[]}
+        labels={ptBRPropertyLabels.email}
+      />
+      <EmailProperty
+        ariaLabel="E-mails"
+        placeholder="Sem e-mail"
+        onValueChange={ignore}
+        value={['ana@example.com']}
+        labels={ptBRPropertyLabels.email}
+      />
     </div>
   ),
 }
@@ -104,8 +118,14 @@ export const CalendarPopover: Story = {
         onValueChange={ignore}
         timeZone="UTC"
         value="2026-06-19T12:00:00.000Z"
+        labels={ptBRPropertyLabels.date}
       />
-      <DateProperty ariaLabel="Prazo" onValueChange={ignore} value={null} />
+      <DateProperty
+        ariaLabel="Prazo"
+        onValueChange={ignore}
+        value={null}
+        labels={ptBRPropertyLabels.date}
+      />
     </div>
   ),
 }
@@ -113,11 +133,19 @@ export const CalendarPopover: Story = {
 export const MultiSelect: Story = {
   render: () => (
     <div className="flex items-center gap-4">
-      <TagsProperty onValueChange={ignore} options={tagOptions} value={[]} />
       <TagsProperty
+        placeholder="Adicionar uma tag"
+        onValueChange={ignore}
+        options={tagOptions}
+        value={[]}
+        labels={ptBRPropertyLabels.tags}
+      />
+      <TagsProperty
+        placeholder="Adicionar uma tag"
         onValueChange={ignore}
         options={tagOptions}
         value={['documents', 'return']}
+        labels={ptBRPropertyLabels.tags}
       />
     </div>
   ),
@@ -127,12 +155,14 @@ export const SelectShell: Story = {
   render: () => (
     <div className="flex items-center gap-2">
       <PersonProperty
+        placeholder="Sem responsável"
         ariaLabel="Responsável"
         onValueChange={ignore}
         options={people}
         value="gabriel"
       />
       <PersonProperty
+        placeholder="Sem responsável"
         ariaLabel="Responsável"
         options={people}
         readOnly

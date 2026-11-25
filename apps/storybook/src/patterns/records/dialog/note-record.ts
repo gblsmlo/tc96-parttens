@@ -13,8 +13,8 @@ import {
 import { richTextToPlainText } from '@tc96/ui/helpers/rich-text'
 import type {
   PersonPropertyOption,
+  PropertyOption,
   RichTextValue,
-  SelectPropertyOption,
 } from '@tc96/ui/patterns'
 
 export interface NoteValues {
@@ -42,7 +42,7 @@ export const noteAuthors: readonly PersonPropertyOption[] = [
   { fallback: 'GM', label: 'Gabriel Melo', value: 'gabriel' },
 ]
 
-export const noteStatusOptions: readonly SelectPropertyOption[] = [
+export const noteStatusOptions: readonly PropertyOption[] = [
   { icon: CircleIcon, label: 'Backlog', tone: 'neutral', value: 'backlog' },
   {
     icon: CircleDashedIcon,
@@ -65,7 +65,7 @@ export const noteStatusOptions: readonly SelectPropertyOption[] = [
   { icon: XCircleIcon, label: 'Cancelada', tone: 'danger', value: 'canceled' },
 ]
 
-export const notePriorityOptions: readonly SelectPropertyOption[] = [
+export const notePriorityOptions: readonly PropertyOption[] = [
   { icon: MinusIcon, label: 'Sem prioridade', tone: 'neutral', value: 'none' },
   {
     icon: WarningIcon,

@@ -12,11 +12,11 @@ const meta = {
   argTypes: phoneInputControlArgTypes,
   decorators: [PhoneInputCanvas],
   parameters: {
-    controls: { exclude: ['disabled', 'invalid', 'value'] },
+    controls: { exclude: ['disabled', 'invalid', 'readOnly', 'value'] },
   },
   render: (args) => <ComposedPhoneInput {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Phone Input/Stories',
+  title: 'Patterns/Properties/Display/PhoneInput/Variants',
 } satisfies Meta<PhoneInputControls>
 
 export default meta
@@ -31,6 +31,10 @@ export const Empty: Story = {
 
 export const Invalid: Story = {
   args: { invalid: true },
+}
+
+export const ReadOnly: Story = {
+  args: { readOnly: true },
 }
 
 export const Disabled: Story = {

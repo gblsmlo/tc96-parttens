@@ -3,23 +3,26 @@
 import {
   PersonProperty,
   PersonPropertyBadge,
-  type PersonPropertyDropdownPlacement,
   type PersonPropertyOption,
 } from '../../display/person/index'
+import type {
+  PropertyChangeContext,
+  PropertySelectDropdownPlacement,
+} from '../../shared/property-catalog'
+import {
+  defaultPropertyAriaLabels,
+  defaultPropertyPlaceholders,
+} from '../../shared/property-labels'
 import type { PropertyVariant } from '../../shared/property-surface'
 
-export type AssignedPropertyOption<TValue extends string = string> =
-  PersonPropertyOption<TValue>
-export type AssignedPropertyDropdownPlacement = PersonPropertyDropdownPlacement
-
-export interface AssignedPropertyActionContext<TValue extends string = string> {
-  option: AssignedPropertyOption<TValue>
-  previousValue: TValue | null
+export interface AssignedPropertyActionContext<TValue extends string = string>
+  extends PropertyChangeContext<TValue | null> {
+  option: PersonPropertyOption<TValue>
 }
 
 export interface AssignedPropertyProps<TValue extends string = string> {
   value: TValue | null
-  options: readonly AssignedPropertyOption<TValue>[]
+  options: readonly PersonPropertyOption<TValue>[]
   action?: (
     value: TValue,
     context: AssignedPropertyActionContext<TValue>,
@@ -27,7 +30,7 @@ export interface AssignedPropertyProps<TValue extends string = string> {
   ariaLabel?: string
   className?: string
   disabled?: boolean
-  dropdownPlacement?: AssignedPropertyDropdownPlacement
+  dropdownPlacement?: PropertySelectDropdownPlacement
   placeholder?: string
   readOnly?: boolean
   variant?: PropertyVariant
@@ -36,10 +39,10 @@ export interface AssignedPropertyProps<TValue extends string = string> {
 
 export function AssignedProperty<TValue extends string = string>({
   action,
-  ariaLabel = 'Responsável',
+  ariaLabel = defaultPropertyAriaLabels.assigned,
   dropdownPlacement,
   options,
-  placeholder = 'Sem responsável',
+  placeholder = defaultPropertyPlaceholders.assigned,
   ...props
 }: Readonly<AssignedPropertyProps<TValue>>) {
   return (
@@ -57,10 +60,10 @@ export function AssignedProperty<TValue extends string = string>({
 export function AssignedPropertyBadge<TValue extends string = string>({
   className,
   option,
-  placeholder = 'Sem responsável',
+  placeholder = defaultPropertyPlaceholders.assigned,
 }: Readonly<{
   className?: string
-  option: AssignedPropertyOption<TValue> | null
+  option: PersonPropertyOption<TValue> | null
   placeholder?: string
 }>) {
   return (

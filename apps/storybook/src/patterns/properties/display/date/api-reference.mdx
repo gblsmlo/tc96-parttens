@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 One date of a record, shown as a chip that opens a calendar when the consumer can change it: a deadline, a start, a target, the moment something happened. The consumer passes the value as an ISO string and receives the next one; the property formats it, marks it overdue on request, and can show the full date and time in a tooltip.
 
-The other pages of `Patterns/Properties/Display/Date`: [Playground](?path=/story/patterns-properties-display-date-playground--playground) to try the texts, the states and the calendar, [Stories](?path=/story/patterns-properties-display-date-stories--default) for each state, [Behavior](?path=/story/patterns-properties-display-date-behavior--without-handler-is-read-only) for the tests, and [Usages](?path=/story/patterns-properties-display-date-usages--target-date) for deadlines, an overdue invoice and a relative time.
+The other pages of `Patterns/Properties/Display/Date`: [Playground](?path=/story/patterns-properties-display-date-playground--playground) to try the texts, the states and the calendar, [Variants](?path=/story/patterns-properties-display-date-variants--default) for each surface and state, [Layouts](?path=/story/patterns-properties-display-date-layouts--default) for the formation, [Behavior](?path=/story/patterns-properties-display-date-behavior--without-handler-is-read-only) for the tests, and [Usages](?path=/story/patterns-properties-display-date-usages--target-date) for deadlines, an overdue invoice and a relative time.
 
 The chip and the calendar popover are the shared parts of the properties, documented once in the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference): `PropertySurface` and `PropertyCalendarPopover`. This page covers what the date adds to them, the tooltip included.
 
@@ -53,18 +53,17 @@ The date. It is read-only when `readOnly` is set or when it has neither `action`
 | `ariaLabel` | `string` | `"Date"` | Names the popover and starts the name of the trigger. |
 | `locale` | `string` | `"en-US"` | Sets the BCP 47 locale that formats the label and the tooltip. |
 | `timeZone` | `string` | `"UTC"` | Sets the IANA time zone that formats the label and the tooltip. |
-| `fallback` | `string` | `"Sem data"` | Sets the label while there is no date. |
+| `labels` | `Partial<DatePropertyLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.date`: `fallback` (`"No date"`, the label while there is no date) and `clear` (`"Clear date"`, the text of the clear button). |
 | `displayLabel` | `string` | - | Replaces the formatted label, on screen and in the trigger name, with or without a date. |
 | `isOverdue` | `boolean` | `false` | When true, sets the label in `font-medium` and adds `data-overdue`. |
 | `tooltip` | `boolean` | `false` | When true and the value is a valid date, shows the full date and time on hover and focus. |
 | `readOnly` | `boolean` | `false` | When true, renders the read-only chip even with a handler. |
 | `disabled` | `boolean` | `false` | When true, disables the trigger. |
 | `allowClear` | `boolean` | `true` | When true, adds the clear button under the calendar. |
-| `clearLabel` | `string` | `"Limpar data"` | Sets the text of the clear button. |
 | `serializeDate` | `(date: Date) => string` | `serializeDatePropertyValue` | Turns the picked day into the emitted string. |
 | `calendarLocale` | `DayPickerLocale` | - | Sets the DayPicker locale of the calendar: its month names and weekdays. |
 | `calendarProps` | `PropertyCalendarProps` | - | Passes props to the calendar, after `calendarLocale`, so its `locale` wins. |
-| `dropdownPlacement` | `DatePropertyDropdownPlacement` | - | Sets `side`, `align`, `sideOffset` and `alignOffset` of the popover. |
+| `dropdownPlacement` | `PropertyPopoverDropdownPlacement` | - | Sets `side`, `align`, `sideOffset` and `alignOffset` of the popover. |
 | `className` | `string` | - | Adds classes to the chip or the trigger. |
 
 Takes no other prop. `PropertyCalendarProps` is every prop of the calendar except `defaultMonth`, `mode`, `onSelect` and `selected`, which the property sets.
@@ -77,7 +76,7 @@ Takes no other prop. `PropertyCalendarProps` is every prop of the calendar excep
 | `data-overdue` | present when `isOverdue` | Styles the overdue date; absent otherwise |
 | `data-slot` | `"property-icon"` | Selects the calendar icon |
 
-The label is `displayLabel` when set, otherwise the day and the short month of the value (`Jun 19`, `19 de jun.`), otherwise `fallback`. `isOverdue` adds no word: the wording, order and separator of an overdue date depend on the language, so the consumer writes them into `displayLabel` (`14 nov · venceu`), which also reaches the trigger name.
+The label is `displayLabel` when set, otherwise the day and the short month of the value (`Jun 19`, `19 de jun.`), otherwise `labels.fallback`. `isOverdue` adds no word: the wording, order and separator of an overdue date depend on the language, so the consumer writes them into `displayLabel` (`14 nov · venceu`), which also reaches the trigger name. The `badge` surface is already `font-medium`, so there `isOverdue` adds only `data-overdue`; the heavier weight shows on `plain`.
 
 Picking a day emits `serializeDate(date)` with the context and closes the popover; the default serializer returns noon UTC of the picked local day (`2026-06-20T12:00:00.000Z`), so the day survives any time zone. A picked day whose string equals `value` emits nothing and closes the popover. A click on the selected day unselects it in the calendar: nothing is emitted and the popover stays open. The clear button emits `null`, when there was a date, and closes the popover. A disabled trigger does not open and dims to 64% opacity.
 
@@ -104,7 +103,7 @@ The read-only date, the chip `DateProperty` renders when it is not editable. Ren
 | `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface. |
 | `locale` | `string` | `"en-US"` | Sets the locale that formats the label and the tooltip. |
 | `timeZone` | `string` | `"UTC"` | Sets the time zone that formats the label and the tooltip. |
-| `fallback` | `string` | `"Sem data"` | Sets the label while there is no date. |
+| `labels` | `Partial<DatePropertyLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.date`: `fallback` (`"No date"`, the label while there is no date) and `clear` (`"Clear date"`, the text of the clear button). |
 | `displayLabel` | `string` | - | Replaces the formatted label. |
 | `isOverdue` | `boolean` | `false` | When true, sets the label in `font-medium` and adds `data-overdue`. |
 | `tooltip` | `boolean` | `false` | When true and the value is valid, adds the tooltip and the tab stop. |
@@ -128,11 +127,11 @@ Takes no other prop.
 | `serializeDatePropertyValue` | `function` | The default `serializeDate`: noon UTC of the local day. `serializeDatePropertyValue(date) => string` |
 | `DatePropertyProps` | `type` | The props of `DateProperty`. |
 | `DatePropertyActionContext` | `type` | The context `action` receives. |
-| `DatePropertyDropdownPlacement` | `type` | The shape of `dropdownPlacement`. |
+| `DatePropertyLabels` | `type` | The texts of `labels`. |
 
 ## Accessibility and theme
 
 - Pass `ariaLabel` with the meaning of the date (`Due date`): the trigger is named `"<ariaLabel>: <label>"`, and the default `Date` says nothing about which date it is.
 - Write the overdue state into `displayLabel`: `isOverdue` only changes the weight, which is not enough on its own.
-- The built-in texts are Portuguese (`Sem data`, `Limpar data`) and the default `ariaLabel` is English (`Date`); pass `fallback`, `clearLabel` and `ariaLabel` to change them, and `calendarLocale` for the calendar's language.
+- The built-in texts are English (`No date`, `Clear date`, the `ariaLabel` `Date`); pass `labels` and `ariaLabel` to change them, and `calendarLocale` for the calendar's language.
 - The chip reads `secondary`, the empty chip `input` and `background`, the plain empty date `muted-foreground`, and the popover `popover` and `border`.

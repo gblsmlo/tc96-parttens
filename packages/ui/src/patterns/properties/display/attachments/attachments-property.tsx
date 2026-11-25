@@ -1,20 +1,16 @@
 'use client'
 
 import { cn } from '@tc96/utils'
-import {
-  Children,
-  type ComponentType,
-  type ReactNode,
-  type SVGProps,
-} from 'react'
+import { Children, type ReactNode } from 'react'
 import { PropertyAddTrigger } from '../../shared/property-add-trigger'
+import type { PropertyIcon } from '../../shared/property-catalog'
 import { PropertyRow } from '../../shared/property-row'
 
 export interface AttachmentsPropertyAction {
   label: string
   onSelect: () => void
   disabled?: boolean
-  icon?: ComponentType<SVGProps<SVGSVGElement>>
+  icon?: PropertyIcon
 }
 
 export interface AttachmentsPropertyProps {

@@ -6,12 +6,13 @@ import { Separator } from '@tc96/ui/separator'
 import { cn } from '@tc96/utils'
 import { useRef, useState } from 'react'
 import type { PropertyCalendarProps } from '../../shared/property-calendar-popover'
+import type { PropertyOption } from '../../shared/property-catalog'
+import type { SchedulePropertyLabels } from '../../shared/property-labels'
 import { ScheduleDetailView } from './schedule-detail-view'
 import {
   ScheduleFooterDrillIn,
   ScheduleFooterRows,
 } from './schedule-footer-rows'
-import type { SchedulePropertyLabels } from './schedule-labels'
 import { buildSchedulePresets, type SchedulePreset } from './schedule-presets'
 import type {
   ScheduleFooterLayout,
@@ -19,11 +20,7 @@ import type {
   ScheduleSection,
 } from './schedule-section'
 import type { ScheduleTimeControl } from './schedule-time-section'
-import type {
-  ScheduleRecurrenceOption,
-  ScheduleReminderOption,
-  ScheduleValue,
-} from './schedule-value'
+import type { ScheduleValue } from './schedule-value'
 
 function PresetList({
   label,
@@ -67,8 +64,8 @@ export interface SchedulePopupProps {
   locale: string
   onChange: (value: ScheduleValue) => void
   onDone: () => void
-  recurrenceOptions: readonly ScheduleRecurrenceOption[]
-  reminderOptions: readonly ScheduleReminderOption[]
+  recurrenceOptions: readonly PropertyOption[]
+  reminderOptions: readonly PropertyOption[]
   timeControl: ScheduleTimeControl
   today: Date
   value: ScheduleValue

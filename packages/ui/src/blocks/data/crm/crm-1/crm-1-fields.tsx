@@ -49,11 +49,11 @@ export function Crm1EmailField({ context, item }: FieldProps) {
   return (
     <TextProperty
       ariaLabel={labels.people.columns.email}
-      copyLabel={labels.copyEmail}
-      fallback={labels.noEmail}
       icon={EnvelopeSimpleIcon}
       value={item.email ?? null}
       variant="plain"
+      copyable
+      labels={{ copy: labels.copyEmail, fallback: labels.noEmail }}
     />
   )
 }
@@ -63,10 +63,10 @@ export function Crm1PhoneField({ context, item }: FieldProps) {
   return (
     <TextProperty
       ariaLabel={labels[variant].columns.phone}
-      fallback={labels.noPhone}
       icon={PhoneIcon}
       value={item.phone}
       variant="plain"
+      labels={{ fallback: labels.noPhone }}
     />
   )
 }
@@ -76,10 +76,10 @@ export function Crm1DocumentField({ context, item }: FieldProps) {
   return (
     <TextProperty
       ariaLabel={variantLabels.columns.document}
-      fallback={variantLabels.noDocument}
       icon={IdentificationCardIcon}
       value={item.document}
       variant="plain"
+      labels={{ fallback: variantLabels.noDocument }}
     />
   )
 }

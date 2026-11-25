@@ -1,14 +1,20 @@
 'use client'
 
 import type { DateRange, DayPickerLocale } from '@daypicker/react'
-import { CalendarIcon } from '@phosphor-icons/react'
 import { Calendar } from '@tc96/ui/calendar'
 import { useState } from 'react'
 import {
   PropertyCalendarPopover,
   type PropertyCalendarProps,
-  type PropertyPopoverDropdownPlacement,
 } from '../../shared/property-calendar-popover'
+import type { PropertyPopoverDropdownPlacement } from '../../shared/property-catalog'
+import { propertyDisplayIcons } from '../../shared/property-display-meta'
+import {
+  type DateRangePropertyLabels,
+  defaultPropertyAriaLabels,
+  defaultPropertyLabels,
+  resolvePropertyLabels,
+} from '../../shared/property-labels'
 import type { PropertyVariant } from '../../shared/property-surface'
 import { IconLabelProperty } from '../icon-label/icon-label-property'
 import { formatDateRangeProperty } from './date-range-format'
@@ -22,16 +28,13 @@ export interface DateRangePropertyProps {
   calendarLocale?: DayPickerLocale
   calendarProps?: PropertyCalendarProps
   className?: string
-  clearLabel?: string
   disabled?: boolean
   displayLabel?: string
   dropdownPlacement?: PropertyPopoverDropdownPlacement
-  fallback?: string
-  fromLabel?: string
+  labels?: Partial<DateRangePropertyLabels>
   locale?: string
   numberOfMonths?: number
   readOnly?: boolean
-  untilLabel?: string
   variant?: PropertyVariant
   onValueChange?: (value: DateRange | undefined) => void
 }
@@ -42,33 +45,36 @@ export function DateRangeProperty({
   calendarLocale,
   calendarProps,
   className,
-  clearLabel = 'Limpar período',
   disabled = false,
   displayLabel,
   dropdownPlacement,
-  fallback = 'Sem período',
-  fromLabel,
+  labels: labelOverrides,
   locale = 'en-US',
   numberOfMonths = 2,
   onValueChange,
   readOnly = false,
-  untilLabel,
   value,
   variant = 'badge',
 }: Readonly<DateRangePropertyProps>) {
   const [open, setOpen] = useState(false)
-  const formatted = formatDateRangeProperty(value, fallback, locale, {
-    fromLabel,
-    untilLabel,
-  })
-  const isEmpty = formatted === fallback
+  const labels = resolvePropertyLabels(
+    defaultPropertyLabels.dateRange,
+    labelOverrides,
+  )
+  const formatted = formatDateRangeProperty(
+    value,
+    labels.fallback,
+    locale,
+    labels,
+  )
+  const isEmpty = formatted === labels.fallback
   const label = isEmpty ? formatted : (displayLabel ?? formatted)
 
   if (readOnly || !onValueChange) {
     return (
       <IconLabelProperty
         className={className}
-        icon={CalendarIcon}
+        icon={propertyDisplayIcons.dateRange}
         label={label}
         muted={isEmpty}
         variant={variant}
@@ -79,12 +85,12 @@ export function DateRangeProperty({
   return (
     <PropertyCalendarPopover
       align="center"
-      ariaLabel={ariaLabel ?? 'Period'}
+      ariaLabel={ariaLabel ?? defaultPropertyAriaLabels.dateRange}
       className={className}
       clear={
         allowClear
           ? {
-              label: clearLabel,
+              label: labels.clear,
               onClear: () => {
                 onValueChange(undefined)
                 setOpen(false)
@@ -94,7 +100,7 @@ export function DateRangeProperty({
       }
       disabled={disabled}
       dropdownPlacement={dropdownPlacement}
-      icon={CalendarIcon}
+      icon={propertyDisplayIcons.dateRange}
       label={label}
       muted={isEmpty}
       onOpenChange={setOpen}

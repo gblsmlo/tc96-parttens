@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A property for one value out of a closed list the consumer defines: the type of an activity, the stage of a deal, the template of a meeting. The value shows on a small surface with an optional icon, and the same surface opens the list. For a person, use [Person](?path=/docs/patterns-properties-display-person-api-reference--api-reference); for several values at once, [Tags](?path=/docs/patterns-properties-display-tags-api-reference--api-reference).
 
-The other pages of `Patterns/Properties/Display/Select`: [Playground](?path=/story/patterns-properties-display-select-playground--playground) to try the value, the texts, the catalog, the surface and the states, [Stories](?path=/story/patterns-properties-display-select-stories--default) for each state and surface, [Behavior](?path=/story/patterns-properties-display-select-behavior--badge-surface-is-filled) for the tests, [Usages](?path=/story/patterns-properties-display-select-usages--activity-type) for real content, and [Layouts](?path=/story/patterns-properties-display-select-layouts--without-icons) for a catalog without icons.
+The other pages of `Patterns/Properties/Display/Select`: [Playground](?path=/story/patterns-properties-display-select-playground--playground) to try the value, the texts, the catalog, the surface and the states, [Variants](?path=/story/patterns-properties-display-select-variants--default) for each surface and state, [Layouts](?path=/story/patterns-properties-display-select-layouts--default) for the formation, [Behavior](?path=/story/patterns-properties-display-select-behavior--badge-surface-is-filled) for the tests, and [Usages](?path=/story/patterns-properties-display-select-usages--activity-type) for real content.
 
-Used in: the frequency of [Schedule](?path=/docs/patterns-properties-display-schedule-api-reference--api-reference), the status, priority and type of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages-tasks--default), the details and stage blocks of [Patterns/Records/Group/Usages](?path=/story/patterns-records-group-usages--details), and the event dialog of [Patterns/Records/RecordDialog/Usages, Events](?path=/story/patterns-records-recorddialog-usages--events).
+Used in: the frequency of [Schedule](?path=/docs/patterns-properties-display-schedule-api-reference--api-reference), the status, priority and type of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages--tasks), the details and stage blocks of [Patterns/Records/Group/Usages](?path=/story/patterns-records-group-usages--details), and the event dialog of [Patterns/Records/RecordDialog/Usages, Events](?path=/story/patterns-records-recorddialog-usages--events).
 
 ## Import
 
@@ -40,15 +40,15 @@ Renders a `button` with `role="combobox"` that opens a list, or, read-only, a `s
 | --- | --- | --- | --- |
 | `ariaLabel` | `string` | required | Names the value: `"<ariaLabel>: <label>"`, or `ariaLabel` alone while the value is absent. |
 | `value` | `string \| null` | required | Sets the `value` of the current option; `null` is absent. |
-| `options` | `readonly SelectPropertyOption[]` | required without `groups` | Sets the catalog as one list, in order. |
+| `options` | `readonly PropertyOption[]` | required without `groups` | Sets the catalog as one list, in order. |
 | `groups` | `readonly SelectPropertyGroup[]` | required without `options` | Sets the catalog as named sections, in order. Pass `options` or `groups`, never both. |
 | `onValueChange` | `(value: string \| null) => void` | - | Called with the `value` of the picked option, or `null` for the empty option. |
-| `action` | `(value: string \| null, context: SelectPropertyActionContext) => void` | - | Called instead of `onValueChange`, with the value before the pick. |
+| `action` | `(value, context) => void` | - | Called instead of `onValueChange`, with the value before the pick. `context` is a `PropertyChangeContext`. |
 | `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface: a 24px filled badge, or inline text with no fill that, while editable, draws a `secondary` box on hover, on keyboard focus and while the list is open. |
-| `placeholder` | `string` | - | Sets the text while the value is `null`; without it, `fallback` shows. |
-| `fallback` | `string` | `"—"` | Sets the text of a value no option declares, and of a `null` value with no `placeholder`. |
-| `emptyOptionLabel` | `string` | - | Adds an option with this label at the top of the list that reports `null`. |
-| `dropdownPlacement` | `SelectPropertyDropdownPlacement` | - | Sets the `side`, `align`, `sideOffset`, `alignOffset` and `alignItemWithTrigger` of the list; it opens below the trigger, 4px away, aligned to its start. |
+| `placeholder` | `string` | - | Sets the text while the value is `null`; without it, `labels.fallback` shows. |
+| `labels` | `Partial<SelectPropertyLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.select`: `fallback` (`"—"`, the text of a value no option declares, and of a `null` value with no `placeholder`) and `emptyOption` (`"None"`, the label of the empty option). |
+| `allowEmpty` | `boolean` | `false` | Adds an option labelled `labels.emptyOption` at the top of the list that reports `null`. |
+| `dropdownPlacement` | `PropertySelectDropdownPlacement` | - | Sets the `side`, `align`, `sideOffset`, `alignOffset` and `alignItemWithTrigger` of the list; it opens below the trigger, 4px away, aligned to its start. |
 | `disabled` | `boolean` | `false` | When true, disables the trigger. |
 | `readOnly` | `boolean` | `false` | When true, renders the value with no list, with the same look. |
 | `className` | `string` | - | Adds classes to the surface. |
@@ -73,9 +73,9 @@ The list opens from the trigger with one option per entry, each with its icon an
 
 ### The empty option
 
-With `emptyOptionLabel`, the list starts with an option of that label, outside every section, that reports `null`. It carries a dashed-circle icon when any option of the catalog has an icon, and none otherwise. Once the user picks it, the surface shows it filled, with its label and that icon, instead of the absent look, even when the value was already `null`; the next non-null `value` ends that. The choice lives in the component, so a remount that receives `null` shows the absent look again.
+With `allowEmpty`, the list starts with an option labelled `labels.emptyOption`, outside every section, that reports `null`. It carries a dashed-circle icon when any option of the catalog has an icon, and none otherwise. Once the user picks it, the surface shows it filled, with its label and that icon, instead of the absent look, even when the value was already `null`; the next non-null `value` ends that. The choice lives in the component, so a remount that receives `null` shows the absent look again.
 
-## SelectPropertyOption
+## PropertyOption
 
 An entry of `options`, or of a section of `groups`.
 
@@ -93,9 +93,9 @@ A section of `groups`.
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `label` | `string` | required | The name of the section, shown above its options. |
-| `options` | `readonly SelectPropertyOption[]` | required | The options of the section, in order. |
+| `options` | `readonly PropertyOption[]` | required | The options of the section, in order. |
 
-## SelectPropertyActionContext
+## PropertyChangeContext
 
 What `action` receives with the picked value.
 
@@ -107,7 +107,7 @@ What `action` receives with the picked value.
 
 | Export | Kind | Description |
 | --- | --- | --- |
-| `SelectPropertyDropdownPlacement` | `type` | `side`, `align`, `sideOffset`, `alignOffset` and `alignItemWithTrigger` of the list. |
+| `SelectPropertyLabels` | `type` | The texts of `labels`. |
 | `SelectPropertyProps` | `type` | The props of `SelectProperty`. |
 
 ## Accessibility and theme

@@ -11,10 +11,9 @@ const meta = {
   args: flagControlArgs,
   argTypes: flagControlArgTypes,
   decorators: [FlagCanvas],
-  parameters: { controls: { exclude: ['active', 'variant'] } },
   render: (args) => <ComposedFlag {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Flag/Stories',
+  title: 'Patterns/Properties/Display/Flag/Variants',
 } satisfies Meta<FlagControls>
 
 export default meta
@@ -25,8 +24,10 @@ export const Default: Story = {}
 
 export const Inactive: Story = {
   args: { active: false },
+  parameters: { controls: { exclude: ['active'] } },
 }
 
 export const Plain: Story = {
   args: { variant: 'plain' },
+  parameters: { controls: { exclude: ['variant'] } },
 }

@@ -12,11 +12,11 @@ const meta = {
   argTypes: scheduleControlArgTypes,
   decorators: [ScheduleCanvas],
   parameters: {
-    controls: { exclude: ['openOnMount', 'value', 'variant'] },
+    controls: { exclude: ['readOnly', 'value', 'variant'] },
   },
   render: (args) => <ComposedSchedule {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Schedule/Stories',
+  title: 'Patterns/Properties/Display/Schedule/Variants',
 } satisfies Meta<ScheduleControls>
 
 export default meta
@@ -31,13 +31,12 @@ export const Plain: Story = {
 
 export const AllDay: Story = {
   args: { value: 'allDay' },
-  name: 'All day',
 }
 
 export const Empty: Story = {
   args: { value: 'empty' },
 }
 
-export const Open: Story = {
-  args: { openOnMount: true },
+export const ReadOnly: Story = {
+  args: { readOnly: true },
 }

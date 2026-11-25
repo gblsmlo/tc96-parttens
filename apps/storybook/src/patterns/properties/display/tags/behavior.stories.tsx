@@ -1,13 +1,16 @@
 import { PlusIcon, TagIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { TagsProperty, type TagsPropertyOption } from '@tc96/ui/patterns'
+import { type PropertyOption, TagsProperty } from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
 import { esperarIndicadorADireita } from '../../../../test-utils/property-surface'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { TagsCanvas } from './tags-canvas.tsx'
+import { tagsControlArgs } from './tags-controls.ts'
 import { placementsCountLabel } from './tags-data.ts'
+import { ComposedTags } from './tags-layouts.tsx'
 
-const options: TagsPropertyOption[] = [
+const options: PropertyOption[] = [
   { label: 'Documentos', value: 'documents' },
   { label: 'Retorno', value: 'return' },
 ]
@@ -18,6 +21,8 @@ const meta = {
     onValueChange: fn(),
     options,
     value: ['documents'],
+    placeholder: 'Adicionar uma tag',
+    labels: ptBRPropertyLabels.tags,
   },
   component: TagsProperty,
   decorators: [TagsCanvas],
@@ -52,9 +57,27 @@ const closeList = async () => {
 
 const countTriggers = (args: Story['args']) => (
   <div className="flex flex-col items-start gap-2">
-    <TagsProperty {...args} options={options} value={[]} />
-    <TagsProperty {...args} options={options} value={['documents']} />
-    <TagsProperty {...args} options={options} value={['documents', 'return']} />
+    <TagsProperty
+      placeholder="Adicionar uma tag"
+      {...args}
+      options={options}
+      value={[]}
+      labels={{ ...ptBRPropertyLabels.tags, ...args?.labels }}
+    />
+    <TagsProperty
+      placeholder="Adicionar uma tag"
+      {...args}
+      options={options}
+      value={['documents']}
+      labels={{ ...ptBRPropertyLabels.tags, ...args?.labels }}
+    />
+    <TagsProperty
+      placeholder="Adicionar uma tag"
+      {...args}
+      options={options}
+      value={['documents', 'return']}
+      labels={{ ...ptBRPropertyLabels.tags, ...args?.labels }}
+    />
   </div>
 )
 
@@ -65,6 +88,17 @@ export const PlainByDefaultHasNoFrame: Story = {
     await expect(tagsProperty(canvasElement)?.dataset.variant).toBe('plain')
     await expect(chips.backgroundColor).toBe(TRANSPARENT)
     await expect(chips.borderTopColor).toBe(TRANSPARENT)
+  },
+}
+
+export const BadgeFramesTheChips: Story = {
+  args: { variant: 'badge' },
+  play: async ({ canvasElement }) => {
+    const chips = getComputedStyle(chipsOf(canvasElement))
+
+    await expect(tagsProperty(canvasElement)?.dataset.variant).toBe('badge')
+    await expect(chips.borderTopWidth).toBe('1px')
+    await expect(chips.borderTopColor).not.toBe(TRANSPARENT)
   },
 }
 
@@ -178,6 +212,24 @@ export const ActionGetsAddedOptionInsteadOfOnValueChange: Story = {
   },
 }
 
+export const LoadingShowsStatusAboveTheOptions: Story = {
+  args: { isLoading: true },
+  play: async ({ args, canvasElement }) => {
+    await userEvent.click(addChip(canvasElement))
+    const status = await screen.findByText('Carregando tags…')
+    const listbox = await screen.findByRole('listbox')
+
+    await expect(status).toHaveAttribute('data-slot', 'combobox-status')
+    await expect(
+      status.compareDocumentPosition(listbox) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+
+    await closeList()
+    await expect(args.onValueChange).not.toHaveBeenCalled()
+  },
+}
+
 export const DisabledBlocksAdding: Story = {
   args: { disabled: true },
   play: async ({ args, canvasElement }) => {
@@ -217,6 +269,23 @@ export const CountShowsOnlyTheCount: Story = {
     await expect(trigger.textContent).toBe('1 Tag')
     await expect(canvas.queryByText('Documentos')).toBeNull()
     await expect(tagsProperty(canvasElement)?.dataset.display).toBe('count')
+  },
+}
+
+export const CountLayoutReplacesChipsAndAddChip: Story = {
+  render: () => <ComposedTags {...tagsControlArgs} display="count" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(
+      canvas.getByRole('button', { name: 'Tags: 2 Tags' }),
+    ).toHaveTextContent('2 Tags')
+    await expect(
+      canvasElement.querySelector('[data-slot="combobox-chip"]'),
+    ).toBeNull()
+    await expect(
+      canvas.queryByRole('button', { name: 'Adicionar tag' }),
+    ).toBeNull()
   },
 }
 
@@ -310,9 +379,9 @@ export const CountPlainKeepsTextSizeAndIcon: Story = {
 export const CountLabelNamesTheTrigger: Story = {
   args: {
     ariaLabel: 'Posicionamentos',
-    countLabel: placementsCountLabel,
     display: 'count',
     variant: 'badge',
+    labels: { ...ptBRPropertyLabels.tags, count: placementsCountLabel },
   },
   render: countTriggers,
   play: async ({ canvasElement }) => {
@@ -334,12 +403,12 @@ export const CountLabelNamesTheTrigger: Story = {
 export const CountLabelOnReadOnlySurface: Story = {
   args: {
     ariaLabel: 'Posicionamentos',
-    countLabel: placementsCountLabel,
     display: 'count',
     onValueChange: undefined,
     readOnly: true,
     value: ['documents', 'return'],
     variant: 'badge',
+    labels: { ...ptBRPropertyLabels.tags, count: placementsCountLabel },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)

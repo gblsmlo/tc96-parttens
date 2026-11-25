@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PlainPropertyColumn } from './properties-layouts'
+import { propertiesControlArgs } from './properties-controls'
+import { ComposedProperties, PlainPropertyColumn } from './properties-layouts'
 
 const meta = {
   decorators: [
@@ -17,6 +18,18 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+export const Default: Story = {
+  render: () => <ComposedProperties {...propertiesControlArgs} />,
+}
+
 export const PlainColumn: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'One row per property in a two-column grid, the name on the start and a `plain` value on the end, editable and read-only values aligned on the same x. For a side panel or a detail view, where each value needs its name in view.',
+      },
+    },
+  },
   render: () => <PlainPropertyColumn />,
 }

@@ -7,9 +7,10 @@ import { TextCanvas } from './text-canvas.tsx'
 const meta = {
   args: {
     ariaLabel: 'Tipo',
-    copyLabel: 'Copiar tipo',
     icon: ShapesIcon,
     value: 'Solicitação de documento',
+    copyable: true,
+    labels: { copy: 'Copiar tipo' },
   },
   component: TextProperty,
   decorators: [TextCanvas],

@@ -13,6 +13,7 @@ import {
 } from '@tc96/ui/patterns'
 import { type ReactNode, useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import { people, priorityOptions, statusOptions } from './project-record'
 import type { RecordDialogControls } from './record-dialog-controls.ts'
 
@@ -239,10 +240,10 @@ const useProjectProperties = (onChange?: FormationProps['onChange']) => {
     <TextProperty
       ariaLabel="Repository"
       editing="inline"
-      fallback="Add repository"
       icon={GitBranchIcon}
       onCommit={(value) => update({ repository: value })}
       value={draft.repository}
+      labels={{ ...ptBRPropertyLabels.text, fallback: 'Add repository' }}
     />
   )
 

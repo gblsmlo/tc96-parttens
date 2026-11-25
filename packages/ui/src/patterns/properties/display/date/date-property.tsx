@@ -1,7 +1,6 @@
 'use client'
 
 import type { DayPickerLocale } from '@daypicker/react'
-import { CalendarDotsIcon } from '@phosphor-icons/react'
 import { Calendar } from '@tc96/ui/calendar'
 import { formatDateTime } from '@tc96/ui/helpers/date'
 import { cn } from '@tc96/utils'
@@ -10,8 +9,18 @@ import { emitChange, isEditable } from '../../shared/lib/property-change'
 import {
   PropertyCalendarPopover,
   type PropertyCalendarProps,
-  type PropertyPopoverDropdownPlacement,
 } from '../../shared/property-calendar-popover'
+import type {
+  PropertyChangeContext,
+  PropertyPopoverDropdownPlacement,
+} from '../../shared/property-catalog'
+import { propertyDisplayIcons } from '../../shared/property-display-meta'
+import {
+  type DatePropertyLabels,
+  defaultPropertyAriaLabels,
+  defaultPropertyLabels,
+  resolvePropertyLabels,
+} from '../../shared/property-labels'
 import {
   PropertySurface,
   type PropertyVariant,
@@ -23,11 +32,9 @@ import {
   serializeDatePropertyValue,
 } from './date-value'
 
-export type DatePropertyDropdownPlacement = PropertyPopoverDropdownPlacement
-
-export interface DatePropertyActionContext {
+export interface DatePropertyActionContext
+  extends PropertyChangeContext<string | null> {
   date: Date | null
-  previousValue: string | null
 }
 
 export interface DatePropertyProps {
@@ -38,12 +45,11 @@ export interface DatePropertyProps {
   calendarLocale?: DayPickerLocale
   calendarProps?: PropertyCalendarProps
   className?: string
-  clearLabel?: string
-  fallback?: string
   disabled?: boolean
   displayLabel?: string
-  dropdownPlacement?: DatePropertyDropdownPlacement
+  dropdownPlacement?: PropertyPopoverDropdownPlacement
   isOverdue?: boolean
+  labels?: Partial<DatePropertyLabels>
   locale?: string
   readOnly?: boolean
   serializeDate?: (date: Date) => string
@@ -69,12 +75,11 @@ export function DateProperty({
   calendarLocale,
   calendarProps,
   className,
-  clearLabel = 'Limpar data',
   disabled = false,
   displayLabel,
   dropdownPlacement,
-  fallback = 'Sem data',
   isOverdue = false,
+  labels: labelOverrides,
   locale = 'en-US',
   onValueChange,
   readOnly = false,
@@ -86,7 +91,11 @@ export function DateProperty({
 }: Readonly<DatePropertyProps>) {
   const [open, setOpen] = useState(false)
   const selectedDate = parseDatePropertyValue(value)
-  const accessibleLabel = ariaLabel ?? 'Date'
+  const accessibleLabel = ariaLabel ?? defaultPropertyAriaLabels.date
+  const labels = resolvePropertyLabels(
+    defaultPropertyLabels.date,
+    labelOverrides,
+  )
 
   const handleChange = (nextValue: string | null, date: Date | null) => {
     if (nextValue !== value) {
@@ -103,8 +112,8 @@ export function DateProperty({
       <DatePropertyBadge
         className={className}
         displayLabel={displayLabel}
-        fallback={fallback}
         isOverdue={isOverdue}
+        labels={labels}
         locale={locale}
         timeZone={timeZone}
         tooltip={tooltip}
@@ -115,7 +124,7 @@ export function DateProperty({
   }
 
   const label =
-    displayLabel ?? formatDateProperty(value, fallback, locale, timeZone)
+    displayLabel ?? formatDateProperty(value, labels.fallback, locale, timeZone)
 
   return (
     <PropertyCalendarPopover
@@ -124,12 +133,12 @@ export function DateProperty({
       muted={!value}
       clear={
         allowClear
-          ? { label: clearLabel, onClear: () => handleChange(null, null) }
+          ? { label: labels.clear, onClear: () => handleChange(null, null) }
           : undefined
       }
       disabled={disabled}
       dropdownPlacement={dropdownPlacement}
-      icon={CalendarDotsIcon}
+      icon={propertyDisplayIcons.date}
       label={label}
       onOpenChange={setOpen}
       open={open}
@@ -155,8 +164,8 @@ export function DateProperty({
 export function DatePropertyBadge({
   className,
   displayLabel,
-  fallback = 'Sem data',
   isOverdue = false,
+  labels,
   locale = 'en-US',
   timeZone = 'UTC',
   tooltip = false,
@@ -167,8 +176,8 @@ export function DatePropertyBadge({
     DatePropertyProps,
     | 'className'
     | 'displayLabel'
-    | 'fallback'
     | 'isOverdue'
+    | 'labels'
     | 'locale'
     | 'timeZone'
     | 'tooltip'
@@ -176,10 +185,12 @@ export function DatePropertyBadge({
     | 'variant'
   >
 >) {
+  const fallback = labels?.fallback ?? defaultPropertyLabels.date.fallback
   const label =
     displayLabel ?? formatDateProperty(value, fallback, locale, timeZone)
   const fullDate = tooltip ? formatFullDate(value, locale, timeZone) : null
 
+  const DateIcon = propertyDisplayIcons.date
   const surface = (
     <PropertySurface
       className={cn('max-w-full', isOverdue && 'font-medium', className)}
@@ -189,11 +200,7 @@ export function DatePropertyBadge({
       tabIndex={fullDate ? 0 : undefined}
       variant={variant}
     >
-      <CalendarDotsIcon
-        aria-hidden
-        className="size-4"
-        data-slot="property-icon"
-      />
+      <DateIcon aria-hidden className="size-4" data-slot="property-icon" />
       <span className="truncate">{label}</span>
     </PropertySurface>
   )

@@ -12,27 +12,20 @@ import {
   ComboboxStatus,
 } from '@tc96/ui/combobox'
 import { cn } from '@tc96/utils'
-import type { ComponentProps, ReactNode, RefObject } from 'react'
+import type { ReactNode, RefObject } from 'react'
 import { useRef, useState } from 'react'
 import {
   diffOptions,
   type OptionLike,
   type ResolvedOption,
 } from './lib/property-options'
-import type { PropertyIcon } from './property-catalog'
+import type {
+  PropertyIcon,
+  PropertyListChangeContext,
+  PropertyMultiSelectDropdownPlacement,
+} from './property-catalog'
 import { propertySelectItemClassName } from './property-select-shell'
 import { PropertySurface, type PropertyVariant } from './property-surface'
-
-export type PropertyMultiSelectDropdownPlacement = Pick<
-  ComponentProps<typeof ComboboxPopup>,
-  'align' | 'alignOffset' | 'side' | 'sideOffset'
->
-
-export interface PropertyMultiSelectChange<TOption extends OptionLike> {
-  added: ResolvedOption<TOption> | null
-  previousValue: readonly TOption['value'][]
-  removed: ResolvedOption<TOption> | null
-}
 
 export interface PropertyMultiSelectShellProps<TOption extends OptionLike> {
   addIcon: PropertyIcon
@@ -42,7 +35,10 @@ export interface PropertyMultiSelectShellProps<TOption extends OptionLike> {
   loadingLabel: string
   onChange: (
     value: readonly TOption['value'][],
-    change: PropertyMultiSelectChange<TOption>,
+    change: PropertyListChangeContext<
+      ResolvedOption<TOption>,
+      TOption['value']
+    >,
   ) => void
   options: readonly TOption[]
   placeholder: string

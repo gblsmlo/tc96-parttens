@@ -14,6 +14,7 @@ import {
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../../properties/properties-labels.ts'
 import { part, rowsOf } from '../fixtures/group-dom'
 import { statusOptions } from '../layouts/rows'
 import { RecordGroupCanvas } from '../record-group-canvas'
@@ -43,6 +44,7 @@ function RequestGroup() {
           editing="inline"
           onCommit={setTitle}
           value={title}
+          labels={ptBRPropertyLabels.text}
         />
       </RecordGroupRow>
       <RecordGroupRow label="Status" leading={<ShapesIcon aria-hidden />}>
@@ -54,13 +56,23 @@ function RequestGroup() {
         />
       </RecordGroupRow>
       <RecordGroupRow label="Due" leading={<CalendarDotsIcon aria-hidden />}>
-        <DateProperty readOnly value="2026-10-21" variant="plain" />
+        <DateProperty
+          readOnly
+          value="2026-10-21"
+          variant="plain"
+          labels={ptBRPropertyLabels.date}
+        />
       </RecordGroupRow>
       <RecordGroupRow
         label={longLabel}
         leading={<CalendarDotsIcon aria-hidden />}
       >
-        <DateProperty readOnly value="2026-10-21" variant="plain" />
+        <DateProperty
+          readOnly
+          value="2026-10-21"
+          variant="plain"
+          labels={ptBRPropertyLabels.date}
+        />
       </RecordGroupRow>
     </RecordGroup>
   )
@@ -74,21 +86,34 @@ function CustomerGroup() {
         label="Type"
         leading={<ShapesIcon aria-hidden />}
       >
-        <TextProperty value="Document request" variant="plain" />
+        <TextProperty
+          value="Document request"
+          variant="plain"
+          labels={ptBRPropertyLabels.text}
+        />
       </RecordGroupRow>
       <RecordGroupRow
         align="between"
         label={longLabel}
         leading={<CalendarDotsIcon aria-hidden />}
       >
-        <DateProperty readOnly value="2026-10-21" variant="plain" />
+        <DateProperty
+          readOnly
+          value="2026-10-21"
+          variant="plain"
+          labels={ptBRPropertyLabels.date}
+        />
       </RecordGroupRow>
       <RecordGroupRow
         align="between"
         label="Owner"
         leading={<UserIcon aria-hidden />}
       >
-        <TextProperty value={longValue} variant="plain" />
+        <TextProperty
+          value={longValue}
+          variant="plain"
+          labels={ptBRPropertyLabels.text}
+        />
       </RecordGroupRow>
     </RecordGroup>
   )

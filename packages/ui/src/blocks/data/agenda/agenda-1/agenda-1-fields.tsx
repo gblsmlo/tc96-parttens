@@ -1,6 +1,6 @@
 import { XCircleIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
-import type { SelectPropertyOption } from '@tc96/ui/patterns/properties/display/select/select-property'
+import type { PropertyOption } from '@tc96/ui/patterns/properties/core'
 import {
   DataOwner,
   DataSelect,
@@ -23,9 +23,9 @@ import type {
 
 export interface Agenda1FieldContext {
   formatters: Agenda1Formatters
-  kindOptions: SelectPropertyOption[]
+  kindOptions: PropertyOption[]
   labels: Agenda1Labels
-  modalityOptions: SelectPropertyOption[]
+  modalityOptions: PropertyOption[]
   onCancel?: (entryId: string) => void
   onOpen?: (entry: Agenda1Entry) => void
   owners: readonly Agenda1Person[]

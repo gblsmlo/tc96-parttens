@@ -13,12 +13,12 @@ const meta = {
   decorators: [TagsCanvas],
   parameters: {
     controls: {
-      exclude: ['disabled', 'display', 'readOnly', 'value', 'variant'],
+      exclude: ['disabled', 'readOnly', 'value', 'variant'],
     },
   },
   render: (args) => <ComposedTags {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Tags/Stories',
+  title: 'Patterns/Properties/Display/Tags/Variants',
 } satisfies Meta<TagsControls>
 
 export default meta
@@ -29,11 +29,6 @@ export const Default: Story = {}
 
 export const Badge: Story = {
   args: { variant: 'badge' },
-}
-
-export const Count: Story = {
-  args: { display: 'count' },
-  name: 'Display count',
 }
 
 export const Empty: Story = {

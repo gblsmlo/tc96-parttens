@@ -13,11 +13,22 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const DateOnly: Story = {
+export const Default: Story = {
+  render: () => <ComposedSchedule {...scheduleControlArgs} openOnMount />,
+}
+
+export const DateOnlyPopup: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The presets and the calendar, with no Hora, Repetir and Lembretes footer under them. For a value that is only a day, such as a deadline.',
+      },
+    },
+  },
   render: () => (
     <ComposedSchedule
       {...scheduleControlArgs}
-      ariaLabel="Prazo"
       dateOnly
       openOnMount
       value="allDay"
@@ -26,6 +37,14 @@ export const DateOnly: Story = {
 }
 
 export const DrillIn: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The presets, the calendar and the footer rows, where a row replaces the whole popup with its editor and a Voltar button. For a narrow popup or a short window, where an editor opened under its row would not fit.',
+      },
+    },
+  },
   render: () => (
     <ComposedSchedule
       {...scheduleControlArgs}

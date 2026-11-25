@@ -11,6 +11,7 @@ import {
   SelectProperty,
   TextProperty,
 } from '@tc96/ui/patterns'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import {
   isPriority,
   isStatus,
@@ -70,6 +71,7 @@ export function AssigneeField({
 }>) {
   return (
     <PersonProperty
+      placeholder="Sem responsável"
       ariaLabel="Responsável"
       avatarSize={avatarSize}
       display={display}
@@ -124,6 +126,7 @@ export function DueField({
       timeZone={TIME_ZONE}
       value={dueOf(task)}
       variant={variant}
+      labels={ptBRPropertyLabels.date}
     />
   )
 }
@@ -136,8 +139,6 @@ export function EstimateField({
     <TextProperty
       ariaLabel="Estimativa"
       editing="inline"
-      fallback="Sem estimativa"
-      inputPlaceholder="Ex.: 8 h"
       onCommit={(value) => {
         const hours = Number.parseFloat(value ?? '')
         onChange(task.id, {
@@ -145,6 +146,11 @@ export function EstimateField({
         })
       }}
       value={`${task.estimate} h`}
+      labels={{
+        ...ptBRPropertyLabels.text,
+        fallback: 'Sem estimativa',
+        inputPlaceholder: 'Ex.: 8 h',
+      }}
     />
   )
 }

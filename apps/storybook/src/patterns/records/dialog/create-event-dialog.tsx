@@ -12,6 +12,7 @@ import {
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { sleep } from '../../../test-utils/sleep'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import {
   availabilityOptions,
   calendarOptions,
@@ -138,7 +139,7 @@ export function CreateEventDialog({
           <RecordGroupRow label="Date">
             <ScheduleProperty
               ariaLabel="Date"
-              labels={scheduleLabels}
+              labels={{ ...ptBRPropertyLabels.schedule, ...scheduleLabels }}
               locale="en-US"
               onValueChange={(schedule) => update({ schedule })}
               recurrenceOptions={scheduleRecurrenceOptions}
@@ -154,16 +155,17 @@ export function CreateEventDialog({
               options={people}
               placeholder="Add guests"
               value={draft.guests}
+              labels={ptBRPropertyLabels.people}
             />
           </RecordGroupRow>
           <RecordGroupRow label="Location">
             <TextProperty
               ariaLabel="Location"
               editing="inline"
-              fallback="Add location"
               icon={MapPinIcon}
               onCommit={(location) => update({ location })}
               value={draft.location}
+              labels={{ ...ptBRPropertyLabels.text, fallback: 'Add location' }}
             />
           </RecordGroupRow>
           <RecordGroupRow label="Type">

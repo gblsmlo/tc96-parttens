@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { DateProperty, DatePropertyBadge } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { DateCanvas } from './date-canvas.tsx'
 
 const ignore = () => undefined
@@ -11,6 +12,7 @@ const meta = {
     displayLabel: 'displayLabel',
     onValueChange: ignore,
     value: '2026-06-19T12:00:00.000Z',
+    labels: ptBRPropertyLabels.date,
   },
   component: DateProperty,
   decorators: [DateCanvas],
@@ -39,6 +41,7 @@ export const BadgeAnatomy: Story = {
     <DatePropertyBadge
       displayLabel="DatePropertyBadge"
       value="2026-06-19T12:00:00.000Z"
+      labels={ptBRPropertyLabels.date}
     />
   ),
   play: async ({ canvasElement }) => {

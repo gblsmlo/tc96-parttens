@@ -25,6 +25,14 @@ const accounts = [
 ]
 
 export const DefaultAccount: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The default account in a list of bank accounts, on the [Default](?path=/story/patterns-properties-display-flag-layouts--default) layout: only the account that is the default shows the flag.',
+      },
+    },
+  },
   render: () => (
     <ul className="grid w-80 divide-y rounded-lg border text-sm">
       {accounts.map((account) => (
@@ -48,6 +56,14 @@ export const DefaultAccount: Story = {
 }
 
 export const CampaignPixel: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Whether a campaign has its pixel installed, on the [Default](?path=/story/patterns-properties-display-flag-layouts--default) layout with `plain` surfaces and `showInactive`, so both states have a word of their own.',
+      },
+    },
+  },
   render: () => (
     <div className="flex flex-col items-start gap-2">
       <FlagProperty
@@ -80,6 +96,14 @@ export const CampaignPixel: Story = {
 }
 
 export const TaskStates: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The states of a task, on the [Default](?path=/story/patterns-properties-display-flag-layouts--default) layout: an inactive flag without `showInactive` renders nothing, so Arquivada does not show.',
+      },
+    },
+  },
   render: () => (
     <div className="flex flex-wrap gap-2">
       <FlagProperty active activeIcon={ClockCountdownIcon} label="Atrasada" />

@@ -7,11 +7,11 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A property for a short free text: the source of a lead, the profession of a contact, an id, an email shown as text. The value shows on the property surface with an optional icon and copy button, and, when the consumer takes commits, it is filled or edited in place. For a value out of a list, use [Select](?path=/docs/patterns-properties-display-select-api-reference--api-reference).
 
-The other pages of `Patterns/Properties/Display/Text`: [Playground](?path=/story/patterns-properties-display-text-playground--playground) to try the value, the texts, the parts, the editing and the surface, [Stories](?path=/story/patterns-properties-display-text-stories--default) for each value and surface, [Behavior](?path=/story/patterns-properties-display-text-behavior--badge-surface-is-filled) for the tests, [Usages](?path=/story/patterns-properties-display-text-usages--contact-details) for real content, and [Layouts](?path=/story/patterns-properties-display-text-layouts--without-icon) for the icon and the copy button.
+The other pages of `Patterns/Properties/Display/Text`: [Playground](?path=/story/patterns-properties-display-text-playground--playground) to try the value, the `labels`, the icon, the copy button, the editing and the surface, [Variants](?path=/story/patterns-properties-display-text-variants--default) for the `plain` surface and the empty value, [Layouts](?path=/story/patterns-properties-display-text-layouts--default) for the value and the [inline field](?path=/story/patterns-properties-display-text-layouts--inline-field), [Behavior](?path=/story/patterns-properties-display-text-behavior--badge-surface-is-filled) for the tests, and [Usages](?path=/story/patterns-properties-display-text-usages--contact-details) for the details of a contact, the id of a task and the location of an event.
 
-`TextProperty` draws its value with [Icon Label](?path=/docs/patterns-properties-display-icon-label-api-reference--api-reference) and edits it with [Editable Text](?path=/docs/patterns-properties-display-editable-text-api-reference--api-reference); this page covers what it adds on top.
+`TextProperty` draws its value with [Icon Label](?path=/docs/patterns-properties-display-iconlabel-api-reference--api-reference) and edits it with [Editable Text](?path=/docs/patterns-properties-display-editabletext-api-reference--api-reference); this page covers what it adds on top.
 
-Used in: the id of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages-tasks--default), the details and billing blocks of [Patterns/Records/Group/Usages](?path=/story/patterns-records-group-usages--details), the contact dialog of [Patterns/Records/RecordDialog/Usages, Contacts](?path=/story/patterns-records-recorddialog-usages--contacts) and the event dialog of [Patterns/Records/RecordDialog/Usages, Events](?path=/story/patterns-records-recorddialog-usages--events).
+Used in: the id of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages--tasks), the details and billing blocks of [Patterns/Records/Group/Usages](?path=/story/patterns-records-group-usages--details), the contact dialog of [Patterns/Records/RecordDialog/Usages, Contacts](?path=/story/patterns-records-recorddialog-usages--contacts) and the event dialog of [Patterns/Records/RecordDialog/Usages, Events](?path=/story/patterns-records-recorddialog-usages--events).
 
 ## Import
 
@@ -26,8 +26,9 @@ import { TextProperty } from '@acme/patterns'
 ```tsx
 <TextProperty
   ariaLabel="Tipo"
-  copyLabel="Copiar tipo"
+  copyable
   icon={ShapesIcon}
+  labels={{ copy: 'Copiar tipo' }}
   value="Solicitação de documento"
 />
 ```
@@ -36,7 +37,7 @@ The surface holds the icon, the value and the copy button, in this order; only t
 
 ## TextProperty
 
-Renders the property surface, a `span`, with the value cut to one line, or `fallback` in the empty look while there is no value. It is read-only unless `onCommit` is passed and `disabled` is not set; it never stores the text, so the consumer keeps `value` and receives each commit.
+Renders the property surface, a `span`, with the value cut to one line, or `labels.fallback` in the empty look while there is no value. It is read-only unless `onCommit` is passed and `disabled` is not set; it never stores the text, so the consumer keeps `value` and receives each commit.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -45,13 +46,11 @@ Renders the property surface, a `span`, with the value cut to one line, or `fall
 | `editing` | `"trigger"` or `"inline"` | `"trigger"` | Controls how an editable value is edited: an add button while empty, or a field in place of the value from the start. |
 | `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface: a 24px filled badge, or inline text with no fill. |
 | `ariaLabel` | `string` | - | Names the value `"<ariaLabel>: <text>"`, and names the field. |
-| `fallback` | `string` | `"Não informado"` | Sets the text while there is no value, the name of the add button without `addLabel`, and the name and placeholder of the field without `ariaLabel` and `inputPlaceholder`. |
-| `icon` | `TextPropertyIcon` | - | Sets the icon before the value, at 12px. |
-| `iconClassName` | `string` | - | Adds classes to the icon, merged over its `size-3`. |
-| `copyLabel` | `string` | - | Adds a copy button after the value, named by this text, while there is a value. |
+| `labels` | `Partial<TextPropertyLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.text`: `fallback` (`"Not set"`, the text while there is no value, the name of the add button without `add`, and the name and placeholder of the field without `ariaLabel` and `inputPlaceholder`), `copy` (`"Copy"`, the name of the copy button), `add` (the name of the add button) and `inputPlaceholder` (the placeholder of the field). |
+| `icon` | `PropertyIcon` | - | Sets the icon before the value, at 16px. |
+| `iconClassName` | `string` | - | Adds classes to the icon, merged over its `size-4`. |
+| `copyable` | `boolean` | `false` | Adds a copy button after the value, named by `labels.copy`, while there is a value. |
 | `trailingVisibility` | `"always"` or `"hover"` | `"always"` | Controls when the copy button shows: always, or only while the surface is hovered or holds focus. |
-| `addLabel` | `string` | - | Names the add button. |
-| `inputPlaceholder` | `string` | - | Sets the placeholder of the field. |
 | `disabled` | `boolean` | `false` | When true, shows the value read-only even with `onCommit`. |
 | `className` | `string` | - | Adds classes to the surface, or to the add button. |
 
@@ -72,22 +71,22 @@ With `ariaLabel`, the surface is named `"<ariaLabel>: <value or fallback>"` with
 
 ### Copying
 
-The copy button is a 12px copy icon at 80% opacity, 100% on hover, at the end of the surface, which drops its end padding for it. A click writes the value to the clipboard; a refused write is ignored, and a browser without the Clipboard API does nothing. With no value the button does not render, so the fallback never reaches the clipboard. With `trailingVisibility="hover"` it keeps its space while hidden, and shows on hover, on focus inside the surface and on a coarse pointer.
+The copy button is a 16px copy icon at 80% opacity, 100% on hover, at the end of the surface, which drops its end padding for it. A click writes the value to the clipboard; a refused write is ignored, and a browser without the Clipboard API does nothing. With no value the button does not render, so the fallback never reaches the clipboard. With `trailingVisibility="hover"` it keeps its space while hidden, and shows on hover, on focus inside the surface and on a coarse pointer.
 
 ### Editing
 
-With `onCommit`, an empty value and `editing="trigger"`, the surface becomes an add button: the outlined badge with a 14px plus and `fallback`, whatever `variant` is. A click replaces it with the field, which takes focus, so typing starts at once. With `editing="inline"` the field takes the place of the value from the first render, without taking focus. The field commits on blur or Enter and discards on Escape, as [Editable Text](?path=/docs/patterns-properties-display-editable-text-api-reference--api-reference) does. With `editing="trigger"` only an empty value is editable: a value that is already there, or one just committed through the add button, shows as text.
+With `onCommit`, an empty value and `editing="trigger"`, the surface becomes an add button: the outlined badge with a 16px plus and `fallback`, whatever `variant` is. A click replaces it with the field, which takes focus, so typing starts at once. With `editing="inline"` the field takes the place of the value from the first render, without taking focus. The field commits on blur or Enter and discards on Escape, as [Editable Text](?path=/docs/patterns-properties-display-editabletext-api-reference--api-reference) does. With `editing="trigger"` only an empty value is editable: a value that is already there, or one just committed through the add button, shows as text.
 
 ## Exports
 
 | Export | Kind | Description |
 | --- | --- | --- |
-| `TextPropertyIcon` | `type` | A component that renders an `svg` and takes its props, such as a `@phosphor-icons/react` icon. |
+| `TextPropertyLabels` | `type` | The texts of `TextProperty`, with English defaults in `defaultPropertyLabels.text`. |
 | `TextPropertyProps` | `type` | The props of `TextProperty`. |
 
 ## Accessibility and theme
 
 - Pass `ariaLabel` when the value alone does not say what it is ("Indicação" is a source): it names the value and the field.
-- Pass `copyLabel` with the thing copied ("Copiar e-mail do contato"); the copy icon carries no name of its own.
+- Pass `labels.copy` with the thing copied ("Copiar e-mail do contato"); the copy icon carries no name of its own.
 - The icon is hidden from assistive technology: put its meaning in `ariaLabel`.
 - The surface reads the badge tokens of the property surface, and `muted-foreground` for the empty value.

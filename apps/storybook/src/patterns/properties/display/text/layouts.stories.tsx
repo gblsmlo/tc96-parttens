@@ -13,10 +13,18 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const WithoutIcon: Story = {
-  render: () => <ComposedText {...textControlArgs} icon={false} />,
+export const Default: Story = {
+  render: () => <ComposedText {...textControlArgs} />,
 }
 
-export const WithCopy: Story = {
-  render: () => <ComposedText {...textControlArgs} copyLabel="Copiar tipo" />,
+export const InlineField: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A field takes the place of the value inside the surface from the first render, after the icon. For a value the user edits often, where an add button would cost a click.',
+      },
+    },
+  },
+  render: () => <ComposedText {...textControlArgs} editing="inline" />,
 }

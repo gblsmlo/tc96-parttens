@@ -9,22 +9,22 @@ describe('formatDateRangeProperty', () => {
     expect(
       formatDateRangeProperty({ from: march, to: april }, 'x', 'en-US'),
     ).toBe('Mar 2 – Apr 15')
-    expect(formatDateRangeProperty(undefined, 'Sem período', 'en-US')).toBe(
-      'Sem período',
+    expect(formatDateRangeProperty(undefined, 'No period', 'en-US')).toBe(
+      'No period',
     )
   })
 
   test('formats an open range with default and custom words', () => {
     expect(
       formatDateRangeProperty({ from: march, to: undefined }, 'x', 'en-US'),
-    ).toBe('A partir de Mar 2')
+    ).toBe('From Mar 2')
     expect(
       formatDateRangeProperty({ from: undefined, to: april }, 'x', 'en-US'),
-    ).toBe('Até Apr 15')
+    ).toBe('Until Apr 15')
     expect(
       formatDateRangeProperty({ from: march, to: undefined }, 'x', 'en-US', {
-        fromLabel: 'From',
+        from: 'A partir de',
       }),
-    ).toBe('From Mar 2')
+    ).toBe('A partir de Mar 2')
   })
 })

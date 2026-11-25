@@ -2,13 +2,10 @@ import type { DayPickerLocale } from '@daypicker/react'
 import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
 import { BellIcon, ClockIcon, RepeatIcon } from '@phosphor-icons/react'
 import type { PropertyCalendarProps } from '../../shared/property-calendar-popover'
-import type { SchedulePropertyLabels } from './schedule-labels'
+import type { PropertyOption } from '../../shared/property-catalog'
+import type { SchedulePropertyLabels } from '../../shared/property-labels'
 import type { ScheduleTimeControl } from './schedule-time-section'
-import type {
-  ScheduleRecurrenceOption,
-  ScheduleReminderOption,
-  ScheduleValue,
-} from './schedule-value'
+import type { ScheduleValue } from './schedule-value'
 
 export type ScheduleSection = 'time' | 'repeat' | 'reminders'
 
@@ -41,8 +38,8 @@ export interface ScheduleEditorProps {
   labels: SchedulePropertyLabels
   locale: string
   onChange: (value: ScheduleValue) => void
-  recurrenceOptions: readonly ScheduleRecurrenceOption[]
-  reminderOptions: readonly ScheduleReminderOption[]
+  recurrenceOptions: readonly PropertyOption[]
+  reminderOptions: readonly PropertyOption[]
   timeControl: ScheduleTimeControl
   value: ScheduleValue
   calendarLocale?: DayPickerLocale

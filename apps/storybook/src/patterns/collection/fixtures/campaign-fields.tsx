@@ -20,6 +20,7 @@ import {
   SelectProperty,
   TagsProperty,
 } from '@tc96/ui/patterns'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import {
   budgetTypeLabels,
   type Campaign,
@@ -102,15 +103,18 @@ export function PlacementsField({
 }: Readonly<{ campaign: Campaign }>) {
   return (
     <TagsProperty<CampaignPlacement>
+      placeholder="Adicionar uma tag"
       ariaLabel="Posicionamentos"
-      countLabel={(count) =>
-        `${count} ${count === 1 ? 'posicionamento' : 'posicionamentos'}`
-      }
       display="count"
       options={placementOptions}
       readOnly
       value={campaign.placements}
       variant="badge"
+      labels={{
+        ...ptBRPropertyLabels.tags,
+        count: (count) =>
+          `${count} ${count === 1 ? 'posicionamento' : 'posicionamentos'}`,
+      }}
     />
   )
 }
@@ -126,6 +130,7 @@ export function ScheduleField({ campaign }: Readonly<{ campaign: Campaign }>) {
         to: campaign.endDate ? parseDateValue(campaign.endDate) : undefined,
       }}
       variant="plain"
+      labels={ptBRPropertyLabels.dateRange}
     />
   )
 }

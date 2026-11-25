@@ -124,9 +124,9 @@ export function Crm2ContactField({ context, item }: FieldProps) {
   return (
     <TextProperty
       ariaLabel={labels.columns.contact}
-      fallback={labels.noContact}
       value={item.contact}
       variant="plain"
+      labels={{ fallback: labels.noContact }}
     />
   )
 }
@@ -136,9 +136,9 @@ export function Crm2NextActionField({ context, item }: FieldProps) {
   return (
     <TextProperty
       ariaLabel={labels.columns.nextAction}
-      fallback={labels.noNextAction}
       value={item.nextAction}
       variant="plain"
+      labels={{ fallback: labels.noNextAction }}
     />
   )
 }
