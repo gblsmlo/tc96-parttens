@@ -80,7 +80,7 @@ export function ListGroup<TRecord>({
         <div
           className={cn(
             'sticky z-20 flex min-h-9 items-center justify-between rounded-lg bg-card px-1',
-            stickyBelowHeader ? 'top-11' : 'top-0',
+            stickyBelowHeader ? 'top-9' : 'top-0',
           )}
           data-slot="list-group-header"
         >

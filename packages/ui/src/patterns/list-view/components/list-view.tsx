@@ -3,6 +3,7 @@
 import { Empty, EmptyDescription } from '@tc96/ui/empty'
 import { ScrollArea } from '@tc96/ui/scroll-area'
 import { Separator } from '@tc96/ui/separator'
+import { cn } from '@tc96/utils'
 import { Fragment, type ReactNode, useMemo, useState } from 'react'
 
 import { projectCollection } from '../../collection/shared/lib/project-collection'
@@ -129,15 +130,18 @@ export function ListView<TRecord>({
           'mask-b-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-end)))] [--fade-size:1.5rem]',
       }}
     >
-      <div className="flex flex-col gap-1 p-2">
-        {header ? (
-          <div
-            className="sticky top-0 z-30 -mt-2 bg-card pt-2"
-            data-slot="list-view-header"
-          >
-            {header}
-          </div>
-        ) : null}
+      {header ? (
+        <div
+          className="sticky top-0 z-30 border-border/80 border-b bg-card"
+          data-slot="list-view-header"
+        >
+          {header}
+        </div>
+      ) : null}
+      <div
+        className={cn('flex flex-col gap-1', header ? 'px-2 pb-2' : 'p-2')}
+        data-slot="list-view-body"
+      >
         {grouping === null && preparedGroups === undefined ? (
           <ListRowHeadingLevelContext.Provider value={2}>
             <div className="flex flex-col gap-0.5" data-slot="list-view-items">
