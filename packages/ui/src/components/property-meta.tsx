@@ -42,8 +42,8 @@ export const workflowStatusMeta = {
   backlog: { icon: CircleDashedIcon, tone: 'neutral' },
   blocked: { icon: ProhibitIcon, tone: 'danger' },
   canceled: { icon: XCircleIcon, tone: 'neutral' },
-  done: { icon: CheckCircleIcon, tone: 'info' },
-  'in-progress': { icon: CircleHalfIcon, tone: 'complete' },
+  done: { icon: CheckCircleIcon, tone: 'teal' },
+  'in-progress': { icon: CircleHalfIcon, tone: 'purple' },
   'in-review': { icon: ChartPieSliceIcon, tone: 'warning' },
   todo: { icon: CircleIcon, tone: 'neutral' },
 } as const satisfies Record<WorkflowStatus, PropertyMeta>

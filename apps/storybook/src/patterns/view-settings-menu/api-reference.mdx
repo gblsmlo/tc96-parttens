@@ -142,7 +142,7 @@ A filter submenu opens with an option for every value, `Todos` or `Todas` to agr
 
 A screen that sets one value per property, as in [Property Submenus](?path=/story/patterns-viewsettingsmenu-layouts--property-submenus), gives each property a `ViewSettingsSubmenu`. The rules:
 
-- The trigger shows the icon and the label of the current option, so `Status` with `Em andamento` shows the half circle in `complete-foreground` and the text `Em andamento`.
+- The trigger shows the icon and the label of the current option, so `Status` with `Em andamento` shows the half circle in `purple-foreground` and the text `Em andamento`.
 - Status and priority icons come from the catalog in `@tc96/ui/property-meta`: `<PropertyMetaIcon meta={workflowStatusMeta.done} />`, `priorityMeta.urgent`. The catalog holds the icon and the tone only; the label is the consumer's.
 - A property with an empty choice offers it as an option (`Sem prioridade`, `Sem responsável`), so the trigger still reads a value. A property with no value at all, such as a date not set, passes no `value` and shows only its icon and name.
 - An icon outside the catalog takes color only from `propertyToneClassName` (`@tc96/ui/lib/property-tone`), never from the palette.
