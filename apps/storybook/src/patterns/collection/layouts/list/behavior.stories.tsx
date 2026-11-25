@@ -213,6 +213,30 @@ export const GroupCollapsesAndExpands: Story = {
   },
 }
 
+export const GroupToggleTakesTheConsumerLabel: Story = {
+  render: () => (
+    <TasksList
+      getGroupToggleLabel={(group, collapsed) =>
+        collapsed ? `Mostrar ${group}` : `Ocultar ${group}`
+      }
+      grouping="status"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(
+      canvas.queryAllByRole('button', { name: /^(Expand|Collapse) / }),
+    ).toHaveLength(0)
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Ocultar A fazer' }),
+    )
+    await expect(
+      await canvas.findByRole('button', { name: 'Mostrar A fazer' }),
+    ).toHaveAttribute('aria-expanded', 'false')
+  },
+}
+
 export const GroupCountIsRound: Story = {
   render: () => <TasksList grouping="status" />,
   play: async ({ canvasElement }) => {

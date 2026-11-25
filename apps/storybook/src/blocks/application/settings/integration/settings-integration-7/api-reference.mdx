@@ -1,0 +1,91 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsIntegration7
+
+A settings section that lists the connectors of the workspace. Each row shows the connector's initials, its name and description, a status badge (Conectado, Disponível or Prévia) and one button whose text comes from the data (`actionLabel`, such as Configurar or Instalar). An optional Criar conector button sits in the header. Reach for it when the app has a catalog of connectors that people configure, install or build. Install it with `npx @tc96/cli add settings-integration-7`.
+
+It is a section, not a page: it renders no `main` landmark. Installing, configuring and building stay in the app; the block only calls `onAction` and `onBuild` and keeps no status of its own.
+
+The other pages of `Blocks/Application/Settings/Integration/Settings7`: [Playground](?path=/story/blocks-application-settings-integration-settings7-playground--playground), [Behavior](?path=/story/blocks-application-settings-integration-settings7-behavior--empty-list-shows-state-surface) and [Usages](?path=/story/blocks-application-settings-integration-settings7-usages--loaded).
+
+## Import
+
+```tsx
+import { SettingsIntegration7 } from '@tc96/ui/blocks/application/settings/integration/settings-integration-7'
+```
+
+The same path exports the types `SettingsIntegration7Props`, `SettingsIntegration7App`, `SettingsIntegration7Status` and `SettingsIntegration7Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsIntegration7
+  apps={apps}
+  onAction={(appId) => openConnector(appId)}
+  onBuild={() => openBuilder()}
+/>
+```
+
+## SettingsIntegration7
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apps` | `SettingsIntegration7App[]` | required | The connectors to list; an empty array shows the empty state. |
+| `onAction` | `(appId: string) => void` | - | Called by the button of a row. Without it the row buttons are not rendered. |
+| `onBuild` | `() => void` | - | Called by the Criar conector button of the header. Without it the button is not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsIntegration7Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+## SettingsIntegration7App
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the connector in `onAction`. |
+| `name` | `string` | Title of the row; its first two initials fill the icon frame. |
+| `logo` | `{ svg: string; title?: string }` | Brand mark, an `@thesvg/icons` module (only `svg` is read), drawn as an `img` with a `data:` URI in the icon frame; without it the initials show. A consumer CSP without `data:` in `img-src` blocks it. |
+| `description` | `string` | Line under the name. |
+| `status` | `'connected' \| 'available' \| 'preview'` | Picks the badge and the button variant. |
+| `actionLabel` | `string` | Visible text of the row button. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Conectores"` |
+| `description` | `string` | `"Configure os conectores ou instale novos para o seu espaço."` |
+| `connected` | `string` | `"Conectado"` |
+| `available` | `string` | `"Disponível"` |
+| `preview` | `string` | `"Prévia"` |
+| `build` | `string` | `"Criar conector"` |
+| `action` | `(name: string, actionLabel: string) => string` | `"Instalar Resend"`; accessible name of the row button |
+| `emptyTitle` | `string` | `"Nenhum conector disponível"` |
+| `emptyDescription` | `string` | `"Os conectores disponíveis aparecem aqui."` |
+| `loading` | `string` | `"Carregando conectores"` |
+| `errorTitle` | `string` | `"Não foi possível carregar os conectores"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsIntegration7` | `component` | The connectors section. |
+| `SettingsIntegration7Props` | `type` | The props of the section. |
+| `SettingsIntegration7App` | `type` | A connector row. |
+| `SettingsIntegration7Status` | `type` | `'connected' \| 'available' \| 'preview'`. |
+| `SettingsIntegration7Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each row button is named by `labels.action(name, actionLabel)`, so rows are told apart by screen readers; the visible text is contained in the name.
+- The status is text in the badge, never color alone; the initials frame is decorative.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

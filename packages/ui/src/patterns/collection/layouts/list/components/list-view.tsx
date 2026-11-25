@@ -1,6 +1,7 @@
 'use client'
 
 import { Empty, EmptyDescription } from '@tc96/ui/empty'
+import { ScrollArea } from '@tc96/ui/scroll-area'
 import { Separator } from '@tc96/ui/separator'
 import { Fragment, type ReactNode, useMemo, useState } from 'react'
 
@@ -37,6 +38,7 @@ export interface ListViewProps<TRecord> {
   getGroupActions?: (
     group: CollectionGroup<TRecord>,
   ) => ListGroupActions | undefined
+  getGroupToggleLabel?: (group: string, collapsed: boolean) => string
   /** `null` lê a coleção como uma lista plana, sem cabeçalho nem colapso. */
   grouping: CollectionGroupingId | null
   loading?: boolean
@@ -59,6 +61,7 @@ export function ListView<TRecord>({
   emptyGroupLabel = 'No items in this group.',
   emptyMessage = 'No items to show.',
   getGroupActions,
+  getGroupToggleLabel,
   grouping,
   loading = false,
   loadingRecordAnatomy,
@@ -114,69 +117,80 @@ export function ListView<TRecord>({
   }
 
   return (
-    <div
-      className="flex min-h-0 min-w-0 flex-1 flex-col gap-1 overflow-auto p-2 rounded-lg bg-card/40 shadow-black/5 border border-border/80"
+    <ScrollArea
       aria-busy={loading ? 'true' : undefined}
+      className="min-w-0 flex-1 rounded-lg border border-border/80 bg-card/40 shadow-black/5"
       data-collection-grouping={grouping ?? undefined}
       data-slot="list-view"
+      viewportProps={{
+        className:
+          'mask-b-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-end)))] [--fade-size:1.5rem]',
+      }}
     >
-      {grouping === null && preparedGroups === undefined ? (
-        <ListRowHeadingLevelContext.Provider value={2}>
-          <div className="flex flex-col" data-slot="list-view-items">
-            {loading ? (
-              skeletonKeys('loading', loadingRecordCount).map((skeletonKey) => (
-                <ListRowSkeleton
-                  key={skeletonKey}
-                  {...loadingRecordAnatomy}
-                  {...(loadingRecordLabel ? { label: loadingRecordLabel } : {})}
-                />
-              ))
-            ) : collection.records.length ? (
-              collection.records.map((record, position) => (
-                <Fragment key={collection.getKey(record)}>
-                  {separated && position > 0 ? (
-                    <Separator className="bg-border/40" />
-                  ) : null}
-                  <ListViewItem record={record} renderRecord={renderRecord} />
-                </Fragment>
-              ))
-            ) : (
-              <Empty>
-                <EmptyDescription>{emptyMessage}</EmptyDescription>
-              </Empty>
-            )}
-          </div>
-        </ListRowHeadingLevelContext.Provider>
-      ) : (
-        groups.map((group) => {
-          const actions = getGroupActions?.(group)
+      <div className="flex flex-col gap-1 p-2">
+        {grouping === null && preparedGroups === undefined ? (
+          <ListRowHeadingLevelContext.Provider value={2}>
+            <div className="flex flex-col" data-slot="list-view-items">
+              {loading ? (
+                skeletonKeys('loading', loadingRecordCount).map(
+                  (skeletonKey) => (
+                    <ListRowSkeleton
+                      key={skeletonKey}
+                      {...loadingRecordAnatomy}
+                      {...(loadingRecordLabel
+                        ? { label: loadingRecordLabel }
+                        : {})}
+                    />
+                  ),
+                )
+              ) : collection.records.length ? (
+                collection.records.map((record, position) => (
+                  <Fragment key={collection.getKey(record)}>
+                    {separated && position > 0 ? (
+                      <Separator className="bg-border/40" />
+                    ) : null}
+                    <ListViewItem record={record} renderRecord={renderRecord} />
+                  </Fragment>
+                ))
+              ) : (
+                <Empty>
+                  <EmptyDescription>{emptyMessage}</EmptyDescription>
+                </Empty>
+              )}
+            </div>
+          </ListRowHeadingLevelContext.Provider>
+        ) : (
+          groups.map((group) => {
+            const actions = getGroupActions?.(group)
 
-          return (
-            <ListGroup
-              collapsed={isCollapsed(group)}
-              separated={separated}
-              emptyLabel={
-                typeof emptyGroupLabel === 'function'
-                  ? emptyGroupLabel(group)
-                  : emptyGroupLabel
-              }
-              getKey={collection.getKey}
-              group={group}
-              key={group.id}
-              loading={loading}
-              {...(loadingRecordAnatomy ? { loadingRecordAnatomy } : {})}
-              loadingRecordCount={loadingRecordCount}
-              onCollapsedChange={(collapsed) =>
-                setGroupCollapsed(group.id, collapsed)
-              }
-              {...(renderGroupTitle ? { renderGroupTitle } : {})}
-              renderRecord={renderRecord}
-              {...(loadingRecordLabel ? { loadingRecordLabel } : {})}
-              {...(actions ? { actions } : {})}
-            />
-          )
-        })
-      )}
-    </div>
+            return (
+              <ListGroup
+                collapsed={isCollapsed(group)}
+                separated={separated}
+                emptyLabel={
+                  typeof emptyGroupLabel === 'function'
+                    ? emptyGroupLabel(group)
+                    : emptyGroupLabel
+                }
+                {...(getGroupToggleLabel ? { getGroupToggleLabel } : {})}
+                getKey={collection.getKey}
+                group={group}
+                key={group.id}
+                loading={loading}
+                {...(loadingRecordAnatomy ? { loadingRecordAnatomy } : {})}
+                loadingRecordCount={loadingRecordCount}
+                onCollapsedChange={(collapsed) =>
+                  setGroupCollapsed(group.id, collapsed)
+                }
+                {...(renderGroupTitle ? { renderGroupTitle } : {})}
+                renderRecord={renderRecord}
+                {...(loadingRecordLabel ? { loadingRecordLabel } : {})}
+                {...(actions ? { actions } : {})}
+              />
+            )
+          })
+        )}
+      </div>
+    </ScrollArea>
   )
 }

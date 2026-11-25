@@ -42,6 +42,7 @@ export interface ActionBarProps<TData = unknown> {
   clearSelectionLabel?: string
   formatSelection?: (count: number) => string
   label?: string
+  notice?: string
   onClearSelection?: () => void
   selectedCount: number
   selectedRows?: readonly TData[]
@@ -158,6 +159,7 @@ export function ActionBar<TData = unknown>({
   clearSelectionLabel = 'Limpar seleção',
   formatSelection = selectionLabel,
   label = 'Ações dos itens selecionados',
+  notice,
   onClearSelection,
   selectedCount,
   selectedRows = [],
@@ -169,7 +171,7 @@ export function ActionBar<TData = unknown>({
     selectedRows,
   }
 
-  return (
+  const bar = (
     <div
       aria-label={label}
       className={cn(
@@ -214,6 +216,20 @@ export function ActionBar<TData = unknown>({
           <XIcon aria-hidden="true" />
         </Button>
       ) : null}
+    </div>
+  )
+
+  if (!notice) return bar
+
+  return (
+    <div className="flex w-fit max-w-full flex-col items-center gap-2">
+      <output
+        className="block max-w-full rounded-md border bg-popover px-3 py-1.5 text-center text-muted-foreground text-sm shadow-sm"
+        data-slot="action-bar-notice"
+      >
+        {notice}
+      </output>
+      {bar}
     </div>
   )
 }

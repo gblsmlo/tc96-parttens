@@ -71,6 +71,14 @@ div[role=toolbar][data-slot=action-bar]
 └── Button                  "Limpar seleção", only with onClearSelection
 ```
 
+With `notice`, the bar and the notice sit in a column wrapper, the notice first:
+
+```text
+div                                               column, centered, 8px gap
+├── output[data-slot=action-bar-notice]            the notice, role status
+└── div[role=toolbar][data-slot=action-bar]       the bar, as above
+```
+
 ## ActionBar
 
 The bar over the selection. Renders a `div` with `role="toolbar"` named "Ações dos itens selecionados", and nothing while `selectedCount` is below 1. It never selects, filters or runs anything: each choice calls the `onSelect` of its item with the same `ActionBarContext`, and the bar does not position itself.
@@ -81,17 +89,21 @@ The bar over the selection. Renders a `div` with `role="toolbar"` named "Ações
 | `selectedCount` | `number` | required | Sets the count shown in the bar; below 1 the bar renders nothing. |
 | `selectedRows` | `readonly TData[]` | `[]` | Sets the records passed to every `onSelect` in the context. |
 | `onClearSelection` | `() => void` | - | Called when the clear button is pressed; when set, adds the button at the end of the bar. |
-| `className` | `string` | - | Adds classes after the bar classes, so a conflicting class wins. |
+| `notice` | `string` | - | Sets a message about the selection, shown above the bar in a polite status region; empty or unset renders no notice. |
+| `className` | `string` | - | Adds classes after the bar classes, so a conflicting class wins; with `notice` it still lands on the bar, not on the wrapper. |
 
 It takes no other prop: the role, the name, `data-slot` and the texts are fixed, and no `ref` reaches the `div`.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-slot` | `"action-bar"` | Selects the bar in the theme and in tests; the bar has no rule on it |
+| `data-slot` | `"action-bar-notice"` | Selects the notice, only with `notice` |
 
 The count reads "1 selecionado" for one record and "N selecionados" for any other count. The bar is `w-fit` up to `max-w-full`, at least 44px tall (`min-h-11`), with a 1px `border`, `rounded-xl` corners, `shadow-lg` and the `bg-popover` background; past its parent's width it scrolls sideways. The actions do not shrink, but the count does: in a tight bar "1 selecionado" breaks onto two lines.
 
 The bar spaces its children 4px apart and a group spaces its actions 2px apart. The divider before a group is an `hr` with `aria-orientation="vertical"`, 1px wide and 20px tall in `bg-border`, with 4px of margin on each side.
+
+The notice is an `output`, whose implicit role is `status`, so a screen reader announces it politely, outside the toolbar and above it. It is as wide as its text up to the width of the parent and wraps there, so a long notice never widens the bar; it has a 1px `border`, `rounded-md` corners, `shadow-sm`, the `bg-popover` background and `text-muted-foreground` text, centered. The pattern never builds its text: pass the final string, such as "Só publicações sem processo são vinculadas ou descartadas juntas.", and pass nothing when the selection needs no message.
 
 The clear button is an icon-only ghost `Button` at `size="sm"` with `data-slot="button"`, named "Limpar seleção" through `aria-label` and `title`.
 
@@ -167,5 +179,6 @@ The value every `onSelect` receives, in the bar and in a submenu.
 - The bar takes `role="toolbar"`, but each action is its own tab stop: `Tab` moves from action to action, and the arrow keys do not move focus between them.
 - Give `label` a text that says the action alone: it is the name of the action in the bar. Inside a submenu the name comes from the content, so a `shortcut` joins the label in the name ("Duplicar" with `"D"` is named "DuplicarD").
 - Pass icons that hide themselves (`aria-hidden="true"`; the `@phosphor-icons/react` icons do not set it, so pass it), since the label already names the action.
+- Use `notice` for a message about the selection, such as why an action is disabled, instead of joining it to the count in `formatSelection`: the notice keeps its status role and wraps above the bar.
 - Place the bar where it should float, such as over the bottom of a list: the bar does not position itself.
 - The bar reads `--popover`, `--popover-foreground`, `--border`, `--muted-foreground` and `--radius-xl` from the theme, plus the `shadow-lg` shadow; its actions read the tokens of `Button` and `Menu`.

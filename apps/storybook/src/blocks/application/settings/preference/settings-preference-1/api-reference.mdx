@@ -1,0 +1,103 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsPreference1
+
+A preferences section with two groups: a general group with the display names select, and an interface group with the font size select, the underline switch and the theme select. Reach for it when the app lets people choose how names are shown and how the interface looks. Install it with `npx @tc96/cli add settings-preference-1`.
+
+It is a section, not a page: it renders no `main` landmark. The block keeps no state of its own: each change goes to `onValueChange` and the values come back through `values`, so the app decides whether and where to save them.
+
+The other pages of `Blocks/Application/Settings/Preference/Settings1`: [Playground](?path=/story/blocks-application-settings-preference-settings1-playground--playground) to try the texts and the values, [Behavior](?path=/story/blocks-application-settings-preference-settings1-behavior--theme-select-calls-on-value-change) for the tests and [Usages](?path=/story/blocks-application-settings-preference-settings1-usages--loaded) for the preferences read over the network.
+
+## Import
+
+```tsx
+import { SettingsPreference1 } from '@tc96/ui/blocks/application/settings/preference/settings-preference-1'
+```
+
+The same path exports the types `SettingsPreference1Labels`, `SettingsPreference1Options`, `SettingsPreference1Props`, `SettingsPreference1SettingOption` and `SettingsPreference1Values`.
+
+## Anatomy
+
+The general group with the display names select, then the interface group with the font size select, the underline switch and the theme select:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsPreference1
+  onValueChange={(key, value) => savePreference(key, value)}
+  options={options}
+  values={values}
+/>
+```
+
+## SettingsPreference1
+
+The preferences sections. Renders one row per setting: the display names select, the font size select, the underline switch and the theme select. Each row takes its value from `values` and its choices from `options`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `values` | `SettingsPreference1Values` | required | The current value of each setting. |
+| `options` | `SettingsPreference1Options` | required | The choices of the three selects. |
+| `onValueChange` | `<K extends keyof SettingsPreference1Values>(key: K, value: SettingsPreference1Values[K]) => void` | - | Called with the setting key and the new value when a select or the switch changes. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsPreference1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root element's classes. |
+
+## SettingsPreference1Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `displayNames` | `string` | The value of the display names select. |
+| `fontSize` | `string` | The value of the font size select. |
+| `theme` | `string` | The value of the theme select. |
+| `underlineLinks` | `boolean` | The state of the underline switch. |
+
+## SettingsPreference1Options
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `displayNames` | `SettingsPreference1SettingOption[]` | The choices of the display names select. |
+| `fontSize` | `SettingsPreference1SettingOption[]` | The choices of the font size select. |
+| `theme` | `SettingsPreference1SettingOption[]` | The choices of the theme select. |
+
+`SettingsPreference1SettingOption` is `{ label: string; value: string }`: the label is shown, the value goes to `onValueChange`.
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `generalTitle` | `string` | `"Geral"` |
+| `displayNames` | `string` | `"Nomes de exibição"` |
+| `displayNamesDescription` | `string` | `"Como os nomes das pessoas aparecem na interface"` |
+| `interfaceTitle` | `string` | `"Interface e tema"` |
+| `fontSize` | `string` | `"Tamanho da fonte"` |
+| `fontSizeDescription` | `string` | `"Ajusta o tamanho do texto em todo o app"` |
+| `underlineLinks` | `string` | `"Sublinhar links"` |
+| `underlineLinksDescription` | `string` | `"Sempre sublinha os títulos das listas"` |
+| `theme` | `string` | `"Tema da interface"` |
+| `themeDescription` | `string` | `"Escolha o esquema de cores da interface"` |
+| `loading` | `string` | `"Carregando preferências"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as preferências"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsPreference1` | `component` | The preferences sections. |
+| `SettingsPreference1Props` | `type` | The props of the sections. |
+| `SettingsPreference1Values` | `type` | The current value of each setting. |
+| `SettingsPreference1Options` | `type` | The choices of the three selects. |
+| `SettingsPreference1SettingOption` | `type` | A choice: a label and a value. |
+| `SettingsPreference1Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each select trigger is named by its setting's label, and the switch by `labels.underlineLinks`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

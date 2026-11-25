@@ -14,7 +14,6 @@ import {
   UsersIcon,
 } from '@phosphor-icons/react'
 import {
-  MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
   MenuRadioGroup,
@@ -42,6 +41,7 @@ import {
   DataGridColumnsSubmenu,
   DataGridDensitySubmenu,
   DataGridPagination,
+  FilterCheckboxSubmenu,
   FilterRadioSubmenu,
   useDataGrid,
   useDataTable,
@@ -55,13 +55,7 @@ import {
   ViewSwitcherSearch,
 } from '@tc96/ui/patterns'
 import { Separator } from '@tc96/ui/separator'
-import {
-  type ComponentType,
-  type ReactElement,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react'
+import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import type { CollectionControls } from './collection-controls'
 import { collectionTasks } from './fixtures/collection-tasks'
 import {
@@ -124,6 +118,22 @@ const dueOptions = taskDueFilters.map(
   (filter) => [filter.value, filter.label] as const,
 )
 
+const statusFilterOptions = statusOptions.map(
+  (option) => [option.value, option.label] as const,
+)
+
+const priorityFilterOptions = priorityOptions.map(
+  (option) => [option.value, option.label] as const,
+)
+
+const assigneeFilterOptions = people.map(
+  (person) => [person.id, person.name] as const,
+)
+
+const estimateFilterOptions = taskEstimateRanges.map(
+  (range) => [range.value, range.label] as const,
+)
+
 type ViewScope = 'all' | 'mine' | 'open'
 
 interface ViewSettings {
@@ -168,59 +178,18 @@ const matchesSearch = (task: Task, search: string) =>
     .toLocaleLowerCase('pt-BR')
     .includes(search.toLocaleLowerCase('pt-BR'))
 
-const toggle = <TValue,>(values: readonly TValue[], value: TValue) =>
-  values.includes(value)
-    ? values.filter((current) => current !== value)
-    : [...values, value]
-
 const viewIcon = (
   <span className="inline-flex size-4 items-center justify-center rounded-sm bg-primary text-primary-foreground">
     <GridFourIcon aria-hidden="true" className="size-3" />
   </span>
 )
 
-function CheckboxFilterSubmenu<TValue extends string>({
-  icon: Icon,
-  label,
-  onToggle,
-  options,
-  selected,
-}: Readonly<{
-  icon: ComponentType<{ 'aria-hidden'?: boolean | 'true' }>
-  label: string
-  onToggle: (value: TValue) => void
-  options: readonly { label: string; value: TValue }[]
-  selected: readonly TValue[]
-}>): ReactElement {
-  return (
-    <MenuSub>
-      <MenuSubTrigger>
-        <Icon aria-hidden="true" />
-        {label}
-      </MenuSubTrigger>
-      <MenuSubPopup>
-        <MenuGroup>
-          <MenuGroupLabel>{label}</MenuGroupLabel>
-          {options.map((option) => (
-            <MenuCheckboxItem
-              checked={selected.includes(option.value)}
-              closeOnClick={false}
-              key={option.value}
-              onCheckedChange={() => onToggle(option.value)}
-            >
-              {option.label}
-            </MenuCheckboxItem>
-          ))}
-        </MenuGroup>
-      </MenuSubPopup>
-    </MenuSub>
-  )
-}
-
 export interface CollectionScreenProps {
   actionLabel?: string
   defaultLayout: CollectionLayout
   emptyMessage: string
+  filterClear: boolean
+  filterLoading: boolean
   initialTasks: readonly Task[]
   loading: boolean
   mode: CollectionFrameMode
@@ -233,6 +202,8 @@ export function CollectionScreen({
   actionLabel,
   defaultLayout,
   emptyMessage,
+  filterClear,
+  filterLoading,
   initialTasks,
   loading,
   mode,
@@ -411,7 +382,7 @@ export function CollectionScreen({
             <CollectionFrameHeader>
               <CollectionToolbar
                 aria-label="Controles da coleção de tarefas"
-                endSlot={
+                right={
                   <>
                     <ViewSettingsMenu
                       activeFilterCount={countTaskQuery(query)}
@@ -563,44 +534,42 @@ export function CollectionScreen({
                       </ViewSettingsSection>
                       <MenuSeparator />
                       <ViewSettingsSection label="Filtros">
-                        <CheckboxFilterSubmenu
+                        <FilterCheckboxSubmenu
+                          clearLabel={
+                            filterClear ? 'Todos os status' : undefined
+                          }
                           icon={RadioButtonIcon}
                           label="Status"
-                          onToggle={(status) =>
-                            updateQuery({
-                              statuses: toggle(query.statuses, status),
-                            })
+                          onValueChange={(statuses) =>
+                            updateQuery({ statuses })
                           }
-                          options={statusOptions}
-                          selected={query.statuses}
+                          options={statusFilterOptions}
+                          value={query.statuses}
                         />
-                        <CheckboxFilterSubmenu
+                        <FilterCheckboxSubmenu
+                          clearLabel={
+                            filterClear ? 'Todas as prioridades' : undefined
+                          }
                           icon={FlagIcon}
                           label="Prioridade"
-                          onToggle={(priority) =>
-                            updateQuery({
-                              priorities: toggle(query.priorities, priority),
-                            })
+                          onValueChange={(priorities) =>
+                            updateQuery({ priorities })
                           }
-                          options={priorityOptions}
-                          selected={query.priorities}
+                          options={priorityFilterOptions}
+                          value={query.priorities}
                         />
-                        <CheckboxFilterSubmenu
+                        <FilterCheckboxSubmenu
+                          clearLabel={
+                            filterClear ? 'Todos os responsáveis' : undefined
+                          }
                           icon={UsersIcon}
                           label="Responsável"
-                          onToggle={(assigneeId) =>
-                            updateQuery({
-                              assigneeIds: toggle(
-                                query.assigneeIds,
-                                assigneeId,
-                              ),
-                            })
+                          loading={filterLoading}
+                          onValueChange={(assigneeIds) =>
+                            updateQuery({ assigneeIds })
                           }
-                          options={people.map((person) => ({
-                            label: person.name,
-                            value: person.id,
-                          }))}
-                          selected={query.assigneeIds}
+                          options={assigneeFilterOptions}
+                          value={query.assigneeIds}
                         />
                         <FilterRadioSubmenu
                           clearLabel="Qualquer prazo"
@@ -614,16 +583,17 @@ export function CollectionScreen({
                           options={dueOptions}
                           value={query.due ?? ''}
                         />
-                        <CheckboxFilterSubmenu
+                        <FilterCheckboxSubmenu
+                          clearLabel={
+                            filterClear ? 'Qualquer estimativa' : undefined
+                          }
                           icon={ClockIcon}
                           label="Estimativa"
-                          onToggle={(range) =>
-                            updateQuery({
-                              estimates: toggle(query.estimates, range),
-                            })
+                          onValueChange={(estimates) =>
+                            updateQuery({ estimates })
                           }
-                          options={taskEstimateRanges}
-                          selected={query.estimates}
+                          options={estimateFilterOptions}
+                          value={query.estimates}
                         />
                       </ViewSettingsSection>
                     </ViewSettingsMenu>
@@ -632,7 +602,7 @@ export function CollectionScreen({
                     ) : null}
                   </>
                 }
-                startSlot={
+                left={
                   <>
                     <ViewSwitcherMenu icon={viewIcon} label={activeView.label}>
                       <ViewSwitcherSearch
@@ -672,7 +642,7 @@ export function CollectionScreen({
                     ) : null}
                   </>
                 }
-                variant="plain"
+                mode="plain"
               />
             </CollectionFrameHeader>
           ) : null}
@@ -754,6 +724,8 @@ export const ComposedCollection = ({
   actionLabel,
   empty,
   emptyMessage,
+  filterClear,
+  filterLoading,
   layout,
   loading,
   mode,
@@ -765,6 +737,8 @@ export const ComposedCollection = ({
     actionLabel={action ? actionLabel || 'Adicionar' : undefined}
     defaultLayout={layout}
     emptyMessage={emptyMessage}
+    filterClear={filterClear}
+    filterLoading={filterLoading}
     initialTasks={empty ? [] : sampleTasks}
     key={[layout, empty, pagination].join()}
     loading={loading}

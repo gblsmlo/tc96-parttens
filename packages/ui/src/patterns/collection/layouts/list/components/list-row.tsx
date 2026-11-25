@@ -128,7 +128,7 @@ export function ListRowBody({
 }: ListRowBodyProps): ReactElement {
   return (
     <div
-      className={cn('flex min-w-0 flex-1 flex-col', className)}
+      className={cn('flex min-w-0 flex-1 flex-col gap-0.5', className)}
       data-slot="list-row-body"
       {...props}
     />

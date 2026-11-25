@@ -1,0 +1,102 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsCatalog5
+
+A settings section that lists the statuses of projects, grouped under collapsible titles. Each row shows an icon, the status name, how many projects use it and, when the app handles actions, a menu to edit or delete. Reach for it when the app lets people set the stages a project goes through. Install it with `npx @tc96/cli add settings-catalog-5`.
+
+It is a section, not a page: it renders no `main` landmark. Creating, editing and deleting stay in the app; the block only calls `onCreate` and `onStatusAction`, keeps no list of its own and never fetches or stores anything.
+
+The other pages of `Blocks/Application/Settings/Catalog/Settings5`: [Playground](?path=/story/blocks-application-settings-catalog-settings5-playground--playground) to try the texts and the actions, [Behavior](?path=/story/blocks-application-settings-catalog-settings5-behavior--new-status-button-calls-on-create) for the tests and [Usages](?path=/story/blocks-application-settings-catalog-settings5-usages--loaded) for the list read over the network.
+
+## Import
+
+```tsx
+import { SettingsCatalog5 } from '@tc96/ui/blocks/application/settings/catalog/settings-catalog-5'
+```
+
+The same path exports the types `SettingsCatalog5Props`, `SettingsCatalog5Group`, `SettingsCatalog5Status`, `SettingsCatalog5Action` and `SettingsCatalog5Labels`.
+
+## Anatomy
+
+The section with its groups and the row menus:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsCatalog5
+  groups={statusGroups}
+  onCreate={openNewStatus}
+  onStatusAction={(statusId, action) => handleStatusAction(statusId, action)}
+/>
+```
+
+## SettingsCatalog5
+
+The statuses section. Renders the title, the description and, with `onCreate`, the New status button, then one collapsible group per entry of `groups`, each with its statuses as rows.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `groups` | `SettingsCatalog5Group[]` | required | The groups to list, each with its statuses. |
+| `onCreate` | `() => void` | - | Called when the New status button is clicked. Without it the button is not rendered. |
+| `onStatusAction` | `(statusId: string, action: SettingsCatalog5Action) => void` | - | Called with the status id and `'edit'` or `'delete'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsCatalog5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+The block takes no other props.
+
+## SettingsCatalog5Group
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the group and its collapsible. |
+| `title` | `string` | Title of the collapsible group. |
+| `statuses` | `SettingsCatalog5Status[]` | Rows listed inside the group. |
+
+## SettingsCatalog5Status
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the status in `onStatusAction`. |
+| `label` | `string` | Title of the row. |
+| `icon` | `Icon` | A Phosphor icon component, shown in a frame at the start of the row. |
+| `projects` | `number` | Projects using the status, shown in `labels.projects`. Without it the row has no description. |
+| `toneClassName` | `string` | Classes of the icon frame, for example `text-sky-700 dark:text-sky-300`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Status de projetos"` |
+| `description` | `string` | `"Os status definem o fluxo que os projetos percorrem do início à conclusão"` |
+| `newStatus` | `string` | `"Novo status"` |
+| `edit` | `string` | `"Editar"` |
+| `delete` | `string` | `"Excluir"` |
+| `actions` | `(name: string) => string` | `"Ações de Em andamento"` for `"Em andamento"`; the accessible name of the row menu |
+| `projects` | `(count: number) => string` | `"12 projetos"`; `1 projeto` in the singular |
+| `loading` | `string` | `"Carregando status"` |
+| `errorTitle` | `string` | `"Não foi possível carregar os status"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsCatalog5` | `component` | The statuses section. |
+| `SettingsCatalog5Props` | `type` | The props of the section. |
+| `SettingsCatalog5Group` | `type` | A collapsible group with its statuses. |
+| `SettingsCatalog5Status` | `type` | A status row, with its icon and optional count. |
+| `SettingsCatalog5Action` | `type` | `'edit' \| 'delete'`. |
+| `SettingsCatalog5Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The row menu button is named by `labels.actions(name)`, so each row's menu is told apart by screen readers.
+- Each group is a section labelled by its title, and it opens and closes from that title.
+- The block carries no color, radius or shadow of its own beyond `toneClassName`: the theme belongs to the app.

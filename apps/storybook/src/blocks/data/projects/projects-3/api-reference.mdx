@@ -1,0 +1,124 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Projects3
+
+A team's task collection: title with its description, type, priority, status, start, due date, assignee and tags, shown as a Tabela or a Kanban, with sub-tasks that expand under their task and groups that collapse. Reach for it on a Tasks screen that is filtered, sorted and paged by the server. Install it with `npx @tc96/cli add projects-3`.
+
+The block is controlled and renders what it gets. Mode, search, sort, grouping, collapsed groups, expanded rows, every filter, the selection, the saved view and the page are a value and a callback; without the value the block keeps it locally. The block does **not** filter, sort or page `tasks`: the consumer sends each change to its server and passes the resulting page back, with `filtered` saying whether any filter or search is active. The one exception is the grouping of the Tabela: the table draws a group header at each run of rows of the same group, so while `groupBy` is set the block orders the tasks it received by the option order of that grouping (Status: Pendente, Em andamento, Concluída, Cancelada; Prioridade: Urgente to Baixa, then Sem prioridade; Responsável: the order of `assignees`, then Sem responsável). That order is stable, so the server order holds inside each group, and it is applied only to draw the groups. Types, assignees and tags are workspace catalogs passed as `{ id, label }[]`.
+
+The toolbar `left` slot holds the heading (`labels.title`, the only `h2`). With `savedViews` (or `savedViewsLoading`) it holds the view switcher instead: Todas as tarefas plus the saved views, and the page has no `h2`; the section and the table keep their name from `labels.title`. On the right: the search field, which reports the text on submit and when it is emptied, then Exibição and Nova tarefa. Exibição holds the mode tabs, Ordenar por (Mais recentes, Vencimento, Prioridade; rendered with `onSortChange`), Agrupar por and Filtros: Status, Responsável, Arquivadas (Ocultar, Incluir or Somente arquivadas) and Tags, the last one multiple-choice. Each filter renders only with its callback; Responsável and Tags also need their catalog, or `assigneesLoading` and `tagsLoading`, which show the submenu skeleton. Salvar preferência renders with `onSavePreference`.
+
+In the Tabela, Tipo, Prioridade, Status, Início, Vencimento, Responsável and Tags are editable with their callback and read-only without it. Prioridade offers Sem prioridade, which reports `null`; Vencimento offers Limpar data, which reports `null`; Início has no clear. Vencimento takes the overdue look from `overdue` on the task, which the consumer computes. A task with `subtasks` shows a toggle before its title and its sub-tasks as indented rows under it. Agrupar por offers Nenhum, Status, Prioridade and Responsável; each group header collapses its rows and reports `collapsedGroupIds` as `<grouping>:<option id>` (`status:pending`, `priority:none`). A sub-task always sits in its parent's group and is not counted in the group header. Selecting rows opens the `ActionBar`: Concluídas, Mais opções (Prioridade, Tipo, Responsável) and Arquivar, each rendered with its callback; each clears the selection, then reports the ids. Only top-level tasks have a checkbox: selecting a task does not select its sub-tasks, and a sub-task cannot be selected on its own. The footer is the `CollectionPagination`, rendered with `pageCount` while there are tasks.
+
+The Kanban groups the top-level tasks by Status, or by Prioridade when `groupBy` is `priority`; Agrupar por offers only those two there. A card shows the description, Vencimento, Prioridade and Tags. While grouped by Status, a drop on another column calls `onStatusChange(id, status)` and returns `false`, so the card goes back until `tasks` changes; an archived task does not move. Grouped by Prioridade, the cards cannot be dragged.
+
+The other pages of `Blocks/Data/Projects/Projects3`: [Playground](?path=/story/blocks-data-projects-projects3-playground--playground), [Layouts](?path=/story/blocks-data-projects-projects3-layouts--default), [Behavior](?path=/story/blocks-data-projects-projects3-behavior--the-heading-names-the-section) and [Usages](?path=/story/blocks-data-projects-projects3-usages--loaded).
+
+## Import
+
+```tsx
+import { Projects3 } from '@tc96/ui/blocks/data/projects/projects-3'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Projects3
+  assignees={assignees}
+  expanded={expanded}
+  filtered={hasFilters}
+  groupBy={groupBy}
+  onExpandedChange={setExpanded}
+  onGroupByChange={setGroupBy}
+  onPageChange={setPage}
+  onSearchChange={setSearch}
+  onStatusChange={changeStatus}
+  onStatusFilterChange={setStatusFilter}
+  page={pageNumber}
+  pageCount={pageCount}
+  pageSize={20}
+  search={search}
+  statusFilter={statusFilter}
+  tags={tags}
+  tasks={page.items}
+  total={page.total}
+  types={types}
+/>
+```
+
+## Projects3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `tasks` | `Projects3Task[]` | required | The page of tasks, already filtered, sorted and paged. Keep the array stable between renders. |
+| `types` | `Projects3Option[]` | `[]` | The type catalog: the options of Tipo in a row and in the action bar. |
+| `assignees` | `Projects3Person[]` | `[]` | The options of Responsável in a row, in the filter, in the action bar and in the Responsável grouping. |
+| `tags` | `Projects3Option[]` | `[]` | The tag catalog: the tags of a row and the Tags filter. |
+| `assigneesLoading`, `tagsLoading` | `boolean` | `false` | Show the skeleton rows of the Responsável and Tags filter submenus (and of the Tags editor). |
+| `mode`, `onModeChange` | `'table' \| 'kanban'`, `(mode) => void` | `'table'` | The controllable layout. |
+| `groupBy`, `onGroupByChange` | `'status' \| 'priority' \| 'assignee' \| null`, `(groupBy) => void` | `null` | The controllable grouping. The Tabela groups by it; the Kanban uses it when it is `status` or `priority`, otherwise Status. |
+| `collapsedGroupIds`, `onCollapsedGroupIdsChange` | `string[]`, `(groupIds) => void` | `[]` | The controllable collapsed groups of the Tabela, as `<grouping>:<option id>`. |
+| `expanded`, `onExpandedChange` | `true \| Record<string, boolean>`, `(expanded) => void` | `{}` | The controllable expanded tasks, keyed by task id; `true` expands every task. |
+| `search`, `onSearchChange` | `string`, `(search) => void` | - | The search field, rendered with `onSearchChange`; called on submit and when emptied. |
+| `sort`, `onSortChange` | `'newest' \| 'due' \| 'priority'`, `(sort) => void` | `'newest'` | Ordenar por, rendered with `onSortChange`. |
+| `statusFilter`, `onStatusFilterChange` | `Projects3Status \| null`, `(status) => void` | `null` | The Status filter. |
+| `assigneeFilter`, `onAssigneeFilterChange` | `string \| null`, `(assigneeId) => void` | `null` | The Responsável filter. |
+| `archivedFilter`, `onArchivedFilterChange` | `'exclude' \| 'include' \| 'only' \| null`, `(archived) => void` | `null` | The Arquivadas filter; `null` and `'exclude'` are Ocultar arquivadas. |
+| `tagFilter`, `onTagFilterChange` | `string[]`, `(tagIds) => void` | `[]` | The Tags filter. |
+| `filtered` | `boolean` | `false` | Picks `labels.noResult` instead of `labels.empty` for the empty message. |
+| `onTypeChange`, `onStatusChange` | `(taskId, value) => void` | - | Make Tipo and Status editable in a row. `onStatusChange` also takes the Kanban drop. |
+| `onPriorityChange` | `(taskId, priority \| null) => void` | - | Makes Prioridade editable in a row and on a card. |
+| `onAssigneeChange` | `(taskId, assigneeId) => void` | - | Makes Responsável editable in a row; the cell cannot clear it. |
+| `onStartChange` | `(taskId, startAt: string) => void` | - | Makes Início editable; the value is the chosen day as `YYYY-MM-DD`. |
+| `onDueChange` | `(taskId, dueAt: string \| null) => void` | - | Makes Vencimento editable in a row and on a card; the value is the chosen day as `YYYY-MM-DD`, `null` when cleared. |
+| `onTagsChange` | `(taskId, tagIds) => void` | - | Makes Tags editable in a row and on a card, with the whole new list. |
+| `onOpen` | `(taskId: string) => void` | - | Makes a row, a sub-task row and a card open the task. |
+| `selectedIds`, `onSelectedIdsChange` | `string[]`, `(taskIds) => void` | `[]` | The controllable selection of the Tabela. Either one, or a bulk callback, adds the select column. |
+| `onBulkStatusChange` | `(taskIds, status) => void` | - | Renders Concluídas, which reports `'completed'`. |
+| `onBulkPriorityChange`, `onBulkTypeChange`, `onBulkAssigneeChange` | `(taskIds, value) => void` | - | Render Prioridade, Tipo and Responsável under Mais opções; Sem prioridade and Sem responsável report `null`. |
+| `onBulkArchive` | `(taskIds: string[]) => void` | - | Renders Arquivar. |
+| `savedViews`, `savedViewsLoading` | `Projects3SavedView[]`, `boolean` | - | Replace the heading with the view switcher. |
+| `savedViewId`, `onSavedViewChange` | `string \| null`, `(savedViewId) => void` | `null` | The controllable active saved view; Todas as tarefas is `null`. |
+| `savedViewModified` | `boolean` | `false` | Marks the active saved view as changed and, with `onSavedViewUpdate`, offers to update it. |
+| `onSavedViewCreate`, `onSavedViewUpdate`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | callbacks | - | The actions of the view switcher, each rendered with its callback. |
+| `onSavePreference` | `() => void` | - | Renders Salvar preferência at the end of Exibição. |
+| `page`, `onPageChange` | `number`, `(page) => void` | `1` | The controllable page, starting at 1. |
+| `pageCount` | `number` | - | Renders the pagination footer while there are tasks. |
+| `pageSize`, `total` | `number` | - | Together they show the range summary (`1–20 de 57`); `total` of 0 hides the footer. |
+| `onCreate` | `() => void` | - | Renders Nova tarefa. |
+| `locale`, `timeZone` | `string` | `'pt-BR'`, `'America/Sao_Paulo'` | Format Início and Vencimento. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. |
+| `labels` | `Projects3LabelsOverride` | pt-BR texts | Overrides the texts; `archivedOptions`, `columns`, `groupings`, `modes`, `paginationButtons`, `priorities`, `savedViews`, `sorts` and `statuses` merge key by key. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Projects3Task
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `title` | `string` | The identity and the title cell. |
+| `description` | `string` | Muted under the title, and the caption of a card. |
+| `type` | `string` | One of `types`. |
+| `priority` | `'urgent' \| 'high' \| 'medium' \| 'low' \| null` | `null` is Sem prioridade. |
+| `status` | `'pending' \| 'in-progress' \| 'completed' \| 'canceled'` | |
+| `startAt`, `dueAt` | `string \| null` | ISO dates; a day-only `YYYY-MM-DD` is shown as that day. |
+| `overdue` | `boolean` | The overdue look of Vencimento; the block computes no dates. |
+| `assigneeId` | `string \| null` | One of `assignees`. |
+| `tagIds` | `string[]` | Ids of `tags`. |
+| `archived` | `boolean` | Shows the muted Arquivada beside the title and blocks the Kanban drop. |
+| `subtasks` | `Projects3Task[]` | Rows under the task in the Tabela; the Kanban shows only top-level tasks. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Projects3` | `component` | The task collection. |
+| `projects3Modes` | `const` | `['table', 'kanban']`. |
+| `projects3Statuses` | `const` | `['pending', 'in-progress', 'completed', 'canceled']`. |
+| `projects3Sorts` | `const` | `['newest', 'due', 'priority']`. |
+| `projects3GroupBys` | `const` | `['status', 'priority', 'assignee']`. |
+| `Projects3Props`, `Projects3Task`, `Projects3Option`, `Projects3Person`, `Projects3SavedView`, `Projects3Status`, `Projects3Priority`, `Projects3Mode`, `Projects3Sort`, `Projects3GroupBy`, `Projects3KanbanGroupBy`, `Projects3Archived`, `Projects3Expanded`, `Projects3ColumnId`, `Projects3Labels`, `Projects3LabelsOverride` | `type` | The props, the data and the labels. |

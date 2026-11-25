@@ -30,18 +30,21 @@ import {
   RICH_TEXT_EXTRA_BLOCKS,
   type RichTextExtraBlock,
 } from './extra-blocks'
-import { blockIcon } from './floating-toolbar'
 import {
   applyBlock,
   MENTION_INPUT_TYPE,
+  MentionAvatar,
   RICH_TEXT_BLOCKS,
+  type RichTextAvatar,
   type RichTextBlock,
   SLASH_INPUT_TYPE,
 } from './plugins'
+import { blockIcon } from './toolbar-parts'
 
 export type SlashMenuBlock = RichTextBlock | RichTextExtraBlock | 'p'
 
 export interface SlashMenuOption {
+  avatar?: RichTextAvatar
   block: SlashMenuBlock | (string & {})
   icon?: PhosphorIcon
   keywords: readonly string[]
@@ -349,10 +352,14 @@ export function SlashMenu({
                 tabIndex={-1}
                 type="button"
               >
-                <Icon
-                  aria-hidden="true"
-                  className="size-4 shrink-0 opacity-80"
-                />
+                {option.avatar ? (
+                  <MentionAvatar avatar={option.avatar} label={option.label} />
+                ) : (
+                  <Icon
+                    aria-hidden="true"
+                    className="size-4 shrink-0 opacity-80"
+                  />
+                )}
                 {option.label}
               </button>
             )

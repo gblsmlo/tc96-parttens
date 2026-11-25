@@ -175,6 +175,7 @@ export const SingleLineList = () => (
 
 interface TasksListProps {
   collapseEmptyGroups?: boolean
+  getGroupToggleLabel?: (group: string, collapsed: boolean) => string
   grouping: string | null
   loading?: boolean
   onAddRecord?: (groupId: string) => void
@@ -185,6 +186,7 @@ interface TasksListProps {
 
 export function TasksList({
   collapseEmptyGroups = false,
+  getGroupToggleLabel,
   grouping,
   loading = false,
   onAddRecord,
@@ -201,6 +203,7 @@ export function TasksList({
       emptyGroupLabel="Nenhuma tarefa neste grupo."
       emptyMessage="Nenhuma tarefa para exibir."
       {...(onAddRecord ? { getGroupActions: () => ({ onAddRecord }) } : {})}
+      {...(getGroupToggleLabel ? { getGroupToggleLabel } : {})}
       grouping={grouping}
       loading={loading}
       loadingRecordAnatomy={{ media: 'icon', pills: 4 }}

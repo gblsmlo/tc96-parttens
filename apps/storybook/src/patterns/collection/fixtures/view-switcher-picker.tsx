@@ -23,7 +23,6 @@ export interface ViewSwitcherOption {
 }
 
 export interface ViewSwitcherPickerProps {
-  footer?: ReactNode
   onCreate?: () => void
   onDelete?: (id: string) => void
   onDuplicate?: (id: string) => void
@@ -44,7 +43,6 @@ export function ViewIcon() {
 }
 
 export function ViewSwitcherPicker({
-  footer,
   onCreate,
   onDelete,
   onDuplicate,
@@ -122,11 +120,6 @@ export function ViewSwitcherPicker({
                   <TrashIcon aria-hidden="true" />
                   Excluir
                 </MenuItem>
-              ) : null}
-              {footer ? (
-                <div className="mt-1 border-t px-2 pt-2 pb-1 text-muted-foreground text-xs">
-                  {footer}
-                </div>
               ) : null}
             </>
           ) : undefined

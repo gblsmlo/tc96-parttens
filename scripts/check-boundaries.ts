@@ -56,6 +56,14 @@ function blockFolder(file: string) {
   if (segments.length <= depth + 1) return undefined
   return { group: segments.slice(0, depth).join('/'), folder: segments[depth] }
 }
+function categorySharedOf(file: string) {
+  const [category, folder] = file
+    .slice('packages/ui/src/blocks/'.length)
+    .split('/')
+  return folder === 'shared' && !flatBlockCategories.has(category)
+    ? category
+    : undefined
+}
 const graph = new Map<string, string[]>()
 const violations: string[] = []
 const configuration = ts.readConfigFile('tsconfig.json', ts.sys.readFile)
@@ -122,6 +130,7 @@ for (const [owner, roots] of Object.entries(layerRoots)) {
         if (
           from &&
           to &&
+          categorySharedOf(target) !== from.group.split('/')[0] &&
           (from.group !== to.group ||
             (to.folder !== 'shared' && to.folder !== from.folder))
         )

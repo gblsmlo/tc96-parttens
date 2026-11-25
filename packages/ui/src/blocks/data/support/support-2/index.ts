@@ -1,0 +1,22 @@
+export { defaultSupport2PageSizeOptions, Support2 } from './support-2'
+export type {
+  Support2ColumnId,
+  Support2ColumnVisibility,
+  Support2Density,
+  Support2Labels,
+  Support2LabelsOverride,
+  Support2Person,
+  Support2Priority,
+  Support2Props,
+  Support2Queue,
+  Support2Requester,
+  Support2RowAction,
+  Support2Sla,
+  Support2SlaTone,
+  Support2Sort,
+  Support2SortKey,
+  Support2Status,
+  Support2Ticket,
+  Support2ToggleColumnId,
+  Support2View,
+} from './types'

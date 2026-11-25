@@ -1,0 +1,94 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RichTextEditor2
+
+A wiki page editor that flows in its page, with no frame around it. Reach for it on a runbook, playbook or knowledge base page where people write with `/` blocks, mention teammates with `@`, and need an outline of the headings. Install it with `npx @tc96/cli add rich-text-editor-2`.
+
+It composes the `RichTextEditor` pattern with an outline, a table bar and a page menu. Blocks come only from `/` and formatting only from the toolbar that appears over a selection: there is no block gutter, block menu or drag handle. The block never fetches or persists: the app passes the first document, the people and the save callback.
+
+The other pages of `Blocks/Application/Rich Text Editor/RichTextEditor2`: [Playground](?path=/story/blocks-application-rich-text-editor-richtexteditor2-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-rich-text-editor-richtexteditor2-behavior--slash-menu-lists-the-blocks) for the tests and [Usages](?path=/story/blocks-application-rich-text-editor-richtexteditor2-usages--editing-the-escalation-playbook) for a page that records each saved version.
+
+## Import
+
+```tsx
+import { RichTextEditor2 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-2'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The navbar slot (Navbar1 in the stories) with the save status and the lock badge, the outline trigger below `lg`, the document, the table bar when the caret is in a table, and the outline rail on the right edge on wide screens.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RichTextEditor2
+  defaultValue={playbook}
+  onSave={(value) => savePage(value)}
+  people={people}
+/>
+```
+
+## RichTextEditor2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `defaultValue` | `RichTextValue` | one empty paragraph | The first document; read once. |
+| `onSave` | `(value: RichTextValue) => void` | - | Called once after `saveDelay` ms without changes; without it the save status is hidden. |
+| `saveDelay` | `number` | `800` | Milliseconds of quiet before `onSave`. |
+| `people` | `RichTextEditor2Person[]` | `[]` | Teammates listed by `@`, with an avatar. |
+| `defaultSettings` | `Partial<RichTextEditor2Settings>` | all `false` | The first state of the page menu. |
+| `onSettingsChange` | `(settings: RichTextEditor2Settings) => void` | - | Called when a page menu toggle changes. |
+| `navbar` | `ReactNode \| (context: RichTextEditor2NavbarContext) => ReactNode` | - | Rendered above the document, inside the editor. The block never imports a navbar: compose one here. |
+| `labels` | `Partial<RichTextEditor2Labels>` | pt-BR texts | Overrides the texts; `blockKinds` merges key by key. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Types
+
+| Type | Field | Description |
+| --- | --- | --- |
+| `RichTextEditor2Person` | `id`, `name`, `role`, `image?` | A teammate; the initials of `name` fill the avatar when there is no `image`. |
+| `RichTextEditor2Settings` | `fullWidth`, `smallText`, `locked` | The page menu state; `locked` makes the page read only. |
+| `RichTextEditor2NavbarContext` | `settings`, `onSettingChange`, `pageMenuItems`, `saveStatus`, `lockBadge`, `status` | What the `navbar` function receives; pass `pageMenuItems` as the `menu` of a Navbar1 (the three checkbox items: full width, small text, lock) and `status` (the save status and the lock badge, or `null`) as its `status`. |
+| `RichTextEditor2BlockKind` | - | The types of the "Transformar em" submenu. |
+
+## Labels
+
+| Key | Default |
+| --- | --- |
+| `editor` | `"Conteúdo da página"`; the name of the editable |
+| `placeholder` | `"Digite '/' para blocos ou '@' para mencionar alguém"` |
+| `slashMenu`, `slashMenuEmpty` | `"Blocos"`, `"Nenhum bloco com esse nome"` |
+| `mention`, `mentionEmpty` | `"Pessoas"`, `"Ninguém com esse nome"` |
+| `blockKinds` | the name of each block type; `p`, `h2`, `h3`, `blockquote`, `ul` and `ol` name the selection toolbar |
+| `outline`, `outlineEmpty`, `outlineTrigger` | the outline name, its empty text and the popover trigger |
+| `fullWidth`, `smallText`, `lockPage`, `locked` | the page menu items and the lock badge |
+| `saving`, `saved` | the save status |
+| `tableBar`, `tableAddRow`, `tableAddColumn`, `tableHeader`, `tableRemoveRow`, `tableRemoveColumn`, `tableRemove` | the table bar |
+| `tableRemoveTitle`, `tableRemoveDescription`, `tableRemoveCancel`, `tableRemoveConfirm` | the confirm dialog |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RichTextEditor2` | `component` | The wiki page editor. |
+| `RichTextEditor2Props` | `type` | The props of the editor. |
+| `RichTextEditor2Person` | `type` | A teammate for `@`. |
+| `RichTextEditor2Settings` | `type` | The page menu state. |
+| `RichTextEditor2BlockKind` | `type` | The block types of the submenu. |
+| `RichTextEditor2NavbarContext` | `type` | The argument of the `navbar` function. |
+| `RichTextEditor2Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The editable is named by `labels.editor`; locked, it becomes a `document`.
+- The `/` and `@` menus are listboxes the editor points to with `aria-activedescendant`.
+- The selection toolbar is Plate's floating toolbar of the pattern; the page menu trigger belongs to the navbar.
+- The table bar is a named toolbar; the header toggle uses `aria-pressed`; deleting a table asks first in an alert dialog.
+- The outline rail is a named `nav` whose buttons keep their names while collapsed; below `lg` a popover lists the same headings.
+- Buttons use the `sm` and `icon-sm` sizes.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

@@ -1,0 +1,86 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsSecurity1
+
+A settings section of privacy controls. Each row has a title, a description and either a switch or, when the control carries an `actionLabel`, a button. A row may also carry a plan badge, Pro or Beta. Reach for it when the app lets people choose what is collected and shared about their account. Install it with `npx @tc96/cli add settings-security-1`.
+
+It is a section, not a page: it renders no `main` landmark. The block holds no value: every switch shows `checked` and every change is reported through a callback.
+
+The other pages of `Blocks/Application/Settings/Security/Settings1`: [Playground](?path=/story/blocks-application-settings-security-settings1-playground--playground) to try the texts and the button, [Behavior](?path=/story/blocks-application-settings-security-settings1-behavior--switch-calls-on-checked-change) for the tests and [Usages](?path=/story/blocks-application-settings-security-settings1-usages--loaded) for the controls read over the network.
+
+## Import
+
+```tsx
+import { SettingsSecurity1 } from '@tc96/ui/blocks/application/settings/security/settings-security-1'
+```
+
+The same path exports the types `SettingsSecurity1Props`, `SettingsSecurity1Control`, `SettingsSecurity1Plan` and `SettingsSecurity1Labels`.
+
+## Anatomy
+
+The section with switches, plan badges and one button row:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsSecurity1
+  controls={controls}
+  onAction={(controlId) => startAction(controlId)}
+  onCheckedChange={(controlId, checked) => save(controlId, checked)}
+/>
+```
+
+## SettingsSecurity1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `controls` | `SettingsSecurity1Control[]` | required | The rows, in order. |
+| `onCheckedChange` | `(controlId: string, checked: boolean) => void` | - | Called when a switch is toggled. The switch shows `checked` until the app passes a new value. |
+| `onAction` | `(controlId: string) => void` | - | Called when the button of an action row is clicked. Without it the action rows render no button. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsSecurity1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+## SettingsSecurity1Control
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row in the callbacks. |
+| `title` | `string` | Title of the row and accessible name of its switch. |
+| `description` | `string` | Text under the title. |
+| `checked` | `boolean` | Value of the switch; used by rows without `actionLabel`. |
+| `actionLabel` | `string` | Makes the row a button row, with this text, instead of a switch row. |
+| `plan` | `'pro' \| 'beta'` | Shows the Pro or Beta badge before the control. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Privacidade"` |
+| `description` | `string` | `"Decida o que é coletado e compartilhado sobre sua conta."` |
+| `pro` | `string` | `"Pro"` |
+| `beta` | `string` | `"Beta"` |
+| `loading` | `string` | `"Carregando privacidade"` |
+| `errorTitle` | `string` | `"Não foi possível carregar a privacidade"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsSecurity1` | `component` | The privacy controls section. |
+| `SettingsSecurity1Props` | `type` | The props of the section. |
+| `SettingsSecurity1Control` | `type` | A row. |
+| `SettingsSecurity1Plan` | `type` | `'pro' \| 'beta'`. |
+| `SettingsSecurity1Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each switch is named by the title of its row.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

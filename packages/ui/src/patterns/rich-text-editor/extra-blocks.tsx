@@ -12,13 +12,17 @@ import {
 } from '@platejs/table/react'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { cn } from '@tc96/utils'
-import type { SlateEditor } from 'platejs'
+import type { Path, SlateEditor } from 'platejs'
 import {
   createPlatePlugin,
   PlateElement,
   type PlateElementProps,
+  useEditorRef,
+  useReadOnly,
 } from 'platejs/react'
-import type { ReactElement } from 'react'
+import type { ReactElement, RefObject } from 'react'
+import { useRef } from 'react'
+import { MIN_TABLE_COLUMN_WIDTH, setTableColumnWidth } from './table-actions'
 
 export const RICH_TEXT_EXTRA_BLOCKS = [
   'todo',
@@ -197,12 +201,80 @@ function ImageElement(props: PlateElementProps): ReactElement {
 }
 
 function TableElement(props: PlateElementProps): ReactElement {
+  const colSizes = props.element.colSizes as number[] | undefined
   return (
     <PlateElement {...props} as="div" className="my-2 overflow-x-auto">
-      <table className="w-full table-fixed border-collapse">
+      <table
+        className="w-full table-fixed border-collapse"
+        style={
+          colSizes
+            ? { minWidth: colSizes.reduce((sum, size) => sum + size, 0) }
+            : undefined
+        }
+      >
+        {colSizes ? (
+          <colgroup>
+            {colSizes.map((size, index) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: columns have no identity beyond their position
+              <col key={index} style={{ width: size }} />
+            ))}
+          </colgroup>
+        ) : null}
         <tbody>{props.children}</tbody>
       </table>
     </PlateElement>
+  )
+}
+
+function ColumnResizeHandle({
+  cell,
+  path,
+}: Readonly<{
+  cell: RefObject<HTMLElement | null>
+  path: Path
+}>): ReactElement | null {
+  const editor = useEditorRef()
+  const readOnly = useReadOnly()
+  if (readOnly) return null
+  const colIndex = path.at(-1) ?? 0
+  const resizeTo = (width: number) =>
+    setTableColumnWidth(editor, path, colIndex, width)
+  const current = () => cell.current?.getBoundingClientRect().width ?? 0
+  return (
+    // biome-ignore lint/a11y/useSemanticElements: a focusable separator is the WAI-ARIA window splitter, an hr cannot take focus or a value
+    <div
+      aria-label="Redimensionar coluna"
+      aria-orientation="vertical"
+      aria-valuemin={MIN_TABLE_COLUMN_WIDTH}
+      aria-valuenow={Math.round(current())}
+      className="absolute inset-y-0 -end-1 z-10 flex w-2 cursor-col-resize touch-none justify-center opacity-0 hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100"
+      contentEditable={false}
+      data-slot="table-column-resize"
+      onKeyDown={(event) => {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+        event.preventDefault()
+        event.stopPropagation()
+        resizeTo(current() + (event.key === 'ArrowRight' ? 16 : -16))
+      }}
+      onPointerDown={(event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        const startX = event.clientX
+        const startWidth = current()
+        const move = (next: PointerEvent) =>
+          resizeTo(startWidth + next.clientX - startX)
+        const stop = () => {
+          document.removeEventListener('pointermove', move)
+          document.removeEventListener('pointerup', stop)
+        }
+        document.addEventListener('pointermove', move)
+        document.addEventListener('pointerup', stop)
+      }}
+      role="separator"
+      tabIndex={0}
+    >
+      <span className="w-0.5 bg-primary" />
+    </div>
   )
 }
 
@@ -211,22 +283,32 @@ function TableRowElement(props: PlateElementProps): ReactElement {
 }
 
 function TableCellElement(props: PlateElementProps): ReactElement {
+  const cell = useRef<HTMLElement | null>(null)
   return (
     <PlateElement
       {...props}
       as="td"
-      className="min-w-12 border border-border/80 p-2 align-top"
-    />
+      className="relative min-w-12 border border-border/80 p-2 align-top"
+      ref={cell}
+    >
+      {props.children}
+      <ColumnResizeHandle cell={cell} path={props.path} />
+    </PlateElement>
   )
 }
 
 function TableHeaderCellElement(props: PlateElementProps): ReactElement {
+  const cell = useRef<HTMLElement | null>(null)
   return (
     <PlateElement
       {...props}
       as="th"
-      className="min-w-12 border border-border/80 bg-muted/48 p-2 text-start align-top font-medium"
-    />
+      className="relative min-w-12 border border-border/80 bg-muted/48 p-2 text-start align-top font-medium"
+      ref={cell}
+    >
+      {props.children}
+      <ColumnResizeHandle cell={cell} path={props.path} />
+    </PlateElement>
   )
 }
 
@@ -260,7 +342,9 @@ export const extraBlockPlugins = [
   }),
   HorizontalRulePlugin.withComponent(HrElement),
   DatePlugin.withComponent(DateElement),
-  TablePlugin.withComponent(TableElement),
+  TablePlugin.configure({ options: { disableMerge: true } }).withComponent(
+    TableElement,
+  ),
   TableRowPlugin.withComponent(TableRowElement),
   TableCellPlugin.withComponent(TableCellElement),
   TableCellHeaderPlugin.withComponent(TableHeaderCellElement),

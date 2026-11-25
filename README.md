@@ -97,13 +97,13 @@ import { Login1 } from '@tc96/ui/blocks/application/auth/login-1'
 
 The pages are controlled: you pass `pending`, `error` and `fieldErrors` and receive `onSubmit(values)`, after the native constraints pass. They never fetch, keep a session or import an auth provider; links go through `renderLink` and only appear when you pass their `href`, every text is in `labels` (pt-BR by default), and the resend and link validity countdowns are numbers you count down and pass in. `login-2`, `signup-2` and `forgot-password-2` are the minimal `login-1`, `signup-1` and `forgot-password-1`, with only the fields and the submit button (no logo, links or providers). `reset-password-2` is `reset-password-1` with a validity timer for the reset link, and `forgot-password-1` and `forgot-password-2` swap their form for a confirmation when you pass `sent`.
 
-#### AI & Agents: flow editors
+#### Application: flow editors
 
-`workflow-editor` and `agent-builder` are two editor pages with the same anatomy: a page header (name, shortcuts, ask the AI, add step, run, actions menu), a step library on the left, a canvas on React Flow in the middle, an inspector with Build, Status and Logs on the right and an AI assistant card over the canvas. `workflow-editor` lays the steps out horizontally, with undo, redo, lock and a minimap; `agent-builder` lays them out as a vertical tree, with edge controls and an "Organizar árvore" button.
+`flow-1` and `flow-2` are two editor pages with the same anatomy: a page header (name, shortcuts, ask the AI, add step, run, actions menu), a step library on the left, a canvas on React Flow in the middle, an inspector with Build, Status and Logs on the right and an AI assistant card over the canvas. `flow-1` lays the steps out horizontally, with undo, redo, lock and a minimap; `flow-2` lays them out as a vertical tree, with edge controls and an "Organizar árvore" button.
 
 ```bash
-npx @tc96/cli add workflow-editor
-npx @tc96/cli add agent-builder
+npx @tc96/cli add flow-1
+npx @tc96/cli add flow-2
 ```
 
 Both bring `@xyflow/react` and `d3-hierarchy`, the `tabs`, `context-menu`, `progress` and `alert` COSS components and the `flow-canvas`, `flow-step-library`, `flow-inspector` and `chat-assistant` pattern files they import. Import the React Flow stylesheet once in your global CSS; without it the canvas does not place nodes or edges:

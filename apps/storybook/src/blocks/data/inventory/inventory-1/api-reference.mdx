@@ -1,0 +1,117 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Inventory1
+
+A product inventory on the collection Data Grid: product name and SKU, category, an editable price and stock with validation per cell, a low stock warning, the status as a read-only select property (icon and tone per status), a storefront visibility switch and a row menu, with a save bar under the grid. Reach for it when people correct a few numbers of many records at once and save them together. Install it with `npx @tc96/cli add inventory-1`.
+
+It is a section, not a page: it renders no `main` landmark. The block keeps no edited value. The consumer owns the unsaved edits as `drafts` and receives every change through `onDraftsChange`; the grid shows the draft value and marks the cell as changed. Salvar alterações calls `onSave(drafts)` and Descartar calls `onDiscard`, and the consumer clears `drafts` when it is done. Errors the server returns for a cell come back through `cellErrors`. The search and the Status filter are view state the Data Grid keeps locally. The heading is the toolbar's: the `left` slot of one `CollectionToolbar` carries `labels.title` as the only `h2` and `labels.description` as its description, and its `right` slot the search, the Exibição menu and Adicionar produto. Loading and error are the block's: the toolbar keeps the heading and the description and hides its controls, `pending` renders its skeleton in place of the grid and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
+
+The other pages of `Blocks/Data/Inventory/Inventory1`: [Playground](?path=/story/blocks-data-inventory-inventory1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-data-inventory-inventory1-behavior--each-row-shows-the-product) for the tests, [States](?path=/story/blocks-data-inventory-inventory1-states--default) for the loaded, unsaved, server error, loading, error and empty states and [Usages](?path=/story/blocks-data-inventory-inventory1-usages--loaded) for the data read and saved over the network.
+
+## Import
+
+```tsx
+import { Inventory1 } from '@tc96/ui/blocks/data/inventory/inventory-1'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The toolbar with the heading, the description, the search, the Exibição menu (Status filter) and Adicionar produto, the grid and the save bar.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Inventory1
+  drafts={drafts}
+  onDiscard={() => setDrafts({})}
+  onDraftsChange={setDrafts}
+  onSave={save}
+  products={products}
+/>
+```
+
+## Inventory1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `products` | `Inventory1Product[]` | required | The saved rows. Keep the array stable between renders. |
+| `drafts` | `Inventory1Drafts` | `{}` | The unsaved values per product id and field; the grid shows them in place of the saved ones. |
+| `onDraftsChange` | `(drafts: Inventory1Drafts) => void` | - | Called after a valid edit with the next drafts; a value equal to the saved one drops out. Without it price and stock are read-only and the save bar is not rendered. |
+| `onSave` | `(drafts: Inventory1Drafts) => void` | - | Called by Salvar alterações; renders only with it. Disabled with no drafts. |
+| `onDiscard` | `() => void` | - | Called by Descartar; renders only with it. Disabled with no drafts or while `saving`. |
+| `saving` | `boolean` | `false` | Shows Salvar alterações as loading. |
+| `cellErrors` | `Inventory1CellErrors` | - | A message per product id and field, shown under the cell and marking it invalid. Keep it stable, because the columns are rebuilt when it changes. |
+| `lowStockThreshold` | `number` | `10` | Stock below it shows the warning icon. |
+| `onVisibleChange` | `(productId: string, visible: boolean) => void` | - | Called by the Visível switch; without it the switch is disabled. |
+| `rowActions`, `onRowAction` | `Inventory1RowAction[]`, `(actionId, productId) => void` | - | The row menu renders only with both. |
+| `onAdd` | `() => void` | - | Adicionar produto renders only with it. |
+| `pageSize` | `number` | `10` | Rows per page of the footer. |
+| `locale` | `string` | `"pt-BR"` | Locale of the numbers and of the decimal separator typed in the price. |
+| `currency` | `string` | `"BRL"` | Currency of the price shown in the cell; the input edits the plain number. |
+| `pending` | `boolean` | `false` | Renders the skeleton in place of the grid; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button; without it the button is not rendered. |
+| `labels` | `Inventory1LabelsOverride` | pt-BR texts | Overrides the texts of the block; `columns` and `statuses` merge key by key. Keep the object stable. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Inventory1Product
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row and keys `drafts` and `cellErrors`. |
+| `name`, `sku` | `string` | The product cell; both are matched by the search. |
+| `category` | `string` | Free text, matched by the search. |
+| `price` | `number` | Shown as currency and edited as a decimal with the locale separator (a dot is also read). Negative or non-numeric values keep the input open with a message. |
+| `stock` | `number` | Edited as a whole number; a fraction or a negative value keeps the input open with a message. |
+| `status` | `'active' \| 'draft' \| 'archived'` | The read-only status select property and the Status filter. |
+| `visible` | `boolean` | The state of the Visível switch. |
+
+`Inventory1Drafts` is `Record<string, { price?: number; stock?: number }>` and `Inventory1CellErrors` is `Record<string, { price?: string; stock?: string }>`.
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title`, `description` | `string` | `"Inventário de produtos"`, `"Edite preços e estoque direto na tabela."`; the toolbar heading and its description, kept while loading or failed |
+| `addProduct` | `string` | `"Adicionar produto"` |
+| `toolbar`, `search` | `string` | `"Controles do inventário"`, `"Buscar produtos"` |
+| `view`, `filters`, `statusFilter`, `allStatuses`, `clearFilters` | `string` | `"Exibição"`, `"Filtros"`, `"Status"`, `"Todos"`, `"Limpar filtros"` |
+| `viewWithFilters` | `(view: string, count: number) => string` | `"Exibição (1)"`; the menu trigger while a filter is active |
+| `columns` | `Record<Inventory1ColumnId, string>` | `"Produto"`, `"Categoria"`, `"Preço"`, `"Estoque"`, `"Status"`, `"Visível"`, `"Ações"` |
+| `statuses` | `Record<Inventory1Status, string>` | `"Ativo"`, `"Rascunho"`, `"Arquivado"` |
+| `priceInvalid`, `priceNegative` | `string` | `"Informe um preço válido."`, `"O preço não pode ser negativo."` |
+| `stockNotInteger`, `stockNegative` | `string` | `"Use um número inteiro."`, `"O estoque não pode ser negativo."` |
+| `cellLabel` | `(column: string, value: string) => string` | `"Preço: R$ 89,90"`; the name of an editable cell |
+| `emptyValue` | `string` | `"Sem valor"`; the value read in that name when the cell is empty |
+| `lowStock`, `changed` | `string` | `"Estoque baixo"`, `"Alterado"`; hidden texts of the warning icon and of a changed cell |
+| `visibleFor`, `rowActionsFor` | `(product: string) => string` | `"Mostrar Óculos aviador na loja"`, `"Ações de Óculos aviador"` |
+| `allSaved` | `string` | `"Todas as alterações salvas"` |
+| `unsavedChanges` | `(count: number) => string` | `"1 alteração não salva"`, `"3 alterações não salvas"` |
+| `discard`, `save` | `string` | `"Descartar"`, `"Salvar alterações"` |
+| `empty` | `string` | `"Nenhum produto para exibir."` |
+| `loading` | `string` | `"Carregando produtos"`; the accessible name of the skeleton |
+| `errorTitle` | `string` | `"Não foi possível carregar os produtos"` |
+| `errorDescription`, `retry` | `string` | `"Verifique sua conexão e tente novamente."`, `"Tentar novamente"` |
+
+The Data Grid parts have their own texts, which `labels` does not reach: the column menu and the pagination footer.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Inventory1` | `component` | The product inventory. |
+| `Inventory1Props`, `Inventory1Product`, `Inventory1Status`, `Inventory1RowAction` | `type` | The props and the data. |
+| `Inventory1Drafts`, `Inventory1Draft`, `Inventory1CellErrors`, `Inventory1EditableField`, `Inventory1ColumnId` | `type` | The edits, the errors and the columns. |
+| `Inventory1Labels`, `Inventory1LabelsOverride` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The grid follows the WAI-ARIA grid pattern; an editable cell is a button that opens an input, Enter or blur commit and Escape restores. While invalid the input has `aria-invalid` and is described by the message under it.
+- The save status is an `output` with `aria-live="polite"`, so the count of unsaved changes is announced.
+- The warning icon and the changed tint carry hidden texts (`labels.lowStock`, `labels.changed`), so neither depends on color or shape alone.
+- The block carries no color, radius or shadow of its own beyond token classes: the theme belongs to the app.

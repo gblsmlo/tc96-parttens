@@ -169,7 +169,7 @@ const GridToolbar = <TData extends object>({
   table,
 }: Readonly<{ table: DataGridTable<TData> }>) => (
   <CollectionToolbar
-    endSlot={
+    right={
       <>
         <DataGridSelectionSummary table={table} />
         <DataGridFilterMenu table={table} />
@@ -182,7 +182,7 @@ const GridToolbar = <TData extends object>({
         </ViewSettingsMenu>
       </>
     }
-    startSlot={
+    left={
       <DataGridSearch
         aria-label="Buscar projetos"
         placeholder="Buscar projetos…"

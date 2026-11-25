@@ -2,16 +2,16 @@ import type { ArgTypes } from '@storybook/react-vite'
 
 export interface Navbar1Controls {
   collaboratorCount: number
+  menu: boolean
   share: string
   shareable: boolean
-  tab: string
 }
 
 export const navbar1ControlArgs: Navbar1Controls = {
   collaboratorCount: 6,
+  menu: true,
   share: 'Compartilhar',
   shareable: true,
-  tab: 'overview',
 }
 
 export const navbar1ControlArgTypes: Partial<ArgTypes<Navbar1Controls>> = {
@@ -19,6 +19,11 @@ export const navbar1ControlArgTypes: Partial<ArgTypes<Navbar1Controls>> = {
     control: { max: 6, min: 0, type: 'number' },
     description:
       'How many collaborators are passed; four are shown and the rest become a count.',
+  },
+  menu: {
+    control: 'boolean',
+    description:
+      'Whether `menu` is passed; without it no "Mais ações" button renders.',
   },
   share: {
     control: 'text',
@@ -28,10 +33,5 @@ export const navbar1ControlArgTypes: Partial<ArgTypes<Navbar1Controls>> = {
     control: 'boolean',
     description:
       'Whether `onShare` is passed; without it no Compartilhar button renders.',
-  },
-  tab: {
-    control: 'select',
-    description: 'The `tab` that starts selected.',
-    options: ['overview', 'tasks', 'files', 'activity'],
   },
 }

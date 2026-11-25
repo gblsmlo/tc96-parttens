@@ -132,14 +132,14 @@ All nine share one contract:
 - **Timers are yours:** the resend countdown (`resendIn`) and the link validity (`expiresIn`, `requestNewLinkIn`) are numbers you count down and pass in; no block runs a timer, and a visible countdown is never read by a screen reader every second.
 - **State you decide:** `ForgotPassword1` and `ForgotPassword2` show its confirmation only when you pass `sent`, and `ResetPassword2` its expired state only when `expiresIn` reaches zero; focus moves to the new title on that change, never on mount.
 
-### AI & Agents / Flow
+### Application / Flow
 
-Two editor pages on React Flow, in `Blocks/AI & Agents/Flow`, installed under `ai-agents/flow/`. They bring `@xyflow/react` and `d3-hierarchy`, the four flow pattern items they import and the COSS `tabs`, `context-menu`, `progress` and `alert`.
+Two editor pages on React Flow, in `Blocks/Application/Flow`, installed under `application/flow/`. They bring `@xyflow/react` and `d3-hierarchy`, the four flow pattern items they import and the COSS `tabs`, `context-menu`, `progress` and `alert`.
 
 | Block | Install | What it is |
 | --- | --- | --- |
-| **[WorkflowEditor](?path=/docs/blocks-ai-agents-flow-workfloweditor--doc)** | `npx @tc96/cli add workflow-editor` | step library, horizontal canvas with undo, redo, lock and minimap, inspector with a Responsável form, assistant |
-| **[AgentBuilder](?path=/docs/blocks-ai-agents-flow-agentbuilder--doc)** | `npx @tc96/cli add agent-builder` | step library, vertical canvas with edge controls and Organizar árvore, inspector with a Caminho form, assistant |
+| **[Flow1](?path=/docs/blocks-application-flow-flow1--doc)** | `npx @tc96/cli add flow-1` | step library, horizontal canvas with undo, redo, lock and minimap, inspector with a Responsável form, assistant |
+| **[Flow2](?path=/docs/blocks-application-flow-flow2--doc)** | `npx @tc96/cli add flow-2` | step library, vertical canvas with edge controls and Organizar árvore, inspector with a Caminho form, assistant |
 
 React Flow ships its own stylesheet, which you import once in your global CSS next to your theme; without it the canvas does not place nodes or edges. The blocks read no `--xy-*` variable from your theme: the colors come from tokens by class.
 
@@ -148,3 +148,13 @@ React Flow ships its own stylesheet, which you import once in your global CSS ne
 ```
 
 Both blocks are controlled. You pass `steps`, `connections`, `stepTypes`, `icons`, `selectedStepId`, `run`, `logs` and `assistant`, and receive `onStepAdd`, `onStepChange`, `onStepDelete`, `onStepsChange`, `onConnect`, `onSelectedStepChange` and `onRun`. History, execution, persistence and every id are yours; the block keeps only the open inspector, its mode and tab, the assistant and the grid snapping.
+
+### AI & Agents / AI Chat
+
+A copilot page on the COSS `chat` parts and `Composer`, in `Blocks/AI & Agents/AI Chat`, installed under `ai-agents/ai-chat/`.
+
+| Block | Install | What it is |
+| --- | --- | --- |
+| **[AiChat1](?path=/docs/blocks-ai-agents-ai-chat-aichat1-api-reference--api-reference)** | `npx @tc96/cli add ai-chat-1` | thread switcher, context window meter, transcript with reasoning, code and sources, starter prompts, composer with chips, attach, web search, extended thinking, model and voice |
+
+The block never calls a model: you pass `messages`, grow the last answer while it streams, set `responding` and receive `onSend`, `onStop` and the answer actions.

@@ -1,15 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Navbar1 } from '@tc96/ui/blocks/application/navbar/navbar-1'
-import { breadcrumbs, collaborators, tabs } from '../fixtures/navbar-1.ts'
+import { MenuItem } from '@tc96/ui/menu'
+import { breadcrumbs, collaborators } from '../fixtures/navbar-1.ts'
 
 const meta = {
   args: {
     breadcrumbs,
     collaborators,
+    menu: <MenuItem>Duplicar projeto</MenuItem>,
     onShare: () => {},
-    onTabChange: () => {},
-    tab: 'overview',
-    tabs,
   },
   component: Navbar1,
   parameters: { layout: 'fullscreen' },

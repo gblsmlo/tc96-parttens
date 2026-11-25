@@ -1,0 +1,121 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Legal5
+
+The cases and lawsuits of a law firm in one list (Processos): title, process number, phase, next deadline, clients, owner and tags, shown as a Tabela or a Lista. Reach for it on the screen that lists Casos and Processos together and is filtered, sorted and paged by the server. Install it with `npx @tc96/cli add legal-5`.
+
+The block is controlled and renders what it gets. View, search, sort, every filter, the selection and the page are a value and a callback; without the value the block keeps it locally. Unlike `Legal1`, it does **not** filter, sort or page `records`: the consumer sends each change to its server and passes the resulting page back, with `filtered` saying whether any filter or search is active. Phases, owners, clients and tags are workspace catalogs passed as `{ id, label }[]`; Polo, Situação and Arquivados are fixed unions.
+
+The toolbar `left` slot holds the view switcher (Todos, Casos, Processos), so the page has no `h2`; the section and the table keep their name from `labels.title`. With `counts`, each view in the popup shows its count as its own element, and `labels.viewCountName` names the item (`Casos, 4 itens`); the trigger shows only the view name. With `savedViews` (or `savedViewsLoading`), the popup lists Minhas visões after the views; the trigger shows the active saved view, marked as changed with `savedViewModified`, and each saved view and footer action renders only with its callback (select, Atualizar, Salvar visão atual…, Renomear, Duplicar, Excluir). The block never applies a saved view: `onSavedViewSelect` reports the id and the consumer sets the view, filters and sort it stores; picking one of the three views calls `onViewChange`, and the consumer clears `savedViewId`. The name and delete dialogs are the consumer's. On the right: the search field, which reports the text on submit and when it is emptied, then Exibição (the mode tabs, Ordenar, Agrupar, Filtros, then Limpar filtros and, with `onSavePreference`, Salvar preferência) and Novo processo. A committed search counts as a filter in the Exibição trigger, and Limpar filtros empties it, as lemind does. Fase and Tags are multiple-choice filters (`FilterCheckboxSubmenu`), the others single-choice; a phase with `group` is listed under that group's label. Polo, Situação and Arquivados exist only for Processos, so the Casos view hides them. A filter renders only with its catalog (Fase, Responsável, Cliente, Tags) or its callback (Polo, Situação, Arquivados, Ordenar); while `phasesLoading`, `ownersLoading`, `clientsLoading` or `tagsLoading` is true the filter renders even with an empty catalog and its submenu shows skeleton rows (`aria-busy`).
+
+Agrupar por (rendered with `onGroupByChange`) groups the Tabela and the Lista by Fase or Responsável; a record without an owner falls under `labels.unassigned`. The Lista shows one collapsible group per phase of the view or per owner, empty ones included. The Tabela groups consecutive rows under a group row, so only while it is grouped the block orders the rows of the page by the grouping's option order (the order of `phases` or `owners`, records without an owner last), keeping the given order inside a group; ungrouped, and in the Lista, the rows keep the order of `records`. `collapsedGroupIds` holds the ids `phase:<phase id>`, `owner:<owner id>` and `owner:unassigned` in both layouts.
+
+In the Tabela the title cell marks a Caso with an outline badge and an archived record with a muted text, and shows Desarquivar for an archived Processo when `onUnarchive` is passed. Número is a `TextProperty` with a copy button, Fase a `SelectProperty` that offers only the phases of the row's kind, Responsável a `PersonProperty`, Próximo prazo the ready text in its tone, and Tags a `TagsProperty`: read-only badges, or, with `onTagsChange`, chips with a remove button and Adicionar tag, in the Tabela and the Lista. A tag change reports the record id and the whole next list of tag ids; the block keeps no edited value. Selecting rows opens the `ActionBar`: Fase (only while every selected record has the same kind), Responsável, Tags and Arquivar, each rendered with its callback, and each clears the selection after it reports the ids. The Lista has no selection; its row shows Caso and Arquivado beside the title and Desarquivar at the end of the row. The footer is the `CollectionPagination`, rendered with `pageCount` while there are records.
+
+The other pages of `Blocks/Data/Legal/Legal5`: [Playground](?path=/story/blocks-data-legal-legal5-playground--playground), [Layouts](?path=/story/blocks-data-legal-legal5-layouts--default), [Behavior](?path=/story/blocks-data-legal-legal5-behavior--the-view-switcher-replaces-the-heading) and [Usages](?path=/story/blocks-data-legal-legal5-usages--loaded).
+
+## Import
+
+```tsx
+import { Legal5 } from '@tc96/ui/blocks/data/legal/legal-5'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Legal5
+  counts={page.counts}
+  filtered={hasFilters}
+  onOwnerFilterChange={setOwnerFilter}
+  onPageChange={setPage}
+  onPhaseChange={changePhase}
+  onSearchChange={setSearch}
+  onViewChange={setView}
+  ownerFilter={ownerFilter}
+  owners={owners}
+  page={pageNumber}
+  pageCount={pageCount}
+  pageSize={25}
+  phases={phases}
+  records={page.items}
+  search={search}
+  tags={tags}
+  total={page.total}
+  view={view}
+/>
+```
+
+## Legal5
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `records` | `Legal5Record[]` | required | The page of records, already filtered, sorted and paged. Keep the array stable between renders. |
+| `phases` | `Legal5Phase[]` | `[]` | The phase catalog: the options of Fase in a row, in the filter and in the action bar. With `kind`, a phase is offered only to records of that kind; with `group`, the Fase filter lists it under that label. |
+| `owners` | `Legal5Person[]` | `[]` | The options of Responsável in a row, in the filter and in the action bar. |
+| `tags` | `Legal5Option[]` | `[]` | The tag catalog: the badges of a row, the Tags filter and the Tags bulk action. |
+| `clients` | `Legal5Option[]` | `[]` | The options of the Cliente filter. |
+| `phasesLoading`, `ownersLoading`, `clientsLoading`, `tagsLoading` | `boolean` | `false` | Show skeleton rows in the submenu of that catalog's filter while it loads; `tagsLoading` also marks the tag picker of a row as loading. |
+| `view`, `onViewChange` | `'all' \| 'matter' \| 'lawsuit'`, `(view) => void` | `'all'` | The controllable view of the switcher. |
+| `counts` | `Partial<Record<Legal5View, number>>` | - | The count shown beside each view in the switcher popup; `labels.viewCountName` composes the item's accessible name. |
+| `savedViews` | `{ id: string; label: string; icon?: ReactNode }[]` | - | The member's saved views, listed under Minhas visões. |
+| `savedViewId` | `string \| null` | - | The active saved view; the trigger shows its label and no fixed view is selected. |
+| `savedViewModified` | `boolean` | `false` | Marks the active saved view as changed and offers Atualizar. |
+| `savedViewsLoading`, `savedViewsPending` | `boolean` | `false` | Skeleton rows under Minhas visões; Duplicar and Atualizar disabled while a write runs. |
+| `onSavedViewSelect`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | `(savedViewId: string) => void` | - | Select a saved view, or render that item of its options menu. |
+| `onSavedViewCreate`, `onSavedViewUpdate` | `() => void` | - | Render Salvar visão atual… and, on a changed active view, Atualizar. |
+| `onSavePreference` | `() => void` | - | Renders Salvar preferência at the end of Exibição. |
+| `mode`, `onModeChange` | `'table' \| 'list'`, `(mode) => void` | `'table'` | The controllable layout. |
+| `groupBy`, `onGroupByChange` | `'phase' \| 'owner' \| null`, `(groupBy) => void` | `null` | The controllable grouping of the Tabela and the Lista; Agrupar por renders with `onGroupByChange`. |
+| `collapsedGroupIds`, `onCollapsedGroupIdsChange` | `string[]`, `(groupIds) => void` | - | The collapsed groups (`phase:<id>`, `owner:<id>`, `owner:unassigned`); without the value the layout keeps them. |
+| `search`, `onSearchChange` | `string`, `(search) => void` | - | The search field, rendered with `onSearchChange`; called on submit, when emptied and by Limpar filtros. A non-empty search counts as one filter. |
+| `sort`, `onSortChange` | `Legal5Sort \| null`, `(sort) => void` | `null` | Ordenar por, rendered with `onSortChange`; `null` is Mais recentes. |
+| `phaseFilter`, `onPhaseFilterChange` | `string[]`, `(phaseIds) => void` | `[]` | The Fase filter, rendered when `phases` has items. |
+| `ownerFilter`, `onOwnerFilterChange` | `string \| null`, `(ownerId) => void` | `null` | The Responsável filter, rendered when `owners` has items. |
+| `clientFilter`, `onClientFilterChange` | `string \| null`, `(clientId) => void` | `null` | The Cliente filter, rendered when `clients` has items. |
+| `tagFilter`, `onTagFilterChange` | `string[]`, `(tagIds) => void` | `[]` | The Tags filter, rendered when `tags` has items. |
+| `poleFilter`, `onPoleFilterChange` | `Legal5Pole \| null`, `(pole) => void` | `null` | The Polo filter, rendered with its callback outside the Casos view. |
+| `situationFilter`, `onSituationFilterChange` | `Legal5Situation \| null`, `(situation) => void` | `null` | The Situação filter, rendered with its callback outside the Casos view; `null` and `'active'` are Ativos. |
+| `archivedFilter`, `onArchivedFilterChange` | `Legal5Archived \| null`, `(archived) => void` | `null` | The Arquivados filter, rendered with its callback outside the Casos view; `null` and `'exclude'` are Ocultar arquivados. |
+| `filtered` | `boolean` | `false` | Picks `labels.noResult` instead of `labels.empty` for the empty message. |
+| `onPhaseChange`, `onOwnerChange` | `(recordId, value) => void` | - | Make Fase and Responsável editable in a row. |
+| `onTagsChange` | `(recordId: string, tagIds: string[]) => void` | - | Makes Tags editable in a row of the Tabela and the Lista. |
+| `onUnarchive` | `(recordId: string) => void` | - | Renders Desarquivar on an archived Processo. |
+| `onOpen` | `(recordId: string) => void` | - | Makes the row and the list title open the record. |
+| `selectedIds`, `onSelectedIdsChange` | `string[]`, `(recordIds) => void` | `[]` | The controllable row selection of the Tabela. Either one, or a bulk callback, adds the select column. |
+| `onBulkPhaseChange`, `onBulkOwnerChange`, `onBulkTagAdd` | `(recordIds, value) => void` | - | Render Fase, Responsável and Tags in the action bar. |
+| `onBulkArchive` | `(recordIds: string[]) => void` | - | Renders Arquivar in the action bar. |
+| `page`, `onPageChange` | `number`, `(page) => void` | `1` | The controllable page, starting at 1. |
+| `pageCount` | `number` | - | Renders the pagination footer while there are records. |
+| `pageSize`, `total` | `number` | - | Together they show the range summary (`1–25 de 57`); `total` of 0 hides the footer. |
+| `onCreate` | `() => void` | - | Renders Novo processo. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. |
+| `labels` | `Legal5LabelsOverride` | pt-BR texts | Overrides the texts; `archivedOptions`, `columns`, `empty`, `groupings`, `modes`, `noResult`, `paginationButtons`, `poles`, `savedViews`, `situations`, `sorts` and `views` merge key by key. The tag picker's own texts (Adicionar tag, Remover tag) come from `TagsProperty`. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Legal5Record
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `title` | `string` | The identity and the title cell. |
+| `kind` | `'lawsuit' \| 'matter'` | A Processo or a Caso; a Caso gets the outline badge. |
+| `number` | `string \| null` | The process number, copyable; `null` shows `labels.noNumber`. |
+| `phaseId` | `string` | One of `phases`. |
+| `nextDeadline` | `{ label: string; tone: 'danger' \| 'warning' \| 'neutral' } \| null` | The ready text of the next deadline and its tone; the block computes no dates. |
+| `clients` | `string[]` | The client names. |
+| `ownerId` | `string \| null` | One of `owners`. |
+| `tagIds` | `string[]` | Ids of `tags`, shown as badges, editable with `onTagsChange`. |
+| `archived` | `boolean` | Shows the muted Arquivado and, on a Processo, Desarquivar. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Legal5` | `component` | The cases and lawsuits list. |
+| `legal5Modes` | `const` | `['table', 'list']`. |
+| `legal5Views` | `const` | `['all', 'matter', 'lawsuit']`. |
+| `Legal5Props`, `Legal5Record`, `Legal5NextDeadline`, `Legal5DeadlineTone`, `Legal5Phase`, `Legal5Option`, `Legal5Person`, `Legal5Kind`, `Legal5View`, `Legal5Mode`, `Legal5Sort`, `Legal5Pole`, `Legal5Situation`, `Legal5Archived`, `Legal5ColumnId`, `Legal5Labels`, `Legal5LabelsOverride` | `type` | The props, the data and the labels. |

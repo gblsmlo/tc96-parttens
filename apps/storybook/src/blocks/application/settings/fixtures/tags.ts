@@ -1,6 +1,6 @@
-import type { Settings7Tag } from '@tc96/ui/blocks/application/settings/settings-7'
+import type { SettingsCatalog1Tag } from '@tc96/ui/blocks/application/settings/catalog/settings-catalog-1'
 
-export const tags: Settings7Tag[] = [
+export const tags: SettingsCatalog1Tag[] = [
   {
     colorClassName: 'bg-violet-700 dark:bg-violet-500',
     id: 'tag-cliente-ativo',

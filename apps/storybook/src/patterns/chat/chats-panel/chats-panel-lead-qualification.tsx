@@ -28,6 +28,9 @@ import {
   ChatsPanelItem,
   ChatsPanelList,
   CollectionToolbar,
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
   FilterRadioSubmenu,
   PersonProperty,
   RecordGroup,
@@ -106,9 +109,16 @@ function LeadConversation({
     >
       <CollectionToolbar
         aria-label="Ações da conversa"
-        className="shrink-0 border-b px-4 py-2"
-        description={`${channel} · ${platforms[lead.source.platform].label}`}
-        endSlot={
+        className="min-h-14 shrink-0 border-b px-4 py-2"
+        left={
+          <CollectionToolbarHeading>
+            <CollectionToolbarTitle>{lead.name}</CollectionToolbarTitle>
+            <CollectionToolbarDescription>
+              {`${channel} · ${platforms[lead.source.platform].label}`}
+            </CollectionToolbarDescription>
+          </CollectionToolbarHeading>
+        }
+        right={
           <>
             <ToolbarButton
               onClick={onCall}
@@ -124,8 +134,6 @@ function LeadConversation({
             />
           </>
         }
-        title={lead.name}
-        variant="text"
       />
       <ChatConversation
         jumpLabel="Ir para a mais recente"
@@ -356,7 +364,7 @@ export function LeadQualificationScreen({
         actions={
           <CollectionToolbar
             aria-label="Ajustes das conversas"
-            endSlot={
+            right={
               <ViewSettingsMenu
                 activeFilterCount={platform ? 1 : 0}
                 onClearFilters={() => setPlatform('')}

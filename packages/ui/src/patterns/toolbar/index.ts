@@ -2,6 +2,7 @@
 
 export type {
   CollectionToolbarGroupProps,
+  CollectionToolbarMode,
   CollectionToolbarProps,
 } from './components/collection-toolbar'
 export {
@@ -9,16 +10,12 @@ export {
   CollectionToolbarGroup,
 } from './components/collection-toolbar'
 export type {
-  ViewSwitcherCreateProps,
-  ViewSwitcherItemProps,
-  ViewSwitcherItemsProps,
-  ViewSwitcherMenuProps,
-  ViewSwitcherSearchProps,
-} from './components/view-switcher'
+  CollectionToolbarDescriptionProps,
+  CollectionToolbarHeadingProps,
+  CollectionToolbarTitleProps,
+} from './components/collection-toolbar-heading'
 export {
-  ViewSwitcherCreate,
-  ViewSwitcherItem,
-  ViewSwitcherItems,
-  ViewSwitcherMenu,
-  ViewSwitcherSearch,
-} from './components/view-switcher'
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from './components/collection-toolbar-heading'

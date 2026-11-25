@@ -1,0 +1,99 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Legal1
+
+The case portfolio of a law firm (Processos): judicial cases (`lawsuit`, with a CNJ number) and extrajudicial matters (`matter`, Casos) with title and number in separate columns, client, area, phase, instance and court, owner, next deadline, queue and status, shown as a Tabela, a Lista or a Kanban grouped by phase. Reach for it on the cases screen of a legal product. Install it with `npx @tc96/cli add legal-1`.
+
+It is a section, not a page: it renders no `main` landmark. The toolbar is one `CollectionToolbar` in `plain` mode. Its `left` slot holds the view switcher (Todos, Processos, Casos), never the heading: the page has no `h2`, and the section and the table keep their name from `labels.title`. The views are fixed scopes over `kind`, not saved views: the block filters by them, `view` is controllable and `onViewChange` reports the choice. Its `right` slot holds the `ViewSettingsMenu` (Exibição), whose mode tabs switch the layout and whose Filtros section holds the status filter, then Exportar CSV (`ghost`) and Novo processo. There is no search field.
+
+The layouts are the collection's own: `CollectionProvider` with controlled preferences and `CollectionLayoutOutlet` mount the Data Table, the `ListView` or the `KanbanView` for the active `mode`. Fila and Status are `SelectProperty` badges with an icon and a tone, Responsável is a `PersonProperty` and the dates are `DateProperty`. Choosing a value only calls `onStatusChange`, `onQueueChange` or `onOwnerChange` with the case id, and dropping a card on another Kanban column only calls `onPhaseChange`: the block never changes a case. `mode` and `statusFilter` are controllable; without the value the block keeps it and still calls the callback. Loading and error are the block's: the toolbar keeps the view switcher and hides its controls, `pending` renders the skeleton and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
+
+The other pages of `Blocks/Data/Legal/Legal1`: [Playground](?path=/story/blocks-data-legal-legal1-playground--playground), [Layouts](?path=/story/blocks-data-legal-legal1-layouts--default), [Behavior](?path=/story/blocks-data-legal-legal1-behavior--the-heading-names-the-section) and [Usages](?path=/story/blocks-data-legal-legal1-usages--loaded).
+
+## Import
+
+```tsx
+import { Legal1 } from '@tc96/ui/blocks/data/legal/legal-1'
+```
+
+## Anatomy
+
+The toolbar with the view switcher and the controls, then the active layout. The Número do processo cell is a `TextProperty` with a trailing copy button; a matter has no number and shows Sem número without the button.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Legal1
+  cases={cases}
+  mode={mode}
+  onModeChange={setMode}
+  onQueueChange={moveToQueue}
+  onStatusChange={changeStatus}
+  owners={owners}
+/>
+```
+
+## Legal1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `cases` | `Legal1Case[]` | required | The cases. Keep the array stable between renders. |
+| `mode` | `'table' \| 'list' \| 'kanban'` | - | Controls the layout; without it the block starts on `table`. |
+| `onModeChange` | `(mode: Legal1Mode) => void` | - | Called by the mode tabs of Exibição. |
+| `view` | `'all' \| 'lawsuits' \| 'matters'` | - | Controls the view switcher; without it the block starts on `all`. |
+| `onViewChange` | `(view: Legal1View) => void` | - | Called by the view switcher. |
+| `statusFilter` | `Legal1Status \| null` | - | Controls the status filter; `null` is Todos os status. |
+| `onStatusFilterChange` | `(status: Legal1Status \| null) => void` | - | Called by the filter and by Limpar filtros. |
+| `owners` | `Legal1Person[]` | `[]` | The options of Responsável. |
+| `onStatusChange` | `(caseId: string, status: Legal1Status) => void` | - | Makes Status editable. |
+| `onQueueChange` | `(caseId: string, queue: Legal1Queue) => void` | - | Makes Fila editable. |
+| `onOwnerChange` | `(caseId: string, ownerId: string) => void` | - | Makes Responsável editable. |
+| `onPhaseChange` | `(caseId: string, phase: Legal1Phase) => void` | - | Lets Kanban cards drag between phases; the card returns to its column until `cases` changes. |
+| `onOpen` | `(caseId: string) => void` | - | Makes the row, the list title and the Kanban card open the case. |
+| `onCreate` | `() => void` | - | Renders Novo processo. |
+| `onExport` | `() => void` | - | Renders Exportar CSV. |
+| `pending` | `boolean` | `false` | Renders the skeleton; wins over `error`. |
+| `error` | `boolean` | `false` | Renders the error surface. |
+| `onRetry` | `() => void` | - | Renders Tentar novamente in the error surface. |
+| `labels` | `Legal1LabelsOverride` | pt-BR texts | Overrides the texts; `areas`, `columns`, `modes`, `phases`, `queues`, `statuses` and `views` merge key by key. Keep the object stable. |
+| `locale`, `timeZone` | `string` | `"pt-BR"`, `"America/Sao_Paulo"` | Format the deadline dates. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Legal1Case
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | What the callbacks receive. |
+| `kind` | `'lawsuit' \| 'matter'` | Processo (judicial) or Caso (extrajudicial); the views filter by it. |
+| `title` | `string` | The Título column. |
+| `number` | `string \| null` | The CNJ number, with a copy button; `null` reads Sem número. |
+| `client` | `string` | The client name. |
+| `area` | `'civil' \| 'labor' \| 'tax' \| 'corporate' \| 'consumer'` | The practice area. |
+| `phase` | `'filing' \| 'evidence' \| 'judgment' \| 'appeal' \| 'enforcement'` | The Kanban column. |
+| `instance`, `court` | `string \| null` | Shown together in the Instância column; `null` reads Extrajudicial. |
+| `ownerId` | `string \| null` | One of `owners`; `null` reads Sem responsável. |
+| `nextDeadline` | `string \| null` | ISO date; `null` reads Sem prazo. |
+| `queue` | `'intake' \| 'drafting' \| 'hearings' \| 'review'` | The Fila badge. |
+| `status` | `'active' \| 'suspended' \| 'settled' \| 'closed'` | The Status badge. |
+
+## Labels
+
+Every visible text is a key of `labels` with a pt-BR default: `title` (`"Processos"`), `toolbar`, `views` (`"Todos"`, `"Processos"`, `"Casos"`), `viewList`, `copyNumber`, `noNumber`, `noCourt`, `create`, `export`, `display`, `filters`, `status`, `allStatuses`, `clearFilters`, `filterCount`, `modes`, `columns`, `areas`, `phases`, `queues`, `statuses`, `empty`, `emptyColumn`, `noDeadline`, `unassigned`, `openCase(title)`, `loading`, `errorTitle`, `errorDescription` and `retry`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Legal1` | `component` | The case portfolio. |
+| `legal1Modes` | `const` | `['table', 'list', 'kanban']`, the order of the mode tabs. |
+| `Legal1Props`, `Legal1Case`, `Legal1Person`, `Legal1Mode`, `Legal1View`, `Legal1Kind`, `Legal1Area`, `Legal1Phase`, `Legal1Queue`, `Legal1Status`, `Legal1ColumnId` | `type` | The props and the data. |
+| `Legal1Labels`, `Legal1LabelsOverride` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The table is a semantic `table`; Fila and Status are comboboxes named by the column and the current value (`Status: Ativo`), read-only images without their callback.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`.
+- The block carries no color, radius or shadow of its own beyond token classes.

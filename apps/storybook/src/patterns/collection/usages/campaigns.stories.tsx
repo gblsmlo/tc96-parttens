@@ -351,7 +351,7 @@ function CampaignsWorkspace({
         <CollectionFrameHeader>
           <CollectionToolbar
             aria-label="Controles da coleção de campanhas"
-            endSlot={
+            right={
               <ViewSettingsMenu
                 activeFilterCount={activeFilterCount}
                 mode={isCampaignLayout(layout) ? layout : 'datatable'}
@@ -467,9 +467,8 @@ function CampaignsWorkspace({
                 </ViewSettingsSection>
               </ViewSettingsMenu>
             }
-            startSlot={
+            left={
               <ViewSwitcherPicker
-                footer="Criado pela equipe · 8 out 2026"
                 onCreate={createPreset}
                 onDelete={presets.length > 1 ? deletePreset : undefined}
                 onDuplicate={duplicatePreset}
@@ -481,7 +480,7 @@ function CampaignsWorkspace({
                 views={presets}
               />
             }
-            variant="plain"
+            mode="plain"
           />
         </CollectionFrameHeader>
 

@@ -24,6 +24,7 @@
     "./patterns/collection/layouts/data-table/data-table-features": "./src/patterns/collection/layouts/data-table/data-table-features.ts",
     "./patterns/collection/layouts/data-table/data-table-types": "./src/patterns/collection/layouts/data-table/data-table-types.ts",
     "./patterns/collection/layouts/data-table/use-data-table": "./src/patterns/collection/layouts/data-table/use-data-table.ts",
+    "./patterns/rich-text-editor": "./src/patterns/rich-text-editor/index.ts",
     "./patterns/*": "./src/patterns/*.tsx",
     "./blocks/*": "./src/blocks/*/index.ts",
     "./helpers/*": "./src/helpers/*.ts"
@@ -37,7 +38,9 @@
     "@dnd-kit/react": "0.5.0",
     "@phosphor-icons/react": "2.1.10",
     "@platejs/basic-nodes": "53.0.0",
+    "@platejs/basic-styles": "53.0.0",
     "@platejs/combobox": "53.0.0",
+    "@platejs/comment": "53.0.0",
     "@platejs/date": "53.0.0",
     "@platejs/dnd": "53.3.8",
     "@platejs/link": "53.3.5",
@@ -45,7 +48,9 @@
     "@platejs/mention": "53.0.0",
     "@platejs/selection": "53.1.6",
     "@platejs/slash-command": "53.0.0",
+    "@platejs/suggestion": "53.2.3",
     "@platejs/table": "53.0.9",
+    "@platejs/yjs": "53.5.6",
     "@tanstack/charts": "1.5.0",
     "@tanstack/react-form": "1.33.5",
     "@tanstack/react-table": "9.2.4",
@@ -61,6 +66,8 @@
     "react-is": "19.1.1",
     "react-phone-number-input": "3.4.18",
     "recharts": "3.10.1",
+    "y-protocols": "1.0.7",
+    "yjs": "13.6.33",
     "zod": "4.4.3"
   },
   "peerDependencies": {

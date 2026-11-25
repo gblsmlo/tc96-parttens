@@ -16,7 +16,7 @@ import { ChatAvatar, channels, chats, unreadLabel } from './fixtures/chats'
 export const SortActions = () => (
   <CollectionToolbar
     aria-label="Ajustes das conversas"
-    endSlot={
+    right={
       <ViewSettingsMenu onClearFilters={() => {}}>
         <ViewSettingsSection label="Ordenar por">
           <MenuRadioGroup defaultValue="recent">

@@ -135,12 +135,7 @@ export function CalendarTimeGrid<TRecord>({
         ))}
       </div>
 
-      <ScrollArea
-        className="min-h-0 flex-1"
-        fill
-        ref={viewportRef}
-        scrollbarGutter
-      >
+      <ScrollArea className="min-h-0 flex-1" fill ref={viewportRef} scrollFade>
         <div
           className="grid"
           style={{

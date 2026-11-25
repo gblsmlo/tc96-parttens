@@ -1,9 +1,11 @@
 import {
+  ArrowsDownUpIcon,
   CalendarDotsIcon,
   CardsIcon,
   GridFourIcon,
   RadioButtonIcon,
   RowsIcon,
+  SignpostIcon,
   TableIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -22,15 +24,16 @@ import {
   type CollectionKanbanCardMove,
   type CollectionLayout,
   CollectionLayoutOutlet,
-  CollectionPagination,
-  type CollectionPaginationProps,
   type CollectionPreferences,
   type CollectionPreferencesChangeDetails,
   CollectionProvider,
   type CollectionRecordChange,
   CollectionSearchField,
   CollectionToolbar,
+  FilterCheckboxSubmenu,
+  type FilterCheckboxSubmenuProps,
   FilterRadioSubmenu,
+  SortRadioSubmenu,
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
@@ -98,6 +101,7 @@ interface BehaviorArgs {
   onRowClick: NonNullable<CollectionDataTableViewProps<Item>['onRowClick']>
   onSavePreference: () => void
   onValueChange: (value: string) => void
+  onValuesChange: (value: string[]) => void
 }
 
 const meta = {
@@ -112,6 +116,7 @@ const meta = {
     onRowClick: fn(),
     onSavePreference: fn(),
     onValueChange: fn(),
+    onValuesChange: fn(),
   },
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
@@ -285,7 +290,7 @@ function LayoutTabs() {
 
   return (
     <CollectionToolbar
-      endSlot={
+      right={
         <ViewSettingsMenu
           mode={preferences.layout}
           modes={layoutModes}
@@ -799,7 +804,7 @@ const searchbox = (canvasElement: HTMLElement) =>
 export const SearchCommitsOnSubmit: Story = {
   render: ({ onCommit }) => (
     <CollectionToolbar
-      startSlot={
+      left={
         <CollectionSearchField
           label="Buscar contatos"
           onCommit={onCommit}
@@ -821,7 +826,7 @@ export const SearchCommitsOnSubmit: Story = {
 export const SearchCommitsWhenEmptied: Story = {
   render: ({ onCommit }) => (
     <CollectionToolbar
-      startSlot={
+      left={
         <CollectionSearchField
           label="Buscar contatos"
           onCommit={onCommit}
@@ -847,7 +852,7 @@ function ExternalSearchValue() {
         Voltar para a busca salva
       </Button>
       <CollectionToolbar
-        startSlot={
+        left={
           <CollectionSearchField
             label="Buscar contatos"
             onCommit={setValue}
@@ -896,7 +901,7 @@ function FilterSubmenu({
 }>) {
   return (
     <CollectionToolbar
-      endSlot={
+      right={
         <ViewSettingsMenu onClearFilters={() => undefined}>
           <ViewSettingsSection label="Filtros">
             <FilterRadioSubmenu
@@ -1001,6 +1006,271 @@ export const FilterSubmenuLoading: Story = {
   },
 }
 
+const phaseOptions: FilterCheckboxSubmenuProps['options'] = [
+  ['triage', 'Triagem'],
+  {
+    label: 'Conhecimento',
+    options: [
+      ['petition', 'Petição inicial'],
+      ['hearing', 'Audiência'],
+    ],
+  },
+  { label: 'Recursal', options: [['appeal', 'Apelação']] },
+]
+
+function PhaseFilterSubmenu({
+  clearLabel,
+  defaultValue = [],
+  loading,
+  onValueChange,
+}: Readonly<{
+  clearLabel?: string
+  defaultValue?: readonly string[]
+  loading?: boolean
+  onValueChange: (value: string[]) => void
+}>) {
+  const [value, setValue] = useState(defaultValue)
+  return (
+    <CollectionToolbar
+      right={
+        <ViewSettingsMenu onClearFilters={() => undefined}>
+          <ViewSettingsSection label="Filtros">
+            <FilterCheckboxSubmenu
+              clearLabel={clearLabel}
+              icon={SignpostIcon}
+              label="Fase"
+              loading={loading}
+              onValueChange={(next) => {
+                onValueChange(next)
+                setValue(next)
+              }}
+              options={phaseOptions}
+              value={value}
+            />
+          </ViewSettingsSection>
+        </ViewSettingsMenu>
+      }
+    />
+  )
+}
+
+const openPhaseSubmenu = async (canvasElement: HTMLElement) => {
+  await userEvent.click(
+    within(canvasElement).getByRole('button', { name: 'Exibição' }),
+  )
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Fase' }))
+}
+
+const phaseSubmenuOf = (item: HTMLElement) =>
+  item.closest('[role="menu"]') as HTMLElement
+
+export const CheckboxFilterTogglesWithoutClosing: Story = {
+  render: ({ onValuesChange }) => (
+    <PhaseFilterSubmenu onValueChange={onValuesChange} />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await openPhaseSubmenu(canvasElement)
+
+    const triage = await screen.findByRole('menuitemcheckbox', {
+      name: 'Triagem',
+    })
+    await userEvent.click(triage)
+    await expect(args.onValuesChange).toHaveBeenLastCalledWith(['triage'])
+    await expect(triage).toBeVisible()
+    await expect(triage).toHaveAttribute('aria-checked', 'true')
+
+    await userEvent.click(
+      screen.getByRole('menuitemcheckbox', { name: 'Apelação' }),
+    )
+    await expect(args.onValuesChange).toHaveBeenLastCalledWith([
+      'triage',
+      'appeal',
+    ])
+
+    await userEvent.click(triage)
+    await expect(args.onValuesChange).toHaveBeenLastCalledWith(['appeal'])
+    await expect(triage).toHaveAttribute('aria-checked', 'false')
+    await expect(args.onValuesChange).toHaveBeenCalledTimes(3)
+    await closeMenus()
+  },
+}
+
+export const CheckboxFilterAnnouncesTheGroups: Story = {
+  render: ({ onValuesChange }) => (
+    <PhaseFilterSubmenu onValueChange={onValuesChange} />
+  ),
+  play: async ({ canvasElement }) => {
+    await openPhaseSubmenu(canvasElement)
+
+    const knowledge = await screen.findByRole('group', {
+      name: 'Conhecimento',
+    })
+    await expect(
+      within(knowledge)
+        .getAllByRole('menuitemcheckbox')
+        .map((item) => item.textContent),
+    ).toEqual(['Petição inicial', 'Audiência'])
+    await expect(
+      within(screen.getByRole('group', { name: 'Recursal' })).getByRole(
+        'menuitemcheckbox',
+        { name: 'Apelação' },
+      ),
+    ).toBeVisible()
+    await expect(
+      screen
+        .getByRole('menuitemcheckbox', { name: 'Triagem' })
+        .closest('[role="group"]'),
+    ).toBeNull()
+    await closeMenus()
+  },
+}
+
+export const CheckboxFilterClearResets: Story = {
+  render: ({ onValuesChange }) => (
+    <PhaseFilterSubmenu
+      clearLabel="Todas as fases"
+      defaultValue={['triage', 'appeal']}
+      onValueChange={onValuesChange}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await openPhaseSubmenu(canvasElement)
+
+    const clear = await screen.findByRole('menuitemcheckbox', {
+      name: 'Todas as fases',
+    })
+    await expect(clear).toHaveAttribute('aria-checked', 'false')
+
+    await userEvent.click(clear)
+    await expect(args.onValuesChange).toHaveBeenCalledOnce()
+    await expect(args.onValuesChange).toHaveBeenLastCalledWith([])
+    await expect(clear).toHaveAttribute('aria-checked', 'true')
+    await expect(
+      screen.getByRole('menuitemcheckbox', { name: 'Triagem' }),
+    ).toHaveAttribute('aria-checked', 'false')
+
+    await userEvent.click(clear)
+    await expect(args.onValuesChange).toHaveBeenCalledOnce()
+    await expect(clear).toHaveAttribute('aria-checked', 'true')
+    await closeMenus()
+  },
+}
+
+export const CheckboxFilterHasNoClearWithoutLabel: Story = {
+  render: ({ onValuesChange }) => (
+    <PhaseFilterSubmenu onValueChange={onValuesChange} />
+  ),
+  play: async ({ canvasElement }) => {
+    await openPhaseSubmenu(canvasElement)
+
+    const triage = await screen.findByRole('menuitemcheckbox', {
+      name: 'Triagem',
+    })
+    await expect(
+      within(phaseSubmenuOf(triage))
+        .getAllByRole('menuitemcheckbox')
+        .map((item) => item.textContent),
+    ).toEqual(['Triagem', 'Petição inicial', 'Audiência', 'Apelação'])
+    await closeMenus()
+  },
+}
+
+export const CheckboxFilterLoading: Story = {
+  render: ({ onValuesChange }) => (
+    <PhaseFilterSubmenu
+      clearLabel="Todas as fases"
+      loading
+      onValueChange={onValuesChange}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await openPhaseSubmenu(canvasElement)
+
+    const clear = await screen.findByRole('menuitemcheckbox', {
+      name: 'Todas as fases',
+    })
+    const submenu = phaseSubmenuOf(clear)
+    await expect(submenu).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      submenu.querySelectorAll('[data-slot="skeleton"]'),
+    ).toHaveLength(3)
+    await expect(within(submenu).getAllByRole('menuitemcheckbox')).toEqual([
+      clear,
+    ])
+    await expect(within(submenu).queryByRole('group')).toBeNull()
+    await closeMenus()
+  },
+}
+
+const sortOptions = [
+  ['fatal', 'Data fatal'],
+  ['internal', 'Data interna'],
+] as const
+
+type DeadlineSort = (typeof sortOptions)[number][0]
+
+function DeadlineSortSubmenu({
+  onValueChange,
+}: Readonly<{ onValueChange: (value: string) => void }>) {
+  const [sort, setSort] = useState<DeadlineSort>('fatal')
+  return (
+    <CollectionToolbar
+      right={
+        <ViewSettingsMenu>
+          <ViewSettingsSection label="Ordenar">
+            <SortRadioSubmenu
+              icon={ArrowsDownUpIcon}
+              label="Ordenar por"
+              onValueChange={(next) => {
+                onValueChange(next)
+                setSort(next)
+              }}
+              options={sortOptions}
+              value={sort}
+            />
+          </ViewSettingsSection>
+        </ViewSettingsMenu>
+      }
+    />
+  )
+}
+
+const checkedSorts = (submenu: HTMLElement) =>
+  within(submenu)
+    .getAllByRole('menuitemradio')
+    .filter((item) => item.getAttribute('aria-checked') === 'true')
+    .map((item) => item.textContent)
+
+export const SortSubmenuAlwaysHasAChoice: Story = {
+  render: ({ onValueChange }) => (
+    <DeadlineSortSubmenu onValueChange={onValueChange} />
+  ),
+  play: async ({ args, canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Exibição' }),
+    )
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Ordenar por' }),
+    )
+
+    const internal = await screen.findByRole('menuitemradio', {
+      name: 'Data interna',
+    })
+    const submenu = internal.closest('[role="menu"]') as HTMLElement
+    await expect(within(submenu).getAllByRole('menuitemradio')).toHaveLength(2)
+    await expect(checkedSorts(submenu)).toEqual(['Data fatal'])
+
+    await userEvent.click(internal)
+    await expect(args.onValueChange).toHaveBeenLastCalledWith('internal')
+    await waitFor(() => expect(checkedSorts(submenu)).toEqual(['Data interna']))
+
+    await userEvent.click(internal)
+    await expect(checkedSorts(submenu)).toEqual(['Data interna'])
+    await expect(args.onValueChange).not.toHaveBeenCalledWith('')
+    await closeMenus()
+  },
+}
+
 const modesOf = (count: number): ViewSettingsMode[] =>
   Array.from({ length: count }, (_, index) => ({
     icon: GridFourIcon,
@@ -1018,7 +1288,7 @@ const popupWidths = [
 export const ModeTabCallsOnModeChange: Story = {
   render: ({ onModeChange }) => (
     <CollectionToolbar
-      endSlot={
+      right={
         <ViewSettingsMenu
           mode="mode-1"
           modes={modesOf(2)}
@@ -1049,7 +1319,7 @@ export const ModeTabCallsOnModeChange: Story = {
 export const PopupWidthFollowsTheModes: Story = {
   render: () => (
     <CollectionToolbar
-      endSlot={popupWidths.map(([label, count]) => (
+      right={popupWidths.map(([label, count]) => (
         <ViewSettingsMenu
           key={label}
           label={label}
@@ -1093,7 +1363,7 @@ function SettingsMenu(
 ) {
   return (
     <CollectionToolbar
-      endSlot={
+      right={
         <ViewSettingsMenu {...props}>
           <ViewSettingsSection label="Seção">
             <MenuItem>Item</MenuItem>
@@ -1179,217 +1449,5 @@ export const SaveCallsOnSavePreference: Story = {
     )
     await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
     await expect(args.onSavePreference).toHaveBeenCalledOnce()
-  },
-}
-
-function StatefulPagination({
-  onPageChange,
-  page: initialPage,
-  ...props
-}: Readonly<CollectionPaginationProps>) {
-  const [page, setPage] = useState(initialPage)
-
-  return (
-    <CollectionPagination
-      {...props}
-      onPageChange={(next) => {
-        setPage(next)
-        onPageChange(next)
-      }}
-      page={page}
-    />
-  )
-}
-
-const pageButton = (canvasElement: HTMLElement, name: string) =>
-  within(canvasElement).getByRole('button', { name })
-
-const pageOverCount = (canvasElement: HTMLElement) =>
-  layoutRoot(canvasElement, 'collection-pagination-page')
-
-export const PaginationNamesTheNavigation: Story = {
-  render: ({ onPageChange }) => (
-    <StatefulPagination
-      label="Paginação de contatos"
-      onPageChange={onPageChange}
-      page={2}
-      pageCount={4}
-    />
-  ),
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-
-    await expect(
-      canvas.getByRole('navigation', { name: 'Paginação de contatos' }),
-    ).toBeVisible()
-    await expect(
-      canvas.queryByRole('navigation', { name: 'pagination' }),
-    ).toBeNull()
-    await expect(pageOverCount(canvasElement)).toHaveTextContent('2 / 4')
-    await expect(pageOverCount(canvasElement)).toHaveAttribute(
-      'aria-current',
-      'page',
-    )
-    await expect(args.onPageChange).not.toHaveBeenCalled()
-  },
-}
-
-export const PaginationSummarizesTheVisibleRange: Story = {
-  render: ({ onPageChange }) => (
-    <StatefulPagination
-      label="Paginação de contatos"
-      onPageChange={onPageChange}
-      page={1}
-      pageCount={3}
-      pageSize={25}
-      total={57}
-    />
-  ),
-  play: async ({ args, canvasElement }) => {
-    const summary = within(canvasElement).getByText('1–25 de 57')
-
-    await expect(summary.tagName).toBe('P')
-    await expect(summary).toHaveAttribute('aria-live', 'polite')
-
-    await userEvent.click(pageButton(canvasElement, 'Próxima página'))
-    await expect(summary).toHaveTextContent('26–50 de 57')
-
-    await userEvent.click(pageButton(canvasElement, 'Última página'))
-    await expect(summary).toHaveTextContent('51–57 de 57')
-    await expect(args.onPageChange).toHaveBeenCalledTimes(2)
-    await expect(args.onPageChange).toHaveBeenNthCalledWith(1, 2)
-    await expect(args.onPageChange).toHaveBeenNthCalledWith(2, 3)
-  },
-}
-
-export const PaginationSummaryNeedsTotalAndPageSize: Story = {
-  render: ({ onPageChange }) => (
-    <div className="flex flex-col gap-2">
-      <StatefulPagination
-        label="Paginação só com total"
-        onPageChange={onPageChange}
-        page={1}
-        pageCount={3}
-        total={57}
-      />
-      <StatefulPagination
-        label="Paginação só com tamanho"
-        onPageChange={onPageChange}
-        page={1}
-        pageCount={3}
-        pageSize={25}
-      />
-    </div>
-  ),
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-
-    await expect(canvas.getAllByRole('navigation')).toHaveLength(2)
-    await expect(canvas.queryByText(/ de /)).toBeNull()
-    await expect(canvasElement.querySelector('[aria-live]')).toBeNull()
-    await expect(args.onPageChange).not.toHaveBeenCalled()
-  },
-}
-
-export const PaginationSummaryReadsZeroOfZero: Story = {
-  render: ({ onPageChange }) => (
-    <StatefulPagination
-      label="Paginação de contatos"
-      onPageChange={onPageChange}
-      page={1}
-      pageCount={0}
-      pageSize={25}
-      total={0}
-    />
-  ),
-  play: async ({ args, canvasElement }) => {
-    await expect(within(canvasElement).getByText('0 de 0')).toHaveAttribute(
-      'aria-live',
-      'polite',
-    )
-    await expect(args.onPageChange).not.toHaveBeenCalled()
-  },
-}
-
-export const PaginationFirstPageDisablesTheStart: Story = {
-  render: ({ onPageChange }) => (
-    <StatefulPagination
-      label="Paginação de contatos"
-      onPageChange={onPageChange}
-      page={1}
-      pageCount={3}
-    />
-  ),
-  play: async ({ args, canvasElement }) => {
-    await expect(pageButton(canvasElement, 'Primeira página')).toBeDisabled()
-    await expect(pageButton(canvasElement, 'Página anterior')).toBeDisabled()
-    await expect(pageButton(canvasElement, 'Próxima página')).toBeEnabled()
-    await expect(pageButton(canvasElement, 'Última página')).toBeEnabled()
-    await expect(args.onPageChange).not.toHaveBeenCalled()
-  },
-}
-
-export const PaginationLastPageDisablesTheEnd: Story = {
-  render: ({ onPageChange }) => (
-    <StatefulPagination
-      label="Paginação de contatos"
-      onPageChange={onPageChange}
-      page={3}
-      pageCount={3}
-    />
-  ),
-  play: async ({ args, canvasElement }) => {
-    await expect(pageButton(canvasElement, 'Próxima página')).toBeDisabled()
-    await expect(pageButton(canvasElement, 'Última página')).toBeDisabled()
-    await expect(pageButton(canvasElement, 'Primeira página')).toBeEnabled()
-    await expect(pageButton(canvasElement, 'Página anterior')).toBeEnabled()
-    await expect(args.onPageChange).not.toHaveBeenCalled()
-  },
-}
-
-export const PaginationReportsTheTargetPage: Story = {
-  render: ({ onPageChange }) => (
-    <StatefulPagination
-      label="Paginação de contatos"
-      onPageChange={onPageChange}
-      page={3}
-      pageCount={5}
-    />
-  ),
-  play: async ({ args, canvasElement }) => {
-    await userEvent.click(pageButton(canvasElement, 'Próxima página'))
-    await userEvent.click(pageButton(canvasElement, 'Página anterior'))
-    await userEvent.click(pageButton(canvasElement, 'Última página'))
-    await userEvent.click(pageButton(canvasElement, 'Primeira página'))
-
-    await expect(args.onPageChange).toHaveBeenCalledTimes(4)
-    await expect(args.onPageChange).toHaveBeenNthCalledWith(1, 4)
-    await expect(args.onPageChange).toHaveBeenNthCalledWith(2, 3)
-    await expect(args.onPageChange).toHaveBeenNthCalledWith(3, 5)
-    await expect(args.onPageChange).toHaveBeenNthCalledWith(4, 1)
-    await expect(pageOverCount(canvasElement)).toHaveTextContent('1 / 5')
-  },
-}
-
-export const PaginationClampsTheOutOfRangePage: Story = {
-  render: ({ onPageChange }) => (
-    <StatefulPagination
-      label="Paginação de contatos"
-      onPageChange={onPageChange}
-      page={9}
-      pageCount={0}
-    />
-  ),
-  play: async ({ args, canvasElement }) => {
-    await expect(pageOverCount(canvasElement)).toHaveTextContent('1 / 1')
-    for (const name of [
-      'Primeira página',
-      'Página anterior',
-      'Próxima página',
-      'Última página',
-    ]) {
-      await expect(pageButton(canvasElement, name)).toBeDisabled()
-    }
-    await expect(args.onPageChange).not.toHaveBeenCalled()
   },
 }

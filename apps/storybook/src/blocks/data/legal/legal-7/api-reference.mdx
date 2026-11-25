@@ -1,0 +1,100 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Legal7
+
+The queue of court publications waiting for a decision (Publicações): when each one was made available and how long it waits, tribunal, type, case number, linked lawsuit, lawyers and an excerpt, shown as a Tabela or a Lista. Reach for it on the publications triage screen of a legal product. Install it with `npx @tc96/cli add legal-7`.
+
+The toolbar shows `labels.title` as the only `h2` and Exibição: the mode tabs, Ordenar (Mais antigas, Mais novas), Filtros (Processo and Tribunal), Limpar filtros and, with `onSavePreference`, Salvar preferência. There is no search field. The queue has no fixed views, so the view switcher renders only when `savedViews`, `savedViewsLoading` or a saved view callback is passed: it then replaces the heading (the page has no `h2`; the section and the table keep `labels.title`), lists Todas (`labels.allPublications`, the queue with no saved view, as lemind names it) and Minhas visualizações, and shows the active saved view on the trigger, marked as changed with `savedViewModified`. Picking a saved view calls `onSavedViewSelect` with its id and Todas calls it with `null`; the block applies neither, and the consumer sets the filters and sort the view stores. Each saved view and footer action renders only with its callback, and the name and delete dialogs are the consumer's. While `tribunalsLoading` is true the Tribunal submenu shows skeleton rows (`aria-busy`). The layouts are the collection's Data Table and `ListView`, mounted by `CollectionProvider` and `CollectionLayoutOutlet`, with `CollectionPagination` below them while `total` is above zero. A Lista row starts with a newspaper icon, and its title opens the publication under the same `labels.openPublication` name as a Tabela row.
+
+The block renders what it gets. It never filters, sorts or pages `publications`: sort, filters and page are value and callback pairs, and the consumer answers each callback with the records of that page, as a server does. Without a value the block keeps the choice locally and still calls the callback. `wait` and each item of `lawyers` arrive as ready text; the block computes no days.
+
+Selecting rows in the Tabela opens the `ActionBar` pattern. One selected publication with a lawsuit offers Criar prazo, Vincular a prazo and Sem prazo; one without a lawsuit offers Cadastrar processo and Vincular a um processo; either case adds Criar tarefa and Descartar. Several selected publications offer Vincular a um processo and Descartar, both disabled while any of them already has a lawsuit; the bar then shows `labels.bulkHint` as its `notice`, above the toolbar. An action renders only when its callback is passed, and the dialogs those actions open belong to the consumer.
+
+The other pages of `Blocks/Data/Legal/Legal7`: [Playground](?path=/story/blocks-data-legal-legal7-playground--playground), [Layouts](?path=/story/blocks-data-legal-legal7-layouts--default), [Behavior](?path=/story/blocks-data-legal-legal7-behavior--the-heading-names-the-section) and [Usages](?path=/story/blocks-data-legal-legal7-usages--loaded).
+
+## Import
+
+```tsx
+import { Legal7 } from '@tc96/ui/blocks/data/legal/legal-7'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Legal7
+  lawsuitFilter={lawsuit}
+  onDiscard={discard}
+  onLawsuitFilterChange={setLawsuit}
+  onOpen={open}
+  onPageChange={setPage}
+  onSortChange={setSort}
+  page={page}
+  pageCount={pageCount}
+  pageSize={25}
+  publications={queue.items}
+  sort={sort}
+  total={queue.total}
+  tribunals={queue.tribunals}
+/>
+```
+
+## Legal7
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `publications` | `Legal7Publication[]` | required | The publications of the current page, already filtered and sorted. Keep the array stable between renders. |
+| `mode`, `onModeChange` | `'table' \| 'list'`, `(mode) => void` | `'table'` | The controllable layout, changed by the mode tabs of Exibição. |
+| `sort`, `onSortChange` | `'oldest' \| 'newest'`, `(sort) => void` | `'oldest'` | The controllable order of Ordenar. The block does not reorder the records. |
+| `lawsuitFilter`, `onLawsuitFilterChange` | `'linked' \| 'unlinked' \| null`, `(filter) => void` | `null` | The controllable Processo filter; `null` is Com e sem processo. |
+| `tribunalFilter`, `onTribunalFilterChange` | `string \| null`, `(tribunal) => void` | `null` | The controllable Tribunal filter; `null` is Todos os tribunais. |
+| `tribunals` | `string[]` | `[]` | The options of the Tribunal filter. A selected tribunal stays offered even when it is not in the list. |
+| `tribunalsLoading` | `boolean` | `false` | Shows skeleton rows in the Tribunal submenu while the tribunals load. |
+| `savedViews` | `{ id: string; label: string; icon?: ReactNode }[]` | - | The member's saved views; with it the view switcher replaces the heading. |
+| `savedViewId` | `string \| null` | - | The active saved view; `null` is Todas. |
+| `savedViewModified` | `boolean` | `false` | Marks the active saved view as changed and offers Atualizar. |
+| `savedViewsLoading`, `savedViewsPending` | `boolean` | `false` | Skeleton rows under Minhas visualizações; Duplicar and Atualizar disabled while a write runs. |
+| `onSavedViewSelect` | `(savedViewId: string \| null) => void` | - | Called with the id of a saved view, or `null` from Todas. |
+| `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | `(savedViewId: string) => void` | - | Render that item of a saved view's options menu. |
+| `onSavedViewCreate`, `onSavedViewUpdate` | `() => void` | - | Render Salvar visualização and, on a changed active view, Atualizar. |
+| `onSavePreference` | `() => void` | - | Renders Salvar preferência at the end of Exibição. |
+| `filtered` | `boolean` | a filter is set | Chooses the empty message: `labels.noResult` when true, `labels.empty` otherwise. |
+| `page`, `onPageChange` | `number`, `(page) => void` | `1` | The controllable page, starting at 1. |
+| `pageCount`, `pageSize`, `total` | `number` | `1`, -, `0` | The pagination values. The pagination renders only when `total` is above zero; the range text needs `pageSize`. |
+| `selectedIds`, `onSelectedIdsChange` | `string[]`, `(publicationIds) => void` | `[]` | The controllable row selection of the Tabela. |
+| `onCreateDeadline`, `onLinkDeadline`, `onNoDeadline` | `(publicationId: string) => void` | - | The actions of one selected publication that has a lawsuit. |
+| `onCreateLawsuit` | `(publicationId: string) => void` | - | Cadastrar processo, for one selected publication without a lawsuit. |
+| `onLinkLawsuit` | `(publicationIds: string[]) => void` | - | Vincular a um processo, for one or several publications without a lawsuit. |
+| `onCreateTask` | `(publicationId: string) => void` | - | Criar tarefa, for one selected publication. |
+| `onDiscard` | `(publicationIds: string[]) => void` | - | Descartar, for one publication or several without a lawsuit. |
+| `onOpen` | `(publicationId: string) => void` | - | Makes the table row and the list title open the publication. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. |
+| `labels` | `Legal7LabelsOverride` | pt-BR texts | Overrides the texts; `actions`, `columns`, `lawsuitFilters`, `modes`, `savedViews` and `sorts` merge key by key. |
+| `locale`, `timeZone` | `string` | `"pt-BR"`, `"America/Sao_Paulo"` | Format `availableOn`. A calendar day (`YYYY-MM-DD`) is shown as written, whatever the time zone. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Legal7Publication
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | The identity sent to every callback. |
+| `availableOn` | `string` | ISO day the publication was made available. |
+| `wait` | `string` | Ready text of how long it waits, such as `há 3 dias`. |
+| `tribunal`, `kind` | `string` | The Tribunal and Tipo cells and the list title. |
+| `number` | `string \| null` | The case number; `null` shows `labels.noNumber`. |
+| `lawsuitTitle` | `string \| null` | The linked lawsuit; `null` shows `labels.noLawsuit` and marks the publication as without a lawsuit for the actions. |
+| `lawyers` | `string[]` | Ready strings such as `Ana Lima (OAB 123456/SP)`, joined by `labels.lawyers`. |
+| `excerpt` | `string` | The start of the text, truncated in the Trecho cell. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Legal7` | `component` | The publications queue. |
+| `legal7Modes` | `const` | `['table', 'list']`. |
+| `legal7Sorts` | `const` | `['oldest', 'newest']`. |
+| `Legal7Props`, `Legal7Publication`, `Legal7Mode`, `Legal7Sort`, `Legal7LawsuitFilter`, `Legal7ColumnId`, `Legal7ActionId`, `Legal7Labels`, `Legal7LabelsOverride` | `type` | The props, the data and the labels. |

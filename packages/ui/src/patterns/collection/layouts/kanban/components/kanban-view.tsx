@@ -184,7 +184,6 @@ export function KanbanView<TCard>({
             }
             fill
             ref={cardDragEnabled ? rootRef : undefined}
-            scrollbarGutter
             scrollFade
           >
             <div

@@ -76,7 +76,7 @@ function MembersToolbar({
 }: Readonly<{ table: DataTableTable<Member> }>) {
   return (
     <CollectionToolbar
-      endSlot={
+      right={
         <ViewSettingsMenu onClearFilters={() => undefined}>
           <ViewSettingsSection label="Exibição">
             <DataGridSortSubmenu table={table} />

@@ -1,0 +1,92 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsIntegration6
+
+An integrations gallery: a responsive grid of cards (one column, two from `sm`, three from `lg`). Each card shows the app's initials, name and description, a button to connect or disconnect and a switch that enables or pauses the integration. Reach for it when users browse many integrations at once. Install it with `npx @tc96/cli add settings-integration-6`.
+
+It is a section, not a page: it renders no `main` landmark. Connecting, disconnecting and pausing stay in the app; the block calls the callbacks and keeps no state of its own. The switch is disabled while the app is not connected.
+
+The other pages of `Blocks/Application/Settings/Integration/Settings6`: [Playground](?path=/story/blocks-application-settings-integration-settings6-playground--playground), [Behavior](?path=/story/blocks-application-settings-integration-settings6-behavior--empty-list-shows-state-surface) and [Usages](?path=/story/blocks-application-settings-integration-settings6-usages--loaded).
+
+## Import
+
+```tsx
+import { SettingsIntegration6 } from '@tc96/ui/blocks/application/settings/integration/settings-integration-6'
+```
+
+The same path exports the types `SettingsIntegration6Props`, `SettingsIntegration6App` and `SettingsIntegration6Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsIntegration6
+  apps={apps}
+  onConnect={(appId) => connect(appId)}
+  onDisconnect={(appId) => disconnect(appId)}
+  onEnabledChange={(appId, enabled) => setEnabled(appId, enabled)}
+/>
+```
+
+## SettingsIntegration6
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apps` | `SettingsIntegration6App[]` | required | The apps to list; an empty array shows the empty state. |
+| `onConnect` | `(appId: string) => void` | - | Called by the Conectar button of a disconnected app. Without it the button is not rendered. |
+| `onDisconnect` | `(appId: string) => void` | - | Called by the Desconectar button of a connected app. Without it the button is not rendered. |
+| `onEnabledChange` | `(appId: string, enabled: boolean) => void` | - | Called when the switch of a connected app changes. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsIntegration6Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+## SettingsIntegration6App
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the app in the callbacks. |
+| `name` | `string` | Title of the card; its first two initials fill the icon frame. |
+| `logo` | `{ svg: string; title?: string }` | Brand mark, an `@thesvg/icons` module (only `svg` is read), drawn as an `img` with a `data:` URI in the icon frame; without it the initials show. A consumer CSP without `data:` in `img-src` blocks it. |
+| `description` | `string` | Line under the name. |
+| `connected` | `boolean` | Picks the Conectar or Desconectar button and enables the switch. |
+| `enabled` | `boolean` | State of the switch; shown off while the app is not connected. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Galeria de integrações"` |
+| `description` | `string` | `"Conecte ferramentas e pause cada integração quando precisar."` |
+| `connect` | `string` | `"Conectar"` |
+| `disconnect` | `string` | `"Desconectar"` |
+| `connectAction` | `(name: string) => string` | `"Conectar Stripe"`; accessible name of the Conectar button |
+| `disconnectAction` | `(name: string) => string` | `"Desconectar Slack"` |
+| `enableAction` | `(name: string) => string` | `"Ativar Slack"`; accessible name of the switch |
+| `emptyTitle` | `string` | `"Nenhuma integração disponível"` |
+| `emptyDescription` | `string` | `"As integrações disponíveis aparecem aqui."` |
+| `loading` | `string` | `"Carregando integrações"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as integrações"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsIntegration6` | `component` | The integrations gallery section. |
+| `SettingsIntegration6Props` | `type` | The props of the section. |
+| `SettingsIntegration6App` | `type` | An app card. |
+| `SettingsIntegration6Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each button and switch is named by its `*Action(name)` label, so cards are told apart by screen readers.
+- The connected state is carried by the button text, never color alone; the initials frame is decorative.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

@@ -1,0 +1,104 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsIntegration5
+
+A settings section that lists integrations and the events each one receives. Each app shows its initials, name and description and a button to connect or disconnect. A connected app that has `channels` reveals one row per channel with a switch. Reach for it when the app sends workspace events to third-party services. Install it with `npx @tc96/cli add settings-integration-5`.
+
+It is a section, not a page: it renders no `main` landmark. Connecting, disconnecting and saving a channel stay in the app; the block only calls `onConnect`, `onDisconnect` and `onChannelChange` and keeps no state of its own.
+
+The other pages of `Blocks/Application/Settings/Integration/Settings5`: [Playground](?path=/story/blocks-application-settings-integration-settings5-playground--playground), [Behavior](?path=/story/blocks-application-settings-integration-settings5-behavior--empty-list-shows-state-surface) and [Usages](?path=/story/blocks-application-settings-integration-settings5-usages--loaded).
+
+## Import
+
+```tsx
+import { SettingsIntegration5 } from '@tc96/ui/blocks/application/settings/integration/settings-integration-5'
+```
+
+The same path exports the types `SettingsIntegration5Props`, `SettingsIntegration5App`, `SettingsIntegration5Channel` and `SettingsIntegration5Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsIntegration5
+  apps={apps}
+  onChannelChange={(appId, channelId, enabled) =>
+    setChannel(appId, channelId, enabled)
+  }
+  onConnect={(appId) => connect(appId)}
+  onDisconnect={(appId) => disconnect(appId)}
+/>
+```
+
+## SettingsIntegration5
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apps` | `SettingsIntegration5App[]` | required | The apps to list; an empty array shows the empty state. |
+| `onConnect` | `(appId: string) => void` | - | Called by the Conectar button of a disconnected app. Without it the button is not rendered. |
+| `onDisconnect` | `(appId: string) => void` | - | Called by the Desconectar button of a connected app. Without it the button is not rendered. |
+| `onChannelChange` | `(appId: string, channelId: string, enabled: boolean) => void` | - | Called when a channel switch changes. The switch is controlled by `channel.enabled`. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsIntegration5Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+## SettingsIntegration5App
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the app in the callbacks. |
+| `name` | `string` | Title of the row; its first two initials fill the icon frame. |
+| `logo` | `{ svg: string; title?: string }` | Brand mark, an `@thesvg/icons` module (only `svg` is read), drawn as an `img` with a `data:` URI in the icon frame; without it the initials show. A consumer CSP without `data:` in `img-src` blocks it. |
+| `description` | `string` | Line under the name. |
+| `connected` | `boolean` | Picks the button and shows or hides the channels. |
+| `channels` | `SettingsIntegration5Channel[]` | Optional. Without it, or with an empty list, the app shows no switch. |
+
+## SettingsIntegration5Channel
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the channel in `onChannelChange`. |
+| `label` | `string` | Title of the channel row. |
+| `description` | `string` | Optional line under the label. |
+| `enabled` | `boolean` | State of the switch. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Eventos por integração"` |
+| `description` | `string` | `"Conecte aplicativos e escolha quais eventos eles recebem."` |
+| `connect` | `string` | `"Conectar"` |
+| `disconnect` | `string` | `"Desconectar"` |
+| `connectAction` | `(name: string) => string` | `"Conectar Linear"`; accessible name of the Conectar button |
+| `disconnectAction` | `(name: string) => string` | `"Desconectar Slack"` |
+| `channelAction` | `(appName: string, channelLabel: string) => string` | `"Pagamentos com falha em Slack"`; accessible name of a channel switch |
+| `emptyTitle` | `string` | `"Nenhuma integração disponível"` |
+| `emptyDescription` | `string` | `"Os aplicativos disponíveis para conexão aparecem aqui."` |
+| `loading` | `string` | `"Carregando integrações"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as integrações"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsIntegration5` | `component` | The integration events section. |
+| `SettingsIntegration5Props` | `type` | The props of the section. |
+| `SettingsIntegration5App` | `type` | An app row. |
+| `SettingsIntegration5Channel` | `type` | An event channel of an app. |
+| `SettingsIntegration5Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each button and switch is named by its label function, so rows are told apart by screen readers; the visible text is contained in the name.
+- Channels render only for a connected app, so a disconnected app never exposes switches that cannot act.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

@@ -1,0 +1,118 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Dashboard6
+
+A CRM summary dashboard in three layers: a header with breadcrumb, title, description and period select; a row of four KPI cards (Em aberto, Ganhos no período, Perdidos no período and Conversão); and a funnel panel, with the open value, a horizontal bar chart of open leads per stage and a stage table, beside a horizontal bar chart of losses by reason. Reach for it on a sales or intake analytics page that answers how much is open, what was won and lost in the period, and why leads are lost. Install it with `npx @tc96/cli add dashboard-6`.
+
+It is a section, not a page: it renders no `main` landmark. The block never fetches, sums, sorts or keeps state. The app passes the summary already computed for the period (`open`, `won`, `lost` and `conversion`), the stages in pipeline order and the loss reasons in the order to show (the top five by count, for example). The period select renders only with `period`, `periodOptions` and `onPeriodChange`, and the app reads the data of the new period. Money arrives in cents and every number is formatted with `locale` and `currency`. A stage name links to `href` through `renderLink` when it has one. Loading, error and empty are the block's: `pending` renders its skeleton, `error` an error surface with a retry button, and no `summary` with empty `stages` and `lossReasons` the empty state. The precedence is `pending`, then `error`, then empty.
+
+The other pages of `Blocks/Application/Dashboard/Dashboard6`: [Playground](?path=/story/blocks-application-dashboard-dashboard6-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-dashboard-dashboard6-behavior--period-select-calls-on-period-change) for the tests, [States](?path=/story/blocks-application-dashboard-dashboard6-states--default) for the four states and [Usages](?path=/story/blocks-application-dashboard-dashboard6-usages--loaded) for the data read over the network.
+
+## Import
+
+```tsx
+import { Dashboard6 } from '@tc96/ui/blocks/application/dashboard/dashboard-6'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The summary, six stages and five loss reasons.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Dashboard6
+  breadcrumbs={[{ href: '/crm', label: 'CRM' }, { label: 'Analítico' }]}
+  error={isError}
+  lossReasons={data?.lossReasons ?? []}
+  onPeriodChange={setPeriod}
+  onRetry={() => refetch()}
+  pending={isPending}
+  period={period}
+  periodOptions={periodOptions}
+  renderLink={(href) => <Link to={href} />}
+  stages={data?.stages ?? []}
+  summary={data?.summary}
+/>
+```
+
+## Dashboard6
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `summary` | `Dashboard6Summary` | - | The KPI values and the open value of the funnel; without it the KPI row and the funnel total are not rendered. |
+| `stages` | `Dashboard6Stage[]` | required | The pipeline stages in order: the bars of the funnel chart and the rows of the stage table. An empty array hides both. |
+| `lossReasons` | `Dashboard6LossReason[]` | required | The bars of the loss chart, in the order given. An empty array renders a message. |
+| `period` | `string` | - | The `value` of the active period. |
+| `periodOptions` | `{ label: string; value: string }[]` | - | The options of the period select. |
+| `onPeriodChange` | `(period: string) => void` | - | Called with the picked period; the select renders only with `period`, `periodOptions` and this callback. |
+| `breadcrumbs` | `{ label: string; href?: string }[]` | - | The trail above the title; the last item is the current page. |
+| `renderLink` | `RenderLink` | `renderAnchor` | Builds the element of each breadcrumb and stage link, for the app's router. |
+| `currency` | `string` | `'BRL'` | Currency of every amount. |
+| `locale` | `string` | `'pt-BR'` | Locale of every formatted number. |
+| `pending` | `boolean` | `false` | Renders the skeleton; wins over `error` and the empty state. |
+| `error` | `boolean` | `false` | Renders the error surface; wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar de novo button; without it the button is not rendered. |
+| `labels` | `Partial<Dashboard6Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Data types
+
+| Type | Fields |
+| --- | --- |
+| `Dashboard6Summary` | `open`, `won` and `lost` (each a `Dashboard6Total`) and `conversion`, a ratio from 0 to 1 or `null` when nothing closed in the period. |
+| `Dashboard6Total` | `count` and `valueCents`. |
+| `Dashboard6Stage` | `id`, `name`, `count`, `valueCents` and `href`, which turns the name in the table into a link. |
+| `Dashboard6LossReason` | `id`, `name` and `count`. |
+| `Dashboard6CountSummaryItem` | `label` and the formatted `count` that `funnelSummary` and `lossesSummary` receive. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Analítico"`; the heading and the accessible name of the section |
+| `description` | `string` | `"Leads em aberto, ganhos, perdas e motivos do período."` |
+| `loading` | `string` | `"Carregando o resumo do funil"`; the accessible name of the skeleton |
+| `indicators` | `string` | `"Indicadores"`; the accessible name of the KPI list |
+| `openLabel`, `wonLabel`, `lostLabel`, `conversionLabel` | `string` | `"Em aberto"`, `"Ganhos no período"`, `"Perdidos no período"`, `"Conversão"` |
+| `conversionDetail` | `string` | `"ganhos entre os encerrados"`; the line under the conversion |
+| `noConversion` | `string` | `"—"`; the conversion when `conversion` is `null` |
+| `leadCount` | `(count, formatted) => string` | `"1 lead"` or `"{n} leads"` |
+| `funnelTitle`, `funnelTotal` | `string` | `"Funil"`, `"Em aberto no funil"` |
+| `funnelLabel` | `string` | `"Leads em aberto por etapa"`; the name of the funnel chart and of the stage table |
+| `funnelSummary` | `(items) => string` | Joins `etapa: n leads` with `; `; the chart description |
+| `columnStage`, `columnLeads`, `columnValue` | `string` | `"Etapa"`, `"Leads"`, `"Valor"` |
+| `lossesTitle`, `lossesEmpty` | `string` | `"Perdas por motivo"`, `"Nenhuma perda no período."` |
+| `lossesLabel` | `string` | `"Leads perdidos por motivo"`; the name of the loss chart |
+| `lossesSummary` | `(items) => string` | Joins `motivo: n leads` with `; `; the chart description |
+| `tooltip` | `(label, count) => string` | `` `${label}: ${count}` ``; the text of a bar tooltip |
+| `breadcrumb` | `string` | `"Navegação estrutural"` |
+| `period`, `export` | `string` | `"Período do resumo"`, `"Exportar"` (the block renders no Exportar button) |
+| `errorTitle`, `errorDescription`, `retry` | `string` | `"Não foi possível carregar o resumo do funil"`, `"Tente de novo em instantes."`, `"Tentar de novo"` |
+| `emptyTitle`, `emptyDescription` | `string` | `"Nenhum lead no funil"`, `"O resumo aparece aqui assim que houver leads no funil."` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Dashboard6` | `component` | The dashboard. |
+| `Dashboard6Props` | `type` | The props of the dashboard. |
+| `Dashboard6Summary` | `type` | The `summary` prop. |
+| `Dashboard6Total` | `type` | A count with its value. |
+| `Dashboard6Stage` | `type` | A funnel stage. |
+| `Dashboard6LossReason` | `type` | A loss reason. |
+| `Dashboard6CountSummaryItem` | `type` | The formatted item the summary labels receive. |
+| `Dashboard6Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The header is a `header` with the `h2` title; the breadcrumb is a `navigation` named by `labels.breadcrumb` and the period select a `combobox` named by `labels.period`.
+- Both charts are TanStack Charts SVGs: an `img` named by `labels.funnelLabel` or `labels.lossesLabel`, with a `desc` built by `labels.funnelSummary` or `labels.lossesSummary`. Arrow keys move between bars and the tooltip text comes from `labels.tooltip`.
+- The stage table, named by `labels.funnelLabel`, is the exact-value alternative of the funnel chart and carries the value of each stage.
+- Each bar carries a direct value label, and the stages keep the pipeline order, so color is not the only cue. The funnel bars use `--chart-1` and the loss bars `--chart-2`; the block carries no raw color, radius or shadow.
+- The skeleton is `aria-busy="true"` and named by `labels.loading`; the error surface has the `alert` role.

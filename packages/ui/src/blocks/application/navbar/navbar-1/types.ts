@@ -1,19 +1,15 @@
+import type { ReactNode } from 'react'
 import type {
   NavbarBreadcrumbItem,
   NavbarPerson,
   NavbarRenderLink,
 } from '../shared/types'
 
-export interface Navbar1Tab {
-  id: string
-  label: string
-}
-
 export interface Navbar1Labels {
   breadcrumb: string
   collaborators: (count: number) => string
+  menu: string
   share: string
-  tabs: string
 }
 
 export interface Navbar1Props {
@@ -21,9 +17,8 @@ export interface Navbar1Props {
   className?: string
   collaborators?: NavbarPerson[]
   labels?: Partial<Navbar1Labels>
+  menu?: ReactNode
   onShare?: () => void
-  onTabChange: (tab: string) => void
   renderLink?: NavbarRenderLink
-  tab: string
-  tabs: Navbar1Tab[]
+  status?: ReactNode
 }

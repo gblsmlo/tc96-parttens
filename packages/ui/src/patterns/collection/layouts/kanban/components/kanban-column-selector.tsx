@@ -35,7 +35,7 @@ export function KanbanColumnSelector({
       <ScrollArea
         aria-labelledby={`${selectorId}-label`}
         className="h-9"
-        scrollbarGutter
+        scrollFade
       >
         <div className="flex w-max gap-1">
           {columns.map((column) => {

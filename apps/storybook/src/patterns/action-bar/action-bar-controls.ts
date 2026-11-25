@@ -15,6 +15,7 @@ export interface ActionBarControls {
   groupLabels: boolean
   icons: boolean
   label: string
+  notice: string
   selectedCount: number
   shortcuts: boolean
   submenu: boolean
@@ -27,6 +28,7 @@ export const actionBarControlArgs: ActionBarControls = {
   groupLabels: false,
   icons: true,
   label: 'Enviar',
+  notice: '',
   selectedCount: 1,
   shortcuts: false,
   submenu: true,
@@ -56,6 +58,11 @@ export const actionBarControlArgTypes: Partial<ArgTypes<ActionBarControls>> = {
     control: 'text',
     description:
       'The `label` of the first action; empty removes the action, and then `variant` and `disabled` act on nothing.',
+  },
+  notice: {
+    control: 'text',
+    description:
+      'The `notice` of `ActionBar`, a message about the selection shown above the bar; empty passes none.',
   },
   selectedCount: {
     control: { min: 0, step: 1, type: 'number' },

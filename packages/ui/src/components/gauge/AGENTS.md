@@ -21,9 +21,9 @@ COSS has `Meter` and `Progress` but no segmented bar, stacked bar or ring; each 
 
 - `packages/ui/src/patterns/widgets/shared/progress-ring.tsx`: `ProgressRing` renders `GaugeRing` with `data-slot="progress-ring"`, so its public name, DOM hooks, text content and plays stay as they were.
 - `packages/ui/src/patterns`: the meters of `widgets` (`BudgetWidget` with `color` per category and `tone="destructive"` over the limit, `QuestsWidget`, `XpMeter`, `ProjectCardWidget`) and `records/group` (`RecordGroupMetric`).
-- `packages/ui/src/blocks/application`: `stats/shared/segmented-meter.tsx` (`stats-3`), `stats/stats-6`, `settings/settings-23`, `shell/app-shell-3/usage-card.tsx`; each names its gauge with `aria-labelledby` on a visible label built from `useId()`.
+- `packages/ui/src/blocks/application`: `stats/shared/segmented-meter.tsx` (`stats-3`), `stats/stats-6`, `settings/account/settings-account-2`, `shell/app-shell-3/usage-card.tsx`; each names its gauge with `aria-labelledby` on a visible label built from `useId()`.
 - `apps/storybook/src/patterns/stats/stats-layouts.tsx` (`LeadsOverviewCard`).
-- Not migrated, on purpose: `Progress` stays where a task runs (`flow-run-card`, `run-monitor`, `impact-map`, `dashboard-3`, `stats-4`, `onboarding-2`), since that is a `progressbar`, not a `meter`; `RiskScoreWidget` (a striped scale) and `ShareBar` (a trend column per segment) are not plain bars; `stats-2` has no bar.
+- Not migrated, on purpose: `Progress` stays where a task runs (`flow-run-card`, `flow-3`, `flow-4`, `dashboard-3`, `stats-4`, `onboarding-2`), since that is a `progressbar`, not a `meter`; `RiskScoreWidget` (a striped scale) and `ShareBar` (a trend column per segment) are not plain bars; `stats-2` has no bar.
 
 ## Invariants
 

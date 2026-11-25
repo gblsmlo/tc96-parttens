@@ -416,6 +416,82 @@ export const SubmenuByKeyboard: Story = {
   },
 }
 
+const mixedNotice =
+  'Só publicações sem processo são vinculadas ou descartadas juntas.'
+
+export const NoticeIsAPoliteStatusAboveTheBar: Story = {
+  render: () => (
+    <ComposedActionBar {...actionBarControlArgs} notice={mixedNotice} />
+  ),
+  play: async ({ canvasElement }) => {
+    const toolbar = getToolbar(canvasElement)
+    const notice = within(canvasElement).getByRole('status')
+    await expect(notice).toHaveTextContent(mixedNotice)
+    await expect(notice).toHaveAttribute('data-slot', 'action-bar-notice')
+    await expect(toolbar.contains(notice)).toBe(false)
+    await expect(notice.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+      toolbar.getBoundingClientRect().top,
+    )
+  },
+}
+
+export const NoNoticeLeavesNoStatus: Story = {
+  render: () => (
+    <div data-testid="parent">
+      <ComposedActionBar {...actionBarControlArgs} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await expect(canvas.queryByRole('status')).toBeNull()
+    await expect(
+      canvasElement.querySelector('[data-slot="action-bar-notice"]'),
+    ).toBeNull()
+    await expect(getToolbar(canvasElement).parentElement).toBe(
+      canvas.getByTestId('parent'),
+    )
+  },
+}
+
+export const NoticeHiddenWithoutSelection: Story = {
+  render: () => (
+    <ComposedActionBar
+      {...actionBarControlArgs}
+      notice={mixedNotice}
+      selectedCount={0}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).queryByRole('status')).toBeNull()
+    await expect(within(canvasElement).queryByRole('toolbar')).toBeNull()
+  },
+}
+
+export const NoticeWrapsWithoutWideningTheBar: Story = {
+  render: () => (
+    <div className="flex w-96 flex-col items-center gap-4">
+      <ComposedActionBar
+        {...actionBarControlArgs}
+        notice={mixedNotice}
+        submenu={false}
+      />
+      <ComposedActionBar {...actionBarControlArgs} submenu={false} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const [withNotice, withoutNotice] = within(canvasElement).getAllByRole(
+      'toolbar',
+    ) as [HTMLElement, HTMLElement]
+    const notice = within(canvasElement).getByRole('status')
+    const lineHeight = Number.parseFloat(getComputedStyle(notice).lineHeight)
+    await expect(withNotice.getBoundingClientRect().width).toBe(
+      withoutNotice.getBoundingClientRect().width,
+    )
+    await expect(notice.getBoundingClientRect().width).toBeLessThanOrEqual(384)
+    await expect(notice.clientHeight).toBeGreaterThan(lineHeight * 1.5)
+  },
+}
+
 export const ClassNameMergesIntoRoot: Story = {
   render: () => (
     <ComposedActionBar {...actionBarControlArgs} className="w-96" />

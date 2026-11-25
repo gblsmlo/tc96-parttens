@@ -1,0 +1,104 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsCatalog9
+
+A settings section that lists the categories of the entries, receipts and expenses, each with its subcategories. Each row shows its name, how many entries use it and, for a top-level category, its direction as a dot and a label. The actions menu edits, adds a subcategory, archives or restores. Reach for it when the app classifies entries by category and lets people organize them one level deep. Install it with `npx @tc96/cli add settings-catalog-9`.
+
+It is a section, not a page: it renders no `main` landmark. Creating, editing and archiving stay in the app; the block only calls `onCreate` and `onCategoryAction`, keeps no list of its own and never fetches or stores anything. A subcategory has no Add subcategory action and no direction, so nesting stops at one level.
+
+The other pages of `Blocks/Application/Settings/Catalog/Settings9`: [Playground](?path=/story/blocks-application-settings-catalog-settings9-playground--playground) to try the texts, the empty list, the archived categories and the actions, [Behavior](?path=/story/blocks-application-settings-catalog-settings9-behavior--empty-list-shows-state-surface) for the tests and [Usages](?path=/story/blocks-application-settings-catalog-settings9-usages--loaded) for the list read over the network.
+
+## Import
+
+```tsx
+import { SettingsCatalog9 } from '@tc96/ui/blocks/application/settings/catalog/settings-catalog-9'
+```
+
+The same path exports the types `SettingsCatalog9Props`, `SettingsCatalog9Category`, `SettingsCatalog9Direction`, `SettingsCatalog9Action` and `SettingsCatalog9Labels`.
+
+## Anatomy
+
+The section with a category, its subcategory and the archived section:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsCatalog9
+  archivedCategories={archivedCategories}
+  categories={categories}
+  onCategoryAction={(categoryId, action) => handleCategoryAction(categoryId, action)}
+  onCreate={openNewCategory}
+/>
+```
+
+## SettingsCatalog9
+
+The categories section. Renders the title, the description and, with `onCreate`, the New category button, then each category followed by its subcategories. With no categories it renders an empty state in place of the rows. With `archivedCategories` it renders a collapsed section, closed by default, after the active rows; without archived categories the section is not rendered.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `categories` | `SettingsCatalog9Category[]` | required | The active categories to list; an empty array shows the empty state. Each category may carry `subcategories`, listed right below it. |
+| `archivedCategories` | `SettingsCatalog9Category[]` | `[]` | Categories listed in the collapsed archived section, with their subcategories. Only rendered when not empty. |
+| `onCreate` | `() => void` | - | Called when the New category button is clicked. Without it the button is not rendered. |
+| `onCategoryAction` | `(categoryId: string, action: SettingsCatalog9Action) => void` | - | Called with the category id and `'edit'`, `'add-subcategory'`, `'archive'` or `'restore'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsCatalog9Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+The block takes no other props.
+
+## SettingsCatalog9Category
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the category in `onCategoryAction`. |
+| `name` | `string` | Title of the row. |
+| `direction` | `'income' \| 'expense'` | Shown as a label on top-level rows only. |
+| `entries` | `number` | Entries using the category, shown in `labels.entries`. |
+| `subcategories` | `SettingsCatalog9Category[]` | Rows listed below the category, described by `labels.subcategoryOf`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Categorias"` |
+| `description` | `string` | `"Como os lançamentos são classificados: honorários, custas, despesas."` |
+| `newCategory` | `string` | `"Nova categoria"` |
+| `edit` | `string` | `"Editar"` |
+| `addSubcategory` | `string` | `"Adicionar subcategoria"` |
+| `archive` | `string` | `"Arquivar"` |
+| `restore` | `string` | `"Restaurar"` |
+| `archived` | `string` | `"Arquivadas"` |
+| `emptyTitle` | `string` | `"Nenhuma categoria ainda"` |
+| `emptyDescription` | `string` | `"Crie uma categoria para classificar receitas e despesas."` |
+| `actions` | `(name: string) => string` | `"Ações de Indicação"` for `"Indicação"`; the accessible name of the row menu |
+| `direction` | `(direction: 'income' \| 'expense') => string` | `"Receita"` for `"income"`, `"Despesa"` for `"expense"` |
+| `entries` | `(count: number) => string` | `"12 lançamentos"`; `1 lançamento` in the singular |
+| `subcategoryOf` | `(parent: string) => string` | `"Subcategoria de Honorários"` for `"Honorários"` |
+| `loading` | `string` | `"Carregando categorias"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as categorias"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsCatalog9` | `component` | The categories section. |
+| `SettingsCatalog9Props` | `type` | The props of the section. |
+| `SettingsCatalog9Category` | `type` | A category, with its direction and optional `subcategories`. |
+| `SettingsCatalog9Direction` | `type` | `'income' \| 'expense'`. |
+| `SettingsCatalog9Action` | `type` | `'edit' \| 'add-subcategory' \| 'archive' \| 'restore'`. |
+| `SettingsCatalog9Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The row menu button is named by `labels.actions(name)`, so each row's menu is told apart by screen readers.
+- The direction dot is always paired with its text label, so the direction is not told apart by color alone.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

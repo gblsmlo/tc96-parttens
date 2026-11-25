@@ -1,0 +1,133 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Finance3
+
+The finance collections of a law firm in one block, picked by `variant`: Lançamentos (`entries`), the A cobrar queue (`receivables`), the Extrato of one account (`statement`) and Dinheiro de clientes (`clientMoney`). Reach for it on the Financeiro screens that list records filtered and paged by the server. Install it with `npx @tc96/cli add finance-3`.
+
+The block is controlled and renders what it gets. Every variant shares the frame, the toolbar, the load state, the pagination and, where there is one, the view switcher and the selection; each variant brings its own record type, columns, filters, bulk actions and labels (`labels.entries`, `labels.receivables`, `labels.statement`, `labels.clientMoney`). The props are a union discriminated by `variant`, so `records`, `onOpen` and the callbacks of one variant are typed for its record and are not accepted on another. The block never filters, sorts or pages `records`: views, filters, sort, page and selection are a value and a callback, and without the value the block keeps it locally. Money arrives in cents and is formatted with `locale` and `currency` (`pt-BR` and `BRL`); a day arrives as `YYYY-MM-DD` and is shown as that day in any time zone.
+
+**Lançamentos** and **A cobrar** share the view switcher in the toolbar `left` slot (Todos, A receber, A pagar, A cobrar, Quitados, with `counts` and the saved views after them), so these pages have no `h2`. The block only reports the view; the consumer applies it and passes `variant="receivables"` while the view is A cobrar, since the queue takes the place of the entries table. `views` limits the list (A cobrar only for who can collect).
+
+- `entries`: Descrição, Tipo, Tipo de honorário, Pagador, Caso ou processo, Responsável, Conta, Categoria, Vencimento, Valor and Situação. Conta, Categoria, Tipo de honorário and Responsável start hidden; Exibição holds the Colunas submenu (`hiddenColumns`), Ordenar por (`sort`, a column and a direction), and the Situação, Tipo, Tipo de honorário and Conta filters, each rendered with its callback; Salvar preferência renders with `onSavePreference`. Responsável, Conta and Categoria are editable in a row with `canEdit` and their callback; Categoria offers the categories of the entry's direction. A transfer shows its two accounts. Valor carries the sign of the kind: income in the success tone, expense with a minus. Selecting rows opens the `ActionBar` with Quitar (Quitar na conta, the accounts) and Responsável (Atribuir a, the members); each reports only the selected entries with `canSettle` or `canEdit`, and is disabled when there is none.
+- `receivables`: Pagador, Parcela, Valor, Vencimento and Último contato (ready texts), Cobrança (the charge status or the failure day, else Sem cobrança) and a row menu with Cobrar (disabled without `canContact`), Marcar cobrado and Emitir or Reemitir cobrança by `chargeAction`. The bulk action is Marcar cobrado. `truncated` shows a notice in the frame's `notice` slot.
+- `statement`: Data, Descrição, Tipo (a settlement reads Entrada or Saída by its sign), Outra conta, Categoria, Motivo, Valor (signed) and Saldo (running). The heading is Extrato, and its description is the summary: the account, the period and Saldo anterior. The table footer shows Saldo final in the Saldo column, through the column `footer` of the `DataTable`. Exibição holds Conta (`accounts`) and Período (`periods`); Exportar mês renders with `onExport`, disabled while `exporting`, and `exportError` shows an `Alert` with Tentar de novo. Only a line with `entryId` opens.
+- `clientMoney`: Cliente and Saldo, with the heading Dinheiro de clientes and no filters.
+
+The other pages of `Blocks/Data/Finance/Finance3`: [Playground](?path=/story/blocks-data-finance-finance3-playground--playground), [Layouts](?path=/story/blocks-data-finance-finance3-layouts--entries), [Behavior](?path=/story/blocks-data-finance-finance3-behavior--the-view-switcher-replaces-the-heading) and [Usages](?path=/story/blocks-data-finance-finance3-usages--entries).
+
+## Import
+
+```tsx
+import { Finance3 } from '@tc96/ui/blocks/data/finance/finance-3'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Finance3
+  accounts={accounts}
+  counts={page.counts}
+  members={members}
+  onBulkSettle={settle}
+  onPageChange={setPage}
+  onSituationFilterChange={setSituation}
+  onViewChange={setView}
+  page={pageNumber}
+  pageCount={pageCount}
+  pageSize={25}
+  records={page.items}
+  situationFilter={situation}
+  total={page.total}
+  variant={view === 'collection' ? 'receivables' : 'entries'}
+  view={view}
+/>
+```
+
+## Shared props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `'entries' \| 'receivables' \| 'statement' \| 'clientMoney'` | required | The collection; it narrows `records` and the callbacks. |
+| `records` | the variant's record array | required | The page of records, already filtered, sorted and paged. |
+| `page`, `onPageChange` | `number`, `(page) => void` | `1` | The controllable page, starting at 1. |
+| `pageCount`, `pageSize`, `total` | `number` | - | `pageCount` renders the pagination while there are records; with `pageSize` and `total` it shows the range. |
+| `locale`, `currency` | `string` | `'pt-BR'`, `'BRL'` | Format the amounts (cents) and the days. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. |
+| `labels` | `Finance3LabelsOverride` | pt-BR texts | Overrides the texts; the variant texts sit under `entries`, `receivables`, `statement` and `clientMoney`, and their groups merge key by key. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Lançamentos and A cobrar
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `view`, `onViewChange` | `Finance3View`, `(view) => void` | `'all'` (`'collection'` in A cobrar) | The controllable view of the switcher. |
+| `views` | `readonly Finance3View[]` | the five views | The views the member may pick. |
+| `counts` | `Partial<Record<Finance3View, number>>` | - | The count beside each view in the popup. |
+| `savedViews`, `savedViewId`, `savedViewModified`, `savedViewsLoading`, `savedViewsPending` | | - | The saved views after the fixed ones. |
+| `onSavedViewSelect`, `onSavedViewCreate`, `onSavedViewUpdate`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | callbacks | - | Each renders its item; the dialogs are the consumer's. |
+| `selectedIds`, `onSelectedIdsChange` | `string[]`, `(ids) => void` | `[]` | The controllable selection; either one, or a bulk callback, adds the select column. |
+| `onCreate` | `() => void` | - | Renders Novo lançamento. |
+
+## Lançamentos (`variant: 'entries'`)
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `accounts`, `accountsLoading` | `Finance3Option[]`, `boolean` | `[]`, `false` | The accounts of Conta, the Conta filter and Quitar na conta. |
+| `categories` | `Finance3Category[]` | `[]` | The categories of a row; one with `direction` is offered only to entries of that direction. |
+| `members` | `Finance3Person[]` | `[]` | The options of Responsável and Atribuir a. |
+| `search`, `onSearchChange` | `string`, `(search) => void` | - | The search field, rendered with `onSearchChange`. |
+| `sort`, `onSortChange` | `Finance3EntrySort \| null`, `(sort) => void` | `null` | Ordenar por, rendered with `onSortChange`. |
+| `situationFilter`, `typeFilter`, `feeTypeFilter`, `accountFilter` and their `on…Change` | unions, `string \| null` | `null` | The filters, each rendered with its callback. |
+| `filtered` | `boolean` | `false` | Picks `labels.entries.noResult` for the empty message. |
+| `hiddenColumns`, `onHiddenColumnsChange` | `Finance3EntryColumnId[]`, `(ids) => void` | Conta, Categoria, Tipo de honorário, Responsável | The columns hidden by the Colunas submenu. |
+| `onSavePreference` | `() => void` | - | Renders Salvar preferência in Exibição. |
+| `onResponsibleChange`, `onAccountChange`, `onCategoryChange` | `(entryId, value) => void` | - | Make those cells editable in a row with `canEdit`. |
+| `onBulkSettle`, `onBulkResponsibleChange` | `(entryIds, id) => void` | - | Render Quitar and Responsável in the action bar. |
+| `onOpen` | `(entryId) => void` | - | Makes a row open the entry. |
+
+## A cobrar (`variant: 'receivables'`)
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onMarkCollected` | `(ids: string[]) => void` | - | Renders Marcar cobrado in the row menu and in the action bar. |
+| `onContact`, `onIssueCharge`, `onReissueCharge` | `(id: string) => void` | - | Render Cobrar, Emitir cobrança and Reemitir cobrança in the row menu. |
+| `truncated` | `boolean` | `false` | Shows the notice that the queue is cut. |
+
+## Extrato (`variant: 'statement'`)
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `summary` | `Finance3StatementSummary` | - | Account, `from`, `to`, `previousBalance` and `closingBalance`: the description and the footer. |
+| `accounts`, `accountsLoading`, `accountFilter`, `onAccountFilterChange` | | - | The Conta filter, rendered with its callback; clearing it is Conta padrão. |
+| `periods`, `period`, `onPeriodChange` | `Finance3Option[]`, `string \| null`, `(id) => void` | - | The Período filter; `null` is Período personalizado. |
+| `onExport`, `exporting`, `exportError` | `() => void`, `boolean`, `boolean` | - | Exportar mês and its retry notice. |
+| `onOpen` | `(entryId) => void` | - | Opens the entry of a line that has one. |
+
+## Dinheiro de clientes (`variant: 'clientMoney'`)
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onOpen` | `(clientId) => void` | - | Makes a row open the client. |
+
+## Records
+
+| Type | Fields |
+| --- | --- |
+| `Finance3Entry` | `id`, `description`, `kind`, `feeType`, `payer`, `target`, `responsibleId`, `accountId`, `counterpartAccountId`, `categoryId`, `dueOn`, `amount` (expected cents), `situation`, `canEdit`, `canSettle` |
+| `Finance3Receivable` | `id`, `payer`, `installment`, `amount`, `due` (`{ label, tone }`), `lastContact`, `charge`, `chargeFailedOn`, `chargeAction`, `canContact` |
+| `Finance3StatementLine` | `id`, `day`, `description`, `kind`, `counterpartAccount`, `category`, `reason`, `amount` (signed), `balance`, `entryId` |
+| `Finance3ClientBalance` | `id`, `name`, `amount` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Finance3` | `component` | The finance collections. |
+| `finance3Variants` | `const` | `['entries', 'receivables', 'statement', 'clientMoney']`. |
+| `finance3Views` | `const` | `['all', 'receivable', 'payable', 'collection', 'settled']`. |
+| `Finance3Props` and the variant props, the records, the unions, `Finance3Labels` and `Finance3LabelsOverride` | `type` | The props, the data and the labels. |

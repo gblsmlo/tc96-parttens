@@ -7,6 +7,8 @@ export interface CollectionControls {
   actionLabel: string
   empty: boolean
   emptyMessage: string
+  filterClear: boolean
+  filterLoading: boolean
   layout: CollectionLayout
   loading: boolean
   mode: CollectionFrameMode
@@ -20,6 +22,8 @@ export const collectionControlArgs: CollectionControls = {
   actionLabel: 'Nova tarefa',
   empty: false,
   emptyMessage: 'Nenhuma tarefa com esses filtros.',
+  filterClear: false,
+  filterLoading: false,
   layout: 'datatable',
   loading: false,
   mode: 'fill',
@@ -47,6 +51,16 @@ export const collectionControlArgTypes: Partial<ArgTypes<CollectionControls>> =
       control: 'text',
       description:
         'The `emptyMessage` of the List, Gallery, Data Table and Data Grid layouts.',
+    },
+    filterClear: {
+      control: 'boolean',
+      description:
+        'Passes a `clearLabel` to each `FilterCheckboxSubmenu` (Status, Prioridade, Responsável, Estimativa), which adds the item that clears the choice; off, the submenus have no such item.',
+    },
+    filterLoading: {
+      control: 'boolean',
+      description:
+        'The `loading` of the Responsável `FilterCheckboxSubmenu`: skeleton rows replace its options while the people load.',
     },
     layout: {
       control: 'select',

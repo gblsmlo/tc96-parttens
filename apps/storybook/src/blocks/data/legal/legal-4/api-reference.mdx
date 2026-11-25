@@ -1,0 +1,70 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Legal4
+
+The clients of a law firm (Clientes): person or company, main contact, active cases, contracts, client since, owner, queue and status, shown as a Tabela or a Lista. Reach for it on the clients screen of a legal product. Install it with `npx @tc96/cli add legal-4`.
+
+It follows the same toolbar and loading contract as `Legal1`: `labels.title` as the only `h2` with the summary line, then Exibição (mode tabs and the status filter), Exportar CSV (`ghost`) and Novo cliente, with no search field and no view switcher. The layouts are the collection's Data Table and `ListView`, mounted by `CollectionProvider` and `CollectionLayoutOutlet`. Fila and Status are `SelectProperty` badges with an icon and a tone, Responsável is a `PersonProperty` and Cliente desde a `DateProperty`. A choice only calls `onStatusChange`, `onQueueChange` or `onOwnerChange` with the client id; the block never changes a client.
+
+The other pages of `Blocks/Data/Legal/Legal4`: [Playground](?path=/story/blocks-data-legal-legal4-playground--playground), [Layouts](?path=/story/blocks-data-legal-legal4-layouts--default), [Behavior](?path=/story/blocks-data-legal-legal4-behavior--the-heading-names-the-section) and [Usages](?path=/story/blocks-data-legal-legal4-usages--loaded).
+
+## Import
+
+```tsx
+import { Legal4 } from '@tc96/ui/blocks/data/legal/legal-4'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Legal4
+  clients={clients}
+  mode={mode}
+  onModeChange={setMode}
+  onStatusChange={changeStatus}
+  owners={owners}
+/>
+```
+
+## Legal4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `clients` | `Legal4Client[]` | required | The clients. Keep the array stable between renders. |
+| `mode` | `'table' \| 'list'` | - | Controls the layout; without it the block starts on `table`. |
+| `onModeChange` | `(mode: Legal4Mode) => void` | - | Called by the mode tabs of Exibição. |
+| `statusFilter`, `onStatusFilterChange` | `Legal4Status \| null`, `(status) => void` | - | The controllable status filter. |
+| `owners` | `Legal4Person[]` | `[]` | The options of Responsável. |
+| `onStatusChange`, `onQueueChange`, `onOwnerChange` | `(clientId, value) => void` | - | Make Status, Fila and Responsável editable. |
+| `onOpen` | `(clientId: string) => void` | - | Makes the row and the list title open the client. |
+| `onCreate`, `onExport` | `() => void` | - | Render Novo cliente and Exportar CSV. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. |
+| `labels` | `Legal4LabelsOverride` | pt-BR texts | Overrides the texts; `columns`, `kinds`, `modes`, `queues` and `statuses` merge key by key; `activeCases(count)` and `contractCount(count)` build the list caption. |
+| `locale`, `timeZone` | `string` | `"pt-BR"`, `"America/Sao_Paulo"` | Format the dates. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Legal4Client
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `name` | `string` | The identity and the client cell. |
+| `kind` | `'person' \| 'company'` | Pessoa física or Pessoa jurídica. |
+| `contact` | `{ name; email } \| null` | The main contact; `null` reads Sem contato. |
+| `activeCases`, `contracts` | `number` | The counts. |
+| `clientSince` | `string \| null` | ISO date. |
+| `ownerId` | `string \| null` | One of `owners`. |
+| `queue` | `'onboarding' \| 'service' \| 'billing' \| 'relationship'` | The Fila badge. |
+| `status` | `'prospect' \| 'active' \| 'defaulting' \| 'inactive'` | The Status badge. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Legal4` | `component` | The clients list. |
+| `legal4Modes` | `const` | `['table', 'list']`. |
+| `Legal4Props`, `Legal4Client`, `Legal4Contact`, `Legal4Person`, `Legal4Mode`, `Legal4Kind`, `Legal4Queue`, `Legal4Status`, `Legal4ColumnId`, `Legal4Labels`, `Legal4LabelsOverride` | `type` | The props, the data and the labels. |

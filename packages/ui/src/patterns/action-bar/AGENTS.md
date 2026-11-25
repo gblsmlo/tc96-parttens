@@ -23,11 +23,12 @@ Imported by path, not through `index.ts`, so moving `components/action-bar.tsx` 
 - Its texts default to pt-BR and come from props: `label` (the toolbar name), `formatSelection(count)` (the count text, never joined from words in the bar) and `clearSelectionLabel`.
 - An item with `submenu` opens a non-modal `Menu` above the bar (`side="top"`) and never calls its own `onSelect`; each submenu item calls its `onSelect` with the same `{ selectedCount, selectedRows }` context.
 - The bar is `role="toolbar"` named "Ações dos itens selecionados"; the clear button exists only with `onClearSelection`, named "Limpar seleção".
+- `notice` adds an `output` (implicit `role="status"`) above the bar and wraps both in a column `div`; without it (or with an empty string) the toolbar stays the root, as before, and `className` always lands on the toolbar. The notice sits outside the toolbar so a long text wraps instead of widening the bar.
 - Floating placement belongs to the caller: `DataGridSelectionActions` and `CollectionFrameOverlay` position the bar, the bar itself does not.
 
 ## Styling
 
-- `data-slot="action-bar"` on the root, for consumers and tests; not styled.
+- `data-slot="action-bar"` on the toolbar and `data-slot="action-bar-notice"` on the notice, for consumers and tests; not styled.
 - Group dividers are an `hr` with `aria-orientation="vertical"`. Colors only from theme tokens (`bg-popover`, `border`, `bg-border`).
 - `scripts/override-exceptions.json` has no entry for this folder.
 

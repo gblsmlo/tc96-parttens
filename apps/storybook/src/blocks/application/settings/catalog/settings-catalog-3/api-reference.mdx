@@ -1,0 +1,99 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsCatalog3
+
+A settings section that lists automation rules. Each rule reads in two lines: the condition, a field, an operator and a value, and the action it applies. Each row has a menu to edit or delete the rule when the app handles actions. Reach for it when the app lets people add or remove SLAs automatically from filters. Install it with `npx @tc96/cli add settings-catalog-3`.
+
+It is a section, not a page: it renders no `main` landmark. Creating, editing and deleting stay in the app; the block only calls `onCreate` and `onRuleAction`, keeps no list of its own and never fetches or stores anything.
+
+The other pages of `Blocks/Application/Settings/Catalog/Settings3`: [Playground](?path=/story/blocks-application-settings-catalog-settings3-playground--playground) to try the texts, the empty list and the actions, [Behavior](?path=/story/blocks-application-settings-catalog-settings3-behavior--empty-list-shows-state-surface) for the tests and [Usages](?path=/story/blocks-application-settings-catalog-settings3-usages--loaded) for the list read over the network.
+
+## Import
+
+```tsx
+import { SettingsCatalog3 } from '@tc96/ui/blocks/application/settings/catalog/settings-catalog-3'
+```
+
+The same path exports the types `SettingsCatalog3Props`, `SettingsCatalog3Rule`, `SettingsCatalog3RuleIcon`, `SettingsCatalog3Action` and `SettingsCatalog3Labels`.
+
+## Anatomy
+
+The section with rules, each with its condition and its action:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsCatalog3
+  onCreate={openNewRule}
+  onRuleAction={(ruleId, action) => handleRuleAction(ruleId, action)}
+  rules={rules}
+/>
+```
+
+## SettingsCatalog3
+
+The rules section. Renders the title, the description and, with `onCreate`, the Add rule button, then one row per rule. With no rules it renders an empty state in place of the rows.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `rules` | `SettingsCatalog3Rule[]` | required | The rules to list; an empty array shows the empty state. |
+| `onCreate` | `() => void` | - | Called when the Add rule button is clicked. Without it the button is not rendered. |
+| `onRuleAction` | `(ruleId: string, action: SettingsCatalog3Action) => void` | - | Called with the rule id and `'edit'` or `'delete'` when a menu item is chosen. Without it the row menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsCatalog3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+The block takes no other props.
+
+## SettingsCatalog3Rule
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the rule in `onRuleAction`. |
+| `field` | `string` | The field of the condition, shown in the first badge. |
+| `operator` | `string` | The operator of the condition, shown in the second badge. |
+| `value` | `{ icon?: SettingsCatalog3RuleIcon; label: string }` | The value of the condition, shown in the third badge; the optional icon is drawn before the label. |
+| `action` | `{ icon?: SettingsCatalog3RuleIcon; text: string }` | The action of the rule, shown on the Then line; the optional icon is drawn before the text. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Regras de automação"` |
+| `description` | `string` | `"Use regras de automação para adicionar ou remover SLAs automaticamente com base em filtros."` |
+| `addRule` | `string` | `"Adicionar regra"` |
+| `edit` | `string` | `"Editar"` |
+| `delete` | `string` | `"Excluir"` |
+| `emptyTitle` | `string` | `"Nenhuma regra ainda"` |
+| `emptyDescription` | `string` | `"Adicione uma regra para aplicar ou remover SLAs automaticamente."` |
+| `whenLabel` | `string` | `"Quando"` |
+| `thenLabel` | `string` | `"Então"` |
+| `condition` | `string` | `"Condição"`; the accessible name of the group with the three badges |
+| `actions` | `(field: string, operator: string, value: string) => string` | `"Ações de Etapa é igual a Proposta"` for `("Etapa", "é igual a", "Proposta")`; the accessible name of the row menu |
+| `loading` | `string` | `"Carregando regras"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as regras"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsCatalog3` | `component` | The rules section. |
+| `SettingsCatalog3Props` | `type` | The props of the section. |
+| `SettingsCatalog3Rule` | `type` | A rule: its condition, its action and its id. |
+| `SettingsCatalog3RuleIcon` | `type` | The component type of the optional icons. |
+| `SettingsCatalog3Action` | `type` | `'edit' \| 'delete'`. |
+| `SettingsCatalog3Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The condition is a group named by `labels.condition`, so each rule's three badges are read together.
+- The row menu button is named by `labels.actions(field, operator, value)`, so each rule's menu is told apart by screen readers.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

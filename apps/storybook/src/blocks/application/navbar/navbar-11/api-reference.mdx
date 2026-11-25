@@ -1,0 +1,98 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Navbar11
+
+The design system bar at the top of a documentation or token manager app: the brand with a version badge, the sections as centered tabs, a switcher for the source the tokens sync from, and the account menu. Reach for it on a design system site where one section is open at a time and the data comes from a source the team can change. Install it with `npx @tc96/cli add navbar-11`.
+
+It renders a `header` that is full width with a bottom border, in three zones: the brand on the left, the tabs in the center and the tools on the right. The block keeps no state beyond the open state of its menus and never fetches: the app passes the section, the source and the user, and every change is a callback.
+
+The other pages of `Blocks/Application/Navbar/Navbar11`: [Playground](?path=/story/blocks-application-navbar-navbar11-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar11-behavior--header-is-a-banner-with-a-border) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar11-usages--browsing-the-sections) for a page with controlled section and source.
+
+## Import
+
+```tsx
+import { Navbar11 } from '@tc96/ui/blocks/application/navbar/navbar-11'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+A brand with a mark, the name and the version, four section tabs, the sync source switcher and the account menu.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Navbar11
+  logo={<BrandMark />}
+  menu={<UserMenuItems />}
+  name="Sistema de Design"
+  onSectionChange={setSection}
+  onSourceChange={setSource}
+  section={section}
+  sections={sections}
+  source={source}
+  sources={sources}
+  user={user}
+  version="v2.4.0"
+/>
+```
+
+## Navbar11
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `string` | required | The brand name, truncated when the space runs out. |
+| `logo` | `ReactNode` | - | The brand mark before the name; it is decorative and hidden from assistive technology. |
+| `version` | `string` | - | Text of the outline badge after the name; hidden below the `sm` breakpoint. |
+| `sections` | `Navbar11Section[]` | `[]` | The tabs, in order. |
+| `section` | `string` | - | The `id` of the selected tab. |
+| `onSectionChange` | `(id: string) => void` | - | Called with the `id` of the clicked tab; with `sections` it renders the tab list. |
+| `sources` | `Navbar11Source[]` | `[]` | The sources listed as radio items. |
+| `source` | `string` | - | The `id` of the checked source; its label shows in the button. |
+| `onSourceChange` | `(id: string) => void` | - | Called with the `id` of the chosen source; with `sources` it renders the switcher. |
+| `user` | `Navbar11User` | - | Renders the avatar button and its menu, which opens with the name and the e-mail. |
+| `menu` | `ReactNode` | - | The `MenuItem`s listed under the user in the account menu. |
+| `labels` | `Partial<Navbar11Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Navbar11Section, Navbar11Source and Navbar11User
+
+| Type | Field | Description |
+| --- | --- | --- |
+| `Navbar11Section` | `id`, `label` | A tab. |
+| `Navbar11Source` | `id`, `label` | A radio item of the switcher. |
+| `Navbar11User` | `name`, `email?`, `image?` | The initials of `name` fill the avatar when there is no `image`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `sectionNavigation` | `string` | `"Seções do sistema de design"`; the name of the tab list |
+| `sourceGroup` | `string` | `"Fonte de sincronização"`; the heading of the switcher menu |
+| `sourceTrigger` | `(source: string) => string` | `"Fonte de sincronização: X"`; the name of the switcher button |
+| `account` | `string` | `"Menu da conta"`; the name of the avatar button |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Navbar11` | `component` | The design system bar. |
+| `Navbar11Props` | `type` | The props of the bar. |
+| `Navbar11Section` | `type` | A section tab. |
+| `Navbar11Source` | `type` | A sync source. |
+| `Navbar11User` | `type` | The signed-in user. |
+| `Navbar11Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The bar is a `header`, which exposes the `banner` landmark when it is a direct child of the page.
+- The sections are a `tablist` named by `labels.sectionNavigation`; the arrow keys move between tabs and the selected tab carries `aria-selected`. The block renders no tab panels, because the app owns the page below.
+- The switcher button is named by `labels.sourceTrigger` even when its label is hidden on a narrow screen; the menu is a radio group, opens with Enter or Space and closes with Escape.
+- The avatar button is named by `labels.account`; the avatar image is decorative.
+- Below the `md` breakpoint the tabs take the middle column and scroll sideways instead of widening the page.
+- Buttons use the `sm` and `icon-sm` sizes.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

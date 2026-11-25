@@ -51,17 +51,10 @@ export const recordGroupArgTypes = {
 
 const text = { control: 'text' } as const
 
-/**
- * `CollectionToolbar`: variante, os textos e os slots de JSX sem controle. As
- * props são uma união, e o docgen não lista `title` nem `description`.
- */
 export const collectionToolbarArgTypes = {
   'aria-label': text,
-  centerSlot: withoutControl,
-  children: withoutControl,
-  description: text,
-  endSlot: withoutControl,
-  startSlot: withoutControl,
-  title: text,
-  variant: { control: 'inline-radio', options: ['default', 'plain', 'text'] },
+  center: withoutControl,
+  left: withoutControl,
+  mode: { control: 'inline-radio', options: ['default', 'plain'] },
+  right: withoutControl,
 } as const

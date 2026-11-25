@@ -1,0 +1,105 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Legal8
+
+The court capture monitoring of a law firm (Jurídico > Monitoramento): a notice that says whether the capture works, then its runs (Execuções) or its failures (Falhas) as a table. Reach for it on the screen where an owner or admin checks the capture of publications and case updates. Install it with `npx @tc96/cli add legal-8`.
+
+The notice is the COSS `Alert`: Captura em dia with `role="status"`, or Captura parada desde the day of `stoppedSince` with `role="alert"` and the error look, the next sweep as its description and Rodar agora (Tentar agora when stopped) as its action. The notice sits in the frame's `notice` slot, above the toolbar. The toolbar has the view switcher in `left`, so the page has no `h2`, and Exibição in `right`. With `savedViews` (or `savedViewsLoading`), the switcher lists Minhas visões after Execuções and Falhas; the trigger shows the active saved view, marked as changed with `savedViewModified`, and each saved view and footer action renders only with its callback (select, Atualizar, Salvar visão atual…, Renomear, Duplicar, Excluir). The block never applies a saved view: `onSavedViewSelect` reports the id and the consumer sets the view, order and origin it stores; picking Execuções or Falhas calls `onViewChange`, and the consumer clears `savedViewId`. The name and delete dialogs are the consumer's. On Falhas, Exibição holds Ordenar and the Origem filter; on Execuções it has nothing to set and only shows Limpar filtros disabled. With `onSavePreference`, Exibição ends with Salvar preferência in both views. There are no mode tabs: each view is one Data Table with its own record type.
+
+The block renders what it gets. It does not filter, sort or page the records: `sort` and `originFilter` only mark the menu and call their callbacks, and the consumer reads the failures again on the server. Falhas keeps the order of `failures`: lemind lists open failures before resolved ones, each group by the chosen order (`failuresInOrder`), so the consumer delivers them already in that order. Execuções keeps the order of `runs` as well: a run just requested by Rodar agora that the next read does not list yet (lemind's `withRequested`) is the consumer's to add to `runs`. `counts` are the consumer's numbers too. The text of Último erro arrives ready in `error` and stays on one line: the cell cuts it with an ellipsis and carries the full text in its `title`, and the property's accessible name holds it too. A run with `simulated` and an error, and a failure with `simulated`, show an outline Simulado badge (`labels.simulated`) beside the error or the origin; lemind marks a capture error of a simulated court and a failure of external origin of one, and the block leaves that rule to the consumer. Ver falha on a run and a failure row call the same `onOpenFailure`; from Execuções the block also switches to Falhas through `view` and `onViewChange`. The block does not render the failure it opens.
+
+`pending`, `error` and `onRetry` apply to the table of the current view. While `pending` the notice keeps its frame and its description, hides its title and disables its action.
+
+The other pages of `Blocks/Data/Legal/Legal8`: [Playground](?path=/story/blocks-data-legal-legal8-playground--playground), [Layouts](?path=/story/blocks-data-legal-legal8-layouts--default), [Behavior](?path=/story/blocks-data-legal-legal8-behavior--the-notice-reports-capture-up-to-date) and [Usages](?path=/story/blocks-data-legal-legal8-usages--loaded).
+
+## Import
+
+```tsx
+import { Legal8 } from '@tc96/ui/blocks/data/legal/legal-8'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Legal8
+  counts={{ failures: 8, runs: 12 }}
+  failures={failures}
+  nextSweepAt={nextSweepAt}
+  onOpenFailure={openFailure}
+  onOriginFilterChange={setOrigin}
+  onRun={runSweep}
+  onSortChange={setSort}
+  onViewChange={setView}
+  originFilter={origin}
+  runs={runs}
+  sort={sort}
+  stoppedSince={stoppedSince}
+  view={view}
+/>
+```
+
+## Legal8
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `runs` | `Legal8Run[]` | required | The rows of Execuções, in the order to show, with a just-requested run already added. Keep the array stable between renders. |
+| `failures` | `Legal8Failure[]` | required | The rows of Falhas, already filtered and ordered: open before resolved, then by `sort`. The block keeps the given order. |
+| `view`, `onViewChange` | `'runs' \| 'failures'`, `(view) => void` | `'runs'` | The controllable view; the switcher and Ver falha change it. |
+| `counts` | `Partial<Record<Legal8View, number>>` | - | The number beside each view in the switcher popup, with the item named by `labels.viewCountName` (`Falhas, 8 itens`); the trigger shows only the view name. |
+| `stoppedSince` | `string \| null` | - | ISO instant since when the capture is stopped; its day goes in the notice title. Without it the notice reads Captura em dia. |
+| `nextSweepAt` | `string \| null` | - | ISO instant of the next sweep, the notice description. |
+| `onRun` | `() => void` | - | Renders the notice action, Rodar agora or Tentar agora. |
+| `running` | `boolean` | `false` | Disables the notice action while a run is requested. |
+| `runError` | `boolean` | `false` | Shows `labels.runFailed` with `role="alert"` under the notice. |
+| `onOpenFailure` | `(failureId: string) => void` | - | Makes a failure row open and renders Ver falha on a run with `failureId`. |
+| `sort`, `onSortChange` | `'newest' \| 'oldest'`, `(sort) => void` | `'newest'` | The controllable order of Falhas. The block does not reorder the rows. |
+| `originFilter`, `onOriginFilterChange` | `Legal8FailureOrigin \| null`, `(origin) => void` | `null` | The controllable Origem filter of Falhas. The block does not filter the rows. |
+| `savedViews` | `{ id: string; label: string; icon?: ReactNode }[]` | - | The member's saved views, listed under Minhas visões. |
+| `savedViewId` | `string \| null` | - | The active saved view; the trigger shows its label and no view is selected. |
+| `savedViewModified` | `boolean` | `false` | Marks the active saved view as changed and offers Atualizar. |
+| `savedViewsLoading`, `savedViewsPending` | `boolean` | `false` | Skeleton rows under Minhas visões; Duplicar and Atualizar disabled while a write runs. |
+| `onSavedViewSelect`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | `(savedViewId: string) => void` | - | Select a saved view, or render that item of its options menu. |
+| `onSavedViewCreate`, `onSavedViewUpdate` | `() => void` | - | Render Salvar visão atual… and, on a changed active view, Atualizar. |
+| `onSavePreference` | `() => void` | - | Renders Salvar preferência at the end of Exibição. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks, for the table of the current view. |
+| `labels` | `Legal8LabelsOverride` | pt-BR texts | Overrides the texts; `views`, `sorts`, `runColumns`, `runKinds`, `runStates`, `failureColumns`, `failureKinds`, `failureOrigins`, `failureStates` and `savedViews` merge key by key. |
+| `locale`, `timeZone` | `string` | `"pt-BR"`, `"America/Sao_Paulo"` | Format the dates of the notice and of the tables. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Legal8Run
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | The identity of the run. |
+| `kind` | `'court-sweep' \| 'oab-lookup' \| 'lawsuit-import'` | Varredura do DJEN, Busca por OAB or Importação. |
+| `startedAt`, `finishedAt` | `string \| null` | ISO instants of Início and Fim, shown with the day and the time in `timeZone`. |
+| `state` | `'queued' \| 'running' \| 'done' \| 'failed' \| 'dead'` | The Situação badge, with an icon and a tone per state. |
+| `publications`, `movements` | `number \| null` | The counts of Publicações and Andamentos. |
+| `error` | `string \| null` | The ready text of Último erro, on one line with the full text in the cell's `title`. |
+| `simulated` | `boolean` | Optional. With an `error`, shows the Simulado badge beside it. |
+| `failureId` | `string \| null` | The failure Ver falha opens. |
+
+## Legal8Failure
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | The identity `onOpenFailure` receives. |
+| `kind` | `'capture_stopped' \| 'proposal_failed' \| 'oab_silent'` | Captura parada, Proposta de prazo não gerada or OAB sem publicações. |
+| `origin` | `'system' \| 'external' \| 'registration'` | Sistema, Fonte externa or Cadastro. |
+| `startedAt`, `lastOccurredAt` | `string` | ISO instants of Início and Última ocorrência. |
+| `occurrences` | `number` | The count of Ocorrências. |
+| `state` | `'open' \| 'resolved'` | The Situação badge. |
+| `simulated` | `boolean` | Optional. Shows the Simulado badge beside the origin. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Legal8` | `component` | The monitoring screen. |
+| `legal8Views` | `const` | `['runs', 'failures']`. |
+| `Legal8Props`, `Legal8Run`, `Legal8Failure`, `Legal8View`, `Legal8Sort`, `Legal8RunKind`, `Legal8RunState`, `Legal8FailureKind`, `Legal8FailureOrigin`, `Legal8FailureState`, `Legal8RunColumnId`, `Legal8FailureColumnId`, `Legal8Labels`, `Legal8LabelsOverride` | `type` | The props, the data and the labels. |

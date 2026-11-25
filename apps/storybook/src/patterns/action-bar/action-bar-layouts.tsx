@@ -44,6 +44,7 @@ export const ComposedActionBar = ({
   groupLabels,
   icons,
   label,
+  notice,
   onAction,
   onClearSelection,
   onMore,
@@ -140,6 +141,7 @@ export const ComposedActionBar = ({
     <ActionBar
       actions={actions}
       className={className}
+      notice={notice || undefined}
       onClearSelection={
         clearButton ? (onClearSelection ?? clearNothing) : undefined
       }

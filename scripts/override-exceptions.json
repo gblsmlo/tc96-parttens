@@ -168,6 +168,18 @@
     "reason": "O placeholder do ComposerInput usa `muted-foreground` a 72% sobre o fundo do compositor e mede 3,15:1 no escuro e 3,08:1 no claro; o texto de orientação do assistente precisa de 4,5:1, e `placeholder:text-muted-foreground` com opacidade total mede 4,71:1 no escuro e 5,48:1 no claro sobre o fundo do compositor, sem mudar nenhum valor de token."
   },
   {
+    "file": "packages/ui/src/blocks/application/rich-text-editor/rich-text-editor-5/assistant-chat.tsx",
+    "component": "ComposerInput",
+    "className": "data-empty:before:text-muted-foreground",
+    "reason": "O placeholder do ComposerInput sem textarea é o `::before` com `muted-foreground` a 72%, que mede 3,15:1 no escuro e 3,08:1 no claro sobre o fundo do compositor; o pedido ao assistente precisa de 4,5:1, e o token inteiro mede 4,71:1 no escuro e 5,48:1 no claro, como no `AssistantComposer`, sem mudar nenhum valor de token."
+  },
+  {
+    "file": "packages/ui/src/blocks/application/rich-text-editor/rich-text-editor-5/rich-text-editor-5.tsx",
+    "component": "Button",
+    "className": "shadow-lg/10",
+    "reason": "O botão do assistente recolhido flutua sobre o texto do plano no canto inferior, como o cartão que ele reabre; sem a mesma sombra do cartão (`shadow-lg/10`) ele se confunde com o texto por baixo."
+  },
+  {
     "file": "packages/ui/src/patterns/flow/canvas/components/flow-step-node.tsx",
     "component": "Card",
     "className": "ring-2",
@@ -252,51 +264,123 @@
     "reason": "O fallback do avatar do usuário fica sobre `bg-border` e herdava o `sidebar-foreground` esmaecido da sidebar: 3,83:1 no claro. `text-foreground` é o token do tema. Antes passava sem registro porque o `AvatarFallback` vinha reexportado de `@tc96/elements/avatar`, removido em 2026-11-22."
   },
   {
-    "file": "packages/ui/src/blocks/application/settings/settings-1/settings-1.tsx",
+    "file": "packages/ui/src/blocks/application/settings/account/settings-account-1/settings-account-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-2",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/ui/src/blocks/application/settings/settings-1/settings-1.tsx",
+    "file": "packages/ui/src/blocks/application/settings/account/settings-account-1/settings-account-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-ring",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/ui/src/blocks/application/settings/settings-1/settings-1.tsx",
+    "file": "packages/ui/src/blocks/application/settings/account/settings-account-1/settings-account-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-offset-1",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/ui/src/blocks/application/settings/settings-1/settings-1.tsx",
+    "file": "packages/ui/src/blocks/application/settings/account/settings-account-1/settings-account-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-offset-background",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/ui/src/blocks/application/settings/settings-5/settings-5.tsx",
+    "file": "packages/ui/src/blocks/application/settings/workspace/settings-workspace-1/settings-workspace-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-2",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/ui/src/blocks/application/settings/settings-5/settings-5.tsx",
+    "file": "packages/ui/src/blocks/application/settings/workspace/settings-workspace-1/settings-workspace-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-ring",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/ui/src/blocks/application/settings/settings-5/settings-5.tsx",
+    "file": "packages/ui/src/blocks/application/settings/workspace/settings-workspace-1/settings-workspace-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-offset-1",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/ui/src/blocks/application/settings/settings-5/settings-5.tsx",
+    "file": "packages/ui/src/blocks/application/settings/workspace/settings-workspace-1/settings-workspace-1.tsx",
     "component": "Avatar",
     "className": "focus-visible:ring-offset-background",
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/data-grid/components/data-grid.tsx",
+    "component": "ScrollArea",
+    "className": "rounded-md",
+    "reason": "A moldura da Data Grid (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o cabeçalho fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/data-grid/components/data-grid.tsx",
+    "component": "ScrollArea",
+    "className": "border",
+    "reason": "A moldura da Data Grid (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o cabeçalho fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/data-grid/components/data-grid.tsx",
+    "component": "ScrollArea",
+    "className": "bg-background",
+    "reason": "A moldura da Data Grid (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o cabeçalho fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table.tsx",
+    "component": "ScrollArea",
+    "className": "rounded-md",
+    "reason": "Com `bordered`, a moldura da Data Table (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o `thead` fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table.tsx",
+    "component": "ScrollArea",
+    "className": "border",
+    "reason": "Com `bordered`, a moldura da Data Table (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o `thead` fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table.tsx",
+    "component": "ScrollArea",
+    "className": "bg-background",
+    "reason": "Com `bordered`, a moldura da Data Table (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o `thead` fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "component": "ScrollArea",
+    "className": "rounded-lg",
+    "reason": "A superfície da List (borda em `border/80`, raio, fundo `card/40` e sombra) fica na raiz do `ScrollArea` para que a barra de rolagem e o fade fiquem dentro dela; é a mesma superfície do `div` com `overflow-auto` que ela substituiu."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "component": "ScrollArea",
+    "className": "border",
+    "reason": "A superfície da List (borda em `border/80`, raio, fundo `card/40` e sombra) fica na raiz do `ScrollArea` para que a barra de rolagem e o fade fiquem dentro dela; é a mesma superfície do `div` com `overflow-auto` que ela substituiu."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "component": "ScrollArea",
+    "className": "border-border/80",
+    "reason": "A superfície da List (borda em `border/80`, raio, fundo `card/40` e sombra) fica na raiz do `ScrollArea` para que a barra de rolagem e o fade fiquem dentro dela; é a mesma superfície do `div` com `overflow-auto` que ela substituiu."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "component": "ScrollArea",
+    "className": "bg-card/40",
+    "reason": "A superfície da List (borda em `border/80`, raio, fundo `card/40` e sombra) fica na raiz do `ScrollArea` para que a barra de rolagem e o fade fiquem dentro dela; é a mesma superfície do `div` com `overflow-auto` que ela substituiu."
+  },
+  {
+    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "component": "ScrollArea",
+    "className": "shadow-black/5",
+    "reason": "A superfície da List (borda em `border/80`, raio, fundo `card/40` e sombra) fica na raiz do `ScrollArea` para que a barra de rolagem e o fade fiquem dentro dela; é a mesma superfície do `div` com `overflow-auto` que ela substituiu."
+  },
+  {
+    "file": "packages/ui/src/blocks/data/inbox/inbox-1/inbox-1-fields.tsx",
+    "component": "Button",
+    "className": "rounded-full",
+    "reason": "O alternador de leitura da Inbox é um botão `ghost` `icon-xs` redondo em volta do ponto de lida/não lida, como no lemind (`features/inbox/components/inbox-read-toggle.tsx`); o COSS não tem botão de ícone redondo, e o raio `rounded-md` do `icon-xs` desenharia um quadrado em volta de um círculo no hover e no foco."
   }
 ]

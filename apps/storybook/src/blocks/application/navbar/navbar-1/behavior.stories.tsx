@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Navbar1 } from '@tc96/ui/blocks/application/navbar/navbar-1'
-import { expect, fn, userEvent, within } from 'storybook/test'
-import { breadcrumbs, collaborators, tabs } from '../fixtures/navbar-1.ts'
+import { MenuItem } from '@tc96/ui/menu'
+import { expect, fn, screen, userEvent, within } from 'storybook/test'
+import { breadcrumbs, collaborators } from '../fixtures/navbar-1.ts'
 import {
   type Navbar1Controls,
   navbar1ControlArgs,
@@ -35,37 +36,6 @@ export const BreadcrumbLinksAllButTheCurrentPage: Story = {
   },
 }
 
-export const TabFollowsTheTabProp: Story = {
-  args: { tab: 'files' },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByRole('tab', { name: 'Arquivos' }),
-    ).toHaveAttribute('aria-selected', 'true')
-  },
-}
-
-const onTabChange = fn()
-
-export const ClickingATabCallsOnTabChange: Story = {
-  render: () => (
-    <Navbar1
-      breadcrumbs={breadcrumbs}
-      onTabChange={onTabChange}
-      tab="overview"
-      tabs={tabs}
-    />
-  ),
-  play: async ({ canvasElement }) => {
-    onTabChange.mockClear()
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('tab', { name: 'Tarefas' }))
-    await expect(onTabChange).toHaveBeenCalledWith('tasks')
-    await expect(
-      canvas.getByRole('tab', { name: 'Visão geral' }),
-    ).toHaveAttribute('aria-selected', 'true')
-  },
-}
-
 export const FirstFourCollaboratorsShowAndTheRestBecomeACount: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
@@ -91,9 +61,6 @@ export const ShareCallsOnShare: Story = {
       breadcrumbs={breadcrumbs}
       collaborators={collaborators}
       onShare={onShare}
-      onTabChange={() => {}}
-      tab="overview"
-      tabs={tabs}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -102,6 +69,35 @@ export const ShareCallsOnShare: Story = {
       within(canvasElement).getByRole('button', { name: 'Compartilhar' }),
     )
     await expect(onShare).toHaveBeenCalledTimes(1)
+  },
+}
+
+export const MenuOpensTheGlobalActions: Story = {
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Mais ações' }),
+    )
+    await expect(
+      await screen.findByRole('menuitem', { name: 'Duplicar projeto' }),
+    ).toBeVisible()
+    await userEvent.keyboard('{Escape}')
+  },
+}
+
+export const WithoutMenuNoMoreActionsButtonRenders: Story = {
+  args: { menu: false },
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).queryByRole('button', { name: 'Mais ações' }),
+    ).toBeNull()
+  },
+}
+
+export const ShareIsThePrimaryButton: Story = {
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole('button', { name: 'Compartilhar' }),
+    ).toHaveClass('bg-primary', 'text-primary-foreground')
   },
 }
 
@@ -122,13 +118,11 @@ export const LabelsOverrideTexts: Story = {
       labels={{
         breadcrumb: 'Trilha',
         collaborators: (count) => `Equipe de ${count}`,
+        menu: 'Outras ações',
         share: 'Convidar',
-        tabs: 'Abas',
       }}
+      menu={<MenuItem>Duplicar</MenuItem>}
       onShare={() => {}}
-      onTabChange={() => {}}
-      tab="overview"
-      tabs={tabs}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -136,10 +130,12 @@ export const LabelsOverrideTexts: Story = {
     await expect(
       canvas.getByRole('navigation', { name: 'Trilha' }),
     ).toBeVisible()
-    await expect(canvas.getByRole('tablist', { name: 'Abas' })).toBeVisible()
     await expect(
       canvas.getByRole('group', { name: 'Equipe de 6' }),
     ).toBeVisible()
     await expect(canvas.getByRole('button', { name: 'Convidar' })).toBeVisible()
+    await expect(
+      canvas.getByRole('button', { name: 'Outras ações' }),
+    ).toBeVisible()
   },
 }

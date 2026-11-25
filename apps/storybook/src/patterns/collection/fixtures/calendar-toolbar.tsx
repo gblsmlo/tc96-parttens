@@ -161,7 +161,7 @@ export function CalendarToolbar({
   return (
     <CollectionToolbar
       aria-label={ariaLabel}
-      centerSlot={
+      center={
         <ToggleGroup
           aria-label="Período"
           onValueChange={(next) => {
@@ -186,7 +186,7 @@ export function CalendarToolbar({
           ))}
         </ToggleGroup>
       }
-      endSlot={
+      right={
         <>
           <ViewSettingsMenu
             activeFilterCount={activeFilterCount}
@@ -197,7 +197,7 @@ export function CalendarToolbar({
           <Action label={createLabel} onClick={onCreate} />
         </>
       }
-      startSlot={
+      left={
         <div className="flex min-w-0 items-center gap-2">
           <Button
             onClick={() => onAnchorChange(today)}
@@ -235,7 +235,7 @@ export function CalendarToolbar({
           </p>
         </div>
       }
-      variant="plain"
+      mode="plain"
     />
   )
 }

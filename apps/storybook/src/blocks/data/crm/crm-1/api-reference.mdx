@@ -1,0 +1,109 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Crm1
+
+The contacts of a workspace in one list, as Pessoas or as Empresas: name, contact details, masked document, sector and tags, shown as a Lista or a Tabela. Reach for it on the screen that lists people or companies and is filtered, sorted and paged by the server. Install it with `npx @tc96/cli add crm-1`.
+
+`variant` picks the collection: `people` shows Pessoa, E-mail, Telefone, CPF and Tags; `companies` shows Empresa, Telefone, CNPJ, Setor and Tags, and adds Definir setor to the action bar. The props are a union on `variant`, so `records` must be `Crm1Person[]` for `people` and `Crm1Company[]` for `companies`, and only `companies` takes `sectors` and `onBulkSectorChange`. `variant` is therefore always controlled: the block never changes it on its own, it only calls `onVariantChange`.
+
+The block is controlled and renders what it gets. Mode, search, sort, every filter, the selection and the page are a value and a callback; without the value the block keeps it locally. It does **not** filter, sort or page `records`: the consumer sends each change to its server and passes the resulting page back, with `filtered` saying whether any filter or search is active. Tags and sectors are workspace catalogs passed as `{ id, label }[]`; Ordenar, Arquivados and Leads are fixed unions. Phone and document arrive ready: the block shows the text it gets and formats nothing.
+
+With `onVariantChange`, the toolbar `left` slot holds the view switcher (Pessoas, Empresas, then the saved views), so the page has no `h2`; the section and the table keep their name from the variant's `title`. With `counts`, each variant in the popup shows its count and `labels.viewCountName` names the item. Choosing the active variant while a saved view is selected also calls `onVariantChange`, which is how the consumer goes back to the base view; choosing the other variant clears the selection first. Without `onVariantChange` the heading shows the variant's title and there are no saved views. On the right: the search field, then Exibição (the mode tabs, Ordenar por, Filtros and Salvar preferência) and Nova pessoa or Nova empresa. Arquivados, Tags and Leads render only with their callback or catalog; `null` and `'exclude'` are Ocultar arquivados.
+
+In the Tabela the name cell marks an archived contact with a muted Arquivado. E-mail is a `TextProperty` with a copy button; Telefone and the document are `TextProperty` displays without one, because a masked document leaves nothing useful to copy. Setor is a read-only `SelectProperty` and Tags read-only badges. Selecting rows opens the `ActionBar`: Definir setor (Empresas, with `sectors`), Arquivar and Desarquivar; Arquivar reports only the selected contacts that are not archived and Desarquivar only the archived ones, each is disabled when none applies, and each clears the selection after it reports. The Lista has no selection; its row shows a person with e-mail and document, a company with document and sector, then Telefone and Tags. The footer is the `CollectionPagination`, rendered with `pageCount` while there are records.
+
+The other pages of `Blocks/Data/CRM/Crm1`: [Playground](?path=/story/blocks-data-crm-crm1-playground--playground), [Layouts](?path=/story/blocks-data-crm-crm1-layouts--people), [Behavior](?path=/story/blocks-data-crm-crm1-behavior--the-view-switcher-replaces-the-heading) and [Usages](?path=/story/blocks-data-crm-crm1-usages--people).
+
+## Import
+
+```tsx
+import { Crm1 } from '@tc96/ui/blocks/data/crm/crm-1'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Crm1
+  archivedFilter={archived}
+  counts={page.counts}
+  filtered={hasFilters}
+  onArchivedFilterChange={setArchived}
+  onBulkArchive={archive}
+  onBulkUnarchive={unarchive}
+  onCreate={openCreateDialog}
+  onOpen={openContact}
+  onPageChange={setPage}
+  onSortChange={setSort}
+  onVariantChange={navigateToCollection}
+  page={pageNumber}
+  pageCount={pageCount}
+  pageSize={20}
+  records={page.items}
+  savedViews={savedViews}
+  sort={sort}
+  tags={tags}
+  total={page.total}
+  variant="people"
+/>
+```
+
+## Crm1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `'people' \| 'companies'` | required | The collection: picks the columns, the list row, the labels and the bulk actions. |
+| `records` | `Crm1Person[]` or `Crm1Company[]` | required | The page of contacts of the variant, already filtered, sorted and paged. Keep the array stable between renders. |
+| `onVariantChange` | `(variant) => void` | - | Renders the view switcher with both variants and the saved views; without it, the heading. |
+| `counts` | `Partial<Record<Crm1Variant, number>>` | - | The count shown beside each variant in the switcher popup. |
+| `tags` | `Crm1Option[]` | `[]` | The tag catalog: the badges of a row and the Tags filter. |
+| `tagsLoading` | `boolean` | `false` | Shows the Tags filter with loading rows while the catalog loads. |
+| `sectors` | `Crm1Option[]` | `[]` | Only for `companies`: the Setor of a row and the options of Definir setor. |
+| `mode`, `onModeChange` | `'list' \| 'table'`, `(mode) => void` | `'list'` | The controllable layout. |
+| `search`, `onSearchChange` | `string`, `(search) => void` | - | The search field, rendered with `onSearchChange`; called on submit and when emptied. |
+| `sort`, `onSortChange` | `Crm1Sort`, `(sort) => void` | `'name_asc'` | Ordenar por, rendered with `onSortChange`; always has a value. |
+| `archivedFilter`, `onArchivedFilterChange` | `Crm1Archived \| null`, `(archived) => void` | `null` | The Arquivados filter, rendered with its callback. |
+| `tagFilter`, `onTagFilterChange` | `string[]`, `(tagIds) => void` | `[]` | The Tags filter, rendered when `tags` has items or `tagsLoading`. |
+| `leadFilter`, `onLeadFilterChange` | `Crm1LeadStatus \| null`, `(leadStatus) => void` | `null` | The Leads filter, rendered with its callback; `null` is Todos os leads. |
+| `filtered` | `boolean` | `false` | Picks the variant's `noResult` instead of `empty` for the empty message. |
+| `onOpen` | `(recordId: string) => void` | - | Makes the row and the list title open the record. |
+| `selectedIds`, `onSelectedIdsChange` | `string[]`, `(recordIds) => void` | `[]` | The controllable row selection of the Tabela. Either one, or a bulk callback, adds the select column. |
+| `onBulkArchive`, `onBulkUnarchive` | `(recordIds: string[]) => void` | - | Render Arquivar and Desarquivar in the action bar. |
+| `onBulkSectorChange` | `(recordIds, sectorId) => void` | - | Only for `companies`: renders Definir setor when `sectors` has items. |
+| `savedViews`, `savedViewId`, `savedViewModified` | `Crm1SavedView[]`, `string \| null`, `boolean` | - | The saved views under the variants in the switcher, the active one and whether it was changed since it was applied. |
+| `savedViewsLoading`, `savedViewsPending` | `boolean` | `false` | Loading rows in the saved views list; disables Duplicar and Atualizar while a write runs. |
+| `onSavedViewSelect`, `onSavedViewCreate`, `onSavedViewUpdate`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | callbacks | - | The saved view actions, each rendered with its callback. |
+| `onSavePreference` | `() => void` | - | Renders Salvar preferência at the end of Exibição. |
+| `page`, `onPageChange` | `number`, `(page) => void` | `1` | The controllable page, starting at 1. |
+| `pageCount` | `number` | - | Renders the pagination footer while there are records. |
+| `pageSize`, `total` | `number` | - | Together they show the range summary (`1–20 de 57`); `total` of 0 hides the footer. |
+| `onCreate` | `() => void` | - | Renders Nova pessoa or Nova empresa. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. |
+| `labels` | `Crm1LabelsOverride` | pt-BR texts | Overrides the texts; `people` and `companies` hold the texts of each variant and merge key by key, as do their `columns`, `archivedOptions`, `leadStatuses`, `modes`, `paginationButtons`, `savedViews` and `sorts`. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Records
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `name` | `string` | The identity and the name cell. |
+| `phone` | `string \| null` | The phone, formatted by the consumer. |
+| `document` | `string \| null` | The CPF or CNPJ, masked by the consumer. |
+| `tagIds` | `string[]` | Ids of `tags`, shown as read-only badges. |
+| `archived` | `boolean` | Shows the muted Arquivado and decides what Arquivar and Desarquivar report. |
+| `email` | `string \| null` | `Crm1Person` only: the e-mail, copyable. |
+| `sectorId` | `string \| null` | `Crm1Company` only: one of `sectors`. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Crm1` | `component` | The contacts list. |
+| `crm1Variants` | `const` | `['people', 'companies']`. |
+| `crm1Modes` | `const` | `['list', 'table']`. |
+| `crm1Sorts` | `const` | `['name_asc', 'name_desc', 'created_desc']`. |
+| `Crm1Props`, `Crm1PeopleProps`, `Crm1CompaniesProps`, `Crm1Contact`, `Crm1Person`, `Crm1Company`, `Crm1Record`, `Crm1Option`, `Crm1SavedView`, `Crm1Variant`, `Crm1Mode`, `Crm1Sort`, `Crm1Archived`, `Crm1LeadStatus`, `Crm1PeopleColumnId`, `Crm1CompaniesColumnId`, `Crm1Labels`, `Crm1PeopleLabels`, `Crm1CompaniesLabels`, `Crm1LabelsOverride` | `type` | The props, the data and the labels. |

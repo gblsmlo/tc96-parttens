@@ -27,6 +27,7 @@ export interface DataTableBodyProps<TData extends RowData> {
   collapsedGroupIds: readonly string[]
   getGroupToggleLabel?: (group: string, collapsed: boolean) => string
   getRowGroup?: (row: TData) => string | null
+  getRowCanOpen?: (row: TableRowOf<TData>) => boolean
   getRowOpenLabel?: (row: TableRowOf<TData>) => string
   loadingMore: ReactNode
   meta: DataTableTable<TData>['options']['meta']
@@ -48,6 +49,7 @@ const NO_ROW_GROUPS: ReadonlyMap<string, string | null> = new Map()
 export function DataTableBody<TData extends RowData>({
   collapsedGroupIds,
   getGroupToggleLabel,
+  getRowCanOpen,
   getRowGroup,
   getRowOpenLabel,
   loadingMore,
@@ -83,22 +85,25 @@ export function DataTableBody<TData extends RowData>({
     return rows.map((row, index) => positions.get(row.id) ?? index)
   })
 
-  const renderRow = (row: TableRowOf<TData>) => (
-    <DataTableRow
-      canSelect={row.getCanSelect()}
-      expanded={row.getIsExpanded()}
-      key={row.id}
-      meta={meta}
-      onRowClick={onRowClick}
-      openLabel={
-        onRowClick ? (getRowOpenLabel?.(row) ?? defaultRowOpenLabel) : undefined
-      }
-      reorderable={reorderActive}
-      row={row}
-      selected={row.getIsSelected()}
-      visibleColumns={visibleColumns}
-    />
-  )
+  const renderRow = (row: TableRowOf<TData>) => {
+    const opens = onRowClick && (getRowCanOpen?.(row) ?? true)
+    return (
+      <DataTableRow
+        canSelect={row.getCanSelect()}
+        expanded={row.getIsExpanded()}
+        key={row.id}
+        meta={meta}
+        onRowClick={opens ? onRowClick : undefined}
+        openLabel={
+          opens ? (getRowOpenLabel?.(row) ?? defaultRowOpenLabel) : undefined
+        }
+        reorderable={reorderActive}
+        row={row}
+        selected={row.getIsSelected()}
+        visibleColumns={visibleColumns}
+      />
+    )
+  }
 
   if (!getRowGroup) {
     return (
