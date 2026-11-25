@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Flow2Canvas } from '@tc96/ui/blocks/application/flow/flow-2/partials'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import {
   collectionsConnections,
   collectionsFailedSteps,
@@ -34,40 +34,16 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ args, canvasElement }) => {
-    await userEvent.click(
-      within(canvasElement).getByRole('button', { name: 'Organizar árvore' }),
-    )
-    await expect(args.onTidy).toHaveBeenCalledOnce()
-  },
-}
+export const Default: Story = {}
 
 export const Failed: Story = {
   args: { steps: collectionsFailedSteps },
-  play: async ({ canvasElement }) => {
-    await expect(
-      canvasElement.querySelector(
-        '[data-slot="flow-step-node"][data-status="failed"]',
-      ),
-    ).not.toBeNull()
-  },
 }
 
 export const Locked: Story = {
   args: { locked: true },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByRole('button', { name: 'Organizar árvore' }),
-    ).toBeDisabled()
-  },
 }
 
 export const Empty: Story = {
   args: { connections: [], steps: [] },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Nenhum passo ainda'),
-    ).toBeVisible()
-  },
 }

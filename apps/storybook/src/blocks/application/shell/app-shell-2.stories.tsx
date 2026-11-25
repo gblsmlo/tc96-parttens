@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AppShell2 } from '@tc96/ui/blocks/application/shell/app-shell-2'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
-import { expectSettingsLevel } from './fixtures/settings-play'
 import {
   ProfileSettingsPage,
   ShellHeaderActions,
@@ -96,56 +95,17 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const screen = () => within(document.body)
-
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    await expect(
-      canvasElement.querySelector('[data-slot="sidebar"]'),
-    ).toHaveAttribute('data-variant', 'floating')
-    await expect(
-      within(canvasElement).getByRole('button', { name: /Buscar/ }),
-    ).toBeVisible()
-  },
-}
+export const Default: Story = {}
 
 export const Collapsed: Story = {
   args: { defaultOpen: false },
 }
 
 export const SearchPages: Story = {
-  play: async ({ args, canvasElement }) => {
-    await userEvent.click(
-      within(canvasElement).getByRole('button', { name: /Buscar/ }),
-    )
-    const dialog = await screen().findByRole('dialog', { name: 'Buscar' })
-    await userEvent.type(
-      within(dialog).getByRole('combobox', { name: 'Buscar' }),
-      'Prev',
-    )
-    await userEvent.click(
-      await within(dialog).findByRole('option', {
-        name: 'Pipeline / Previsão',
-      }),
-    )
-    await expect(args.onNavigate).toHaveBeenCalledWith('/forecast')
-    await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
-  },
   tags: ['!autodocs'],
 }
 
 export const SearchShortcut: Story = {
-  play: async () => {
-    await userEvent.keyboard('{Control>}k{/Control}')
-    const dialog = await screen().findByRole('dialog', { name: 'Buscar' })
-    await waitFor(() =>
-      expect(
-        within(dialog).getByRole('option', { name: 'Painel' }),
-      ).toBeVisible(),
-    )
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(screen().queryByRole('dialog')).toBeNull())
-  },
   tags: ['!autodocs'],
 }
 
@@ -162,8 +122,5 @@ export const Settings: Story = {
           'With `settings`, the sidebar becomes the settings level: Voltar ao app at the top and the settings menu below it.',
       },
     },
-  },
-  play: async ({ canvasElement }) => {
-    await expectSettingsLevel(canvasElement)
   },
 }

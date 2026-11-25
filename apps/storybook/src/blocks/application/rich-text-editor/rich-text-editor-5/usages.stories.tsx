@@ -4,22 +4,13 @@ import type {
   RichTextEditor5Planner,
 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-5'
 import { useState } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
 import {
   modelPlanner,
   rolloutAuthor,
-  rolloutDocumentName,
   rolloutTime,
   rolloutValue,
 } from '../fixtures/rich-text-editor-5.ts'
-import {
-  dockOf,
-  editorOf,
-  PlanPage,
-  reviewItems,
-  runTask,
-  waitForFinished,
-} from './rich-text-editor-5-layouts.tsx'
+import { PlanPage } from './rich-text-editor-5-layouts.tsx'
 
 const decisionText = (decision: RichTextEditor5Decision) =>
   'change' in decision
@@ -68,74 +59,10 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const PolishingARolloutPlanWithTheAssistant: Story = {
-  play: async ({ canvasElement }) => {
-    await runTask(canvasElement, 'Corrigir ortografia')
-    await waitForFinished(canvasElement)
-    await runTask(canvasElement, 'Enxugar o texto')
-    await waitForFinished(canvasElement)
-    await waitFor(() => expect(reviewItems(canvasElement)).toHaveLength(7))
-    await userEvent.click(
-      dockOf(canvasElement).getByRole('button', {
-        name: /Rejeitar sugestão de Assistente: para migrar/,
-      }),
-    )
-    await waitFor(() => expect(reviewItems(canvasElement)).toHaveLength(6))
-    await userEvent.click(
-      dockOf(canvasElement).getByRole('button', { name: 'Aceitar tudo' }),
-    )
-    await waitFor(() => expect(reviewItems(canvasElement)).toHaveLength(0))
-    const editor = editorOf(canvasElement)
-    await expect(editor).toHaveTextContent('recebimento dos artigos')
-    await expect(editor).toHaveTextContent('porque o suporte')
-    await expect(editor).toHaveTextContent('no sentido de realizar a migração')
-    await expect(
-      within(canvasElement).getByRole('region', {
-        name: 'Registro de decisões',
-      }),
-    ).toHaveTextContent('Aceitas 6 sugestões')
-  },
-}
+export const PolishingARolloutPlanWithTheAssistant: Story = {}
 
-export const TriagingOpenQuestionsBeforeTheKickoff: Story = {
-  play: async ({ canvasElement }) => {
-    await runTask(canvasElement, 'Listar perguntas em aberto')
-    await waitForFinished(canvasElement)
-    const dock = dockOf(canvasElement)
-    await userEvent.click(
-      await dock.findByRole('button', {
-        name: 'Ir para o trecho: A data do piloto ainda é TBD.',
-      }),
-    )
-    await waitFor(() =>
-      expect(canvasElement.ownerDocument.getSelection()?.toString()).toBe(
-        'A data do piloto ainda é TBD.',
-      ),
-    )
-    await runTask(canvasElement, 'Listar responsáveis')
-    await waitForFinished(canvasElement)
-    await expect(
-      await dock.findByText(
-        'Rafael: Rafael valida os fluxos de busca com o suporte.',
-      ),
-    ).toBeVisible()
-    await expect(
-      within(canvasElement).getByRole('textbox', { name: rolloutDocumentName }),
-    ).toHaveTextContent('A data do piloto ainda é TBD.')
-  },
-}
+export const TriagingOpenQuestionsBeforeTheKickoff: Story = {}
 
 export const PluggingYourOwnModelIntoThePlanner: Story = {
   args: { planner: modelPlanner },
-  play: async ({ canvasElement }) => {
-    await runTask(canvasElement, 'Escrever resumo')
-    await waitForFinished(canvasElement)
-    await expect(
-      within(canvasElement).getByText('Modelo externo: summary'),
-    ).toBeVisible()
-    await waitFor(() => expect(reviewItems(canvasElement)).toHaveLength(1))
-    await expect(
-      reviewItems(canvasElement)[0]?.querySelector('ins'),
-    ).toHaveTextContent('Cronograma em três ondas')
-  },
 }

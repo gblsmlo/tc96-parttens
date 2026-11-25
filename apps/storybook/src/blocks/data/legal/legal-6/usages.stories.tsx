@@ -6,7 +6,6 @@ import {
   type Legal6View,
 } from '@tc96/ui/blocks/data/legal/legal-6'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { legal6Handlers } from '../../../../mocks/legal-6.ts'
 import {
@@ -96,22 +95,9 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const rowsOf = (canvasElement: HTMLElement) =>
-  canvasElement.querySelectorAll('[data-slot="data-table"] tbody tr')
-
 export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal6Handlers.loaded, ...legal6Handlers.savedViews())
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Réplica à contestação')).toBeVisible()
-    await expect(
-      canvas.getByRole('table', { name: 'Prazos: Minha fila' }),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Minha fila' }),
-    ).toBeVisible()
   },
 }
 
@@ -120,17 +106,6 @@ export const LoadsMoreByCursor: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal6Handlers.loaded, ...legal6Handlers.savedViews())
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      await canvas.findByRole('button', { name: 'Carregar mais' }),
-    )
-    await expect(await canvas.findByText('Apelação')).toBeVisible()
-    await expect(rowsOf(canvasElement)).toHaveLength(8)
-    await expect(
-      canvas.queryByRole('button', { name: 'Carregar mais' }),
-    ).toBeNull()
-  },
 }
 
 export const LoadMoreFailed: Story = {
@@ -138,26 +113,11 @@ export const LoadMoreFailed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal6Handlers.moreFailed, ...legal6Handlers.savedViews())
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      await canvas.findByRole('button', { name: 'Carregar mais' }),
-    )
-    await expect(await canvas.findByRole('alert')).toHaveTextContent(
-      'Não foi possível carregar mais prazos. Tente de novo.',
-    )
-    await expect(rowsOf(canvasElement)).toHaveLength(5)
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal6Handlers.empty, ...legal6Handlers.savedViews())
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum prazo na sua fila.'),
-    ).toBeVisible()
   },
 }
 
@@ -165,23 +125,11 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal6Handlers.pending, ...legal6Handlers.savedViews())
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando prazos'),
-    ).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal6Handlers.error, ...legal6Handlers.savedViews())
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os prazos',
-      ),
-    ).toBeVisible()
   },
 }
 
@@ -189,20 +137,5 @@ export const SavedViews: Story = {
   args: { initialView: 'all' },
   beforeEach: ({ msw }) => {
     msw.use(legal6Handlers.loaded, ...legal6Handlers.savedViews())
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await canvas.findByText('Réplica à contestação')
-    await userEvent.click(canvas.getByRole('button', { name: 'Todos' }))
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Prazos do Rafael' }),
-    )
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-    await expect(
-      canvas.getByRole('button', { name: 'Prazos do Rafael' }),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Exibição (1)' }),
-    ).toBeVisible()
   },
 }

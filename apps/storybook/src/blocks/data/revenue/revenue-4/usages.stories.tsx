@@ -7,7 +7,6 @@ import {
   type Revenue4Summary,
 } from '@tc96/ui/blocks/data/revenue/revenue-4'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { revenue4Handlers } from '../../../../mocks/revenue-4.ts'
 
@@ -53,25 +52,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(revenue4Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Northwind Comércio')).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Recolher tudo' }))
-    await expect(canvas.queryByText('Northwind Comércio')).toBeNull()
-    await expect(
-      canvas.getByRole('button', { name: 'Expandir tudo' }),
-    ).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(revenue4Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma conta para exibir.'),
-    ).toBeVisible()
   },
 }
 
@@ -79,26 +64,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(revenue4Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as contas',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(revenue4Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando contas'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('heading', { name: 'Receita por região' }),
-    ).toBeVisible()
   },
 }

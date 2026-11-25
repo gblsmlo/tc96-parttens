@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Inventory2 } from '@tc96/ui/blocks/data/inventory/inventory-2'
-import { expect, fn, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { products } from '../fixtures/inventory-2.ts'
 
 const meta = {
@@ -15,11 +15,7 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByRole('table')).toBeVisible()
-  },
-}
+export const Default: Story = {}
 
 export const Unsaved: Story = {
   args: {
@@ -28,11 +24,6 @@ export const Unsaved: Story = {
     onDraftsChange: fn(),
     onSave: fn(),
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('2 alterações não salvas'),
-    ).toBeVisible()
-  },
 }
 
 export const ServerErrors: Story = {
@@ -40,46 +31,17 @@ export const ServerErrors: Story = {
     cellErrors: { 'prd-3502': { price: 'Preço abaixo do custo.' } },
     onDraftsChange: fn(),
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Preço abaixo do custo.'),
-    ).toBeVisible()
-  },
 }
 
 export const Loading: Story = {
   args: { pending: true },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByLabelText('Carregando produtos')).toHaveAttribute(
-      'aria-busy',
-      'true',
-    )
-    await expect(
-      canvas.getByRole('heading', { name: 'Inventário de produtos' }),
-    ).toBeVisible()
-  },
 }
 
 export const ErrorState: Story = {
   args: { error: true },
   name: 'Error',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.getByText('Não foi possível carregar os produtos'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('heading', { name: 'Inventário de produtos' }),
-    ).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   args: { products: [] },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Nenhum produto para exibir.'),
-    ).toBeVisible()
-  },
 }

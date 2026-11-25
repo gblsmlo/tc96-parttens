@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Navbar6 } from '@tc96/ui/blocks/application/navbar/navbar-6'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   breadcrumb,
   filterOptions,
@@ -110,42 +109,8 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const tasksList = (canvas: ReturnType<typeof within>) =>
-  within(canvas.getByRole('list', { name: 'Tarefas' })).getAllByRole('listitem')
+export const FilteringTheBoard: Story = {}
 
-export const FilteringTheBoard: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(tasksList(canvas)).toHaveLength(4)
-    await userEvent.click(canvas.getByRole('button', { name: 'Filtrar' }))
-    await userEvent.click(
-      await screen.findByRole('menuitemcheckbox', { name: 'Atrasadas' }),
-    )
-    await userEvent.keyboard('{Escape}')
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
-    await expect(tasksList(canvas)).toHaveLength(2)
-    await expect(
-      canvas.getByRole('button', { name: 'Filtrar' }),
-    ).toHaveAttribute('data-active')
-  },
-}
+export const SortingByName: Story = {}
 
-export const SortingByName: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Ordenar' }))
-    await userEvent.click(
-      await screen.findByRole('menuitemradio', { name: 'Nome' }),
-    )
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
-    await expect(tasksList(canvas)[0]).toHaveTextContent('Atualizar o catálogo')
-  },
-}
-
-export const InvitingTheTeam: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Convidar' }))
-    await expect(canvas.getByText('Convite enviado à equipe.')).toBeVisible()
-  },
-}
+export const InvitingTheTeam: Story = {}

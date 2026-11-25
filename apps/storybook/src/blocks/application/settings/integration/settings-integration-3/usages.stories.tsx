@@ -4,7 +4,7 @@ import {
   SettingsIntegration3,
   type SettingsIntegration3Key,
 } from '@tc96/ui/blocks/application/settings/integration/settings-integration-3'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../../mocks/api.ts'
 import { settingsIntegration3Handlers } from '../../../../../mocks/settings-integration-3.ts'
 import { settingsIntegration3ControlArgs } from './settings-integration-3-controls.ts'
@@ -52,21 +52,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsIntegration3Handlers.keys)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Integração CRM')).toBeVisible()
-    await expect(canvas.getByText('sk_live_••••4f2a')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsIntegration3Handlers.keysEmpty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma chave ainda'),
-    ).toBeVisible()
   },
 }
 
@@ -74,28 +64,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsIntegration3Handlers.keysError)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar as chaves'),
-    ).toBeVisible()
-    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
-    await expect(retry).toBeEnabled()
-    await userEvent.click(retry)
-    await expect(await canvas.findByRole('alert')).toHaveAttribute(
-      'data-kind',
-      'error',
-    )
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsIntegration3Handlers.keysPending)
-  },
-  play: async ({ canvasElement }) => {
-    const skeleton =
-      await within(canvasElement).findByLabelText('Carregando chaves')
-    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

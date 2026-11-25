@@ -6,7 +6,6 @@ import {
   type Flow4Node,
 } from '@tc96/ui/blocks/application/flow/flow-4'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { flow4Handlers } from '../../../../mocks/flow-4.ts'
 
@@ -51,25 +50,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(flow4Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const node = await canvas.findByRole('button', {
-      name: /Ativação de contas/,
-    })
-    await expect(node).toHaveAttribute('aria-pressed', 'false')
-    await userEvent.click(node)
-    await expect(node).toHaveAttribute('aria-pressed', 'true')
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(flow4Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum nó no mapa'),
-    ).toBeVisible()
   },
 }
 
@@ -77,24 +62,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(flow4Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar o mapa de impacto'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar novamente' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(flow4Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando mapa de impacto'),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

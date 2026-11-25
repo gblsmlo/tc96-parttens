@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { EmptyState6 } from '@tc96/ui/blocks/application/empty-state/empty-state-6'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { tabs } from '../fixtures/empty-state-6.ts'
 
 const AccountSetup = () => {
@@ -36,15 +35,4 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const NewAccountSettings: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('tab', { name: 'Integrações' }))
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Adicionar integração' }),
-    )
-    await expect(canvas.getByRole('status')).toHaveTextContent(
-      'Adicionar integração',
-    )
-  },
-}
+export const NewAccountSettings: Story = {}

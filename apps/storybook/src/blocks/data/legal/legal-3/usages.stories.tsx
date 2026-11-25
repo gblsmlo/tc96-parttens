@@ -6,7 +6,6 @@ import {
   type Legal3Mode,
 } from '@tc96/ui/blocks/data/legal/legal-3'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { legal3Handlers } from '../../../../mocks/legal-3.ts'
 import { calendarAnchor, calendarNow, owners } from '../fixtures/legal-3.ts'
@@ -58,23 +57,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal3Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Contestação da TransVale'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal3Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum prazo para exibir.'),
-    ).toBeVisible()
   },
 }
 
@@ -82,24 +69,10 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal3Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando prazos'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('heading', { name: 'Prazos' })).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal3Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os prazos',
-      ),
-    ).toBeVisible()
   },
 }

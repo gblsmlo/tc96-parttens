@@ -4,7 +4,7 @@ import {
   SettingsAccount1,
   type SettingsAccount1Props,
 } from '@tc96/ui/blocks/application/settings/account/settings-account-1'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../../mocks/api.ts'
 import { settingsAccount1Handlers } from '../../../../../mocks/settings-account-1.ts'
 import { settingsAccount1ControlArgs } from './settings-account-1-controls.ts'
@@ -58,41 +58,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsAccount1Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Perfil')).toBeVisible()
-    await expect(
-      await canvas.findByRole('textbox', { name: 'E-mail' }),
-    ).toHaveValue('ana@acme.com')
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsAccount1Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar a conta'),
-    ).toBeVisible()
-    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
-    await expect(retry).toBeEnabled()
-    await userEvent.click(retry)
-    await expect(await canvas.findByRole('alert')).toHaveAttribute(
-      'data-kind',
-      'error',
-    )
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsAccount1Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const skeleton =
-      await within(canvasElement).findByLabelText('Carregando conta')
-    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

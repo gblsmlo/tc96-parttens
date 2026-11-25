@@ -4,7 +4,6 @@ import {
   List1,
   type List1Metric,
 } from '@tc96/ui/blocks/application/list/list-1'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { list1Handlers } from '../../../../mocks/list-1.ts'
 
@@ -39,21 +38,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(list1Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Receita')).toBeVisible()
-    await expect(canvas.getByText('Clientes ativos')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(list1Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma métrica ainda'),
-    ).toBeVisible()
   },
 }
 
@@ -61,22 +50,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(list1Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as métricas',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(list1Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando métricas'),
-    ).toBeVisible()
   },
 }

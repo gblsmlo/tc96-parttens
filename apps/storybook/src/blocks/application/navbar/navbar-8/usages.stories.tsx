@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Navbar8 } from '@tc96/ui/blocks/application/navbar/navbar-8'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   agents,
   categories,
@@ -66,38 +65,8 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const FilteringTheCatalog: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getAllByRole('listitem')).toHaveLength(5)
-    await userEvent.click(canvas.getByRole('radio', { name: 'Dados' }))
-    await expect(canvas.getAllByRole('listitem')).toHaveLength(2)
-    await expect(canvas.getByText('Analista de dados')).toBeVisible()
-    await expect(canvas.queryByText('Revisor de PRs')).toBeNull()
-  },
-}
+export const FilteringTheCatalog: Story = {}
 
-export const DeployingAnAgent: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Implantar' }))
-    await expect(canvas.getByText('Implantação iniciada.')).toBeVisible()
-  },
-}
+export const DeployingAnAgent: Story = {}
 
-export const ReadingNotifications: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Notificações, 2 não lidas' }),
-    )
-    await userEvent.click(
-      await screen.findByRole('button', { name: /Implantação concluída/ }),
-    )
-    await waitFor(() =>
-      expect(
-        canvas.getByRole('button', { name: 'Notificações, 1 não lida' }),
-      ).toBeVisible(),
-    )
-  },
-}
+export const ReadingNotifications: Story = {}

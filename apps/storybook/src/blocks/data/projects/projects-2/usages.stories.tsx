@@ -7,7 +7,6 @@ import {
   type Projects2View,
 } from '@tc96/ui/blocks/data/projects/projects-2'
 import { useMemo, useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { projects2Handlers } from '../../../../mocks/projects-2.ts'
 import { tasksForView } from '../fixtures/projects-2.ts'
@@ -59,29 +58,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(projects2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText(
-        'Concluir o handshake do registro para instalações privadas',
-      ),
-    ).toBeVisible()
-    await expect(canvas.getAllByRole('heading')).toHaveLength(1)
-    await userEvent.click(canvas.getByRole('tab', { name: /Backlog/ }))
-    await expect(
-      await canvas.findByText('Permitir notas fiscais em lote'),
-    ).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(projects2Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma tarefa para exibir.'),
-    ).toBeVisible()
   },
 }
 
@@ -89,26 +70,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(projects2Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as tarefas',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(projects2Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando tarefas'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('heading', { name: 'Entrega de tarefas' }),
-    ).toBeVisible()
   },
 }

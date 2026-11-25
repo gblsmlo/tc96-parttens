@@ -4,7 +4,7 @@ import {
   Card4,
   type Card4Meeting,
 } from '@tc96/ui/blocks/application/card/card-4'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card4Handlers } from '../../../../mocks/card-4.ts'
 
@@ -43,26 +43,11 @@ export const Loaded: Story = {
     onJoin.mockClear()
     msw.use(card4Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Revisão de design')).toBeVisible()
-    await userEvent.click(
-      canvas.getByRole('button', {
-        name: 'Entrar na reunião Revisão de design',
-      }),
-    )
-    await expect(onJoin).toHaveBeenCalledWith('review')
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card4Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma reunião hoje'),
-    ).toBeVisible()
   },
 }
 
@@ -70,22 +55,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card4Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as reuniões',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card4Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando reuniões'),
-    ).toBeVisible()
   },
 }

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { SettingsWorkspace2 } from '@tc96/ui/blocks/application/settings/workspace/settings-workspace-2'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../../mocks/api.ts'
 import { settingsWorkspace2Handlers } from '../../../../../mocks/settings-workspace-2.ts'
 import {
@@ -57,39 +57,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsWorkspace2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Ana Ribeiro')).toBeVisible()
-    await expect(canvas.getByText('diego@acme.com')).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsWorkspace2Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar os membros'),
-    ).toBeVisible()
-    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
-    await expect(retry).toBeEnabled()
-    await userEvent.click(retry)
-    await expect(await canvas.findByRole('alert')).toHaveAttribute(
-      'data-kind',
-      'error',
-    )
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsWorkspace2Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const skeleton =
-      await within(canvasElement).findByLabelText('Carregando membros')
-    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

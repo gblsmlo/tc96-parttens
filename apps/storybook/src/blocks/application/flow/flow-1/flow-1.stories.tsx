@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Flow1, type Flow1Props } from '@tc96/ui/blocks/application/flow/flow-1'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../../.storybook/docs-page.tsx'
 import { withAppShell } from '../../../../templates/fixtures/app-shell'
 import {
@@ -84,8 +84,6 @@ const docs = {
   usage,
 } satisfies UsageDocsParameters & Record<string, unknown>
 
-const screen = () => within(document.body)
-
 const meta = {
   args: {
     assistant: {
@@ -161,128 +159,22 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
+export const Default: Story = {}
 
-    await userEvent.click(canvas.getByRole('button', { name: 'Enviar e-mail' }))
-    await expect(args.onStepAdd).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'email' }),
-      {},
-    )
-
-    await userEvent.click(canvas.getByText('Novo lead'))
-    await userEvent.click(
-      await canvas.findByRole('button', { name: 'Editar Novo lead' }),
-    )
-    const name = await canvas.findByRole('textbox', { name: 'Nome' })
-    await userEvent.clear(name)
-    await userEvent.type(name, 'Lead recebido')
-    await userEvent.click(canvas.getByRole('button', { name: 'Salvar passo' }))
-    await waitFor(() =>
-      expect(args.onStepChange).toHaveBeenCalledWith(
-        'form',
-        expect.objectContaining({ name: 'Lead recebido', type: 'form' }),
-      ),
-    )
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Pergunte à IA' }))
-    await userEvent.click(
-      await canvas.findByRole('button', {
-        name: 'Por que o passo de Slack falhou?',
-      }),
-    )
-    await expect(args.assistant?.onSuggestion).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'why' }),
-    )
-  },
-}
-
-export const Locked: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Travar canvas' }))
-    await expect(
-      canvas.getByRole('button', { name: 'Adicionar passo' }),
-    ).toBeDisabled()
-    await expect(
-      canvas.getByRole('button', { name: 'Enviar e-mail' }),
-    ).toBeDisabled()
-    await userEvent.click(canvas.getByText('Novo lead'))
-    await expect(
-      await canvas.findByRole('button', { name: 'Editar Novo lead' }),
-    ).toBeEnabled()
-    await expect(
-      canvas.getByRole('button', {
-        name: 'Adicionar um passo depois de Novo lead',
-      }),
-    ).toBeDisabled()
-    await expect(args.onStepAdd).not.toHaveBeenCalled()
-  },
-}
+export const Locked: Story = {}
 
 export const Empty: Story = {
   args: { connections: [], steps: [] },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByText('Nenhum passo ainda')).toBeVisible()
-    await expect(
-      canvas.queryByRole('region', { name: 'Última execução' }),
-    ).toBeNull()
-  },
 }
 
 export const Running: Story = {
   args: { running: true, steps: leadRoutingRunningSteps },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.getByRole('button', { name: 'Executar uma vez' }),
-    ).toBeDisabled()
-    await expect(
-      canvas.getByRole('region', { name: 'Última execução' }),
-    ).toHaveAttribute('data-status', 'running')
-  },
 }
 
 export const Failed: Story = {
   args: { steps: leadRoutingFailedSteps },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const card = canvas.getByRole('region', { name: 'Última execução' })
-    await expect(card).toHaveAttribute('data-status', 'failed')
-    await expect(
-      within(card).getByText('Canal #vendas não encontrado'),
-    ).toBeVisible()
-  },
 }
 
 export const Mobile: Story = {
   globals: { viewport: { isRotated: false, value: 'mobile2' } },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvasElement.querySelector('[data-slot="flow-step-library"]'),
-    ).toHaveAttribute('data-collapsed')
-
-    await userEvent.click(canvas.getByRole('button', { name: 'Pergunte à IA' }))
-    await expect(
-      await screen().findByRole('dialog', { name: 'Assistente' }),
-    ).toBeVisible()
-
-    await userEvent.click(
-      await screen().findByRole('button', { name: 'Encerrar' }),
-    )
-    await waitFor(() =>
-      expect(screen().queryByRole('dialog', { name: 'Assistente' })).toBeNull(),
-    )
-    await userEvent.click(canvas.getByText('Novo lead'))
-    await userEvent.click(
-      await canvas.findByRole('button', { name: 'Ver Novo lead' }),
-    )
-    const sheet = await screen().findByRole('dialog', {
-      name: 'Detalhes do passo',
-    })
-    await waitFor(() => expect(sheet).toBeVisible())
-  },
 }

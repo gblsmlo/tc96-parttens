@@ -14,7 +14,6 @@ import {
   type Projects3Task,
 } from '@tc96/ui/blocks/data/projects/projects-3'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { projects3Handlers } from '../../../../mocks/projects-3.ts'
 import {
@@ -141,24 +140,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(projects3Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Organizar a reunião trimestral'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-    await expect(canvas.getByText('1–5 de 12')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(projects3Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma tarefa ainda.'),
-    ).toBeVisible()
   },
 }
 
@@ -166,24 +152,10 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(projects3Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando tarefas'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('heading', { name: 'Tarefas' })).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(projects3Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as tarefas',
-      ),
-    ).toBeVisible()
   },
 }

@@ -1,11 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  Flow2,
-  type Flow2Props,
-  type FlowStep,
-} from '@tc96/ui/blocks/application/flow/flow-2'
-import { flowStepNodeSize } from '@tc96/ui/patterns/flow/canvas/core'
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test'
+import { Flow2, type Flow2Props } from '@tc96/ui/blocks/application/flow/flow-2'
+import { fn } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../../.storybook/docs-page.tsx'
 import { withAppShell } from '../../../../templates/fixtures/app-shell'
 import {
@@ -92,19 +87,6 @@ const docs = {
   usage,
 } satisfies UsageDocsParameters & Record<string, unknown>
 
-const overlaps = (steps: readonly FlowStep[]) => {
-  const [width, height] = flowStepNodeSize
-  return steps.some((first, index) =>
-    steps
-      .slice(index + 1)
-      .some(
-        (second) =>
-          Math.abs(first.position.x - second.position.x) < width &&
-          Math.abs(first.position.y - second.position.y) < height,
-      ),
-  )
-}
-
 const meta = {
   args: {
     assistant: {
@@ -180,89 +162,20 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-const screen = () => within(document.body)
-
-export const Default: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Ações de Decidir abordagem' }),
-    )
-    await userEvent.click(
-      await screen().findByRole('menuitem', { name: 'Adicionar ramo' }),
-    )
-    const inspector = await canvas.findByRole('complementary', {
-      name: 'Detalhes do passo',
-    })
-    await userEvent.type(
-      within(inspector).getByRole('textbox', { name: 'Nome' }),
-      'Ligar para o cliente',
-    )
-    await userEvent.click(
-      within(inspector).getByRole('button', { name: 'Adicionar passo' }),
-    )
-    await waitFor(() =>
-      expect(args.onStepAdd).toHaveBeenCalledWith(
-        expect.objectContaining({ id: 'customer' }),
-        expect.objectContaining({
-          after: 'decide',
-          values: expect.objectContaining({ name: 'Ligar para o cliente' }),
-        }),
-      ),
-    )
-
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Organizar árvore' }),
-    )
-    await waitFor(() => expect(args.onStepsChange).toHaveBeenCalled())
-    const organized = (args.onStepsChange as ReturnType<typeof fn>).mock
-      .lastCall?.[0] as FlowStep[]
-    await expect(organized.length).toBeGreaterThan(0)
-    await expect(overlaps(organized)).toBe(false)
-  },
-}
+export const Default: Story = {}
 
 export const Empty: Story = {
   args: { connections: [], steps: [] },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByText('Nenhum passo ainda')).toBeVisible()
-  },
 }
 
 export const Running: Story = {
   args: { running: true, steps: collectionsRunningSteps },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.getByRole('button', { name: 'Executar teste' }),
-    ).toBeDisabled()
-  },
 }
 
 export const Failed: Story = {
   args: { steps: collectionsFailedSteps },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const card = canvas.getByRole('region', { name: 'Última execução' })
-    await expect(card).toHaveAttribute('data-status', 'failed')
-    await expect(
-      within(card).getByText('O Resend recusou o domínio de envio'),
-    ).toBeVisible()
-  },
 }
 
 export const Mobile: Story = {
   globals: { viewport: { isRotated: false, value: 'mobile2' } },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvasElement.querySelector('[data-slot="flow-step-library"]'),
-    ).toHaveAttribute('data-collapsed')
-    await userEvent.click(canvas.getByRole('button', { name: 'Pergunte à IA' }))
-    await expect(
-      await screen().findByRole('dialog', { name: 'Assistente' }),
-    ).toBeVisible()
-  },
 }

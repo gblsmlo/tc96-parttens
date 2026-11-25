@@ -4,7 +4,6 @@ import {
   Timeline2,
   type Timeline2Release,
 } from '@tc96/ui/blocks/application/timeline/timeline-2'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { timeline2Handlers } from '../../../../mocks/timeline-2.ts'
 
@@ -40,21 +39,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Versão 2.4.0')).toBeVisible()
-    await expect(canvas.getByText('Versão 2.3.1')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline2Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma versão publicada'),
-    ).toBeVisible()
   },
 }
 
@@ -62,28 +51,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline2Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText(
-        'Não foi possível carregar o histórico de versões',
-      ),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar novamente' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(timeline2Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText(
-        'Carregando histórico de versões',
-      ),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

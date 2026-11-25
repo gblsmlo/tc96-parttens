@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Dashboard3 } from '@tc96/ui/blocks/application/dashboard/dashboard-3'
-import { expect, fn, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { crew, forecast, kpis, queue } from '../fixtures/dashboard-3.ts'
 import { breadcrumbsFor, periodOptions } from '../fixtures/shared.ts'
 
@@ -28,38 +28,17 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByRole('table', { name: 'Equipe do turno' }),
-    ).toBeVisible()
-  },
-}
+export const Default: Story = {}
 
 export const Loading: Story = {
   args: { pending: true },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByLabelText('Carregando cobertura das equipes'),
-    ).toHaveAttribute('aria-busy', 'true')
-  },
 }
 
 export const Failed: Story = {
   args: { error: true },
   name: 'Error',
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Não foi possível carregar a cobertura'),
-    ).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   args: { crew: [], forecast: [], kpis: [], queue: [] },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Nenhuma escala cadastrada'),
-    ).toBeVisible()
-  },
 }

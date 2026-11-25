@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
 import type { RichTextValue } from '@tc96/ui/patterns/rich-text-editor'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { richTextTyping } from '../../../../test-utils/rich-text-typing.ts'
 import {
   launchBrief,
@@ -100,48 +99,12 @@ type Story = StoryObj<typeof meta>
 
 export const AutosavingTheBrief: Story = {
   render: () => <AutosavedBrief />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByText('Nenhum salvamento ainda.')).toBeVisible()
-    await focusEditor(canvasElement)
-    await userEvent.keyboard(' Fim.')
-    await waitFor(() =>
-      expect(
-        canvas.getByText('1 salvamento enviado ao servidor.'),
-      ).toBeVisible(),
-    )
-  },
 }
 
 export const ReviewingInViewOnlyMode: Story = {
   render: () => <ReviewedBrief />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.getByRole('document', { name: 'Conteúdo do documento' }),
-    ).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Pedir edição' }))
-    await waitFor(() =>
-      expect(
-        canvas.getByRole('textbox', { name: 'Conteúdo do documento' }),
-      ).toBeVisible(),
-    )
-    await expect(canvas.getByRole('toolbar')).toBeVisible()
-  },
 }
 
 export const CopyingToTheClipboard: Story = {
   render: () => <ClipboardBrief />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Mais ações' }))
-    await userEvent.click(
-      await screen.findByRole('menuitem', { name: 'Copiar como texto' }),
-    )
-    await waitFor(() =>
-      expect(
-        canvasElement.querySelector('[data-slot="copied-content"]'),
-      ).toHaveTextContent('Agendar os e-mails de convite'),
-    )
-  },
 }

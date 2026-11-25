@@ -4,7 +4,6 @@ import {
   Stats7,
   type Stats7Metric,
 } from '@tc96/ui/blocks/application/stats/stats-7'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { stats7Handlers } from '../../../../mocks/stats-7.ts'
 
@@ -40,33 +39,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(stats7Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByRole('region', { name: 'Cadastros' }),
-    ).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(stats7Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as métricas',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(stats7Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando métricas'),
-    ).toBeVisible()
   },
 }

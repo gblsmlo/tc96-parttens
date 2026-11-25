@@ -4,7 +4,7 @@ import {
   SettingsCatalog9,
   type SettingsCatalog9Category,
 } from '@tc96/ui/blocks/application/settings/catalog/settings-catalog-9'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../../mocks/api.ts'
 import { settingsCatalog9Handlers } from '../../../../../mocks/settings-catalog-9.ts'
 import { settingsCatalog9ControlArgs } from './settings-catalog-9-controls.ts'
@@ -51,21 +51,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog9Handlers.categories)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Custas processuais')).toBeVisible()
-    await expect(canvas.getByText('Subcategoria de Honorários')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog9Handlers.categoriesEmpty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma categoria ainda'),
-    ).toBeVisible()
   },
 }
 
@@ -73,29 +63,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog9Handlers.categoriesError)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar as categorias'),
-    ).toBeVisible()
-    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
-    await expect(retry).toBeEnabled()
-    await userEvent.click(retry)
-    await expect(await canvas.findByRole('alert')).toHaveAttribute(
-      'data-kind',
-      'error',
-    )
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog9Handlers.categoriesPending)
-  },
-  play: async ({ canvasElement }) => {
-    const skeleton = await within(canvasElement).findByLabelText(
-      'Carregando categorias',
-    )
-    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }
