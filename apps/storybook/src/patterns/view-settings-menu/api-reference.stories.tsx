@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ViewSettingsMenu } from '@tc96/ui/patterns'
 import { Slot } from '../../test-utils/anatomy-slot'
-import { ViewSettingsCanvas } from './view-settings-canvas.tsx'
+import { ViewSettingsCanvas } from './view-settings-menu-canvas.tsx'
 
 const meta = {
   args: { children: null },
@@ -9,7 +9,7 @@ const meta = {
   decorators: [ViewSettingsCanvas],
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs', '!dev'],
-  title: 'Patterns/ViewSettings/API Reference',
+  title: 'Patterns/ViewSettingsMenu/API Reference',
 } satisfies Meta<typeof ViewSettingsMenu>
 
 export default meta

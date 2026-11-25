@@ -6,7 +6,7 @@ import {
 } from '@phosphor-icons/react'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
 import { SortRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-sort-submenu'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings/components/view-settings'
+import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import {
   inbox1KindsOf,
   inbox1ReadFilters,

@@ -12,7 +12,7 @@ import type { UseDataGridReturn } from '@tc96/ui/patterns/data-grid/hooks/use-da
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings/components/view-settings'
+} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import type { ReactNode } from 'react'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import { support1Queues, support1Statuses } from './support-1-options'

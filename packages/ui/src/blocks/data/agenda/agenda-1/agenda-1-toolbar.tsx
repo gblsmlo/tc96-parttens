@@ -13,7 +13,7 @@ import {
   FilterRadioSubmenu,
 } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
 import { SortRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-sort-submenu'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings/components/view-settings'
+import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { DataCollectionSettingsToolbar } from '../../shared/collection/data-collection-settings-toolbar'
 import { DataCollectionToolbarButton } from '../../shared/collection/data-collection-toolbar'

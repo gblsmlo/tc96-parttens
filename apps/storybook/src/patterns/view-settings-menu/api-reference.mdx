@@ -3,18 +3,24 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 <Meta of={ApiReferenceStories} name="API Reference" />
 
-# ViewSettings
+# ViewSettingsMenu
 
-The display settings of a collection in one menu: tabs for the layouts, the sections the screen passes (grouping, sorting, density, columns, filters), then the clear and save items. It keeps no state: the consumer passes the active layout, the filter count and the sections, and handles every callback. Its trigger is a toolbar button, so it only mounts inside a [CollectionToolbar](?path=/docs/patterns-collectiontoolbar-api-reference--api-reference), usually in its `right` slot.
+The display settings of a collection in one menu: tabs for the layouts, the sections the screen passes (grouping, sorting, density, columns, filters), then the clear and save items. It owns the popover and the organization of the fields: a submenu that shows its current value, the field sections with a visibility switch per field, and the item that shows every field. It keeps no state: the consumer passes the active layout, the filter count and the sections, and handles every callback. Its trigger is a toolbar button, so it only mounts inside a [CollectionToolbar](?path=/docs/patterns-collectiontoolbar-api-reference--api-reference), usually in its `right` slot.
 
-The other pages of `Patterns/ViewSettings`: [Playground](?path=/story/patterns-viewsettings-playground--playground) to try the texts and the footer items, [Layouts](?path=/story/patterns-viewsettings-layouts--default) for the arrangements of the layout tabs and the field settings, [Behavior](?path=/story/patterns-viewsettings-behavior--trigger-is-a-ghost-toolbar-button) for the tests, and [Usages](?path=/story/patterns-viewsettings-usages--task-list) for real settings menus.
+The other pages of `Patterns/ViewSettingsMenu`: [Playground](?path=/story/patterns-viewsettingsmenu-playground--playground) to try the texts and the footer items, [Layouts](?path=/story/patterns-viewsettingsmenu-layouts--default) for the arrangements of the layout tabs and the field settings, [Behavior](?path=/story/patterns-viewsettingsmenu-behavior--trigger-is-a-ghost-toolbar-button) for the tests, and [Usages](?path=/story/patterns-viewsettingsmenu-usages--task-list) for real settings menus.
 
 Used in: the toolbar of every [Collection](?path=/story/patterns-collection-usages--tasks) usage and of the table and data grid blocks. `FilterRadioSubmenu`, an item for the filter section, is documented in [Patterns/Collection](?path=/docs/patterns-collection-api-reference--api-reference).
 
 ## Import
 
 ```tsx
-import { ViewSettingsMenu, ViewSettingsSection } from '@acme/patterns'
+import {
+  ViewSettingsFieldSection,
+  ViewSettingsMenu,
+  ViewSettingsSection,
+  ViewSettingsShowAllFields,
+  ViewSettingsSubmenu,
+} from '@acme/patterns'
 ```
 
 ## Anatomy
@@ -86,31 +92,75 @@ A named section of the menu. Renders a menu group whose label comes first.
 | `label` | `React.ReactNode` | required | Sets the label of the group. |
 | `children` | `React.ReactNode` | required | Renders the items and submenus of the section. |
 
+## ViewSettingsSubmenu
+
+A submenu of single choice whose trigger shows the current option after the label, such as `Agrupar por` and `Ordenar por`. Renders a submenu trigger and a radio group in the submenu.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Sets the text of the trigger. |
+| `options` | `readonly ViewSettingsOption<TValue>[]` | required | Lists the choices, each `{ label, value }`. |
+| `value` | `TValue` | required | Sets the checked option and the value shown in the trigger. |
+| `onValueChange` | `(value: TValue) => void` | required | Called when an option is picked. |
+| `icon` | `Icon` (Phosphor) | - | Renders before the label. |
+
+## ViewSettingsFieldSection
+
+A section of fields, each row a switch that shows or hides the field. The label carries the count of fields, and an empty list renders nothing.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `React.ReactNode` | required | Sets the label of the section, before the count. |
+| `fields` | `readonly ViewSettingsField[]` | required | Lists the fields in the order shown, each `{ id, label, visible, icon?, typeLabel? }`. |
+| `onVisibleChange` | `(id: string, visible: boolean) => void` | required | Called when a switch changes; the menu stays open. |
+
+## ViewSettingsShowAllFields
+
+The item that shows every hidden field. Keeps the menu open.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `hiddenCount` | `number` | required | Disables the item at zero. |
+| `onShowAll` | `() => void` | required | Called when the item is picked. |
+| `label` | `string` | `"Mostrar todos os campos"` | Sets the text of the item. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"view-settings-current-value"` | Selects the current value in a `ViewSettingsSubmenu` trigger |
+| `data-slot` | `"view-settings-field-count"` | Selects the count in a field section label |
+| `data-field` | the field `id` | Selects one field row |
+
 ## Field settings
 
-A collection that lets the user choose its fields composes them as sections of the menu, as in [Field Settings](?path=/story/patterns-viewsettings-layouts--field-settings) ([open](?path=/story/patterns-viewsettings-layouts--field-settings-open)). The menu has no prop for it: the consumer groups, sorts and filters the fields and passes the sections ready. The rules:
+A collection that lets the user choose its fields composes the parts above, as in [Field Settings](?path=/story/patterns-viewsettingsmenu-layouts--field-settings) ([open](?path=/story/patterns-viewsettingsmenu-layouts--field-settings-open)). The parts render what they receive: the consumer groups, sorts and filters the fields and passes each group ready. The rules:
 
 - Grouping and sorting are two submenus, never one list of combinations. `Agrupar por` offers `Nenhum`, `Tipo` and `Visibilidade`; `Ordenar por` offers `Manual`, `Nome A-Z` and `Nome Z-A`.
 - The name order applies inside each group. "By type, in alphabetical order" is `Tipo` plus `Nome A-Z`, not a fourth option.
-- Each submenu trigger shows its current value after the label, in `muted-foreground`, so the state reads without opening it.
+- Both are `ViewSettingsSubmenu`, inside one `ViewSettingsSection` named `Organizar campos`, so each trigger shows its current value.
 - The default is `Visibilidade` with `Manual`: `Visíveis` comes before `Ocultos`, and `Manual` keeps the order the consumer passes.
-- Each group is a `ViewSettingsSection` whose label carries the count of its fields; an empty group is not rendered. Without grouping, one section named `Campos` holds every field.
-- Each field is a `MenuCheckboxItem` with `variant="switch"` and `closeOnClick={false}`: the switch shows or hides the field and the menu stays open. Grouped by visibility, the field moves to the other group at once.
-- The row shows the type icon and the name; the type label follows only when the list is not grouped by type, where it would repeat the group label.
+- Each group is a `ViewSettingsFieldSection`; an empty group is not rendered. Without grouping, one section named `Campos` holds every field.
+- The switch shows or hides the field and the menu stays open. Grouped by visibility, the field moves to the other group at once.
+- The row shows the type icon and the name; pass `typeLabel` only when the list is not grouped by type, where it would repeat the group label.
 - Type labels are words the user reads (`Texto`, `Seleção`, `Pessoa`, `Data`, `Número`), never the storage type.
-- `Mostrar todos os campos` closes the field sections and stays disabled while no field is hidden.
+- `ViewSettingsShowAllFields` closes the field sections.
 - The menu does not reorder fields by drag; a manual order is edited elsewhere and arrives in the order the consumer passes.
 
 ## Exports
 
 | Export | Kind | Description |
 | --- | --- | --- |
+| `ViewSettingsField` | `type` | One row of `ViewSettingsFieldSection`. |
+| `ViewSettingsFieldSectionProps` | `type` | The props of `ViewSettingsFieldSection`. |
 | `ViewSettingsMenuProps` | `type` | The props of `ViewSettingsMenu`. |
 | `ViewSettingsMode` | `type` | One tab of `ViewSettingsMenu`, `{ icon, label, value }`. |
+| `ViewSettingsOption` | `type` | One choice of `ViewSettingsSubmenu`, `{ label, value }`. |
 | `ViewSettingsSectionProps` | `type` | The props of `ViewSettingsSection`. |
+| `ViewSettingsShowAllFieldsProps` | `type` | The props of `ViewSettingsShowAllFields`. |
+| `ViewSettingsSubmenuProps` | `type` | The props of `ViewSettingsSubmenu`. |
 
 ## Accessibility and theme
 
 - The trigger text and the footer items are in Portuguese by default (`"Exibição"`, `"Limpar filtros"`, `"Salvar preferência"`): pass `label`, `clearLabel` and `savePreferenceLabel` in the language of the screen, and `formatTriggerLabel` when the count needs another grammar.
+- The field rows are `menuitemcheckbox` items with a switch look; the default `Mostrar todos os campos` is in Portuguese, so pass `label` in the language of the screen.
 - The layout tabs are `menuitemradio` items of the menu, so the arrow keys move between them and Enter picks one; picking a tab closes the menu.
 - The menu reads `--popover`, `--popover-foreground` and `--border`; the active tab `--background` (`--input` in dark) with a shadow, the others `--muted-foreground`, and the icon square `--primary`. The trigger reads the tokens of the ghost `Button`.

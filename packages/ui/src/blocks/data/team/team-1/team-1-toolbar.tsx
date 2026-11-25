@@ -15,7 +15,7 @@ import {
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings/components/view-settings'
+} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import { sortFromSorting } from '../../shared/grid/grid-state'
 import { GridToolbar } from '../../shared/grid/grid-toolbar'
 import type {

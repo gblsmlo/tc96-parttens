@@ -376,7 +376,7 @@ export const itemAreas: Partial<Record<ItemName, string[]>> = {
   collection: [
     'collection-pagination',
     'toolbar',
-    'view-settings',
+    'view-settings-menu',
     'view-switcher',
   ],
 }

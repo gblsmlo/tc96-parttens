@@ -1,7 +1,7 @@
 import { ArrowsDownUpIcon, ShapesIcon, UserIcon } from '@phosphor-icons/react'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
 import { SortRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-sort-submenu'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings/components/view-settings'
+import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import { legal6Sorts } from './legal-6-options'
 import type {
   Legal6Kind,

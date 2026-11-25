@@ -13,7 +13,7 @@ import {
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings/components/view-settings'
+} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import { dataPriorities } from '../../shared/properties/data-priority'
 import type { Projects1Labels, Projects1Task } from './types'

@@ -18,7 +18,7 @@ import {
   ViewSettingsMenu,
   type ViewSettingsMode,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings/components/view-settings'
+} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import type { ReactNode } from 'react'
 import type {

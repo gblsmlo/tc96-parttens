@@ -16,7 +16,7 @@ import {
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings/components/view-settings'
+} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import { marketing1Statuses } from './marketing-1-options'
 import type { Marketing1Campaign, Marketing1Labels } from './types'

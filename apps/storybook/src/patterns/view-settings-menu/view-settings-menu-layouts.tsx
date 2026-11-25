@@ -1,6 +1,5 @@
 import {
   CalendarDotsIcon,
-  EyeIcon,
   RowsIcon,
   SortAscendingIcon,
   SquaresFourIcon,
@@ -9,7 +8,6 @@ import {
   MenuCheckboxItem,
   MenuGroup,
   MenuGroupLabel,
-  MenuItem,
   MenuRadioGroup,
   MenuRadioItem,
   MenuSeparator,
@@ -18,12 +16,17 @@ import {
   MenuSubTrigger,
 } from '@tc96/ui/menu'
 import {
+  type ViewSettingsField,
+  ViewSettingsFieldSection,
   ViewSettingsMenu,
   type ViewSettingsMode,
+  type ViewSettingsOption,
   ViewSettingsSection,
+  ViewSettingsShowAllFields,
+  ViewSettingsSubmenu,
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
-import type { ViewSettingsControls } from './view-settings-controls.ts'
+import type { ViewSettingsControls } from './view-settings-menu-controls.ts'
 import {
   agendaModes,
   type CollectionField,
@@ -34,7 +37,7 @@ import {
   noFilters,
   taskFields,
   viewModes,
-} from './view-settings-data.tsx'
+} from './view-settings-menu-data.tsx'
 
 type Density = 'comfortable' | 'compact'
 
@@ -165,18 +168,18 @@ type FieldGrouping = 'none' | 'type' | 'visibility'
 type FieldOrder = 'manual' | 'name-asc' | 'name-desc'
 
 interface FieldGroup {
-  fields: readonly CollectionField[]
+  fields: readonly ViewSettingsField[]
   id: string
   label: string
 }
 
-const groupingOptions: readonly { label: string; value: FieldGrouping }[] = [
+const groupingOptions: readonly ViewSettingsOption<FieldGrouping>[] = [
   { label: 'Nenhum', value: 'none' },
   { label: 'Tipo', value: 'type' },
   { label: 'Visibilidade', value: 'visibility' },
 ]
 
-const orderOptions: readonly { label: string; value: FieldOrder }[] = [
+const orderOptions: readonly ViewSettingsOption<FieldOrder>[] = [
   { label: 'Manual', value: 'manual' },
   { label: 'Nome A-Z', value: 'name-asc' },
   { label: 'Nome Z-A', value: 'name-desc' },
@@ -196,42 +199,44 @@ const sortFields = (
   )
 }
 
+const toMenuField = (
+  field: CollectionField,
+  grouping: FieldGrouping,
+): ViewSettingsField => {
+  const { icon, label } = fieldType(field.type)
+  return {
+    icon,
+    id: field.id,
+    label: field.label,
+    typeLabel: grouping === 'type' ? undefined : label,
+    visible: field.visible,
+  }
+}
+
 const groupFields = (
   fields: readonly CollectionField[],
   grouping: FieldGrouping,
   order: FieldOrder,
 ): readonly FieldGroup[] => {
   const sorted = sortFields(fields, order)
-  if (grouping === 'none') {
-    return [{ fields: sorted, id: 'all', label: 'Campos' }]
+  const group = (
+    id: string,
+    label: string,
+    include: (field: CollectionField) => boolean,
+  ): FieldGroup => ({
+    fields: sorted.filter(include).map((field) => toMenuField(field, grouping)),
+    id,
+    label,
+  })
+  if (grouping === 'none') return [group('all', 'Campos', () => true)]
+  if (grouping === 'visibility') {
+    return [
+      group('visible', 'Visíveis', ({ visible }) => visible),
+      group('hidden', 'Ocultos', ({ visible }) => !visible),
+    ]
   }
-  const groups: readonly FieldGroup[] =
-    grouping === 'visibility'
-      ? [
-          {
-            fields: sorted.filter(({ visible }) => visible),
-            id: 'visible',
-            label: 'Visíveis',
-          },
-          {
-            fields: sorted.filter(({ visible }) => !visible),
-            id: 'hidden',
-            label: 'Ocultos',
-          },
-        ]
-      : fieldTypes.map(({ label, value }) => ({
-          fields: sorted.filter(({ type }) => type === value),
-          id: value,
-          label,
-        }))
-  return groups.filter(({ fields: groupFields }) => groupFields.length > 0)
-}
-
-function CurrentValue({ children }: Readonly<{ children: string }>) {
-  return (
-    <span className="flex-1 truncate text-end text-muted-foreground">
-      {children}
-    </span>
+  return fieldTypes.map(({ label, value }) =>
+    group(value, label, ({ type }) => type === value),
   )
 }
 
@@ -248,7 +253,7 @@ export function FieldSettingsLayout(controls: Readonly<ViewSettingsControls>) {
     order !== 'manual' ||
     fields.some((field, index) => field.visible !== taskFields[index]?.visible)
 
-  const toggleField = (id: string, visible: boolean) => {
+  const setVisible = (id: string, visible: boolean) => {
     setFields((current) =>
       current.map((field) => (field.id === id ? { ...field, visible } : field)),
     )
@@ -271,85 +276,33 @@ export function FieldSettingsLayout(controls: Readonly<ViewSettingsControls>) {
       savePreferenceLabel={controls.savePreferenceLabel}
     >
       <ViewSettingsSection label="Organizar campos">
-        <MenuSub>
-          <MenuSubTrigger>
-            <SquaresFourIcon aria-hidden="true" />
-            Agrupar por
-            <CurrentValue>
-              {groupingOptions.find(({ value }) => value === grouping)?.label ??
-                ''}
-            </CurrentValue>
-          </MenuSubTrigger>
-          <MenuSubPopup>
-            <MenuRadioGroup onValueChange={setGrouping} value={grouping}>
-              {groupingOptions.map(({ label, value }) => (
-                <MenuRadioItem key={value} value={value}>
-                  {label}
-                </MenuRadioItem>
-              ))}
-            </MenuRadioGroup>
-          </MenuSubPopup>
-        </MenuSub>
-        <MenuSub>
-          <MenuSubTrigger>
-            <SortAscendingIcon aria-hidden="true" />
-            Ordenar por
-            <CurrentValue>
-              {orderOptions.find(({ value }) => value === order)?.label ?? ''}
-            </CurrentValue>
-          </MenuSubTrigger>
-          <MenuSubPopup>
-            <MenuRadioGroup onValueChange={setOrder} value={order}>
-              {orderOptions.map(({ label, value }) => (
-                <MenuRadioItem key={value} value={value}>
-                  {label}
-                </MenuRadioItem>
-              ))}
-            </MenuRadioGroup>
-          </MenuSubPopup>
-        </MenuSub>
+        <ViewSettingsSubmenu
+          icon={SquaresFourIcon}
+          label="Agrupar por"
+          onValueChange={setGrouping}
+          options={groupingOptions}
+          value={grouping}
+        />
+        <ViewSettingsSubmenu
+          icon={SortAscendingIcon}
+          label="Ordenar por"
+          onValueChange={setOrder}
+          options={orderOptions}
+          value={order}
+        />
       </ViewSettingsSection>
       {groups.map(({ fields: groupItems, id, label }) => (
-        <ViewSettingsSection
+        <ViewSettingsFieldSection
+          fields={groupItems}
           key={id}
-          label={
-            <span className="flex justify-between gap-2">
-              {label} <span>{groupItems.length}</span>
-            </span>
-          }
-        >
-          {groupItems.map((field) => {
-            const { icon: TypeIcon, label: typeLabel } = fieldType(field.type)
-            return (
-              <MenuCheckboxItem
-                checked={field.visible}
-                closeOnClick={false}
-                key={field.id}
-                onCheckedChange={(visible) => toggleField(field.id, visible)}
-                variant="switch"
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  <TypeIcon aria-hidden="true" />
-                  <span className="truncate">{field.label}</span>
-                  {grouping === 'type' ? null : (
-                    <span className="ms-auto shrink-0 text-muted-foreground text-xs">
-                      {typeLabel}
-                    </span>
-                  )}
-                </span>
-              </MenuCheckboxItem>
-            )
-          })}
-        </ViewSettingsSection>
+          label={label}
+          onVisibleChange={setVisible}
+        />
       ))}
-      <MenuItem
-        closeOnClick={false}
-        disabled={hiddenCount === 0}
-        onClick={showAll}
-      >
-        <EyeIcon aria-hidden="true" />
-        Mostrar todos os campos
-      </MenuItem>
+      <ViewSettingsShowAllFields
+        hiddenCount={hiddenCount}
+        onShowAll={showAll}
+      />
     </ViewSettingsMenu>
   )
 }

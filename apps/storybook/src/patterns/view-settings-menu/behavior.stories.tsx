@@ -6,12 +6,13 @@ import {
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
-import { viewSettingsControlArgs } from './view-settings-controls.ts'
-import { spreadsheetModes, viewModes } from './view-settings-data.tsx'
+import { viewSettingsControlArgs } from './view-settings-menu-controls.ts'
+import { spreadsheetModes, viewModes } from './view-settings-menu-data.tsx'
 import {
   ComposedViewSettings,
+  FieldSettingsLayout,
   StackedModeTabsLayout,
-} from './view-settings-layouts.tsx'
+} from './view-settings-menu-layouts.tsx'
 
 const onClearFilters = fn()
 const onModeChange = fn()
@@ -22,7 +23,7 @@ const meta = {
   component: ViewSettingsMenu,
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/ViewSettings/Behavior',
+  title: 'Patterns/ViewSettingsMenu/Behavior',
 } satisfies Meta<typeof ViewSettingsMenu>
 
 export default meta
@@ -247,5 +248,71 @@ export const FilterCountAndClear: Story = {
     )
     await expect(onClearFilters).toHaveBeenCalledTimes(1)
     await expectMenuClosed()
+  },
+}
+
+const fieldSettings = () => (
+  <CollectionToolbar
+    right={<FieldSettingsLayout {...viewSettingsControlArgs} />}
+  />
+)
+
+const fieldGroup = (name: string) =>
+  screen.getByRole('group', { name: new RegExp(`^${name} \\d+$`) })
+
+export const SubmenuTriggerShowsTheCurrentValue: Story = {
+  render: fieldSettings,
+  play: async ({ canvasElement }) => {
+    const menu = await openSettings(canvasElement)
+    const trigger = menu.getByRole('menuitem', { name: /Agrupar por/ })
+    await expect(trigger).toHaveTextContent('Agrupar porVisibilidade')
+    await userEvent.click(trigger)
+    await userEvent.click(
+      await screen.findByRole('menuitemradio', { name: 'Tipo' }),
+    )
+    await waitFor(() =>
+      expect(
+        screen.getByRole('menuitem', { name: /Agrupar por/ }),
+      ).toHaveTextContent('Agrupar porTipo'),
+    )
+    await userEvent.keyboard('{Escape}')
+    await closeMenu()
+  },
+}
+
+export const FieldSwitchKeepsTheMenuOpenAndMovesTheField: Story = {
+  render: fieldSettings,
+  play: async ({ canvasElement }) => {
+    const menu = await openSettings(canvasElement)
+    const visible = fieldGroup('Visíveis')
+    await expect(visible).toHaveAccessibleName('Visíveis 4')
+    await userEvent.click(
+      within(visible).getByRole('menuitemcheckbox', { name: /Status/ }),
+    )
+    await expect(
+      menu.getByRole('menuitemcheckbox', { name: /Status/ }),
+    ).toBeVisible()
+    await expect(fieldGroup('Visíveis')).toHaveAccessibleName('Visíveis 3')
+    await expect(
+      within(fieldGroup('Ocultos')).getByRole('menuitemcheckbox', {
+        name: /Status/,
+      }),
+    ).toHaveAttribute('aria-checked', 'false')
+    await closeMenu()
+  },
+}
+
+export const ShowAllFieldsEmptiesTheHiddenSection: Story = {
+  render: fieldSettings,
+  play: async ({ canvasElement }) => {
+    const menu = await openSettings(canvasElement)
+    const showAll = menu.getByRole('menuitem', {
+      name: 'Mostrar todos os campos',
+    })
+    await userEvent.click(showAll)
+    await expect(screen.getByRole('menu')).toBeVisible()
+    await expect(screen.queryByRole('group', { name: /^Ocultos/ })).toBeNull()
+    await expect(showAll).toHaveAttribute('aria-disabled', 'true')
+    await closeMenu()
   },
 }
