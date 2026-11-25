@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A support ticket queue on the collection Data Grid: ticket title with code and opening time, requester, queue, priority, SLA and status, with the pattern's `ActionBar` floating over the grid while tickets are selected, to assign an owner or move them, and a footer with the rows per page selector. Reach for it on a help desk or operations screen where people triage a queue of items with deadlines. Install it with `npx @tc96/cli add data-grid-1`.
 
-It is a section, not a page: it renders no `main` landmark. The toolbar is one `CollectionToolbar`. Its `left` slot holds either the view switcher, when `views` has items, or `labels.title` as the only `h2` with the summary line as its description, never both; with the switcher the page has no `h2` and the section and the grid keep their name from `labels.title`. Its `right` slot holds the search, the `ViewSettingsMenu` (Exibição) holding sort, row height and columns, the queue and status filters, Limpar filtros and Salvar visão, and the Exportar CSV and Novo chamado buttons. Every piece of state a consumer saves is controllable and reported: `search`, `queue`, `status`, `sort`, `columnVisibility`, `density`, `selectedIds` and `pageSize`; without the value the grid keeps it locally and still calls the callback. The block filters, sorts and pages the rows it receives, but never changes a ticket: Atribuir responsável and Atualizar status are `ActionBar` items whose submenus list the owners and the statuses, and a choice only calls `onAssignOwner` or `onStatusUpdate` with the selected ids. Loading and error are the block's: the toolbar keeps its `left` slot (the view switcher, or the heading without the summary) and hides its controls, `pending` renders the skeleton in place of the grid and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
+It is a section, not a page: it renders no `main` landmark. The toolbar is one `CollectionToolbar`. Its `left` slot holds either the view switcher, when `views` has items, or `labels.title` as the only `h2` with the summary line as its description, never both; with the switcher the page has no `h2` and the section and the grid keep their name from `labels.title`. Its `right` slot holds the `ViewSettingsMenu` (Exibição) holding sort, row height and columns, the queue and status filters, Limpar filtros and Salvar visão, and the Exportar CSV (ghost) and Novo chamado buttons. Every piece of state a consumer saves is controllable and reported: `queue`, `status`, `sort`, `columnVisibility`, `density`, `selectedIds` and `pageSize`; without the value the grid keeps it locally and still calls the callback. The block filters, sorts and pages the rows it receives, but never changes a ticket: Atribuir responsável and Atualizar status are `ActionBar` items whose submenus list the owners and the statuses, and a choice only calls `onAssignOwner` or `onStatusUpdate` with the selected ids. Loading and error are the block's: the toolbar keeps its `left` slot (the view switcher, or the heading without the summary) and hides its controls, `pending` renders the skeleton in place of the grid and `error` an error surface with a retry button; the precedence is `pending`, then `error`.
 
 The other pages of `Blocks/Data/DataGrid/DataGrid1`: [Playground](?path=/story/blocks-data-datagrid-datagrid1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-data-datagrid-datagrid1-behavior--each-row-shows-the-ticket-details) for the tests, [States](?path=/story/blocks-data-datagrid-datagrid1-states--default) for the loaded, loading, error and empty states and [Usages](?path=/story/blocks-data-datagrid-datagrid1-usages--loaded) for the data read over the network.
 
@@ -44,8 +44,6 @@ The toolbar with the heading and the summary line (the view switcher takes their
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `tickets` | `DataGrid1Ticket[]` | required | The rows. Keep the array stable between renders. |
-| `search` | `string` | - | Controls the search text; without it the grid keeps it. |
-| `onSearchChange` | `(search: string) => void` | - | Called on every keystroke of the search. |
 | `queue` | `DataGrid1Queue \| null` | - | Controls the queue filter of Exibição > Fila; `null` is Todas as filas. |
 | `onQueueChange` | `(queue: DataGrid1Queue \| null) => void` | - | Called by the queue filter and by Limpar filtros. |
 | `status` | `DataGrid1Status \| null` | - | Controls the status filter of Exibição > Status; `null` is Todos os status. |
@@ -85,10 +83,10 @@ The toolbar with the heading and the summary line (the view switcher takes their
 | Field | Type | Description |
 | --- | --- | --- |
 | `id` | `string` | Identifies the row and is what the callbacks receive. |
-| `code`, `title` | `string` | The ticket cell; both are searched. |
+| `code`, `title` | `string` | The ticket cell. |
 | `opened` | `string` | The opening time as ready text (`"Aberto há 2 h"`); the block does not compute relative times. |
 | `ownerId` | `string \| null` | `null` counts the ticket as unassigned in the summary line. |
-| `requester` | `{ name; company; imageUrl? }` | Avatar (initials without image), name and company; name and company are searched. |
+| `requester` | `{ name; company; imageUrl? }` | Avatar (initials without image), name and company. |
 | `queue` | `'platform' \| 'billing' \| 'authentication' \| 'integrations'` | The queue badge and its icon. |
 | `priority` | `'urgent' \| 'high' \| 'medium' \| 'low'` | The priority badge; sorts by that order. |
 | `sla` | `{ label; caption; tone; dueInMinutes }` | The SLA text colored by `tone` (`breached`, `warning`, `healthy`, `closed`) and its caption; `dueInMinutes` sorts the column, `null` goes last. `breached` and `warning` count as near SLA in the summary line. |
@@ -100,9 +98,8 @@ The toolbar with the heading and the summary line (the view switcher takes their
 | --- | --- | --- |
 | `title` | `string` | `"Fila de suporte"`; the name of the section and the grid, and the toolbar heading without views |
 | `toolbar` | `string` | `"Controles da fila de suporte"`; the name of the toolbar |
-| `summary` | `(visible, unassigned, nearSla) => string` | `"11 visíveis · 2 sem responsável · 6 perto do SLA"`; counted over the rows left by the search and filters |
+| `summary` | `(visible, unassigned, nearSla) => string` | `"11 visíveis · 2 sem responsável · 6 perto do SLA"`; counted over the rows left by the filters |
 | `create`, `export` | `string` | `"Novo chamado"`, `"Exportar CSV"` |
-| `search` | `string` | `"Buscar chamados"`; placeholder and name of the search |
 | `viewSelect`, `viewSearch`, `viewSearchPlaceholder`, `views`, `viewsEmpty`, `viewCreate` | `string` | `"Selecionar view"`, `"Buscar views"`, `"Buscar views..."`, `"Views"`, `"Nenhuma view encontrada"`, `"Criar nova view"`; the shared view switcher of the table blocks |
 | `display`, `sortBy`, `density`, `columnsMenu`, `filters` | `string` | `"Exibição"`, `"Ordenar por"`, `"Altura das linhas"`, `"Colunas"`, `"Filtros"` |
 | `sortOption`, `clearSort` | `(column, direction) => string`, `string` | `"Fila: crescente"`, `"Limpar ordenação"` |

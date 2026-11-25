@@ -5,13 +5,15 @@ import {
   Action,
   CollectionSearchField,
   CollectionToolbar,
+  CollectionToolbarDescription,
   CollectionToolbarGroup,
+  CollectionToolbarHeading,
   type CollectionToolbarProps,
+  CollectionToolbarTitle,
   FilterRadioSubmenu,
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
-import { Text } from '@tc96/ui/text'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { useState } from 'react'
 import { Slot } from '../../test-utils/anatomy-slot'
@@ -59,23 +61,10 @@ export function ComposedToolbar({
   )
 
   const heading = (
-    <div className="min-w-0">
-      <Text
-        className="truncate leading-tight"
-        family="heading"
-        render={<h2>{title}</h2>}
-        size="base"
-        weight="semibold"
-      />
-      {description ? (
-        <Text
-          className="truncate leading-tight"
-          foreground="muted"
-          render={<p>{description}</p>}
-          size="sm"
-        />
-      ) : null}
-    </div>
+    <CollectionToolbarHeading>
+      <CollectionToolbarTitle>{title}</CollectionToolbarTitle>
+      <CollectionToolbarDescription>{description}</CollectionToolbarDescription>
+    </CollectionToolbarHeading>
   )
 
   const leftContent = {
@@ -189,10 +178,10 @@ export function GroupToolbar() {
     <CollectionToolbar
       left={
         <CollectionToolbarGroup aria-label="Atalhos de prazo">
-          <ToolbarButton render={<Button size="sm" variant="outline" />}>
+          <ToolbarButton render={<Button variant="outline" />}>
             Hoje
           </ToolbarButton>
-          <ToolbarButton render={<Button size="sm" variant="outline" />}>
+          <ToolbarButton render={<Button variant="outline" />}>
             Esta semana
           </ToolbarButton>
         </CollectionToolbarGroup>

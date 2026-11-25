@@ -3,6 +3,10 @@
 import { DataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid'
 import { DataGridPagination } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-pagination'
 import { useDataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import {
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useMemo } from 'react'
 import { createTableFormatter, defaultGridLocale } from '../shared/format'
 import { GridFrame } from '../shared/grid-frame'
@@ -14,7 +18,6 @@ import {
   visibilityFromState,
 } from '../shared/grid-state'
 import { GridToolbar } from '../shared/grid-toolbar'
-import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { createDataGrid2Columns } from './data-grid-2-columns'
 import { DataGrid2Skeleton } from './data-grid-2-skeleton'
 import { DataGrid2Toolbar } from './data-grid-2-toolbar'
@@ -108,7 +111,11 @@ export function DataGrid2({
         loadState ? (
           <GridToolbar
             aria-label={labels.toolbar}
-            left={<GridToolbarHeading title={labels.title} />}
+            left={
+              <CollectionToolbarHeading>
+                <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+              </CollectionToolbarHeading>
+            }
           />
         ) : (
           <DataGrid2Toolbar

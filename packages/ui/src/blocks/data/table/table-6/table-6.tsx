@@ -3,12 +3,16 @@
 import { DataTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table'
 import type { DataTableGroupCellContext } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-group-row'
 import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import { createTableFormatter } from '../shared/format'
 import { TableFrame } from '../shared/table-frame'
 import { tableLoadState } from '../shared/table-load-state'
 import { TableToolbar } from '../shared/table-toolbar'
-import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { resolveTable6Labels } from './labels'
 import { sortByRegion, summarizeRegion } from './region-summary'
 import { createTable6Columns, Table6Nrr } from './table-6-columns'
@@ -176,10 +180,12 @@ export function Table6({
           <TableToolbar
             aria-label={labels.toolbar}
             left={
-              <TableToolbarHeading
-                description={labels.description}
-                title={labels.title}
-              />
+              <CollectionToolbarHeading>
+                <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+                <CollectionToolbarDescription>
+                  {labels.description}
+                </CollectionToolbarDescription>
+              </CollectionToolbarHeading>
             }
           />
         ) : (

@@ -1,0 +1,115 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsCatalog4
+
+A settings section that lists the stages of a funnel, grouped by phase. Each stage shows its icon, its name, how many leads it holds and, for a phase that closes the deal, how it closes. When the app handles actions, each stage has a menu to edit, move it up or down within its phase, or delete it. Reach for it when the app lets people organize the steps a lead goes through. Install it with `npx @tc96/cli add settings-catalog-4`.
+
+It is a page section: it renders a `main` landmark with the section inside. Creating, editing, moving and deleting stay in the app; the block only calls `onStageCreate` and `onStageAction`, keeps the list of stages in the props and never fetches or stores anything. Its only state is the open state of the New stage dialog.
+
+The other pages of `Blocks/Application/Settings/Catalog/Settings4`: [Playground](?path=/story/blocks-application-settings-catalog-settings4-playground--playground) to try the texts and the actions, [Behavior](?path=/story/blocks-application-settings-catalog-settings4-behavior--stage-description-shows-leads-and-closing) for the tests and [Usages](?path=/story/blocks-application-settings-catalog-settings4-usages--loaded) for the stages read over the network, moved and created in place.
+
+## Import
+
+```tsx
+import { SettingsCatalog4 } from '@tc96/ui/blocks/application/settings/catalog/settings-catalog-4'
+```
+
+The same path exports the types `SettingsCatalog4Props`, `SettingsCatalog4Stage`, `SettingsCatalog4Phase`, `SettingsCatalog4Action` and `SettingsCatalog4Labels`.
+
+## Anatomy
+
+The section with its phases, each with its stages:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsCatalog4
+  onStageAction={(stageId, action) => handleStageAction(stageId, action)}
+  onStageCreate={(name, phaseId) => handleStageCreate(name, phaseId)}
+  phases={phases}
+  stages={stages}
+/>
+```
+
+## SettingsCatalog4
+
+The stages section. Renders the title, the description and, with `onStageCreate`, the New stage button and its dialog, then one group per phase, in the order of `phases`, each listing its stages in the order of `stages`. A stage with `locked` has only the Edit action in its menu.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `phases` | `SettingsCatalog4Phase[]` | required | The phases, one group each, in order. |
+| `stages` | `SettingsCatalog4Stage[]` | required | The stages; each one is listed in the group of its `phase`. |
+| `onStageCreate` | `(name: string, phaseId: string) => void` | - | Called with the trimmed name and the chosen phase when the dialog is submitted. Without it the New stage button is not rendered. |
+| `onStageAction` | `(stageId: string, action: SettingsCatalog4Action) => void` | - | Called with the stage id and `'edit'`, `'move-up'`, `'move-down'` or `'delete'` when a menu item is chosen. Without it the stage menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsCatalog4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the section's classes. |
+
+The block takes no other props.
+
+## SettingsCatalog4Phase
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the phase; a stage's `phase` points to it, and the dialog reports it. |
+| `label` | `string` | The title of the phase group, and the phase name in the closing text. |
+| `closed` | `boolean` | Marks a phase that closes the deal. Its stages without a lead count read `Fecha como` followed by the label in lower case. |
+
+## SettingsCatalog4Stage
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the stage in `onStageAction`. |
+| `name` | `string` | Title of the row. |
+| `icon` | `Icon` (Phosphor) | Drawn before the name. |
+| `tone` | `string` | Classes of the icon, for example `text-blue-700 dark:text-blue-500`. |
+| `phase` | `string` | The `id` of the phase that holds the stage. |
+| `leads` | `number` | Leads in the stage, shown in `labels.stageDescription`. |
+| `locked` | `boolean` | Removes Move up, Move down and Delete from the menu; the stage keeps Edit. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Etapas do funil"` |
+| `description` | `string` | `"Etapas são os passos que um lead percorre, agrupadas por fase"` |
+| `newStage` | `string` | `"Nova etapa"` |
+| `edit` | `string` | `"Editar"` |
+| `moveUp` | `string` | `"Mover para cima"` |
+| `moveDown` | `string` | `"Mover para baixo"` |
+| `delete` | `string` | `"Excluir"` |
+| `actions` | `(name: string) => string` | `"Ações de Proposta"` for `"Proposta"`; the accessible name of the stage menu |
+| `dialogTitle` | `string` | `"Nova etapa"` |
+| `dialogAncestor` | `string` | `"Etapas do funil"`; the small text above the dialog title |
+| `createStage` | `string` | `"Criar etapa"` |
+| `cancel` | `string` | `"Cancelar"` |
+| `stageName` | `string` | `"Nome da etapa"`; the name field of the dialog |
+| `phase` | `string` | `"Fase"`; the phase select of the dialog |
+| `stageDescription` | `(leads: number, phaseLabel: string, closed: boolean) => string \| undefined` | `"12 leads · Fecha como ganho"`; `"4 leads"` for an open phase; `undefined` when there is nothing to show |
+| `loading` | `string` | `"Carregando etapas"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as etapas"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsCatalog4` | `component` | The stages section, with its New stage dialog. |
+| `SettingsCatalog4Props` | `type` | The props of the section. |
+| `SettingsCatalog4Phase` | `type` | A phase group. |
+| `SettingsCatalog4Stage` | `type` | A stage row. |
+| `SettingsCatalog4Action` | `type` | `'edit' \| 'move-up' \| 'move-down' \| 'delete'`. |
+| `SettingsCatalog4Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- Each phase is a named region, with the phase label as its name.
+- The stage menu button is named by `labels.actions(name)`, so each stage's menu is told apart by screen readers.
+- The New stage dialog disables its submit button while the name is empty or already used by another stage, ignoring case.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

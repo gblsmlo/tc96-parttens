@@ -1,7 +1,7 @@
 'use client'
 
 import { flexRender, type Row, type RowData } from '@tanstack/react-table'
-import { ScrollAreaPrimitive, ScrollBar } from '@tc96/ui/scroll-area'
+import { ScrollArea } from '@tc96/ui/scroll-area'
 import {
   Table,
   TableBody,
@@ -221,199 +221,184 @@ export function DataTable<TData extends RowData>({
       data-overflow-start={overflow.start || undefined}
       data-slot="data-table"
     >
-      <ScrollAreaPrimitive.Root
+      <ScrollArea
         className={cn(
-          'relative flex min-h-0 flex-1 flex-col',
+          'relative flex size-auto min-h-0 flex-1 flex-col',
           bordered && 'rounded-md border bg-background',
         )}
+        clampContentMinWidth={false}
         ref={scrollAreaRef}
+        verticalScrollbarProps={{ style: scrollbarInsetStyle }}
+        viewportProps={{
+          className: 'h-auto min-h-0 flex-1',
+          'data-slot': 'data-table-viewport',
+          ref: scrollContainerRef,
+        }}
       >
-        <ScrollAreaPrimitive.Viewport
-          className="min-h-0 flex-1 rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-          data-slot="data-table-viewport"
-          ref={scrollContainerRef}
+        <Table
+          aria-busy={isLoading || loadingMoreCount > 0 || undefined}
+          data-density={density}
+          render={
+            <div
+              className="overflow-x-visible!"
+              data-bordered={bordered ? '' : undefined}
+            />
+          }
+          className={cn(
+            resizable &&
+              'table-fixed [&_td]:overflow-hidden [&_td]:text-ellipsis [&_th]:overflow-hidden',
+            density && DENSITY_CLASS[density],
+            className,
+          )}
+          style={
+            resizable ? { minWidth: table.getTotalSize(), ...style } : style
+          }
+          {...props}
         >
-          <ScrollAreaPrimitive.Content>
-            <Table
-              aria-busy={isLoading || loadingMoreCount > 0 || undefined}
-              data-density={density}
-              render={
-                <div
-                  className="overflow-x-visible!"
-                  data-bordered={bordered ? '' : undefined}
+          {resizable ? (
+            <colgroup>
+              {visibleColumns.map((column) => (
+                <col
+                  key={column.id}
+                  style={
+                    column.id === fillColumnId
+                      ? undefined
+                      : { width: column.getSize() }
+                  }
                 />
-              }
-              className={cn(
-                resizable &&
-                  'table-fixed [&_td]:overflow-hidden [&_td]:text-ellipsis [&_th]:overflow-hidden',
-                density && DENSITY_CLASS[density],
-                className,
-              )}
-              style={
-                resizable ? { minWidth: table.getTotalSize(), ...style } : style
-              }
-              {...props}
-            >
-              {resizable ? (
-                <colgroup>
-                  {visibleColumns.map((column) => (
-                    <col
-                      key={column.id}
-                      style={
-                        column.id === fillColumnId
-                          ? undefined
-                          : { width: column.getSize() }
-                      }
-                    />
-                  ))}
-                </colgroup>
-              ) : null}
-              <TableHeader className="sticky top-0 z-10 not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)] dark:not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-white)_2%)]">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead
-                        className={
-                          cn(
-                            resizable && 'relative',
-                            columnAlignClass(header.column),
-                          ) || undefined
-                        }
-                        key={header.id}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                        {resizable &&
-                        !header.isPlaceholder &&
-                        header.subHeaders.length === 0 &&
-                        header.column.id !== fillColumnId &&
-                        header.column.getCanResize() ? (
-                          <DataTableResizeHandle
-                            header={header}
-                            table={table}
-                          />
-                        ) : null}
-                      </TableHead>
-                    ))}
-                  </TableRow>
+              ))}
+            </colgroup>
+          ) : null}
+          <TableHeader className="sticky top-0 z-10 not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)] dark:not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-white)_2%)]">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    className={
+                      cn(
+                        resizable && 'relative',
+                        columnAlignClass(header.column),
+                      ) || undefined
+                    }
+                    key={header.id}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                    {resizable &&
+                    !header.isPlaceholder &&
+                    header.subHeaders.length === 0 &&
+                    header.column.id !== fillColumnId &&
+                    header.column.getCanResize() ? (
+                      <DataTableResizeHandle header={header} table={table} />
+                    ) : null}
+                  </TableHead>
                 ))}
-              </TableHeader>
-              {isLoading ? (
-                <TableBody>
+              </TableRow>
+            ))}
+          </TableHeader>
+          {isLoading ? (
+            <TableBody>
+              <DataTableSkeletonRows
+                anatomy={loadingRowAnatomy}
+                columnCount={columnCount}
+                linesColumnIndex={linesColumnIndex}
+                rowCount={loadingRowCount}
+                scope="loading"
+              />
+            </TableBody>
+          ) : rows.length ? (
+            <DataTableBody
+              collapsedGroupIds={collapsedGroupIds}
+              getGroupToggleLabel={getGroupToggleLabel}
+              getRowGroup={getRowGroup}
+              getRowOpenLabel={getRowOpenLabel}
+              loadingMore={
+                loadingMoreCount > 0 ? (
                   <DataTableSkeletonRows
                     anatomy={loadingRowAnatomy}
                     columnCount={columnCount}
                     linesColumnIndex={linesColumnIndex}
-                    rowCount={loadingRowCount}
-                    scope="loading"
+                    loadingMore
+                    rowCount={loadingMoreCount}
+                    scope="loading-more"
                   />
-                </TableBody>
-              ) : rows.length ? (
-                <DataTableBody
-                  collapsedGroupIds={collapsedGroupIds}
-                  getGroupToggleLabel={getGroupToggleLabel}
-                  getRowGroup={getRowGroup}
-                  getRowOpenLabel={getRowOpenLabel}
-                  loadingMore={
-                    loadingMoreCount > 0 ? (
-                      <DataTableSkeletonRows
-                        anatomy={loadingRowAnatomy}
-                        columnCount={columnCount}
-                        linesColumnIndex={linesColumnIndex}
-                        loadingMore
-                        rowCount={loadingMoreCount}
-                        scope="loading-more"
-                      />
-                    ) : null
-                  }
-                  meta={meta}
-                  onRowClick={onRowClick}
-                  onRowMove={onRowMove}
-                  onToggleGroup={onToggleGroup}
-                  renderGroupCell={renderGroupCell}
-                  reorderActive={reorderActive}
-                  rowDragAnnouncements={rowDragAnnouncements}
-                  rows={rows}
-                  table={table}
-                  visibleColumns={visibleColumns}
-                />
-              ) : (
-                <TableBody>
-                  <TableRow>
-                    <TableCell
-                      className="h-24 text-center"
-                      colSpan={columnCount}
-                    >
-                      {emptyMessage}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              )}
-              {hasFooter ? (
-                <TableFooter className="sticky bottom-0 z-10">
-                  {table.getFooterGroups().map((footerGroup) => (
-                    <TableRow className="group/footer" key={footerGroup.id}>
-                      {footerGroup.headers.map((header) => {
-                        const { column } = header
-                        const meta = columnMetaOf<TData>(column)
-                        const options = meta.aggregations ?? []
-                        const selected = aggregations[column.id] ?? null
-                        const aggregation =
-                          selected && options.includes(selected)
-                            ? selected
-                            : null
-                        const result =
-                          aggregation === null
-                            ? 0
-                            : aggregate(aggregatedRows, aggregation, (row) =>
-                                meta.getAggregationValue
-                                  ? meta.getAggregationValue(row.original)
-                                  : row.getValue(column.id),
-                              )
+                ) : null
+              }
+              meta={meta}
+              onRowClick={onRowClick}
+              onRowMove={onRowMove}
+              onToggleGroup={onToggleGroup}
+              renderGroupCell={renderGroupCell}
+              reorderActive={reorderActive}
+              rowDragAnnouncements={rowDragAnnouncements}
+              rows={rows}
+              table={table}
+              visibleColumns={visibleColumns}
+            />
+          ) : (
+            <TableBody>
+              <TableRow>
+                <TableCell className="h-24 text-center" colSpan={columnCount}>
+                  {emptyMessage}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          )}
+          {hasFooter ? (
+            <TableFooter className="sticky bottom-0 z-10">
+              {table.getFooterGroups().map((footerGroup) => (
+                <TableRow className="group/footer" key={footerGroup.id}>
+                  {footerGroup.headers.map((header) => {
+                    const { column } = header
+                    const meta = columnMetaOf<TData>(column)
+                    const options = meta.aggregations ?? []
+                    const selected = aggregations[column.id] ?? null
+                    const aggregation =
+                      selected && options.includes(selected) ? selected : null
+                    const result =
+                      aggregation === null
+                        ? 0
+                        : aggregate(aggregatedRows, aggregation, (row) =>
+                            meta.getAggregationValue
+                              ? meta.getAggregationValue(row.original)
+                              : row.getValue(column.id),
+                          )
 
-                        const content =
-                          header.isPlaceholder ? null : options.length === 0 ? (
-                            flexRender(
-                              column.columnDef.footer,
-                              header.getContext(),
-                            )
-                          ) : showAggregations ? (
-                            <DataTableAggregationCell
-                              align={meta.align}
-                              labels={labels}
-                              onValueChange={(next) =>
-                                changeAggregation(column.id, next)
-                              }
-                              options={options}
-                              result={
-                                aggregation === null
-                                  ? null
-                                  : (meta.formatAggregation?.(
-                                      result,
-                                      aggregation,
-                                    ) ?? String(result))
-                              }
-                              value={aggregation}
-                            />
-                          ) : null
+                    const content =
+                      header.isPlaceholder ? null : options.length === 0 ? (
+                        flexRender(column.columnDef.footer, header.getContext())
+                      ) : showAggregations ? (
+                        <DataTableAggregationCell
+                          align={meta.align}
+                          labels={labels}
+                          onValueChange={(next) =>
+                            changeAggregation(column.id, next)
+                          }
+                          options={options}
+                          result={
+                            aggregation === null
+                              ? null
+                              : (meta.formatAggregation?.(
+                                  result,
+                                  aggregation,
+                                ) ?? String(result))
+                          }
+                          value={aggregation}
+                        />
+                      ) : null
 
-                        return <TableCell key={header.id}>{content}</TableCell>
-                      })}
-                    </TableRow>
-                  ))}
-                </TableFooter>
-              ) : null}
-            </Table>
-          </ScrollAreaPrimitive.Content>
-        </ScrollAreaPrimitive.Viewport>
-        <ScrollBar orientation="vertical" style={scrollbarInsetStyle} />
-        <ScrollBar orientation="horizontal" />
-        <ScrollAreaPrimitive.Corner />
-      </ScrollAreaPrimitive.Root>
+                    return <TableCell key={header.id}>{content}</TableCell>
+                  })}
+                </TableRow>
+              ))}
+            </TableFooter>
+          ) : null}
+        </Table>
+      </ScrollArea>
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-y-px start-px w-10 rounded-s-md bg-linear-to-r from-background to-transparent opacity-0 transition-opacity group-data-overflow-start/data-table:opacity-100 rtl:bg-linear-to-l"

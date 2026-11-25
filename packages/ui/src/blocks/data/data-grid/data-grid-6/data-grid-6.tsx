@@ -3,12 +3,16 @@
 import { DataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid'
 import type { DataGridGroupCellContext } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-group-row'
 import { useDataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import { createTableFormatter } from '../shared/format'
 import { GridFrame } from '../shared/grid-frame'
 import { gridLoadState } from '../shared/grid-load-state'
 import { GridToolbar } from '../shared/grid-toolbar'
-import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { createDataGrid6Columns, DataGrid6Nrr } from './data-grid-6-columns'
 import { DataGrid6Kpis } from './data-grid-6-kpis'
 import { DataGrid6Skeleton } from './data-grid-6-skeleton'
@@ -176,10 +180,12 @@ export function DataGrid6({
           <GridToolbar
             aria-label={labels.toolbar}
             left={
-              <GridToolbarHeading
-                description={labels.description}
-                title={labels.title}
-              />
+              <CollectionToolbarHeading>
+                <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+                <CollectionToolbarDescription>
+                  {labels.description}
+                </CollectionToolbarDescription>
+              </CollectionToolbarHeading>
             }
           />
         ) : (

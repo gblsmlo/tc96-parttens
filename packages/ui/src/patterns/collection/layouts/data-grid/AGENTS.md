@@ -109,7 +109,7 @@ ARIA and layout:
 - The resize separator always carries `aria-valuemin` and `aria-valuemax`, and the keyboard resize is clamped to them. `useDataGrid`'s default column sets `minSize: 80`; another table falls back to TanStack's 20 and `Number.MAX_SAFE_INTEGER`.
 - The last column's resize handle and grab area grow inward: outward they add 8px of scroll past the content, and the strip reads as an extra column.
 - With no fill column the wrapper and the bordered root are `w-fit max-w-full`, because stretching leaves a borderless strip that reads as a phantom column; it still scrolls when columns overflow. The wrapper also positions the selection action bar.
-- `style={{ minWidth: 0 }}` on `ScrollAreaPrimitive.Content` is the only way to beat Base UI's inline `minWidth: fit-content`.
+- The grid is the `ScrollArea` of `@tc96/ui/scroll-area`; its default `clampContentMinWidth` puts `style={{ minWidth: 0 }}` on the content, the only way to beat Base UI's inline `minWidth: fit-content`. The frame classes on its root are registered in `scripts/override-exceptions.json`.
 
 ## Styling
 

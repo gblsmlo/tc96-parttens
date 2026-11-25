@@ -5,12 +5,15 @@ import {
   type DataGridProps,
 } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid'
 import { useDataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import {
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import { createTableFormatter } from '../shared/format'
 import { GridFrame } from '../shared/grid-frame'
 import { gridLoadState } from '../shared/grid-load-state'
 import { GridToolbar } from '../shared/grid-toolbar'
-import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { createDataGrid7Columns } from './data-grid-7-columns'
 import { DataGrid7Skeleton } from './data-grid-7-skeleton'
 import { DataGrid7Toolbar } from './data-grid-7-toolbar'
@@ -126,7 +129,11 @@ export function DataGrid7({
         loadState ? (
           <GridToolbar
             aria-label={labels.toolbar}
-            left={<GridToolbarHeading title={labels.title} />}
+            left={
+              <CollectionToolbarHeading>
+                <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+              </CollectionToolbarHeading>
+            }
           />
         ) : (
           <DataGrid7Toolbar

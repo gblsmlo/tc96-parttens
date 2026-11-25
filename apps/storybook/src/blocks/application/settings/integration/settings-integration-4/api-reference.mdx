@@ -1,0 +1,103 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsIntegration4
+
+A settings block that lists the app connections of the workspace grouped in labeled sections (Comunicação, Colaboração, Agendamento and so on). Each row shows the app's initials, name and description, a status badge (Conectado or Requer revisão) and a menu with Sincronizar, Gerenciar and Desconectar; the header carries an optional Nova conexão button. Install it with `npx @tc96/cli add settings-integration-4`.
+
+It renders no `main` landmark. Syncing, managing, disconnecting and creating stay in the app; the block only calls `onAction` and `onCreate`.
+
+The other pages of `Blocks/Application/Settings/Integration/Settings4`: [Playground](?path=/story/blocks-application-settings-integration-settings4-playground--playground), [Behavior](?path=/story/blocks-application-settings-integration-settings4-behavior--empty-list-shows-state-surface) and [Usages](?path=/story/blocks-application-settings-integration-settings4-usages--loaded).
+
+## Import
+
+```tsx
+import { SettingsIntegration4 } from '@tc96/ui/blocks/application/settings/integration/settings-integration-4'
+```
+
+The same path exports the types `SettingsIntegration4Props`, `SettingsIntegration4Section`, `SettingsIntegration4App`, `SettingsIntegration4Status`, `SettingsIntegration4Action` and `SettingsIntegration4Labels`.
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsIntegration4
+  sections={sections}
+  onAction={(appId, action) => run(appId, action)}
+  onCreate={() => openConnectionDialog()}
+/>
+```
+
+## SettingsIntegration4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `sections` | `SettingsIntegration4Section[]` | required | The groups to list. A section with no apps is not rendered; when none remains the empty state shows. |
+| `onAction` | `(appId: string, action: SettingsIntegration4Action) => void` | - | Called by the row menu. Without it the menus are not rendered. |
+| `onCreate` | `() => void` | - | Called by the Nova conexão button. Without it the button is not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsIntegration4Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## SettingsIntegration4Section
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Key of the section. |
+| `title` | `string` | Heading of the group. |
+| `apps` | `SettingsIntegration4App[]` | The rows of the group. |
+
+## SettingsIntegration4App
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the app in `onAction`. |
+| `name` | `string` | Title of the row; its first two initials fill the icon frame. |
+| `description` | `string` | Line under the name. |
+| `status` | `'connected' \| 'review'` | Picks the badge. |
+
+`SettingsIntegration4Action` is `'sync' \| 'manage' \| 'disconnect'`.
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Conexões"` |
+| `description` | `string` | `"Aplicativos conectados ao seu espaço, agrupados por tipo."` |
+| `newConnection` | `string` | `"Nova conexão"` |
+| `connected` | `string` | `"Conectado"` |
+| `review` | `string` | `"Requer revisão"` |
+| `sync` | `string` | `"Sincronizar"` |
+| `manage` | `string` | `"Gerenciar"` |
+| `disconnect` | `string` | `"Desconectar"` |
+| `actions` | `(name: string) => string` | `"Ações de Slack"`; accessible name of the row menu |
+| `emptyTitle` | `string` | `"Nenhuma conexão"` |
+| `emptyDescription` | `string` | `"As conexões criadas aparecem aqui."` |
+| `loading` | `string` | `"Carregando conexões"` |
+| `errorTitle` | `string` | `"Não foi possível carregar as conexões"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsIntegration4` | `component` | The grouped connections block. |
+| `SettingsIntegration4Props` | `type` | The props of the block. |
+| `SettingsIntegration4Section` | `type` | A labeled group. |
+| `SettingsIntegration4App` | `type` | An app row. |
+| `SettingsIntegration4Status` | `type` | `'connected' \| 'review'`. |
+| `SettingsIntegration4Action` | `type` | `'sync' \| 'manage' \| 'disconnect'`. |
+| `SettingsIntegration4Labels` | `type` | The keys of `labels`. |
+
+## Accessibility and theme
+
+- The row menu trigger is named by `labels.actions(name)`, so rows are told apart by screen readers.
+- The status is text in the badge, never color alone; the initials frame is decorative.
+- The empty state has `role="status"` and `data-kind="empty"`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

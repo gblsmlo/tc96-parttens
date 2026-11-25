@@ -29,7 +29,7 @@ const statusTones = {
 
 export function ProductCell({ product }: Readonly<{ product: Table4Row }>) {
   return (
-    <span className="grid min-w-0">
+    <span className="grid min-w-0 gap-0.5">
       <span className="truncate font-medium">{product.name}</span>
       <span className="truncate font-mono text-muted-foreground text-xs">
         {product.sku}

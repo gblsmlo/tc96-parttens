@@ -6,6 +6,11 @@ import {
   type UseDataTableOptions,
   useDataTable,
 } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import {
   createTableFormatter,
@@ -15,7 +20,6 @@ import {
 import { TableFrame } from '../shared/table-frame'
 import { tableLoadState } from '../shared/table-load-state'
 import { TableToolbar } from '../shared/table-toolbar'
-import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import {
   applyDraft,
   createPriceFormat,
@@ -166,10 +170,12 @@ export function Table4({
           <TableToolbar
             aria-label={labels.toolbar}
             left={
-              <TableToolbarHeading
-                description={labels.description}
-                title={labels.title}
-              />
+              <CollectionToolbarHeading>
+                <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+                <CollectionToolbarDescription>
+                  {labels.description}
+                </CollectionToolbarDescription>
+              </CollectionToolbarHeading>
             }
           />
         ) : (

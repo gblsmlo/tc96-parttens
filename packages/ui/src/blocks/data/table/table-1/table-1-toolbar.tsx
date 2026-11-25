@@ -1,7 +1,6 @@
 import {
   DownloadSimpleIcon,
   FunnelSimpleIcon,
-  PlusIcon,
   StackIcon,
 } from '@phosphor-icons/react'
 import { MenuSeparator } from '@tc96/ui/menu'
@@ -135,7 +134,6 @@ export function Table1Toolbar({
           ) : null}
           {onCreate ? (
             <TableToolbarButton onClick={onCreate} variant="default">
-              <PlusIcon aria-hidden="true" />
               {labels.create}
             </TableToolbarButton>
           ) : null}

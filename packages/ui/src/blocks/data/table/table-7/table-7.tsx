@@ -5,12 +5,15 @@ import {
   type DataTableProps,
 } from '@tc96/ui/patterns/collection/layouts/data-table/data-table'
 import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import {
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import { createTableFormatter } from '../shared/format'
 import { TableFrame } from '../shared/table-frame'
 import { tableLoadState } from '../shared/table-load-state'
 import { TableToolbar } from '../shared/table-toolbar'
-import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { resolveTable7Labels } from './labels'
 import { createTable7Columns } from './table-7-columns'
 import { Table7Skeleton } from './table-7-skeleton'
@@ -126,7 +129,11 @@ export function Table7({
         loadState ? (
           <TableToolbar
             aria-label={labels.toolbar}
-            left={<TableToolbarHeading title={labels.title} />}
+            left={
+              <CollectionToolbarHeading>
+                <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+              </CollectionToolbarHeading>
+            }
           />
         ) : (
           <Table7Toolbar

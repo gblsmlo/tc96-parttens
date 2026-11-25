@@ -18,7 +18,10 @@ The controls a screen puts in the slots have their own pages: [ViewSwitcher](?pa
 ```tsx
 import {
   CollectionToolbar,
+  CollectionToolbarDescription,
   CollectionToolbarGroup,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
 } from '@acme/patterns'
 ```
 
@@ -43,6 +46,28 @@ div[role=toolbar][data-slot=toolbar][data-mode]
 ├── div[role=group][data-slot=toolbar-group]   center, only with center
 └── div[role=group][data-slot=toolbar-group]   right
     or div[aria-hidden]                        spacer, only with center and no right
+```
+
+The heading of the `left` slot, a title with its description, for a toolbar that names the collection instead of picking a saved view:
+
+<Canvas of={ApiReferenceStories.HeadingAnatomy} />
+
+```tsx
+<CollectionToolbar
+  left={
+    <CollectionToolbarHeading>
+      <CollectionToolbarTitle>{title}</CollectionToolbarTitle>
+      <CollectionToolbarDescription>{description}</CollectionToolbarDescription>
+    </CollectionToolbarHeading>
+  }
+  right={right}
+/>
+```
+
+```text
+div[data-slot=collection-toolbar-heading]
+├── h2[data-slot=collection-toolbar-title]          CollectionToolbarTitle
+└── p[data-slot=collection-toolbar-description]     CollectionToolbarDescription, only with text
 ```
 
 ## CollectionToolbar
@@ -85,6 +110,40 @@ Also takes every prop of Base UI `Toolbar.Group` (a `div`), such as `disabled`, 
 | `data-orientation` | `"horizontal"` or `"vertical"` | Follows the orientation of the toolbar |
 | `data-disabled` | present when disabled | Lets the theme style a disabled group |
 
+## CollectionToolbarHeading
+
+The heading of the `left` slot: stacks the title above the description. Renders a `div` that can shrink, so its texts truncate instead of pushing the other slots out of the bar. Takes every prop of a `div`. The `left` slot holds the heading or the [ViewSwitcher](?path=/docs/patterns-viewswitcher-api-reference--api-reference), not both.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collection-toolbar-heading"` | Selects the heading |
+
+## CollectionToolbarTitle
+
+The title of the collection. Renders an `h2` in the heading font, 16px semibold, truncated on one line.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | required | Sets the text of the title. |
+| `className` | `string` | - | Adds classes after the title classes. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collection-toolbar-title"` | Selects the title |
+
+## CollectionToolbarDescription
+
+The line under the title, such as a count or a summary. Renders a muted `p`, 14px, truncated on one line, and renders nothing when `children` is `null`, `undefined` or an empty string, so a consumer passes a description that may be missing without a condition of its own.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | - | Sets the text of the description; empty renders nothing. |
+| `className` | `string` | - | Adds classes after the description classes. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collection-toolbar-description"` | Selects the description |
+
 ## Exports
 
 | Export | Kind | Description |
@@ -92,6 +151,9 @@ Also takes every prop of Base UI `Toolbar.Group` (a `div`), such as `disabled`, 
 | `CollectionToolbarProps` | `type` | The props of `CollectionToolbar`. |
 | `CollectionToolbarMode` | `type` | The values of `mode`: `"default"` or `"plain"`. |
 | `CollectionToolbarGroupProps` | `type` | The props of `CollectionToolbarGroup`. |
+| `CollectionToolbarHeadingProps` | `type` | The props of `CollectionToolbarHeading`, those of a `div`. |
+| `CollectionToolbarTitleProps` | `type` | The props of `CollectionToolbarTitle`. |
+| `CollectionToolbarDescriptionProps` | `type` | The props of `CollectionToolbarDescription`. |
 
 ## Accessibility and theme
 

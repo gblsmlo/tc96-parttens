@@ -1,4 +1,3 @@
-import { PlusIcon } from '@phosphor-icons/react'
 import { DataGridDensitySubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-density-submenu'
 import { DataGridSortSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-sort-submenu'
 import { isConditionComplete } from '@tc96/ui/patterns/collection/layouts/data-grid/lib/data-grid-conditions'
@@ -68,7 +67,6 @@ export function Table3Toolbar({
           </ViewSettingsMenu>
           {onCreate ? (
             <TableToolbarButton onClick={onCreate} variant="default">
-              <PlusIcon aria-hidden="true" />
               {labels.create}
             </TableToolbarButton>
           ) : null}

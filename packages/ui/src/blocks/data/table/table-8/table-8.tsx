@@ -3,6 +3,11 @@
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
 import { DataTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table'
 import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useMemo } from 'react'
 import { createTableFormatter } from '../shared/format'
 import { TableFrame } from '../shared/table-frame'
@@ -13,7 +18,6 @@ import {
   visibilityFromState,
 } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
-import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { resolveTable8Labels } from './labels'
 import { createTable8Columns } from './table-8-columns'
 import { createTable8SelectionActions } from './table-8-selection-actions'
@@ -140,17 +144,17 @@ export function Table8({
         views={views}
       />
     ) : (
-      <TableToolbarHeading
-        description={
-          loadState
+      <CollectionToolbarHeading>
+        <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+        <CollectionToolbarDescription>
+          {loadState
             ? undefined
             : labels.loaded(
                 formatter.number(loadedCount ?? transactions.length),
                 formatter.number(totalCount),
-              )
-        }
-        title={labels.title}
-      />
+              )}
+        </CollectionToolbarDescription>
+      </CollectionToolbarHeading>
     )
 
   return (

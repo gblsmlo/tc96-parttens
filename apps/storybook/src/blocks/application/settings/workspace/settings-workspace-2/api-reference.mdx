@@ -1,0 +1,129 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# SettingsWorkspace2
+
+A members section that lists the team with each member's role and, when the app handles actions, a menu to remove a member. Pending invitations are listed in a second section with a menu to resend or revoke them. Reach for it when the app lets admins manage who has access to the workspace. Install it with `npx @tc96/cli add settings-workspace-2`.
+
+It is a section, not a page: it renders no `main` landmark. Inviting, changing roles and revoking stay in the app: the block only calls the `on...` callbacks, keeps no list of its own and never fetches or stores anything. The role select keeps the chosen value in local state so it shows the new role at once.
+
+The other pages of `Blocks/Application/Settings/Workspace/Settings2`: [Playground](?path=/story/blocks-application-settings-workspace-settings2-playground--playground) to try the texts, the seats and the actions, [Behavior](?path=/story/blocks-application-settings-workspace-settings2-behavior--invite-button-calls-on-invite) for the tests and [Usages](?path=/story/blocks-application-settings-workspace-settings2-usages--loaded) for the team read over the network.
+
+## Import
+
+```tsx
+import { SettingsWorkspace2 } from '@tc96/ui/blocks/application/settings/workspace/settings-workspace-2'
+```
+
+The same path exports the types `SettingsWorkspace2Props`, `SettingsWorkspace2Labels`, `SettingsWorkspace2Member`, `SettingsWorkspace2Invitation`, `SettingsWorkspace2Role`, `SettingsWorkspace2Seats`, `SettingsWorkspace2MemberAction` and `SettingsWorkspace2InvitationAction`.
+
+## Anatomy
+
+The members section with one owner and two members, and the pending invitations section below it:
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<SettingsWorkspace2
+  invitations={invitations}
+  members={members}
+  onInvite={openInviteDialog}
+  onInvitationAction={(invitationId, action) => handleInvitation(invitationId, action)}
+  onMemberAction={(memberId, action) => handleMember(memberId, action)}
+  onRoleChange={(memberId, role) => changeRole(memberId, role)}
+  roles={roles}
+  seats={{ limit: 10, plan: 'Pro' }}
+/>
+```
+
+## SettingsWorkspace2
+
+The members section. Renders the title, the seats description and, with `onInvite`, the Invite button, then one row per member. A member whose role is `ownerRole` shows the owner label in place of the role select and the menu. Pending invitations follow in their own section, shown only when the list is not empty.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `members` | `SettingsWorkspace2Member[]` | required | The members to list, one row each. |
+| `roles` | `SettingsWorkspace2Role[]` | required | The options of the role select of every member but the owner. |
+| `invitations` | `SettingsWorkspace2Invitation[]` | required | The pending invitations; an empty array hides their section. |
+| `seats` | `SettingsWorkspace2Seats` | - | Plan usage shown under the title. Without it the description is not rendered. |
+| `ownerRole` | `string` | `"owner"` | The `role` value that marks the owner, who has no role select and no menu. |
+| `onInvite` | `() => void` | - | Called when the Invite button is clicked. Without it the button is not rendered. |
+| `onRoleChange` | `(memberId: string, role: string) => void` | - | Called with the member id and the new role when the role select changes. |
+| `onMemberAction` | `(memberId: string, action: SettingsWorkspace2MemberAction) => void` | - | Called with the member id and `'remove'` when the row menu item is chosen. Without it the row menus are not rendered. |
+| `onInvitationAction` | `(invitationId: string, action: SettingsWorkspace2InvitationAction) => void` | - | Called with the invitation id and `'resend'` or `'revoke'` when a menu item is chosen. Without it the invitation menus are not rendered. |
+| `pending` | `boolean` | `false` | Replaces the content with the skeleton of the block, an `output` with `aria-busy="true"` named by `labels.loading`. Wins over `error`. |
+| `error` | `boolean` | `false` | Replaces the content with the error `StateSurface` (`role="alert"`). Wins over the empty state. |
+| `onRetry` | `() => void` | - | Called by the Tentar novamente button of the error state; without it the button does not render. |
+| `labels` | `Partial<SettingsWorkspace2Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root element's classes. |
+
+## SettingsWorkspace2Member
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the member in `onMemberAction` and `onRoleChange`. |
+| `name` | `string` | Title of the row. |
+| `email` | `string` | Description of the row. |
+| `initials` | `string` | Text of the avatar. |
+| `role` | `string` | The value of the role select; equal to `ownerRole` for the owner. |
+
+## SettingsWorkspace2Invitation
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the invitation in `onInvitationAction`. |
+| `email` | `string` | Title of the row, also the name of its menu. |
+| `role` | `string` | Matched against `roles` to show the role label. |
+| `sent` | `string` | Shown in `labels.invitationMeta`, for example `"12 nov"`. |
+
+## SettingsWorkspace2Role and SettingsWorkspace2Seats
+
+| Type | Field | Description |
+| --- | --- | --- |
+| `SettingsWorkspace2Role` | `value` | The value passed to `onRoleChange`. |
+| `SettingsWorkspace2Role` | `label` | The option text of the role select. |
+| `SettingsWorkspace2Seats` | `limit` | The number of seats in the plan. |
+| `SettingsWorkspace2Seats` | `plan` | The name of the plan. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `title` | `string` | `"Membros"` |
+| `invite` | `string` | `"Convidar membros"` |
+| `owner` | `string` | `"Proprietário"` |
+| `memberRole` | `(name: string) => string` | `"Papel de ${name}"`; the accessible name of the role select |
+| `actions` | `(name: string) => string` | `"Ações de ${name}"`; the accessible name of the row menu |
+| `removeMember` | `string` | `"Remover do workspace"` |
+| `invitationsTitle` | `string` | `"Convites pendentes"` |
+| `invitationMeta` | `(role: string, sent: string) => string` | `"${role} · Enviado ${sent}"` |
+| `pending` | `string` | `"Pendente"` |
+| `resendInvitation` | `string` | `"Reenviar convite"` |
+| `revokeInvitation` | `string` | `"Revogar convite"` |
+| `seats` | `(used: number, limit: number, plan: string) => string` | `"${used} de ${limit} vagas usadas no plano ${plan}."`; `used` is the number of members |
+| `loading` | `string` | `"Carregando membros"` |
+| `errorTitle` | `string` | `"Não foi possível carregar os membros"` |
+| `errorDescription` | `string` | `"Verifique sua conexão e tente novamente."` |
+| `retry` | `string` | `"Tentar novamente"` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SettingsWorkspace2` | `component` | The members section and the invitations section. |
+| `SettingsWorkspace2Props` | `type` | The props of the section. |
+| `SettingsWorkspace2Labels` | `type` | The keys of `labels`. |
+| `SettingsWorkspace2Member` | `type` | A member row. |
+| `SettingsWorkspace2Invitation` | `type` | A pending invitation row. |
+| `SettingsWorkspace2Role` | `type` | A role option: `label` and `value`. |
+| `SettingsWorkspace2Seats` | `type` | The plan limit and name. |
+| `SettingsWorkspace2MemberAction` | `type` | `'remove'`. |
+| `SettingsWorkspace2InvitationAction` | `type` | `'resend' \| 'revoke'`. |
+
+## Accessibility and theme
+
+- The row menu buttons are named by `labels.actions(name)`, so each row's menu is told apart by screen readers.
+- The role selects are named by `labels.memberRole(name)`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.

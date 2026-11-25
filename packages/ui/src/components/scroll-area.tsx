@@ -4,6 +4,19 @@ import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
 import type React from "react";
 import { cn } from "@tc96/utils";
 
+export interface ScrollAreaProps extends ScrollAreaPrimitive.Root.Props {
+  scrollFade?: boolean;
+  scrollbarGutter?: boolean;
+  fill?: boolean;
+  clampContentMinWidth?: boolean;
+  overscrollContain?: boolean;
+  viewportProps?: Omit<ScrollAreaPrimitive.Viewport.Props, "children"> & {
+    [attribute: `data-${string}`]: string | undefined;
+  };
+  contentProps?: Omit<ScrollAreaPrimitive.Content.Props, "children">;
+  verticalScrollbarProps?: Omit<ScrollAreaPrimitive.Scrollbar.Props, "orientation">;
+}
+
 export function ScrollArea({
   className,
   children,
@@ -12,14 +25,14 @@ export function ScrollArea({
   fill = false,
   clampContentMinWidth = true,
   overscrollContain = false,
+  viewportProps,
+  contentProps,
+  verticalScrollbarProps,
   ...props
-}: ScrollAreaPrimitive.Root.Props & {
-  scrollFade?: boolean;
-  scrollbarGutter?: boolean;
-  fill?: boolean;
-  clampContentMinWidth?: boolean;
-  overscrollContain?: boolean;
-}): React.ReactElement {
+}: ScrollAreaProps): React.ReactElement {
+  const { className: viewportClassName, ...viewportRest } = viewportProps ?? {};
+  const { className: contentClassName, ...contentRest } = contentProps ?? {};
+
   return (
     <ScrollAreaPrimitive.Root
       className={cn("size-full min-h-0", className)}
@@ -34,18 +47,24 @@ export function ScrollArea({
             "mask-t-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-start)))] mask-b-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-end)))] mask-l-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-start)))] mask-r-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-end)))] [--fade-size:1.5rem]",
           scrollbarGutter &&
             "data-has-overflow-y:pe-2.5 data-has-overflow-x:pb-2.5",
+          typeof viewportClassName === "string" && viewportClassName,
         )}
         data-slot="scroll-area-viewport"
+        {...viewportRest}
       >
         <ScrollAreaPrimitive.Content
-          className={cn(fill && "size-full")}
+          className={cn(
+            fill && "size-full",
+            typeof contentClassName === "string" && contentClassName,
+          )}
           data-slot="scroll-area-content"
           style={clampContentMinWidth ? { minWidth: 0 } : undefined}
+          {...contentRest}
         >
           {children}
         </ScrollAreaPrimitive.Content>
       </ScrollAreaPrimitive.Viewport>
-      <ScrollBar orientation="vertical" />
+      <ScrollBar orientation="vertical" {...verticalScrollbarProps} />
       <ScrollBar orientation="horizontal" />
       <ScrollAreaPrimitive.Corner data-slot="scroll-area-corner" />
     </ScrollAreaPrimitive.Root>

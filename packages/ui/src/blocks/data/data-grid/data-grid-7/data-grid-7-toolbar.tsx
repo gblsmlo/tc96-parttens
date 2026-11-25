@@ -1,6 +1,10 @@
 import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { GridToolbar, GridToolbarButton } from '../shared/grid-toolbar'
-import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import type { DataGrid7Labels } from './types'
 
 export interface DataGrid7ToolbarProps {
@@ -20,7 +24,12 @@ export function DataGrid7Toolbar({
     <GridToolbar
       aria-label={labels.toolbar}
       left={
-        <GridToolbarHeading description={description} title={labels.title} />
+        <CollectionToolbarHeading>
+          <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+          <CollectionToolbarDescription>
+            {description}
+          </CollectionToolbarDescription>
+        </CollectionToolbarHeading>
       }
       right={
         onResetOrder ? (

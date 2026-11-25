@@ -1,0 +1,90 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# CollectionPagination
+
+The page bar of a paginated collection. It keeps no page of its own: the consumer keeps the page and the page size, whether the server or a table paginates, and decides when to show the bar.
+
+The other pages of `Patterns/CollectionPagination`: [Playground](?path=/story/patterns-collectionpagination-playground--playground) to try the label, the range and the rows-per-page selector, [Layouts](?path=/story/patterns-collectionpagination-layouts--default) for the arrangements of the bar, [Behavior](?path=/story/patterns-collectionpagination-behavior--names-the-navigation) for the tests, and [Usages](?path=/story/patterns-collectionpagination-usages--contacts) for real collections.
+
+Used in: `CollectionFrameFooter` of [Patterns/Collection](?path=/docs/patterns-collection-api-reference--api-reference), the [Gallery](?path=/docs/patterns-collection-layouts-gallery-api-reference--api-reference) layout and `DataGridPagination` of the [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference) layout.
+
+## Import
+
+```tsx
+import { CollectionPagination } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<CollectionPagination
+  label={label}
+  page={page}
+  pageCount={pageCount}
+  onPageChange={setPage}
+  pageSize={pageSize}
+  total={total}
+/>
+```
+
+```text
+div[data-slot=collection-pagination]
+├── div[data-slot=collection-pagination-page-size]   rows-per-page Select, only with its three props
+├── p[aria-live=polite]                              range, only with pageSize and total
+└── nav[data-slot=pagination]                        aria-label is the label
+    └── ul[data-slot=pagination-content]
+        ├── li > button                              Primeira página, Página anterior
+        ├── li > span[data-slot=collection-pagination-page][aria-current=page]
+        └── li > button                              Próxima página, Última página
+```
+
+## CollectionPagination
+
+The page bar of a paginated collection, for `CollectionFrameFooter`: the range on screen, `1–25 de 57`, then the buttons `Primeira página`, `Página anterior`, the current page over the page count, `2 / 3`, `Próxima página` and `Última página`. Renders a `div`, a wrapping flex row with the range at its start and a `nav` at its end; the `nav`, its list and its items are `Pagination`, `PaginationContent` and `PaginationItem` of [UI/Pagination](?path=/docs/ui-pagination-api-reference--api-reference), and the buttons are ghost icon buttons of size `icon-sm`. It keeps no page of its own: the consumer keeps the page, whether the server or a table paginates, and decides when to show the bar. `DataGridPagination` of the [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference) node renders it from a table.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | required | Names the `nav` (`aria-label`), in the words of the collection: `Paginação de contatos`. |
+| `page` | `number` | required | Sets the current page, counted from 1. |
+| `pageCount` | `number` | required | Sets the number of pages. |
+| `onPageChange` | `(page: number) => void` | required | Called when a button is clicked, with the page it leads to, never a step. |
+| `pageSize` | `number` | - | Sets the number of records per page; with `total`, shows the range. |
+| `total` | `number` | - | Sets the number of records; with `pageSize`, shows the range. |
+| `pageSizeOptions` | `readonly number[]` | - | Lists the page sizes of the rows-per-page selector. |
+| `onPageSizeChange` | `(size: number) => void` | - | Called with the chosen size; the consumer keeps the size, as it keeps the page. |
+| `pageSizeLabel` | `string` | - | The text of the selector, which also names it. |
+| `buttonLabels` | `Partial<CollectionPaginationButtonLabels>` | `{ first: "Primeira página", previous: "Página anterior", next: "Próxima página", last: "Última página" }` | Names the four page buttons; a missing key keeps its default. |
+| `formatRange` | `(first: number, last: number, total: number) => string` | `` `${first}–${last} de ${total}` ``, or `"0 de 0"` when `total` is 0 | Builds the range text, for a language with another grammar. |
+
+The selector, a `Select` in a `div` with `data-slot="collection-pagination-page-size"`, shows only when `pageSizeOptions`, `onPageSizeChange` and `pageSizeLabel` are all set; the range then sits beside the page buttons.
+
+Also takes every prop of a `div` except `children` and `onChange`; they reach the outer `div`.
+
+The page is clamped: the last page is `pageCount`, or 1 when `pageCount` is below 1, and `page` is kept between 1 and the last page, so `page={9}` with `pageCount={0}` shows `1 / 1` with every button disabled. `Primeira página` and `Página anterior` are disabled on the first page, `Próxima página` and `Última página` on the last. The current page is a `span` with `aria-current="page"`.
+
+The range renders only when both `pageSize` and `total` are set, as `<first>–<last> de <total>`, and reads `0 de 0` when `total` is 0. It is a `p` with `aria-live="polite"`, so a screen reader announces the new range after a page change.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"collection-pagination"` | Selects the bar, the outer `div`; a `data-slot` passed in the props replaces it, as `DataGridPagination` does with `"data-grid-pagination"` |
+| `data-slot` | `"collection-pagination-page"` | Selects the current page over the page count |
+
+The `nav`, the list and the items keep the `data-slot` of UI/Pagination: `"pagination"`, `"pagination-content"` and `"pagination-item"`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `CollectionPaginationProps` | `type` | The props of `CollectionPagination`. |
+| `CollectionPaginationButtonLabels` | `type` | The names of the four page buttons, `{ first, previous, next, last }`. |
+
+## Accessibility and theme
+
+- Name the bar with `label` in the words of the collection, `Paginação de contatos`: it is the name of the `nav`. The button names (`Primeira página`, `Página anterior`, `Próxima página`, `Última página`) are Portuguese by default; pass `buttonLabels`, `formatRange` and `pageSizeLabel` in the language of the screen.
+- Each page button is its own Tab stop, and a disabled one is skipped. The range is announced after a page change, since it is `aria-live="polite"`.
+- The bar reads the tokens of the ghost `Button` and of `Select`, and the range and the current page `--muted-foreground`.

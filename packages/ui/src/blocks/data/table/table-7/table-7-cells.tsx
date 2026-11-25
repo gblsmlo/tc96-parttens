@@ -64,7 +64,7 @@ export function RuleCell({ rule }: Readonly<{ rule: Table7Rule }>) {
       <IconFrame shape="rounded" size="sm">
         <Icon aria-hidden="true" />
       </IconFrame>
-      <span className="grid min-w-0">
+      <span className="grid min-w-0 gap-0.5">
         <span className={cn('truncate font-medium', tone(rule))}>
           {rule.name}
         </span>

@@ -110,7 +110,7 @@ export function createDataGrid8Columns({
     {
       accessorFn: (transaction) => transaction.id,
       cell: ({ row }) => (
-        <span className="grid min-w-0">
+        <span className="grid min-w-0 gap-0.5">
           <span className="truncate font-medium font-mono text-sm/4">
             {row.original.id}
           </span>
@@ -137,7 +137,7 @@ export function createDataGrid8Columns({
               ) : null}
               <AvatarFallback>{getInitials(customer.name)}</AvatarFallback>
             </Avatar>
-            <span className="grid min-w-0">
+            <span className="grid min-w-0 gap-0.5">
               <span className="truncate font-medium text-sm/4">
                 {customer.name}
               </span>
@@ -257,7 +257,7 @@ export function createDataGrid8Columns({
     {
       accessorFn: (transaction) => transaction.createdAt,
       cell: ({ row }) => (
-        <span className="grid min-w-0">
+        <span className="grid min-w-0 gap-0.5">
           <span className="truncate text-sm/4">
             {formatter.shortDate(row.original.createdAt)}
           </span>

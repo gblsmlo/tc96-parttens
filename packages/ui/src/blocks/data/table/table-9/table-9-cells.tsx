@@ -78,7 +78,7 @@ export function CampaignCell({
         <Icon aria-hidden="true" />
         <span className="sr-only">{labels.channels[campaign.channel]}</span>
       </IconFrame>
-      <span className="grid min-w-0">
+      <span className="grid min-w-0 gap-0.5">
         <span className="truncate font-medium">{campaign.name}</span>
         <span className="flex items-center gap-1.5 text-muted-foreground text-xs">
           <span aria-hidden="true">{countryFlag(campaign.country)}</span>

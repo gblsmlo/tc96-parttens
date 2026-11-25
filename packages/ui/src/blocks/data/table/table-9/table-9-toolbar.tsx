@@ -1,6 +1,6 @@
 'use client'
 
-import { DownloadSimpleIcon, PlusIcon, PulseIcon } from '@phosphor-icons/react'
+import { DownloadSimpleIcon, PulseIcon } from '@phosphor-icons/react'
 import { MenuSeparator } from '@tc96/ui/menu'
 import { DataGridDensitySubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-density-submenu'
 import { DataGridSearch } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-search'
@@ -9,11 +9,15 @@ import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/collection/layouts/da
 import type { DataTableTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
 import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
+import {
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { TableToolbar, TableToolbarButton } from '../shared/table-toolbar'
-import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import type { Table9Campaign, Table9Labels, Table9Status } from './types'
 
 const statuses: readonly Table9Status[] = [
@@ -44,7 +48,12 @@ export function Table9Toolbar({
     <TableToolbar
       aria-label={labels.toolbar}
       left={
-        <TableToolbarHeading description={description} title={labels.title} />
+        <CollectionToolbarHeading>
+          <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+          <CollectionToolbarDescription>
+            {description}
+          </CollectionToolbarDescription>
+        </CollectionToolbarHeading>
       }
       right={
         <>
@@ -103,7 +112,6 @@ export function Table9Toolbar({
           ) : null}
           {onCreate ? (
             <TableToolbarButton onClick={onCreate} variant="default">
-              <PlusIcon aria-hidden="true" />
               {labels.create}
             </TableToolbarButton>
           ) : null}

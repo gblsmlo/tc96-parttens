@@ -1,4 +1,4 @@
-import { FlagIcon, FolderIcon, PlusIcon } from '@phosphor-icons/react'
+import { FlagIcon, FolderIcon, } from '@phosphor-icons/react'
 import { MenuCheckboxItem, MenuSeparator } from '@tc96/ui/menu'
 import { DataGridColumnsSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-columns-submenu'
 import { DataGridSearch } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-search'
@@ -6,11 +6,15 @@ import { DataGridSortSubmenu } from '@tc96/ui/patterns/collection/layouts/data-g
 import type { UseDataGridReturn } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
 import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
+import {
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { GridToolbar, GridToolbarButton } from '../shared/grid-toolbar'
-import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { dataGrid5PriorityOrder } from './data-grid-5-columns'
 import type { DataGrid5Labels, DataGrid5Task } from './types'
 
@@ -46,7 +50,12 @@ export function DataGrid5Toolbar({
     <GridToolbar
       aria-label={labels.toolbar}
       left={
-        <GridToolbarHeading description={description} title={labels.title} />
+        <CollectionToolbarHeading>
+          <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+          <CollectionToolbarDescription>
+            {description}
+          </CollectionToolbarDescription>
+        </CollectionToolbarHeading>
       }
       right={
         <>
@@ -114,7 +123,6 @@ export function DataGrid5Toolbar({
           </ViewSettingsMenu>
           {onCreate ? (
             <GridToolbarButton onClick={onCreate} variant="default">
-              <PlusIcon aria-hidden="true" />
               {labels.create}
             </GridToolbarButton>
           ) : null}

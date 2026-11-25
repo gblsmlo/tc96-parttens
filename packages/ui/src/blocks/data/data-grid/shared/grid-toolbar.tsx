@@ -30,7 +30,7 @@ export function GridToolbarButton({
     <ToolbarButton
       disabled={disabled}
       onClick={onClick}
-      render={<Button size="sm" type="button" variant={variant} />}
+      render={<Button type="button" variant={variant} />}
     >
       {children}
     </ToolbarButton>

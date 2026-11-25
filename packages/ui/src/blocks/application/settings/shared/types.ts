@@ -21,3 +21,8 @@ export interface SettingsLoadProps {
   onRetry?: () => void
   pending?: boolean
 }
+
+export interface SettingsAppLogoData {
+  svg: string
+  title?: string
+}

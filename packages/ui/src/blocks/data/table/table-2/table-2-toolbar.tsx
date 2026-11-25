@@ -9,12 +9,16 @@ import type { DataTableTable } from '@tc96/ui/patterns/collection/layouts/data-t
 import type { DataTableTableMeta } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-types'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
 import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
+import {
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { sortFromSorting } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
-import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import type {
   Table2ColumnVisibility,
   Table2Labels,
@@ -101,7 +105,12 @@ export function Table2Toolbar({
     <TableToolbar
       aria-label={labels.toolbar}
       left={
-        <TableToolbarHeading description={description} title={labels.title} />
+        <CollectionToolbarHeading>
+          <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+          <CollectionToolbarDescription>
+            {description}
+          </CollectionToolbarDescription>
+        </CollectionToolbarHeading>
       }
       right={
         <ViewSettingsMenu

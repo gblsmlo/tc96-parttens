@@ -5,7 +5,7 @@ import type React from 'react'
 import {
   CollectionPagination,
   type CollectionPaginationProps,
-} from '../../../shared/components/collection-pagination'
+} from '../../../../collection-pagination/components/collection-pagination'
 
 export interface PaginatedTable {
   readonly store: { readonly state: { pagination: PaginationState } }

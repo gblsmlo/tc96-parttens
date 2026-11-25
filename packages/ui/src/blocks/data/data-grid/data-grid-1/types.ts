@@ -102,7 +102,6 @@ export interface DataGrid1Labels extends GridLoadLabels, GridViewLabels {
   rowActionsFor: (ticket: string) => string
   rowsPerPage: string
   saveView: string
-  search: string
   selectAll: string
   selectedCount: (count: number) => string
   selectionActions: string
@@ -146,7 +145,6 @@ export interface DataGrid1Props
   onQueueChange?: (queue: DataGrid1Queue | null) => void
   onRowAction?: (actionId: string, ticketId: string) => void
   onSaveView?: () => void
-  onSearchChange?: (search: string) => void
   onSelectedIdsChange?: (ticketIds: string[]) => void
   onSortChange?: (sort: DataGrid1Sort | null) => void
   onStatusChange?: (status: DataGrid1Status | null) => void
@@ -156,7 +154,6 @@ export interface DataGrid1Props
   pageSizeOptions?: readonly number[]
   queue?: DataGrid1Queue | null
   rowActions?: DataGrid1RowAction[]
-  search?: string
   selectedIds?: string[]
   sort?: DataGrid1Sort | null
   status?: DataGrid1Status | null

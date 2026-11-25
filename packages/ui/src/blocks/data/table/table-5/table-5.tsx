@@ -4,13 +4,16 @@ import { Badge } from '@tc96/ui/badge'
 import { DataGridPagination } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-pagination'
 import { DataTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table'
 import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import {
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@tc96/ui/tabs'
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import { TableFrame } from '../shared/table-frame'
 import { tableLoadState } from '../shared/table-load-state'
 import { sortFromSorting, sortingFromSort } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
-import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { resolveTable5Labels } from './labels'
 import { createTable5Columns } from './table-5-columns'
 import { Table5Skeleton } from './table-5-skeleton'
@@ -138,7 +141,11 @@ export function Table5({
         loadState ? (
           <TableToolbar
             aria-label={labels.toolbar}
-            left={<TableToolbarHeading title={labels.title} />}
+            left={
+              <CollectionToolbarHeading>
+                <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+              </CollectionToolbarHeading>
+            }
           />
         ) : (
           <Table5Toolbar

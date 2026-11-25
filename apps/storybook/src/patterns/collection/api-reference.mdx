@@ -268,34 +268,7 @@ Also takes every prop of a `div`.
 
 ## CollectionPagination
 
-The page bar of a paginated collection, for `CollectionFrameFooter`: the range on screen, `1–25 de 57`, then the buttons `Primeira página`, `Página anterior`, the current page over the page count, `2 / 3`, `Próxima página` and `Última página`. Renders a `div`, a wrapping flex row with the range at its start and a `nav` at its end; the `nav`, its list and its items are `Pagination`, `PaginationContent` and `PaginationItem` of [UI/Pagination](?path=/docs/ui-pagination-api-reference--api-reference), and the buttons are ghost icon buttons of size `icon-sm`. It keeps no page of its own: the consumer keeps the page, whether the server or a table paginates, and decides when to show the bar. `DataGridPagination` of the [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference) node renders it from a table.
-
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `label` | `string` | required | Names the `nav` (`aria-label`), in the words of the collection: `Paginação de contatos`. |
-| `page` | `number` | required | Sets the current page, counted from 1. |
-| `pageCount` | `number` | required | Sets the number of pages. |
-| `onPageChange` | `(page: number) => void` | required | Called when a button is clicked, with the page it leads to, never a step. |
-| `pageSize` | `number` | - | Sets the number of records per page; with `total`, shows the range. |
-| `total` | `number` | - | Sets the number of records; with `pageSize`, shows the range. |
-| `pageSizeOptions` | `readonly number[]` | - | Lists the page sizes of the rows-per-page selector. |
-| `onPageSizeChange` | `(size: number) => void` | - | Called with the chosen size; the consumer keeps the size, as it keeps the page. |
-| `pageSizeLabel` | `string` | - | The text of the selector, which also names it; in the consumer's language, since the other labels are fixed. |
-
-The selector, a `Select` in a `div` with `data-slot="collection-pagination-page-size"`, shows only when `pageSizeOptions`, `onPageSizeChange` and `pageSizeLabel` are all set; the range then sits beside the page buttons.
-
-Also takes every prop of a `div` except `children` and `onChange`; they reach the outer `div`.
-
-The page is clamped: the last page is `pageCount`, or 1 when `pageCount` is below 1, and `page` is kept between 1 and the last page, so `page={9}` with `pageCount={0}` shows `1 / 1` with every button disabled. `Primeira página` and `Página anterior` are disabled on the first page, `Próxima página` and `Última página` on the last. The current page is a `span` with `aria-current="page"`.
-
-The range renders only when both `pageSize` and `total` are set, as `<first>–<last> de <total>`, and reads `0 de 0` when `total` is 0. It is a `p` with `aria-live="polite"`, so a screen reader announces the new range after a page change.
-
-| Attribute | Values | Description |
-| --- | --- | --- |
-| `data-slot` | `"collection-pagination"` | Selects the bar, the outer `div`; a `data-slot` passed in the props replaces it, as `DataGridPagination` does with `"data-grid-pagination"` |
-| `data-slot` | `"collection-pagination-page"` | Selects the current page over the page count |
-
-The `nav`, the list and the items keep the `data-slot` of UI/Pagination: `"pagination"`, `"pagination-content"` and `"pagination-item"`.
+The page bar for `CollectionFrameFooter` has its own page: [CollectionPagination](?path=/docs/patterns-collectionpagination-api-reference--api-reference).
 
 ## CollectionFrameOverlay
 
@@ -340,7 +313,6 @@ Also takes every prop of a `div`.
 | `CollectionFrameBodyProps` | `type` | The props of `CollectionFrameBody`. |
 | `CollectionFrameFooterProps` | `type` | The props of `CollectionFrameFooter`. |
 | `CollectionFrameOverlayProps` | `type` | The props of `CollectionFrameOverlay`. |
-| `CollectionPaginationProps` | `type` | The props of `CollectionPagination`. |
 | `FilterRadioSubmenuProps` | `type` | The props of `FilterRadioSubmenu`. |
 | `CollectionSearchFieldProps` | `type` | The props of `CollectionSearchField`. |
 | `ActionProps` | `type` | The props of `Action`. |

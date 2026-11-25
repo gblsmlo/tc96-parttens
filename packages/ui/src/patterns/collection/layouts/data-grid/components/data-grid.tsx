@@ -3,7 +3,7 @@
 'use client'
 
 import type { RowData } from '@tanstack/react-table'
-import { ScrollAreaPrimitive, ScrollBar } from '@tc96/ui/scroll-area'
+import { ScrollArea } from '@tc96/ui/scroll-area'
 import { cn } from '@tc96/utils'
 import { type ReactNode, useMemo, useRef } from 'react'
 import { useCollapsedGroups } from '../../../shared/hooks/use-collapsed-groups'
@@ -265,112 +265,105 @@ export function DataGrid<TData extends RowData>({
         className,
       )}
     >
-      <ScrollAreaPrimitive.Root
+      <ScrollArea
         className={cn(
-          'relative min-h-0 flex-1 rounded-md border bg-background text-sm',
+          'relative size-auto min-h-0 flex-1 rounded-md border bg-background text-sm',
           fillColumnId ? 'w-full' : 'w-fit max-w-full',
         )}
         data-slot="data-grid"
         ref={scrollAreaRef}
+        verticalScrollbarProps={{ style: scrollbarInsetStyle }}
+        viewportProps={{
+          'aria-busy': isLoading || loadingMoreCount > 0 || undefined,
+          'aria-colcount': leafColumns.length,
+          'aria-label': ariaLabel,
+          'aria-multiselectable': true,
+          'aria-rowcount': ariaRowCount,
+          className:
+            'grid h-full cursor-grab select-none rounded-[inherit] outline-none transition-shadows focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background data-[drag-scroll=dragging]:cursor-grabbing data-has-overflow-x:overscroll-x-contain data-has-overflow-y:overscroll-y-contain',
+          'data-density': density,
+          'data-drag-scroll': dragScroll.isDragScrolling
+            ? 'dragging'
+            : undefined,
+          onClickCapture: dragScroll.onClickCapture,
+          onLostPointerCapture: dragScroll.onLostPointerCapture,
+          onPointerCancel: dragScroll.onPointerCancel,
+          onPointerDownCapture: dragScroll.onPointerDownCapture,
+          onPointerMove: dragScroll.onPointerMove,
+          onPointerUp: dragScroll.onPointerUp,
+          ref: gridRef,
+          role: expandable ? 'treegrid' : 'grid',
+          style: { maxHeight },
+          tabIndex: rows.length > 0 && !isLoading ? -1 : 0,
+        }}
       >
-        <ScrollAreaPrimitive.Viewport
-          aria-busy={isLoading || loadingMoreCount > 0 || undefined}
-          aria-colcount={leafColumns.length}
-          aria-label={ariaLabel}
-          aria-multiselectable
-          aria-rowcount={ariaRowCount}
-          className="grid h-full cursor-grab select-none rounded-[inherit] outline-none transition-shadows focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background data-[drag-scroll=dragging]:cursor-grabbing data-has-overflow-x:overscroll-x-contain data-has-overflow-y:overscroll-y-contain"
-          data-density={density}
-          data-drag-scroll={dragScroll.isDragScrolling ? 'dragging' : undefined}
-          data-slot="scroll-area-viewport"
-          onClickCapture={dragScroll.onClickCapture}
-          onLostPointerCapture={dragScroll.onLostPointerCapture}
-          onPointerCancel={dragScroll.onPointerCancel}
-          onPointerDownCapture={dragScroll.onPointerDownCapture}
-          onPointerMove={dragScroll.onPointerMove}
-          onPointerUp={dragScroll.onPointerUp}
-          ref={gridRef}
-          role={expandable ? 'treegrid' : 'grid'}
-          style={{ maxHeight }}
-          tabIndex={rows.length > 0 && !isLoading ? -1 : 0}
-        >
-          <ScrollAreaPrimitive.Content
-            data-slot="scroll-area-content"
-            style={{ minWidth: 0 }}
+        <DataGridHeaderRows
+          columnLayouts={columnLayouts}
+          fillColumnId={fillColumnId}
+          table={table}
+        />
+        <DataGridRowContext value={rowContext}>
+          <DataGridRowReorder
+            active={reorderActive}
+            announcements={rowDragAnnouncements}
+            indexByRowId={model.rowIndexById}
+            onRowMove={onRowMove}
+            paginationRowOffset={model.paginationRowOffset}
+            positions={model.positions}
+            rows={rows}
           >
-            <DataGridHeaderRows
+            <DataGridBody
+              columnIds={leafColumns.map((column) => column.id)}
               columnLayouts={columnLayouts}
-              fillColumnId={fillColumnId}
-              table={table}
+              columns={leafColumns}
+              density={density}
+              emptyMessage={emptyMessage}
+              entries={model.entries}
+              expandable={expandable}
+              focusedColumnId={cellSelection.focusedColumnId}
+              focusedRowId={cellSelection.focusedRowId}
+              getRowSelected={getRowSelected}
+              hasInteracted={cellSelection.hasInteracted}
+              headerRowCount={model.headerRowCount}
+              isLoading={isLoading}
+              labelColumnId={leafColumns[firstNavigableColumn]?.id}
+              loadingMoreRowCount={loadingMoreCount}
+              loadingMoreRowIndexOffset={bodyRowCount}
+              {...(loadingRowAnatomy ? { loadingRowAnatomy } : {})}
+              loadingRowCount={loadingRowCount}
+              minWidth={totalSize}
+              onToggleGroup={onToggleGroup}
+              pageRowCount={model.pageRows.length}
+              renderGroupCell={renderGroupCell}
+              getGroupToggleLabel={getGroupToggleLabel}
+              selection={cellSelection.selection}
+              totalSize={
+                virtualizer.totalSize + loadingMoreCount * ROW_HEIGHT[density]
+              }
+              virtualItems={virtualizer.virtualItems}
+              virtualized={shouldVirtualize}
             />
-            <DataGridRowContext value={rowContext}>
-              <DataGridRowReorder
-                active={reorderActive}
-                announcements={rowDragAnnouncements}
-                indexByRowId={model.rowIndexById}
-                onRowMove={onRowMove}
-                paginationRowOffset={model.paginationRowOffset}
-                positions={model.positions}
-                rows={rows}
-              >
-                <DataGridBody
-                  columnIds={leafColumns.map((column) => column.id)}
-                  columnLayouts={columnLayouts}
-                  columns={leafColumns}
-                  density={density}
-                  emptyMessage={emptyMessage}
-                  entries={model.entries}
-                  expandable={expandable}
-                  focusedColumnId={cellSelection.focusedColumnId}
-                  focusedRowId={cellSelection.focusedRowId}
-                  getRowSelected={getRowSelected}
-                  hasInteracted={cellSelection.hasInteracted}
-                  headerRowCount={model.headerRowCount}
-                  isLoading={isLoading}
-                  labelColumnId={leafColumns[firstNavigableColumn]?.id}
-                  loadingMoreRowCount={loadingMoreCount}
-                  loadingMoreRowIndexOffset={bodyRowCount}
-                  {...(loadingRowAnatomy ? { loadingRowAnatomy } : {})}
-                  loadingRowCount={loadingRowCount}
-                  minWidth={totalSize}
-                  onToggleGroup={onToggleGroup}
-                  pageRowCount={model.pageRows.length}
-                  renderGroupCell={renderGroupCell}
-                  getGroupToggleLabel={getGroupToggleLabel}
-                  selection={cellSelection.selection}
-                  totalSize={
-                    virtualizer.totalSize +
-                    loadingMoreCount * ROW_HEIGHT[density]
-                  }
-                  virtualItems={virtualizer.virtualItems}
-                  virtualized={shouldVirtualize}
-                />
-              </DataGridRowReorder>
-            </DataGridRowContext>
-            {onRowAdd ? (
-              <DataGridAddRow
-                ariaRowIndex={
-                  model.headerRowCount + bodyRowCount + loadingMoreCount + 1
-                }
-                label={addRowLabel}
-                minWidth={totalSize}
-                onAdd={onRowAdd}
-              />
-            ) : null}
-            {footerContent ? (
-              <DataGridFooter
-                ariaRowIndex={ariaRowCount}
-                columnCount={leafColumns.length}
-              >
-                {footerContent}
-              </DataGridFooter>
-            ) : null}
-          </ScrollAreaPrimitive.Content>
-        </ScrollAreaPrimitive.Viewport>
-        <ScrollBar orientation="vertical" style={scrollbarInsetStyle} />
-        <ScrollBar orientation="horizontal" />
-        <ScrollAreaPrimitive.Corner data-slot="scroll-area-corner" />
-      </ScrollAreaPrimitive.Root>
+          </DataGridRowReorder>
+        </DataGridRowContext>
+        {onRowAdd ? (
+          <DataGridAddRow
+            ariaRowIndex={
+              model.headerRowCount + bodyRowCount + loadingMoreCount + 1
+            }
+            label={addRowLabel}
+            minWidth={totalSize}
+            onAdd={onRowAdd}
+          />
+        ) : null}
+        {footerContent ? (
+          <DataGridFooter
+            ariaRowIndex={ariaRowCount}
+            columnCount={leafColumns.length}
+          >
+            {footerContent}
+          </DataGridFooter>
+        ) : null}
+      </ScrollArea>
       <DataGridSelectionActions
         selectionActions={selectionActions}
         table={table}

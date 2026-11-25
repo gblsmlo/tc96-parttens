@@ -5,6 +5,11 @@ import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
 import { DataGridPagination } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-pagination'
 import { DataTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table'
 import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { TableFrame } from '../shared/table-frame'
 import { tableLoadState } from '../shared/table-load-state'
@@ -14,7 +19,6 @@ import {
   visibilityFromState,
 } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
-import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { TableViewSwitcher } from '../shared/table-view-switcher'
 import { resolveTable1Labels } from './labels'
 import { createTable1Columns } from './table-1-columns'
@@ -246,10 +250,12 @@ export function Table1({
       views={views}
     />
   ) : (
-    <TableToolbarHeading
-      description={loadState ? undefined : description}
-      title={labels.title}
-    />
+    <CollectionToolbarHeading>
+      <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+      <CollectionToolbarDescription>
+        {loadState ? undefined : description}
+      </CollectionToolbarDescription>
+    </CollectionToolbarHeading>
   )
 
   return (

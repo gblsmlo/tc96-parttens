@@ -91,7 +91,7 @@ Every part but `ListRow` is optional. While `loading`, a `ListRowSkeleton` takes
 
 ## ListView
 
-The list. Renders a `div` with no role, framed (8px of padding, a rounded border and a light `card` fill) and scrolling itself: inside a flex column of bounded height it takes the remaining height, and the group headers stick to its top. It never fetches, sorts, filters or stores the records; its only state is which groups are collapsed, unless `collapsedGroupIds` controls it. Each row renders in a memoized leaf that re-runs `renderRecord` only when the record or the function changes.
+The list. Renders a `ScrollArea` of [UI/ScrollArea](?path=/docs/ui-scroll-area-api-reference--api-reference) with no role, framed (a rounded border and a light `card` fill, 8px of padding inside) and scrolling itself, with a fade only on the bottom edge while more rows lie below: inside a flex column of bounded height it takes the remaining height, and the group headers stick to the top of its viewport, opaque and above the rows, so the top needs no fade. It never fetches, sorts, filters or stores the records; its only state is which groups are collapsed, unless `collapsedGroupIds` controls it. Each row renders in a memoized leaf that re-runs `renderRecord` only when the record or the function changes.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |

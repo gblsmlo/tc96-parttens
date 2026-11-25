@@ -28,6 +28,9 @@ import {
   ChatsPanelItem,
   ChatsPanelList,
   CollectionToolbar,
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
   FilterRadioSubmenu,
   PersonProperty,
   RecordGroup,
@@ -38,7 +41,6 @@ import {
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
-import { Text } from '@tc96/ui/text'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { useId, useState } from 'react'
 import {
@@ -109,23 +111,12 @@ function LeadConversation({
         aria-label="Ações da conversa"
         className="min-h-14 shrink-0 border-b px-4 py-2"
         left={
-          <div className="min-w-0">
-            <Text
-              className="truncate leading-tight"
-              family="heading"
-              render={<h2>{lead.name}</h2>}
-              size="base"
-              weight="semibold"
-            />
-            <Text
-              className="truncate leading-tight"
-              foreground="muted"
-              render={
-                <p>{`${channel} · ${platforms[lead.source.platform].label}`}</p>
-              }
-              size="sm"
-            />
-          </div>
+          <CollectionToolbarHeading>
+            <CollectionToolbarTitle>{lead.name}</CollectionToolbarTitle>
+            <CollectionToolbarDescription>
+              {`${channel} · ${platforms[lead.source.platform].label}`}
+            </CollectionToolbarDescription>
+          </CollectionToolbarHeading>
         }
         right={
           <>

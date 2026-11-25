@@ -1,0 +1,73 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Legal3
+
+The procedural deadlines of a law firm (Prazos): deadline and type, linked case, final date, owner, queue and status, shown as a Tabela, a Lista or an Agenda (the collection calendar in month mode). Reach for it on the deadlines screen of a legal product. Install it with `npx @tc96/cli add legal-3`.
+
+It follows the same toolbar and loading contract as `Legal1`: `labels.title` as the only `h2` with the summary line, then Exibição (mode tabs and the status filter), Exportar CSV (`ghost`) and Novo prazo, with no search field and no view switcher. The layouts are the collection's Data Table, `ListView` and `CalendarView`, mounted by `CollectionProvider` and `CollectionLayoutOutlet`. In the Agenda each deadline is a `CalendarEventChip` toned by status (`primary` pending, `success` and struck through when done, `destructive` when missed); hearings show their time, the other kinds sit as all-day items. The month shown is `anchor`; the block has no month navigation and the calendar does not drag. Fila and Status are `SelectProperty` badges, Responsável a `PersonProperty` and the final date a `DateProperty` marked overdue when the deadline was missed. A choice only calls its callback with the deadline id.
+
+The other pages of `Blocks/Data/Legal/Legal3`: [Playground](?path=/story/blocks-data-legal-legal3-playground--playground), [Layouts](?path=/story/blocks-data-legal-legal3-layouts--default), [Behavior](?path=/story/blocks-data-legal-legal3-behavior--the-heading-names-the-section) and [Usages](?path=/story/blocks-data-legal-legal3-usages--loaded).
+
+## Import
+
+```tsx
+import { Legal3 } from '@tc96/ui/blocks/data/legal/legal-3'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Legal3
+  anchor="2026-12-01T12:00:00.000Z"
+  deadlines={deadlines}
+  mode={mode}
+  onModeChange={setMode}
+  onStatusChange={changeStatus}
+  owners={owners}
+/>
+```
+
+## Legal3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `deadlines` | `Legal3Deadline[]` | required | The deadlines. Keep the array stable between renders. |
+| `mode` | `'table' \| 'list' \| 'calendar'` | - | Controls the layout; without it the block starts on `table`. |
+| `onModeChange` | `(mode: Legal3Mode) => void` | - | Called by the mode tabs of Exibição. |
+| `anchor` | `string` | the mount time | ISO instant whose month the Agenda shows. |
+| `now` | `string` | the clock | ISO instant of today's highlight in the Agenda. |
+| `statusFilter`, `onStatusFilterChange` | `Legal3Status \| null`, `(status) => void` | - | The controllable status filter. |
+| `owners` | `Legal3Person[]` | `[]` | The options of Responsável. |
+| `onStatusChange`, `onQueueChange`, `onOwnerChange` | `(deadlineId, value) => void` | - | Make Status, Fila and Responsável editable. |
+| `onOpen` | `(deadlineId: string) => void` | - | Makes the row, the list title and the Agenda item open the deadline. |
+| `onCreate`, `onExport` | `() => void` | - | Render Novo prazo and Exportar CSV. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. |
+| `labels` | `Legal3LabelsOverride` | pt-BR texts | Overrides the texts; `columns`, `kinds`, `modes`, `queues` and `statuses` merge key by key. |
+| `locale`, `timeZone` | `string` | `"pt-BR"`, `"America/Sao_Paulo"` | Format the dates and place the Agenda items. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Legal3Deadline
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `title` | `string` | The identity and the deadline cell. |
+| `kind` | `'answer' \| 'appeal' \| 'filing' \| 'hearing'` | Contestação, Recurso, Manifestação or Audiência. |
+| `caseNumber`, `caseTitle` | `string` | The linked case. |
+| `dueAt` | `string` | ISO instant of the final date. |
+| `allDay` | `boolean` | `false` shows the time in the Agenda (hearings). |
+| `ownerId` | `string \| null` | One of `owners`. |
+| `queue` | `'intake' \| 'drafting' \| 'review' \| 'filing'` | The Fila badge. |
+| `status` | `'pending' \| 'done' \| 'missed'` | The Status badge and the Agenda tone. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Legal3` | `component` | The deadlines list. |
+| `legal3Modes` | `const` | `['table', 'list', 'calendar']`. |
+| `Legal3Props`, `Legal3Deadline`, `Legal3Person`, `Legal3Mode`, `Legal3Kind`, `Legal3Queue`, `Legal3Status`, `Legal3ColumnId`, `Legal3Labels`, `Legal3LabelsOverride` | `type` | The props, the data and the labels. |

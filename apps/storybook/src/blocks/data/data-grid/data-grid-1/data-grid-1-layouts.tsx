@@ -28,7 +28,6 @@ interface ComposedDataGrid1Props extends DataGrid1Controls {
   onQueueChange?: DataGrid1Props['onQueueChange']
   onRowAction?: DataGrid1Props['onRowAction']
   onSaveView?: DataGrid1Props['onSaveView']
-  onSearchChange?: DataGrid1Props['onSearchChange']
   onSelectedIdsChange?: DataGrid1Props['onSelectedIdsChange']
   onSortChange?: DataGrid1Props['onSortChange']
   onStatusChange?: DataGrid1Props['onStatusChange']
@@ -51,7 +50,6 @@ export const ComposedDataGrid1 = ({
   onQueueChange,
   onRowAction,
   onSaveView,
-  onSearchChange,
   onSelectedIdsChange,
   onSortChange,
   onStatusChange,
@@ -66,7 +64,6 @@ export const ComposedDataGrid1 = ({
   const [sort, setSort] = useState<DataGrid1Sort | null>(initialSort)
   const [visibility, setVisibility] = useState<DataGrid1ColumnVisibility>({})
   const [density, setDensity] = useState<DataGrid1Density>('tall')
-  const [search, setSearch] = useState('')
   const [queue, setQueue] = useState<DataGrid1Queue | null>(null)
   const [status, setStatus] = useState<DataGrid1Status | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -101,10 +98,6 @@ export const ComposedDataGrid1 = ({
       }}
       onRowAction={showRowActions ? (onRowAction ?? noop) : undefined}
       onSaveView={onSaveView ?? noop}
-      onSearchChange={(next) => {
-        setSearch(next)
-        onSearchChange?.(next)
-      }}
       onSelectedIdsChange={(next) => {
         setSelectedIds(next)
         onSelectedIdsChange?.(next)
@@ -132,7 +125,6 @@ export const ComposedDataGrid1 = ({
       pageSizeOptions={dataGrid1PageSizeOptions}
       queue={queue}
       rowActions={showRowActions ? rowActions : undefined}
-      search={search}
       selectedIds={selectedIds}
       sort={sort}
       status={status}

@@ -3,11 +3,15 @@ import { DataGridSearch } from '@tc96/ui/patterns/collection/layouts/data-grid/c
 import type { UseDataGridReturn } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
 import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
+import {
   ViewSettingsMenu,
   ViewSettingsSection,
 } from '@tc96/ui/patterns/view-settings/components/view-settings'
 import { GridToolbar, GridToolbarButton } from '../shared/grid-toolbar'
-import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import type { DataGrid4Row } from './data-grid-4-cells'
 import type { DataGrid4Labels, DataGrid4Status } from './types'
 
@@ -35,10 +39,12 @@ export function DataGrid4Toolbar({
     <GridToolbar
       aria-label={labels.toolbar}
       left={
-        <GridToolbarHeading
-          description={labels.description}
-          title={labels.title}
-        />
+        <CollectionToolbarHeading>
+          <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+          <CollectionToolbarDescription>
+            {labels.description}
+          </CollectionToolbarDescription>
+        </CollectionToolbarHeading>
       }
       right={
         <>

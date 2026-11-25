@@ -21,7 +21,6 @@ const meta = {
     onQueueChange: fn(),
     onRowAction: fn(),
     onSaveView: fn(),
-    onSearchChange: fn(),
     onSelectedIdsChange: fn(),
     onSortChange: fn(),
     onStatusChange: fn(),
@@ -43,7 +42,6 @@ const meta = {
     onQueueChange: () => void
     onRowAction: () => void
     onSaveView: () => void
-    onSearchChange: () => void
     onSelectedIdsChange: () => void
     onSortChange: () => void
     onStatusChange: () => void
@@ -115,9 +113,7 @@ export const TheToolbarCarriesTheViewSwitcherAndTheControls: Story = {
     await expect(
       inToolbar.getByRole('button', { name: 'Todos os chamados' }),
     ).toBeVisible()
-    await expect(
-      inToolbar.getByRole('searchbox', { name: 'Buscar chamados' }),
-    ).toBeVisible()
+    await expect(inToolbar.queryByRole('searchbox')).toBeNull()
     await expect(
       inToolbar.getByRole('button', { name: 'Exibição' }),
     ).toBeVisible()
@@ -162,21 +158,6 @@ export const TheSummaryCountsTheVisibleTickets: Story = {
     await expect(headerOf(canvasElement)).toHaveTextContent(
       '11 visíveis · 2 sem responsável · 6 perto do SLA',
     )
-  },
-}
-
-export const SearchFiltersAndReports: Story = {
-  args: { savedViews: false },
-  play: async ({ args, canvasElement }) => {
-    await userEvent.type(
-      within(canvasElement).getByRole('searchbox', { name: 'Buscar chamados' }),
-      'Slack',
-    )
-    await waitFor(() =>
-      expect(args.onSearchChange).toHaveBeenLastCalledWith('Slack'),
-    )
-    await waitFor(() => expect(rowsOf(canvasElement)).toHaveLength(1))
-    await expect(headerOf(canvasElement)).toHaveTextContent('1 visíveis')
   },
 }
 
@@ -489,7 +470,6 @@ export const PendingShowsSkeleton: Story = {
       canvas.getByRole('heading', { name: 'Fila de suporte' }),
     ).toBeVisible()
     await expect(canvas.getAllByRole('heading')).toHaveLength(1)
-    await expect(canvas.queryByRole('searchbox')).toBeNull()
     await expect(canvas.queryByRole('button', { name: 'Exibição' })).toBeNull()
     await expect(canvas.queryByRole('grid')).toBeNull()
   },

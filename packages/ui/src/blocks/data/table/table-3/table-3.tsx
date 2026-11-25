@@ -13,6 +13,11 @@ import {
 import { DataTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table'
 import type { DataTableFeatures } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
 import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import { createTableFormatter } from '../shared/format'
 import { TableFrame } from '../shared/table-frame'
@@ -23,7 +28,6 @@ import {
   visibilityFromState,
 } from '../shared/table-state'
 import { TableToolbar } from '../shared/table-toolbar'
-import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import { TableViewSwitcher } from '../shared/table-view-switcher'
 import { resolveTable3Labels } from './labels'
 import { healthLevel } from './table-3-cells'
@@ -279,10 +283,12 @@ export function Table3({
       views={views}
     />
   ) : (
-    <TableToolbarHeading
-      description={loadState ? undefined : description}
-      title={labels.title}
-    />
+    <CollectionToolbarHeading>
+      <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+      <CollectionToolbarDescription>
+        {loadState ? undefined : description}
+      </CollectionToolbarDescription>
+    </CollectionToolbarHeading>
   )
 
   return (

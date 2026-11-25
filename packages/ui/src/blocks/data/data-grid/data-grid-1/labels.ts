@@ -55,7 +55,6 @@ export const defaultDataGrid1Labels: DataGrid1Labels = {
   rowActionsFor: (ticket) => `Ações de ${ticket}`,
   rowsPerPage: 'Linhas por página',
   saveView: 'Salvar visão',
-  search: 'Buscar chamados',
   selectAll: 'Selecionar todos os chamados da página',
   selectedCount: (count) =>
     count === 1 ? '1 chamado selecionado' : `${count} chamados selecionados`,

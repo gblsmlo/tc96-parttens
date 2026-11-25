@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { CollectionToolbar } from '@tc96/ui/patterns'
+import {
+  CollectionToolbar,
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns'
 import { Slot } from '../../test-utils/anatomy-slot'
 import { ToolbarCanvas } from './toolbar-canvas.tsx'
 
@@ -20,6 +25,24 @@ export const Anatomy: Story = {
     <CollectionToolbar
       center={<Slot name="center" />}
       left={<Slot name="left" />}
+      right={<Slot name="right" />}
+    />
+  ),
+}
+
+export const HeadingAnatomy: Story = {
+  render: () => (
+    <CollectionToolbar
+      left={
+        <CollectionToolbarHeading>
+          <CollectionToolbarTitle>
+            CollectionToolbarTitle
+          </CollectionToolbarTitle>
+          <CollectionToolbarDescription>
+            CollectionToolbarDescription
+          </CollectionToolbarDescription>
+        </CollectionToolbarHeading>
+      }
       right={<Slot name="right" />}
     />
   ),

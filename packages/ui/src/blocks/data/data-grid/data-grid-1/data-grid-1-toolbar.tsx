@@ -1,13 +1,11 @@
 import {
   DownloadSimpleIcon,
   FunnelSimpleIcon,
-  PlusIcon,
   StackIcon,
 } from '@phosphor-icons/react'
 import { MenuSeparator } from '@tc96/ui/menu'
 import { DataGridColumnsSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-columns-submenu'
 import { DataGridDensitySubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-density-submenu'
-import { DataGridSearch } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-search'
 import { DataGridSortSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-sort-submenu'
 import type { UseDataGridReturn } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
@@ -66,12 +64,6 @@ export function DataGrid1Toolbar({
       left={left}
       right={
         <>
-          <DataGridSearch
-            aria-label={labels.search}
-            className="w-40 sm:w-64 sm:max-w-none"
-            placeholder={labels.search}
-            table={table}
-          />
           <ViewSettingsMenu
             activeFilterCount={activeFilterCount}
             formatTriggerLabel={labels.filterCount}
@@ -128,14 +120,13 @@ export function DataGrid1Toolbar({
             </ViewSettingsSection>
           </ViewSettingsMenu>
           {onExport ? (
-            <GridToolbarButton onClick={onExport}>
+            <GridToolbarButton onClick={onExport} variant="ghost">
               <DownloadSimpleIcon aria-hidden="true" />
               {labels.export}
             </GridToolbarButton>
           ) : null}
           {onCreate ? (
             <GridToolbarButton onClick={onCreate} variant="default">
-              <PlusIcon aria-hidden="true" />
               {labels.create}
             </GridToolbarButton>
           ) : null}

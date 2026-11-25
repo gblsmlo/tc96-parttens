@@ -52,7 +52,7 @@ A column declares `meta.aggregations` (`count`, `sum`) with `DataTableColumnMeta
 
 ## Horizontal overflow
 
-The table scrolls inside a Base UI `ScrollArea` (`data-slot="data-table-viewport"`), with a sticky `thead` and `tfoot`; the vertical scrollbar starts below the header and ends above the footer. The root `data-slot="data-table"` carries `data-overflow-start` and `data-overflow-end` while the columns run past that side of the viewport, and a fade over that edge shows the clipped content.
+The table scrolls inside the `ScrollArea` of `@tc96/ui/scroll-area` (`data-slot="data-table-viewport"` on its viewport), with a sticky `thead` and `tfoot`; the vertical scrollbar starts below the header and ends above the footer. The root `data-slot="data-table"` carries `data-overflow-start` and `data-overflow-end` while the columns run past that side of the viewport, and a fade over that edge shows the clipped content.
 
 ## Benchmark
 

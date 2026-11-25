@@ -72,7 +72,7 @@ export function AccountCell({
           </span>
         )}
       </IconFrame>
-      <span className="grid min-w-0">
+      <span className="grid min-w-0 gap-0.5">
         <span className="truncate font-medium">{account.name}</span>
         <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs">
           <span aria-hidden="true" className="text-foreground">
@@ -106,7 +106,7 @@ export function RenewalCell({
   const urgency = urgencyOf(renewal.dueInDays)
 
   return (
-    <span className="grid min-w-0">
+    <span className="grid min-w-0 gap-0.5">
       <span
         className={cn(
           'truncate font-medium',
@@ -136,7 +136,7 @@ export function ArrCell({
   const hasUpside = renewal.upside > 0
 
   return (
-    <span className="grid min-w-0">
+    <span className="grid min-w-0 gap-0.5">
       <span className="font-medium tabular-nums">
         {formatter.money(renewal.arr)}
       </span>

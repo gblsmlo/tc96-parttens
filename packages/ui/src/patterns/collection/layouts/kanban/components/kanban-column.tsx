@@ -309,7 +309,7 @@ export function KanbanColumn<TCard>({
       />
 
       {!column.collapsed ? (
-        <ScrollArea className="min-h-0 flex-1" fill scrollbarGutter scrollFade>
+        <ScrollArea className="min-h-0 flex-1" fill scrollFade>
           <div
             ref={ref}
             className="grid h-full min-h-full min-w-0 max-w-full content-start gap-2 px-2 pb-2"

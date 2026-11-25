@@ -1,0 +1,81 @@
+import type { Legal3Deadline } from '@tc96/ui/blocks/data/legal/legal-3'
+
+export { legalOwners as owners } from './owners.ts'
+
+export const calendarAnchor = '2026-12-01T12:00:00.000Z'
+export const calendarNow = '2026-11-24T12:00:00.000Z'
+
+export const deadlines: Legal3Deadline[] = [
+  {
+    allDay: true,
+    caseNumber: '0010457-62.2026.5.15.9002',
+    caseTitle: 'Reclamação trabalhista de ex-motorista',
+    dueAt: '2026-12-02T12:00:00.000Z',
+    id: 'prz-201',
+    kind: 'answer',
+    ownerId: 'rafael',
+    queue: 'drafting',
+    status: 'pending',
+    title: 'Contestação da TransVale',
+  },
+  {
+    allDay: false,
+    caseNumber: '5001234-18.2026.8.26.9001',
+    caseTitle: 'Ação de cobrança contra fornecedor de farinha',
+    dueAt: '2026-12-09T17:30:00.000Z',
+    id: 'prz-202',
+    kind: 'hearing',
+    ownerId: 'beatriz',
+    queue: 'review',
+    status: 'pending',
+    title: 'Audiência de instrução',
+  },
+  {
+    allDay: true,
+    caseNumber: '2109876-54.2026.8.26.9005',
+    caseTitle: 'Apelação em dissolução parcial de sociedade',
+    dueAt: '2026-12-04T12:00:00.000Z',
+    id: 'prz-203',
+    kind: 'appeal',
+    ownerId: 'thiago',
+    queue: 'filing',
+    status: 'pending',
+    title: 'Contrarrazões de apelação',
+  },
+  {
+    allDay: true,
+    caseNumber: '5003871-40.2026.4.03.9003',
+    caseTitle: 'Mandado de segurança sobre crédito de ICMS',
+    dueAt: '2026-11-20T12:00:00.000Z',
+    id: 'prz-204',
+    kind: 'filing',
+    ownerId: 'camila',
+    queue: 'filing',
+    status: 'done',
+    title: 'Manifestação sobre informações da autoridade',
+  },
+  {
+    allDay: true,
+    caseNumber: '1000789-21.2026.8.26.9006',
+    caseTitle: 'Revisional de contrato de locação comercial',
+    dueAt: '2026-11-18T12:00:00.000Z',
+    id: 'prz-205',
+    kind: 'filing',
+    ownerId: null,
+    queue: 'intake',
+    status: 'missed',
+    title: 'Emenda à petição inicial',
+  },
+  {
+    allDay: true,
+    caseNumber: '0011320-08.2026.5.15.9007',
+    caseTitle: 'Recurso ordinário sobre horas extras',
+    dueAt: '2026-12-15T12:00:00.000Z',
+    id: 'prz-206',
+    kind: 'appeal',
+    ownerId: 'rafael',
+    queue: 'intake',
+    status: 'pending',
+    title: 'Recurso de revista',
+  },
+]

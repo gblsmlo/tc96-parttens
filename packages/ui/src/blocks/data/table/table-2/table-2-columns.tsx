@@ -69,7 +69,7 @@ function MemberCell({
           presence={member.presence}
         />
       </span>
-      <span className="grid min-w-0">
+      <span className="grid min-w-0 gap-0.5">
         <span className="flex items-center gap-1 font-medium">
           <span className="truncate">{member.name}</span>
           {member.isCurrentUser ? (

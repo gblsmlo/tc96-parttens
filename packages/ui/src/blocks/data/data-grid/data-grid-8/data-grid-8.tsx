@@ -3,6 +3,11 @@
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
 import { DataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid'
 import { useDataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useMemo } from 'react'
 import { createTableFormatter } from '../shared/format'
 import { GridFrame } from '../shared/grid-frame'
@@ -13,7 +18,6 @@ import {
   visibilityFromState,
 } from '../shared/grid-state'
 import { GridToolbar } from '../shared/grid-toolbar'
-import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { createDataGrid8Columns } from './data-grid-8-columns'
 import { createDataGrid8SelectionActions } from './data-grid-8-selection-actions'
 import { DataGrid8Skeleton } from './data-grid-8-skeleton'
@@ -139,17 +143,17 @@ export function DataGrid8({
         views={views}
       />
     ) : (
-      <GridToolbarHeading
-        description={
-          loadState
+      <CollectionToolbarHeading>
+        <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+        <CollectionToolbarDescription>
+          {loadState
             ? undefined
             : labels.loaded(
                 formatter.number(loadedCount ?? transactions.length),
                 formatter.number(totalCount),
-              )
-        }
-        title={labels.title}
-      />
+              )}
+        </CollectionToolbarDescription>
+      </CollectionToolbarHeading>
     )
 
   return (

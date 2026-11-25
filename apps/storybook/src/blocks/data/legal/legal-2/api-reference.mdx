@@ -1,0 +1,70 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Legal2
+
+The contracts of a law firm's clients (Contratos): contract and code, type, client and counterparty, value, end of term, owner, queue and status, shown as a Tabela or a Lista. Reach for it on the advisory screen of a legal product. Install it with `npx @tc96/cli add legal-2`.
+
+It follows the same toolbar and loading contract as `Legal1`: a section with `labels.title` as the only `h2` and the summary line in the `left` slot, then Exibição (mode tabs and the status filter), Exportar CSV (`ghost`) and Novo contrato in the `right` slot, with no search field and no view switcher. The layouts are the collection's Data Table and `ListView`, mounted by `CollectionProvider` and `CollectionLayoutOutlet`. Fila and Status are `SelectProperty` badges with an icon and a tone, Responsável is a `PersonProperty` and the end of term is a `DateProperty` marked overdue while the contract is `expired`. A choice only calls `onStatusChange`, `onQueueChange` or `onOwnerChange` with the contract id; the block never changes a contract.
+
+The other pages of `Blocks/Data/Legal/Legal2`: [Playground](?path=/story/blocks-data-legal-legal2-playground--playground), [Layouts](?path=/story/blocks-data-legal-legal2-layouts--default), [Behavior](?path=/story/blocks-data-legal-legal2-behavior--the-heading-names-the-section) and [Usages](?path=/story/blocks-data-legal-legal2-usages--loaded).
+
+## Import
+
+```tsx
+import { Legal2 } from '@tc96/ui/blocks/data/legal/legal-2'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Legal2
+  contracts={contracts}
+  mode={mode}
+  onModeChange={setMode}
+  onStatusChange={changeStatus}
+  owners={owners}
+/>
+```
+
+## Legal2
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `contracts` | `Legal2Contract[]` | required | The contracts. Keep the array stable between renders. |
+| `mode` | `'table' \| 'list'` | - | Controls the layout; without it the block starts on `table`. |
+| `onModeChange` | `(mode: Legal2Mode) => void` | - | Called by the mode tabs of Exibição. |
+| `statusFilter`, `onStatusFilterChange` | `Legal2Status \| null`, `(status) => void` | - | The controllable status filter. |
+| `owners` | `Legal2Person[]` | `[]` | The options of Responsável. |
+| `onStatusChange`, `onQueueChange`, `onOwnerChange` | `(contractId, value) => void` | - | Make Status, Fila and Responsável editable. |
+| `onOpen` | `(contractId: string) => void` | - | Makes the row and the list title open the contract. |
+| `onCreate`, `onExport` | `() => void` | - | Render Novo contrato and Exportar CSV. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. |
+| `labels` | `Legal2LabelsOverride` | pt-BR texts | Overrides the texts; `columns`, `modes`, `queues`, `statuses` and `types` merge key by key. |
+| `locale`, `currency`, `timeZone` | `string` | `"pt-BR"`, `"BRL"`, `"America/Sao_Paulo"` | Format the value and the dates. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Legal2Contract
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id`, `code`, `title` | `string` | The identity and the contract cell. |
+| `type` | `'services' \| 'fees' \| 'nda' \| 'lease' \| 'partnership'` | The Tipo column. |
+| `client`, `counterparty` | `string` | The Partes column. |
+| `value` | `number \| null` | Raw amount, formatted with `locale` and `currency`; `null` reads Sem valor. |
+| `startsOn`, `endsOn` | `string \| null` | ISO dates; `endsOn` is shown, `null` reads Prazo indeterminado. |
+| `ownerId` | `string \| null` | One of `owners`. |
+| `queue` | `'drafting' \| 'negotiation' \| 'signature' \| 'renewal'` | The Fila badge. |
+| `status` | `'draft' \| 'review' \| 'signed' \| 'expired'` | The Status badge. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Legal2` | `component` | The contracts list. |
+| `legal2Modes` | `const` | `['table', 'list']`. |
+| `Legal2Props`, `Legal2Contract`, `Legal2Person`, `Legal2Mode`, `Legal2Type`, `Legal2Queue`, `Legal2Status`, `Legal2ColumnId`, `Legal2Labels`, `Legal2LabelsOverride` | `type` | The props, the data and the labels. |

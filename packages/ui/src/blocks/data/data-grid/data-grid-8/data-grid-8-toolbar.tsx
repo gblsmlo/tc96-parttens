@@ -109,7 +109,7 @@ export function DataGrid8Toolbar({
               aria-busy={refreshing || undefined}
               disabled={refreshing}
               onClick={onRefresh}
-              render={<Button size="sm" type="button" variant="ghost" />}
+              render={<Button type="button" variant="ghost" />}
             >
               <ArrowClockwiseIcon
                 aria-hidden="true"

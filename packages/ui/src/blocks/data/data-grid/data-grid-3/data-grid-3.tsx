@@ -11,6 +11,11 @@ import {
   createDataGridConditionFilterFn,
   type DataGridConditionField,
 } from '@tc96/ui/patterns/collection/layouts/data-grid/lib/data-grid-conditions'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import { createTableFormatter } from '../shared/format'
 import { GridFrame } from '../shared/grid-frame'
@@ -21,7 +26,6 @@ import {
   visibilityFromState,
 } from '../shared/grid-state'
 import { GridToolbar } from '../shared/grid-toolbar'
-import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { GridViewSwitcher } from '../shared/grid-view-switcher'
 import { healthLevel } from './data-grid-3-cells'
 import { createDataGrid3Columns } from './data-grid-3-columns'
@@ -281,10 +285,12 @@ export function DataGrid3({
       views={views}
     />
   ) : (
-    <GridToolbarHeading
-      description={loadState ? undefined : description}
-      title={labels.title}
-    />
+    <CollectionToolbarHeading>
+      <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+      <CollectionToolbarDescription>
+        {loadState ? undefined : description}
+      </CollectionToolbarDescription>
+    </CollectionToolbarHeading>
   )
 
   return (

@@ -5,6 +5,11 @@ import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
 import { DataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid'
 import { DataGridPagination } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-pagination'
 import { useDataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { GridFrame } from '../shared/grid-frame'
 import { gridLoadState } from '../shared/grid-load-state'
@@ -14,7 +19,6 @@ import {
   visibilityFromState,
 } from '../shared/grid-state'
 import { GridToolbar } from '../shared/grid-toolbar'
-import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import { GridViewSwitcher } from '../shared/grid-view-switcher'
 import { createDataGrid1Columns } from './data-grid-1-columns'
 import { createDataGrid1SelectionActions } from './data-grid-1-selection-actions'
@@ -67,7 +71,6 @@ export function DataGrid1({
   onRetry,
   onRowAction,
   onSaveView,
-  onSearchChange,
   onSelectedIdsChange,
   onSortChange,
   onStatusChange,
@@ -80,7 +83,6 @@ export function DataGrid1({
   pending,
   queue: queueProp,
   rowActions,
-  search,
   selectedIds,
   sort,
   status: statusProp,
@@ -156,7 +158,6 @@ export function DataGrid1({
     enablePagination: true,
     enableRowSelection: true,
     getRowId: (ticket) => ticket.id,
-    globalFilter: search,
     onColumnFiltersChange: (filters) => {
       const find = (id: string) =>
         filters.find((filter) => filter.id === id)?.value
@@ -170,9 +171,6 @@ export function DataGrid1({
       : undefined,
     onDensityChange: onDensityChange
       ? (next) => onDensityChange(next)
-      : undefined,
-    onGlobalFilterChange: onSearchChange
-      ? (value) => onSearchChange(String(value ?? ''))
       : undefined,
     onPaginationChange: (next) => {
       if (next.pageSize !== pageSize) {
@@ -245,10 +243,12 @@ export function DataGrid1({
       views={views}
     />
   ) : (
-    <GridToolbarHeading
-      description={loadState ? undefined : description}
-      title={labels.title}
-    />
+    <CollectionToolbarHeading>
+      <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+      <CollectionToolbarDescription>
+        {loadState ? undefined : description}
+      </CollectionToolbarDescription>
+    </CollectionToolbarHeading>
   )
 
   return (

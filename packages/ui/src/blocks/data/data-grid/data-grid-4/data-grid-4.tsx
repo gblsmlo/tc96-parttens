@@ -5,6 +5,11 @@ import {
   type UseDataGridOptions,
   useDataGrid,
 } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
 import {
   createTableFormatter,
@@ -14,7 +19,6 @@ import {
 import { GridFrame } from '../shared/grid-frame'
 import { gridLoadState } from '../shared/grid-load-state'
 import { GridToolbar } from '../shared/grid-toolbar'
-import { GridToolbarHeading } from '../shared/grid-toolbar-heading'
 import type { DataGrid4Row } from './data-grid-4-cells'
 import { createDataGrid4Columns } from './data-grid-4-columns'
 import { DataGrid4Footer } from './data-grid-4-footer'
@@ -169,10 +173,12 @@ export function DataGrid4({
           <GridToolbar
             aria-label={labels.toolbar}
             left={
-              <GridToolbarHeading
-                description={labels.description}
-                title={labels.title}
-              />
+              <CollectionToolbarHeading>
+                <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+                <CollectionToolbarDescription>
+                  {labels.description}
+                </CollectionToolbarDescription>
+              </CollectionToolbarHeading>
             }
           />
         ) : (

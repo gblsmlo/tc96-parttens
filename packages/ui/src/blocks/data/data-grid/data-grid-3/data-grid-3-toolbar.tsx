@@ -1,4 +1,3 @@
-import { PlusIcon } from '@phosphor-icons/react'
 import { DataGridColumnsSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-columns-submenu'
 import { DataGridDensitySubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-density-submenu'
 import { DataGridSortSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-sort-submenu'
@@ -72,7 +71,6 @@ export function DataGrid3Toolbar({
           </ViewSettingsMenu>
           {onCreate ? (
             <GridToolbarButton onClick={onCreate} variant="default">
-              <PlusIcon aria-hidden="true" />
               {labels.create}
             </GridToolbarButton>
           ) : null}

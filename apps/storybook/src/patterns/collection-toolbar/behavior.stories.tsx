@@ -8,8 +8,10 @@ import {
 } from '@tc96/ui/patterns'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { toolbarControlArgs } from './toolbar-controls.ts'
 import {
   CenterAndRightSlots,
+  ComposedToolbar,
   DefaultSlots,
   LeftCenterRightSlots,
 } from './toolbar-layouts.tsx'
@@ -212,5 +214,41 @@ export const PrimaryActionHasNoIcon: Story = {
     await expect(action.querySelector('svg')).toBeNull()
     await userEvent.click(action)
     await expect(onAction).toHaveBeenCalledTimes(1)
+  },
+}
+
+export const HeadingTitleIsAnH2AboveItsDescription: Story = {
+  render: () => (
+    <ComposedToolbar {...toolbarControlArgs} left="heading" right="none" />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const title = canvas.getByRole('heading', { level: 2, name: 'Tarefas' })
+    await expect(title).toHaveAttribute('data-slot', 'collection-toolbar-title')
+    const description = canvas.getByText(
+      'Acompanhe e organize o trabalho da equipe.',
+    )
+    await expect(description.tagName).toBe('P')
+    await expect(title.nextElementSibling).toBe(description)
+  },
+}
+
+export const HeadingWithoutDescriptionRendersOnlyTheTitle: Story = {
+  render: () => (
+    <ComposedToolbar
+      {...toolbarControlArgs}
+      description=""
+      left="heading"
+      right="none"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const heading = canvasElement.querySelector(
+      '[data-slot="collection-toolbar-heading"]',
+    )
+    await expect(heading?.children).toHaveLength(1)
+    await expect(
+      heading?.querySelector('[data-slot="collection-toolbar-description"]'),
+    ).toBeNull()
   },
 }

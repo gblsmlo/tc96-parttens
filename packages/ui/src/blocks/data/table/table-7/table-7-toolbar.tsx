@@ -1,6 +1,10 @@
 import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react'
+import {
+  CollectionToolbarDescription,
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import { TableToolbar, TableToolbarButton } from '../shared/table-toolbar'
-import { TableToolbarHeading } from '../shared/table-toolbar-heading'
 import type { Table7Labels } from './types'
 
 export interface Table7ToolbarProps {
@@ -20,7 +24,12 @@ export function Table7Toolbar({
     <TableToolbar
       aria-label={labels.toolbar}
       left={
-        <TableToolbarHeading description={description} title={labels.title} />
+        <CollectionToolbarHeading>
+          <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+          <CollectionToolbarDescription>
+            {description}
+          </CollectionToolbarDescription>
+        </CollectionToolbarHeading>
       }
       right={
         onResetOrder ? (

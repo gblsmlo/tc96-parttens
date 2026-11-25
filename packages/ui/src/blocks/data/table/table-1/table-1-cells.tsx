@@ -66,7 +66,7 @@ const statusDots = {
 
 export function TicketCell({ ticket }: Readonly<{ ticket: Table1Ticket }>) {
   return (
-    <span className="grid min-w-0">
+    <span className="grid min-w-0 gap-0.5">
       <span className="truncate font-medium">{ticket.title}</span>
       <span className="flex items-center gap-1.5 text-muted-foreground text-xs">
         <span className="tabular-nums">{ticket.code}</span>
@@ -90,7 +90,7 @@ export function RequesterCell({ ticket }: Readonly<{ ticket: Table1Ticket }>) {
           {getInitials(requester.name)}
         </AvatarFallback>
       </Avatar>
-      <span className="grid min-w-0">
+      <span className="grid min-w-0 gap-0.5">
         <span className="truncate font-medium">{requester.name}</span>
         <span className="truncate text-muted-foreground text-xs">
           {requester.company}
@@ -131,7 +131,7 @@ export function PriorityCell({
 
 export function SlaCell({ sla }: Readonly<{ sla: Table1Sla }>) {
   return (
-    <span className="grid min-w-0">
+    <span className="grid min-w-0 gap-0.5">
       <span
         className={cn('truncate font-medium', slaTones[sla.tone])}
         data-sla={sla.tone}
