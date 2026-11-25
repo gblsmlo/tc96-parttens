@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ListCanvas } from './list-canvas.tsx'
 import { listControlArgs } from './list-controls.ts'
-import { ComposedList, SingleLineList } from './list-layouts.tsx'
+import { ComposedList, HeaderList, SingleLineList } from './list-layouts.tsx'
 
 const meta = {
   decorators: [ListCanvas],
@@ -45,6 +45,10 @@ export const WithAddAction: Story = {
 
 export const SingleLineRows: Story = {
   render: () => <SingleLineList />,
+}
+
+export const WithHeader: Story = {
+  render: () => <HeaderList />,
 }
 
 export const Flat: Story = {

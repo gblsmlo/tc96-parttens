@@ -18,6 +18,9 @@ import {
   ListRowTitle,
   ListRowTrailing,
   ListView,
+  ListViewHeader,
+  ListViewHeaderCell,
+  type ListViewSortDirection,
 } from '@tc96/ui/patterns'
 import { Text } from '@tc96/ui/text'
 import { useState } from 'react'
@@ -223,6 +226,47 @@ export const SingleLineList = () => (
   />
 )
 
+export const HeaderList = () => (
+  <ListView<SampleRecord>
+    collection={sampleCollection(sampleRecords)}
+    grouping="status"
+    header={
+      <ListViewHeader>
+        <ListViewHeaderCell always className="flex-1">
+          Registro
+        </ListViewHeaderCell>
+        <ListViewHeaderCell always className="w-24">
+          Criado em
+        </ListViewHeaderCell>
+        <ListViewHeaderCell className="w-32">Responsável</ListViewHeaderCell>
+      </ListViewHeader>
+    }
+    renderRecord={(record) => (
+      <ListRow>
+        <ListRowBody>
+          <ListRowTitle>
+            <ListRowOpenTrigger onClick={ignore}>
+              {record.title}
+            </ListRowOpenTrigger>
+          </ListRowTitle>
+        </ListRowBody>
+        <ListRowTrailing className="gap-3">
+          <ListRowField always className="w-24">
+            <Text foreground="muted" size="sm">
+              20 nov.
+            </Text>
+          </ListRowField>
+          <ListRowField className="w-32">
+            <Text foreground="muted" size="sm">
+              Mariana Souza
+            </Text>
+          </ListRowField>
+        </ListRowTrailing>
+      </ListRow>
+    )}
+  />
+)
+
 interface TasksListProps {
   collapseEmptyGroups?: boolean
   getGroupToggleLabel?: (group: string, collapsed: boolean) => string
@@ -334,6 +378,73 @@ export function DocumentRow({
               </Button>
             </ListRowAction>
           </ListRowTrailing>
+        </ListRow>
+      )}
+    />
+  )
+}
+
+export const SortableHeaderList = ({
+  onSort,
+}: Readonly<{
+  onSort: (column: string, direction: ListViewSortDirection) => void
+}>) => {
+  const [sort, setSort] = useState<{
+    column: string
+    direction: ListViewSortDirection
+  }>({ column: 'created', direction: 'desc' })
+  const sortBy = (column: string) => {
+    const direction =
+      sort.column === column && sort.direction === 'asc' ? 'desc' : 'asc'
+    setSort({ column, direction })
+    onSort(column, direction)
+  }
+  const cell = (column: string, label: string) => {
+    const direction = sort.column === column ? sort.direction : null
+    return {
+      onSort: () => sortBy(column),
+      sortDirection: direction,
+      sortLabel:
+        direction === 'asc'
+          ? `Ordenar por ${label}, crescente`
+          : direction === 'desc'
+            ? `Ordenar por ${label}, decrescente`
+            : `Ordenar por ${label}`,
+    }
+  }
+
+  return (
+    <ListView<SampleRecord>
+      collection={sampleCollection(sampleRecords)}
+      grouping={null}
+      header={
+        <ListViewHeader>
+          <ListViewHeaderCell
+            always
+            className="flex-1"
+            {...cell('title', 'Registro')}
+          >
+            Registro
+          </ListViewHeaderCell>
+          <ListViewHeaderCell
+            always
+            className="w-24"
+            {...cell('created', 'Criado em')}
+          >
+            Criado em
+          </ListViewHeaderCell>
+        </ListViewHeader>
+      }
+      renderRecord={(record) => (
+        <ListRow>
+          <ListRowBody>
+            <ListRowTitle>{record.title}</ListRowTitle>
+          </ListRowBody>
+          <ListRowField always className="w-24">
+            <Text foreground="muted" size="sm">
+              20 nov.
+            </Text>
+          </ListRowField>
         </ListRow>
       )}
     />

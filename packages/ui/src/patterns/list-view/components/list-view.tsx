@@ -39,6 +39,7 @@ export interface ListViewProps<TRecord> {
     group: CollectionGroup<TRecord>,
   ) => ListGroupActions | undefined
   getGroupToggleLabel?: (group: string, collapsed: boolean) => string
+  header?: ReactNode
   /** `null` lê a coleção como uma lista plana, sem cabeçalho nem colapso. */
   grouping: CollectionGroupingId | null
   loading?: boolean
@@ -63,6 +64,7 @@ export function ListView<TRecord>({
   getGroupActions,
   getGroupToggleLabel,
   grouping,
+  header,
   loading = false,
   loadingAnatomy,
   loadingCount = 1,
@@ -128,6 +130,14 @@ export function ListView<TRecord>({
       }}
     >
       <div className="flex flex-col gap-1 p-2">
+        {header ? (
+          <div
+            className="sticky top-0 z-30 -mt-2 bg-card pt-2"
+            data-slot="list-view-header"
+          >
+            {header}
+          </div>
+        ) : null}
         {grouping === null && preparedGroups === undefined ? (
           <ListRowHeadingLevelContext.Provider value={2}>
             <div className="flex flex-col gap-0.5" data-slot="list-view-items">
@@ -170,6 +180,7 @@ export function ListView<TRecord>({
                 }
                 {...(getGroupToggleLabel ? { getGroupToggleLabel } : {})}
                 getKey={collection.getKey}
+                stickyBelowHeader={Boolean(header)}
                 group={group}
                 key={group.id}
                 loading={loading}

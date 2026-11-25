@@ -38,3 +38,12 @@ export type {
 export { ListRowSkeleton } from './components/list-row-skeleton'
 export type { ListViewProps } from './components/list-view'
 export { ListView } from './components/list-view'
+export type {
+  ListViewHeaderCellProps,
+  ListViewHeaderProps,
+  ListViewSortDirection,
+} from './components/list-view-header'
+export {
+  ListViewHeader,
+  ListViewHeaderCell,
+} from './components/list-view-header'
