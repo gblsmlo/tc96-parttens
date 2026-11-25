@@ -2,7 +2,7 @@
 
 A menu is a list of actions or options that opens from a trigger and floats above the page: the account menu of the shell, the "more" button of a row, the view and column settings of a collection. It holds plain actions, links, checkbox and radio choices, grouped and separated, with optional icons and keyboard shortcuts, and it can open nested submenus. It is keyboard first: arrow keys move through the items, typing jumps to one, `Escape` closes and focus returns to the trigger.
 
-The parts come from COSS on top of Base UI `Menu` and are owned by this repo (ADR 0008): every change to how a part looks starts in `TOKENS.md`, the blueprint, and is then copied into `menu.tsx`; a pattern never recreates or wraps a part to restyle it (decision of 2026-11-19). Storybook documents it in the six pages under `UI/Menu`: `API Reference` (the hand-written contract of every part, with the `Anatomy`), `Playground`, `Stories` (one per item state), `Behavior` (one `play` per guarantee), `Usages` (whole menus with real content) and `Layouts` (how the parts combine).
+The parts come from COSS on top of Base UI `Menu` and are owned by this repo (ADR 0008): every change to how a part looks starts in `TOKENS.md`, the blueprint, and is then copied into `menu.tsx`; a pattern never recreates or wraps a part to restyle it (decision of 2026-11-19). Storybook documents it in the six pages under `UI/Menu`: `API Reference` (the hand-written contract of every part, with the `Anatomy`), `Playground`, `Variants` (one per item state), `Layouts` (the formations the parts take), `Behavior` (one `play` per guarantee) and `Usages` (whole menus with real content, each on a formation).
 
 ## Map
 

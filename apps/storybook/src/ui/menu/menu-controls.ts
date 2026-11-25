@@ -1,6 +1,13 @@
 import type { ArgTypes } from '@storybook/react-vite'
 
-export const menuSides = ['top', 'bottom', 'left', 'right'] as const
+export const menuSides = [
+  'top',
+  'bottom',
+  'left',
+  'right',
+  'inline-start',
+  'inline-end',
+] as const
 
 export const menuAligns = ['start', 'center', 'end'] as const
 
