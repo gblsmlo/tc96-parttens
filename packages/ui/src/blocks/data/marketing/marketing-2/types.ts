@@ -1,4 +1,4 @@
-import type { UseDataTableOptions } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import type { UseDataTableOptions } from '@tc96/ui/patterns/data-table/use-data-table'
 import type {
   TableColumnVisibility,
   TableFormatProps,

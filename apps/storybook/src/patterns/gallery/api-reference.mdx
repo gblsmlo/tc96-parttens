@@ -1,0 +1,104 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Gallery
+
+A responsive grid of cards for one page of a collection: documents and notes, products, templates, any record that reads better as a card than as a row. The consumer passes the records already filtered, sorted and sliced to the page, and returns the whole card from `renderRecord`; the gallery lays them out, shows the loading and empty states, and keeps the height of a page.
+
+The other pages of `Patterns/Gallery`: [Playground](?path=/story/patterns-gallery-playground--playground) to try the loading and empty states, the page size and the card parts the skeleton follows, [Variants](?path=/story/patterns-gallery-variants--default) for each prop value, [Behavior](?path=/story/patterns-gallery-behavior--loading-keeps-page-height) for the tests, [Usages](?path=/story/patterns-gallery-usages--paginated-documents) for a paginated gallery of documents and [Layouts](?path=/story/patterns-gallery-layouts--title-only-cards) for the card parts that `loadingRecordAnatomy` mirrors.
+
+Used in: [Patterns/Collection/Usages, Documents](?path=/story/patterns-collection-usages--documents), where a `GalleryView` holds the pinned notes and `CollectionLayoutOutlet` mounts the gallery of the other documents, from its `gallery` prop and `renderGalleryRecord`, when the view is switched to **Galeria**.
+
+## Import
+
+```tsx
+import { GalleryRowSkeleton, GalleryView } from '@acme/patterns'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<GalleryView
+  collection={collection}
+  pageSize={3}
+  renderRecord={(record) => <Card>{/* the consumer's card */}</Card>}
+/>
+```
+
+`GalleryView` renders the grid, and one `renderRecord` result per record in it. The card is the consumer's: the gallery adds no wrapper around it, so the card is the grid item and stretches to the row height. While `loading`, a `GalleryRowSkeleton` takes the place of each card:
+
+<Canvas of={ApiReferenceStories.SkeletonAnatomy} />
+
+```tsx
+<GalleryRowSkeleton action descriptionLines={2} titleLines={2} />
+```
+
+## GalleryView
+
+The grid. Renders a `div` with no role: one column, two from the `sm` breakpoint and three from `lg`, with 12px between cards. It renders `collection.records` in the order it receives them and never groups, sorts, filters or paginates; it reads only `records` and `getKey` from the collection. Each card renders in a memoized leaf that re-runs `renderRecord` only when the record or the function changes, so a renderer that reads other state must change identity when that state changes.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `collection` | `CollectionDefinition<TRecord>` | required | Sets the records, in the order they are shown, and `getKey`, which keys each card. |
+| `renderRecord` | `(record: TRecord) => React.ReactNode` | required | Returns the whole card of a record. |
+| `pageSize` | `3`, `6`, `9` or `12` | - | Sets the size of the page the consumer passes: the number of skeletons while loading and the rows the grid keeps. |
+| `loading` | `boolean` | `false` | When true, replaces the cards with skeletons and sets `aria-busy`. |
+| `loadingRecordAnatomy` | `GalleryRowSkeletonAnatomy` | - | Sets the parts of each skeleton, so it matches the card. |
+| `loadingRecordCount` | `number` | `4` | Sets the number of skeletons while loading, when `pageSize` is not set. |
+| `loadingRecordLabel` | `string` | - | Names each skeleton; without it the skeleton is named `"Loading item"`. |
+| `emptyMessage` | `React.ReactNode` | `"No items to show."` | Sets the message shown when the collection has no records and is not loading. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"gallery-view"` | Selects the grid |
+| `data-page-size` | `"3"`, `"6"`, `"9"` or `"12"` | Set when `pageSize` is set |
+| `aria-busy` | `"true"` while `loading` | Marks the grid as loading |
+
+With `pageSize`, the grid keeps the rows of a full page at each breakpoint, each at least 13rem (208px) tall, so a partial last page and the loading state have the height of a full page: 3 keeps 3, 2 and 1 rows (one, two and three columns), 6 keeps 6, 3 and 2, 9 keeps 9, 5 and 3, and 12 keeps 12, 6 and 4. It keeps no rows when the collection is empty. Give the card a minimum height of 13rem (`min-h-52`) so a short card fills its row like the skeleton does.
+
+With no records and not `loading`, the grid holds one `Empty` block across every column, with `emptyMessage` in its `EmptyDescription`.
+
+## GalleryRowSkeleton
+
+A loading card. Renders an `output`, whose role is `status`, named by `label`, with `aria-busy="true"` and no box of its own (`display: contents`); inside it, an `article` card hidden from assistive technology, at least 13rem tall, with no pointer events. Its lines have the real line heights of a card's eyebrow, title, description and footer, so a card clamped to the same line counts keeps the height of the skeleton.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | `"Loading item"` | Names the `status`. |
+| `density` | `"comfortable"` or `"compact"` | `"comfortable"` | Sets the padding: the card's own, 24px; or, for a compact card, 16px around the header, and 12px above and below with 16px at the sides in the footer. |
+| `eyebrow` | `boolean` | `true` | When true, adds the short line above the title. |
+| `action` | `boolean` | `false` | When true, adds a square at the end of the first row, for a menu button. |
+| `titleLines` | `1` or `2` | `1` | Sets the number of title lines. |
+| `descriptionLines` | `number` | `1` | Sets the number of description lines; `0` removes them. |
+| `footer` | `boolean` | `true` | When true, adds a separator and a footer with a line and a round avatar. |
+
+Takes no other prop. With `action` and no `eyebrow`, the first row stays, with the eyebrow line invisible.
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-density` | `"comfortable"` or `"compact"` | Reports `density` on the `output` |
+| `data-description-lines` | the number of description lines | Reports `descriptionLines` on the `output` |
+
+`GalleryView` renders it from `loadingRecordAnatomy`, which takes the same fields except `label`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `GalleryViewProps` | `type` | The props of `GalleryView`, generic over the record. |
+| `GalleryPageSize` | `type` | `3`, `6`, `9` or `12`. |
+| `GalleryRowSkeletonAnatomy` | `type` | The fields of `loadingRecordAnatomy`: `action`, `density`, `descriptionLines`, `eyebrow`, `footer`, `titleLines`. |
+| `GalleryRowSkeletonDensity` | `type` | `"comfortable"` or `"compact"`. |
+| `GalleryRowSkeletonProps` | `type` | The props of `GalleryRowSkeleton`. |
+
+`CollectionDefinition` belongs to the collection: see the [API Reference of `Patterns/Collection`](?path=/docs/patterns-collection-api-reference--api-reference).
+
+## Accessibility and theme
+
+- The default texts are English (`"No items to show."`, `"Loading item"`); pass `emptyMessage` and `loadingRecordLabel` in the language of the page.
+- The card's heading level, its name and its controls are the consumer's: render the card as an `article` with a heading, and name every icon button.
+- The grid itself sets no colors; the skeleton uses the `Card`, `Separator` and `Skeleton` of the theme.

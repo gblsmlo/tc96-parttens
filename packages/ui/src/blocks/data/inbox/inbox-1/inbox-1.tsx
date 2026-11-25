@@ -1,7 +1,7 @@
 'use client'
 
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import { type ReactNode, useMemo } from 'react'
 import {
   DataCollection,

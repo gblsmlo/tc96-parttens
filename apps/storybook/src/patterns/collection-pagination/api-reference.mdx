@@ -9,7 +9,7 @@ The page bar of a paginated collection. It keeps no page of its own: the consume
 
 The other pages of `Patterns/CollectionPagination`: [Playground](?path=/story/patterns-collectionpagination-playground--playground) to try the label, the range and the rows-per-page selector, [Layouts](?path=/story/patterns-collectionpagination-layouts--default) for the arrangements of the bar, [Behavior](?path=/story/patterns-collectionpagination-behavior--names-the-navigation) for the tests, and [Usages](?path=/story/patterns-collectionpagination-usages--contacts) for real collections.
 
-Used in: `CollectionFrameFooter` of [Patterns/Collection](?path=/docs/patterns-collection-api-reference--api-reference), the [Gallery](?path=/docs/patterns-collection-layouts-gallery-api-reference--api-reference) layout and `DataGridPagination` of the [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference) layout.
+Used in: `CollectionFrameFooter` of [Patterns/Collection](?path=/docs/patterns-collection-api-reference--api-reference), the [Gallery](?path=/docs/patterns-gallery-api-reference--api-reference) layout and `DataGridPagination` of the [Data Grid](?path=/docs/patterns-datagrid-api-reference--api-reference) layout.
 
 ## Import
 
@@ -45,7 +45,7 @@ div[data-slot=collection-pagination]
 
 ## CollectionPagination
 
-The page bar of a paginated collection, for `CollectionFrameFooter`: the range on screen, `1–25 de 57`, then the buttons `Primeira página`, `Página anterior`, the current page over the page count, `2 / 3`, `Próxima página` and `Última página`. Renders a `div`, a wrapping flex row with the range at its start and a `nav` at its end; the `nav`, its list and its items are `Pagination`, `PaginationContent` and `PaginationItem` of [UI/Pagination](?path=/docs/ui-pagination-api-reference--api-reference), and the buttons are ghost icon buttons of size `icon-sm`. It keeps no page of its own: the consumer keeps the page, whether the server or a table paginates, and decides when to show the bar. `DataGridPagination` of the [Data Grid](?path=/docs/patterns-collection-layouts-data-grid-api-reference--api-reference) node renders it from a table.
+The page bar of a paginated collection, for `CollectionFrameFooter`: the range on screen, `1–25 de 57`, then the buttons `Primeira página`, `Página anterior`, the current page over the page count, `2 / 3`, `Próxima página` and `Última página`. Renders a `div`, a wrapping flex row with the range at its start and a `nav` at its end; the `nav`, its list and its items are `Pagination`, `PaginationContent` and `PaginationItem` of [UI/Pagination](?path=/docs/ui-pagination-api-reference--api-reference), and the buttons are ghost icon buttons of size `icon-sm`. It keeps no page of its own: the consumer keeps the page, whether the server or a table paginates, and decides when to show the bar. `DataGridPagination` of the [Data Grid](?path=/docs/patterns-datagrid-api-reference--api-reference) node renders it from a table.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |

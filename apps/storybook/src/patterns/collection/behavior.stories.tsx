@@ -22,6 +22,7 @@ import {
   CollectionFrameOverlay,
   type CollectionGroup,
   type CollectionKanbanCardMove,
+  type CollectionKanbanColumnState,
   type CollectionLayout,
   CollectionLayoutOutlet,
   type CollectionPreferences,
@@ -574,6 +575,84 @@ function Board({
       </CollectionProvider>
     </div>
   )
+}
+
+const swatches = [
+  { label: 'Cinza', value: 'var(--color-slate-400)' },
+  { label: 'Vermelho', value: 'var(--color-red-500)' },
+]
+
+function BoardWithColumnSettings() {
+  const [states, setStates] = useState<
+    Record<string, CollectionKanbanColumnState>
+  >({})
+  const update = (columnId: string, next: CollectionKanbanColumnState) =>
+    setStates((current) => ({
+      ...current,
+      [columnId]: { ...current[columnId], ...next },
+    }))
+
+  return (
+    <div className="flex h-96 flex-col">
+      <CollectionProvider
+        collection={boardCollection}
+        defaultPreferences={{ groupBy: 'status', layout: 'kanban' }}
+      >
+        <CollectionLayoutOutlet
+          collection={boardCollection}
+          kanban={{
+            getColumnActions: () => ({
+              colorOptions: swatches,
+              onCollapsedChange: (columnId, collapsed) =>
+                update(columnId, { collapsed }),
+              onColorChange: (columnId, color) => update(columnId, { color }),
+            }),
+            getColumnState: (group) => states[group.id],
+          }}
+          renderKanbanRecord={renderTitle}
+        />
+      </CollectionProvider>
+    </div>
+  )
+}
+
+export const KanbanTakesTheGroupColorAndCollapsed: Story = {
+  render: () => <BoardWithColumnSettings />,
+  play: async ({ canvasElement }) => {
+    const region = () =>
+      within(canvasElement).getByRole('region', { name: /^A fazer/ })
+
+    await userEvent.click(
+      within(region()).getByRole('button', { name: /^Configurar seção/ }),
+    )
+    const marker = region().querySelector('header span[aria-hidden="true"]')
+    await expect(
+      marker ? getComputedStyle(marker).backgroundColor : 'missing',
+    ).not.toBe('rgba(0, 0, 0, 0)')
+
+    const settings = within(await screen.findByRole('dialog'))
+    await expect(settings.getByRole('radio', { name: 'Cinza' })).toBeChecked()
+    await expect(
+      settings.getByRole('radio', { name: 'Vermelho' }),
+    ).not.toBeChecked()
+    await userEvent.click(settings.getByRole('radio', { name: 'Vermelho' }))
+    await expect(
+      settings.getByRole('radio', { name: 'Vermelho' }),
+    ).toBeChecked()
+
+    await userEvent.click(
+      settings.getByRole('switch', { name: 'Recolher coluna' }),
+    )
+    await waitFor(() =>
+      expect(region().closest('[data-slot="kanban-column"]')).toHaveAttribute(
+        'data-collapsed',
+        'true',
+      ),
+    )
+
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+  },
 }
 
 const dragOverlay = () => document.querySelector('[data-dnd-overlay]')

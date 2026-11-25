@@ -6,9 +6,9 @@ import {
   TagIcon,
 } from '@phosphor-icons/react'
 import { MenuSeparator } from '@tc96/ui/menu'
-import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-columns-submenu'
-import type { DataTableTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
+import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/data-table/data-table-columns-submenu'
+import type { DataTableTable } from '@tc96/ui/patterns/data-table/data-table-features'
 import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings/components/view-settings'
 import {
   finance3EntrySortColumns,

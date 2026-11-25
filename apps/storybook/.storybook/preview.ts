@@ -158,6 +158,7 @@ const preview: Preview = {
         const sections = [
           'API Reference',
           'Playground',
+          'Variants',
           'Stories',
           'Layouts',
           'Behavior',

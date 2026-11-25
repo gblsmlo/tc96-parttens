@@ -1,10 +1,10 @@
-import type { CollectionCalendarViewProps } from '@tc96/ui/patterns/collection/composition/collection-layout-outlet'
 import {
   CalendarEventChip,
   CalendarEventChipOpenTrigger,
   CalendarEventChipTime,
   CalendarEventChipTitle,
-} from '@tc96/ui/patterns/collection/layouts/calendar/components/calendar-event-chip'
+} from '@tc96/ui/patterns/calendar/composition/calendar-event-chip/calendar-event-chip'
+import type { CollectionCalendarViewProps } from '@tc96/ui/patterns/collection/composition/collection-layout-outlet'
 import { DataCollectionListRow } from '../../shared/collection/data-collection-record-parts'
 import {
   Agenda1CancelButton,

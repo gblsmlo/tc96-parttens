@@ -19,12 +19,16 @@ export interface Deal {
 }
 
 export const stageOptions = [
-  { color: '#94a3b8', label: 'Lead', value: 'lead' },
-  { color: '#3b82f6', label: 'Qualificado', value: 'qualified' },
-  { color: '#8b5cf6', label: 'Proposta', value: 'proposal' },
-  { color: '#f59e0b', label: 'Negociação', value: 'negotiation' },
-  { color: '#22c55e', label: 'Ganho', value: 'won' },
-  { color: '#ef4444', label: 'Perdido', value: 'lost' },
+  { color: 'var(--color-slate-400)', label: 'Lead', value: 'lead' },
+  { color: 'var(--color-blue-500)', label: 'Qualificado', value: 'qualified' },
+  { color: 'var(--color-violet-500)', label: 'Proposta', value: 'proposal' },
+  {
+    color: 'var(--color-amber-500)',
+    label: 'Negociação',
+    value: 'negotiation',
+  },
+  { color: 'var(--color-green-500)', label: 'Ganho', value: 'won' },
+  { color: 'var(--color-red-500)', label: 'Perdido', value: 'lost' },
 ] as const satisfies readonly {
   color: string
   label: string

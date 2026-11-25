@@ -11,8 +11,8 @@ import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
   DataTableExpandToggle,
   type DataTableExpandToggleProps,
-} from '@tc96/ui/patterns/collection/layouts/data-table/data-table-expand-toggle'
-import type { UseDataTableOptions } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+} from '@tc96/ui/patterns/data-table/data-table-expand-toggle'
+import type { UseDataTableOptions } from '@tc96/ui/patterns/data-table/use-data-table'
 import { TextProperty } from '@tc96/ui/patterns/properties/display/text/text-property'
 import { cn } from '@tc96/utils'
 import {

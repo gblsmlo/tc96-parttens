@@ -15,7 +15,7 @@ Import direction: `components/` → `@tc96/ui/button`, `@tc96/ui/menu`, `@tc96/u
 
 Imported by path, not through `index.ts`, so moving `components/action-bar.tsx` breaks them:
 
-- `collection/layouts/data-grid/components/data-grid-selection-actions.tsx` (the `ActionBarContext` type), which makes the `collection` registry item ship this folder.
+- `data-grid/components/data-grid-selection-actions.tsx` (the `ActionBarContext` type), which makes the `collection` registry item ship this folder.
 
 ## Invariants
 

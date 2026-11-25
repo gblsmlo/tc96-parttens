@@ -14,7 +14,7 @@ import {
 const { createElement, useState } = await import('react')
 const { flushSync } = await import('react-dom')
 const { ListRow, ListRowBody, ListRowDescription, ListRowTitle, ListView } =
-  await import('../../packages/ui/src/patterns/collection/layouts/list/index')
+  await import('../../packages/ui/src/patterns/list-view/index')
 
 interface Task {
   id: string

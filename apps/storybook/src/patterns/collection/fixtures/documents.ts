@@ -20,15 +20,20 @@ export interface DocumentRecord {
 }
 
 export const kindOptions = [
-  { color: '#d97706', icon: NotebookIcon, label: 'Nota', value: 'note' },
   {
-    color: '#2563eb',
+    color: 'var(--color-amber-600)',
+    icon: NotebookIcon,
+    label: 'Nota',
+    value: 'note',
+  },
+  {
+    color: 'var(--color-blue-600)',
     icon: FileTextIcon,
     label: 'Documento',
     value: 'document',
   },
   {
-    color: '#059669',
+    color: 'var(--color-emerald-600)',
     icon: BookmarkSimpleIcon,
     label: 'Bookmark',
     value: 'bookmark',

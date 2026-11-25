@@ -3,7 +3,7 @@ import {
   CalendarEventChipOpenTrigger,
   CalendarEventChipTime,
   CalendarEventChipTitle,
-} from '@tc96/ui/patterns/collection/layouts/calendar/components/calendar-event-chip'
+} from '@tc96/ui/patterns/calendar/composition/calendar-event-chip/calendar-event-chip'
 import { DataCollectionListRow } from '../../shared/collection/data-collection-record-parts'
 import {
   Legal3DueField,

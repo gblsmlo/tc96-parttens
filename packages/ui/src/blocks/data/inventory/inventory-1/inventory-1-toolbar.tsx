@@ -1,7 +1,7 @@
 import { PlusIcon, RadioButtonIcon } from '@phosphor-icons/react'
-import { DataGridSearch } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-search'
-import type { UseDataGridReturn } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
+import { DataGridSearch } from '@tc96/ui/patterns/data-grid/components/data-grid-search'
+import type { UseDataGridReturn } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import {
   CollectionToolbarDescription,
   CollectionToolbarHeading,

@@ -1,4 +1,4 @@
-import type { DataTableDensity } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-types'
+import type { DataTableDensity } from '@tc96/ui/patterns/data-table/data-table-types'
 import type { DataPriority } from '../../shared/properties/data-priority'
 import type { DataOptionAppearance } from '../../shared/properties/types'
 import type {

@@ -5,11 +5,11 @@ import {
   HeartbeatIcon,
 } from '@phosphor-icons/react'
 import { MenuSeparator } from '@tc96/ui/menu'
-import { DataGridColumnsSubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-columns-submenu'
-import { DataGridDensitySubmenu } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-density-submenu'
-import { DataGridSearch } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-search'
-import type { UseDataGridReturn } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
+import { DataGridColumnsSubmenu } from '@tc96/ui/patterns/data-grid/components/data-grid-columns-submenu'
+import { DataGridDensitySubmenu } from '@tc96/ui/patterns/data-grid/components/data-grid-density-submenu'
+import { DataGridSearch } from '@tc96/ui/patterns/data-grid/components/data-grid-search'
+import type { UseDataGridReturn } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import {
   CollectionToolbarDescription,
   CollectionToolbarHeading,

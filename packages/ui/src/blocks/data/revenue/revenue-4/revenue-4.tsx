@@ -1,8 +1,8 @@
 'use client'
 
-import { DataTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table'
-import type { DataTableGroupCellContext } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-group-row'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import { DataTable } from '@tc96/ui/patterns/data-table/data-table'
+import type { DataTableGroupCellContext } from '@tc96/ui/patterns/data-table/data-table-group-row'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import {
   CollectionToolbarDescription,
   CollectionToolbarHeading,

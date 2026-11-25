@@ -1,4 +1,4 @@
-import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
+import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
 import { DataCollectionTitleCell } from '../../shared/collection/data-collection-record-parts'
 import { Finance3Amount, Finance3TextField } from './finance-3-fields'
 import {

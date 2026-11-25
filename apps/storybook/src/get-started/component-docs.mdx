@@ -11,7 +11,7 @@ Every component is documented as six pages under its own node in the sidebar. Ea
 | --- | --- | --- | --- |
 | `API Reference` | What can I import, pass and style? | `api-reference.mdx` with `api-reference.stories.tsx` | MDX, hand-written |
 | `Playground` | What happens if I change this? | `playground.stories.tsx` | one story with controls over text, props and optional parts |
-| `Stories` | What does each prop value look like? | `stories.stories.tsx` | stories that differ only by `args`, no `play` |
+| `Variants` | What does each prop value look like? | `variants.stories.tsx` | stories that differ only by `args`, no `play` |
 | `Behavior` | What does it guarantee? | `behavior.stories.tsx` | stories, each with a `play` |
 | `Usages` | How does it read with real content? | `usages.stories.tsx` | stories with real text and data |
 | `Layouts` | How do its parts combine? Optional | `layouts.stories.tsx` | stories that differ only by structure, no `play` |
@@ -22,9 +22,9 @@ The files sit in one folder that mirrors the title (`apps/storybook/src/ui/alert
 
 **API Reference.** An MDX file attached with `<Meta of={ApiReferenceStories} name="API Reference" />` to `api-reference.stories.tsx`, whose meta is titled `<Layer>/<Component>/API Reference` and tagged `['!autodocs', '!dev']`. It holds `Anatomy`, every part as a dashed placeholder (`apps/storybook/src/test-utils/anatomy-slot.tsx`). The tags keep it out of the sidebar and off any generated page, while the MDX still renders it with `<Canvas>` and the Vitest project still tests it. The page does not embed the `Playground`: it links to it, so trying the component and reading its contract stay on separate pages. Naming the page like its node makes the sidebar show one `API Reference` entry.
 
-**Playground.** One story, named `Playground` in a file titled `<Layer>/<Component>/Playground`, so the sidebar shows a single entry. Its args are not the component's props but what a reader wants to change: the texts, the props that change the look, and a boolean per optional part (for the alert: `title`, `description`, `variant`, `icon`, `action`). An empty text removes its part. Those args come from no type the docgen reads, so each gets an `argTypes` entry with a `control` and a one-line `description`, the one place `argTypes` describes. The args, their defaults and argTypes live in `<component>-controls.ts`, and the `render` in a `Composed<Component>` of `<component>-layouts.tsx`, because `Stories` uses both. No `play`: it only has to render in every combination.
+**Playground.** One story, named `Playground` in a file titled `<Layer>/<Component>/Playground`, so the sidebar shows a single entry. Its args are not the component's props but what a reader wants to change: the texts, the props that change the look, and a boolean per optional part (for the alert: `title`, `description`, `variant`, `icon`, `action`). An empty text removes its part. Those args come from no type the docgen reads, so each gets an `argTypes` entry with a `control` and a one-line `description`, the one place `argTypes` describes. The args, their defaults and argTypes live in `<component>-controls.ts`, and the `render` in a `Composed<Component>` of `<component>-layouts.tsx`, because `Variants` uses both. No `play`: it only has to render in every combination.
 
-**Stories.** One story per value of each prop that changes the look, named after the state (`Default`, `Error`, `Info`). The meta takes the `Playground`'s args, argTypes and `render`, with the base composition as defaults (for the alert: icon, title and description), and every story only sets the prop that names it. That prop is fixed: `parameters.controls.exclude` takes it off the panel, since switching `Error` to `success` would leave a story whose name lies. Texts and optional parts stay as controls (for the alert: `title`, `description`, `icon`, `action`), so each state can be read with other content. A story for a combination of values exists only when the combination looks different from its parts. No gallery of every value side by side, and no `play`.
+**Variants.** One story per value of each prop that changes how the component looks or which state it shows, with the same structure: `Default`, a size or density (`Compact`, `DensityTall`), a mode (`Month`), a state the component ships through a prop (`Loading`, `Empty`, `Selected`, `Disabled`), an interaction state forced through a prop (`Hover`), a tone or variant (`Error`, `Info`). Each is named after the value. The meta takes the `Playground`'s args, argTypes and `render`, with the base composition as defaults (for the alert: icon, title and description), and every story only sets the prop that names it. That prop is fixed: `parameters.controls.exclude` takes it off the panel, since switching `Error` to `success` would leave a story whose name lies. Texts and optional parts stay as controls (for the alert: `title`, `description`, `icon`, `action`), so each state can be read with other content. A story for a combination of values exists only when the combination looks different from its parts. No gallery of every value side by side, and no `play`.
 
 **Behavior.** One story per guarantee, named after it (`AnnouncedOnInsert`, `DecorativeIcon`, `Actions`), each with a `play` from `storybook/test`. Callbacks are `fn()` args, so the Interactions panel shows the calls.
 
@@ -34,14 +34,14 @@ The files sit in one folder that mirrors the title (`apps/storybook/src/ui/alert
 
 Every story file of the component sets `tags: ['!autodocs']`: the MDX page replaces the generated `Doc`.
 
-## Stories or Layouts?
+## Variants or Layouts?
 
 The two pages split on what changes between their stories, after Storybook's rule that a story is a named state set by its `args`.
 
 | The new story… | Goes to |
 | --- | --- |
-| is the meta's `render` with other `args` (a variant, a size, `disabled`) | `Stories` |
-| needs another `render`: a part added, removed, repeated or moved | `Layouts` |
+| is the meta's `render` with other `args` (a variant, a size, a mode, `loading`, `empty`, `disabled`) | `Variants` |
+| needs another `render`, or a prop that defines the structure: a part added, removed, repeated or moved, groups on or off, a fixed column layout | `Layouts` |
 | shows the parts themselves, not a state | `API Reference` (`Anatomy`) |
 | lets the reader change texts, props and parts at once | `Playground`, as another control, never another story |
 | carries real text or data, whatever its structure and props | `Usages` |
@@ -57,7 +57,7 @@ A component, pattern or block never fetches: it takes prepared data through prop
 - Handlers live in `apps/storybook/src/mocks/<domain>.ts`, one named handler per state (`members`, `membersEmpty`, `membersError`, `membersPending`), with paths built by `apiUrl`.
 - A tagged story picks its state in `beforeEach: ({ msw }) => { msw.use(settingsHandlers.members) }`; handlers reset between stories. Without the tag, `msw` is undefined in `beforeEach`.
 - Data is read with TanStack Query. Every story gets its own `QueryClient` with retries off (`.storybook/query-client.tsx`), so no cache leaks from one story to the next.
-- `Playground`, `Stories`, `Layouts` and `Behavior` keep passing fixtures straight to props.
+- `Playground`, `Variants`, `Layouts` and `Behavior` keep passing fixtures straight to props.
 
 The `Usages` of `Blocks/Application/Settings/Catalog/Settings1` are a reference.
 
@@ -67,10 +67,10 @@ The `Usages` of `Blocks/Application/Settings/Catalog/Settings1` are a reference.
 - **Attached against unattached MDX.** An unattached page (`<Meta title>`) sits anywhere, but Storybook documents its blocks with an attached `Meta`. Attaching to a hidden `api-reference.stories.tsx` keeps the documented path and still places the page at `API Reference`.
 - **Hand-written tables against `<ArgTypes>`.** `<ArgTypes>` reads descriptions from JSDoc, and components in this repo carry no comments, so its table would show types without meaning. The props table stays hand-written, and the `Playground` is where a reader tries the values.
 - **Separate Behavior against tests in every story.** A `play` in a presentation story makes the page re-run assertions whenever it is opened and mixes what the component looks like with what it guarantees. Keeping the plays in `Behavior` costs a second render of the same composition, which the shared `<component>-layouts.tsx` keeps to one source.
-- **Playground args against component props.** The `Playground` controls texts and parts, which the component's props cannot, so it shows what a reader wants to try rather than the API. The cost is a hand-written `argTypes` and a `render` with conditions, shared with `Stories`; the props table of the API Reference stays the contract, and the API Reference links to the `Playground` instead of embedding it.
-- **Fixed state against free controls.** `Stories` drops the control of the prop that names each story, so a story always shows the state its name promises; changing that prop is what the `Playground` is for. Turning an optional part off in `Stories` reaches a structure that `Layouts` also names: the controls explore one state, while `Layouts` keeps the named structures, linked and tested.
+- **Playground args against component props.** The `Playground` controls texts and parts, which the component's props cannot, so it shows what a reader wants to try rather than the API. The cost is a hand-written `argTypes` and a `render` with conditions, shared with `Variants`; the props table of the API Reference stays the contract, and the API Reference links to the `Playground` instead of embedding it.
+- **Fixed state against free controls.** `Variants` drops the control of the prop that names each story, so a story always shows the state its name promises; changing that prop is what the `Playground` is for. Turning an optional part off in `Variants` reaches a structure that `Layouts` also names: the controls explore one state, while `Layouts` keeps the named structures, linked and tested.
 - **Named states against galleries.** One story per value keeps controls and links per state, but a reviewer no longer sees every variant side by side; the `Playground` switches between them. A component with several props gets one story per value of each, not per combination.
-- **Migration.** The other components still use the generated `Doc` with `parameters.docs.api`; both shapes live side by side until each component moves.
+- **Migration.** The other components still use the generated `Doc` with `parameters.docs.api`; both shapes live side by side until each component moves. `Variants` replaced the `Stories` page on 2026-11-25 in `Patterns/Calendar`, `Collection`, `DataGrid`, `DataTable`, `Gallery`, `Kanban`, `KanbanCard` and `ListView`; the other nodes keep `Stories` until they move, and `storySort` orders both.
 
 ## API Reference template
 

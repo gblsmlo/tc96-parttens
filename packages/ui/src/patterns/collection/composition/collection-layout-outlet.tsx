@@ -3,28 +3,25 @@ import { type ReactNode, useCallback, useMemo } from 'react'
 import {
   CalendarView,
   type CalendarViewProps,
-} from '../layouts/calendar/components/calendar-view'
+} from '../../calendar/composition/calendar-view/calendar-view'
 import {
   DataGrid,
   type DataGridProps,
-} from '../layouts/data-grid/components/data-grid'
-import {
-  DataTable,
-  type DataTableProps,
-} from '../layouts/data-table/data-table'
+} from '../../data-grid/components/data-grid'
+import { DataTable, type DataTableProps } from '../../data-table/data-table'
 import {
   GalleryView,
   type GalleryViewProps,
-} from '../layouts/gallery/components/gallery-view'
+} from '../../gallery/components/gallery-view'
 import {
   KanbanView,
   type KanbanViewProps,
-} from '../layouts/kanban/components/kanban-view'
-import type { KanbanCardMove, KanbanColumnData } from '../layouts/kanban/types'
+} from '../../kanban/composition/kanban-view/kanban-view'
+import type { KanbanCardMove, KanbanColumnData } from '../../kanban/types'
 import {
   ListView,
   type ListViewProps,
-} from '../layouts/list/components/list-view'
+} from '../../list-view/components/list-view'
 import { projectCollection } from '../shared/lib/project-collection'
 import { useCollectionPreferences } from '../store/collection-provider'
 import type {
@@ -55,11 +52,19 @@ export interface CollectionKanbanCardMove<TRecord>
   targetGroup: CollectionGroup<TRecord>
 }
 
+export type CollectionKanbanColumnState = Pick<
+  KanbanColumnData,
+  'collapsed' | 'color'
+>
+
 export interface CollectionKanbanViewProps<TRecord>
   extends Omit<
     KanbanViewProps<TRecord>,
     'columns' | 'getKey' | 'onMoveCard' | 'renderCard'
   > {
+  getColumnState?: (
+    group: CollectionGroup<TRecord>,
+  ) => CollectionKanbanColumnState | undefined
   onMoveCard?: (
     move: CollectionKanbanCardMove<TRecord>,
   ) => boolean | Promise<boolean>
@@ -119,17 +124,29 @@ export function CollectionLayoutOutlet<TRecord extends RowData>({
       preferences.layout,
     ],
   )
+  const {
+    getColumnState,
+    onMoveCard: onCollectionMoveCard,
+    ...kanbanProps
+  } = kanban ?? {}
   const columns = useMemo<KanbanColumnData<TRecord>[]>(
     () =>
-      kanbanGroups.map((group) => ({
-        cards: [...group.records],
-        count: group.count,
-        id: group.id,
-        title: group.label,
-      })),
-    [kanbanGroups],
+      kanbanGroups.map((group) => {
+        const state = getColumnState?.(group)
+
+        return {
+          cards: [...group.records],
+          count: group.count,
+          id: group.id,
+          title: group.label,
+          ...(state?.color === undefined ? {} : { color: state.color }),
+          ...(state?.collapsed === undefined
+            ? {}
+            : { collapsed: state.collapsed }),
+        }
+      }),
+    [getColumnState, kanbanGroups],
   )
-  const { onMoveCard: onCollectionMoveCard, ...kanbanProps } = kanban ?? {}
   const canWriteGroup = Boolean(
     onRecordChange &&
       collection.groupings.find(({ id }) => id === preferences.groupBy)

@@ -3,8 +3,8 @@
 import {
   DataGrid,
   type DataGridProps,
-} from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid'
-import { useDataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+} from '@tc96/ui/patterns/data-grid/components/data-grid'
+import { useDataGrid } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import {
   CollectionToolbarHeading,
   CollectionToolbarTitle,

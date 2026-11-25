@@ -1,16 +1,16 @@
 'use client'
 
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
-import { DataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid'
+import { DataGrid } from '@tc96/ui/patterns/data-grid/components/data-grid'
 import {
   type DataGridConditionFilterField,
   DataGridConditionFilters,
-} from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-condition-filters'
-import { useDataGrid } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+} from '@tc96/ui/patterns/data-grid/components/data-grid-condition-filters'
+import { useDataGrid } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import {
   createDataGridConditionFilterFn,
   type DataGridConditionField,
-} from '@tc96/ui/patterns/collection/layouts/data-grid/lib/data-grid-conditions'
+} from '@tc96/ui/patterns/data-grid/lib/data-grid-conditions'
 import {
   CollectionToolbarDescription,
   CollectionToolbarHeading,

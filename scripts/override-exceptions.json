@@ -1,12 +1,12 @@
 [
   {
-    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-group.tsx",
+    "file": "packages/ui/src/patterns/list-view/components/list-group.tsx",
     "component": "Separator",
     "className": "bg-border/40",
     "reason": "O separator entre itens da lista é mais discreto que o do COSS: as linhas agrupam itens sem competir com o conteúdo; `bg-border/40` mantém o token do tema com 40% da opacidade."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "file": "packages/ui/src/patterns/list-view/components/list-view.tsx",
     "component": "Separator",
     "className": "bg-border/40",
     "reason": "O separator entre itens da lista é mais discreto que o do COSS: as linhas agrupam itens sem competir com o conteúdo; `bg-border/40` mantém o token do tema com 40% da opacidade."
@@ -30,103 +30,103 @@
     "reason": "O `bg-muted` do `Kbd` do COSS é 4% de preto ou de branco e some sobre o `bg-primary` do botão de enviar; `bg-primary-foreground/16` é a tecla clara sobre o botão escuro (e o inverso no escuro), com o texto acima de 4,5:1 nos dois temas."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table.tsx",
+    "file": "packages/ui/src/patterns/data-table/data-table.tsx",
     "component": "TableHeader",
     "className": "not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)]",
     "reason": "O thead da tabela usa a mesma cor do `TableFooter` do COSS (`color-mix` de `var(--card)` com 2% de preto, ou de branco no escuro), para que cabeçalho e rodapé enquadrem as linhas, que ficam na cor do fundo."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table.tsx",
+    "file": "packages/ui/src/patterns/data-table/data-table.tsx",
     "component": "TableHeader",
     "className": "dark:not-in-data-[variant=card]:bg-[color-mix(in_srgb,var(--card),var(--color-white)_2%)]",
     "reason": "O thead da tabela usa a mesma cor do `TableFooter` do COSS (`color-mix` de `var(--card)` com 2% de preto, ou de branco no escuro), para que cabeçalho e rodapé enquadrem as linhas, que ficam na cor do fundo."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table-row.tsx",
+    "file": "packages/ui/src/patterns/data-table/data-table-row.tsx",
     "component": "TableRow",
     "className": "data-dnd-dragging:bg-background",
     "reason": "Ao reordenar, o dnd-kit leva a linha arrastada para a camada de topo, sobre as outras linhas; o `TableRow` do COSS é transparente e deixaria o conteúdo de baixo aparecer através dela. `bg-background` é o fundo do tema, o mesmo das linhas em repouso, e só vale enquanto `onRowMove` está ativo e a linha carrega `data-dnd-dragging`."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "hover:bg-card/60",
     "reason": "O card interativo do Kanban afrouxa o fundo para 60% no hover, o retorno visual de que o card e clicavel; o Card so define o estado de repouso."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-primary",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-offset-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "has-focus-visible:ring-offset-background",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "border-dashed",
     "reason": "Somente o estilo da borda muda (tracejada), e apenas enquanto o card esta dimmed, para marcar o lugar de origem durante o arraste; largura e cor da borda continuam do Card."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-2",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-primary/40",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-offset-2",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "ring-offset-background",
     "reason": "Card selecionado marcado por anel primary/40 com offset sobre o background; o Card nao tem estado de selecao."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-primary",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-offset-2",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/kanban/components/kanban-card.tsx",
+    "file": "packages/ui/src/patterns/kanban-card/components/kanban-card.tsx",
     "component": "Card",
     "className": "focus-visible:ring-offset-background",
     "reason": "O anel de foco do KanbanCard fica no article porque o gatilho de abertura remove o outline nativo; o Card nao tem estado de foco."
@@ -312,67 +312,67 @@
     "reason": "O avatar de upload é renderizado como `button` para trocar a foto, e o `Avatar` do COSS não tem estado de foco: o anel com o token `ring` é o foco visível do botão, como nos demais controles do COSS."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/data-grid/components/data-grid.tsx",
+    "file": "packages/ui/src/patterns/data-grid/components/data-grid.tsx",
     "component": "ScrollArea",
     "className": "rounded-md",
     "reason": "A moldura da Data Grid (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o cabeçalho fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/data-grid/components/data-grid.tsx",
+    "file": "packages/ui/src/patterns/data-grid/components/data-grid.tsx",
     "component": "ScrollArea",
     "className": "border",
     "reason": "A moldura da Data Grid (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o cabeçalho fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/data-grid/components/data-grid.tsx",
+    "file": "packages/ui/src/patterns/data-grid/components/data-grid.tsx",
     "component": "ScrollArea",
     "className": "bg-background",
     "reason": "A moldura da Data Grid (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o cabeçalho fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table.tsx",
+    "file": "packages/ui/src/patterns/data-table/data-table.tsx",
     "component": "ScrollArea",
     "className": "rounded-md",
     "reason": "Com `bordered`, a moldura da Data Table (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o `thead` fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table.tsx",
+    "file": "packages/ui/src/patterns/data-table/data-table.tsx",
     "component": "ScrollArea",
     "className": "border",
     "reason": "Com `bordered`, a moldura da Data Table (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o `thead` fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/data-table/data-table.tsx",
+    "file": "packages/ui/src/patterns/data-table/data-table.tsx",
     "component": "ScrollArea",
     "className": "bg-background",
     "reason": "Com `bordered`, a moldura da Data Table (borda, raio e fundo) fica na raiz do `ScrollArea` para que as barras de rolagem e o `thead` fixo fiquem dentro dela; antes a mesma classe estava no primitivo do Base UI, e a migração para o `ScrollArea` da UI manteve o desenho."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "file": "packages/ui/src/patterns/list-view/components/list-view.tsx",
     "component": "ScrollArea",
     "className": "rounded-lg",
     "reason": "A superfície da List (borda em `border/80`, raio, fundo `card/40` e sombra) fica na raiz do `ScrollArea` para que a barra de rolagem e o fade fiquem dentro dela; é a mesma superfície do `div` com `overflow-auto` que ela substituiu."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "file": "packages/ui/src/patterns/list-view/components/list-view.tsx",
     "component": "ScrollArea",
     "className": "border",
     "reason": "A superfície da List (borda em `border/80`, raio, fundo `card/40` e sombra) fica na raiz do `ScrollArea` para que a barra de rolagem e o fade fiquem dentro dela; é a mesma superfície do `div` com `overflow-auto` que ela substituiu."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "file": "packages/ui/src/patterns/list-view/components/list-view.tsx",
     "component": "ScrollArea",
     "className": "border-border/80",
     "reason": "A superfície da List (borda em `border/80`, raio, fundo `card/40` e sombra) fica na raiz do `ScrollArea` para que a barra de rolagem e o fade fiquem dentro dela; é a mesma superfície do `div` com `overflow-auto` que ela substituiu."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "file": "packages/ui/src/patterns/list-view/components/list-view.tsx",
     "component": "ScrollArea",
     "className": "bg-card/40",
     "reason": "A superfície da List (borda em `border/80`, raio, fundo `card/40` e sombra) fica na raiz do `ScrollArea` para que a barra de rolagem e o fade fiquem dentro dela; é a mesma superfície do `div` com `overflow-auto` que ela substituiu."
   },
   {
-    "file": "packages/ui/src/patterns/collection/layouts/list/components/list-view.tsx",
+    "file": "packages/ui/src/patterns/list-view/components/list-view.tsx",
     "component": "ScrollArea",
     "className": "shadow-black/5",
     "reason": "A superfície da List (borda em `border/80`, raio, fundo `card/40` e sombra) fica na raiz do `ScrollArea` para que a barra de rolagem e o fade fiquem dentro dela; é a mesma superfície do `div` com `overflow-auto` que ela substituiu."

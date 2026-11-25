@@ -11,8 +11,8 @@ import {
 } from '@phosphor-icons/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { getInitials } from '@tc96/ui/helpers/initials'
-import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import { createDataTableSelectColumn } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-select-column'
+import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
+import { createDataTableSelectColumn } from '@tc96/ui/patterns/data-table/data-table-select-column'
 import { cn } from '@tc96/utils'
 import {
   DataSelect,

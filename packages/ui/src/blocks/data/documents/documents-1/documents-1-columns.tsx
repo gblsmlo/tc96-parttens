@@ -1,4 +1,4 @@
-import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
+import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
 import {
   Documents1AccessField,
   Documents1CreatedAtField,

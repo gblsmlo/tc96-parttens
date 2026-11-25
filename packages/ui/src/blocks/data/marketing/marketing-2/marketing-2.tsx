@@ -1,8 +1,8 @@
 'use client'
 
-import { DataGridPagination } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-pagination'
-import { DataTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
+import { DataGridPagination } from '@tc96/ui/patterns/data-grid/components/data-grid-pagination'
+import { DataTable } from '@tc96/ui/patterns/data-table/data-table'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import {
   CollectionToolbarHeading,
   CollectionToolbarTitle,

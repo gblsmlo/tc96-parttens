@@ -9,7 +9,7 @@ import {
   KanbanCardHeader,
   KanbanCardOpenTrigger,
   KanbanCardTitle,
-} from '@tc96/ui/patterns/collection/layouts/kanban/components/kanban-card'
+} from '@tc96/ui/patterns/kanban-card/components/kanban-card'
 import {
   ListRow,
   ListRowAction,
@@ -21,7 +21,7 @@ import {
   ListRowTitle,
   ListRowTitleTrigger,
   ListRowTrailing,
-} from '@tc96/ui/patterns/collection/layouts/list/components/list-row'
+} from '@tc96/ui/patterns/list-view/components/list-row'
 import { Fragment, type ReactNode } from 'react'
 
 export function DataCollectionCaption({

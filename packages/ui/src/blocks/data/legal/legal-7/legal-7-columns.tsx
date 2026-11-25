@@ -1,5 +1,5 @@
-import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import { createDataTableSelectColumn } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-select-column'
+import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
+import { createDataTableSelectColumn } from '@tc96/ui/patterns/data-table/data-table-select-column'
 import { Legal7AvailableField, type Legal7FieldContext } from './legal-7-fields'
 import type { Legal7Publication } from './types'
 

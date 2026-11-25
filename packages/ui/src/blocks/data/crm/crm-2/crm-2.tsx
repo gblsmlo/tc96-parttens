@@ -5,8 +5,8 @@ import { Alert, AlertDescription } from '@tc96/ui/alert'
 import { createAmountFormatter } from '@tc96/ui/helpers/format'
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
 import type { CollectionKanbanViewProps } from '@tc96/ui/patterns/collection/composition/collection-layout-outlet'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
 import { CollectionPagination } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import { useMemo } from 'react'
 import {
   DataCollection,

@@ -2,16 +2,22 @@ import { spawnSync } from 'node:child_process'
 import { files } from './files'
 
 for (const path of [
+  'calendar',
   'chat/assistant',
   'chat/chats-panel',
   'charts',
   'checklist',
   'collection',
+  'data-grid',
+  'data-table',
   'editable',
   'flow/canvas',
   'flow/inspector',
   'flow/step-library',
+  'gallery',
+  'kanban',
   'list',
+  'list-view',
   'properties',
   'records/dialog',
   'records/group',

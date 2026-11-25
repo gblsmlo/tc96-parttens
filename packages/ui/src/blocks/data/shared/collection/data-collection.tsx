@@ -7,9 +7,9 @@ import {
   CollectionLayoutOutlet,
   type CollectionLayoutOutletProps,
 } from '@tc96/ui/patterns/collection/composition/collection-layout-outlet'
-import type { DataTableSelectionActionsProp } from '@tc96/ui/patterns/collection/layouts/data-table/data-table'
-import type { DataTableTable } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
 import { CollectionProvider } from '@tc96/ui/patterns/collection/store/collection-provider'
+import type { DataTableSelectionActionsProp } from '@tc96/ui/patterns/data-table/data-table'
+import type { DataTableTable } from '@tc96/ui/patterns/data-table/data-table-features'
 import { type ReactNode, useMemo } from 'react'
 import type { DataCollectionMode } from './types'
 import { useControllable } from './use-controllable'

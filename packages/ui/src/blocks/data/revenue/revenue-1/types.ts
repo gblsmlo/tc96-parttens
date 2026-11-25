@@ -1,8 +1,8 @@
-import type { DataGridConditionFilterLabels } from '@tc96/ui/patterns/collection/layouts/data-grid/components/data-grid-condition-filters'
+import type { DataGridConditionFilterLabels } from '@tc96/ui/patterns/data-grid/components/data-grid-condition-filters'
 import type {
   DataGridCondition,
   DataGridConditionOperator,
-} from '@tc96/ui/patterns/collection/layouts/data-grid/lib/data-grid-conditions'
+} from '@tc96/ui/patterns/data-grid/lib/data-grid-conditions'
 import type {
   GridColumnVisibility,
   GridFormatProps,

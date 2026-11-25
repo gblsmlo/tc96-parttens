@@ -1,5 +1,5 @@
-import type { DataTableColumnDef } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-features'
-import { createDataTableSelectColumn } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-select-column'
+import type { DataTableColumnDef } from '@tc96/ui/patterns/data-table/data-table-features'
+import { createDataTableSelectColumn } from '@tc96/ui/patterns/data-table/data-table-select-column'
 import { SelectProperty } from '@tc96/ui/patterns/properties/display/select/select-property'
 import { DataCollectionTitleCell } from '../../shared/collection/data-collection-record-parts'
 import {

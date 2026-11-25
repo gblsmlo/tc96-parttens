@@ -1,7 +1,7 @@
 import { DotsThreeIcon, WarningIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
-import { DataTableCell } from '@tc96/ui/patterns/collection/layouts/data-table/data-table-cell'
+import { DataTableCell } from '@tc96/ui/patterns/data-table/data-table-cell'
 import type { SelectPropertyOption } from '@tc96/ui/patterns/properties/display/select/select-property'
 import { Switch } from '@tc96/ui/switch'
 import { cn } from '@tc96/utils'

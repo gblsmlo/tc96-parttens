@@ -2,11 +2,11 @@ import { type KanbanColumnData, projectCollection } from '@tc96/ui/patterns'
 import { createCollection, type Task, type TaskStatus } from './tasks'
 
 const STATUS_COLOR: Record<TaskStatus, string> = {
-  backlog: '#6b7280',
-  done: '#22c55e',
-  'in-progress': '#3b82f6',
-  review: '#f59e0b',
-  todo: '#94a3b8',
+  backlog: 'var(--color-gray-500)',
+  done: 'var(--color-green-500)',
+  'in-progress': 'var(--color-blue-500)',
+  review: 'var(--color-amber-500)',
+  todo: 'var(--color-slate-400)',
 }
 
 export const projectTaskColumns = (

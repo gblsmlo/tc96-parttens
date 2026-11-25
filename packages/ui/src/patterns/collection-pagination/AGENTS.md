@@ -13,7 +13,7 @@ Import direction: `components/` → `@tc96/ui/<component>` (`pagination`, `butto
 
 ## Dependents
 
-- `collection/layouts/data-grid/components/data-grid-pagination.tsx` imports `components/collection-pagination` by path; stories import through `@tc96/ui/patterns`.
+- `data-grid/components/data-grid-pagination.tsx` imports `components/collection-pagination` by path; stories import through `@tc96/ui/patterns`.
 - The `collection` entry of `docs/architecture/public-api-exports.json` no longer lists `CollectionPagination*`; the root `parttens` entry does.
 - The `collection` registry item ships this folder through `itemAreas` in `packages/registry/src/manifest.ts`.
 

@@ -13,7 +13,7 @@ import {
 
 const { createElement, useState } = await import('react')
 const { GalleryView } = await import(
-  '../../packages/ui/src/patterns/collection/layouts/gallery/index'
+  '../../packages/ui/src/patterns/gallery/index'
 )
 
 interface DocumentRecord {

@@ -1,8 +1,8 @@
 'use client'
 
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
-import { useDataTable } from '@tc96/ui/patterns/collection/layouts/data-table/use-data-table'
 import { CollectionPagination } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
+import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
 import { useMemo } from 'react'
 import {
   DataCollection,

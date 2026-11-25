@@ -12,7 +12,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { Checkbox } from '@tc96/ui/checkbox'
 import { getInitials } from '@tc96/ui/helpers/initials'
-import type { UseDataGridOptions } from '@tc96/ui/patterns/collection/layouts/data-grid/hooks/use-data-grid'
+import type { UseDataGridOptions } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import { cn } from '@tc96/utils'
 import type { GridFormatter } from '../../shared/grid/format'
 import {

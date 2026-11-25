@@ -7,7 +7,7 @@ import {
   PhoneIcon,
   VideoCameraIcon,
 } from '@phosphor-icons/react'
-import type { CalendarEventChipTone } from '@tc96/ui/patterns/collection/layouts/calendar/components/calendar-event-chip'
+import type { CalendarEventChipTone } from '@tc96/ui/patterns/calendar/composition/calendar-event-chip/calendar-event-chip'
 import type { DataOptionAppearance } from '../../shared/properties/types'
 import type {
   Agenda1GroupBy,
