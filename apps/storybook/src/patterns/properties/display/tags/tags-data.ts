@@ -1,6 +1,6 @@
-import type { TagsPropertyOption } from '@tc96/ui/patterns'
+import type { PropertyOption } from '@tc96/ui/patterns'
 
-export const tagOptions: TagsPropertyOption[] = [
+export const tagOptions: PropertyOption[] = [
   { label: 'Documentos', value: 'documents' },
   { label: 'Retorno', value: 'return' },
   { label: 'Urgente', value: 'urgent' },
@@ -11,7 +11,7 @@ export const tagOptionLabels = Object.fromEntries(
   tagOptions.map((option) => [option.value, option.label]),
 )
 
-export const placementOptions: TagsPropertyOption[] = [
+export const placementOptions: PropertyOption[] = [
   { label: 'Feed do Instagram', value: 'instagram-feed' },
   { label: 'Stories do Instagram', value: 'instagram-stories' },
   { label: 'Feed do Facebook', value: 'facebook-feed' },

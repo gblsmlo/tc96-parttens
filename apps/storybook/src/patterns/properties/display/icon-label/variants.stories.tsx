@@ -11,10 +11,9 @@ const meta = {
   args: iconLabelControlArgs,
   argTypes: iconLabelControlArgTypes,
   decorators: [IconLabelCanvas],
-  parameters: { controls: { exclude: ['element', 'muted', 'variant'] } },
   render: (args) => <ComposedIconLabel {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Icon Label/Stories',
+  title: 'Patterns/Properties/Display/IconLabel/Variants',
 } satisfies Meta<IconLabelControls>
 
 export default meta
@@ -25,8 +24,10 @@ export const Default: Story = {}
 
 export const Plain: Story = {
   args: { variant: 'plain' },
+  parameters: { controls: { exclude: ['variant'] } },
 }
 
 export const Muted: Story = {
   args: { muted: true },
+  parameters: { controls: { exclude: ['muted'] } },
 }

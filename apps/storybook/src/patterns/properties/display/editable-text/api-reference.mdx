@@ -3,11 +3,11 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 <Meta of={ApiReferenceStories} name="API Reference" />
 
-# Editable Text
+# EditableText
 
 A text that reads as text and is edited in place, with no editing state to enter: a task title, a record name, a description, an email shown inline. The consumer passes the confirmed value and receives each commit; the field keeps the draft, commits on blur or Enter, and discards on Escape.
 
-The other pages of `Patterns/Properties/Display/Editable Text`: [Playground](?path=/story/patterns-properties-display-editable-text-playground--playground) to try the texts, the size and the read-only state, [Stories](?path=/story/patterns-properties-display-editable-text-stories--default) for each size, [Behavior](?path=/story/patterns-properties-display-editable-text-behavior--does-not-commit-while-typing) for the tests, [Usages](?path=/story/patterns-properties-display-editable-text-usages--task-title) for titles, a description and a read-only email, and [Layouts](?path=/story/patterns-properties-display-editable-text-layouts--multiline) for the multiline and read-only elements.
+The other pages of `Patterns/Properties/Display/EditableText`: [Playground](?path=/story/patterns-properties-display-editabletext-playground--playground) to try the texts, the size, the field and the read-only state, [Variants](?path=/story/patterns-properties-display-editabletext-variants--default) for each size, the empty value and the read-only text, [Layouts](?path=/story/patterns-properties-display-editabletext-layouts--default) for the single-line field and the [multiline](?path=/story/patterns-properties-display-editabletext-layouts--multiline) one, [Behavior](?path=/story/patterns-properties-display-editabletext-behavior--does-not-commit-while-typing) for the tests, and [Usages](?path=/story/patterns-properties-display-editabletext-usages--task-title) for titles, a description and a read-only e-mail.
 
 `EditableText` is `Editable` with one `EditableField`: the focus session, the dirty check, Enter, Escape and the read-only text are the field's, documented in the API Reference of `Patterns/Editable`. This page covers the contract the properties add on top.
 

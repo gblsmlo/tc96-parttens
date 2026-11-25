@@ -42,8 +42,11 @@ export const BadgeAnatomy: Story = {
   args: { options: assignees, value: null },
   render: () => (
     <div className="flex items-center gap-2">
-      <AssignedPropertyBadge option={assignees[1] ?? null} />
-      <AssignedPropertyBadge option={null} />
+      <AssignedPropertyBadge
+        placeholder="Sem responsável"
+        option={assignees[1] ?? null}
+      />
+      <AssignedPropertyBadge placeholder="Sem responsável" option={null} />
     </div>
   ),
 }

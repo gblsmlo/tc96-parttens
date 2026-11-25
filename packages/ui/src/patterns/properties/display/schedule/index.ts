@@ -1,4 +1,3 @@
-export type { SchedulePropertyLabels } from './schedule-labels'
 export type { SchedulePropertyDropdownPlacement } from './schedule-popup-frame'
 export {
   ScheduleProperty,
@@ -11,8 +10,6 @@ export {
   defaultScheduleReminderOptions,
   emptyScheduleValue,
   formatScheduleProperty,
-  type ScheduleRecurrenceOption,
-  type ScheduleReminderOption,
   type ScheduleValue,
   scheduleRecurrenceLabel,
 } from './schedule-value'

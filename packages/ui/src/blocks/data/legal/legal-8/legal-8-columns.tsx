@@ -56,9 +56,9 @@ export function createLegal8RunColumns(
   const text = (id: keyof typeof labels.runColumns, value: string | null) => (
     <TextProperty
       ariaLabel={labels.runColumns[id]}
-      fallback={labels.noValue}
       value={value}
       variant="plain"
+      labels={{ fallback: labels.noValue }}
     />
   )
   const instant = (
@@ -177,9 +177,9 @@ export function createLegal8FailureColumns(
   const text = (id: keyof typeof labels.failureColumns, value: string) => (
     <TextProperty
       ariaLabel={labels.failureColumns[id]}
-      fallback={labels.noValue}
       value={value}
       variant="plain"
+      labels={{ fallback: labels.noValue }}
     />
   )
   const instant = (id: keyof typeof labels.failureColumns, value: string) => (

@@ -12,6 +12,7 @@ const meta = {
     onValueChange: ignore,
     options: personOptions,
     value: 'gabriel',
+    placeholder: 'Sem responsável',
   },
   component: PersonProperty<ExamplePerson>,
   decorators: [PersonCanvas],
@@ -39,6 +40,7 @@ export const Anatomy: Story = {
 export const BadgeAnatomy: Story = {
   render: () => (
     <PersonPropertyBadge
+      placeholder="Sem responsável"
       ariaLabel="Responsável: Gabriel Melo"
       option={personOptions[1] ?? null}
     />

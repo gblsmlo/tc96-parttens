@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A property for one person: the assignee of a task, the owner of an account, who created a record. The person shows as an avatar and a name, or as the avatar alone in a dense row, and the same surface opens a list of the people the consumer offers. For several people at once, use [People](?path=/docs/patterns-properties-display-people-api-reference--api-reference).
 
-The other pages of `Patterns/Properties/Display/Person`: [Playground](?path=/story/patterns-properties-display-person-playground--playground) to try the person, the texts, the surface and the states, [Stories](?path=/story/patterns-properties-display-person-stories--default) for each state and surface, [Behavior](?path=/story/patterns-properties-display-person-behavior--badge-surface-with-xs-avatar) for the tests, and [Usages](?path=/story/patterns-properties-display-person-usages--task-assignee) for real content.
+The other pages of `Patterns/Properties/Display/Person`: [Playground](?path=/story/patterns-properties-display-person-playground--playground) to try the person, the texts, the surface and the states, [Variants](?path=/story/patterns-properties-display-person-variants--default) for each surface, avatar size and state, [Layouts](?path=/story/patterns-properties-display-person-layouts--default) for the avatar and name and the [avatar alone](?path=/story/patterns-properties-display-person-layouts--avatar-only-value), [Behavior](?path=/story/patterns-properties-display-person-behavior--badge-surface-with-xs-avatar) for the tests, and [Usages](?path=/story/patterns-properties-display-person-usages--task-assignee) for real content.
 
-Used in: [`AssignedProperty`](?path=/docs/patterns-properties-display-assigned-api-reference--api-reference) is a `PersonProperty` with assignee defaults, and the checklist rows render it for their assignee. The creator of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages-tasks--default) renders it read-only.
+Used in: [`AssignedProperty`](?path=/docs/patterns-properties-display-assigned-api-reference--api-reference) is a `PersonProperty` with assignee defaults, and the checklist rows render it for their assignee. The creator of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages--tasks) renders it read-only.
 
 ## Import
 
@@ -54,8 +54,8 @@ Renders a `button` with `role="combobox"` that opens a list, or, read-only, a `s
 | `display` | `"full"` or `"avatar"` | `"full"` | Controls the value: the avatar and the name, or the avatar alone. |
 | `avatarSize` | `"xs"`, `"sm"`, `"default"`, `"lg"` or `"xl"` | `"xs"` | Sets the avatar of the value: 16, 24, 32, 40 or 48px; the 24px surface fits `"xs"` and `"sm"`. |
 | `ariaLabel` | `string` | `"Person"` | Prefixes the accessible name, before the name of the person. |
-| `placeholder` | `string` | `"Sem responsável"` | Sets the text and the name while no one is set. |
-| `dropdownPlacement` | `PersonPropertyDropdownPlacement` | - | Sets the `side`, `align`, `sideOffset`, `alignOffset` and `alignItemWithTrigger` of the list. |
+| `placeholder` | `string` | `"No assignee"` | Sets the text and the name while no one is set. |
+| `dropdownPlacement` | `PropertySelectDropdownPlacement` | - | Sets the `side`, `align`, `sideOffset`, `alignOffset` and `alignItemWithTrigger` of the list. |
 | `disabled` | `boolean` | `false` | When true, disables the trigger. |
 | `readOnly` | `boolean` | `false` | When true, renders the value with no list, with the same look. |
 | `className` | `string` | - | Adds classes to the surface. |
@@ -91,7 +91,7 @@ The read-only value of a person, with no list. Renders the property surface, a `
 | `option` | `PersonPropertyOption<TValue> \| null` | required | Sets the person to show. |
 | `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface. |
 | `display` | `"full"` or `"avatar"` | `"full"` | Controls the value: the avatar and the name, or the avatar alone. |
-| `placeholder` | `string` | `"Sem responsável"` | Sets the text while `option` is `null`. |
+| `placeholder` | `string` | `"No assignee"` | Sets the text while `option` is `null`. |
 | `ariaLabel` | `string` | - | Names the surface as given, with `role="img"`. |
 | `className` | `string` | - | Adds classes to the surface. |
 
@@ -124,11 +124,10 @@ What `action` receives with the id of the picked person.
 
 | Export | Kind | Description |
 | --- | --- | --- |
-| `PersonPropertyDropdownPlacement` | `type` | `side`, `align`, `sideOffset`, `alignOffset` and `alignItemWithTrigger` of the list. |
 | `PersonPropertyProps` | `type` | The props of `PersonProperty`. |
 
 ## Accessibility and theme
 
 - Pass `ariaLabel`: without it the value is named `"Person: <name>"`, in English. With `display="avatar"` it is the only way the role of the person reaches a screen reader.
-- The default `placeholder` is Brazilian Portuguese; pass one that says what is missing ("Sem dono").
+- The default `placeholder` is English (`No assignee`); pass one that says what is missing ("Sem dono").
 - The avatar initials are 10px; their contrast is recorded in `docs/accessibility.md`. The surface reads the badge tokens of the property surface.

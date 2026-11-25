@@ -13,36 +13,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const WithoutRemove: Story = {
-  render: () => (
-    <ComposedAttachments {...attachmentsControlArgs} remove={false} />
-  ),
-}
-
-export const WithoutAddAction: Story = {
-  render: () => (
-    <ComposedAttachments {...attachmentsControlArgs} action={false} />
-  ),
-}
-
-export const ReadOnly: Story = {
-  render: () => (
-    <ComposedAttachments
-      {...attachmentsControlArgs}
-      action={false}
-      remove={false}
-    />
-  ),
-}
-
-export const WithoutTypeIcon: Story = {
-  render: () => (
-    <ComposedAttachments {...attachmentsControlArgs} typeIcon={false} />
-  ),
-}
-
-export const EmptyWithoutIcon: Story = {
-  render: () => (
-    <ComposedAttachments {...attachmentsControlArgs} actionIcon={false} empty />
-  ),
+export const Default: Story = {
+  render: () => <ComposedAttachments {...attachmentsControlArgs} />,
 }

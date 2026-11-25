@@ -16,7 +16,7 @@ const meta = {
   },
   render: (args) => <ComposedPeople {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/People/Stories',
+  title: 'Patterns/Properties/Display/People/Variants',
 } satisfies Meta<PeopleControls>
 
 export default meta
@@ -25,12 +25,12 @@ type Story = StoryObj<PeopleControls>
 
 export const Default: Story = {}
 
-export const Empty: Story = {
-  args: { value: [] },
-}
-
 export const Badge: Story = {
   args: { variant: 'badge' },
+}
+
+export const Empty: Story = {
+  args: { value: [] },
 }
 
 export const ReadOnly: Story = {

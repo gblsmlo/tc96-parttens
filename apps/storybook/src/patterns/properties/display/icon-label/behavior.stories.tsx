@@ -13,13 +13,15 @@ import {
   esperarSuperficiePlana,
 } from '../../../../test-utils/property-surface'
 import { IconLabelCanvas } from './icon-label-canvas.tsx'
+import { iconLabelControlArgs } from './icon-label-controls.ts'
+import { ComposedIconLabel } from './icon-label-layouts.tsx'
 
 const meta = {
   args: { label: 'Manual' },
   component: IconLabelProperty,
   decorators: [IconLabelCanvas],
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Icon Label/Behavior',
+  title: 'Patterns/Properties/Display/IconLabel/Behavior',
 } satisfies Meta<typeof IconLabelProperty>
 
 export default meta
@@ -163,5 +165,34 @@ export const RenderedButtonKeepsItsRole: Story = {
       surfaceIn(canvasElement),
     )
     await expect(canvas.queryByRole('img')).toBeNull()
+  },
+}
+
+export const RenderedLinkKeepsTheName: Story = {
+  render: () => <ComposedIconLabel {...iconLabelControlArgs} element="link" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const link = canvas.getByRole('link', { name: 'Origem: Manual' })
+
+    await expect(link).toBe(surfaceIn(canvasElement))
+    await expect(link.tagName).toBe('A')
+    await expect(canvas.queryByRole('img')).toBeNull()
+  },
+}
+
+export const LeadingRendersBeforeTheIcon: Story = {
+  render: () => <ComposedIconLabel {...iconLabelControlArgs} leading />,
+  play: async ({ canvasElement }) => {
+    const surface = surfaceIn(canvasElement)
+    const icon = surface.querySelector('[data-slot="property-icon"]')
+    const leading = surface.firstElementChild
+
+    if (!icon || !leading) throw new Error('The story did not render both.')
+
+    await expect(leading).not.toBe(icon)
+    await expect(isInaccessible(leading)).toBe(true)
+    await expect(
+      leading.compareDocumentPosition(icon) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
   },
 }

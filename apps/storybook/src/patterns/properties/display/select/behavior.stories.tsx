@@ -1,7 +1,7 @@
 import { CircleDashedIcon, CircleIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@tc96/ui/button'
-import { SelectProperty, type SelectPropertyOption } from '@tc96/ui/patterns'
+import { type PropertyOption, SelectProperty } from '@tc96/ui/patterns'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
@@ -11,10 +11,11 @@ import {
   esperarSuperficiePlana,
 } from '../../../../test-utils/property-surface'
 import { SelectCanvas } from './select-canvas.tsx'
+import { selectControlArgs } from './select-controls.ts'
 import { activityOptions, groupActivities } from './select-data.ts'
-import { StatefulSelect } from './select-layouts.tsx'
+import { ComposedSelect, StatefulSelect } from './select-layouts.tsx'
 
-const options: SelectPropertyOption[] = [
+const options: PropertyOption[] = [
   { label: 'Reunião', value: 'meeting' },
   { label: 'Ligação', value: 'call' },
   { label: 'Outro', value: 'other' },
@@ -188,7 +189,7 @@ export const EmptyNamesPropertyAndIsMuted: Story = {
 }
 
 export const FallbackOutsideCatalog: Story = {
-  args: { fallback: 'Não informado', value: 'desconhecido' },
+  args: { value: 'desconhecido', labels: { fallback: 'Não informado' } },
   play: async ({ canvasElement }) => {
     await expect(canvasElement).toHaveTextContent('Não informado')
     await expect(surface(canvasElement)).toHaveAttribute(
@@ -196,6 +197,40 @@ export const FallbackOutsideCatalog: Story = {
       'Tipo: Não informado',
     )
     await expect(surface(canvasElement)).not.toHaveAttribute('data-empty')
+  },
+}
+
+export const OutsideCatalogKeepsTheFilledLook: Story = {
+  render: () => <ComposedSelect {...selectControlArgs} value="unknown" />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('combobox', {
+      name: 'Tipo: —',
+    })
+
+    await expect(trigger).toHaveTextContent('—')
+    await expect(trigger).not.toHaveAttribute('data-empty')
+    await expect(
+      trigger.querySelector('[data-slot="property-icon"]'),
+    ).toBeNull()
+  },
+}
+
+export const CatalogWithoutIconsShowsNoIcon: Story = {
+  render: () => <ComposedSelect {...selectControlArgs} icons={false} />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('combobox', {
+      name: 'Tipo: Reunião',
+    })
+
+    await expect(trigger.querySelector('svg')).toBeNull()
+    await userEvent.click(trigger)
+    const listbox = await screen.findByRole('listbox')
+    await expect(within(listbox).getAllByRole('option')).toHaveLength(4)
+    await expect(
+      listbox.querySelector('[data-slot="property-icon"]'),
+    ).toBeNull()
+
+    await closeList(trigger)
   },
 }
 
@@ -214,10 +249,11 @@ export const DisabledTriggerCannotOpen: Story = {
 
 export const GroupsNameTheirSections: Story = {
   args: {
-    emptyOptionLabel: 'Sem tipo',
     groups: groupActivities(activityOptions),
     onValueChange: fn(),
     options: undefined,
+    allowEmpty: true,
+    labels: { emptyOption: 'Sem tipo' },
   },
   play: async ({ args, canvasElement }) => {
     const trigger = within(canvasElement).getByRole('combobox', {
@@ -241,7 +277,7 @@ export const GroupsNameTheirSections: Story = {
 }
 
 export const EmptyOptionReportsNull: Story = {
-  args: { action: fn(), emptyOptionLabel: 'Sem tipo' },
+  args: { action: fn(), allowEmpty: true, labels: { emptyOption: 'Sem tipo' } },
   play: async ({ args, canvasElement }) => {
     await choose(
       within(canvasElement).getByRole('combobox', { name: 'Tipo: Ligação' }),
@@ -259,9 +295,10 @@ export const EmptyOptionHasNoIconWhenCatalogHasNone: Story = {
   render: () => (
     <StatefulSelect
       ariaLabel="Frequência"
-      emptyOptionLabel="Não repete"
       initialValue="daily"
       options={[{ label: 'Diariamente', value: 'daily' }]}
+      allowEmpty
+      labels={{ emptyOption: 'Não repete' }}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -284,9 +321,10 @@ export const EmptyOptionShowsDashedIconWhenCatalogHasIcons: Story = {
   render: () => (
     <StatefulSelect
       ariaLabel="Tipo"
-      emptyOptionLabel="Sem tipo"
       initialValue="call"
       options={activityOptions}
+      allowEmpty
+      labels={{ emptyOption: 'Sem tipo' }}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -309,10 +347,11 @@ export const EmptyOptionShowsDashedIconWhenCatalogHasIcons: Story = {
 export const FilledAfterPickingEmptyOverNull: Story = {
   args: {
     ariaLabel: 'Prioridade',
-    emptyOptionLabel: 'Sem prioridade',
     onValueChange: fn(),
     placeholder: 'Prioridade',
     value: null,
+    allowEmpty: true,
+    labels: { emptyOption: 'Sem prioridade' },
   },
   play: async ({ args, canvasElement }) => {
     await expect(surface(canvasElement)).toHaveAttribute('data-empty', 'true')
@@ -339,10 +378,11 @@ export const FilledAfterMovingFromValueToEmpty: Story = {
   render: () => (
     <StatefulSelect
       ariaLabel="Prioridade"
-      emptyOptionLabel="Sem prioridade"
       initialValue="call"
       options={options}
       placeholder="Prioridade"
+      allowEmpty
+      labels={{ emptyOption: 'Sem prioridade' }}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -370,11 +410,12 @@ function ValueFromOutside() {
     <div className="flex items-center gap-2">
       <SelectProperty
         ariaLabel="Prioridade"
-        emptyOptionLabel="Sem prioridade"
         onValueChange={() => undefined}
         options={options}
         placeholder="Prioridade"
         value={value}
+        allowEmpty
+        labels={{ emptyOption: 'Sem prioridade' }}
       />
       <Button onClick={() => setValue('call')} variant="outline">
         Receber Ligação

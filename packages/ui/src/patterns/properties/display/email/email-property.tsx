@@ -1,6 +1,6 @@
 'use client'
 
-import { EnvelopeSimpleIcon, XIcon } from '@phosphor-icons/react'
+import { XIcon } from '@phosphor-icons/react'
 import { Input } from '@tc96/ui/input'
 import { Popover, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
@@ -9,7 +9,16 @@ import { useEntryListEditor } from '../../hooks/use-entry-list-editor'
 import { createEntryParser } from '../../shared/lib/entry-parser'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import { PropertyAddTrigger } from '../../shared/property-add-trigger'
+import type { PropertyListChangeContext } from '../../shared/property-catalog'
+import { propertyDisplayIcons } from '../../shared/property-display-meta'
 import { PropertyEntryForm } from '../../shared/property-entry-form'
+import {
+  defaultPropertyAriaLabels,
+  defaultPropertyLabels,
+  defaultPropertyPlaceholders,
+  type EmailPropertyLabels,
+  resolvePropertyLabels,
+} from '../../shared/property-labels'
 import { PropertyRow } from '../../shared/property-row'
 import {
   PropertySurface,
@@ -19,33 +28,21 @@ import { EditableText } from '../editable-text/index'
 import { IconLabelProperty } from '../icon-label/icon-label-property'
 import { emailAddressSchema } from './email-address'
 
-const invalidEmailMessage = 'Informe um e-mail válido.'
-const duplicateEmailMessage = 'Este e-mail já está na lista.'
-const parseEmail = createEntryParser(emailAddressSchema, invalidEmailMessage)
+const EmailIcon = propertyDisplayIcons.email
 
-export interface EmailPropertyActionContext {
-  added: string | null
-  previousValue: readonly string[]
-  removed: string | null
-}
+type EmailChangeContext = PropertyListChangeContext<string, string>
 
 export interface EmailPropertyProps {
   value: readonly string[]
-  action?: (
-    value: readonly string[],
-    context: EmailPropertyActionContext,
-  ) => void
-
+  action?: (value: readonly string[], context: EmailChangeContext) => void
   addDisabled?: boolean
-  addLabel?: string
   ariaLabel?: string
   className?: string
   disabled?: boolean
   display?: 'chips' | 'trigger'
   editing?: 'inline' | 'popover'
-  entryLabels?: readonly string[]
   errorMessage?: string | null
-  inputPlaceholder?: string
+  labels?: Partial<EmailPropertyLabels>
   placeholder?: string
   readOnly?: boolean
   variant?: PropertyVariant
@@ -55,17 +52,15 @@ export interface EmailPropertyProps {
 export function EmailProperty({
   action,
   addDisabled = false,
-  addLabel = 'Adicionar e-mail',
-  ariaLabel = 'E-mails',
+  ariaLabel = defaultPropertyAriaLabels.email,
   className,
   disabled = false,
   display = 'chips',
   editing = 'popover',
-  entryLabels = ['Principal', 'Secundário'],
   errorMessage = null,
-  inputPlaceholder = 'nome@exemplo.com',
+  labels: labelOverrides,
   onValueChange,
-  placeholder = 'Sem e-mail',
+  placeholder = defaultPropertyPlaceholders.email,
   readOnly = false,
   value,
   variant = 'plain',
@@ -73,15 +68,21 @@ export function EmailProperty({
   const [editingInline, setEditingInline] = useState(false)
   const [inlineDraft, setInlineDraft] = useState<string | null>(null)
   const [formatError, setFormatError] = useState<string | null>(null)
+  const labels = resolvePropertyLabels(
+    defaultPropertyLabels.email,
+    labelOverrides,
+  )
+  const parseEmail = createEntryParser(
+    emailAddressSchema(labels.invalid),
+    labels.invalid,
+  )
 
-  const commit = (
-    next: readonly string[],
-    context: EmailPropertyActionContext,
-  ) => emitChange({ action, onValueChange }, next, context)
+  const commit = (next: readonly string[], context: EmailChangeContext) =>
+    emitChange({ action, onValueChange }, next, context)
 
   const editor = useEntryListEditor({
-    duplicateMessage: duplicateEmailMessage,
-    limit: entryLabels.length,
+    duplicateMessage: labels.duplicate,
+    limit: labels.entries.length,
     onCommit: commit,
     parse: parseEmail,
     value,
@@ -95,7 +96,7 @@ export function EmailProperty({
     }
 
     if (value.includes(parsed.value)) {
-      setFormatError(duplicateEmailMessage)
+      setFormatError(labels.duplicate)
       return false
     }
 
@@ -124,7 +125,7 @@ export function EmailProperty({
         {value.length > 0 ? (
           value.map((email) => (
             <IconLabelProperty
-              icon={EnvelopeSimpleIcon}
+              icon={EmailIcon}
               key={email}
               label={email}
               variant={variant}
@@ -141,17 +142,15 @@ export function EmailProperty({
 
   const entryForm = (
     <PropertyEntryForm
-      addLabel={addLabel}
       canAddAnother={editor.canAddAnother}
       drafts={editor.drafts}
-      entryLabels={entryLabels}
       errorMessage={errorMessage}
       errors={editor.errors}
+      labels={labels}
       onAdd={editor.addDraft}
       onChange={editor.setDraft}
       onRemove={editor.removeDraft}
       onSave={editor.save}
-      removeLabel={(entryLabel) => `Remover ${entryLabel} e-mail`}
       renderField={(field) => (
         <Input
           aria-invalid={field.invalid || undefined}
@@ -159,7 +158,7 @@ export function EmailProperty({
           nativeInput
           onChange={(event) => field.onChange(event.target.value)}
           onKeyDown={field.onKeyDown}
-          placeholder={inputPlaceholder}
+          placeholder={labels.inputPlaceholder}
           type="email"
           value={field.draft}
         />
@@ -186,7 +185,7 @@ export function EmailProperty({
               render={<button disabled={disabled} type="button" />}
               variant={variant === 'plain' ? 'plain' : 'badge'}
             >
-              <EnvelopeSimpleIcon
+              <EmailIcon
                 aria-hidden="true"
                 className="size-4"
                 data-slot="property-icon"
@@ -211,12 +210,12 @@ export function EmailProperty({
       {value.map((email) => (
         <IconLabelProperty
           className="pe-0"
-          icon={EnvelopeSimpleIcon}
+          icon={EmailIcon}
           key={email}
           label={email}
           trailing={
             <button
-              aria-label={`Remover e-mail ${email}`}
+              aria-label={`${labels.remove} ${email}`}
               className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
               disabled={disabled}
               onClick={() => removeEmail(email)}
@@ -233,7 +232,7 @@ export function EmailProperty({
           <span className="inline-flex min-w-0 flex-col gap-0.5">
             <PropertySurface className="w-48">
               <EditableText
-                ariaLabel={addLabel}
+                ariaLabel={labels.add}
                 className="text-sm"
                 onCommit={(next) => {
                   const candidate = next?.trim() ?? ''
@@ -250,7 +249,7 @@ export function EmailProperty({
                   }
                   setInlineDraft(candidate)
                 }}
-                placeholder={inputPlaceholder}
+                placeholder={labels.inputPlaceholder}
                 size="sm"
                 type="email"
                 value={inlineDraft}
@@ -267,10 +266,10 @@ export function EmailProperty({
           </span>
         ) : (
           <PropertyAddTrigger
-            addLabel={addLabel}
+            addLabel={labels.add}
             disabled={disabled}
             hasValue={value.length > 0}
-            icon={EnvelopeSimpleIcon}
+            icon={EmailIcon}
             onClick={() => {
               setFormatError(null)
               setEditingInline(true)
@@ -283,10 +282,10 @@ export function EmailProperty({
           <PopoverTrigger
             render={
               <PropertyAddTrigger
-                addLabel={addLabel}
+                addLabel={labels.add}
                 disabled={disabled}
                 hasValue={value.length > 0}
-                icon={EnvelopeSimpleIcon}
+                icon={EmailIcon}
                 placeholder={placeholder}
               />
             }

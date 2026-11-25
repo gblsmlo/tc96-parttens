@@ -9,11 +9,9 @@ import {
   addCalendarDays,
   type CalendarDate,
   fromZonedDateTime,
+  type PropertyOption,
   type SchedulePropertyLabels,
-  type ScheduleRecurrenceOption,
-  type ScheduleReminderOption,
   type ScheduleValue,
-  type SelectPropertyOption,
   toZonedDateTime,
 } from '@tc96/ui/patterns'
 import { z } from 'zod'
@@ -51,7 +49,7 @@ export const slotFromCalendar = ({
   start: formatMinutes(startMinutes),
 })
 
-export const typeOptions: SelectPropertyOption[] = [
+export const typeOptions: PropertyOption[] = [
   { icon: CalendarBlankIcon, label: 'Event', tone: 'neutral', value: 'event' },
   {
     icon: HandshakeIcon,
@@ -61,7 +59,7 @@ export const typeOptions: SelectPropertyOption[] = [
   },
 ]
 
-export const calendarOptions: SelectPropertyOption[] = [
+export const calendarOptions: PropertyOption[] = [
   {
     icon: CircleIcon,
     label: 'Appointments',
@@ -76,7 +74,7 @@ export const dialogTitles: Record<string, string> = {
   appointment: 'New appointment',
 }
 
-export const availabilityOptions: SelectPropertyOption[] = [
+export const availabilityOptions: PropertyOption[] = [
   { icon: BriefcaseIcon, label: 'Busy', tone: 'neutral', value: 'busy' },
   { icon: CoffeeIcon, label: 'Free', tone: 'neutral', value: 'free' },
 ]
@@ -104,7 +102,7 @@ export const scheduleLabels: Partial<SchedulePropertyLabels> = {
   untilFallback: 'No end date',
 }
 
-export const scheduleRecurrenceOptions: readonly ScheduleRecurrenceOption[] = [
+export const scheduleRecurrenceOptions: readonly PropertyOption[] = [
   { label: 'Daily', value: 'daily' },
   { label: 'Weekdays', value: 'weekdays' },
   { label: 'Weekly', value: 'weekly' },
@@ -112,7 +110,7 @@ export const scheduleRecurrenceOptions: readonly ScheduleRecurrenceOption[] = [
   { label: 'Yearly', value: 'yearly' },
 ]
 
-export const scheduleReminderOptions: readonly ScheduleReminderOption[] = [
+export const scheduleReminderOptions: readonly PropertyOption[] = [
   { label: '10 minutes before', value: '10' },
   { label: '30 minutes before', value: '30' },
   { label: '1 hour before', value: '60' },

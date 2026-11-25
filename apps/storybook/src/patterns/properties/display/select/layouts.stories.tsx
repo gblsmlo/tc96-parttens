@@ -13,6 +13,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const WithoutIcons: Story = {
-  render: () => <ComposedSelect {...selectControlArgs} icons={false} />,
+export const Default: Story = {
+  render: () => <ComposedSelect {...selectControlArgs} />,
 }

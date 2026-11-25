@@ -5,6 +5,7 @@ import {
   type ScheduleValue,
 } from '@tc96/ui/patterns'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import type { ScheduleControls } from './schedule-controls.ts'
 import { scheduleToday, scheduleValues } from './schedule-data.ts'
 
@@ -17,12 +18,14 @@ export function StatefulSchedule({
 
   return (
     <ScheduleProperty
+      locale="pt-BR"
       {...props}
       onValueChange={(next) => {
         setValue(next)
         onValueChange?.(next)
       }}
       value={value}
+      labels={{ ...ptBRPropertyLabels.schedule, ...props.labels }}
     />
   )
 }
@@ -60,8 +63,8 @@ export function OpenOnMount({ children }: Readonly<{ children: ReactNode }>) {
 
 export function ComposedSchedule({
   calendarLocale,
-  fallback,
   keepBelow,
+  labelsFallback,
   openOnMount,
   readOnly,
   value,
@@ -74,10 +77,10 @@ export function ComposedSchedule({
       dropdownPlacement={
         keepBelow ? { collisionAvoidance: { side: 'none' } } : undefined
       }
-      fallback={fallback || undefined}
       readOnly={readOnly}
       today={scheduleToday}
       value={scheduleValues[value]}
+      labels={{ fallback: labelsFallback }}
     />
   )
 

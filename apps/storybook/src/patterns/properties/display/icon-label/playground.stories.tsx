@@ -13,7 +13,7 @@ const meta = {
   decorators: [IconLabelCanvas],
   render: (args) => <ComposedIconLabel {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Icon Label/Playground',
+  title: 'Patterns/Properties/Display/IconLabel/Playground',
 } satisfies Meta<IconLabelControls>
 
 export default meta

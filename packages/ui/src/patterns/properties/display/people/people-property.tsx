@@ -1,14 +1,22 @@
 'use client'
 
-import { UserPlusIcon } from '@phosphor-icons/react'
 import { cn } from '@tc96/utils'
 import { useMemo } from 'react'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import { resolveOptions } from '../../shared/lib/property-options'
+import type {
+  PropertyListChangeContext,
+  PropertyMultiSelectDropdownPlacement,
+} from '../../shared/property-catalog'
+import { propertyDisplayIcons } from '../../shared/property-display-meta'
 import {
-  type PropertyMultiSelectDropdownPlacement,
-  PropertyMultiSelectShell,
-} from '../../shared/property-multi-select-shell'
+  defaultPropertyAriaLabels,
+  defaultPropertyLabels,
+  defaultPropertyPlaceholders,
+  type PeoplePropertyLabels,
+  resolvePropertyLabels,
+} from '../../shared/property-labels'
+import { PropertyMultiSelectShell } from '../../shared/property-multi-select-shell'
 import { PropertyRow } from '../../shared/property-row'
 import {
   PropertySurface,
@@ -19,32 +27,19 @@ import {
   type PersonPropertyOption,
 } from '../person/person-option-content'
 
-const addPersonLabel = 'Adicionar pessoa'
-
-export type PeoplePropertyOption<TValue extends string = string> =
-  PersonPropertyOption<TValue>
-
-export type PeoplePropertyDropdownPlacement =
-  PropertyMultiSelectDropdownPlacement
-
-export interface PeoplePropertyActionContext<TValue extends string = string> {
-  added: PeoplePropertyOption<TValue> | null
-  previousValue: readonly TValue[]
-  removed: PeoplePropertyOption<TValue> | null
-}
-
 export interface PeoplePropertyProps<TValue extends string = string> {
   value: readonly TValue[]
-  options: readonly PeoplePropertyOption<TValue>[]
+  options: readonly PersonPropertyOption<TValue>[]
   action?: (
     value: readonly TValue[],
-    context: PeoplePropertyActionContext<TValue>,
+    context: PropertyListChangeContext<PersonPropertyOption<TValue>, TValue>,
   ) => void
   ariaLabel?: string
   className?: string
   disabled?: boolean
-  dropdownPlacement?: PeoplePropertyDropdownPlacement
+  dropdownPlacement?: PropertyMultiSelectDropdownPlacement
   isLoading?: boolean
+  labels?: Partial<PeoplePropertyLabels>
   placeholder?: string
   readOnly?: boolean
   variant?: PropertyVariant
@@ -53,18 +48,23 @@ export interface PeoplePropertyProps<TValue extends string = string> {
 
 export function PeopleProperty<TValue extends string = string>({
   action,
-  ariaLabel = 'Pessoas',
+  ariaLabel = defaultPropertyAriaLabels.people,
   className,
   disabled = false,
   dropdownPlacement,
   isLoading = false,
+  labels: labelOverrides,
   onValueChange,
   options,
-  placeholder = addPersonLabel,
+  placeholder = defaultPropertyPlaceholders.people,
   readOnly = false,
   value,
   variant = 'plain',
 }: Readonly<PeoplePropertyProps<TValue>>) {
+  const labels = resolvePropertyLabels(
+    defaultPropertyLabels.people,
+    labelOverrides,
+  )
   const selectedOptions = useMemo(
     () => resolveOptions(options, value),
     [options, value],
@@ -101,20 +101,20 @@ export function PeopleProperty<TValue extends string = string>({
       variant={variant}
     >
       <PropertyMultiSelectShell
-        addIcon={UserPlusIcon}
-        addLabel={addPersonLabel}
+        addIcon={propertyDisplayIcons.personAdd}
+        addLabel={labels.add}
         ariaLabel={ariaLabel}
         disabled={disabled}
         dropdownPlacement={dropdownPlacement}
-        emptyLabel="Nenhuma pessoa encontrada."
+        emptyLabel={labels.empty}
         isLoading={isLoading}
-        loadingLabel="Carregando pessoas…"
+        loadingLabel={labels.loading}
         onChange={(nextValue, change) =>
           emitChange({ action, onValueChange }, nextValue, change)
         }
         options={options}
         placeholder={placeholder}
-        removeLabel={(option) => `Remover ${option.label}`}
+        removeLabel={(option) => `${labels.remove} ${option.label}`}
         renderChip={(option) => (
           <PersonOptionContent option={option} size="xs" />
         )}

@@ -1,14 +1,18 @@
 import type { DateRange } from '@daypicker/react'
 import { formatShortDate, isValidDate } from '@tc96/ui/helpers/date'
+import {
+  type DateRangePropertyLabels,
+  defaultPropertyLabels,
+} from '../../shared/property-labels'
 
 export function formatDateRangeProperty(
   value: DateRange | undefined,
   fallback: string,
   locale: string,
   {
-    fromLabel = 'A partir de',
-    untilLabel = 'Até',
-  }: Readonly<{ fromLabel?: string; untilLabel?: string }> = {},
+    from: fromLabel = defaultPropertyLabels.dateRange.from,
+    until: untilLabel = defaultPropertyLabels.dateRange.until,
+  }: Readonly<Partial<Pick<DateRangePropertyLabels, 'from' | 'until'>>> = {},
 ): string {
   const from = formatEnd(value?.from, locale)
   const to = formatEnd(value?.to, locale)

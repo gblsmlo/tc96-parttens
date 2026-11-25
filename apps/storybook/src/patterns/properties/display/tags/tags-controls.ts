@@ -1,5 +1,6 @@
 import type { ArgTypes } from '@storybook/react-vite'
 import type { PropertyVariant } from '@tc96/ui/patterns'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { tagOptionLabels, tagOptions } from './tags-data.ts'
 
 export const tagsDisplays = ['chips', 'count'] as const
@@ -13,6 +14,10 @@ export interface TagsControls {
   disabled: boolean
   display: TagsDisplay
   isLoading: boolean
+  labelsAdd: string
+  labelsEmpty: string
+  labelsLoading: string
+  labelsRemove: string
   placeholder: string
   readOnly: boolean
   value: string[]
@@ -24,6 +29,10 @@ export const tagsControlArgs: TagsControls = {
   disabled: false,
   display: 'chips',
   isLoading: false,
+  labelsAdd: ptBRPropertyLabels.tags.add,
+  labelsEmpty: ptBRPropertyLabels.tags.empty,
+  labelsLoading: ptBRPropertyLabels.tags.loading,
+  labelsRemove: ptBRPropertyLabels.tags.remove,
   placeholder: 'Adicionar uma tag',
   readOnly: false,
   value: ['documents', 'urgent'],
@@ -50,6 +59,26 @@ export const tagsControlArgTypes: Partial<ArgTypes<TagsControls>> = {
     description:
       'The `isLoading` of `TagsProperty`: a status line at the top of the open list.',
   },
+  labelsAdd: {
+    control: 'text',
+    description:
+      '`labels.add` of `TagsProperty`: the text of the empty add chip and the name of the `+` chip.',
+  },
+  labelsEmpty: {
+    control: 'text',
+    description:
+      '`labels.empty` of `TagsProperty`: the message of an open list with no option.',
+  },
+  labelsLoading: {
+    control: 'text',
+    description:
+      '`labels.loading` of `TagsProperty`: the status line `isLoading` shows at the top of the open list.',
+  },
+  labelsRemove: {
+    control: 'text',
+    description:
+      '`labels.remove` of `TagsProperty`: the name of each remove button, before the label of its tag.',
+  },
   placeholder: {
     control: 'text',
     description:
@@ -61,8 +90,7 @@ export const tagsControlArgTypes: Partial<ArgTypes<TagsControls>> = {
   },
   value: {
     control: { labels: tagOptionLabels, type: 'check' },
-    description:
-      'The tags of `value`; the story keeps the edits in its own state until this control changes.',
+    description: 'The tags of `value`; none applied shows the empty add chip.',
     options: tagOptions.map((option) => option.value),
   },
   variant: {

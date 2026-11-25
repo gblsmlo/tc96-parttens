@@ -11,6 +11,7 @@ import {
 import { Skeleton } from '@tc96/ui/skeleton'
 import { Switch } from '@tc96/ui/switch'
 import { type ReactNode, useEffect, useState } from 'react'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import {
   initialLawsuitValues,
   LAWSUIT_NUMBER_DIGITS,
@@ -268,6 +269,7 @@ export function LawsuitOffice({
     <RecordGroup collapsible={false} title="Escritório">
       <RecordGroupRow label="Responsável">
         <PersonProperty
+          placeholder="Sem responsável"
           ariaLabel="Responsável"
           onValueChange={(ownerId) => update({ ownerId })}
           options={lawsuitOwners}
@@ -324,13 +326,13 @@ export function LawsuitFields({ form }: Readonly<{ form: LawsuitForm }>) {
             ariaLabel={label}
             disabled={creating}
             editing="inline"
-            fallback={fallback}
             onCommit={(next) => {
               touch(field)
               update({ [field]: next } as Partial<LawsuitValues>)
             }}
             value={value}
             variant="plain"
+            labels={{ ...ptBRPropertyLabels.text, fallback: fallback }}
           />
           {source && draft[field] === null ? (
             <SourceBadge>{source.from}</SourceBadge>
@@ -354,10 +356,13 @@ export function LawsuitFields({ form }: Readonly<{ form: LawsuitForm }>) {
               ariaLabel="Número"
               disabled={creating}
               editing="inline"
-              fallback="Adicionar número"
               onCommit={(number) => update({ number: number ?? '' })}
               value={draft.number || null}
               variant="plain"
+              labels={{
+                ...ptBRPropertyLabels.text,
+                fallback: 'Adicionar número',
+              }}
             />
           ) : (
             <span className="text-sm tabular-nums">{draft.number}</span>

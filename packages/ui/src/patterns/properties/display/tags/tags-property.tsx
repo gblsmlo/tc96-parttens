@@ -1,52 +1,45 @@
 'use client'
 
-import { TagIcon } from '@phosphor-icons/react'
 import { cn } from '@tc96/utils'
 import { useMemo } from 'react'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import { resolveOptions } from '../../shared/lib/property-options'
+import type {
+  PropertyListChangeContext,
+  PropertyMultiSelectDropdownPlacement,
+  PropertyOption,
+} from '../../shared/property-catalog'
+import { propertyDisplayIcons } from '../../shared/property-display-meta'
 import {
-  type PropertyMultiSelectDropdownPlacement,
-  PropertyMultiSelectShell,
-} from '../../shared/property-multi-select-shell'
+  defaultPropertyAriaLabels,
+  defaultPropertyLabels,
+  defaultPropertyPlaceholders,
+  resolvePropertyLabels,
+  type TagsPropertyLabels,
+} from '../../shared/property-labels'
+import { PropertyMultiSelectShell } from '../../shared/property-multi-select-shell'
 import { PropertyRow } from '../../shared/property-row'
 import {
   PropertySurface,
   type PropertyVariant,
 } from '../../shared/property-surface'
 
-const addTagLabel = 'Adicionar tag'
-
-const defaultCountLabel = (count: number) =>
-  `${count} ${count === 1 ? 'Tag' : 'Tags'}`
-
-export interface TagsPropertyOption<TValue extends string = string> {
-  label: string
-  value: TValue
-}
-
-export type TagsPropertyDropdownPlacement = PropertyMultiSelectDropdownPlacement
-
-export interface TagsPropertyActionContext<TValue extends string = string> {
-  added: TagsPropertyOption<TValue> | null
-  previousValue: readonly TValue[]
-  removed: TagsPropertyOption<TValue> | null
-}
+const TagIcon = propertyDisplayIcons.tags
 
 export interface TagsPropertyProps<TValue extends string = string> {
   value: readonly TValue[]
-  options: readonly TagsPropertyOption<TValue>[]
+  options: readonly PropertyOption<TValue>[]
   action?: (
     value: readonly TValue[],
-    context: TagsPropertyActionContext<TValue>,
+    context: PropertyListChangeContext<PropertyOption<TValue>, TValue>,
   ) => void
   ariaLabel?: string
   className?: string
-  countLabel?: (count: number) => string
   disabled?: boolean
   display?: 'chips' | 'count'
-  dropdownPlacement?: TagsPropertyDropdownPlacement
+  dropdownPlacement?: PropertyMultiSelectDropdownPlacement
   isLoading?: boolean
+  labels?: Partial<TagsPropertyLabels>
   placeholder?: string
   readOnly?: boolean
   variant?: PropertyVariant
@@ -55,26 +48,30 @@ export interface TagsPropertyProps<TValue extends string = string> {
 
 export function TagsProperty<TValue extends string = string>({
   action,
-  ariaLabel = 'Tags',
+  ariaLabel = defaultPropertyAriaLabels.tags,
   className,
-  countLabel = defaultCountLabel,
   disabled = false,
   display = 'chips',
   dropdownPlacement,
   isLoading = false,
+  labels: labelOverrides,
   onValueChange,
   options,
-  placeholder = 'Adicionar uma tag',
+  placeholder = defaultPropertyPlaceholders.tags,
   readOnly = false,
   value,
   variant = 'plain',
 }: Readonly<TagsPropertyProps<TValue>>) {
+  const labels = resolvePropertyLabels(
+    defaultPropertyLabels.tags,
+    labelOverrides,
+  )
   const selectedOptions = useMemo(
     () => resolveOptions(options, value),
     [options, value],
   )
 
-  const countText = countLabel(selectedOptions.length)
+  const countText = labels.count(selectedOptions.length)
 
   if (!isEditable({ action, onValueChange, readOnly })) {
     return (
@@ -120,19 +117,19 @@ export function TagsProperty<TValue extends string = string>({
     >
       <PropertyMultiSelectShell
         addIcon={TagIcon}
-        addLabel={addTagLabel}
+        addLabel={labels.add}
         ariaLabel={ariaLabel}
         disabled={disabled}
         dropdownPlacement={dropdownPlacement}
-        emptyLabel="Nenhuma tag encontrada."
+        emptyLabel={labels.empty}
         isLoading={isLoading}
-        loadingLabel="Carregando tags…"
+        loadingLabel={labels.loading}
         onChange={(nextValue, change) =>
           emitChange({ action, onValueChange }, nextValue, change)
         }
         options={options}
-        placeholder={addTagLabel}
-        removeLabel={(option) => `Remover tag ${option.label}`}
+        placeholder={labels.add}
+        removeLabel={(option) => `${labels.remove} ${option.label}`}
         renderOption={(option) => option.label}
         renderTrigger={
           display === 'count'

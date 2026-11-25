@@ -11,11 +11,7 @@ import {
   ShoppingBagIcon,
   UserPlusIcon,
 } from '@phosphor-icons/react'
-import type {
-  CollectionDefinition,
-  SelectPropertyOption,
-  TagsPropertyOption,
-} from '@tc96/ui/patterns'
+import type { CollectionDefinition, PropertyOption } from '@tc96/ui/patterns'
 
 export type CampaignObjective =
   | 'awareness'
@@ -89,7 +85,7 @@ export const objectiveOptions = [
     value: 'app-promotion',
   },
   { icon: ShoppingBagIcon, label: 'Vendas', tone: 'success', value: 'sales' },
-] as const satisfies readonly (SelectPropertyOption & {
+] as const satisfies readonly (PropertyOption & {
   value: CampaignObjective
 })[]
 
@@ -119,17 +115,16 @@ export const statusOptions = [
     tone: 'info',
     value: 'completed',
   },
-] as const satisfies readonly (SelectPropertyOption & {
+] as const satisfies readonly (PropertyOption & {
   value: CampaignStatus
 })[]
 
-export const placementOptions: readonly TagsPropertyOption<CampaignPlacement>[] =
-  [
-    { label: 'Facebook', value: 'facebook' },
-    { label: 'Instagram', value: 'instagram' },
-    { label: 'Messenger', value: 'messenger' },
-    { label: 'Audience Network', value: 'audience-network' },
-  ]
+export const placementOptions: readonly PropertyOption<CampaignPlacement>[] = [
+  { label: 'Facebook', value: 'facebook' },
+  { label: 'Instagram', value: 'instagram' },
+  { label: 'Messenger', value: 'messenger' },
+  { label: 'Audience Network', value: 'audience-network' },
+]
 
 export const resultLabels: Record<CampaignObjective, string> = {
   'app-promotion': 'Instalações',

@@ -12,11 +12,13 @@ const meta = {
   argTypes: dateControlArgTypes,
   decorators: [DateCanvas],
   parameters: {
-    controls: { exclude: ['disabled', 'isOverdue', 'value', 'variant'] },
+    controls: {
+      exclude: ['disabled', 'isOverdue', 'readOnly', 'value', 'variant'],
+    },
   },
   render: (args) => <ComposedDate {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Date/Stories',
+  title: 'Patterns/Properties/Display/Date/Variants',
 } satisfies Meta<DateControls>
 
 export default meta
@@ -35,6 +37,10 @@ export const Empty: Story = {
 
 export const Overdue: Story = {
   args: { isOverdue: true },
+}
+
+export const ReadOnly: Story = {
+  args: { readOnly: true },
 }
 
 export const Disabled: Story = {

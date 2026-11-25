@@ -19,6 +19,14 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const TaskOwner: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The owner of a task card, on the [Default](?path=/story/patterns-properties-display-assigned-layouts--default) layout: the assignee on the end of the card, with the list aligned to its end and Atribuir while no one is set.',
+      },
+    },
+  },
   render: () => <TaskOwnerRow />,
   play: async ({ canvasElement }) => {
     await expect(
@@ -30,6 +38,14 @@ export const TaskOwner: Story = {
 }
 
 export const TeamTasks: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The assignees of a team task list, on the [Default](?path=/story/patterns-properties-display-assigned-layouts--default) layout as read-only `AssignedPropertyBadge` values: one per task, and Sem responsável on the task no one owns.',
+      },
+    },
+  },
   render: () => <TeamTaskList />,
   play: async ({ canvasElement }) => {
     const list = within(

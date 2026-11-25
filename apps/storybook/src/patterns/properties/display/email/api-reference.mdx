@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A property for a short list of email addresses: the work and personal address of a contact, the billing address of an account. The addresses show as a row of chips with an add trigger at the end, or as one trigger that summarizes them; new addresses are typed in a popup with one field per entry, or in a field that takes the place of the trigger. The consumer keeps the list and receives the next one.
 
-The other pages of `Patterns/Properties/Display/Email`: [Playground](?path=/story/patterns-properties-display-email-playground--playground) to try the addresses, the texts, the states and the add trigger, [Stories](?path=/story/patterns-properties-display-email-stories--default) for each state and display, [Behavior](?path=/story/patterns-properties-display-email-behavior--empty-trigger-names-itself) for the tests, [Usages](?path=/story/patterns-properties-display-email-usages--contact-emails) for real content, and [Layouts](?path=/story/patterns-properties-display-email-layouts--without-add-trigger) for the row without the add trigger.
+The other pages of `Patterns/Properties/Display/Email`: [Playground](?path=/story/patterns-properties-display-email-playground--playground) to try the addresses, the texts, the states and the add trigger, [Variants](?path=/story/patterns-properties-display-email-variants--default) for the empty, read-only and disabled rows, [Layouts](?path=/story/patterns-properties-display-email-layouts--default) for the chips row, the list in a popover and the inline field, [Behavior](?path=/story/patterns-properties-display-email-behavior--empty-trigger-names-itself) for the tests, and [Usages](?path=/story/patterns-properties-display-email-usages--contact-emails) for the addresses of a contact, a lead and an account.
 
 Used in: the contact of [Templates/Contact Detail](?path=/story/templates-contact-detail--default) and the dialog of [Patterns/Records/RecordDialog/Usages, Contacts](?path=/story/patterns-records-recorddialog-usages--contacts).
 
@@ -43,15 +43,13 @@ Renders a `fieldset` named by `ariaLabel`, or, with `display="trigger"`, a singl
 | --- | --- | --- | --- |
 | `value` | `readonly string[]` | required | Sets the addresses, in order. |
 | `onValueChange` | `(value: readonly string[]) => void` | - | Called with the next list after a save, an inline add or a removal. |
-| `action` | `(value: readonly string[], context: EmailPropertyActionContext) => void` | - | Called instead of `onValueChange`, with what changed. |
+| `action` | `(value, context) => void` | - | Called instead of `onValueChange`, with what changed. `context` is a `PropertyListChangeContext`. |
 | `display` | `"chips"` or `"trigger"` | `"chips"` | Controls the display: a row of chips with an add trigger, or one trigger that names the property and summarizes the list. |
 | `editing` | `"popover"` or `"inline"` | `"popover"` | Controls how the chips row adds an address: in the entry popup, or in a field that takes the place of the add trigger. |
 | `variant` | `"badge"` or `"plain"` | `"plain"` | Controls the surface of the read-only chips and of the `trigger` display. |
-| `entryLabels` | `readonly string[]` | `["Principal", "Secundário"]` | Names the fields of the popup, one per address, and so sets how many addresses the popup holds. |
-| `placeholder` | `string` | `"Sem e-mail"` | Sets the text of the add trigger and of the read-only row while there is no address. |
-| `addLabel` | `string` | `"Adicionar e-mail"` | Names the add trigger, the popup and the inline field. |
-| `ariaLabel` | `string` | `"E-mails"` | Names the row, and prefixes the name of the `trigger` display. |
-| `inputPlaceholder` | `string` | `"nome@exemplo.com"` | Sets the placeholder of the fields. |
+| `labels` | `Partial<EmailPropertyLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.email`: `entries` (`["Primary", "Secondary"]`, names the fields of the popup, one per address, and so sets how many addresses the popup holds), `add` (`"Add email"`, names the add trigger, the popup and the inline field), `inputPlaceholder` (`"name@example.com"`), `invalid` (`"Enter a valid email."`), `duplicate` (`"This email is already in the list."`), `addAnother` (`"Add another"`), `save` (`"Save"`), `remove` (`"Remove email"`, followed by the value) and `removeEntry` (`(entry) => string`, default `` `Remove ${entry} email` ``, names the remove button of a field). |
+| `placeholder` | `string` | `"No email"` | Sets the text of the add trigger and of the read-only row while there is no address. |
+| `ariaLabel` | `string` | `"Emails"` | Names the row, and prefixes the name of the `trigger` display. |
 | `errorMessage` | `string \| null` | `null` | Sets a rejection of the consumer, shown with `role="alert"` in the popup and under the inline field. |
 | `addDisabled` | `boolean` | `false` | When true, removes the add trigger from the chips row. |
 | `disabled` | `boolean` | `false` | When true, disables the add trigger, the remove buttons and the `trigger` display. |
@@ -73,25 +71,25 @@ Takes no other prop.
 
 ### The chips row
 
-Each address is a badge with a mail icon and a 24px remove button named `"Remover e-mail <address>"`; a click removes the address at once. The chips of an editable row are badges whatever `variant` says: `variant` reaches only `data-variant` there. The add trigger comes last: with no address it shows the mail icon and `placeholder`, with addresses it shrinks to a 24px `+`, and both are named by `addLabel` and announce a dialog (`aria-haspopup="dialog"`, `aria-expanded`).
+Each address is a badge with a mail icon and a 24px remove button named `"<labels.remove> <address>"`; a click removes the address at once. The chips of an editable row are badges whatever `variant` says: `variant` reaches only `data-variant` there. The add trigger comes last: with no address it shows the mail icon and `placeholder`, with addresses it shrinks to a 24px `+`, and both are named by `labels.add` and announce a dialog (`aria-haspopup="dialog"`, `aria-expanded`).
 
 ### The entry popup
 
-The popup is a 320px popover named by `addLabel`, with one `type="email"` field per address, or a single empty field when there is none, each named by its entry label; the labels show above the fields when there is more than one. `Adicionar outro` adds a field while there are fewer fields than `entryLabels` and every field holds a valid address. `Salvar`, or Enter in a field, saves: empty fields are dropped, each field is trimmed and checked, and a bad one shows `"Informe um e-mail válido."` or `"Este e-mail já está na lista."` under it, with `role="alert"`, and keeps the popup open. A valid save calls the handler once with the whole list and closes the popup. The fields copy `value` when the popup opens, so a new `value` while it is open does not overwrite what is being typed.
+The popup is a 320px popover named by `labels.add`, with one `type="email"` field per address, or a single empty field when there is none, each named by its entry label; the labels show above the fields when there is more than one. The `labels.addAnother` button adds a field while there are fewer fields than `labels.entries` and every field holds a valid address. The `labels.save` button, or Enter in a field, saves: empty fields are dropped, each field is trimmed and checked, and a bad one shows `labels.invalid` or `labels.duplicate` under it, with `role="alert"`, and keeps the popup open. A valid save calls the handler once with the whole list and closes the popup. The fields copy `value` when the popup opens, so a new `value` while it is open does not overwrite what is being typed.
 
 ### Inline editing
 
-With `editing="inline"` the add trigger gives way to a 192px field named by `addLabel`, with no popup. Leaving the field or pressing Enter commits: an empty field closes with no change, a bad or repeated address keeps the field open with the text and shows the message under it, and a valid one is added to the end of the list and closes the field. The field does not take focus when it opens, and it adds one address at a time with no limit from `entryLabels`.
+The [Inline Field](?path=/story/patterns-properties-display-email-layouts--inline-field) layout. With `editing="inline"` the add trigger gives way to a 192px field named by `labels.add`, with no popup. Leaving the field or pressing Enter commits: an empty field closes with no change, a bad or repeated address keeps the field open with the text and shows the message under it, and a valid one is added to the end of the list and closes the field. The field does not take focus when it opens, and it adds one address at a time with no limit from `labels.entries`.
 
 ### The trigger display
 
-With `display="trigger"` there is no row and no chip: one button with the mail icon and a summary, the first address plus `"+N"` for the others, or `placeholder` while there is none. It is named `"<ariaLabel>: <summary>"`, or `ariaLabel` alone while empty, and opens the same popup to add, change or remove addresses. Its surface is a badge unless `variant` is `"plain"`; the plain trigger draws a `secondary` box on hover, on keyboard focus and while the popup is open (see [`PropertySurface`](?path=/docs/patterns-properties-api-reference--api-reference)).
+The [List In Popover](?path=/story/patterns-properties-display-email-layouts--list-in-popover) layout. With `display="trigger"` there is no row and no chip: one button with the mail icon and a summary, the first address plus `"+N"` for the others, or `placeholder` while there is none. It is named `"<ariaLabel>: <summary>"`, or `ariaLabel` alone while empty, and opens the same popup to add, change or remove addresses. Its surface is a badge unless `variant` is `"plain"`; the plain trigger draws a `secondary` box on hover, on keyboard focus and while the popup is open (see [`PropertySurface`](?path=/docs/patterns-properties-api-reference--api-reference)).
 
 ### Read-only
 
 A read-only `EmailProperty` renders the row with one `IconLabelProperty` per address, on the `variant` surface, or a muted surface with `placeholder` while there is no address. It has no button.
 
-## EmailPropertyActionContext
+## PropertyListChangeContext
 
 What `action` receives with the next list.
 
@@ -111,6 +109,6 @@ A save that adds and removes several addresses at once reports only the first of
 
 ## Accessibility and theme
 
-- The texts are Brazilian Portuguese: pass `placeholder`, `addLabel`, `ariaLabel` and `entryLabels` to change them. The format and repeat messages, `Adicionar outro`, `Salvar` and the remove names cannot be changed.
+- The texts are English: pass `placeholder` and `ariaLabel`, and every other text through `labels`.
 - With `editing="inline"`, pressing the add trigger removes it and does not move focus to the field that replaces it, so focus falls to the page and keyboard users lose their place.
 - The error messages read `destructive-foreground`; the chips and trigger read the badge tokens of the property surface.

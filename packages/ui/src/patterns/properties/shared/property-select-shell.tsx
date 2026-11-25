@@ -2,13 +2,9 @@
 
 import { Select, SelectPopup, SelectPrimitive } from '@tc96/ui/select'
 import { cn } from '@tc96/utils'
-import type { ComponentProps, ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import type { PropertySelectDropdownPlacement } from './property-catalog'
 import { PropertySurface, type PropertyVariant } from './property-surface'
-
-export type PropertySelectDropdownPlacement = Pick<
-  ComponentProps<typeof SelectPopup>,
-  'align' | 'alignItemWithTrigger' | 'alignOffset' | 'side' | 'sideOffset'
->
 
 export interface PropertySelectShellProps<
   TOption extends { label: ReactNode; value: string },

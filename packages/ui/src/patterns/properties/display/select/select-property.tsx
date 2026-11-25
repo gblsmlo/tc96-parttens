@@ -6,65 +6,60 @@ import { cn } from '@tc96/utils'
 import { useState } from 'react'
 import { emitChange, isEditable } from '../../shared/lib/property-change'
 import {
-  type PropertyIcon,
-  type PropertyTone,
+  type PropertyChangeContext,
+  type PropertyOption,
+  type PropertySelectDropdownPlacement,
   propertyToneClassName,
 } from '../../shared/property-catalog'
 import {
-  type PropertySelectDropdownPlacement,
+  defaultPropertyLabels,
+  resolvePropertyLabels,
+  type SelectPropertyLabels,
+} from '../../shared/property-labels'
+import {
   PropertySelectShell,
   propertySelectItemClassName,
 } from '../../shared/property-select-shell'
 import type { PropertyVariant } from '../../shared/property-surface'
 
-export interface SelectPropertyOption {
-  label: string
-  value: string
-  icon?: PropertyIcon
-  tone?: PropertyTone
-}
-
 export interface SelectPropertyGroup {
   label: string
-  options: readonly SelectPropertyOption[]
-}
-
-export type SelectPropertyDropdownPlacement = PropertySelectDropdownPlacement
-
-export interface SelectPropertyActionContext {
-  previousValue: string | null
+  options: readonly PropertyOption[]
 }
 
 interface SelectPropertyBaseProps {
   ariaLabel: string
   value: string | null
-  action?: (value: string | null, context: SelectPropertyActionContext) => void
+  action?: (
+    value: string | null,
+    context: PropertyChangeContext<string | null>,
+  ) => void
+  allowEmpty?: boolean
   className?: string
   disabled?: boolean
-  dropdownPlacement?: SelectPropertyDropdownPlacement
+  dropdownPlacement?: PropertySelectDropdownPlacement
+  labels?: Partial<SelectPropertyLabels>
   placeholder?: string
-  fallback?: string
-  emptyOptionLabel?: string
   readOnly?: boolean
   variant?: PropertyVariant
   onValueChange?: (value: string | null) => void
 }
 
 export type SelectPropertyItems =
-  | { groups?: undefined; options: readonly SelectPropertyOption[] }
+  | { groups?: undefined; options: readonly PropertyOption[] }
   | { groups: readonly SelectPropertyGroup[]; options?: undefined }
 
 export type SelectPropertyProps = SelectPropertyBaseProps & SelectPropertyItems
 
 export function SelectProperty({
   action,
+  allowEmpty = false,
   ariaLabel,
   className,
   disabled = false,
   dropdownPlacement,
-  emptyOptionLabel,
-  fallback = '—',
   groups,
+  labels: labelOverrides,
   onValueChange,
   options,
   placeholder,
@@ -72,15 +67,19 @@ export function SelectProperty({
   value,
   variant = 'badge',
 }: Readonly<SelectPropertyProps>) {
+  const labels = resolvePropertyLabels(
+    defaultPropertyLabels.select,
+    labelOverrides,
+  )
   const catalog = groups ? groups.flatMap((group) => group.options) : options
   const selectedOption =
     value === null ? undefined : catalog.find((o) => o.value === value)
-  const emptyOption: SelectPropertyOption | null = emptyOptionLabel
+  const emptyOption: PropertyOption | null = allowEmpty
     ? {
         icon: catalog.some((option) => option.icon)
           ? CircleDashedIcon
           : undefined,
-        label: emptyOptionLabel,
+        label: labels.emptyOption,
         tone: 'neutral',
         value: '',
       }
@@ -99,8 +98,8 @@ export function SelectProperty({
     (explicitEmpty
       ? emptyOption.label
       : value === null
-        ? (placeholder ?? fallback)
-        : fallback)
+        ? (placeholder ?? labels.fallback)
+        : labels.fallback)
 
   const accessibleLabel = absent ? ariaLabel : `${ariaLabel}: ${currentLabel}`
   const items = emptyOption ? [emptyOption, ...catalog] : catalog
@@ -171,7 +170,7 @@ export function SelectProperty({
 function SelectPropertyContent({
   label,
   option,
-}: Readonly<{ label: string; option?: SelectPropertyOption }>) {
+}: Readonly<{ label: string; option?: PropertyOption }>) {
   const Icon = option?.icon
 
   return (
@@ -184,6 +183,7 @@ function SelectPropertyContent({
             option?.tone ? propertyToneClassName[option.tone] : undefined,
           )}
           data-slot="property-icon"
+          weight={option?.weight}
         />
       ) : null}
       <span className="truncate">{label}</span>

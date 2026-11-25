@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A row of files or links attached to a record, with the add path always in view: the documents of a deal, the material of a meeting, the links of a support case. Each item is an `AttachmentProperty` chip that opens its target and, when the consumer allows it, removes itself; the row adds one add trigger after the chips.
 
-The other pages of `Patterns/Properties/Display/Attachments`: [Playground](?path=/story/patterns-properties-display-attachments-playground--playground) to try the texts, the type and the optional parts, [Stories](?path=/story/patterns-properties-display-attachments-stories--default) for each state and type, [Behavior](?path=/story/patterns-properties-display-attachments-behavior--lists-attachments) for the tests, [Usages](?path=/story/patterns-properties-display-attachments-usages--record-files) for files and links of a record, and [Layouts](?path=/story/patterns-properties-display-attachments-layouts--without-remove) for the row without its actions.
+The other pages of `Patterns/Properties/Display/Attachments`: [Playground](?path=/story/patterns-properties-display-attachments-playground--playground) to try the texts, the type and the optional parts, [Variants](?path=/story/patterns-properties-display-attachments-variants--default) for the empty and read-only rows, the disabled add trigger and each type, [Layouts](?path=/story/patterns-properties-display-attachments-layouts--default) for the row, [Behavior](?path=/story/patterns-properties-display-attachments-behavior--lists-attachments) for the tests, and [Usages](?path=/story/patterns-properties-display-attachments-usages--record-files) for the files and links of a record.
 
 The row, the chip surface and the add trigger are the shared parts of the properties, documented once in the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference): `PropertyRow`, `PropertySurface` and `PropertyAddTrigger`. This page covers what the attachments add to them.
 
@@ -37,7 +37,7 @@ The chip holds the type icon and the label inside a link, and the remove button 
 
 ## AttachmentsProperty
 
-The row. Renders a `fieldset` named by `ariaLabel`, so its role is `group`, with no border, margin or padding, laying out its children in a wrapping row 4px apart (2px between lines). It renders the `children` first and, when `action` is set, one add trigger after them. It never uploads, fetches or stores a file: `onSelect` is where the consumer opens its own picker.
+The row. Renders a `fieldset` named by `ariaLabel`, so its role is `group`, with no border, margin or padding, laying out its children in a wrapping row 4px apart (2px between lines). It renders the `children` first and, when `action` is set, one add trigger after them. It never uploads, fetches or stores a file: `onSelect` is where the consumer opens its own picker. There is no `readOnly` prop: a row the user cannot change passes no `action`, and its chips no `onRemove`.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -75,7 +75,7 @@ One attachment. Renders a filled chip (a `span`, 24px tall, `text-sm`) that hold
 | `type` | `"pdf"`, `"doc"`, `"audio"` or `"link"` | - | Sets the type icon before the label; without it the chip shows no icon. |
 | `action` | `"anchor"` or `"download"` | `"anchor"` | Controls how the link opens its target: `"download"` adds the `download` attribute. |
 | `onRemove` | `() => void` | - | Adds the remove button and is called when it is pressed; without it the chip has no button. |
-| `removeLabel` | `string` | `"Remover anexo"` | Names the remove button. |
+| `labels` | `Partial<AttachmentPropertyLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.attachment`: `remove` (`"Remove attachment"`) names the remove button. |
 
 Also takes every prop of an `a` except `children` and `download`: `href`, `target`, `rel` and the event handlers reach the link, while `className` goes to the chip.
 
@@ -103,6 +103,6 @@ The type icon is 14px, hidden from assistive technology, and takes the tone of i
 ## Accessibility and theme
 
 - Pass `ariaLabel` on every row: an unnamed `fieldset` is a group with no name, and a record often has more than one row of attachments.
-- Pass a `removeLabel` that names the item (`Remove Signed contract.pdf`): the default `Remover anexo` is the same on every chip.
-- The built-in text is Portuguese (`Remover anexo`); pass `removeLabel` to change it.
+- Pass a `labels.remove` that names the item (`Remove Signed contract.pdf`): the default `Remove attachment` is the same on every chip.
+- The built-in text is English (`Remove attachment`); pass `labels.remove` to change it.
 - The chip and the trigger read `secondary` and `secondary-foreground`, the trigger `muted-foreground`, and the type icons `destructive-foreground`, `info-foreground`, `warning-foreground` and `muted-foreground`.

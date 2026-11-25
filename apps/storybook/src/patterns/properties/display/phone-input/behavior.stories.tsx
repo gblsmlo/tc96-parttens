@@ -1,16 +1,26 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PhoneInput } from '@tc96/ui/patterns/properties/display/phone-input/phone-input'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { PhoneInputCanvas } from './phone-input-canvas.tsx'
-import { StatefulPhoneInput } from './phone-input-layouts.tsx'
+import { phoneInputControlArgs } from './phone-input-controls.ts'
+import {
+  ComposedPhoneInput,
+  StatefulPhoneInput,
+} from './phone-input-layouts.tsx'
 
 const meta = {
-  args: { ariaLabel: 'Telefone', onValueChange: fn(), value: null },
+  args: {
+    ariaLabel: 'Telefone',
+    onValueChange: fn(),
+    value: null,
+    labels: ptBRPropertyLabels.phoneInput,
+  },
   component: PhoneInput,
   decorators: [PhoneInputCanvas],
   render: (args) => <StatefulPhoneInput {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Phone Input/Behavior',
+  title: 'Patterns/Properties/Display/PhoneInput/Behavior',
 } satisfies Meta<typeof PhoneInput>
 
 export default meta
@@ -22,6 +32,12 @@ const phoneField = (canvasElement: HTMLElement) =>
 
 const countryTrigger = (canvasElement: HTMLElement, country: string) =>
   within(canvasElement).getByRole('combobox', { name: `País: ${country}` })
+
+const groupOf = (field: HTMLElement) => {
+  const group = field.closest<HTMLElement>('[data-slot="phone-input"]')
+  if (!group) throw new Error('The field is outside a [data-slot=phone-input].')
+  return group
+}
 
 const countryListClosed = () =>
   waitFor(() =>
@@ -145,6 +161,39 @@ export const InvalidMarksOnlyTheNumber: Story = {
     )
     await expect(countryTrigger(canvasElement, 'Brasil')).not.toHaveAttribute(
       'aria-invalid',
+    )
+  },
+}
+
+export const DisabledDimsTheWholeGroup: Story = {
+  render: () => <ComposedPhoneInput {...phoneInputControlArgs} disabled />,
+  play: async ({ canvasElement }) => {
+    const group = groupOf(phoneField(canvasElement))
+
+    await expect(getComputedStyle(group).opacity).toBe('0.64')
+  },
+}
+
+export const InvalidPaintsTheGroupBorder: Story = {
+  render: () => (
+    <div className="flex w-full flex-col gap-4">
+      <ComposedPhoneInput {...phoneInputControlArgs} />
+      <ComposedPhoneInput
+        {...phoneInputControlArgs}
+        ariaLabel="Telefone inválido"
+        invalid
+        value="+55119876"
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const valid = groupOf(phoneField(canvasElement))
+    const invalid = groupOf(
+      within(canvasElement).getByLabelText('Telefone inválido'),
+    )
+
+    await expect(getComputedStyle(invalid).borderTopColor).not.toBe(
+      getComputedStyle(valid).borderTopColor,
     )
   },
 }

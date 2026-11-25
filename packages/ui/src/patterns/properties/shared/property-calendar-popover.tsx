@@ -5,14 +5,12 @@ import type { Calendar } from '@tc96/ui/calendar'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactNode } from 'react'
-import type { PropertyIcon } from './property-catalog'
+import type {
+  PropertyIcon,
+  PropertyPopoverDropdownPlacement,
+} from './property-catalog'
 import { PropertySurface, type PropertyVariant } from './property-surface'
 import { PropertyTooltip } from './property-tooltip'
-
-export type PropertyPopoverDropdownPlacement = Pick<
-  ComponentProps<typeof PopoverPopup>,
-  'align' | 'alignOffset' | 'side' | 'sideOffset'
->
 
 export type PropertyCalendarProps = Omit<
   ComponentProps<typeof Calendar>,

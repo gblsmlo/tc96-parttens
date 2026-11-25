@@ -12,11 +12,11 @@ const meta = {
   argTypes: dateRangeControlArgTypes,
   decorators: [DateRangeCanvas],
   parameters: {
-    controls: { exclude: ['disabled', 'ends', 'variant'] },
+    controls: { exclude: ['disabled', 'ends', 'readOnly', 'variant'] },
   },
   render: (args) => <ComposedDateRange {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/DateRange/Stories',
+  title: 'Patterns/Properties/Display/DateRange/Variants',
 } satisfies Meta<DateRangeControls>
 
 export default meta
@@ -29,16 +29,20 @@ export const Plain: Story = {
   args: { variant: 'plain' },
 }
 
-export const FromOnly: Story = {
+export const LoneStart: Story = {
   args: { ends: 'from' },
 }
 
-export const UntilOnly: Story = {
+export const LoneEnd: Story = {
   args: { ends: 'until' },
 }
 
 export const Empty: Story = {
   args: { ends: 'none' },
+}
+
+export const ReadOnly: Story = {
+  args: { readOnly: true },
 }
 
 export const Disabled: Story = {

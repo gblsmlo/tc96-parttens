@@ -1,22 +1,18 @@
 'use client'
 
+import type { PropertyIcon } from '../../shared/property-catalog'
 import type { PropertyVariant } from '../../shared/property-surface'
-import {
-  IconLabelProperty,
-  type IconLabelPropertyIcon,
-} from '../icon-label/icon-label-property'
-
-export type FlagPropertyIcon = IconLabelPropertyIcon
+import { IconLabelProperty } from '../icon-label/icon-label-property'
 
 export interface FlagPropertyProps {
   active: boolean
   label: string
-  activeIcon?: FlagPropertyIcon
+  activeIcon?: PropertyIcon
   ariaLabel?: string
   className?: string
   iconClassName?: string
   inactiveLabel?: string
-  inactiveIcon?: FlagPropertyIcon
+  inactiveIcon?: PropertyIcon
   showInactive?: boolean
   variant?: PropertyVariant
 }

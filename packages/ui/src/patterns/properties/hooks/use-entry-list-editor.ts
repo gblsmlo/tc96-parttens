@@ -1,17 +1,15 @@
 import { useState } from 'react'
 import type { EntryParser } from '../shared/lib/entry-parser'
 import { diffValues } from '../shared/lib/property-options'
-
-export interface EntryListChange {
-  added: string | null
-  previousValue: readonly string[]
-  removed: string | null
-}
+import type { PropertyListChangeContext } from '../shared/property-catalog'
 
 export interface UseEntryListEditorOptions {
   duplicateMessage: string
   limit: number
-  onCommit: (next: readonly string[], change: EntryListChange) => void
+  onCommit: (
+    next: readonly string[],
+    change: PropertyListChangeContext<string, string>,
+  ) => void
   parse: EntryParser
   value: readonly string[]
 }

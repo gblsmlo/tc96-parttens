@@ -6,33 +6,13 @@ import { ComposedIconLabel } from './icon-label-layouts.tsx'
 const meta = {
   decorators: [IconLabelCanvas],
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Icon Label/Layouts',
+  title: 'Patterns/Properties/Display/IconLabel/Layouts',
 } satisfies Meta
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const WithoutIcon: Story = {
-  render: () => <ComposedIconLabel {...iconLabelControlArgs} icon={false} />,
-}
-
-export const WithLeading: Story = {
-  render: () => (
-    <ComposedIconLabel {...iconLabelControlArgs} icon={false} leading />
-  ),
-}
-
-export const WithTrailing: Story = {
-  render: () => <ComposedIconLabel {...iconLabelControlArgs} trailing />,
-}
-
-export const AsButton: Story = {
-  render: () => (
-    <ComposedIconLabel {...iconLabelControlArgs} element="button" />
-  ),
-}
-
-export const AsLink: Story = {
-  render: () => <ComposedIconLabel {...iconLabelControlArgs} element="link" />,
+export const Default: Story = {
+  render: () => <ComposedIconLabel {...iconLabelControlArgs} />,
 }

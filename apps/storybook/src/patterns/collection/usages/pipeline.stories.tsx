@@ -166,6 +166,7 @@ function DealCard({
         </KanbanCardControl>
         <KanbanCardControl className="ml-auto">
           <PersonProperty
+            placeholder="Sem responsável"
             ariaLabel="Responsável"
             avatarSize="sm"
             display="avatar"

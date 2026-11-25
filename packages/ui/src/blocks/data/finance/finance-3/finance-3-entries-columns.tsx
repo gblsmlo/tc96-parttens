@@ -65,8 +65,6 @@ function AccountField({ context, item }: CellProps) {
   return (
     <SelectProperty
       ariaLabel={columnLabel}
-      emptyOptionLabel={labels.entries.noAccount}
-      fallback={labels.noValue}
       onValueChange={
         onAccountChange && item.canEdit
           ? (accountId) => {
@@ -81,6 +79,11 @@ function AccountField({ context, item }: CellProps) {
       }))}
       value={item.accountId}
       variant="plain"
+      allowEmpty
+      labels={{
+        emptyOption: labels.entries.noAccount,
+        fallback: labels.noValue,
+      }}
     />
   )
 }
@@ -98,8 +101,6 @@ function CategoryField({ context, item }: CellProps) {
   return (
     <SelectProperty
       ariaLabel={labels.entries.columns.category}
-      emptyOptionLabel={labels.entries.noCategory}
-      fallback={labels.noValue}
       onValueChange={
         onCategoryChange && item.canEdit && direction
           ? (categoryId) => {
@@ -114,6 +115,11 @@ function CategoryField({ context, item }: CellProps) {
       }))}
       value={item.categoryId}
       variant="plain"
+      allowEmpty
+      labels={{
+        emptyOption: labels.entries.noCategory,
+        fallback: labels.noValue,
+      }}
     />
   )
 }
@@ -201,10 +207,10 @@ export function createFinance3EntriesColumns(
       cell: ({ row }) => (
         <SelectProperty
           ariaLabel={entryLabels.columns.feeType}
-          fallback={labels.noValue}
           options={feeTypeOptions}
           readOnly
           value={row.original.feeType}
+          labels={{ fallback: labels.noValue }}
         />
       ),
       size: 170,

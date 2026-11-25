@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { getInitials } from '@tc96/ui/helpers/initials'
 import { IconFrame } from '@tc96/ui/icon-frame'
-import type { SelectPropertyOption } from '@tc96/ui/patterns/properties/display/select/select-property'
+import type { PropertyOption } from '@tc96/ui/patterns/properties/core'
 import { cn } from '@tc96/utils'
 import { DataSelect } from '../../shared/properties/data-properties'
 import type { TableFormatter } from '../../shared/table/format'
@@ -183,7 +183,7 @@ export function StageCell({
   stage,
 }: Readonly<{
   labels: Revenue2Labels
-  options: readonly SelectPropertyOption[]
+  options: readonly PropertyOption[]
   stage: Revenue2Stage
 }>) {
   return (
@@ -201,7 +201,7 @@ export function RiskCell({
   risk,
 }: Readonly<{
   labels: Revenue2Labels
-  options: readonly SelectPropertyOption[]
+  options: readonly PropertyOption[]
   risk: Revenue2Risk
 }>) {
   return (

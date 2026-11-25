@@ -13,7 +13,9 @@ import {
 import { useEffect, useState } from 'react'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../test-utils/is-icon'
-import { PlainPropertyColumn } from './properties-layouts'
+import { propertiesControlArgs } from './properties-controls'
+import { ptBRPropertyLabels } from './properties-labels.ts'
+import { ComposedProperties, PlainPropertyColumn } from './properties-layouts'
 
 interface BehaviorArgs {
   action: (value: unknown, context: unknown) => void
@@ -85,6 +87,7 @@ export const CollectionShowsDefaultVisibleItems: Story = {
     <PropertyCollection
       ariaLabel="Propriedades da Task"
       items={collectionItems}
+      labels={ptBRPropertyLabels.collection}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -104,6 +107,7 @@ export const CollectionContainerDefaultVisibleWins: Story = {
       ariaLabel="Propriedades da Task"
       defaultVisible={['tags']}
       items={collectionItems}
+      labels={ptBRPropertyLabels.collection}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -119,6 +123,7 @@ export const CollectionWithoutDefaultsStartsEmpty: Story = {
     <PropertyCollection
       ariaLabel="Propriedades"
       items={collectionItems.map(({ defaultVisible: _, ...item }) => item)}
+      labels={ptBRPropertyLabels.collection}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -144,6 +149,7 @@ export const CollectionReadOnlyHidesTrigger: Story = {
       ariaLabel="Propriedades da Task"
       items={collectionItems}
       readOnly
+      labels={ptBRPropertyLabels.collection}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -161,6 +167,7 @@ export const CollectionMenuListsCatalogWithVisibleChecked: Story = {
     <PropertyCollection
       ariaLabel="Propriedades da Task"
       items={collectionItems}
+      labels={ptBRPropertyLabels.collection}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -185,6 +192,7 @@ export const CollectionMenuOpensByKeyboard: Story = {
       ariaLabel="Propriedades da Task"
       items={collectionItems}
       onVisibleChange={onVisibleChange}
+      labels={ptBRPropertyLabels.collection}
     />
   ),
   play: async ({ args, canvasElement }) => {
@@ -220,6 +228,7 @@ export const CollectionToggleReportsCatalogOrder: Story = {
       ariaLabel="Propriedades da Task"
       items={collectionItems}
       onVisibleChange={onVisibleChange}
+      labels={ptBRPropertyLabels.collection}
     />
   ),
   play: async ({ args, canvasElement }) => {
@@ -258,6 +267,7 @@ export const CollectionControlledVisibilityOnlyReports: Story = {
       items={collectionItems}
       onVisibleChange={onVisibleChange}
       visible={['tags']}
+      labels={ptBRPropertyLabels.collection}
     />
   ),
   play: async ({ args, canvasElement }) => {
@@ -376,6 +386,69 @@ const colorWithPrimary = (canvasElement: HTMLElement, element: HTMLElement) => {
   element.style.removeProperty('transition')
 
   return color
+}
+
+const formationSurfaces = (canvasElement: HTMLElement) => {
+  const group = within(
+    within(canvasElement).getByRole('group', { name: 'Task properties' }),
+  )
+  return {
+    displays: [
+      group.getByRole('combobox', { name: /^Status/ }),
+      group.getByRole('combobox', { name: /^Priority/ }),
+      group.getByRole('combobox', { name: /^Assignee/ }),
+      group.getByRole('button', { name: /^Due date/ }),
+    ],
+    trigger: group.getByRole('button', { name: 'Ajustar propriedades' }),
+  }
+}
+
+export const ReadOnlyRemovesTheTriggerAndKeepsDisplaysEditable: Story = {
+  render: () => <ComposedProperties {...propertiesControlArgs} readOnly />,
+  play: async ({ canvasElement }) => {
+    const group = within(
+      within(canvasElement).getByRole('group', { name: 'Task properties' }),
+    )
+
+    await expect(
+      group.queryByRole('button', { name: 'Ajustar propriedades' }),
+    ).toBeNull()
+
+    await userEvent.click(
+      group.getByRole('combobox', { name: 'Status: In progress' }),
+    )
+    await expect(await screen.findByRole('listbox')).toBeVisible()
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
+  },
+}
+
+export const PlainVariantDrawsNoFillAndTheTriggerStaysBadge: Story = {
+  render: () => (
+    <ComposedProperties {...propertiesControlArgs} variant="plain" />
+  ),
+  play: async ({ canvasElement }) => {
+    const { displays, trigger } = formationSurfaces(canvasElement)
+
+    for (const surface of displays) {
+      await expect(surface).toHaveAttribute('data-variant', 'plain')
+      await expect(backgroundOf(surface)).toBe(TRANSPARENT)
+    }
+    await expect(trigger).toHaveAttribute('data-variant', 'badge')
+    await expect(backgroundOf(trigger)).not.toBe(TRANSPARENT)
+  },
+}
+
+export const EmptyValuesMarkEverySurfaceEmpty: Story = {
+  render: () => <ComposedProperties {...propertiesControlArgs} empty />,
+  play: async ({ canvasElement }) => {
+    const { displays, trigger } = formationSurfaces(canvasElement)
+
+    for (const surface of displays) {
+      await expect(surface).toHaveAttribute('data-empty', 'true')
+    }
+    await expect(trigger).not.toHaveAttribute('data-empty')
+  },
 }
 
 export const SurfaceValueUsesPrimaryAndPlaceholderStaysMuted: Story = {
@@ -524,11 +597,13 @@ const rowOf = (
 export const RowNamesFieldsetWithSlotAndVariant: Story = {
   render: () => (
     <TagsProperty
+      placeholder="Adicionar uma tag"
       ariaLabel="Tags"
       options={tagOptions}
       readOnly
       value={['documents', 'return']}
       variant="plain"
+      labels={ptBRPropertyLabels.tags}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -544,10 +619,12 @@ export const RowNamesFieldsetWithSlotAndVariant: Story = {
 export const RowResetsChromeAndKeepsLayout: Story = {
   render: () => (
     <TagsProperty
+      placeholder="Adicionar uma tag"
       ariaLabel="Tags"
       options={tagOptions}
       readOnly
       value={['documents']}
+      labels={ptBRPropertyLabels.tags}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -576,11 +653,13 @@ export const RowResetsChromeAndKeepsLayout: Story = {
 export const RowCallerOverridesReset: Story = {
   render: () => (
     <TagsProperty
+      placeholder="Adicionar uma tag"
       ariaLabel="Tags"
       className="min-w-fit"
       options={tagOptions}
       readOnly
       value={['documents']}
+      labels={ptBRPropertyLabels.tags}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -604,6 +683,7 @@ export const RowOmitsVariantAndLabel: Story = {
         },
       ]}
       readOnly
+      labels={ptBRPropertyLabels.collection}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -618,15 +698,20 @@ export const RowPassesDataAttributes: Story = {
   render: () => (
     <div className="flex flex-col gap-2">
       <TagsProperty
+        placeholder="Adicionar uma tag"
         display="count"
         options={tagOptions}
         readOnly
         value={['documents']}
+        labels={ptBRPropertyLabels.tags}
       />
       <EmailProperty
+        ariaLabel="E-mails"
+        placeholder="Sem e-mail"
         editing="inline"
         onValueChange={ignore}
         value={['ana@example.com']}
+        labels={ptBRPropertyLabels.email}
       />
     </div>
   ),
@@ -646,7 +731,15 @@ const glyphSize = (glyph: SVGElement | null | undefined) => {
 }
 
 export const AddTriggerEmptyShowsPlaceholderAndNamesAction: Story = {
-  render: () => <EmailProperty onValueChange={ignore} value={[]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={ignore}
+      value={[]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const trigger = within(canvasElement).getByRole('button', {
       name: 'Adicionar e-mail',
@@ -659,7 +752,15 @@ export const AddTriggerEmptyShowsPlaceholderAndNamesAction: Story = {
 }
 
 export const AddTriggerEmptyGlyphMatchesEmptyChips: Story = {
-  render: () => <EmailProperty onValueChange={ignore} value={[]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={ignore}
+      value={[]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const glyph = within(canvasElement)
       .getByRole('button', { name: 'Adicionar e-mail' })
@@ -673,7 +774,13 @@ export const AddTriggerEmptyGlyphMatchesEmptyChips: Story = {
 
 export const AddTriggerWithValueCollapsesToSign: Story = {
   render: () => (
-    <EmailProperty onValueChange={ignore} value={['ana@example.com']} />
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={ignore}
+      value={['ana@example.com']}
+      labels={ptBRPropertyLabels.email}
+    />
   ),
   play: async ({ canvasElement }) => {
     const trigger = within(canvasElement).getByRole('button', {
@@ -707,7 +814,15 @@ export const AddTriggerMutedCanBeOverridden: Story = {
 }
 
 export const AddTriggerForwardsTriggerProps: Story = {
-  render: () => <EmailProperty onValueChange={ignore} value={[]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={ignore}
+      value={[]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const trigger = within(canvasElement).getByRole('button', {
       name: 'Adicionar e-mail',
@@ -793,6 +908,7 @@ export const CalendarPopoverNamesTriggerAfterPropertyAndLabel: Story = {
       onValueChange={ignore}
       timeZone="UTC"
       value={DATE}
+      labels={ptBRPropertyLabels.date}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -811,7 +927,12 @@ export const CalendarPopoverNamesTriggerAfterPropertyAndLabel: Story = {
 
 export const CalendarPopoverAbsentValueIsMuted: Story = {
   render: () => (
-    <DateProperty ariaLabel="Prazo" onValueChange={ignore} value={null} />
+    <DateProperty
+      ariaLabel="Prazo"
+      onValueChange={ignore}
+      value={null}
+      labels={ptBRPropertyLabels.date}
+    />
   ),
   play: async ({ canvasElement }) => {
     await expect(
@@ -828,6 +949,7 @@ export const CalendarPopoverOpensNamedDialog: Story = {
       onValueChange={ignore}
       timeZone="UTC"
       value={DATE}
+      labels={ptBRPropertyLabels.date}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -850,12 +972,14 @@ export const CalendarPopoverClearFooterOnlyWithClearAction: Story = {
         onValueChange={onValueChange}
         timeZone="UTC"
         value={DATE}
+        labels={ptBRPropertyLabels.date}
       />
       <DateProperty
         ariaLabel="Prazo"
         onValueChange={onValueChange}
         timeZone="UTC"
         value={DATE}
+        labels={ptBRPropertyLabels.date}
       />
     </div>
   ),
@@ -884,6 +1008,7 @@ export const CalendarPopoverAlignsToStartByDefault: Story = {
       onValueChange={ignore}
       timeZone="UTC"
       value={DATE}
+      labels={ptBRPropertyLabels.date}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -899,6 +1024,7 @@ export const CalendarPopoverAlignOverridesStart: Story = {
       ariaLabel="Período"
       onValueChange={ignore}
       value={RANGE}
+      labels={ptBRPropertyLabels.dateRange}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -916,6 +1042,7 @@ export const CalendarPopoverPlacementWinsOverAlign: Story = {
         dropdownPlacement={{ align: 'end' }}
         onValueChange={ignore}
         value={RANGE}
+        labels={ptBRPropertyLabels.dateRange}
       />
     </div>
   ),
@@ -934,6 +1061,7 @@ export const CalendarPopoverDisabledDoesNotOpen: Story = {
       onValueChange={ignore}
       timeZone="UTC"
       value={DATE}
+      labels={ptBRPropertyLabels.date}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -959,7 +1087,15 @@ const openEntryForm = async (canvasElement: HTMLElement) => {
 }
 
 export const EntryFormLabelsEachEntry: Story = {
-  render: () => <EmailProperty onValueChange={ignore} value={[ANA]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={ignore}
+      value={[ANA]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const form = await openEntryForm(canvasElement)
 
@@ -974,9 +1110,11 @@ export const EntryFormLabelsEachEntry: Story = {
 export const EntryFormSingleLabelHidesEntryLabel: Story = {
   render: () => (
     <EmailProperty
-      entryLabels={['Principal']}
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
       onValueChange={ignore}
       value={[ANA]}
+      labels={{ ...ptBRPropertyLabels.email, entries: ['Principal'] }}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -993,8 +1131,11 @@ export const EntryFormSingleLabelHidesEntryLabel: Story = {
 export const EntryFormFallsBackPastTheLabels: Story = {
   render: () => (
     <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
       onValueChange={ignore}
       value={['a@example.com', 'b@example.com', 'c@example.com']}
+      labels={ptBRPropertyLabels.email}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -1009,7 +1150,15 @@ export const EntryFormFallsBackPastTheLabels: Story = {
 }
 
 export const EntryFormNoRemoveWithSingleDraft: Story = {
-  render: () => <EmailProperty onValueChange={ignore} value={[ANA]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={ignore}
+      value={[ANA]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const form = await openEntryForm(canvasElement)
 
@@ -1020,7 +1169,13 @@ export const EntryFormNoRemoveWithSingleDraft: Story = {
 
 export const EntryFormRemovesTheDraftAtItsIndex: Story = {
   render: ({ onValueChange }) => (
-    <EmailProperty onValueChange={onValueChange} value={[ANA, BIA]} />
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={onValueChange}
+      value={[ANA, BIA]}
+      labels={ptBRPropertyLabels.email}
+    />
   ),
   play: async ({ args, canvasElement }) => {
     const form = await openEntryForm(canvasElement)
@@ -1042,7 +1197,13 @@ export const EntryFormRemovesTheDraftAtItsIndex: Story = {
 
 export const EntryFormForwardsTypingWithTheFieldIndex: Story = {
   render: ({ onValueChange }) => (
-    <EmailProperty onValueChange={onValueChange} value={[ANA, BIA]} />
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={onValueChange}
+      value={[ANA, BIA]}
+      labels={ptBRPropertyLabels.email}
+    />
   ),
   play: async ({ args, canvasElement }) => {
     const form = await openEntryForm(canvasElement)
@@ -1067,7 +1228,13 @@ export const EntryFormForwardsTypingWithTheFieldIndex: Story = {
 
 export const EntryFormSavesOnEnterWithoutReachingThePopup: Story = {
   render: ({ onValueChange }) => (
-    <EmailProperty onValueChange={onValueChange} value={[ANA]} />
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={onValueChange}
+      value={[ANA]}
+      labels={ptBRPropertyLabels.email}
+    />
   ),
   play: async ({ args, canvasElement }) => {
     const form = await openEntryForm(canvasElement)
@@ -1086,7 +1253,13 @@ export const EntryFormSavesOnEnterWithoutReachingThePopup: Story = {
 
 export const EntryFormIgnoresOtherKeys: Story = {
   render: ({ onValueChange }) => (
-    <EmailProperty onValueChange={onValueChange} value={[ANA]} />
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={onValueChange}
+      value={[ANA]}
+      labels={ptBRPropertyLabels.email}
+    />
   ),
   play: async ({ args, canvasElement }) => {
     const form = await openEntryForm(canvasElement)
@@ -1101,7 +1274,13 @@ export const EntryFormIgnoresOtherKeys: Story = {
 
 export const EntryFormSavesThroughSubmitWithoutNativeValidation: Story = {
   render: ({ onValueChange }) => (
-    <EmailProperty onValueChange={onValueChange} value={[ANA]} />
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={onValueChange}
+      value={[ANA]}
+      labels={ptBRPropertyLabels.email}
+    />
   ),
   play: async ({ args, canvasElement }) => {
     const form = await openEntryForm(canvasElement)
@@ -1118,7 +1297,15 @@ export const EntryFormSavesThroughSubmitWithoutNativeValidation: Story = {
 }
 
 export const EntryFormAddAnotherDisabledWhenNotAllowed: Story = {
-  render: () => <EmailProperty onValueChange={ignore} value={[ANA, BIA]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={ignore}
+      value={[ANA, BIA]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const form = await openEntryForm(canvasElement)
 
@@ -1130,7 +1317,15 @@ export const EntryFormAddAnotherDisabledWhenNotAllowed: Story = {
 }
 
 export const EntryFormAddAnotherAddsAnEntry: Story = {
-  render: () => <EmailProperty onValueChange={ignore} value={[ANA]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={ignore}
+      value={[ANA]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const form = await openEntryForm(canvasElement)
 
@@ -1147,9 +1342,12 @@ export const EntryFormAddAnotherAddsAnEntry: Story = {
 export const EntryFormAnnouncesFieldErrorsAndConsumerRefusal: Story = {
   render: ({ onValueChange }) => (
     <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
       errorMessage="Já existe no workspace."
       onValueChange={onValueChange}
       value={[]}
+      labels={ptBRPropertyLabels.email}
     />
   ),
   play: async ({ args, canvasElement }) => {
@@ -1187,10 +1385,12 @@ const closeList = async () => {
 export const MultiSelectEmptyAddChipNamesItselfWithPlaceholder: Story = {
   render: () => (
     <PeopleProperty
+      ariaLabel="Pessoas"
       onValueChange={ignore}
       options={multiPeople}
       placeholder="Adicionar responsável"
       value={[]}
+      labels={ptBRPropertyLabels.people}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -1215,7 +1415,13 @@ export const MultiSelectEmptyAddChipNamesItselfWithPlaceholder: Story = {
 
 export const MultiSelectEmptyAddChipShowsAddIcon: Story = {
   render: () => (
-    <TagsProperty onValueChange={ignore} options={multiOptions} value={[]} />
+    <TagsProperty
+      placeholder="Adicionar uma tag"
+      onValueChange={ignore}
+      options={multiOptions}
+      value={[]}
+      labels={ptBRPropertyLabels.tags}
+    />
   ),
   play: async ({ canvasElement }) => {
     const trigger = within(canvasElement).getByRole('button', {
@@ -1230,9 +1436,11 @@ export const MultiSelectEmptyAddChipShowsAddIcon: Story = {
 export const MultiSelectValuesNameRemovalAndCollapseAddChip: Story = {
   render: () => (
     <TagsProperty
+      placeholder="Adicionar uma tag"
       onValueChange={ignore}
       options={multiOptions}
       value={['documents']}
+      labels={ptBRPropertyLabels.tags}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -1252,9 +1460,11 @@ export const MultiSelectValuesNameRemovalAndCollapseAddChip: Story = {
 export const MultiSelectReportsAddedOption: Story = {
   render: ({ action }) => (
     <TagsProperty
+      placeholder="Adicionar uma tag"
       action={action}
       options={multiOptions}
       value={['documents']}
+      labels={ptBRPropertyLabels.tags}
     />
   ),
   play: async ({ args, canvasElement }) => {
@@ -1278,9 +1488,11 @@ export const MultiSelectReportsAddedOption: Story = {
 export const MultiSelectReportsRemovedOption: Story = {
   render: ({ action }) => (
     <TagsProperty
+      placeholder="Adicionar uma tag"
       action={action}
       options={multiOptions}
       value={['documents', 'return']}
+      labels={ptBRPropertyLabels.tags}
     />
   ),
   play: async ({ args, canvasElement }) => {
@@ -1302,10 +1514,12 @@ export const MultiSelectReportsRemovedOption: Story = {
 export const MultiSelectCustomTriggerReplacesChips: Story = {
   render: () => (
     <TagsProperty
+      placeholder="Adicionar uma tag"
       display="count"
       onValueChange={ignore}
       options={multiOptions}
       value={[]}
+      labels={ptBRPropertyLabels.tags}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -1327,10 +1541,12 @@ export const MultiSelectAlignsToEndByDefault: Story = {
   render: () => (
     <div className="flex w-full justify-end">
       <TagsProperty
+        placeholder="Adicionar uma tag"
         className="w-auto"
         onValueChange={ignore}
         options={multiOptions}
         value={[]}
+        labels={ptBRPropertyLabels.tags}
       />
     </div>
   ),
@@ -1348,10 +1564,12 @@ export const MultiSelectAlignsToEndByDefault: Story = {
 export const MultiSelectPlacementOverridesAlign: Story = {
   render: () => (
     <TagsProperty
+      placeholder="Adicionar uma tag"
       dropdownPlacement={{ align: 'start' }}
       onValueChange={ignore}
       options={multiOptions}
       value={[]}
+      labels={ptBRPropertyLabels.tags}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -1367,7 +1585,14 @@ export const MultiSelectPlacementOverridesAlign: Story = {
 
 export const MultiSelectLoadingAndEmptyLabels: Story = {
   render: () => (
-    <TagsProperty isLoading onValueChange={ignore} options={[]} value={[]} />
+    <TagsProperty
+      placeholder="Adicionar uma tag"
+      isLoading
+      onValueChange={ignore}
+      options={[]}
+      value={[]}
+      labels={ptBRPropertyLabels.tags}
+    />
   ),
   play: async ({ canvasElement }) => {
     await userEvent.click(
@@ -1399,7 +1624,15 @@ function ExternalValue() {
     }
   }, [])
 
-  return <EmailProperty onValueChange={setValue} value={value} />
+  return (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      onValueChange={setValue}
+      value={value}
+      labels={ptBRPropertyLabels.email}
+    />
+  )
 }
 
 const draftsOf = () =>
@@ -1413,7 +1646,15 @@ const replaceText = async (field: HTMLElement, text: string) => {
 }
 
 export const EntryListOpensWithTheValueAsDrafts: Story = {
-  render: () => <EmailProperty action={ignore} value={[ANA, BIA]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      action={ignore}
+      value={[ANA, BIA]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     await openEntryForm(canvasElement)
 
@@ -1423,7 +1664,15 @@ export const EntryListOpensWithTheValueAsDrafts: Story = {
 }
 
 export const EntryListOpensWithOneBlankDraftWhenEmpty: Story = {
-  render: () => <EmailProperty action={ignore} value={[]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      action={ignore}
+      value={[]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const editor = await openEntryForm(canvasElement)
 
@@ -1434,7 +1683,15 @@ export const EntryListOpensWithOneBlankDraftWhenEmpty: Story = {
 }
 
 export const EntryListReopeningDiscardsTyping: Story = {
-  render: () => <EmailProperty action={ignore} value={[ANA]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      action={ignore}
+      value={[ANA]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const editor = await openEntryForm(canvasElement)
     await replaceText(
@@ -1468,7 +1725,15 @@ export const EntryListNewValueWhileOpenKeepsDrafts: Story = {
 }
 
 export const EntryListEditingADraftClearsOnlyItsError: Story = {
-  render: ({ action }) => <EmailProperty action={action} value={[ANA, BIA]} />,
+  render: ({ action }) => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      action={action}
+      value={[ANA, BIA]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ args, canvasElement }) => {
     const editor = await openEntryForm(canvasElement)
     const first = editor.getByRole('textbox', { name: 'Principal' })
@@ -1495,7 +1760,15 @@ export const EntryListEditingADraftClearsOnlyItsError: Story = {
 }
 
 export const EntryListAddsAndRemovesDrafts: Story = {
-  render: () => <EmailProperty action={ignore} value={[ANA]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      action={ignore}
+      value={[ANA]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const editor = await openEntryForm(canvasElement)
 
@@ -1514,7 +1787,15 @@ export const EntryListAddsAndRemovesDrafts: Story = {
 }
 
 export const EntryListAddAnotherOnlyWhileValidAndUnderLimit: Story = {
-  render: () => <EmailProperty action={ignore} value={[ANA]} />,
+  render: () => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      action={ignore}
+      value={[ANA]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ canvasElement }) => {
     const editor = await openEntryForm(canvasElement)
     const addAnother = editor.getByRole('button', { name: 'Adicionar outro' })
@@ -1542,9 +1823,14 @@ export const EntryListAddAnotherOnlyWhileValidAndUnderLimit: Story = {
 export const EntryListSavesParsedDraftsWithTheDiff: Story = {
   render: ({ action }) => (
     <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
       action={action}
-      entryLabels={['Principal', 'Secundário', 'Terciário']}
       value={[ANA, BIA]}
+      labels={{
+        ...ptBRPropertyLabels.email,
+        entries: ['Principal', 'Secundário', 'Terciário'],
+      }}
     />
   ),
   play: async ({ args, canvasElement }) => {
@@ -1576,7 +1862,15 @@ export const EntryListSavesParsedDraftsWithTheDiff: Story = {
 }
 
 export const EntryListInvalidDraftKeepsThePopupOpen: Story = {
-  render: ({ action }) => <EmailProperty action={action} value={[]} />,
+  render: ({ action }) => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      action={action}
+      value={[]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ args, canvasElement }) => {
     const editor = await openEntryForm(canvasElement)
 
@@ -1596,7 +1890,15 @@ export const EntryListInvalidDraftKeepsThePopupOpen: Story = {
 }
 
 export const EntryListDuplicateReportedOnTheSecondDraft: Story = {
-  render: ({ action }) => <EmailProperty action={action} value={[]} />,
+  render: ({ action }) => (
+    <EmailProperty
+      ariaLabel="E-mails"
+      placeholder="Sem e-mail"
+      action={action}
+      value={[]}
+      labels={ptBRPropertyLabels.email}
+    />
+  ),
   play: async ({ args, canvasElement }) => {
     const editor = await openEntryForm(canvasElement)
 

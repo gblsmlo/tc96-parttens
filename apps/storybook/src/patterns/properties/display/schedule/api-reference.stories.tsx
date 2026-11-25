@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ScheduleProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { ScheduleCanvas } from './schedule-canvas.tsx'
 import { scheduleToday, timedWeeklySchedule } from './schedule-data.ts'
 import { OpenOnMount, StatefulSchedule } from './schedule-layouts.tsx'
@@ -17,6 +18,8 @@ const meta = {
     onValueChange: ignore,
     today: scheduleToday,
     value: timedWeeklySchedule,
+    locale: 'pt-BR',
+    labels: ptBRPropertyLabels.schedule,
   },
   component: ScheduleProperty,
   decorators: [ScheduleCanvas],

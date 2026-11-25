@@ -1,25 +1,25 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { AssignedPropertyOption, PropertyVariant } from '@tc96/ui/patterns'
+import type { PersonPropertyOption, PropertyVariant } from '@tc96/ui/patterns'
 
 export type Assignee = 'ana' | 'gabriel' | 'marina'
 
-export const assignees: AssignedPropertyOption<Assignee>[] = [
+export const assignees: PersonPropertyOption<Assignee>[] = [
   {
     fallback: 'AM',
     label: 'Ana Martins',
-    supportingLabel: 'Ops',
+    supportingLabel: 'Operações',
     value: 'ana',
   },
   {
     fallback: 'GM',
     label: 'Gabriel Melo',
-    supportingLabel: 'Owner',
+    supportingLabel: 'Dono',
     value: 'gabriel',
   },
   {
     fallback: 'MS',
     label: 'Marina Souza',
-    supportingLabel: 'Sales',
+    supportingLabel: 'Vendas',
     value: 'marina',
   },
 ]

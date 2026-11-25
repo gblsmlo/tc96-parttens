@@ -1,5 +1,5 @@
 import type { CollectionPaginationButtonLabels } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
-import type { SelectPropertyOption } from '@tc96/ui/patterns/properties/display/select/select-property'
+import type { PropertyOption } from '@tc96/ui/patterns/properties/core'
 import type {
   DataCollectionFormatProps,
   DataCollectionLoadLabels,
@@ -32,7 +32,7 @@ export type Crm2Archived = 'exclude' | 'include' | 'only'
 
 export type Crm2Status = 'lost' | 'open' | 'won'
 
-export type Crm2StageTone = NonNullable<SelectPropertyOption['tone']>
+export type Crm2StageTone = NonNullable<PropertyOption['tone']>
 
 export type Crm2SavedView = DataCollectionSavedView
 

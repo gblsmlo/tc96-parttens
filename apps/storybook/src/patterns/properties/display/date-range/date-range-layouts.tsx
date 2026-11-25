@@ -5,6 +5,7 @@ import {
   type DateRangePropertyProps,
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import type { DateRangeControls } from './date-range-controls.ts'
 
 export const sampleFrom = new Date(2026, 5, 19)
@@ -28,13 +29,24 @@ export function StatefulDateRange({
 }: Readonly<StatefulDateRangeProps>) {
   const [value, setValue] = useState(initialValue)
 
-  return <DateRangeProperty {...props} onValueChange={setValue} value={value} />
+  return (
+    <DateRangeProperty
+      {...props}
+      onValueChange={setValue}
+      value={value}
+      labels={{ ...ptBRPropertyLabels.dateRange, ...props.labels }}
+    />
+  )
 }
 
 export const ComposedDateRange = ({
   calendarLocale,
   displayLabel,
   ends,
+  labelsClear,
+  labelsFallback,
+  labelsFrom,
+  labelsUntil,
   ...props
 }: Readonly<DateRangeControls>) => (
   <StatefulDateRange
@@ -42,6 +54,12 @@ export const ComposedDateRange = ({
     calendarLocale={calendarLocale === 'ptBR' ? ptBR : undefined}
     displayLabel={displayLabel || undefined}
     key={ends}
+    labels={{
+      clear: labelsClear,
+      fallback: labelsFallback,
+      from: labelsFrom,
+      until: labelsUntil,
+    }}
     value={valueOfEnds[ends]}
   />
 )

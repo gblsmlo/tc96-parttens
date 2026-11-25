@@ -4,6 +4,7 @@ import { PlusIcon, XIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { PopoverPopup } from '@tc96/ui/popover'
 import type { FormEvent, KeyboardEventHandler, ReactNode } from 'react'
+import type { PropertyEntryListLabels } from './property-labels'
 
 export interface PropertyEntryField {
   ariaLabel: string
@@ -15,34 +16,34 @@ export interface PropertyEntryField {
 }
 
 export interface PropertyEntryFormProps {
-  addLabel: string
   canAddAnother: boolean
   drafts: readonly string[]
-  entryLabels: readonly string[]
   errors: readonly (string | null)[]
+  labels: Pick<
+    PropertyEntryListLabels,
+    'add' | 'addAnother' | 'entries' | 'removeEntry' | 'save'
+  >
   onAdd: () => void
   onChange: (index: number, next: string) => void
   onRemove: (index: number) => void
   onSave: () => void
-  removeLabel: (entryLabel: string) => string
   renderField: (field: PropertyEntryField) => ReactNode
   errorMessage?: string | null
 }
 
 export function PropertyEntryForm({
-  addLabel,
   canAddAnother,
   drafts,
-  entryLabels,
   errorMessage = null,
   errors,
+  labels,
   onAdd,
   onChange,
   onRemove,
   onSave,
-  removeLabel,
   renderField,
 }: Readonly<PropertyEntryFormProps>) {
+  const entryLabels = labels.entries
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     onSave()
@@ -56,7 +57,7 @@ export function PropertyEntryForm({
   }
 
   return (
-    <PopoverPopup align="start" aria-label={addLabel} className="w-80">
+    <PopoverPopup align="start" aria-label={labels.add} className="w-80">
       <form className="grid gap-3 p-1" noValidate onSubmit={submit}>
         {drafts.map((draft, index) => (
           <div
@@ -70,7 +71,7 @@ export function PropertyEntryForm({
             ) : null}
             <div className="flex items-center gap-1">
               {renderField({
-                ariaLabel: entryLabels[index] ?? addLabel,
+                ariaLabel: entryLabels[index] ?? labels.add,
                 draft,
                 index,
                 invalid: Boolean(errors[index]),
@@ -79,7 +80,7 @@ export function PropertyEntryForm({
               })}
               {drafts.length > 1 ? (
                 <Button
-                  aria-label={removeLabel(entryLabels[index] ?? '')}
+                  aria-label={labels.removeEntry(entryLabels[index] ?? '')}
                   className="opacity-0 transition-opacity focus-visible:opacity-100 group-focus-within/entry:opacity-100 group-hover/entry:opacity-100"
                   onClick={() => onRemove(index)}
                   size="icon-sm"
@@ -111,10 +112,10 @@ export function PropertyEntryForm({
             variant="ghost"
           >
             <PlusIcon aria-hidden="true" />
-            Adicionar outro
+            {labels.addAnother}
           </Button>
           <Button size="sm" type="submit" variant="secondary">
-            Salvar
+            {labels.save}
           </Button>
         </div>
       </form>

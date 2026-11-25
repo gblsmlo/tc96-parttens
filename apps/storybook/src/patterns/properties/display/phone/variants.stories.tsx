@@ -12,13 +12,11 @@ const meta = {
   argTypes: phoneControlArgTypes,
   decorators: [PhoneCanvas],
   parameters: {
-    controls: {
-      exclude: ['disabled', 'display', 'readOnly', 'value'],
-    },
+    controls: { exclude: ['disabled', 'readOnly', 'value'] },
   },
   render: (args) => <ComposedPhone {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Phone/Stories',
+  title: 'Patterns/Properties/Display/Phone/Variants',
 } satisfies Meta<PhoneControls>
 
 export default meta
@@ -29,11 +27,6 @@ export const Default: Story = {}
 
 export const Empty: Story = {
   args: { value: [] },
-}
-
-export const TriggerDisplay: Story = {
-  args: { display: 'trigger' },
-  name: 'Display trigger',
 }
 
 export const ReadOnly: Story = {

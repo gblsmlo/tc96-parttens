@@ -2,13 +2,10 @@
 
 import { BellIcon } from '@phosphor-icons/react'
 import { resolveOptions } from '../../shared/lib/property-options'
+import type { PropertyOption } from '../../shared/property-catalog'
+import type { SchedulePropertyLabels } from '../../shared/property-labels'
 import { PropertyMultiSelectShell } from '../../shared/property-multi-select-shell'
-import type { SchedulePropertyLabels } from './schedule-labels'
-import {
-  type ScheduleReminderOption,
-  type ScheduleValue,
-  sortScheduleReminders,
-} from './schedule-value'
+import { type ScheduleValue, sortScheduleReminders } from './schedule-value'
 
 export function ScheduleRemindersSection({
   labels,
@@ -18,7 +15,7 @@ export function ScheduleRemindersSection({
 }: Readonly<{
   labels: SchedulePropertyLabels
   onChange: (value: ScheduleValue) => void
-  options: readonly ScheduleReminderOption[]
+  options: readonly PropertyOption[]
   value: ScheduleValue
 }>) {
   const reminders = sortScheduleReminders(value.reminders, options)

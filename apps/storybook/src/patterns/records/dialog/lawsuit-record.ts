@@ -1,4 +1,4 @@
-import type { RecordStatus, SelectPropertyOption } from '@tc96/ui/patterns'
+import type { PropertyOption, RecordStatus } from '@tc96/ui/patterns'
 
 export type LawsuitLookup = 'fast' | 'slow' | 'failing' | 'duplicate'
 
@@ -105,13 +105,13 @@ export const lawsuitPhaseOptions = [
   { label: 'Instrução', value: 'discovery' },
   { label: 'Sentença', value: 'judgment' },
   { label: 'Recurso', value: 'appeal' },
-] as const satisfies readonly SelectPropertyOption[]
+] as const satisfies readonly PropertyOption[]
 
 export const lawsuitInstanceOptions = [
   { label: '1º grau', value: 'first' },
   { label: '2º grau', value: 'second' },
   { label: 'Tribunais superiores', value: 'superior' },
-] as const satisfies readonly SelectPropertyOption[]
+] as const satisfies readonly PropertyOption[]
 
 export const lawsuitPartyRoleOptions = [
   { label: 'Cliente', value: 'client' },
@@ -119,12 +119,12 @@ export const lawsuitPartyRoleOptions = [
   { label: 'Testemunha', value: 'witness' },
   { label: 'Correspondente', value: 'correspondent' },
   { label: 'Indicação', value: 'referral' },
-] as const satisfies readonly SelectPropertyOption[]
+] as const satisfies readonly PropertyOption[]
 
 export const lawsuitContractOptions = [
   { label: 'Contrato de honorários 2025/014', value: 'fee-2025-014' },
   { label: 'Contrato de êxito 2025/021', value: 'success-2025-021' },
-] as const satisfies readonly SelectPropertyOption[]
+] as const satisfies readonly PropertyOption[]
 
 export const initialLawsuitValues: LawsuitValues = {
   action: null,

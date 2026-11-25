@@ -3,13 +3,13 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 <Meta of={ApiReferenceStories} name="API Reference" />
 
-# Icon Label
+# IconLabel
 
 A read-only property value made of an optional icon and a short label on the property surface: an origin ("Manual"), a creation date, a category with a colored dot. Reach for it when the value is already text and only needs to sit in a record row or a card the same way the other properties do; it has no editing of its own.
 
-The other pages of `Patterns/Properties/Display/Icon Label`: [Playground](?path=/story/patterns-properties-display-icon-label-playground--playground) to try the texts, the surface, the parts and the element, [Stories](?path=/story/patterns-properties-display-icon-label-stories--default) for each surface, [Behavior](?path=/story/patterns-properties-display-icon-label-behavior--aria-label-names-the-surface-as-image) for the tests, [Usages](?path=/story/patterns-properties-display-icon-label-usages--record-dates) for real content, and [Layouts](?path=/story/patterns-properties-display-icon-label-layouts--without-icon) for how the parts combine.
+The other pages of `Patterns/Properties/Display/IconLabel`: [Playground](?path=/story/patterns-properties-display-iconlabel-playground--playground) to try the texts, the surface, the icon, `leading`, `trailing` and the element, [Variants](?path=/story/patterns-properties-display-iconlabel-variants--default) for the `plain` and `muted` surfaces, [Layouts](?path=/story/patterns-properties-display-iconlabel-layouts--default) for the one formation, [Behavior](?path=/story/patterns-properties-display-iconlabel-behavior--aria-label-names-the-surface-as-image) for the tests, and [Usages](?path=/story/patterns-properties-display-iconlabel-usages--record-dates) for record dates, an origin, a category and a filter.
 
-Used in: [Flag](?path=/docs/patterns-properties-display-flag-api-reference--api-reference) is an `IconLabelProperty` chosen by a boolean, and the [Email](?path=/docs/patterns-properties-display-email-api-reference--api-reference) chips are `IconLabelProperty` with a remove button as `trailing`; date range, phone, reference and attachments draw their values with it too. The record dates of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages-tasks--default) and the direction of [Patterns/Surfaces/Settings/Usages/Finance/Categories](?path=/story/patterns-surfaces-settings-usages-finance-categories--categories) render it directly.
+Used in: [Flag](?path=/docs/patterns-properties-display-flag-api-reference--api-reference) is an `IconLabelProperty` chosen by a boolean, and the [Email](?path=/docs/patterns-properties-display-email-api-reference--api-reference) chips are `IconLabelProperty` with a remove button as `trailing`; date range, phone, reference and attachments draw their values with it too. The record dates of [Patterns/Records/Preview/Usages/Tasks](?path=/story/patterns-records-preview-usages--tasks) and the direction of [Patterns/Surfaces/Settings/Usages/Finance/Categories](?path=/story/patterns-surfaces-settings-usages--categories) render it directly.
 
 ## Import
 
@@ -43,8 +43,8 @@ Renders the property surface, a `span` by default, with the label cut to one lin
 | `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface: a 24px filled badge, or inline text with no fill; a plain `button` or link draws a `secondary` box on hover, on keyboard focus and while its popup is open. |
 | `muted` | `boolean` | `false` | When true, gives the surface the empty look: an outlined badge, or muted text when plain. |
 | `ariaLabel` | `string` | - | Names the surface `"<ariaLabel>: <label>"` and gives it `role="img"`. |
-| `icon` | `IconLabelPropertyIcon` | - | Sets the icon before the label, at 12px. |
-| `iconClassName` | `string` | - | Adds classes to the icon, merged over its `size-3`. |
+| `icon` | `PropertyIcon` | - | Sets the icon before the label, at 16px. |
+| `iconClassName` | `string` | - | Adds classes to the icon, merged over its `size-4`. |
 | `leading` | `React.ReactNode` | - | Sets content before the icon, such as a colored dot or an avatar. |
 | `trailing` | `React.ReactNode` | - | Sets content after the label, such as a remove button. |
 | `trailingVisibility` | `"always"` or `"hover"` | `"always"` | Controls when `trailing` shows: always, or only while the surface is hovered or holds focus. |
@@ -73,7 +73,6 @@ With `trailingVisibility="hover"`, `trailing` sits in a `span` that is transpare
 
 | Export | Kind | Description |
 | --- | --- | --- |
-| `IconLabelPropertyIcon` | `type` | A component that renders an `svg` and takes its props, such as a `@phosphor-icons/react` icon. |
 | `IconLabelPropertyProps` | `type` | The props of `IconLabelProperty`. |
 
 ## Accessibility and theme
@@ -81,4 +80,4 @@ With `trailingVisibility="hover"`, `trailing` sits in a `span` that is transpare
 - Pass `ariaLabel` when the label alone does not say what the value is ("27/09/2026" is a creation date); a record row whose label already names it can leave it out.
 - The icon is hidden from assistive technology: put its meaning in the label or in `ariaLabel`.
 - Name every control you pass as `trailing`, and do not pass one with `render` set to a `button` or a link, which cannot hold another control.
-- The surface reads the theme tokens `secondary` and `secondary-foreground` for the badge, `input` and `background` for the muted badge, and `muted-foreground` for muted plain text.
+- The surface reads the theme tokens `secondary` for the badge fill and `primary` for its text, `input` and `background` for the muted badge, and `muted-foreground` for muted plain text.

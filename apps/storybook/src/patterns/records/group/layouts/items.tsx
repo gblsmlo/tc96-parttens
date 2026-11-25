@@ -14,17 +14,17 @@ import {
   MenuTrigger,
 } from '@tc96/ui/menu'
 import {
+  type PropertyOption,
   RecordGroup,
   RecordGroupItem,
   RecordStatusBadge,
   SelectProperty,
-  type SelectPropertyOption,
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
 
 const ignore = (_id: string) => undefined
 
-const statusOptions: readonly SelectPropertyOption[] = [
+const statusOptions: readonly PropertyOption[] = [
   { label: 'Paga', value: 'paid' },
   { label: 'Prevista', value: 'scheduled' },
   { label: 'Atrasada', value: 'overdue' },

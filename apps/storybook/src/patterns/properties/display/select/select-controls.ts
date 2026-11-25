@@ -1,5 +1,6 @@
 import type { ArgTypes } from '@storybook/react-vite'
 import type { PropertyVariant } from '@tc96/ui/patterns'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 
 export const selectValues = [
   'meeting',
@@ -15,12 +16,13 @@ export type SelectValueControl = (typeof selectValues)[number]
 export const selectVariants = ['badge', 'plain'] as const
 
 export interface SelectControls {
+  allowEmpty: boolean
   ariaLabel: string
   disabled: boolean
-  emptyOptionLabel: string
-  fallback: string
   grouped: boolean
   icons: boolean
+  labelsEmptyOption: string
+  labelsFallback: string
   placeholder: string
   readOnly: boolean
   value: SelectValueControl
@@ -28,12 +30,13 @@ export interface SelectControls {
 }
 
 export const selectControlArgs: SelectControls = {
+  allowEmpty: false,
   ariaLabel: 'Tipo',
   disabled: false,
-  emptyOptionLabel: '',
-  fallback: '—',
   grouped: false,
   icons: true,
+  labelsEmptyOption: ptBRPropertyLabels.select.emptyOption,
+  labelsFallback: ptBRPropertyLabels.select.fallback,
   placeholder: 'Tipo',
   readOnly: false,
   value: 'meeting',
@@ -41,6 +44,11 @@ export const selectControlArgs: SelectControls = {
 }
 
 export const selectControlArgTypes: Partial<ArgTypes<SelectControls>> = {
+  allowEmpty: {
+    control: 'boolean',
+    description:
+      'The `allowEmpty` of `SelectProperty`: an option at the top of the list that reports `null`.',
+  },
   ariaLabel: {
     control: 'text',
     description:
@@ -50,16 +58,6 @@ export const selectControlArgTypes: Partial<ArgTypes<SelectControls>> = {
     control: 'boolean',
     description: 'The `disabled` of `SelectProperty`.',
   },
-  emptyOptionLabel: {
-    control: 'text',
-    description:
-      'The `emptyOptionLabel` of `SelectProperty`: an option at the top of the list that reports `null`; empty leaves it out.',
-  },
-  fallback: {
-    control: 'text',
-    description:
-      'The `fallback` of `SelectProperty`, shown for a value no option declares (`unknown`).',
-  },
   grouped: {
     control: 'boolean',
     description:
@@ -68,6 +66,16 @@ export const selectControlArgTypes: Partial<ArgTypes<SelectControls>> = {
   icons: {
     control: 'boolean',
     description: 'Gives each option an `icon` and a `tone`.',
+  },
+  labelsEmptyOption: {
+    control: 'text',
+    description:
+      '`labels.emptyOption` of `SelectProperty`: the label of the empty option that `allowEmpty` adds.',
+  },
+  labelsFallback: {
+    control: 'text',
+    description:
+      '`labels.fallback` of `SelectProperty`: the text of a value no option declares (`unknown`).',
   },
   placeholder: {
     control: 'text',
@@ -82,7 +90,7 @@ export const selectControlArgTypes: Partial<ArgTypes<SelectControls>> = {
   value: {
     control: 'select',
     description:
-      'The `value` of `SelectProperty`; `none` passes `null` and `unknown` a value no option declares. The story keeps the pick in its own state until this control changes.',
+      'The `value` of `SelectProperty`; `none` passes `null` and `unknown` a value no option declares.',
     options: selectValues,
   },
   variant: {

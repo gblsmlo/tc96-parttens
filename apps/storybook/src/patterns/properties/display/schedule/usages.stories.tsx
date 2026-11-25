@@ -2,6 +2,7 @@ import { ptBR } from '@daypicker/react/locale'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { emptyScheduleValue, ScheduleProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { ScheduleCanvas } from './schedule-canvas.tsx'
 import { scheduleToday } from './schedule-data.ts'
 import { StatefulSchedule } from './schedule-layouts.tsx'
@@ -17,6 +18,14 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const PipelineMeeting: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A weekly meeting, on the [Default](?path=/story/patterns-properties-display-schedule-layouts--default) layout: the day, the start and end times and the repeat icon, with two reminders in the footer.',
+      },
+    },
+  },
   render: () => (
     <dl className="grid grid-cols-[6rem_1fr] items-center gap-x-4 gap-y-3 text-sm">
       <dt className="text-muted-foreground">Evento</dt>
@@ -50,6 +59,14 @@ export const PipelineMeeting: Story = {
 }
 
 export const TaskDeadline: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The deadline of a legal task, on the [Date Only Popup](?path=/story/patterns-properties-display-schedule-layouts--date-only-popup) layout: a day with no time, recurrence or reminders, and Sem prazo while none is set.',
+      },
+    },
+  },
   render: () => (
     <dl className="grid grid-cols-[6rem_1fr] items-center gap-x-4 gap-y-3 text-sm">
       <dt className="text-muted-foreground">Tarefa</dt>
@@ -60,9 +77,9 @@ export const TaskDeadline: Story = {
           ariaLabel="Prazo"
           calendarLocale={ptBR}
           dateOnly
-          fallback="Sem prazo"
           today={scheduleToday}
           value={{ ...emptyScheduleValue, from: new Date(2026, 9, 16) }}
+          labels={{ fallback: 'Sem prazo' }}
         />
       </dd>
     </dl>
@@ -74,45 +91,31 @@ export const TaskDeadline: Story = {
   },
 }
 
-export const EnglishEvent: Story = {
+export const QuarterlyReview: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A quarterly review, on the [Default](?path=/story/patterns-properties-display-schedule-layouts--default) layout with the consumer's own frequencies and reminders: Trimestralmente is not one of the default options.",
+      },
+    },
+  },
   render: () => (
     <dl className="grid grid-cols-[6rem_1fr] items-center gap-x-4 gap-y-3 text-sm">
-      <dt className="text-muted-foreground">Event</dt>
-      <dd>Quarterly business review</dd>
-      <dt className="text-muted-foreground">Date</dt>
+      <dt className="text-muted-foreground">Evento</dt>
+      <dd>Revisão trimestral de resultados</dd>
+      <dt className="text-muted-foreground">Data</dt>
       <dd>
         <StatefulSchedule
-          ariaLabel="Date"
-          labels={{
-            addReminder: 'Add reminder',
-            allDay: 'All day',
-            back: 'Back',
-            end: 'End',
-            frequency: 'Frequency',
-            nextWeek: 'Next week',
-            noDate: 'No date',
-            noReminders: 'No reminder found.',
-            noRepeat: 'Does not repeat',
-            presets: 'Date presets',
-            reminders: 'Reminders',
-            removeReminder: 'Remove reminder',
-            repeat: 'Repeat',
-            start: 'Start',
-            thisWeekend: 'This weekend',
-            time: 'Time',
-            today: 'Today',
-            tomorrow: 'Tomorrow',
-            until: 'Until',
-            untilFallback: 'No end',
-          }}
-          locale="en-US"
+          ariaLabel="Data"
+          calendarLocale={ptBR}
           recurrenceOptions={[
-            { label: 'Monthly', value: 'monthly' },
-            { label: 'Quarterly', value: 'quarterly' },
+            { label: 'Mensalmente', value: 'monthly' },
+            { label: 'Trimestralmente', value: 'quarterly' },
           ]}
           reminderOptions={[
-            { label: '1 hour before', value: '60' },
-            { label: '1 day before', value: '1440' },
+            { label: '1 hora antes', value: '60' },
+            { label: '1 dia antes', value: '1440' },
           ]}
           today={scheduleToday}
           value={{
@@ -131,18 +134,27 @@ export const EnglishEvent: Story = {
   play: async ({ canvasElement }) => {
     await expect(
       within(canvasElement).getByRole('button', {
-        name: 'Date: Nov 3 · 15:00 – 16:30 · Quarterly',
+        name: 'Data: 3 de nov · 15:00 – 16:30 · Trimestralmente',
       }),
     ).toBeVisible()
   },
 }
 
 export const ReadOnlyAgenda: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'An agenda of calls and meetings, on the [Default](?path=/story/patterns-properties-display-schedule-layouts--default) layout, read-only with a `plain` surface: a timed day, an all-day day and a weekday recurrence.',
+      },
+    },
+  },
   render: () => (
     <ul className="flex w-80 flex-col gap-2 text-sm">
       <li className="flex items-center justify-between gap-4">
         <span>Ligar para Acme Corp</span>
         <ScheduleProperty
+          locale="pt-BR"
           ariaLabel="Data"
           value={{
             ...emptyScheduleValue,
@@ -151,19 +163,23 @@ export const ReadOnlyAgenda: Story = {
             startTime: '10:30',
           }}
           variant="plain"
+          labels={ptBRPropertyLabels.schedule}
         />
       </li>
       <li className="flex items-center justify-between gap-4">
         <span>Enviar proposta revisada</span>
         <ScheduleProperty
+          locale="pt-BR"
           ariaLabel="Data"
           value={{ ...emptyScheduleValue, from: new Date(2026, 9, 9) }}
           variant="plain"
+          labels={ptBRPropertyLabels.schedule}
         />
       </li>
       <li className="flex items-center justify-between gap-4">
         <span>Reunião de status</span>
         <ScheduleProperty
+          locale="pt-BR"
           ariaLabel="Data"
           value={{
             allDay: false,
@@ -175,6 +191,7 @@ export const ReadOnlyAgenda: Story = {
             until: null,
           }}
           variant="plain"
+          labels={ptBRPropertyLabels.schedule}
         />
       </li>
     </ul>

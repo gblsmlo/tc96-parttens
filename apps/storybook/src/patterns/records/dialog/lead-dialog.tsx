@@ -119,6 +119,7 @@ export function LeadDialog({
           </RecordGroupRow>
           <RecordGroupRow label="Responsável">
             <PersonProperty
+              placeholder="Sem responsável"
               ariaLabel="Responsável"
               dropdownPlacement={{ align: 'start' }}
               onValueChange={setOwnerId}

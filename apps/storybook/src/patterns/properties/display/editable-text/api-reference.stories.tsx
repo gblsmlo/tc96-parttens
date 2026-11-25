@@ -13,7 +13,7 @@ const meta = {
   component: EditableText,
   decorators: [EditableTextCanvas],
   tags: ['!autodocs', '!dev'],
-  title: 'Patterns/Properties/Display/Editable Text/API Reference',
+  title: 'Patterns/Properties/Display/EditableText/API Reference',
 } satisfies Meta<typeof EditableText>
 
 export default meta

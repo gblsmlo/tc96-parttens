@@ -6,12 +6,20 @@ import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
 } from '../../../../test-utils/property-surface'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { DateCanvas } from './date-canvas.tsx'
+import { dateControlArgs } from './date-controls.ts'
+import { ComposedDate } from './date-layouts.tsx'
 
 const VALUE = '2026-06-19T12:00:00.000Z'
 
 const meta = {
-  args: { locale: 'en-US', timeZone: 'UTC', value: VALUE },
+  args: {
+    locale: 'en-US',
+    timeZone: 'UTC',
+    value: VALUE,
+    labels: ptBRPropertyLabels.date,
+  },
   component: DateProperty,
   decorators: [DateCanvas],
   tags: ['!autodocs'],
@@ -107,7 +115,10 @@ export const PlainTriggerOpensCalendar: Story = {
 }
 
 export const OpensCalendarAndClears: Story = {
-  args: { fallback: 'No target', onValueChange: fn() },
+  args: {
+    onValueChange: fn(),
+    labels: { ...ptBRPropertyLabels.date, fallback: 'No target' },
+  },
   play: async ({ args, canvasElement }) => {
     await userEvent.click(
       within(canvasElement).getByRole('button', { name: 'Date: Jun 19' }),
@@ -418,6 +429,49 @@ export const OverdueReadOnlyAddsNoWord: Story = {
 
     await expect(surface).toHaveTextContent(/^Jun 19$/)
     await expect(surface).toHaveAttribute('data-overdue')
+  },
+}
+
+export const OverduePlainWeighsTheDateHeavier: Story = {
+  render: () => (
+    <div className="flex gap-2">
+      <ComposedDate {...dateControlArgs} ariaLabel="Prazo" variant="plain" />
+      <ComposedDate
+        {...dateControlArgs}
+        ariaLabel="Vencimento"
+        isOverdue
+        variant="plain"
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const onTime = canvas.getByRole('button', { name: 'Prazo: 19 de jun.' })
+    const overdue = canvas.getByRole('button', {
+      name: 'Vencimento: 19 de jun.',
+    })
+
+    await expect(overdue).toHaveAttribute('data-overdue', 'true')
+    await expect(onTime).not.toHaveAttribute('data-overdue')
+    await expect(getComputedStyle(overdue).fontWeight).toBe('500')
+    await expect(Number(getComputedStyle(overdue).fontWeight)).toBeGreaterThan(
+      Number(getComputedStyle(onTime).fontWeight),
+    )
+  },
+}
+
+export const PickingADayShowsItInTheLocale: Story = {
+  render: () => <ComposedDate {...dateControlArgs} />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Data: 19 de jun.',
+    })
+
+    await userEvent.click(trigger)
+    await userEvent.click(dayButton(await screen.findByRole('grid'), '20'))
+    await waitFor(() => expect(screen.queryByRole('grid')).toBeNull())
+
+    await expect(trigger).toHaveAccessibleName('Data: 20 de jun.')
   },
 }
 

@@ -1,5 +1,6 @@
 import type { ArgTypes } from '@storybook/react-vite'
 import type { PropertyVariant } from '@tc96/ui/patterns'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 
 export const textEditings = ['none', 'trigger', 'inline'] as const
 
@@ -13,12 +14,14 @@ export const textVariants = ['badge', 'plain'] as const
 
 export interface TextControls {
   ariaLabel: string
-  copyLabel: string
+  copyable: boolean
   disabled: boolean
   editing: TextEditingControl
-  fallback: string
   icon: boolean
-  inputPlaceholder: string
+  labelsAdd: string
+  labelsCopy: string
+  labelsFallback: string
+  labelsInputPlaceholder: string
   trailingVisibility: TextTrailingVisibility
   value: string
   variant: PropertyVariant
@@ -26,12 +29,14 @@ export interface TextControls {
 
 export const textControlArgs: TextControls = {
   ariaLabel: 'Tipo',
-  copyLabel: '',
+  copyable: false,
   disabled: false,
   editing: 'none',
-  fallback: 'Não informado',
   icon: true,
-  inputPlaceholder: '',
+  labelsAdd: '',
+  labelsCopy: ptBRPropertyLabels.text.copy,
+  labelsFallback: ptBRPropertyLabels.text.fallback,
+  labelsInputPlaceholder: '',
   trailingVisibility: 'always',
   value: 'Solicitação de documento',
   variant: 'badge',
@@ -43,10 +48,10 @@ export const textControlArgTypes: Partial<ArgTypes<TextControls>> = {
     description:
       'The `ariaLabel` of `TextProperty`, prefixed to the value in the accessible name, and the name of the field.',
   },
-  copyLabel: {
-    control: 'text',
+  copyable: {
+    control: 'boolean',
     description:
-      'The `copyLabel` of `TextProperty`: names a copy button after the value; empty leaves it out.',
+      'The `copyable` of `TextProperty`: a copy button after the value, named by `labels.copy`.',
   },
   disabled: {
     control: 'boolean',
@@ -56,27 +61,37 @@ export const textControlArgTypes: Partial<ArgTypes<TextControls>> = {
   editing: {
     control: 'inline-radio',
     description:
-      '`none` passes no `onCommit`; `trigger` and `inline` pass one with that `editing`. The story keeps the commit in its own state until `value` changes.',
+      '`none` passes no `onCommit`; `trigger` and `inline` pass one with that `editing`, kept in the story state until `value` changes.',
     options: textEditings,
-  },
-  fallback: {
-    control: 'text',
-    description:
-      'The `fallback` of `TextProperty`, shown while `value` is empty.',
   },
   icon: {
     control: 'boolean',
     description: 'Passes an `icon` before the value.',
   },
-  inputPlaceholder: {
+  labelsAdd: {
     control: 'text',
     description:
-      'The `inputPlaceholder` of `TextProperty`: the placeholder of the field; empty falls back to `fallback`.',
+      '`labels.add` of `TextProperty`: the name of the add button; empty falls back to `labels.fallback`.',
+  },
+  labelsCopy: {
+    control: 'text',
+    description:
+      '`labels.copy` of `TextProperty`: the name of the copy button; acts only with `copyable`.',
+  },
+  labelsFallback: {
+    control: 'text',
+    description:
+      '`labels.fallback` of `TextProperty`: the text while `value` is empty.',
+  },
+  labelsInputPlaceholder: {
+    control: 'text',
+    description:
+      '`labels.inputPlaceholder` of `TextProperty`: the placeholder of the field; empty falls back to `labels.fallback`.',
   },
   trailingVisibility: {
     control: 'inline-radio',
     description:
-      'The `trailingVisibility` of `TextProperty`; acts only with `copyLabel`.',
+      'The `trailingVisibility` of `TextProperty`; acts only with `copyable`.',
     options: textTrailingVisibilities,
   },
   value: {

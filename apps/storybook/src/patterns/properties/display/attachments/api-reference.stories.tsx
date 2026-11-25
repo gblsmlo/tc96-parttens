@@ -2,6 +2,7 @@ import { PaperclipIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AttachmentProperty, AttachmentsProperty } from '@tc96/ui/patterns'
 import { expect } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { AttachmentsCanvas } from './attachments-canvas.tsx'
 
 const ignore = () => undefined
@@ -28,8 +29,11 @@ export const Anatomy: Story = {
         href="#attachment"
         label="AttachmentProperty"
         onRemove={ignore}
-        removeLabel="Remove AttachmentProperty"
         type="pdf"
+        labels={{
+          ...ptBRPropertyLabels.attachment,
+          remove: 'Remove AttachmentProperty',
+        }}
       />
     </AttachmentsProperty>
   ),

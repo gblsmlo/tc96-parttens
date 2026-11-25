@@ -5,6 +5,7 @@ import {
   type AttachmentsPropertyAction,
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import type { AttachmentsControls } from './attachments-controls.ts'
 import {
   type AttachmentItem,
@@ -56,8 +57,11 @@ export function StatefulAttachments({
                   )
               : undefined
           }
-          removeLabel={`Remove ${item.label}`}
           type={item.type}
+          labels={{
+            ...ptBRPropertyLabels.attachment,
+            remove: `Remover ${item.label}`,
+          }}
         />
       ))}
     </AttachmentsProperty>
@@ -71,13 +75,14 @@ export const ComposedAttachments = ({
   actionLabel,
   ariaLabel,
   empty,
+  readOnly,
   remove,
   type,
   typeIcon,
 }: Readonly<AttachmentsControls>) => (
   <StatefulAttachments
     action={
-      action
+      action && !readOnly
         ? {
             disabled: actionDisabled,
             icon: actionIcon ? PaperclipIcon : undefined,
@@ -96,6 +101,6 @@ export const ComposedAttachments = ({
     }
     key={[empty, type, typeIcon].join()}
     newItem={{ ...sampleNewAttachment, type: typeIcon ? type : undefined }}
-    removable={remove}
+    removable={remove && !readOnly}
   />
 )

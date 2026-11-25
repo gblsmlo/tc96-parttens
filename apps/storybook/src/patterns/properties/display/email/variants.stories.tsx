@@ -12,13 +12,11 @@ const meta = {
   argTypes: emailControlArgTypes,
   decorators: [EmailCanvas],
   parameters: {
-    controls: {
-      exclude: ['disabled', 'display', 'readOnly', 'value'],
-    },
+    controls: { exclude: ['disabled', 'readOnly', 'value'] },
   },
   render: (args) => <ComposedEmail {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Email/Stories',
+  title: 'Patterns/Properties/Display/Email/Variants',
 } satisfies Meta<EmailControls>
 
 export default meta
@@ -29,11 +27,6 @@ export const Default: Story = {}
 
 export const Empty: Story = {
   args: { value: [] },
-}
-
-export const TriggerDisplay: Story = {
-  args: { display: 'trigger' },
-  name: 'Display trigger',
 }
 
 export const ReadOnly: Story = {

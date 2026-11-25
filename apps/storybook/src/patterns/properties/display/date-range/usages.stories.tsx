@@ -15,48 +15,68 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const CampaignValidity: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'How long a campaign runs, on the [Default](?path=/story/patterns-properties-display-daterange-layouts--default) layout: both ends as day and short month, joined by an en dash.',
+      },
+    },
+  },
   render: () => (
     <StatefulDateRange
-      ariaLabel="Campaign validity"
-      clearLabel="Clear validity"
-      fallback="No validity"
-      fromLabel="From"
-      locale="en-US"
-      untilLabel="Until"
+      ariaLabel="Vigência da campanha"
+      calendarLocale={ptBR}
+      locale="pt-BR"
       value={{ from: new Date(2026, 5, 19), to: new Date(2026, 5, 26) }}
+      labels={{ clear: 'Limpar vigência', fallback: 'Sem vigência' }}
     />
   ),
   play: async ({ canvasElement }) => {
     await expect(
       within(canvasElement).getByRole('button', {
-        name: 'Campaign validity: Jun 19 – Jun 26',
+        name: 'Vigência da campanha: 19 de jun. – 26 de jun.',
       }),
     ).toBeVisible()
   },
 }
 
 export const OpenEndedCampaign: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A campaign with no end date yet, on the [Default](?path=/story/patterns-properties-display-daterange-layouts--default) layout: the lone start reads after A partir de.',
+      },
+    },
+  },
   render: () => (
     <StatefulDateRange
-      ariaLabel="Campaign validity"
-      clearLabel="Clear validity"
-      fallback="No validity"
-      fromLabel="From"
-      locale="en-US"
-      untilLabel="Until"
+      ariaLabel="Vigência da campanha"
+      calendarLocale={ptBR}
+      locale="pt-BR"
       value={{ from: new Date(2026, 5, 19), to: undefined }}
+      labels={{ clear: 'Limpar vigência', fallback: 'Sem vigência' }}
     />
   ),
   play: async ({ canvasElement }) => {
     await expect(
       within(canvasElement).getByRole('button', {
-        name: 'Campaign validity: From Jun 19',
+        name: 'Vigência da campanha: A partir de 19 de jun.',
       }),
     ).toBeVisible()
   },
 }
 
 export const SupportWindow: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The support window of a contract, on the [Default](?path=/story/patterns-properties-display-daterange-layouts--default) layout: two months apart, with the calendar in Portuguese.',
+      },
+    },
+  },
   render: () => (
     <StatefulDateRange
       ariaLabel="Janela de suporte"
@@ -75,16 +95,27 @@ export const SupportWindow: Story = {
 }
 
 export const ReportingInterval: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The interval of a report, on the [Default](?path=/story/patterns-properties-display-daterange-layouts--default) layout, read-only with a `plain` surface: the consumer names the quarter in `displayLabel`.',
+      },
+    },
+  },
   render: () => (
     <StatefulDateRange
-      displayLabel="Q2 2026"
-      locale="en-US"
+      ariaLabel="Período do relatório"
+      displayLabel="2º trimestre de 2026"
+      locale="pt-BR"
       readOnly
       value={{ from: new Date(2026, 3, 1), to: new Date(2026, 5, 30) }}
       variant="plain"
     />
   ),
   play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByText('Q2 2026')).toBeVisible()
+    await expect(
+      within(canvasElement).getByText('2º trimestre de 2026'),
+    ).toBeVisible()
   },
 }

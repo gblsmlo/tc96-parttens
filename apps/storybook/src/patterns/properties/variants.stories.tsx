@@ -10,11 +10,11 @@ const meta = {
   args: propertiesControlArgs,
   argTypes: propertiesControlArgTypes,
   parameters: {
-    controls: { exclude: ['defaultVisible', 'empty', 'readOnly', 'variant'] },
+    controls: { exclude: ['empty', 'variant'] },
   },
   render: (args) => <ComposedProperties {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Stories',
+  title: 'Patterns/Properties/Variants',
 } satisfies Meta<PropertiesControls>
 
 export default meta
@@ -29,13 +29,4 @@ export const Plain: Story = {
 
 export const Empty: Story = {
   args: { empty: true },
-}
-
-export const ReadOnly: Story = {
-  args: { readOnly: true },
-}
-
-export const NoneVisible: Story = {
-  args: { defaultVisible: [] },
-  name: 'defaultVisible none',
 }

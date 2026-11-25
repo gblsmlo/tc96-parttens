@@ -1,9 +1,8 @@
+import type { PropertyOption } from '../../shared/property-catalog'
+import type { SchedulePropertyLabels } from '../../shared/property-labels'
 import { formatDateProperty } from '../date/date-value'
-import type { SchedulePropertyLabels } from './schedule-labels'
 import type { ScheduleSection } from './schedule-section'
 import {
-  type ScheduleRecurrenceOption,
-  type ScheduleReminderOption,
   type ScheduleValue,
   scheduleRecurrenceLabel,
   sortScheduleReminders,
@@ -17,8 +16,8 @@ export interface ScheduleSummary {
 export interface ScheduleSummaryContext {
   labels: SchedulePropertyLabels
   locale: string
-  recurrenceOptions: readonly ScheduleRecurrenceOption[]
-  reminderOptions: readonly ScheduleReminderOption[]
+  recurrenceOptions: readonly PropertyOption[]
+  reminderOptions: readonly PropertyOption[]
   value: ScheduleValue
 }
 

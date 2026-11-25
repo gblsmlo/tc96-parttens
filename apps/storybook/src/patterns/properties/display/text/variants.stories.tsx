@@ -11,12 +11,9 @@ const meta = {
   args: textControlArgs,
   argTypes: textControlArgTypes,
   decorators: [TextCanvas],
-  parameters: {
-    controls: { exclude: ['value', 'variant'] },
-  },
   render: (args) => <ComposedText {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Text/Stories',
+  title: 'Patterns/Properties/Display/Text/Variants',
 } satisfies Meta<TextControls>
 
 export default meta
@@ -27,8 +24,10 @@ export const Default: Story = {}
 
 export const Plain: Story = {
   args: { variant: 'plain' },
+  parameters: { controls: { exclude: ['variant'] } },
 }
 
 export const Empty: Story = {
   args: { value: '' },
+  parameters: { controls: { exclude: ['value'] } },
 }

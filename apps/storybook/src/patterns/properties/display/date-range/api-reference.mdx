@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 One period of a record, shown as a chip that opens a two-month calendar when the consumer can change it: the validity of a campaign, a support window, a reporting interval. It is one property, not two dates side by side: a start with no end and an end with no start are states of the same period, and the label says which end exists.
 
-The other pages of `Patterns/Properties/Display/DateRange`: [Playground](?path=/story/patterns-properties-display-daterange-playground--playground) to try the texts, the ends and the calendar, [Stories](?path=/story/patterns-properties-display-daterange-stories--default) for each state, [Behavior](?path=/story/patterns-properties-display-daterange-behavior--joins-both-ends) for the tests, and [Usages](?path=/story/patterns-properties-display-daterange-usages--campaign-validity) for campaigns, a support window and a reporting interval.
+The other pages of `Patterns/Properties/Display/DateRange`: [Playground](?path=/story/patterns-properties-display-daterange-playground--playground) to try the texts, the ends and the calendar, [Variants](?path=/story/patterns-properties-display-daterange-variants--default) for each surface, end and state, [Layouts](?path=/story/patterns-properties-display-daterange-layouts--default) for the formation, [Behavior](?path=/story/patterns-properties-display-daterange-behavior--joins-both-ends) for the tests, and [Usages](?path=/story/patterns-properties-display-daterange-usages--campaign-validity) for campaigns, a support window and a reporting interval.
 
 The chip and the calendar popover are the shared parts of the properties, documented once in the [API Reference of `Patterns/Properties`](?path=/docs/patterns-properties-api-reference--api-reference): `PropertySurface` and `PropertyCalendarPopover`. This page covers what the period adds to them.
 
@@ -45,21 +45,18 @@ The period. It is read-only when `readOnly` is set or when it has no `onValueCha
 | `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the surface: a filled chip, or text with no fill. |
 | `ariaLabel` | `string` | `"Period"` | Names the popover and starts the name of the trigger. |
 | `locale` | `string` | `"en-US"` | Sets the BCP 47 locale that formats each end. |
-| `fallback` | `string` | `"Sem período"` | Sets the label while neither end is set. |
-| `displayLabel` | `string` | - | Replaces the formatted label while at least one end is set; the empty period keeps `fallback`. |
-| `fromLabel` | `string` | `"A partir de"` | Sets the word before a start with no end. |
-| `untilLabel` | `string` | `"Até"` | Sets the word before an end with no start. |
+| `labels` | `Partial<DateRangePropertyLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.dateRange`: `fallback` (`"No period"`, the label while neither end is set), `from` (`"From"`, the word before a start with no end), `until` (`"Until"`, the word before an end with no start) and `clear` (`"Clear period"`, the text of the clear button). |
+| `displayLabel` | `string` | - | Replaces the formatted label while at least one end is set; the empty period keeps `labels.fallback`. |
 | `numberOfMonths` | `number` | `2` | Sets the months the calendar shows side by side. |
 | `readOnly` | `boolean` | `false` | When true, renders the read-only chip even with `onValueChange`. |
 | `disabled` | `boolean` | `false` | When true, disables the trigger. |
 | `allowClear` | `boolean` | `true` | When true, adds the clear button under the calendar. |
-| `clearLabel` | `string` | `"Limpar período"` | Sets the text of the clear button. |
 | `calendarLocale` | `DayPickerLocale` | - | Sets the DayPicker locale of the calendar: its month names and weekdays. |
 | `calendarProps` | `PropertyCalendarProps` | - | Passes props to the calendar, after `calendarLocale`, so its `locale` wins. |
-| `dropdownPlacement` | `DatePropertyDropdownPlacement` | - | Sets `side`, `align`, `sideOffset` and `alignOffset` of the popover; `align` replaces the centered default. |
+| `dropdownPlacement` | `PropertyPopoverDropdownPlacement` | - | Sets `side`, `align`, `sideOffset` and `alignOffset` of the popover; `align` replaces the centered default. |
 | `className` | `string` | - | Adds classes to the chip or the trigger. |
 
-Takes no other prop. `PropertyCalendarProps` is every prop of the calendar except `defaultMonth`, `mode`, `onSelect` and `selected`; `DatePropertyDropdownPlacement` is exported by [Date](?path=/docs/patterns-properties-display-date-api-reference--api-reference).
+Takes no other prop. `PropertyCalendarProps` is every prop of the calendar except `defaultMonth`, `mode`, `onSelect` and `selected`; `PropertyPopoverDropdownPlacement` is exported by [Date](?path=/docs/patterns-properties-display-date-api-reference--api-reference).
 
 | Attribute | Values | Description |
 | --- | --- | --- |
@@ -68,7 +65,7 @@ Takes no other prop. `PropertyCalendarProps` is every prop of the calendar excep
 | `data-empty` | `"true"` while neither end is set | Styles the empty period: the `"badge"` chip turns to an outline with `border-input` |
 | `data-slot` | `"property-icon"` | Selects the calendar-range icon |
 
-The label joins both ends with an en dash (`Jun 19 – Jun 26`), puts `fromLabel` before a lone start (`A partir de Jun 19`) and `untilLabel` before a lone end (`Até Jun 26`), and shows `fallback` with neither. Each end is the day and the short month, formatted in the runtime's time zone, with no year.
+The label joins both ends with an en dash (`Jun 19 – Jun 26`), puts `labels.from` before a lone start (`From Jun 19`) and `labels.until` before a lone end (`Until Jun 26`), and shows `labels.fallback` with neither. Each end is the day and the short month, formatted in the runtime's time zone, with no year.
 
 The calendar emits on every click and the popover stays open: the first click already returns a range starting on the clicked day, and the second completes it, so closing is the user's choice (Escape, a click outside, or the clear button). The clear button emits `undefined` and closes the popover. A disabled trigger does not open and dims to 64% opacity.
 
@@ -85,5 +82,5 @@ With `variant="plain"` the editable trigger is the plain trigger box of `Propert
 ## Accessibility and theme
 
 - Pass `ariaLabel` with the meaning of the period (`Campaign validity`): the trigger is named `"<ariaLabel>: <label>"`, and the default `Period` says nothing about which period it is.
-- The built-in texts are Portuguese (`Sem período`, `A partir de`, `Até`, `Limpar período`) and the default `ariaLabel` is English (`Period`); pass `fallback`, `fromLabel`, `untilLabel`, `clearLabel` and `ariaLabel` to change them, and `calendarLocale` for the calendar's language.
+- The built-in texts are English (`No period`, `From`, `Until`, `Clear period`, the `ariaLabel` `Period`); pass `labels` and `ariaLabel` to change them.
 - The chip reads `secondary`, the empty chip `input` and `background`, the plain empty period `muted-foreground`, and the popover `popover` and `border`; the days between the ends read `accent`.

@@ -7,6 +7,7 @@ import { Input } from '@tc96/ui/input'
 import { DateProperty, type DatePropertyProps } from '@tc96/ui/patterns'
 import { Popover, PopoverPopup, PopoverTrigger } from '@tc96/ui/popover'
 import { useState } from 'react'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import type { DateControls } from './date-controls.ts'
 
 export type StatefulDateProps = Omit<DatePropertyProps, 'onValueChange'>
@@ -17,12 +18,21 @@ export function StatefulDate({
 }: Readonly<StatefulDateProps>) {
   const [value, setValue] = useState(initialValue)
 
-  return <DateProperty {...props} onValueChange={setValue} value={value} />
+  return (
+    <DateProperty
+      {...props}
+      onValueChange={setValue}
+      value={value}
+      labels={{ ...ptBRPropertyLabels.date, ...props.labels }}
+    />
+  )
 }
 
 export const ComposedDate = ({
   calendarLocale,
   displayLabel,
+  labelsClear,
+  labelsFallback,
   value,
   ...props
 }: Readonly<DateControls>) => (
@@ -31,6 +41,7 @@ export const ComposedDate = ({
     calendarLocale={calendarLocale === 'ptBR' ? ptBR : undefined}
     displayLabel={displayLabel || undefined}
     key={value}
+    labels={{ clear: labelsClear, fallback: labelsFallback }}
     timeZone="UTC"
     value={value || null}
   />
@@ -45,7 +56,7 @@ const parseDateTime = (value: string | null) => {
 const formatDateTimeLabel = (value: string | null, fallback: string) => {
   const date = parseDateTime(value)
   if (!date) return fallback
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'medium',
     timeStyle: 'short',
     timeZone: 'UTC',
@@ -78,12 +89,12 @@ export function DateAndTimeBadge({
   const selected = parseDateTime(value) ?? new Date(initialValue)
   const [draftDate, setDraftDate] = useState(selected)
   const [draftTime, setDraftTime] = useState(formatTimeInput(selected))
-  const label = formatDateTimeLabel(value, 'Schedule')
+  const label = formatDateTimeLabel(value, 'Agendar')
 
   return (
     <Popover>
       <PopoverTrigger
-        aria-label={`Schedule: ${label}`}
+        aria-label={`Agendamento: ${label}`}
         render={
           <Badge
             className="max-w-full"
@@ -103,6 +114,7 @@ export function DateAndTimeBadge({
       >
         <Calendar
           defaultMonth={draftDate}
+          locale={ptBR}
           mode="single"
           onSelect={(date) => {
             if (!date) return
@@ -117,10 +129,10 @@ export function DateAndTimeBadge({
             htmlFor="date-and-time-input"
           >
             <span className="font-medium text-muted-foreground text-xs">
-              Time
+              Hora
             </span>
             <Input
-              aria-label="Schedule time"
+              aria-label="Hora do agendamento"
               id="date-and-time-input"
               nativeInput
               onChange={(event) => {
@@ -142,7 +154,7 @@ export function DateAndTimeBadge({
               type="button"
               variant="ghost"
             >
-              Clear
+              Limpar
             </Button>
           </div>
         </div>

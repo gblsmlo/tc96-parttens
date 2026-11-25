@@ -5,11 +5,7 @@ import {
   ProhibitInsetIcon,
   RadioButtonIcon,
 } from '@phosphor-icons/react'
-import type {
-  CollectionDefinition,
-  SelectPropertyOption,
-  TagsPropertyOption,
-} from '@tc96/ui/patterns'
+import type { CollectionDefinition, PropertyOption } from '@tc96/ui/patterns'
 
 export type ContactStage =
   | 'none'
@@ -58,14 +54,14 @@ export const stageOptions = [
     tone: 'warning',
     value: 'inactive',
   },
-] as const satisfies readonly (SelectPropertyOption & {
+] as const satisfies readonly (PropertyOption & {
   value: ContactStage
 })[]
 
 export const documentTypeOptions = [
   { label: 'CPF', value: 'cpf' },
   { label: 'CNPJ', value: 'cnpj' },
-] as const satisfies readonly (SelectPropertyOption & {
+] as const satisfies readonly (PropertyOption & {
   value: ContactDocumentType
 })[]
 
@@ -74,7 +70,7 @@ export const isContactDocumentType = (
 ): value is ContactDocumentType =>
   documentTypeOptions.some((option) => option.value === value)
 
-export const tagOptions: readonly TagsPropertyOption<ContactTag>[] = [
+export const tagOptions: readonly PropertyOption<ContactTag>[] = [
   { label: 'Decisor', value: 'decision-maker' },
   { label: 'Indicação', value: 'referral' },
   { label: 'Evento', value: 'event' },

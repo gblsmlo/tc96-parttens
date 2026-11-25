@@ -3,6 +3,7 @@
 import { UserIcon } from '@phosphor-icons/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
 import { resolveInitials } from '@tc96/ui/helpers/initials'
+import type { PropertyOption } from '../../shared/property-catalog'
 
 export type PersonAvatarSize = 'xs' | 'sm' | 'default' | 'lg' | 'xl'
 
@@ -15,9 +16,8 @@ const personAvatarSizeClassNames: Record<PersonAvatarSize, string | undefined> =
     xl: '[--avatar-size:--spacing(12)]',
   }
 
-export interface PersonPropertyOption<TValue extends string = string> {
-  value: TValue
-  label: string
+export interface PersonPropertyOption<TValue extends string = string>
+  extends PropertyOption<TValue> {
   fallback?: string
   imageUrl?: string
   supportingLabel?: string

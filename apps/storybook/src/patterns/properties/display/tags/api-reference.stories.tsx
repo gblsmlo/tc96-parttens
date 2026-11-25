@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TagsProperty } from '@tc96/ui/patterns'
 import { expect } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { TagsCanvas } from './tags-canvas.tsx'
 import { tagOptions } from './tags-data.ts'
 
@@ -12,6 +13,8 @@ const meta = {
     onValueChange: ignore,
     options: tagOptions,
     value: ['documents', 'urgent'],
+    placeholder: 'Adicionar uma tag',
+    labels: ptBRPropertyLabels.tags,
   },
   component: TagsProperty,
   decorators: [TagsCanvas],

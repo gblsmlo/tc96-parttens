@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PhoneProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { PhoneCanvas } from './phone-canvas.tsx'
 import { PrimaryNumberPhone, StatefulPhone } from './phone-layouts.tsx'
 
@@ -15,6 +16,14 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const ContactPhones: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The mobile and work numbers of a contact in its detail list, on the [Default](?path=/story/patterns-properties-display-phone-layouts--default) layout: the popup names its fields Celular and Trabalho.',
+      },
+    },
+  },
   render: () => (
     <dl className="grid w-full grid-cols-[6rem_1fr] items-center gap-x-4 gap-y-3 text-sm">
       <dt className="text-muted-foreground">Nome</dt>
@@ -23,8 +32,8 @@ export const ContactPhones: Story = {
       <dd>
         <StatefulPhone
           ariaLabel="Telefones de Ana Souza"
-          entryLabels={['Celular', 'Trabalho']}
           initialValue={['+5511987654321', '+551133224455']}
+          labels={{ entries: ['Celular', 'Trabalho'] }}
         />
       </dd>
     </dl>
@@ -39,6 +48,14 @@ export const ContactPhones: Story = {
 }
 
 export const ContactsTable: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The phones column of a contacts table, on the [List In Popover](?path=/story/patterns-properties-display-phone-layouts--list-in-popover) layout: each row shows its first number and a count of the others, or Sem telefone.',
+      },
+    },
+  },
   render: () => (
     <table className="w-full text-sm">
       <thead>
@@ -83,6 +100,14 @@ export const ContactsTable: Story = {
 }
 
 export const SinglePrimaryNumber: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The one main number of a record, on the [Default](?path=/story/patterns-properties-display-phone-layouts--default) layout: the popup holds a single field, and the add trigger leaves while a number is set, so the number can only be removed and added again.',
+      },
+    },
+  },
   render: () => <PrimaryNumberPhone initialValue={['+5511987654321']} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
@@ -99,13 +124,23 @@ export const SinglePrimaryNumber: Story = {
 }
 
 export const CompanyPhones: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The numbers of a company, read-only on badges, on the [Default](?path=/story/patterns-properties-display-phone-layouts--default) layout.',
+      },
+    },
+  },
   render: () => (
     <div className="flex flex-col gap-2 text-sm">
       <span className="font-medium">Padaria Bom Dia</span>
       <PhoneProperty
+        placeholder="Sem telefone"
         ariaLabel="Telefones da empresa"
         value={['+551132104455', '+5511940028922']}
         variant="badge"
+        labels={ptBRPropertyLabels.phone}
       />
     </div>
   ),

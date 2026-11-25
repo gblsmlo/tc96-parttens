@@ -5,7 +5,8 @@ import {
   esperarSuperficieDeBadge,
   esperarSuperficiePlana,
 } from '../../../../test-utils/property-surface'
-import { assignees } from './assigned-controls'
+import { assignedControlArgs, assignees } from './assigned-controls'
+import { ComposedAssigned } from './assigned-layouts'
 
 interface BehaviorArgs {
   action: (value: unknown, context: unknown) => void
@@ -37,6 +38,8 @@ const closeList = async () => {
 export const ReadOnlyRendersNoCombobox: Story = {
   render: ({ onValueChange }) => (
     <AssignedProperty
+      ariaLabel="Responsável"
+      placeholder="Sem responsável"
       onValueChange={onValueChange}
       options={assignees}
       readOnly
@@ -55,7 +58,14 @@ export const ReadOnlyRendersNoCombobox: Story = {
 }
 
 export const WithoutHandlerIsReadOnly: Story = {
-  render: () => <AssignedProperty options={assignees} value="ana" />,
+  render: () => (
+    <AssignedProperty
+      ariaLabel="Responsável"
+      placeholder="Sem responsável"
+      options={assignees}
+      value="ana"
+    />
+  ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
 
@@ -68,7 +78,13 @@ export const WithoutHandlerIsReadOnly: Story = {
 
 export const BadgeSurfaceIsFilled: Story = {
   render: () => (
-    <AssignedProperty options={assignees} readOnly value="gabriel" />
+    <AssignedProperty
+      ariaLabel="Responsável"
+      placeholder="Sem responsável"
+      options={assignees}
+      readOnly
+      value="gabriel"
+    />
   ),
   play: async ({ canvasElement }) => {
     await esperarSuperficieDeBadge(canvasElement)
@@ -78,6 +94,8 @@ export const BadgeSurfaceIsFilled: Story = {
 export const PlainSurfaceHasNoFill: Story = {
   render: () => (
     <AssignedProperty
+      ariaLabel="Responsável"
+      placeholder="Sem responsável"
       options={assignees}
       readOnly
       value="gabriel"
@@ -93,6 +111,8 @@ export const PlainSurfaceHasNoFill: Story = {
 export const DefaultsNameTheEmptyValue: Story = {
   render: ({ onValueChange }) => (
     <AssignedProperty
+      ariaLabel="Responsável"
+      placeholder="Sem responsável"
       onValueChange={onValueChange}
       options={assignees}
       value={null}
@@ -112,6 +132,7 @@ export const DefaultsNameTheEmptyValue: Story = {
 export const ListsEveryAssignee: Story = {
   render: ({ onValueChange }) => (
     <AssignedProperty
+      placeholder="Sem responsável"
       ariaLabel="Assigned"
       onValueChange={onValueChange}
       options={assignees}
@@ -148,6 +169,7 @@ export const ListsEveryAssignee: Story = {
 export const ActionReceivesPreviousValue: Story = {
   render: ({ action, onValueChange }) => (
     <AssignedProperty
+      placeholder="Sem responsável"
       action={action}
       ariaLabel="Assigned"
       dropdownPlacement={{ align: 'end', side: 'bottom' }}
@@ -182,6 +204,8 @@ export const ActionReceivesPreviousValue: Story = {
 export const PickingTheCurrentValueEmitsNothing: Story = {
   render: ({ onValueChange }) => (
     <AssignedProperty
+      ariaLabel="Responsável"
+      placeholder="Sem responsável"
       onValueChange={onValueChange}
       options={assignees}
       value="gabriel"
@@ -202,9 +226,29 @@ export const PickingTheCurrentValueEmitsNothing: Story = {
   },
 }
 
+export const PickingAnAssigneeShowsThem: Story = {
+  render: () => <ComposedAssigned {...assignedControlArgs} />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('combobox', {
+      name: 'Responsável: Gabriel Melo',
+    })
+
+    await userEvent.click(trigger)
+    await userEvent.click(
+      await screen.findByRole('option', { name: /Ana Martins/ }),
+    )
+    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
+
+    await expect(trigger).toHaveAccessibleName('Responsável: Ana Martins')
+    await expect(trigger).toHaveTextContent('Ana Martins')
+  },
+}
+
 export const DisabledDoesNotOpen: Story = {
   render: ({ onValueChange }) => (
     <AssignedProperty
+      ariaLabel="Responsável"
+      placeholder="Sem responsável"
       disabled
       onValueChange={onValueChange}
       options={assignees}
@@ -227,6 +271,8 @@ export const DisabledDoesNotOpen: Story = {
 export const KeyboardOpensTheList: Story = {
   render: ({ onValueChange }) => (
     <AssignedProperty
+      ariaLabel="Responsável"
+      placeholder="Sem responsável"
       onValueChange={onValueChange}
       options={assignees}
       value="gabriel"
@@ -250,7 +296,9 @@ export const KeyboardOpensTheList: Story = {
 }
 
 export const BadgeShowsThePlaceholderWithoutOption: Story = {
-  render: () => <AssignedPropertyBadge option={null} />,
+  render: () => (
+    <AssignedPropertyBadge placeholder="Sem responsável" option={null} />
+  ),
   play: async ({ canvasElement }) => {
     const surface = canvasElement.querySelector<HTMLElement>(
       '[data-slot="property-surface"]',

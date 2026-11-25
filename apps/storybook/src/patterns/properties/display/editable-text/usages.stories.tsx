@@ -6,7 +6,7 @@ import { StatefulEditableText } from './editable-text-layouts.tsx'
 const meta = {
   decorators: [EditableTextCanvas],
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Editable Text/Usages',
+  title: 'Patterns/Properties/Display/EditableText/Usages',
 } satisfies Meta
 
 export default meta
@@ -14,68 +14,102 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const TaskTitle: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The title of a task in a list, on the [Default](?path=/story/patterns-properties-display-editabletext-layouts--default) layout at the `sm` size.',
+      },
+    },
+  },
   render: () => (
     <StatefulEditableText
-      ariaLabel="Task title"
-      placeholder="Untitled task"
+      ariaLabel="Título da tarefa"
+      placeholder="Tarefa sem título"
       size="sm"
-      value="Check the contract signatures"
+      value="Conferir as assinaturas do contrato"
     />
   ),
   play: async ({ canvasElement }) => {
     await expect(
-      within(canvasElement).getByRole('textbox', { name: 'Task title' }),
-    ).toHaveValue('Check the contract signatures')
+      within(canvasElement).getByRole('textbox', { name: 'Título da tarefa' }),
+    ).toHaveValue('Conferir as assinaturas do contrato')
   },
 }
 
 export const RecordTitle: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The title of a new record, on the [Default](?path=/story/patterns-properties-display-editabletext-layouts--default) layout at the `lg` size. "Sem título" is the `emptyValue`: focus clears it, and an empty draft puts it back.',
+      },
+    },
+  },
   render: () => (
     <StatefulEditableText
-      ariaLabel="Record title"
+      ariaLabel="Título do registro"
       className="font-semibold"
-      emptyValue="Untitled"
+      emptyValue="Sem título"
       revertWhenEmpty
       size="lg"
-      value="Untitled"
+      value="Sem título"
     />
   ),
   play: async ({ canvasElement }) => {
     await expect(
-      within(canvasElement).getByRole('textbox', { name: 'Record title' }),
-    ).toHaveValue('Untitled')
+      within(canvasElement).getByRole('textbox', {
+        name: 'Título do registro',
+      }),
+    ).toHaveValue('Sem título')
   },
 }
 
 export const Description: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The description of a task, on the [Multiline](?path=/story/patterns-properties-display-editabletext-layouts--multiline) layout.',
+      },
+    },
+  },
   render: () => (
     <StatefulEditableText
-      ariaLabel="Description"
+      ariaLabel="Descrição"
       className="leading-relaxed"
       multiline
-      placeholder="Add a description"
+      placeholder="Adicionar uma descrição"
       size="sm"
-      value="The contract needs both signatures before Tuesday’s meeting, and the finance team has to approve the payment terms first."
+      value="O contrato precisa das duas assinaturas antes da reunião de terça, e o financeiro ainda tem que aprovar as condições de pagamento."
     />
   ),
   play: async ({ canvasElement }) => {
     await expect(
-      within(canvasElement).getByRole('textbox', { name: 'Description' }),
+      within(canvasElement).getByRole('textbox', { name: 'Descrição' }),
     ).toBeVisible()
   },
 }
 
-export const ReadOnlyEmail: Story = {
+export const ContactEmail: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The e-mail of a contact the user cannot edit, on the [Default](?path=/story/patterns-properties-display-editabletext-layouts--default) layout with `readOnly`: the placeholder shows as text, with no field.',
+      },
+    },
+  },
   render: () => (
     <StatefulEditableText
-      ariaLabel="Email"
-      placeholder="No email"
+      ariaLabel="E-mail"
+      placeholder="Sem e-mail"
       readOnly
       size="sm"
       value={null}
     />
   ),
   play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByText('No email')).toBeVisible()
+    await expect(within(canvasElement).getByText('Sem e-mail')).toBeVisible()
   },
 }

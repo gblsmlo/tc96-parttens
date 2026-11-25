@@ -6,6 +6,11 @@ import { cn } from '@tc96/utils'
 import type React from 'react'
 import { Fragment, useState } from 'react'
 import type { PropertyIcon } from '../shared/property-catalog'
+import {
+  defaultPropertyLabels,
+  type PropertyCollectionLabels,
+  resolvePropertyLabels,
+} from '../shared/property-labels'
 import { PropertyRow } from '../shared/property-row'
 import { PropertySurface } from '../shared/property-surface'
 
@@ -22,8 +27,8 @@ export interface PropertyCollectionProps {
   ariaLabel?: string
   className?: string
   defaultVisible?: readonly string[]
+  labels?: Partial<PropertyCollectionLabels>
   readOnly?: boolean
-  triggerLabel?: string
   visible?: readonly string[]
   onVisibleChange?: (visible: readonly string[]) => void
 }
@@ -33,11 +38,15 @@ export function PropertyCollection({
   className,
   defaultVisible,
   items,
+  labels: labelOverrides,
   onVisibleChange,
   readOnly = false,
-  triggerLabel = 'Ajustar propriedades',
   visible,
 }: Readonly<PropertyCollectionProps>) {
+  const labels = resolvePropertyLabels(
+    defaultPropertyLabels.collection,
+    labelOverrides,
+  )
   const [uncontrolledVisible, setUncontrolledVisible] = useState<
     readonly string[]
   >(
@@ -75,7 +84,7 @@ export function PropertyCollection({
       {readOnly ? null : (
         <Menu>
           <MenuTrigger
-            aria-label={triggerLabel}
+            aria-label={labels.trigger}
             render={
               <PropertySurface
                 className="text-muted-foreground"

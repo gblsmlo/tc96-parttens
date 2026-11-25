@@ -2,7 +2,7 @@
 
 import { PopoverPrimitive } from '@tc96/ui/popover'
 import type { ReactNode } from 'react'
-import type { PropertyPopoverDropdownPlacement } from '../../shared/property-calendar-popover'
+import type { PropertyPopoverDropdownPlacement } from '../../shared/property-catalog'
 
 export type SchedulePropertyDropdownPlacement =
   PropertyPopoverDropdownPlacement &

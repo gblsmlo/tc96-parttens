@@ -4,6 +4,7 @@ import type {
   ScheduleFooterLayout,
   ScheduleTimeControl,
 } from '@tc96/ui/patterns'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { type ScheduleValueName, scheduleValueNames } from './schedule-data.ts'
 
 export const scheduleLocales = ['pt-BR', 'en-US'] as const
@@ -29,9 +30,9 @@ export interface ScheduleControls {
   ariaLabel: string
   calendarLocale: (typeof scheduleCalendarLocales)[number]
   dateOnly: boolean
-  fallback: string
   footerLayout: ScheduleFooterLayout
   keepBelow: boolean
+  labelsFallback: string
   locale: (typeof scheduleLocales)[number]
   openOnMount: boolean
   readOnly: boolean
@@ -44,9 +45,9 @@ export const scheduleControlArgs: ScheduleControls = {
   ariaLabel: 'Data',
   calendarLocale: 'ptBR',
   dateOnly: false,
-  fallback: '',
   footerLayout: 'rows',
   keepBelow: false,
+  labelsFallback: ptBRPropertyLabels.schedule.fallback,
   locale: 'pt-BR',
   openOnMount: false,
   readOnly: false,
@@ -72,11 +73,6 @@ export const scheduleControlArgTypes: Partial<ArgTypes<ScheduleControls>> = {
     description:
       'The `dateOnly` of `ScheduleProperty`: drops the Hora, Repetir and Lembretes footer.',
   },
-  fallback: {
-    control: 'text',
-    description:
-      'The `fallback` of `ScheduleProperty`, shown while there is no day; empty shows `labels.noDate`.',
-  },
   footerLayout: {
     control: 'inline-radio',
     description:
@@ -87,6 +83,11 @@ export const scheduleControlArgTypes: Partial<ArgTypes<ScheduleControls>> = {
     control: 'boolean',
     description:
       "Passes `dropdownPlacement.collisionAvoidance` as `{ side: 'none' }`: the popup stays below the trigger.",
+  },
+  labelsFallback: {
+    control: 'text',
+    description:
+      '`labels.fallback` of `ScheduleProperty`: the label while there is no day.',
   },
   locale: {
     control: 'inline-radio',
@@ -113,7 +114,7 @@ export const scheduleControlArgTypes: Partial<ArgTypes<ScheduleControls>> = {
   value: {
     control: 'inline-radio',
     description:
-      'The initial `value` of `ScheduleProperty`: a timed weekly event, an all-day date or no date. Edits replace it.',
+      'The `value` of `ScheduleProperty`: a timed weekly event, an all-day date or no date.',
     options: scheduleValueNames,
   },
   variant: {

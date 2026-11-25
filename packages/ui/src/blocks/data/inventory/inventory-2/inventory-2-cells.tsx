@@ -2,7 +2,7 @@ import { DotsThreeIcon, WarningIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import { DataTableCell } from '@tc96/ui/patterns/data-table/data-table-cell'
-import type { SelectPropertyOption } from '@tc96/ui/patterns/properties/display/select/select-property'
+import type { PropertyOption } from '@tc96/ui/patterns/properties/core'
 import { Switch } from '@tc96/ui/switch'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'
@@ -39,7 +39,7 @@ export function StatusCell({
   status,
 }: Readonly<{
   labels: Inventory2Labels
-  options: readonly SelectPropertyOption[]
+  options: readonly PropertyOption[]
   status: Inventory2Status
 }>) {
   return (

@@ -13,7 +13,7 @@ const meta = {
   decorators: [PhoneInputCanvas],
   render: (args) => <ComposedPhoneInput {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Phone Input/Playground',
+  title: 'Patterns/Properties/Display/PhoneInput/Playground',
 } satisfies Meta<PhoneInputControls>
 
 export default meta

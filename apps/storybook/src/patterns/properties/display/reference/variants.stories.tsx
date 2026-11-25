@@ -11,10 +11,9 @@ const meta = {
   args: referenceControlArgs,
   argTypes: referenceControlArgTypes,
   decorators: [ReferenceCanvas],
-  parameters: { controls: { exclude: ['kind', 'variant'] } },
   render: (args) => <ComposedReference {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Reference/Stories',
+  title: 'Patterns/Properties/Display/Reference/Variants',
 } satisfies Meta<ReferenceControls>
 
 export default meta
@@ -25,12 +24,15 @@ export const Default: Story = {}
 
 export const Plain: Story = {
   args: { variant: 'plain' },
+  parameters: { controls: { exclude: ['variant'] } },
 }
 
 export const Account: Story = {
   args: { kind: 'account' },
+  parameters: { controls: { exclude: ['kind'] } },
 }
 
 export const Product: Story = {
   args: { kind: 'product' },
+  parameters: { controls: { exclude: ['kind'] } },
 }

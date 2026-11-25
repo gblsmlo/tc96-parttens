@@ -1,5 +1,6 @@
 import { TagsProperty, type TagsPropertyProps } from '@tc96/ui/patterns'
 import { useState } from 'react'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import type { TagsControls } from './tags-controls.ts'
 import { tagOptions } from './tags-data.ts'
 
@@ -13,14 +14,35 @@ export const StatefulTags = ({
 }: Readonly<StatefulTagsProps>) => {
   const [value, setValue] = useState(initialValue)
 
-  return <TagsProperty {...props} onValueChange={setValue} value={value} />
+  return (
+    <TagsProperty
+      placeholder="Adicionar uma tag"
+      {...props}
+      onValueChange={setValue}
+      value={value}
+      labels={{ ...ptBRPropertyLabels.tags, ...props.labels }}
+    />
+  )
 }
 
-export const ComposedTags = ({ value, ...props }: Readonly<TagsControls>) => (
+export const ComposedTags = ({
+  labelsAdd,
+  labelsEmpty,
+  labelsLoading,
+  labelsRemove,
+  value,
+  ...props
+}: Readonly<TagsControls>) => (
   <StatefulTags
     {...props}
     initialValue={value}
     key={value.join()}
+    labels={{
+      add: labelsAdd,
+      empty: labelsEmpty,
+      loading: labelsLoading,
+      remove: labelsRemove,
+    }}
     options={tagOptions}
   />
 )

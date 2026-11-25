@@ -1,8 +1,5 @@
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
-import type {
-  PersonPropertyOption,
-  SelectPropertyOption,
-} from '@tc96/ui/patterns'
+import type { PersonPropertyOption, PropertyOption } from '@tc96/ui/patterns'
 import type { IconModule } from '@thesvg/icons'
 import googleAds from '@thesvg/icons/google-ads'
 import meta from '@thesvg/icons/meta'
@@ -72,7 +69,7 @@ export const platformOptions = Object.entries(platforms).map(
   ([value, { label }]) => [value, label] as const,
 )
 
-export const statusOptions: readonly SelectPropertyOption[] = [
+export const statusOptions: readonly PropertyOption[] = [
   { label: 'Novo', tone: 'info', value: 'new' },
   { label: 'Em qualificação', tone: 'warning', value: 'qualifying' },
   { label: 'Qualificado', tone: 'success', value: 'qualified' },
@@ -90,7 +87,7 @@ export const attendants: readonly PersonPropertyOption[] = [
 export const qualificationQuestions: readonly {
   key: keyof LeadAnswers
   label: string
-  options: readonly SelectPropertyOption[]
+  options: readonly PropertyOption[]
 }[] = [
   {
     key: 'property',

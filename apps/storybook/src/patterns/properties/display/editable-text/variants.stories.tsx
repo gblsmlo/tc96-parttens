@@ -11,12 +11,9 @@ const meta = {
   args: editableTextControlArgs,
   argTypes: editableTextControlArgTypes,
   decorators: [EditableTextCanvas],
-  parameters: {
-    controls: { exclude: ['size', 'value'] },
-  },
   render: (args) => <ComposedEditableText {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/Properties/Display/Editable Text/Stories',
+  title: 'Patterns/Properties/Display/EditableText/Variants',
 } satisfies Meta<EditableTextControls>
 
 export default meta
@@ -27,19 +24,25 @@ export const Default: Story = {}
 
 export const SizeSm: Story = {
   args: { size: 'sm' },
-  name: 'Size sm',
+  parameters: { controls: { exclude: ['size'] } },
 }
 
 export const SizeLg: Story = {
   args: { size: 'lg' },
-  name: 'Size lg',
+  parameters: { controls: { exclude: ['size'] } },
 }
 
 export const SizeXl: Story = {
   args: { size: 'xl' },
-  name: 'Size xl',
+  parameters: { controls: { exclude: ['size'] } },
 }
 
 export const Empty: Story = {
   args: { value: '' },
+  parameters: { controls: { exclude: ['value'] } },
+}
+
+export const ReadOnly: Story = {
+  args: { readOnly: true },
+  parameters: { controls: { exclude: ['readOnly'] } },
 }

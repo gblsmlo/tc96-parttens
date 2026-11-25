@@ -15,10 +15,10 @@ export interface FlagControls {
 
 export const flagControlArgs: FlagControls = {
   active: true,
-  ariaLabel: 'Run mode',
+  ariaLabel: 'Modo de execução',
   icon: true,
   inactiveLabel: 'Manual',
-  label: 'Automatic',
+  label: 'Automático',
   showInactive: true,
   variant: 'badge',
 }

@@ -1,5 +1,6 @@
 import type { ArgTypes } from '@storybook/react-vite'
 import type { PropertyVariant } from '@tc96/ui/patterns'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 
 export const dateRangeEnds = ['both', 'from', 'until', 'none'] as const
 
@@ -16,33 +17,33 @@ export interface DateRangeControls {
   allowClear: boolean
   ariaLabel: string
   calendarLocale: (typeof dateRangeCalendarLocales)[number]
-  clearLabel: string
   disabled: boolean
   displayLabel: string
   ends: (typeof dateRangeEnds)[number]
-  fallback: string
-  fromLabel: string
+  labelsClear: string
+  labelsFallback: string
+  labelsFrom: string
+  labelsUntil: string
   locale: (typeof dateRangeLocales)[number]
   numberOfMonths: number
   readOnly: boolean
-  untilLabel: string
   variant: PropertyVariant
 }
 
 export const dateRangeControlArgs: DateRangeControls = {
   allowClear: true,
-  ariaLabel: 'Period',
-  calendarLocale: 'default',
-  clearLabel: 'Clear period',
+  ariaLabel: 'Período',
+  calendarLocale: 'ptBR',
   disabled: false,
   displayLabel: '',
   ends: 'both',
-  fallback: 'No period',
-  fromLabel: 'From',
-  locale: 'en-US',
+  labelsClear: ptBRPropertyLabels.dateRange.clear,
+  labelsFallback: ptBRPropertyLabels.dateRange.fallback,
+  labelsFrom: ptBRPropertyLabels.dateRange.from,
+  labelsUntil: ptBRPropertyLabels.dateRange.until,
+  locale: 'pt-BR',
   numberOfMonths: 2,
   readOnly: false,
-  untilLabel: 'Until',
   variant: 'badge',
 }
 
@@ -63,11 +64,6 @@ export const dateRangeControlArgTypes: Partial<ArgTypes<DateRangeControls>> = {
       'The `calendarLocale` of `DateRangeProperty`: `ptBR` passes the DayPicker Portuguese locale to the calendar.',
     options: dateRangeCalendarLocales,
   },
-  clearLabel: {
-    control: 'text',
-    description:
-      'The `clearLabel` of `DateRangeProperty`. Acts only with `allowClear`.',
-  },
   disabled: {
     control: 'boolean',
     description:
@@ -81,18 +77,28 @@ export const dateRangeControlArgTypes: Partial<ArgTypes<DateRangeControls>> = {
   ends: {
     control: 'inline-radio',
     description:
-      'The initial `value`: both ends, only `from`, only `to`, or `undefined`. Picking days replaces it.',
+      'The `value` of `DateRangeProperty`: both ends, only `from`, only `to`, or `undefined`.',
     options: dateRangeEnds,
   },
-  fallback: {
+  labelsClear: {
     control: 'text',
     description:
-      'The `fallback` of `DateRangeProperty`, shown while neither end is set.',
+      '`labels.clear` of `DateRangeProperty`: the text of the clear button that `allowClear` adds.',
   },
-  fromLabel: {
+  labelsFallback: {
     control: 'text',
     description:
-      'The `fromLabel` of `DateRangeProperty`, before a start with no end.',
+      '`labels.fallback` of `DateRangeProperty`: the label while neither end is set.',
+  },
+  labelsFrom: {
+    control: 'text',
+    description:
+      '`labels.from` of `DateRangeProperty`: the word before a start with no end.',
+  },
+  labelsUntil: {
+    control: 'text',
+    description:
+      '`labels.until` of `DateRangeProperty`: the word before an end with no start.',
   },
   locale: {
     control: 'inline-radio',
@@ -108,11 +114,6 @@ export const dateRangeControlArgTypes: Partial<ArgTypes<DateRangeControls>> = {
     control: 'boolean',
     description:
       'The `readOnly` of `DateRangeProperty`: renders the range with no trigger.',
-  },
-  untilLabel: {
-    control: 'text',
-    description:
-      'The `untilLabel` of `DateRangeProperty`, before an end with no start.',
   },
   variant: {
     control: 'inline-radio',

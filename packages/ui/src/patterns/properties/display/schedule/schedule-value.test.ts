@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { defaultSchedulePropertyLabels } from './schedule-labels'
+import { defaultPropertyLabels } from '../../shared/property-labels'
 import { buildSchedulePresets } from './schedule-presets'
 import {
   defaultScheduleRecurrenceOptions,
@@ -61,7 +61,7 @@ describe('scheduleRecurrenceLabel', () => {
   test('names the frequency from the options', () => {
     expect(
       scheduleRecurrenceLabel('weekly', defaultScheduleRecurrenceOptions),
-    ).toBe('Semanalmente')
+    ).toBe('Weekly')
   })
 
   test('returns null without a frequency or with an unknown one', () => {
@@ -87,7 +87,7 @@ describe('sortScheduleReminders', () => {
 
 describe('buildSchedulePresets', () => {
   const presetsFrom = (today: Date) =>
-    buildSchedulePresets(today, defaultSchedulePropertyLabels, 'pt-BR')
+    buildSchedulePresets(today, defaultPropertyLabels.schedule, 'en-US')
 
   test('hints each preset with its weekday, and next week with the day', () => {
     const wednesday = new Date(2026, 9, 7)
@@ -95,11 +95,11 @@ describe('buildSchedulePresets', () => {
     expect(
       presetsFrom(wednesday).map(({ hint, label }) => [label, hint]),
     ).toEqual([
-      ['Hoje', 'Qua'],
-      ['Amanhã', 'Qui'],
-      ['Este fim de semana', 'Sáb'],
-      ['Próxima semana', 'Seg, 12 de out'],
-      ['Sem data', ''],
+      ['Today', 'Wed'],
+      ['Tomorrow', 'Thu'],
+      ['This weekend', 'Sat'],
+      ['Next week', 'Mon, Oct 12'],
+      ['No date', ''],
     ])
     expect(presetsFrom(wednesday).at(-1)?.day).toBe(null)
   })

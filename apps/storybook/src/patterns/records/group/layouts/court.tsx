@@ -8,6 +8,7 @@ import {
 import { Button } from '@tc96/ui/button'
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
 import {
+  type PropertyOption,
   RecordGroup,
   RecordGroupDivider,
   RecordGroupLink,
@@ -15,7 +16,6 @@ import {
   RecordGroupSubgroup,
   type RecordGroupVariant,
   SelectProperty,
-  type SelectPropertyOption,
 } from '@tc96/ui/patterns'
 import { Fragment, useState } from 'react'
 
@@ -48,7 +48,7 @@ interface Proceeding {
 const ignore = (..._values: unknown[]) => undefined
 const onAdd = ignore
 
-const roleOptions: readonly SelectPropertyOption[] = [
+const roleOptions: readonly PropertyOption[] = [
   { label: 'Originário', value: 'origin' },
   { label: 'Recurso', value: 'appeal' },
   { label: 'Cumprimento', value: 'enforcement' },
@@ -57,7 +57,7 @@ const roleOptions: readonly SelectPropertyOption[] = [
   { label: 'Apenso', value: 'attachment' },
 ]
 
-const instanceOptions: readonly SelectPropertyOption[] = [
+const instanceOptions: readonly PropertyOption[] = [
   { label: '1º grau', value: 'first_degree' },
   { label: '2º grau', value: 'second_degree' },
   { label: 'Tribunal superior', value: 'superior' },
@@ -65,7 +65,7 @@ const instanceOptions: readonly SelectPropertyOption[] = [
   { label: 'Outra', value: 'other' },
 ]
 
-const courtOptions: readonly SelectPropertyOption[] = [
+const courtOptions: readonly PropertyOption[] = [
   {
     label: '2ª Vara Cível do Foro Central',
     value: '2ª Vara Cível do Foro Central',
@@ -142,7 +142,7 @@ const proceedings: readonly Proceeding[] = [
   },
 ]
 
-const labelOf = (options: readonly SelectPropertyOption[], value: string) =>
+const labelOf = (options: readonly PropertyOption[], value: string) =>
   options.find((option) => option.value === value)?.label ?? value
 
 const roleLabel = (role: string) => labelOf(roleOptions, role)

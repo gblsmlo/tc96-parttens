@@ -1,11 +1,9 @@
 'use client'
 
+import type { PropertyOption } from '@tc96/ui/patterns/properties/core'
 import { DateProperty } from '@tc96/ui/patterns/properties/display/date/date-property'
 import { PersonProperty } from '@tc96/ui/patterns/properties/display/person/person-property'
-import {
-  SelectProperty,
-  type SelectPropertyOption,
-} from '@tc96/ui/patterns/properties/display/select/select-property'
+import { SelectProperty } from '@tc96/ui/patterns/properties/display/select/select-property'
 import type {
   DataOptionAppearance,
   DataPerson,
@@ -19,19 +17,20 @@ export function dataSelectOptions<TValue extends string>(
   values: readonly TValue[],
   labels: Record<TValue, string>,
   appearance: Record<TValue, DataOptionAppearance>,
-): SelectPropertyOption[] {
+): PropertyOption[] {
   return values.map((value) => ({
     icon: appearance[value].icon,
     label: labels[value],
     tone: appearance[value].tone,
     value,
+    weight: appearance[value].weight,
   }))
 }
 
 export interface DataSelectProps<TValue extends string> {
   ariaLabel: string
   onChange?: (value: TValue) => void
-  options: readonly SelectPropertyOption[]
+  options: readonly PropertyOption[]
   value: TValue
   variant?: PropertyVariant
 }
@@ -144,8 +143,8 @@ export function DataDate({
         displayLabel ??
         (withTime ? formatDateWithTime(value, locale, timeZone) : undefined)
       }
-      fallback={fallback}
       isOverdue={overdue}
+      labels={{ fallback }}
       locale={locale}
       timeZone={timeZone}
       value={value}

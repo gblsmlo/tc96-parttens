@@ -3,14 +3,23 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PhoneProperty } from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
 import { isIcon } from '../../../../test-utils/is-icon'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { PhoneCanvas } from './phone-canvas.tsx'
+import { phoneControlArgs } from './phone-controls.ts'
+import { ComposedPhone, ListInPopoverPhone } from './phone-layouts.tsx'
 
 const PHONE = '+5511987654321'
 const OTHER = '+5511912345678'
 const PHONE_LABEL = '+55 11 98765 4321'
 
 const meta = {
-  args: { action: fn(), value: [] },
+  args: {
+    action: fn(),
+    value: [],
+    ariaLabel: 'Telefones',
+    placeholder: 'Sem telefone',
+    labels: ptBRPropertyLabels.phone,
+  },
   component: PhoneProperty,
   decorators: [PhoneCanvas],
   tags: ['!autodocs'],
@@ -52,6 +61,13 @@ const addAnother = () => screen.getByRole('button', { name: 'Adicionar outro' })
 
 const save = () =>
   userEvent.click(screen.getByRole('button', { name: 'Salvar' }))
+
+const UNFILLED = 'rgba(0, 0, 0, 0)'
+
+const backgroundOf = (element: Element) =>
+  getComputedStyle(element).backgroundColor
+
+const LIST_TRIGGER = 'Telefones: +55 11 98765 4321 +1'
 
 export const EmptyTriggerNamesItself: Story = {
   play: async ({ canvasElement }) => {
@@ -342,5 +358,95 @@ export const EnterSaves: Story = {
       removed: null,
     })
     await popoverClosed()
+  },
+}
+
+export const DisabledDimsTheAddTrigger: Story = {
+  render: () => <ComposedPhone {...phoneControlArgs} disabled />,
+  play: async ({ canvasElement }) => {
+    const trigger = addTrigger(canvasElement)
+
+    await expect(trigger).toBeDisabled()
+    await expect(getComputedStyle(trigger).opacity).toBe('0.64')
+  },
+}
+
+export const AddTriggerOffKeepsEveryRemove: Story = {
+  render: () => <ComposedPhone {...phoneControlArgs} addTrigger={false} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const removes = canvas.getAllByRole('button', {
+      name: /^Remover telefone /,
+    })
+
+    await expect(
+      canvas.queryByRole('button', { name: 'Adicionar telefone' }),
+    ).toBeNull()
+    await expect(removes).toHaveLength(2)
+    for (const remove of removes) {
+      await expect(remove).toBeEnabled()
+    }
+  },
+}
+
+export const BadgeVariantFillsReadOnlyNumbers: Story = {
+  render: () => (
+    <ComposedPhone {...phoneControlArgs} readOnly variant="badge" />
+  ),
+  play: async ({ canvasElement }) => {
+    const row = within(canvasElement).getByRole('group', { name: 'Telefones' })
+    const surfaces = row.querySelectorAll('[data-slot="property-surface"]')
+
+    await expect(row).toHaveAttribute('data-variant', 'badge')
+    await expect(surfaces).toHaveLength(2)
+    for (const surface of surfaces) {
+      await expect(surface).toHaveAttribute('data-variant', 'badge')
+      await expect(backgroundOf(surface)).not.toBe(UNFILLED)
+    }
+  },
+}
+
+export const BadgeVariantFillsTheListTrigger: Story = {
+  render: () => <ListInPopoverPhone {...phoneControlArgs} variant="badge" />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: LIST_TRIGGER,
+    })
+
+    await expect(trigger).toHaveAttribute('data-variant', 'badge')
+    await expect(backgroundOf(trigger)).not.toBe(UNFILLED)
+  },
+}
+
+export const PlainListTriggerHasNoFillAtRest: Story = {
+  render: () => <ListInPopoverPhone {...phoneControlArgs} />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: LIST_TRIGGER,
+    })
+
+    await expect(trigger).toHaveAttribute('data-variant', 'plain')
+    await expect(backgroundOf(trigger)).toBe(UNFILLED)
+  },
+}
+
+export const EmptyListTriggerNamesOnlyTheProperty: Story = {
+  render: () => <ListInPopoverPhone {...phoneControlArgs} value={[]} />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Telefones',
+    })
+
+    await expect(trigger).toHaveTextContent('Sem telefone')
+    await expect(trigger).toHaveAttribute('data-empty', 'true')
+  },
+}
+
+export const DisabledBlocksTheListTrigger: Story = {
+  render: () => <ListInPopoverPhone {...phoneControlArgs} disabled />,
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole('button', { name: LIST_TRIGGER }),
+    ).toBeDisabled()
   },
 }

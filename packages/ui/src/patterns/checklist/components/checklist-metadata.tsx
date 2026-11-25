@@ -45,6 +45,7 @@ export function ChecklistMetadata({
         <PersonProperty
           ariaLabel="Author"
           options={authorOptions}
+          placeholder="Sem responsável"
           readOnly={readOnly || !onItemAuthorChange}
           value={item.authorId}
           variant="plain"
@@ -61,8 +62,8 @@ export function ChecklistMetadata({
             timeZone,
             dueDayOffset,
           )}
-          fallback="No due date"
           isOverdue={status === 'overdue'}
+          labels={{ clear: 'Limpar data', fallback: 'No due date' }}
           locale={locale}
           readOnly={readOnly || !onItemDueDateChange}
           timeZone={timeZone}

@@ -38,6 +38,7 @@ export function TaskOwnerRow() {
         <span className="text-muted-foreground text-xs">Vence em 28/08</span>
       </div>
       <AssignedProperty
+        ariaLabel="Responsável"
         dropdownPlacement={{ align: 'end', side: 'bottom', sideOffset: 8 }}
         onValueChange={setOwner}
         options={assignees}
@@ -64,6 +65,7 @@ export function TeamTaskList() {
         >
           <span className="truncate text-sm">{task.title}</span>
           <AssignedPropertyBadge
+            placeholder="Sem responsável"
             option={
               assignees.find((option) => option.value === task.assignee) ?? null
             }

@@ -97,11 +97,11 @@ export function Legal5NumberField({ context, item, variant }: FieldProps) {
   return (
     <TextProperty
       ariaLabel={labels.columns.number}
-      copyLabel={labels.copyNumber}
-      fallback={labels.noNumber}
       trailingVisibility="always"
       value={item.number}
       variant={variant}
+      copyable
+      labels={{ copy: labels.copyNumber, fallback: labels.noNumber }}
     />
   )
 }

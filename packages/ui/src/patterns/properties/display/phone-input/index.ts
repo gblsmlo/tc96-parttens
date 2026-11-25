@@ -1,3 +1,4 @@
+export type { PhoneInputLabels } from '../../shared/property-labels'
 export type { PhoneCountryCode } from './countries'
 export { PhoneInput, type PhoneInputProps } from './phone-input'
 export {

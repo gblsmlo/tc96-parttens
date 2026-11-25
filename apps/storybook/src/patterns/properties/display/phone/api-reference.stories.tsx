@@ -1,12 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PhoneProperty } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
+import { ptBRPropertyLabels } from '../../properties-labels.ts'
 import { PhoneCanvas } from './phone-canvas.tsx'
 
 const ignore = () => undefined
 
 const meta = {
-  args: { onValueChange: ignore, value: ['+5511987654321'] },
+  args: {
+    onValueChange: ignore,
+    value: ['+5511987654321'],
+    ariaLabel: 'Telefones',
+    placeholder: 'Sem telefone',
+    labels: ptBRPropertyLabels.phone,
+  },
   component: PhoneProperty,
   decorators: [PhoneCanvas],
   tags: ['!autodocs', '!dev'],

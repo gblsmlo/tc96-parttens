@@ -10,10 +10,10 @@ import {
   WarningIcon,
   XCircleIcon,
 } from '@phosphor-icons/react'
-import type { SelectPropertyOption } from '@tc96/ui/patterns'
+import type { PropertyOption } from '@tc96/ui/patterns'
 import { z } from 'zod'
 
-export const statusOptions: SelectPropertyOption[] = [
+export const statusOptions: PropertyOption[] = [
   { icon: CircleIcon, label: 'Backlog', tone: 'neutral', value: 'backlog' },
   {
     icon: CircleDashedIcon,
@@ -36,7 +36,7 @@ export const statusOptions: SelectPropertyOption[] = [
   { icon: XCircleIcon, label: 'Canceled', tone: 'danger', value: 'canceled' },
 ]
 
-export const priorityOptions: SelectPropertyOption[] = [
+export const priorityOptions: PropertyOption[] = [
   { icon: MinusIcon, label: 'No priority', tone: 'neutral', value: 'none' },
   { icon: WarningIcon, label: 'Urgent', tone: 'danger', value: 'urgent' },
   { icon: CellSignalHighIcon, label: 'High', tone: 'warning', value: 'high' },

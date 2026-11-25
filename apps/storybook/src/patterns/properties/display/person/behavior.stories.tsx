@@ -9,6 +9,8 @@ import {
   esperarSuperficiePlana,
 } from '../../../../test-utils/property-surface'
 import { PersonCanvas } from './person-canvas.tsx'
+import { personControlArgs } from './person-controls.ts'
+import { ComposedPerson } from './person-layouts.tsx'
 
 type Person = 'ana' | 'gm'
 
@@ -23,6 +25,7 @@ const meta = {
     options,
     readOnly: true,
     value: 'gm',
+    placeholder: 'Sem responsável',
   },
   component: PersonProperty<Person>,
   decorators: [PersonCanvas],
@@ -99,6 +102,30 @@ export const AvatarOnlyKeepsAccessibleLabel: Story = {
     ).toBeInTheDocument()
     await expect(canvas.queryByText('Ana Souza')).toBeNull()
     await esperarAvatarComAresta(canvasElement, 16)
+  },
+}
+
+export const AvatarOnlyValueDropsTheName: Story = {
+  render: () => <ComposedPerson {...personControlArgs} display="avatar" />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('combobox', {
+      name: 'Responsável: Gabriel Melo',
+    })
+
+    await expect(avatarIn(trigger)).toBeVisible()
+    await expect(trigger).not.toHaveTextContent('Gabriel Melo')
+  },
+}
+
+export const DisabledTriggerCannotOpen: Story = {
+  render: () => <ComposedPerson {...personControlArgs} disabled />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('combobox', {
+      name: 'Responsável: Gabriel Melo',
+    })
+
+    await expect(trigger).toBeDisabled()
+    await expect(screen.queryByRole('listbox')).toBeNull()
   },
 }
 
@@ -198,8 +225,8 @@ export const ExplicitFallbackWins: Story = {
 export const XsKeepsTheFirstLetter: Story = {
   render: (args) => (
     <div className="flex gap-2">
-      <PersonProperty {...args} value="gm" />
-      <PersonProperty {...args} value="ana" />
+      <PersonProperty placeholder="Sem responsável" {...args} value="gm" />
+      <PersonProperty placeholder="Sem responsável" {...args} value="ana" />
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -212,6 +239,16 @@ export const AvatarSizeSetsTheValueAvatar: Story = {
   play: async ({ canvasElement }) => {
     await expect(avatarIn(canvasElement)).toHaveAttribute('data-size', 'lg')
     await esperarAvatarComAresta(canvasElement, 40)
+  },
+}
+
+export const AvatarSizeSmSetsA24pxValueAvatar: Story = {
+  render: () => <ComposedPerson {...personControlArgs} avatarSize="sm" />,
+  play: async ({ canvasElement }) => {
+    const avatar = avatarIn(canvasElement)
+
+    await expect(avatar).toHaveAttribute('data-size', 'sm')
+    await expect(avatar.getBoundingClientRect().width).toBe(24)
   },
 }
 

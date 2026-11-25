@@ -15,6 +15,7 @@ import {
   SelectProperty,
   TagsProperty,
 } from '@tc96/ui/patterns'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import {
   type Contact,
   type ContactTag,
@@ -50,11 +51,13 @@ export function StageField({ contact, onChange }: Readonly<FieldProps>) {
 export function EmailsField({ contact, onChange }: Readonly<FieldProps>) {
   return (
     <EmailProperty
+      placeholder="Sem e-mail"
       ariaLabel="E-mails"
       display="trigger"
       onValueChange={(value) => onChange(contact.id, { emails: [...value] })}
       value={contact.emails}
       variant="badge"
+      labels={ptBRPropertyLabels.email}
     />
   )
 }
@@ -62,11 +65,13 @@ export function EmailsField({ contact, onChange }: Readonly<FieldProps>) {
 export function PhonesField({ contact, onChange }: Readonly<FieldProps>) {
   return (
     <PhoneProperty
+      placeholder="Sem telefone"
       ariaLabel="Telefones"
       display="trigger"
       onValueChange={(value) => onChange(contact.id, { phones: [...value] })}
       value={contact.phones}
       variant="badge"
+      labels={ptBRPropertyLabels.phone}
     />
   )
 }
@@ -74,12 +79,14 @@ export function PhonesField({ contact, onChange }: Readonly<FieldProps>) {
 export function TagsField({ contact, onChange }: Readonly<FieldProps>) {
   return (
     <TagsProperty<ContactTag>
+      placeholder="Adicionar uma tag"
       ariaLabel="Tags"
       display="count"
       onValueChange={(value) => onChange(contact.id, { tags: [...value] })}
       options={tagOptions}
       value={contact.tags}
       variant="badge"
+      labels={ptBRPropertyLabels.tags}
     />
   )
 }
@@ -93,6 +100,7 @@ export function LastContactField({ contact }: Readonly<{ contact: Contact }>) {
       timeZone={TIME_ZONE}
       value={contact.lastContactAt}
       variant="plain"
+      labels={ptBRPropertyLabels.date}
     />
   )
 }

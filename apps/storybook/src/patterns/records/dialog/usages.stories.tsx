@@ -29,17 +29,18 @@ import { IconFrame } from '@tc96/ui/icon-frame'
 import {
   PersonProperty,
   type PersonPropertyOption,
+  type PropertyOption,
   RecordDialog,
   RecordGroup,
   RecordGroupRow,
   SelectProperty,
-  type SelectPropertyOption,
   TextProperty,
 } from '@tc96/ui/patterns'
 import { Switch } from '@tc96/ui/switch'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, within } from 'storybook/test'
 import { initialContacts } from '../../collection/fixtures/contacts'
+import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import { CreateContactDialog, type NewContact } from './create-contact-dialog'
 import { CreateEventDialog } from './create-event-dialog'
 import type { EventSlot, EventValues } from './event-record'
@@ -207,7 +208,7 @@ interface ManualLawsuitRow {
   icon: PhosphorIcon
   id: string
   label: string
-  options?: readonly SelectPropertyOption[]
+  options?: readonly PropertyOption[]
   people?: readonly PersonPropertyOption[]
   toggle?: true
 }
@@ -427,10 +428,10 @@ export const Lawsuits: StoryObj<LawsuitsArgs> = {
         <TextProperty
           ariaLabel={row.label}
           editing="inline"
-          fallback={row.fallback}
           onCommit={(next) => update(row.id, next)}
           value={value}
           variant="plain"
+          labels={{ ...ptBRPropertyLabels.text, fallback: row.fallback }}
         />
       )
     }

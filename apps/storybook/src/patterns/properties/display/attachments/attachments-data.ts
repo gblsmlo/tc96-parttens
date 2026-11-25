@@ -9,15 +9,15 @@ export interface AttachmentItem {
 }
 
 export const sampleAttachments: readonly AttachmentItem[] = [
-  { action: 'download', href: '#file-1', id: 'file-1', label: 'File 1.pdf' },
-  { action: 'download', href: '#file-2', id: 'file-2', label: 'File 2.pdf' },
+  { action: 'download', href: '#file-1', id: 'file-1', label: 'Arquivo 1.pdf' },
+  { action: 'download', href: '#file-2', id: 'file-2', label: 'Arquivo 2.pdf' },
 ]
 
 export const sampleNewAttachment: AttachmentItem = {
   action: 'download',
   href: '#file-3',
   id: 'file-3',
-  label: 'File 3.pdf',
+  label: 'Arquivo 3.pdf',
 }
 
 export const recordFiles: readonly AttachmentItem[] = [
@@ -25,14 +25,14 @@ export const recordFiles: readonly AttachmentItem[] = [
     action: 'download',
     href: '#proposal',
     id: 'proposal',
-    label: 'Commercial proposal.pdf',
+    label: 'Proposta comercial.pdf',
     type: 'pdf',
   },
   {
     action: 'download',
     href: '#contract',
     id: 'contract',
-    label: 'Signed contract.pdf',
+    label: 'Contrato assinado.pdf',
     type: 'doc',
   },
 ]
@@ -41,7 +41,7 @@ export const uploadedFile: AttachmentItem = {
   action: 'download',
   href: '#minutes',
   id: 'minutes',
-  label: 'Kickoff minutes.pdf',
+  label: 'Ata do kickoff.pdf',
   type: 'pdf',
 }
 
@@ -49,7 +49,7 @@ export const recordLinks: readonly AttachmentItem[] = [
   {
     href: '#playbook',
     id: 'playbook',
-    label: 'Support playbook',
+    label: 'Playbook de suporte',
     type: 'link',
   },
 ]
@@ -57,7 +57,7 @@ export const recordLinks: readonly AttachmentItem[] = [
 export const pastedLink: AttachmentItem = {
   href: '#status-page',
   id: 'status-page',
-  label: 'Status page',
+  label: 'Página de status',
   type: 'link',
 }
 
@@ -66,27 +66,27 @@ export const meetingMaterial: readonly AttachmentItem[] = [
     action: 'download',
     href: '#proposal',
     id: 'proposal',
-    label: 'Commercial proposal.pdf',
+    label: 'Proposta comercial.pdf',
     type: 'pdf',
   },
   {
     action: 'download',
     href: '#onboarding',
     id: 'onboarding',
-    label: 'Onboarding playbook',
+    label: 'Playbook de onboarding',
     type: 'doc',
   },
   {
     action: 'download',
     href: '#recording',
     id: 'recording',
-    label: 'Meeting recording',
+    label: 'Gravação da reunião',
     type: 'audio',
   },
   {
     href: '#linkedin',
     id: 'linkedin',
-    label: 'LinkedIn profile',
+    label: 'Perfil no LinkedIn',
     type: 'link',
   },
 ]
