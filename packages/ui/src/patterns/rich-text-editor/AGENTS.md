@@ -1,6 +1,6 @@
 # Rich text editor pattern
 
-A Notion-style editor on Plate (Slate) with every UI piece taken from COSS, plus a page title. `RichTextEditor` renders an editable area with no box of its own, a floating toolbar over the selection, a `/` menu for blocks, an optional `@` menu for mentions and an optional drag handle per top-level block; `EditorTitle` is an `h1` around a borderless `textarea` that never keeps a line break. The vocabulary is closed: `RICH_TEXT_ELEMENTS` and `RICH_TEXT_MARKS` name every node type the editor emits. The pattern never uploads, fetches, persists or ships CSS; its only state is the Plate editor instance (seeded once by `defaultValue`; there is no `value` or read-only prop), the title draft, the active menu option and the toolbar's dismissed selection.
+A Notion-style editor on Plate (Slate) with every UI piece taken from COSS, plus a page title. `RichTextEditor` renders an editable area with no box of its own, a floating toolbar over the selection, a `/` menu for blocks, an optional `@` menu for mentions and an optional drag handle per top-level block; `EditorTitle` is an `h1` around a borderless `textarea` that never keeps a line break. The vocabulary is closed: `RICH_TEXT_ELEMENTS` and `RICH_TEXT_MARKS` name every node type the editor emits. The pattern never uploads, fetches, persists or ships CSS; its only state is the Plate editor instance (seeded once by `defaultValue`, or created by the caller with `useRichTextEditor` and passed as `editor`), the title draft, the active menu option and the toolbar's dismissed selection.
 
 ## Map
 
@@ -12,9 +12,12 @@ The folder is flat; files by role:
 | `plugins.tsx` | `richTextEditorOptions` (the whole Plate setup), core elements and leaves, input rules, normalizers, `applyBlock`, the vocabulary arrays |
 | `extra-blocks.tsx`, `block-draggable.tsx` | the blocks reachable only from the `/` menu, `insertImage`, and the opt-in drag and block selection plugins |
 | `slash-menu.tsx`, `floating-toolbar.tsx`, `link-button.tsx` | `useSlashMenu` and the listbox shared by `/` and `@`; the toolbar with the block `Select`, mark and block toggles and the link popover |
+| `toolbar-parts.tsx` | the toolbar pieces shared by the floating toolbar and by a fixed toolbar a block builds: `RichTextToolbar`, the toggles, `RichTextBlockSelect`, `RichTextHistoryButton`, `blockIcon` |
+| `table-actions.ts` | pure table transforms (rows, columns, header row, column width) over `@platejs/table`, usable from any button |
+| `extensions.test.ts` | spikes that prove the suggestion, comment and Yjs plugins, the table actions and the opt-in features on `createPlateEditor`; not shipped |
 | `index.ts` | the barrel; internal names (`useSlashMenu`, `richTextEditorOptions`, `blockDragPlugins`, `withoutSlashInput`) stay out of it |
 
-Import direction: `rich-text-editor.tsx` → every other file except `editor-title.tsx`; `plugins.tsx` → `block-draggable.tsx`, `extra-blocks.tsx`; `slash-menu.tsx` → `plugins.tsx`, `extra-blocks.tsx` and `blockIcon` from `floating-toolbar.tsx`; `floating-toolbar.tsx` → `link-button.tsx`, `plugins.tsx`; `editor-title.tsx` imports nothing from the folder. Outside it: `@tc96/ui/helpers/rich-text` (`flattenTitle`, `formatTitleCounter`, `stripRichTextNodeIds`), COSS and `@tc96/utils`.
+Import direction: `rich-text-editor.tsx` → every other file except `editor-title.tsx`; `toolbar-parts.tsx` → `plugins.tsx`, `extra-blocks.tsx`; `extra-blocks.tsx` → `table-actions.ts`; `plugins.tsx` → `block-draggable.tsx`, `extra-blocks.tsx`; `slash-menu.tsx` → `plugins.tsx`, `extra-blocks.tsx` and `blockIcon` from `floating-toolbar.tsx`; `floating-toolbar.tsx` → `link-button.tsx`, `plugins.tsx`; `editor-title.tsx` imports nothing from the folder. Outside it: `@tc96/ui/helpers/rich-text` (`flattenTitle`, `formatTitleCounter`, `stripRichTextNodeIds`), COSS and `@tc96/utils`.
 
 ## Dependents
 
@@ -24,6 +27,16 @@ Import direction: `rich-text-editor.tsx` → every other file except `editor-tit
 - The registry pins `platejs`, but its `@platejs/core` range floats, so npm in a consumer resolves a newer core and `slate-react` than `bun.lock` (53.3.18 and 0.145.1 against 53.3.14 and 0.126.4 on 2026-10-21). Type Plate callbacks from the prop that receives them (`renderPlaceholder` takes `PlateContentProps['renderPlaceholder']`), not from the `slate-react` type Plate re-exports: `RenderPlaceholderProps` gained a required `'aria-hidden'` that Plate's own type for the `PlateContent` prop does not declare, and `bun run test:consumer:registry` is the only check that sees the newer types.
 
 ## Invariants
+
+Block base (blocks compose this pattern; see `packages/ui/src/blocks/application/rich-text-editor/`):
+
+- `RichTextEditor` owns its Plate editor unless `editor` is passed; then `defaultValue`, `maxListDepth`, `features` and the `mentions` and `draggableBlocks` that decide which plugins exist are read only by `useRichTextEditor`. The component still reads `mentions` (the `@` menu list) and `draggableBlocks` (Escape selects a block), so pass those two to both.
+- `features` is the opt-in surface: `h1` (the `h1` element, `#` makes `h1`, pasted `H1` stays `h1`; off by default because `h1` belongs to `EditorTitle`), `align` (`align` on `p`, `h1`, `h2`, `h3`, `blockquote` through `setAlignment`), `plugins` (appended last, for suggestion, comment and Yjs) and `skipInitialization` (required with Yjs: the plugin's `init` seeds the document).
+- `toolbar` and `children` render inside `<Plate>`, so they may use `useEditorRef` and `useEditorSelector`; `toolbar` goes above the content and `children` below it, after the floating toolbar. `floatingToolbar={false}` or `readOnly` removes the floating toolbar.
+- `readOnly` is Plate's: `contenteditable="false"`, `role="document"` instead of `textbox`, no `aria-placeholder`, no placeholder, no table resize handles.
+- Tables carry `colSizes` (px) on the table node; the cell handle is a focusable `role="separator"` (arrows move 16px, `MIN_TABLE_COLUMN_WIDTH` floor) and `data-slot="table-column-resize"`. Merging cells is off (`disableMerge`): Plate's merge-mode `insertTableColumn` inserted nothing under test.
+- Suggestion accept and reject must run inside `suggestion.withoutSuggestions(...)`, otherwise they are recorded as new suggestions while the editor is in suggesting mode; the `TResolvedSuggestion.keyId` is the whole `suggestion_<id>` key.
+- A Yjs provider registered with `registerProviderType` is wired to the plugin's sync callbacks; an instance in `providers` is not, so `init` waits 5 s for a sync that never comes unless `autoConnect: false` is passed. Slate changes reach the `Y.Doc` on a later tick, never synchronously.
 
 Document:
 
@@ -41,6 +54,7 @@ Menus:
 
 - `slash_input` is a non-void inline whose text is the `/` and the query, instead of Plate's void input, which would steal focus. The listbox never takes focus: `PlateContent` carries `aria-activedescendant` and `aria-controls`, options have `tabIndex={-1}` and a prevented `onMouseDown`, and keys are handled in the editable. `aria-expanded` stays off the editable because axe rejects it on `role="textbox"`.
 - Enter with no match dismisses and lets the event through; Escape dismisses to literal text; Space with an empty query or no match dismisses. Blur, the cursor leaving the node (`unwrapStaleTriggerInputs`) and an empty or prefix-less node (`triggerNormalizer`) also unwrap or remove it.
+- A `RichTextMention.avatar` (`{ url?, fallback? }`) shows a COSS `Avatar` in the `@` menu option and, copied onto the node as `avatar`, inline before the mention text; without it the menu keeps the `@` icon and the node carries no `avatar`.
 - `@` reuses `useSlashMenu` with `MENTION_INPUT_TYPE` and exists only when `mentions` is passed; the editor never searches people. The image option exists only with `onPickImage`; the pattern never uploads or stores a file.
 
 Toolbar and focus:

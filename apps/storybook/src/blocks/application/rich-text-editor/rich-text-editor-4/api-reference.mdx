@@ -1,0 +1,136 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RichTextEditor4
+
+Um documento escrito por várias pessoas ao mesmo tempo sobre Yjs, sem serviço hospedado: cursores e seleções com nome, quem está editando, conversas ancoradas no texto, desfazer só das próprias edições e um modo offline que sincroniza ao voltar. Use onde uma especificação, uma ata ou um plano é revisado ao vivo. Instale com `npx @tc96/cli add rich-text-editor-4`.
+
+O aviso de desfazer da resolução usa o `toastManager` do COSS: monte um `ToastProvider` uma vez no app. O bloco só conhece um `Y.Doc` e uma instância de `Awareness`: é aí que um Hocuspocus, um y-websocket ou um Liveblocks entra. Ele não busca, não grava e não abre conexão. Para as histórias e os testes há uma sala em memória, `createLocalRoom`, com colegas roteirizados que digitam e movem o cursor.
+
+As outras páginas de `Blocks/Application/Rich Text Editor/RichTextEditor4`: [Playground](?path=/story/blocks-application-rich-text-editor-richtexteditor4-playground--playground), [Behavior](?path=/story/blocks-application-rich-text-editor-richtexteditor4-behavior--two-clients-converge) e [Usages](?path=/story/blocks-application-rich-text-editor-richtexteditor4-usages--reviewing-the-spec-with-the-team).
+
+## Import
+
+```tsx
+import {
+  RichTextEditor4,
+  createLocalRoom,
+  useLocalRoom,
+} from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-4'
+```
+
+O mesmo caminho exporta os tipos listados em Exports.
+
+## Anatomy
+
+Cabeçalho com as pessoas na sala, o interruptor Online e o botão Reproduzir; barra de formatação; o texto com os cursores dos colegas; e a coluna de conversas.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+const room = useLocalRoom({ script, teammates })
+
+room ? (
+  <RichTextEditor4
+    defaultValue={value}
+    onCommentsChange={save}
+    room={room}
+    user={{ color: 'primary', id: 'marina', name: 'Marina Costa' }}
+  />
+) : null
+```
+
+## Plugando um provedor
+
+A sala é um objeto com `doc` e `awareness`. Com Hocuspocus:
+
+```tsx
+const provider = new HocuspocusProvider({ name: 'spec-42', url })
+
+const room = {
+  awareness: provider.awareness,
+  connect: () => provider.connect(),
+  disconnect: () => provider.disconnect(),
+  doc: provider.document,
+}
+```
+
+`connect` e `disconnect` só alimentam o interruptor Online; sem eles o interruptor desfaz apenas a exibição, por isso passe os dois. `room` precisa ser estável: trocar o objeto remonta o editor. Todos os clientes devem passar o mesmo `defaultValue`, porque o texto inicial vira um estado Yjs determinístico que se funde sem duplicar.
+
+## RichTextEditor4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `room` | `RichTextEditor4Room` | required | `doc`, `awareness` e, opcionais, `connect`, `disconnect` e `replay`. |
+| `user` | `RichTextEditor4User` | required | `id`, `name` e `color`, o nome de um token (`chart-1` a `chart-5` ou `primary`). Lido uma vez, na montagem. |
+| `defaultValue` | `RichTextValue` | um parágrafo vazio | Texto inicial, usado só quando o documento da sala está vazio, e também ao Reproduzir. |
+| `onCommentsChange` | `(threads: RichTextEditor4Thread[]) => void` | - | Chamado com todas as conversas sempre que uma muda e na montagem. |
+| `now` | `() => number` | `Date.now` | Relógio das mensagens; injete um fixo nos testes. |
+| `labels` | `RichTextEditor4LabelsInput` | textos em pt-BR | Mescla grupo a grupo sobre os padrões; veja Labels. |
+| `className` | `string` | - | Mesclada na raiz. |
+
+## RichTextEditor4Room
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `doc` | `Y.Doc` | O documento compartilhado; o texto vive em `content` e as conversas em `comments`. |
+| `awareness` | `Awareness` | Presença: o bloco publica `data`, `selection` e `presence`. |
+| `connect` | `() => void \| Promise<void>` | Chamado ao voltar para Online; o bloco espera o retorno antes de contar as edições mescladas. |
+| `disconnect` | `() => void` | Chamado ao ir para Offline. |
+| `replay` | `() => void` | Reinicia o roteiro dos colegas; sem ele o botão Reproduzir não aparece. |
+
+## createLocalRoom
+
+`createLocalRoom(options)` devolve uma `LocalRoom`: a sala do cliente principal mais `join()`, que cria outro cliente completo ligado ao mesmo servidor em memória, e `teammates`, colegas roteirizados. `useLocalRoom(options)` cria a sala numa montagem e a destrói na saída (seguro com StrictMode); devolve `null` no primeiro render.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `teammates` | `RichTextEditor4User[]` | `[]` | Quem entra na sala como colega roteirizado. |
+| `script` | `LocalRoomStep[]` | `[]` | Passos com `at` em ms: `caret`, `select`, `type`, `status`, `comment`, `reply`, `resolve`. Os índices de bloco contam os blocos de texto em ordem do documento. |
+| `autoplay` | `boolean` | `true` | Liga os temporizadores quando o documento ganha texto; desligado, só `step()` e `stepAll()` andam o roteiro. |
+| `clock` | `LocalRoomClock` | relógio do navegador | `setTimeout`, `clearTimeout` e `now` injetáveis. |
+
+## RichTextEditor4Thread
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | O id que também marca o trecho (`comment_<id>`). |
+| `quote` | `string` | O texto selecionado na criação. |
+| `messages` | `RichTextEditor4Message[]` | `id`, `author`, `body` e `createdAt`. |
+| `resolved` | `boolean` | Resolvida; o trecho fica com sublinhado tracejado. |
+| `resolvedBy` | `RichTextEditor4User` | Quem resolveu. |
+| `anchored` | `boolean` | `false` quando a marca no texto foi removida. |
+
+## Labels
+
+`labels` agrupa os textos em `blocks`, `comments`, `online`, `presence` e `tools`, mais `editor`, `title` e `replay`. Cada grupo é mesclado sobre o padrão em pt-BR; `presence.status` também. As funções (`online.merged`, `presence.person`, `comments.openThread`, `comments.replies`) recebem os dados e devolvem o texto final.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RichTextEditor4` | `component` | O editor colaborativo. |
+| `createLocalRoom` | `function` | Sala em memória com colegas roteirizados. |
+| `useLocalRoom` | `hook` | `createLocalRoom` preso ao ciclo de vida do componente. |
+| `LocalRoom`, `LocalRoomOptions`, `LocalRoomStep`, `LocalRoomClock`, `LocalTeammate` | `type` | A sala em memória. |
+| `RichTextEditor4Props`, `RichTextEditor4Room`, `RichTextEditor4User`, `RichTextEditor4Color`, `RichTextEditor4Status` | `type` | O contrato do componente. |
+| `RichTextEditor4Thread`, `RichTextEditor4Message` | `type` | As conversas. |
+| `RichTextEditor4Labels`, `RichTextEditor4LabelsInput` | `type` | Os textos. |
+
+## Comportamento e limites
+
+- Cada cliente tem o seu histórico: desfazer reverte só as edições feitas ali (o `UndoManager` do Yjs rastreia a origem local). As conversas ficam fora do histórico: desfazer não apaga uma conversa criada, só a marca no texto, e a conversa passa a `anchored: false`.
+- Offline, as edições ficam no `Y.Doc` local e o contador da faixa sobe; ao voltar, o Yjs funde. O aviso nomeia quem escreveu entre o `connect` e o fim do retorno dele; com um provedor cujo `connect` resolve antes do estado chegar, o aviso pode sair sem nomes.
+- Os cursores dos colegas são calculados a partir das posições relativas do Yjs e medidos no DOM; carets dentro de elementos em linha (links) ficam aproximados, e seleções que atravessam vários blocos desenham também o retângulo dos blocos do meio.
+- O destaque de texto está desligado neste editor: ele seria lido como âncora de conversa.
+- O rascunho de um comentário (o trecho enquanto se escreve) é só local; o texto marcado entra no documento quando o comentário é enviado.
+
+## Accessibility and theme
+
+- As pessoas na sala são botões nomeados com o status ("Carla Prado, Editando"), com `aria-pressed` quando seguidas; o resumo em texto repete os números, então o status nunca depende só da cor.
+- Cursores e seleções são decorativos (`aria-hidden`); o nome também está nos botões da lista.
+- A conversa é um popover nomeado; a coluna de conversas dá a mesma via por teclado, com um botão por conversa.
+- Os avisos de offline e de mesclagem são `output`, anunciados sem tirar o foco.
+- Cores só de tokens (`chart-1` a `chart-5`, `primary`); os botões usam `sm` e `icon-sm`.

@@ -1,0 +1,110 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RichTextEditor3
+
+A contract review screen in suggesting mode: the document keeps every edit as a tracked change, and a margin lists each change with Accept and Reject. Reach for it when one side proposes wording and the other side decides, such as a services agreement, a policy or a proposal. Install it with `npx @tc96/cli add rich-text-editor-3`.
+
+It renders a sticky header (document title, change counter, previous and next, the view switch and the export menu), the editor with a formatting toolbar, and the review margin. Typing becomes an insertion, deleting strikes the text in place, and typing over a selection becomes a replace; each change is stamped with the `author` and the time. Formatting, block type changes and paragraph splits apply directly, so the list is about words. Below 1024px the margin moves into a `Sheet`. The block is controlled: it never fetches or persists, and the app receives the value, the decisions and the exported content through callbacks.
+
+The other pages of `Blocks/Application/Rich Text Editor/RichTextEditor3`: [Playground](?path=/story/blocks-application-rich-text-editor-richtexteditor3-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-rich-text-editor-richtexteditor3-behavior--typing-becomes-an-insert) for the tests and [Usages](?path=/story/blocks-application-rich-text-editor-richtexteditor3-usages--reviewing-an-agreement-with-the-counterparty) for a review with a decision log.
+
+## Import
+
+```tsx
+import { RichTextEditor3 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-3'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+The header with three changes counted, the toolbar over the document and the margin with one card per change.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RichTextEditor3
+  author={{ id: 'ana', name: 'Ana Souza' }}
+  authors={people}
+  defaultValue={contract}
+  onChange={saveDraft}
+  onDecision={logDecision}
+  onExport={(format, content) => copy(content)}
+/>
+```
+
+## RichTextEditor3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `author` | `{ id: string; name: string }` | required | The current user; every new change is stamped with this id and the time. |
+| `defaultValue` | `RichTextValue` | required | The document, read once. It may already carry changes from other people. |
+| `authors` | `{ id: string; name: string }[]` | `[]` | People that appear in the document, to turn a change's user id into a name. An unknown id shows as is. |
+| `title` | `string` | `labels.document` | The name shown in the sticky header. |
+| `formatTime` | `(date: Date) => string` | `Intl` pt-BR, short date and time | Formats the time of each change in the margin; the `datetime` attribute is always ISO. |
+| `onChange` | `(value: RichTextValue) => void` | - | Called with the document, tracked changes included, on every edit and every decision. |
+| `onDecision` | `(decision: RichTextEditor3Decision) => void` | - | Called after Accept, Reject, Accept all or Reject all. |
+| `onExport` | `(format: RichTextEditor3ExportFormat, content: string) => void` | - | Called by the export menu; the app copies or saves the content. |
+| `labels` | `Partial<RichTextEditor3Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## Decisions and export formats
+
+| Type | Shape | Description |
+| --- | --- | --- |
+| `RichTextEditor3Decision` | `{ action: 'accept' \| 'reject'; change }` | One change was decided. |
+| `RichTextEditor3Decision` | `{ action: 'accept-all' \| 'reject-all'; changes }` | Every change was decided; `changes` is the list as it was before. |
+| `RichTextEditor3Change` | `{ id, kind, before, after, author, createdAt }` | `kind` is `insert`, `delete` or `replace`; `before` is the struck text and `after` the inserted text. |
+| `RichTextEditor3ExportFormat` | `'redline-html' \| 'final-text' \| 'original-text'` | `redline-html` marks insertions with `<ins>` and deletions with `<del>`, each with `data-author` and `datetime`. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `document` | `string` | `"Contrato de prestação de serviços"`; the name of the editor and the default title |
+| `count` | `(count: number) => string` | `"N alterações"` |
+| `previous`, `next` | `string` | `"Alteração anterior"`, `"Próxima alteração"` |
+| `views` | `string` | `"Versão exibida"`; the name of the view switch |
+| `viewAll`, `viewFinal`, `viewOriginal` | `string` | `"Todas as marcações"`, `"Final"`, `"Original"` |
+| `export`, `exportHtml`, `exportFinal`, `exportOriginal` | `string` | `"Exportar"` and the three menu items |
+| `reviewTitle`, `reviewDescription`, `openReview`, `closeReview` | `string` | The margin title, the Sheet description, the narrow button and the Sheet close button |
+| `acceptAll`, `rejectAll`, `cancel` | `string` | `"Aceitar tudo"`, `"Rejeitar tudo"`, `"Cancelar"` |
+| `confirmAcceptAllTitle`, `confirmRejectAllTitle` | `string` | The titles of the two confirm dialogs |
+| `confirmAcceptAllDescription`, `confirmRejectAllDescription` | `(count: number) => string` | The texts of the two confirm dialogs |
+| `confirmAcceptAll`, `confirmRejectAll` | `string` | The confirm buttons |
+| `formatting`, `undo`, `redo` | `string` | The toolbar name and its history buttons |
+| `marks` | `Record<'bold' \| 'italic' \| 'underline', string>` | `"Negrito"`, `"Itálico"`, `"Sublinhado"` |
+| `blocks` | `Record<'h2' \| 'h3' \| 'blockquote' \| 'ul' \| 'ol', string>` | The names of the block buttons |
+| `review` | `SuggestionReviewLabels` | `accept`, `reject`, `acceptChange(change)`, `rejectChange(change)`, `was`, `now`, `kind`, `list`, `empty` |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RichTextEditor3` | `component` | The review screen. |
+| `RichTextEditor3Props` | `type` | The props of the screen. |
+| `RichTextEditor3Author` | `type` | A person: `id` and `name`. |
+| `RichTextEditor3Change` | `type` | One tracked change. |
+| `RichTextEditor3Decision` | `type` | The argument of `onDecision`. |
+| `RichTextEditor3ExportFormat` | `type` | The first argument of `onExport`. |
+| `RichTextEditor3Labels` | `type` | The keys of `labels`. |
+
+## Limits
+
+- Only inline text edits are tracked. Pasting blocks, deleting across several paragraphs and moving blocks are not covered.
+- Formatting, block type changes and paragraph splits are direct edits and are not listed.
+- Strike, code, highlight, task lists and the `/` menu are off.
+- The Final and Original views are read only and are drawn by hiding leaves; the stored document is never changed by a view.
+
+## Accessibility and theme
+
+- The editor is a `textbox` named by `labels.document`; in the Final and Original views it is a read-only `document`.
+- Insertions and deletions are `ins` and `del` elements, so the meaning does not depend on color alone: deletions are struck through and insertions are underlined.
+- The margin is a `complementary` region named by `labels.reviewTitle`; the Sheet is a dialog with the same name.
+- Accept and Reject buttons are named with the author and the text, so each one is distinct.
+- Accept all and Reject all open an alert dialog before anything changes.
+- Buttons use the `sm` and `icon-sm` sizes.
+- Colors come from the `success`, `destructive`, `muted` and `ring` tokens; the block carries no radius or shadow of its own beyond the cards of the margin.

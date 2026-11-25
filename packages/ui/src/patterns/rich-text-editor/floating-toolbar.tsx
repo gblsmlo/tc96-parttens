@@ -1,192 +1,27 @@
 'use client'
 
-import {
-  CodeSimpleIcon,
-  HighlighterIcon,
-  ListBulletsIcon,
-  ListNumbersIcon,
-  type Icon as PhosphorIcon,
-  QuotesIcon,
-  TextBIcon,
-  TextHThreeIcon,
-  TextHTwoIcon,
-  TextItalicIcon,
-  TextStrikethroughIcon,
-  TextUnderlineIcon,
-} from '@phosphor-icons/react'
-import { unwrapList } from '@platejs/list-classic'
 import { Popover, PopoverPopup } from '@tc96/ui/popover'
 import {
-  Select,
-  SelectItem,
-  SelectPopup,
-  SelectTrigger,
-  SelectValue,
-} from '@tc96/ui/select'
-import { Toggle } from '@tc96/ui/toggle'
-import {
-  ToolbarButton,
   ToolbarGroup,
   ToolbarPrimitive,
   ToolbarSeparator,
 } from '@tc96/ui/toolbar'
 import { RangeApi, type SlateEditor, type TRange } from 'platejs'
-import {
-  useEditorRef,
-  useEditorSelector,
-  useMarkToolbarButton,
-  useMarkToolbarButtonState,
-} from 'platejs/react'
+import { useEditorRef, useEditorSelector } from 'platejs/react'
 import type { ReactElement, RefObject } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { LinkButton, type LinkButtonLabels } from './link-button'
 import {
-  applyBlock,
   RICH_TEXT_BLOCKS,
   RICH_TEXT_MARKS,
   type RichTextBlock,
   type RichTextMark,
 } from './plugins'
-
-const markIcon = {
-  bold: TextBIcon,
-  code: CodeSimpleIcon,
-  highlight: HighlighterIcon,
-  italic: TextItalicIcon,
-  strikethrough: TextStrikethroughIcon,
-  underline: TextUnderlineIcon,
-} as const satisfies Record<RichTextMark, PhosphorIcon>
-
-export const blockIcon = {
-  blockquote: QuotesIcon,
-  h2: TextHTwoIcon,
-  h3: TextHThreeIcon,
-  ol: ListNumbersIcon,
-  ul: ListBulletsIcon,
-} as const satisfies Record<RichTextBlock, PhosphorIcon>
-
-function ToolbarToggle({
-  icon: Icon,
-  label,
-  onToggle,
-  pressed,
-}: Readonly<{
-  icon: PhosphorIcon
-  label: string
-  onToggle: () => void
-  pressed: boolean
-}>): ReactElement {
-  return (
-    <ToolbarButton
-      onMouseDown={(event) => event.preventDefault()}
-      render={
-        <Toggle
-          aria-label={label}
-          onPressedChange={onToggle}
-          pressed={pressed}
-          size="sm"
-        />
-      }
-    >
-      <Icon aria-hidden="true" />
-    </ToolbarButton>
-  )
-}
-
-function MarkButton({
-  label,
-  mark,
-}: Readonly<{ label: string; mark: RichTextMark }>): ReactElement {
-  const { props } = useMarkToolbarButton(
-    useMarkToolbarButtonState({ nodeType: mark }),
-  )
-
-  return (
-    <ToolbarToggle
-      icon={markIcon[mark]}
-      label={label}
-      onToggle={props.onClick}
-      pressed={props.pressed}
-    />
-  )
-}
-
-function BlockButton({
-  block,
-  label,
-}: Readonly<{ block: RichTextBlock; label: string }>): ReactElement {
-  const editor = useEditorRef()
-  const pressed = useEditorSelector(
-    (current) => current.api.some({ match: { type: block } }),
-    [block],
-  )
-
-  return (
-    <ToolbarToggle
-      icon={blockIcon[block]}
-      label={label}
-      onToggle={() => {
-        applyBlock(editor, block)
-        editor.tf.focus()
-      }}
-      pressed={pressed}
-    />
-  )
-}
-
-type BlockType = RichTextBlock | 'p'
-
-const blockTypes: readonly BlockType[] = ['p', ...RICH_TEXT_BLOCKS]
-
-function BlockTypeSelect({
-  blockLabels,
-  label,
-  paragraphLabel,
-}: Readonly<{
-  blockLabels: Readonly<Record<RichTextBlock, string>>
-  label: string
-  paragraphLabel: string
-}>): ReactElement {
-  const editor = useEditorRef()
-  const current = useEditorSelector(
-    (state) =>
-      RICH_TEXT_BLOCKS.find((block) =>
-        state.api.some({ match: { type: block } }),
-      ) ?? 'p',
-    [],
-  )
-  const labels = { ...blockLabels, p: paragraphLabel }
-
-  return (
-    <Select<BlockType>
-      items={blockTypes.map((value) => ({ label: labels[value], value }))}
-      onValueChange={(next) => {
-        if (next === null || next === current) return
-        if (next === 'p') {
-          if (current === 'ul' || current === 'ol') unwrapList(editor)
-          else editor.tf.toggleBlock(current)
-        } else applyBlock(editor, next)
-        editor.tf.focus()
-      }}
-      value={current}
-    >
-      <ToolbarButton
-        aria-label={label}
-        onMouseDown={(event) => event.preventDefault()}
-        render={<SelectTrigger className="min-w-32" size="sm" />}
-      >
-        <SelectValue />
-      </ToolbarButton>
-      <SelectPopup alignItemWithTrigger={false} sideOffset={8}>
-        {blockTypes.map((value) => (
-          <SelectItem key={value} value={value}>
-            {labels[value]}
-          </SelectItem>
-        ))}
-      </SelectPopup>
-    </Select>
-  )
-}
+import {
+  RichTextBlockButton as BlockButton,
+  RichTextBlockSelect as BlockTypeSelect,
+  RichTextMarkButton as MarkButton,
+} from './toolbar-parts'
 
 const sameRange = (a: TRange | null, b: TRange | null) =>
   a === b || (a !== null && b !== null && RangeApi.equals(a, b))

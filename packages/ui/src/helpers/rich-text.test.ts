@@ -1,9 +1,12 @@
 import { describe, expect, test } from 'bun:test'
 import {
+  countWords,
   flattenTitle,
   formatTitleCounter,
   richTextElementTypes,
   richTextHasNodeId,
+  richTextStats,
+  richTextToHtml,
   richTextToPlainText,
   stripRichTextNodeIds,
 } from './rich-text'
@@ -124,5 +127,66 @@ describe('stripRichTextNodeIds', () => {
       },
     ])
     expect(richTextHasNodeId(tagged)).toBe(true)
+  })
+})
+
+describe('countWords and richTextStats', () => {
+  test('counts words with inner punctuation as one word', () => {
+    expect(countWords("Don't stop e-mail 3.14 — now")).toBe(5)
+    expect(countWords('   ')).toBe(0)
+  })
+
+  test('reports words, characters and reading minutes rounded up', () => {
+    const doc = [
+      { children: [{ text: 'Olá mundo' }], type: 'p' },
+      { children: [{ text: 'de novo' }], type: 'p' },
+    ]
+    expect(richTextStats(doc)).toEqual({
+      characters: 14,
+      charactersWithSpaces: 17,
+      readingMinutes: 1,
+      words: 4,
+    })
+    expect(richTextStats([{ children: [{ text: '' }], type: 'p' }])).toEqual({
+      characters: 0,
+      charactersWithSpaces: 0,
+      readingMinutes: 0,
+      words: 0,
+    })
+    expect(
+      richTextStats(
+        [{ children: [{ text: 'a '.repeat(401) }], type: 'p' }],
+        200,
+      ).readingMinutes,
+    ).toBe(3)
+  })
+})
+
+describe('richTextToHtml', () => {
+  test('escapes text and wraps marks and blocks', () => {
+    expect(
+      richTextToHtml([
+        {
+          align: 'center',
+          children: [
+            { bold: true, text: 'a<b' },
+            { text: ' & ' },
+            { children: [{ text: 'x' }], type: 'a', url: 'https://e.co' },
+          ],
+          type: 'p',
+        },
+        {
+          children: [
+            {
+              children: [{ children: [{ text: 'um' }], type: 'lic' }],
+              type: 'li',
+            },
+          ],
+          type: 'ul',
+        },
+      ]),
+    ).toBe(
+      '<p style="text-align:center"><strong>a&lt;b</strong> &amp; <a href="https://e.co">x</a></p><ul><li>um</li></ul>',
+    )
   })
 })

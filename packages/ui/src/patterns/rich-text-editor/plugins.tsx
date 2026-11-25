@@ -7,6 +7,7 @@ import {
 import {
   BoldPlugin,
   CodePlugin,
+  H1Plugin,
   H2Plugin,
   H3Plugin,
   HighlightPlugin,
@@ -14,6 +15,7 @@ import {
   StrikethroughPlugin,
   UnderlinePlugin,
 } from '@platejs/basic-nodes/react'
+import { TextAlignPlugin } from '@platejs/basic-styles/react'
 import { LinkPlugin } from '@platejs/link/react'
 import { toggleList, unwrapList } from '@platejs/list-classic'
 import {
@@ -25,7 +27,11 @@ import {
 } from '@platejs/list-classic/react'
 import { MentionInputPlugin, MentionPlugin } from '@platejs/mention/react'
 import { SlashInputPlugin, SlashPlugin } from '@platejs/slash-command/react'
+import { Avatar, AvatarFallback, AvatarImage } from '@tc96/ui/avatar'
+import { getInitials } from '@tc96/ui/helpers/initials'
+import { cn } from '@tc96/utils'
 import {
+  type AnyPluginConfig,
   createBlockStartInputRule,
   type Descendant,
   ElementApi,
@@ -65,6 +71,24 @@ export const RICH_TEXT_BLOCKS = ['h2', 'h3', 'blockquote', 'ul', 'ol'] as const
 
 export type RichTextBlock = (typeof RICH_TEXT_BLOCKS)[number]
 
+export type RichTextBlockWithTitle = RichTextBlock | 'h1'
+
+export const RICH_TEXT_ALIGNMENTS = [
+  'left',
+  'center',
+  'right',
+  'justify',
+] as const
+
+export type RichTextAlignment = (typeof RICH_TEXT_ALIGNMENTS)[number]
+
+export interface RichTextEditorFeatures {
+  align?: boolean
+  h1?: boolean
+  plugins?: readonly AnyPluginConfig[]
+  skipInitialization?: boolean
+}
+
 export const RICH_TEXT_ELEMENTS = [
   'p',
   'h2',
@@ -78,6 +102,25 @@ export const RICH_TEXT_ELEMENTS = [
   'mention',
   ...RICH_TEXT_EXTRA_ELEMENTS,
 ] as const
+
+export interface RichTextAvatar {
+  fallback?: string
+  url?: string
+}
+
+export function MentionAvatar({
+  avatar,
+  label,
+}: Readonly<{ avatar: RichTextAvatar; label: string }>): ReactElement {
+  return (
+    <Avatar aria-hidden="true" className="size-4 text-[0.5rem]">
+      {avatar.url ? <AvatarImage alt="" src={avatar.url} /> : null}
+      <AvatarFallback>
+        {avatar.fallback ?? getInitials(label, 2)}
+      </AvatarFallback>
+    </Avatar>
+  )
+}
 
 export const SLASH_INPUT_TYPE = KEYS.slashInput
 
@@ -93,9 +136,16 @@ const isList = (node: unknown): node is TElement =>
 const inListItem = (editor: SlateEditor) =>
   editor.api.some({ match: { type: 'li' } })
 
+export function setAlignment(
+  editor: SlateEditor,
+  alignment: RichTextAlignment,
+): void {
+  editor.getTransforms(TextAlignPlugin).textAlign.setNodes(alignment)
+}
+
 export function applyBlock(
   editor: SlateEditor,
-  block: RichTextBlock | 'p',
+  block: RichTextBlockWithTitle | 'p',
 ): void {
   if (block === 'ul' || block === 'ol') {
     toggleList(editor, { type: block })
@@ -109,13 +159,13 @@ export function applyBlock(
 const outsideList = ({ editor }: { editor: SlateEditor }) => !inListItem(editor)
 
 const notAlready =
-  (block: RichTextBlock) =>
+  (block: RichTextBlockWithTitle) =>
   ({ editor }: { editor: SlateEditor }) =>
     !editor.api.some({ match: { type: block } })
 
 function blockShortcut(
   prefix: RegExp | string,
-  block: RichTextBlock,
+  block: RichTextBlockWithTitle,
   enabled?: (context: { editor: SlateEditor }) => boolean,
 ) {
   return createBlockStartInputRule({
@@ -134,6 +184,16 @@ function blockShortcut(
 function ParagraphElement(props: PlateElementProps): ReactElement {
   return (
     <PlateElement {...props} as="p" className="my-2 first:mt-0 last:mb-0" />
+  )
+}
+
+function H1Element(props: PlateElementProps): ReactElement {
+  return (
+    <PlateElement
+      {...props}
+      as="h1"
+      className="mt-5 mb-2 font-semibold text-2xl first:mt-0"
+    />
   )
 }
 
@@ -304,14 +364,19 @@ const slashPlugin = SlashPlugin.configure({
   .overrideEditor(triggerNormalizer(SLASH_INPUT_TYPE, '/') as never)
 
 function MentionElement(props: PlateElementProps): ReactElement {
+  const label = String(props.element.value ?? '')
+  const avatar = props.element.avatar as RichTextAvatar | undefined
   return (
     <PlateElement
       {...props}
       as="span"
       attributes={{ ...props.attributes, contentEditable: false }}
-      className="rounded-sm bg-primary/12 px-1 font-medium text-primary"
+      className={cn(
+        'rounded-sm bg-primary/12 px-1 font-medium text-primary',
+        avatar && 'inline-flex items-center gap-1 align-middle',
+      )}
     >
-      @{String(props.element.value ?? '')}
+      {avatar ? <MentionAvatar avatar={avatar} label={label} /> : null}@{label}
       {props.children}
     </PlateElement>
   )
@@ -462,6 +527,7 @@ export function richTextEditorOptions(
   maxListDepth: number,
   withMentions = false,
   blockDragLabels?: BlockDragLabels,
+  features: RichTextEditorFeatures = {},
 ) {
   if (!Number.isInteger(maxListDepth) || maxListDepth < 1) {
     throw new RangeError(
@@ -470,12 +536,29 @@ export function richTextEditorOptions(
   }
   return {
     nodeId: { initialValueIds: 'always' as const },
+    ...(features.skipInitialization ? { skipInitialization: true } : {}),
     plugins: [
       ParagraphPlugin.withComponent(ParagraphElement),
+      ...(features.h1
+        ? [
+            H1Plugin.withComponent(H1Element).configure({
+              inputRules: [blockShortcut('#', 'h1')],
+              parsers: {
+                html: { deserializer: { rules: [{ validNodeName: 'H1' }] } },
+              },
+            }),
+          ]
+        : []),
       H2Plugin.withComponent(H2Element).configure({
-        inputRules: [blockShortcut('#', 'h2'), blockShortcut('##', 'h2')],
+        inputRules: features.h1
+          ? [blockShortcut('##', 'h2')]
+          : [blockShortcut('#', 'h2'), blockShortcut('##', 'h2')],
         parsers: {
-          html: { deserializer: { rules: [{ validNodeName: ['H1', 'H2'] }] } },
+          html: {
+            deserializer: {
+              rules: [{ validNodeName: features.h1 ? ['H2'] : ['H1', 'H2'] }],
+            },
+          },
         },
       }),
       H3Plugin.withComponent(H3Element).configure({
@@ -519,6 +602,16 @@ export function richTextEditorOptions(
         node: { component: CodeLeaf },
         shortcuts: { toggle: { keys: [[Key.Mod, 'e']] } },
       }),
+      ...(features.align
+        ? [
+            TextAlignPlugin.configure({
+              inject: {
+                targetPlugins: ['p', 'h1', 'h2', 'h3', 'blockquote'],
+              },
+            }),
+          ]
+        : []),
+      ...(features.plugins ?? []),
     ],
   }
 }
