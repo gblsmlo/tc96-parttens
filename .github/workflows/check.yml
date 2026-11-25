@@ -2,15 +2,7 @@ name: Check
 
 on:
   pull_request:
-    # ready_for_review and unlabeled rerun the story tests a draft or the skip-storybook label skipped.
-    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
   workflow_dispatch:
-    inputs:
-      storybook-runner:
-        description: Runner image for the Storybook job
-        type: choice
-        options: [ubuntu-24.04, ubuntu-24.04-arm]
-        default: ubuntu-24.04
 
 permissions:
   contents: read
@@ -21,7 +13,7 @@ concurrency:
 
 jobs:
   static:
-    # Release PRs run the full gate in release-check.yml.
+    # Story tests, storybook:build and docs:build run only in release-check.yml.
     if: ${{ !startsWith(github.head_ref, 'chore/release-') }}
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
@@ -36,6 +28,12 @@ jobs:
         with:
           node-version: 24
 
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+
       - run: bun install --frozen-lockfile
 
       - run: bun run check:coss
@@ -48,100 +46,3 @@ jobs:
       - run: bun run test
       - run: bun run build
       - run: bun run verify:public-api
-
-  # The story tests run in five shards: one runner closed the browser mid-run
-  # with 232 story files (PR #425), and with 448 files per shard on the full suite (PR #429).
-  # Skipped on draft PRs and on PRs labeled skip-storybook; the release gate still runs every story.
-  storybook-shard:
-    if: >-
-      ${{ !startsWith(github.head_ref, 'chore/release-')
-      && !github.event.pull_request.draft
-      && !contains(github.event.pull_request.labels.*.name, 'skip-storybook') }}
-    name: storybook (${{ matrix.shard }}/5)
-    runs-on: ${{ inputs.storybook-runner || 'ubuntu-24.04' }}
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2, 3, 4, 5]
-    steps:
-      # On pull_request HEAD is the merge commit, so HEAD^1 is the base it merges into.
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Pick the lane
-        id: lane
-        env:
-          EVENT: ${{ github.event_name }}
-        run: |
-          global='^(package\.json|bun\.lock|\.github/workflows/|apps/storybook/(\.storybook/|package\.json|vite\.config\.ts|vitest\.config\.ts)|apps/example/packages/ui/src/styles\.css)'
-          stories='^(apps/storybook/|apps/example/packages/ui/|packages/)'
-          storybook_build='^apps/storybook/(.*\.mdx$|\.storybook/)'
-          docs_build='^apps/docs/'
-
-          if [ "$EVENT" != pull_request ]; then
-            files=''
-            tests=full
-          else
-            files=$(git diff --name-only HEAD^1 HEAD)
-            if grep -qE "$global" <<<"$files"; then tests=full
-            elif grep -qE "$stories" <<<"$files"; then tests=changed
-            else tests=skip
-            fi
-          fi
-
-          has() { [ "$tests" = full ] || grep -qE "$1" <<<"$files" && echo true || echo false; }
-          sb=$(has "$storybook_build")
-          docs=$(has "$docs_build")
-          install=$([ "$tests" != skip ] || [ "$sb" = true ] || [ "$docs" = true ] && echo true || echo false)
-          {
-            echo "tests=$tests"
-            echo "storybook-build=$sb"
-            echo "docs-build=$docs"
-            echo "install=$install"
-          } | tee -a "$GITHUB_OUTPUT"
-
-      - if: steps.lane.outputs.install == 'true'
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.4.2
-
-      - if: steps.lane.outputs.install == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - if: steps.lane.outputs.install == 'true'
-        run: bun install --frozen-lockfile
-
-      - if: steps.lane.outputs.tests != 'skip'
-        run: bunx playwright install --with-deps --only-shell chromium
-        working-directory: apps/storybook
-
-      - if: steps.lane.outputs.tests == 'changed'
-        run: bun run test --project storybook --changed HEAD^1 --passWithNoTests --shard=${{ matrix.shard }}/5
-        working-directory: apps/storybook
-
-      - if: steps.lane.outputs.tests == 'full'
-        run: bun run test --passWithNoTests --shard=${{ matrix.shard }}/5
-        working-directory: apps/storybook
-
-      - if: matrix.shard == 1 && steps.lane.outputs.storybook-build == 'true'
-        run: bun run storybook:build
-
-      - if: matrix.shard == 1 && steps.lane.outputs.docs-build == 'true'
-        run: bun run docs:build
-
-  # Keeps one `storybook` check for branch protection: it passes only when every shard passed or was skipped.
-  storybook:
-    if: ${{ always() && !startsWith(github.head_ref, 'chore/release-') }}
-    needs: storybook-shard
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    steps:
-      - env:
-          RESULT: ${{ needs.storybook-shard.result }}
-        run: |
-          echo "storybook shards: $RESULT"
-          [ "$RESULT" = success ] || [ "$RESULT" = skipped ]

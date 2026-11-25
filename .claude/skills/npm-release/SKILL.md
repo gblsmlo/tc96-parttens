@@ -13,7 +13,7 @@ The package is never published from a laptop. `bun run release` creates the GitH
 | --- | --- |
 | The version, the only line a release changes | `packages/registry/src/build-registry.ts`, `version: 'X.Y.Z'` inside the `@tc96/cli` package.json it writes |
 | Local release gate | `bun run release:check` (full `check`, consumer registry and SSR tests, view benchmarks, `pack:check`) |
-| CI release gate | `.github/workflows/release-check.yml`, runs `release:check` on PRs whose branch starts with `chore/release-` |
+| CI release gate | `.github/workflows/release-check.yml` runs `release:check` without the Storybook steps, and `.github/workflows/storybook-release.yml` runs the story tests in five shards plus `storybook:build` and `docs:build`, both on PRs whose branch starts with `chore/release-`; the `skip-storybook` label skips the Storybook workflow |
 | Release command | `scripts/release.ts`: requires `main`, a clean tree, `main` equal to `origin/main`, no `vX.Y.Z` tag on origin and no `X.Y.Z` on npm; `--dry-run` prints the `gh release create` command without running it |
 | Publish | `.github/workflows/publish.yml`: on `release: published`, skips prereleases, checks the tag commit is on `main`, runs typecheck, test, build, checks the tag equals `dist/cli/package.json` version, `pack:check`, `npm publish --provenance --tag latest` |
 

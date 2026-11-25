@@ -1,0 +1,168 @@
+name: Storybook release
+
+on:
+  pull_request:
+    # labeled and unlabeled rerun the story tests when skip-storybook is added or removed.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  workflow_dispatch:
+    inputs:
+      storybook-runner:
+        description: Runner image for the Storybook job
+        type: choice
+        options: [ubuntu-24.04, ubuntu-24.04-arm]
+        default: ubuntu-24.04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: storybook-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # One runner closed the browser mid-run with 232 story files (PR #425) and with 448 per shard (PR #429).
+  storybook-shard:
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch'
+      || (startsWith(github.head_ref, 'chore/release-')
+      && !contains(github.event.pull_request.labels.*.name, 'skip-storybook')) }}
+    name: storybook (${{ matrix.shard }}/5)
+    runs-on: ${{ inputs.storybook-runner || 'ubuntu-24.04' }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: echo "SETUP_START=$(date +%s)" >> "$GITHUB_ENV"
+
+      - id: bun-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+
+      - run: bun install --frozen-lockfile
+
+      - name: Read the Playwright version
+        id: playwright
+        run: echo "version=$(bunx playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+        working-directory: apps/storybook
+
+      - id: playwright-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}
+
+      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps --only-shell chromium
+        working-directory: apps/storybook
+
+      # The cache holds the browser only; its system libraries still come from apt.
+      - if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+        working-directory: apps/storybook
+
+      # actions/cache saves only when the job passes; a failing story would leave the browser uncached.
+      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-cache.outputs.cache-primary-key }}
+
+      - run: echo "TEST_START=$(date +%s)" >> "$GITHUB_ENV"
+
+      - id: test
+        run: bun run test --passWithNoTests --shard=${{ matrix.shard }}/5
+        working-directory: apps/storybook
+
+      - if: always()
+        env:
+          SHARD: ${{ matrix.shard }}
+          RUNNER: ${{ inputs.storybook-runner || 'ubuntu-24.04' }}
+          BUN_HIT: ${{ steps.bun-cache.outputs.cache-hit || 'false' }}
+          PLAYWRIGHT_HIT: ${{ steps.playwright-cache.outputs.cache-hit || 'false' }}
+          TEST_RESULT: ${{ steps.test.outcome }}
+        run: |
+          end=$(date +%s)
+          setup=$(( ${TEST_START:-$end} - SETUP_START ))
+          tests=$(( end - ${TEST_START:-$end} ))
+          echo "| $SHARD | $RUNNER | $BUN_HIT | $PLAYWRIGHT_HIT | ${setup}s | ${tests}s | $TEST_RESULT |" > cache-report-$SHARD.md
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cache-report-${{ matrix.shard }}
+          path: cache-report-${{ matrix.shard }}.md
+          retention-days: 7
+
+  cache-report:
+    if: ${{ always() && needs.storybook-shard.result != 'skipped' }}
+    needs: storybook-shard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: cache-report-*
+          merge-multiple: true
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          FORUM_ISSUE: 527
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REF: ${{ github.head_ref || github.ref_name }}
+        run: |
+          {
+            echo "Cache report for [run $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT]($RUN_URL) on \`$REF\` (\`${GITHUB_SHA::8}\`)."
+            echo
+            echo "| Shard | Runner | bun cache hit | Playwright cache hit | Setup | Tests | Result |"
+            echo "| --- | --- | --- | --- | --- | --- | --- |"
+            cat $(ls cache-report-*.md | sort)
+          } > comment.md
+          gh issue comment "$FORUM_ISSUE" --body-file comment.md
+
+  build:
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch'
+      || (startsWith(github.head_ref, 'chore/release-')
+      && !contains(github.event.pull_request.labels.*.name, 'skip-storybook')) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+
+      - run: bun install --frozen-lockfile
+
+      - run: bun run storybook:build
+
+      - run: bun run docs:build
