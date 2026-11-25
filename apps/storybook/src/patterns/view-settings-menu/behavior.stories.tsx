@@ -11,6 +11,7 @@ import { spreadsheetModes, viewModes } from './view-settings-menu-data.tsx'
 import {
   ComposedViewSettings,
   FieldSettingsLayout,
+  PropertySubmenusLayout,
   StackedModeTabsLayout,
 } from './view-settings-menu-layouts.tsx'
 
@@ -59,7 +60,7 @@ export const TriggerIsAGhostToolbarButton: Story = {
   },
 }
 
-export const NoTabsKeepTheMenuNarrow: Story = {
+export const NoTabsUseTheBaseWidth: Story = {
   render: () => (
     <CollectionToolbar
       right={<ComposedViewSettings {...viewSettingsControlArgs} />}
@@ -68,7 +69,7 @@ export const NoTabsKeepTheMenuNarrow: Story = {
   play: async ({ canvasElement }) => {
     const menu = await openSettings(canvasElement)
     await expect(menu.queryAllByRole('menuitemradio')).toHaveLength(0)
-    await expect(await screen.findByRole('menu')).toHaveClass('w-56')
+    await expect(await screen.findByRole('menu')).toHaveClass('w-80')
     await closeMenu()
   },
 }
@@ -313,6 +314,63 @@ export const ShowAllFieldsEmptiesTheHiddenSection: Story = {
     await expect(screen.getByRole('menu')).toBeVisible()
     await expect(screen.queryByRole('group', { name: /^Ocultos/ })).toBeNull()
     await expect(showAll).toHaveAttribute('aria-disabled', 'true')
+    await closeMenu()
+  },
+}
+
+export const AllIsCheckedUntilAFilterValueIsPicked: Story = {
+  render: () => (
+    <CollectionToolbar
+      right={<ComposedViewSettings {...viewSettingsControlArgs} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const menu = await openSettings(canvasElement)
+    await userEvent.click(menu.getByRole('menuitem', { name: 'Status' }))
+    const all = await screen.findByRole('menuitemcheckbox', { name: 'Todos' })
+    await expect(all).toHaveAttribute('aria-checked', 'true')
+    await userEvent.click(
+      screen.getByRole('menuitemcheckbox', { name: 'A fazer' }),
+    )
+    await expect(all).toHaveAttribute('aria-checked', 'false')
+    await userEvent.click(all)
+    await expect(all).toHaveAttribute('aria-checked', 'true')
+    await expect(
+      screen.getByRole('menuitemcheckbox', { name: 'A fazer' }),
+    ).toHaveAttribute('aria-checked', 'false')
+    await userEvent.keyboard('{Escape}')
+    await closeMenu()
+  },
+}
+
+export const SubmenuTriggerFollowsTheCurrentOption: Story = {
+  render: () => (
+    <CollectionToolbar
+      right={<PropertySubmenusLayout {...viewSettingsControlArgs} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const menu = await openSettings(canvasElement)
+    await expect(
+      menu.getByRole('menuitem', { name: /Início/ }),
+    ).toHaveTextContent(/^Início$/)
+    const status = menu.getByRole('menuitem', { name: /Status/ })
+    await expect(status).toHaveTextContent('StatusA fazer')
+    await userEvent.click(status)
+    await userEvent.click(
+      await screen.findByRole('menuitemradio', { name: 'Em andamento' }),
+    )
+    await waitFor(() =>
+      expect(
+        screen.getByRole('menuitem', { name: /Status/ }),
+      ).toHaveTextContent('StatusEm andamento'),
+    )
+    await expect(
+      screen
+        .getByRole('menuitem', { name: /Status/ })
+        .querySelector('svg.text-warning-foreground'),
+    ).not.toBeNull()
+    await userEvent.keyboard('{Escape}')
     await closeMenu()
   },
 }

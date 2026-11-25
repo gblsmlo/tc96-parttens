@@ -8,9 +8,10 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
 } from '@tc96/ui/menu'
-import type { ReactElement } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 
 export interface ViewSettingsOption<TValue extends string = string> {
+  icon?: ReactNode
   label: string
   value: TValue
 }
@@ -20,7 +21,7 @@ export interface ViewSettingsSubmenuProps<TValue extends string = string> {
   label: string
   onValueChange: (value: TValue) => void
   options: readonly ViewSettingsOption<TValue>[]
-  value: TValue
+  value?: TValue
 }
 
 export function ViewSettingsSubmenu<TValue extends string = string>({
@@ -35,7 +36,7 @@ export function ViewSettingsSubmenu<TValue extends string = string>({
   return (
     <MenuSub>
       <MenuSubTrigger>
-        {Icon ? <Icon aria-hidden="true" /> : null}
+        {current?.icon ?? (Icon ? <Icon aria-hidden="true" /> : null)}
         {label}
         <span
           className="flex-1 truncate text-end text-muted-foreground"
@@ -47,10 +48,11 @@ export function ViewSettingsSubmenu<TValue extends string = string>({
       <MenuSubPopup>
         <MenuRadioGroup
           onValueChange={(next: TValue) => onValueChange(next)}
-          value={value}
+          value={value ?? null}
         >
           {options.map((option) => (
             <MenuRadioItem key={option.value} value={option.value}>
+              {option.icon}
               {option.label}
             </MenuRadioItem>
           ))}

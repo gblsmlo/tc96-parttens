@@ -29,12 +29,21 @@ import { useState } from 'react'
 import type { ViewSettingsControls } from './view-settings-menu-controls.ts'
 import {
   agendaModes,
+  assigneeOptions,
   type CollectionField,
+  type DateRange,
+  dateRangeOptions,
   type FieldType,
   type FilterKey,
   fieldTypes,
   filterDefinitions,
   noFilters,
+  priorityOptions,
+  startDateIcon,
+  statusOptions,
+  type TaskAssignee,
+  type TaskPriority,
+  type TaskStatus,
   taskFields,
   viewModes,
 } from './view-settings-menu-data.tsx'
@@ -72,6 +81,10 @@ export function ComposedViewSettings({
     mode !== initialMode ||
     sort !== 'due' ||
     density !== 'comfortable'
+
+  const clearFilter = (key: FilterKey) => {
+    setFilters((current) => ({ ...current, [key]: [] }))
+  }
 
   const toggleFilter = (key: FilterKey, value: string) => {
     setFilters((current) => ({
@@ -125,29 +138,39 @@ export function ComposedViewSettings({
         <>
           <MenuSeparator />
           <ViewSettingsSection label="Filtros">
-            {filterDefinitions.map(({ icon: Icon, id, label, options }) => (
-              <MenuSub key={id}>
-                <MenuSubTrigger>
-                  <Icon aria-hidden="true" />
-                  {label}
-                </MenuSubTrigger>
-                <MenuSubPopup>
-                  <MenuGroup>
-                    <MenuGroupLabel>{label}</MenuGroupLabel>
-                    {options.map((option) => (
+            {filterDefinitions.map(
+              ({ allLabel, icon: Icon, id, label, options }) => (
+                <MenuSub key={id}>
+                  <MenuSubTrigger>
+                    <Icon aria-hidden="true" />
+                    {label}
+                  </MenuSubTrigger>
+                  <MenuSubPopup>
+                    <MenuGroup>
+                      <MenuGroupLabel>{label}</MenuGroupLabel>
                       <MenuCheckboxItem
-                        checked={filters[id].includes(option)}
+                        checked={filters[id].length === 0}
                         closeOnClick={false}
-                        key={option}
-                        onCheckedChange={() => toggleFilter(id, option)}
+                        onCheckedChange={() => clearFilter(id)}
                       >
-                        {option}
+                        {allLabel}
                       </MenuCheckboxItem>
-                    ))}
-                  </MenuGroup>
-                </MenuSubPopup>
-              </MenuSub>
-            ))}
+                      <MenuSeparator />
+                      {options.map((option) => (
+                        <MenuCheckboxItem
+                          checked={filters[id].includes(option)}
+                          closeOnClick={false}
+                          key={option}
+                          onCheckedChange={() => toggleFilter(id, option)}
+                        >
+                          {option}
+                        </MenuCheckboxItem>
+                      ))}
+                    </MenuGroup>
+                  </MenuSubPopup>
+                </MenuSub>
+              ),
+            )}
           </ViewSettingsSection>
         </>
       ) : null}
@@ -303,6 +326,113 @@ export function FieldSettingsLayout(controls: Readonly<ViewSettingsControls>) {
         hiddenCount={hiddenCount}
         onShowAll={showAll}
       />
+    </ViewSettingsMenu>
+  )
+}
+
+type DisplayOption = 'completed' | 'empty-groups' | 'subtasks' | 'week-numbers'
+
+const displayOptions: readonly { label: string; value: DisplayOption }[] = [
+  { label: 'Mostrar concluídas', value: 'completed' },
+  { label: 'Mostrar subtarefas', value: 'subtasks' },
+  { label: 'Mostrar grupos vazios', value: 'empty-groups' },
+  { label: 'Mostrar número da semana', value: 'week-numbers' },
+]
+
+export function SwitchOptionsLayout(controls: Readonly<ViewSettingsControls>) {
+  const [mode, setMode] = useState(viewModes[0]?.value)
+  const [enabled, setEnabled] = useState<readonly DisplayOption[]>(['subtasks'])
+
+  const toggle = (value: DisplayOption, checked: boolean) => {
+    setEnabled((current) =>
+      checked ? [...current, value] : current.filter((item) => item !== value),
+    )
+  }
+
+  return (
+    <ViewSettingsMenu
+      label={controls.label}
+      mode={mode}
+      modes={viewModes}
+      onModeChange={setMode}
+      onSavePreference={controls.savePreference ? () => undefined : undefined}
+      savePreferenceDisabled={enabled.length === 1 && enabled[0] === 'subtasks'}
+      savePreferenceLabel={controls.savePreferenceLabel}
+    >
+      <ViewSettingsSection label="Exibir">
+        {displayOptions.map(({ label, value }) => (
+          <MenuCheckboxItem
+            checked={enabled.includes(value)}
+            closeOnClick={false}
+            key={value}
+            onCheckedChange={(checked) => toggle(value, checked)}
+            variant="switch"
+          >
+            {label}
+          </MenuCheckboxItem>
+        ))}
+      </ViewSettingsSection>
+    </ViewSettingsMenu>
+  )
+}
+
+export function PropertySubmenusLayout(
+  controls: Readonly<ViewSettingsControls>,
+) {
+  const [status, setStatus] = useState<TaskStatus>('todo')
+  const [priority, setPriority] = useState<TaskPriority>('none')
+  const [assignee, setAssignee] = useState<TaskAssignee>('unassigned')
+  const [startDate, setStartDate] = useState<DateRange>()
+  const [dueDate, setDueDate] = useState<DateRange>()
+
+  const modified =
+    status !== 'todo' ||
+    priority !== 'none' ||
+    assignee !== 'unassigned' ||
+    startDate !== undefined ||
+    dueDate !== undefined
+
+  return (
+    <ViewSettingsMenu
+      label={controls.label}
+      onSavePreference={controls.savePreference ? () => undefined : undefined}
+      savePreferenceDisabled={!modified}
+      savePreferenceLabel={controls.savePreferenceLabel}
+    >
+      <ViewSettingsSection label="Propriedades">
+        <ViewSettingsSubmenu
+          label="Status"
+          onValueChange={setStatus}
+          options={statusOptions}
+          value={status}
+        />
+        <ViewSettingsSubmenu
+          label="Prioridade"
+          onValueChange={setPriority}
+          options={priorityOptions}
+          value={priority}
+        />
+        <ViewSettingsSubmenu
+          label="Responsável"
+          onValueChange={setAssignee}
+          options={assigneeOptions}
+          value={assignee}
+        />
+        <ViewSettingsSubmenu
+          icon={startDateIcon}
+          label="Início"
+          onValueChange={setStartDate}
+          options={dateRangeOptions}
+          value={startDate}
+        />
+        <ViewSettingsSubmenu
+          icon={CalendarDotsIcon}
+          label="Prazo"
+          onValueChange={setDueDate}
+          options={dateRangeOptions}
+          value={dueDate}
+        />
+      </ViewSettingsSection>
     </ViewSettingsMenu>
   )
 }

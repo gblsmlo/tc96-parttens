@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 The display settings of a collection in one menu: tabs for the layouts, the sections the screen passes (grouping, sorting, density, columns, filters), then the clear and save items. It owns the popover and the organization of the fields: a submenu that shows its current value, the field sections with a visibility switch per field, and the item that shows every field. It keeps no state: the consumer passes the active layout, the filter count and the sections, and handles every callback. Its trigger is a toolbar button, so it only mounts inside a [CollectionToolbar](?path=/docs/patterns-collectiontoolbar-api-reference--api-reference), usually in its `right` slot.
 
-The other pages of `Patterns/ViewSettingsMenu`: [Playground](?path=/story/patterns-viewsettingsmenu-playground--playground) to try the texts and the footer items, [Layouts](?path=/story/patterns-viewsettingsmenu-layouts--default) for the arrangements of the layout tabs and the field settings, [Behavior](?path=/story/patterns-viewsettingsmenu-behavior--trigger-is-a-ghost-toolbar-button) for the tests, and [Usages](?path=/story/patterns-viewsettingsmenu-usages--task-list) for real settings menus.
+The other pages of `Patterns/ViewSettingsMenu`: [Playground](?path=/story/patterns-viewsettingsmenu-playground--playground) to try the texts and the footer items, [Layouts](?path=/story/patterns-viewsettingsmenu-layouts--default) for the arrangements of the layout tabs, the field settings, the switch options and the property submenus, [Behavior](?path=/story/patterns-viewsettingsmenu-behavior--trigger-is-a-ghost-toolbar-button) for the tests, and [Usages](?path=/story/patterns-viewsettingsmenu-usages--task-list) for real settings menus.
 
 Used in: the toolbar of every [Collection](?path=/story/patterns-collection-usages--tasks) usage and of the table and data grid blocks. `FilterRadioSubmenu`, an item for the filter section, is documented in [Patterns/Collection](?path=/docs/patterns-collection-api-reference--api-reference).
 
@@ -75,7 +75,7 @@ The settings of the view in one menu: tabs for the layouts, the consumer's secti
 | `savePreferenceLabel` | `string` | `"Salvar preferência"` | Sets the text of the save item. |
 | `className` | `string` | - | Adds classes to the trigger. |
 
-The width of the menu follows the number of tabs: 14rem (224px) with fewer than two, 16rem with two, 18rem with three, 24rem with four or more. Up to three tabs sit in one row with the icon beside the label; four or more stack the icon above the label. Each tab is a `menuitemradio`.
+The menu is 20rem (320px) wide up to three tabs, so a submenu trigger fits its label and current value with room between them, and 24rem with four or more. Up to three tabs sit in one row with the icon beside the label; four or more stack the icon above the label. Each tab is a `menuitemradio`.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
@@ -94,15 +94,15 @@ A named section of the menu. Renders a menu group whose label comes first.
 
 ## ViewSettingsSubmenu
 
-A submenu of single choice whose trigger shows the current option after the label, such as `Agrupar por` and `Ordenar por`. Renders a submenu trigger and a radio group in the submenu.
+A submenu of single choice whose trigger shows the current option after the label, such as `Agrupar por`, `Ordenar por` or the status of a task. Renders a submenu trigger and a radio group in the submenu; the chosen option carries a check at the end.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `label` | `string` | required | Sets the text of the trigger. |
-| `options` | `readonly ViewSettingsOption<TValue>[]` | required | Lists the choices, each `{ label, value }`. |
-| `value` | `TValue` | required | Sets the checked option and the value shown in the trigger. |
+| `options` | `readonly ViewSettingsOption<TValue>[]` | required | Lists the choices, each `{ label, value, icon? }`; `icon` is a node, so it may carry a theme color. |
+| `value` | `TValue` | - | Sets the checked option and the value shown in the trigger; without it no option is checked and the trigger shows only its icon and label. |
 | `onValueChange` | `(value: TValue) => void` | required | Called when an option is picked. |
-| `icon` | `Icon` (Phosphor) | - | Renders before the label. |
+| `icon` | `Icon` (Phosphor) | - | Renders before the label when the current option has no icon of its own. |
 
 ## ViewSettingsFieldSection
 
@@ -130,6 +130,19 @@ The item that shows every hidden field. Keeps the menu open.
 | `data-slot` | `"view-settings-field-count"` | Selects the count in a field section label |
 | `data-field` | the field `id` | Selects one field row |
 
+## Filter submenus
+
+A filter submenu opens with an option for every value, `Todos` or `Todas` to agree with the filter name, checked by default. It stays checked while no value of that filter is picked; picking a value unchecks it, and picking it clears the values of that filter only. A separator divides it from the values. The [Default](?path=/story/patterns-viewsettingsmenu-layouts--default) layout shows it.
+
+## Property submenus
+
+A screen that sets one value per property, as in [Property Submenus](?path=/story/patterns-viewsettingsmenu-layouts--property-submenus), gives each property a `ViewSettingsSubmenu`. The rules:
+
+- The trigger shows the icon and the label of the current option, so `Status` with `Em andamento` shows the half circle in `warning-foreground` and the text `Em andamento`.
+- A property with an empty choice offers it as an option (`Sem prioridade`, `Sem responsável`), so the trigger still reads a value. A property with no value at all, such as a date not set, passes no `value` and shows only its icon and name.
+- Option icons take color only from theme tokens (`text-warning-foreground`, `text-success-foreground`, `text-destructive-foreground`), never from the palette.
+- Picking an option keeps the submenu open; Escape closes it.
+
 ## Field settings
 
 A collection that lets the user choose its fields composes the parts above, as in [Field Settings](?path=/story/patterns-viewsettingsmenu-layouts--field-settings) ([open](?path=/story/patterns-viewsettingsmenu-layouts--field-settings-open)). The parts render what they receive: the consumer groups, sorts and filters the fields and passes each group ready. The rules:
@@ -153,7 +166,7 @@ A collection that lets the user choose its fields composes the parts above, as i
 | `ViewSettingsFieldSectionProps` | `type` | The props of `ViewSettingsFieldSection`. |
 | `ViewSettingsMenuProps` | `type` | The props of `ViewSettingsMenu`. |
 | `ViewSettingsMode` | `type` | One tab of `ViewSettingsMenu`, `{ icon, label, value }`. |
-| `ViewSettingsOption` | `type` | One choice of `ViewSettingsSubmenu`, `{ label, value }`. |
+| `ViewSettingsOption` | `type` | One choice of `ViewSettingsSubmenu`, `{ label, value, icon? }`. |
 | `ViewSettingsSectionProps` | `type` | The props of `ViewSettingsSection`. |
 | `ViewSettingsShowAllFieldsProps` | `type` | The props of `ViewSettingsShowAllFields`. |
 | `ViewSettingsSubmenuProps` | `type` | The props of `ViewSettingsSubmenu`. |

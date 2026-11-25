@@ -6,7 +6,9 @@ import {
   ComposedViewSettings,
   FieldSettingsLayout,
   InlineModeTabsLayout,
+  PropertySubmenusLayout,
   StackedModeTabsLayout,
+  SwitchOptionsLayout,
 } from './view-settings-menu-layouts.tsx'
 
 const meta = {
@@ -57,5 +59,33 @@ export const FieldSettingsOpen: Story = {
       within(canvasElement).getByRole('button', { name: 'Exibição' }),
     )
     await screen.findByRole('menu')
+  },
+}
+
+export const SwitchOptions: Story = {
+  parameters: describe(
+    'Display options that are on or off, each a switch in one section; the menu stays open while they change. Shown open. For settings that take no value beyond on and off, such as showing completed tasks or subtasks.',
+  ),
+  render: () => <SwitchOptionsLayout {...viewSettingsControlArgs} />,
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Exibição' }),
+    )
+    await screen.findByRole('menu')
+  },
+}
+
+export const PropertySubmenus: Story = {
+  parameters: describe(
+    'One submenu per property, each trigger with the icon and label of its current option, and each option with its own icon and a check on the chosen one. A property without a value shows only its icon and name. Shown open on Status. For a single choice per property, such as the status, priority, assignee and dates of a task.',
+  ),
+  render: () => <PropertySubmenusLayout {...viewSettingsControlArgs} />,
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: 'Exibição' }),
+    )
+    const menu = within(await screen.findByRole('menu'))
+    await userEvent.click(menu.getByRole('menuitem', { name: /Status/ }))
+    await screen.findByRole('menuitemradio', { name: 'Backlog' })
   },
 }

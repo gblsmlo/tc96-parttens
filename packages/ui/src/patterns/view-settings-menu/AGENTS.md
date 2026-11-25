@@ -20,8 +20,8 @@ Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/utils`, `@pho
 ## Invariants
 
 - The trigger is the toolbar's menu trigger, a ghost `ToolbarButton`, so `ViewSettingsMenu` must render inside a `CollectionToolbar`.
-- The layout tabs render only with two modes or more. Up to three sit in one row (`data-layout="inline"`), four or more stack the icon above the label (`data-layout="stacked"`); the popup widens with the count (`w-56`, `w-64`, `w-72`, `w-96`), because three labels truncate at 16rem.
-- `ViewSettingsSubmenu` shows the label of the current option after its own label, so the trigger reads the state without opening it.
+- The layout tabs render only with two modes or more. Up to three sit in one row (`data-layout="inline"`), four or more stack the icon above the label (`data-layout="stacked"`); the popup is `w-80` (320px) up to three tabs and `w-96` from four, so a submenu trigger fits its label and current value (`Responsável`, `Sem responsável`) with room between them.
+- `ViewSettingsSubmenu` shows the label of the current option after its own label, and the option's icon in place of its own when the option has one, so the trigger reads the state without opening it. Without `value` no option is checked.
 - `ViewSettingsFieldSection` renders nothing for an empty list and shows the field count in its label; each row is a switch with `closeOnClick={false}`, so the menu stays open while fields are toggled.
 - `ViewSettingsShowAllFields` keeps the menu open and stays disabled while `hiddenCount` is zero.
 - The footer renders the clear item only with `onClearFilters`, and it stays disabled while `activeFilterCount` is zero; the save item renders only with `onSavePreference`. Clear comes before save.
