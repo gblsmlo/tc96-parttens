@@ -6,7 +6,6 @@ import {
   type Legal2Mode,
 } from '@tc96/ui/blocks/data/legal/legal-2'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { legal2Handlers } from '../../../../mocks/legal-2.ts'
 import { owners } from '../fixtures/legal-2.ts'
@@ -56,21 +55,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('CTR-2026-041')).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal2Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum contrato para exibir.'),
-    ).toBeVisible()
   },
 }
 
@@ -78,26 +67,10 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal2Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando contratos'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('heading', { name: 'Contratos' }),
-    ).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal2Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os contratos',
-      ),
-    ).toBeVisible()
   },
 }

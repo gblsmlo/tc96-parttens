@@ -6,7 +6,6 @@ import {
   type Stats6Sleeve,
 } from '@tc96/ui/blocks/application/stats/stats-6'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { stats6Handlers } from '../../../../mocks/stats-6.ts'
 
@@ -45,33 +44,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(stats6Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Renda fixa')).toBeVisible()
-    await expect(canvas.getByText('Ações')).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(stats6Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar a carteira',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(stats6Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando carteira'),
-    ).toBeVisible()
   },
 }

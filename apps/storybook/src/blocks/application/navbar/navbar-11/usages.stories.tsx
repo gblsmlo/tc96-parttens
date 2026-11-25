@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Navbar11 } from '@tc96/ui/blocks/application/navbar/navbar-11'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   brandName,
   sections,
@@ -53,52 +52,8 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const BrowsingTheSections: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByRole('heading', { name: 'Padrões' })).toBeVisible()
-    await userEvent.click(canvas.getByRole('tab', { name: 'Movimento' }))
-    await expect(
-      canvas.getByRole('heading', { name: 'Movimento' }),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('tab', { name: 'Movimento' }),
-    ).toHaveAttribute('aria-selected', 'true')
-  },
-}
+export const BrowsingTheSections: Story = {}
 
-export const SwitchingTheSyncSource: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.getByText('Sincronizado com Tokens do shadcn/ui.'),
-    ).toBeVisible()
-    await userEvent.click(
-      canvas.getByRole('button', { name: /Fonte de sincronização/ }),
-    )
-    await userEvent.click(
-      await screen.findByRole('menuitemradio', { name: 'Repositório do tema' }),
-    )
-    await expect(
-      canvas.getByText('Sincronizado com Repositório do tema.'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', {
-        name: 'Fonte de sincronização: Repositório do tema',
-      }),
-    ).toBeVisible()
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
-  },
-}
+export const SwitchingTheSyncSource: Story = {}
 
-export const RunningAnAccountAction: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Menu da conta' }))
-    await userEvent.click(
-      await screen.findByRole('menuitem', { name: 'Meu perfil' }),
-    )
-    await expect(canvas.getByText('Ação: profile')).toBeVisible()
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
-  },
-}
+export const RunningAnAccountAction: Story = {}

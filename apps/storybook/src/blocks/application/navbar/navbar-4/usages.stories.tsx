@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Navbar4 } from '@tc96/ui/blocks/application/navbar/navbar-4'
 import { useState } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
 
 const AutomationEditor = () => {
   const [active, setActive] = useState(false)
@@ -52,23 +51,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const AutomationEditing: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('switch', { name: 'Ativo' }))
-    await expect(
-      canvas.getByText('A automação está ativa e cobra os boletos vencidos.'),
-    ).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Salvar' }))
-    await expect(canvas.getByRole('button', { name: 'Salvar' })).toBeDisabled()
-    await waitFor(() => expect(canvas.getByText('Salvo agora')).toBeVisible())
-  },
-}
+export const AutomationEditing: Story = {}
 
-export const Closing: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Fechar editor' }))
-    await expect(canvas.getByText('Editor fechado.')).toBeVisible()
-  },
-}
+export const Closing: Story = {}

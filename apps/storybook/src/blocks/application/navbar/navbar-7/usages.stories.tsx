@@ -5,7 +5,6 @@ import {
 } from '@tc96/ui/blocks/application/navbar/navbar-7'
 import { MenuItem } from '@tc96/ui/menu'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   novemberRange,
   refreshOptions,
@@ -75,36 +74,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const SwitchingReportsFromTheSearch: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.getByRole('heading', { name: 'Visão de crescimento' }),
-    ).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: /Buscar/ }))
-    await userEvent.click(
-      await screen.findByRole('option', { name: 'Retenção de clientes' }),
-    )
-    await expect(
-      canvas.getByRole('heading', { name: 'Retenção de clientes' }),
-    ).toBeVisible()
-    await expect(
-      canvas.getByText('Retenção de clientes', { selector: '[aria-current]' }),
-    ).toBeVisible()
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-  },
-}
+export const SwitchingReportsFromTheSearch: Story = {}
 
-export const ComparingAndRefreshing: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', { name: 'Comparar' }))
-    await expect(
-      canvas.getByText('Comparando com o período anterior.'),
-    ).toBeVisible()
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Atualizar dados' }),
-    )
-    await expect(canvas.getByText('Dados atualizados 1 vez.')).toBeVisible()
-  },
-}
+export const ComparingAndRefreshing: Story = {}

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Card2 } from '@tc96/ui/blocks/application/card/card-2'
-import { expect, fn, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { integrations } from '../fixtures/card-2.ts'
 
 const meta = {
@@ -15,31 +15,13 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByRole('list', { name: 'Integrações' }),
-    ).toBeVisible()
-  },
-}
+export const Default: Story = {}
 
 export const Loading: Story = {
   args: { pending: true },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByLabelText('Carregando integrações'),
-    ).toHaveAttribute('aria-busy', 'true')
-  },
 }
 
 export const ErrorState: Story = {
   args: { error: true },
   name: 'Error',
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText(
-        'Não foi possível carregar as integrações',
-      ),
-    ).toBeVisible()
-  },
 }

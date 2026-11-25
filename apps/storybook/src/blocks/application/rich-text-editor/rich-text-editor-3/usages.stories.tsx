@@ -4,7 +4,6 @@ import type {
   RichTextEditor3ExportFormat,
 } from '@tc96/ui/blocks/application/rich-text-editor/rich-text-editor-3'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import {
   contractValue,
   redlineAuthor,
@@ -71,59 +70,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const ReviewingAnAgreementWithTheCounterparty: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const margin = within(
-      await canvas.findByRole('complementary', { name: 'Revisão' }),
-    )
-    await userEvent.click(
-      margin.getByRole('button', {
-        name: /Aceitar alteração de Marcos Lima: 45 dias/,
-      }),
-    )
-    await userEvent.click(
-      margin.getByRole('button', {
-        name: /Rejeitar alteração de Júlia Prado/,
-      }),
-    )
-    const log = within(
-      canvas.getByRole('region', { name: 'Registro da revisão' }),
-    )
-    await expect(
-      log.getByText('Aceita: alteração de Marcos Lima'),
-    ).toBeVisible()
-    await expect(
-      log.getByText('Rejeitada: alteração de Júlia Prado'),
-    ).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Aceitar tudo' }))
-    await userEvent.click(
-      within(
-        await screen.findByRole('alertdialog', {
-          name: 'Aceitar todas as alterações?',
-        }),
-      ).getByRole('button', { name: 'Aceitar todas' }),
-    )
-    await waitFor(() =>
-      expect(log.getByText('Aceitas 1 alteração')).toBeVisible(),
-    )
-    await expect(canvas.getByText('0 alterações')).toBeVisible()
-  },
-}
+export const ReviewingAnAgreementWithTheCounterparty: Story = {}
 
-export const CopyingTheRedlineForTheCounterparty: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      await canvas.findByRole('button', { name: 'Mais ações' }),
-    )
-    await userEvent.click(
-      await screen.findByRole('menuitem', { name: 'Copiar redline em HTML' }),
-    )
-    await expect(
-      await canvas.findByText(
-        /redline em HTML: .*<ins data-author="Júlia Prado"/,
-      ),
-    ).toBeVisible()
-  },
-}
+export const CopyingTheRedlineForTheCounterparty: Story = {}

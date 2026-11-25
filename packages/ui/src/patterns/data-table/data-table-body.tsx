@@ -76,8 +76,8 @@ export function DataTableBody<TData extends RowData>({
     [rows],
   )
   const rowIds = useMemo(() => rows.map((row) => row.id), [rows])
-  const getCollectionIndexes = useLatestCallback(() => {
-    const positions = new Map(
+  const getCollectionIndexes = useLatestCallback((): number[] => {
+    const positions = new Map<string, number>(
       table
         .getPrePaginatedRowModel()
         .rows.map((row, position) => [row.id, position]),

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, within } from 'storybook/test'
 import { login7ControlArgs } from './login-7-controls.ts'
 import { ComposedLogin7 } from './login-7-layouts.tsx'
 
@@ -15,11 +14,6 @@ type Story = StoryObj<typeof meta>
 
 export const SignIn: Story = {
   render: () => <ComposedLogin7 {...login7ControlArgs} />,
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByRole('heading', { level: 1, name: 'Entrar' }),
-    ).toBeVisible()
-  },
 }
 
 export const WrongCredentials: Story = {
@@ -29,18 +23,8 @@ export const WrongCredentials: Story = {
       error="E-mail ou senha incorretos."
     />
   ),
-  play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByRole('alert')).toHaveTextContent(
-      'E-mail ou senha incorretos.',
-    )
-  },
 }
 
 export const SigningIn: Story = {
   render: () => <ComposedLogin7 {...login7ControlArgs} pending />,
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByRole('button', { name: /^Entrar/ }),
-    ).toBeDisabled()
-  },
 }

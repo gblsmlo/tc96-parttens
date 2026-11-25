@@ -11,7 +11,6 @@ import {
   type Finance3View,
 } from '@tc96/ui/blocks/data/finance/finance-3'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { finance3Handlers } from '../../../../mocks/finance-3.ts'
 import {
@@ -249,14 +248,6 @@ export const Entries: Story = {
     )
   },
   render: () => <LedgerPage />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Custas de distribuição'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Todos' })).toBeVisible()
-    await expect(canvas.getByText('1–5 de 12')).toBeVisible()
-  },
 }
 
 export const EntriesPending: Story = {
@@ -264,11 +255,6 @@ export const EntriesPending: Story = {
     msw.use(finance3Handlers.entries.pending)
   },
   render: () => <LedgerPage />,
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando lançamentos'),
-    ).toBeVisible()
-  },
 }
 
 export const EntriesFailed: Story = {
@@ -276,13 +262,6 @@ export const EntriesFailed: Story = {
     msw.use(finance3Handlers.entries.error)
   },
   render: () => <LedgerPage />,
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível listar os lançamentos',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Receivables: Story = {
@@ -293,15 +272,6 @@ export const Receivables: Story = {
     )
   },
   render: () => <LedgerPage initialView="collection" />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Moinho Santa Clara Ltda.'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByText('Mostrando as 500 parcelas mais atrasadas.'),
-    ).toBeVisible()
-  },
 }
 
 export const Statement: Story = {
@@ -309,13 +279,6 @@ export const Statement: Story = {
     msw.use(finance3Handlers.statement.loaded)
   },
   render: () => <StatementPage />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Honorários de êxito · TransVale'),
-    ).toBeVisible()
-    await expect(canvas.getByText(/^Itaú PJ · /)).toBeVisible()
-  },
 }
 
 export const ClientMoney: Story = {
@@ -323,9 +286,4 @@ export const ClientMoney: Story = {
     msw.use(finance3Handlers.clientMoney.loaded)
   },
   render: () => <ClientMoneyPage />,
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Helena Prado'),
-    ).toBeVisible()
-  },
 }

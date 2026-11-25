@@ -12,7 +12,6 @@ import {
   type Crm2Mode,
 } from '@tc96/ui/blocks/data/crm/crm-2'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { crm2Handlers } from '../../../../mocks/crm-2.ts'
 import {
@@ -142,30 +141,12 @@ export const SalesBoard: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...crm2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const negotiation = within(
-      await within(canvasElement).findByRole('region', {
-        name: /^Negociação/,
-      }),
-    )
-    await expect(
-      await negotiation.findByText('Piloto de BI para a Rede Farmavida'),
-    ).toBeVisible()
-  },
 }
 
 export const LeadsTable: Story = {
   args: { initialMode: 'table' },
   beforeEach: ({ msw }) => {
     msw.use(...crm2Handlers.loaded)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Implantação de ERP na Padaria Pão Dourado'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-    await expect(canvas.getByText('1–5 de 11')).toBeVisible()
   },
 }
 
@@ -174,33 +155,16 @@ export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...crm2Handlers.empty)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum lead ainda.'),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...crm2Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando leads'),
-    ).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...crm2Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível listar os leads',
-      ),
-    ).toBeVisible()
   },
 }

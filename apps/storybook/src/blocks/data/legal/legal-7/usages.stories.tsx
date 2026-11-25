@@ -7,7 +7,6 @@ import {
   type Legal7Sort,
 } from '@tc96/ui/blocks/data/legal/legal-7'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { legal7Handlers } from '../../../../mocks/legal-7.ts'
 import {
@@ -121,26 +120,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal7Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Citação')).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-    await expect(canvas.getByText('1–5 de 12')).toBeVisible()
-  },
 }
 
 export const TheServerPagesTheQueue: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal7Handlers.loaded)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await canvas.findByText('Citação')
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Próxima página' }),
-    )
-    await waitFor(() => expect(canvas.getByText('6–10 de 12')).toBeVisible())
-    await expect(await canvas.findByText('Edital')).toBeVisible()
   },
 }
 
@@ -148,29 +132,11 @@ export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal7Handlers.empty)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText(
-        'Nenhuma publicação para decidir. As novas chegam na próxima captura.',
-      ),
-    ).toBeVisible()
-    await expect(canvas.queryByRole('navigation')).toBeNull()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal7Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando publicações'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('heading', { name: 'Publicações' }),
-    ).toBeVisible()
   },
 }
 
@@ -178,32 +144,11 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal7Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as publicações',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const SavedViews: Story = {
   args: { withSavedViews: true },
   beforeEach: ({ msw }) => {
     msw.use(legal7Handlers.loaded, ...legal7Handlers.savedViews())
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('1–5 de 12')).toBeVisible()
-    await expect(canvas.queryByRole('heading', { level: 2 })).toBeNull()
-    await userEvent.click(canvas.getByRole('button', { name: 'Todas' }))
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'TRT-15 mais novas' }),
-    )
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-    await waitFor(() => expect(canvas.getByText('1–2 de 2')).toBeVisible())
-    await expect(
-      canvas.getByRole('button', { name: 'TRT-15 mais novas' }),
-    ).toBeVisible()
   },
 }

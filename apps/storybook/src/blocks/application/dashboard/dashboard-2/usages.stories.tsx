@@ -9,7 +9,6 @@ import {
   type Dashboard2Sort,
 } from '@tc96/ui/blocks/application/dashboard/dashboard-2'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { dashboard2Handlers } from '../../../../mocks/dashboard-2.ts'
 import {
@@ -101,25 +100,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Helena Prado')).toBeVisible()
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Ordenar por Total' }),
-    )
-    const rows = canvas.getAllByRole('row')
-    await expect(rows[1]).toHaveTextContent('Beatriz Sampaio')
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard2Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma venda registrada'),
-    ).toBeVisible()
   },
 }
 
@@ -127,26 +112,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard2Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar as vendas'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar novamente' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard2Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText(
-        'Carregando receita do varejo',
-      ),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

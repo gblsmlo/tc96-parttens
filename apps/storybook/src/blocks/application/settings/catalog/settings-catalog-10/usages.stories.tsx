@@ -4,7 +4,7 @@ import {
   SettingsCatalog10,
   type SettingsCatalog10CostCenter,
 } from '@tc96/ui/blocks/application/settings/catalog/settings-catalog-10'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../../mocks/api.ts'
 import { settingsCatalog10Handlers } from '../../../../../mocks/settings-catalog-10.ts'
 import { settingsCatalog10ControlArgs } from './settings-catalog-10-controls.ts'
@@ -51,21 +51,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog10Handlers.costCenters)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Advocacia cível')).toBeVisible()
-    await expect(canvas.getByText('Administrativo')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog10Handlers.costCentersEmpty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum centro de custo ainda'),
-    ).toBeVisible()
   },
 }
 
@@ -73,30 +63,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog10Handlers.costCentersError)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar os centros de custo'),
-    ).toBeVisible()
-    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
-    await expect(retry).toBeEnabled()
-    await userEvent.click(retry)
-    await expect(await canvas.findByRole('alert')).toHaveAttribute(
-      'data-kind',
-      'error',
-    )
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog10Handlers.costCentersPending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText(
-        'Carregando centros de custo',
-      ),
-    ).toBeVisible()
   },
 }

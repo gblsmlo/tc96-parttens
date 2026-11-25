@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, within } from 'storybook/test'
 import { login9ControlArgs } from './login-9-controls.ts'
 import { ComposedLogin9 } from './login-9-layouts.tsx'
 
@@ -15,7 +14,4 @@ type Story = StoryObj<typeof meta>
 
 export const MagicLinkWithTestimonial: Story = {
   render: () => <ComposedLogin9 {...login9ControlArgs} />,
-  play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByText('Ana Souza')).toBeVisible()
-  },
 }

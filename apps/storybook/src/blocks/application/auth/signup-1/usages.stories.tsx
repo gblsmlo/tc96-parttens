@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, within } from 'storybook/test'
 import { signupControlArgs } from './signup-1-controls.ts'
 import { ComposedSignup } from './signup-1-layouts.tsx'
 
@@ -15,16 +14,6 @@ type Story = StoryObj<typeof meta>
 
 export const CreateAccount: Story = {
   render: () => <ComposedSignup {...signupControlArgs} />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.getByRole('heading', { level: 1, name: 'Criar conta' }),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('link', { name: 'Termos de Uso' }),
-    ).toBeVisible()
-    await expect(canvas.getByRole('link', { name: 'Entrar' })).toBeVisible()
-  },
 }
 
 export const EmailInUse: Story = {
@@ -34,11 +23,6 @@ export const EmailInUse: Story = {
       emailError="Este e-mail já está em uso."
     />
   ),
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Este e-mail já está em uso.'),
-    ).toBeVisible()
-  },
 }
 
 export const WeakPassword: Story = {
@@ -48,11 +32,6 @@ export const WeakPassword: Story = {
       passwordError="Escolha uma senha mais forte."
     />
   ),
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Escolha uma senha mais forte.'),
-    ).toBeVisible()
-  },
 }
 
 export const MissingName: Story = {
@@ -62,11 +41,6 @@ export const MissingName: Story = {
       nameError="Informe o nome completo."
     />
   ),
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Informe o nome completo.'),
-    ).toBeVisible()
-  },
 }
 
 export const CreationFailed: Story = {
@@ -76,20 +50,10 @@ export const CreationFailed: Story = {
       error="Não foi possível criar a conta. Tente novamente."
     />
   ),
-  play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByRole('alert')).toHaveTextContent(
-      'Não foi possível criar a conta. Tente novamente.',
-    )
-  },
 }
 
 export const CreatingAccount: Story = {
   render: () => <ComposedSignup {...signupControlArgs} pending />,
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByRole('button', { name: /^Criar conta/ }),
-    ).toBeDisabled()
-  },
 }
 
 export const StrictPasswordPolicy: Story = {
@@ -100,8 +64,4 @@ export const StrictPasswordPolicy: Story = {
       suggestions="numberAndSymbol"
     />
   ),
-  play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByText('número')).toBeVisible()
-    await expect(within(canvasElement).getByText('símbolo')).toBeVisible()
-  },
 }

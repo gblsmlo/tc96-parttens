@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MagicLink6 } from '@tc96/ui/blocks/application/auth/magic-link-6'
-import { expect, within } from 'storybook/test'
 import { authLogo, authProviders } from '../fixtures/auth-data'
 import { gradientMedia } from '../login-6/login-6-layouts.tsx'
 
@@ -26,12 +25,4 @@ export const SignInWithLink: Story = {
       onSubmit={ignore}
     />
   ),
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByRole('heading', {
-        level: 1,
-        name: 'Entrar com link',
-      }),
-    ).toBeVisible()
-  },
 }

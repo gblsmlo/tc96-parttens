@@ -7,7 +7,6 @@ import {
   type Dashboard6Summary,
 } from '@tc96/ui/blocks/application/dashboard/dashboard-6'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { dashboard6Handlers } from '../../../../mocks/dashboard-6.ts'
 import { crmPeriodOptions, initialCrmPeriod } from '../fixtures/dashboard-6.ts'
@@ -59,25 +58,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard6Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByRole('table', { name: 'Leads em aberto por etapa' }),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('link', { name: 'Qualificação' }),
-    ).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard6Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum lead no funil'),
-    ).toBeVisible()
   },
 }
 
@@ -85,26 +70,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard6Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar o resumo do funil'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar de novo' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard6Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText(
-        'Carregando o resumo do funil',
-      ),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

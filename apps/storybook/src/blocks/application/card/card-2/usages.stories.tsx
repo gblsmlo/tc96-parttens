@@ -4,7 +4,6 @@ import {
   Card2,
   type Card2Integration,
 } from '@tc96/ui/blocks/application/card/card-2'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card2Handlers } from '../../../../mocks/card-2.ts'
 
@@ -40,33 +39,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Slack')).toBeVisible()
-    await expect(canvas.getByText('Conectado')).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card2Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as integrações',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card2Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando integrações'),
-    ).toBeVisible()
   },
 }

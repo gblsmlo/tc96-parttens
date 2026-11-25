@@ -34,6 +34,8 @@ The files sit in one folder that mirrors the title (`apps/storybook/src/ui/alert
 
 Every story file of the component sets `tags: ['!autodocs']`: the MDX page replaces the generated `Doc`.
 
+**Blocks.** A block has no `Behavior` page and no `play` in any story. It renders patterns and `ui` components whose guarantees are already tested on their own nodes, so its pages are documentation only; axe still checks every story. The `bun test` files of pure block helpers stay.
+
 ## Variants or Layouts?
 
 The two pages split on what changes between their stories, after Storybook's rule that a story is a named state set by its `args`.

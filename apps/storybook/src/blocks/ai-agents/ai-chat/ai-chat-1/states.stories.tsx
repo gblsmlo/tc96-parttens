@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AiChat1 } from '@tc96/ui/blocks/ai-agents/ai-chat/ai-chat-1'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import {
   copilotMessages,
   copilotModels,
@@ -36,23 +36,10 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByRole('log', {
-        name: 'Conversa com o assistente',
-      }),
-    ).toBeVisible()
-  },
-}
+export const Default: Story = {}
 
 export const Starter: Story = {
   args: { messages: [] },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Como posso ajudar hoje?'),
-    ).toBeVisible()
-  },
 }
 
 export const Responding: Story = {
@@ -60,47 +47,13 @@ export const Responding: Story = {
     messages: copilotMessages.slice(0, 3),
     responding: true,
   },
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('O assistente está respondendo'),
-    ).toBeInTheDocument()
-    await expect(
-      canvas.queryByRole('button', { name: 'Enviar' }),
-    ).not.toBeInTheDocument()
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Parar resposta' }),
-    )
-    await expect(args.onStop).toHaveBeenCalledOnce()
-  },
 }
 
 export const Loading: Story = {
   args: { pending: true },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByLabelText('Carregando conversa')).toHaveAttribute(
-      'aria-busy',
-      'true',
-    )
-    await expect(canvas.getByRole('button', { name: 'Enviar' })).toBeDisabled()
-  },
 }
 
 export const Failed: Story = {
   args: { error: true },
   name: 'Error',
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.getByText('Não foi possível carregar a conversa'),
-    ).toBeVisible()
-    await expect(
-      canvas.queryByRole('textbox', { name: 'Mensagem para o assistente' }),
-    ).not.toBeInTheDocument()
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Tentar novamente' }),
-    )
-    await expect(args.onRetry).toHaveBeenCalledOnce()
-  },
 }

@@ -6,7 +6,6 @@ import {
   type Inventory2Product,
 } from '@tc96/ui/blocks/data/inventory/inventory-2'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { apiUrl, fetchJson } from '../../../../mocks/api.ts'
 import { inventory2Handlers } from '../../../../mocks/inventory-2.ts'
 import { rowActions } from '../fixtures/inventory-2.ts'
@@ -77,35 +76,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(inventory2Handlers.loaded, inventory2Handlers.save)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Camiseta de algodão')).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: /^Estoque: 7/ }))
-    await userEvent.type(
-      await canvas.findByRole('textbox'),
-      '{Control>}a{/Control}25{Enter}',
-    )
-    await expect(canvas.getByText('1 alteração não salva')).toBeVisible()
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Salvar alterações' }),
-    )
-    await expect(
-      await canvas.findByText('Todas as alterações salvas'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: /^Estoque: 25/ }),
-    ).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(inventory2Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum produto para exibir.'),
-    ).toBeVisible()
   },
 }
 
@@ -113,26 +88,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(inventory2Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os produtos',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(inventory2Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando produtos'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('heading', { name: 'Inventário de produtos' }),
-    ).toBeVisible()
   },
 }

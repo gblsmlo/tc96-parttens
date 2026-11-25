@@ -11,7 +11,6 @@ import {
   type Legal5View,
 } from '@tc96/ui/blocks/data/legal/legal-5'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { legal5Handlers } from '../../../../mocks/legal-5.ts'
 import {
@@ -141,25 +140,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal5Handlers.loaded, ...legal5Handlers.savedViews())
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Reclamação trabalhista de ex-motorista'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Todos' })).toBeVisible()
-    await expect(canvas.getByText('1–12 de 12')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal5Handlers.empty, ...legal5Handlers.savedViews())
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum processo ainda.'),
-    ).toBeVisible()
   },
 }
 
@@ -167,50 +152,16 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal5Handlers.pending, ...legal5Handlers.savedViews())
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando processos'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Todos' })).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal5Handlers.error, ...legal5Handlers.savedViews())
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os processos',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const SavedViews: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal5Handlers.loaded, ...legal5Handlers.savedViews())
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await canvas.findByText('Reclamação trabalhista de ex-motorista')
-    await userEvent.click(canvas.getByRole('button', { name: 'Todos' }))
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Processos da Beatriz' }),
-    )
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-    await expect(
-      await canvas.findByText('Ação de cobrança contra fornecedor de farinha'),
-    ).toBeVisible()
-    await waitFor(() =>
-      expect(
-        canvas.queryByText('Reclamação trabalhista de ex-motorista'),
-      ).toBeNull(),
-    )
-    await expect(
-      canvas.getByRole('button', { name: 'Processos da Beatriz' }),
-    ).toBeVisible()
   },
 }

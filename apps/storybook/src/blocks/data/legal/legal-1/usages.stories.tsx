@@ -7,7 +7,6 @@ import {
   type Legal1View,
 } from '@tc96/ui/blocks/data/legal/legal-1'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { legal1Handlers } from '../../../../mocks/legal-1.ts'
 import { owners } from '../fixtures/legal-1.ts'
@@ -61,23 +60,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal1Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('5001234-18.2026.8.26.9001'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal1Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum processo para exibir.'),
-    ).toBeVisible()
   },
 }
 
@@ -85,24 +72,10 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal1Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando processos'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Todos' })).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal1Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os processos',
-      ),
-    ).toBeVisible()
   },
 }

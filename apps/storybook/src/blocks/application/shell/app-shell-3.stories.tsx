@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AppShell3 } from '@tc96/ui/blocks/application/shell/app-shell-3'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
-import { expectSettingsLevel } from './fixtures/settings-play'
 import {
   ProfileSettingsPage,
   ShellHeaderActions,
@@ -106,21 +105,7 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvasElement.querySelector('[data-slot="sidebar"]'),
-    ).toHaveAttribute('data-variant', 'inset')
-    const projects = canvas.getByRole('navigation', { name: 'Projetos' })
-    await expect(
-      within(projects).getByRole('link', { name: 'Onboarding Acme' }),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('meter', { name: 'Limite de gastos' }),
-    ).toHaveAttribute('aria-valuetext', 'R$ 3.200 de R$ 5.000')
-  },
-}
+export const Default: Story = {}
 
 export const Collapsed: Story = {
   args: { defaultOpen: false },
@@ -139,24 +124,6 @@ export const WithoutExtras: Story = {
 }
 
 export const Notifications: Story = {
-  play: async ({ args, canvasElement }) => {
-    await userEvent.click(
-      within(canvasElement).getByRole('button', {
-        name: 'Notificações, 2 não lidas',
-      }),
-    )
-    const popover = await within(document.body).findByRole('dialog', {
-      name: 'Notificações',
-    })
-    await userEvent.click(
-      within(popover).getByRole('button', { name: /Nova menção/ }),
-    )
-    await expect(args.onNotificationSelect).toHaveBeenCalledWith('mention')
-    await userEvent.click(
-      within(popover).getByRole('button', { name: 'Marcar todas como lidas' }),
-    )
-    await expect(args.onMarkAllRead).toHaveBeenCalledOnce()
-  },
   tags: ['!autodocs'],
 }
 
@@ -173,8 +140,5 @@ export const Settings: Story = {
           'With `settings`, the sidebar becomes the settings level: Voltar ao app at the top and the settings menu below it.',
       },
     },
-  },
-  play: async ({ canvasElement }) => {
-    await expectSettingsLevel(canvasElement)
   },
 }

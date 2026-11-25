@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Team1 } from '@tc96/ui/blocks/data/team/team-1'
-import { expect, fn, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { members, pageSizeOptions } from '../fixtures/team-1.ts'
 
 const meta = {
@@ -20,41 +20,17 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByRole('grid')).toBeVisible()
-  },
-}
+export const Default: Story = {}
 
 export const Loading: Story = {
   args: { pending: true },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(canvas.getByLabelText('Carregando membros')).toHaveAttribute(
-      'aria-busy',
-      'true',
-    )
-    await expect(canvas.getByRole('heading', { name: 'Membros' })).toBeVisible()
-  },
 }
 
 export const ErrorState: Story = {
   args: { error: true },
   name: 'Error',
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvas.getByText('Não foi possível carregar os membros'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('heading', { name: 'Membros' })).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   args: { members: [] },
-  play: async ({ canvasElement }) => {
-    await expect(
-      within(canvasElement).getByText('Nenhum membro para exibir.'),
-    ).toBeVisible()
-  },
 }

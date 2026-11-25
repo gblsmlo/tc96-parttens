@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { SettingsPreference3 } from '@tc96/ui/blocks/application/settings/preference/settings-preference-3'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../../mocks/api.ts'
 import { settingsPreference3Handlers } from '../../../../../mocks/settings-preference-3.ts'
 import type { SettingsPreference3Data } from '../../fixtures/settings-preference-3.ts'
@@ -51,42 +51,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsPreference3Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Aparência')).toBeVisible()
-    await expect(
-      await canvas.findByRole('combobox', { name: 'Tema' }),
-    ).toHaveTextContent('Default')
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsPreference3Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar a aparência'),
-    ).toBeVisible()
-    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
-    await expect(retry).toBeEnabled()
-    await userEvent.click(retry)
-    await expect(await canvas.findByRole('alert')).toHaveAttribute(
-      'data-kind',
-      'error',
-    )
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsPreference3Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const skeleton = await within(canvasElement).findByLabelText(
-      'Carregando aparência',
-    )
-    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

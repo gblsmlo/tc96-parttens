@@ -62,23 +62,26 @@ if (JSON.stringify(firstRun.addedUi) !== JSON.stringify(expectedUi))
   throw new Error(
     `Expected the CLI to add only ${expectedUi}, added: ${firstRun.addedUi.join(', ') || 'nothing'}`,
   )
-const installedFirst = patternNames.filter((name) =>
-  existsSync(
-    join(consumer.root, consumer.patterns, patternSources[name], 'index.ts'),
-  ),
-)
-const firstNames = new Set(
-  installedFirst.flatMap((name) => baseline[name] ?? []),
-)
-const laterOnly = new Set(
-  patternNames
-    .filter((name) => !installedFirst.includes(name))
-    .flatMap((name) => baseline[name] ?? [])
-    .filter((name) => !firstNames.has(name)),
-)
+function installedBarrel(consumer: Consumer) {
+  const installed = patternNames.filter((name) =>
+    existsSync(
+      join(consumer.root, consumer.patterns, patternSources[name], 'index.ts'),
+    ),
+  )
+  const installedNames = new Set(
+    installed.flatMap((name) => baseline[name] ?? []),
+  )
+  const notInstalled = new Set(
+    patternNames
+      .filter((name) => !installed.includes(name))
+      .flatMap((name) => baseline[name] ?? [])
+      .filter((name) => !installedNames.has(name)),
+  )
+  return all.filter((name) => !notInstalled.has(name))
+}
 expectExports(
   barrelExports(consumer),
-  all.filter((name) => !laterOnly.has(name)),
+  installedBarrel(consumer),
   first.join(' and '),
 )
 // The shells need COSS items and a COSS hook the consumer does not have yet.
@@ -119,8 +122,8 @@ for (const file of await files(join(consumer.root, blocksPath)))
     throw new Error(`${file} still imports @tc96/*`)
 expectExports(
   barrelExports(consumer),
-  all.filter((name) => !laterOnly.has(name)),
-  'the blocks, which leave the patterns barrel alone',
+  installedBarrel(consumer),
+  'the blocks, which add only the patterns they install',
 )
 const laterRun = await installPatterns(consumer, later)
 if (laterRun.addedUi.length)

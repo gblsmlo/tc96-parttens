@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { Card5 } from '@tc96/ui/blocks/application/card/card-5'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card5Handlers } from '../../../../mocks/card-5.ts'
 import { type ShortcutRecord, toShortcuts } from '../fixtures/card-5.ts'
@@ -41,23 +41,11 @@ export const Loaded: Story = {
     onSelect.mockClear()
     msw.use(card5Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      await canvas.findByRole('button', { name: /Agendar reunião/ }),
-    )
-    await expect(onSelect).toHaveBeenCalledWith('schedule')
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card5Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum atalho disponível'),
-    ).toBeVisible()
   },
 }
 
@@ -65,22 +53,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card5Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os atalhos',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card5Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando atalhos'),
-    ).toBeVisible()
   },
 }

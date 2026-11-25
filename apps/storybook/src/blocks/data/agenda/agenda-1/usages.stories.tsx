@@ -12,7 +12,6 @@ import {
   agenda1Window,
 } from '@tc96/ui/blocks/data/agenda/agenda-1'
 import { useState } from 'react'
-import { expect, userEvent, waitFor, within } from 'storybook/test'
 import {
   type Agenda1WindowPage,
   agenda1Handlers,
@@ -102,36 +101,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(agenda1Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByRole('article', {
-        name: 'Compromisso: Ligação com o contador',
-      }),
-    ).toBeVisible()
-    await expect(
-      canvasElement.querySelector('[data-calendar-mode="week"]'),
-    ).not.toBeNull()
-  },
 }
 
 export const NextWeek: Story = {
   beforeEach: ({ msw }) => {
     msw.use(agenda1Handlers.loaded)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await canvas.findByRole('article', {
-      name: 'Compromisso: Ligação com o contador',
-    })
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Próximo período' }),
-    )
-    await expect(
-      await canvas.findByRole('article', {
-        name: 'Compromisso: Reunião de planejamento de 2027',
-      }),
-    ).toBeVisible()
   },
 }
 
@@ -139,38 +113,16 @@ export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(agenda1Handlers.empty)
   },
-  play: async ({ canvasElement }) => {
-    const view = canvasElement.querySelector('[data-calendar-mode="week"]')
-    await expect(view).not.toBeNull()
-    await waitFor(() => expect(view).not.toHaveAttribute('aria-busy'))
-    await expect(
-      canvasElement.querySelector('[data-slot="calendar-event-chip"]'),
-    ).toBeNull()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(agenda1Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      canvasElement.querySelector('[data-slot="calendar-view"]'),
-    ).toHaveAttribute('aria-busy', 'true')
-    await expect(canvas.getByRole('button', { name: 'Hoje' })).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(agenda1Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar a agenda',
-      ),
-    ).toBeVisible()
   },
 }

@@ -167,7 +167,8 @@ export function DataTable<TData extends RowData>({
   const resizable = Boolean(table.options.enableColumnResizing)
   const fillColumnId = visibleColumns.at(-1)?.id
   const meta = table.options.meta
-  const aggregatedRows = table.getPrePaginatedRowModel().rows
+  const aggregatedRows: Row<DataTableFeatures, TData>[] =
+    table.getPrePaginatedRowModel().rows
   const showAggregations = !loading && aggregatedRows.length > 0
   const hasFooter = table
     .getAllLeafColumns()

@@ -212,7 +212,7 @@ export function RemoteCarets({
       }
       const domRange = draft && editor.api.toDOMRange(draft)
       const nextDraft = domRange
-        ? Array.from(domRange.getClientRects())
+        ? Array.from<DOMRect>(domRange.getClientRects())
             .filter((rect) => rect.width > 1 && rect.height > 1)
             .map((rect) => toBox(rect, origin))
         : []

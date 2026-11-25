@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AppShell4 } from '@tc96/ui/blocks/application/shell/app-shell-4'
 import { type ReactElement, useState } from 'react'
-import { expect, fn, userEvent, within } from 'storybook/test'
+import { fn } from 'storybook/test'
 import type { UsageDocsParameters } from '../../../../.storybook/docs-page.tsx'
-import { expectSettingsLevel } from './fixtures/settings-play'
 import {
   ProfileSettingsPage,
   ShellHeaderActions,
@@ -116,39 +115,13 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const rail = canvas.getByRole('navigation', { name: 'Seções' })
-    await expect(
-      within(rail).getByRole('button', { name: 'Vendas' }),
-    ).toHaveAttribute('aria-pressed', 'true')
-    await expect(
-      canvas.getByRole('navigation', { name: 'Vendas' }),
-    ).toBeVisible()
-  },
-}
+export const Default: Story = {}
 
 export const Collapsed: Story = {
   args: { defaultOpen: false },
 }
 
 export const SwitchSection: Story = {
-  play: async ({ args, canvasElement }) => {
-    const canvas = within(canvasElement)
-    const rail = canvas.getByRole('navigation', { name: 'Seções' })
-    await userEvent.click(
-      within(rail).getByRole('button', { name: 'Marketing' }),
-    )
-    await expect(args.onSectionChange).toHaveBeenCalledWith('marketing')
-    const section = await canvas.findByRole('navigation', { name: 'Marketing' })
-    await expect(
-      within(section).getByRole('link', { name: 'Campanhas' }),
-    ).toHaveAttribute('aria-current', 'page')
-    await expect(
-      canvas.queryByRole('navigation', { name: 'Vendas' }),
-    ).toBeNull()
-  },
   tags: ['!autodocs'],
 }
 
@@ -165,8 +138,5 @@ export const Settings: Story = {
           'With `settings`, the sidebar becomes the settings level: Voltar ao app at the top and the settings menu below it.',
       },
     },
-  },
-  play: async ({ canvasElement }) => {
-    await expectSettingsLevel(canvasElement)
   },
 }

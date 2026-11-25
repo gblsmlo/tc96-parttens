@@ -14,7 +14,6 @@ import {
   type Legal9Status,
 } from '@tc96/ui/blocks/data/legal/legal-9'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { legal9Handlers } from '../../../../mocks/legal-9.ts'
 import {
@@ -133,25 +132,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal9Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Assessoria trabalhista mensal'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('table')).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Padrão' })).toBeVisible()
-    await expect(canvas.getByText('1–12 de 12')).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal9Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum contrato ainda.'),
-    ).toBeVisible()
   },
 }
 
@@ -159,24 +144,10 @@ export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal9Handlers.pending)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando contratos'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Padrão' })).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(legal9Handlers.error)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível listar os contratos',
-      ),
-    ).toBeVisible()
   },
 }

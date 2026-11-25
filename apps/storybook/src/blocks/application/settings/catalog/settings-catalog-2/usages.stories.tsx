@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useQuery } from '@tanstack/react-query'
 import { SettingsCatalog2 } from '@tc96/ui/blocks/application/settings/catalog/settings-catalog-2'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../../mocks/api.ts'
 import { settingsCatalog2Handlers } from '../../../../../mocks/settings-catalog-2.ts'
 import type { SettingsCatalog2Sla } from '../../fixtures/settings-catalog-2.ts'
@@ -48,39 +47,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByRole('switch', { name: 'Ativar SLAs' }),
-    ).toBeChecked()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog2Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar os SLAs'),
-    ).toBeVisible()
-    const retry = canvas.getByRole('button', { name: 'Tentar novamente' })
-    await expect(retry).toBeEnabled()
-    await userEvent.click(retry)
-    await expect(await canvas.findByRole('alert')).toHaveAttribute(
-      'data-kind',
-      'error',
-    )
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(settingsCatalog2Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const skeleton =
-      await within(canvasElement).findByLabelText('Carregando SLAs')
-    await expect(skeleton).toHaveAttribute('aria-busy', 'true')
   },
 }

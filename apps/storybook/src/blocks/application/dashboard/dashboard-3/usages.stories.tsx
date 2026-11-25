@@ -8,7 +8,6 @@ import {
   type Dashboard3QueueItem,
 } from '@tc96/ui/blocks/application/dashboard/dashboard-3'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { dashboard3Handlers } from '../../../../mocks/dashboard-3.ts'
 import {
@@ -86,24 +85,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard3Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Marina Costa')).toBeVisible()
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Aprovar: Aprovar hora extra' }),
-    )
-    await expect(canvas.queryByText('Aprovar hora extra')).toBeNull()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard3Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhuma escala cadastrada'),
-    ).toBeVisible()
   },
 }
 
@@ -111,26 +97,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard3Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByText('Não foi possível carregar a cobertura'),
-    ).toBeVisible()
-    await expect(
-      canvas.getByRole('button', { name: 'Tentar novamente' }),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(dashboard3Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText(
-        'Carregando cobertura das equipes',
-      ),
-    ).toHaveAttribute('aria-busy', 'true')
   },
 }

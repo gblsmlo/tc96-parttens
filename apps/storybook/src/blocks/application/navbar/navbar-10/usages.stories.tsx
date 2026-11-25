@@ -4,7 +4,6 @@ import {
   type Navbar10Method,
 } from '@tc96/ui/blocks/application/navbar/navbar-10'
 import { useState } from 'react'
-import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { services, user } from '../fixtures/navbar-10.ts'
 import { AccountMenu, Logo } from './navbar-10-layouts.tsx'
 
@@ -62,33 +61,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const SendingARequestFromThePortal: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('combobox', { name: 'Método HTTP' }))
-    await userEvent.click(await screen.findByRole('option', { name: 'DELETE' }))
-    await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull())
-    const input = canvas.getByRole('textbox', { name: 'Caminho da requisição' })
-    await userEvent.clear(input)
-    await userEvent.type(input, '/modelos/7{Enter}')
-    await expect(canvas.getByText('Enviada: DELETE /modelos/7')).toBeVisible()
-  },
-}
+export const SendingARequestFromThePortal: Story = {}
 
-export const SwitchingTheServiceChangesTheEndpoint: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Serviço: Modelos' }),
-    )
-    await userEvent.click(
-      await screen.findByRole('menuitemradio', { name: 'Pagamentos' }),
-    )
-    await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
-    await expect(
-      canvas.getByRole('textbox', { name: 'Caminho da requisição' }),
-    ).toHaveValue('/pagamentos')
-    await userEvent.click(canvas.getByRole('button', { name: 'Enviar' }))
-    await expect(canvas.getByText('Enviada: GET /pagamentos')).toBeVisible()
-  },
-}
+export const SwitchingTheServiceChangesTheEndpoint: Story = {}

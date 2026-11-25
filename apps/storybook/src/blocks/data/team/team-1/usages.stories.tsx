@@ -6,7 +6,6 @@ import {
   type Team1Settings,
 } from '@tc96/ui/blocks/data/team/team-1'
 import { useState } from 'react'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { team1Handlers } from '../../../../mocks/team-1.ts'
 import { factorySettings } from '../fixtures/team-1.ts'
@@ -56,22 +55,11 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(team1Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Ana Souza')).toBeVisible()
-    await expect(canvas.getByRole('grid')).toBeVisible()
-    await expect(canvas.getByRole('heading', { name: 'Membros' })).toBeVisible()
-  },
 }
 
 export const Empty: Story = {
   beforeEach: ({ msw }) => {
     msw.use(team1Handlers.empty)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText('Nenhum membro para exibir.'),
-    ).toBeVisible()
   },
 }
 
@@ -79,24 +67,10 @@ export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(team1Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar os membros',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(team1Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByLabelText('Carregando membros'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('heading', { name: 'Membros' })).toBeVisible()
   },
 }

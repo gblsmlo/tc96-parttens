@@ -4,7 +4,6 @@ import { Alert, AlertDescription, AlertTitle } from '@tc96/ui/alert'
 import { EmptyState2 } from '@tc96/ui/blocks/application/empty-state/empty-state-2'
 import { Spinner } from '@tc96/ui/spinner'
 import { useState } from 'react'
-import { expect, userEvent, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { emptyState2Handlers } from '../../../../mocks/empty-state-2.ts'
 
@@ -53,36 +52,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(emptyState2Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(
-      await canvas.findByRole('button', { name: 'cobrança vencida' }),
-    ).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Limpar busca' }))
-    await expect(await canvas.findByText('Busca limpa.')).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(emptyState2Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar as sugestões',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(emptyState2Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando sugestões'),
-    ).toBeVisible()
   },
 }

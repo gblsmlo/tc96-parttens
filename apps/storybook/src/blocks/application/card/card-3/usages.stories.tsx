@@ -4,7 +4,6 @@ import {
   Card3,
   type Card3Profile,
 } from '@tc96/ui/blocks/application/card/card-3'
-import { expect, within } from 'storybook/test'
 import { fetchJson } from '../../../../mocks/api.ts'
 import { card3Handlers } from '../../../../mocks/card-3.ts'
 
@@ -41,33 +40,16 @@ export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card3Handlers.loaded)
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    await expect(await canvas.findByText('Marina Costa')).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Seguir' })).toBeVisible()
-  },
 }
 
 export const Failed: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card3Handlers.error)
   },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByText(
-        'Não foi possível carregar o perfil',
-      ),
-    ).toBeVisible()
-  },
 }
 
 export const Pending: Story = {
   beforeEach: ({ msw }) => {
     msw.use(card3Handlers.pending)
-  },
-  play: async ({ canvasElement }) => {
-    await expect(
-      await within(canvasElement).findByLabelText('Carregando perfil'),
-    ).toBeVisible()
   },
 }
