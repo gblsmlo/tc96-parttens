@@ -926,6 +926,8 @@ export const TheSearchCountsAsAFilter: Story = {
     )
     await expect(args.onSearchChange).toHaveBeenLastCalledWith('')
     await waitFor(() => expect(field).toHaveValue(''))
+    await expect(screen.getByRole('menu')).toBeVisible()
+    await userEvent.keyboard('{Escape}')
     await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
   },
 }

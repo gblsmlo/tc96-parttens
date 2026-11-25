@@ -63,6 +63,13 @@ export const defaultLegal5Labels: Legal5Labels = {
     matter: 'Nenhum caso com esses filtros.',
   },
   noTags: 'Nenhuma tag.',
+  tagPicker: {
+    add: 'Adicionar tag',
+    count: (count) => `${count} ${count === 1 ? 'tag' : 'tags'}`,
+    empty: 'Nenhuma tag encontrada.',
+    loading: 'Carregando tags…',
+    remove: 'Remover tag',
+  },
   openRecord: (title) => `Abrir ${title}`,
   pageRange: (first, last, total) =>
     total === 0 ? '0 de 0' : `${first}–${last} de ${total}`,
@@ -140,6 +147,7 @@ export function resolveLegal5Labels(
     savedViews: { ...base.savedViews, ...labels?.savedViews },
     situations: { ...base.situations, ...labels?.situations },
     sorts: { ...base.sorts, ...labels?.sorts },
+    tagPicker: { ...base.tagPicker, ...labels?.tagPicker },
     views: { ...base.views, ...labels?.views },
   }
 }

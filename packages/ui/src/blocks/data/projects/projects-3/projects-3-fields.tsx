@@ -225,6 +225,7 @@ export function Projects3TagsField({ context, item, variant }: FieldProps) {
     <TagsProperty
       ariaLabel={labels.columns.tags}
       isLoading={tagsLoading}
+      labels={labels.tagPicker}
       onValueChange={(tagIds) => onTagsChange(item.id, [...tagIds])}
       options={options}
       placeholder={labels.noTags}

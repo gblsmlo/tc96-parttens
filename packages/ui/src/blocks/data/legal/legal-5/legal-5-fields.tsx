@@ -143,6 +143,7 @@ export function Legal5TagsField({ context, item }: FieldProps) {
         ariaLabel={labels.columns.tags}
         className="w-auto"
         isLoading={tagsLoading}
+        labels={labels.tagPicker}
         onValueChange={(tagIds) => onTagsChange(item.id, [...tagIds])}
         options={tags.map((tag) => ({ label: tag.label, value: tag.id }))}
         value={item.tagIds}
