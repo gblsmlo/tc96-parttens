@@ -5,11 +5,11 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Navbar1
 
-A page-top bar for a project workspace: a breadcrumb, line tabs below it, the collaborators on the right and an optional Share button. Reach for it above the content of a project, board or document page. Install it with `npx @tc96/cli add navbar-1`.
+A page-top bar for a project workspace: a breadcrumb, the collaborators, an optional menu of global actions and an optional primary Share button. Reach for it above the content of a project, board or document page. Install it with `npx @tc96/cli add navbar-1`.
 
-It renders a `header`, not a page: it carries no `main` landmark. The block keeps no state: the selected tab is a prop and every change is a callback.
+It renders a `header`, not a page: it carries no `main` landmark. The block keeps no state: the share action is a callback.
 
-The other pages of `Blocks/Application/Navbar/Navbar1`: [Playground](?path=/story/blocks-application-navbar-navbar1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar1-behavior--breadcrumb-links-all-but-the-current-page) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar1-usages--switching-sections-of-a-project) for a project page.
+The other pages of `Blocks/Application/Navbar/Navbar1`: [Playground](?path=/story/blocks-application-navbar-navbar1-playground--playground) to try the controls, [Behavior](?path=/story/blocks-application-navbar-navbar1-behavior--breadcrumb-links-all-but-the-current-page) for the tests and [Usages](?path=/story/blocks-application-navbar-navbar1-usages--project-page-header) for a project page.
 
 ## Import
 
@@ -21,7 +21,7 @@ The same path exports the types listed under Exports.
 
 ## Anatomy
 
-The breadcrumb, the collaborators and the Share button on the first row, the tabs below.
+The breadcrumb on the left; the collaborators, the more-actions menu and the Share button on the right.
 
 <Canvas of={ApiReferenceStories.Anatomy} />
 
@@ -29,10 +29,8 @@ The breadcrumb, the collaborators and the Share button on the first row, the tab
 <Navbar1
   breadcrumbs={breadcrumbs}
   collaborators={collaborators}
+  menu={<MenuItem>Duplicar projeto</MenuItem>}
   onShare={share}
-  onTabChange={setTab}
-  tab={tab}
-  tabs={tabs}
 />
 ```
 
@@ -41,21 +39,18 @@ The breadcrumb, the collaborators and the Share button on the first row, the tab
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `breadcrumbs` | `NavbarBreadcrumbItem[]` | required | The path, in order. The last item is the current page; the others link when they have an `href`. |
-| `tabs` | `Navbar1Tab[]` | required | The tabs, in order. |
-| `tab` | `string` | required | The `id` of the selected tab. |
-| `onTabChange` | `(tab: string) => void` | required | Called with the `id` of the tab the user picked. The block does not change `tab` by itself. |
 | `collaborators` | `NavbarPerson[]` | - | The people on the project. Four show; the rest become a count. Empty or missing renders no group. |
-| `onShare` | `() => void` | - | Called when Share is clicked. Without it no button renders. |
+| `menu` | `ReactNode` | - | The `MenuItem`s of the global actions menu, opened by a "..." button after the collaborators. Without it no button renders. |
+| `onShare` | `() => void` | - | Called when Share is clicked; the button is `primary`. Without it no button renders. |
 | `renderLink` | `(href: string) => ReactElement` | `renderAnchor` | Renders the breadcrumb links, so the app can pass its router link. |
 | `labels` | `Partial<Navbar1Labels>` | pt-BR texts | Overrides the texts of the block; see Labels below. |
 | `className` | `string` | - | Merged into the root classes. |
 
-## Navbar1Tab and NavbarPerson
+## NavbarPerson
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `id` | `string` | Identifies the tab or the person. |
-| `label` | `string` | Text of the tab. |
+| `id` | `string` | Identifies the person. |
 | `name` | `string` | Name of the person; its initials fill the avatar and it is the tooltip. |
 | `avatarUrl` | `string` | Photo of the person. Without it the initials show. |
 
@@ -64,8 +59,8 @@ The breadcrumb, the collaborators and the Share button on the first row, the tab
 | Key | Type | Default |
 | --- | --- | --- |
 | `breadcrumb` | `string` | `"Caminho da página"`; the accessible name of the breadcrumb |
-| `tabs` | `string` | `"Seções do projeto"`; the accessible name of the tab list |
 | `collaborators` | `(count: number) => string` | `"6 colaboradores"`; the accessible name of the avatar group |
+| `menu` | `string` | `"Mais ações"`; the accessible name of the "..." button |
 | `share` | `string` | `"Compartilhar"`; the visible text of the button |
 
 ## Exports
@@ -74,11 +69,9 @@ The breadcrumb, the collaborators and the Share button on the first row, the tab
 | --- | --- | --- |
 | `Navbar1` | `component` | The project workspace bar. |
 | `Navbar1Props` | `type` | The props of the bar. |
-| `Navbar1Tab` | `type` | A tab. |
 | `Navbar1Labels` | `type` | The keys of `labels`. |
 
 ## Accessibility and theme
 
-- The header holds a breadcrumb navigation, the avatar group (named by `labels.collaborators`) and a tab list named by `labels.tabs`; the current page is marked with `aria-current`.
-- Tabs move with the arrow keys and the selected one has `aria-selected`.
+- The header holds a breadcrumb navigation and the avatar group (named by `labels.collaborators`); the current page is marked with `aria-current`.
 - The block carries no color, radius or shadow of its own beyond the bottom border: the theme belongs to the app.

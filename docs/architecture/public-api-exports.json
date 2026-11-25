@@ -2112,8 +2112,7 @@
   "block:navbar-1": [
     "Navbar1",
     "Navbar1Labels",
-    "Navbar1Props",
-    "Navbar1Tab"
+    "Navbar1Props"
   ],
   "block:navbar-2": [
     "Navbar2",
