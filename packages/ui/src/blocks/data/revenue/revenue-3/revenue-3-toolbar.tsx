@@ -18,7 +18,7 @@ import {
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings/components/view-settings'
+} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import { revenue3HealthOrder } from './revenue-3-options'
 import type { Revenue3Account, Revenue3Labels } from './types'

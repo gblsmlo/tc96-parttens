@@ -1,9 +1,4 @@
-import {
-  CellSignalHighIcon,
-  CellSignalLowIcon,
-  CellSignalMediumIcon,
-  WarningCircleIcon,
-} from '@phosphor-icons/react'
+import { priorityMeta } from '@tc96/ui/property-meta'
 import type { DataOptionAppearance } from './types'
 
 export type DataPriority = 'high' | 'low' | 'medium' | 'urgent'
@@ -16,10 +11,10 @@ export const dataPriorities: readonly DataPriority[] = [
 ]
 
 export const dataPriorityAppearance = {
-  high: { icon: CellSignalHighIcon, tone: 'warning' },
-  low: { icon: CellSignalLowIcon, tone: 'neutral' },
-  medium: { icon: CellSignalMediumIcon, tone: 'info' },
-  urgent: { icon: WarningCircleIcon, tone: 'danger' },
+  high: priorityMeta.high,
+  low: priorityMeta.low,
+  medium: priorityMeta.medium,
+  urgent: priorityMeta.urgent,
 } as const satisfies Record<DataPriority, DataOptionAppearance>
 
 export const dataPriorityRank = {

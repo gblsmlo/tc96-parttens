@@ -16,7 +16,7 @@ import type { UseDataGridReturn } from '@tc96/ui/patterns/data-grid/hooks/use-da
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings/components/view-settings'
+} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'

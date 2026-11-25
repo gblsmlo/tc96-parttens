@@ -13,7 +13,7 @@ Controlled property displays (date, date range, editable text, email, flag, icon
 | `shared/lib/` | `isEditable`/`emitChange` (handler rule), option lookup and diff, zod entry parser |
 | `core.ts` | React-free surface: catalog types, `propertyToneClassName`, date formatters; workspace only, not reached from the barrel |
 
-Import direction: `composition/` → `display/`, `shared/`; `display/<property>/` → `hooks/`, `shared/`, other display folders; `display/editable-text/` → `editable/index.ts` (`Editable`, `EditableField`), the only import into another pattern; `hooks/` → `shared/lib/`; `shared/` → only COSS, Base UI, `@tc96/utils` and zod types, never a display, hook or composition.
+Import direction: `composition/` → `display/`, `shared/`; `display/<property>/` → `hooks/`, `shared/`, other display folders; `display/editable-text/` → `editable/index.ts` (`Editable`, `EditableField`), the only import into another pattern; `hooks/` → `shared/lib/`; `shared/` → only COSS, Base UI, `@tc96/utils`, `@tc96/ui/lib/property-tone` (the tone it re-exports) and zod types, never a display, hook or composition.
 
 ## Dependents
 

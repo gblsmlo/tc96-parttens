@@ -16,7 +16,7 @@ import type { DataTableTable } from '@tc96/ui/patterns/data-table/data-table-fea
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings/components/view-settings'
+} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'

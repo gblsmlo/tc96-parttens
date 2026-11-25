@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ViewSettingsCanvas } from './view-settings-canvas.tsx'
+import { ViewSettingsCanvas } from './view-settings-menu-canvas.tsx'
 import {
   type ViewSettingsControls,
   viewSettingsControlArgs,
   viewSettingsControlArgTypes,
-} from './view-settings-controls.ts'
-import { ComposedViewSettings } from './view-settings-layouts.tsx'
+} from './view-settings-menu-controls.ts'
+import { ComposedViewSettings } from './view-settings-menu-layouts.tsx'
 
 const meta = {
   args: viewSettingsControlArgs,
@@ -14,7 +14,7 @@ const meta = {
   parameters: { layout: 'fullscreen' },
   render: (args) => <ComposedViewSettings {...args} />,
   tags: ['!autodocs'],
-  title: 'Patterns/ViewSettings/Playground',
+  title: 'Patterns/ViewSettingsMenu/Playground',
 } satisfies Meta<ViewSettingsControls>
 
 export default meta

@@ -2,6 +2,7 @@
 
 import {
   ArrowCounterClockwiseIcon,
+  ArrowsCounterClockwiseIcon,
   FloppyDiskIcon,
   type Icon as PhosphorIcon,
   SlidersHorizontalIcon,
@@ -39,8 +40,11 @@ export interface ViewSettingsMenuProps<TMode extends string = string> {
   modes?: readonly ViewSettingsMode<TMode>[]
   onClearFilters?: () => void
   onModeChange?: (mode: TMode) => void
+  onReset?: () => void
   /** Sem handler o rodapé não compõe o item: guardar preferência é opcional. */
   onSavePreference?: () => void
+  resetDisabled?: boolean
+  resetLabel?: string
   savePreferenceDisabled?: boolean
   savePreferenceLabel?: string
 }
@@ -54,10 +58,7 @@ const defaultTriggerLabel = (label: string, count: number) =>
   `${label} (${count})`
 
 const popupWidth = (modeCount: number) => {
-  if (modeCount < 2) return 'w-56'
-  if (modeCount === 2) return 'w-64'
-  // Com três modos a linha única trunca "Tabela", "Kanban" e "Planilha" em 16rem.
-  if (modeCount === 3) return 'w-72'
+  if (modeCount < 4) return 'w-80'
   return 'w-96'
 }
 
@@ -79,7 +80,10 @@ export function ViewSettingsMenu<TMode extends string = string>({
   modes = [],
   onClearFilters,
   onModeChange,
+  onReset,
   onSavePreference,
+  resetDisabled = false,
+  resetLabel = 'Redefinir',
   savePreferenceDisabled = false,
   savePreferenceLabel = 'Salvar preferência',
 }: Readonly<ViewSettingsMenuProps<TMode>>): ReactElement {
@@ -108,9 +112,23 @@ export function ViewSettingsMenu<TMode extends string = string>({
         {/* Limpar antes de guardar: descartar volta ao ponto de partida, guardar
             avança a partir dele — a ordem é a mesma sequência de decisão. */}
         {onClearFilters ? (
-          <MenuItem disabled={!normalizedActiveCount} onClick={onClearFilters}>
+          <MenuItem
+            closeOnClick={false}
+            disabled={!normalizedActiveCount}
+            onClick={onClearFilters}
+          >
             <ArrowCounterClockwiseIcon aria-hidden="true" />
             {clearLabel}
+          </MenuItem>
+        ) : null}
+        {onReset ? (
+          <MenuItem
+            closeOnClick={false}
+            disabled={resetDisabled}
+            onClick={onReset}
+          >
+            <ArrowsCounterClockwiseIcon aria-hidden="true" />
+            {resetLabel}
           </MenuItem>
         ) : null}
         {onSavePreference ? (

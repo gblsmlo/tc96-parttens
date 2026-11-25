@@ -6,7 +6,7 @@ import { isConditionComplete } from '@tc96/ui/patterns/data-grid/lib/data-grid-c
 import {
   ViewSettingsMenu,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings/components/view-settings'
+} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import type { ReactNode } from 'react'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import type {
