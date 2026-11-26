@@ -98,7 +98,6 @@ export const ComposedTasks2 = ({
   const [groupBy, setGroupBy] = useState<Tasks2GroupBy | null>(
     groupByControl === 'none' ? null : groupByControl,
   )
-  const [collapsedGroupIds, setCollapsedGroupIds] = useState<string[]>([])
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<Tasks2Sort>('due')
   const [sortDirection, setSortDirection] = useState<Tasks2SortDirection>('asc')
@@ -148,7 +147,6 @@ export const ComposedTasks2 = ({
   return (
     <Tasks2
       assigneeFilter={assigneeFilter}
-      collapsedGroupIds={collapsedGroupIds}
       createOptions={createMenu ? createOptions : undefined}
       filtered={Boolean(
         search || statusFilter || projectFilter || assigneeFilter,
@@ -165,10 +163,7 @@ export const ComposedTasks2 = ({
         (id: string, assigneeIds: string[]) => update(id, { assigneeIds }),
         onAssigneesChange,
       )}
-      onCollapsedGroupIdsChange={(next) => {
-        setCollapsedGroupIds(next)
-        onCollapsedGroupIdsChange?.(next)
-      }}
+      onCollapsedGroupIdsChange={onCollapsedGroupIdsChange}
       onCreate={headerActions ? (onCreate ?? noop) : undefined}
       onDueChange={edit(
         (id: string, dueAt: string | null) =>
@@ -177,7 +172,6 @@ export const ComposedTasks2 = ({
       )}
       onGroupByChange={(next) => {
         setGroupBy(next)
-        setCollapsedGroupIds([])
         onGroupByChange?.(next)
       }}
       onModeChange={(next) => {

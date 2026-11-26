@@ -29,7 +29,7 @@ import { Tasks2 } from '@tc96/ui/blocks/data/tasks/tasks-2'
 | `people`, `projects`, `tags` | `Tasks2Person[]`, `Tasks2Option[]`, `Tasks2Tag[]` | `[]` | The catalogs of Responsáveis and author, Projeto, and the tag pills (`tone` colors the dot). |
 | `mode`, `onModeChange` | `'list' \| 'kanban'` | `'list'` | The controllable layout. |
 | `groupBy`, `onGroupByChange` | `'priority' \| 'status' \| 'project' \| null` | `'priority'` | The controllable grouping; the Kanban reads Prioridade unless it is Status. |
-| `collapsedGroupIds`, `onCollapsedGroupIdsChange` | `string[]` | `[]` | Collapsed groups as `<grouping>:<option id>`. |
+| `collapsedGroupIds`, `onCollapsedGroupIdsChange` | `string[]` | - | Collapsed groups as `<grouping>:<option id>`. Without `collapsedGroupIds` the list keeps them: a group with no tasks starts collapsed, reopens when it gets tasks unless someone toggled it, and the effective list is reported. |
 | `sort`, `sortDirection`, `onSortChange` | `Tasks2Sort`, `'asc' \| 'desc'` | `'due'`, the sort's default | Ordenar por and the sortable header, rendered with `onSortChange`. |
 | `selectedIds`, `onSelectedIdsChange` | `string[]` | `[]` | The selected tasks; the priority icon of a row turns into its checkbox on hover, focus and touch. |
 | `onBulkStatusChange`, `onBulkPriorityChange`, `onBulkProjectChange`, `onBulkAssigneesChange`, `onBulkDelete` | `(taskIds, value?) => void` | - | Any of them enables selection and the `ActionBar` of the list: Concluir, Mais opções and Excluir, with no confirmation. |

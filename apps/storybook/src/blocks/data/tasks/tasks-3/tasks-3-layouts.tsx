@@ -27,7 +27,6 @@ type Callbacks = Pick<
   | 'onPriorityChange'
   | 'onPriorityFilterChange'
   | 'onProjectChange'
-  | 'onSearchChange'
   | 'onSelectedIdsChange'
   | 'onSortChange'
   | 'onStatusChange'
@@ -88,7 +87,6 @@ export const ComposedTasks3 = ({
   onPriorityChange,
   onPriorityFilterChange,
   onProjectChange,
-  onSearchChange,
   onSelectedIdsChange,
   onSortChange,
   onStatusChange,
@@ -102,8 +100,6 @@ export const ComposedTasks3 = ({
   const [groupBy, setGroupBy] = useState<Tasks3GroupBy | null>(
     groupByControl === 'none' ? null : groupByControl,
   )
-  const [collapsedGroupIds, setCollapsedGroupIds] = useState<string[]>([])
-  const [search, setSearch] = useState('')
   const [sort, setSort] = useState<Tasks3Sort>('due')
   const [sortDirection, setSortDirection] = useState<Tasks3SortDirection>('asc')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -157,7 +153,6 @@ export const ComposedTasks3 = ({
     : sortTasks(
         items.filter(
           (task) =>
-            task.title.toLowerCase().includes(search.toLowerCase()) &&
             (!statusFilter || task.status === statusFilter) &&
             matchesPriority(task, priorityFilter) &&
             (!assigneeFilter || task.assigneeIds.includes(assigneeFilter)),
@@ -169,11 +164,8 @@ export const ComposedTasks3 = ({
   return (
     <Tasks3
       assigneeFilter={assigneeFilter}
-      collapsedGroupIds={collapsedGroupIds}
       error={error}
-      filtered={Boolean(
-        search || statusFilter || priorityFilter || assigneeFilter,
-      )}
+      filtered={Boolean(statusFilter || priorityFilter || assigneeFilter)}
       groupBy={groupBy}
       labels={labels}
       mode={mode}
@@ -196,10 +188,7 @@ export const ComposedTasks3 = ({
         (ids: string[], status: Tasks3Status) => updateMany(ids, { status }),
         undefined,
       )}
-      onCollapsedGroupIdsChange={(next) => {
-        setCollapsedGroupIds(next)
-        onCollapsedGroupIdsChange?.(next)
-      }}
+      onCollapsedGroupIdsChange={onCollapsedGroupIdsChange}
       onCreate={headerActions ? (onCreate ?? noop) : undefined}
       onDueChange={edit(
         (id: string, dueAt: string | null) =>
@@ -208,7 +197,6 @@ export const ComposedTasks3 = ({
       )}
       onGroupByChange={(next) => {
         setGroupBy(next)
-        setCollapsedGroupIds([])
         onGroupByChange?.(next)
       }}
       onModeChange={(next) => {
@@ -227,14 +215,6 @@ export const ComposedTasks3 = ({
         onProjectChange,
       )}
       onRetry={noop}
-      onSearchChange={
-        headerActions
-          ? (next) => {
-              setSearch(next)
-              onSearchChange?.(next)
-            }
-          : undefined
-      }
       onSelectedIdsChange={(next) => {
         setSelectedIds(next)
         onSelectedIdsChange?.(next)
@@ -253,7 +233,6 @@ export const ComposedTasks3 = ({
       people={people}
       priorityFilter={priorityFilter}
       projects={projects}
-      search={search}
       selectedIds={selectedIds}
       sort={sort}
       sortDirection={sortDirection}
