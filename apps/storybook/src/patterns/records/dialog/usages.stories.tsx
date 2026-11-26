@@ -39,9 +39,7 @@ import {
 import { Switch } from '@tc96/ui/switch'
 import { useState } from 'react'
 import { expect, fn, screen, userEvent, within } from 'storybook/test'
-import { initialContacts } from '../../collection/fixtures/contacts'
 import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
-import { CreateContactDialog, type NewContact } from './create-contact-dialog'
 import {
   lawsuitClients,
   lawsuitContractOptions,
@@ -61,56 +59,6 @@ const meta = {
 } satisfies Meta
 
 export default meta
-
-const companies = initialContacts.map((contact) => contact.company)
-const roles = initialContacts.map((contact) => contact.role)
-
-interface ContactsArgs {
-  onCreate: (contact: NewContact) => void
-}
-
-export const Contacts: StoryObj<ContactsArgs> = {
-  args: { onCreate: fn((_contact: NewContact) => {}) },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'The create step of the Contacts collection, on the [Inline Properties](?path=/story/patterns-records-recorddialog-layouts--inline-properties) layout without `stretchBody`: the name as a borderless title, a short description below it, and every other field as a property chip. Telefone, E-mail, Tipo (CPF or CNPJ) and Documento are always shown. The ... chip opens a menu whose switches show or hide Etapa, Tags, Empresa and Cargo; Etapa starts at Sem etapa and has no Lead. Empresa and Cargo share one combobox chip: search, the existing roles or companies of the collection, and a footer that creates the typed name and selects it. The Contacts usage of `Patterns/Collection` opens the same dialog from Novo contato.',
-      },
-    },
-  },
-  render: function Contacts({ onCreate }) {
-    const [open, setOpen] = useState(true)
-
-    return (
-      <>
-        <Button onClick={() => setOpen(true)} variant="outline">
-          Novo contato
-        </Button>
-        <CreateContactDialog
-          companies={companies}
-          onCreate={onCreate}
-          onOpenChange={setOpen}
-          open={open}
-          roles={roles}
-        />
-      </>
-    )
-  },
-  play: async () => {
-    const dialog = within(
-      await screen.findByRole('dialog', { name: 'Novo contato' }),
-    )
-
-    await expect(dialog.getByRole('textbox', { name: 'Nome' })).toBeVisible()
-    await expect(
-      dialog.getByRole('button', { name: 'Mais propriedades' }),
-    ).toBeVisible()
-    await expect(
-      dialog.getByRole('button', { name: /Criar contato/ }),
-    ).toBeDisabled()
-  },
-}
 
 interface LeadsArgs {
   onCreate: (lead: NewLead) => void

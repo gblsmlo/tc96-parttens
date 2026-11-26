@@ -31,6 +31,7 @@ export type PropertyDisplayMeta = Required<
 export const propertyDisplayIcons = {
   date: CalendarDotsIcon,
   dateRange: CalendarIcon,
+  document: FileTextIcon,
   email: EnvelopeSimpleIcon,
   link: LinkIcon,
   location: MapPinIcon,

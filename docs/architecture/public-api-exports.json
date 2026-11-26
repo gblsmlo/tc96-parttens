@@ -3275,5 +3275,23 @@
     "createAgenda2CalendarOptions",
     "createAgenda2TypeOptions",
     "defaultAgenda2Slot"
+  ],
+  "block:record-dialog-contacts-1": [
+    "Contacts1",
+    "Contacts1Document",
+    "Contacts1Labels",
+    "Contacts1Props",
+    "Contacts1Stage",
+    "Contacts1Tag",
+    "Contacts1Values"
+  ],
+  "block:record-dialog-contacts-2": [
+    "Contacts2",
+    "Contacts2Document",
+    "Contacts2Labels",
+    "Contacts2Props",
+    "Contacts2Stage",
+    "Contacts2Tag",
+    "Contacts2Values"
   ]
 }

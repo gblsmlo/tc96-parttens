@@ -1,0 +1,30 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Contacts2
+
+A create dialog for a contact on the Record Dialog inline layout: the name as a borderless title, a short description, then phone, e-mail and document as chips. The document has no type field: 11 digits take the CPF mask and 12 or more take the CNPJ mask. A contact can hold more than one document. Etapa, Tags, Empresa and Cargo stay behind the more menu. Install it with `npx @tc96/cli add record-dialog-contacts-2`.
+
+The collection screen opens this dialog from Novo contato. The other pages of `Blocks/Application/Record Dialog/Contacts/Contacts2`: [Playground](?path=/story/blocks-application-record-dialog-contacts-contacts2-playground--playground) and [States](?path=/story/blocks-application-record-dialog-contacts-contacts2-states--multiple) for a CPF and a CNPJ together, [CPF](?path=/story/blocks-application-record-dialog-contacts-contacts2-states--cpf) and [CNPJ](?path=/story/blocks-application-record-dialog-contacts-contacts2-states--cnpj).
+
+## Import
+
+```tsx
+import { Contacts2 } from '@tc96/ui/blocks/application/record-dialog/contacts-2'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<Contacts2
+  companies={companies}
+  onCreate={saveContact}
+  onOpenChange={setOpen}
+  open={open}
+  roles={roles}
+/>
+```

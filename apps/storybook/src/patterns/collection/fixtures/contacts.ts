@@ -5,6 +5,7 @@ import {
   ProhibitInsetIcon,
   RadioButtonIcon,
 } from '@phosphor-icons/react'
+import type { Contacts2Values } from '@tc96/ui/blocks/application/record-dialog/contacts-2'
 import type { CollectionDefinition, PropertyOption } from '@tc96/ui/patterns'
 
 export type ContactStage =
@@ -28,6 +29,7 @@ export interface Contact {
   description?: string
   document?: string
   documentType?: ContactDocumentType
+  documents?: readonly { kind: ContactDocumentType; value: string }[]
   emails: string[]
   id: string
   lastContactAt: string
@@ -64,6 +66,28 @@ export const documentTypeOptions = [
 ] as const satisfies readonly (PropertyOption & {
   value: ContactDocumentType
 })[]
+
+export function contactFromDialog(
+  values: Contacts2Values,
+  id: string,
+): Contact {
+  const [first] = values.documents
+  return {
+    company: values.company,
+    description: values.description,
+    document: first?.value,
+    documentType: first?.kind,
+    documents: values.documents,
+    emails: [...values.emails],
+    id,
+    lastContactAt: new Date().toISOString(),
+    name: values.name,
+    phones: [...values.phones],
+    role: values.role,
+    stage: values.stage,
+    tags: [...values.tags],
+  }
+}
 
 export const isContactDocumentType = (
   value: string,

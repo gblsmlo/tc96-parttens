@@ -207,6 +207,8 @@ export const blockNames = [
   'agenda-1',
   'record-dialog-agenda-1',
   'record-dialog-agenda-2',
+  'record-dialog-contacts-1',
+  'record-dialog-contacts-2',
 ] as const
 export type BlockName = (typeof blockNames)[number]
 /** Folder under packages/ui/src/blocks, kept as the path in the consumer. */
@@ -381,6 +383,8 @@ export const blockSources: Record<BlockName, string> = {
   'agenda-1': 'data/agenda/agenda-1',
   'record-dialog-agenda-1': 'application/record-dialog/agenda-1',
   'record-dialog-agenda-2': 'application/record-dialog/agenda-2',
+  'record-dialog-contacts-1': 'application/record-dialog/contacts-1',
+  'record-dialog-contacts-2': 'application/record-dialog/contacts-2',
 }
 export type ItemName = PatternName | BlockName
 /** Areas under packages/ui/src/patterns that ship with an item no file of it imports. */

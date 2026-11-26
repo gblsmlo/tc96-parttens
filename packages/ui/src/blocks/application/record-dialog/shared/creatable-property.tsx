@@ -15,7 +15,7 @@ import {
   ComboboxTrigger,
   useComboboxFilter,
 } from '@tc96/ui/combobox'
-import { PropertySurface } from '@tc96/ui/patterns'
+import { PropertySurface } from '@tc96/ui/patterns/properties/shared/property-surface'
 import { useState } from 'react'
 
 export interface CreatablePropertyLabels {
@@ -80,16 +80,19 @@ export function CreatableProperty({
       <ComboboxTrigger
         aria-label={value ? `${ariaLabel}: ${value}` : ariaLabel}
         render={
-          <PropertySurface muted={!value} render={<button type="button" />} />
+          <PropertySurface
+            muted={!value}
+            render={<button type="button" />}
+            variant="badge"
+          />
         }
       >
-        <Icon aria-hidden className="size-3.5" />
+        <Icon aria-hidden className="size-4" />
         <span className="truncate">{value ?? ariaLabel}</span>
       </ComboboxTrigger>
       <ComboboxPopup aria-label={ariaLabel} className="w-64">
         <ComboboxInput
           aria-label={labels.search}
-          className="border-transparent! bg-transparent! shadow-none before:hidden has-focus-visible:ring-0"
           onKeyDown={(event) => {
             if (event.key !== 'Enter' || hasMatch || !canCreate) return
             event.preventDefault()

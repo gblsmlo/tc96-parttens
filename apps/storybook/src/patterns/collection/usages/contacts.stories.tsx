@@ -7,6 +7,7 @@ import {
   TrashIcon,
 } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Contacts2 } from '@tc96/ui/blocks/application/record-dialog/contacts-2'
 import {
   MenuCheckboxItem,
   MenuGroup,
@@ -45,7 +46,6 @@ import {
 } from '@tc96/ui/patterns'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
 import { expect, within } from 'storybook/test'
-import { CreateContactDialog } from '../../records/dialog/create-contact-dialog'
 import {
   createContactGridColumns,
   createContactTableColumns,
@@ -56,6 +56,7 @@ import {
   type Contact,
   type ContactStage,
   type ContactTag,
+  contactFromDialog,
   contactGroupings,
   createContactCollection,
   initialContacts as seedContacts,
@@ -526,16 +527,12 @@ function ContactsWorkspace({
           </CollectionFrameFooter>
         ) : null}
       </CollectionFrame>
-      <CreateContactDialog
+      <Contacts2
         companies={contacts.map((contact) => contact.company)}
-        onCreate={(contact) =>
+        onCreate={(values) =>
           onContactsChange((current) => [
             ...current,
-            {
-              ...contact,
-              id: nextContactId(current),
-              lastContactAt: new Date().toISOString(),
-            },
+            contactFromDialog(values, nextContactId(current)),
           ])
         }
         onOpenChange={setCreating}
