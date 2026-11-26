@@ -300,7 +300,7 @@ test('installs a block with the COSS hook its components need', async () => {
     )
     expect(
       await readFile(
-        join(root, 'src/blocks/application/shell/app-shell-1/index.ts'),
+        join(root, 'src/blocks/shell/app-shell-1/index.ts'),
         'utf8',
       ),
     ).toBe(
@@ -381,7 +381,7 @@ test('installs a block under aliases.templates with a deprecation warning', asyn
     )
     expect(
       existsSync(
-        join(root, 'src/shells/application/shell/app-shell-1/index.ts'),
+        join(root, 'src/shells/shell/app-shell-1/index.ts'),
       ),
     ).toBe(true)
   } finally {
@@ -400,7 +400,7 @@ test('writes a block to the templates path of a tsconfig that was not renamed', 
     )
     expect(
       await readFile(
-        join(root, 'src/templates/application/shell/app-shell-1/index.ts'),
+        join(root, 'src/templates/shell/app-shell-1/index.ts'),
         'utf8',
       ),
     ).toBe(

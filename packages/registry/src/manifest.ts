@@ -214,7 +214,7 @@ export const blockNames = [
   'record-dialog-7',
 ] as const
 export type BlockName = (typeof blockNames)[number]
-/** Folder under packages/ui/src/blocks, kept as the path in the consumer. */
+/** Folder under packages/ui/src/blocks; the consumer receives it without the category. */
 export const blockSources: Record<BlockName, string> = {
   'app-shell-1': 'application/shell/app-shell-1',
   'app-shell-2': 'application/shell/app-shell-2',
@@ -542,6 +542,8 @@ export function assertDistributable(item: RegistryItem) {
       )
   }
 }
+// The block category organizes the repo and Storybook; the consumer gets <group>/<block>.
+const withoutBlockCategory = (rest: string) => rest.replace(/^\/[^/]+/, '')
 export function prepareItem(
   item: RegistryItem,
   configuration: InstallConfig,
@@ -581,7 +583,11 @@ export function prepareItem(
             edits.push({
               start: node.moduleSpecifier.getStart(ast) + 1,
               end: node.moduleSpecifier.getEnd() - 1,
-              value: config.aliases[match.alias] + match.rest,
+              value:
+                config.aliases[match.alias] +
+                (match.alias === 'blocks'
+                  ? withoutBlockCategory(match.rest)
+                  : match.rest),
             })
         }
         ts.forEachChild(node, visit)
@@ -595,7 +601,7 @@ export function prepareItem(
         ...file,
         content,
         type: 'registry:file',
-        target: `~/${destination}/${suffix.join('/')}`,
+        target: `~/${destination}/${(layer === 'blocks' ? suffix.slice(1) : suffix).join('/')}`,
       }
     }),
   }

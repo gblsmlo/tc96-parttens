@@ -96,9 +96,9 @@ test('maps block files and imports to the blocks destination', () => {
   )
   expect(result.files[0]).toMatchObject({
     target:
-      '~/apps/web/src/blocks/application/shell/app-shell-1/app-shell-1.tsx',
+      '~/apps/web/src/blocks/shell/app-shell-1/app-shell-1.tsx',
     content:
-      'import { Sidebar } from "@consumer/visual/sidebar"\nimport { ProgressRing } from "@consumer/patterns/widgets/shared/progress-ring"\nimport { NavMain } from "@consumer/blocks/application/shell/shared/nav-main"\n',
+      'import { Sidebar } from "@consumer/visual/sidebar"\nimport { ProgressRing } from "@consumer/patterns/widgets/shared/progress-ring"\nimport { NavMain } from "@consumer/blocks/shell/shared/nav-main"\n',
   })
   const built = prepareItem(
     item(
