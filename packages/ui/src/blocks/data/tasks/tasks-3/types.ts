@@ -98,6 +98,7 @@ export interface Tasks3Labels extends DataCollectionLoadLabels {
   search: string
   selectedCount: (count: number) => string
   selectionActions: string
+  selectAll: string
   selectTask: (title: string) => string
   sort: string
   sortBy: string

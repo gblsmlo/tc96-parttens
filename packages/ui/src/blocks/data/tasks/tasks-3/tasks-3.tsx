@@ -422,6 +422,20 @@ export function Tasks3({
           listHeader={
             <Tasks3ListHeader
               labels={labels}
+              selection={
+                selectable && tasks.length > 0
+                  ? {
+                      checked: tasks.every((task) => selectedSet.has(task.id)),
+                      indeterminate:
+                        selectedSet.size > 0 &&
+                        !tasks.every((task) => selectedSet.has(task.id)),
+                      onCheckedChange: (checked) =>
+                        setSelectedIds(
+                          checked ? tasks.map((task) => task.id) : noIds,
+                        ),
+                    }
+                  : undefined
+              }
               onSort={onSortChange ? sortByColumn : undefined}
               sort={sort}
               sortDirection={sortDirection}

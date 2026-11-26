@@ -82,6 +82,7 @@ export const defaultTasks3Labels: Tasks3Labels = {
   selectedCount: (count) =>
     count === 1 ? '1 tarefa selecionada' : `${count} tarefas selecionadas`,
   selectionActions: 'Ações das tarefas selecionadas',
+  selectAll: 'Selecionar todas as tarefas',
   selectTask: (title) => `Selecionar ${title}`,
   sort: 'Ordenar',
   sortBy: 'Ordenar por',

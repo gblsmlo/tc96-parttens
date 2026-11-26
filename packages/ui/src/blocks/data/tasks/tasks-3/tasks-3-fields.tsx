@@ -17,7 +17,6 @@ import {
 } from '@tc96/ui/property-meta'
 import { cn } from '@tc96/utils'
 import { dataPriorities } from '../../shared/properties/data-priority'
-import { DataOwner } from '../../shared/properties/data-properties'
 import { tasks3VisibleTags } from './tasks-3-options'
 import type {
   Tasks3Labels,
@@ -230,20 +229,6 @@ export function Tasks3UpdatedField({ context, item }: FieldProps) {
           {formatTasks3Updated(item.updatedAt, now, locale, timeZone)}
         </time>
       }
-      variant="plain"
-    />
-  )
-}
-
-export function Tasks3CreatorField({ context, item }: FieldProps) {
-  const { labels, people } = context
-  return (
-    <DataOwner
-      ariaLabel={labels.columns.creator}
-      avatarOnly
-      owners={people}
-      placeholder={labels.noCreator}
-      value={item.creatorId}
       variant="plain"
     />
   )

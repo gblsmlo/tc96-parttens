@@ -58,7 +58,6 @@ export const tasks3LeadingWidth = 'w-5'
 
 export const tasks3FieldWidth = {
   assignees: 'w-40',
-  creator: 'w-6',
   due: 'w-32',
   project: 'w-40',
   updated: 'w-20',

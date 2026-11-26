@@ -1,4 +1,4 @@
-import { UserPlusIcon } from '@phosphor-icons/react'
+import { Checkbox } from '@tc96/ui/checkbox'
 import {
   ListRow,
   ListRowBody,
@@ -19,7 +19,6 @@ import { cn } from '@tc96/utils'
 import { DataCollectionKanbanCard } from '../../shared/collection/data-collection-record-parts'
 import {
   Tasks3AssigneesField,
-  Tasks3CreatorField,
   Tasks3DueField,
   type Tasks3FieldContext,
   Tasks3PriorityMark,
@@ -37,8 +36,15 @@ import type {
   Tasks3Task,
 } from './types'
 
+export interface Tasks3ListHeaderSelection {
+  checked: boolean
+  indeterminate: boolean
+  onCheckedChange: (checked: boolean) => void
+}
+
 export interface Tasks3ListHeaderProps {
   labels: Tasks3Labels
+  selection?: Tasks3ListHeaderSelection
   onSort?: (column: Tasks3SortColumn) => void
   sort: Tasks3Sort
   sortDirection: Tasks3SortDirection
@@ -47,6 +53,7 @@ export interface Tasks3ListHeaderProps {
 export function Tasks3ListHeader({
   labels,
   onSort,
+  selection,
   sort,
   sortDirection,
 }: Readonly<Tasks3ListHeaderProps>) {
@@ -63,8 +70,19 @@ export function Tasks3ListHeader({
     <ListViewHeader data-slot="tasks-3-list-header">
       <ListViewHeaderCell
         always
-        className={cn(tasks3LeadingWidth, '-me-0.5')}
-      />
+        className={cn(tasks3LeadingWidth, '-me-0.5 ps-1')}
+      >
+        {selection ? (
+          <Checkbox
+            aria-label={labels.selectAll}
+            checked={selection.checked}
+            indeterminate={selection.indeterminate}
+            onCheckedChange={(checked) =>
+              selection.onCheckedChange(checked === true)
+            }
+          />
+        ) : null}
+      </ListViewHeaderCell>
       <ListViewHeaderCell always className="flex-1" {...sortable('title')}>
         {labels.columns.title}
       </ListViewHeaderCell>
@@ -89,12 +107,6 @@ export function Tasks3ListHeader({
         {...sortable('updated')}
       >
         {labels.columns.updated}
-      </ListViewHeaderCell>
-      <ListViewHeaderCell
-        className={cn(tasks3FieldWidth.creator, 'justify-center')}
-      >
-        <UserPlusIcon aria-hidden="true" className="size-4" />
-        <span className="sr-only">{labels.columns.creator}</span>
       </ListViewHeaderCell>
     </ListViewHeader>
   )
@@ -163,11 +175,6 @@ export const renderTasks3ListRow =
           </ListRowField>
           <ListRowField className={tasks3FieldWidth.updated}>
             <Tasks3UpdatedField context={context} item={task} />
-          </ListRowField>
-          <ListRowField
-            className={cn(tasks3FieldWidth.creator, 'justify-center')}
-          >
-            <Tasks3CreatorField context={context} item={task} />
           </ListRowField>
         </ListRowTrailing>
       </ListRow>
