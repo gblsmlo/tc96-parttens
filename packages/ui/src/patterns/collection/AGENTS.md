@@ -153,6 +153,8 @@ Moving a file under `shared/` or `types/`, re-exporting a layout from `collectio
 ## Comandos
 
 ```bash
+bun run test:scope collection          # biome, bun test, boundaries, overrides and the plays of src/patterns/collection/ (62s)
+bun run test:scope collection --deps   # adds the plays of the six layouts the outlet mounts (4 min)
 bun test --isolate packages/ui/src/patterns/collection
 bunx biome check packages/ui/src/patterns/collection
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api

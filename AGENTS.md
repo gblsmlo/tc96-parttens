@@ -89,6 +89,7 @@ bun run storybook:lint
 bun run check:coss && bun run boundaries:check && bun run overrides:check
 bun run verify:public-api
 bun run test                 # helpers, boundaries, patterns, blocks, registry
+bun run test:scope <scope>   # one scope from scripts/scopes.json: biome, bun test, checks, plays (light theme); --deps, --scenario=changed|watch
 bun run storybook:test       # vitest browser + axe (a11y violations fail)
 bun run story:source <id>    # one story as a ready-to-use component; needs the dev server
 bun run check                # full gate; run before a release or PR

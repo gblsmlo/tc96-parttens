@@ -43,6 +43,9 @@ export default mergeConfig(
   defineConfig({
     test: {
       maxWorkers: 2,
+      ...(process.env.TC96_CHANGED_SOURCES_ONLY
+        ? { forceRerunTriggers: [] }
+        : {}),
       projects: [
         storybookProject('storybook', { theme: 'light' }),
         storybookProject('storybook-dark', { theme: 'dark' }),
