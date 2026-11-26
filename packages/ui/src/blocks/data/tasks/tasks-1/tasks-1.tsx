@@ -1,6 +1,4 @@
-import { cn } from '@tc96/utils'
-
-;('use client')
+'use client'
 
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
 import { CollectionPagination } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
@@ -306,7 +304,7 @@ export function Tasks1({
 
   return (
     <DataCollectionFrame
-      className={cn('flex h-full min-h-0 flex-col', className)}
+      className={className}
       data-block="tasks-1"
       title={labels.title}
       toolbar={
@@ -343,64 +341,62 @@ export function Tasks1({
         />
       }
     >
-      <div className="min-h-0 flex-1 overflow-auto" data-slot="tasks-1-body">
-        {loadState ?? (
-          <DataCollection<Tasks1Task>
-            collapsedGroupIds={collapsedGroupIds}
-            collection={collection}
-            emptyMessage={filtered ? labels.noResult : labels.empty}
-            footer={
-              pageCount !== undefined && hasTasks ? (
-                <CollectionPagination
-                  buttonLabels={labels.paginationButtons}
-                  formatRange={labels.pageRange}
-                  label={labels.pagination}
-                  onPageChange={setPage}
-                  page={page}
-                  pageCount={pageCount}
-                  pageSize={pageSize}
-                  total={total}
-                />
-              ) : undefined
-            }
-            getGroupToggleLabel={labels.groupToggle}
-            getRowOpenLabel={(task) => labels.openTask(task.title)}
-            groupBy={groupBy}
-            label={labels.title}
-            mode="table"
-            onCollapsedGroupIdsChange={(groupIds) =>
-              setCollapsedGroupIds([...groupIds])
-            }
-            onGroupByChange={(next) => setGroupBy(pickGroupBy(next))}
-            onOpen={openTask ? (task) => openTask(task.id) : undefined}
-            selectionActions={
-              selectable
-                ? ({ clearSelection, selectedCount, selectedRows }) => (
-                    <ActionBar
-                      actions={createTasks1SelectionActions({
-                        labels,
-                        onBulkDelete,
-                        onBulkPriorityChange,
-                        onBulkProjectChange,
-                        onBulkStatusChange,
-                        onDone: clearSelection,
-                        projects,
-                        selectedRows,
-                      })}
-                      clearSelectionLabel={labels.clearSelection}
-                      formatSelection={labels.selectedCount}
-                      label={labels.selectionActions}
-                      onClearSelection={clearSelection}
-                      selectedCount={selectedCount}
-                      selectedRows={selectedRows}
-                    />
-                  )
-                : undefined
-            }
-            table={table}
-          />
-        )}
-      </div>
+      {loadState ?? (
+        <DataCollection<Tasks1Task>
+          collapsedGroupIds={collapsedGroupIds}
+          collection={collection}
+          emptyMessage={filtered ? labels.noResult : labels.empty}
+          footer={
+            pageCount !== undefined && hasTasks ? (
+              <CollectionPagination
+                buttonLabels={labels.paginationButtons}
+                formatRange={labels.pageRange}
+                label={labels.pagination}
+                onPageChange={setPage}
+                page={page}
+                pageCount={pageCount}
+                pageSize={pageSize}
+                total={total}
+              />
+            ) : undefined
+          }
+          getGroupToggleLabel={labels.groupToggle}
+          getRowOpenLabel={(task) => labels.openTask(task.title)}
+          groupBy={groupBy}
+          label={labels.title}
+          mode="table"
+          onCollapsedGroupIdsChange={(groupIds) =>
+            setCollapsedGroupIds([...groupIds])
+          }
+          onGroupByChange={(next) => setGroupBy(pickGroupBy(next))}
+          onOpen={openTask ? (task) => openTask(task.id) : undefined}
+          selectionActions={
+            selectable
+              ? ({ clearSelection, selectedCount, selectedRows }) => (
+                  <ActionBar
+                    actions={createTasks1SelectionActions({
+                      labels,
+                      onBulkDelete,
+                      onBulkPriorityChange,
+                      onBulkProjectChange,
+                      onBulkStatusChange,
+                      onDone: clearSelection,
+                      projects,
+                      selectedRows,
+                    })}
+                    clearSelectionLabel={labels.clearSelection}
+                    formatSelection={labels.selectedCount}
+                    label={labels.selectionActions}
+                    onClearSelection={clearSelection}
+                    selectedCount={selectedCount}
+                    selectedRows={selectedRows}
+                  />
+                )
+              : undefined
+          }
+          table={table}
+        />
+      )}
     </DataCollectionFrame>
   )
 }

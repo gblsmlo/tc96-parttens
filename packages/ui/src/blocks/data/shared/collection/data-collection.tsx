@@ -132,7 +132,7 @@ export function DataCollection<TRecord extends RowData>({
 
   return (
     <div
-      className="grid min-w-0 gap-3"
+      className="flex min-h-0 min-w-0 flex-1 flex-col gap-3"
       data-group-by={activeGroupBy ?? undefined}
       data-mode={mode}
       data-slot="data-collection"

@@ -1,8 +1,13 @@
+import {
+  CollectionFrame,
+  CollectionFrameBody,
+  CollectionFrameHeader,
+} from '@tc96/ui/patterns/collection/composition/collection-frame'
 import { cn } from '@tc96/utils'
 import type { ComponentProps, ReactNode } from 'react'
 
 export interface DataCollectionFrameProps
-  extends Omit<ComponentProps<'section'>, 'title'> {
+  extends Omit<ComponentProps<'div'>, 'title'> {
   notice?: ReactNode
   title: string
   toolbar: ReactNode
@@ -17,14 +22,17 @@ export function DataCollectionFrame({
   ...props
 }: Readonly<DataCollectionFrameProps>) {
   return (
-    <section
+    <CollectionFrame
       aria-label={title}
-      className={cn('grid min-w-0 gap-4', className)}
+      className={cn('h-full gap-4', className)}
+      role="region"
       {...props}
     >
-      {notice}
-      {toolbar}
-      {children}
-    </section>
+      <CollectionFrameHeader className="gap-4">
+        {notice}
+        {toolbar}
+      </CollectionFrameHeader>
+      <CollectionFrameBody>{children}</CollectionFrameBody>
+    </CollectionFrame>
   )
 }
