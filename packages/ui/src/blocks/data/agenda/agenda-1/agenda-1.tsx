@@ -47,7 +47,6 @@ import { resolveAgenda1Labels } from './labels'
 import type {
   Agenda1Entry,
   Agenda1GroupBy,
-  Agenda1Kind,
   Agenda1Mode,
   Agenda1Period,
   Agenda1Props,
@@ -61,7 +60,6 @@ export {
 } from './agenda-1-options'
 
 const noOwners: NonNullable<Agenda1Props['owners']> = []
-const noKinds: Agenda1Kind[] = []
 const noEntries: Agenda1Entry[] = []
 
 export function Agenda1({
@@ -72,7 +70,6 @@ export function Agenda1({
   error,
   filtered = false,
   groupBy: groupByProp,
-  kindFilter: kindFilterProp,
   labels: labelsProp,
   locale = defaultDataCollectionLocale,
   mode: modeProp,
@@ -82,17 +79,12 @@ export function Agenda1({
   onCollapsedGroupIdsChange,
   onCreate,
   onGroupByChange,
-  onKindFilterChange,
   onModeChange,
   onOpen,
-  onOwnerFilterChange,
   onPeriodChange,
   onReschedule,
   onRetry,
-  onSavePreference,
-  ownerFilter: ownerFilterProp,
   owners = noOwners,
-  ownersLoading = false,
   pending,
   period: periodProp,
   timeZone = defaultDataCollectionTimeZone,
@@ -105,7 +97,7 @@ export function Agenda1({
     [mountedAt, now, timeZone],
   )
   const todayKey = calendarDateKey(today)
-  const [mode, setMode] = useControllable<Agenda1Mode>(
+  const [mode] = useControllable<Agenda1Mode>(
     modeProp,
     'calendar',
     onModeChange,
@@ -120,20 +112,10 @@ export function Agenda1({
     todayKey,
     onAnchorChange,
   )
-  const [groupBy, setGroupBy] = useControllable<Agenda1GroupBy | null>(
+  const [groupBy] = useControllable<Agenda1GroupBy | null>(
     groupByProp,
     'day',
     onGroupByChange,
-  )
-  const [kindFilter, setKindFilter] = useControllable<Agenda1Kind[]>(
-    kindFilterProp,
-    noKinds,
-    onKindFilterChange,
-  )
-  const [ownerFilter, setOwnerFilter] = useControllable<string | null>(
-    ownerFilterProp,
-    null,
-    onOwnerFilterChange,
   )
   const openEntry = useStableHandler(onOpen)
   const cancelEntry = useStableHandler(onCancel)
@@ -305,23 +287,12 @@ export function Agenda1({
       title={labels.title}
       toolbar={
         <Agenda1Toolbar
-          groupBy={groupBy}
-          kindFilter={kindFilter}
           labels={labels}
-          mode={mode}
           onCreate={create ? () => create() : undefined}
-          onGroupByChange={setGroupBy}
-          onKindFilterChange={onKindFilterChange ? setKindFilter : undefined}
-          onModeChange={setMode}
           onNext={() => goTo(shiftAgenda1Anchor(anchorDate, period, 1))}
-          onOwnerFilterChange={setOwnerFilter}
           onPeriodChange={setPeriod}
           onPrevious={() => goTo(shiftAgenda1Anchor(anchorDate, period, -1))}
-          onSavePreference={onSavePreference}
           onToday={() => setAnchor(todayKey)}
-          ownerFilter={ownerFilter}
-          owners={owners}
-          ownersLoading={ownersLoading}
           period={period}
           periodTitle={formatters.periodTitle(anchorDate, period)}
         />

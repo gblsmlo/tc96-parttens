@@ -3,7 +3,10 @@ import { expect, screen, userEvent, within } from 'storybook/test'
 import { ToolbarCanvas } from './toolbar-canvas.tsx'
 import { toolbarControlArgs } from './toolbar-controls.ts'
 import {
+  AppointmentsToolbar,
+  appointmentToday,
   ComposedToolbar,
+  formatAppointmentPeriod,
   GroupToolbar,
   SearchFieldToolbar,
   SpreadsheetSettingsToolbar,
@@ -130,6 +133,42 @@ export const SpreadsheetModes: Story = {
   play: async ({ canvasElement }) => {
     await expect(
       toolbarIn(canvasElement).getByRole('button', { name: 'Exibição' }),
+    ).toBeVisible()
+  },
+}
+
+export const Appointments: Story = {
+  parameters: describe(
+    `The period controls of an agenda, on the [Left Center Right](?path=/story/patterns-collectiontoolbar-layouts--left-center-right) layout: today, the previous and next period and the current range in \`left\`, the day, week and month switch in \`center\`, and the creation action in \`right\`.`,
+  ),
+  render: () => <AppointmentsToolbar />,
+  play: async ({ canvasElement }) => {
+    const toolbar = toolbarIn(canvasElement, 'Controles da agenda')
+    const today = appointmentToday()
+    await expect(toolbar.getByRole('button', { name: 'Hoje' })).toBeVisible()
+    await expect(
+      toolbar.getByText(formatAppointmentPeriod(today, 'week')),
+    ).toBeVisible()
+    await expect(
+      toolbar.getByRole('button', { name: 'Semana' }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.click(toolbar.getByRole('button', { name: 'Dia' }))
+    await expect(toolbar.getByRole('button', { name: 'Dia' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await expect(
+      toolbar.getByText(formatAppointmentPeriod(today, 'day')),
+    ).toBeVisible()
+    await userEvent.click(toolbar.getByRole('button', { name: 'Semana' }))
+    await expect(
+      toolbar.getByRole('button', { name: 'Semana' }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    await expect(
+      toolbar.getByText(formatAppointmentPeriod(today, 'week')),
+    ).toBeVisible()
+    await expect(
+      toolbar.getByRole('button', { name: 'Novo compromisso' }),
     ).toBeVisible()
   },
 }
